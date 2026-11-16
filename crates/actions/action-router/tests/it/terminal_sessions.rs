@@ -20,7 +20,7 @@ fn scope(name: &str) -> StartedFrom {
 async fn companion_opens(router: &Router<FakeSeams>, from: Option<StartedFrom>) -> SessionId {
     opens(
         router,
-        &caller("org.quire.Companiond", CallerRole::Companion),
+        &caller("org.bardo.Companion", CallerRole::Companion),
         from,
     )
     .await
@@ -108,14 +108,14 @@ async fn a_terminal_lists_loads_and_forks_a_conversation_a_terminal_started() {
 async fn any_terminal_sees_it_not_only_the_same_scope() {
     let router = router();
     let started = companion_opens(&router, Some(scope("vte-spawn-1.scope"))).await;
-    let other = caller("org.quire.OtherDo", CallerRole::Cli);
+    let other = caller("org.bardo.OtherDo", CallerRole::Cli);
     assert_eq!(listed(&router, &other).await, [started]);
 }
 
 #[tokio::test]
 async fn a_companion_session_the_launcher_started_is_not_shown_to_a_terminal() {
     let router = router();
-    let shell = caller("org.quire.Shell", CallerRole::Launcher);
+    let shell = caller("org.bardo.Shell", CallerRole::Launcher);
     let from_launcher = opens(&router, &shell, None).await;
     let plain = companion_opens(&router, None).await;
     for hidden in [&from_launcher, &plain] {
@@ -144,7 +144,7 @@ async fn only_the_companion_can_say_a_terminal_started_it() {
     let claimed = scope("vte-spawn-1.scope");
     let by_launcher = opens(
         &router,
-        &caller("org.quire.Shell", CallerRole::Launcher),
+        &caller("org.bardo.Shell", CallerRole::Launcher),
         Some(claimed.clone()),
     )
     .await;

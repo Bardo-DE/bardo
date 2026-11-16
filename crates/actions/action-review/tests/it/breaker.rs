@@ -9,7 +9,7 @@ use provenance::{ActionName, UnixSeconds};
 
 fn goal(action: &str) -> GoalKey {
     GoalKey {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         action: ActionName::parse(action).expect("action"),
         kind: None,
     }

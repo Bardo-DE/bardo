@@ -1,4 +1,4 @@
-//! `$XDG_CONFIG_HOME/quire/actions-mcp.toml`: the name the edge's client goes by. Every key is
+//! `$XDG_CONFIG_HOME/quire/bardo-actions-mcp.toml`: the name the edge's client goes by. Every key is
 //! optional. Whether the edge is on is not here: it is the setting `agent.mcp.expose` in docket's
 //! own settings file (`settings.rs`), off when nothing says otherwise (QUESTIONS S7).
 
@@ -6,11 +6,11 @@ use crate::settings;
 use provenance::ClientName;
 use serde::{Deserialize, Serialize};
 
-const SHIPPED: &str = include_str!("../../dist/actions-mcp.toml");
+const SHIPPED: &str = include_str!("../../dist/bardo-actions-mcp.toml");
 
 /// Why the file is not a configuration.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("actions-mcp.toml: {0}")]
+#[error("bardo-actions-mcp.toml: {0}")]
 pub struct ConfigError(String);
 
 fn client() -> ClientName {
@@ -44,17 +44,17 @@ impl McpConfig {
         toml::from_str(text).map_err(|e| ConfigError(e.to_string()))
     }
 
-    /// The configuration the package ships (`dist/actions-mcp.toml`): off.
+    /// The configuration the package ships (`dist/bardo-actions-mcp.toml`): off.
     pub fn shipped() -> Result<Self, ConfigError> {
         Self::parse(SHIPPED)
     }
 
-    /// The first `quire/actions-mcp.toml` of the configuration directories (`$XDG_CONFIG_HOME`,
+    /// The first `quire/bardo-actions-mcp.toml` of the configuration directories (`$XDG_CONFIG_HOME`,
     /// then `$XDG_CONFIG_DIRS`), else the shipped one; the switch from the settings file.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, ConfigError> {
         let found = settings::config_dirs(env)
             .into_iter()
-            .map(|d| d.join("quire").join("actions-mcp.toml"))
+            .map(|d| d.join("quire").join("bardo-actions-mcp.toml"))
             .find_map(|path| std::fs::read_to_string(path).ok());
         let config = match found {
             Some(text) => Self::parse(&text)?,

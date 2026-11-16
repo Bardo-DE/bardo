@@ -487,7 +487,7 @@ mod tests {
         StepLine {
             call: CallId(0),
             action: ActionRef {
-                app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse("mail.message.forward").expect("name"),
             },
             effect: Effect::Outbound,
@@ -607,7 +607,7 @@ mod tests {
     fn an_app_that_needs_an_argument_lists_its_choices_by_key_and_never_by_title() {
         let option = |key: &str| action_vocab::EntityRef {
             id: provenance::EntityId {
-                app: account_core::AppName::parse("org.quire.Cua").expect("app"),
+                app: account_core::AppName::parse("org.bardo.ComputerUse").expect("app"),
                 kind: provenance::EntityKind::parse("desktop.app").expect("kind"),
                 key: provenance::EntityKey::parse(key).expect("key"),
             },
@@ -677,7 +677,7 @@ mod tests {
         };
         let line = seen(&[own, twin]);
         assert!(
-            line.starts_with("org.quire.Mail.mail.message.forward done"),
+            line.starts_with("org.bardo.Mail.mail.message.forward done"),
             "{line}"
         );
     }
@@ -706,7 +706,7 @@ mod tests {
     fn searched(action: &str, end: StepEnd) -> StepLine {
         StepLine {
             action: ActionRef {
-                app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse(action).expect("name"),
             },
             ..step(end)
@@ -736,7 +736,7 @@ mod tests {
         };
         assert_eq!(
             step_line_in(&again, &seen),
-            "org.quire.Mail.mail.contact.search not run: you already hold its answer [#5 mail.contact] (1 item); #5 can be used as \"to\" in mail.message.forward, mail.message.send; repeating it again asks the person"
+            "org.bardo.Mail.mail.contact.search not run: you already hold its answer [#5 mail.contact] (1 item); #5 can be used as \"to\" in mail.message.forward, mail.message.send; repeating it again asks the person"
         );
     }
 
@@ -946,7 +946,7 @@ mod tests {
     fn masked(action: &str, with: Vec<u64>, end: StepEnd) -> StepLine {
         StepLine {
             action: ActionRef {
-                app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse(action).expect("name"),
             },
             shown: StepShown::Masked,
@@ -973,7 +973,7 @@ mod tests {
         let line = step_line(&read, &[card(4)]);
         assert_eq!(
             line,
-            "org.quire.Mail.mail.thread.read #1 → #4 [outcome: Read the thread]"
+            "org.bardo.Mail.mail.thread.read #1 → #4 [outcome: Read the thread]"
         );
         assert_eq!(
             line,
@@ -993,7 +993,7 @@ mod tests {
         let cards = [entity_card(1, "mail.thread"), entity_card(2, "mail.thread")];
         assert_eq!(
             step_line(&search, &cards),
-            "org.quire.Mail.mail.thread.search → [#1 mail.thread, #2 mail.thread] (2 items) [outcome: Found threads]"
+            "org.bardo.Mail.mail.thread.search → [#1 mail.thread, #2 mail.thread] (2 items) [outcome: Found threads]"
         );
     }
 
@@ -1021,7 +1021,7 @@ mod tests {
         forward.with = vec![Handle(1), Handle(3)];
         let line = step_line(&forward, &[]);
         assert!(
-            line.starts_with("org.quire.Mail.mail.message.forward #1 #3 not run"),
+            line.starts_with("org.bardo.Mail.mail.message.forward #1 #3 not run"),
             "{line}"
         );
     }

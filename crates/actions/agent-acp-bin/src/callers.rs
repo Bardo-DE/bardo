@@ -1,6 +1,6 @@
-//! `acp-callers.toml`: the one process docket-acp and docket-agent answer when they serve
-//! `Confirm1` is intentd's unit. The shipped file is `dist/acp-callers.toml`; the system's copy
-//! under `/etc/quire` and the person's under their configuration directory are laid over each
+//! `agent-acp-callers.toml`: the one process bardo-agent-acp and bardo-agent answer when they serve
+//! `Confirm1` is intentd's unit. The shipped file is `dist/agent-acp-callers.toml`; the system's copy
+//! under `/etc/bardo` and the person's under their configuration directory are laid over each
 //! other (`action_dbus::callers::read_table`), and only the system's can give a fixed role.
 
 use action_dbus::callers::{
@@ -9,9 +9,9 @@ use action_dbus::callers::{
 use std::path::Path;
 
 /// The file name in both directories.
-pub const FILE: &str = "acp-callers.toml";
+pub const FILE: &str = "agent-acp-callers.toml";
 
-const SHIPPED: &str = include_str!("../../dist/acp-callers.toml");
+const SHIPPED: &str = include_str!("../../dist/agent-acp-callers.toml");
 
 /// The table the package ships. A shipped file that does not read is an empty table: nobody is
 /// identified, which is the strict way to fail.
@@ -19,7 +19,7 @@ pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }
 
-/// The table of this machine: `/etc/quire/acp-callers.toml` with the person's file over it.
+/// The table of this machine: `/etc/bardo/agent-acp-callers.toml` with the person's file over it.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     read_table(FILE, env)
 }

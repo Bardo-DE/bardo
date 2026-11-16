@@ -1,4 +1,4 @@
-//! `quire_desktop_manager_v1` (P2-Z; filled by P2-Q1): the wire glue lives in
+//! `bardo_desktop_manager_v1` (P2-Z; filled by P2-Q1): the wire glue lives in
 //! `compositor_wayland::quire::desktop`; this implements what it asks of the state.
 
 use crate::state::State;

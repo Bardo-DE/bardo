@@ -37,14 +37,14 @@ async fn uses_are_kept_once_each_survive_a_restart_and_go_with_the_identity() {
     assert_eq!(said, None);
     assert!(book.apps(&identity("ada.example")).is_empty());
     for _ in 0..2 {
-        book.record(identity("ada.example"), app("org.quire.Mail"))
+        book.record(identity("ada.example"), app("org.bardo.Mail"))
             .await
             .expect("record");
     }
-    book.record(identity("ada.example"), app("org.quire.Calendar"))
+    book.record(identity("ada.example"), app("org.bardo.Calendar"))
         .await
         .expect("record");
-    let both = [app("org.quire.Calendar"), app("org.quire.Mail")];
+    let both = [app("org.bardo.Calendar"), app("org.bardo.Mail")];
     assert_eq!(book.apps(&identity("ada.example")), both);
 
     let (mut again, said) = UseBook::open(Some(&store(&scratch))).await;
@@ -71,7 +71,7 @@ async fn a_file_that_cannot_be_read_is_left_as_it_is_and_no_use_is_recorded() {
     let (mut book, said) = UseBook::open(Some(&store(&scratch))).await;
     assert!(said.is_some_and(|said| said.contains(FILE)));
     let refused = book
-        .record(identity("ada.example"), app("org.quire.Mail"))
+        .record(identity("ada.example"), app("org.bardo.Mail"))
         .await;
     assert_eq!(refused, Err(Unsaved));
     assert_eq!(

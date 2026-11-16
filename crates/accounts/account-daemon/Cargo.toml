@@ -1,6 +1,6 @@
 [package]
 name = "account-daemon"
-description = "porter's identity daemon: org.quire.Accounts1 over account-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
+description = "porter's identity daemon: org.bardo.Accounts1 over account-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -59,14 +59,14 @@ rustix = {version = "1.1", default-features = false, features = ["std", "event",
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]
-# Test builds only, never default and never in dist: `ACCOUNTD_PROC_ROOT=<dir>` makes the binary
+# Test builds only, never default and never in dist: `BARDO_ACCOUNTD_PROC_ROOT=<dir>` makes the binary
 # read caller identities from <dir> instead of /proc, because the jailed and acceptance tests run
-# processes outside service cgroups, and `PORTER_SYSTEM_CALLERS=<file>` makes it read that file as
+# processes outside service cgroups, and `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes it read that file as
 # the system caller table, because a jail cannot write /etc/porter. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
 test-proc-root = ["account-callers/test-proc-root"]
-# Test builds only, never default and never in dist: `ACCOUNTD_KEYS=file:<absolute path>` keeps
+# Test builds only, never default and never in dist: `BARDO_ACCOUNTD_KEYS=file:<absolute path>` keeps
 # credentials in one 0600 plain-text JSON file (account-secrets' `FileSecrets`) instead of the
 # Secret Service, for private-bus and scratch runs with no keyring. A release build ignores the
 # variable and says so once. tests/dist.rs and check-boundary.sh fail if this feature is default.

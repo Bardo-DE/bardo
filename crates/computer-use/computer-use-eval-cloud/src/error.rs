@@ -1,4 +1,4 @@
-//! Why the `cua-eval-cloud` program stops: a flag it cannot use, or a step of the set-up or the run
+//! Why the `computer-use-eval-cloud` program stops: a flag it cannot use, or a step of the set-up or the run
 //! that failed. The binary prints the error and exits with status 2.
 
 use account_capability::Tier;

@@ -1,4 +1,4 @@
-//! The helpers on a private bus: a stand-in owns `org.quire.Companion1` and its
+//! The helpers on a private bus: a stand-in owns `org.bardo.Companion1` and its
 //! `Companion1.Helpers2` object; the companion service reads the list, follows `Changed`, reads a
 //! card, and sends what the person confirms. Every wait is on the service's published state or on
 //! the stand-in's record, never on a clock. Never the person's session bus.
@@ -24,7 +24,7 @@ use shell_model::companion::{
 };
 use zbus::{Connection, fdo, interface};
 
-const PATH: &str = "/org/quire/Companion1";
+const PATH: &str = "/org/bardo/Companion1";
 
 fn id(text: &str) -> HelperId {
     HelperId::parse(text).unwrap_or_else(|e| panic!("{e}"))
@@ -49,7 +49,7 @@ fn card(helper: &str, name: &str) -> HelperCardView {
         role: "Reads the news each morning".to_owned(),
         app_name: None,
         model: HelperModel::Unset,
-        reach: vec!["org.quire.Notes: look at things".to_owned()],
+        reach: vec!["org.bardo.Notes: look at things".to_owned()],
         steps: Count(12),
         jobs: vec![
             serde_json::from_str(
@@ -78,7 +78,7 @@ struct StandInHelpers {
     held: Held,
 }
 
-#[interface(name = "org.quire.Companion1.Helpers2")]
+#[interface(name = "org.bardo.Companion1.Helpers2")]
 impl StandInHelpers {
     async fn list(&self, after: u64) -> fdo::Result<String> {
         self.log.push(format!("list {after}"));
@@ -198,7 +198,7 @@ async fn changed(companion: &Connection) {
         .emit_signal(
             None::<&str>,
             PATH,
-            "org.quire.Companion1.Helpers2",
+            "org.bardo.Companion1.Helpers2",
             "Changed",
             &(),
         )
@@ -282,7 +282,7 @@ async fn a_saved_card_goes_to_the_companion_and_its_refusal_is_shown_as_it_came(
         HelpersMsg::NewHelper,
         HelpersMsg::EditName("Research".to_owned()),
         HelpersMsg::EditRole("Reads the news".to_owned()),
-        HelpersMsg::ToggleApp(app("org.quire.Notes")),
+        HelpersMsg::ToggleApp(app("org.bardo.Notes")),
         HelpersMsg::Save,
     ] {
         desk.send(CompanionCommand::Helpers(msg));

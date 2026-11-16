@@ -26,7 +26,7 @@ pub struct LayerKey(pub u64);
 #[serde(transparent)]
 pub struct PopupKey(pub u64);
 
-/// One agent lease (`quire_agent_lease_v1`).
+/// One agent lease (`bardo_agent_lease_v1`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct LeaseId(pub u64);

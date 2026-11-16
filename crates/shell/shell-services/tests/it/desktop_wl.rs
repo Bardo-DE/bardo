@@ -554,7 +554,7 @@ fn the_offered_protocols_choose_the_arm() {
         ),
         (
             "the desktop's own manager without the list",
-            named(&["quire_desktop_manager_v1"]),
+            named(&["bardo_desktop_manager_v1"]),
             DesktopBackend::Bare,
         ),
         ("nothing", GlobalOffer::default(), DesktopBackend::Bare),

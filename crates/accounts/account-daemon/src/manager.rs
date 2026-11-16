@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Manager`: add an identity through the sheet, and tell the shell which
+//! `org.bardo.Accounts1.Manager`: add an identity through the sheet, and tell the shell which
 //! accounts need signing in again. Apps no longer find, choose or are granted accounts here: they
 //! ask `Identities1` for "Continue as" and keep their own sign-ins.
 

@@ -85,7 +85,7 @@ async fn announce(connection: &Connection, levels: &[(String, u32)]) {
         .emit_signal(
             None::<&str>,
             PATH,
-            "org.quire.Displays1",
+            "org.bardo.Displays1",
             "Changed",
             &(levels,),
         )

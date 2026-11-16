@@ -1,4 +1,4 @@
-//! The shell's manifest (`dist/intents/org.quire.Shell.toml`) against the model that reads an
+//! The shell's manifest (`dist/intents/org.bardo.Shell.toml`) against the model that reads an
 //! invocation of it: every declared action is one the model knows, every choice a declared
 //! option, so a name or an option cannot drift between the file docket reads and the code sill
 //! runs.
@@ -61,7 +61,7 @@ fn reads(invocation: &Invocation) -> Result<(), AppRefusal> {
 fn the_shipped_manifest_is_valid_and_is_the_shells() {
     let manifest = manifest().unwrap_or_else(|e| panic!("{e}"));
     let manifest = manifest.manifest();
-    assert_eq!(manifest.app.as_str(), "org.quire.Shell");
+    assert_eq!(manifest.app.as_str(), "org.bardo.Shell");
     assert_eq!(manifest.actions.len(), 17);
 }
 

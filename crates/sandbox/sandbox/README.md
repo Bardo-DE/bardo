@@ -45,7 +45,7 @@ refused, a bad working directory), `Shell` refuses and says why.
 - `redact`, `Tail`, `shown`: output is bounded, valid UTF-8, and secret-looking values are masked.
 - `AgentRun`, `agent_bwrap_args`, `NetworkMode`, `forward`: confining a long-running agent
   process, including an endpoint-only network mode served by a small forwarder
-  (`bulkhead-forward`, or your own binary calling `cli::forward_main`).
+  (`bardo-sandbox-forward`, or your own binary calling `cli::forward_main`).
 - `egress`: the allow-list mode. The agent's namespace has only a loopback; the same forwarder
   hands each connection to a unix socket, and `egress::Proxy` on the other end speaks HTTP proxy
   (`CONNECT host:port` and `http://` requests, nothing else). An `EgressPolicy` lists allowed and
@@ -55,10 +55,10 @@ refused, a bad working directory), `Shell` refuses and says why.
   unspecified unless that exact address is listed, and connects to the address it checked.
   `AgentRun::new` sets `HTTPS_PROXY`, `HTTP_PROXY` (both cases) and an empty `NO_PROXY`. It
   filters by name, not content: an allowed host still receives whatever the agent sends it.
-- `enter` and `bulkhead-enter`: an optional exec stage (`AgentRun::with_landlock`) that bubblewrap
+- `enter` and `bardo-sandbox-enter`: an optional exec stage (`AgentRun::with_landlock`) that bubblewrap
   runs first. It applies a Landlock ruleset to itself (read and execute where the root is read-only,
   write only in the workspace and the private scratch places, TCP connect only to the forwarder's
-  port or nowhere), prints `bulkhead-enter: landlock=full|files-only|none` on standard error
+  port or nowhere), prints `bardo-sandbox-enter: landlock=full|files-only|none` on standard error
   (`LandlockLevel::from_report_line` reads it), and execs the agent. On a kernel without Landlock
   or without its network rules it still runs the agent, and says so in that line.
   The Landlock calls (`enter::apply`, `enter::enter_main`, the binary) are behind the `landlock`

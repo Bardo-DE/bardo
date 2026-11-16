@@ -1,4 +1,4 @@
-//! `org.quire.SettingsModule1` at [`PRIVACY_PATH`] on casement's session-bus connection: the
+//! `org.bardo.SettingsModule1` at [`PRIVACY_PATH`] on casement's session-bus connection: the
 //! Privacy list Settings shows, from the model's rows, and the changes Settings makes to it.
 //!
 //! The model owns the answers. This module reads the board the event loop publishes to, and a
@@ -24,7 +24,7 @@ use ui_settings::schema::KeyPath;
 use zbus::Connection;
 
 /// Where the module is served.
-pub const PRIVACY_PATH: &str = "/org/quire/Compositor1/privacy";
+pub const PRIVACY_PATH: &str = "/org/bardo/Compositor1/privacy";
 
 /// The Privacy module.
 #[derive(Debug)]

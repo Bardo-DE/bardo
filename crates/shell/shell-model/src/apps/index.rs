@@ -12,7 +12,7 @@ const FILE_MANAGER: &str = "FileManager";
 
 /// The desktop's own file manager's entry id (the files repo): the Trash opens in it when
 /// installed.
-const DESKTOP_FILES: &str = "org.quire.Files";
+const DESKTOP_FILES: &str = "org.bardo.Files";
 
 /// Every installed application, sorted by id, one entry per id (the first found in XDG
 /// precedence order wins).
@@ -94,10 +94,10 @@ pub struct App {
     pub startup_wm_class: Option<String>,
     /// `X-Flatpak`, the Flatpak app id, for `match_app`; `None` for a host app.
     pub flatpak: Option<String>,
-    /// `X-Quire-BusNames`: the well-known session-bus names the app owns, most important first;
+    /// `X-Bardo-BusNames`: the well-known session-bus names the app owns, most important first;
     /// empty when the entry declares none (activation then falls back to the desktop id).
     pub bus_names: Vec<String>,
-    /// `X-Quire-IntentsApp`: the app's name in its intents manifest; `None` when it declares none.
+    /// `X-Bardo-IntentsApp`: the app's name in its intents manifest; `None` when it declares none.
     pub intents_app: Option<String>,
     /// `X-Flatpak-RenamedFrom`: the ids this app had before, so what a person stored under one
     /// (a pin, a launcher history entry) is still theirs; empty when the entry names none.
@@ -134,7 +134,7 @@ impl App {
     }
 
     /// The well-known bus name that activates the app: its first declared one, else its desktop
-    /// id (what an entry with no `X-Quire-BusNames` is assumed to own).
+    /// id (what an entry with no `X-Bardo-BusNames` is assumed to own).
     pub fn bus_name(&self) -> &str {
         self.bus_names
             .first()
@@ -386,12 +386,12 @@ pub(crate) mod tests {
             AppIndex::default(),
             AppsEvent::Scanned(vec![
                 folders("org.gnome.Nautilus", &["System", "FileManager"]),
-                folders("org.quire.Files", &["System", "FileManager"]),
+                folders("org.bardo.Files", &["System", "FileManager"]),
             ]),
         );
         assert_eq!(
             ours.file_manager().map(|id| id.0.as_str()),
-            Some("org.quire.Files"),
+            Some("org.bardo.Files"),
             "the desktop's own Files comes before the first by id"
         );
     }

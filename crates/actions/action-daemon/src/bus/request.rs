@@ -1,5 +1,5 @@
 //! Request objects: a call that may wait for the person is answered with the path of an object
-//! at `/org/quire/Intents1/request/<n>`, and the answer is its `Response` signal, sent to the
+//! at `/org/bardo/Intents1/request/<n>`, and the answer is its `Response` signal, sent to the
 //! caller alone (an answer carries what the call returned). The path is returned before the
 //! answer is awaited; a caller subscribes before it calls, so a quick answer is not lost.
 
@@ -58,7 +58,7 @@ impl RequestObject {
     }
 }
 
-#[zbus::interface(name = "org.quire.Intents1.Request")]
+#[zbus::interface(name = "org.bardo.Intents1.Request")]
 impl RequestObject {
     async fn close(
         &self,
@@ -144,7 +144,7 @@ fn progress_to(connection: zbus::Connection, to: String, at: String) -> Telling 
                     .emit_signal(
                         Some(to.as_str()),
                         at.as_str(),
-                        "org.quire.Intents1.Request",
+                        "org.bardo.Intents1.Request",
                         "Progress",
                         &(text,),
                     )
@@ -222,7 +222,7 @@ impl Gateway {
                 .emit_signal(
                     Some(to.as_str()),
                     at.as_str(),
-                    "org.quire.Intents1.Request",
+                    "org.bardo.Intents1.Request",
                     "Response",
                     &(code, body),
                 )

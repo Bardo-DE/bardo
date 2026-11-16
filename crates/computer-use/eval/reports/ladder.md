@@ -84,7 +84,7 @@ convention fits Holo 3.1 9B and Holo4 (clicks land on the intended targets).
 
 ## What the runs needed
 
-- `cua-eval --api-key-file <file>`: a bearer key for a local engine behind a tunnel; the key is read
+- `computer-use-eval --api-key-file <file>`: a bearer key for a local engine behind a tunnel; the key is read
   from the file and never printed (`Secret` redacts it).
 - 9B on the 16 GB card shared with the desktop (2 GB used): on-the-fly FP8 weights take 10.8 GiB (the
   vision tower and embeddings stay bf16), so the only line that fits is

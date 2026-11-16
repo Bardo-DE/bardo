@@ -75,7 +75,7 @@ fn window_source(
 }
 
 /// `window` drawn alone at the scale of its output: its content size, RGBA rows top first,
-/// transparent where it does not draw. What window capture sends and `casementctl shot
+/// transparent where it does not draw. What window capture sends and `bardo-compositorctl shot
 /// --window` writes. `OutputGone` when the window is not drawn or has no output.
 pub(crate) fn window_rgba(
     state: &mut State,

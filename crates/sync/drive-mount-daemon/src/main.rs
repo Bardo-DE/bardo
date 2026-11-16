@@ -1,5 +1,5 @@
-//! porter-mountd: listens on its socket (passed by `porter-mountd.socket`, or bound at
-//! `$XDG_RUNTIME_DIR/porter/mountd.sock` when started by hand) and shows drives in `~/Cloud`.
+//! bardo-drive-mount: listens on its socket (passed by `bardo-drive-mount.socket`, or bound at
+//! `$XDG_RUNTIME_DIR/bardo/drive-mount.sock` when started by hand) and shows drives in `~/Cloud`.
 
 use drive_mount_daemon::server::{self, Fusermount, Helper};
 use rustix::fs::{FileType, fstat};
@@ -11,21 +11,21 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let Some(home) = std::env::var_os("HOME").filter(|home| !home.is_empty()) else {
-        eprintln!("porter-mountd: there is no home folder (HOME)");
+        eprintln!("bardo-drive-mount: there is no home folder (HOME)");
         return ExitCode::FAILURE;
     };
     let runtime = std::env::var_os("XDG_RUNTIME_DIR").map(PathBuf::from);
     let activated = match activated() {
         Ok(activated) => activated,
         Err(why) => {
-            eprintln!("porter-mountd: the socket passed is no use: {why}");
+            eprintln!("bardo-drive-mount: the socket passed is no use: {why}");
             return ExitCode::FAILURE;
         }
     };
     let listener = match server::listener(activated, runtime.as_deref()) {
         Ok(listener) => listener,
         Err(why) => {
-            eprintln!("porter-mountd: not listening: {why}");
+            eprintln!("bardo-drive-mount: not listening: {why}");
             return ExitCode::FAILURE;
         }
     };

@@ -53,7 +53,7 @@ impl SurfaceHandle {
         self.placement
     }
 
-    /// Ask the compositor to place this toplevel (`quire_window_v1.request_placement`), as the
+    /// Ask the compositor to place this toplevel (`bardo_window_v1.request_placement`), as the
     /// person just chose from the zoom button's menu: the seat's latest input serial goes
     /// with it. Dropped on a compositor without the protocol.
     pub fn request_placement(&self, placement: WindowPlacement) {

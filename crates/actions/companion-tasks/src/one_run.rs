@@ -27,7 +27,7 @@ use agent_loop::CompletionNote;
 use provenance::{AgentRef, MessageKind, ReportStatus};
 
 /// The app whose runs are on screen.
-const CUA_APP: &str = "org.quire.Cua";
+const CUA_APP: &str = "org.bardo.ComputerUse";
 /// The action that starts one.
 const RUN_START: &str = "cua.run.start";
 
@@ -183,7 +183,7 @@ mod tests {
 
     #[test]
     fn a_started_run_rests_the_loop_and_nothing_else_does() {
-        let other = action("org.quire.Mail", "mail.thread.archive");
+        let other = action("org.bardo.Mail", "mail.thread.archive");
         let table = [
             (
                 "a start done",
@@ -258,7 +258,7 @@ mod tests {
         }
         // The check is for the run-start action only, however live the task's run is.
         let live = task(vec![line(start(), done())], vec![]);
-        assert!(!live.holds_run(&action("org.quire.Mail", "mail.thread.archive")));
+        assert!(!live.holds_run(&action("org.bardo.Mail", "mail.thread.archive")));
         // Another task has no run of its own: this task's run does not block it.
         assert!(!task(vec![], vec![]).holds_run(&start()));
         // A task brought back after a restart has its history but no count: a start whose report

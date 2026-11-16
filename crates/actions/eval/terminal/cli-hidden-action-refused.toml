@@ -9,6 +9,6 @@ expect = { kind = "all_refused" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Memory"
+app = "org.bardo.Memory"
 action = "memory.forget"
 targets = [{ kind = "memory.fact", key = "f1" }]

@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
 # First install of the desktop on a machine: fetches the latest release, checks it, and hands it to slipway's
 # privileged helper. Run slipway's scripts/install.sh with --pubkey first: it installs three programs in
-# /usr/libexec (slipway-apply installs a release, slipway-rollback goes back and asks for the administrator's
-# password, slipway-health keeps the record of which starts went well), the one polkit file that names them and
-# the key at /usr/share/slipway/release.pub. This script checks all of that (release/check-helpers.sh) before it
+# /usr/libexec (bardo-updater-apply installs a release, bardo-updater-rollback goes back and asks for the administrator's
+# password, bardo-updater-health keeps the record of which starts went well), the one polkit file that names them and
+# the key at /usr/share/bardo/updater/release.pub. This script checks all of that (release/check-helpers.sh) before it
 # asks for anything.
 #
 #   release/bootstrap.sh [--pubkey FILE] [--base URL] [--verify-only]
 #
-#   --pubkey FILE   the key to check the release against (default /usr/share/slipway/release.pub)
+#   --pubkey FILE   the key to check the release against (default /usr/share/bardo/updater/release.pub)
 #   --base URL      where the three files are (default the latest release of PoHsuanLai/desktop-releases)
 #   --verify-only   download and verify, install nothing
 #
 # Downloads release.toml, release.toml.minisig and bundle.tar.zst into a fresh temporary directory, runs
-# release/verify.sh on them, then `pkexec /usr/libexec/slipway-apply <dir>`; the helper checks everything again
-# as root before it switches /opt/quire/current. The directory is removed at the end.
+# release/verify.sh on them, then `pkexec /usr/libexec/bardo/bardo-updater-apply <dir>`; the helper checks everything again
+# as root before it switches /opt/bardo/current. The directory is removed at the end.
 # Exit: 0 installed (or verified), 1 a download, the check or the helper failed, 2 bad usage or a tool missing.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=release/lib.sh
 . "$HERE/lib.sh"
-pub=/usr/share/slipway/release.pub
+pub=/usr/share/bardo/updater/release.pub
 base=https://github.com/PoHsuanLai/desktop-releases/releases/latest/download
-helper=/usr/libexec/slipway-apply
+helper=/usr/libexec/bardo/bardo-updater-apply
 verify_only=0
 usage() { sed -n '2,/^set -euo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
 while [ $# -gt 0 ]; do

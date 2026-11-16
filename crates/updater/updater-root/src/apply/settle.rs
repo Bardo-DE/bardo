@@ -17,17 +17,17 @@ const UNIT_FOLDER: &str = "/usr/lib/systemd/system/";
 /// The folder of the device rules the helper may place.
 const RULE_FOLDER: &str = "/etc/udev/rules.d/";
 /// The one socket that is started as soon as it is placed: the input service waits behind it.
-const INPUT_SOCKET: &str = "/usr/lib/systemd/system/turnstile.socket";
+const INPUT_SOCKET: &str = "/usr/lib/systemd/system/bardo-input-broker.socket";
 
 /// The one service that is enabled and started as soon as it is placed: the keyboard map. It is placed in the
 /// vendor unit folder and its `[Install]` section is never acted on by anything else, so without this a
 /// release-only install would leave the keys unmapped until someone enabled it. Its unit name is the file name.
-const KEYMAP_SERVICE: &str = "/usr/lib/systemd/system/keycap.service";
+const KEYMAP_SERVICE: &str = "/usr/lib/systemd/system/bardo-key-remap.service";
 
 /// The other service that is enabled and started as soon as it is placed: the touchpad daemon (Magic Mouse
 /// gestures). Like the keyboard map it is a system service whose `[Install]` section (`multi-user.target`) nothing
 /// else acts on, so a release-only install would leave it stopped. Its unit name is the file name.
-const TOUCHPAD_SERVICE: &str = "/usr/lib/systemd/system/palmrest.service";
+const TOUCHPAD_SERVICE: &str = "/usr/lib/systemd/system/bardo-mouse-gestures.service";
 
 /// Where the service manager's tool is looked for (a fixed list, so root never depends on `PATH`).
 const MANAGER_TOOLS: &[&str] = &["/usr/bin/systemctl", "/bin/systemctl"];
@@ -79,16 +79,16 @@ const APPLY_RULES: Command = Command {
 };
 const START_INPUT_SOCKET: Command = Command {
     tools: MANAGER_TOOLS,
-    args: &["enable", "--now", "turnstile.socket"],
+    args: &["enable", "--now", "bardo-input-broker.socket"],
 };
 
 const START_KEYMAP_SERVICE: Command = Command {
     tools: MANAGER_TOOLS,
-    args: &["enable", "--now", "keycap.service"],
+    args: &["enable", "--now", "bardo-key-remap.service"],
 };
 const START_TOUCHPAD_SERVICE: Command = Command {
     tools: MANAGER_TOOLS,
-    args: &["enable", "--now", "palmrest.service"],
+    args: &["enable", "--now", "bardo-mouse-gestures.service"],
 };
 
 /// What to run after `changes`, in order: units are read again before the socket is started, rules are

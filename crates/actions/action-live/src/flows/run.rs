@@ -100,8 +100,8 @@ pub(crate) async fn observe(
     let launcher = match script.focus {
         Focus::Nowhere => launcher,
         Focus::Thread(_) => launcher.summoned_from(
-            account_core::AppName::parse("org.quire.Mail")
-                .expect("`org.quire.Mail` is an app name"),
+            account_core::AppName::parse("org.bardo.Mail")
+                .expect("`org.bardo.Mail` is an app name"),
         ),
     };
     let opened = launcher.open().await;

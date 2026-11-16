@@ -75,8 +75,8 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
             confidentiality: Confidentiality::Private(BTreeSet::from([self.space.clone()])),
             classes: BTreeSet::new(),
             sources: BTreeSet::from([Source::App(
-                AppName::parse("org.quire.Intents1")
-                    .unwrap_or_else(|_| unreachable!("`org.quire.Intents1` is a valid app name")),
+                AppName::parse("org.bardo.Intents1")
+                    .unwrap_or_else(|_| unreachable!("`org.bardo.Intents1` is a valid app name")),
             )]),
         }
     }

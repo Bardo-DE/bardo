@@ -1,7 +1,7 @@
 //! The two system settings the privileged programs read: where releases are installed and which file
 //! holds the key they are checked with.
 //!
-//! The file (`/etc/slipway/config.toml`, written once by `scripts/install.sh`) may hold more: the update
+//! The file (`/etc/bardo/updater.toml`, written once by `scripts/install.sh`) may hold more: the update
 //! service reads the rest. Here every other key is ignored, so this crate does not need to know the
 //! service's settings, and the service reads these two keys with the same names and defaults.
 
@@ -10,9 +10,9 @@ use std::path::{Path, PathBuf};
 /// The default install root.
 pub const DEFAULT_ROOT: &str = "/opt/quire";
 /// Where the trusted public key is installed.
-pub const DEFAULT_PUBKEY_PATH: &str = "/usr/share/slipway/release.pub";
+pub const DEFAULT_PUBKEY_PATH: &str = "/usr/share/bardo/updater/release.pub";
 /// The system-wide settings file the privileged programs read (never the person's own file).
-pub const SYSTEM_CONFIG_PATH: &str = "/etc/slipway/config.toml";
+pub const SYSTEM_CONFIG_PATH: &str = "/etc/bardo/updater.toml";
 
 const ROOT_KEY: &str = "root";
 const PUBKEY_KEY: &str = "pubkey_path";

@@ -1,4 +1,4 @@
-//! The person's gesture settings, `~/.config/palmrest/gestures.toml`. palmrest is a system service
+//! The person's gesture settings, `~/.config/mouse-gestures/gestures.toml`. palmrest is a system service
 //! and cannot read a home folder, so the host reads the file and sends its text (`UserConfig`)
 //! after connecting and when the file changes. The host watches no files, so a change is found by
 //! looking at the file's size and modification time every [`LOOK_EVERY`].
@@ -16,10 +16,10 @@ use mouse_gestures_proto::USER_CONFIG_MAX_BYTES;
 pub(crate) const LOOK_EVERY: Duration = Duration::from_secs(2);
 
 /// The file under the person's configuration folder.
-const FILE: &str = "palmrest/gestures.toml";
+const FILE: &str = "mouse-gestures/gestures.toml";
 
-/// Where the file is: `$XDG_CONFIG_HOME/palmrest/gestures.toml`, else
-/// `~/.config/palmrest/gestures.toml`; none when neither variable is set.
+/// Where the file is: `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml`, else
+/// `~/.config/mouse-gestures/gestures.toml`; none when neither variable is set.
 pub(crate) fn path(lookup: impl Fn(&str) -> Option<OsString>) -> Option<PathBuf> {
     let base = lookup("XDG_CONFIG_HOME")
         .filter(|v| !v.is_empty())
@@ -108,17 +108,17 @@ mod tests {
             (
                 "xdg wins",
                 &[("XDG_CONFIG_HOME", "/x"), ("HOME", "/h")],
-                Some("/x/palmrest/gestures.toml"),
+                Some("/x/mouse-gestures/gestures.toml"),
             ),
             (
                 "home",
                 &[("HOME", "/h")],
-                Some("/h/.config/palmrest/gestures.toml"),
+                Some("/h/.config/mouse-gestures/gestures.toml"),
             ),
             (
                 "empty xdg falls to home",
                 &[("XDG_CONFIG_HOME", ""), ("HOME", "/h")],
-                Some("/h/.config/palmrest/gestures.toml"),
+                Some("/h/.config/mouse-gestures/gestures.toml"),
             ),
             ("neither", &[], None),
         ];

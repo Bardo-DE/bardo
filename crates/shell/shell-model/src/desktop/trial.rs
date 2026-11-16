@@ -1,5 +1,5 @@
 //! The display trial: a program other than the shell changed the displays and the compositor asks
-//! the person whether to keep the new setup (`quire_shell_v1` version 6, `displays_trial`). Pure:
+//! the person whether to keep the new setup (`bardo_shell_v1` version 6, `displays_trial`). Pure:
 //! the question's words and its countdown arithmetic. The compositor reverts by itself when the
 //! time runs out, so the countdown only tells the person how long is left; it never decides.
 

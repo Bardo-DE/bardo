@@ -28,7 +28,7 @@ pub struct Reader {
     pub configs: Receiver<Loaded>,
     pub devices: Devices,
     pub tracker: Tracker,
-    /// The machine's settings text (`/etc/palmrest/gestures.toml`), as last read.
+    /// The machine's settings text (`/etc/bardo/mouse-gestures/gestures.toml`), as last read.
     pub system: String,
     /// The person's settings text, as the shell last sent it; none until it does, and again
     /// when the person leaves the seat.

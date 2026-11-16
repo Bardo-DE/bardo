@@ -1,4 +1,4 @@
-//! A fake `org.quire.Inference1` on a private bus: `Open` returns one end of a socketpair and
+//! A fake `org.bardo.Inference1` on a private bus: `Open` returns one end of a socketpair and
 //! serves the other, answering embedding requests with `FakeEmbedder`'s vectors and task requests
 //! with a fixed text, and remembering the class of every session and request. It speaks the
 //! real frames (`account_core::wire`), so memoryd's own client code runs unchanged against it.
@@ -68,7 +68,7 @@ impl FakeInferd {
     }
 }
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl FakeInferd {
     async fn open(
         &self,

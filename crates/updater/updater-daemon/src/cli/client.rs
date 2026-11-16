@@ -11,9 +11,9 @@ const WORK_LIMIT: Duration = Duration::from_secs(2 * 60 * 60);
 
 /// The daemon's object, as a caller sees it.
 #[zbus::proxy(
-    interface = "org.quire.Updates1",
-    default_service = "org.quire.Updates1",
-    default_path = "/org/quire/Updates1"
+    interface = "org.bardo.Updates1",
+    default_service = "org.bardo.Updates1",
+    default_path = "/org/bardo/Updates1"
 )]
 pub trait UpdatesClient {
     /// Look for a newer version.

@@ -1,6 +1,6 @@
 //! The P2 surface of the model: which connection sees the `quire` globals (I7), what the desktop
 //! manager's requests reach (`ToSpace`, `Assign`, `MoveTo` included) and the notes the model
-//! publishes for `quire_desktop_v1`. The shell's requests are in `model_shell.rs`.
+//! publishes for `bardo_desktop_v1`. The shell's requests are in `model_shell.rs`.
 
 use crate::support::driver::{Op, last, map, plug, run, run_from};
 use crate::support::{headless, proven};
@@ -76,7 +76,7 @@ fn window_ask(window: u64, ask: WindowAsk) -> Op {
 
 #[test]
 fn the_desktop_manager_reaches_the_windows_and_apps_it_names() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Missing)]);
     let closed = run_from(base.model.clone(), vec![window_ask(1, WindowAsk::Close)]);
     assert!(last(&closed).contains(&Effect::SendClose {
@@ -107,7 +107,7 @@ fn the_desktop_manager_reaches_the_windows_and_apps_it_names() {
 
 #[test]
 fn reopen_waits_for_its_machine() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Missing)]);
     let asked = run_from(
         base.model,
@@ -133,7 +133,7 @@ fn a_new_space_is_made_on_the_named_output() {
 
 #[test]
 fn a_window_moves_to_the_space_named() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let key = headless("HEADLESS-1").key;
     let made = run(vec![
         plug("HEADLESS-1"),
@@ -162,7 +162,7 @@ fn a_window_moves_to_the_space_named() {
 
 #[test]
 fn a_window_is_assigned_to_every_space_or_this_one() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let all = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Missing),
@@ -204,7 +204,7 @@ fn a_space_moves_within_its_row() {
 
 #[test]
 fn a_mapped_window_and_its_app_are_published() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let mapped = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Missing)]);
     let effects = last(&mapped);
     assert!(
@@ -235,7 +235,7 @@ fn a_mapped_window_and_its_app_are_published() {
 
 #[test]
 fn a_step_publishes_exactly_what_changed() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let mapped = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Missing)]);
     let notes: Vec<DesktopNote> = last(&mapped)
         .iter()
@@ -257,7 +257,7 @@ fn a_step_publishes_exactly_what_changed() {
 
 #[test]
 fn a_change_of_placement_within_one_state_is_published() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let left = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Missing),

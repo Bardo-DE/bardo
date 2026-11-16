@@ -1,12 +1,12 @@
-//! `docket-agents`: the commands that reach the network for agents.
+//! `bardo-agents`: the commands that reach the network for agents.
 //!
 //! ```text
-//! docket-agents --dir DIR installed           what is installed, without the network: one JSON
+//! bardo-agents --dir DIR installed           what is installed, without the network: one JSON
 //!                                             object a line (id, versions)
-//! docket-agents --dir DIR list                every agent on offer: one JSON object a line
+//! bardo-agents --dir DIR list                every agent on offer: one JSON object a line
 //!                                             (id, name, description, version, installed)
-//! docket-agents --dir DIR check ID            what the registry offers against what is installed
-//! docket-agents --dir DIR install ID VERSION  install exactly that version
+//! bardo-agents --dir DIR check ID            what the registry offers against what is installed
+//! bardo-agents --dir DIR install ID VERSION  install exactly that version
 //! ```
 //! `--registry-file FILE` reads the snapshot from a file instead of the registry. `install` says
 //! `installing ID VERSION` on its first line before it reaches the network.
@@ -26,7 +26,7 @@ const REGISTRY: &str = "https://cdn.agentclientprotocol.com/registry/v1/latest/r
 /// The command line.
 #[derive(Debug, Parser)]
 #[command(
-    name = "docket-agents",
+    name = "bardo-agents",
     about = "Coding agents from the agent registry"
 )]
 struct Cli {
@@ -129,7 +129,7 @@ fn main() -> ExitCode {
                     println!("{id} {v} is installed and is the version on offer")
                 }
                 Standing::Offered { offered, installed } => println!(
-                    "{id} {offered} is on offer; installed: {}. To take it: docket-agents install {id} {offered}",
+                    "{id} {offered} is on offer; installed: {}. To take it: bardo-agents install {id} {offered}",
                     if installed.is_empty() {
                         "nothing".to_owned()
                     } else {

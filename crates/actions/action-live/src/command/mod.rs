@@ -1,4 +1,4 @@
-//! The two commands of `docket-live`: `corpus` plays the eval corpora through the router with the
+//! The two commands of `agent-live`: `corpus` plays the eval corpora through the router with the
 //! real policy writer and reviewer cascade over a model; `smoke` plays the acceptance flows with
 //! every daemon against a model. The binary only parses its command line and hands the command here.
 
@@ -15,7 +15,7 @@ use action_accept::world::Binaries;
 use action_eval_core::{AttackError, SummaryError};
 use std::process::ExitCode;
 
-/// Why a command did not run. The words are what the program prints after `docket-live: `.
+/// Why a command did not run. The words are what the program prints after `agent-live: `.
 #[derive(Debug, thiserror::Error)]
 pub enum CommandFault {
     /// The corpus cases could not be read.
@@ -88,10 +88,10 @@ pub async fn run(command: Command, binaries: &Binaries) -> Result<ExitCode, Comm
 pub(super) fn say_reach(engine: Engine) {
     if engine.reach() == Reach::Network {
         eprintln!(
-            "docket-live: --engine cloud: prompts WILL be sent over the network to the hosted model your inferd config names"
+            "agent-live: --engine cloud: prompts WILL be sent over the network to the hosted model your inferd config names"
         );
     } else {
-        eprintln!("docket-live: --engine {}: no network", engine.slug());
+        eprintln!("agent-live: --engine {}: no network", engine.slug());
     }
 }
 
@@ -100,7 +100,7 @@ pub(super) fn say_reach(engine: Engine) {
 pub(super) fn say_agent(agent: &Agent) {
     if let Agent::Acp(spec) = agent {
         eprintln!(
-            "docket-live: --agent acp: {} runs in a sandbox with network {}{}",
+            "agent-live: --agent acp: {} runs in a sandbox with network {}{}",
             spec.program,
             crate::acp::spec::network_word(spec.network),
             if spec.network == sandbox::NetworkMode::Host {
@@ -111,7 +111,7 @@ pub(super) fn say_agent(agent: &Agent) {
         );
         if spec.credentials.is_some() {
             eprintln!(
-                "docket-live: the login you named is copied into the scratch HOME for this run and removed when it ends"
+                "agent-live: the login you named is copied into the scratch HOME for this run and removed when it ends"
             );
         }
     }

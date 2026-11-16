@@ -2,7 +2,7 @@
 //! the person's `keycap.toml`, learns from it whether it runs and holds the keyboards, and tells
 //! the person when that needs them (`shell_model::keycap::attention`).
 //!
-//! The socket (`/run/keycap/keycap.sock`, `Env::keycap_socket`) is held by a thread of its own,
+//! The socket (`/run/bardo/key-remap/key-remap.sock`, `Env::keycap_socket`) is held by a thread of its own,
 //! started by `run`: it reconnects with a growing wait and starts each connection with the focus
 //! and the config. While the socket is down for more than a few seconds the service asks systemd
 //! about the unit on the system bus, so a crash loop that gave up shows as `Failed`; a machine

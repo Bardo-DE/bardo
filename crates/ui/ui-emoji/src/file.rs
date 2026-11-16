@@ -249,8 +249,8 @@ mod tests {
             assert_eq!(
                 got[..3],
                 [
-                    "/usr/local/share/fonts/quire/Noto-COLRv1.ttf",
-                    "/usr/share/fonts/quire/Noto-COLRv1.ttf",
+                    "/usr/local/share/fonts/bardo/Noto-COLRv1.ttf",
+                    "/usr/share/fonts/bardo/Noto-COLRv1.ttf",
                     "/home/u/.local/share/fonts/quire/Noto-COLRv1.ttf",
                 ]
             );
@@ -262,7 +262,7 @@ mod tests {
     #[test]
     fn xdg_data_home_replaces_the_default_user_dir_and_repeats_collapse() {
         let got = strs(dirs(Some("/usr/share"), Some("/usr/share"), Some("/home/u")).candidates());
-        let ours = "/usr/share/fonts/quire/Noto-COLRv1.ttf";
+        let ours = "/usr/share/fonts/bardo/Noto-COLRv1.ttf";
         assert_eq!(got.iter().filter(|path| *path == ours).count(), 1);
         assert!(!got.iter().any(|path| path.starts_with("/home/u")));
     }
@@ -272,7 +272,7 @@ mod tests {
         let fake = Fake {
             colour: vec![
                 "/usr/share/fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf",
-                "/usr/local/share/fonts/quire/Noto-COLRv1.ttf",
+                "/usr/local/share/fonts/bardo/Noto-COLRv1.ttf",
             ],
             ..Fake::default()
         };
@@ -280,7 +280,7 @@ mod tests {
         assert_eq!(
             found,
             Some(PathBuf::from(
-                "/usr/local/share/fonts/quire/Noto-COLRv1.ttf"
+                "/usr/local/share/fonts/bardo/Noto-COLRv1.ttf"
             ))
         );
     }

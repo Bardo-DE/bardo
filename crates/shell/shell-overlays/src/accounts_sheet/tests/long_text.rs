@@ -125,7 +125,7 @@ fn a_long_app_id_is_cut_short_with_an_ellipsis_at_its_end() {
     assert!(props.app.chars().count() <= 28, "{}", props.app);
     assert!(props.app.starts_with("ApplicationName"), "{}", props.app);
     assert!(props.app.ends_with('\u{2026}'), "{}", props.app);
-    let Some(Step::Consent(props)) = shown(consent_for("org.quire.Photos", "a@b.test"), vec![])
+    let Some(Step::Consent(props)) = shown(consent_for("org.bardo.Photos", "a@b.test"), vec![])
     else {
         panic!("no consent");
     };
@@ -135,7 +135,7 @@ fn a_long_app_id_is_cut_short_with_an_ellipsis_at_its_end() {
 #[test]
 fn a_long_account_label_is_cut_short_on_the_review_and_the_consent_line() {
     let long = format!("{}@rig.test", "a".repeat(300));
-    let Some(Step::Consent(props)) = shown(consent_for("org.quire.Photos", &long), vec![]) else {
+    let Some(Step::Consent(props)) = shown(consent_for("org.bardo.Photos", &long), vec![]) else {
         panic!("no consent");
     };
     let label = &props.choices[0].label;

@@ -9,7 +9,7 @@ fn manifest(visibility: &str) -> action_manifest::ValidManifest {
     let text = format!(
         r#"
 vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 visibility = "{visibility}"
 
 [[entities]]

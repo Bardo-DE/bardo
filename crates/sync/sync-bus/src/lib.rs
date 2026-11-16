@@ -27,23 +27,23 @@ pub use storage::{
     ItemsChangedStream, Refused, Saved, StorageProxy, StorageServed, StorageServer,
 };
 
-/// `org.quire.Sync1`, and the Photos Picker beside it only with the `photos-picker` feature.
+/// `org.bardo.Sync1`, and the Photos Picker beside it only with the `photos-picker` feature.
 #[cfg(feature = "photos-picker")]
 pub const SYNC: Document = Document {
-    file_name: "org.quire.Sync1.xml",
+    file_name: "org.bardo.Sync1.xml",
     interfaces: &[
         SyncServed::<Unserved>::introspect,
         PhotosPickerServed::<Unserved>::introspect,
     ],
 };
-/// `org.quire.Sync1`.
+/// `org.bardo.Sync1`.
 #[cfg(not(feature = "photos-picker"))]
 pub const SYNC: Document = Document {
-    file_name: "org.quire.Sync1.xml",
+    file_name: "org.bardo.Sync1.xml",
     interfaces: &[SyncServed::<Unserved>::introspect],
 };
-/// `org.quire.Storage1`, on syncd's bus name.
+/// `org.bardo.Storage1`, on syncd's bus name.
 pub const STORAGE: Document = Document {
-    file_name: "org.quire.Storage1.xml",
+    file_name: "org.bardo.Storage1.xml",
     interfaces: &[StorageServed::<Unserved>::introspect],
 };

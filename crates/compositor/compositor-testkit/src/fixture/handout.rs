@@ -1,5 +1,5 @@
 //! The fixture's way to a privileged connection the way a program gets one: through
-//! `org.quire.Compositor1.Connect`'s decision (`compositor_app::connect::answer`), with the caller as
+//! `org.bardo.Compositor1.Connect`'s decision (`compositor_app::connect::answer`), with the caller as
 //! the bus thread would have proven it (a [`Proven`] from [`fakes::callers`](crate::fakes::callers))
 //! instead of a process on a bus.
 

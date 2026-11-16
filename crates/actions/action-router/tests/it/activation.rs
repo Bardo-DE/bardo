@@ -67,7 +67,7 @@ async fn a_call_without_a_token_carries_none() {
 async fn the_cli_and_the_field_have_the_token_dropped() {
     for (name, who) in [
         ("cli", cli()),
-        ("field", caller("org.quire.Field", CallerRole::Field)),
+        ("field", caller("org.bardo.Field", CallerRole::Field)),
     ] {
         let router = router();
         let (who, request) =
@@ -87,7 +87,7 @@ async fn the_cli_and_the_field_have_the_token_dropped() {
 async fn the_companion_and_mcp_have_the_token_dropped() {
     for (name, who) in [
         ("companion", companion()),
-        ("mcp", caller("org.quire.ActionsMcp", CallerRole::Mcp)),
+        ("mcp", caller("org.bardo.ActionsMcp", CallerRole::Mcp)),
     ] {
         let mut router = router();
         // The companion is granted; an MCP client is asked, and the person allows it once.
@@ -128,7 +128,7 @@ fn the_wire_form_is_the_invocations_with_one_optional_top_level_string() {
         target: action_vocab::TargetValue::Nothing,
         args: action_vocab::Args::new(),
         actor: provenance::Actor::User {
-            via: app("org.quire.Shell"),
+            via: app("org.bardo.Shell"),
         },
         origin: action_vocab::Origin::Launcher,
         space: provenance::SpaceId::desktop(),

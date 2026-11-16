@@ -1,9 +1,9 @@
-//! sill serves the screen-sharing picker: `org.quire.Shell1.PickCaptureSource`, which transom (the
+//! sill serves the screen-sharing picker: `org.bardo.Shell1.PickCaptureSource`, which transom (the
 //! portal backend) calls with what an app asked to share and which returns what the person picked;
 //! and the questions beside it (`PickColor`, `AskPermission`).
 //!
 //! - **The name.** The object is exported on the connection the intents service already holds as
-//!   `org.quire.Shell` (the seat); this service claims no name of its own. Without the seat the
+//!   `org.bardo.Shell` (the seat); this service claims no name of its own. Without the seat the
 //!   interface is not served and transom's call fails with an unknown-name error, which it takes
 //!   as "nobody to ask".
 //! - **Only transom.** A call is let in only from the program the table of the desktop's own
@@ -52,7 +52,7 @@ use crate::service::{Service, ServiceIo};
 /// compositor's answers go.
 #[derive(Debug, Clone)]
 pub struct CaptureLinks {
-    /// The shell's connection at intentd, which owns `org.quire.Shell`.
+    /// The shell's connection at intentd, which owns `org.bardo.Shell`.
     pub seat: SeatView,
     pub displays: watch::Receiver<Displays>,
     /// The desktop's view, whose windows are the ones the picker offers.

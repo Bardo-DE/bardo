@@ -1,7 +1,7 @@
-//! The ACP engine of `docket-live`: an external agent (Claude Code through its ACP adapter, say)
+//! The ACP engine of `agent-live`: an external agent (Claude Code through its ACP adapter, say)
 //! in the place of companiond's planner. The same scratch world (a private bus, scratch HOME and
 //! XDG directories, the fake mail, a scripted person answering the sheets), the same flows and
-//! the same outcome checks; the agent is hosted exactly as `docket-agent` hosts it, through the
+//! the same outcome checks; the agent is hosted exactly as `bardo-agent` hosts it, through the
 //! router, in its sandbox, with the per-session tool edge offered.
 //!
 //! - `spec`: the agent, as an `agents.toml` entry from the command line.

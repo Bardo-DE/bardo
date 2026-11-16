@@ -1,4 +1,4 @@
-//! `quire/extensions.toml`: which Extensions are turned off (design: Extensions, section 4.5).
+//! `bardo/extensions.toml`: which Extensions are turned off (design: Extensions, section 4.5).
 //!
 //! Off is stored and on is the default, so a new Extension works without a write. The file is an
 //! ordinary schema'd settings file (page Extensions), layered like any setting, so an
@@ -30,7 +30,7 @@ pub enum Power {
 /// `extensions.*`: the keys of `extensions.toml`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, SettingsSchema)]
 #[serde(default)]
-#[settings(file = "quire/extensions.toml", domain = "extensions", page = Page::declared("extensions"))]
+#[settings(file = "bardo/extensions.toml", domain = "extensions", page = Page::declared("extensions"))]
 pub struct ExtensionsSettings {
     /// `extensions.off`: the ids turned off.
     #[settings(
@@ -63,7 +63,7 @@ impl ExtensionsSettings {
     }
 }
 
-/// `quire/extensions.toml`, whole.
+/// `bardo/extensions.toml`, whole.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ExtensionsFile {
@@ -101,7 +101,7 @@ impl SettingsDoc for ExtensionsFile {
     const FORMAT: Format = Format::Toml;
 }
 
-/// The schema of `quire/extensions.toml`: one `Rows` key, `extensions.off`.
+/// The schema of `bardo/extensions.toml`: one `Rows` key, `extensions.off`.
 pub fn extensions_schema() -> Schema {
     ExtensionsSettings::schema()
 }

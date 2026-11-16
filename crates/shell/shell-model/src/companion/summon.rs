@@ -345,7 +345,7 @@ mod tests {
 
     fn asking(fallback: Fallback) -> Summon {
         Summon::AskingApp {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             window: WINDOW,
             serial: SummonSerial(1),
             until: Stamp(180),
@@ -355,7 +355,7 @@ mod tests {
 
     fn in_app() -> Summon {
         Summon::InApp {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             serial: SummonSerial(1),
             window: WINDOW,
         }
@@ -379,12 +379,12 @@ mod tests {
     /// Every row of design/32 section 4.1, and the rows its table leaves implicit.
     #[test]
     fn summon_table() {
-        let mail = Some("org.quire.Mail");
+        let mail = Some("org.bardo.Mail");
         let from_search = Summon::InLauncher {
             origin: LauncherOrigin::FromSearch,
         };
         let ask_mail = SummonOut::AskApp {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             serial: SummonSerial(1),
         };
         let cases: Vec<Case> = vec![
@@ -498,7 +498,7 @@ mod tests {
                 SummonIn::Summon(facts(None, mail, true)),
                 500,
                 Summon::AskingApp {
-                    app: app("org.quire.Mail"),
+                    app: app("org.bardo.Mail"),
                     window: WINDOW,
                     serial: SummonSerial(1),
                     until: Stamp(580),
@@ -558,7 +558,7 @@ mod tests {
             ..SummonParams::default()
         };
         let (state, out) = Summon::Rest.step(
-            SummonIn::Summon(facts(None, Some("org.quire.Mail"), true)),
+            SummonIn::Summon(facts(None, Some("org.bardo.Mail"), true)),
             Stamp(0),
             &params,
             &SummonCx::default(),

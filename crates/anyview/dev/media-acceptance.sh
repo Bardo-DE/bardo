@@ -30,9 +30,9 @@ mpv="${MPV_WGPU_MPV:-$(command -v mpv || true)}"
 cplugin="${MPV_WGPU_CPLUGIN:-}"
 [ -x "$mpv" ] || { echo "no mpv (set MPV_WGPU_MPV or install mpv)"; exit 2; }
 [ -f "$cplugin" ] || { echo "no mpv-wgpu C plugin (set MPV_WGPU_CPLUGIN to libmpv_wgpu_cplugin.so)"; exit 2; }
-mkdir -p "$XDG_DATA_HOME/quire/extensions/org.quire.anyview.Mpv"
+mkdir -p "$XDG_DATA_HOME/quire/extensions/org.bardo.anyview.Mpv"
 sed -e "s|@MPV@|$mpv|" -e "s|@PREFIX@/libexec/anyview/mpv-wgpu-cplugin.so|$cplugin|" \
-  dist/extensions/org.quire.anyview.Mpv.toml.in >"$XDG_DATA_HOME/quire/extensions/org.quire.anyview.Mpv/extension.toml"
+  dist/extensions/org.bardo.anyview.Mpv.toml.in >"$XDG_DATA_HOME/quire/extensions/org.bardo.anyview.Mpv/extension.toml"
 
 session() {
   local name=org.mpris.MediaPlayer2.anyview path=/org/mpris/MediaPlayer2 player=org.mpris.MediaPlayer2.Player

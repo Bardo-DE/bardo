@@ -56,7 +56,7 @@ impl Warmed {
     /// The line a run prints for it.
     pub fn line(&self) -> String {
         format!(
-            "docket-live: warm {:?} {} ready in {:.1}s",
+            "agent-live: warm {:?} {} ready in {:.1}s",
             self.step.tier,
             self.step.model,
             self.took.as_secs_f64()

@@ -14,7 +14,7 @@ use support::proven;
 
 #[test]
 fn a_window_is_listed_when_it_maps_relisted_when_it_is_named_and_unlisted_when_it_goes() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]);
     assert!(last(&run).contains(&Effect::ListWindow(WindowId(1))));
     let run = support::driver::run_from(
@@ -31,7 +31,7 @@ fn a_window_is_listed_when_it_maps_relisted_when_it_is_named_and_unlisted_when_i
 
 #[test]
 fn a_dialog_hint_set_after_the_map_opens_and_closes_a_sheet() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let child = MappedToplevel {
         parent: Some(WindowId(1)),
         modality: Modality::Modeless,
@@ -74,7 +74,7 @@ fn a_dialog_hint_set_after_the_map_opens_and_closes_a_sheet() {
 
 #[test]
 fn a_drag_floats_the_window_where_the_pointer_took_it() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let there = LogicalRect::new(
         LogicalPoint { x: 100, y: 50 },
         LogicalSize { w: 500, h: 400 },

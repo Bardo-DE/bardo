@@ -3,7 +3,7 @@
 # every running app, live, on a headless casement in the jail.
 #
 # The apps are the sill daemon's surfaces (bar and Dock): each is a quire ds root that follows
-# `quire/appearance.toml` through ui-settings' watch. The change is made the way a settings app
+# `bardo/appearance.toml` through ui-settings' watch. The change is made the way a settings app
 # makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one); the proof is each
 # surface's own capture (`sill debug capture`), compared by pixels. Quire apps outside sill need
 # a screenshot of casement (P1-C1): that is the scenario `appearance-reaches-quire-apps`.
@@ -20,11 +20,11 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" \
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
   "$SCEN_BUILD/sill-target/debug/sill"
 
-export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
+export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 floor_shim appearance-reaches-apps sill   # sill takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
@@ -42,7 +42,7 @@ trap cleanup EXIT
 # The appearance file, as the settings app writes it.
 write_theme() {
   mkdir -p "$CONFIG/quire"
-  printf '[appearance]\ntheme = "%s"\n' "$1" >"$CONFIG/quire/appearance.toml"
+  printf '[appearance]\ntheme = "%s"\n' "$1" >"$CONFIG/bardo/appearance.toml"
 }
 
 step_baseline() {

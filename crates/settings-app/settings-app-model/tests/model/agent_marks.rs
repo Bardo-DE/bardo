@@ -13,7 +13,7 @@ const MAGNIFICATION: &str = "dock.magnification";
 
 /// sill's real schema with `agent = "settable"` written under the key `path`.
 fn sill_marking(path: &str) -> String {
-    let text = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
+    let text = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let line = format!("path = \"{path}\"");
     assert!(text.contains(&line), "the fixture has {path}");
     text.replacen(&line, &format!("{line}\nagent = \"settable\""), 1)
@@ -22,7 +22,7 @@ fn sill_marking(path: &str) -> String {
 fn schema_dir(scratch: &Scratch, name: &str, text: &str) -> PathBuf {
     let dir = scratch.join(name);
     std::fs::create_dir_all(&dir).expect("dir");
-    std::fs::write(dir.join("sill.settings.toml"), text).expect("write");
+    std::fs::write(dir.join("shell.settings.toml"), text).expect("write");
     dir
 }
 
@@ -43,7 +43,7 @@ fn setting_of(catalogue: &Catalogue, path: &str) -> AgentSetting {
 #[test]
 fn a_schema_without_marks_leaves_every_key_to_the_person() {
     let scratch = Scratch::under(TMP, "marks-none");
-    let text = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
+    let text = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let dir = schema_dir(&scratch, "d", &text);
     let found = catalogue(&[&dir], std::slice::from_ref(&dir));
     assert!(
@@ -69,7 +69,7 @@ fn only_the_marked_key_is_settable() {
 #[test]
 fn the_marks_come_from_the_schema_that_supplies_the_program() {
     let scratch = Scratch::under(TMP, "marks-shadow");
-    let plain = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
+    let plain = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let first = schema_dir(&scratch, "home", &plain);
     let second = schema_dir(&scratch, "system", &sill_marking(MAGNIFICATION));
     let found = catalogue(&[&first, &second], &[first.clone(), second.clone()]);
@@ -85,12 +85,12 @@ fn a_path_two_programs_share_names_no_one_key() {
     let scratch = Scratch::under(TMP, "marks-ambiguous");
     let dir = scratch.join("d");
     std::fs::create_dir_all(&dir).expect("dir");
-    let text = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
-    std::fs::write(dir.join("sill.settings.toml"), &text).expect("write");
+    let text = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
+    std::fs::write(dir.join("shell.settings.toml"), &text).expect("write");
     std::fs::write(
         dir.join("twin.settings.toml"),
         text.replace("app = \"sill\"", "app = \"twin\"")
-            .replace("sill/settings.toml", "twin/settings.toml"),
+            .replace("shell/settings.toml", "twin/settings.toml"),
     )
     .expect("write");
     let found = catalogue(&[&dir], std::slice::from_ref(&dir));
@@ -100,7 +100,7 @@ fn a_path_two_programs_share_names_no_one_key() {
 #[test]
 fn a_user_schema_cannot_lend_its_marks_to_an_installed_one() {
     let scratch = Scratch::under(TMP, "marks-user-dir");
-    let plain = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
+    let plain = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let system = schema_dir(&scratch, "system", &plain);
     let user = schema_dir(&scratch, "user", &sill_marking(MAGNIFICATION));
     // `ui_settings::schema::data_dirs` lists the system's directories first.
@@ -111,7 +111,7 @@ fn a_user_schema_cannot_lend_its_marks_to_an_installed_one() {
 #[test]
 fn a_stale_schema_that_marks_keys_lends_nothing_to_the_valid_one() {
     let scratch = Scratch::under(TMP, "marks-stale");
-    let plain = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
+    let plain = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let system = schema_dir(&scratch, "system", &plain);
     let stale = sill_marking(MAGNIFICATION).replacen("version = 1", "version = 99", 1);
     let user = schema_dir(&scratch, "user", &stale);
@@ -142,7 +142,7 @@ fn a_schema_that_marks_a_never_settable_key_is_not_a_program() {
 #[test]
 fn a_file_that_is_not_a_schema_marks_nothing_even_if_it_says_settable() {
     let scratch = Scratch::under(TMP, "marks-side-file");
-    let plain = std::fs::read_to_string(fixture_dir().join("sill.settings.toml")).expect("fixture");
+    let plain = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let dir = schema_dir(&scratch, "d", &plain);
     // Not named for its program: the side reader that once took marks from any such file is gone.
     std::fs::write(dir.join("evil.settings.toml"), sill_marking(MAGNIFICATION)).expect("write");
@@ -212,8 +212,8 @@ fn quires_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my
     let dir = scratch.join("d");
     std::fs::create_dir_all(&dir).expect("dir");
     std::fs::copy(
-        fixture_dir().join("quire.settings.toml"),
-        dir.join("quire.settings.toml"),
+        fixture_dir().join("bardo.settings.toml"),
+        dir.join("bardo.settings.toml"),
     )
     .expect("copy");
     let found = catalogue(&[&dir], std::slice::from_ref(&dir));

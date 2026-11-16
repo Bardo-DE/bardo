@@ -19,10 +19,10 @@ use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 
 /// The system's caller table, read by accountd and syncd.
-pub const SYSTEM_CALLERS: &str = "/etc/porter/callers.toml";
+pub const SYSTEM_CALLERS: &str = "/etc/bardo/accountd-callers.toml";
 
 /// The variable that names a file to read in place of [`SYSTEM_CALLERS`] (a test build only).
-pub const SYSTEM_CALLERS_VAR: &str = "PORTER_SYSTEM_CALLERS";
+pub const SYSTEM_CALLERS_VAR: &str = "BARDO_ACCOUNTD_SYSTEM_CALLERS";
 
 /// A system table and the variable a test build may name another file with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -41,8 +41,8 @@ pub const CALLERS: SystemFile = SystemFile {
 
 /// inferd's caller table (its cua, Settings, shell, agent launcher, places and app units).
 pub const INFERD_CALLERS: SystemFile = SystemFile {
-    path: "/etc/porter/inferd-callers.toml",
-    var: "PORTER_INFERD_CALLERS",
+    path: "/etc/bardo/inferd-callers.toml",
+    var: "BARDO_INFERD_CALLERS",
 };
 
 /// Which file a daemon reads as a system table.
@@ -234,11 +234,11 @@ mod tests {
             |file| SystemCallers::choose_file(file, false, |_| Some(OsString::from("/x")));
         assert_eq!(
             ignored(CALLERS).notice("myd").expect("line"),
-            "myd: PORTER_SYSTEM_CALLERS=/x ignored: not a test-proc-root build"
+            "myd: BARDO_ACCOUNTD_SYSTEM_CALLERS=/x ignored: not a test-proc-root build"
         );
         assert_eq!(
             ignored(INFERD_CALLERS).notice("inferd").expect("line"),
-            "inferd: PORTER_INFERD_CALLERS=/x ignored: not a test-proc-root build"
+            "inferd: BARDO_INFERD_CALLERS=/x ignored: not a test-proc-root build"
         );
         assert_eq!(ignored(CALLERS).path(), Path::new(SYSTEM_CALLERS));
     }
@@ -257,8 +257,8 @@ mod tests {
                 .to_owned()
         };
         assert_eq!(
-            choose(&held_only("/etc/porter/inferd-callers.toml")),
-            PathBuf::from("/etc/porter/inferd-callers.toml")
+            choose(&held_only("/etc/bardo/inferd-callers.toml")),
+            PathBuf::from("/etc/bardo/inferd-callers.toml")
         );
         assert_eq!(
             choose(&held_only("/opt/quire/share/porter/inferd-callers.toml")),
@@ -272,7 +272,7 @@ mod tests {
         // Nothing root holds, or only the person's directory: the usual path, read as empty.
         assert_eq!(
             choose(&|path: &Path| path.starts_with("/home")),
-            PathBuf::from("/etc/porter/inferd-callers.toml")
+            PathBuf::from("/etc/bardo/inferd-callers.toml")
         );
     }
 

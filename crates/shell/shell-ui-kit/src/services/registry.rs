@@ -83,13 +83,13 @@ services! {
         volume: VolumeService = () => crate::harness::fake::volume();
         /// Inert until the daemon's first policy.
         displays: DisplaysService = volume.state.clone();
-        /// Each display's brightness for Settings (`org.quire.Displays1`); passive until the daemon
+        /// Each display's brightness for Settings (`org.bardo.Displays1`); passive until the daemon
         /// says to serve.
         displays_bus: DisplaysBusService = DisplaysBusLinks {
             displays: displays.state.clone(),
             control: displays.control.clone(),
         };
-        /// The screen-sharing picker transom asks (`org.quire.Shell1.PickCaptureSource`); served on
+        /// The screen-sharing picker transom asks (`org.bardo.Shell1.PickCaptureSource`); served on
         /// the connection `intents` holds, passive until the daemon says to serve.
         capture: CaptureService = CaptureLinks {
             seat: wiring.seat_view.clone(),
@@ -151,7 +151,7 @@ services! {
             notes: notifications.state.clone(),
             answers: wiring.answers.clone(),
         };
-        /// The accounts sheet accountd opens on `org.quire.AccountsSheet1`; passive until the daemon
+        /// The accounts sheet accountd opens on `org.bardo.AccountsSheet1`; passive until the daemon
         /// says to serve.
         accounts_sheet: AccountsSheetService = AccountsSheetLinks {
             launch: launch.control.clone(),
@@ -200,7 +200,7 @@ services! {
         /// The polkit agent (passive until the daemon's policy).
         polkit_agent: PolkitAgentService = ();
         /// sill's seat at intentd: the confirmation sheet it serves, the terminal's grants, the shell's
-        /// own actions as `org.quire.Shell`; passive until the daemon says to serve.
+        /// own actions as `org.bardo.Shell`; passive until the daemon says to serve.
         intents: IntentsService = IntentsLinks {
             calls: wiring.shell_calls,
             menus: MenuLinks {
@@ -211,10 +211,10 @@ services! {
             shots: screenshots.state.clone(),
             seat: wiring.seat_publisher,
         };
-        /// Each output's work area and scale, served on `org.quire.Outputs1`; passive until the daemon
+        /// Each output's work area and scale, served on `org.bardo.Outputs1`; passive until the daemon
         /// says to serve.
         work_areas: WorkAreaService = ();
-        /// Each workspace's name, output and `SpaceLook`, served on `org.quire.Workspaces1`; passive
+        /// Each workspace's name, output and `SpaceLook`, served on `org.bardo.Workspaces1`; passive
         /// until the daemon says to serve.
         workspace_looks: WorkspaceLooksService = ();
     }

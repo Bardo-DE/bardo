@@ -57,7 +57,7 @@ fn files_written_behind_the_window_show_after_a_reload() {
         Some("true")
     );
 
-    sandbox.write("sill/settings.toml", "[dock]\nmagnification = false\n");
+    sandbox.write("shell/settings.toml", "[dock]\nmagnification = false\n");
     assert_eq!(
         harness.attr(switch, "aria-checked").as_deref(),
         Some("true"),
@@ -74,6 +74,6 @@ fn files_written_behind_the_window_show_after_a_reload() {
 
     // The window still writes after a reload.
     click(&mut harness, switch);
-    let text = sandbox.read("sill/settings.toml").expect("written");
+    let text = sandbox.read("shell/settings.toml").expect("written");
     assert!(text.contains("magnification = true"), "{text}");
 }

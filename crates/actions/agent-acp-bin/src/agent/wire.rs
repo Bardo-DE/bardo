@@ -1,5 +1,5 @@
 //! Building a host's wiring from this computer: the settings and `agents.toml` that allow an
-//! agent to run, the sandbox, the bus and the launcher on it. `docket-agent` on a terminal and
+//! agent to run, the sandbox, the bus and the launcher on it. `bardo-agent` on a terminal and
 //! its service (`serve`) both start from here, so the two hold an agent to the same rules.
 
 use super::fault::AgentFault;
@@ -32,7 +32,7 @@ pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
             "agent.acp.agents is off: no agent program starts".to_owned(),
         ));
     }
-    let text = std::fs::read_to_string(places.config_dir().join("docket/agents.toml"))
+    let text = std::fs::read_to_string(places.config_dir().join("actions/agents.toml"))
         .map_err(|_| AgentFault::NoAgentsFile)?;
     let agents = places.agents_dir();
     let file = Arc::new(
@@ -43,7 +43,7 @@ pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
 }
 
 /// The wiring of a host on `bus`: the sandbox, the launcher registered on the bus and the tool
-/// edge (`tools`: whether the agent may be offered the desktop's actions, when `actions-mcp` is
+/// edge (`tools`: whether the agent may be offered the desktop's actions, when `bardo-actions-mcp` is
 /// beside this program; an entry in `agents.toml` can still switch it off for its program; a
 /// start that only reads what the agent offers passes false). `fallback` says who answers the sheets of the agent's session; `places` is what
 /// `main` read of the environment.
@@ -60,23 +60,23 @@ pub async fn build(
         Detected::Bwrap(bwrap) => bwrap,
         Detected::Missing(why) => return Err(AgentFault::NoSandbox(why)),
     };
-    let forwarder = sibling("docket-net-forward").ok_or(AgentFault::NoForwarder)?;
+    let forwarder = sibling("bardo-agent-net-forward").ok_or(AgentFault::NoForwarder)?;
     // Without the exec stage the agent is held by the sandbox alone: say so, never hide it.
-    let enter = sibling("docket-net-enter").filter(|p| std::path::Path::new(p.as_str()).exists());
+    let enter = sibling("bardo-agent-net-enter").filter(|p| std::path::Path::new(p.as_str()).exists());
     if enter.is_none() {
         eprintln!(
-            "docket-agent: no docket-net-enter beside this program: the kernel does not limit the agent's files or network"
+            "bardo-agent: no bardo-agent-net-enter beside this program: the kernel does not limit the agent's files or network"
         );
     }
     let run_dir = places
         .runtime_dir()
         .ok_or(AgentFault::NoRuntimeDir)?
         .to_path_buf();
-    // The desktop's actions go to the agent as an MCP server it starts itself: the `actions-mcp`
+    // The desktop's actions go to the agent as an MCP server it starts itself: the `bardo-actions-mcp`
     // program beside this one, as the bridge to this host. Whether a program is offered it (an
     // entry can switch it off) and which of the actions is decided where its backend is made.
     let offered = tools
-        .then(|| sibling("actions-mcp"))
+        .then(|| sibling("bardo-actions-mcp"))
         .flatten()
         .filter(|bridge| std::path::Path::new(bridge.as_str()).exists())
         .map(|bridge| ToolsOffer {
@@ -85,7 +85,7 @@ pub async fn build(
         });
     if offered.is_none() && tools {
         eprintln!(
-            "docket-agent: no agent is offered the desktop's actions (no actions-mcp beside this program)"
+            "bardo-agent: no agent is offered the desktop's actions (no bardo-actions-mcp beside this program)"
         );
     }
 
@@ -112,7 +112,7 @@ pub async fn build(
 
     if places.data_dir().join("acp-agent-grants.json").exists() {
         eprintln!(
-            "docket-agent: ignoring the old acp-agent-grants.json in the data directory: \
+            "bardo-agent: ignoring the old acp-agent-grants.json in the data directory: \
              an agent's grants are docket's now (Settings lists and revokes them); allow \
              \"always\" again where you want one"
         );

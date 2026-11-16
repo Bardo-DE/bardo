@@ -6,7 +6,7 @@
 #   release/check-ldd.sh [--stage DIR] [--ignore REGEX]
 #
 #   --stage DIR     the tree to scan (default build/release/stage under this repo, or give an installed
-#                   /opt/quire/current); libraries in DIR/opt/quire/current/lib, DIR/lib and DIR/lib64
+#                   /opt/bardo/current); libraries in DIR/opt/quire/current/lib, DIR/lib and DIR/lib64
 #                   are found as the installed program would find them
 #   --ignore REGEX  a library name (extended regex) that may be missing, for one that is loaded on demand
 #

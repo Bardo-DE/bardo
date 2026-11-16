@@ -56,7 +56,7 @@ async fn rig(script: impl IntoIterator<Item = Scripted>) -> Rig {
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Photos").expect("name"),
+        name: AppName::parse("org.bardo.Photos").expect("name"),
         isolation: Isolation::Flatpak,
     }
 }

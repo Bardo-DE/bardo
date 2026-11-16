@@ -1,6 +1,6 @@
 //! The ACP engine end to end, with a fake agent: the real intentd, inferd (replaying a cassette),
 //! memoryd and the mail provider on a private bus, the agent in the real bubblewrap sandbox with
-//! no network, its MCP server the real `actions-mcp` bridge over the per-session socket, and the
+//! no network, its MCP server the real `bardo-actions-mcp` bridge over the per-session socket, and the
 //! calls it makes the host's router calls. No real agent, no real login, no network; HOME and
 //! every XDG directory are scratch. A run skips, with a printed reason, where bubblewrap or user
 //! namespaces are not available.
@@ -267,7 +267,7 @@ async fn an_agent_that_says_its_login_aloud_is_scrubbed_from_the_transcript_and_
     }
 }
 
-/// The packaged `docket-live` as a process, as the owner starts it: the login must not appear on
+/// The packaged `agent-live` as a process, as the owner starts it: the login must not appear on
 /// its stdout or stderr, in its traces or anywhere under its output directory.
 #[test]
 fn the_command_prints_and_writes_nothing_of_the_login() {
@@ -281,7 +281,7 @@ fn the_command_prints_and_writes_nothing_of_the_login() {
     let out = scratch.path().join("out");
     let catalog = scratch.path().join("catalog");
     std::fs::create_dir_all(&catalog).expect("an empty catalogue");
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_docket-live"))
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_agent-live"))
         .env_clear()
         .env("HOME", &home)
         .env("PATH", "/usr/bin:/bin")
@@ -317,7 +317,7 @@ fn the_command_prints_and_writes_nothing_of_the_login() {
         .arg("--patience-s")
         .arg("120")
         .output()
-        .expect("docket-live runs");
+        .expect("agent-live runs");
     let shown = format!(
         "{}{}",
         String::from_utf8_lossy(&output.stdout),

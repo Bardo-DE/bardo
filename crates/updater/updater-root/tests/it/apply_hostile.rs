@@ -20,7 +20,7 @@ fn a_changed_file_is_refused_and_nothing_is_installed() {
     let mut recipe = Recipe::new("0.1.0");
     recipe.packed = Some(vec![
         ("bin/casement", "casement EVIL"),
-        ("share/wayland-sessions/quire.desktop", "[Desktop Entry]"),
+        ("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
     ]);
     let err = sandbox.install(&build(&recipe)).expect_err("tampered");
     assert!(

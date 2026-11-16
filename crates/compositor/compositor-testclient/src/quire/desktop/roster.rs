@@ -1,21 +1,21 @@
 //! What a desktop manager announced, as a client reads it (P2-Q1): the objects with their
 //! proxies, the views built from their events, and the `Dispatch` impls that fill them.
 
-use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::GlowState;
-use desktop_protocols::client::quire_desktop_v1::quire_desktop_app_v1::{
-    self as app, QuireDesktopAppV1,
+use desktop_protocols::client::bardo_agent_v1::bardo_agent_lease_v1::GlowState;
+use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_app_v1::{
+    self as app, BardoDesktopAppV1,
 };
-use desktop_protocols::client::quire_desktop_v1::quire_desktop_manager_v1::{
-    self as manager, ActorKind, QuireDesktopManagerV1,
+use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_manager_v1::{
+    self as manager, ActorKind, BardoDesktopManagerV1,
 };
-use desktop_protocols::client::quire_desktop_v1::quire_desktop_space_v1::{
-    self as space, QuireDesktopSpaceV1,
+use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_space_v1::{
+    self as space, BardoDesktopSpaceV1,
 };
-use desktop_protocols::client::quire_desktop_v1::quire_desktop_window_v1::{
-    self as window, QuireDesktopWindowV1,
+use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_window_v1::{
+    self as window, BardoDesktopWindowV1,
 };
-use desktop_protocols::client::quire_sensitive_v1::quire_sensitive_surface_v1::SensitivityLevel;
-use desktop_protocols::client::quire_window_v1::quire_window_v1::{
+use desktop_protocols::client::bardo_sensitive_v1::bardo_sensitive_surface_v1::SensitivityLevel;
+use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{
     Emphasis, PlacementMark, WindowRole,
 };
 use wayland_client::protocol::wl_output::{self, WlOutput};
@@ -163,23 +163,23 @@ pub(super) enum Origin {
 
 #[derive(Debug)]
 pub(super) struct AppSeen {
-    pub(super) object: QuireDesktopAppV1,
+    pub(super) object: BardoDesktopAppV1,
     pub(super) view: AppView,
 }
 
 #[derive(Debug)]
 pub(super) struct WindowSeen {
-    pub(super) object: QuireDesktopWindowV1,
+    pub(super) object: BardoDesktopWindowV1,
     pub(super) origin: Origin,
     pub(super) view: WindowView,
-    app: Option<QuireDesktopAppV1>,
-    space: Option<QuireDesktopSpaceV1>,
-    parent: Option<QuireDesktopWindowV1>,
+    app: Option<BardoDesktopAppV1>,
+    space: Option<BardoDesktopSpaceV1>,
+    parent: Option<BardoDesktopWindowV1>,
 }
 
 #[derive(Debug)]
 pub(super) struct SpaceSeen {
-    pub(super) object: QuireDesktopSpaceV1,
+    pub(super) object: BardoDesktopSpaceV1,
     pub(super) view: SpaceView,
 }
 
@@ -190,8 +190,8 @@ pub(super) struct Roster {
     pub(super) windows: Vec<WindowSeen>,
     pub(super) spaces: Vec<SpaceSeen>,
     pub(super) handles: Vec<(ExtForeignToplevelHandleV1, String)>,
-    active_app: Option<QuireDesktopAppV1>,
-    active_key: Option<QuireDesktopWindowV1>,
+    active_app: Option<BardoDesktopAppV1>,
+    active_key: Option<BardoDesktopWindowV1>,
     active_actor: Option<ActorKind>,
     pub(super) dones: usize,
     pub(super) finished: bool,
@@ -199,21 +199,21 @@ pub(super) struct Roster {
 
 impl Roster {
     /// A window object that came from `get_window_for`.
-    pub(super) fn asked(&mut self, object: QuireDesktopWindowV1) {
+    pub(super) fn asked(&mut self, object: BardoDesktopWindowV1) {
         self.windows.push(WindowSeen::new(object, Origin::Asked));
     }
 
-    fn app_key(&self, object: &QuireDesktopAppV1) -> Option<String> {
+    fn app_key(&self, object: &BardoDesktopAppV1) -> Option<String> {
         let found = self.apps.iter().find(|seen| &seen.object == object)?;
         Some(found.view.key.clone())
     }
 
-    fn space_id(&self, object: &QuireDesktopSpaceV1) -> Option<String> {
+    fn space_id(&self, object: &BardoDesktopSpaceV1) -> Option<String> {
         let found = self.spaces.iter().find(|seen| &seen.object == object)?;
         Some(found.view.id.clone())
     }
 
-    fn window_name(&self, object: &QuireDesktopWindowV1) -> Option<String> {
+    fn window_name(&self, object: &BardoDesktopWindowV1) -> Option<String> {
         let found = self.windows.iter().find(|seen| &seen.object == object)?;
         Some(found.view.identifier.clone())
     }
@@ -249,7 +249,7 @@ impl Roster {
 }
 
 impl WindowSeen {
-    fn new(object: QuireDesktopWindowV1, origin: Origin) -> WindowSeen {
+    fn new(object: BardoDesktopWindowV1, origin: Origin) -> WindowSeen {
         WindowSeen {
             object,
             origin,
@@ -261,10 +261,10 @@ impl WindowSeen {
     }
 }
 
-impl Dispatch<QuireDesktopManagerV1, ()> for Roster {
+impl Dispatch<BardoDesktopManagerV1, ()> for Roster {
     fn event(
         state: &mut Roster,
-        _proxy: &QuireDesktopManagerV1,
+        _proxy: &BardoDesktopManagerV1,
         event: manager::Event,
         _data: &(),
         _connection: &Connection,
@@ -293,17 +293,17 @@ impl Dispatch<QuireDesktopManagerV1, ()> for Roster {
         }
     }
 
-    event_created_child!(Roster, QuireDesktopManagerV1, [
-        manager::EVT_APP_OPCODE => (QuireDesktopAppV1, ()),
-        manager::EVT_WINDOW_OPCODE => (QuireDesktopWindowV1, ()),
-        manager::EVT_SPACE_OPCODE => (QuireDesktopSpaceV1, ()),
+    event_created_child!(Roster, BardoDesktopManagerV1, [
+        manager::EVT_APP_OPCODE => (BardoDesktopAppV1, ()),
+        manager::EVT_WINDOW_OPCODE => (BardoDesktopWindowV1, ()),
+        manager::EVT_SPACE_OPCODE => (BardoDesktopSpaceV1, ()),
     ]);
 }
 
-impl Dispatch<QuireDesktopAppV1, ()> for Roster {
+impl Dispatch<BardoDesktopAppV1, ()> for Roster {
     fn event(
         state: &mut Roster,
-        proxy: &QuireDesktopAppV1,
+        proxy: &BardoDesktopAppV1,
         event: app::Event,
         _data: &(),
         _connection: &Connection,
@@ -336,10 +336,10 @@ impl Dispatch<QuireDesktopAppV1, ()> for Roster {
     }
 }
 
-impl Dispatch<QuireDesktopWindowV1, ()> for Roster {
+impl Dispatch<BardoDesktopWindowV1, ()> for Roster {
     fn event(
         state: &mut Roster,
-        proxy: &QuireDesktopWindowV1,
+        proxy: &BardoDesktopWindowV1,
         event: window::Event,
         _data: &(),
         _connection: &Connection,
@@ -397,10 +397,10 @@ impl Dispatch<QuireDesktopWindowV1, ()> for Roster {
     }
 }
 
-impl Dispatch<QuireDesktopSpaceV1, ()> for Roster {
+impl Dispatch<BardoDesktopSpaceV1, ()> for Roster {
     fn event(
         state: &mut Roster,
-        proxy: &QuireDesktopSpaceV1,
+        proxy: &BardoDesktopSpaceV1,
         event: space::Event,
         _data: &(),
         _connection: &Connection,

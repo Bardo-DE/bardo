@@ -1,6 +1,6 @@
 //! The base scenes (and the vkms one) (P0-R-scene, tier P: pixman, byte-exact), driven through the
 //! fixture so real client surfaces are drawn.
-//! Goldens live in `tests/golden/scenes/<name>.png`, blessed with `CASEMENT_BLESS=1`.
+//! Goldens live in `tests/golden/scenes/<name>.png`, blessed with `BARDO_COMPOSITOR_BLESS=1`.
 
 use compositor_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
 use compositor_testkit::{Env, Fixture, FixtureSpec};
@@ -36,7 +36,7 @@ mod minimise;
 mod mission;
 
 /// Compares `actual` with the pixman golden `tests/golden/scenes/<name>.png`; with
-/// `CASEMENT_BLESS=1` the golden is written (deliberate, with a reason in the commit).
+/// `BARDO_COMPOSITOR_BLESS=1` the golden is written (deliberate, with a reason in the commit).
 fn golden_matches(name: &str, actual: &image::RgbaImage) {
     let env = Env::of_process();
     let golden = Golden {

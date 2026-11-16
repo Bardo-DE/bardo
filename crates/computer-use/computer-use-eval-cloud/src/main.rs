@@ -1,8 +1,8 @@
-//! `cua-eval-cloud`: plays the task set against a hosted model through inferd, under a spend and a
-//! step budget, and writes the same report and cassette as `cua-eval --engine local`.
+//! `computer-use-eval-cloud`: plays the task set against a hosted model through inferd, under a spend and a
+//! step budget, and writes the same report and cassette as `computer-use-eval --engine local`.
 //!
 //! ```text
-//! cua-eval-cloud --dir eval --entry eval/cloud-catalog/claude-sonnet-5.5.toml --label claude-sonnet-5.5 \
+//! computer-use-eval-cloud --dir eval --entry eval/cloud-catalog/claude-sonnet-5.5.toml --label claude-sonnet-5.5 \
 //!     --tier balanced --max-steps 400
 //! ```
 //!
@@ -203,7 +203,7 @@ async fn warm(transport: &DbusTransport, tier: Tier) -> Result<(), RunError> {
         .await
         .map_err(|source| RunError::Prepare { tier, source })?;
     println!(
-        "cua-eval-cloud: inferd answers Prepare for the {tier:?} chat with {ready:?} (a hosted model has nothing to load)"
+        "computer-use-eval-cloud: inferd answers Prepare for the {tier:?} chat with {ready:?} (a hosted model has nothing to load)"
     );
     Ok(())
 }
@@ -268,10 +268,10 @@ async fn run(args: Args) -> Result<(), RunError> {
             || "ran to the end".to_owned(),
             |why| format!("STOPPED: {why}")
         ),
-        seen.line().trim_start_matches("cua-eval-cloud: ")
+        seen.line().trim_start_matches("computer-use-eval-cloud: ")
     );
     write_out(&args, &corpus, &engine, &records)?;
-    println!("cua-eval-cloud: {engine}");
+    println!("computer-use-eval-cloud: {engine}");
     Ok(())
 }
 
@@ -280,14 +280,14 @@ async fn main() -> ExitCode {
     let args = match parse(std::env::args().skip(1)) {
         Ok(args) => args,
         Err(why) => {
-            eprintln!("cua-eval-cloud: {why}");
+            eprintln!("computer-use-eval-cloud: {why}");
             return ExitCode::from(2);
         }
     };
     match run(args).await {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
-            eprintln!("cua-eval-cloud: {why}");
+            eprintln!("computer-use-eval-cloud: {why}");
             ExitCode::from(2)
         }
     }

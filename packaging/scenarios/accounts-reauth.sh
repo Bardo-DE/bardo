@@ -1,7 +1,7 @@
 # Scenario `accounts-reauth` (design 31 §7.1): the issuer stops honouring the refresh token, the account needs the person,
 # and signing it in again through the sheet makes it work again. Since porter's accounts split (Phase B) the tokens are held
 # by whoever uses them, so the refusal is met by syncd (ferry's; it has no accounts of its own and uses accountd's through
-# org.quire.Grants1), and the account it shows needs the person. Real accountd and syncd, sill (the sheet host) on casement,
+# org.bardo.Grants1), and the account it shows needs the person. Real accountd and syncd, sill (the sheet host) on casement,
 # ferry's rig (the issuer and Graph) (harness/lib/accounts.sh). Internet Accounts (accountd) owns Sign in again: syncd's rows
 # have no such row.
 #
@@ -74,21 +74,21 @@ step_boot() {
 # record (an empty log with exit 0 is a SyncNow that was taken).
 sync_now() {
   local code
-  as_app org.quire.Settings busctl --address="$BUS" call org.quire.Sync1 /org/quire/Sync1 org.quire.Sync1 SyncNow s \
+  as_app org.bardo.Settings busctl --address="$BUS" call org.bardo.Sync1 /org/bardo/Sync1 org.bardo.Sync1 SyncNow s \
     "${ACCOUNT//[-.]/_}/storage_app_folder" >>"$OUT_DIR/sync-now.log" 2>&1
   code=$?
   echo "SyncNow exit $code at ${SECONDS}s" >>"$OUT_DIR/sync-now.log"
 }
 refused_after_sync_now() { sync_now; sleep 4; account_needs_reauth; }
 sync_files_on() { [ "$(sync_get "accounts.$ACCOUNT.sync.files")" = on ]; }
-dataset_listed() { frigc org.quire.Files datasets 2>/dev/null | grep -q "${ACCOUNT//[-.]/_}/storage_app_folder"; }
+dataset_listed() { frigc org.bardo.Files datasets 2>/dev/null | grep -q "${ACCOUNT//[-.]/_}/storage_app_folder"; }
 
 step_refusal() {
   # The dataset (and so a token use) exists only while the permit is held (step_boot turned it on, Always Allow: a once permit
   # is spent by the first relay, and the dataset would go with it).
   [ "$(acc_permit_scope "$ACCOUNT" $SYNC_APP)" = always ] || { echo "accountd's permit for $SYNC_APP on $ACCOUNT is '$(acc_permit_scope "$ACCOUNT" $SYNC_APP)', not always" >&2; return 1; }
   sync_files_on || { echo "the files switch is '$(sync_get "accounts.$ACCOUNT.sync.files")'" >&2; return 1; }
-  acc_wait 40 dataset_listed || { echo "syncd lists no storage_app_folder dataset with the files switch on: $(frigc org.quire.Files datasets)" >&2; tail -5 "$OUT_DIR/syncd.log" >&2; return 1; }
+  acc_wait 40 dataset_listed || { echo "syncd lists no storage_app_folder dataset with the files switch on: $(frigc org.bardo.Files datasets)" >&2; tail -5 "$OUT_DIR/syncd.log" >&2; return 1; }
   frigctl POST "/issuer/refuse-refreshes?n=1000" >/dev/null
   # The rig's access tokens last 4 s; a cycle after that finds the token spent and the refresh refused (invalid_grant), which
   # accountd turns into NeedsReauth when syncd's relay asks it for a token (account-service-core credential.rs refused_refresh).
@@ -125,7 +125,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_refusal step_sign_in step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd syncd daemon rig-servers ferry-rig-servers secrets add; do
+  for f in accountd syncd daemon rig-servers sync-rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

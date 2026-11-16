@@ -64,7 +64,7 @@ The proof ladder (`Proof`, ordered `Cgroup < Exe < Full`; with feature `dev-rows
    root-owned directories and is root-owned, every drop-in is root-owned, `Transient == false`,
    `LoadState == loaded`, and `ExecStart` is one of the row's images. (`ExecStart` is matched
    against the row's patterns, not against the image: a unit may start a program through a stable
-   symlink such as `/opt/quire/current/bin/x` while the running image is the resolved release path.)
+   symlink such as `/opt/bardo/current/bin/x` while the running image is the resolved release path.)
    Nothing is taken from a transient unit name or from an `app-*.scope` name for a service role.
 
 The rules of `judge`, in order: a sandbox makes the peer `Sandboxed` and never a service; a hidden
@@ -82,7 +82,7 @@ path belongs to another mount namespace, so it is not read: its exe is `Hidden`.
 ## 4. The table
 
 `dist/desktop-callers.toml` is the sample (and this desktop's) table, installed root-owned at
-`/etc/quire/desktop-callers.toml` with additions in `/etc/quire/desktop-callers.d/*.toml`.
+`/etc/bardo/desktop-callers.toml` with additions in `/etc/bardo/desktop-callers.d/*.toml`.
 `TableFiles::load` merges the main file first and the drop-ins after it in name order; the first
 row for a unit wins, so a later file adds programs and cannot take over a unit. A file is refused
 whole unless the file and every directory above it are root-only. The format is refused whole for:

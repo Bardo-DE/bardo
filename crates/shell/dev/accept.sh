@@ -19,7 +19,7 @@
 #   (no --compositor)       each script keeps its own default (casement, or kwin where it ran
 #                           headless KWin).
 #
-# Each script's combined output is OUT/NAME.log (default OUT: $SILL_TARGET/accept-runs/<run>). The runner
+# Each script's combined output is OUT/NAME.log (default OUT: $BARDO_SHELL_TARGET/accept-runs/<run>). The runner
 # prints one PASS|SKIP|FAIL line per script and, under it, the steps that skipped and why ("expected
 # skip: ..." lines, and a launcher's PENDING lines) or failed. A script's own exit code is its verdict:
 # 0 passed, 2 passed but for steps that could not run on this compositor yet (SKIP), 1 failed.
@@ -27,16 +27,16 @@
 # Exit: 0 every script passed | 1 one failed | 2 none failed but one skipped | 3 environment incomplete
 # (an artefact is missing: run with --build, outside the jail) | 4 a script overran its bound.
 #
-# Environment: SILL_PROFILE (debug, the default, or release), CARGO_TARGET_DIR, CASEMENT_REPO (the
-# casement crate, default crates/compositor of this tree), CASEMENT_TARGET (its cargo target dir, for --build),
-# CASEMENT_TOOLS, SILL_JAIL (the jail script).
+# Environment: BARDO_SHELL_PROFILE (debug, the default, or release), CARGO_TARGET_DIR, BARDO_COMPOSITOR_REPO (the
+# casement crate, default crates/compositor of this tree), BARDO_COMPOSITOR_TARGET (its cargo target dir, for --build),
+# BARDO_COMPOSITOR_TOOLS, BARDO_SHELL_JAIL (the jail script).
 set -uo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
 # shellcheck source=dev/lib/compositor.sh
 source "$root/dev/lib/compositor.sh"
 
-DOCKET_TARGET="${DOCKET_TARGET:-$SILL_TARGET/docket-target}"
-compositor="" parallel=4 build=no out="" bound=${ACCEPT_SCRIPT_TIMEOUT:-900} names=()
+BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$BARDO_SHELL_TARGET/docket-target}"
+compositor="" parallel=4 build=no out="" bound=${BARDO_ACCEPT_SCRIPT_TIMEOUT:-900} names=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --compositor) compositor=${2:?--compositor needs a value}; shift 2 ;;
@@ -67,17 +67,17 @@ if [ "$compositor" != casement ] && [ "$parallel" -gt 1 ]; then
   parallel=1
 fi
 
-if [ -z "$out" ]; then out="$SILL_TARGET/accept-runs/$(date +%Y%m%dT%H%M%S)-$$"; fi
+if [ -z "$out" ]; then out="$BARDO_SHELL_TARGET/accept-runs/$(date +%Y%m%dT%H%M%S)-$$"; fi
 mkdir -p "$out"
 out=$(cd "$out" && pwd)
 
 # --- the artefacts, built outside the jail (A7)
 prebuild() {
-  local flags=("${SILL_CARGO_PROFILE[@]}")
+  local flags=("${BARDO_SHELL_CARGO_PROFILE[@]}")
   {
     echo "== the daemon without the debug feature (lock.sh's last step asks a build without it)"
     (cd "$root" && cargo build "${flags[@]}" -p shell-app) || return 1
-    cp -f "$SILL_OUT/sill" "$SILL_OUT/sill-nodebug" || return 1
+    cp -f "$BARDO_SHELL_OUT/sill" "$BARDO_SHELL_OUT/sill-nodebug" || return 1
     echo "== the daemon with --features debug, the testkit's examples, the launcher demo"
     (cd "$root" && cargo build "${flags[@]}" -p shell-app --features debug \
       && cargo build "${flags[@]}" -p shell-testkit --examples \
@@ -85,12 +85,12 @@ prebuild() {
       && cargo build "${flags[@]}" -p shell-launcher-ui --example launcher_demo \
       && cargo build --release -p shell-bar --example bar_demo) || return 1
     echo "== layer-shell-host's probe_toplevel (the maximised-window probe)"
-    (cd "$SILL_TREE" && CARGO_TARGET_DIR="$SILL_TARGET" cargo build --release -p layer-shell-host \
+    (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_SHELL_TARGET" cargo build --release -p layer-shell-host \
       --features debug-inject --example probe_toplevel) || return 1
-    echo "== docket (confirm.sh's accept-intentd and quire-do), into its own target dir"
-    (cd "$SILL_TREE" && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p action-accept --bin accept-intentd && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p action-cli --bins) || return 1
+    echo "== docket (confirm.sh's accept-actiond and bardo-do), into its own target dir"
+    (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-accept --bin accept-actiond && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-cli --bins) || return 1
     echo "== casement's tools"
-    (cd "$CASEMENT_REPO" && CARGO_TARGET_DIR="${CASEMENT_TARGET:-$SILL_TARGET}" dev/bootstrap.sh --build-only) || return 1
+    (cd "$BARDO_COMPOSITOR_REPO" && CARGO_TARGET_DIR="${BARDO_COMPOSITOR_TARGET:-$BARDO_SHELL_TARGET}" dev/bootstrap.sh --build-only) || return 1
   } >"$out/build.log" 2>&1 || { echo "accept.sh: the build failed (see $out/build.log)" >&2; return 1; }
 }
 if [ "$build" = yes ]; then
@@ -98,21 +98,21 @@ if [ "$build" = yes ]; then
   prebuild || exit 3
 fi
 if [ "$compositor" = casement ]; then
-  for tool in casement casementctl casement-probe fake-logind; do
-    [ -x "$CASEMENT_TOOLS/bin/$tool" ] || { echo "accept.sh: $CASEMENT_TOOLS/bin/$tool is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
+  for tool in casement bardo-compositorctl compositor-probe fake-logind; do
+    [ -x "$BARDO_COMPOSITOR_TOOLS/bin/$tool" ] || { echo "accept.sh: $BARDO_COMPOSITOR_TOOLS/bin/$tool is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
-  for artefact in "$SILL_OUT/sill" "$SILL_OUT/sill-nodebug"; do
+  for artefact in "$BARDO_SHELL_OUT/sill" "$BARDO_SHELL_OUT/sill-nodebug"; do
     [ -x "$artefact" ] || { echo "accept.sh: $artefact is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
-  jail="${SILL_JAIL:-$SILL_TREE/packaging/harness/jail.sh}"
+  jail="${BARDO_SHELL_JAIL:-$BARDO_SHELL_TREE/packaging/harness/jail.sh}"
   [ -x "$jail" ] || { echo "accept.sh: the jail script $jail is missing" >&2; exit 3; }
   jail_env=(
-    --env SILL_COMPOSITOR=casement --env SILL_PREBUILT=1 --env "SILL_PROFILE=$SILL_PROFILE"
-    --env "CARGO_TARGET_DIR=$SILL_TARGET" --env "DOCKET_TARGET=$DOCKET_TARGET"
-    --env "SILL_PROBE=$SILL_TARGET/release/examples/probe_toplevel" --env "CASEMENT_REPO=$CASEMENT_REPO" --env "CASEMENT_TOOLS=$CASEMENT_TOOLS"
+    --env BARDO_SHELL_COMPOSITOR=casement --env BARDO_SHELL_PREBUILT=1 --env "BARDO_SHELL_PROFILE=$BARDO_SHELL_PROFILE"
+    --env "CARGO_TARGET_DIR=$BARDO_SHELL_TARGET" --env "BARDO_ACTIONS_TARGET=$BARDO_ACTIONS_TARGET"
+    --env "BARDO_SHELL_PROBE=$BARDO_SHELL_TARGET/release/examples/probe_toplevel" --env "BARDO_COMPOSITOR_REPO=$BARDO_COMPOSITOR_REPO" --env "BARDO_COMPOSITOR_TOOLS=$BARDO_COMPOSITOR_TOOLS"
   )
-  [ -z "${CASEMENT_START_TENTHS:-}" ] || jail_env+=(--env "CASEMENT_START_TENTHS=$CASEMENT_START_TENTHS")
-  [ -z "${SHELL_HOST_DEV:-}" ] || jail_env+=(--env "SHELL_HOST_DEV=$SHELL_HOST_DEV")
+  [ -z "${BARDO_COMPOSITOR_START_TENTHS:-}" ] || jail_env+=(--env "BARDO_COMPOSITOR_START_TENTHS=$BARDO_COMPOSITOR_START_TENTHS")
+  [ -z "${BARDO_LAYER_SHELL_HOST_DEV:-}" ] || jail_env+=(--env "BARDO_LAYER_SHELL_HOST_DEV=$BARDO_LAYER_SHELL_HOST_DEV")
 fi
 
 # run_one NAME: one script, in its own jail on casement or directly otherwise; leaves
@@ -124,7 +124,7 @@ run_one() {
     timeout --kill-after=10 "$bound" "$jail" --scratch "$out/$name" "${jail_env[@]}" -- \
       "$root/dev/accept/$name.sh" >"$out/$name.log" 2>&1 </dev/null
   else
-    SILL_COMPOSITOR=$compositor timeout --kill-after=10 "$bound" "$root/dev/accept/$name.sh" \
+    BARDO_SHELL_COMPOSITOR=$compositor timeout --kill-after=10 "$bound" "$root/dev/accept/$name.sh" \
       >"$out/$name.log" 2>&1 </dev/null
   fi
   rc=$?

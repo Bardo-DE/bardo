@@ -19,7 +19,7 @@
 #                                         # Debian 13 and Ubuntu before 26.04 have no package: take
 #                                         # a release build from github.com/ggml-org/llama.cpp and
 #                                         # set its llama-server path here.
-# speech_host = "/usr/libexec/quire/speech-host"
+# speech_host = "/usr/libexec/bardo/bardo-speech-host"
 # speech_host_libs = "/usr/lib/quire/sherpa"  # the directory of libsherpa-onnx-c-api.so and
 #                                             # libonnxruntime.so: the speech host's LD_LIBRARY_PATH,
 #                                             # and readable in its sandbox
@@ -59,7 +59,7 @@
 # Settings, and a name or model written here wins over one added there.
 # No TLS: a socket or a loopback address only, and the tunnel's lifetime is yours. The engine is
 # looked at when a session opens (and not otherwise); if it is down or does not list the model the
-# session is told it is not ready and the log says why. inferd.service reaches the loopback addresses of
+# session is told it is not ready and the log says why. bardo-inferd.service reaches the loopback addresses of
 # this computer (and nothing beyond them), so a loopback `url` works as it ships, and so does a `socket`.
 # [engines.attached."qwen3-32b"]
 # socket = "/run/user/1000/lab-vllm.sock"
@@ -67,7 +67,7 @@
 # where = "my-network"
 #
 # The settings rows, at the paths the Settings app writes them (the schema is
-# dist/inferd.settings.toml; the model rows are served by inferd itself). inferd reads the file again
+# dist/inference.settings.toml; the model rows are served by inferd itself). inferd reads the file again
 # a moment after it changes, and on Rescan, so an edit needs no restart; a session already open
 # keeps the model it was given. Every row is optional; a value a row does not accept is logged and
 # replaced by the row's default, for that row only.
@@ -138,10 +138,10 @@
 # (768 numbers, `search_query: ` and `search_document: `).
 
 # Who may call is not this file's to say: inferd reads its callers only from the system's table,
-# /etc/porter/inferd-callers.toml (dist/inferd-callers.toml), which a person cannot write. A
+# /etc/bardo/inferd-callers.toml (dist/inferd-callers.toml), which a person cannot write. A
 # [callers] table here is not read.
 
-# Structured-output limits (settings ai.structured.*; each row's range is in dist/inferd.settings.toml).
+# Structured-output limits (settings ai.structured.*; each row's range is in dist/inference.settings.toml).
 # A value out of range is logged and replaced by the default, for that field only. Read at start.
 # [ai.structured]
 # open_text = 4096

@@ -9,7 +9,7 @@ const SCOPE: &str = "/user.slice/user-1000.slice/user@1000.service/app.slice/run
 
 fn dev_row(extra: &str) -> String {
     format!(
-        "[[peer]]\napp = \"org.quire.Accounts\"\nexe = [\"{STANDIN}\"]\nrole = \"accounts\"\n{extra}"
+        "[[peer]]\napp = \"org.bardo.Accounts\"\nexe = [\"{STANDIN}\"]\nrole = \"accounts\"\n{extra}"
     )
 }
 
@@ -46,7 +46,7 @@ mod with_feature {
     #[test]
     fn a_stand_in_matching_a_dev_row_is_a_dev_service_even_though_the_person_wrote_it() {
         let table = merged(&dev_row(""));
-        let want = dev_service("org.quire.Accounts", "accounts");
+        let want = dev_service("org.bardo.Accounts", "accounts");
         assert_eq!(writable_standing(STANDIN, SCOPE, &table), want);
         // A root-owned image of the same path is the same.
         assert_eq!(judge(&facts(SCOPE, root_only(STANDIN)), &table), want);
@@ -58,7 +58,7 @@ mod with_feature {
         let in_unit = "/user.slice/user-1000.slice/user@1000.service/app.slice/standin.service";
         assert_eq!(
             writable_standing(STANDIN, in_unit, &table),
-            dev_service("org.quire.Accounts", "accounts")
+            dev_service("org.bardo.Accounts", "accounts")
         );
         for cgroup in [SCOPE, in_sill_unit()] {
             assert_eq!(
@@ -112,25 +112,25 @@ mod with_feature {
     #[test]
     fn a_dev_row_never_outranks_a_shipped_row() {
         // The dev row claims the shipped shell's image and unit.
-        let evil = "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"sill.service\"\nexe = [\"/usr/bin/sill\"]\nrole = \"shell\"\n\
-                    [[peer]]\napp = \"org.evil.Other\"\nexe = [\"/usr/bin/sill\"]\nrole = \"other\"\n";
+        let evil = "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/usr/bin/bardo-shell\"]\nrole = \"shell\"\n\
+                    [[peer]]\napp = \"org.evil.Other\"\nexe = [\"/usr/bin/bardo-shell\"]\nrole = \"other\"\n";
         let table = merged(evil);
         // The unit stays the shipped one's, and the other dev row is after the shipped rows.
         let shipped_app = table
-            .row_for_unit(&UnitName::new("sill.service").expect("a unit"))
+            .row_for_unit(&UnitName::new("bardo-shell.service").expect("a unit"))
             .map(|r| r.app.as_str());
-        assert_eq!(shipped_app, Some("org.quire.Shell"));
+        assert_eq!(shipped_app, Some("org.bardo.Shell"));
         let origins: Vec<RowOrigin> = table.rows().iter().map(|r| r.origin).collect();
         assert_eq!(
             origins,
             [RowOrigin::Shipped, RowOrigin::Shipped, RowOrigin::Dev]
         );
         // A process running the shipped image is judged by the shipped row, not as Dev.
-        let standing = judge(&facts(in_sill_unit(), root_only("/usr/bin/sill")), &table);
+        let standing = judge(&facts(in_sill_unit(), root_only("/usr/bin/bardo-shell")), &table);
         assert_eq!(
             standing,
             Standing::Service {
-                app: AppKey::new("org.quire.Shell").expect("an app"),
+                app: AppKey::new("org.bardo.Shell").expect("an app"),
                 role: role("shell"),
                 proof: Proof::Exe,
                 pin: Pin::AtConnect,
@@ -139,7 +139,7 @@ mod with_feature {
         // Outside its unit the shipped image is a plain program: the unit-less dev row that names
         // the same image does not turn it into a service at any proof.
         assert!(matches!(
-            judge(&facts(SCOPE, root_only("/usr/bin/sill")), &table),
+            judge(&facts(SCOPE, root_only("/usr/bin/bardo-shell")), &table),
             Standing::Program { .. }
         ));
     }
@@ -147,12 +147,12 @@ mod with_feature {
     #[test]
     fn merging_the_other_way_round_still_puts_shipped_rows_first_and_keeps_their_units() {
         let dev = Table::from_toml_dev(
-            "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"sill.service\"\nexe = [\"/home/p/sill\"]\nrole = \"shell\"\n",
+            "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/home/p/sill\"]\nrole = \"shell\"\n",
         )
         .expect("dev");
         let merged = dev.merge(table());
         let apps: Vec<&str> = merged.rows().iter().map(|r| r.app.as_str()).collect();
-        assert_eq!(apps, ["org.quire.Shell", "org.quire.Updater"]);
+        assert_eq!(apps, ["org.bardo.Shell", "org.bardo.Updater"]);
         assert!(merged.rows().iter().all(|r| r.origin == RowOrigin::Shipped));
     }
 
@@ -160,14 +160,14 @@ mod with_feature {
     fn a_dev_row_may_name_a_shipped_app_without_replacing_its_row() {
         let table = merged(&dev_row("")).merge(
             Table::from_toml_dev(
-                "[[peer]]\napp = \"org.quire.Shell\"\nexe = [\"/home/p/shell_standin\"]\nrole = \"shell\"\n",
+                "[[peer]]\napp = \"org.bardo.Shell\"\nexe = [\"/home/p/shell_standin\"]\nrole = \"shell\"\n",
             )
             .expect("dev"),
         );
         assert_eq!(table.rows().len(), 4);
         assert_eq!(
             writable_standing("/home/p/shell_standin", SCOPE, &table),
-            dev_service("org.quire.Shell", "shell")
+            dev_service("org.bardo.Shell", "shell")
         );
         // The shipped row is untouched.
         assert_eq!(table.rows()[0].origin, RowOrigin::Shipped);
@@ -189,7 +189,7 @@ mod with_feature {
     #[test]
     fn dev_proof_is_below_every_real_proof_and_meets_none_of_their_requirements() {
         assert!(Proof::Dev < Proof::Cgroup && Proof::Cgroup < Proof::Exe);
-        let standing = dev_service("org.quire.Accounts", "accounts");
+        let standing = dev_service("org.bardo.Accounts", "accounts");
         for at_least in [Proof::Cgroup, Proof::Exe, Proof::Full] {
             let need = [Requirement::new(role("accounts"), at_least)];
             assert_eq!(
@@ -212,7 +212,7 @@ mod with_feature {
         assert!(standing.holds(&[Requirement::dev(role("shell"))]).is_err());
         // The real service passes the debug build's requirement too.
         let real = Standing::Service {
-            app: AppKey::new("org.quire.Accounts").expect("an app"),
+            app: AppKey::new("org.bardo.Accounts").expect("an app"),
             role: role("accounts"),
             proof: Proof::Full,
             pin: Pin::AtConnect,

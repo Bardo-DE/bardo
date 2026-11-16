@@ -3,7 +3,7 @@
 almanac is the desktop's memory: a typed, append-only, hash-chained **event log** per Space
 (which is also the audit log), the companion's **memory files** as plain markdown (add-only,
 dated, linked to their sources), a rebuildable **recall index** (FTS5 plus exact-scan vectors,
-fused), and **memoryd**, the daemon that owns them and serves `org.quire.Memory1`. The design is
+fused), and **memoryd**, the daemon that owns them and serves `org.bardo.Memory1`. The design is
 the area spec (`memory.md`) as consolidated by the program spec (`SPEC.md`, which wins where they
 differ: crate map section 1, one-home owners section 2, cross-area signatures section 3.4,
 daemons and D-Bus section 4). This file is the map of the code that freezes those interfaces.
@@ -24,19 +24,19 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `memory-files-format` | pure: the topic file format (`parse_topic`, `render_topic`, the trailer), `Store` over a `Vault` (from `memory-store`), `Primer`, `MemfilesError`. No file IO | none |
 | `memfiles` | the vaults on disk: `PlainDir`, `SealedDir`, and `MemoryVault` (feature `testing`). The `Vault` seam and `VaultPath` are in `memory-store` | the filesystem |
 | `recall` | generic: `VectorIndex`, `Fts5`, `ExactScan`, `Index` (implements `SearchIndex`), `FakeEmbedder` (feature `testing`); re-exports the `Embedder` and document types from `memory-store`; the vector, card and fusion code (`Vector`, `EmbedderCard`, `fuse_rrf`, `chunk`, `nearest_exact`) lives only there. Knows nothing of almanac's domain | rusqlite |
-| `memory-settings` | pure: what the person can set for memory: `MemorySettings`, `ConsolidateWhen`, `ConsolidateApply`, `SCHEMA` (`schema/almanac.settings.toml`, the file the Settings app draws them from; `memoryd --write-schema` writes it), `SETTINGS_FILE`, the lenient reader `read` (`Loaded`, `Fallback`, `Why`), the key table, and the consent gate (`Confirmations`, `gate`, `waiting`, `loosenings`: a value looser than shipped applies only once the person confirmed it). No file is read | none |
+| `memory-settings` | pure: what the person can set for memory: `MemorySettings`, `ConsolidateWhen`, `ConsolidateApply`, `SCHEMA` (`schema/memory.settings.toml`, the file the Settings app draws them from; `memoryd --write-schema` writes it), `SETTINGS_FILE`, the lenient reader `read` (`Loaded`, `Fallback`, `Why`), the key table, and the consent gate (`Confirmations`, `gate`, `waiting`, `loosenings`: a value looser than shipped applies only once the person confirmed it). No file is read | none |
 | `memory-tidy` | pure: what memory learns and keeps tidy: the fact lifecycle machine (`fact`), the consolidation run machine, the `Consolidator` seam and `check_draft` (`consolidation`), the consolidation prompt and the parse of the model's draft (`render_prompt`, `parse_draft`), `tidy_is_acceptable`, `changes` (what a reply changed, as the pure `Change` events the daemon turns into bus signals), the removal notes (`Removals` over the `RemovalLedger` seam and the `removals.toml` text) | none |
 | `memory-search` | pure: how memory is searched: `docs` (the recall documents facts and events contribute to the index: `event_docs`, `fact_doc`, `indexed_docs`, `DocRef`, `newest_episodes`), `SpaceReader` (the narrow view of a Space that a search reads: its index, its log entries, its stored facts), `embed_query`, `search` and `inject` (fused lexical and semantic ranking, reciprocal-rank merge of facts and events, the token budget) | none |
 | `memory-service` | memoryd's core over seams: `Caller` (who is asking: `App`, `Router`, `Cuad`, `ShellUi`, `Settings`; derived by the transport, never sent) and `allowed`, the matrix over it, the per-Space request queue (`Claim`), the Space and forget-plan machines, the run that drives `memory-tidy`'s fact and consolidation machines over a `Backend`, the readers (`SpaceReader` for `Open`; the ranking is `memory-search`'s), retention, timeline rows, the export writer, the config file text (`memory.toml`, `spaces.toml`; the files themselves are `memory-host`'s), `Backend` and `MemoryService`; it takes the person's `MemorySettings` from `memory-settings`, injected through `apply_settings`, `Backend` and `MemoryService`. Depends on `memory-tidy`, `memory-search`, `memory-store` and `memory-files-format`, never on `eventlog` or `recall`, so it links no SQLite, SQLCipher or OpenSSL | none (seams are passed in) |
 | `memory-infer` | the inferd adapters over inference-client's `Transport`: `InferdEmbedder` (an `Embedder`), `InferdConsolidator` (a `Consolidator`) and their `Deadlines`. No daemon, so an app other than memoryd can use them | inferd, through the transport it is given |
-| `memory-host` | the files memory keeps beside its Spaces: `Locator` (finds `$XDG_CONFIG_HOME/almanac/settings.toml`, then `$XDG_CONFIG_DIRS`; reads it through `memory-settings` and keeps the confirmations store), `write_private_atomic`, `read_config`. Used by memoryd and `memory-local` | the filesystem |
+| `memory-host` | the files memory keeps beside its Spaces: `Locator` (finds `$XDG_CONFIG_HOME/memory/settings.toml`, then `$XDG_CONFIG_DIRS`; reads it through `memory-settings` and keeps the confirmations store), `write_private_atomic`, `read_config`. Used by memoryd and `memory-local` | the filesystem |
 | `memory-watch` | `FileWatch`, `WatchError`, the pure `join` of observed changes and app-supplied reasons; `InotifyWatch` (notify 8.2) behind the `linux` feature | inotify (feature `linux`) |
-| `memory-dbus` | the caller's half of `org.quire.Memory1` (`Record`, `Recall`, `Control`): the zbus proxies, bus names, `MemoryError`, the argument codec (`encode_request`/`decode_request`, `encode_reply`/`decode_reply`) and `invoke` | zbus |
-| `memory-dbus-serve` | the daemon's half: the objects served over a `Serve` handler, `Signal` with `emit`/`emit_to`, and the frozen skeletons whose introspection is checked against `dbus/org.quire.Memory1.xml`. Reaches `memory-dbus`, never the other way | `memory-dbus`, zbus |
+| `memory-dbus` | the caller's half of `org.bardo.Memory1` (`Record`, `Recall`, `Control`): the zbus proxies, bus names, `MemoryError`, the argument codec (`encode_request`/`decode_request`, `encode_reply`/`decode_reply`) and `invoke` | zbus |
+| `memory-dbus-serve` | the daemon's half: the objects served over a `Serve` handler, `Signal` with `emit`/`emit_to`, and the frozen skeletons whose introspection is checked against `dbus/org.bardo.Memory1.xml`. Reaches `memory-dbus`, never the other way | `memory-dbus`, zbus |
 | `memory-client` | the app-facing `Memory` over a `Transport`: `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`), `InProcess` (feature `in_process`, off by default: only it links `memory-service`, which links no storage) | through its transport |
 | `memory-local` | the portable on-disk `Backend` for an app that hosts its own memory: `LocalBackend` (SQLCipher log and index, sealed or plain files, `ProvidedKeys`, `SystemClock` (the one real `Clock`) or an app-passed clock, embedder and consolidator, `NoEmbedder`/`NoConsolidator` by default), `Root` (the one directory the app gives), `open`, `create_space`, `save_spaces` (`spaces.toml`); no XDG, bus, inotify or Landlock | none (seams are passed in) |
 | `memory-fake` | test-only: `fake_service`, `FakeBackend`, `SteppedClock`, `SharedVault`, `ScriptedConsolidator`, `Scratch`, the five fixtures | none |
-| `memoryd` | the daemon and its library: `SystemBackend` (over any key store, embedder and consolidator), built over `memory-infer`'s `InferdEmbedder` and `InferdConsolidator`, the XDG roots, `Peers` (who is calling), `Daemon` (the bus handler), the Landlock `sandbox` policy, `keysel` (which key store: the Secret Service, or with the test-only `test-keys` feature a sealed file named by `MEMORYD_KEYS=file:<path>`; the same feature lets `MEMORYD_SANDBOX=off` skip Landlock, see FINDINGS; `PROC_GATE` and account-daemon-support's `ProcRoot`: the test-only `test-proc-root` feature's `MEMORYD_PROC_ROOT=<dir>`, a fixture `/proc` for callers); `callers` (the callers file and porter's caller mapped onto almanac's); the binary applies the sandbox, then serves the session bus; `SettingsWatch` (the directory watch on `almanac/settings.toml`; `apply_next` puts each change in force on the service), `Consent` (the person's confirmations of loosened settings, `Memory1.ConfirmSettings`, kept in `confirmed-settings.toml` in memoryd's own data directory, which the agent sandbox cannot write; the Settings app's alone; `Consent::waiting` answers `Memory1.PendingSettings`, the Settings app's and the shell's), the nightly consolidation timer, `Policy.read_dirs`, `--write-schema` | everything |
+| `memoryd` | the daemon and its library: `SystemBackend` (over any key store, embedder and consolidator), built over `memory-infer`'s `InferdEmbedder` and `InferdConsolidator`, the XDG roots, `Peers` (who is calling), `Daemon` (the bus handler), the Landlock `sandbox` policy, `keysel` (which key store: the Secret Service, or with the test-only `test-keys` feature a sealed file named by `BARDO_MEMORYD_KEYS=file:<path>`; the same feature lets `BARDO_MEMORYD_SANDBOX=off` skip Landlock, see FINDINGS; `PROC_GATE` and account-daemon-support's `ProcRoot`: the test-only `test-proc-root` feature's `BARDO_MEMORYD_PROC_ROOT=<dir>`, a fixture `/proc` for callers); `callers` (the callers file and porter's caller mapped onto almanac's); the binary applies the sandbox, then serves the session bus; `SettingsWatch` (the directory watch on `memory/settings.toml`; `apply_next` puts each change in force on the service), `Consent` (the person's confirmations of loosened settings, `Memory1.ConfirmSettings`, kept in `confirmed-settings.toml` in memoryd's own data directory, which the agent sandbox cannot write; the Settings app's alone; `Consent::waiting` answers `Memory1.PendingSettings`, the Settings app's and the shell's), the nightly consolidation timer, `Policy.read_dirs`, `--write-schema` | everything |
 
 ## 1a. Portable core and desktop extras
 
@@ -238,7 +238,7 @@ interface other work builds on; a change is a format bump (section 6) or a SPEC 
 | the export writer, `EventLine`, config files (`memory.toml`, `spaces.toml`) | built; golden tar layout and event lines |
 | `plan_forget`, `check_draft`, `MemoryService` | built |
 | the file-why `join`, `InotifyWatch` | built |
-| D-Bus skeletons, proxies, `dbus/org.quire.Memory1.xml`, `MemoryError` | frozen, introspection tested (the skeletons and the served objects both) |
+| D-Bus skeletons, proxies, `dbus/org.bardo.Memory1.xml`, `MemoryError` | frozen, introspection tested (the skeletons and the served objects both) |
 | D-Bus codec, `invoke`, the served objects, `DbusTransport` | built; `memory-dbus/tests/it/codec.rs` (every wire sample, both directions), `memory-dbus-serve/tests/it/served.rs` |
 | `Memory`, `Absent`, `InProcess` | built, tested |
 | `fake_service`, fixtures, scratch dirs | built |
@@ -290,12 +290,12 @@ produced. Golden: `crates/memfiles-format/tests/golden/people-sam-lee.md`.
 pending/**.md` plain, `rules.toml`. Never the index, never the keys. Golden:
 `crates/almanac-service/tests/golden/events.jsonl` and the layout test.
 
-**D-Bus** `org.quire.Memory1` at `/org/quire/Memory1`: interfaces `.Record`, `.Recall`,
+**D-Bus** `org.bardo.Memory1` at `/org/bardo/Memory1`: interfaces `.Record`, `.Recall`,
 `.Control` (28 methods, 5 signals, properties `Version u = 1` and `Confinement s`, one of `confined`,
 `partial`, `not-available` or, in a test build only, `off`: how far memoryd's Landlock sandbox is in
 force); bodies are the serde JSON of
-`memory-core` types in `s` arguments; errors `org.quire.Memory1.Error.<Refusal variant>`.
-`dbus/org.quire.Memory1.xml` is checked against the skeletons by `memory-dbus-serve`'s
+`memory-core` types in `s` arguments; errors `org.bardo.Memory1.Error.<Refusal variant>`.
+`dbus/org.bardo.Memory1.xml` is checked against the skeletons by `memory-dbus-serve`'s
 introspection test; the failure prints the new text.
 
 ## 7. Recipes
@@ -353,7 +353,7 @@ and every fact; `Recent`, `Entries`, `Timeline` and export return it. The member
 **Add a request**: the variant in `MemoryRequest` and its reply in `MemoryReply`; its arm in
 `MemoryRequest::space`, in `allowed` (the match is exhaustive) and in `MemoryService::handle`;
 the D-Bus member in `memory-dbus` (proxy) and `memory-dbus-serve` (skeleton and served object), then regenerate and review
-`dbus/org.quire.Memory1.xml`; a method on `Memory`; the arms of `encode_request`, `decode_request`,
+`dbus/org.bardo.Memory1.xml`; a method on `Memory`; the arms of `encode_request`, `decode_request`,
 `decode_reply`, `encode_reply` and `invoke`; the sample in `memory-core/tests/it/support/samples.rs`
 (the wire and codec tests read it); its queue claim in `almanac_service::claim_of`.
 
@@ -406,7 +406,7 @@ the fakes.
 - **The wire is serde.** Every stored or wire type has a round-trip test; enums with data are
   adjacently tagged (`kind`/`v`).
 - **D-Bus signatures change with their XML.** `memory-dbus-serve/tests/it/introspection.rs` fails until
-  `dbus/org.quire.Memory1.xml` equals the skeletons' introspection, and `tests/it/served.rs` until
+  `dbus/org.bardo.Memory1.xml` equals the skeletons' introspection, and `tests/it/served.rs` until
   the served objects (what memoryd runs) introspect the same.
 - **Keys and bodies never cross a transport in the clear.** No wire type holds a `SpaceKey`;
   the digest subkey leaves only in an export the person asked to include it in.
@@ -417,9 +417,9 @@ the fakes.
 
 ## 10. Install
 
-`scripts/install.sh` installs memoryd, `memoryd.service` with its `memoryd.service.d/sandbox.conf`
+`scripts/install.sh` installs memoryd, `bardo-memoryd.service` with its `bardo-memoryd.service.d/sandbox.conf`
 drop-in, the D-Bus activation file and interface XML, the settings schema, and
-`dbus/memory-callers.toml` as `/etc/quire/memory-callers.toml`. Flags: `--prefix DIR` (default
+`dbus/memoryd-callers.toml` as `/etc/bardo/memoryd-callers.toml`. Flags: `--prefix DIR` (default
 `/usr/local`), `--destdir DIR` (for packages), `--user` (under `~/.local`, no root), `--no-build`,
 `--bin-dir DIR` (programs built elsewhere), `--dry-run` (print every action),
 `--sandbox auto|on|off` and `--distro debian|fedora|arch`. Root steps use `$SUDO`, else sudo, doas

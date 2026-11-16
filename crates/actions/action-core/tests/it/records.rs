@@ -37,7 +37,7 @@ fn calls_confirmations_and_audit_round_trip() {
     );
     let call = CallRequest {
         action: ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: action("mail.message.send"),
         },
         target: TargetValue::Entities(vec![entity("mail.thread", "t")]),
@@ -49,7 +49,7 @@ fn calls_confirmations_and_audit_round_trip() {
         id: ConfirmId::parse("c-1").expect("id"),
         space: space("work"),
         actor: planner(),
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         action: words("Send 1 message"),
         effect: Effect::Outbound,
         count: Count(1),
@@ -92,7 +92,7 @@ fn calls_confirmations_and_audit_round_trip() {
             call: CallId(3),
             actor: planner(),
             action: ActionRef {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 name: action("mail.thread.archive"),
             },
             targets: vec![entity("mail.thread", "t")],
@@ -172,12 +172,12 @@ fn the_planner_view_and_the_roster_round_trip() {
             id: TurnId(1),
             text: "summarise this".into(),
             at: at(1),
-            from: Caller::field(app("org.quire.Mail")),
+            from: Caller::field(app("org.bardo.Mail")),
             via: TurnVia::Spoken,
             mode: None,
         }],
         context: ContextView {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             window: Reveal::Handle(Handle(1)),
             here: HereView::Nowhere,
             selection: SelectionView::Nothing,
@@ -198,7 +198,7 @@ fn the_planner_view_and_the_roster_round_trip() {
         history: vec![StepLine {
             call: CallId(1),
             action: ActionRef {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 name: action("mail.thread.read"),
             },
             effect: Effect::Read,
@@ -312,7 +312,7 @@ fn briefs_add_only_optional_fields_to_the_sheet_and_the_answer() {
         id: ConfirmId::parse("c-2").expect("id"),
         space: provenance::SpaceId::desktop(),
         actor: provenance::Actor::Unknown,
-        app: app("org.quire.Companion"),
+        app: app("org.bardo.Companion"),
         action: LabelText::parse("Check what the helpers will work from").expect("label"),
         effect: Effect::Read,
         count: Count(1),

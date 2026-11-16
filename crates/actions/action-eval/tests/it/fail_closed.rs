@@ -41,7 +41,7 @@ fn send_with(args: &str) -> String {
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 {args}
@@ -120,7 +120,7 @@ fn a_harness_ending_is_not_a_refusal_for_a_case_that_wants_one() {
 fn reset_forgets_standing_grants_and_link_state() {
     let harness = Harness::new(AgentConfig::default()).expect("harness");
     let seams = &harness.router.seams;
-    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let mail = AppName::parse("org.bardo.Mail").expect("app");
     seams.grants.add_standing(StandingGrant::new(
         GrantCaller::Cli,
         StandingScope::Outbound {

@@ -42,7 +42,7 @@ use tokio::sync::watch;
 
 pub const ACCOUNT: &str = "google-acct";
 pub const SEGMENT: &str = "google_acct";
-pub const SYNCD: &str = "org.quire.Sync";
+pub const SYNCD: &str = "org.bardo.Sync";
 pub const SECRET_ACCESS: &str = "SECRET-ACCESS-TOKEN";
 pub const SECRET_REFRESH: &str = "SECRET-REFRESH-TOKEN";
 /// What the fake provider mints for each audience: `fake:<account>:<family slug>`.
@@ -390,7 +390,7 @@ pub fn local(rig: &Rig, rel: &str) -> std::path::PathBuf {
     rig.paths.storage_dir(&rig.account).join(rel)
 }
 
-/// Serves `org.quire.Photos1.Picker` beside `Sync1`, for the Photos app, over this rig's
+/// Serves `org.bardo.Photos1.Picker` beside `Sync1`, for the Photos app, over this rig's
 /// supervisor (the pickers it starts at each tick).
 #[cfg(feature = "photos-picker")]
 pub async fn serve_picker(rig: &Rig) {

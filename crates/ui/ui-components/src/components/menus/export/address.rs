@@ -28,9 +28,9 @@ pub enum AddressError {
 impl AppMenuAddress {
     /// What every exported menu's bus name starts with: list the bus's names for it to find
     /// every app that exports a menu.
-    pub const SERVICE_PREFIX: &'static str = "org.quire.AppMenu.";
+    pub const SERVICE_PREFIX: &'static str = "org.bardo.AppMenu.";
     /// The object every exporter serves the menu at.
-    pub const PATH: &'static str = "/org/quire/AppMenu";
+    pub const PATH: &'static str = "/org/bardo/AppMenu";
 
     /// The address of the app whose Wayland `app_id` is `app_id`. Each dot-separated element of
     /// the id is made a legal bus-name element: other characters become `_`, an empty element

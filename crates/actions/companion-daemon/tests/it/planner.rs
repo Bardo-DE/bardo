@@ -38,8 +38,8 @@ fn mail_tool(name: &str) -> CatalogueTool {
 fn only_actions_an_agent_may_offer_are_tools_with_unique_short_names() {
     let c = catalogue();
     let names: Vec<&str> = c.tools().iter().map(|t| t.name.as_str()).collect();
-    assert!(names.contains(&"org_quire_Mail-mail_thread_read"));
-    assert!(names.contains(&"org_quire_Memory-memory_recall"));
+    assert!(names.contains(&"org_bardo_Mail-mail_thread_read"));
+    assert!(names.contains(&"org_bardo_Memory-memory_recall"));
     assert!(
         !names.iter().any(|n| n.contains("memory.forget")),
         "hidden: {names:?}"
@@ -50,7 +50,7 @@ fn only_actions_an_agent_may_offer_are_tools_with_unique_short_names() {
     assert_eq!(sorted.len(), names.len(), "unique");
     assert!(names.iter().all(|n| n.len() <= 64));
     // The registry's order: mail first.
-    assert_eq!(names[0], "org_quire_Mail-mail_thread_read");
+    assert_eq!(names[0], "org_bardo_Mail-mail_thread_read");
     assert_eq!(c.cards().len(), names.len());
 }
 
@@ -74,7 +74,7 @@ fn a_tool_names_its_target_by_what_the_action_acts_on() {
 
 fn entity(key: &str) -> EntityId {
     EntityId {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         kind: EntityKind::parse("mail.thread").expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }
@@ -115,7 +115,7 @@ fn each_declared_type_reads_its_json() {
         label: LabelText::parse("A").expect("label"),
     }]);
     let kind = EntityKind::parse("mail.thread").expect("kind");
-    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let cases = [
         (
             "text",
@@ -251,7 +251,7 @@ fn a_call_is_read_whole_or_not_at_all() {
     );
     // The target follows `on`.
     let archive = mail_tool("mail.thread.archive");
-    let one = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let one = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     assert_eq!(
         read_call(&archive, &json!({ "target": [one.clone()] }))
             .expect("many")
@@ -283,7 +283,7 @@ async fn the_request_is_the_view_in_two_messages_and_the_tools_of_the_cards() {
     assert!(system.contains("Prefers short answers"));
     assert!(system.contains("Eve is the landlord"));
     let names: Vec<&str> = request.tools.iter().map(|t| t.name.as_str()).collect();
-    assert!(names.contains(&"org_quire_Mail-mail_thread_read"));
+    assert!(names.contains(&"org_bardo_Mail-mail_thread_read"));
     assert_eq!(
         &names[names.len() - 4..],
         [TOOL_ANSWER, TOOL_ASK, TOOL_READ, TOOL_FINISH]
@@ -320,13 +320,13 @@ fn view_of_first_card() -> PlannerView {
 
 #[tokio::test]
 async fn a_reply_is_read_into_calls_a_read_a_question_an_end_or_words() {
-    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let (planner, _) = planner(vec![
         // Words and a call: both come back.
         Say::Reply(
             "Reading it.".into(),
             vec![(
-                "org_quire_Mail-mail_thread_read".into(),
+                "org_bardo_Mail-mail_thread_read".into(),
                 json!({ "target": thread }),
             )],
         ),
@@ -336,7 +336,7 @@ async fn a_reply_is_read_into_calls_a_read_a_question_an_end_or_words() {
             vec![
                 ("nothing-here".into(), json!({})),
                 (
-                    "org_quire_Mail-mail_thread_read".into(),
+                    "org_bardo_Mail-mail_thread_read".into(),
                     json!({ "target": thread }),
                 ),
             ],
@@ -353,7 +353,7 @@ async fn a_reply_is_read_into_calls_a_read_a_question_an_end_or_words() {
         words("Just words."),
         // Only an unknown tool, only bad arguments, nothing at all, and words cut off.
         call("nothing-here", json!({})),
-        call("org_quire_Mail-mail_thread_read", json!({ "target": 5 })),
+        call("org_bardo_Mail-mail_thread_read", json!({ "target": 5 })),
         words(""),
         Say::Cut("Half of a sen".into()),
     ]);
@@ -517,7 +517,7 @@ async fn a_quire_related_that_cannot_be_a_call_is_told_what_was_wrong() {
         // A thing named in full, of a kind that has no such relation.
         call(
             TOOL_RELATED,
-            json!({ "of": { "app": "org.quire.Mail", "kind": "mail.contact", "key": "c1" }, "relation": "from" }),
+            json!({ "of": { "app": "org.bardo.Mail", "kind": "mail.contact", "key": "c1" }, "relation": "from" }),
         ),
     ]);
     let mut v = view(catalogue().cards());
@@ -541,7 +541,7 @@ async fn a_quire_related_that_cannot_be_a_call_is_told_what_was_wrong() {
 async fn a_thing_named_in_full_is_asked_about_as_a_target_names_it() {
     let (planner, _) = planner(vec![call(
         TOOL_RELATED,
-        json!({ "of": { "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" }, "relation": "from" }),
+        json!({ "of": { "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" }, "relation": "from" }),
     )]);
     let ModelOutput::Calls(calls) = planner
         .plan(&view(catalogue().cards()))
@@ -677,7 +677,7 @@ fn a_target_is_the_handle_of_a_held_thing_of_its_kind_and_nothing_else() {
         held_thing(13, "mail.contact"),
         held_thing(15, "mail.thread"),
     ];
-    let one = target_in(&planner, &v, "org_quire_Mail-mail_thread_read");
+    let one = target_in(&planner, &v, "org_bardo_Mail-mail_thread_read");
     assert_eq!(one["properties"]["handle"]["enum"], json!([12, 15]));
     assert_eq!(one["required"], json!(["handle"]));
     assert!(one.get("anyOf").is_none(), "one way to name it: {one}");
@@ -686,7 +686,7 @@ fn a_target_is_the_handle_of_a_held_thing_of_its_kind_and_nothing_else() {
         said.contains("mail.thread") && said.contains("\"here\""),
         "{said}"
     );
-    let many = target_in(&planner, &v, "org_quire_Mail-mail_thread_archive");
+    let many = target_in(&planner, &v, "org_bardo_Mail-mail_thread_archive");
     assert_eq!(
         many["items"]["properties"]["handle"]["enum"],
         json!([12, 15])
@@ -698,14 +698,14 @@ fn a_target_with_many_held_things_is_a_handle_without_a_list_and_with_none_eithe
     let (planner, _) = planner(vec![]);
     let mut v = view(catalogue().cards());
     v.handles = (1..=33).map(|n| held_thing(n, "mail.thread")).collect();
-    let crowded = target_in(&planner, &v, "org_quire_Mail-mail_thread_read");
+    let crowded = target_in(&planner, &v, "org_bardo_Mail-mail_thread_read");
     assert!(
         crowded["properties"]["handle"].get("enum").is_none(),
         "{crowded}"
     );
     assert_eq!(crowded["properties"]["handle"]["minimum"], 0);
     v.handles = vec![held_thing(13, "mail.contact")];
-    let none = target_in(&planner, &v, "org_quire_Mail-mail_thread_read");
+    let none = target_in(&planner, &v, "org_bardo_Mail-mail_thread_read");
     assert_eq!(none["anyOf"].as_array().map(Vec::len), Some(2), "{none}");
 }
 
@@ -716,7 +716,7 @@ const THREE_ITEM_VIEW_BUDGET: usize = 1200;
 
 #[test]
 fn a_three_item_list_costs_a_short_prompt_with_each_things_handle_first() {
-    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let mail = AppName::parse("org.bardo.Mail").expect("app");
     let thread = |n: u64| EntityLine {
         handle: Handle(10 + n * 3),
         id: EntityId {
@@ -730,7 +730,7 @@ fn a_three_item_list_costs_a_short_prompt_with_each_things_handle_first() {
     let mut v = view(catalogue().cards());
     v.context = ContextView {
         app: mail.clone(),
-        window: Reveal::Plain("org.quire.Mail".to_owned()),
+        window: Reveal::Plain("org.bardo.Mail".to_owned()),
         here: HereView::Entity(thread(1)),
         selection: SelectionView::Nothing,
         visible: VisibleView {
@@ -773,7 +773,7 @@ fn a_three_item_list_costs_a_short_prompt_with_each_things_handle_first() {
     );
 }
 
-const POST_JOB: &str = "org_quire_Companion-companion_helper_post_job";
+const POST_JOB: &str = "org_bardo_Companion-companion_helper_post_job";
 
 /// A view that lists these helpers, all idle in the desktop Space.
 fn view_with_helpers(names: &[&str]) -> PlannerView {

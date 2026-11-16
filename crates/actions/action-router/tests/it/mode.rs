@@ -174,13 +174,13 @@ async fn the_shell_switches_the_mode_and_no_other_role_can() {
     let end = perform_in(&router, &front.session, archive("t1")).await;
     assert!(asked(&end), "{end:?}");
     for (name, role) in [
-        ("org.quire.Companiond", CallerRole::Companion),
-        ("org.quire.AcpAgent", CallerRole::AcpAgent),
-        ("org.quire.Cuad", CallerRole::Cua),
-        ("org.quire.Do", CallerRole::Cli),
-        ("org.quire.Actions", CallerRole::Mcp),
-        ("org.quire.Mail", CallerRole::App),
-        ("org.quire.Notes", CallerRole::Field),
+        ("org.bardo.Companion", CallerRole::Companion),
+        ("org.bardo.AcpAgent", CallerRole::AcpAgent),
+        ("org.bardo.ComputerUse", CallerRole::Cua),
+        ("org.bardo.Do", CallerRole::Cli),
+        ("org.bardo.Actions", CallerRole::Mcp),
+        ("org.bardo.Mail", CallerRole::App),
+        ("org.bardo.Notes", CallerRole::Field),
         ("org.example.Editor", CallerRole::Editor),
     ] {
         let reply = switch(&router, &caller(name, role), &front.session, Mode::Auto).await;
@@ -323,7 +323,7 @@ async fn open_run_for(router: &Router, who: &CallerId, run: &RunId, conversation
 async fn gate(router: &Router, run: &RunId, effect: Effect) -> IntentsReply {
     ask(
         router,
-        &caller("org.quire.Cuad", CallerRole::Cua),
+        &caller("org.bardo.ComputerUse", CallerRole::Cua),
         IntentsRequest::GateCheck(step(run, effect)),
     )
     .await
@@ -341,7 +341,7 @@ async fn a_screen_run_takes_the_mode_of_the_conversation_that_started_it() {
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let granted = ask(
         &router,
-        &caller("org.quire.Cuad", CallerRole::Cua),
+        &caller("org.bardo.ComputerUse", CallerRole::Cua),
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -432,7 +432,7 @@ async fn a_run_follows_the_conversation_the_screen_daemon_names_and_nobody_else_
     let front = ready_in(&router, Some(Mode::Manual)).await;
     let named = RunId::parse("r-1").expect("run");
     let borrowed = RunId::parse("r-2").expect("run");
-    let cuad = caller("org.quire.Cuad", CallerRole::Cua);
+    let cuad = caller("org.bardo.ComputerUse", CallerRole::Cua);
     open_run_for(&router, &cuad, &named, &front.session).await;
     // The companion may open a run's session, but its word on the conversation is ignored.
     open_run_for(&router, &companion(), &borrowed, &front.session).await;
@@ -470,7 +470,7 @@ async fn a_conversation_that_let_a_run_use_an_app_is_not_asked_again_by_its_next
     let mut router = router();
     let front = ready_in(&router, Some(Mode::Auto)).await;
     let other = ready_in(&router, Some(Mode::Auto)).await;
-    let cuad = caller("org.quire.Cuad", CallerRole::Cua);
+    let cuad = caller("org.bardo.ComputerUse", CallerRole::Cua);
     let (first, second, elsewhere) = (
         RunId::parse("r-1").expect("run"),
         RunId::parse("r-2").expect("run"),

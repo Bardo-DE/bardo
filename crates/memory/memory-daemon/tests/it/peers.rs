@@ -16,37 +16,37 @@ use std::sync::Arc;
 
 const TABLE: &str = r#"
 [[caller]]
-app = "org.quire.Intents"
-unit = "intentd.service"
+app = "org.bardo.Intents"
+unit = "bardo-actiond.service"
 role = "agent"
 
 [[caller]]
-app = "org.quire.Cua"
-unit = "cuad.service"
+app = "org.bardo.ComputerUse"
+unit = "bardo-computer-use.service"
 role = "cua"
 
 [[caller]]
-app = "org.quire.Shell"
-unit = "sill.service"
+app = "org.bardo.Shell"
+unit = "bardo-shell.service"
 role = "sheet_host"
-exe = ["/usr/bin/sill", "/usr/local/bin/sill", "/opt/quire/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
 
 [[caller]]
-app = "org.quire.Settings"
-unit = "org.quire.Settings.service"
+app = "org.bardo.Settings"
+unit = "org.bardo.Settings.service"
 role = "settings"
-exe = ["/usr/bin/detent", "/usr/local/bin/detent", "/opt/quire/releases/*/bin/detent"]
+exe = ["/usr/bin/bardo-settings", "/usr/local/bin/detent", "/opt/bardo/releases/*/bin/detent"]
 
 # A scope never carries a fixed role: this row makes the shell's old scope a plain app.
 [[caller]]
-app = "org.quire.Shell"
+app = "org.bardo.Shell"
 unit = "sill-shell.scope"
 role = "sheet_host"
-exe = ["/usr/bin/sill", "/usr/local/bin/sill", "/opt/quire/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
 
 [[caller]]
-app = "org.quire.Companion"
-unit = "companiond.service"
+app = "org.bardo.Companion"
+unit = "bardo-companiond.service"
 role = "agent"
 "#;
 
@@ -102,10 +102,10 @@ fn a_process_is_identified_by_its_cgroup() {
     let scratch = tempfile::tempdir().expect("scratch");
     let root = scratch.path();
     for (pid, leaf) in [
-        (10, "intentd.service"),
-        (11, "cuad.service"),
-        (12, "sill.service"),
-        (13, "companiond.service"),
+        (10, "bardo-actiond.service"),
+        (11, "bardo-computer-use.service"),
+        (12, "bardo-shell.service"),
+        (13, "bardo-companiond.service"),
         (14, "curl.service"),
         (15, "app-flatpak-org.example.Mail-4242.scope"),
         (16, "app-org.example.Notes-77.scope"),
@@ -114,15 +114,15 @@ fn a_process_is_identified_by_its_cgroup() {
         (18, "vte-spawn-3f1e.scope"),
         // An app scope named for the router's app is only an app: the unit row gives its role
         // to that unit alone.
-        (19, "app-org.quire.Intents-5.scope"),
+        (19, "app-org.bardo.Intents-5.scope"),
         // The shell's old transient scope matches its row exactly, but as a plain app only;
         // near misses are refused.
         (21, "sill-shell.scope"),
         (22, "sill-shell-2.scope"),
         (23, "xsill-shell.scope"),
         // The Settings app is a unit row; its app scope is only an app.
-        (26, "org.quire.Settings.service"),
-        (27, "app-org.quire.Settings-3.scope"),
+        (26, "org.bardo.Settings.service"),
+        (27, "app-org.bardo.Settings-3.scope"),
     ] {
         put_cgroup(root, pid, leaf);
     }
@@ -131,29 +131,29 @@ fn a_process_is_identified_by_its_cgroup() {
     put_flatpak_info(root, 15, "org.example.Mail");
     put_member(root, 24, "app-flatpak-org.example.Mail-4243.scope");
     // Another process in the router's unit is not the router: only the main process is.
-    put_member(root, 25, "intentd.service");
+    put_member(root, 25, "bardo-actiond.service");
     // A scope has no main process: the shell's old scope is matched by the program it runs.
-    put_image(root, 21, "/usr/bin/sill");
+    put_image(root, 21, "/usr/bin/bardo-shell");
     let flatpak = app("org.example.Mail", Isolation::Flatpak);
     for (pid, expected) in [
         (10, Some(Caller::Router)),
         (11, Some(Caller::Cuad)),
         (12, Some(Caller::ShellUi)),
-        (13, app("org.quire.Companion", Isolation::Unsandboxed)),
+        (13, app("org.bardo.Companion", Isolation::Unsandboxed)),
         (14, None),
         (15, flatpak),
         (16, app("org.example.Notes", Isolation::Unsandboxed)),
         (17, app("org.example.Notes", Isolation::Unsandboxed)),
         (18, None),
-        (19, app("org.quire.Intents", Isolation::Unsandboxed)),
+        (19, app("org.bardo.Intents", Isolation::Unsandboxed)),
         (20, None),
-        (21, app("org.quire.Shell", Isolation::Unsandboxed)),
+        (21, app("org.bardo.Shell", Isolation::Unsandboxed)),
         (22, None),
         (23, None),
         (24, None),
         (25, None),
         (26, Some(Caller::Settings)),
-        (27, app("org.quire.Settings", Isolation::Unsandboxed)),
+        (27, app("org.bardo.Settings", Isolation::Unsandboxed)),
     ] {
         assert_eq!(identify(root, pid, &table), expected, "pid {pid}");
     }
@@ -162,7 +162,7 @@ fn a_process_is_identified_by_its_cgroup() {
 #[test]
 fn an_empty_table_names_no_unit_and_an_app_is_still_an_app() {
     let scratch = tempfile::tempdir().expect("scratch");
-    put_cgroup(scratch.path(), 1, "intentd.service");
+    put_cgroup(scratch.path(), 1, "bardo-actiond.service");
     put_cgroup(scratch.path(), 2, "app-org.example.Notes-7.scope");
     let none = CallerTable::default();
     assert_eq!(identify(scratch.path(), 1, &none), None);
@@ -176,18 +176,18 @@ fn an_empty_table_names_no_unit_and_an_app_is_still_an_app() {
 fn the_roles_map_onto_almanacs_callers() {
     let table = table_from_toml(TABLE).expect("table");
     let named = |unit: &str| table.resolve_unit(unit).map(caller_for);
-    assert_eq!(named("intentd.service"), Some(Caller::Router));
-    assert_eq!(named("sill.service"), Some(Caller::ShellUi));
-    assert_eq!(named("cuad.service"), Some(Caller::Cuad));
-    assert_eq!(named("org.quire.Settings.service"), Some(Caller::Settings));
+    assert_eq!(named("bardo-actiond.service"), Some(Caller::Router));
+    assert_eq!(named("bardo-shell.service"), Some(Caller::ShellUi));
+    assert_eq!(named("bardo-computer-use.service"), Some(Caller::Cuad));
+    assert_eq!(named("org.bardo.Settings.service"), Some(Caller::Settings));
     // The same shell app with the `app` role is an app: the role decides, not the name alone.
     let demoted = table_from_toml(
-        "[[caller]]\napp = \"org.quire.Shell\"\nunit = \"sill.service\"\nrole = \"app\"\n",
+        "[[caller]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nrole = \"app\"\n",
     )
     .expect("table");
     assert_eq!(
-        demoted.resolve_unit("sill.service").map(caller_for),
-        app("org.quire.Shell", Isolation::Unsandboxed)
+        demoted.resolve_unit("bardo-shell.service").map(caller_for),
+        app("org.bardo.Shell", Isolation::Unsandboxed)
     );
     // The `settings` role of any other app is that app, not the Settings app.
     let other = table_from_toml(
@@ -212,12 +212,12 @@ fn the_user_file_wins_a_missing_one_is_empty_and_a_bad_one_is_an_error() {
     std::fs::write(&system, TABLE).expect("system");
     std::fs::write(
         &user,
-        "[[caller]]\napp = \"org.example.Mine\"\nunit = \"intentd.service\"\nrole = \"app\"\n",
+        "[[caller]]\napp = \"org.example.Mine\"\nunit = \"bardo-actiond.service\"\nrole = \"app\"\n",
     )
     .expect("user");
     let merged = load_callers(&system, &user).expect("merged");
     assert_eq!(
-        merged.resolve_unit("intentd.service").map(caller_for),
+        merged.resolve_unit("bardo-actiond.service").map(caller_for),
         app("org.example.Mine", Isolation::Unsandboxed)
     );
     assert_eq!(
@@ -274,7 +274,7 @@ fn proc_with_me_in(leaf: &str) -> tempfile::TempDir {
 async fn a_connection_is_resolved_through_its_process_to_its_cgroup() {
     let table = table_from_toml(TABLE).expect("table");
     // This test binary is intentd: its search is allowed.
-    let proc = proc_with_me_in("intentd.service");
+    let proc = proc_with_me_in("bardo-actiond.service");
     let (_scratch, _bus, _daemon, address) = world(table.clone(), proc.path()).await;
     let router = Memory::over(DbusTransport::new(connect(&address).await));
     assert!(router.search(search()).await.is_ok());
@@ -288,7 +288,7 @@ async fn a_connection_is_resolved_through_its_process_to_its_cgroup() {
     );
 
     // The same binary as the shell may forget (a made-up plan is `Invalid`, not `NotAllowed`).
-    let proc = proc_with_me_in("sill.service");
+    let proc = proc_with_me_in("bardo-shell.service");
     let (_scratch2, _bus2, _daemon2, address) = world(table, proc.path()).await;
     let shell = Memory::over(DbusTransport::new(connect(&address).await));
     let refused = shell
@@ -325,7 +325,7 @@ async fn a_process_nothing_names_is_nobody() {
     assert_eq!(refused("curl.service", table.clone()).await, not_allowed);
     assert_eq!(refused("vte-spawn-3.scope", table).await, not_allowed);
     assert_eq!(
-        refused("intentd.service", CallerTable::default()).await,
+        refused("bardo-actiond.service", CallerTable::default()).await,
         not_allowed
     );
     // No cgroup file for the process at all.

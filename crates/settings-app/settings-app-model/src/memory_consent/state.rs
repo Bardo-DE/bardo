@@ -12,7 +12,7 @@ use std::path::Path;
 
 /// The settings file whose looser values wait for confirmation (almanac's, under the config
 /// home).
-const MEMORY_FILE: &str = "almanac/settings.toml";
+const MEMORY_FILE: &str = "memory/settings.toml";
 
 /// Whether `entry` is a memory setting, one that can wait for the person's confirmation.
 pub fn is_memory_setting(entry: &KeyEntry) -> bool {

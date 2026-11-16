@@ -1,6 +1,6 @@
 [package]
 name = "account-dbus"
-description = "porter's D-Bus API: accountd's interfaces (org.quire.Accounts1, Identities1, Spaces1, Tailnet1 and the AI keys'), each written once, as the zbus proxy its callers use, the trait a daemon implements and the object that serves it."
+description = "porter's D-Bus API: accountd's interfaces (org.bardo.Accounts1, Identities1, Spaces1, Tailnet1 and the AI keys'), each written once, as the zbus proxy its callers use, the trait a daemon implements and the object that serves it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

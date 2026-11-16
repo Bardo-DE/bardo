@@ -12,7 +12,7 @@ use action_vocab::{ChoiceId, Handle};
 use agent_inapp::{Ending, Failure, InAppAgent, InAppKit, TransportReader};
 use serde_json::{Value, json};
 
-const READ: &str = "org_quire_Mail-mail_thread_read";
+const READ: &str = "org_bardo_Mail-mail_thread_read";
 
 fn good_ask() -> Value {
     let ask = ReaderAsk {

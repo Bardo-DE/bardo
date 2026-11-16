@@ -134,7 +134,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
             with(Effect::Destructive, |r| {
                 r.principal.kind = ActorKind::Mcp;
                 r.resource.app =
-                    account_core::AppName::parse("org.quire.Checkpoints").expect("app");
+                    account_core::AppName::parse("org.bardo.Checkpoints").expect("app");
             }),
             Cell::Deny,
             None,
@@ -144,7 +144,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
             with(Effect::Destructive, |r| {
                 r.principal.kind = ActorKind::Acp;
                 r.resource.app =
-                    account_core::AppName::parse("org.quire.Checkpoints").expect("app");
+                    account_core::AppName::parse("org.bardo.Checkpoints").expect("app");
             }),
             Cell::Deny,
             None,

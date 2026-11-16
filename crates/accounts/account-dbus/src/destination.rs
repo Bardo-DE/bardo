@@ -1,7 +1,7 @@
 //! Where a bus call goes: a daemon's well-known name, or the unique name of the connection a
 //! caller has already checked owns it. A well-known name can change hands between that check
 //! and the call (another program takes it the moment the daemon lets go), so a caller that
-//! checked who owns `org.quire.Accounts1` sends to that owner's unique name instead, and a
+//! checked who owns `org.bardo.Accounts1` sends to that owner's unique name instead, and a
 //! squatter that takes the well-known name afterwards gets nothing.
 
 use crate::BusConnection;

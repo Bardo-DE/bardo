@@ -1,4 +1,4 @@
-//! The sections of `palmrest/gestures.toml`, one struct per table. Only what a person chooses is
+//! The sections of `mouse-gestures/gestures.toml`, one struct per table. Only what a person chooses is
 //! a setting: how fast scrolling goes and what each gesture does. Every other number is a
 //! constant next to the code that uses it.
 

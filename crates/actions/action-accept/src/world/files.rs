@@ -6,32 +6,32 @@ use std::path::Path;
 
 /// inferd's caller table, a system file: the apps by the units that run them. inferd reads who is
 /// calling from this file alone, never from `inferd.toml`.
-pub const INFERD_CALLERS: &str = "[apps]\n\"org.quire.Memory\" = [\"memoryd.service\"]\n\"org.quire.Intents\" = [\"intentd.service\"]\n\"org.quire.Companion\" = [\"companiond.service\", { unit = \"docket-acp.scope\", exe = [\"/usr/bin/docket-acp\"] }]\n\"org.quire.Reader\" = [\"readerd.service\"]\n";
+pub const INFERD_CALLERS: &str = "[apps]\n\"org.bardo.Memory\" = [\"bardo-memoryd.service\"]\n\"org.bardo.Intents\" = [\"bardo-actiond.service\"]\n\"org.bardo.Companion\" = [\"bardo-companiond.service\", { unit = \"bardo-agent-acp.scope\", exe = [\"/usr/bin/bardo-agent-acp\"] }]\n\"org.bardo.Reader\" = [\"bardo-readerd.service\"]\n";
 
 /// accountd's caller table, a system file (its `callers.toml`): inferd is the AI broker, the one
 /// daemon that asks for the key behind a permit, and the launcher of external coding agents may
 /// call the `Launcher` interface.
 pub const ACCOUNTD_CALLERS: &str = r#"[[caller]]
-app = "org.quire.Inference"
-unit = "inferd.service"
+app = "org.bardo.Inference"
+unit = "bardo-inferd.service"
 role = "ai_broker"
 name = "Intelligence"
 
 [[caller]]
-app = "org.quire.DocketAcp"
-unit = "docket-acp.service"
+app = "org.bardo.AcpAgent"
+unit = "bardo-agent-acp.service"
 role = "agent_launcher"
 name = "Agents"
 "#;
 
 /// The shipped callers files of the daemons that read their own, by file name.
 const SYSTEM_CALLERS: [(&str, &str); 7] = [
-    ("memory-callers.toml", MEMORY_CALLERS),
+    ("memoryd-callers.toml", MEMORY_CALLERS),
     ("accountd-callers.toml", ACCOUNTD_CALLERS),
     ("inferd-callers.toml", INFERD_CALLERS),
     (
-        "intentd-callers.toml",
-        include_str!("../../../dist/intentd-callers.toml"),
+        "actiond-callers.toml",
+        include_str!("../../../dist/actiond-callers.toml"),
     ),
     (
         "companiond-callers.toml",
@@ -42,8 +42,8 @@ const SYSTEM_CALLERS: [(&str, &str); 7] = [
         include_str!("../../../dist/readerd-callers.toml"),
     ),
     (
-        "acp-callers.toml",
-        include_str!("../../../dist/acp-callers.toml"),
+        "agent-acp-callers.toml",
+        include_str!("../../../dist/agent-acp-callers.toml"),
     ),
 ];
 
@@ -84,37 +84,37 @@ pub fn inferd_toml(root: &Path, model: &ModelSource, record: Option<&Path>) -> S
 const SCRIPTED_TEXT: &str = "[ai.model.text]\nfast = \"local/scripted\"\nbalanced = \"local/scripted\"\nbest = \"local/scripted\"\n";
 
 /// memoryd's callers file: the units that may call it, with the roles the router and the shell
-/// are told apart by. The shell is `sill.service` only; the run places the test process
+/// are told apart by. The shell is `bardo-shell.service` only; the run places the test process
 /// in that unit, as its main process.
 pub const MEMORY_CALLERS: &str = r#"[[caller]]
-app = "org.quire.Intents"
-unit = "intentd.service"
+app = "org.bardo.Intents"
+unit = "bardo-actiond.service"
 role = "agent"
 
 [[caller]]
-app = "org.quire.Cua"
-unit = "cuad.service"
+app = "org.bardo.ComputerUse"
+unit = "bardo-computer-use.service"
 role = "cua"
 
 [[caller]]
-app = "org.quire.Shell"
-unit = "sill.service"
+app = "org.bardo.Shell"
+unit = "bardo-shell.service"
 role = "sheet_host"
 
 [[caller]]
-app = "org.quire.Companion"
-unit = "companiond.service"
+app = "org.bardo.Companion"
+unit = "bardo-companiond.service"
 role = "agent"
 
 [[caller]]
-app = "org.quire.Acp"
-unit = "docket-acp.scope"
+app = "org.bardo.Acp"
+unit = "bardo-agent-acp.scope"
 role = "agent"
-exe = ["/usr/bin/docket-acp"]
+exe = ["/usr/bin/bardo-agent-acp"]
 
 [[caller]]
-app = "org.quire.Reader"
-unit = "readerd.service"
+app = "org.bardo.Reader"
+unit = "bardo-readerd.service"
 role = "agent"
 "#;
 

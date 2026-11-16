@@ -1,5 +1,5 @@
 //! What every session of a live host shares: the performer the router's `Perform` for the
-//! pseudo-app reaches, the pseudo-app served on the bus under `org.quire.AcpAgent`, and the parts
+//! pseudo-app reaches, the pseudo-app served on the bus under `org.bardo.AcpAgent`, and the parts
 //! a spawner is made of. One agent's session (`host`) and the sessions of many helpers'
 //! agents (`helper_host`) both start from here, so both hold an agent to the same rules.
 
@@ -29,7 +29,7 @@ use provenance::{HelperId, SessionId, TaskId};
 use std::path::PathBuf;
 use std::sync::Arc;
 
-const MANIFEST: &str = include_str!("../../../manifests/org.quire.AcpAgent.toml");
+const MANIFEST: &str = include_str!("../../../manifests/org.bardo.AcpAgent.toml");
 
 /// The pseudo-app served, and what a backend for any program is made of.
 #[allow(missing_debug_implementations)]

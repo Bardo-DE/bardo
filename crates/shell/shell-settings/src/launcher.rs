@@ -11,7 +11,7 @@ use shell_model::results::CurrencyPolicy;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "launcher", page = Page::Appearance,
+    file = "shell/settings.toml", domain = "launcher", page = Page::Appearance,
     footnote(section = "Clipboard", text = "Copies stay in memory only and are forgotten when you log out. Password copies are never kept."),
 )]
 pub struct LauncherSettings {

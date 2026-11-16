@@ -40,7 +40,7 @@ pub struct StockToplevelCapture {
 /// Capture through the lease's `get_capture_source`: the compositor masks before the buffer
 /// leaves, so frames are reported as masked by the compositor and the hints go to it. Needs
 /// the agent connection (`Compositor1.Connect("agent")`); a compositor that does not advertise
-/// `quire_agent_manager_v1` (casement master does not yet) makes `open` answer
+/// `bardo_agent_manager_v1` (casement master does not yet) makes `open` answer
 /// [`CaptureError::BackendUnavailable`].
 #[derive(Debug)]
 pub struct QuireMaskedCapture {
@@ -182,7 +182,7 @@ impl QuireMaskedCapture {
 #[cfg(test)]
 mod tests {
     use computer_use_capture::MaskReason;
-    use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::MaskReason as ProtocolReason;
+    use desktop_protocols::client::bardo_agent_v1::bardo_agent_lease_v1::MaskReason as ProtocolReason;
 
     #[test]
     fn mask_reason_codes_equal_the_protocol_enum() {

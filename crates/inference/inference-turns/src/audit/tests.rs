@@ -10,7 +10,7 @@ use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Test").expect("name"),
+        name: AppName::parse("org.bardo.Test").expect("name"),
         isolation: Isolation::Unsandboxed,
     }
 }

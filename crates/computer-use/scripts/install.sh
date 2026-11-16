@@ -22,15 +22,15 @@
 #
 # What goes where (system install; --user puts the same in your own folders, see --prefix):
 #   PREFIX/libexec/quire/cuad            the daemon
-#   PREFIX/lib/systemd/user/             cuad.service, pointed at the prefix, and
-#                                        cuad.service.d/sandbox.conf, its protections
+#   PREFIX/lib/systemd/user/             bardo-computer-use.service, pointed at the prefix, and
+#                                        bardo-computer-use.service.d/sandbox.conf, its protections
 #   PREFIX/share/dbus-1/services/        the activation files; interfaces/ has the interface XML
 #   PREFIX/share/quire/settings/         the Settings schema
 #   PREFIX/share/quire/cua/              screen-rules.toml: the phrases, window classes and words the
 #                                        screen check uses. cuad has the same file built in; this copy
 #                                        is the reference. To change them, put your own whole
 #                                        screen-rules.toml in SYSCONFDIR/quire/ (read at start)
-#   SYSCONFDIR/quire/cuad-callers.toml   which units may call cuad. It is the machine's security table:
+#   SYSCONFDIR/quire/computer-use-callers.toml   which units may call cuad. It is the machine's security table:
 #                                        always replaced, reset on every install. Needs root; read at
 #                                        start, so restart cuad after
 # Computer use reads other programs' windows through the accessibility service; the installer
@@ -49,13 +49,13 @@ extra_arg() { return 1; }
 extra_build_tools() { :; }
 
 install_rest() {
-  put_unit "$ROOT/dist/cuad.service"
-  put 644 "$ROOT/dist/dbus/org.quire.Cua1.service" "$SHARE/dbus-1/services/org.quire.Cua1.service" unit
-  put 644 "$ROOT/dist/dbus/org.quire.Cua.service" "$SHARE/dbus-1/services/org.quire.Cua.service" unit
+  put_unit "$ROOT/dist/bardo-computer-use.service"
+  put 644 "$ROOT/dist/dbus/org.bardo.ComputerUse1.service" "$SHARE/dbus-1/services/org.bardo.ComputerUse1.service" unit
+  put 644 "$ROOT/dist/dbus/org.bardo.ComputerUse.service" "$SHARE/dbus-1/services/org.bardo.ComputerUse.service" unit
   put_tree 644 "$ROOT/dbus" "$SHARE/dbus-1/interfaces"
   put_tree 644 "$ROOT/dist/settings" "$SHARE/quire/settings"
   put 644 "$ROOT/dist/screen-rules.toml" "$SHARE/quire/cua/screen-rules.toml" copy
-  install_callers "$ROOT/dist/cuad-callers.toml" cuad-callers.toml
+  install_callers "$ROOT/dist/computer-use-callers.toml" computer-use-callers.toml
 }
 
 # The accessibility bus: the org.a11y.Bus name on the session bus, or the files that provide it.
@@ -224,8 +224,8 @@ priv() {
 }
 
 # ---- text rewrites ----
-rewrite_exec() { # the shipped /usr/libexec/quire is now under the prefix
-  sed -E -e "s|^(ExecStart=)/usr/libexec/quire/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/quire/|\1$LIBEXEC/|"
+rewrite_exec() { # the shipped /usr/libexec/bardo is now under the prefix
+  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$LIBEXEC/|"
 }
 render() { # kind source -> text on stdout
   case "$1" in

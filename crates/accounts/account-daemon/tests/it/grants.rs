@@ -1,4 +1,4 @@
-//! `org.quire.Grants1`: an app finds the accounts it holds a grant for, is asked through the
+//! `org.bardo.Grants1`: an app finds the accounts it holds a grant for, is asked through the
 //! sheet host (once for an account: the answer is kept), and opens a stream to the account's server that accountd has signed in: the
 //! descriptor reaches a fake DAV server, which saw accountd's credential and the app never did.
 //! Nobody asks about another app's grants, and only a porter daemon, Settings or the shell lists
@@ -31,8 +31,8 @@ use zbus::zvariant::{OwnedValue, Value};
 
 const ACCESS_DENIED: &str = "org.freedesktop.DBus.Error.AccessDenied";
 const INVALID_ARGS: &str = "org.freedesktop.DBus.Error.InvalidArgs";
-const UNKNOWN_GRANT: &str = "org.quire.Accounts1.Error.UnknownGrant";
-const ENDPOINT_NOT_GRANTED: &str = "org.quire.Accounts1.Error.EndpointNotGranted";
+const UNKNOWN_GRANT: &str = "org.bardo.Accounts1.Error.UnknownGrant";
+const ENDPOINT_NOT_GRANTED: &str = "org.bardo.Accounts1.Error.EndpointNotGranted";
 
 fn need() -> Need {
     Need::Storage(StorageNeed::new(
@@ -115,7 +115,7 @@ async fn request(
 async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor() {
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
     let rig = rig(&dav).await;
-    let connection = rig.client("org.quire.Photos").await;
+    let connection = rig.client("org.bardo.Photos").await;
     let proxy = grants_of(&connection).await;
     let (need_text, class, usage) = (to_text(&need()), "photos", "interactive");
 
@@ -157,7 +157,7 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
     let held: Vec<Grant> = from_text(&proxy.grants().await.expect("grants")).expect("grants");
     assert_eq!(held.len(), 1);
     assert_eq!(held[0].id, chosen.grant);
-    assert_eq!(held[0].key.app, app("org.quire.Photos"));
+    assert_eq!(held[0].key.app, app("org.bardo.Photos"));
 
     // The stream: a Unix socket whose other end accountd's relay holds.
     let endpoint = chosen.endpoints[0].url.clone();
@@ -211,7 +211,7 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
         tokio::time::sleep(std::time::Duration::from_millis(50)).await;
     }
     assert_eq!(closed.len(), 1, "the relay's end is recorded once");
-    assert_eq!(closed[0].app, Some(app("org.quire.Photos")));
+    assert_eq!(closed[0].app, Some(app("org.bardo.Photos")));
     assert_eq!(closed[0].account, Some(chosen.account.clone()));
     assert_eq!(
         closed[0].event,
@@ -242,7 +242,7 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
 async fn a_grant_is_the_apps_own_and_an_endpoint_outside_it_is_refused() {
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
     let rig = rig(&dav).await;
-    let photos = rig.client("org.quire.Photos").await;
+    let photos = rig.client("org.bardo.Photos").await;
     let proxy = grants_of(&photos).await;
     let AccountsReply::Chosen(chosen) = request(&photos, &proxy, "").await.expect("asked") else {
         panic!("the person allowed it");
@@ -250,7 +250,7 @@ async fn a_grant_is_the_apps_own_and_an_endpoint_outside_it_is_refused() {
     let endpoint = chosen.endpoints[0].url.clone();
 
     // Another app holds none of it: it cannot use, read or revoke Photos' grant.
-    let files = rig.client("org.quire.Files").await;
+    let files = rig.client("org.bardo.Files").await;
     let other = grants_of(&files).await;
     let held: Vec<Grant> = from_text(&other.grants().await.expect("grants")).expect("grants");
     assert!(held.is_empty());
@@ -369,7 +369,7 @@ async fn the_accounts_are_listed_to_a_porter_daemon_settings_and_the_shell_and_t
         assert_eq!(listed[0].1, "", "{role:?}");
         assert!(!text.contains(APP_PASSWORD), "{text}");
     }
-    let app = rig.client("org.quire.Photos").await;
+    let app = rig.client("org.bardo.Photos").await;
     let refused = grants_of(&app).await.accounts().await.expect_err("an app");
     assert_eq!(error_name(refused), ACCESS_DENIED);
 }
@@ -379,7 +379,7 @@ async fn extending_access_names_an_account_it_holds_and_a_provider_that_asks_on_
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
     let rig = rig(&dav).await;
     let daemon = rig
-        .client_as(caller("org.quire.Sync", CallerRole::PorterDaemon))
+        .client_as(caller("org.bardo.Sync", CallerRole::PorterDaemon))
         .await;
     let proxy = grants_of(&daemon).await;
     let nobody = AccountId::parse("nobody").expect("id");
@@ -411,7 +411,7 @@ async fn a_grant_asked_for_one_account_gives_that_account_or_a_refusal_never_ano
     // The person allows the first account whatever the sheet is about; the app asked about the
     // second. The answer is not the first account's grant, and nothing is kept for it.
     let rig = rig_of(vec![first.clone(), second.clone()], first.id.clone()).await;
-    let connection = rig.client("org.quire.Photos").await;
+    let connection = rig.client("org.bardo.Photos").await;
     let proxy = grants_of(&connection).await;
     let reply = request(&connection, &proxy, second.id.as_str())
         .await
@@ -422,7 +422,7 @@ async fn a_grant_asked_for_one_account_gives_that_account_or_a_refusal_never_ano
 
     // The person allows the second: that is the account granted, though the first fits too.
     let rig = rig_of(vec![first.clone(), second.clone()], second.id.clone()).await;
-    let connection = rig.client("org.quire.Photos").await;
+    let connection = rig.client("org.bardo.Photos").await;
     let proxy = grants_of(&connection).await;
     let AccountsReply::Chosen(chosen) = request(&connection, &proxy, second.id.as_str())
         .await
@@ -437,7 +437,7 @@ async fn a_grant_asked_for_one_account_gives_that_account_or_a_refusal_never_ano
 
     // Without a name the person still picks among the accounts that fit.
     let rig = rig_of(vec![first.clone(), second], first.id.clone()).await;
-    let connection = rig.client("org.quire.Photos").await;
+    let connection = rig.client("org.bardo.Photos").await;
     let proxy = grants_of(&connection).await;
     let AccountsReply::Chosen(chosen) = request(&connection, &proxy, "").await.expect("asked")
     else {

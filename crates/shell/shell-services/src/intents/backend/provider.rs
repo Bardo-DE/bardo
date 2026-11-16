@@ -26,7 +26,7 @@ use crate::app_menu::{MenuAgent, MenuLinks};
 use crate::intents::ShellCall;
 
 /// What the shell declares, as shipped: the installed file, held to the model by a test.
-const MANIFEST: &str = include_str!("../../../../dist/intents/org.quire.Shell.toml");
+const MANIFEST: &str = include_str!("../../../../dist/intents/org.bardo.Shell.toml");
 
 /// How long the daemon has to do one action (the manifest's `quick` latency is five seconds).
 const CALL_WAIT: Duration = Duration::from_secs(4);

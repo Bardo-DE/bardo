@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Build casement and install it: the compositor and its control tool, and the systemd user unit
-# that starts the compositor in the desktop session (dist/casement.service, with its ExecStart
+# that starts the compositor in the desktop session (dist/bardo-compositor.service, with its ExecStart
 # rewritten to the installed binary). The login entry and the session script are the desktop
 # repo's (install/). Safe to run again: a file already in place and identical is left alone.
 #
 #   scripts/install.sh [--prefix P] [--destdir D] [--no-build] [--locked] [--dry-run]
 #
-#   --prefix P    where it is installed (default /usr/local): P/bin/casement, P/bin/casementctl,
-#                 P/lib/systemd/user/casement.service and P/share/quire/settings/casement.settings.toml
+#   --prefix P    where it is installed (default /usr/local): P/bin/casement, P/bin/bardo-compositorctl,
+#                 P/lib/systemd/user/bardo-compositor.service and P/share/quire/settings/compositor.settings.toml
 #   --destdir D   a staging root put in front of every path (for a package build); nothing then
 #                 talks to systemd or SELinux
 #   --no-build    use the release binaries that are already built (under $CARGO_TARGET_DIR, else
@@ -22,8 +22,8 @@ set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 TREE=$(cd "$ROOT/../.." && pwd)
-UNIT="$ROOT/dist/casement.service"
-BINS=(casement casementctl)
+UNIT="$ROOT/dist/bardo-compositor.service"
+BINS=(casement bardo-compositorctl)
 
 prefix=/usr/local destdir="" build=yes locked=no dry=no
 usage() { sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
@@ -125,19 +125,19 @@ step "3/5 the user unit ($destdir$prefix/lib/systemd/user)"
 rendered=$(mktemp)
 # Kept when its install needs root: the printed command names it.
 trap '[ ${#MANUAL[@]} -gt 0 ] || rm -f "$rendered"' EXIT
-# Only the program path is replaced: the rest of the line (the session's arguments, $CASEMENT_SESSION_ARGS) stays.
+# Only the program path is replaced: the rest of the line (the session's arguments, $BARDO_COMPOSITOR_SESSION_ARGS) stays.
 sed 's|^ExecStart=[^ ]*|ExecStart='"$prefix"'/bin/casement|' "$UNIT" >"$rendered"
 grep -q "^ExecStart=$prefix/bin/casement\( \|\$\)" "$rendered" || die "$UNIT has no ExecStart= line to point at $prefix/bin/casement"
-put 644 "$rendered" "$prefix/lib/systemd/user/casement.service"
+put 644 "$rendered" "$prefix/lib/systemd/user/bardo-compositor.service"
 
 step "4/5 the settings schema ($destdir$prefix/share/quire/settings)"
 # The Settings app finds casement's keys (Spaces, pointer, keyboard...) by this file.
 if [ "$dry" = yes ]; then
-  note "would run: $target/casement --write-schema and install casement.settings.toml"
+  note "would run: $target/casement --write-schema and install compositor.settings.toml"
 else
   schema=$(mktemp -d)
   "$target/casement" --write-schema "$schema" >/dev/null || die "casement --write-schema failed"
-  put 644 "$schema/casement.settings.toml" "$prefix/share/quire/settings/casement.settings.toml"
+  put 644 "$schema/compositor.settings.toml" "$prefix/share/quire/settings/compositor.settings.toml"
   rm -rf "$schema"
 fi
 
@@ -146,7 +146,7 @@ if [ -n "$destdir" ]; then
   note "skipped: staging into $destdir"
 else
   if command -v restorecon >/dev/null 2>&1; then
-    run_at "$prefix/bin" restorecon -F "$prefix/bin/casement" "$prefix/bin/casementctl" "$prefix/lib/systemd/user/casement.service"
+    run_at "$prefix/bin" restorecon -F "$prefix/bin/casement" "$prefix/bin/bardo-compositorctl" "$prefix/lib/systemd/user/bardo-compositor.service"
   else
     note "no restorecon: skipped"
   fi
@@ -165,4 +165,4 @@ if [ ${#MANUAL[@]} -gt 0 ] && [ "$dry" = no ]; then
   exit 1
 fi
 step "done"
-note "The desktop session starts casement.service; install the login entry from the desktop repo."
+note "The desktop session starts bardo-compositor.service; install the login entry from the desktop repo."

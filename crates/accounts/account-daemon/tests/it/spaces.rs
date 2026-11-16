@@ -1,4 +1,4 @@
-//! `org.quire.Spaces1` (lane spaces): the desktop-wide Spaces accountd keeps. Who may call what,
+//! `org.bardo.Spaces1` (lane spaces): the desktop-wide Spaces accountd keeps. Who may call what,
 //! the `Changed` signal, the audit of a removal, the per-app limit on new Spaces, and a restart
 //! keeping them.
 
@@ -47,7 +47,7 @@ async fn listed(proxy: &SpacesProxy<'_>) -> Vec<(String, String)> {
 }
 
 fn settings_caller() -> account_callers::Caller {
-    caller("org.quire.Settings", CallerRole::Settings)
+    caller("org.bardo.Settings", CallerRole::Settings)
 }
 
 /// The next `Changed`, as (id, what): each one is waited for as long as a starved machine needs.
@@ -66,7 +66,7 @@ async fn next_change(stream: &mut SpaceChangedStream) -> Option<(String, String)
 #[tokio::test(flavor = "multi_thread")]
 async fn any_identified_app_lists_and_creates_and_a_stranger_is_denied() {
     let rig = start(Options::default()).await;
-    let app = spaces(&rig.client("org.quire.Photos").await).await;
+    let app = spaces(&rig.client("org.bardo.Photos").await).await;
     assert!(listed(&app).await.is_empty());
     let id = app
         .create("Work", r#"{"colour":"teal"}"#)
@@ -114,7 +114,7 @@ async fn an_assistant_computer_use_or_a_launcher_never_makes_a_space() {
         CallerRole::Cua,
         CallerRole::AgentLauncher,
     ] {
-        let them = spaces(&rig.client_as(caller("org.quire.Companion", role)).await).await;
+        let them = spaces(&rig.client_as(caller("org.bardo.Companion", role)).await).await;
         let refused = them
             .create("Theirs", "")
             .await
@@ -123,12 +123,12 @@ async fn an_assistant_computer_use_or_a_launcher_never_makes_a_space() {
         assert_eq!(error_name(&refused), ACCESS_DENIED, "{role:?}");
     }
     let assistant = spaces(
-        &rig.client_as(caller("org.quire.Companion", CallerRole::Agent))
+        &rig.client_as(caller("org.bardo.Companion", CallerRole::Agent))
             .await,
     )
     .await;
     assert!(listed(&assistant).await.is_empty(), "an assistant may list");
-    let app = spaces(&rig.client("org.quire.Photos").await).await;
+    let app = spaces(&rig.client("org.bardo.Photos").await).await;
     assert!(listed(&app).await.is_empty(), "nothing was made");
     assert!(
         !rig.audit
@@ -141,7 +141,7 @@ async fn an_assistant_computer_use_or_a_launcher_never_makes_a_space() {
 #[tokio::test(flavor = "multi_thread")]
 async fn only_settings_and_the_shell_rename_restyle_and_remove() {
     let rig = start(Options::default()).await;
-    let app = spaces(&rig.client("org.quire.Photos").await).await;
+    let app = spaces(&rig.client("org.bardo.Photos").await).await;
     let id = app.create("Work", "").await.expect("create");
     for error in [
         app.rename(&id, "Mine").await.expect_err("rename"),
@@ -151,7 +151,7 @@ async fn only_settings_and_the_shell_rename_restyle_and_remove() {
         assert_eq!(error_name(&error), ACCESS_DENIED);
     }
     let agent = spaces(
-        &rig.client_as(caller("org.quire.Companion", CallerRole::Agent))
+        &rig.client_as(caller("org.bardo.Companion", CallerRole::Agent))
             .await,
     )
     .await;
@@ -177,7 +177,7 @@ async fn only_settings_and_the_shell_rename_restyle_and_remove() {
 #[tokio::test(flavor = "multi_thread")]
 async fn bad_names_and_looks_are_invalid_args() {
     let rig = start(Options::default()).await;
-    let app = spaces(&rig.client("org.quire.Photos").await).await;
+    let app = spaces(&rig.client("org.bardo.Photos").await).await;
     let long_look = "x".repeat(1025);
     for (name, look) in [
         ("", ""),
@@ -199,13 +199,13 @@ async fn bad_names_and_looks_are_invalid_args() {
 #[tokio::test(flavor = "multi_thread")]
 async fn known_connections_are_told_each_change() {
     let rig = start(Options::default()).await;
-    let watcher = spaces(&rig.client("org.quire.Mail").await).await;
+    let watcher = spaces(&rig.client("org.bardo.Mail").await).await;
     let mut changes = watcher.receive_changed().await.expect("subscribe");
     watcher
         .list()
         .await
         .expect("list joins the connections told");
-    let maker = spaces(&rig.client("org.quire.Photos").await).await;
+    let maker = spaces(&rig.client("org.bardo.Photos").await).await;
     let id = maker.create("Work", "").await.expect("create");
     assert_eq!(
         next_change(&mut changes).await,
@@ -248,13 +248,13 @@ async fn removing_a_space_is_audited_and_leaves_the_others() {
 async fn a_restart_keeps_the_spaces() {
     let scratch = Scratch::new("it-spaces");
     let first = start(options(&scratch)).await;
-    let app = spaces(&first.client("org.quire.Photos").await).await;
+    let app = spaces(&first.client("org.bardo.Photos").await).await;
     let work = app.create("Work", "teal").await.expect("create");
     let home = app.create("Home", "").await.expect("create");
     drop(first);
 
     let second = start(options(&scratch)).await;
-    let app = spaces(&second.client("org.quire.Photos").await).await;
+    let app = spaces(&second.client("org.bardo.Photos").await).await;
     assert_eq!(
         listed(&app).await,
         [(work, "Work".to_owned()), (home.clone(), "Home".to_owned())]
@@ -319,14 +319,14 @@ async fn the_creation_window_runs_on_the_injected_monotonic_clock() {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_compositor_registers_its_workspace_ids_and_nothing_else() {
     let rig = start(Options::default()).await;
-    let watcher = spaces(&rig.client("org.quire.Mail").await).await;
+    let watcher = spaces(&rig.client("org.bardo.Mail").await).await;
     let mut changes = watcher.receive_changed().await.expect("subscribe");
     watcher
         .list()
         .await
         .expect("list joins the connections told");
     let compositor = spaces(
-        &rig.client_as(caller("org.quire.Casement", CallerRole::Compositor))
+        &rig.client_as(caller("org.bardo.Compositor", CallerRole::Compositor))
             .await,
     )
     .await;
@@ -392,7 +392,7 @@ async fn the_compositor_registers_its_workspace_ids_and_nothing_else() {
         assert_eq!(error_name(&error), ACCESS_DENIED);
     }
     // An app may not register: it could take an id the compositor mints later.
-    let app = spaces(&rig.client("org.quire.Photos").await).await;
+    let app = spaces(&rig.client("org.bardo.Photos").await).await;
     let refused = app
         .register("s-00000000000000000000000000000000", "x", "")
         .await

@@ -54,7 +54,7 @@ fn a_proposed_routine_names_a_helper_that_exists() {
 
 #[test]
 fn a_proposed_helper_is_a_form_of_its_own_planner_with_the_steps_it_is_proposed_with() {
-    let apps = ["org.quire.Mail".to_owned()];
+    let apps = ["org.bardo.Mail".to_owned()];
     let form = helper_form("Inbox", "Reads the mail", &apps, Ceiling::Look, space()).expect("form");
     assert_eq!(form.name.as_str(), "Inbox");
     assert_eq!(form.steps, PROPOSED_STEPS);

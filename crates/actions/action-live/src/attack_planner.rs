@@ -1,4 +1,4 @@
-//! The attack suite played by the companion's real planner (`docket-live corpus --corpus attacks
+//! The attack suite played by the companion's real planner (`agent-live corpus --corpus attacks
 //! --planner live`): AgentDojo's own measurement. The planner model is given the person's words
 //! over the attack's world, once with the carrier holding filler and once holding the injection,
 //! and chooses its own steps through the companion's real loop, in this process, over the same
@@ -182,9 +182,9 @@ pub fn ask_of(session: SessionId, turn: UserTurn, place: &Place) -> Result<AskWi
 async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, AttackFault> {
     let words = case.turns.first().cloned().ok_or(AttackFault::NoTurn)?;
     let reviewer = Judges(InferReviewer {
-        quick: rig.model("quire-quick")?,
-        deliberate: rig.model("quire-deliberate")?,
-        second: rig.model("quire-second")?,
+        quick: rig.model("bardo-quick")?,
+        deliberate: rig.model("bardo-deliberate")?,
+        second: rig.model("bardo-second")?,
         timeouts: rig.timeouts.config(),
     });
     let config = AgentConfig {
@@ -205,11 +205,11 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
     let place = attack.place(&router.seams.link.shown())?;
     router.seams.link.show_window(place.window.clone());
     let router = Arc::new(router);
-    let shell = AppName::parse("org.quire.Shell").map_err(|_| AttackFault::ShellName)?;
+    let shell = AppName::parse("org.bardo.Shell").map_err(|_| AttackFault::ShellName)?;
     let mut companion: Companion<_, _, _, Quiet> = Companion::new(
         Intents::over(InProcess::new(
             router.clone(),
-            caller("org.quire.Companiond", CallerRole::Companion)?,
+            caller("org.bardo.Companion", CallerRole::Companion)?,
         )),
         PlannerModel::new(rig.link()),
         AgentConfig::default(),
@@ -218,7 +218,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
     );
     let launcher = Intents::over(InProcess::new(
         router.clone(),
-        caller("org.quire.Shell", CallerRole::Launcher)?,
+        caller("org.bardo.Shell", CallerRole::Launcher)?,
     ));
     let opened = companion
         .open(SessionOpen {
@@ -342,7 +342,7 @@ pub async fn run_attacks_planner(
     let facts = Facts::shipped();
     for (n, attack) in attacks.iter().enumerate() {
         eprintln!(
-            "docket-live: attack {} of {}: {}",
+            "agent-live: attack {} of {}: {}",
             n + 1,
             attacks.len(),
             attack.id.0

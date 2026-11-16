@@ -5,7 +5,7 @@ use crate::protocol::{Protocol, ProtocolSet};
 /// The protocols that describe and act on toplevels, chosen from the offer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DesktopBackend {
-    /// `ext-foreign-toplevel-list` for identity plus `quire_desktop_v1` for state, places,
+    /// `ext-foreign-toplevel-list` for identity plus `bardo_desktop_v1` for state, places,
     /// apps and Spaces.
     Quire,
     /// `zwlr-foreign-toplevel-management` (paired with the ext list when that is offered).
@@ -15,7 +15,7 @@ pub enum DesktopBackend {
 }
 
 /// The arm for `offered`, from the globals alone (never from a compositor's name or the
-/// environment): Quire when `quire_desktop_v1` and the ext list are offered, else wlr when its
+/// environment): Quire when `bardo_desktop_v1` and the ext list are offered, else wlr when its
 /// manager is, else the ext list alone; `None` when no toplevel protocol is offered.
 ///
 /// ```

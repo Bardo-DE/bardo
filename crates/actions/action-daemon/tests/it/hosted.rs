@@ -1,5 +1,5 @@
-//! The built-in providers through a whole intentd on a private bus: `org.quire.Memory` over a
-//! fake memoryd and `org.quire.Companion` over the router itself. A companion calls them like
+//! The built-in providers through a whole intentd on a private bus: `org.bardo.Memory` over a
+//! fake memoryd and `org.bardo.Companion` over the router itself. A companion calls them like
 //! any app, the manifests are listed, and what they do reaches memoryd as audit records.
 
 use crate::support::apps::{Answer, FakeSill};
@@ -27,8 +27,8 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-const COMPANIOND: &str = "org.quire.Companiond";
-const SILL: &str = "org.quire.Shell";
+const COMPANIOND: &str = "org.bardo.Companion";
+const SILL: &str = "org.bardo.Shell";
 
 fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
@@ -96,7 +96,7 @@ impl Desk {
         let mut setup = Setup::from_env(&env).expect("setup");
         // The person has let the companion use both built-ins, always.
         let grants = FileGrants::at(setup.grants.clone());
-        for (n, owner) in ["org.quire.Memory", "org.quire.Companion"]
+        for (n, owner) in ["org.bardo.Memory", "org.bardo.Companion"]
             .into_iter()
             .enumerate()
         {
@@ -133,12 +133,12 @@ impl Desk {
             .await
             .expect("intentd");
         let sill_connection = bus.connect().await;
-        let sill = FakeSill::start(&sill_connection, &["org.quire.Confirm1", SILL]).await;
+        let sill = FakeSill::start(&sill_connection, &["org.bardo.Confirm1", SILL]).await;
         introduce(
             &who,
             &sill_connection,
             &config(),
-            &["org.quire.Confirm1", SILL],
+            &["org.bardo.Confirm1", SILL],
         );
         let companion_connection = bus.connect().await;
         companion_connection
@@ -233,10 +233,10 @@ async fn the_built_in_providers_are_listed_with_their_manifests() {
     assert_eq!(
         listed,
         [
-            "org.quire.AcpAgent",
-            "org.quire.Checkpoints",
-            "org.quire.Companion",
-            "org.quire.Memory"
+            "org.bardo.AcpAgent",
+            "org.bardo.Checkpoints",
+            "org.bardo.Companion",
+            "org.bardo.Memory"
         ]
     );
 }
@@ -254,7 +254,7 @@ async fn a_companion_recalls_through_memory_and_what_it_gets_carries_the_hits_la
         .companion
         .perform(
             call(
-                "org.quire.Memory",
+                "org.bardo.Memory",
                 "memory.recall",
                 TargetValue::Nothing,
                 &[("query", Value::Text("wire".into()))],
@@ -306,7 +306,7 @@ async fn a_proposal_from_a_companion_asks_the_person_then_goes_to_memory_and_lan
     let front = desk.front().await;
     let propose = |text: &str| {
         call(
-            "org.quire.Memory",
+            "org.bardo.Memory",
             "memory.propose",
             TargetValue::Nothing,
             &[("text", Value::Text(text.into()))],
@@ -375,7 +375,7 @@ async fn a_companion_starts_a_task_and_the_task_is_audited_into_memory() {
         .companion
         .perform(
             call(
-                "org.quire.Companion",
+                "org.bardo.Companion",
                 "companion.task.start",
                 TargetValue::Nothing,
                 &[("goal", Value::Text("find the Lisbon receipts".into()))],
@@ -456,36 +456,36 @@ async fn an_installed_manifest_appearing_changing_and_going_is_said_on_the_regis
     std::fs::create_dir_all(&folder).expect("dir");
 
     std::fs::write(
-        folder.join("org.quire.Mail.toml"),
+        folder.join("org.bardo.Mail.toml"),
         action_fake::MAIL_MANIFEST,
     )
     .expect("write");
     let signal = first(&mut changed).await;
-    assert_eq!(signal.args().expect("args").app(), &"org.quire.Mail");
+    assert_eq!(signal.args().expect("args").app(), &"org.bardo.Mail");
     let listed = desk.companion.manifests().await.expect("manifests");
     assert!(
         listed
             .iter()
-            .any(|m| m.manifest().app.as_str() == "org.quire.Mail")
+            .any(|m| m.manifest().app.as_str() == "org.bardo.Mail")
     );
 
     let edited = action_fake::MAIL_MANIFEST.replace("Read", "Look at");
-    std::fs::write(folder.join("org.quire.Mail.toml"), edited).expect("write");
+    std::fs::write(folder.join("org.bardo.Mail.toml"), edited).expect("write");
     assert_eq!(
         first(&mut changed).await.args().expect("args").app(),
-        &"org.quire.Mail"
+        &"org.bardo.Mail"
     );
 
-    std::fs::remove_file(folder.join("org.quire.Mail.toml")).expect("remove");
+    std::fs::remove_file(folder.join("org.bardo.Mail.toml")).expect("remove");
     assert_eq!(
         first(&mut changed).await.args().expect("args").app(),
-        &"org.quire.Mail"
+        &"org.bardo.Mail"
     );
     let listed = desk.companion.manifests().await.expect("manifests");
     assert!(
         listed
             .iter()
-            .all(|m| m.manifest().app.as_str() != "org.quire.Mail")
+            .all(|m| m.manifest().app.as_str() != "org.bardo.Mail")
     );
 }
 
@@ -495,14 +495,14 @@ async fn a_file_cannot_declare_the_built_in_providers() {
     let folder = desk.dir.path().join("data/quire/intents");
     std::fs::create_dir_all(&folder).expect("dir");
     // A file that renames the memory actions' effects: the built-in declaration stands.
-    let memory = include_str!("../../../manifests/org.quire.Memory.toml")
+    let memory = include_str!("../../../manifests/org.bardo.Memory.toml")
         .replace("reach = \"hidden\"", "reach = \"offered\"");
-    std::fs::write(folder.join("org.quire.Memory.toml"), memory).expect("write");
+    std::fs::write(folder.join("org.bardo.Memory.toml"), memory).expect("write");
     tokio::time::sleep(Duration::from_millis(400)).await;
     let listed = desk.companion.manifests().await.expect("manifests");
     let memory = listed
         .iter()
-        .find(|m| m.manifest().app.as_str() == "org.quire.Memory")
+        .find(|m| m.manifest().app.as_str() == "org.bardo.Memory")
         .expect("memory is still there");
     let forget = memory
         .manifest()
@@ -530,7 +530,7 @@ async fn a_message_arriving_for_a_worker_is_said_content_free() {
         .companion
         .perform(
             call(
-                "org.quire.Companion",
+                "org.bardo.Companion",
                 "companion.task.start",
                 TargetValue::Nothing,
                 &[("goal", Value::Text("find the receipts".into()))],
@@ -609,7 +609,7 @@ fn skill_dir(data: &std::path::Path, id: &str, uses: &str, body: &str) {
     std::fs::write(
         dir.join("skill.toml"),
         format!(
-            "vocab = 1\nid = \"{id}\"\nowner = \"org.quire.Companion\"\nversion = \"0.2.0\"\nuses = [\"{uses}\"]\n"
+            "vocab = 1\nid = \"{id}\"\nowner = \"org.bardo.Companion\"\nversion = \"0.2.0\"\nuses = [\"{uses}\"]\n"
         ),
     )
     .expect("toml");
@@ -620,7 +620,7 @@ fn skill_dir(data: &std::path::Path, id: &str, uses: &str, body: &str) {
     .expect("md");
 }
 
-const LOAD_USES: &str = "org.quire.Companion:companion.skill.load";
+const LOAD_USES: &str = "org.bardo.Companion:companion.skill.load";
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_skill_loads_as_trusted_text_from_the_person_and_a_task_loads_at_most_three() {
@@ -631,7 +631,7 @@ async fn a_skill_loads_as_trusted_text_from_the_person_and_a_task_loads_at_most_
         skill_dir(
             data,
             "s-missing",
-            "org.quire.Companion:companion.no.such",
+            "org.bardo.Companion:companion.no.such",
             "never",
         );
     })
@@ -639,7 +639,7 @@ async fn a_skill_loads_as_trusted_text_from_the_person_and_a_task_loads_at_most_
     let front = desk.front().await;
     let load = |id: &str| {
         call(
-            "org.quire.Companion",
+            "org.bardo.Companion",
             "companion.skill.load",
             TargetValue::Nothing,
             &[("id", Value::Text(id.into()))],

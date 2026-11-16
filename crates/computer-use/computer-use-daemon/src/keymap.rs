@@ -2,7 +2,7 @@
 //! feature is on, this desktop's own bindings and the person's overrides, read once at start.
 //!
 //! cuad uses the standard shortcuts only (owner decision, 2026-10-10). Its sandbox
-//! (`dist/cuad.service`) keeps the person's home and the keycap socket closed, so their own
+//! (`dist/bardo-computer-use.service`) keeps the person's home and the keycap socket closed, so their own
 //! remappings are not read and the shortcut hints come from chordkit's conventional keymap (with
 //! the desktop's own bindings). A source that cannot be opened is therefore not a problem: it is
 //! skipped without a word, and only what was read and found wrong (a bad line in a keymap file
@@ -68,8 +68,8 @@ mod tests {
     #[test]
     fn nothing_found_is_the_conventions() {
         let nowhere = |name: &str| match name {
-            "KEYCAP_SOCKET" => Some("/nonexistent/keycap.sock".to_owned()),
-            "KEYCAP_CONFIG_DIR" => Some("/nonexistent/keycap".to_owned()),
+            "BARDO_KEY_REMAP_SOCKET" => Some("/nonexistent/key-remap.sock".to_owned()),
+            "BARDO_KEY_REMAP_CONFIG_DIR" => Some("/nonexistent/keycap".to_owned()),
             _ => None,
         };
         let (keymap, _) = desktop_keymap(OURS, nowhere);
@@ -86,8 +86,8 @@ mod tests {
         let root = home.path().to_string_lossy().into_owned();
         let lookup = |name: &str| match name {
             "XDG_CONFIG_HOME" => Some(root.clone()),
-            "KEYCAP_SOCKET" => Some(format!("{root}/no-socket")),
-            "KEYCAP_CONFIG_DIR" => Some(format!("{root}/no-machine-dir")),
+            "BARDO_KEY_REMAP_SOCKET" => Some(format!("{root}/no-socket")),
+            "BARDO_KEY_REMAP_CONFIG_DIR" => Some(format!("{root}/no-machine-dir")),
             _ => None,
         };
         let (keymap, _) = desktop_keymap(OURS, lookup);
@@ -105,8 +105,8 @@ mod tests {
         let root = blocker.to_string_lossy().into_owned();
         let lookup = |name: &str| match name {
             "XDG_CONFIG_HOME" => Some(root.clone()),
-            "KEYCAP_SOCKET" => Some(format!("{root}/no-socket")),
-            "KEYCAP_CONFIG_DIR" => Some(format!("{root}/no-machine-dir")),
+            "BARDO_KEY_REMAP_SOCKET" => Some(format!("{root}/no-socket")),
+            "BARDO_KEY_REMAP_CONFIG_DIR" => Some(format!("{root}/no-machine-dir")),
             _ => None,
         };
         let (keymap, problems) = desktop_keymap(OURS, lookup);

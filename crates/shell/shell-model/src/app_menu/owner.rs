@@ -1,4 +1,4 @@
-//! Whose menu the bar shows: the owner of `org.quire.AppMenu.<id>` must be the program the
+//! Whose menu the bar shows: the owner of `org.bardo.AppMenu.<id>` must be the program the
 //! focused window belongs to (QUIRE-12). Any process may claim the name, so the name proves
 //! nothing; the system's account of the owner (peephole's standing: an image the system owns, a
 //! sandbox it attests, a desktop service) is compared with the window's client.
@@ -8,7 +8,7 @@
 //!
 //! **The seam.** The window's client is known by the app key the desktop names it by. The
 //! compositor reports the client's own *subject* (the program's image path or the sandboxed
-//! app's id, `quire_desktop_app_v1.subject`) once it has established one; it reaches here as
+//! app's id, `bardo_desktop_app_v1.subject`) once it has established one; it reaches here as
 //! [`MenuClient::reported`]. With a subject the subject is compared, which is the stronger test
 //! (a launcher's scope name is only a claim). Without one (a program the compositor cannot name,
 //! a compositor older than protocol version 2, or an app id two programs declare) the key is

@@ -1,4 +1,4 @@
-//! `docket-eval --check-skills <dir>…`: every skill under the directories validates (the format,
+//! `agent-eval --check-skills <dir>…`: every skill under the directories validates (the format,
 //! the sizes, the ids agreeing, vocab 1) and every action it `uses` exists in a manifest found
 //! under the same directories or among the built-in ones. A skill whose action is missing would
 //! be hidden at run time, so here it fails. A skill that uses an action the companion cannot
@@ -19,8 +19,8 @@ use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 const BUILT_IN: [&str; 2] = [
-    include_str!("../../manifests/org.quire.Memory.toml"),
-    include_str!("../../manifests/org.quire.Companion.toml"),
+    include_str!("../../manifests/org.bardo.Memory.toml"),
+    include_str!("../../manifests/org.bardo.Companion.toml"),
 ];
 
 /// The `*.toml` files directly in `dir` (none when it is not a directory), sorted.

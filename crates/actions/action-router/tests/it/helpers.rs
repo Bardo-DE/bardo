@@ -388,7 +388,7 @@ async fn a_post_that_says_the_person_approved_confirms_nothing() {
     assert!(!answered_yes, "no receipt came from a message");
 }
 
-// ---- the two helper actions of org.quire.Companion --------------------------------------------
+// ---- the two helper actions of org.bardo.Companion --------------------------------------------
 
 fn words_of(source: Source) -> Label {
     Label {
@@ -493,7 +493,7 @@ async fn a_helper_proposed_by_a_tainted_planner_has_no_name_and_no_role_to_take(
             &[
                 ("name", text("Inbox"), name),
                 ("role", text("Reads the mail."), role),
-                ("apps", text("org.quire.Mail"), planners()),
+                ("apps", text("org.bardo.Mail"), planners()),
             ],
         )
     };

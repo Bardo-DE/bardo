@@ -16,7 +16,7 @@ pub(crate) fn notes_summary(count: usize) -> String {
     }
 }
 
-/// Where a note is: `quire/style.css, line 4`.
+/// Where a note is: `bardo/style.css, line 4`.
 pub(crate) fn note_place(row: &NoteRow) -> String {
     format!("{}, line {}", row.file, row.line)
 }
@@ -45,9 +45,9 @@ mod tests {
     fn a_note_is_placed_by_file_and_line() {
         let row = NoteRow {
             words: "Heavy blur may slow the desktop".to_owned(),
-            file: "quire/style.css".to_owned(),
+            file: "bardo/style.css".to_owned(),
             line: 4,
         };
-        assert_eq!(note_place(&row), "quire/style.css, line 4");
+        assert_eq!(note_place(&row), "bardo/style.css, line 4");
     }
 }

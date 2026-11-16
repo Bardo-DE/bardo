@@ -56,8 +56,8 @@ fn both_are_served_before_anyone_logs_in() {
 #[test]
 fn refusals_table() {
     use Refusal::*;
-    let user_palmrest = "/user.slice/user-1000.slice/user@1000.service/app.slice/palmrest.service";
-    let user_keycap = "/user.slice/user-1000.slice/user@1000.service/app.slice/keycap.service";
+    let user_palmrest = "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
+    let user_keycap = "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
     let table: Vec<(&str, Kind, Caller, ActiveUid, Refusal)> = vec![
         (
             "not in the table",
@@ -110,7 +110,7 @@ fn refusals_table() {
                 "keymap_daemon",
                 Proof::Cgroup,
                 KEYCAP_UID,
-                "/system.slice/keycap.service",
+                "/system.slice/bardo-key-remap.service",
             ),
             seat(Some(USER)),
             TooWeak,
@@ -136,7 +136,7 @@ fn refusals_table() {
                 "pad_daemon",
                 Proof::Full,
                 PALMREST_UID,
-                "/system.slice/palmrest.service/x",
+                "/system.slice/bardo-mouse-gestures.service/x",
             ),
             seat(Some(USER)),
             WrongPlace,
@@ -148,7 +148,7 @@ fn refusals_table() {
                 "pad_daemon",
                 Proof::Full,
                 PALMREST_UID,
-                "/system.slice/keycap.service",
+                "/system.slice/bardo-key-remap.service",
             ),
             seat(Some(USER)),
             WrongPlace,
@@ -160,7 +160,7 @@ fn refusals_table() {
                 "keymap_daemon",
                 Proof::Full,
                 USER,
-                "/system.slice/keycap.service",
+                "/system.slice/bardo-key-remap.service",
             ),
             seat(Some(USER)),
             WrongUser,
@@ -179,7 +179,7 @@ fn refusals_table() {
                 "keymap_daemon",
                 Proof::Full,
                 KEYCAP_UID,
-                "/system.slice/keycap.service/x",
+                "/system.slice/bardo-key-remap.service/x",
             ),
             seat(Some(USER)),
             WrongPlace,
@@ -213,7 +213,7 @@ fn only_a_proven_unit_gets_devices_whatever_the_place_is() {
             "keymap_daemon",
             *proof,
             KEYCAP_UID,
-            "/system.slice/keycap.service",
+            "/system.slice/bardo-key-remap.service",
         );
         for kind in PALMREST_KINDS {
             assert_eq!(

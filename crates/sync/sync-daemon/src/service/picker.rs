@@ -1,15 +1,15 @@
-//! `org.quire.Photos1.Picker` on syncd's object (`sync_bus::PhotosPickerProxy`): the Google
+//! `org.bardo.Photos1.Picker` on syncd's object (`sync_bus::PhotosPickerProxy`): the Google
 //! Photos Picker for the Photos app. Served in a build with the `photos-picker` feature; an
 //! account answers through it while its Photos row in Settings is on. The caller is identified as `Sync1`'s are (the connection's, by
-//! account-dbus's `Callers`), and only an app that owns the Photos datasets (`org.quire.Photos`)
+//! account-dbus's `Callers`), and only an app that owns the Photos datasets (`org.bardo.Photos`)
 //! may call it. Settings and the porter daemons see datasets but are not the app that imports
 //! photos, so they are `Denied`, as they are for `Sync1.Resolve`.
 //!
 //! - An account with no Picker (unknown, not Google, the person did not grant the picker scope,
 //!   Photos not granted to syncd) answers `NoFittingAccount`.
 //! - A malformed account or session word is `InvalidArgs`.
-//! - `Import` before the person is done is `org.quire.Photos1.Error.NotYet`; a session Google
-//!   does not have is `org.quire.Photos1.Error.NoSuchSession`; the Picker not answering is
+//! - `Import` before the person is done is `org.bardo.Photos1.Error.NotYet`; a session Google
+//!   does not have is `org.bardo.Photos1.Error.NoSuchSession`; the Picker not answering is
 //!   `Unavailable`; anything else `Failed`.
 //! - Nothing but ids, the page to open, a state word and the files' paths crosses the bus.
 
@@ -297,7 +297,7 @@ impl<C: Callers, D: PickerDesk> PhotosPickerServer for PickerObject<C, D> {
     }
 }
 
-/// Serves `org.quire.Photos1.Picker` beside `Sync1` on `connection`: `desk` has the Pickers,
+/// Serves `org.bardo.Photos1.Picker` beside `Sync1` on `connection`: `desk` has the Pickers,
 /// `owners` is who may call (the Photos app), `callers` says who the senders are.
 #[cfg(feature = "photos-picker")]
 pub async fn serve_picker<C: Callers, D: PickerDesk>(

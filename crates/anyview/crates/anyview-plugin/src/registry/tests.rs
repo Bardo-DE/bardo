@@ -115,7 +115,7 @@ fn a_kind_nobody_serves_names_its_package_or_nothing() {
 #[test]
 fn a_kind_only_a_turned_off_plugin_serves_is_off_not_missing() {
     let off = OffPlugin::new(
-        "org.quire.anyview.Ffmpeg",
+        "org.bardo.anyview.Ffmpeg",
         "FFmpeg",
         candidate("tool", 1, Origin::System, "\"video\"", "")
             .manifest
@@ -188,7 +188,7 @@ fn mpv_plugin_unready(reason: PluginError) -> Plugins {
     let text = "id = \"mpv\"\nname = \"mpv\"\nprotocol = 1\n[[provides]]\ncapability = \"play\"\n\
                 kinds = [\"video\"]\nmpv = \"/usr/bin/mpv\"\ncplugin = \"/opt/av/mpv-wgpu-cplugin.so\"\n";
     let mut manifest = Manifest::parse(text).unwrap();
-    manifest.id = PluginId::parse_dotted("org.quire.anyview.Mpv").unwrap();
+    manifest.id = PluginId::parse_dotted("org.bardo.anyview.Mpv").unwrap();
     Plugins::resolve(vec![Candidate {
         manifest,
         origin: Origin::System,

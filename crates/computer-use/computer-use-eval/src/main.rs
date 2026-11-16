@@ -1,12 +1,12 @@
-//! `cua-eval`: plays the task set against scripts or a model and writes the report.
+//! `computer-use-eval`: plays the task set against scripts or a model and writes the report.
 //!
 //! ```text
-//! cua-eval --dir eval --label gate                                  (scripts: no model)
-//! cua-eval --dir eval --engine cassette --cassette eval/reports/x.cassette.toml
-//! cua-eval --dir eval --platform macos                              (the shortcuts of another platform)
-//! cua-eval --dir eval --screens /tmp/screens                        (what each task starts on)
-//! cua-eval --dir eval --engine local --entry catalog/holo-3.1-4b.toml --port 8000 --repeat 3
-//! cua-eval ... --api-key-file <file>        (an engine that wants a bearer key; read from the file, never printed)
+//! computer-use-eval --dir eval --label gate                                  (scripts: no model)
+//! computer-use-eval --dir eval --engine cassette --cassette eval/reports/x.cassette.toml
+//! computer-use-eval --dir eval --platform macos                              (the shortcuts of another platform)
+//! computer-use-eval --dir eval --screens /tmp/screens                        (what each task starts on)
+//! computer-use-eval --dir eval --engine local --entry catalog/holo-3.1-4b.toml --port 8000 --repeat 3
+//! computer-use-eval ... --api-key-file <file>        (an engine that wants a bearer key; read from the file, never printed)
 //! ```
 //!
 //! The local engine is an OpenAI-compatible server on this machine's loopback address that the
@@ -239,14 +239,14 @@ async fn main() -> ExitCode {
     let args = match parse(std::env::args().skip(1)) {
         Ok(args) => args,
         Err(why) => {
-            eprintln!("cua-eval: {why}");
+            eprintln!("computer-use-eval: {why}");
             return ExitCode::from(2);
         }
     };
     let corpus = match Corpus::load(&args.dir) {
         Ok(corpus) => corpus.on(args.platform),
         Err(why) => {
-            eprintln!("cua-eval: {why}");
+            eprintln!("computer-use-eval: {why}");
             return ExitCode::from(2);
         }
     };
@@ -256,17 +256,17 @@ async fn main() -> ExitCode {
     let played = match play(&args, &corpus).await {
         Ok(played) => played,
         Err(why) => {
-            eprintln!("cua-eval: {why}");
+            eprintln!("computer-use-eval: {why}");
             return ExitCode::from(2);
         }
     };
     if let Err(why) = write_out(&args, &played, &corpus) {
-        eprintln!("cua-eval: {why}");
+        eprintln!("computer-use-eval: {why}");
         return ExitCode::from(2);
     }
     let missed = played.checks.iter().filter(|c| !c.met()).count();
     if missed > 0 {
-        eprintln!("cua-eval: {missed} script(s) did not reach the verdict they were written for");
+        eprintln!("computer-use-eval: {missed} script(s) did not reach the verdict they were written for");
         return ExitCode::from(1);
     }
     ExitCode::SUCCESS
@@ -277,18 +277,18 @@ fn screens(corpus: &Corpus, args: &Args, out: &std::path::Path) -> ExitCode {
     let shots = match computer_use_eval::eval::start_screens(corpus, &args.only) {
         Ok(shots) => shots,
         Err(why) => {
-            eprintln!("cua-eval: {why}");
+            eprintln!("computer-use-eval: {why}");
             return ExitCode::from(2);
         }
     };
     if let Err(why) = std::fs::create_dir_all(out) {
-        eprintln!("cua-eval: {why}");
+        eprintln!("computer-use-eval: {why}");
         return ExitCode::from(2);
     }
     for (task, png) in shots {
         let path = out.join(format!("{task}.png"));
         if let Err(why) = std::fs::write(&path, png) {
-            eprintln!("cua-eval: {why}");
+            eprintln!("computer-use-eval: {why}");
             return ExitCode::from(2);
         }
         println!("wrote {}", path.display());

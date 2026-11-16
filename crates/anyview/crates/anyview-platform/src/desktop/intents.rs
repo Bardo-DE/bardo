@@ -1,6 +1,6 @@
-//! The viewer as an app of docket, the desktop's agent layer: `org.quire.IntentProvider1` served on
-//! the app's own bus name, `org.quire.Anyview`, so the router can ask the viewer to open files.
-//! The declared actions are in `dist/intents/org.quire.Anyview.toml`, which this module embeds, so
+//! The viewer as an app of docket, the desktop's agent layer: `org.bardo.IntentProvider1` served on
+//! the app's own bus name, `org.bardo.Anyview`, so the router can ask the viewer to open files.
+//! The declared actions are in `dist/intents/org.bardo.Anyview.toml`, which this module embeds, so
 //! the file the installer ships and the one the viewer answers for are one file.
 //!
 //! Every action is a request the viewer already takes from another launch (`Request::Open`): a call
@@ -27,7 +27,7 @@ use std::sync::Arc;
 use std::sync::mpsc::Sender;
 
 /// The bus name docket's router calls: the viewer's app name, which docket's activation file starts.
-pub const AGENT_BUS_NAME: &str = "org.quire.Anyview";
+pub const AGENT_BUS_NAME: &str = "org.bardo.Anyview";
 
 /// The action that opens files in the window.
 pub const OPEN_FILES: &str = "anyview.file.open";
@@ -36,7 +36,7 @@ pub const OPEN_FILES: &str = "anyview.file.open";
 const MOST_FILES: usize = 100;
 
 /// The manifest the installer ships, parsed where the viewer starts.
-const MANIFEST: &str = include_str!("../../../../dist/intents/org.quire.Anyview.toml");
+const MANIFEST: &str = include_str!("../../../../dist/intents/org.bardo.Anyview.toml");
 
 /// The viewer's declaration, read from the embedded file.
 pub(super) fn manifest() -> Result<ValidManifest, PlatformError> {

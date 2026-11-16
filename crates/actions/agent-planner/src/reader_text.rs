@@ -163,7 +163,7 @@ mod tests {
 
     fn reader(task: &str, with: &[u64], end: StepEnd) -> StepLine {
         step(
-            "org.quire.Companion",
+            "org.bardo.Companion",
             &format!("companion.read.{task}"),
             with,
             end,
@@ -190,7 +190,7 @@ mod tests {
             episodes: vec![],
             recalled: vec![],
             context: ContextView {
-                app: AppName::parse("org.quire.Shell").expect("app"),
+                app: AppName::parse("org.bardo.Shell").expect("app"),
                 window: Reveal::Plain("w".into()),
                 here: HereView::Nowhere,
                 selection: SelectionView::Nothing,
@@ -216,7 +216,7 @@ mod tests {
 
     fn summarised() -> Vec<StepLine> {
         vec![
-            step("org.quire.Mail", "mail.thread.read", &[3], returns(10)),
+            step("org.bardo.Mail", "mail.thread.read", &[3], returns(10)),
             reader("summarise", &[10], returns(11)),
         ]
     }
@@ -262,7 +262,7 @@ mod tests {
             value: None,
             undo: None,
         };
-        steps.push(step("org.quire.Files", "files.file.create", &[11], made));
+        steps.push(step("org.bardo.Files", "files.file.create", &[11], made));
         assert!(!viewed(steps, vec![]).contains("Ready to show"));
     }
 

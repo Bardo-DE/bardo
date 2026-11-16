@@ -1,4 +1,4 @@
-//! The administrator's floor file: `/etc/quire/docket-floor.toml`. A missing file is no floor. A
+//! The administrator's floor file: `/etc/bardo/actions-floor.toml`. A missing file is no floor. A
 //! file that exists and does not read is an error that stops the daemon, never a silent skip: a
 //! floor the daemon ignored would leave the machine looser than its administrator meant.
 //!
@@ -9,7 +9,7 @@ use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
 /// Where the floor is on a real machine.
-pub const FLOOR_FILE: &str = "/etc/quire/docket-floor.toml";
+pub const FLOOR_FILE: &str = "/etc/bardo/actions-floor.toml";
 
 /// Why the floor file could not be used.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

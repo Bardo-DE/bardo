@@ -1,4 +1,4 @@
-//! `org.quire.Spaces1` at `/org/quire/Spaces1`, on accountd's connection: the registry of
+//! `org.bardo.Spaces1` at `/org/bardo/Spaces1`, on accountd's connection: the registry of
 //! desktop-wide Spaces, the ones an app's own Space can link to (account-core `space`).
 //!
 //! Who may call: any identified app may `List`; `Create` an app, Settings or the shell (never an
@@ -13,9 +13,9 @@ use account_dbus_macros::bus_interface;
 /// The interface, written once. `#[bus_interface]` makes [`SpacesProxy`] for its callers from this
 /// trait, [`SpacesServer`] for the daemon to implement and [`SpacesServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Spaces1",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Spaces1"
+    interface = "org.bardo.Spaces1",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Spaces1"
 )]
 pub trait Spaces {
     /// Every desktop-wide Space: its id, then `name` (`s`), `look` (`s`, opaque, as `Create` or

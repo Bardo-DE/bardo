@@ -22,11 +22,11 @@
 #
 # What goes where (system install; --user puts the same in your own folders, see --prefix):
 #   PREFIX/libexec/quire/memoryd         the daemon
-#   PREFIX/lib/systemd/user/             memoryd.service, pointed at the prefix, and
-#                                        memoryd.service.d/sandbox.conf, its protections
+#   PREFIX/lib/systemd/user/             bardo-memoryd.service, pointed at the prefix, and
+#                                        bardo-memoryd.service.d/sandbox.conf, its protections
 #   PREFIX/share/dbus-1/services/        the activation file; interfaces/ has the interface XML
 #   PREFIX/share/quire/settings/         the Settings schema
-#   SYSCONFDIR/quire/memory-callers.toml which units may call memoryd. It is the machine's security
+#   SYSCONFDIR/quire/memoryd-callers.toml which units may call memoryd. It is the machine's security
 #                                        table: always replaced, reset on every install. Needs root;
 #                                        memoryd reads it at start, so restart it after
 set -euo pipefail
@@ -54,11 +54,11 @@ extra_build_tools() {
 }
 
 install_rest() {
-  put_unit "$ROOT/dbus/memoryd.service"
-  put 644 "$ROOT/dbus/org.quire.Memory1.service" "$SHARE/dbus-1/services/org.quire.Memory1.service" unit
-  put 644 "$ROOT/dbus/org.quire.Memory1.xml" "$SHARE/dbus-1/interfaces/org.quire.Memory1.xml" copy
+  put_unit "$ROOT/dbus/bardo-memoryd.service"
+  put 644 "$ROOT/dbus/org.bardo.Memory1.service" "$SHARE/dbus-1/services/org.bardo.Memory1.service" unit
+  put 644 "$ROOT/dbus/org.bardo.Memory1.xml" "$SHARE/dbus-1/interfaces/org.bardo.Memory1.xml" copy
   put_tree 644 "$ROOT/memory-settings/schema" "$SHARE/quire/settings"
-  install_callers "$ROOT/dbus/memory-callers.toml" memory-callers.toml
+  install_callers "$ROOT/dbus/memoryd-callers.toml" memoryd-callers.toml
 }
 
 # memoryd keeps its keys in the person's password store; without one a Space cannot open.
@@ -221,8 +221,8 @@ priv() {
 }
 
 # ---- text rewrites ----
-rewrite_exec() { # the shipped /usr/libexec/quire is now under the prefix
-  sed -E -e "s|^(ExecStart=)/usr/libexec/quire/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/quire/|\1$LIBEXEC/|"
+rewrite_exec() { # the shipped /usr/libexec/bardo is now under the prefix
+  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$LIBEXEC/|"
 }
 render() { # kind source -> text on stdout
   case "$1" in

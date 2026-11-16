@@ -16,7 +16,7 @@ Super while keycap runs.
 ```
 
 This prints every command and runs none. `--desktop plasma` installs Plasma's shortcut set as
-`/etc/keycap/keycap.toml` if you have none (it never overwrites yours). `--plasma-focus` installs
+`/etc/bardo/key-remap/key-remap.toml` if you have none (it never overwrites yours). `--plasma-focus` installs
 the focus feed, which tells keycap when a terminal has focus. **Do not run keycap without it:
 Cmd+C in Konsole would be Ctrl+C.** It needs `python3-gobject` (Fedora: `sudo dnf install
 python3-gobject`).
@@ -27,14 +27,14 @@ python3-gobject`).
 ./install.sh --desktop plasma --plasma-focus
 ```
 
-Toshy is not touched. Note that `/etc/keycap/keycap.toml` is the machine file: every session
+Toshy is not touched. Note that `/etc/bardo/key-remap/key-remap.toml` is the machine file: every session
 shares it, so it holds the Plasma shortcuts (Cmd+Space is KRunner, Cmd+H minimises,
 Cmd+Shift+3/4 are Spectacle). If you also log in to a desktop that forwards
 `~/.config/keycap/keycap.toml` (sill does), that desktop's rules go in your own file, which
 overrides the machine file in that session only; see
 [personal-config.md](personal-config.md#which-file-when-you-use-more-than-one-desktop).
 
-Then add your own settings to `/etc/keycap/keycap.toml` (`sudoedit`; changes apply on save): the
+Then add your own settings to `/etc/bardo/key-remap/key-remap.toml` (`sudoedit`; changes apply on save): the
 keyboard layout and, if Toshy made Caps Lock switch your input
 method, the Caps Lock rules. Both are explained in [personal-config.md](personal-config.md).
 
@@ -52,7 +52,7 @@ keycap: running
 ```
 
 `keycap status` exits 1 until a keyboard is grabbed; that is not an error here. Also check that
-`systemctl status keycap` and `systemctl --user status keycap-focus` are active.
+`systemctl status keycap` and `systemctl --user status bardo-key-remap-focus` are active.
 
 ## 4. Switch
 
@@ -111,7 +111,7 @@ nohup ~/.local/bin/toshy-tray >/dev/null 2>&1 &
 To pause keycap without removing it:
 
 ```bash
-sudo systemctl disable --now keycap.service
+sudo systemctl disable --now bardo-key-remap.service
 systemctl --user enable --now toshy-config.service toshy-kwin-dbus.service toshy-session-monitor.service
 ```
 
@@ -120,7 +120,7 @@ systemctl --user enable --now toshy-config.service toshy-kwin-dbus.service toshy
 | You see | What to do |
 | --- | --- |
 | `held by another remapper` | Stop the other remapper (`pgrep -a xwaykeyz`), then `sudo systemctl restart keycap` |
-| Cmd+C in Konsole interrupts | The focus feed is not reaching keycap: check `systemctl --user status keycap-focus`, click another window, and make sure the KWin script is enabled in System Settings, Window Management, KWin Scripts |
+| Cmd+C in Konsole interrupts | The focus feed is not reaching keycap: check `systemctl --user status bardo-key-remap-focus`, click another window, and make sure the KWin script is enabled in System Settings, Window Management, KWin Scripts |
 | Cmd and Option swapped | Add the `[[device]]` layout entry, with the keyboard's switch on Mac |
 | `cannot connect` | `systemctl status keycap`, `journalctl -u keycap -b` |
 | No keyboard listed | A Bluetooth keyboard is asleep; wake it |

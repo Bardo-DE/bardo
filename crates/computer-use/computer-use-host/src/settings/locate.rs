@@ -1,4 +1,4 @@
-//! Where the settings file is: `$XDG_CONFIG_HOME/cua/settings.toml`, then each of
+//! Where the settings file is: `$XDG_CONFIG_HOME/computer-use/settings.toml`, then each of
 //! `$XDG_CONFIG_DIRS` (design/22 section 2). The first file that reads wins.
 
 use super::read::{Fallback, Loaded, Why, read};

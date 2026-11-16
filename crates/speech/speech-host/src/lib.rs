@@ -8,7 +8,7 @@
 //! nothing to disk: audio lives in memory for the utterance.
 //!
 //! This crate has no engine and no native code, so the gate tests the whole loop over a
-//! [`Recognizer`] seam. The sherpa-onnx recognizer and the `speech-host` binary live in the
+//! [`Recognizer`] seam. The sherpa-onnx recognizer and the `bardo-speech-host` binary live in the
 //! excluded sibling crate `speech-host-sherpa`.
 
 mod args;

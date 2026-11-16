@@ -26,7 +26,7 @@ fn admit_table() {
     let default_thing = Retention::WhileSourceExists;
     let never_mail = rules(vec![named(
         "r-never",
-        rule(RuleScope::App(app("org.quire.Mail")), RememberMode::Never),
+        rule(RuleScope::App(app("org.bardo.Mail")), RememberMode::Never),
     )]);
 
     // (name, record, rules, state, marks, expected)
@@ -102,7 +102,7 @@ fn admit_table() {
             rules(vec![]),
             SpaceState::Open,
             Marks {
-                things: [thing("org.quire.Mail", "mail.thread", "7f3a")].into(),
+                things: [thing("org.bardo.Mail", "mail.thread", "7f3a")].into(),
             },
             Admission::Drop(DropReason::ThingMarked),
         ),
@@ -115,9 +115,9 @@ fn admit_table() {
 #[test]
 fn the_most_specific_scope_wins_and_ties_go_to_the_strictest_mode() {
     let mail = record(archived_body(), user());
-    let this_thing = RuleScope::Thing(thing("org.quire.Mail", "mail.thread", "7f3a"));
+    let this_thing = RuleScope::Thing(thing("org.bardo.Mail", "mail.thread", "7f3a"));
     let kind = RuleScope::Kind(KindPattern::parse("mail.*").expect("pattern"));
-    let app_scope = RuleScope::App(app("org.quire.Mail"));
+    let app_scope = RuleScope::App(app("org.bardo.Mail"));
     let open = SpaceState::Open;
     let marks = Marks::default();
 
@@ -144,7 +144,7 @@ fn the_most_specific_scope_wins_and_ties_go_to_the_strictest_mode() {
         named(
             "r-b",
             rule(
-                RuleScope::App(app("org.quire.Mail")),
+                RuleScope::App(app("org.bardo.Mail")),
                 RememberMode::HeaderOnly,
             ),
         ),
@@ -213,7 +213,7 @@ fn globs() {
 
 #[test]
 fn a_terminals_events_are_audit_class_like_the_companions() {
-    // quire-do cannot tell the person from an agent typing in the terminal: what it does is
+    // bardo-do cannot tell the person from an agent typing in the terminal: what it does is
     // audited, so a pause or a Never rule keeps the header and never drops it.
     let acted: Vec<(&str, Actor, bool)> = vec![
         ("terminal", Actor::Cli, true),
@@ -255,7 +255,7 @@ fn a_terminal_is_no_app_so_an_app_rule_matches_it_only_through_its_things() {
     let rec = record(file_body(FileWhy::Unexplained), Actor::Cli);
     let never_mail = rules(vec![named(
         "r-mail",
-        rule(RuleScope::App(app("org.quire.Mail")), RememberMode::Never),
+        rule(RuleScope::App(app("org.bardo.Mail")), RememberMode::Never),
     )]);
     let standard = RuleSet::standard();
     let open = SpaceState::Open;
@@ -342,7 +342,7 @@ fn withheld_names_why_a_record_would_not_be_kept_whole_audit_class_or_not() {
         );
     }
     let marked = Marks {
-        things: std::collections::BTreeSet::from([thing("org.quire.Mail", "mail.thread", "7f3a")]),
+        things: std::collections::BTreeSet::from([thing("org.bardo.Mail", "mail.thread", "7f3a")]),
     };
     assert_eq!(
         withheld(&mail, &plain, &SpaceState::Open, &marked),

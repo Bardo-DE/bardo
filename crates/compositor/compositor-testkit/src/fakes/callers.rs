@@ -1,4 +1,4 @@
-//! Callers of `org.quire.Compositor1` as the bus thread proved them: the app and the role of
+//! Callers of `org.bardo.Compositor1` as the bus thread proved them: the app and the role of
 //! the caller-table row they matched. A test says who is calling instead of building a process
 //! table; the proof itself (the process, its image, its unit) is `compositor-ipc`'s tests.
 
@@ -16,7 +16,7 @@ pub fn proven(app: &str, role: &str) -> Proven {
 /// The shell (sill).
 pub fn shell() -> Proven {
     Proven::new(
-        AppKey::new("org.quire.Shell").expect("an app key"),
+        AppKey::new("org.bardo.Shell").expect("an app key"),
         roles::SHELL,
     )
 }
@@ -24,7 +24,7 @@ pub fn shell() -> Proven {
 /// The agent tier (cuad).
 pub fn agent_tier() -> Proven {
     Proven::new(
-        AppKey::new("org.quire.Agent").expect("an app key"),
+        AppKey::new("org.bardo.Agent").expect("an app key"),
         roles::AGENT_TIER,
     )
 }
@@ -32,7 +32,7 @@ pub fn agent_tier() -> Proven {
 /// The portal backend (transom).
 pub fn portal() -> Proven {
     Proven::new(
-        AppKey::new("org.quire.Portal").expect("an app key"),
+        AppKey::new("org.bardo.Portal").expect("an app key"),
         roles::PORTAL,
     )
 }
@@ -40,7 +40,7 @@ pub fn portal() -> Proven {
 /// Some other desktop program (a role that is no connection's).
 pub fn companion() -> Proven {
     Proven::new(
-        AppKey::new("org.quire.Companion").expect("an app key"),
+        AppKey::new("org.bardo.Companion").expect("an app key"),
         roles::COMPANION,
     )
 }

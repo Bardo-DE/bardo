@@ -1,10 +1,10 @@
-//! `org.quire.Updates1.Error.<Variant>`: why `Install(version)` was refused, as a caller sees it.
+//! `org.bardo.Updates1.Error.<Variant>`: why `Install(version)` was refused, as a caller sees it.
 
 use crate::problem::Problem;
 
 /// The errors `Install(version)` returns. Each carries the plain sentence for the person.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Updates1.Error")]
+#[zbus(prefix = "org.bardo.Updates1.Error")]
 pub enum InstallError {
     /// The bus's own failures.
     #[zbus(error)]

@@ -24,15 +24,15 @@ use provenance::{SpaceId, UnixSeconds};
 use serde_json::json;
 use std::sync::Arc;
 
-const ARCHIVE: &str = "org_quire_Mail-mail_thread_archive";
-const READ: &str = "org_quire_Mail-mail_thread_read";
+const ARCHIVE: &str = "org_bardo_Mail-mail_thread_archive";
+const READ: &str = "org_bardo_Mail-mail_thread_read";
 
 fn work() -> SpaceId {
     SpaceId::parse("work").expect("space")
 }
 
 fn thread(key: &str) -> serde_json::Value {
-    json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": key })
+    json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
 fn mail() -> FakeMail {
@@ -68,7 +68,7 @@ fn parts<R>(
 /// The policy a writer drafts for "archive the digest": the archive action, up to an undoable write.
 fn archive_draft() -> String {
     json!({
-        "actions": ["org.quire.Mail mail.thread.archive"], "apps": [], "kinds": [],
+        "actions": ["org.bardo.Mail mail.thread.archive"], "apps": [], "kinds": [],
         "ceiling": "undoable_write", "max_count": 1,
         "recipients": [], "destinations": [], "paths": [],
     })

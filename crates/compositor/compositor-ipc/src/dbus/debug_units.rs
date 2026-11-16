@@ -1,5 +1,5 @@
 //! Test unit overrides (feature `debug-inject` only): a table that says "the peer running the
-//! program `sill` is unit `sill.service`", for a jailed desktop scenario that has no systemd and
+//! program `sill` is unit `bardo-shell.service`", for a jailed desktop scenario that has no systemd and
 //! so no unit manager to vouch for a unit. [`DebugPeerUnits`] is a [`CallerCheck`] that makes a
 //! matching peer stand as the role of the unit the table names, and asks the real check about
 //! every other. This file is compiled only under `debug-inject`; a release build has no such
@@ -30,7 +30,7 @@ pub enum PeerMatch {
 pub struct PeerUnitRule {
     /// Which peers.
     pub who: PeerMatch,
-    /// The unit they are taken to run in, e.g. `sill.service`.
+    /// The unit they are taken to run in, e.g. `bardo-shell.service`.
     pub unit: String,
 }
 
@@ -58,7 +58,7 @@ impl PeerUnitTable {
     /// ```
     /// use compositor_ipc::dbus::{PeerMatch, PeerUnitTable};
     ///
-    /// let table = PeerUnitTable::parse("sill=sill.service,4242=cuad.service").unwrap();
+    /// let table = PeerUnitTable::parse("sill=bardo-shell.service,4242=bardo-computer-use.service").unwrap();
     /// assert_eq!(table.rules().len(), 2);
     /// assert_eq!(table.rules()[0].who, PeerMatch::Exe("sill".to_owned()));
     /// assert_eq!(table.rules()[1].who, PeerMatch::Pid(4242));
@@ -136,9 +136,9 @@ impl ProcComm {
 /// jailed scenario needs to be.
 fn role_of_unit(unit: &str) -> Option<RoleName> {
     match unit {
-        "sill.service" => Some(roles::SHELL),
-        "cuad.service" => Some(roles::AGENT_TIER),
-        "transom.service" => Some(roles::PORTAL),
+        "bardo-shell.service" => Some(roles::SHELL),
+        "bardo-computer-use.service" => Some(roles::AGENT_TIER),
+        "bardo-portal.service" => Some(roles::PORTAL),
         _ => None,
     }
 }
@@ -147,7 +147,7 @@ fn role_of_unit(unit: &str) -> Option<RoleName> {
 /// way (nothing real stands behind it).
 fn standing_of_unit(unit: &str) -> Option<Standing> {
     Some(Standing::Service {
-        app: AppKey::new("org.quire.TestOnly").ok()?,
+        app: AppKey::new("org.bardo.TestOnly").ok()?,
         role: role_of_unit(unit)?,
         proof: Proof::Full,
         pin: Pinning::Reopened,
@@ -208,17 +208,17 @@ mod tests {
 
     #[test]
     fn the_table_parses_names_and_pids_and_refuses_the_rest() {
-        let ok = PeerUnitTable::parse(" sill = sill.service , 7=cuad.service,, ").expect("ok");
+        let ok = PeerUnitTable::parse(" sill = bardo-shell.service , 7=bardo-computer-use.service,, ").expect("ok");
         assert_eq!(
             ok.rules(),
             [
                 PeerUnitRule {
                     who: PeerMatch::Exe("sill".to_owned()),
-                    unit: "sill.service".to_owned()
+                    unit: "bardo-shell.service".to_owned()
                 },
                 PeerUnitRule {
                     who: PeerMatch::Pid(7),
-                    unit: "cuad.service".to_owned()
+                    unit: "bardo-computer-use.service".to_owned()
                 },
             ]
         );
@@ -247,9 +247,9 @@ mod tests {
 
     #[test]
     fn a_rule_matches_by_pid_or_name_first_match_wins_and_the_comm_is_cut() {
-        let table = PeerUnitTable::parse("2=cuad.service,sill=sill.service").expect("a table");
-        assert_eq!(table.unit_of(2, Some("sill")), Some("cuad.service"));
-        assert_eq!(table.unit_of(1, Some("sill")), Some("sill.service"));
+        let table = PeerUnitTable::parse("2=bardo-computer-use.service,sill=bardo-shell.service").expect("a table");
+        assert_eq!(table.unit_of(2, Some("sill")), Some("bardo-computer-use.service"));
+        assert_eq!(table.unit_of(1, Some("sill")), Some("bardo-shell.service"));
         assert_eq!(table.unit_of(3, Some("other")), None);
         assert_eq!(table.unit_of(3, None), None);
         assert_eq!(comm_cut("a-very-long-program-name"), "a-very-long-pro");
@@ -258,9 +258,9 @@ mod tests {
     #[test]
     fn a_test_unit_stands_as_the_role_of_the_desktops_own_unit_and_no_other() {
         for (unit, role) in [
-            ("sill.service", roles::SHELL),
-            ("cuad.service", roles::AGENT_TIER),
-            ("transom.service", roles::PORTAL),
+            ("bardo-shell.service", roles::SHELL),
+            ("bardo-computer-use.service", roles::AGENT_TIER),
+            ("bardo-portal.service", roles::PORTAL),
         ] {
             assert!(
                 matches!(standing_of_unit(unit), Some(Standing::Service { role: got, .. }) if got == role),

@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Request`: one object per sheet shown, as portals do. `Response`
+//! `org.bardo.Accounts1.Request`: one object per sheet shown, as portals do. `Response`
 //! carries 0 (done), 1 (cancelled) or 2 (other), and the results by name.
 
 use crate::Details;
@@ -7,8 +7,8 @@ use account_dbus_macros::bus_interface;
 /// The interface, written once. `#[bus_interface]` makes [`RequestProxy`] for its callers from this
 /// trait, [`RequestServer`] for the daemon to implement and [`RequestServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Accounts1.Request",
-    default_service = "org.quire.Accounts1"
+    interface = "org.bardo.Accounts1.Request",
+    default_service = "org.bardo.Accounts1"
 )]
 pub trait Request {
     /// Closes the sheet; no `Response` follows.

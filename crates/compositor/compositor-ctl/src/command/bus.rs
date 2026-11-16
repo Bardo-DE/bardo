@@ -1,12 +1,12 @@
-//! The client side of `org.quire.Casement.Debug1` on the jail's private bus.
+//! The client side of `org.bardo.Compositor.Debug1` on the jail's private bus.
 
 use super::plan::Call;
 use std::time::Duration;
 use zbus::{Connection, Proxy};
 
-const DESTINATION: &str = "org.quire.Casement.Debug1";
-const PATH: &str = "/org/quire/Casement/Debug1";
-const INTERFACE: &str = "org.quire.Casement.Debug1";
+const DESTINATION: &str = "org.bardo.Compositor.Debug1";
+const PATH: &str = "/org/bardo/Compositor/Debug1";
+const INTERFACE: &str = "org.bardo.Compositor.Debug1";
 /// Slack on top of a wait's own bound: the call itself must come back before this runs out.
 const WAIT_SLACK: Duration = Duration::from_secs(15);
 /// How long any other call may take. The loop answers in a frame; this only catches a hang.

@@ -6,8 +6,8 @@ use computer_use_action::{Coord, PixelFormat, Point, Rect, Size, WindowSpace};
 use std::collections::BTreeMap;
 use crate::key::{ObjectKey as Key, Rounds, SyncTag};
 use super::lease::LeaseRec;
-use desktop_protocols::client::quire_agent_v1::quire_agent_manager_v1::{
-    self, QuireAgentManagerV1,
+use desktop_protocols::client::bardo_agent_v1::bardo_agent_manager_v1::{
+    self, BardoAgentManagerV1,
 };
 use wayland_client::protocol::wl_buffer::{self, WlBuffer};
 use wayland_client::protocol::wl_callback::{self, WlCallback};
@@ -102,7 +102,7 @@ pub(crate) struct CapState {
     sources: Option<ExtForeignToplevelImageCaptureSourceManagerV1>,
     pub(super) copy: Option<ExtImageCopyCaptureManagerV1>,
     shm: Option<WlShm>,
-    pub(super) agent: Option<QuireAgentManagerV1>,
+    pub(super) agent: Option<BardoAgentManagerV1>,
     pub(super) leases: BTreeMap<Key, LeaseRec>,
     pub(super) toplevels: BTreeMap<Key, Top>,
     pub sessions: BTreeMap<Key, SessionRec>,
@@ -248,7 +248,7 @@ impl Dispatch<WlRegistry, ()> for CapState {
             "ext_image_copy_capture_manager_v1" => {
                 state.copy = Some(registry.bind(name, 1, qh, ()))
             }
-            "quire_agent_manager_v1" => state.agent = Some(registry.bind(name, 1, qh, ())),
+            "bardo_agent_manager_v1" => state.agent = Some(registry.bind(name, 1, qh, ())),
             "wl_shm" => state.shm = Some(registry.bind(name, 1, qh, ())),
             _ => {}
         }
@@ -338,7 +338,7 @@ ignore_events! {
     ExtImageCaptureSourceV1, ext_image_capture_source_v1::Event, ();
     ExtForeignToplevelImageCaptureSourceManagerV1, ext_foreign_toplevel_image_capture_source_manager_v1::Event, ();
     ExtImageCopyCaptureManagerV1, ext_image_copy_capture_manager_v1::Event, ();
-    QuireAgentManagerV1, quire_agent_manager_v1::Event, ();
+    BardoAgentManagerV1, bardo_agent_manager_v1::Event, ();
 }
 
 impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for CapState {

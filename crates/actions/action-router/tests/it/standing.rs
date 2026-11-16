@@ -270,7 +270,7 @@ async fn the_control_surface_lists_and_revokes() {
 }
 
 pub(crate) fn files_app() -> account_core::AppName {
-    app("org.quire.Files")
+    app("org.bardo.Files")
 }
 
 pub(crate) fn move_to(destination: &str) -> CallRequest {

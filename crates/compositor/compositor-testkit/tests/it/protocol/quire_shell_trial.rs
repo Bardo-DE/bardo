@@ -1,4 +1,4 @@
-//! `quire_shell_v1` version 6, the display trial: a program changes the displays through
+//! `bardo_shell_v1` version 6, the display trial: a program changes the displays through
 //! `zwlr_output_manager_v1`, the shell is asked whether to keep the change, and the previous
 //! setup comes back on Revert or when the (virtual) time runs out. The shell's own changes are
 //! never asked; a shell that binds mid-trial is asked with the time left; a shell older than
@@ -12,7 +12,7 @@ use compositor_testclient::manage::output_management::{
     ConfigOutcome, ConfigPurpose, OutputManager, Properties,
 };
 use compositor_testkit::Fixture;
-use desktop_protocols::client::quire_shell_v1::quire_shell_v1 as wire;
+use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1 as wire;
 use desktop_protocols::vocab::TrialAnswer;
 use std::time::Duration;
 use ui_core::geometry::scale::Scale;
@@ -152,7 +152,7 @@ fn an_answer_that_comes_too_soon_is_the_protocol_error_and_the_trial_stays() {
     fixture.advance(Duration::from_millis(100));
     shell.answer_trial_at_once(&mut fixture, trial, TrialAnswer::Keep);
     let error = fixture.client(shell.id).protocol_error().expect("too soon");
-    assert_eq!(error.interface, "quire_shell_v1");
+    assert_eq!(error.interface, "bardo_shell_v1");
     assert_eq!(error.code, wire::Error::AnsweredTooSoon as u32);
     assert!(shell.trial_ends().is_empty(), "the trial is still open");
 }

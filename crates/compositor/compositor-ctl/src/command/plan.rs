@@ -7,7 +7,7 @@ use std::time::Duration;
 /// How long `debug wait` waits (session time) when `--timeout` is not given.
 pub const DEFAULT_WAIT: Duration = Duration::from_secs(10);
 
-/// One call on `org.quire.Casement.Debug1`.
+/// One call on `org.bardo.Compositor.Debug1`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Call {
     /// `Inject(lines)`; no lines named means they come on stdin.

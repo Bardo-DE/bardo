@@ -83,7 +83,7 @@ def canonical(event):
 
 
 def state_log_text():
-    base = os.environ.get("DESKTOP_SESSION_STATE") or os.path.join(os.environ.get("XDG_RUNTIME_DIR", ""), "desktop-session")
+    base = os.environ.get("BARDO_SESSION_STATE") or os.path.join(os.environ.get("XDG_RUNTIME_DIR", ""), "bardo-session")
     try:
         with open(os.path.join(base, "casement.log"), "rb") as handle:
             handle.seek(0, os.SEEK_END)

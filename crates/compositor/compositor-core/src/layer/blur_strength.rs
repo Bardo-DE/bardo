@@ -1,7 +1,7 @@
 //! How strongly the blur behind a layer surface frosts what lies under it.
 //!
 //! ext-background-effect carries no parameters, so a client cannot say how much; the shell
-//! role it was given through `quire_shell_v1` already says what the surface is, and that picks
+//! role it was given through `bardo_shell_v1` already says what the surface is, and that picks
 //! a strength here (the material of quire's design/03 section 17.3). A surface with no role
 //! (a client's own layer surface) gets [`BlurStrength::Regular`], today's one look. Pure; the
 //! renderer turns a strength into a look.

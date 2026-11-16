@@ -80,7 +80,7 @@ pub struct Opening {
     /// The directory an editor opened it in; none for a session no editor opened.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cwd: Option<Workspace>,
-    /// The terminal a `quire-do ask` conversation came from, which the companion that opened it
+    /// The terminal a `bardo-do ask` conversation came from, which the companion that opened it
     /// said; none for any other session, and for every log written before this field.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub started_from: Option<StartedFrom>,

@@ -97,7 +97,7 @@ pub enum Route {
     Click(i32),
 }
 
-/// How `item` is activated. `command` is the row's `x-quire-command-id` claim when it has one.
+/// How `item` is activated. `command` is the row's `x-bardo-command-id` claim when it has one.
 pub fn route_of(
     item: ItemKey,
     command: Option<&MenuCommand>,

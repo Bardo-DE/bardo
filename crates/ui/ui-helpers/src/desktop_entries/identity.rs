@@ -10,10 +10,10 @@ use crate::DesktopGroup;
 
 /// `X-Quire-WindowId=`: the `app_id` the app's windows carry.
 const WINDOW_ID_KEY: &str = "X-Quire-WindowId";
-/// `X-Quire-BusNames=`: a `;` list of the well-known names the app owns on the session bus.
-const BUS_NAMES_KEY: &str = "X-Quire-BusNames";
-/// `X-Quire-IntentsApp=`: the app name in the app's intents manifest.
-const INTENTS_APP_KEY: &str = "X-Quire-IntentsApp";
+/// `X-Bardo-BusNames=`: a `;` list of the well-known names the app owns on the session bus.
+const BUS_NAMES_KEY: &str = "X-Bardo-BusNames";
+/// `X-Bardo-IntentsApp=`: the app name in the app's intents manifest.
+const INTENTS_APP_KEY: &str = "X-Bardo-IntentsApp";
 /// `StartupWMClass=`: what a window id defaults to.
 const WM_CLASS_KEY: &str = "StartupWMClass";
 

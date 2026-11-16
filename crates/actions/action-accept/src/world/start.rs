@@ -93,7 +93,7 @@ impl World {
         let record = options.record.then(|| root.join("record.jsonl"));
         place(root, std::process::id(), Cgroup::Unit("sill"));
         write(
-            &root.join("config/quire/memory-callers.toml"),
+            &root.join("config/quire/memoryd-callers.toml"),
             MEMORY_CALLERS,
         );
         write(&root.join("data/quire/memory/spaces.toml"), SPACES);
@@ -117,7 +117,7 @@ impl World {
         }
 
         write(
-            &root.join("config/docket/settings.toml"),
+            &root.join("config/actions/settings.toml"),
             &settings_toml(options.acp),
         );
         copy_catalog(options.catalog.as_deref(), root);
@@ -141,10 +141,10 @@ impl World {
         if let Some(home) = &options.keys_home {
             home.seed(root).expect("the key home's records are copied");
         }
-        start("accountd", &binaries.accountd, "org.quire.Accounts1").await;
-        start("inferd", &binaries.inferd, "org.quire.Inference1").await;
-        start("memoryd", &binaries.memoryd, "org.quire.Memory1").await;
-        start("intentd", &binaries.intentd, "org.quire.Intents1").await;
+        start("accountd", &binaries.accountd, "org.bardo.Accounts1").await;
+        start("inferd", &binaries.inferd, "org.bardo.Inference1").await;
+        start("memoryd", &binaries.memoryd, "org.bardo.Memory1").await;
+        start("intentd", &binaries.intentd, "org.bardo.Intents1").await;
 
         // The app's provider: its own connection, its own name, the manifest's wire.
         let provider_connection =
@@ -192,8 +192,8 @@ impl World {
             }
         };
 
-        start("readerd", &binaries.readerd, "org.quire.Reader1").await;
-        start("companiond", &binaries.companiond, "org.quire.Companion1").await;
+        start("readerd", &binaries.readerd, "org.bardo.Reader1").await;
+        start("companiond", &binaries.companiond, "org.bardo.Companion1").await;
         World {
             daemons,
             sheet,

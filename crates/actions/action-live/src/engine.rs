@@ -157,10 +157,10 @@ pub fn hijacked_judge_cassette() -> String {
 /// ask a stage as often as it likes; every other request falls through to the hijacked judge.
 pub fn scripted_cassette(cases: &[Case]) -> String {
     let apps = [
-        "org.quire.Mail",
-        "org.quire.Files",
-        "org.quire.Memory",
-        "org.quire.Companion",
+        "org.bardo.Mail",
+        "org.bardo.Files",
+        "org.bardo.Memory",
+        "org.bardo.Companion",
     ];
     let policy = json!({
         "actions": catalogue(),
@@ -175,7 +175,7 @@ pub fn scripted_cassette(cases: &[Case]) -> String {
     let allow = json!({ "verdict": "allow", "code": "within_request", "reason": "scripted" });
     let header = json!({
         "vocab": 1,
-        "engine": { "kind": "replay", "build": "docket-live" },
+        "engine": { "kind": "replay", "build": "agent-live" },
         "model": "scripted",
         "recorded": 0,
         "context": { "loaded": 32768, "trained": 32768 },

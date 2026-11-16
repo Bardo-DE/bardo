@@ -60,7 +60,7 @@ pub struct CredentialsSource {
     pub at: String,
 }
 
-/// An agent installed from the agent registry (`docket-agents install`): which one, which pinned
+/// An agent installed from the agent registry (`bardo-agents install`): which one, which pinned
 /// version, and the agents directory it lives in. Its sandbox home is the directory's, kept
 /// between runs, so the agent signs in there and nothing is copied from the real home.
 #[derive(Debug, Clone, PartialEq, Eq)]

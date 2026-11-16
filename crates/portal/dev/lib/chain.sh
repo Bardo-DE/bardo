@@ -1,28 +1,28 @@
 # Sourceable: starts and stops the jailed portal chain on a private bus:
 #   pipewire, wireplumber, transom, xdg-permission-store, xdg-desktop-portal (which finds transom
-#   through dist/quire.portal).
+#   through dist/bardo.portal).
 # Everything runs in the jail's scratch; nothing touches the real session. Callers have already
 # run require_jail. Owner: P2-Z-tr (skeleton), the P2-T lanes fill the details they need.
 #
-# State lives in $TRANSOM_STATE (default $XDG_STATE_HOME/transom-dev/<run>): an `env` file with
+# State lives in $BARDO_PORTAL_STATE (default $XDG_STATE_HOME/transom-dev/<run>): an `env` file with
 # the exports and one pid per line. Processes are stopped by pid, never by name.
 
-# Where binaries come from. TRANSOM_BIN: the built transom; the system ones are looked up on PATH.
+# Where binaries come from. BARDO_PORTAL_BIN: the built transom; the system ones are looked up on PATH.
 #
-# TRANSOM_DEV_CALLERS (optional): a rows file of the person's own, passed on to transom. The jail has
-# no /etc/quire/desktop-callers.toml, so without it every call from xdg-desktop-portal is refused as
+# BARDO_PORTAL_DEV_CALLERS (optional): a rows file of the person's own, passed on to transom. The jail has
+# no /etc/bardo/desktop-callers.toml, so without it every call from xdg-desktop-portal is refused as
 # an unknown caller. The file names the stand-ins ([[peer]] rows with app, role and exe; for the
 # frontend app "org.freedesktop.portal.Desktop", role "portal_frontend", exe
 # ["/usr/libexec/xdg-desktop-portal"]; for the shell role "shell"). It must be a plain file of the
 # person's, not writable by group or others. Only a transom built with `--features debug`
 # (`cargo build -p portal-daemon --features debug`) reads it; a release build has no such variable and
-# refuses the frontend. TRANSOM_BIN must point at the debug-feature build when this is set.
+# refuses the frontend. BARDO_PORTAL_BIN must point at the debug-feature build when this is set.
 transom_tool() {
   local name=$1
   case "$name" in
     transom)
-      if [ -n "${TRANSOM_BIN:-}" ] && [ -x "$TRANSOM_BIN" ]; then echo "$TRANSOM_BIN"; return 0; fi
-      echo "chain.sh: set TRANSOM_BIN to the built transom binary" >&2; return 3 ;;
+      if [ -n "${BARDO_PORTAL_BIN:-}" ] && [ -x "$BARDO_PORTAL_BIN" ]; then echo "$BARDO_PORTAL_BIN"; return 0; fi
+      echo "chain.sh: set BARDO_PORTAL_BIN to the built transom binary" >&2; return 3 ;;
     xdg-desktop-portal)
       for p in /usr/libexec/xdg-desktop-portal /usr/lib/xdg-desktop-portal /usr/libexec/xdg-desktop-portal; do
         if [ -x "$p" ]; then echo "$p"; return 0; fi
@@ -41,7 +41,7 @@ transom_tool() {
 }
 
 transom_state_dir() {
-  echo "${TRANSOM_STATE:?chain.sh: TRANSOM_STATE is not set}"
+  echo "${BARDO_PORTAL_STATE:?chain.sh: BARDO_PORTAL_STATE is not set}"
 }
 
 # start_chain [--env FILE]: with --env, join the compositor session that env file describes (its
@@ -57,11 +57,11 @@ start_chain() {
     esac
   done
   : "${XDG_RUNTIME_DIR:?start_chain: XDG_RUNTIME_DIR is not set}"
-  if [ -z "${TRANSOM_STATE:-}" ]; then
-    TRANSOM_STATE="${XDG_STATE_HOME:?start_chain: XDG_STATE_HOME is not set}/transom-dev/$$"
-    export TRANSOM_STATE
+  if [ -z "${BARDO_PORTAL_STATE:-}" ]; then
+    BARDO_PORTAL_STATE="${XDG_STATE_HOME:?start_chain: XDG_STATE_HOME is not set}/transom-dev/$$"
+    export BARDO_PORTAL_STATE
   fi
-  state=$TRANSOM_STATE
+  state=$BARDO_PORTAL_STATE
   mkdir -p "$state/portals" "$XDG_CONFIG_HOME/xdg-desktop-portal"
 
   local pw wp tr ps xdp
@@ -83,38 +83,38 @@ start_chain() {
     echo "TRANSOM_BUS_PID=$PRIVATE_BUS_PID" >> "$state/env"
   fi
 
-  cp "$root/dist/quire.portal" "$state/portals/quire.portal"
-  cp "$root/dist/quire-portals.conf" "$XDG_CONFIG_HOME/xdg-desktop-portal/quire-portals.conf"
-  export XDG_CURRENT_DESKTOP=quire XDG_DESKTOP_PORTAL_DIR="$state/portals"
+  cp "$root/dist/bardo.portal" "$state/portals/bardo.portal"
+  cp "$root/dist/bardo-portals.conf" "$XDG_CONFIG_HOME/xdg-desktop-portal/bardo-portals.conf"
+  export XDG_CURRENT_DESKTOP=bardo XDG_DESKTOP_PORTAL_DIR="$state/portals"
 
-  "$pw" >"$state/pipewire.log" 2>&1 & echo "TRANSOM_PIPEWIRE_PID=$!" >> "$state/env"
+  "$pw" >"$state/pipewire.log" 2>&1 & echo "BARDO_PORTAL_PIPEWIRE_PID=$!" >> "$state/env"
   # The linking and node topics at info level: the log then says which node got a session item and
   # why a consumer's target was or was not found (a screencast check reads it).
-  WIREPLUMBER_DEBUG=2,s-linking:4,s-node:4 "$wp" >"$state/wireplumber.log" 2>&1 & echo "TRANSOM_WIREPLUMBER_PID=$!" >> "$state/env"
+  WIREPLUMBER_DEBUG=2,s-linking:4,s-node:4 "$wp" >"$state/wireplumber.log" 2>&1 & echo "BARDO_PORTAL_WIREPLUMBER_PID=$!" >> "$state/env"
   # transom stops at start, saying why in its log, when the rows file cannot be taken.
-  if [ -n "${TRANSOM_DEV_CALLERS:-}" ]; then
-    TRANSOM_DEV_CALLERS=$TRANSOM_DEV_CALLERS "$tr" >"$state/transom.log" 2>&1 & echo "TRANSOM_PID=$!" >> "$state/env"
+  if [ -n "${BARDO_PORTAL_DEV_CALLERS:-}" ]; then
+    BARDO_PORTAL_DEV_CALLERS=$BARDO_PORTAL_DEV_CALLERS "$tr" >"$state/transom.log" 2>&1 & echo "BARDO_PORTAL_PID=$!" >> "$state/env"
   else
-    "$tr" >"$state/transom.log" 2>&1 & echo "TRANSOM_PID=$!" >> "$state/env"
+    "$tr" >"$state/transom.log" 2>&1 & echo "BARDO_PORTAL_PID=$!" >> "$state/env"
   fi
   # The frontend records the person's answers (Access, screen sharing) in the permission store and
   # gives up on the request when it cannot reach one; the private bus has no activation for it.
-  "$ps" --replace >"$state/permission-store.log" 2>&1 & echo "TRANSOM_PERMISSION_STORE_PID=$!" >> "$state/env"
+  "$ps" --replace >"$state/permission-store.log" 2>&1 & echo "BARDO_PORTAL_PERMISSION_STORE_PID=$!" >> "$state/env"
   # A host app is named to the frontend only when its app id has a desktop file the frontend can
   # find (org.freedesktop.host.portal.Registry.Register); the cast check registers as this one,
   # since a share is remembered only for an app with an identity.
   mkdir -p "$state/data/applications"
   printf '[Desktop Entry]\nType=Application\nName=Cast check\nExec=true\nNoDisplay=true\n' \
-    >"$state/data/applications/org.quire.CastCheck.desktop"
+    >"$state/data/applications/org.bardo.CastCheck.desktop"
   XDG_DATA_DIRS="$state/data:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}" \
-    "$xdp" >"$state/portal.log" 2>&1 & echo "TRANSOM_PORTAL_PID=$!" >> "$state/env"
+    "$xdp" >"$state/portal.log" 2>&1 & echo "BARDO_PORTAL_PORTAL_PID=$!" >> "$state/env"
   # `export` on each line: callers source this file in their own shell and start more clients
   # (a fake shell, a cast) that must find the same bus.
   {
     printf 'export DBUS_SESSION_BUS_ADDRESS=%q\n' "$DBUS_SESSION_BUS_ADDRESS"
-    echo "export XDG_CURRENT_DESKTOP=quire"
+    echo "export XDG_CURRENT_DESKTOP=bardo"
     printf 'export XDG_DESKTOP_PORTAL_DIR=%q\n' "$state/portals"
-    printf 'export TRANSOM_STATE=%q\n' "$state"
+    printf 'export BARDO_PORTAL_STATE=%q\n' "$state"
   } >> "$state/env"
 
   # Wait (up to 10 s) for the portal frontend to own its name.
@@ -133,7 +133,7 @@ stop_chain() {
   state=$(transom_state_dir) || return 0
   envfile=$state/env
   [ -f "$envfile" ] || return 0
-  for var in TRANSOM_PORTAL_PID TRANSOM_PERMISSION_STORE_PID TRANSOM_PID TRANSOM_WIREPLUMBER_PID TRANSOM_PIPEWIRE_PID TRANSOM_BUS_PID; do
+  for var in BARDO_PORTAL_PORTAL_PID BARDO_PORTAL_PERMISSION_STORE_PID BARDO_PORTAL_PID BARDO_PORTAL_WIREPLUMBER_PID BARDO_PORTAL_PIPEWIRE_PID TRANSOM_BUS_PID; do
     pid=$(sed -n "s/^$var=//p" "$envfile" | tail -n 1)
     if [ -n "$pid" ]; then kill "$pid" 2>/dev/null || true; fi
   done

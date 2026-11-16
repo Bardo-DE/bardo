@@ -1,4 +1,4 @@
-//! The colour picker: an app asks for one colour from the screen (`org.quire.Shell1.PickColor`,
+//! The colour picker: an app asks for one colour from the screen (`org.bardo.Shell1.PickColor`,
 //! the portal's `PickColor`), the person points at it with an eyedropper, and the answer is that
 //! pixel's colour (`Some`), or nothing when they cancel (`None`). Pure.
 //!

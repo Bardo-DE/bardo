@@ -460,11 +460,11 @@ async fn an_action_hidden_from_agents_is_denied_with_only_a_coarse_code() {
     ready(&router).await;
     let forget = CallRequest {
         action: ActionRef {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             name: provenance::ActionName::parse("memory.forget").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),
@@ -827,7 +827,7 @@ async fn an_app_undo_marks_the_journal() {
         .expect("ran");
     let id = router.state.lock().expect("lock").journal.entries()[0].id;
     let by = provenance::Actor::User {
-        via: app("org.quire.Mail"),
+        via: app("org.bardo.Mail"),
     };
     router.note_app_undo(id, by.clone());
     let st = router.state.lock().expect("lock");

@@ -1,4 +1,4 @@
-//! `slipway-health recover` or `slipway-health confirmed`: the privileged half of the health check.
+//! `bardo-updater-health recover` or `bardo-updater-health confirmed`: the privileged half of the health check.
 //!
 //! Started through polkit, with no password, by the session. It keeps a record only root can write,
 //! counts only what only root can see (the boot), and puts the previous release back when the current

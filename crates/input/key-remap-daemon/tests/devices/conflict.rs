@@ -10,7 +10,7 @@ const QUIET: Duration = Duration::from_millis(500);
 const RETRY_WITHIN: Duration = Duration::from_secs(20);
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn a_keyboard_another_program_grabbed_is_a_conflict_until_it_lets_go() {
     let scene = Scene::new("grab-conflict");
     let fake = ok(

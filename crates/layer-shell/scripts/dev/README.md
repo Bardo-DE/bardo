@@ -79,17 +79,17 @@ popup-keyboard, swipe; lock runs only there) runs a script against casement, our
 KWin. The script builds its demos outside the jail, then `lib/compositor.sh` re-executes it in
 `packaging/harness/jail.sh` (no GPU, no network, no `/dev/input`, no session), where casement's
 `dev/up.sh` starts `casement --backend headless` on a private bus and the script's input goes
-through `casementctl debug inject` (`lib/input.sh`; a superset of `fake-input.sh`'s grammar). State
+through `bardo-compositorctl debug inject` (`lib/input.sh`; a superset of `fake-input.sh`'s grammar). State
 lives in the jail's scratch directory `scripts/dev/out/casement-<name>/` (logs under `out/`,
 casement's under `casement/`), never in the checkout otherwise.
 
-- `CASEMENT_DIR` (default `crates/casement` of this tree) is the casement crate; its tools must be built
-  first, outside the jail: `$CASEMENT_DIR/dev/bootstrap.sh --build-only` (`CASEMENT_TOOLS` moves
+- `BARDO_COMPOSITOR_DIR` (default `crates/casement` of this tree) is the casement crate; its tools must be built
+  first, outside the jail: `$BARDO_COMPOSITOR_DIR/dev/bootstrap.sh --build-only` (`BARDO_COMPOSITOR_TOOLS` moves
   the directory).
-- `SHELL_HOST_BACKEND` is `cpu` by default under casement (the demos paint into `wl_shm`);
-  `gpu` runs the library default (lavapipe in the jail), which with `CASEMENT_DMABUF=none` (the
+- `BARDO_LAYER_SHELL_HOST_BACKEND` is `cpu` by default under casement (the demos paint into `wl_shm`);
+  `gpu` runs the library default (lavapipe in the jail), which with `BARDO_COMPOSITOR_DMABUF=none` (the
   default) is the F80 fallback; `accept-hover.sh` adds an `f80_fallback` step then.
-- `CASEMENT_CLOCK` is `wall` by default (the demos run on the wall clock; `stepped` is for casement's
+- `BARDO_COMPOSITOR_CLOCK` is `wall` by default (the demos run on the wall clock; `stepped` is for casement's
   own tests).
 - `lib/input.sh` and `lib/windows.sh [--class APP_ID]` are the compositor-neutral forms of
   `fake-input.sh` and `kwin-windows.sh`.

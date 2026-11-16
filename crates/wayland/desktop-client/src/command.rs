@@ -99,7 +99,7 @@ pub enum DesktopCommand {
         /// Which Spaces.
         assign: Assign,
     },
-    /// Forget a window's minimise target (`quire_shell_v1`). Quire arm, shell role.
+    /// Forget a window's minimise target (`bardo_shell_v1`). Quire arm, shell role.
     ClearMinimiseTarget(ToplevelKey),
     /// Switch to a Space. Quire arm.
     ActivateSpace(SpaceKey),
@@ -246,9 +246,9 @@ impl SpaceTarget {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CommandRoute {
     /// The plain window commands: `zwlr-foreign-toplevel-management` or, on the Quire arm,
-    /// `quire_desktop_window_v1`.
+    /// `bardo_desktop_window_v1`.
     Toplevel,
-    /// The minimise target: the toplevel handle, or on the Quire arm `quire_shell_v1`.
+    /// The minimise target: the toplevel handle, or on the Quire arm `bardo_shell_v1`.
     MinimiseTarget,
     /// `ext-workspace-v1`.
     Workspace,
@@ -258,9 +258,9 @@ pub enum CommandRoute {
     Capture,
     /// A window command only the Quire arm has.
     QuireWindow,
-    /// An app or Space command, on `quire_desktop_manager_v1`.
+    /// An app or Space command, on `bardo_desktop_manager_v1`.
     QuireDesktop,
-    /// A shell command, on `quire_shell_v1`.
+    /// A shell command, on `bardo_shell_v1`.
     QuireShell,
 }
 

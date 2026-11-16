@@ -34,7 +34,7 @@ async fn a_first_start_writes_an_empty_list_once() {
 async fn ids_are_minted_not_named_and_survive_renames_and_restarts() {
     let scratch = Scratch::new("spaces");
     let (mut book, _) = SpaceBook::open(Some(&store(&scratch))).await;
-    let photos = app("org.quire.Photos");
+    let photos = app("org.bardo.Photos");
     let at = (Instant::now(), NOW);
     // A registered Space already holds the id the counter would give first.
     let taken = DesktopSpace::parse("space-1").expect("id");
@@ -130,7 +130,7 @@ async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
     std::fs::create_dir_all(&dir).expect("dir");
     let file = dir.join("spaces.json");
     let at = (Instant::now(), NOW);
-    let photos = app("org.quire.Photos");
+    let photos = app("org.bardo.Photos");
 
     // The last id the counter can mint is made; the counter cannot move past it.
     let almost = format!(
@@ -175,7 +175,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
     assert!(book.list().is_empty());
     assert_eq!(
         book.create(
-            &app("org.quire.Photos"),
+            &app("org.bardo.Photos"),
             name("x"),
             SpaceLook::default(),
             (Instant::now(), NOW)
@@ -196,7 +196,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
 async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_nothing() {
     let scratch = Scratch::new("spaces");
     let (mut book, _) = SpaceBook::open(Some(&store(&scratch))).await;
-    let casement = app("org.quire.Casement");
+    let casement = app("org.bardo.Compositor");
     let at = (Instant::now(), NOW);
     let workspace = DesktopSpace::parse("s-0123456789abcdef0123456789abcdef").expect("id");
     let taken = DesktopSpace::parse("space-1").expect("id");

@@ -84,14 +84,14 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(&editor, "org.quire.Acp", action_dbus::callers::Role::Agent);
+    who.introduce_app(&editor, "org.bardo.Acp", action_dbus::callers::Role::Agent);
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),
         role: Role::parse("Looks things up.").expect("role"),
         space: space("work"),
         model: HelperModel::Unset,
-        apps: vec![app("org.quire.Mail")],
+        apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: account_ids::Count(8),
         kind: Default::default(),
@@ -212,7 +212,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(&editor, "org.quire.Acp", action_dbus::callers::Role::Agent);
+    who.introduce_app(&editor, "org.bardo.Acp", action_dbus::callers::Role::Agent);
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),
@@ -222,7 +222,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
             account: account_core::AccountId::parse("local").expect("account"),
             model: account_capability::ModelId::parse("tiny").expect("model"),
         }),
-        apps: vec![app("org.quire.Mail")],
+        apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: account_ids::Count(8),
         kind: Default::default(),
@@ -244,7 +244,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
     // The editor records the person's words with the router, as its own surface.
     let recorder = action_client::Intents::over(action_client::InProcess::new(
         router.clone(),
-        caller("org.quire.Acp", CallerRole::Editor),
+        caller("org.bardo.Acp", CallerRole::Editor),
     ));
     let turn = recorder
         .session_turn(
@@ -299,7 +299,7 @@ async fn router_session(
 ) -> provenance::SessionId {
     let companion = action_client::Intents::over(action_client::InProcess::new(
         router.clone(),
-        caller("org.quire.Companiond", CallerRole::Companion),
+        caller("org.bardo.Companion", CallerRole::Companion),
     ));
     companion
         .session_open(SessionOpen {

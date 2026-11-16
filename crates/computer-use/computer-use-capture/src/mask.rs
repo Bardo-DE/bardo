@@ -12,7 +12,7 @@ use std::sync::Arc;
 pub enum MaskReason {
     /// A password field (text-input purpose, or an accessibility `PasswordText` role).
     PasswordField,
-    /// The app declared the region sensitive (`quire_sensitive_v1`).
+    /// The app declared the region sensitive (`bardo_sensitive_v1`).
     SurfaceDeclared,
     /// An accessibility node marked secret.
     A11ySecret,

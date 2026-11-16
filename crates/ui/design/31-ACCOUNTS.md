@@ -308,7 +308,7 @@ AI providers:
 | `accountd` | account registry, provider registry, token broker, secrets, consent store, discovery and probes, the Settings live module | the control plane; small, must never stall | P |
 | `syncd` | the sync journal, anchors, the polling scheduler, dataset plug-ins (Photos first) | a failing backend or a long upload cannot block sign-in ([R] §3) | P |
 | `inferd` | the AI broker: routing, policy, spend, audit, wire adapters, engine supervision, GPU queue, streaming sessions | streams and big payloads; restartable alone | P |
-| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.quire.AccountsSheet1` (§4.4) and draws quire's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to casement's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
+| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws quire's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to casement's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
 
 All are user-session services, D-Bus activated on Linux, single-instance through latchkey
 ([R] §1). syncd gets tokens and authenticated streams from accountd like any client; inferd also
@@ -317,9 +317,9 @@ resolution and reporting probed local runtimes.
 
 **Caller roles [refines §4.5, 2026-10-05].** One caller table (`account-dbus` `ProcCallers`, shared
 by accountd and inferd) maps a connection's pid, through its cgroup scope or Flatpak info and
-`identity_of`, to an `AppId` and a role from a shipped table (`/etc/porter/callers.toml`, the
+`identity_of`, to an `AppId` and a role from a shipped table (`/etc/bardo/accountd-callers.toml`, the
 user file wins): `App`, `Settings` (detent), `SheetHost` (sill), `PorterDaemon` (inferd, syncd),
-`Agent` (intentd, companiond, readerd, cuad, quire-do, actions-mcp), `Cua` (cuad, for inferd). A
+`Agent` (intentd, companiond, readerd, cuad, bardo-do, bardo-actions-mcp), `Cua` (cuad, for inferd). A
 sender with no app scope and no Flatpak info is refused. accountd refuses every account call from
 the `Agent` role (`Choose`, `AddAccount`, `Reauthenticate`, `IssueToken`, `OpenAuthenticated`);
 agents keep inferd.
@@ -349,7 +349,7 @@ and by mailo in process), `porter-dav` (mailo's WebDAV reply parsing, moved) and
 | `porter-sync`, `syncd` | `Replica` contract (§6.1), dataset kinds; journal and scheduler in syncd | new | SQLite | core yes |
 | `storage-*` (later) | one per family: `webdav`, `graph`, `gdrive`, `dropbox`, `s3` | new (mailo's CardDAV WebDAV code reused) | HTTP | yes |
 | `inference-core`, `inferd` | typed request model, routing, policy, spend, audit, `Model` trait; adapters later (`ChatCompletions`, `Responses`, `Messages`, `GenerateContent`, `OllamaNative`, `ComfyWorkflow`) | new | HTTP (adapters) | core yes |
-| `account-oauth`, `account-discover` | OAuth PKCE, loopback, device code, client registry (shipped `/usr/share/porter/clients.toml` per channel, a user-supplied override written only by detent), renewal, OpenRouter key mint; autoconfig, SRV, MX, `.well-known`, JMAP session, Nextcloud OCS, port probes | `mail-runtime/src/{oauth,signin,renewal,loopback,discover}.rs`, `mail-proto/src/discover` | HTTP | yes |
+| `account-oauth`, `account-discover` | OAuth PKCE, loopback, device code, client registry (shipped `/usr/share/bardo/accounts/clients.toml` per channel, a user-supplied override written only by detent), renewal, OpenRouter key mint; autoconfig, SRV, MX, `.well-known`, JMAP session, Nextcloud OCS, port probes | `mail-runtime/src/{oauth,signin,renewal,loopback,discover}.rs`, `mail-proto/src/discover` | HTTP | yes |
 | `account-families` | `Provider` implementations (sign-in, discover, open, revoke) per family: Nextcloud (Login Flow v2), generic IMAP/SMTP + DAV, Microsoft; moved out of accountd so mailo builds the same families in process | new | HTTP | yes |
 | `porter-dav`, `account-proxy` | WebDAV PROPFIND/REPORT/sync-collection/quota parsing; the IMAP, SMTP and HTTP relays behind `OpenAuthenticated` | `mail-pim/src/dav` (vCard and iCal values stay in mail-pim) | HTTP, TLS | yes |
 | `mail-proto`, `mail-pim` | stay in mailo, now "family" crates for Mail, Calendar, Contacts | unchanged | none | yes |
@@ -365,7 +365,7 @@ deployment config, never in the account (as mailo's `AuthPlan` comment already s
 
 | Platform | Link | Who hosts the core | St |
 | --- | --- | --- | --- |
-| Linux, our desktop | `DbusTransport` to `org.quire.Accounts1` | accountd | P |
+| Linux, our desktop | `DbusTransport` to `org.bardo.Accounts1` | accountd | P |
 | Linux, another desktop; macOS; Windows | `SocketTransport` (framed messages over latchkey's socket / named pipe) | accountd built without zbus, or mailo's own agent hosting the core | P |
 | mailo standalone, tests | `InProcess` (in process) | the app | P |
 
@@ -377,7 +377,7 @@ derives it from the connection.
 
 ### 4.4 D-Bus API sketch
 
-Bus name `org.quire.Accounts1`; root `/org/quire/Accounts1`. Shaped like a portal (Request
+Bus name `org.bardo.Accounts1`; root `/org/bardo/Accounts1`. Shaped like a portal (Request
 objects with a `Response` signal, `handle_token`), so a later `org.freedesktop.portal`
 proposal can reuse it ([R] §2 portals).
 
@@ -387,25 +387,25 @@ proposal can reuse it ([R] §2 portals).
 | | `Availability(need, class, usage) -> s` | `granted`, `available_needs_consent`, `denied`, `needs_account`, `unsupported` | reveals no identities |
 | | `Choose(need, class, usage, parent_window: s, options: a{sv}) -> o` | Request; the sheet host shows a chooser with only matching accounts; the `Response` carries the account path and a new grant | the one way an app learns of a new account |
 | | `AddAccount(provider_hint: s, parent_window: s, options: a{sv}) -> o` | Request; opens the add sheet | apps offer "Add Account…" |
-| `.Account` (per object, `/org/quire/Accounts1/account/<id>`) | properties `Id s`, `Provider s`, `Label s`, `State s` (`ok`, `needs_reauth`, `offline`, `limited`), `Capabilities a(sa{sv})` | readable only with a grant | |
+| `.Account` (per object, `/org/bardo/Accounts1/account/<id>`) | properties `Id s`, `Provider s`, `Label s`, `State s` (`ok`, `needs_reauth`, `offline`, `limited`), `Capabilities a(sa{sv})` | readable only with a grant | |
 | | `Reauthenticate(parent_window: s, options: a{sv}) -> o` | Request | |
 | `.Grants` | `Revoke(grant: s)`; `List() -> a(sa{sv})` (caller's own) | | |
 | `.Tokens` | `IssueToken(grant: s, audience: s) -> (ssx)` | kind (`bearer`, `xoauth2`, `api_key_handle`), value, expiry; short-lived access tokens only | refresh tokens never leave (§4.6) |
 | | `OpenAuthenticated(grant: s, endpoint: s) -> h` | a socket fd to a daemon-side authenticated relay. **v1 [departs §7.1/§7.2, owner 2026-10-05]**: IMAP (the relay logs in; the app sees a `* PREAUTH` greeting), SMTP (the relay does EHLO, STARTTLS and AUTH; the app sees a greeting and an EHLO reply without them), HTTP/1.1 for WebDAV, CalDAV, CardDAV and OCS (the relay adds `Authorization`, speaks TLS, reaches only the endpoint's origin and drops an app's own `Authorization`) | password protocols without releasing the password: a password never leaves accountd, to any app, sandboxed or not |
 | `.Request` (per sheet) | `Close()`; signal `Response(response: u, results: a{sv})` | 0 done, 1 cancelled, 2 other | the portal Request shape |
 | Signals on `.Manager` | `AccountAdded(o)`, `AccountRemoved(o)`, `CapabilityChanged(o)`, `NeedsReauth(o)`, `GrantChanged(s)` | sent only to holders of a relevant grant (unicast) | |
-| `org.quire.SettingsModule1` | at `/org/quire/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in quire's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | detent reads it; `Set` only from the `Settings` role |
+| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in quire's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | detent reads it; `Set` only from the `Settings` role |
 | `.Peer` | `Verdicts(app, need, class, usage)`, `ResolveKey(grant) -> h` (the key on a sealed memfd, never a string), `ReportLocal(provider, claims, state)` | only the `PorterDaemon` role [2026-10-05] | inferd asks with the app it derived from its own connection |
-| `org.quire.AccountsSheet1` (served by the sheet host) | `Open(handle, parent_window, view: s)`, `Update(handle, view: s)`, `Close(handle)`, signal `Input(handle, input: s)` | only accountd's connection may `Open`; only the sheet owner's `Input` counts [refines §4.6: a typed password travels inward here, nothing outward] | the add, re-auth, device-code and consent conversations [2026-10-05] |
-| `.Manager` (mailo migration) | `Adopt(legacy)` | the daemon reads an app's own legacy keyring entries itself (gated by an `[adopt]` table, `org.quire.Mail = "mailo"`), so no credential crosses a transport | [2026-10-05] |
+| `org.bardo.AccountsSheet1` (served by the sheet host) | `Open(handle, parent_window, view: s)`, `Update(handle, view: s)`, `Close(handle)`, signal `Input(handle, input: s)` | only accountd's connection may `Open`; only the sheet owner's `Input` counts [refines §4.6: a typed password travels inward here, nothing outward] | the add, re-auth, device-code and consent conversations [2026-10-05] |
+| `.Manager` (mailo migration) | `Adopt(legacy)` | the daemon reads an app's own legacy keyring entries itself (gated by an `[adopt]` table, `org.bardo.Mail = "mailo"`), so no credential crosses a transport | [2026-10-05] |
 
 A need on the bus is `(sa{sv})`: the kind's slug and its fields by name, each field's value its
 slug; `class` and `usage` are `DataClass` and `Usage` slugs. The full introspection is porter's
-`dbus/org.quire.Accounts1.xml`, checked against the skeletons by a test.
+`dbus/org.bardo.Accounts1.xml`, checked against the skeletons by a test.
 
-syncd serves `org.quire.Sync1` at `/org/quire/Sync1` (`Datasets() -> as`, `Status(dataset: s) ->
+syncd serves `org.bardo.Sync1` at `/org/bardo/Sync1` (`Datasets() -> as`, `Status(dataset: s) ->
 a{sv}` with a `quota` key (used, total) from `Replica::quota`, `Pause(s)`, `Resume(s)`, signals `Progress(s, a{sv})`, `Conflict(s, a{sv})`); inferd
-serves `org.quire.Inference1` at `/org/quire/Inference1`:
+serves `org.bardo.Inference1` at `/org/bardo/Inference1`:
 
 | Member | Signature | Notes |
 | --- | --- | --- |
@@ -416,10 +416,10 @@ serves `org.quire.Inference1` at `/org/quire/Inference1`:
 | `Rescan` | `()` | |
 | signal `EnginesChanged` | `()` | broadcast: engine state is not personal; listeners re-read readiness with `Prepare` or the settings module |
 | property `Gpu` | `s` | `idle`, `busy`, `loading` |
-| `org.quire.SettingsModule1` | at `/org/quire/Inference1/settings`: the picker rows per kind and the `ai.model.<kind>.<tier>` map | 22 §9.4 (declared there, not in account-dbus) |
+| `org.bardo.SettingsModule1` | at `/org/bardo/Inference1/settings`: the picker rows per kind and the `ai.model.<kind>.<tier>` map | 22 §9.4 (declared there, not in account-dbus) |
 
 Speech and computer-use steps travel on the `Open` fd, so the interface has no member for them.
-The full introspection is porter's `dbus/org.quire.Inference1.xml`, checked by the same test.
+The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by the same test.
 
 ### 4.5 Consent
 
@@ -431,9 +431,9 @@ The full introspection is porter's `dbus/org.quire.Inference1.xml`, checked by t
 | Prompt | by capability, not by provider: "Photos wants to keep its library in your Nextcloud files" (`Alert` on a `Sheet{Centre}` from the sheet host) | P |
 | First-party apps | Mail, Photos, Calendar, Notes, Files and the shell still get one prompt at first use; no silent pre-grant, so the per-app list in detent is complete | P |
 | Identity of caller | `AppId { name: AppName (reverse DNS), isolation: Isolation {Flatpak, Unsandboxed, InProcess} }`, established by the transport, never sent by the caller. Flatpak: app id from the sandbox info of the caller's pid (`GetConnectionCredentials`, pidfd); native: the systemd `app-<id>-*.scope` cgroup, marked "unsandboxed" (R12) | P |
-| Flatpak reach | `--talk-name=org.quire.Accounts1` finish arg; consent is enforced inside the daemon | P |
+| Flatpak reach | `--talk-name=org.bardo.Accounts1` finish arg; consent is enforced inside the daemon | P |
 | Storage | the consent store is accountd's own table, PermissionStore-shaped, so a portal can adopt it; persisted with the registry as `$XDG_STATE_HOME/porter/registry.json` (`Persisted { vocab, accounts, grants, toggles }`, atomic write; JSON, not SQLite: tens of rows, no SQLCipher in mailo); a vocabulary bump now needs a migration test [2026-10-05] | P |
-| Voice | the caller `org.quire.Voice` with class `Voice` and an `OnDevice` route holds a shipped default grant, because the person's first-use voice consent (a sill sheet) is the grant; any other route for `Voice` needs `ai.local_only` off, a floor change and an explicit grant; an app transcribing its own files uses its own class and the normal grant | P |
+| Voice | the caller `org.bardo.Voice` with class `Voice` and an `OnDevice` route holds a shipped default grant, because the person's first-use voice consent (a sill sheet) is the grant; any other route for `Voice` needs `ai.local_only` off, a floor change and an explicit grant; an app transcribing its own files uses its own class and the normal grant | P |
 | Audit | grants, denials, revocations, token issues (with audience), proxy opens, sign-ins, re-auths, removals, adoptions: time, app, account, capability; never content; `$XDG_STATE_HOME/quire/accountd/audit.jsonl`, the shape of inferd's [2026-10-05] | P |
 | Add and allow | when an app's `Choose` finds no fitting account and the person adds one from that sheet, the last step reads "Add, and allow Mail to use it": one grant, not a second prompt [refines, 2026-10-05] | P |
 | Audience | `IssueToken` refuses an audience outside the grant's kind (`AudienceNotGranted`) | P |
@@ -548,11 +548,11 @@ Provider verdicts for the library home:
 | Rate and queue | token bucket per app and account; interactive first; `Retry-After`; GPU queue (§3.3) | P |
 | Indicator | a bar item shows when a request leaves the machine, naming the provider | P |
 | Audit | app, account, model, tokens, bytes, time; content never stored by default | P |
-| Tools | a chat request carries the functions a model may call (`ToolDecl`, from the companion's typed actions); the model's calls come back as `ToolCall` events and parts. inferd only passes them: the router (`docket`) gates every call, and MCP is an edge binary there (`actions-mcp`), not an inferd role | P |
+| Tools | a chat request carries the functions a model may call (`ToolDecl`, from the companion's typed actions); the model's calls come back as `ToolCall` events and parts. inferd only passes them: the router (`docket`) gates every call, and MCP is an edge binary there (`bardo-actions-mcp`), not an inferd role | P |
 
 ### 5.6 detent's Accounts page and first run
 
-detent renders the list through `org.quire.SettingsModule1` (22 §9.4); flows that need a
+detent renders the list through `org.bardo.SettingsModule1` (22 §9.4); flows that need a
 browser or a secret are sheet-host sheets that detent opens with `AddAccount` /
 `Reauthenticate`.
 
@@ -679,7 +679,7 @@ Service and fake servers; the real system is never touched):
 | ChatGPT sign-in (R9), after a registration spike | a plan-billed account completes a Responses call and shows `PlanBudget` usage | O |
 | Files: Locations in the sidebar, selective sync; open/save chooser lists Storage accounts | a file saved from a sandboxed app lands in OneDrive and appears on the other machine | O |
 | Desktop-own account: settings, Spaces, dock, widgets, style CSS synced E2E over a Storage grant | changing the dock on A shows on B within one poll; the Storage account holds only ciphertext | O |
-| MCP edge (`actions-mcp` in docket, not inferd) | Notes exposes "search notes" as a tool; a chat in the launcher calls it after a confirmation | P |
+| MCP edge (`bardo-actions-mcp` in docket, not inferd) | Notes exposes "search notes" as a tool; a chat in the launcher calls it after a confirmation | P |
 
 ### 7.3 v3 (the ambitious options)
 
@@ -794,7 +794,7 @@ an edit here and a change there in step.
 | §2 vocabulary, provenance, restrictions | `account-core` (and `prov` for the companion's shared ids, labels and `Actor`) | `Capability`, `CapabilityKind`, `VocabVersion(3)`, `ComputerUse`, `Family` (moved here from account-provider), `endpoint` (`ServiceEndpoint`, `EndpointUrl`, `Origin`, `Tls`, `LoginName`, `EndpointProtocol`, `RelayPlan`), `sheet` (`SheetView`, `SheetInput`, `Stage`, `step`), `store` (`Persisted`, the migration table), `audit` (`AuditEntry`), `stream` (`ByteStream`, `duplex`), `Need`, `matches -> Match`, `Claim`/`Offer`/`Subject`/`Provenance`, `effective`, `Restriction`/`Limit`, `Locality`/`Tier`/`Billing` |
 | §3 providers | `account-provider` | `ProviderSpec` (the TOML file, with `[matching]`), `parse_provider`, `ProviderSet` (`claiming`), `Issuer` (`endpoints`), `Discovery`, traits `Provider` (`sign_in`, `revoke`) and `ProviderSession`, `SignIn`/`SignInStep`/`Signed`, the client registry file (`ClientsFile`) |
 | §4.1-4.3 core, transports | `account-service`, `account-client` | `AccountService` over `Provider`, `Secrets`, `Sheets` (replacing `Prompter`), `Clock`, `RegistryStore`, `AuditSink`; `open_authenticated`; `AccountsRequest`/`AccountsReply`; `Transport` (`call` for accountd, `open_authenticated` returning an `AuthenticatedStream`, `open_with` for an inference session, with `open` the same without trace options) with `DbusTransport`, `SocketTransport`, `InProcess`; `InferSession` |
-| §4.4 D-Bus | `account-dbus` | proxies and skeletons for `org.quire.Accounts1` (`Manager` with `Adopt`, `Account`, `Grants`, `Tokens`, `Request`, `Peer`), `org.quire.AccountsSheet1`, the caller table (`CallerRole`, `ProcCallers`), `org.quire.Sync1`, `org.quire.Inference1` (`Open`, `Prepare`, `EnginesChanged`, `Gpu`); `dbus/*.xml` |
+| §4.4 D-Bus | `account-dbus` | proxies and skeletons for `org.bardo.Accounts1` (`Manager` with `Adopt`, `Account`, `Grants`, `Tokens`, `Request`, `Peer`), `org.bardo.AccountsSheet1`, the caller table (`CallerRole`, `ProcCallers`), `org.bardo.Sync1`, `org.bardo.Inference1` (`Open`, `Prepare`, `EnginesChanged`, `Gpu`); `dbus/*.xml` |
 | §4.5 consent | `account-core` `consent` | `Grant<K = GrantKey>`, `GrantKey` (with `space`), `decide<K: Eq> -> Verdict`, `SpaceId`/`SpaceScope`, `availability -> Availability`, `ConsentAsk`/`ConsentAnswer`, `AppId` |
 | §4.6 secrets | `account-secrets` | `Secrets` (get, put, delete, delete_account), `attributes`, `MemorySecrets`, `Oo7Secrets`, `KeyringSecrets` (stubs until W2a) |
 | §5.1 client | `account-client` | `Accounts`, `Found`, `ConsentOffer`, `NoAccount` |

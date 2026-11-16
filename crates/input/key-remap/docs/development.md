@@ -10,7 +10,7 @@ evdev (grabbed) ──► check_gate ──► Remapper::step ──► Vec<Rema
    └─ touchpad axes of a combo device ──────────────────────────┴─────────────────► "<name> (keycap pointer)"
 socket ── Focus ───────────────────► Remapper::step (profile)    └─ ReleaseGrabs ─► ungrab, Paused
 socket ── UserConfig ──► config merge ──► Profiles
-/usr/lib/keycap/keycap.toml, /etc/keycap/keycap.toml ── inotify ──► config merge
+/usr/lib/bardo/key-remap/key-remap.toml, /etc/bardo/key-remap/key-remap.toml ── inotify ──► config merge
 ```
 
 Two threads and no async runtime: the **reader** (poll over every grabbed fd, an eventfd and
@@ -40,7 +40,7 @@ touches a device, so a script replays to exactly the outputs the live daemon pro
 
 ## The socket protocol
 
-`/run/keycap/keycap.sock`, `SOCK_SEQPACKET`, mode 0666, one JSON message per packet, adjacently
+`/run/bardo/key-remap/key-remap.sock`, `SOCK_SEQPACKET`, mode 0666, one JSON message per packet, adjacently
 tagged (`{"kind": "...", "v": {...}}`). The first packet on a connection is `Hello`; a client
 checks `version` (`PROTOCOL_VERSION = 3`, `MIN_PROTOCOL_VERSION = 3`: nothing older is read) before reading on. `MAX_PACKET` is 64 KiB, so a
 config fits in one packet.
@@ -80,8 +80,8 @@ pub enum Grab {
 ```
 
 `SO_PEERCRED` and the process's control group sort each client into `Peer { Steering, Plain, Observer }`,
-using `ACTIVE_UID` from `/run/systemd/seats/seat0`: `Steering` is the shell (a process in `sill.service`, or
-for the Plasma feed `keycap-focus.service`, under `user@<active uid>.service`), `Plain` any other process of
+using `ACTIVE_UID` from `/run/systemd/seats/seat0`: `Steering` is the shell (a process in `bardo-shell.service`, or
+for the Plasma feed `bardo-key-remap-focus.service`, under `user@<active uid>.service`), `Plain` any other process of
 that user, `Observer` anyone else. Only `Steering`'s `Focus` and `UserConfig` are honoured, and `Resume` also from `Plain` (any other request
 from the others ends their connection); every client receives `Status`. The user layer the shell sends is
 cut down on arrival: no rule on a key with no modifier held, no list or empty `then`, at most 256 rules. The
@@ -130,10 +130,10 @@ keycap grabs the user's only keyboard, so:
 - **Tests create no input device unless they are the gated device tests.** The ordinary suite
   drives the core with scripts and a recording sink and never constructs the uinput device. The
   device tests (`crates/keycap/tests/devices`) are the one exception: each is `#[ignore]`d and
-  asserts `KEYCAP_DEVICE_TESTS=1`, so neither `cargo test` nor `cargo test -- --ignored` alone
+  asserts `BARDO_KEY_REMAP_DEVICE_TESTS=1`, so neither `cargo test` nor `cargo test -- --ignored` alone
   creates a device. CI runs them (see Tests).
 - **Virtual devices are never grabbed**, so another remapper's output cannot loop back through
-  keycap. The one exception is `KEYCAP_GRAB_VIRTUAL=<exact device name>`, which makes the virtual
+  keycap. The one exception is `BARDO_KEY_REMAP_GRAB_VIRTUAL=<exact device name>`, which makes the virtual
   device with that name eligible like a hardware keyboard, for tests whose keyboard is itself a
   uinput device. Only root, or the unit's `Environment=`, can set it; it admits
   exactly one named device and makes it the only device grabbed (no hardware keyboard is touched),
@@ -142,7 +142,7 @@ keycap grabs the user's only keyboard, so:
 - **No `record` command.** A tool that writes every keystroke to a file is a keylogger. Test
   scripts are synthesised by hand; `keycap replay FILE` feeds one through the core.
 - `keycap --check-uinput` opens and closes `/dev/uinput` without `UI_DEV_CREATE`, and only when
-  `KEYCAP_ALLOW_UINPUT_PROBE=1` is set; when the device service's socket is there it only connects to it.
+  `BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE=1` is set; when the device service's socket is there it only connects to it.
 - The emergency chord (both Shifts + Esc) releases every grab at once; `Resume` grabs again (the shell
   or any program of the seat's user may send it).
 - keycap never changes kernel module parameters or `/etc` files; `install.sh` does, with sudo,
@@ -153,23 +153,23 @@ keycap grabs the user's only keyboard, so:
 ## Environment and replay
 
 `--check-uinput` opens and closes `/dev/uinput` and creates nothing; it refuses to run unless
-`KEYCAP_ALLOW_UINPUT_PROBE=1` is set.
+`BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE=1` is set.
 
 The daemon reads its environment once, at start:
 
 | Variable | Meaning | Default |
 | --- | --- | --- |
 | `NOTIFY_SOCKET`, `WATCHDOG_USEC` | systemd's `sd_notify` socket and watchdog interval | none |
-| `RUNTIME_DIRECTORY` | where `keycap.sock` lives | `/run/keycap` |
-| `KEYCAP_CONFIG_DIR` | where `keycap.toml` is read, only if root-only (a file in a test's scratch folder is not used) | `/etc/keycap` |
-| `KEYCAP_VENDOR_DIR` | where the desktop's shipped `keycap.toml` is read, under the one above; tests point it at a folder that is not there | `/usr/lib/keycap` |
-| `KEYCAP_SEAT_FILE` | logind's seat state file, for the active uid | `/run/systemd/seats/seat0` |
-| `KEYCAP_SYS_INPUT`, `KEYCAP_DEV_INPUT` | where nodes are listed and opened | `/sys/class/input`, `/dev/input` |
-| `KEYCAP_UDEV_DATA` | where udev's database says which seat a node is on | `/run/udev/data` |
-| `KEYCAP_GRAB_VIRTUAL` | one virtual device, by exact name, that may be grabbed (see Safety rules) | none |
-| `KEYCAP_DEVICE_SERVICE` | the socket of the service that makes the virtual devices; when it is absent keycap opens `/dev/uinput` | `/run/turnstile/input.sock` |
-| `KEYCAP_STEERING` | `seat-user` makes every program of the seat's user the shell; for tests whose client is in no unit, like `KEYCAP_GRAB_VIRTUAL` | the shell's unit only |
-| `KEYCAP_ALLOW_UINPUT_PROBE` | lets `--check-uinput` open the node | none |
+| `RUNTIME_DIRECTORY` | where `key-remap.sock` lives | `/run/keycap` |
+| `BARDO_KEY_REMAP_CONFIG_DIR` | where `keycap.toml` is read, only if root-only (a file in a test's scratch folder is not used) | `/etc/keycap` |
+| `BARDO_KEY_REMAP_VENDOR_DIR` | where the desktop's shipped `keycap.toml` is read, under the one above; tests point it at a folder that is not there | `/usr/lib/keycap` |
+| `BARDO_KEY_REMAP_SEAT_FILE` | logind's seat state file, for the active uid | `/run/systemd/seats/seat0` |
+| `BARDO_KEY_REMAP_SYS_INPUT`, `BARDO_KEY_REMAP_DEV_INPUT` | where nodes are listed and opened | `/sys/class/input`, `/dev/input` |
+| `BARDO_KEY_REMAP_UDEV_DATA` | where udev's database says which seat a node is on | `/run/udev/data` |
+| `BARDO_KEY_REMAP_GRAB_VIRTUAL` | one virtual device, by exact name, that may be grabbed (see Safety rules) | none |
+| `BARDO_KEY_REMAP_DEVICE_SERVICE` | the socket of the service that makes the virtual devices; when it is absent keycap opens `/dev/uinput` | `/run/bardo/input-broker/input.sock` |
+| `BARDO_KEY_REMAP_STEERING` | `seat-user` makes every program of the seat's user the shell; for tests whose client is in no unit, like `BARDO_KEY_REMAP_GRAB_VIRTUAL` | the shell's unit only |
+| `BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE` | lets `--check-uinput` open the node | none |
 
 The path variables exist so a test can run the real binary against scratch directories.
 
@@ -246,23 +246,23 @@ Three tiers, each in its own CI job (`.github/workflows/ci.yml`).
    against a fake keyboard on `/dev/uinput` and reads the "keycap keyboard" it writes back from
    `/dev/input`, through the real evdev grab, the real uinput device and the real socket. The
    harness is the `key-remap-devtest` crate. Every test is `#[ignore]`d and asserts
-   `KEYCAP_DEVICE_TESTS=1`. On a Linux machine you may use as a test bed (they create and grab
+   `BARDO_KEY_REMAP_DEVICE_TESTS=1`. On a Linux machine you may use as a test bed (they create and grab
    a keyboard for a few seconds each; the fake is grabbed, your real keyboards are not):
 
    ```bash
    sudo modprobe uinput
    cargo build -p key-remap-daemon --bins --examples
    cargo test -p key-remap-daemon --test devices --no-run     # build as yourself
-   sudo -E env "PATH=$PATH" KEYCAP_DEVICE_TESTS=1 \
+   sudo -E env "PATH=$PATH" BARDO_KEY_REMAP_DEVICE_TESTS=1 \
      target/debug/deps/devices-<hash> --ignored --test-threads=1
    ```
 
    They need root (the nodes are `root:input`), run one at a time (one fake name, one daemon),
    and dump the daemon's stderr, the output device's event trace and the status history when a
-   test fails. Set `KEYCAP_TEST_ARTIFACTS=DIR` to keep those logs in files.
+   test fails. Set `BARDO_KEY_REMAP_TEST_ARTIFACTS=DIR` to keep those logs in files.
 3. **The systemd tier** (`systemd`). `ci/systemd-test.sh` installs the release binary, the unit,
    the udev rule and the polkit rule on a runner whose PID 1 is systemd, adds a drop-in that
-   sets `KEYCAP_GRAB_VIRTUAL`, plugs in a fake keyboard and checks that the unit starts under
+   sets `BARDO_KEY_REMAP_GRAB_VIRTUAL`, plugs in a fake keyboard and checks that the unit starts under
    its hardening, that `kill -STOP` makes the watchdog restart it, that six quick `kill -9`s end
    in `failed` (start limit), and that `reset-failed` and `start` recover. It installs files, so
-   it refuses to run outside CI unless `KEYCAP_CI_ALLOW_INSTALL=1`.
+   it refuses to run outside CI unless `BARDO_KEY_REMAP_CI_ALLOW_INSTALL=1`.

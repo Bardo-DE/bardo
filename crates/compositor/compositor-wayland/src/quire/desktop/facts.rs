@@ -9,19 +9,19 @@ use compositor_core::app::{AppKey, AppVisibility as Held, MenuSource};
 use compositor_core::space::SpaceContent;
 use compositor_core::window::SpacePlace;
 use compositor_core::{OutputKey, WindowId};
-use desktop_protocols::server::quire_agent_v1::quire_agent_lease_v1::GlowState;
-use desktop_protocols::server::quire_desktop_v1::quire_desktop_app_v1::{
-    self as app, QuireDesktopAppV1,
+use desktop_protocols::server::bardo_agent_v1::bardo_agent_lease_v1::GlowState;
+use desktop_protocols::server::bardo_desktop_v1::bardo_desktop_app_v1::{
+    self as app, BardoDesktopAppV1,
 };
-use desktop_protocols::server::quire_desktop_v1::quire_desktop_manager_v1::ActorKind;
-use desktop_protocols::server::quire_desktop_v1::quire_desktop_space_v1::{
-    self as space, QuireDesktopSpaceV1,
+use desktop_protocols::server::bardo_desktop_v1::bardo_desktop_manager_v1::ActorKind;
+use desktop_protocols::server::bardo_desktop_v1::bardo_desktop_space_v1::{
+    self as space, BardoDesktopSpaceV1,
 };
-use desktop_protocols::server::quire_desktop_v1::quire_desktop_window_v1::{
-    self as window, QuireDesktopWindowV1,
+use desktop_protocols::server::bardo_desktop_v1::bardo_desktop_window_v1::{
+    self as window, BardoDesktopWindowV1,
 };
-use desktop_protocols::server::quire_sensitive_v1::quire_sensitive_surface_v1::SensitivityLevel;
-use desktop_protocols::server::quire_window_v1::quire_window_v1::{
+use desktop_protocols::server::bardo_sensitive_v1::bardo_sensitive_surface_v1::SensitivityLevel;
+use desktop_protocols::server::bardo_window_v1::bardo_window_v1::{
     Emphasis, PlacementMark, WindowRole,
 };
 use desktop_protocols::vocab::{self, WireCode};
@@ -38,9 +38,9 @@ fn output_for(view: &DesktopView<'_>, key: &OutputKey, object: &impl Resource) -
 /// The objects a manager has, for the events that name one object from another.
 #[derive(Debug, Clone, Copy)]
 pub(super) struct Objects<'a> {
-    pub(super) apps: &'a BTreeMap<AppKey, QuireDesktopAppV1>,
-    pub(super) spaces: &'a BTreeMap<SpaceId, QuireDesktopSpaceV1>,
-    pub(super) windows: &'a BTreeMap<WindowId, QuireDesktopWindowV1>,
+    pub(super) apps: &'a BTreeMap<AppKey, BardoDesktopAppV1>,
+    pub(super) spaces: &'a BTreeMap<SpaceId, BardoDesktopSpaceV1>,
+    pub(super) windows: &'a BTreeMap<WindowId, BardoDesktopWindowV1>,
 }
 
 /// Where an app's global menu is, as `menu_source` carries it.
@@ -116,7 +116,7 @@ impl AppFacts {
     }
 
     /// Sends `object` what differs from `was`; says how many events that was.
-    pub(super) fn send(&self, was: Option<&AppFacts>, object: &QuireDesktopAppV1) -> usize {
+    pub(super) fn send(&self, was: Option<&AppFacts>, object: &BardoDesktopAppV1) -> usize {
         let mut sent = 0;
         if was.is_none_or(|was| {
             (&was.key, was.proof, &was.claimed) != (&self.key, self.proof, &self.claimed)
@@ -196,7 +196,7 @@ impl SpaceFacts {
     pub(super) fn send(
         &self,
         was: Option<&SpaceFacts>,
-        object: &QuireDesktopSpaceV1,
+        object: &BardoDesktopSpaceV1,
         view: &DesktopView<'_>,
     ) -> usize {
         let mut sent = 0;
@@ -322,7 +322,7 @@ impl WindowFacts {
     pub(super) fn send(
         &self,
         was: Option<&WindowFacts>,
-        object: &QuireDesktopWindowV1,
+        object: &BardoDesktopWindowV1,
         near: Objects<'_>,
         view: &DesktopView<'_>,
     ) -> usize {
@@ -418,8 +418,8 @@ impl ActiveFacts {
         &self,
         near: Objects<'a>,
     ) -> (
-        Option<&'a QuireDesktopAppV1>,
-        Option<&'a QuireDesktopWindowV1>,
+        Option<&'a BardoDesktopAppV1>,
+        Option<&'a BardoDesktopWindowV1>,
     ) {
         (
             self.app.as_ref().and_then(|key| near.apps.get(key)),

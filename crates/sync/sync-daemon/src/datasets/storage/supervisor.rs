@@ -3,7 +3,7 @@
 //!
 //! - `AppFolder` (`DataClass::Files`): the account's app folder as a two-way [`FolderDataset`]
 //!   at `$XDG_DATA_HOME/porter/storage/<account>/`, one dataset `<account>/storage_app_folder`
-//!   (owner `org.quire.Files`), over a [`graph_replica`] relay of the grant for a OneDrive
+//!   (owner `org.bardo.Files`), over a [`graph_replica`] relay of the grant for a OneDrive
 //!   account or a [`gdrive_replica`] relay for a Google one. Which one is read from the
 //!   endpoint the account's candidate lists ([`app_folder_store`]), never from the provider.
 //! - `Photos` (`DataClass::Photos`): the two Photos datasets over `Photos/Originals` and
@@ -11,7 +11,7 @@
 //!   account's Photos row in Settings makes it and takes it back.
 //! - `GooglePhotos` (`DataClass::Photos`, a `Photos`-kind grant): Google Photos, by the same
 //!   grant: the upload folder `$XDG_DATA_HOME/porter/photos/<account>/upload/` as the
-//!   dataset `<account>/google_photos_upload` (owner `org.quire.Photos`), and the picker the
+//!   dataset `<account>/google_photos_upload` (owner `org.bardo.Photos`), and the picker the
 //!   Photos app imports through ([`StorageSupervisor::google_picker`]).
 //! - `Drive` (`DataClass::Files`, a grant that reaches the whole store): the whole drive's
 //!   listing into `<account>/storage_drive` ([`crate::datasets::drive::keep_listing`]), every
@@ -62,9 +62,9 @@ use tokio::sync::{Notify, watch};
 use tokio::task::JoinHandle;
 
 /// The app that owns the app folder mirror's dataset (it settles its conflicts).
-pub const FILES_APP: &str = "org.quire.Files";
+pub const FILES_APP: &str = "org.bardo.Files";
 /// The app that owns the Photos datasets.
-pub const PHOTOS_APP: &str = "org.quire.Photos";
+pub const PHOTOS_APP: &str = "org.bardo.Photos";
 
 /// How the supervisor behaves.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -216,7 +216,7 @@ where
         }
     }
 
-    /// The drives shown in Files, as `org.quire.Storage1` serves them: kept current by every
+    /// The drives shown in Files, as `org.bardo.Storage1` serves them: kept current by every
     /// `tick`.
     pub fn drive_set(&self) -> DriveSet {
         self.drives.clone()
@@ -513,7 +513,7 @@ where
         if self.drives.keeps_all(&live.id) {
             files.set_keep_all(true);
         }
-        // The folder is mounted off the runtime's one thread: asking porter-mountd, or running
+        // The folder is mounted off the runtime's one thread: asking bardo-drive-mount, or running
         // fusermount3, waits on another process (bounded, but not for the runtime to sit on).
         let mounting = match &self.config.mount {
             DriveMount::Off => None,

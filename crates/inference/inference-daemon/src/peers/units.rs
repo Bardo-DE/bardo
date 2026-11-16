@@ -2,14 +2,14 @@
 
 use serde::{Deserialize, Serialize};
 
-/// A unit under `[apps]` or `agent_launcher`: its name alone (`"memoryd.service"`, whose program
+/// A unit under `[apps]` or `agent_launcher`: its name alone (`"bardo-memoryd.service"`, whose program
 /// the shared table knows: a daemon's `libexec/quire/<name>`), or its name and the programs that
 /// may run in it, for a unit the name does not give a program for (a scope, a dotted service):
 ///
 /// ```toml
-/// "org.quire.Companion" = [
-///     "companiond.service",
-///     { unit = "docket-acp.scope", exe = ["/usr/bin/docket-acp", "/opt/quire/releases/*/bin/docket-acp"] },
+/// "org.bardo.Companion" = [
+///     "bardo-companiond.service",
+///     { unit = "bardo-agent-acp.scope", exe = ["/usr/bin/bardo-agent-acp", "/opt/bardo/releases/*/bin/bardo-agent-acp"] },
 /// ]
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]

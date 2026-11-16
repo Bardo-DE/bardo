@@ -1,4 +1,4 @@
-//! The real `quire-do` binary against a private bus: a `dbus-daemon` made from a scratch config
+//! The real `bardo-do` binary against a private bus: a `dbus-daemon` made from a scratch config
 //! in a scratch directory, a scratch HOME and runtime directory, and nothing from the
 //! environment. The person's real session bus is never named, so it is never reached.
 //!
@@ -10,9 +10,9 @@ use action_testbus::PrivateBus;
 use std::path::Path;
 use std::process::Command;
 
-/// `quire-do` with a scratch world: only what is named here reaches the process.
+/// `bardo-do` with a scratch world: only what is named here reaches the process.
 fn quire_do(dir: &Path, bus: &str, words: &[&str]) -> std::process::Output {
-    Command::new(env!("CARGO_BIN_EXE_quire-do"))
+    Command::new(env!("CARGO_BIN_EXE_bardo-do"))
         .args(words)
         .env_clear()
         .env("HOME", dir)
@@ -22,7 +22,7 @@ fn quire_do(dir: &Path, bus: &str, words: &[&str]) -> std::process::Output {
         .env("XDG_CONFIG_HOME", dir)
         .env("DBUS_SESSION_BUS_ADDRESS", bus)
         .output()
-        .expect("quire-do runs")
+        .expect("bardo-do runs")
 }
 
 fn text(bytes: &[u8]) -> String {

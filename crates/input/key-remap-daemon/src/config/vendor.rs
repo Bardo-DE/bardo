@@ -1,4 +1,4 @@
-//! Reading the vendor file: the defaults a desktop ships in `/usr/lib/keycap/keycap.toml`, laid
+//! Reading the vendor file: the defaults a desktop ships in `/usr/lib/bardo/key-remap/key-remap.toml`, laid
 //! under the machine file in `/etc/keycap`, which stays the administrator's. It is read like the
 //! machine file is, through the one reader in `trusted.rs`.
 
@@ -10,7 +10,7 @@ use key_remap_proto::Warning;
 
 use super::trusted::read_layer;
 
-/// Where the vendor file is unless `$KEYCAP_VENDOR_DIR` says otherwise.
+/// Where the vendor file is unless `$BARDO_KEY_REMAP_VENDOR_DIR` says otherwise.
 pub const VENDOR_DIR: &str = "/usr/lib/keycap";
 
 /// The vendor layer from `dir`, judged on the real file system.

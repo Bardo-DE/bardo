@@ -127,7 +127,7 @@ pub fn controls_of(phase: HelperPhase) -> Vec<HelperControl> {
     }
 }
 
-/// An app as the card names it: the last word of its name (`Notes` for `org.quire.Notes`).
+/// An app as the card names it: the last word of its name (`Notes` for `org.bardo.Notes`).
 pub fn app_label(app: &AppName) -> String {
     let name = app.as_str();
     name.rsplit('.').next().unwrap_or(name).to_owned()

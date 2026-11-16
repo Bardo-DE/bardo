@@ -1,11 +1,11 @@
-//! `org.quire.Memory1.Recall`: readers and proposals. Callers are the action router and the
+//! `org.bardo.Memory1.Recall`: readers and proposals. Callers are the action router and the
 //! shell; every call is audited as `Memory.Read`.
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Memory1.Recall",
-    default_service = "org.quire.Memory1",
-    default_path = "/org/quire/Memory1"
+    interface = "org.bardo.Memory1.Recall",
+    default_service = "org.bardo.Memory1",
+    default_path = "/org/bardo/Memory1"
 )]
 pub trait Recall {
     /// Search (`RecallQuery` JSON); answers `Vec<RecallHit>` JSON.

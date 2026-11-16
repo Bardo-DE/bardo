@@ -1,4 +1,4 @@
-//! Handing a file to the viewer: one call on `org.quire.Anyview1` over a connection to the session
+//! Handing a file to the viewer: one call on `org.bardo.Anyview1` over a connection to the session
 //! bus, in the shape the viewer's own platform crate writes (`anyview_platform::Request`). The bus
 //! starts the viewer for the call when it is installed with its activation file; when the call
 //! fails (no viewer on this machine, no session bus), the caller opens the file with the default

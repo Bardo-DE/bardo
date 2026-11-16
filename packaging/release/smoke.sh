@@ -10,8 +10,8 @@
 #
 #   --release DIR  the packed release (release.toml, release.toml.minisig, bundle.tar.zst)
 #   --pubkey FILE  the key it is signed with
-#   --helpers DIR  the built slipway-apply, slipway-rollback and slipway-health
-#   --policy FILE  slipway's polkit file (dist/org.quire.slipway.policy), installed as slipway's install does
+#   --helpers DIR  the built bardo-updater-apply, bardo-updater-rollback and bardo-updater-health
+#   --policy FILE  slipway's polkit file (dist/org.bardo.updater.policy), installed as slipway's install does
 #   --root DIR     the install root (default /opt/quire)
 #   --really       yes, this machine may be changed
 #
@@ -48,20 +48,20 @@ step "verify the release"
 "$HERE/verify.sh" "$release" --pubkey "$pub"
 
 step "install the key and the settings the helper reads"
-install -Dm644 "$pub" /usr/share/slipway/release.pub
+install -Dm644 "$pub" /usr/share/bardo/updater/release.pub
 install -d -m 755 /etc/slipway
-printf 'root = "%s"\npubkey_path = "/usr/share/slipway/release.pub"\n' "$root" >/etc/slipway/config.toml
+printf 'root = "%s"\npubkey_path = "/usr/share/bardo/updater/release.pub"\n' "$root" >/etc/bardo/updater.toml
 
 step "slipway's own install: three programs and one polkit file"
-for program in slipway-apply slipway-rollback slipway-health; do
+for program in bardo-updater-apply bardo-updater-rollback bardo-updater-health; do
   [ -x "$helpers/$program" ] || { echo "smoke.sh: $helpers/$program is not there" >&2; exit 2; }
   install -Dm755 "$helpers/$program" "/usr/libexec/$program"
 done
-install -Dm644 "$policy" /usr/share/polkit-1/actions/org.quire.slipway.policy
+install -Dm644 "$policy" /usr/share/polkit-1/actions/org.bardo.updater.policy
 "$HERE/check-helpers.sh"
-helper=/usr/libexec/slipway-apply
+helper=/usr/libexec/bardo/bardo-updater-apply
 
-step "slipway-apply"
+step "bardo-updater-apply"
 "$helper" "$release"
 
 step "what is in place"

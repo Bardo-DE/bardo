@@ -44,7 +44,7 @@ fn a_table_of_callers_and_the_roles_their_standing_backs() {
         row(
             "a terminal's child is the cli role",
             Found::Terminal,
-            Some(("org.quire.Do", &[CallerRole::Cli])),
+            Some(("org.bardo.Do", &[CallerRole::Cli])),
         ),
         row(
             "an app scope the configuration does not list is a plain app",
@@ -53,48 +53,48 @@ fn a_table_of_callers_and_the_roles_their_standing_backs() {
         ),
         row(
             "an app scope the configuration lists plays its roles",
-            held("org.quire.Do", Role::App),
-            Some(("org.quire.Do", &[CallerRole::Cli])),
+            held("org.bardo.Do", Role::App),
+            Some(("org.bardo.Do", &[CallerRole::Cli])),
         ),
         row(
             "the shell's unit, with the system's sheet_host role, plays the sheet roles",
-            held("org.quire.Shell", Role::SheetHost),
-            Some(("org.quire.Shell", SILL)),
+            held("org.bardo.Shell", Role::SheetHost),
+            Some(("org.bardo.Shell", SILL)),
         ),
         row(
             "a scope that claims the shell's app is a plain app and plays no sheet role",
-            held("org.quire.Shell", Role::App),
-            Some(("org.quire.Shell", &[])),
+            held("org.bardo.Shell", Role::App),
+            Some(("org.bardo.Shell", &[])),
         ),
         row(
             "the shell's app with the agent role plays no sheet role either",
-            held("org.quire.Shell", Role::Agent),
-            Some(("org.quire.Shell", &[])),
+            held("org.bardo.Shell", Role::Agent),
+            Some(("org.bardo.Shell", &[])),
         ),
         row(
             "companiond's unit plays the companion role",
-            held("org.quire.Companion1", Role::Agent),
-            Some(("org.quire.Companion1", &[CallerRole::Companion])),
+            held("org.bardo.Companion1", Role::Agent),
+            Some(("org.bardo.Companion1", &[CallerRole::Companion])),
         ),
         row(
             "an app scope called like companiond plays nothing",
-            held("org.quire.Companion1", Role::App),
-            Some(("org.quire.Companion1", &[])),
+            held("org.bardo.Companion1", Role::App),
+            Some(("org.bardo.Companion1", &[])),
         ),
         row(
             "readerd's unit plays the reader role",
-            held("org.quire.Reader1", Role::Agent),
-            Some(("org.quire.Reader1", &[CallerRole::Reader])),
+            held("org.bardo.Reader1", Role::Agent),
+            Some(("org.bardo.Reader1", &[CallerRole::Reader])),
         ),
         row(
             "cuad's unit plays the cua role, an agent of that app does not",
-            held("org.quire.Cua1", Role::Cua),
-            Some(("org.quire.Cua1", &[CallerRole::Cua])),
+            held("org.bardo.ComputerUse1", Role::Cua),
+            Some(("org.bardo.ComputerUse1", &[CallerRole::Cua])),
         ),
         row(
             "an agent in cuad's app is not cuad",
-            held("org.quire.Cua1", Role::Agent),
-            Some(("org.quire.Cua1", &[])),
+            held("org.bardo.ComputerUse1", Role::Agent),
+            Some(("org.bardo.ComputerUse1", &[])),
         ),
     ];
     for r in rows {
@@ -105,22 +105,22 @@ fn a_table_of_callers_and_the_roles_their_standing_backs() {
 
 #[test]
 fn the_acp_apps_count_only_while_their_settings_are_on() {
-    let acp = held("org.quire.Acp", Role::Agent);
+    let acp = held("org.bardo.Acp", Role::Agent);
     assert_eq!(who(&acp, &AcpGate::shut()), None);
     let on = AcpGate::new(true);
     assert_eq!(
         who(&acp, &on),
         Some((
-            "org.quire.Acp".to_owned(),
+            "org.bardo.Acp".to_owned(),
             vec![CallerRole::Editor, CallerRole::Companion]
         ))
     );
-    let host = held("org.quire.AcpAgent", Role::Agent);
+    let host = held("org.bardo.AcpAgent", Role::Agent);
     assert_eq!(who(&host, &on), None);
     on.set_agents(true);
     assert_eq!(
         who(&host, &on),
-        Some(("org.quire.AcpAgent".to_owned(), vec![CallerRole::AcpAgent]))
+        Some(("org.bardo.AcpAgent".to_owned(), vec![CallerRole::AcpAgent]))
     );
 }
 
@@ -129,7 +129,7 @@ fn the_identity_is_unsandboxed_until_something_better_is_known() {
     let caller = derive(
         &config(),
         &AcpGate::shut(),
-        &held("org.quire.Mail", Role::App),
+        &held("org.bardo.Mail", Role::App),
     )
     .expect("caller");
     assert_eq!(caller.app.isolation, Isolation::Unsandboxed);
@@ -171,27 +171,27 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
     let root = root.path();
     let table = callers::shipped();
     for (pid, leaf, main) in [
-        (1, "sill.service", Main::Yes),
+        (1, "bardo-shell.service", Main::Yes),
         (2, "sill-shell.scope", Main::No),
-        (3, "sill.service", Main::No),
-        (4, "companiond.service", Main::Yes),
-        (5, "app-org.quire.Companion1-1.scope", Main::No),
+        (3, "bardo-shell.service", Main::No),
+        (4, "bardo-companiond.service", Main::Yes),
+        (5, "app-org.bardo.Companion1-1.scope", Main::No),
         (6, "vte-spawn-1b2c.scope", Main::No),
         (7, "curl.service", Main::Yes),
-        (8, "docket-acp.scope", Main::No),
-        (9, "cuad.service", Main::Yes),
-        (10, "app-org.quire.Cua1-1.scope", Main::No),
+        (8, "bardo-agent-acp.scope", Main::No),
+        (9, "bardo-computer-use.service", Main::Yes),
+        (10, "app-org.bardo.Cua1-1.scope", Main::No),
         (11, "run-r4242.scope", Main::No),
     ] {
         put(root, pid, leaf, main);
     }
     // A scope has no main process: the editor's host is matched by the program it runs.
-    std::os::unix::fs::symlink("/usr/bin/docket-acp", root.join("8").join("exe")).expect("exe");
+    std::os::unix::fs::symlink("/usr/bin/bardo-agent-acp", root.join("8").join("exe")).expect("exe");
     let on = AcpGate::new(true);
     // A row: what it is, its pid, and the app and roles it is taken for (none: refused).
     type Row<'a> = (&'a str, u32, Option<(&'a str, &'a [CallerRole])>);
     let rows: [Row<'_>; 12] = [
-        ("the shell's unit", 1, Some(("org.quire.Shell", SILL))),
+        ("the shell's unit", 1, Some(("org.bardo.Shell", SILL))),
         ("the shell's old scope is nobody", 2, None),
         (
             "a process of the shell's unit that is not its main process",
@@ -201,36 +201,36 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
         (
             "companiond's unit",
             4,
-            Some(("org.quire.Companion1", &[CallerRole::Companion])),
+            Some(("org.bardo.Companion1", &[CallerRole::Companion])),
         ),
         (
             "an app scope called like companiond",
             5,
-            Some(("org.quire.Companion1", &[])),
+            Some(("org.bardo.Companion1", &[])),
         ),
         (
             "a terminal's child",
             6,
-            Some(("org.quire.Do", &[CallerRole::Cli])),
+            Some(("org.bardo.Do", &[CallerRole::Cli])),
         ),
         ("a unit the table does not name", 7, None),
         (
             "the editor's scope, while the setting is on",
             8,
             Some((
-                "org.quire.Acp",
+                "org.bardo.Acp",
                 &[CallerRole::Editor, CallerRole::Companion],
             )),
         ),
         (
             "cuad's unit",
             9,
-            Some(("org.quire.Cua1", &[CallerRole::Cua])),
+            Some(("org.bardo.ComputerUse1", &[CallerRole::Cua])),
         ),
         (
             "an app scope called like cuad",
             10,
-            Some(("org.quire.Cua1", &[])),
+            Some(("org.bardo.ComputerUse1", &[])),
         ),
         ("a scope nothing names", 11, None),
         ("no such process", 99, None),
@@ -249,14 +249,14 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
 #[test]
 fn the_users_file_cannot_make_an_app_the_shell() {
     let user = action_dbus::callers::table_from_toml(
-        "[[caller]]\napp = \"org.quire.Shell\"\nunit = \"mine.service\"\nrole = \"sheet_host\"\n\n\
-         [[caller]]\napp = \"org.quire.Shell\"\nunit = \"sill.service\"\nrole = \"app\"\n",
+        "[[caller]]\napp = \"org.bardo.Shell\"\nunit = \"mine.service\"\nrole = \"sheet_host\"\n\n\
+         [[caller]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nrole = \"app\"\n",
     )
     .expect("user table");
     let table = CallerTable::layered(callers::shipped(), user);
     let root = tempfile::tempdir().expect("scratch");
     put(root.path(), 1, "mine.service", Main::Yes);
-    put(root.path(), 2, "sill.service", Main::Yes);
+    put(root.path(), 2, "bardo-shell.service", Main::Yes);
     assert_eq!(
         found_in(root.path(), 1, &table),
         None,
@@ -265,7 +265,7 @@ fn the_users_file_cannot_make_an_app_the_shell() {
     let lowered = found_in(root.path(), 2, &table).expect("the unit is still named");
     assert_eq!(
         who(&lowered, &AcpGate::shut()),
-        Some(("org.quire.Shell".to_owned(), vec![])),
+        Some(("org.bardo.Shell".to_owned(), vec![])),
         "a user may lower a role"
     );
 }

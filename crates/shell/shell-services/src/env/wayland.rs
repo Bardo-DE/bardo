@@ -17,7 +17,7 @@ pub enum WaylandRoute {
     Environment,
     /// A socket by path: a live test's nested compositor, or one that is not there.
     Socket(PathBuf),
-    /// A connected socket the compositor handed the shell (`org.quire.Compositor1.Connect`):
+    /// A connected socket the compositor handed the shell (`org.bardo.Compositor1.Connect`):
     /// the shell's own standing, where `$WAYLAND_DISPLAY` is any app's.
     Handed(HandedSocket),
 }

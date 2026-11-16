@@ -1,4 +1,4 @@
-//! The person's AI keys, as an app asks for them (`org.quire.Accounts1.Keys` on accountd). An AI
+//! The person's AI keys, as an app asks for them (`org.bardo.Accounts1.Keys` on accountd). An AI
 //! key is accountd's, and inferd is the one that sends it to an AI company: an app never sees
 //! one. What an app gets is the person's yes to use their keys, a permit ([`GrantId`]), after
 //! accountd shows the consent sheet; an app that holds a permit already is answered with it and

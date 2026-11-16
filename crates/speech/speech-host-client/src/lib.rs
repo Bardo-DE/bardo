@@ -1,4 +1,4 @@
-//! The client of `speech-host`, the STT engine process, over `$XDG_RUNTIME_DIR/inferd/<engine>.sock`.
+//! The client of `bardo-speech-host`, the STT engine process, over `$XDG_RUNTIME_DIR/inferd/<engine>.sock`.
 //!
 //! It speaks `speech_provider::host_wire` (a 4-byte length, then JSON). `SpeechHostClient` is
 //! one of the `SttBackend` arms in porter's inferd.

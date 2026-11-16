@@ -11,7 +11,7 @@
 #           tree. It is piped to accountd's standard input (never put in argv or the environment,
 #           never printed or read by this script). Without it, accountd asks at its own prompt
 #           with echo off.
-# --providers DIR   where openrouter.toml is (default $PORTER_PROVIDERS, else ~/porter/providers).
+# --providers DIR   where openrouter.toml is (default $BARDO_ACCOUNT_PROVIDERS, else ~/porter/providers).
 #
 # accountd runs on a private bus (dbus-run-session): the real session bus, the real Secret Service
 # and the real home are never touched.
@@ -23,7 +23,7 @@ in_git() { (cd "$(dirname "$1")" && git rev-parse --is-inside-work-tree >/dev/nu
 
 [ $# -ge 2 ] || die "usage: cloud-key.sh DIR ACCOUNTD [--key-file FILE] [--providers DIR]"
 home=$1; accountd=$2; shift 2
-keyfile=; providers=${PORTER_PROVIDERS:-$HOME/porter/providers}
+keyfile=; providers=${BARDO_ACCOUNT_PROVIDERS:-$HOME/porter/providers}
 while [ $# -gt 0 ]; do
   case "$1" in
     --key-file) [ $# -ge 2 ] || die "--key-file needs a value"; keyfile=$2; shift 2 ;;
@@ -50,11 +50,11 @@ mkdir -p "$home/state" "$home/config" "$home/data/porter/providers" "$home/run"
 chmod 700 "$home/run"
 cp "$providers/openrouter.toml" "$home/data/porter/providers/"
 
-add=(add openrouter --allow org.quire.Intents --allow org.quire.Companion --allow org.quire.Reader)
+add=(add openrouter --allow org.bardo.Intents --allow org.bardo.Companion --allow org.bardo.Reader)
 run() {
   env -i PATH="$PATH" HOME="$home" XDG_STATE_HOME="$home/state" XDG_CONFIG_HOME="$home/config" \
     XDG_DATA_HOME="$home/data" XDG_RUNTIME_DIR="$home/run" XDG_CACHE_HOME="$home/run" \
-    ACCOUNTD_KEYS="file:$home/accountd.keys" \
+    BARDO_ACCOUNTD_KEYS="file:$home/accountd.keys" \
     dbus-run-session -- "$accountd" "${add[@]}"
 }
 if [ -n "$keyfile" ]; then

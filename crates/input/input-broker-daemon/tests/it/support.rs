@@ -16,7 +16,7 @@ pub(crate) const KEYCAP_UID: Uid = Uid::new(61_234);
 /// palmrest's dynamic user.
 pub(crate) const PALMREST_UID: Uid = Uid::new(61_235);
 /// palmrest's control group: a system service's.
-pub(crate) const PALMREST_CGROUP: &str = "/system.slice/palmrest.service";
+pub(crate) const PALMREST_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
 
 pub(crate) fn listed(role: &str, proof: Proof, uid: Uid, cgroup: &str) -> Caller {
     let role = RoleName::new(role).expect("a valid role name");
@@ -40,7 +40,7 @@ pub(crate) fn keycap() -> Caller {
         "keymap_daemon",
         Proof::Full,
         KEYCAP_UID,
-        "/system.slice/keycap.service",
+        "/system.slice/bardo-key-remap.service",
     )
 }
 

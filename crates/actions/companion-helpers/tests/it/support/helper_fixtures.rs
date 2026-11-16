@@ -45,7 +45,7 @@ pub fn reach() -> TaskPolicy {
         space: space("work"),
         from: vec![],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::UndoableWrite,
         )]),
         kinds: BTreeSet::from([EntityKind::parse("mail.thread").expect("kind")]),
@@ -155,17 +155,17 @@ pub fn chosen_ref() -> ModelRef {
     }
 }
 
-pub const READ: &str = "org_quire_Mail-mail_thread_read";
-pub const ARCHIVE: &str = "org_quire_Mail-mail_thread_archive";
-pub const DELETE: &str = "org_quire_Mail-mail_thread_delete";
+pub const READ: &str = "org_bardo_Mail-mail_thread_read";
+pub const ARCHIVE: &str = "org_bardo_Mail-mail_thread_archive";
+pub const DELETE: &str = "org_bardo_Mail-mail_thread_delete";
 
 pub fn thread(key: &str) -> serde_json::Value {
-    json!({ "target": { "app": "org.quire.Mail", "kind": "mail.thread", "key": key } })
+    json!({ "target": { "app": "org.bardo.Mail", "kind": "mail.thread", "key": key } })
 }
 
 /// A target list of one thread, for the actions that act on many.
 pub fn threads(key: &str) -> serde_json::Value {
-    json!({ "target": [{ "app": "org.quire.Mail", "kind": "mail.thread", "key": key }] })
+    json!({ "target": [{ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key }] })
 }
 
 pub fn work_form(name: &str, model: HelperModel) -> HelperForm {
@@ -174,7 +174,7 @@ pub fn work_form(name: &str, model: HelperModel) -> HelperForm {
         role: Role::parse("Looks after the mail.").expect("role"),
         space: space("work"),
         model,
-        apps: vec![app("org.quire.Mail")],
+        apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Change,
         steps: Count(8),
         kind: Default::default(),
@@ -191,7 +191,7 @@ pub async fn editor_says(
 ) -> SayReply {
     let editor = Intents::over(InProcess::new(
         w.router.clone(),
-        caller("org.quire.Acp", CallerRole::Editor),
+        caller("org.bardo.Acp", CallerRole::Editor),
     ));
     let id = editor
         .session_turn(
@@ -213,7 +213,7 @@ pub async fn editor_says(
             session: session.clone(),
             id,
             text: text.into(),
-            from: Caller::editor(app("org.quire.Acp")),
+            from: Caller::editor(app("org.bardo.Acp")),
         },
     )
     .await

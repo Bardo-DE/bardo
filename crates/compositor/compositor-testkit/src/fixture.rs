@@ -266,7 +266,7 @@ impl Fixture {
     }
 
     /// The administrator's floor changed on disk and casement was told to read it again
-    /// (`casementctl privacy reload`).
+    /// (`bardo-compositorctl privacy reload`).
     pub fn reload_floor(&mut self) {
         compositor_app::privacy::reload_floor(&mut self.state);
         self.pump();

@@ -2,15 +2,15 @@
 """A small client for the jailed chain's acceptance checks (stdlib plus PyGObject's Gio).
 
   portal_client.py fake-shell LOG ANSWER [ANSWER...]
-      Own org.quire.Shell and serve Shell1.PickCaptureSource, Shell1.PickColor (a fixed colour,
-      or a cancel for `none`) and Shell1.AskPermission (the answer in TRANSOM_FAKE_ACCESS: 0
+      Own org.bardo.Shell and serve Shell1.PickCaptureSource, Shell1.PickColor (a fixed colour,
+      or a cancel for `none`) and Shell1.AskPermission (the answer in BARDO_PORTAL_FAKE_ACCESS: 0
       granted, the default; 1 denied; 2 dismissed). Every call is appended to LOG as
       one line; the answer is the sources given, each `output:NAME` or `window:IDENTIFIER`, with
-      the pointer mode from TRANSOM_FAKE_CURSOR (default: the first mode the app allows). `none` answers with a cancel.
+      the pointer mode from BARDO_PORTAL_FAKE_CURSOR (default: the first mode the app allows). `none` answers with a cancel.
       Runs until killed.
 
   portal_client.py cast TYPES PERSIST [RESTORE_TOKEN]
-      Register as the app org.quire.CastCheck, then run ScreenCast CreateSession, SelectSources and
+      Register as the app org.bardo.CastCheck, then run ScreenCast CreateSession, SelectSources and
       Start through the portal frontend (a share is remembered only for an app with an id). TYPES is
       the portal bit set (1 display, 2 window), PERSIST the persist mode. Prints one line:
       `response=N node=ID token=TOKEN size=WxH`; the node and token are empty when absent.
@@ -33,7 +33,7 @@ except (ImportError, ValueError):
     print("portal_client.py: PyGObject (Gio) is not installed", file=sys.stderr)
     sys.exit(3)
 
-SHELL_XML = """<node><interface name="org.quire.Shell1">
+SHELL_XML = """<node><interface name="org.bardo.Shell1">
   <method name="PickCaptureSource">
     <arg type="s" name="app_label" direction="in"/><arg type="u" name="kinds" direction="in"/>
     <arg type="u" name="multiple" direction="in"/><arg type="au" name="cursor_modes" direction="in"/>
@@ -58,8 +58,8 @@ PORTAL_PATH = "/org/freedesktop/portal/desktop"
 def fake_shell(log_path, answers):
     import os
     sources = [] if answers == ["none"] else [tuple(a.split(":", 1)) for a in answers]
-    cursor = os.environ.get("TRANSOM_FAKE_CURSOR")
-    access = int(os.environ.get("TRANSOM_FAKE_ACCESS", "0"))
+    cursor = os.environ.get("BARDO_PORTAL_FAKE_CURSOR")
+    access = int(os.environ.get("BARDO_PORTAL_FAKE_ACCESS", "0"))
 
     def on_call(conn, sender, path, iface, method, params, invocation):
         if method == "PickColor":
@@ -87,9 +87,9 @@ def fake_shell(log_path, answers):
 
     def on_bus(conn, name):
         node = Gio.DBusNodeInfo.new_for_xml(SHELL_XML)
-        conn.register_object("/org/quire/Shell1", node.interfaces[0], on_call, None, None)
+        conn.register_object("/org/bardo/Shell1", node.interfaces[0], on_call, None, None)
 
-    Gio.bus_own_name(Gio.BusType.SESSION, "org.quire.Shell", Gio.BusNameOwnerFlags.NONE,
+    Gio.bus_own_name(Gio.BusType.SESSION, "org.bardo.Shell", Gio.BusNameOwnerFlags.NONE,
                      on_bus, None, None)
     GLib.MainLoop().run()
 
@@ -98,7 +98,7 @@ def fake_shell(log_path, answers):
 # identity (PORTAL-16), and a host app has one only once it registers it with the portal; even then
 # it is kept only when the app is shown to be what its id says (NEW-PI-2), which this client, run
 # from the source tree with no desktop entry of root's, never is.
-CAST_APP_ID = "org.quire.CastCheck"
+CAST_APP_ID = "org.bardo.CastCheck"
 
 
 def register(conn, app_id):

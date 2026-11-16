@@ -1,4 +1,4 @@
-//! The caller table as files: `/etc/porter/callers.toml` and the user's own, at the paths a
+//! The caller table as files: `/etc/bardo/accountd-callers.toml` and the user's own, at the paths a
 //! daemon's main passes in. One reader for every daemon (accountd and syncd read the same two
 //! files, PLAN §2.1); the table's type is [`CallerTable`]. Behind the `file` feature,
 //! which brings the TOML reader in: an app that only calls the daemons does not need it.
@@ -73,11 +73,11 @@ mod tests {
     use account_core::AppName;
     use base_testkit::Scratch;
 
-    const SYSTEM: &str = "[[caller]]\napp = \"org.quire.Settings\"\nrole = \"settings\"\n\n\
-        [[caller]]\napp = \"org.quire.Inference\"\nunit = \"inferd.service\"\nrole = \"porter_daemon\"\n\n\
+    const SYSTEM: &str = "[[caller]]\napp = \"org.bardo.Settings\"\nrole = \"settings\"\n\n\
+        [[caller]]\napp = \"org.bardo.Inference\"\nunit = \"bardo-inferd.service\"\nrole = \"porter_daemon\"\n\n\
         [[caller]]\napp = \"org.example.Sheets\"\nrole = \"sheet_host\"\n";
-    const USER: &str = "[[caller]]\napp = \"org.quire.Settings\"\nrole = \"app\"\n\n\
-        [[caller]]\napp = \"org.example.Mine\"\nunit = \"inferd.service\"\nrole = \"app\"\n";
+    const USER: &str = "[[caller]]\napp = \"org.bardo.Settings\"\nrole = \"app\"\n\n\
+        [[caller]]\napp = \"org.example.Mine\"\nunit = \"bardo-inferd.service\"\nrole = \"app\"\n";
 
     fn scratch(name: &str) -> Scratch {
         Scratch::new(&format!("caller-files-{name}"))
@@ -94,17 +94,17 @@ mod tests {
         std::fs::write(&system, SYSTEM).expect("system");
         std::fs::write(&user, USER).expect("user");
         let merged = load_callers(&system, &user).expect("load");
-        let unit = merged.resolve_unit("inferd.service").expect("unit");
+        let unit = merged.resolve_unit("bardo-inferd.service").expect("unit");
         assert_eq!(unit.app.name.as_str(), "org.example.Mine");
         assert_eq!(unit.role, CallerRole::App);
-        assert_eq!(merged.role_of(&name("org.quire.Settings")), CallerRole::App);
+        assert_eq!(merged.role_of(&name("org.bardo.Settings")), CallerRole::App);
         assert_eq!(
             merged.role_of(&name("org.example.Sheets")),
             CallerRole::SheetHost
         );
         let alone = load_callers(&system, &dir.join("missing.toml")).expect("alone");
         assert_eq!(
-            alone.role_of(&name("org.quire.Settings")),
+            alone.role_of(&name("org.bardo.Settings")),
             CallerRole::Settings
         );
     }
@@ -139,15 +139,15 @@ mod tests {
     #[test]
     fn a_row_may_carry_the_name_a_person_reads() {
         let table = table_from_toml(
-            "[[caller]]\napp = \"org.quire.Sync\"\nunit = \"syncd.service\"\nrole = \"porter_daemon\"\nname = \"Sync\"\n\n\
-             [[caller]]\napp = \"org.quire.Settings\"\nrole = \"settings\"\n",
+            "[[caller]]\napp = \"org.bardo.Sync\"\nunit = \"bardo-syncd.service\"\nrole = \"porter_daemon\"\nname = \"Sync\"\n\n\
+             [[caller]]\napp = \"org.bardo.Settings\"\nrole = \"settings\"\n",
         )
         .expect("table");
         assert_eq!(
-            table.title_of(&name("org.quire.Sync")),
+            table.title_of(&name("org.bardo.Sync")),
             Some(&crate::AppTitle("Sync".to_owned()))
         );
-        assert_eq!(table.title_of(&name("org.quire.Settings")), None);
+        assert_eq!(table.title_of(&name("org.bardo.Settings")), None);
         assert!(
             table_from_toml("[[caller]]\napp = \"org.x.A\"\nrole = \"app\"\nname = 3\n").is_err()
         );

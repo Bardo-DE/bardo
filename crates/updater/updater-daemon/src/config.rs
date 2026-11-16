@@ -1,6 +1,6 @@
 //! The configuration: read only, never written by slipway.
 //!
-//! Two files, one meaning. The system file (`/etc/slipway/config.toml`, written by the installer) holds
+//! Two files, one meaning. The system file (`/etc/bardo/updater.toml`, written by the installer) holds
 //! every setting, including the two that decide what may be installed and where: `root` and
 //! `pubkey_path`. The privileged helper reads only that file, and the daemon reads it first, so the two
 //! cannot disagree. The person's own file (`$XDG_CONFIG_HOME/slipway/config.toml`) may only change what
@@ -22,11 +22,11 @@ pub const DEFAULT_SETTINGS_COMMAND: &str = "detent --page software-update";
 /// The name shown for the software.
 pub const DEFAULT_NAME: &str = "Quire";
 /// Where the privileged helper lives (the polkit action names this path).
-pub const DEFAULT_APPLY_PATH: &str = "/usr/libexec/slipway-apply";
+pub const DEFAULT_APPLY_PATH: &str = "/usr/libexec/bardo/bardo-updater-apply";
 /// Where the program that goes back to the previous release lives (it has its own polkit action).
-pub const DEFAULT_ROLLBACK_PATH: &str = "/usr/libexec/slipway-rollback";
+pub const DEFAULT_ROLLBACK_PATH: &str = "/usr/libexec/bardo/bardo-updater-rollback";
 /// Where the program that keeps the root-side health record lives.
-pub const DEFAULT_HEALTH_PATH: &str = "/usr/libexec/slipway-health";
+pub const DEFAULT_HEALTH_PATH: &str = "/usr/libexec/bardo/bardo-updater-health";
 /// The settings, each with a default.
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
 #[serde(default)]

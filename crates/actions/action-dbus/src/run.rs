@@ -1,4 +1,4 @@
-//! `org.quire.Intents1.Run`: performing, previewing, suggesting and undoing.
+//! `org.bardo.Intents1.Run`: performing, previewing, suggesting and undoing.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -6,9 +6,9 @@ use zbus::zvariant::OwnedObjectPath;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Run",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Run",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Run {
     /// Performs a call (`CallRequest` JSON; the session is `Option<SessionId>` JSON, `null` for the person's surfaces and callers with one session; the window is `Option<WindowKey>` JSON). Answers a Request object whose `Response` carries the `Outcome` or `CallRefusal`. Options: `watch` (bool) and `activation` (string, the launcher's activation token: honoured from the launcher role only, dropped for every other caller, passed unchanged to the app and never logged).
@@ -40,7 +40,7 @@ pub trait Run {
 #[derive(Debug, Default)]
 pub struct RunSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Run")]
+#[zbus::interface(name = "org.bardo.Intents1.Run")]
 impl RunSkeleton {
     fn perform(
         &self,

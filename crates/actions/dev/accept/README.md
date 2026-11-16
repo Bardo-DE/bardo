@@ -20,10 +20,10 @@ the world drops. No environment variable turns it on: the library reads none.
 | Piece | How it runs |
 |---|---|
 | intentd, companiond, readerd | their own `run()`, one process each (`src/bin/accept-*.rs` are the packaged mains under names that cannot collide in one target dir), `env_clear`, scratch HOME and XDG dirs, the private bus |
-| memoryd (almanac) | the packaged binary, built by `crates/actions/action-accept/build.rs` from `../almanac` with `--features test-keys,test-proc-root` into `<target>/accept-siblings/almanac`; `env_clear`, scratch dirs, `MEMORYD_KEYS=file:<scratch>/keys/memoryd.keys` (no Secret Service on the bus), `MEMORYD_PROC_ROOT=<scratch>/proc`; its Landlock sandbox stays ON. Callers by unit in `<config>/quire/memory-callers.toml` (intentd agent, sill sheet_host, companiond, readerd) |
-| accountd (porter) | the packaged binary, built the same way from `../porter` with `--features test-keys,test-proc-root`; it holds the AI keys and starts before inferd, which asks it for them. `env_clear`, scratch dirs, `ACCOUNTD_KEYS=file:<scratch>/keys/accountd.keys` (or the key home's file), `ACCOUNTD_PROC_ROOT=<scratch>/proc`, `ACCOUNTD_TAILSCALE_SOCKET` at a scratch path. Callers by unit in `<scratch>/system/accountd-callers.toml`, named by `PORTER_SYSTEM_CALLERS` (inferd is the `ai_broker`; a row for the agent launcher) |
-| inferd (porter) | the packaged binary, built the same way from `../porter` with `--features test-proc-root`; `INFERD_PROC_ROOT=<scratch>/proc`; `inferd.toml` in the scratch config names the replay engine `scripted` (the cassette) and picks it for every text tier (`[ai.model.text]`); the callers by unit (`[apps]`: memoryd, intentd, companiond, readerd) are `<scratch>/system/inferd-callers.toml`, named by `PORTER_INFERD_CALLERS` |
-| caller identity | every daemon reads the callers' `<scratch>/proc/<pid>/cgroup` and the unit's main pid in `<scratch>/proc/units/`, which `World` writes for each daemon it spawns (`.../app.slice/<name>.service`) and for the test process as the shell (`sill.service`, its main process); the daemons' system callers files are the shipped `dist/*-callers.toml` copied to `<scratch>/system/`; an app is `.../app-<App>-1.scope` (`Cgroup::AppScope`, `as_app`), docket-acp is `docket-acp.scope` |
+| memoryd (almanac) | the packaged binary, built by `crates/actions/action-accept/build.rs` from `../almanac` with `--features test-keys,test-proc-root` into `<target>/accept-siblings/almanac`; `env_clear`, scratch dirs, `BARDO_MEMORYD_KEYS=file:<scratch>/keys/memoryd.keys` (no Secret Service on the bus), `BARDO_MEMORYD_PROC_ROOT=<scratch>/proc`; its Landlock sandbox stays ON. Callers by unit in `<config>/quire/memoryd-callers.toml` (intentd agent, sill sheet_host, companiond, readerd) |
+| accountd (porter) | the packaged binary, built the same way from `../porter` with `--features test-keys,test-proc-root`; it holds the AI keys and starts before inferd, which asks it for them. `env_clear`, scratch dirs, `BARDO_ACCOUNTD_KEYS=file:<scratch>/keys/accountd.keys` (or the key home's file), `BARDO_ACCOUNTD_PROC_ROOT=<scratch>/proc`, `BARDO_ACCOUNTD_TAILSCALE_SOCKET` at a scratch path. Callers by unit in `<scratch>/system/accountd-callers.toml`, named by `BARDO_ACCOUNTD_SYSTEM_CALLERS` (inferd is the `ai_broker`; a row for the agent launcher) |
+| inferd (porter) | the packaged binary, built the same way from `../porter` with `--features test-proc-root`; `BARDO_INFERD_PROC_ROOT=<scratch>/proc`; `inferd.toml` in the scratch config names the replay engine `scripted` (the cassette) and picks it for every text tier (`[ai.model.text]`); the callers by unit (`[apps]`: memoryd, intentd, companiond, readerd) are `<scratch>/system/inferd-callers.toml`, named by `BARDO_INFERD_CALLERS` |
+| caller identity | every daemon reads the callers' `<scratch>/proc/<pid>/cgroup` and the unit's main pid in `<scratch>/proc/units/`, which `World` writes for each daemon it spawns (`.../app.slice/<name>.service`) and for the test process as the shell (`bardo-shell.service`, its main process); the daemons' system callers files are the shipped `dist/*-callers.toml` copied to `<scratch>/system/`; an app is `.../app-<App>-1.scope` (`Cgroup::AppScope`, `as_app`), bardo-agent-acp is `bardo-agent-acp.scope` |
 | the bus | `action-testbus`'s `dbus-daemon`, killed by PID on drop, with a watchdog if the test dies |
 
 ## What is scripted
@@ -41,12 +41,12 @@ full view is `Record::On`'s output.
 
 | Piece | Why | File |
 |---|---|---|
-| `org.quire.Confirm1` (sill's sheet) | owns `org.quire.Confirm1` and `org.quire.Shell` (where intentd sends the sheet), and the test process is `sill.service`, so intentd derives sill's `confirm`, `launcher` and `control` roles from `intentd.toml` as it would for sill; answers Allow (with a receipt) or Refuse from a queue the test fills | `src/confirm.rs` |
-| `org.quire.Mail` provider | `org.quire.IntentProvider1` served with `docket_provider::serve_on` for the manifest `fixtures/org.quire.Mail.toml`; holds a forward or send for an undo window like mailo | `src/provider.rs` |
+| `org.bardo.Confirm1` (sill's sheet) | owns `org.bardo.Confirm1` and `org.bardo.Shell` (where intentd sends the sheet), and the test process is `bardo-shell.service`, so intentd derives sill's `confirm`, `launcher` and `control` roles from `actiond.toml` as it would for sill; answers Allow (with a receipt) or Refuse from a queue the test fills | `src/confirm.rs` |
+| `org.bardo.Mail` provider | `org.bardo.IntentProvider1` served with `docket_provider::serve_on` for the manifest `fixtures/org.bardo.Mail.toml`; holds a forward or send for an undo window like mailo | `src/provider.rs` |
 
 ## What mailo's real provider must match
 
-The manifest `dev/accept/fixtures/org.quire.Mail.toml` is the contract the run proves:
+The manifest `dev/accept/fixtures/org.bardo.Mail.toml` is the contract the run proves:
 
 - `mail.thread.search` (Read, `Entities(mail.thread)`), `mail.thread.read` (Read, text result with
   `trust = third_party(mail)`), `mail.contact.search` (Read, `Entities(mail.contact)`, trusted
@@ -58,7 +58,7 @@ The manifest `dev/accept/fixtures/org.quire.Mail.toml` is the contract the run p
   (`to`): the sheet draws a recipient quoted from mail when the label is untrusted.
 - `Perform` of an Outbound action answers `Undoable::Yes(token)` valid for the send window and
   `Undo(token, actor)` cancels the held send; after the window `Undo` answers `UndoFault::Gone`.
-- Every member but `Summon` refuses a caller that is not the owner of `org.quire.Intents1`.
+- Every member but `Summon` refuses a caller that is not the owner of `org.bardo.Intents1`.
 - Action names carry the app prefix (`mail.`): the spec's `contacts.search` is
   `mail.contact.search`.
 

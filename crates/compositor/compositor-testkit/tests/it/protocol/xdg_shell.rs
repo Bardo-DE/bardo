@@ -22,7 +22,7 @@ use desktop_protocols::vocab::PressEdge;
 use std::path::PathBuf;
 use std::time::Duration;
 
-/// Whether the golden files are replaced (`CASEMENT_BLESS=1`, deliberate).
+/// Whether the golden files are replaced (`BARDO_COMPOSITOR_BLESS=1`, deliberate).
 pub(crate) fn blessing() -> bool {
     Env::of_process().bless
 }
@@ -183,7 +183,7 @@ pub(crate) enum Corner {
     BottomRight,
 }
 
-/// Compares `actual` with the golden at `path`; with `CASEMENT_BLESS=1` the golden is replaced
+/// Compares `actual` with the golden at `path`; with `BARDO_COMPOSITOR_BLESS=1` the golden is replaced
 /// (deliberate, with a reason in the commit).
 pub(crate) fn check_golden(path: &std::path::Path, actual: &str) -> Result<(), String> {
     let golden = std::fs::read_to_string(path).unwrap_or_default();

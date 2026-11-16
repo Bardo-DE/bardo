@@ -88,7 +88,7 @@ mod tests {
 
     fn action() -> ActionRef {
         ActionRef {
-            app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+            app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
             name: ActionName::parse("mail.message.forward").expect("name"),
         }
     }

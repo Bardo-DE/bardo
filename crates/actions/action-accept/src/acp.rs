@@ -1,8 +1,8 @@
-//! The editor's side of an ACP run: `docket-acp` as a process on the private bus, spoken to over
+//! The editor's side of an ACP run: `bardo-agent-acp` as a process on the private bus, spoken to over
 //! its stdin and stdout by a scripted peer. The process is placed in the fake proc root as the
-//! scope it is started in (`docket-acp.scope`, a plain agent of the app `org.quire.Acp`), which
+//! scope it is started in (`bardo-agent-acp.scope`, a plain agent of the app `org.bardo.Acp`), which
 //! is how intentd, inferd and memoryd know it: the callers files and tables the world writes name
-//! that scope (`org.quire.Acp` is an editor and a companion in the shipped `intentd.toml`).
+//! that scope (`org.bardo.Acp` is an editor and a companion in the shipped `actiond.toml`).
 
 use crate::world::{Cgroup, DaemonEnv, GIVE_UP, World, env_of, extra_env, place};
 use action_testbus::Reaped;
@@ -12,7 +12,7 @@ use std::process::{Command, Stdio};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, Lines};
 use tokio::process::{ChildStdin, ChildStdout};
 
-/// A scripted editor on a running `docket-acp`.
+/// A scripted editor on a running `bardo-agent-acp`.
 pub struct AcpEditor {
     // Declared first: the process goes before its pipes.
     _process: Reaped,
@@ -37,15 +37,15 @@ impl AcpEditor {
         command
             .env_clear()
             .envs(env_of(dir))
-            .envs(extra_env(dir, "docket-acp", DaemonEnv::default()))
+            .envs(extra_env(dir, "bardo-agent-acp", DaemonEnv::default()))
             .env("DBUS_SESSION_BUS_ADDRESS", world.address())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::from(
-                std::fs::File::create(dir.join("logs/docket-acp.log")).expect("log"),
+                std::fs::File::create(dir.join("logs/bardo-agent-acp.log")).expect("log"),
             ));
-        let mut process = Reaped::spawn(&mut command).expect("docket-acp starts");
-        place(dir, process.pid(), Cgroup::Scope("docket-acp"));
+        let mut process = Reaped::spawn(&mut command).expect("bardo-agent-acp starts");
+        place(dir, process.pid(), Cgroup::Scope("bardo-agent-acp"));
         let child = process.child_mut();
         let stdin = ChildStdin::from_std(child.stdin.take().expect("stdin")).expect("stdin");
         let stdout = ChildStdout::from_std(child.stdout.take().expect("stdout")).expect("stdout");
@@ -67,7 +67,7 @@ impl AcpEditor {
     async fn read(&mut self) -> Value {
         let line = tokio::time::timeout(GIVE_UP, self.lines.next_line())
             .await
-            .expect("docket-acp answered in time")
+            .expect("bardo-agent-acp answered in time")
             .expect("read")
             .expect("the server closed");
         let message: Value = serde_json::from_str(&line).expect("json");

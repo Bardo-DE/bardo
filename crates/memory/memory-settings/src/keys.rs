@@ -1,4 +1,4 @@
-//! The key table: every `memory.*` key of the schema (`schema/almanac.settings.toml`), its
+//! The key table: every `memory.*` key of the schema (`schema/memory.settings.toml`), its
 //! rule and where its value goes. The tests hold the schema and this table to each other.
 
 use crate::{ConsolidateApply, ConsolidateWhen, MemorySettings};

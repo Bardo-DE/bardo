@@ -376,7 +376,7 @@ impl NoPlaceReason {
     }
 
     /// The reason's name in Pascal case, the last segment of its D-Bus error name
-    /// (`org.quire.Inference1.Error.NoAllowedPlace.NotReady`).
+    /// (`org.bardo.Inference1.Error.NoAllowedPlace.NotReady`).
     pub fn name(self) -> &'static str {
         match self {
             NoPlaceReason::NotReady => "NotReady",

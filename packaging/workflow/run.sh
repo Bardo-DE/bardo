@@ -54,7 +54,7 @@ wants() { [ "$PART" = all ] || [ "$PART" = "$1" ]; }
 require_session() {
   [ -z "${JAIL_SCRATCH:-}" ] || die "this is the test jail; run it on your real login"
   [ -n "${WAYLAND_DISPLAY:-}" ] || die "no Wayland display: run it in a terminal inside the sill (casement) session"
-  [ "${XDG_CURRENT_DESKTOP:-}" = quire ] || [ -n "${CASEMENT_SOCKET:-}" ] || pgrep -u "$USER" -x casement >/dev/null \
+  [ "${XDG_CURRENT_DESKTOP:-}" = quire ] || [ -n "${BARDO_COMPOSITOR_SOCKET:-}" ] || pgrep -u "$USER" -x casement >/dev/null \
     || die "this is not the sill (casement) session; log in to it first"
   command -v python3 >/dev/null || die "python3 is missing"
   python3 -c 'import tomllib' 2>/dev/null || die "python3 is older than 3.11 (no tomllib)"
@@ -108,7 +108,7 @@ close_app() { # UNIT PID: ask politely (stop the unit, else SIGTERM) and wait un
   sleep 1
 }
 
-record_gpu() { # KEY PHASE ROUND SILL_PID WINDOW_PID
+record_gpu() { # KEY PHASE ROUND BARDO_SHELL_PID WINDOW_PID
   local text
   text=$("${PY[@]}" gpu --pid "$4")
   case "$text" in none*) [ "$5" = - ] || [ "$5" = 0 ] || text=$("${PY[@]}" gpu --pid "$5") ;; esac
@@ -242,7 +242,7 @@ write_summary() {
   local prev
   prev=$(previous_run || true)
   {
-    echo "Workflow timing $(basename "$OUT")   release: $(readlink /opt/quire/current 2>/dev/null || echo unknown)   kernel: $(uname -r)   warm rounds: $ROUNDS"
+    echo "Workflow timing $(basename "$OUT")   release: $(readlink /opt/bardo/current 2>/dev/null || echo unknown)   kernel: $(uname -r)   warm rounds: $ROUNDS"
     echo
     "${PY[@]}" summarize --raw "$RAW" ${prev:+--previous "$prev/raw.tsv"} --answers "$ANSWERS"
   } >"$OUT/summary.txt"

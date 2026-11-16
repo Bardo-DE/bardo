@@ -258,7 +258,7 @@ mod tests {
     #[test]
     fn manifests_are_looked_for_beside_each_schema_folder_in_its_order() {
         let schemas = [
-            "/usr/share/quire/settings",
+            "/usr/share/bardo/settings",
             "/home/ada/.local/share/quire/settings",
         ]
         .map(PathBuf::from)
@@ -266,7 +266,7 @@ mod tests {
         assert_eq!(
             intent_dirs_beside(&schemas),
             [
-                "/usr/share/quire/intents",
+                "/usr/share/bardo/intents",
                 "/home/ada/.local/share/quire/intents"
             ]
             .map(PathBuf::from)

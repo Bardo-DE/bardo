@@ -135,7 +135,7 @@ pub(crate) async fn watching(
         .map_err(|_| TransportError::Closed)?;
     let rule = MatchRule::builder()
         .msg_type(Type::Signal)
-        .interface("org.quire.Intents1.Request")
+        .interface("org.bardo.Intents1.Request")
         .map_err(bus)?
         .build();
     let messages = MessageStream::for_match_rule(rule, connection, Some(256))

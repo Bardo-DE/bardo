@@ -20,7 +20,7 @@ pub enum JailRefusal {
 }
 
 /// Whether a start with `config` may go ahead under `root` (`/` in the binary). The jail's
-/// conditions are `compositor_privacy::breach`'s, shared with `casementctl`.
+/// conditions are `compositor_privacy::breach`'s, shared with `bardo-compositorctl`.
 pub fn require_start(config: &StartConfig, root: &Path) -> Result<(), JailRefusal> {
     if config.backend != BackendChoice::Headless {
         return Err(JailRefusal::Backend);

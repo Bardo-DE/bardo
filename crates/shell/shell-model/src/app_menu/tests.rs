@@ -54,7 +54,7 @@ fn served() -> ServedMenu {
         node(40, "View", vec![sidebar]),
     ];
     ServedMenu {
-        name: MenuName("org.quire.AppMenu.dev.notes".to_owned()),
+        name: MenuName("org.bardo.AppMenu.dev.notes".to_owned()),
         menus: rows_of(menus),
     }
 }
@@ -285,7 +285,7 @@ fn action(app: &str, action: &str) -> ActionRef {
 fn actions() -> ActionIndex {
     ActionIndex(BTreeMap::from([
         (
-            action("org.quire.Shell", "shell.workspace.switch"),
+            action("org.bardo.Shell", "shell.workspace.switch"),
             Effect::Read,
         ),
         (action("dev.notes", "note.archive"), Effect::UndoableWrite),
@@ -564,7 +564,7 @@ fn a_menu_is_shown_only_when_its_owner_is_the_windows_program() {
         ),
         (
             "a service that is another app",
-            service("org.quire.Settings"),
+            service("org.bardo.Settings"),
             client(None),
             HIDDEN,
         ),

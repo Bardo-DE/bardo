@@ -151,8 +151,8 @@ async fn nothing_in_the_draft_is_believed_as_written() {
     )];
     let reply = serde_json::json!({
         // One real action, one the model invented.
-        "actions": [key_of(&archive), "org.quire.Mail mail.everything.delete"],
-        "apps": [{ "app": "org.quire.Elsewhere", "up_to": "destructive" }],
+        "actions": [key_of(&archive), "org.bardo.Mail mail.everything.delete"],
+        "apps": [{ "app": "org.bardo.Elsewhere", "up_to": "destructive" }],
         "kinds": ["mail.thread", "not a kind!"],
         // Far more than archiving needs.
         "ceiling": "destructive",
@@ -201,7 +201,7 @@ async fn a_domain_the_person_wrote_is_a_domain_and_an_app_up_to_an_effect_stays_
     let turns = [turn(1, "tidy my inbox, anything to example.com is fine")];
     let reply = serde_json::json!({
         "actions": [],
-        "apps": [{ "app": "org.quire.Mail", "up_to": "undoable_write" }],
+        "apps": [{ "app": "org.bardo.Mail", "up_to": "undoable_write" }],
         "kinds": [],
         "ceiling": "outbound",
         "max_count": 0,
@@ -216,7 +216,7 @@ async fn a_domain_the_person_wrote_is_a_domain_and_an_app_up_to_an_effect_stays_
     assert_eq!(
         policy.actions.iter().cloned().collect::<Vec<_>>(),
         vec![ActionMatch::AppUpTo(
-            account_core::AppName::parse("org.quire.Mail").expect("app"),
+            account_core::AppName::parse("org.bardo.Mail").expect("app"),
             Effect::UndoableWrite
         )]
     );

@@ -25,7 +25,7 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-const COMPANIOND: &str = "org.quire.Companiond";
+const COMPANIOND: &str = "org.bardo.Companion";
 
 fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
@@ -143,7 +143,7 @@ impl Desk {
             agent_reader_daemon::shipped_callers(),
             self._dir.path().join("proc-readerd"),
         ));
-        reader_who.introduce_app(&self.intentd_connection, "org.quire.Intents", Role::Agent);
+        reader_who.introduce_app(&self.intentd_connection, "org.bardo.Intents", Role::Agent);
         let service = ReaderService::new(
             ReaderHost::start(),
             self.inferd.clone(),

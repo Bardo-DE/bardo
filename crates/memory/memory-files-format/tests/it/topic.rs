@@ -46,7 +46,7 @@ const T3: i64 = 1_790_928_000;
 
 fn sample() -> TopicFile {
     let mail = Link::Thing(ThingRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: ThingKind::parse("mail.thread").expect("kind"),
         key: ThingKey::parse("7f3a; odd > key %").expect("key"),
     });
@@ -55,7 +55,7 @@ fn sample() -> TopicFile {
         "Prefers meetings after 10:00.",
         T1,
         Actor::User {
-            via: app("org.quire.Mail"),
+            via: app("org.bardo.Mail"),
         },
         label(Integrity::Trusted, &[Source::User]),
         vec![mail],

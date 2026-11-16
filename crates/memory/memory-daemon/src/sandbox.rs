@@ -40,7 +40,7 @@ pub struct Policy {
 }
 
 /// How far the daemon confines itself (its Landlock sandbox), as the stable word the
-/// `Confinement` property of `org.quire.Memory1.Control` carries. The words of
+/// `Confinement` property of `org.bardo.Memory1.Control` carries. The words of
 /// [`Confinement::as_word`] are a public contract: the Settings app reads them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Confinement {

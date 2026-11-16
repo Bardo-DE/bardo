@@ -42,7 +42,7 @@ impl Transport for Scripted {
 fn call() -> CallRequest {
     CallRequest {
         action: ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: ActionName::parse("mail.thread.archive").expect("action"),
         },
         target: TargetValue::Nothing,
@@ -55,7 +55,7 @@ fn ask_for_run() -> CuaAsk {
     CuaAsk {
         run: provenance::RunId::parse("r-1").expect("run"),
         step: 1,
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         trust: WindowTrust::Quire,
         mode: RunMode::InPlace,
         space: provenance::SpaceId::parse("work").expect("space"),
@@ -76,7 +76,7 @@ async fn the_gate_methods_send_their_ask_and_read_only_their_own_reply() {
         Ok(IntentsReply::Granted(GrantAnswer::Granted)),
     ]));
     let grant = GrantAsk {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         space: provenance::SpaceId::parse("work").expect("space"),
         level: Default::default(),
         run: None,

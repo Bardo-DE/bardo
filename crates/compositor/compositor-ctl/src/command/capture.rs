@@ -45,7 +45,7 @@ pub fn run(output: &str, out: &Path) -> u8 {
             0
         }
         Err(error) => {
-            eprintln!("casementctl: shot: {error}");
+            eprintln!("bardo-compositorctl: shot: {error}");
             FAILED
         }
     }

@@ -9,7 +9,7 @@
 #   dev/fuzz.sh 10 sse_stream      # one target, 10 minutes
 #
 # Targets: sse_stream (SSE framer + chat stream decoder), framers (SSE and NDJSON), whole_bodies
-# (model list, embeddings, transcription, error replies), pcm, host_frames (speech-host wire).
+# (model list, embeddings, transcription, error replies), pcm, host_frames (bardo-speech-host wire).
 # Seeds are in fuzz/corpus/<target>; a crash is written to fuzz/artifacts/<target>.
 set -euo pipefail
 cd "$(dirname "$0")/../fuzz"

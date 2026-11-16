@@ -8,7 +8,7 @@
 //! each generic list just before its first family that maps an emoji: text fonts earlier in the
 //! list still map the letters, digits and spaces (Noto Color Emoji maps digits to empty glyphs).
 //! The face is detected, not named, and nothing here asks which platform it is on: the one
-//! `QUIRE_EMOJI_FAMILY` names, else the first family of the `emoji` generic that carries a COLR
+//! `BARDO_EMOJI_FAMILY` names, else the first family of the `emoji` generic that carries a COLR
 //! table, else the COLRv1 file the installer or a distro package left on disk (`emoji_file`),
 //! registered here, else the first family of the `emoji` generic with bitmap colour glyphs
 //! (`sbix`: Apple Color Emoji on every Mac; `CBDT`: Ubuntu's Noto Color Emoji). Vector comes first
@@ -28,7 +28,7 @@ pub struct Fonts<'a> {
 }
 
 /// The environment variable naming the colour emoji family to use instead of the detected one.
-pub const EMOJI_FAMILY_ENV: &str = "QUIRE_EMOJI_FAMILY";
+pub const EMOJI_FAMILY_ENV: &str = "BARDO_EMOJI_FAMILY";
 
 /// A character every emoji font maps and a text font does not.
 const PROBE: char = '\u{1F600}';

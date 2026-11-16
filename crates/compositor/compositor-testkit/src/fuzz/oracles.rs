@@ -81,10 +81,10 @@ pub(super) fn invariants<H: FuzzHost>(host: &H) -> Result<(), FuzzFailure> {
 
 /// The privileged globals no `Public` or `Sandboxed` connection may be offered.
 const PRIVILEGED: [&str; 4] = [
-    "quire_shell_v1",
-    "quire_desktop_manager_v1",
-    "quire_agent_manager_v1",
-    "quire_trusted_manager_v1",
+    "bardo_shell_v1",
+    "bardo_desktop_manager_v1",
+    "bardo_agent_manager_v1",
+    "bardo_trusted_manager_v1",
 ];
 
 /// Oracle 5 for one client of `role`.
@@ -145,7 +145,7 @@ fn kind_of(interface: &str) -> Option<GlobalKind> {
         "xdg_toplevel_tag_manager_v1" => GlobalKind::XdgToplevelTag,
         "zxdg_exporter_v2" | "zxdg_importer_v2" => GlobalKind::XdgForeign,
         "xdg_system_bell_v1" => GlobalKind::SystemBell,
-        "quire_window_manager_v1" => GlobalKind::QuireWindow,
+        "bardo_window_manager_v1" => GlobalKind::QuireWindow,
         "zwlr_layer_shell_v1" => GlobalKind::LayerShell,
         "ext_session_lock_manager_v1" => GlobalKind::SessionLock,
         "wl_seat" => GlobalKind::Seat,
@@ -179,8 +179,8 @@ fn kind_of(interface: &str) -> Option<GlobalKind> {
         | "zwlr_screencopy_manager_v1" => GlobalKind::ImageCapture,
         // P2-Z: the desktop and shell protocols (the shell and agent connections only) and
         // the toplevel capture source (declared; P2-Q3 advertises it).
-        "quire_desktop_manager_v1" => GlobalKind::QuireDesktop,
-        "quire_shell_v1" => GlobalKind::QuireShell,
+        "bardo_desktop_manager_v1" => GlobalKind::QuireDesktop,
+        "bardo_shell_v1" => GlobalKind::QuireShell,
         "ext_foreign_toplevel_image_capture_source_manager_v1" => GlobalKind::ToplevelCapture,
         _ => return None,
     })

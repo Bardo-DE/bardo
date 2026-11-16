@@ -10,10 +10,10 @@ fn manifests_are_read_in_folder_order_and_only_the_toml_files_among_them() {
     let scratch = Scratch::under(TMP, "intents-read");
     let (first, second) = (scratch.join("first"), scratch.join("second"));
     for (dir, file, text) in [
-        (&first, "org.quire.B.toml", "b"),
-        (&first, "org.quire.A.toml", "a"),
+        (&first, "org.bardo.B.toml", "b"),
+        (&first, "org.bardo.A.toml", "a"),
         (&first, "default-grants.json", "{}"),
-        (&second, "org.quire.C.toml", "c"),
+        (&second, "org.bardo.C.toml", "c"),
     ] {
         std::fs::create_dir_all(dir).expect("dir");
         std::fs::write(dir.join(file), text).expect("write");

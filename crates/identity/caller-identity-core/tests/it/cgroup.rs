@@ -10,10 +10,10 @@ fn cg(text: &str) -> CgroupPath {
 
 #[test]
 fn the_unified_line_is_picked_out_of_a_hybrid_file() {
-    let text = "12:cpu:/x\n1:name=systemd:/y\n0::/user.slice/sill.service\n";
+    let text = "12:cpu:/x\n1:name=systemd:/y\n0::/user.slice/bardo-shell.service\n";
     let path = CgroupPath::from_proc(text).expect("a path");
-    assert_eq!(path.as_str(), "/user.slice/sill.service");
-    assert_eq!(path.leaf(), "sill.service");
+    assert_eq!(path.as_str(), "/user.slice/bardo-shell.service");
+    assert_eq!(path.leaf(), "bardo-shell.service");
     assert!(CgroupPath::from_proc("1:name=systemd:/y\n").is_err());
     assert!(CgroupPath::from_proc("0::relative\n").is_err());
 }
@@ -21,8 +21,8 @@ fn the_unified_line_is_picked_out_of_a_hybrid_file() {
 #[test]
 fn only_a_unit_name_is_a_unit_leaf() {
     assert_eq!(
-        cg("/a/b/sill.service").unit_leaf().map(|u| u.to_string()),
-        Some("sill.service".to_owned())
+        cg("/a/b/bardo-shell.service").unit_leaf().map(|u| u.to_string()),
+        Some("bardo-shell.service".to_owned())
     );
     assert_eq!(
         cg("/a/b/session-3.scope")
@@ -31,7 +31,7 @@ fn only_a_unit_name_is_a_unit_leaf() {
         Some("session-3.scope".to_owned())
     );
     assert!(cg("/a/b/app.slice").unit_leaf().is_none());
-    assert!(cg("/a/b/sill.service (deleted)").unit_leaf().is_none());
+    assert!(cg("/a/b/bardo-shell.service (deleted)").unit_leaf().is_none());
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn a_launchers_scope_names_an_app_as_a_claim() {
             "/user.slice/app.slice/app-flatpak-org.mozilla.firefox-4242.scope",
             None,
         ),
-        ("/user.slice/app.slice/sill.service", None),
+        ("/user.slice/app.slice/bardo-shell.service", None),
         ("/user.slice/app.slice/app-org.x.Foo-notaword!.scope", None),
     ];
     for (path, want) in cases {
@@ -98,7 +98,7 @@ fn a_flatpak_scope_must_spell_the_apps_own_id_and_a_number() {
             "/user.slice/app.slice/app-org.mozilla.firefox-1234.scope",
             false,
         ),
-        ("/user.slice/app.slice/sill.service", false),
+        ("/user.slice/app.slice/bardo-shell.service", false),
     ];
     for (path, want) in cases {
         assert_eq!(flatpak_scope_in(&cg(path), &app), want, "{path}");

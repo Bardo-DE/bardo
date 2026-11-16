@@ -1,9 +1,9 @@
-//! `casement-x11probe`: an X11 client for the XWayland suite (P1-X1). It sets `WM_CLASS`, maps
+//! `compositor-x11probe`: an X11 client for the XWayland suite (P1-X1). It sets `WM_CLASS`, maps
 //! windows, reads input and selections, reports override-redirect facts, geometry, the screen's
 //! size and the `RESOURCE_MANAGER` (the DPI satellite publishes), and asks for activation, so
 //! `dev/accept/xwayland-*.sh` assert what an X11 client sees through xwayland-satellite.
 //!
-//! `casement-x11probe session` is one long-lived client driven from stdin, one command a line
+//! `compositor-x11probe session` is one long-lived client driven from stdin, one command a line
 //! (grammar in `x11probe/command.rs`), printing `x11: ...` lines on stdout: what the session did
 //! (`x11: done N`, `x11: error ...`) and every event its windows got
 //! (`x11: event NAME key-press detail=38`). Scripts wait on lines, never on sleeps.
@@ -22,7 +22,7 @@ fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args != ["session"] {
         eprintln!(
-            "usage: casement-x11probe session   (commands on stdin; see x11probe/command.rs)"
+            "usage: compositor-x11probe session   (commands on stdin; see x11probe/command.rs)"
         );
         return ExitCode::from(64);
     }
@@ -43,7 +43,7 @@ fn main() -> ExitCode {
     }
 }
 
-/// The jail check in its smallest form (as `casement-probe` has it): no input devices and no
+/// The jail check in its smallest form (as `compositor-probe` has it): no input devices and no
 /// live compositor socket.
 fn outside_the_jail() -> Option<String> {
     let uid = rustix::process::getuid().as_raw();

@@ -34,14 +34,14 @@ name! {
 }
 
 name! {
-    /// An app's key as the desktop names it (`quire_desktop_app_v1.identity`'s `key`): the string
+    /// An app's key as the desktop names it (`bardo_desktop_app_v1.identity`'s `key`): the string
     /// the rest of the desktop uses for the app, safe to store and to send to another process.
     /// [`crate::AppKey`] is this client's number for the same app's protocol object.
     AppId
 }
 
 name! {
-    /// The program behind an app as the compositor established it (`quire_desktop_app_v1.subject`):
+    /// The program behind an app as the compositor established it (`bardo_desktop_app_v1.subject`):
     /// the image path of a native process, or the app id of a sandboxed one. A fact, not the app's
     /// claim, so it can be compared with the standing of another process (the owner of the app's
     /// menu on the session bus).
@@ -49,7 +49,7 @@ name! {
 }
 
 name! {
-    /// A Space's stable id (`quire_desktop_space_v1.id`), also the `id` of its ext-workspace
+    /// A Space's stable id (`bardo_desktop_space_v1.id`), also the `id` of its ext-workspace
     /// workspace. [`crate::SpaceKey`] is this client's number for the Space's protocol object.
     SpaceId
 }

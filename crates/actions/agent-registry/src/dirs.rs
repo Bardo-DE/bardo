@@ -10,7 +10,7 @@
 //!
 //! The agent signs in inside `home` and keeps its login there. Nothing is copied into it from the
 //! person's real home. This is the layout as paths and touches no disk; listing and reading what is
-//! there is `docket-agents`.
+//! there is `bardo-agents`.
 
 use crate::slug::Slug;
 use std::path::{Path, PathBuf};

@@ -63,7 +63,7 @@ mod tests {
     #[test]
     fn a_standing_is_the_owner_it_names_and_an_unverified_process_is_nobody() {
         let service = introduced_service(
-            "org.quire.Settings",
+            "org.bardo.Settings",
             "settings",
             Proof::Full,
             Pin::AtConnect,
@@ -79,7 +79,7 @@ mod tests {
                 "a desktop service",
                 service,
                 MenuOwner::Service {
-                    app: "org.quire.Settings".to_owned(),
+                    app: "org.bardo.Settings".to_owned(),
                 },
             ),
             (

@@ -17,13 +17,13 @@
 # fake DDC; it only touches processes it started itself (kill by its own pid).
 #
 # Usage: dev/accept/idle-cpu.sh
-#   DURATION=60 WARMUP=20 MAX_CPU_PCT=1.0 MAX_THREADS=120 SILL_PROFILE=release|debug (default release)
+#   DURATION=60 WARMUP=20 MAX_CPU_PCT=1.0 MAX_THREADS=120 BARDO_SHELL_PROFILE=release|debug (default release)
 set -uo pipefail
 # Idle cost is a release measurement (a debug build's CPU says nothing): release unless asked.
-export SILL_PROFILE="${SILL_PROFILE:-release}"
+export BARDO_SHELL_PROFILE="${BARDO_SHELL_PROFILE:-release}"
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-idle-cpu"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-idle-cpu"
 mkdir -p "$OUT_DIR"
 DURATION="${DURATION:-60}"
 WARMUP="${WARMUP:-20}"

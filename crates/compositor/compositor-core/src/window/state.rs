@@ -71,7 +71,7 @@ impl WindowState {
         }
     }
 
-    /// Where the window sits, as `quire_window_v1.placement` marks it. A minimised window
+    /// Where the window sits, as `bardo_window_v1.placement` marks it. A minimised window
     /// carries the mark of the state it will return to.
     pub fn mark(&self) -> PlacementMark {
         match self {

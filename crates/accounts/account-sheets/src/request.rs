@@ -1,7 +1,7 @@
 //! The Request objects of the sheet methods, shaped as portals' are, for any daemon that shows a
 //! sheet.
 //!
-//! A sheet method registers an `org.quire.Accounts1.Request` object under the request root of its
+//! A sheet method registers an `org.bardo.Accounts1.Request` object under the request root of its
 //! [`ServiceRoot`] (the caller's unique name, then its `handle_token` or one minted here), returns
 //! its path at once, and runs the call in a task. When the call ends the task sends
 //! `Response(code, results)` (`account_dbus::accounts::sheet::response_of` says what the answer looks like) to the
@@ -314,7 +314,7 @@ mod tests {
     #[test]
     fn an_app_has_one_open_sheet_of_each_kind_until_it_ends() {
         let open = OpenSheets::default();
-        let mail = app("org.quire.Mail");
+        let mail = app("org.bardo.Mail");
         let first = open.claim(&mail, SheetKind::AddAccount).expect("first");
         let again = open
             .claim(&mail, SheetKind::AddAccount)
@@ -323,7 +323,7 @@ mod tests {
         // Another kind, or another app, is its own.
         let _choose = open.claim(&mail, SheetKind::Choose).expect("another kind");
         let _other = open
-            .claim(&app("org.quire.Photos"), SheetKind::AddAccount)
+            .claim(&app("org.bardo.Photos"), SheetKind::AddAccount)
             .expect("another app");
         drop(first);
         let _next = open

@@ -1,4 +1,4 @@
-//! `org.quire.Inference1` at `/org/quire/Inference1`: inferd. A session is the fd `Open`
+//! `org.bardo.Inference1` at `/org/bardo/Inference1`: inferd. A session is the fd `Open`
 //! returns: the client writes `inference_core::ClientFrame` frames (requests, `Cancel`, audio),
 //! inferd writes `InferEvent` frames; memfds ride on frames as SCM_RIGHTS. Speech and
 //! computer-use steps use the same fd, so this interface has no member for them.
@@ -11,9 +11,9 @@ use zbus::zvariant::OwnedFd;
 /// The interface, written once. `#[bus_interface]` makes [`InferenceProxy`] for its callers from this
 /// trait, [`InferenceServer`] for the daemon to implement and [`InferenceServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Inference1",
-    default_service = "org.quire.Inference1",
-    default_path = "/org/quire/Inference1"
+    interface = "org.bardo.Inference1",
+    default_service = "org.bardo.Inference1",
+    default_path = "/org/bardo/Inference1"
 )]
 pub trait Inference {
     /// Whether an AI need can be met for this class, revealing no identity. `options` is the
@@ -21,7 +21,7 @@ pub trait Inference {
     /// (`OPTION_USAGE`) and, for docket's daemons only, `places` and `place_models`
     /// (`OPTION_PLACES`, `OPTION_PLACE_MODELS`), `asker` and `model` (`OPTION_ASKER`,
     /// `OPTION_MODEL`). With `places`, when no allowed place can serve,
-    /// the call fails with `org.quire.Inference1.Error.NoAllowedPlace.<Reason>` (see
+    /// the call fails with `org.bardo.Inference1.Error.NoAllowedPlace.<Reason>` (see
     /// `place_error_name`).
     fn availability(&self, need: &NeedArg, class: &str, options: &Details) -> zbus::Result<String>;
     /// A framed request/stream session for `need`, `class` and `tier`, pinned to one model.
@@ -84,7 +84,7 @@ pub trait Inference {
     /// the connection on this computer that leads to the engine) or `port` (`q`, the port on this
     /// computer that does), and `key` (`s`, optional; kept in a file only the owner can read, and
     /// never given back). Only Settings may call; a refusal is
-    /// `org.quire.Inference1.Error.Computer.<Name>` with a plain sentence (`COMPUTER_ERROR_PREFIX`).
+    /// `org.bardo.Inference1.Error.Computer.<Name>` with a plain sentence (`COMPUTER_ERROR_PREFIX`).
     /// `EnginesChanged` follows a change.
     fn add_computer(&self, name: &str, models: Vec<(String, Details)>) -> zbus::Result<String>;
     /// Removes a computer that `AddComputer` added: `name` is its name or its place id. One
@@ -101,7 +101,7 @@ pub trait Inference {
     /// Adds the computer `node` (a Tailscale node id from `Candidates`) as one of the person's
     /// own computers, reached over their Tailscale network, with the models it lends, and answers
     /// its place id (`computer:<name>`, the name made from the one Tailscale knows it by). Only
-    /// Settings may call; a refusal is `org.quire.Inference1.Error.Computer.<Name>`.
+    /// Settings may call; a refusal is `org.bardo.Inference1.Error.Computer.<Name>`.
     fn add_tailnet_computer(&self, node: &str) -> zbus::Result<String>;
     /// The computers that asked to use this computer's models or were answered, one row each:
     /// the node id first, then `name`, `state` (`approved`, `denied` or `asking`) and `since`
@@ -133,7 +133,7 @@ pub trait Inference {
     fn stop(&self, model: &str) -> zbus::Result<()>;
     /// The models this computer runs itself, one row each: the model first (`account/model`),
     /// then a vardict of `state` (`stopped`, `starting`, `ready`, `stopping`, `retrying` or
-    /// `failed`), `engine` (`vllm`, `llama-server`, `speech-host` or `kokoro`), `memory_mib`
+    /// `failed`), `engine` (`vllm`, `llama-server`, `bardo-speech-host` or `kokoro`), `memory_mib`
     /// (`u`), and where they apply `since` (`x`, unix seconds), `window` (`u`, tokens; while
     /// ready) and `reason` (`s`; while failed); the key names are `RUNNING_KEY_*` and
     /// `running_from_dbus` reads a row. Only Settings may ask.

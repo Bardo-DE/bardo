@@ -62,15 +62,15 @@ const SPACES_RETRY: Duration = Duration::from_secs(10);
 pub struct HarnessSeams {
     /// Where callers' cgroups are read.
     pub proc_root: ProcRoot,
-    /// The system's callers file, when the harness's main chose another than `/etc/quire`'s: the
+    /// The system's callers file, when the harness's main chose another than `/etc/bardo`'s: the
     /// harness is its own system, and a fixed role (the shell's) comes from no other file.
     pub system_callers: Option<PathBuf>,
     /// What is kept of the exchanges with inferd.
     pub trace: InferWatch,
-    /// The administrator's floor file, when the harness's main chose another than `/etc/quire`'s.
+    /// The administrator's floor file, when the harness's main chose another than `/etc/bardo`'s.
     pub floor: Option<PathBuf>,
     /// The administrator's policy directory, when the harness's main chose another than
-    /// `/etc/quire/permissions`.
+    /// `/etc/bardo/permissions`.
     pub admin_permissions: Option<PathBuf>,
 }
 
@@ -89,7 +89,7 @@ impl Default for HarnessSeams {
 /// Why the daemon did not start or stopped.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum DaemonFault {
-    /// `intentd.toml` is not a configuration.
+    /// `actiond.toml` is not a configuration.
     #[error("{0}")]
     Config(ConfigError),
     /// The bus.
@@ -102,7 +102,7 @@ pub enum DaemonFault {
     /// A directory the daemon keeps its files in is not an absolute path.
     #[error("not an absolute path: {0}")]
     State(String),
-    /// `intentd-callers.toml` exists and cannot be used. A daemon that dropped it would identify
+    /// `actiond-callers.toml` exists and cannot be used. A daemon that dropped it would identify
     /// fewer or more callers than it was told to.
     #[error("{0}")]
     Callers(String),
@@ -134,14 +134,14 @@ pub struct Setup {
     pub data_dirs: Vec<PathBuf>,
     /// How often the router's state is looked at for signals, and the manifests rescanned.
     pub signals: Cadence,
-    /// Who is which unit: `intentd-callers.toml` of `/etc/quire` with the person's laid over it.
+    /// Who is which unit: `actiond-callers.toml` of `/etc/bardo` with the person's laid over it.
     pub callers: CallerTable,
     /// Says who a connection is, when a test names its own (`Identity::introduce_app`); otherwise
     /// porter's `ProcCallers` over `callers` and `proc_root`.
     pub identity: Option<Arc<Identity>>,
     /// Where callers' cgroups are read: `/proc`, unless the harness's main passed another root.
     pub proc_root: ProcRoot,
-    /// Where the person's settings file is (`docket/settings.toml`, design/22 section 3.27).
+    /// Where the person's settings file is (`actions/settings.toml`, design/22 section 3.27).
     pub settings: Locator,
     /// What is kept of the exchanges with inferd (off, unless the harness's main passed a watch).
     pub trace: InferWatch,
@@ -191,12 +191,12 @@ fn config_dirs(env: &impl Fn(&str) -> Option<String>) -> Vec<PathBuf> {
 }
 
 impl Setup {
-    /// Reads the configuration (the first `quire/intentd.toml` of the configuration
+    /// Reads the configuration (the first `quire/actiond.toml` of the configuration
     /// directories, else the shipped one) and the manifests of the data directories.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, DaemonFault> {
         let found = config_dirs(env)
             .into_iter()
-            .map(|d| d.join("quire").join("intentd.toml"))
+            .map(|d| d.join("quire").join("actiond.toml"))
             .find_map(|path| std::fs::read_to_string(path).ok());
         let config = match found {
             Some(text) => IntentdConfig::parse(&text),
@@ -255,7 +255,7 @@ impl Running {
     }
 }
 
-/// Builds the router over the seams of `session`, serves `org.quire.Intents1` on it, drains the
+/// Builds the router over the seams of `session`, serves `org.bardo.Intents1` on it, drains the
 /// audit queue and, when `system` is given, ends the terminal's grants when logind removes the
 /// person's session.
 pub async fn start(
@@ -342,7 +342,7 @@ pub async fn start(
     }
     let mut router = Router::new(seams, config.agent, loaded.presets);
     router.floor = floor;
-    // The person's settings over intentd.toml's proposed values, now and whenever the file changes.
+    // The person's settings over actiond.toml's proposed values, now and whenever the file changes.
     let mut watched = SettingsWatch::start(settings, AgentSettings::over(config.agent));
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("intentd: settings are read once, not watched: {reason}");

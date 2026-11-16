@@ -1,5 +1,5 @@
 //! What the glow shows, and the numbers `quire-agent-v1` carries for it. The protocol's enums
-//! (`protocols/quire-agent-v1.xml`) and these tables are the same values; a test in `tests/it`
+//! (`protocols/bardo-agent-v1.xml`) and these tables are the same values; a test in `tests/it`
 //! compares them with the generated bindings.
 
 use crate::lease::{RevokeReason, Suspend};

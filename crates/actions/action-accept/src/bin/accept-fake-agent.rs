@@ -21,11 +21,11 @@ fn line(out: &mut impl Write, value: &Value) {
 }
 
 fn thread(key: &str) -> Value {
-    json!({"app": "org.quire.Mail", "kind": "mail.thread", "key": key})
+    json!({"app": "org.bardo.Mail", "kind": "mail.thread", "key": key})
 }
 
 fn contact(key: &str) -> Value {
-    json!({"app": "org.quire.Mail", "kind": "mail.contact", "key": key})
+    json!({"app": "org.bardo.Mail", "kind": "mail.contact", "key": key})
 }
 
 /// The calls a script makes: tool name and arguments.

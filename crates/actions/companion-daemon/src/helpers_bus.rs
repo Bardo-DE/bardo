@@ -2,7 +2,7 @@
 //! signing in to an app a helper runs and the routines. Only the shell speaks for the person on
 //! either, except that our own editor bridge may read the list and a helper's card; every call
 //! goes to the desks the daemon was built with. Members carry no doc comments:
-//! zbus copies them into the introspection, which is held to `dbus/org.quire.Companion1.xml`.
+//! zbus copies them into the introspection, which is held to `dbus/org.bardo.Companion1.xml`.
 
 use crate::serve::{bad, json};
 use crate::speaker::{EDITOR_APP, Speakers};
@@ -112,7 +112,7 @@ impl HelpersObject {
     }
 }
 
-#[zbus::interface(name = "org.quire.Companion1.Helpers")]
+#[zbus::interface(name = "org.bardo.Companion1.Helpers")]
 impl HelpersObject {
     async fn list(&self, after: u64, #[zbus(header)] header: Header<'_>) -> fdo::Result<String> {
         self.require_read(&header).await?;
@@ -211,7 +211,7 @@ impl Helpers2Object {
     }
 }
 
-#[zbus::interface(name = "org.quire.Companion1.Helpers2")]
+#[zbus::interface(name = "org.bardo.Companion1.Helpers2")]
 impl Helpers2Object {
     async fn list(&self, after: u64, #[zbus(header)] header: Header<'_>) -> fdo::Result<String> {
         self.require_read(&header).await?;
@@ -435,7 +435,7 @@ pub(crate) struct TerminalsObject {
     pub(crate) speakers: Speakers,
 }
 
-#[zbus::interface(name = "org.quire.Companion1.Terminals")]
+#[zbus::interface(name = "org.bardo.Companion1.Terminals")]
 impl TerminalsObject {
     async fn sessions(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<String> {
         self.speakers.require(&header, Call::Helpers).await?;

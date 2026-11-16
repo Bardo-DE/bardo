@@ -106,7 +106,7 @@ fn print_answer(answer: Answer) -> u8 {
 }
 
 fn fail(message: &str) -> u8 {
-    eprintln!("casementctl: {message}");
+    eprintln!("bardo-compositorctl: {message}");
     REFUSED
 }
 

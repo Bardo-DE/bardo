@@ -21,7 +21,7 @@ fn read_scope(app_action: &ActionRef) -> StandingScope {
 }
 
 fn files_app() -> account_core::AppName {
-    account_core::AppName::parse("org.quire.Files").expect("app")
+    account_core::AppName::parse("org.bardo.Files").expect("app")
 }
 
 pub(crate) fn files_read() -> CallRequest {

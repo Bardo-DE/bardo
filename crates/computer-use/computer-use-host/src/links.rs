@@ -23,7 +23,7 @@ use std::sync::Mutex;
 
 /// The app whose things the conversations are. Must match docket's session log
 /// (`companion-memory`'s `SESSION_APP`): the router reads a conversation's records by this thing.
-const CONVERSATION_APP: &str = "org.quire.Companion";
+const CONVERSATION_APP: &str = "org.bardo.Companion";
 /// The kind of the thing a conversation names itself as. Must match docket's session log
 /// (`companion-memory`'s `SESSION_KIND`).
 const CONVERSATION_KIND: &str = "companion.session";
@@ -313,7 +313,7 @@ mod tests {
             named,
             vec![
                 expected(
-                    "org.quire.Companion",
+                    "org.bardo.Companion",
                     "companion.session",
                     "c-1",
                     ThingRole::Subject

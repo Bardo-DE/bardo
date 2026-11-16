@@ -1,4 +1,4 @@
-//! A fake speech host: the `speech-host` protocol (`speech_provider::host_wire`, a 4-byte length
+//! A fake speech host: the `bardo-speech-host` protocol (`speech_provider::host_wire`, a 4-byte length
 //! and JSON) served on a Unix socket, and an engine host that "runs" it when the supervisor
 //! spawns the speech engine. It plays the part of the real binary and never loads a model or a
 //! native library.

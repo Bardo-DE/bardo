@@ -38,7 +38,7 @@ pub fn space() -> SpaceId {
     SpaceId::parse("work").expect("space")
 }
 pub fn mail() -> AppName {
-    AppName::parse("org.quire.Mail").expect("app")
+    AppName::parse("org.bardo.Mail").expect("app")
 }
 pub fn action(name: &str) -> ActionRef {
     ActionRef {

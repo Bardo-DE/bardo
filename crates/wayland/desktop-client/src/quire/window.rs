@@ -1,4 +1,4 @@
-//! Windows: `quire_desktop_window_v1`.
+//! Windows: `bardo_desktop_window_v1`.
 
 use super::lifecycle::{Entity, Lifecycle, announced};
 use crate::geometry::Rect;

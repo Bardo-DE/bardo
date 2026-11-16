@@ -1,6 +1,6 @@
-//! `org.quire.IntentReach1` on the provider's object: whether `cua.run.start` is on now.
+//! `org.bardo.IntentReach1` on the provider's object: whether `cua.run.start` is on now.
 //!
-//! The installed manifest (`manifests/org.quire.Cua.toml`) declares the action `hidden`, as it is
+//! The installed manifest (`manifests/org.bardo.ComputerUse.toml`) declares the action `hidden`, as it is
 //! while `cua.enabled = off`; intentd only knows installed files, so cuad says the live value
 //! here and intentd lays it over the manifest. cuad reloads the person's settings file while it
 //! runs ([`follow_settings`]), so a change of `cua.enabled` is announced with `ReachChanged`.
@@ -25,12 +25,12 @@ pub fn reach_json(enabled: bool) -> String {
     serde_json::json!({ ACTION: word }).to_string()
 }
 
-/// `org.quire.IntentReach1`, answering from the setting in force now.
+/// `org.bardo.IntentReach1`, answering from the setting in force now.
 pub(crate) struct ReachObject<S: Seams> {
     pub supervisor: Arc<Supervisor<S>>,
 }
 
-#[zbus::interface(name = "org.quire.IntentReach1")]
+#[zbus::interface(name = "org.bardo.IntentReach1")]
 impl<S: Seams> ReachObject<S> {
     fn reach(&self) -> String {
         reach_json(self.supervisor.settings().enabled)
@@ -58,7 +58,7 @@ pub async fn follow_settings<S: Seams>(
                 .emit_signal(
                     None::<&str>,
                     PROVIDER_PATH,
-                    "org.quire.IntentReach1",
+                    "org.bardo.IntentReach1",
                     "ReachChanged",
                     &(),
                 )

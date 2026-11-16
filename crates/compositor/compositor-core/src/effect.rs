@@ -36,7 +36,7 @@ pub enum Effect {
         /// The window.
         window: WindowId,
     },
-    /// Tell a client the person asked its app to quit (`quire_window_manager_v1.quit`, sent in
+    /// Tell a client the person asked its app to quit (`bardo_window_manager_v1.quit`, sent in
     /// place of closing the app's windows to a client that listens for it).
     SendQuit {
         /// The client.
@@ -116,15 +116,15 @@ pub enum Effect {
     /// Send `zwlr_foreign_toplevel_management` clients this window's title, app id, state and
     /// outputs as they now are (P1-M2).
     PublishToplevel(WindowId),
-    /// Send `quire_desktop_v1` clients this object as it now is (P2-Z; the model emits it with
+    /// Send `bardo_desktop_v1` clients this object as it now is (P2-Z; the model emits it with
     /// the lane P2-Q1).
     Desktop(DesktopNote),
-    /// Record or send this to the shell (`quire_shell_v1`; P2-Z).
+    /// Record or send this to the shell (`bardo_shell_v1`; P2-Z).
     Shell(ShellNote),
     /// Stop an app's processes with a signal (force quit; P3-QU).
     Terminate(Termination),
     /// Ask the person whether a program may use a power: the shell shows the question
-    /// (`quire_shell_v1.permission_ask`) and answers with `Event::PermissionAnswered`.
+    /// (`bardo_shell_v1.permission_ask`) and answers with `Event::PermissionAnswered`.
     AskPermission {
         /// The question's id on the wire, never reused in a run.
         ask: AskId,
@@ -142,7 +142,7 @@ pub enum Effect {
         ask: AskId,
     },
     /// Ask the person whether to keep the displays as a program changed them
-    /// (`quire_shell_v1.displays_trial`): the shell shows "Keep these display settings?" and
+    /// (`bardo_shell_v1.displays_trial`): the shell shows "Keep these display settings?" and
     /// answers with `Event::DisplaysAnswered`. Sent again, with the same id, when a further
     /// change restarts the time.
     AskKeepDisplays {

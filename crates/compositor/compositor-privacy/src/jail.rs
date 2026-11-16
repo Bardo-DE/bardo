@@ -1,7 +1,7 @@
 //! The structural jail check (20-FREEZE-PLAN §6.1): four conditions read from paths and never
-//! from the environment. The compositor's test builds and `casementctl` both refuse to run
+//! from the environment. The compositor's test builds and `bardo-compositorctl` both refuse to run
 //! outside the jail, and neither opens a device: this only stats paths and reads `/proc/1/comm`.
-//! (It lives here because `casementctl` links this crate and not the compositor.)
+//! (It lives here because `bardo-compositorctl` links this crate and not the compositor.)
 
 use std::path::Path;
 

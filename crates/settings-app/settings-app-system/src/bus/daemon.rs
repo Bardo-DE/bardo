@@ -7,10 +7,10 @@ use settings_app_model::ModuleId;
 use sync_bus::{SYNC_BUS, SYNC_PATH};
 
 /// The object path of syncd's settings module.
-const SYNC_SETTINGS_PATH: &str = "/org/quire/Sync1/settings";
+const SYNC_SETTINGS_PATH: &str = "/org/bardo/Sync1/settings";
 
 /// The object path of the compositor's Privacy module.
-const PRIVACY_PATH: &str = "/org/quire/Compositor1/privacy";
+const PRIVACY_PATH: &str = "/org/bardo/Compositor1/privacy";
 
 /// A daemon on the bus: its name and its object path (for a live settings module, the module's).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -64,7 +64,7 @@ impl Daemon {
         }
     }
 
-    /// syncd, which holds a deletion for the person's word and tells it (`org.quire.Sync1`).
+    /// syncd, which holds a deletion for the person's word and tells it (`org.bardo.Sync1`).
     pub fn syncd() -> Daemon {
         Daemon {
             name: SYNC_BUS,

@@ -2,7 +2,7 @@
 //! face of an action of the app's intents manifest, or it is interface only and says why. An app
 //! implements [`AppCommand`](ui_core::command::AppCommand) for the command type its menu items
 //! yield and its shortcuts fire, reads its menu bar, its own menus and its shortcut table into
-//! rows, and writes the file from them; `docket-eval --check-app` then reads it. The writer lives
+//! rows, and writes the file from them; `agent-eval --check-app` then reads it. The writer lives
 //! here and the checker with the manifest, so `ds` names neither the manifest nor the checker.
 
 mod model;

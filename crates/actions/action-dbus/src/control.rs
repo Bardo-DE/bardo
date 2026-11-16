@@ -1,13 +1,13 @@
-//! `org.quire.Intents1.Control`: halting, resuming and the journal.
+//! `org.bardo.Intents1.Control`: halting, resuming and the journal.
 
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Control",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Control",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Control {
     /// Halts a scope (`SpaceScope`, `HaltCause` JSON).
@@ -22,7 +22,7 @@ pub trait Control {
     /// The undo journal (`JournalFilter` JSON; answers `Vec<UndoEntry>` JSON).
     fn journal(&self, filter: &str) -> zbus::Result<String>;
 
-    /// The actions the terminal (`quire-do`) may run without asking, until logout
+    /// The actions the terminal (`bardo-do`) may run without asking, until logout
     /// (`Vec<ActionRef>` JSON). Control role only.
     fn terminal_grants(&self) -> zbus::Result<String>;
 
@@ -56,7 +56,7 @@ pub trait Control {
 #[derive(Debug, Default)]
 pub struct ControlSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Control")]
+#[zbus::interface(name = "org.bardo.Intents1.Control")]
 impl ControlSkeleton {
     fn halt(&self, scope: String, cause: String) -> fdo::Result<()> {
         let _ = (scope, cause);

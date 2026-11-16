@@ -1,6 +1,6 @@
-//! The agent launcher's side of accountd: `org.quire.Accounts1.Launcher` at `/org/quire/Accounts1`.
+//! The agent launcher's side of accountd: `org.bardo.Accounts1.Launcher` at `/org/bardo/Accounts1`.
 //!
-//! The agent launcher (docket-acp) registers the programs it launches, opens sessions, asks for
+//! The agent launcher (bardo-agent-acp) registers the programs it launches, opens sessions, asks for
 //! the consent sheet of an agent's key (`RequestAgentKey`, a Request object answered with a
 //! permit), reports an agent's login or logout, and is handed an API key for a process it spawns
 //! (`IssueProcessCredential`, a sealed memfd). Only a connection the caller table knows as the

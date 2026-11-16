@@ -11,8 +11,8 @@ use std::sync::Arc;
 use zbus::fdo::RequestNameFlags;
 use zbus::fdo::RequestNameReply;
 
-/// The bus name the shipped `intentd.toml` gives the `mcp` role.
-pub const MCP_BUS: &str = "org.quire.ActionsMcp";
+/// The bus name the shipped `actiond.toml` gives the `mcp` role.
+pub const MCP_BUS: &str = "org.bardo.ActionsMcp";
 
 /// Where the edge speaks MCP.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -108,7 +108,7 @@ async fn over_socket(
     // only after this removes it, so the bus name (taken first) is what keeps two edges apart.
     let _ = std::fs::remove_file(path);
     let listener = tokio::net::UnixListener::bind(path)?;
-    eprintln!("actions-mcp: listening on {}", path.display());
+    eprintln!("bardo-actions-mcp: listening on {}", path.display());
     loop {
         let (stream, _) = listener.accept().await?;
         let edge = edge(&connection, &config, &expose);
@@ -217,7 +217,7 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
     }
     if !config.expose {
         eprintln!(
-            "actions-mcp: off (set agent.mcp.expose = true in docket/settings.toml): no tools are listed"
+            "bardo-actions-mcp: off (set agent.mcp.expose = true in actions/settings.toml): no tools are listed"
         );
     }
     let connection = action_dbus::session_connection(env).await?;
@@ -232,10 +232,10 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
     start_following(&connection, config, listen, expose).await
 }
 
-/// `--write-schema DIR`: `docket.settings.toml` into `DIR`, for a local install (design/22 section
+/// `--write-schema DIR`: `actions.settings.toml` into `DIR`, for a local install (design/22 section
 /// 9.2).
 pub fn write_schema(dir: &Path) -> Result<(), DaemonFault> {
     std::fs::create_dir_all(dir)?;
-    std::fs::write(dir.join("docket.settings.toml"), crate::settings::SCHEMA)?;
+    std::fs::write(dir.join("actions.settings.toml"), crate::settings::SCHEMA)?;
     Ok(())
 }

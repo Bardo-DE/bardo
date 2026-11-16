@@ -111,7 +111,7 @@ fn entry(seq: u64, kind: &str, at: i64, body: Option<String>) -> RecentEntry {
             occurred: provenance::UnixSeconds(at),
             kind: KindTag::parse(kind).expect("kind"),
             actor: Actor::User {
-                via: account_core::AppName::parse("org.quire.Shell").expect("app"),
+                via: account_core::AppName::parse("org.bardo.Shell").expect("app"),
             },
             things: vec![],
         },

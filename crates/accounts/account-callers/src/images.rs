@@ -11,9 +11,9 @@ pub enum Install {
 }
 
 /// The roots a package (`/usr`), a local install (`/usr/local`) and a release bundle
-/// (`/opt/quire/releases/<version>`) put the desktop under. Every one is root-owned; a home
+/// (`/opt/bardo/releases/<version>`) put the desktop under. Every one is root-owned; a home
 /// directory is not among them.
-const ROOTS: [&str; 3] = ["/usr", "/usr/local", "/opt/quire/releases/*"];
+const ROOTS: [&str; 3] = ["/usr", "/usr/local", "/opt/bardo/releases/*"];
 
 /// The images of the program `name` installed as `install` under each of the roots.
 pub fn installed(install: Install, name: &str) -> Vec<String> {
@@ -28,7 +28,7 @@ pub fn installed(install: Install, name: &str) -> Vec<String> {
 }
 
 /// The daemon a unit named `<name>.service` is, when `<name>` is lower case letters, digits and
-/// dashes (`inferd`, `docket-acp`); a dotted unit (`org.quire.Settings.service`) is an app that
+/// dashes (`inferd`, `bardo-agent-acp`); a dotted unit (`org.bardo.Settings.service`) is an app that
 /// D-Bus activates, whose program the unit's name does not give.
 pub(super) fn daemon_name(unit: &str) -> Option<&str> {
     let name = unit.strip_suffix(".service")?;

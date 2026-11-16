@@ -28,7 +28,7 @@ fn wants_window(notice: &Notice) -> bool {
 /// The window an action opens.
 fn window_spec() -> WindowSpec {
     WindowSpec::new("Settings", WindowSize::new(WIDTH, HEIGHT))
-        .with_app_id(AppId("org.quire.Settings".to_owned()))
+        .with_app_id(AppId("org.bardo.Settings".to_owned()))
         .with_decorations(Decorations::Client)
 }
 
@@ -99,7 +99,7 @@ pub fn run() -> ExitCode {
     tokio::spawn(dispatch(notices, windows, app.clone()));
     let roots = FileRoots::new(env.client.wallpaper().roots());
     let config = AppConfig::new("Settings", WindowSize::new(WIDTH, HEIGHT))
-        .with_app_id(AppId("org.quire.Settings".to_owned()))
+        .with_app_id(AppId("org.bardo.Settings".to_owned()))
         .with_decorations(Decorations::Client)
         .with_file_roots(roots)
         .with_handle(app)

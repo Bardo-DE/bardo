@@ -20,7 +20,7 @@ use std::time::Duration;
 use ui_core::geometry::scale::Scale;
 use ui_core::vocab::Fraction;
 
-/// A scratch config home holding `text` as `casement/settings.toml`.
+/// A scratch config home holding `text` as `compositor/settings.toml`.
 fn home_with(text: &str) -> (tempfile::TempDir, PathBuf) {
     let dir = tempfile::tempdir().expect("temp dir");
     let casement = dir.path().join("casement");
@@ -313,9 +313,9 @@ fn every_kind_of_binding_survives_the_document() {
             "htop".to_owned(),
         ])),
         BindingAction::Call(DbusCall {
-            service: "org.quire.Shell1".to_owned(),
-            path: "/org/quire/Shell1".to_owned(),
-            interface: "org.quire.Shell1".to_owned(),
+            service: "org.bardo.Shell1".to_owned(),
+            path: "/org/bardo/Shell1".to_owned(),
+            interface: "org.bardo.Shell1".to_owned(),
             method: "ToggleLauncher".to_owned(),
             args: vec!["a".to_owned(), "b".to_owned()],
         }),
@@ -406,7 +406,7 @@ fn the_schema_and_the_document_name_the_same_keys() {
 #[test]
 fn the_schema_is_written_and_reads_back() {
     let read_back = |dir: &Path, step: &str| {
-        let text = std::fs::read_to_string(dir.join("casement.settings.toml"))
+        let text = std::fs::read_to_string(dir.join("compositor.settings.toml"))
             .unwrap_or_else(|e| panic!("{step}: written: {e}"));
         ui_settings::schema::Schema::from_toml(&text)
             .unwrap_or_else(|e| panic!("{step}: parses: {e:?}"))
@@ -417,7 +417,7 @@ fn the_schema_is_written_and_reads_back() {
     assert!(!read.key.is_empty(), "every settings key has a row");
     assert_eq!(read, schema(), "write_schema");
     assert_eq!(read.app.0, "casement");
-    assert_eq!(read.file.0, "casement/settings.toml");
+    assert_eq!(read.file.0, "compositor/settings.toml");
 
     let dir = tempfile::tempdir().expect("temp dir");
     let status = Command::new(env!("CARGO_BIN_EXE_casement"))

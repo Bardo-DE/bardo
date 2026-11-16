@@ -225,7 +225,7 @@ mod tests {
 
     #[test]
     fn the_whole_wait_fits_inside_the_units_start_timeout() {
-        // dist/keycap.service sets TimeoutStartSec=10.
+        // dist/bardo-key-remap.service sets TimeoutStartSec=10.
         assert!(UINPUT_PATIENCE + UINPUT_RETRY < Duration::from_secs(10));
     }
 }

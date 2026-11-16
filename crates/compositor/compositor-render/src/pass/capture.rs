@@ -1,5 +1,5 @@
 //! Reading an output's frame back (P1-Z; filled by P1-C1): what `ext_image_copy_capture` and
-//! `casementctl shot` return. The frame read back is the one scanout shows: on pixman it is
+//! `bardo-compositorctl shot` return. The frame read back is the one scanout shows: on pixman it is
 //! byte-exact.
 //!
 //! ```no_run

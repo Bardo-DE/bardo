@@ -1,5 +1,5 @@
-//! `intentd-callers.toml`: which unit is which app, and with what role. The shipped file is
-//! `dist/intentd-callers.toml`; the system's copy under `/etc/quire` and the person's under their
+//! `actiond-callers.toml`: which unit is which app, and with what role. The shipped file is
+//! `dist/actiond-callers.toml`; the system's copy under `/etc/bardo` and the person's under their
 //! configuration directory are laid over each other (`action_dbus::callers::read_table`), and only
 //! the system's can give a fixed role.
 
@@ -9,9 +9,9 @@ use action_dbus::callers::{
 use std::path::Path;
 
 /// The file name in both directories.
-pub const FILE: &str = "intentd-callers.toml";
+pub const FILE: &str = "actiond-callers.toml";
 
-const SHIPPED: &str = include_str!("../../dist/intentd-callers.toml");
+const SHIPPED: &str = include_str!("../../dist/actiond-callers.toml");
 
 /// The table the package ships. A shipped file that does not read is an empty table: nobody is
 /// identified, which is the strict way to fail.
@@ -19,7 +19,7 @@ pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }
 
-/// The table of this machine: `/etc/quire/intentd-callers.toml` with the person's file over it.
+/// The table of this machine: `/etc/bardo/actiond-callers.toml` with the person's file over it.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     read_table(FILE, env)
 }
@@ -41,9 +41,9 @@ mod tests {
     fn the_shipped_file_reads_and_gives_the_shell_the_sheet_host_role_by_its_unit() {
         let table = shipped();
         let shell = table
-            .resolve_unit("sill.service")
+            .resolve_unit("bardo-shell.service")
             .expect("the shell's unit");
-        assert_eq!(shell.app.name.as_str(), "org.quire.Shell");
+        assert_eq!(shell.app.name.as_str(), "org.bardo.Shell");
         assert_eq!(shell.role, Role::SheetHost);
         assert!(table.resolve_unit("sill-shell.scope").is_none());
     }

@@ -53,14 +53,14 @@ fn kind(k: &str) -> EntityKind {
 
 fn thread(key: &str) -> EntityId {
     EntityId {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         kind: kind("mail.thread"),
         key: EntityKey::parse(key).expect("key"),
     }
 }
 
 fn entity_json(key: &str) -> Json {
-    json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": key })
+    json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
 fn one(ty: ParamType, given: Json) -> Result<Value, ArgsFault> {
@@ -215,7 +215,7 @@ fn a_value_that_does_not_fit_is_refused_with_its_parameter() {
         (ParamType::Choice(vec![]), json!("anything"), Why::Range),
         (
             ParamType::Entity(kind("mail.thread")),
-            json!({ "app": "org.quire.Mail", "kind": "mail.contact", "key": "c1" }),
+            json!({ "app": "org.bardo.Mail", "kind": "mail.contact", "key": "c1" }),
             Why::Range,
         ),
         (

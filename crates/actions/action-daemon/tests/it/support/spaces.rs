@@ -1,4 +1,4 @@
-//! A fake accountd that serves only `org.quire.Spaces1` on a private bus: the list the test
+//! A fake accountd that serves only `org.bardo.Spaces1` on a private bus: the list the test
 //! sets, and the `Changed` signal it sends on demand.
 
 use account_dbus::Details;
@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
 
-const ACCOUNTS: &str = "org.quire.Accounts1";
+const ACCOUNTS: &str = "org.bardo.Accounts1";
 
 /// The Spaces accountd would list.
 #[derive(Debug, Clone, Default)]
@@ -30,7 +30,7 @@ fn details(id: &str) -> Details {
 
 struct Skeleton(FakeSpaces);
 
-#[zbus::interface(name = "org.quire.Spaces1")]
+#[zbus::interface(name = "org.bardo.Spaces1")]
 impl Skeleton {
     fn list(&self) -> Vec<(String, Details)> {
         let ids = self.0.ids.lock().expect("lock").clone();

@@ -44,7 +44,7 @@ fn catalogue() -> Vec<ActionCard> {
 }
 
 fn key(name: &str) -> String {
-    format!("org.quire.Mail {name}")
+    format!("org.bardo.Mail {name}")
 }
 
 async fn derive(draft: serde_json::Value, said: &str) -> Result<Derived, ReviewError> {
@@ -121,14 +121,14 @@ async fn a_ceiling_higher_than_needed_is_cut_as_before_and_is_no_correction() {
 
 #[tokio::test]
 async fn raising_adds_no_action_and_never_widens_an_app_grant() {
-    let apps = json!([{ "app": "org.quire.Mail", "up_to": "read" }]);
+    let apps = json!([{ "app": "org.bardo.Mail", "up_to": "read" }]);
     let derived = derive(
         draft(&["mail.thread.archive"], apps, "read"),
         "archive the newsletters",
     )
     .await
     .expect("policy");
-    let app = account_core::AppName::parse("org.quire.Mail").expect("app");
+    let app = account_core::AppName::parse("org.bardo.Mail").expect("app");
     assert_eq!(derived.policy.ceiling, Effect::UndoableWrite);
     let named = |m: &ActionMatch| matches!(m, ActionMatch::AppUpTo(_, Effect::Read));
     assert_eq!(derived.policy.actions.len(), 2);
@@ -143,7 +143,7 @@ async fn raising_adds_no_action_and_never_widens_an_app_grant() {
 
 #[tokio::test]
 async fn an_app_grant_alone_is_not_a_floor_for_the_ceiling() {
-    let apps = json!([{ "app": "org.quire.Mail", "up_to": "undoable_write" }]);
+    let apps = json!([{ "app": "org.bardo.Mail", "up_to": "undoable_write" }]);
     let derived = derive(draft(&[], apps, "read"), "tidy my inbox")
         .await
         .expect("policy");

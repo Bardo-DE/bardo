@@ -81,7 +81,7 @@ fn host_mode_shares_the_network_and_binds_back_only_the_resolver_files() {
 #[test]
 fn endpoint_only_starts_the_forwarder_first_and_binds_one_socket() {
     let bind = EndpointBind::new(
-        abs("/opt/bulkhead/bulkhead-forward"),
+        abs("/opt/bulkhead/bardo-sandbox-forward"),
         abs("/run/user/1000/bulkhead/ep.sock"),
         40123,
     );
@@ -91,7 +91,7 @@ fn endpoint_only_starts_the_forwarder_first_and_binds_one_socket() {
         &args,
         &[
             "--ro-bind",
-            "/opt/bulkhead/bulkhead-forward",
+            "/opt/bulkhead/bardo-sandbox-forward",
             INSIDE_FORWARDER
         ]
     ));

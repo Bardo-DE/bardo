@@ -1,0 +1,39 @@
+# companiond's systemd user unit: the companion. Its configuration is dist/companiond.toml at
+# /etc/xdg/bardo/companiond.toml (a file of the person's own at ~/.config/quire/companiond.toml
+# replaces it whole). It holds no files: its state is
+# rebuilt from the eventlog on start, and everything it does goes through intentd. It talks to
+# inferd for the planner. Each sandbox line says what it protects.
+[Unit]
+Description=Quire assistant (org.bardo.Companion1)
+After=bardo-actiond.service
+Wants=bardo-actiond.service
+
+[Service]
+Type=dbus
+BusName=org.bardo.Companion1
+ExecStart=/usr/libexec/bardo/bardo-companiond
+# No loader variables from the session reach the daemon: porter gives its fixed caller role only
+# to a unit that unsets them (applied after the manager environment and Environment=).
+UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
+
+# --- Sandbox ---
+# Only Unix sockets: the session bus. The rest (no network, no home folder, a read-only system,
+# private temporary files, no devices, no kernel surfaces) is bardo-companiond.service.d/sandbox.conf.
+RestrictAddressFamilies=AF_UNIX
+# No setuid gain, no writable-and-executable memory (no JIT, no injected code).
+NoNewPrivileges=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+# A narrow syscall set: the system-service baseline, minus privileged and obsolete calls.
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @mount @debug @obsolete
+SystemCallArchitectures=native
+# No capabilities at all.
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=default.target

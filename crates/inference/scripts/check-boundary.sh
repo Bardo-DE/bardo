@@ -152,7 +152,7 @@ for member in $(sed -n 's#^    "crates/inference/\(.*\)",$#\1#p' ../../Cargo.tom
 done
 
 # inferd's test-only knobs are never on in a default build: neither `test-proc-root`
-# (`INFERD_PROC_ROOT`, which account-callers' fixtures and peephole's `fake` come with) nor
+# (`BARDO_INFERD_PROC_ROOT`, which account-callers' fixtures and peephole's `fake` come with) nor
 # account-secrets' `test-keys` (a file key store that keeps credentials as plain text) may be among
 # the features cargo resolves for inferd without any flag.
 if cargo tree -p inference-daemon --depth 0 -f '{p} {f}' 2>/dev/null | grep -q 'test-proc-root'; then

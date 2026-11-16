@@ -1,5 +1,5 @@
 //! What `OpenEndpoint` and `CloseEndpoint` answer instead of a value: a cause as the D-Bus error
-//! `org.quire.Inference1.Error.<Cause>`, or one of the bus's own (`AccessDenied`, `InvalidArgs`)
+//! `org.bardo.Inference1.Error.<Cause>`, or one of the bus's own (`AccessDenied`, `InvalidArgs`)
 //! under its real name. Written by hand, as accountd's refusals are, so a client tells a cause
 //! from any other failure by name.
 
@@ -147,11 +147,11 @@ mod tests {
         }
         assert_eq!(
             Cause::EndpointOff.error_name(),
-            "org.quire.Inference1.Error.EndpointOff"
+            "org.bardo.Inference1.Error.EndpointOff"
         );
         assert_eq!(
             Cause::UnsupportedProtocol.error_name(),
-            "org.quire.Inference1.Error.UnsupportedProtocol"
+            "org.bardo.Inference1.Error.UnsupportedProtocol"
         );
     }
 }

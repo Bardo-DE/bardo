@@ -32,8 +32,8 @@ use std::path::Path;
 const KEY_OR: &str = "sk-or-v1-S3CRET-CLOUD-KEY-0123456789";
 const KEY_OAI: &str = "sk-proj-OTHER-SECRET-KEY-9876543210";
 
-pub(crate) const COMPANION: &str = "org.quire.Companion";
-const READER: &str = "org.quire.Reader";
+pub(crate) const COMPANION: &str = "org.bardo.Companion";
+const READER: &str = "org.bardo.Reader";
 
 pub(crate) fn app(name: &str) -> AppId {
     AppId {

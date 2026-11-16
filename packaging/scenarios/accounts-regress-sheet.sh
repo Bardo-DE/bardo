@@ -80,7 +80,7 @@ step_s4_cancel_stays() {
 # shipped file is the jail's /usr/share overlay; the files are read again each time a sheet opens.
 acc_clients_google() {
   mkdir -p /usr/share/porter
-  printf '[[client]]\nissuer = "google"\nchannel = "stable"\nclient_id = "rig.apps.googleusercontent.com"\n' >/usr/share/porter/clients.toml
+  printf '[[client]]\nissuer = "google"\nchannel = "stable"\nclient_id = "rig.apps.googleusercontent.com"\n' >/usr/share/bardo/accounts/clients.toml
 }
 
 step_s2_google() {
@@ -130,7 +130,7 @@ s6_pick_microsoft_without_client() {
   acc_clients_for_issuer
   open_sheet || return 1
   sheet_type Micro; sleep 0.5
-  rm -f /usr/share/porter/clients.toml
+  rm -f /usr/share/bardo/accounts/clients.toml
   sheet_key Enter; sleep 2.5
 }
 
@@ -164,9 +164,9 @@ step_s5_agent_id() {
 
 step_s3_long_id() {
   local x0 y0 x1 y1 i0 j0 i1 j1 head=Laaaaaaaaaaaaaaaaaaaaaaaaaaa
-  ask "org.quire.${head}XXXXXXXXXXXXXXXXXXXX" l1; sheet_await || return 1; sleep 1.5; sheet_shot s3-long-x
+  ask "org.bardo.${head}XXXXXXXXXXXXXXXXXXXX" l1; sheet_await || return 1; sleep 1.5; sheet_shot s3-long-x
   sheet_key Escape; sheet_gone 8
-  ask "org.quire.${head}YYYYYYYYYYYYYYYYYYYYYYYYYYYY" l2; sheet_await || return 1; sleep 1.5; sheet_shot s3-long-y
+  ask "org.bardo.${head}YYYYYYYYYYYYYYYYYYYYYYYYYYYY" l2; sheet_await || return 1; sleep 1.5; sheet_shot s3-long-y
   sheet_key Escape; sheet_gone 8
   must "S3 ids that agree on the first 28 characters draw the same window (cut, not run out)" same_shot s3-long-x s3-long-y
   read -r x0 y0 x1 y1 _ _ < <(sheet_card s3-long-x) || return 1
@@ -201,7 +201,7 @@ step_scan() { scan_end; }
 run_steps step_boot step_s4_cancel_stays step_s2_google step_s1_other step_s5_titles step_s6_no_client step_add \
   step_s5_agent_id step_s3_long_id step_s7_browser_wait step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd daemon rig-servers ferry-rig-servers secrets add; do
+  for f in accountd inferd daemon rig-servers sync-rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

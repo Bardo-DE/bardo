@@ -4,7 +4,7 @@
 //! variable in a running test is `unsafe`. So the real test starts this very test binary again as
 //! a child process whose environment points at a scratch folder, and runs `child_round_trip`
 //! there. Run by itself, `child_round_trip` does nothing: it needs the scratch folder named in
-//! `FILES_TRASH_SCRATCH`. Neither test empties the Trash, which would reach other volumes' own
+//! `BARDO_FILES_TRASH_SCRATCH`. Neither test empties the Trash, which would reach other volumes' own
 //! Trash folders; the child erases only the one item it threw away.
 
 use std::fs;
@@ -13,7 +13,7 @@ use std::process::Command;
 use files_core::{FileName, FolderPath, ItemRef};
 use files_trash::{SystemTrash, Trash, TrashError};
 
-const SCRATCH: &str = "FILES_TRASH_SCRATCH";
+const SCRATCH: &str = "BARDO_FILES_TRASH_SCRATCH";
 
 #[test]
 fn the_real_trash_round_trips_in_a_scratch_data_folder() {

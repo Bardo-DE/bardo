@@ -13,7 +13,7 @@ fn grant(id: &str, caller: GrantCaller, scope: SpaceScope) -> ActionGrant {
         id: GrantId::parse(id).expect("id"),
         key: ActionGrantKey {
             caller,
-            owner: app("org.quire.Mail"),
+            owner: app("org.bardo.Mail"),
             target: GrantTarget::App,
             class: DataClass::Mail,
             usage: Usage::Interactive,
@@ -42,14 +42,14 @@ fn ids(read: &Reconciled) -> Vec<&str> {
 
 #[test]
 fn an_app_space_is_open_to_its_owner_alone() {
-    let mine = app("org.quire.Mail");
-    let theirs = app("org.quire.Photos");
-    let own = only("app:org.quire.Mail:3");
+    let mine = app("org.bardo.Mail");
+    let theirs = app("org.bardo.Photos");
+    let own = only("app:org.bardo.Mail:3");
     assert_eq!(space_access(&own, &mine), SpaceAccess::Open);
     assert_eq!(
         space_access(&own, &theirs),
         SpaceAccess::Refused(SpaceRefusal {
-            space: space("app:org.quire.Mail:3"),
+            space: space("app:org.bardo.Mail:3"),
             owner: mine.clone(),
         })
     );
@@ -58,7 +58,7 @@ fn an_app_space_is_open_to_its_owner_alone() {
     }
     assert!(
         SpaceRefusal {
-            space: space("app:org.quire.Mail:3"),
+            space: space("app:org.bardo.Mail:3"),
             owner: mine,
         }
         .to_string()
@@ -68,18 +68,18 @@ fn an_app_space_is_open_to_its_owner_alone() {
 
 #[test]
 fn a_grant_for_an_app_over_another_apps_space_is_ended_on_reading() {
-    let photos = GrantCaller::App(app("org.quire.Photos"));
+    let photos = GrantCaller::App(app("org.bardo.Photos"));
     let held = vec![
-        grant("g-1", photos.clone(), only("app:org.quire.Photos:1")),
-        grant("g-2", photos.clone(), only("app:org.quire.Mail:1")),
-        grant("g-3", GrantCaller::Companion, only("app:org.quire.Mail:1")),
+        grant("g-1", photos.clone(), only("app:org.bardo.Photos:1")),
+        grant("g-2", photos.clone(), only("app:org.bardo.Mail:1")),
+        grant("g-3", GrantCaller::Companion, only("app:org.bardo.Mail:1")),
     ];
     let read = reconcile(held, None);
     assert_eq!(ids(&read), ["g-1", "g-3"]);
     assert_eq!(
         read.ended,
         [Ended {
-            why: GrantEnd::NotTheirSpace(space("app:org.quire.Mail:1")),
+            why: GrantEnd::NotTheirSpace(space("app:org.bardo.Mail:1")),
             count: 1
         }]
     );
@@ -91,7 +91,7 @@ fn a_space_the_registry_lacks_ends_its_grants_and_only_those() {
         grant("g-1", GrantCaller::Companion, only("work")),
         grant("g-2", GrantCaller::Companion, only("home")),
         grant("g-3", GrantCaller::Companion, only("desktop")),
-        grant("g-4", GrantCaller::Companion, only("app:org.quire.Mail:2")),
+        grant("g-4", GrantCaller::Companion, only("app:org.bardo.Mail:2")),
         grant("g-5", GrantCaller::Companion, SpaceScope::Any),
     ];
     let read = reconcile(held, Some(&known(&["work"])));

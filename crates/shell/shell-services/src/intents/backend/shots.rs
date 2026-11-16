@@ -29,7 +29,7 @@ pub(super) async fn saved(
         .current
         .as_ref()
         .map(|shot| shot.path.to_string_lossy().into_owned())?;
-    let app = AppName::parse("org.quire.Shell").ok()?;
+    let app = AppName::parse("org.bardo.Shell").ok()?;
     let label = Label::untrusted(Source::App(app), DataClass::Screen, inv.space.clone());
     Some(Labelled::new(Value::Text(path), label))
 }

@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.freedesktop.impl.portal.desktop.bardo
+Exec=/usr/libexec/bardo/bardo-portal
+SystemdService=bardo-portal.service

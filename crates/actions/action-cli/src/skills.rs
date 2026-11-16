@@ -1,4 +1,4 @@
-//! `quire-do skills`: the installed skills, from the directories `main` read, each checked against
+//! `bardo-do skills`: the installed skills, from the directories `main` read, each checked against
 //! the manifests intentd has registered: offered to the companion, hidden for a missing action,
 //! or not offered because an action is Hidden. A directory that does not load is listed with why.
 

@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn the_short_name_is_short_stable_and_per_root() {
         let long = Path::new(
-            "/home/someone/rs-wt/live-eval/tmp/docket-live.bkxE6l/out/scratch/world-5Vb5Za",
+            "/home/someone/rs-wt/live-eval/tmp/agent-live.bkxE6l/out/scratch/world-5Vb5Za",
         );
         let name = short_run(long);
         assert_eq!(name, short_run(long));

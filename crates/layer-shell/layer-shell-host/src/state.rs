@@ -7,8 +7,8 @@
 use std::collections::{BTreeMap, VecDeque};
 
 use blitz_traits::shell::ColorScheme;
-use desktop_protocols::client::quire_window_v1::quire_window_manager_v1::QuireWindowManagerV1;
-use desktop_protocols::client::quire_window_v1::quire_window_v1::QuireWindowV1;
+use desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::BardoWindowManagerV1;
+use desktop_protocols::client::bardo_window_v1::bardo_window_v1::BardoWindowV1;
 use smithay_client_toolkit::activation::ActivationState;
 use smithay_client_toolkit::compositor::CompositorState;
 use smithay_client_toolkit::data_device_manager::DataDeviceManagerState;
@@ -103,7 +103,7 @@ pub(crate) struct HostState {
     pub(crate) activation: Option<ActivationState>,
     pub(crate) fractional: Option<Fractional>,
     pub(crate) background_effect: Option<BackgroundEffect>,
-    /// `quire_window_manager_v1`, only where the compositor advertises it (casement).
+    /// `bardo_window_manager_v1`, only where the compositor advertises it (casement).
     pub(crate) quire_window: Option<QuireWindows>,
     /// The compositor's main render device, for the adapter that follows it.
     pub(crate) render_device: Option<RenderDevice>,
@@ -364,8 +364,8 @@ delegate_dispatch!(HostState: [WpViewporter: ()] => Fractional);
 delegate_dispatch!(HostState: [WpViewport: ()] => Fractional);
 delegate_dispatch!(HostState: [ExtBackgroundEffectManagerV1: ()] => BackgroundEffect);
 delegate_dispatch!(HostState: [ExtBackgroundEffectSurfaceV1: ()] => BackgroundEffect);
-delegate_dispatch!(HostState: [QuireWindowManagerV1: ()] => QuireWindows);
-delegate_dispatch!(HostState: [QuireWindowV1: ()] => QuireWindows);
+delegate_dispatch!(HostState: [BardoWindowManagerV1: ()] => QuireWindows);
+delegate_dispatch!(HostState: [BardoWindowV1: ()] => QuireWindows);
 delegate_dispatch!(HostState: [ZwpLinuxDmabufV1: ()] => RenderDevice);
 delegate_dispatch!(HostState: [ZwpLinuxDmabufFeedbackV1: ()] => RenderDevice);
 // zwp_text_input_v3 is dispatched by `handlers::text_input` directly on `HostState`: sctk has no

@@ -1,13 +1,13 @@
-//! `org.quire.Reader1`: the quarantined reader, served by readerd. Only intentd may call it.
+//! `org.bardo.Reader1`: the quarantined reader, served by readerd. Only intentd may call it.
 
 use account_dbus::Details;
 use zbus::fdo;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Reader1",
-    default_service = "org.quire.Reader1",
-    default_path = "/org/quire/Reader1"
+    interface = "org.bardo.Reader1",
+    default_service = "org.bardo.Reader1",
+    default_path = "/org/bardo/Reader1"
 )]
 pub trait Reader {
     /// Reads the handles of a session under a schema (`ReaderAsk` JSON; answers `Value` JSON).
@@ -18,7 +18,7 @@ pub trait Reader {
 #[derive(Debug, Default)]
 pub struct ReaderSkeleton;
 
-#[zbus::interface(name = "org.quire.Reader1")]
+#[zbus::interface(name = "org.bardo.Reader1")]
 impl ReaderSkeleton {
     fn extract(&self, session: String, ask: String, options: Details) -> fdo::Result<String> {
         let _ = (session, ask, options);

@@ -24,7 +24,7 @@ fn rollback_swaps_back_and_forth_and_moves_the_links() {
         "casement one"
     );
     assert_eq!(
-        read(&sandbox.link("/usr/share/wayland-sessions/quire.desktop")),
+        read(&sandbox.link("/usr/share/wayland-sessions/bardo.desktop")),
         "[Desktop Entry]"
     );
 
@@ -57,13 +57,13 @@ fn rollback_moves_the_exports_of_the_release_it_returns_to() {
     sandbox.install(&build(&first)).expect("install");
     let mut second = Recipe::new("0.2.0");
     second.exports = vec![(
-        "/usr/share/wayland-sessions/quire.desktop",
-        "share/wayland-sessions/quire.desktop",
+        "/usr/share/wayland-sessions/bardo.desktop",
+        "share/wayland-sessions/bardo.desktop",
     )];
     sandbox.install(&build(&second)).expect("install");
     assert!(
         sandbox
-            .link("/usr/share/wayland-sessions/quire.desktop")
+            .link("/usr/share/wayland-sessions/bardo.desktop")
             .exists()
     );
     assert!(std::fs::symlink_metadata(sandbox.link("/usr/local/bin/casement")).is_err());
@@ -71,7 +71,7 @@ fn rollback_moves_the_exports_of_the_release_it_returns_to() {
     rollback(&sandbox.layout, &Accept).expect("rollback");
     assert!(sandbox.link("/usr/local/bin/casement").exists());
     assert!(
-        std::fs::symlink_metadata(sandbox.link("/usr/share/wayland-sessions/quire.desktop"))
+        std::fs::symlink_metadata(sandbox.link("/usr/share/wayland-sessions/bardo.desktop"))
             .is_err()
     );
 }

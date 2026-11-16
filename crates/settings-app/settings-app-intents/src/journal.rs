@@ -65,7 +65,7 @@ mod tests {
 
     fn change(n: i64) -> Change {
         Change {
-            file: ConfigFile::parse(&FilePath("sill/settings.toml".into())).expect("a file"),
+            file: ConfigFile::parse(&FilePath("shell/settings.toml".into())).expect("a file"),
             key: KeyPath("dock.tile_size_px".into()),
             before: toml::Value::Integer(n),
             after: toml::Value::Integer(n + 1),

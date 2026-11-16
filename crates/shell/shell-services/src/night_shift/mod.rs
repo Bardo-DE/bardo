@@ -1,5 +1,5 @@
 //! Night Shift: casement's software night light, asked for by the person. casement warms the
-//! screen from `[night_light]` in `~/.config/casement/settings.toml`; this service reads that
+//! screen from `[night_light]` in `~/.config/compositor/settings.toml`; this service reads that
 //! table and writes it when the person turns Night Shift on until tomorrow, turns it off or
 //! moves the warmth, and keeps the manual turn-on's end in `night-shift.json` in the state
 //! directory so a restart does not leave the screen warm all day. Everything else in casement's

@@ -9,7 +9,7 @@ use agent_planner::Planner;
 use companion_daemon::*;
 use serde_json::json;
 
-const READ: &str = "org_quire_Mail-mail_thread_read";
+const READ: &str = "org_bardo_Mail-mail_thread_read";
 
 async fn plan(say: Say) -> Result<ModelOutput, PlanFault> {
     let (planner, _) = planner(vec![say]);
@@ -18,7 +18,7 @@ async fn plan(say: Say) -> Result<ModelOutput, PlanFault> {
 
 #[tokio::test]
 async fn a_call_written_as_words_is_a_fault_in_every_template() {
-    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let hermes = format!(
         "<tool_call>\n{}\n</tool_call>",
         json!({ "name": READ, "arguments": { "target": thread } })
@@ -126,7 +126,7 @@ async fn an_id_the_model_repeats_is_said_as_what_it_is() {
 
 #[tokio::test]
 async fn markup_beside_real_calls_is_dropped_and_the_calls_stand() {
-    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let (planner, _) = planner(vec![Say::Reply(
         "<tool_call>{}</tool_call>".into(),
         vec![(READ.into(), json!({ "target": thread }))],
@@ -213,20 +213,20 @@ async fn a_question_past_what_its_tool_allows_is_unreadable() {
 fn a_tool_name_with_a_homoglyph_is_not_a_name_at_all() {
     // The wire type refuses it before the planner could compare it: a Cyrillic letter is not in
     // the grammar of a tool name.
-    assert!(inference_core::ToolName::new("org_quire_Mail-mail_thr\u{0435}ad.read").is_err());
+    assert!(inference_core::ToolName::new("org_bardo_Mail-mail_thr\u{0435}ad.read").is_err());
 }
 
 #[tokio::test]
 async fn made_up_and_wrong_typed_calls_are_unread_with_a_typed_fault_not_run() {
     use action_core::ReplyFault;
     use action_manifest::{ArgsFault, TargetFault};
-    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let target = |fault| ReplyFault::Args(ArgsFault::Target(fault));
     for (name, args, fault) in [
         (
-            "org_quire_Mail-mail_thread_nuke",
+            "org_bardo_Mail-mail_thread_nuke",
             json!({ "target": thread }),
-            ReplyFault::NoSuchTool("org_quire_Mail-mail_thread_nuke".into()),
+            ReplyFault::NoSuchTool("org_bardo_Mail-mail_thread_nuke".into()),
         ),
         (READ, json!({ "target": 5 }), target(TargetFault::Malformed)),
         (READ, json!({}), target(TargetFault::Missing)),

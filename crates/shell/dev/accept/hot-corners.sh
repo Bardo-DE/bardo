@@ -37,7 +37,7 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-hot-corners"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-hot-corners"
 mkdir -p "$OUT_DIR"
 
 # Whether SURFACE $1 is listed in `sill debug stats` (popups and corners alike).
@@ -53,7 +53,7 @@ start_hot_corners_daemon() {
   rm -f "$MARK"
   backdrop_seed "$CONFIG" || return 1
   mkdir -p "$CONFIG/sill"
-  cat >"$CONFIG/sill/settings.toml" <<TOML
+  cat >"$CONFIG/shell/settings.toml" <<TOML
 [hot_corners]
 top_left = "launcher"
 top_right = "notification_center"
@@ -147,7 +147,7 @@ step_dwell() {
 step_reload() {
   local log="$OUT_DIR/reload.log"
   : >"$log"
-  cat >"$CONFIG/sill/settings.toml" <<TOML
+  cat >"$CONFIG/shell/settings.toml" <<TOML
 [hot_corners]
 top_left = "none"
 top_right = "notification_center"

@@ -24,7 +24,7 @@ rustix = {version = "1.1", default-features = false, features = ["std", "event",
 [features]
 # Headless tests only (B10): the dummy renderer, minting Physical/Virtual/Test origins.
 testing = ["compositor-render/testing"]
-# casementctl's injection path (B10): minting Physical/Remote/Test origins from Debug1.
+# bardo-compositorctl's injection path (B10): minting Physical/Remote/Test origins from Debug1.
 debug-inject = []
 # The real tty adapters (`tty/*_real.rs`, `gpu/render_nodes_real.rs`): libseat, udev, DRM, GBM
 # (A2). Off by default so headless consumers (the test kit, cua's tests, a harness) build with

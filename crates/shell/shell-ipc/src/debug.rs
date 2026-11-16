@@ -94,7 +94,7 @@ pub enum DebugRequest {
     /// without `debug`: inside the lock grace it opens the lock.
     IdleWake,
     /// Switch the conversation `session` to `mode` as the shell does (`Intents1.Session.SetMode`):
-    /// for a run the companion's box does not hold, such as one asked through `quire-do`
+    /// for a run the companion's box does not hold, such as one asked through `bardo-do`
     /// (`desktop/scenarios`). Refused by a daemon built without `debug`. Answered once the
     /// companion service has it; what the router made of it is its `ModeChanged` signal, and a
     /// refusal is in the daemon's log.

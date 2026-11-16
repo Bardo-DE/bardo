@@ -10,7 +10,7 @@ pub(crate) fn path(t: &str) -> AbsPath {
 
 pub(crate) fn act(name: &str) -> ActionRef {
     ActionRef {
-        app: account_core::AppName::parse("org.quire.Files").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Files").expect("app"),
         name: provenance::ActionName::parse(name).expect("action"),
     }
 }

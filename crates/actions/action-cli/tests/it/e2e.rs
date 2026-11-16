@@ -1,11 +1,11 @@
-//! `quire-do` end to end: the real binary, intentd's real `start` (the router over `DbusLink`,
-//! `SheetConfirmer` and `FileGrants`, serving `org.quire.Intents1`), a mail app that is
+//! `bardo-do` end to end: the real binary, intentd's real `start` (the router over `DbusLink`,
+//! `SheetConfirmer` and `FileGrants`, serving `org.bardo.Intents1`), a mail app that is
 //! action-fake's `FakeMail` behind `action_provider::serve_on`, and sill's `Confirm1` as a fake
 //! that answers from a script. All of it on a private `dbus-daemon`, with a scratch HOME and
 //! XDG directories (the app's manifest is installed under the scratch `XDG_DATA_DIRS`): the
 //! person's real session bus and `~/.config` are never named.
 //!
-//! The terminal's AppId (`org.quire.Do`, role cli) comes from the cgroup of the pid behind its
+//! The terminal's AppId (`org.bardo.Do`, role cli) comes from the cgroup of the pid behind its
 //! connection: the binary owns no bus name, so intentd names it by the scope it runs in. The test
 //! reads a fake proc root: `quire()` starts the binary through `sh`, which waits for a line on
 //! its stdin, so the child's pid (kept by `exec`) is placed in a `vte-spawn-*.scope` before the
@@ -56,7 +56,7 @@ fn refused() -> Answer {
     Answer::With(ConfirmAnswer::Ended(ConfirmEnd::Refused))
 }
 
-/// The world: a bus, intentd, a mail app, sill, and a scratch home for `quire-do`.
+/// The world: a bus, intentd, a mail app, sill, and a scratch home for `bardo-do`.
 struct Desk {
     dir: tempfile::TempDir,
     bus: PrivateBus,
@@ -77,13 +77,13 @@ impl Desk {
         let manifests = data.join("quire/intents");
         std::fs::create_dir_all(&manifests).expect("manifest dir");
         std::fs::write(
-            manifests.join("org.quire.Mail.toml"),
+            manifests.join("org.bardo.Mail.toml"),
             action_fake::MAIL_MANIFEST,
         )
         .expect("mail manifest");
         // An app that is installed and never running: nothing on the bus owns its name.
         std::fs::write(
-            manifests.join("org.quire.Files.toml"),
+            manifests.join("org.bardo.Files.toml"),
             action_fake::FILES_MANIFEST,
         )
         .expect("files manifest");
@@ -101,7 +101,7 @@ impl Desk {
         memoryd.serve(&memory_connection).await;
         let sill_connection = bus.connect().await;
         let sill =
-            FakeSill::start(&sill_connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+            FakeSill::start(&sill_connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
 
         let home = dir.path().display().to_string();
         let env = |key: &str| match key {
@@ -117,7 +117,7 @@ impl Desk {
         setup.signals.every = std::time::Duration::from_millis(30);
         setup.proc_root = ProcRoot::Honoured(dir.path().join("proc"));
         // Every connection here is this process: the test says that the one that serves sill's
-        // names is the shell's unit. `quire-do` is told apart by its cgroup in the fake proc root.
+        // names is the shell's unit. `bardo-do` is told apart by its cgroup in the fake proc root.
         let who = std::sync::Arc::new(Identity::on_fixture(
             daemon_connection.clone(),
             action_daemon::callers::shipped(),
@@ -128,7 +128,7 @@ impl Desk {
             &who,
             &sill_connection,
             &IntentdConfig::shipped().expect("the shipped configuration"),
-            &["org.quire.Confirm1", "org.quire.Shell"],
+            &["org.bardo.Confirm1", "org.bardo.Shell"],
         );
         let intentd = start(&daemon_connection, None, setup)
             .await
@@ -152,14 +152,14 @@ impl Desk {
         }
     }
 
-    /// The real `quire-do`, with only what is named here in its environment, running in a
+    /// The real `bardo-do`, with only what is named here in its environment, running in a
     /// terminal's scope of the fake proc root.
     async fn quire(&self, words: &[&str]) -> Output {
         use tokio::io::AsyncWriteExt;
         let scratch: &Path = self.dir.path();
         let mut child = tokio::process::Command::new("sh")
             .args(["-c", "read _; exec \"$0\" \"$@\" </dev/null"])
-            .arg(env!("CARGO_BIN_EXE_quire-do"))
+            .arg(env!("CARGO_BIN_EXE_bardo-do"))
             .args(words)
             .env_clear()
             .env("HOME", scratch)
@@ -173,7 +173,7 @@ impl Desk {
             .stderr(std::process::Stdio::piped())
             .kill_on_drop(true)
             .spawn()
-            .expect("quire-do starts");
+            .expect("bardo-do starts");
         let pid = child.id().expect("a pid");
         let at = scratch.join("proc").join(pid.to_string());
         std::fs::create_dir_all(&at).expect("fake proc");
@@ -182,7 +182,7 @@ impl Desk {
         let mut go = child.stdin.take().expect("stdin");
         go.write_all(b"\n").await.expect("go");
         drop(go);
-        child.wait_with_output().await.expect("quire-do runs")
+        child.wait_with_output().await.expect("bardo-do runs")
     }
 
     async fn stop_intentd(&mut self) {
@@ -211,7 +211,7 @@ fn say(out: &Output) -> String {
 
 fn archive() -> ActionRef {
     ActionRef {
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         name: provenance::ActionName::parse("mail.thread.archive").expect("action"),
     }
 }
@@ -480,8 +480,8 @@ async fn an_app_that_is_absent_is_exit_6() {
     );
 }
 
-/// The role is the cli role by the executable, never by anything `quire-do` says: another
-/// process that owns no name and is not `quire-do` is nobody, and `quire-do` run as the person's
+/// The role is the cli role by the executable, never by anything `bardo-do` says: another
+/// process that owns no name and is not `bardo-do` is nobody, and `bardo-do` run as the person's
 /// control centre would still be a terminal.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_process_that_is_not_quire_do_is_not_the_terminal() {

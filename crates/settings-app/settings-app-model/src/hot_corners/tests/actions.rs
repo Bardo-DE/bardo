@@ -1,9 +1,9 @@
 use super::*;
 
-/// A manifest of an app `org.quire.Mail` with the five kinds of action the list sorts.
+/// A manifest of an app `org.bardo.Mail` with the five kinds of action the list sorts.
 const MAIL: &str = r#"
 vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 entities = []
 
 [[actions]]

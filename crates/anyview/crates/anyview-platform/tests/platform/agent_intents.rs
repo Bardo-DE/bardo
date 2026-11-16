@@ -21,12 +21,12 @@ use std::time::Duration;
 use support::PrivateBus;
 use zbus::zvariant::Value;
 
-const PROVIDER_PATH: &str = "/org/quire/IntentProvider1";
-const PROVIDER_INTERFACE: &str = "org.quire.IntentProvider1";
+const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";
+const PROVIDER_INTERFACE: &str = "org.bardo.IntentProvider1";
 
 fn shipped_manifest() -> String {
     let file =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../dist/intents/org.quire.Anyview.toml");
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../dist/intents/org.bardo.Anyview.toml");
     std::fs::read_to_string(file).unwrap()
 }
 
@@ -60,7 +60,7 @@ fn invocation(files: &[&Path]) -> String {
         target: TargetValue::Files(files),
         args: Args::new(),
         actor: Actor::User {
-            via: AppName::parse("org.quire.Shell").unwrap(),
+            via: AppName::parse("org.bardo.Shell").unwrap(),
         },
         origin: Origin::Launcher,
         space: SpaceId::parse("work").unwrap(),
@@ -93,18 +93,18 @@ async fn perform(caller: &zbus::Connection, invocation: String) -> zbus::Result<
 }
 
 /// A fixture `/proc` in `root` in which this test's process is the main process of
-/// `intentd.service`, the router's unit.
+/// `bardo-actiond.service`, the router's unit.
 fn router_proc(root: &Path) {
     let pid = std::process::id();
     let process = root.join(pid.to_string());
     std::fs::create_dir_all(&process).unwrap();
     std::fs::write(
         process.join("cgroup"),
-        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/intentd.service\n",
+        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-actiond.service\n",
     )
     .unwrap();
     std::fs::create_dir_all(root.join("units")).unwrap();
-    std::fs::write(root.join("units/intentd.service"), pid.to_string()).unwrap();
+    std::fs::write(root.join("units/bardo-actiond.service"), pid.to_string()).unwrap();
 }
 
 async fn viewer(bus: &PrivateBus, proc_root: &Path) -> Primary {
@@ -177,7 +177,7 @@ async fn only_the_router_may_call_the_provider() {
     let proc_root = scratch.path().join("proc");
     router_proc(&proc_root);
     std::fs::write(
-        proc_root.join("units/intentd.service"),
+        proc_root.join("units/bardo-actiond.service"),
         (std::process::id() + 1).to_string(),
     )
     .unwrap();

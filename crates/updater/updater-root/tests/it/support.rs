@@ -54,12 +54,12 @@ impl<'a> Recipe<'a> {
             version,
             listed: vec![
                 ("bin/casement", "casement 1"),
-                ("share/wayland-sessions/quire.desktop", "[Desktop Entry]"),
+                ("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
             ],
             packed: None,
             exports: vec![(
-                "/usr/share/wayland-sessions/quire.desktop",
-                "share/wayland-sessions/quire.desktop",
+                "/usr/share/wayland-sessions/bardo.desktop",
+                "share/wayland-sessions/bardo.desktop",
             )],
             system: Vec::new(),
         }

@@ -32,7 +32,7 @@ fn lab(text: &str, label: Label) -> Labelled<String> {
 }
 fn entity(kind: &str, key: &str) -> EntityId {
     EntityId {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: EntityKind::parse(kind).expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }
@@ -48,11 +48,11 @@ fn shipped(name: &str) -> String {
 #[test]
 fn the_registry_reads_the_shipped_manifests_and_finds_their_actions() {
     let mut registry = Registry::new();
-    for file in ["org.quire.Memory.toml", "org.quire.Companion.toml"] {
+    for file in ["org.bardo.Memory.toml", "org.bardo.Companion.toml"] {
         registry.insert(parse(&shipped(file)).unwrap_or_else(|e| panic!("{file}: {e}")));
     }
     let start = ActionRef {
-        app: app("org.quire.Companion"),
+        app: app("org.bardo.Companion"),
         name: provenance::ActionName::parse("companion.task.start").expect("action"),
     };
     assert_eq!(
@@ -60,7 +60,7 @@ fn the_registry_reads_the_shipped_manifests_and_finds_their_actions() {
         Some(provenance::Effect::Read)
     );
     let missing = ActionRef {
-        app: app("org.quire.Companion"),
+        app: app("org.bardo.Companion"),
         name: provenance::ActionName::parse("companion.nothing.here").expect("action"),
     };
     assert!(registry.action(&missing).is_none());
@@ -73,7 +73,7 @@ fn the_registry_reads_the_shipped_manifests_and_finds_their_actions() {
 
 #[test]
 fn an_action_naming_a_kind_no_app_declares_is_unresolved() {
-    let text = shipped("org.quire.Memory.toml").replace(
+    let text = shipped("org.bardo.Memory.toml").replace(
         "on = { kind = \"one\", v = \"memory.fact\" }",
         "on = { kind = \"one\", v = \"memory.ghost\" }",
     );
@@ -92,7 +92,7 @@ fn parse_names_what_is_wrong() {
         parse("vocab = \"x\""),
         Err(ManifestFileError::Toml(_))
     ));
-    let outside = shipped("org.quire.Memory.toml")
+    let outside = shipped("org.bardo.Memory.toml")
         .replace("name = \"memory.recall\"", "name = \"files.recall\"");
     assert!(matches!(
         parse(&outside),
@@ -104,12 +104,12 @@ fn parse_names_what_is_wrong() {
 
 fn snapshot() -> ContextSnapshot {
     let thread = provenance::EntityId {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
         key: provenance::EntityKey::parse("t1").expect("key"),
     };
     ContextSnapshot {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         window: lab("Inbox", trusted()),
         here: Here::Entity(EntityRef {
             id: thread.clone(),

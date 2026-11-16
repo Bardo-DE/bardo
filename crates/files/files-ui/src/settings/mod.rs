@@ -7,7 +7,7 @@
 //! it, so a change made in the Settings app reaches an open window.
 //!
 //! What is not a choice stays where it was: how each folder is shown is state (`folders.toml` in
-//! the state folder), and the look is the desktop's (`quire/appearance.toml`).
+//! the state folder), and the look is the desktop's (`bardo/appearance.toml`).
 
 mod apply;
 mod follow;

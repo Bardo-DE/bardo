@@ -72,7 +72,7 @@ fn the_desktops_own_list_beats_the_general_list_and_temor() {
     for bin in ["temor", "kitty", "foot"] {
         scratch.program(bin);
     }
-    scratch.entry("org.quire.Temor.desktop", "temor", "");
+    scratch.entry("org.bardo.Temor.desktop", "temor", "");
     scratch.entry("kitty.desktop", "kitty", "");
     scratch.entry("foot.desktop", "foot", "");
     scratch.write("config/xdg-terminals.list", "# mine\nfoot.desktop\n");
@@ -119,7 +119,7 @@ fn with_no_list_temor_comes_first_then_the_terminals_found_by_name() {
         "temor by name beats the rest"
     );
     scratch.entry(
-        "org.quire.Temor.desktop",
+        "org.bardo.Temor.desktop",
         "temor --new",
         "X-TerminalArgExec=--run",
     );

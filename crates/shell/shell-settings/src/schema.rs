@@ -64,13 +64,13 @@ pub fn schemas() -> Vec<Schema> {
     ]
 }
 
-/// The one `sill.settings.toml` the package installs: every domain's keys under app `sill`,
-/// file `sill/settings.toml`.
+/// The one `shell.settings.toml` the package installs: every domain's keys under app `sill`,
+/// file `shell/settings.toml`.
 pub fn schema() -> Schema {
     let parts = schemas();
     Schema {
         app: AppId("sill".to_owned()),
-        file: FilePath("sill/settings.toml".to_owned()),
+        file: FilePath("shell/settings.toml".to_owned()),
         version: 1,
         pages: parts.iter().flat_map(|s| s.pages.clone()).collect(),
         footnotes: parts.iter().flat_map(|s| s.footnotes.clone()).collect(),

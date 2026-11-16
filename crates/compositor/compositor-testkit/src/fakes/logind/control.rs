@@ -1,4 +1,4 @@
-//! `org.quire.Casement.FakeLogind1`: lets a jailed scenario drive the fake from outside the
+//! `org.bardo.Compositor.FakeLogind1`: lets a jailed scenario drive the fake from outside the
 //! process (`busctl call ... Lock`) and read back what it recorded.
 
 use super::log::Recorder;
@@ -23,7 +23,7 @@ fn failed(error: impl std::fmt::Display) -> fdo::Error {
     fdo::Error::Failed(error.to_string())
 }
 
-#[zbus::interface(name = "org.quire.Casement.FakeLogind1")]
+#[zbus::interface(name = "org.bardo.Compositor.FakeLogind1")]
 impl Control {
     /// Emits the session's `Lock` signal.
     async fn lock(&self) -> fdo::Result<()> {

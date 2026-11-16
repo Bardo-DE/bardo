@@ -1,4 +1,4 @@
-//! `org.quire.Compositor1` at `/org/quire/Compositor1` (the session bus; casement owns the
+//! `org.bardo.Compositor1` at `/org/bardo/Compositor1` (the session bus; casement owns the
 //! name): the way the shell, the agent tier and the portal get their privileged Wayland
 //! connections.
 //!
@@ -54,10 +54,10 @@ use zbus::fdo;
 use zbus::message::Header;
 
 /// The object's path.
-pub const OBJECT_PATH: &str = "/org/quire/Compositor1";
+pub const OBJECT_PATH: &str = "/org/bardo/Compositor1";
 
 /// The well-known name casement owns on the session bus.
-pub const BUS_NAME: &str = "org.quire.Compositor1";
+pub const BUS_NAME: &str = "org.bardo.Compositor1";
 
 /// The object: the door into the event loop, where every call is carried out, and the check
 /// that says who a caller is.
@@ -102,7 +102,7 @@ pub fn parse_connect_role(text: &str) -> Result<ConnectionRole, IpcError> {
     }
 }
 
-#[zbus::interface(name = "org.quire.Compositor1")]
+#[zbus::interface(name = "org.bardo.Compositor1")]
 impl Compositor1 {
     /// `Connect(role: s) -> h`: a new Wayland connection with the role `role` (`shell`, `agent`
     /// or `portal`), when the caller holds the role that stands for it. The reply is the client end

@@ -35,15 +35,15 @@ fn plan(binaries: &Binaries) -> [(&'static str, &Path, &'static str); 5] {
         (
             "accountd",
             binaries.accountd.as_path(),
-            "org.quire.Accounts1",
+            "org.bardo.Accounts1",
         ),
-        ("inferd", binaries.inferd.as_path(), "org.quire.Inference1"),
-        ("memoryd", binaries.memoryd.as_path(), "org.quire.Memory1"),
-        ("intentd", binaries.intentd.as_path(), "org.quire.Intents1"),
+        ("inferd", binaries.inferd.as_path(), "org.bardo.Inference1"),
+        ("memoryd", binaries.memoryd.as_path(), "org.bardo.Memory1"),
+        ("intentd", binaries.intentd.as_path(), "org.bardo.Intents1"),
         (
             "companiond",
             binaries.companiond.as_path(),
-            "org.quire.Companion1",
+            "org.bardo.Companion1",
         ),
     ]
 }

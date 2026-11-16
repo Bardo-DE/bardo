@@ -22,11 +22,11 @@ fn router() -> Router<action_fake::FakeSeams> {
 }
 
 fn files() -> AppName {
-    AppName::parse("org.quire.Files").expect("app")
+    AppName::parse("org.bardo.Files").expect("app")
 }
 
 fn companion() -> CallerId {
-    crate::support::world::caller("org.quire.Companiond", &[CallerRole::Companion])
+    crate::support::world::caller("org.bardo.Companion", &[CallerRole::Companion])
 }
 
 async fn open(router: &Router<action_fake::FakeSeams>, agent: AgentRef) -> SessionOpened {
@@ -107,7 +107,7 @@ async fn a_row_in_the_journal_or_a_change_of_one_is_a_journal_change_with_the_ro
         provenance::UnixSeconds(1),
         Actor::Cli,
         ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: provenance::ActionName::parse("mail.thread.archive").expect("action"),
         },
         LabelText::parse("Archived 1 thread").expect("words"),
@@ -170,7 +170,7 @@ async fn a_conversation_switched_to_another_mode_is_said_whoever_switched_it() {
     let router = router();
     let front = open(&router, AgentRef::Companion).await;
     assert_eq!(front.mode, Mode::Auto, "the mode it opens in");
-    let shell = crate::support::world::caller("org.quire.Shell", &[CallerRole::Launcher]);
+    let shell = crate::support::world::caller("org.bardo.Shell", &[CallerRole::Launcher]);
     let switch = |mode: Mode| {
         IntentsRequest::SessionMode(SessionModeAsk {
             session: front.session.clone(),
@@ -274,11 +274,11 @@ async fn a_caller_that_may_not_search_gets_no_hits() {
     let mut config = everything_config();
     config.roles.insert(
         CallerRole::Reader,
-        vec![AppName::parse("org.quire.Readerish").expect("app")],
+        vec![AppName::parse("org.bardo.Readerish").expect("app")],
     );
     config.roles.retain(|role, _| *role == CallerRole::Reader);
     let world = World::serving(mail_router(), config).await;
-    let (_, reader) = world.client(&["org.quire.Readerish"]).await;
+    let (_, reader) = world.client(&["org.bardo.Readerish"]).await;
     let proxy = action_dbus::SearchProxy::new(&reader).await.expect("proxy");
     let scope = serde_json::to_string(&SearchScope::Everything).expect("scope");
     let refused = proxy.query("Invoice", &scope, 1).await;

@@ -1,4 +1,4 @@
-//! `casement-x11probe session`: the X11 connection, the windows by name, the clipboard, and the
+//! `compositor-x11probe session`: the X11 connection, the windows by name, the clipboard, and the
 //! loop that interleaves stdin commands with X events. Nothing blocks on the X server except
 //! the small round trips a command needs; a paste is answered by the `SelectionNotify` event.
 
@@ -97,7 +97,7 @@ pub(crate) fn run() -> Result<(), ProbeError> {
         active_window: atom(&conn, b"_NET_ACTIVE_WINDOW")?,
         protocols: atom(&conn, b"WM_PROTOCOLS")?,
         delete_window: atom(&conn, b"WM_DELETE_WINDOW")?,
-        paste_into: atom(&conn, b"CASEMENT_PROBE_PASTE")?,
+        paste_into: atom(&conn, b"BARDO_COMPOSITOR_PROBE_PASTE")?,
     };
     // A window that never maps: the clipboard's owner and the paste's requestor.
     let clip_window = conn.generate_id()?;

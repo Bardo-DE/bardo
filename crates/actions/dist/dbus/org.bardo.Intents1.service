@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Intents1
+Exec=/usr/libexec/bardo/bardo-actiond
+SystemdService=bardo-actiond.service

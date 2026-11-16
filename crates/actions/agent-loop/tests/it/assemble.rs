@@ -13,7 +13,7 @@ use permission_core::{BreakerTrip, DenyCode};
 use provenance::{ActionName, Effect, Integrity, SpaceId, UnixSeconds};
 
 fn app() -> AppName {
-    AppName::parse("org.quire.Mail").expect("app")
+    AppName::parse("org.bardo.Mail").expect("app")
 }
 
 fn card(name: &str) -> ActionCard {

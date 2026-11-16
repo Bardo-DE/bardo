@@ -1,5 +1,5 @@
 //! The menus of the apps the bar follows. An app that serves `com.canonical.dbusmenu` at
-//! `org.quire.AppMenu.<app_id>` (quire design/27 §5.2 rule a) has its menu read, followed
+//! `org.bardo.AppMenu.<app_id>` (quire design/27 §5.2 rule a) has its menu read, followed
 //! (`LayoutUpdated`, `ItemsPropertiesUpdated`) and published; a click, and `AboutToShow` when a
 //! menu opens, go back to the app. An app with no owner for its name has no entry, so the bar
 //! keeps its own App menu alone (rule c).

@@ -4,7 +4,7 @@
 //! Spaces are per app, but linkable (owner decision 2026-10-09). Each app keeps its own list of
 //! Spaces (quire's Spaces kit numbers them, `ui_style::space::list::SpaceId(u64)`), and any of
 //! them may be linked to a desktop-wide Space, whose registry accountd keeps
-//! (`org.quire.Spaces1`). Only linked Spaces share agent memory and consent across apps; an
+//! (`org.bardo.Spaces1`). Only linked Spaces share agent memory and consent across apps; an
 //! unlinked Space is its app's alone. porter owns the ids; quire's kit stores only an opaque
 //! link per Space, which is a desktop-wide Space's id.
 //!
@@ -59,7 +59,7 @@ pub struct LocalSpace(pub u64);
 /// A desktop-wide Space's id: a slug of the id grammar, never `desktop`. On casement the
 /// compositor mints it for each workspace (`s-` and 32 lowercase hex digits), sends it as the
 /// ext-workspace id, keeps it across restarts and registers it with accountd's
-/// `org.quire.Spaces1`; sill and apps read it from the workspace protocol. On a compositor
+/// `org.bardo.Spaces1`; sill and apps read it from the workspace protocol. On a compositor
 /// without stable workspace ids, accountd mints it when the Space is made. Never derived from
 /// the name, so a rename keeps it; an id stored before Spaces were per app is kept as it is.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

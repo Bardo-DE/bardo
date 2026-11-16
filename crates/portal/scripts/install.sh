@@ -11,11 +11,11 @@
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
 #   PREFIX/libexec/transom                                                 the portal backend
-#   PREFIX/lib/systemd/user/transom.service                                the user unit
-#   PREFIX/share/dbus-1/services/org.freedesktop.impl.portal.desktop.quire.service   D-Bus activation
-#   PREFIX/share/xdg-desktop-portal/portals/quire.portal                   which interfaces it answers, UseIn=quire
+#   PREFIX/lib/systemd/user/bardo-portal.service                                the user unit
+#   PREFIX/share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service   D-Bus activation
+#   PREFIX/share/xdg-desktop-portal/portals/bardo.portal                   which interfaces it answers, UseIn=bardo
 #
-# Not installed: the portals.conf routing (dist/quire-portals.conf is the example). Which backend
+# Not installed: the portals.conf routing (dist/bardo-portals.conf is the example). Which backend
 # answers which interface is the desktop's choice, so the desktop's installer ships that file. The unit
 # is not enabled (that writes under the home directory): the first portal call starts transom through
 # D-Bus activation.
@@ -109,13 +109,13 @@ if [ ! -x "$built/transom" ]; then
     exit 1
 fi
 
-# The files in dist/ name /usr/libexec/transom; a different prefix changes that one path.
+# The files in dist/ name /usr/libexec/bardo/bardo-portal; a different prefix changes that one path.
 libexec=$prefix/libexec
 put 755 "$built/transom" "$libexec/transom"
-put 644 "$dist/transom.service" "$prefix/lib/systemd/user/transom.service" /usr/libexec/transom "$libexec/transom"
-put 644 "$dist/org.freedesktop.impl.portal.desktop.quire.service" \
-    "$prefix/share/dbus-1/services/org.freedesktop.impl.portal.desktop.quire.service" /usr/libexec/transom "$libexec/transom"
-put 644 "$dist/quire.portal" "$prefix/share/xdg-desktop-portal/portals/quire.portal"
+put 644 "$dist/bardo-portal.service" "$prefix/lib/systemd/user/bardo-portal.service" /usr/libexec/bardo/bardo-portal "$libexec/transom"
+put 644 "$dist/org.freedesktop.impl.portal.desktop.bardo.service" \
+    "$prefix/share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service" /usr/libexec/bardo/bardo-portal "$libexec/transom"
+put 644 "$dist/bardo.portal" "$prefix/share/xdg-desktop-portal/portals/bardo.portal"
 
 if [ "$changed" -eq 0 ]; then
     echo "nothing to change"

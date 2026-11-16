@@ -3,7 +3,7 @@
 //! keeps its aspect ratio when resized. Pure functions on rectangles; `model/pip.rs` carries
 //! them into the model.
 //!
-//! A window is picture in picture when its client said so (`quire_window_v1.set_role(pip)`).
+//! A window is picture in picture when its client said so (`bardo_window_v1.set_role(pip)`).
 //! Browsers do not know that protocol, so a window that declared nothing and whose title and
 //! app id are a known browser's picture-in-picture window is treated the same way
 //! (a guess); a client that later sets a role of its own overrides the guess.
@@ -44,7 +44,7 @@ const BROWSER_TITLES: [&str; 2] = ["picture-in-picture", "picture in picture"];
 /// use compositor_core::window::pip_source_of;
 ///
 /// assert_eq!(pip_source_of(desktop_protocols::vocab::WindowRole::Pip, "", ""), Some(true));
-/// assert_eq!(pip_source_of(desktop_protocols::vocab::WindowRole::Document, "Mail", "org.quire.Mail"), None);
+/// assert_eq!(pip_source_of(desktop_protocols::vocab::WindowRole::Document, "Mail", "org.bardo.Mail"), None);
 /// ```
 pub fn pip_source_of(role: WindowRole, title: &str, app_id: &str) -> Option<bool> {
     match role {
@@ -256,7 +256,7 @@ mod tests {
                 "other app",
                 Document,
                 "Picture-in-Picture",
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 None,
             ),
             ("other title", Document, "Mail", "firefox", None),

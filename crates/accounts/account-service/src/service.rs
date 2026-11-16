@@ -215,7 +215,7 @@ where
 
     /// Shows the chooser and consent sheet for `need` and records the grant the person gives.
     /// `session` is the open session the request was made in (the agent launcher's, for an agent
-    /// program's key: `caller` is then the app `org.quire.Agent.<program>`), which lets the
+    /// program's key: `caller` is then the app `org.bardo.Agent.<program>`), which lets the
     /// sheet offer "This session only". With a session "Add Account…" is not offered a second
     /// route: it ends the request dismissed, since the account it would add and allow gets an
     /// `Always` grant, not the session one.

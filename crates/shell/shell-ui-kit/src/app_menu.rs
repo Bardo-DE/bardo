@@ -21,15 +21,15 @@ mod tests {
     #[test]
     fn a_name_is_what_quire_derives_from_the_app_id() {
         const CASES: &[(&str, Option<&str>)] = &[
-            ("dev.mailo.Mailo", Some("org.quire.AppMenu.dev.mailo.Mailo")),
-            ("test.app", Some("org.quire.AppMenu.test.app")),
-            ("foot", Some("org.quire.AppMenu.foot")),
+            ("dev.mailo.Mailo", Some("org.bardo.AppMenu.dev.mailo.Mailo")),
+            ("test.app", Some("org.bardo.AppMenu.test.app")),
+            ("foot", Some("org.bardo.AppMenu.foot")),
             (
                 "org.gnome.gedit-2",
-                Some("org.quire.AppMenu.org.gnome.gedit-2"),
+                Some("org.bardo.AppMenu.org.gnome.gedit-2"),
             ),
-            ("1password", Some("org.quire.AppMenu._1password")),
-            ("a b.c", Some("org.quire.AppMenu.a_b.c")),
+            ("1password", Some("org.bardo.AppMenu._1password")),
+            ("a b.c", Some("org.bardo.AppMenu.a_b.c")),
             ("", None),
         ];
         for &(app, want) in CASES {

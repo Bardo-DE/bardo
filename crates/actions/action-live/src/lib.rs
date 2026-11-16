@@ -1,5 +1,5 @@
-//! The operator tools over the acceptance world (`action-accept`): `docket-live`, the live-eval
-//! harness, and `docket-bringup` (`bringup`), which starts the agent services on a demo shell's bus.
+//! The operator tools over the acceptance world (`action-accept`): `agent-live`, the live-eval
+//! harness, and `agent-bringup` (`bringup`), which starts the agent services on a demo shell's bus.
 //!
 //! The live-eval harness: runs the agent stack against a real model (or a cassette) with every
 //! safety the owner's machine needs: a private bus, scratch HOME and XDG directories, no real

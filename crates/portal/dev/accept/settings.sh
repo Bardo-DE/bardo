@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Acceptance script 'settings': ashpd-style reads of org.freedesktop.appearance through the portal, and SettingChanged when the document changes.
-# Needs TRANSOM_BIN. No compositor.
+# Needs BARDO_PORTAL_BIN. No compositor.
 # Prints PASS or FAIL per step. Calls require_jail first. Owner: P2-T1.
 #   exit 0 all steps passed, 1 a step failed, 2 not runnable (outside the jail), 3 a tool is missing.
 set -euo pipefail

@@ -2,7 +2,7 @@
 # Scenario `space-id-survives-restart` (plan §4.14): a Space id is stable across a casement restart.
 #
 # Needs casement 5d47b6d or later: `casement --state-home DIR` (headless writes DIR/spaces.toml) and
-# `casement-probe workspaces` (one JSON line per ext-workspace workspace, in announce order:
+# `compositor-probe workspaces` (one JSON line per ext-workspace workspace, in announce order:
 # {"active","group","id","name"}). Steps, each waiting on the probe's own `done`, never on a sleep:
 #   first    two outputs, state home A: the workspace ids are read (at least one per output, all
 #            present, all distinct)
@@ -16,15 +16,15 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casement-probe" "$SCEN_TOOLS/bin/fake-logind"
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/compositor-probe" "$SCEN_TOOLS/bin/fake-logind"
 
-export CASEMENT_TOOLS="$SCEN_TOOLS" CASEMENT_REPO="$SCEN_SIB/compositor"
-floor_make space-id-survives-restart casement-probe   # the probe lists the workspaces (ext_workspace_manager): a floor row for the built probe
+export BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS" BARDO_COMPOSITOR_REPO="$SCEN_SIB/compositor"
+floor_make space-id-survives-restart compositor-probe   # the probe lists the workspaces (ext_workspace_manager): a floor row for the built probe
 # shellcheck source=/dev/null
 source "$SCEN_SIB/compositor/dev/lib/compositor.sh"
 OUT_DIR=$(scenario_out space-id-survives-restart)
 OUTPUTS='HEADLESS-1:1280x720@60000:120:0,0;HEADLESS-2:1280x720@60000:120:1280,0'
-PROBE="$SCEN_TOOLS/bin/casement-probe"
+PROBE="$SCEN_TOOLS/bin/compositor-probe"
 STATE_A="$OUT_DIR/state-a"
 STATE_B="$OUT_DIR/state-b"
 rm -rf "$STATE_A" "$STATE_B"
@@ -35,7 +35,7 @@ trap cleanup EXIT
 
 # ids_to FILE: the workspace ids the running casement announces, one per line in announce order.
 ids_to() {
-  "$PROBE" workspaces >"$1.json" || { echo "casement-probe workspaces failed:" >&2; cat "$1.json" >&2; return 1; }
+  "$PROBE" workspaces >"$1.json" || { echo "compositor-probe workspaces failed:" >&2; cat "$1.json" >&2; return 1; }
   python3 -I -c '
 import json, sys
 for line in open(sys.argv[1]):

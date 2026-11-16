@@ -343,7 +343,7 @@ impl Sandbox {
 
     /// The drop-in the switch wrote, if it is there.
     pub fn drop_in(&self) -> Option<String> {
-        self.read("systemd/user/inferd.service.d/tailnet.conf")
+        self.read("systemd/user/bardo-inferd.service.d/tailnet.conf")
     }
 
     /// A harness running the app in this world, light.

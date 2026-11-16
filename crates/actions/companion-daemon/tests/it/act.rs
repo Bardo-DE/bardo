@@ -22,7 +22,7 @@ fn card(id: &str, action: &str, key: &str) -> CardWire {
         effect: Effect::UndoableWrite,
         call: CallRequest {
             action: ActionRef {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 name: provenance::ActionName::parse(action).expect("action"),
             },
             target: TargetValue::Entities(vec![entity("mail.thread", key)]),
@@ -155,7 +155,7 @@ async fn a_pressed_card_is_performed_in_the_answers_session_and_the_answer_follo
     );
     let request = answers.act("archive").await.expect("act");
     assert!(
-        request.as_str().starts_with("/org/quire/Intents1/request/"),
+        request.as_str().starts_with("/org/bardo/Intents1/request/"),
         "{request}"
     );
     let done = step_after_done(&mut updates, 1).await;

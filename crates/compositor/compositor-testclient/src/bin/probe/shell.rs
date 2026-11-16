@@ -130,7 +130,7 @@ fn buffer(bound: &Bound, width: u32, height: u32) -> Result<(WlBuffer, File), Fa
         h: height,
     };
     let bytes = Pattern::CoordinateEncoding.bytes(size);
-    let fd = memfd_create("casement-probe", MemfdFlags::CLOEXEC)
+    let fd = memfd_create("compositor-probe", MemfdFlags::CLOEXEC)
         .map_err(|e| Failure::Probe(e.to_string()))?;
     ftruncate(&fd, bytes.len() as u64).map_err(|e| Failure::Probe(e.to_string()))?;
     let file = File::from(fd);
@@ -236,12 +236,12 @@ pub(crate) fn toplevel(args: &[String]) -> Result<(), Failure> {
     let toplevel = xdg.get_toplevel(&bound.qh, ());
     toplevel.set_title(
         option(args, "--title")
-            .unwrap_or("casement-probe")
+            .unwrap_or("compositor-probe")
             .to_owned(),
     );
     toplevel.set_app_id(
         option(args, "--app-id")
-            .unwrap_or("casement-probe")
+            .unwrap_or("compositor-probe")
             .to_owned(),
     );
     if args.iter().any(|a| a == "--maximised") {
@@ -287,7 +287,7 @@ pub(crate) fn layer(args: &[String]) -> Result<(), Failure> {
     };
     let surface = bound.compositor.create_surface(&bound.qh, ());
     let namespace = option(args, "--namespace")
-        .unwrap_or("casement-probe")
+        .unwrap_or("compositor-probe")
         .to_owned();
     let layer = shell.get_layer_surface(&surface, None, which, namespace, &bound.qh, ());
     let (width, height) = size_option(args);

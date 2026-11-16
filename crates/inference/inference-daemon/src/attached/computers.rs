@@ -377,7 +377,7 @@ impl From<inference_tailnet::GuestError> for ComputerError {
 }
 
 impl ComputerError {
-    /// The name of the error on the bus, after `org.quire.Inference1.Error.Computer.`.
+    /// The name of the error on the bus, after `org.bardo.Inference1.Error.Computer.`.
     pub fn name(&self) -> &'static str {
         match self {
             ComputerError::BadName => "BadName",

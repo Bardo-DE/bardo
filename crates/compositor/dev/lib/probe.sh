@@ -1,4 +1,4 @@
-# Test clients for the acceptance scripts: `casement-probe session` processes, each driven through
+# Test clients for the acceptance scripts: `compositor-probe session` processes, each driven through
 # a fifo (commands in, one line each) and read through its log (the client's protocol transcript,
 # `< object#id.event(args)`, and its own `probe: ...` notes). Scripts wait on log lines, with a
 # bound, never on sleeps: see crates/compositor/compositor-testclient/src/bin/probe/command.rs for the commands.
@@ -28,7 +28,7 @@ probe_start() {
   require_jail
   local name=${1:?probe_start NAME} dir tool pid
   dir=$(_probe_dir)
-  tool=$(casement_tool casement-probe) || return 3
+  tool=$(casement_tool compositor-probe) || return 3
   rm -f "$dir/$name.in" "$dir/$name.log"
   mkfifo "$dir/$name.in"
   # <> keeps the fifo open read-write: the client never sees an end of file between commands.

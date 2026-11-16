@@ -56,7 +56,7 @@ fn dismissing() -> SheetHost {
 async fn the_sheet_host_signs_any_account_in_again() {
     let rig = Rig::start_with(Default::default(), dismissing()).await;
     let shell = rig
-        .client_as(caller("org.quire.Shell", CallerRole::SheetHost))
+        .client_as(caller("org.bardo.Shell", CallerRole::SheetHost))
         .await;
     let account = AccountProxy::builder(&shell)
         .path(
@@ -94,7 +94,7 @@ async fn settings_signs_any_account_in_again() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_cannot_sign_an_account_in_again() {
     let rig = Rig::start_with(Default::default(), dismissing()).await;
-    let app = rig.client("org.quire.Mail").await;
+    let app = rig.client("org.bardo.Mail").await;
     let account = AccountProxy::builder(&app)
         .path(
             ObjectPath::try_from(account_dbus::accounts::account_path(&mail_account().id))

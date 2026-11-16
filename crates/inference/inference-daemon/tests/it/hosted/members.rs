@@ -107,7 +107,7 @@ async fn the_object_introspects_as_the_frozen_interface() {
     object.introspect_to_writer(&mut xml, 1);
     xml.push_str("</node>\n");
     let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../dbus/org.quire.Inference1.xml");
+        .join("../dbus/org.bardo.Inference1.xml");
     let expected = std::fs::read_to_string(&path).expect("the checked-in XML");
     assert_eq!(
         xml, expected,

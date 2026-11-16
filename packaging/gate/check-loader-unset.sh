@@ -7,15 +7,15 @@
 #
 #   gate/check-loader-unset.sh [--peephole DIR] [--crates DIR] [--table FILE] [--pending FILE] [--dropin FILE]...
 #
-#   --peephole DIR   the caller-identity folder, holding caller-identity-core (default: $PEEPHOLE_DIR, then crates/identity of this tree). None: exit 2
+#   --peephole DIR   the caller-identity folder, holding caller-identity-core (default: $BARDO_CALLER_IDENTITY_DIR, then crates/identity of this tree). None: exit 2
 #   --crates DIR   the component domain folders (crates/<domain> of this tree), where the unit files are looked for under <domain>/dist, <domain>/dbus and one folder
 #                    deeper (<domain>/<group>/dist) (default: crates/ of this tree). A unit whose file is not found is noted and skipped
 #   --table FILE     the table of the desktop's programs (default dist/desktop-callers.toml): its `unit` rows are the units checked,
-#                    xdg-desktop-portal.service excepted (it is the distro's; its drop-in is checked instead), plus turnstile.service
+#                    xdg-desktop-portal.service excepted (it is the distro's; its drop-in is checked instead), plus bardo-input-broker.service
 #   --pending FILE   units that wait for their own repository to carry the line (default gate/loader-unset-pending.txt: `unit
 #                    repository` per line). A unit there that is already complete is a fault (take it off the list); the file is
 #                    a debt list and ends empty
-#   --dropin FILE    another drop-in to check (e.g. the one an installer staged); session/xdg-desktop-portal.service.d/10-quire.conf
+#   --dropin FILE    another drop-in to check (e.g. the one an installer staged); session/xdg-desktop-portal.service.d/10-bardo.conf
 #                    is always checked
 # `UnsetEnvironment=` lines add up; an empty assignment resets the list (systemd.exec(5)); an entry NAME=value does not count.
 # Exit: 0 clean, 1 a fault (each printed), 2 usage or no peephole.
@@ -24,7 +24,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
 table="$ROOT/dist/desktop-callers.toml" peephole="" crates_dir="$(dirname "$ROOT")/crates" pending="$HERE/loader-unset-pending.txt"
-dropins=("$ROOT/session/xdg-desktop-portal.service.d/10-quire.conf")
+dropins=("$ROOT/session/xdg-desktop-portal.service.d/10-bardo.conf")
 while [ $# -gt 0 ]; do
   case "$1" in
     --peephole) peephole=${2:?}; shift ;;
@@ -39,12 +39,12 @@ while [ $# -gt 0 ]; do
 done
 command -v python3 >/dev/null || { echo "check-loader-unset: python3 is not installed" >&2; exit 2; }
 if [ -z "$peephole" ]; then
-  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/identity"; do
+  for d in "${BARDO_CALLER_IDENTITY_DIR:-}" "$ROOT/../crates/identity"; do
     if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/facts.rs" ]; then peephole=$d; break; fi
   done
 fi
 if [ -z "$peephole" ] || [ ! -f "$peephole/caller-identity-core/src/facts.rs" ]; then
-  echo "check-loader-unset: no peephole crate (caller-identity-core/src/facts.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
+  echo "check-loader-unset: no peephole crate (caller-identity-core/src/facts.rs): give --peephole DIR or set BARDO_CALLER_IDENTITY_DIR" >&2
   exit 2
 fi
 exec python3 -I - "$peephole/caller-identity-core/src/facts.rs" "$table" "$crates_dir" "$pending" "${dropins[@]}" <<'PY'
@@ -94,8 +94,8 @@ with open(table, "rb") as f:
         u = peer.get("unit")
         if u and u != "xdg-desktop-portal.service" and u not in units:
             units.append(u)
-if "turnstile.service" not in units:
-    units.append("turnstile.service")  # the input service is not a table row but root runs it and keycap trusts the socket
+if "bardo-input-broker.service" not in units:
+    units.append("bardo-input-broker.service")  # the input service is not a table row but root runs it and keycap trusts the socket
 
 found = {}
 for repo in sorted(os.listdir(crates_dir)):

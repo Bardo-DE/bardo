@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 /// The prefix of every error name of this interface.
-pub const ERROR_PREFIX: &str = "org.quire.Voice1.Error.";
+pub const ERROR_PREFIX: &str = "org.bardo.Voice1.Error.";
 
 /// Why a call was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]

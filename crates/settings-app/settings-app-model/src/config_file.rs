@@ -37,8 +37,8 @@ mod tests {
     use ui_settings::schema::FilePath;
 
     const CASES: &[(&str, bool)] = &[
-        ("sill/settings.toml", true),
-        ("quire/appearance.toml", true),
+        ("shell/settings.toml", true),
+        ("bardo/appearance.toml", true),
         ("../settings.toml", false),
         ("/etc/settings.toml", false),
         ("sill/../../x.toml", false),

@@ -15,8 +15,8 @@ use ui_settings::schema::{
 };
 
 /// The bus name and path the module is served at.
-const NAME: &str = "org.quire.TestModules1";
-const PATH: &str = "/org/quire/TestModules1/settings";
+const NAME: &str = "org.bardo.TestModules1";
+const PATH: &str = "/org/bardo/TestModules1/settings";
 
 /// The one row the module has.
 pub(crate) const ROW: &str = "words.one";

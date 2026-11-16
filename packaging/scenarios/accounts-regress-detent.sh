@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Scenario `accounts-regress-detent`: detent's Accounts pane, as accounts-hunt found it wrong (probes 4, 5 and 6) and
-# detent 06f5829 fixed it. detent runs with ui-blitz's debug probe (QUIRE_DEBUG_PROBE), so its controls are read by role and
+# detent 06f5829 fixed it. detent runs with ui-blitz's debug probe (BARDO_DEBUG_PROBE), so its controls are read by role and
 # name; what is only text (the line under a row) is measured in the capture. Real accountd, sill (the sheet host), detent at
 # its pin, the rigs' fake mail and Graph (porter's and ferry's).
 #
@@ -63,7 +63,7 @@ step_boot() {
   sheet_add_microsoft || return 1
   sheet_add_openai || return 1
   AI_ACCOUNT=$ACCOUNT
-  sheet_grant org.quire.Companion grant || return 1
+  sheet_grant org.bardo.Companion grant || return 1
   detent_start
   acc_wait 30 detent_mapped || { echo "detent never mapped" >&2; tail -5 "$OUT_DIR/detent.log" >&2; return 1; }
   sleep 4
@@ -100,7 +100,7 @@ step_d1_names() {
   detent_press option "$(ai_get "accounts.$AI_ACCOUNT.label") …"; sleep 1.5
   acc_shot d1-ai-account
   names=$(buttons)
-  must "D1 Revoke names the app" starts_with "$names" "Revoke $(app_title org.quire.Companion)"
+  must "D1 Revoke names the app" starts_with "$names" "Revoke $(app_title org.bardo.Companion)"
   must "D1 no bare Revoke" not lists "$names" Revoke
   reg_verdict
 }
@@ -151,7 +151,7 @@ step_d4_remove_legible() {
   local light dark
   detent_press button "Remove account …"; sleep 1
   light=$(remove_contrast d4-question-light)
-  printf '[appearance]\ntheme = "dark"\n' >"$CONFIG/quire/appearance.toml"; sleep 3
+  printf '[appearance]\ntheme = "dark"\n' >"$CONFIG/bardo/appearance.toml"; sleep 3
   dark=$(remove_contrast d4-question-dark)
   echo "contrast light: $light; dark: $dark" >&2
   must "D4 the question's answer is legible in the light theme ($light)" python3 -I -c 'import sys; sys.exit(0 if float(sys.argv[1].split()[0]) >= 4.5 else 1)' "$light"
@@ -164,7 +164,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_d2_search step_d1_names step_d3_reauth step_d4_remove_legible step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd daemon detent rig-servers ferry-rig-servers secrets add; do
+  for f in accountd inferd daemon detent rig-servers sync-rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

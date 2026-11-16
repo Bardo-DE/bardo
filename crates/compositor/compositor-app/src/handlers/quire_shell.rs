@@ -1,4 +1,4 @@
-//! `quire_shell_v1` (P2-Z; filled by P2-Q2): the wire glue lives in
+//! `bardo_shell_v1` (P2-Z; filled by P2-Q2): the wire glue lives in
 //! `compositor_wayland::quire::shell`; this implements what it asks of the state.
 
 use crate::state::State;

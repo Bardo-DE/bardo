@@ -10,7 +10,7 @@ more: the extras are additive, never a different program.
    writes and files mail; anyview views files; almanac remembers; docket runs an agent over
    the app's own intents. A core never shows a disabled control for an extra it lacks: the
    extra is simply not there.
-2. **Desktop extras light up by capability**, probed at runtime ("is `org.quire.Intents1`
+2. **Desktop extras light up by capability**, probed at runtime ("is `org.bardo.Intents1`
    answering?"), never by asking which OS or desktop this is. A missing or stopped service
    means the core path, not an error.
 3. **Extras stay out of foreign builds.** Desktop integration code sits behind the Cargo

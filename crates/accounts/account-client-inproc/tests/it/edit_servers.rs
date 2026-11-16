@@ -30,7 +30,7 @@ const PASSWORD: &str = "s3cret-example";
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Mail").expect("app name"),
+        name: AppName::parse("org.bardo.Mail").expect("app name"),
         isolation: Isolation::Flatpak,
     }
 }

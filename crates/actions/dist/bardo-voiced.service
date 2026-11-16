@@ -1,0 +1,41 @@
+# voiced's systemd user unit. It has no [Install] section on purpose: the owner has not said it
+# may start with the session yet (voice.md section 5: nothing opens the microphone but a hold),
+# so `systemctl --user enable` has nothing to enable; start it by hand or by bus activation once
+# a dbus service file is added. It captures audio only between Begin and the end of the tail,
+# holds no files and no network. Each sandbox line says what it protects.
+[Unit]
+Description=Quire voice daemon (org.bardo.Voice1)
+
+[Service]
+Type=dbus
+BusName=org.bardo.Voice1
+ExecStart=/usr/libexec/bardo/bardo-voiced --config /etc/bardo/voiced.toml
+# No loader variables from the session reach the daemon: porter gives its fixed caller role only
+# to a unit that unsets them (applied after the manager environment and Environment=).
+UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
+# A panic in the voice loop ends the process with a failure (the daemon joins its loop), and
+# systemd starts it again; a clean exit (the bus closing with the session) is not restarted.
+Restart=on-failure
+RestartSec=2
+
+# --- Sandbox ---
+# Only Unix sockets: the PipeWire socket and the session bus. The rest (no network, no home folder
+# but three read-only paths, a read-only system, private temporary files, no kernel surfaces) is
+# bardo-voiced.service.d/sandbox.conf.
+RestrictAddressFamilies=AF_UNIX
+# No setuid gain, no writable-and-executable memory (no JIT, no injected code).
+NoNewPrivileges=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictRealtime=no
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+# A narrow syscall set: the system-service baseline, minus privileged and obsolete calls.
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @mount @debug @obsolete
+SystemCallArchitectures=native
+# No capabilities at all.
+CapabilityBoundingSet=
+AmbientCapabilities=
+# Memory is never swapped out with audio in it.
+LimitMEMLOCK=0

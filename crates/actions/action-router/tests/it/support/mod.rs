@@ -29,7 +29,7 @@ pub fn app(s: &str) -> AppName {
     AppName::parse(s).expect("app")
 }
 pub fn mail_app() -> AppName {
-    app("org.quire.Mail")
+    app("org.bardo.Mail")
 }
 pub fn caller(name: &str, role: CallerRole) -> CallerId {
     CallerId {
@@ -41,13 +41,13 @@ pub fn caller(name: &str, role: CallerRole) -> CallerId {
     }
 }
 pub fn companion() -> CallerId {
-    caller("org.quire.Companiond", CallerRole::Companion)
+    caller("org.bardo.Companion", CallerRole::Companion)
 }
 pub fn launcher() -> CallerId {
-    caller("org.quire.Shell", CallerRole::Launcher)
+    caller("org.bardo.Shell", CallerRole::Launcher)
 }
 pub fn control() -> CallerId {
-    caller("org.quire.Shell", CallerRole::Control)
+    caller("org.bardo.Shell", CallerRole::Control)
 }
 pub fn entity(kind: &str, key: &str) -> EntityId {
     EntityId {
@@ -317,10 +317,10 @@ pub async fn ready_outside(router: &Router<FakeSeams>) -> SessionOpened {
 }
 
 pub fn cli() -> CallerId {
-    caller("org.quire.Do", CallerRole::Cli)
+    caller("org.bardo.Do", CallerRole::Cli)
 }
 
-/// A call as `quire-do` makes it.
+/// A call as `bardo-do` makes it.
 pub fn from_cli(name: &str, targets: &[&str], args: Vec<(&str, Value)>) -> CallRequest {
     CallRequest {
         origin: Origin::Cli,

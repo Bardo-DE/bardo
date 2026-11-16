@@ -1,4 +1,4 @@
-//! The identities signed in on this machine (`org.quire.Identities1` on accountd), for an app
+//! The identities signed in on this machine (`org.bardo.Identities1` on accountd), for an app
 //! that wants to say "Continue as ada@example.org" without holding the sign-in itself. An
 //! identity is an address, a provider and a kind; nothing here is a token.
 //!

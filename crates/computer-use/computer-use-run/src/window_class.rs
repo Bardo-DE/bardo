@@ -81,7 +81,7 @@ mod tests {
                 "Compose a letter",
                 WindowClass::Ordinary,
             ),
-            ("org.quire.Mail", "New message", WindowClass::MailCompose),
+            ("org.bardo.Mail", "New message", WindowClass::MailCompose),
             ("org.example.Bank", "Account", WindowClass::Banking),
             (
                 "org.mozilla.firefox",
@@ -96,7 +96,7 @@ mod tests {
             ("org.mozilla.firefox", "Bank transfer", WindowClass::Banking),
             ("org.mozilla.firefox", "Shop - Cart", WindowClass::Ordinary),
             (
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 "Reply: payment due",
                 WindowClass::MailCompose,
             ),

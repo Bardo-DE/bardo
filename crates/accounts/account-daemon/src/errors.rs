@@ -1,5 +1,5 @@
 //! What a method answers instead of a value: a refusal as the error
-//! `org.quire.Accounts1.Error.<Refusal>` (`account_dbus::accounts::refusal_error_name` pins the names), or
+//! `org.bardo.Accounts1.Error.<Refusal>` (`account_dbus::accounts::refusal_error_name` pins the names), or
 //! one of the bus's own (`AccessDenied`, `InvalidArgs`, `UnknownObject`) under its real name, so
 //! a client classifies it as it does a bus's refusal.
 //!

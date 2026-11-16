@@ -34,7 +34,7 @@ pub fn timeline_entry() -> TimelineEntry {
         kind: KindTag::parse("thing.archived").expect("kind"),
         effect: Effect::UndoableWrite,
         label: user_label(),
-        things: vec![view("org.quire.Mail", "mail.thread", "7f3a", "Q4 budget")],
+        things: vec![view("org.bardo.Mail", "mail.thread", "7f3a", "Q4 budget")],
         body: EntryBody::Erased {
             by: EraseCause::Forgotten,
         },
@@ -51,7 +51,7 @@ pub fn fact_view() -> FactView {
             by: FactId::mint(5, [3; 10]),
         },
         sources: vec![
-            SourceView::Present(view("org.quire.Mail", "mail.thread", "7f3a", "Q4")),
+            SourceView::Present(view("org.bardo.Mail", "mail.thread", "7f3a", "Q4")),
             SourceView::Event(timeline_entry()),
             SourceView::Purged,
         ],
@@ -78,13 +78,13 @@ pub fn requests() -> Vec<MemoryRequest> {
             space: w.clone(),
             path: SpacePath::parse("/a/b").expect("p"),
             content: ContentDigest([2; 32]),
-            cause: thing("org.quire.Mail", "mail.message", "m1"),
+            cause: thing("org.bardo.Mail", "mail.message", "m1"),
             verb: Verb::Downloaded,
             by: user(),
         }),
         MemoryRequest::Mark(MarkRequest {
             space: w.clone(),
-            thing: thing("org.quire.Mail", "mail.thread", "k"),
+            thing: thing("org.bardo.Mail", "mail.thread", "k"),
             mark: MarkKind::DoNotRemember,
         }),
         MemoryRequest::Search(RecallQuery {
@@ -100,7 +100,7 @@ pub fn requests() -> Vec<MemoryRequest> {
             state: FactFilter::Active,
             limit: Count(5),
         }),
-        MemoryRequest::Related(w.clone(), thing("org.quire.Mail", "mail.thread", "k")),
+        MemoryRequest::Related(w.clone(), thing("org.bardo.Mail", "mail.thread", "k")),
         MemoryRequest::Provenance(w.clone(), SpacePath::parse("/a/b").expect("p")),
         MemoryRequest::Primer(w.clone()),
         MemoryRequest::Propose(
@@ -122,7 +122,7 @@ pub fn requests() -> Vec<MemoryRequest> {
                 limit: Count(50),
                 filter: TimelineFilter {
                     actors: ActorFilter::You,
-                    apps: vec![app("org.quire.Mail")],
+                    apps: vec![app("org.bardo.Mail")],
                     kinds: vec![KindPattern::any()],
                     trust: TrustFilter::Any,
                     range: Some((UnixSeconds(1), UnixSeconds(2))),
@@ -131,13 +131,13 @@ pub fn requests() -> Vec<MemoryRequest> {
         ),
         scope(ForgetScope::Event(event_ref(1))),
         scope(ForgetScope::Thing(thing(
-            "org.quire.Mail",
+            "org.bardo.Mail",
             "mail.thread",
             "k",
         ))),
         scope(ForgetScope::Fact(fact().id)),
         scope(ForgetScope::Range(UnixSeconds(1), UnixSeconds(2))),
-        scope(ForgetScope::App(app("org.quire.Mail"))),
+        scope(ForgetScope::App(app("org.bardo.Mail"))),
         scope(ForgetScope::Kind(KindPattern::any())),
         scope(ForgetScope::Space),
         MemoryRequest::Forget(PlanToken::parse("p-1").expect("token")),
@@ -202,7 +202,7 @@ pub fn requests() -> Vec<MemoryRequest> {
             w.clone(),
             EntriesQuery {
                 kinds: vec![KindPattern::parse("companion.session.*").expect("pattern")],
-                about: Some(thing("org.quire.Companion", "companion.session", "s-1")),
+                about: Some(thing("org.bardo.Companion", "companion.session", "s-1")),
                 after: Some(Cursor(Seq(7))),
                 limit: Count(50),
                 bodies: BodyMode::Json,

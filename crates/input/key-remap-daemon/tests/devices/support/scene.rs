@@ -14,9 +14,9 @@ const READY_WITHIN: Duration = Duration::from_secs(5);
 
 /// The environment variable a device test requires, so a plain `cargo test --ignored` on a
 /// developer's machine never creates a device.
-const GATE: &str = "KEYCAP_DEVICE_TESTS";
+const GATE: &str = "BARDO_KEY_REMAP_DEVICE_TESTS";
 /// Where a failed test's logs are copied, when set.
-const ARTIFACTS: &str = "KEYCAP_TEST_ARTIFACTS";
+const ARTIFACTS: &str = "BARDO_KEY_REMAP_TEST_ARTIFACTS";
 
 /// Unwraps a harness result, naming the step.
 pub fn ok<T>(result: Result<T, Failure>, step: &str) -> T {
@@ -31,7 +31,7 @@ pub struct Scene {
 }
 
 impl Scene {
-    /// Opens the scene, refusing to run unless `KEYCAP_DEVICE_TESTS=1`.
+    /// Opens the scene, refusing to run unless `BARDO_KEY_REMAP_DEVICE_TESTS=1`.
     pub fn new(name: &str) -> Self {
         assert_eq!(
             std::env::var(GATE).as_deref(),

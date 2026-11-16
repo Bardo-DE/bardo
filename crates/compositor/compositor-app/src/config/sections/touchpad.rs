@@ -9,7 +9,7 @@ use ui_settings::schema::Page;
 /// `touchpad.*`: how touchpads behave.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "touchpad", page = Page::MouseAndGestures)]
+#[settings(file = "compositor/settings.toml", domain = "touchpad", page = Page::MouseAndGestures)]
 pub struct TouchpadSection {
     /// `touchpad.accel`.
     #[settings(

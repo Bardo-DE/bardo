@@ -8,7 +8,7 @@ const QUIET: Duration = Duration::from_millis(500);
 const STATUS_WITHIN: Duration = Duration::from_secs(5);
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn the_escape_chord_gives_the_keyboard_back_and_resume_takes_it_again() {
     let mut r = Rig::start("escape-chord");
     r.press("leftshift", "+leftshift SYN");

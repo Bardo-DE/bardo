@@ -1,4 +1,4 @@
-//! The command line of `docket-bringup`, parsed into a request. Pure: it reads no file and no
+//! The command line of `agent-bringup`, parsed into a request. Pure: it reads no file and no
 //! environment, so a table of command lines tests it.
 
 use std::path::PathBuf;
@@ -14,7 +14,7 @@ pub enum Command {
     Status(RootArgs),
 }
 
-/// `docket-bringup up`.
+/// `agent-bringup up`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UpArgs {
     /// The private bus the services join (`DBUS_SESSION_BUS_ADDRESS` of the demo).
@@ -34,7 +34,7 @@ pub struct UpArgs {
     pub inferd_config: Option<PathBuf>,
 }
 
-/// `docket-bringup down` and `status`.
+/// `agent-bringup down` and `status`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RootArgs {
     /// The scratch root `up` was given.
@@ -46,7 +46,7 @@ pub struct RootArgs {
 pub enum UsageError {
     /// No subcommand, or one that does not exist.
     #[error(
-        "usage: docket-bringup up --bus ADDRESS --root DIR --shell-pid PID [--keys-home DIR] [--catalog DIR] [--providers DIR] [--inferd-config FILE]\n       docket-bringup down --root DIR\n       docket-bringup status --root DIR"
+        "usage: agent-bringup up --bus ADDRESS --root DIR --shell-pid PID [--keys-home DIR] [--catalog DIR] [--providers DIR] [--inferd-config FILE]\n       agent-bringup down --root DIR\n       agent-bringup status --root DIR"
     )]
     Subcommand,
     /// A flag needs a value.

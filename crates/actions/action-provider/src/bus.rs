@@ -1,11 +1,11 @@
-//! `org.quire.IntentProvider1` served for one provider: each member decodes the JSON of its
+//! `org.bardo.IntentProvider1` served for one provider: each member decodes the JSON of its
 //! typed argument, calls the provider and answers the JSON of its typed result. The member
 //! list, its signatures and its signals are those of `action-dbus`'s `IntentProviderSkeleton`
-//! (a test holds the introspection to `dbus/org.quire.IntentProvider1.xml`).
+//! (a test holds the introspection to `dbus/org.bardo.IntentProvider1.xml`).
 //!
 //! The gate lives in intentd: a provider answers nothing but intentd, so a process that calls
 //! an app's bus name directly gets no way around it. Intentd is the process porter's callers table
-//! names as the router (its unit, `intentd.service`, by the main process the systemd manager
+//! names as the router (its unit, `bardo-actiond.service`, by the main process the systemd manager
 //! reports), never whoever owns a well-known name. `Summon` is the one member that also comes
 //! from the shell.
 
@@ -49,7 +49,7 @@ async fn from_intentd(callers: &impl Callers, header: &Header<'_>) -> fdo::Resul
         })
 }
 
-#[zbus::interface(name = "org.quire.IntentProvider1")]
+#[zbus::interface(name = "org.bardo.IntentProvider1")]
 impl<P, C, S, K> ProviderObject<P, C, S, K>
 where
     P: IntentProvider + 'static,
@@ -168,8 +168,8 @@ where
     async fn index_stale(emitter: &SignalEmitter<'_>, epoch: u64) -> zbus::Result<()>;
 }
 
-/// Exports `provider` at `/org/quire/IntentProvider1` on `connection` and claims the manifest's
-/// app as its bus name; only intentd's unit (`intentd.service`, by its main process, over the
+/// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the manifest's
+/// app as its bus name; only intentd's unit (`bardo-actiond.service`, by its main process, over the
 /// system's `/proc`) is answered. Returns once the name is ours; the connection keeps serving.
 pub async fn serve_on<P, C, S>(
     connection: &BusConnection,
@@ -289,7 +289,7 @@ mod tests {
     fn the_served_interface_is_the_declared_one() {
         let manifest = action_manifest::validate(action_manifest::Manifest {
             vocab: action_vocab::IntentsVocab(1),
-            app: provenance::AppName::parse("org.quire.Nobody").expect("an app name"),
+            app: provenance::AppName::parse("org.bardo.Nobody").expect("an app name"),
             entities: vec![],
             actions: vec![],
             visibility: action_manifest::Visibility::Everyone,
@@ -306,7 +306,7 @@ mod tests {
         );
         object.introspect_to_writer(&mut served, 1);
         served.push_str("</node>\n");
-        let declared = include_str!("../../dbus/org.quire.IntentProvider1.xml");
+        let declared = include_str!("../../dbus/org.bardo.IntentProvider1.xml");
         assert_eq!(served, declared);
     }
 }

@@ -32,7 +32,7 @@ fn observer_client(scene: &Scene) -> PathBuf {
 }
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn a_client_that_does_not_own_the_seat_cannot_change_the_profile() {
     if rustix::process::getuid().as_raw() != 0 {
         eprintln!(

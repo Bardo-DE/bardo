@@ -1,4 +1,4 @@
-//! Reading `org.quire.Outputs1` and following its changes.
+//! Reading `org.bardo.Outputs1` and following its changes.
 
 use crate::outputs::{Outputs, Wire};
 use crate::probe::bus::answered;
@@ -9,9 +9,9 @@ use zbus::proxy::PropertyStream;
 use zbus::{Connection, proxy};
 
 #[proxy(
-    interface = "org.quire.Outputs1",
-    default_service = "org.quire.Outputs1",
-    default_path = "/org/quire/Outputs1",
+    interface = "org.bardo.Outputs1",
+    default_service = "org.bardo.Outputs1",
+    default_path = "/org/bardo/Outputs1",
     gen_blocking = false
 )]
 trait Outputs1 {

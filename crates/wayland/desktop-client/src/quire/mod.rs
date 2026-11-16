@@ -1,5 +1,5 @@
-//! The Quire arm: apps, windows and Spaces from `quire_desktop_v1`, and the shell's notes from
-//! `quire_shell_v1`.
+//! The Quire arm: apps, windows and Spaces from `bardo_desktop_v1`, and the shell's notes from
+//! `bardo_shell_v1`.
 //!
 //! A compositor that offers the private protocols (and the ext toplevel list, which names its
 //! windows) reports what wlr cannot: an app's identity and life, a window's role, place,

@@ -1,4 +1,4 @@
-//! sill draws the accounts sheet: this is the half that serves it (`org.quire.AccountsSheet1`,
+//! sill draws the accounts sheet: this is the half that serves it (`org.bardo.AccountsSheet1`,
 //! porter's frozen interface; PLAN §2.4).
 //!
 //! accountd calls `Open(handle, parent_window, view)`, `Update(handle, view)` and `Close(handle)`
@@ -7,9 +7,9 @@
 //! ([`AccountsSheets`]) for the accounts-sheet surface to draw, and sends what the person does
 //! (an [`AccountsSheetCommand::Act`]) back through the pure step.
 //!
-//! - **Only the account services.** A call is let in only from accountd (`org.quire.Accounts1`),
-//!   inferd (`org.quire.Inference1`: AI keys, the AI permit and agent key sheets) or syncd
-//!   (`org.quire.Sync1`: its own sign-in), and only when the system shows the caller to be that
+//! - **Only the account services.** A call is let in only from accountd (`org.bardo.Accounts1`),
+//!   inferd (`org.bardo.Inference1`: AI keys, the AI permit and agent key sheets) or syncd
+//!   (`org.bardo.Sync1`: its own sign-in), and only when the system shows the caller to be that
 //!   service: the program the table of the desktop's own programs names for its role, owning
 //!   the name ([`crate::callers`]). A call from any other connection is refused
 //!   (`AccessDenied`) and draws nothing. `Update` and `Close` also must come from the connection

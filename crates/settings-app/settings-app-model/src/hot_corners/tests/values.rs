@@ -38,25 +38,25 @@ fn a_corners_value_reads_as_its_bindings() {
         ),
         (
             "an app action carries the app and the action",
-            "v = [{ action = \"app_action\", app = \"org.quire.Mail\", intent = \"compose\" }]",
+            "v = [{ action = \"app_action\", app = \"org.bardo.Mail\", intent = \"compose\" }]",
             vec![bind(
                 &[],
                 HotDo::AppAction {
-                    app: "org.quire.Mail".to_owned(),
+                    app: "org.bardo.Mail".to_owned(),
                     action: "compose".to_owned(),
                 },
             )],
         ),
         (
             "an app action without its action is dropped",
-            "v = [{ action = \"app_action\", app = \"org.quire.Mail\" }]",
+            "v = [{ action = \"app_action\", app = \"org.bardo.Mail\" }]",
             vec![],
         ),
         (
             "open takes an app, a path or an address",
-            "v = [{ action = \"open\", app = \"org.quire.Files\" }, { keys = [\"option\"], action = \"open\", path = \"~/Documents\" }, { keys = [\"command\"], action = \"open\", url = \"https://example.org\" }]",
+            "v = [{ action = \"open\", app = \"org.bardo.Files\" }, { keys = [\"option\"], action = \"open\", path = \"~/Documents\" }, { keys = [\"command\"], action = \"open\", url = \"https://example.org\" }]",
             vec![
-                bind(&[], HotDo::Open(HotItem::App("org.quire.Files".to_owned()))),
+                bind(&[], HotDo::Open(HotItem::App("org.bardo.Files".to_owned()))),
                 bind(&[Alt], HotDo::Open(HotItem::Path("~/Documents".to_owned()))),
                 bind(
                     &[Command],
@@ -101,11 +101,11 @@ fn bindings_write_the_new_form_and_read_back() {
             vec![bind(
                 &[Alt],
                 HotDo::AppAction {
-                    app: "org.quire.Mail".to_owned(),
+                    app: "org.bardo.Mail".to_owned(),
                     action: "compose".to_owned(),
                 },
             )],
-            "v = [{ action = \"app_action\", app = \"org.quire.Mail\", intent = \"compose\", keys = [\"option\"] }]",
+            "v = [{ action = \"app_action\", app = \"org.bardo.Mail\", intent = \"compose\", keys = [\"option\"] }]",
         ),
         (
             "an address is written as url",

@@ -333,7 +333,7 @@ async fn two_graph_calendars_mirror_into_the_vdir_with_names_colours_and_ics_fil
     );
 
     // Sync1 names them <account>/<dataset>.
-    let settings = caller_of("org.quire.Settings", CallerRole::Settings);
+    let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     let names = rig.hub.names_for(&settings);
     assert_eq!(names.len(), 2, "{names:?}");
     assert!(
@@ -413,7 +413,7 @@ async fn a_remote_change_a_removal_a_new_event_and_a_rename_arrive_at_the_next_p
         },
     )
     .await;
-    let settings = caller_of("org.quire.Settings", CallerRole::Settings);
+    let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     assert_eq!(rig.hub.names_for(&settings).len(), 2);
 }
 

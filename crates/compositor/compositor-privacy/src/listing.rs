@@ -1,4 +1,4 @@
-//! The privacy list as `casementctl privacy list` prints it: the person's answers and the
+//! The privacy list as `bardo-compositorctl privacy list` prints it: the person's answers and the
 //! administrator's, as the two files say them. It only reads, never sets a damaged book aside,
 //! and says in plain words what it could not read.
 

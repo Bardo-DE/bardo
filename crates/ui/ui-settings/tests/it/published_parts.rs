@@ -67,7 +67,7 @@ fn the_directories_are_the_system_ones_then_the_persons() {
         dirs,
         [
             "/usr/local/share/quire/selectors",
-            "/usr/share/quire/selectors",
+            "/usr/share/bardo/selectors",
             "/home/p/.local/share/quire/selectors",
         ]
         .map(std::path::PathBuf::from)

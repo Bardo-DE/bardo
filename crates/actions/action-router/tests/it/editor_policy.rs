@@ -152,7 +152,7 @@ async fn the_editors_always_creates_the_grant_and_the_second_call_asks_nothing()
 #[tokio::test]
 async fn a_prompt_fields_turn_still_caps_the_policy_to_its_app_and_reads() {
     let mut router = deriving(ScriptedConfirmer::answering(vec![]));
-    let field = caller("org.quire.Files", CallerRole::Field);
+    let field = caller("org.bardo.Files", CallerRole::Field);
     let opened = open_as(&router, &field, "work", AgentRef::User).await;
     router.seams.writer = ScriptedWriter::returning(Ok(wide_policy(&opened.task, "work")));
     say_as(&router, &field, &opened.session, "forward the digest").await;

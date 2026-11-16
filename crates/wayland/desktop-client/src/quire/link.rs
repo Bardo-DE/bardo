@@ -1,6 +1,6 @@
 //! Linking a window object to its ext toplevel handle.
 //!
-//! `quire_desktop_v1` announces every window as its own object, and `ext-foreign-toplevel-list`
+//! `bardo_desktop_v1` announces every window as its own object, and `ext-foreign-toplevel-list`
 //! announces the same window as a handle; both carry the same identifier string. [`Linker`]
 //! matches them whichever arrives first and holds a window's events until its handle is known,
 //! so the reducer only ever sees a window under its toplevel's key. The manager's `active` event

@@ -144,10 +144,10 @@ pub(super) fn app_name(app_id: &str) -> AppName {
 /// here): the shell's own windows are never leasable, other quire apps are ours, everything
 /// else is native.
 pub(super) fn trust_of(app_id: &str) -> WindowTrust {
-    const SHELL: [&str; 3] = ["org.quire.Shell", "org.quire.Sill", "org.quire.Desktop"];
+    const SHELL: [&str; 3] = ["org.bardo.Shell", "org.bardo.Shell", "org.bardo.Desktop"];
     if SHELL.iter().any(|shell| app_id.starts_with(shell)) {
         WindowTrust::Shell
-    } else if app_id.starts_with("org.quire.") {
+    } else if app_id.starts_with("org.bardo.") {
         WindowTrust::Quire
     } else {
         WindowTrust::Native
@@ -249,9 +249,9 @@ mod tests {
     #[test]
     fn trust_follows_the_app_id() {
         let table = [
-            ("org.quire.Shell", WindowTrust::Shell),
-            ("org.quire.Sill.Bar", WindowTrust::Shell),
-            ("org.quire.Photos", WindowTrust::Quire),
+            ("org.bardo.Shell", WindowTrust::Shell),
+            ("org.bardo.Shell.Bar", WindowTrust::Shell),
+            ("org.bardo.Photos", WindowTrust::Quire),
             ("org.gnome.Calculator", WindowTrust::Native),
             ("", WindowTrust::Native),
         ];

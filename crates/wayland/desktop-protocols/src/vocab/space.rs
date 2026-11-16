@@ -1,9 +1,9 @@
-//! Space vocabulary: `quire_desktop_space_v1`'s enums.
+//! Space vocabulary: `bardo_desktop_space_v1`'s enums.
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// What a Space holds (`quire_desktop_space_v1.space_kind`).
+    /// What a Space holds (`bardo_desktop_space_v1.space_kind`).
     SpaceKind {
         /// An ordinary desktop.
         Desktop = 0,
@@ -17,7 +17,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// What is happening on a Space (`quire_desktop_space_v1.space_activity`).
+    /// What is happening on a Space (`bardo_desktop_space_v1.space_activity`).
     SpaceActivity {
         /// Nothing to show.
         None = 0,

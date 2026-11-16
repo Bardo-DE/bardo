@@ -50,7 +50,7 @@ pub fn app_for(raw: &str, index: &AppIndex) -> AppMatch {
 }
 
 /// The name the app of the Wayland app id `raw` has in the intents manifests: what its entry
-/// declares in `X-Quire-IntentsApp`, else `raw` itself when that is a valid name (an app whose
+/// declares in `X-Bardo-IntentsApp`, else `raw` itself when that is a valid name (an app whose
 /// window id is its bus name, the case before entries declared one). None when neither names it.
 pub fn intents_app_for(raw: &str, index: &AppIndex) -> Option<provenance::AppName> {
     let declared = index

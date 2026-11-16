@@ -21,7 +21,7 @@ thiserror = {version = "2"}
 tracing = {version = "0.1"}
 
 [features]
-# The private `quire_*` servers (`quire_desktop_manager_v1`, `quire_shell_v1`; A8): a consumer that
+# The private `quire_*` servers (`bardo_desktop_manager_v1`, `bardo_shell_v1`; A8): a consumer that
 # wants the standard protocol set alone takes the crate with `default-features = false`. The
 # composition root needs them.
 default = ["quire"]

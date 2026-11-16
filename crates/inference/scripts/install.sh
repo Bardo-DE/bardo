@@ -15,16 +15,16 @@
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
 #   PREFIX/libexec/quire/inferd                              the daemon
-#   PREFIX/lib/systemd/user/inferd.service                   the user unit
-#   PREFIX/lib/systemd/user/inferd.service.d/sandbox.conf    the part of the unit's sandbox that needs a
+#   PREFIX/lib/systemd/user/bardo-inferd.service                   the user unit
+#   PREFIX/lib/systemd/user/bardo-inferd.service.d/sandbox.conf    the part of the unit's sandbox that needs a
 #                                                            mount namespace; left out (with one line saying
 #                                                            so) when a probe shows this system refuses a user
 #                                                            service one (Ubuntu 24.04's AppArmor restriction
 #                                                            on user namespaces); always installed with a destdir
-#   PREFIX/share/dbus-1/services/org.quire.*.service         D-Bus activation
+#   PREFIX/share/dbus-1/services/org.bardo.*.service         D-Bus activation
 #   PREFIX/share/porter/inferd-tailnet.conf                  the tailnet drop-in, as data: the Settings switch
 #                                                            installs it for the person; never installed live
-#   PREFIX/share/quire/settings/inferd.settings.toml         the AI settings page schema
+#   PREFIX/share/quire/settings/inference.settings.toml         the AI settings page schema
 #   PREFIX/share/doc/porter/examples/                        inferd.toml and inferd-cloud.conf: samples
 #                                                            for the person to copy; never installed live
 #   SYSCONFDIR/porter/inferd-callers.toml                    the caller table (kept if the owner changed it)
@@ -199,11 +199,11 @@ for daemon in $daemons; do
     fi
 done
 
-# The files in dist/ name /usr/libexec/quire; a different prefix changes that one path.
+# The files in dist/ name /usr/libexec/bardo; a different prefix changes that one path.
 libexec=$prefix/libexec/quire
 for daemon in $daemons; do
     put 755 "$built/$daemon" "$libexec/$daemon"
-    put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/quire "$libexec"
+    put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/bardo "$libexec"
 done
 namespaces=0
 mount_namespace_for_user_units || namespaces=$?
@@ -223,11 +223,11 @@ else
     echo "The daemon runs without its extra sandbox on this system, which does not let a user service have its own mount namespace. On Ubuntu, allow it with the kernel.apparmor_restrict_unprivileged_userns setting or an AppArmor profile, then run this again."
 fi
 for activation in "$dist"/dbus/*.service; do
-    put 644 "$activation" "$prefix/share/dbus-1/services/$(basename "$activation")" /usr/libexec/quire "$libexec"
+    put 644 "$activation" "$prefix/share/dbus-1/services/$(basename "$activation")" /usr/libexec/bardo "$libexec"
 done
 
 # --- Data ----------------------------------------------------------------------------------------
-put 644 "$dist/inferd.settings.toml" "$prefix/share/quire/settings/inferd.settings.toml"
+put 644 "$dist/inference.settings.toml" "$prefix/share/quire/settings/inference.settings.toml"
 # The tailnet drop-in is data, never live: the Settings switch "Let my other computers use this
 # computer's models" copies it into the person's own systemd user configuration, with their consent.
 put 644 "$dist/inferd-tailnet.conf" "$prefix/share/porter/inferd-tailnet.conf"

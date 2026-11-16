@@ -55,7 +55,7 @@ pub fn mail_label(space_id: &str) -> Label {
 
 pub fn user() -> Actor {
     Actor::User {
-        via: app("org.quire.Mail"),
+        via: app("org.bardo.Mail"),
     }
 }
 
@@ -69,9 +69,9 @@ pub fn companion() -> Actor {
 pub fn archived_body() -> EventBody {
     EventBody::Thing {
         verb: Verb::Archived,
-        thing: view("org.quire.Mail", "mail.thread", "7f3a", "Q4 budget"),
+        thing: view("org.bardo.Mail", "mail.thread", "7f3a", "Q4 budget"),
         sources: vec![view(
-            "org.quire.Mail",
+            "org.bardo.Mail",
             "mail.message",
             "m1",
             "Re: Q4 budget",
@@ -97,7 +97,7 @@ pub fn area_body(area: AreaTag, kind: &str) -> EventBody {
         kind: KindTag::parse(kind).expect("kind tag"),
         json: JsonText::parse(r#"{"ruling":"ask"}"#).expect("json"),
         things: vec![(
-            view("org.quire.Mail", "mail.thread", "7f3a", "Q4 budget"),
+            view("org.bardo.Mail", "mail.thread", "7f3a", "Q4 budget"),
             ThingRole::Subject,
         )],
     })
@@ -122,7 +122,7 @@ pub fn fact() -> Fact {
         recorded: NOW,
         by: user(),
         label: user_label(),
-        links: vec![Link::Thing(thing("org.quire.Mail", "mail.thread", "7f3a"))],
+        links: vec![Link::Thing(thing("org.bardo.Mail", "mail.thread", "7f3a"))],
         supersedes: Vec::new(),
         valid: Validity::Unstated,
     }

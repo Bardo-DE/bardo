@@ -1,6 +1,6 @@
 //! Who the program on a Wayland socket is, read when it connects: the process is held by a
 //! descriptor, its facts are read from `/proc`, and they are judged against the desktop's
-//! caller table (`/etc/quire/desktop-callers.toml`, root-owned or not believed).
+//! caller table (`/etc/bardo/desktop-callers.toml`, root-owned or not believed).
 
 use super::Vetting;
 use super::image::PinnedImage;
@@ -38,7 +38,7 @@ impl Arrival {
     }
 }
 
-/// The desktop's own list of its programs: `/etc/quire/desktop-callers.toml` and its drop-ins,
+/// The desktop's own list of its programs: `/etc/bardo/desktop-callers.toml` and its drop-ins,
 /// and, in a build for the jail (`testing`, `debug-inject`) whose run has an injected folder
 /// (`--system-dir`), the test rows of `desktop-callers.toml` there, after them (`dev_callers`).
 /// This is the one place the table is made. A table that cannot be loaded (missing, or not owned
@@ -203,7 +203,7 @@ mod tests {
     #[test]
     fn only_a_build_for_the_jail_reads_test_rows_from_the_injected_folder() {
         let dir = tempfile::tempdir().expect("a scratch folder");
-        let rows = "[[peer]]\napp = \"org.quire.Shell\"\nrole = \"shell\"\nexe = [\"/scratch/bin/sill\"]\n";
+        let rows = "[[peer]]\napp = \"org.bardo.Shell\"\nrole = \"shell\"\nexe = [\"/scratch/bin/sill\"]\n";
         let file = dir.path().join("desktop-callers.toml");
         std::fs::write(&file, rows).expect("the rows file");
         std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600)).expect("its mode");

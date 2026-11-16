@@ -32,7 +32,7 @@ async fn world() -> (Arc<Router<FakeSeams>>, SessionId, Handle) {
     let router = Arc::new(fake_router(AgentConfig::default()).expect("router"));
     let opened = router
         .handle(
-            &caller("org.quire.Companiond", CallerRole::Companion),
+            &caller("org.bardo.Companion", CallerRole::Companion),
             IntentsRequest::SessionOpen(SessionOpen {
                 space: SpaceId::parse("work").expect("space"),
                 agent: AgentRef::Companion,
@@ -100,7 +100,7 @@ async fn rig(answer: &str) -> Rig {
         ScriptedInferd::answering(answer),
         Intents::over(InProcess::new(
             router,
-            caller("org.quire.Reader1", CallerRole::Reader),
+            caller("org.bardo.Reader1", CallerRole::Reader),
         )),
     );
     let server = bus.connect().await;
@@ -121,7 +121,7 @@ async fn rig(answer: &str) -> Rig {
         .expect("intentd's name");
     who.introduce_app(
         &intentd,
-        "org.quire.Intents",
+        "org.bardo.Intents",
         action_dbus::callers::Role::Agent,
     );
     Rig {
@@ -166,11 +166,11 @@ async fn only_the_process_in_intentds_unit_is_answered() {
         ("an unknown process", None),
         (
             "a plain app called like intentd",
-            Some(("org.quire.Intents", Role::App)),
+            Some(("org.bardo.Intents", Role::App)),
         ),
         (
             "another app's agent",
-            Some(("org.quire.Companion1", Role::Agent)),
+            Some(("org.bardo.Companion1", Role::Agent)),
         ),
     ] {
         let stranger = rig.bus.connect().await;

@@ -120,7 +120,7 @@ fn a_turned_off_id_is_apart_with_its_name_and_hides_from_the_ranking() {
 fn another_owners_word_is_kept_raw_and_skipped_not_refused() {
     let scratch = Scratch::new();
     let person = scratch.root("home");
-    let heif = "org.quire.anyview.Heif";
+    let heif = "org.bardo.anyview.Heif";
     let program = "[program]\npath = \"/usr/libexec/anyview/heif\"\n\n";
     let entry = "[[provides]]\ncapability = \"thumbnail\"\nmimes = [\"image/heic\"]\n";
     let thumbnail = format!("{program}{entry}");

@@ -247,7 +247,7 @@ DIRECT=(
 # iso_currency and iso_country: 720.
 # anyview-platform finds the plugins with ui-extensions' scan (the plugins are desktop Extensions), so the
 # media host and the pane with its player now reach it, ui-settings under it (the off list,
-# quire/extensions.toml) and that crate's file watch: ui-behaviour, ui-settings-derive, notify,
+# bardo/extensions.toml) and that crate's file watch: ui-behaviour, ui-settings-derive, notify,
 # notify-types, inotify and inotify-sys, all already in every quire app that hosts the pane: eight
 # more in each: the media host 620 and the pane with its player 621.
 # zip 9 (RUSTSEC-2026-0429) sets file times through nix on macOS and the BSDs (MIT, already in the

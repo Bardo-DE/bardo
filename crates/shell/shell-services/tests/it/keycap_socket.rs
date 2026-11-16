@@ -1,5 +1,5 @@
 //! The keycap service against a fake daemon: a `SOCK_SEQPACKET` socket in a scratch folder
-//! stands in for `/run/keycap/keycap.sock`. No system bus, no real daemon, no real config folder.
+//! stands in for `/run/bardo/key-remap/key-remap.sock`. No system bus, no real daemon, no real config folder.
 
 use std::os::fd::OwnedFd;
 use std::path::{Path, PathBuf};
@@ -142,7 +142,7 @@ struct Daemon {
 impl Daemon {
     fn start() -> (Daemon, PathBuf) {
         let folder = TempDir::new("keycap-daemon");
-        let path = folder.path().join("keycap.sock");
+        let path = folder.path().join("key-remap.sock");
         let listener = socket_with(
             AddressFamily::UNIX,
             SocketType::SEQPACKET,

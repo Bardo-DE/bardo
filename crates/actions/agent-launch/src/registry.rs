@@ -1,4 +1,4 @@
-//! Starting an agent installed from the registry: read the record `docket-agents` left in the
+//! Starting an agent installed from the registry: read the record `bardo-agents` left in the
 //! agents directory and make the agent's home. The values are `agent_registry`'s; this is the only
 //! disk access the launcher needs, so it does not link the installer.
 

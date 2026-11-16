@@ -1,5 +1,5 @@
 //! The permission sheet: a yes-or-no question about an app, asked of the person the way macOS asks
-//! it. transom (the portal backend) calls `org.quire.Shell1.AskPermission`
+//! it. transom (the portal backend) calls `org.bardo.Shell1.AskPermission`
 //! (`shell_services::capture_pick`) before it lets an app control the desktop or take a screenshot
 //! the person did not start; this sheet is quire's `Alert` centred on the sheets' output over an
 //! Overlay layer that takes the keyboard. It shows the app's icon, a headline, the app's name with

@@ -1,4 +1,4 @@
-//! The exit codes of `quire-do`, stable and documented in `--help`, and the one error type every
+//! The exit codes of `bardo-do`, stable and documented in `--help`, and the one error type every
 //! stage of a run ends in. A code is derived from what the router said, never from prose.
 
 use action_client::{ClientError, TransportError};

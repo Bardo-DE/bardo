@@ -26,7 +26,7 @@ fn a_complete_honest_bundle_passes() {
     audit.admit_dir("share/wayland-sessions").expect("sessions");
     audit
         .admit_file(
-            "share/wayland-sessions/quire.desktop",
+            "share/wayland-sessions/bardo.desktop",
             &digest("[Desktop Entry]"),
         )
         .expect("file");
@@ -149,7 +149,7 @@ fn a_missing_file_is_named() {
     assert_eq!(
         audit.finish(),
         Err(AuditError::Missing(
-            "share/wayland-sessions/quire.desktop".into()
+            "share/wayland-sessions/bardo.desktop".into()
         ))
     );
 }

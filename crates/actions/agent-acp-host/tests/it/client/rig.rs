@@ -30,7 +30,7 @@ use std::collections::BTreeSet;
 use std::sync::Arc;
 
 pub const CWD: &str = "/work/app";
-pub const HOST: &str = "org.quire.AcpAgent";
+pub const HOST: &str = "org.bardo.AcpAgent";
 
 pub fn abs(text: &str) -> AbsPath {
     AbsPath::parse(text).expect("abs")

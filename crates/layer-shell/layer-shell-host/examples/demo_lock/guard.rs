@@ -3,10 +3,10 @@
 //! password, so the demo locks only when every rule below holds, checked once before it
 //! connects (the connection and the check read the same environment):
 //!
-//! - `SHELL_HOST_ALLOW_LOCK` is exactly `virtual`;
+//! - `BARDO_LAYER_SHELL_HOST_ALLOW_LOCK` is exactly `virtual`;
 //! - `WAYLAND_SOCKET` is unset (it would win over `WAYLAND_DISPLAY` at connect);
 //! - `WAYLAND_DISPLAY` is an absolute path to a socket;
-//! - `SHELL_HOST_LOCK_RUNTIME` names the virtual compositor's runtime directory (the one the
+//! - `BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME` names the virtual compositor's runtime directory (the one the
 //!   script prints), which holds the script's marker file [`MARKER`];
 //! - that directory is neither this process's `XDG_RUNTIME_DIR` nor the login session's
 //!   `/run/user/<uid>` (run the demo with the session's own `XDG_RUNTIME_DIR`);
@@ -30,7 +30,7 @@ pub struct LockEnv {
     pub display_resolved: Option<PathBuf>,
     /// The resolved display path is a socket.
     pub display_is_socket: bool,
-    /// `SHELL_HOST_LOCK_RUNTIME` resolved.
+    /// `BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME` resolved.
     pub runtime: Option<PathBuf>,
     /// The runtime dir holds the virtual compositor's marker file.
     pub marker: bool,
@@ -44,7 +44,7 @@ pub struct LockEnv {
 /// Pure.
 pub fn permit(env: &LockEnv) -> Result<(), String> {
     if env.allow.as_deref() != Some("virtual") {
-        return Err("SHELL_HOST_ALLOW_LOCK is not \"virtual\"".to_owned());
+        return Err("BARDO_LAYER_SHELL_HOST_ALLOW_LOCK is not \"virtual\"".to_owned());
     }
     if env.socket_fd.is_some() {
         return Err("WAYLAND_SOCKET is set".to_owned());
@@ -63,15 +63,15 @@ pub fn permit(env: &LockEnv) -> Result<(), String> {
     let runtime = env
         .runtime
         .as_deref()
-        .ok_or("SHELL_HOST_LOCK_RUNTIME is unset or missing")?;
+        .ok_or("BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is unset or missing")?;
     if !env.marker {
         return Err(format!("{} has no {MARKER}", runtime.display()));
     }
     if env.session_runtime.as_deref() == Some(runtime) {
-        return Err("SHELL_HOST_LOCK_RUNTIME is the session's XDG_RUNTIME_DIR".to_owned());
+        return Err("BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is the session's XDG_RUNTIME_DIR".to_owned());
     }
     if env.login_runtime.as_deref() == Some(runtime) {
-        return Err("SHELL_HOST_LOCK_RUNTIME is the login session's /run/user/<uid>".to_owned());
+        return Err("BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is the login session's /run/user/<uid>".to_owned());
     }
     if socket.parent() != Some(runtime) {
         return Err(format!(
@@ -93,12 +93,12 @@ pub fn from_process() -> LockEnv {
     let display = var("WAYLAND_DISPLAY");
     let display_resolved = resolve(display.clone());
     let display_is_socket = display_resolved.as_deref().is_some_and(is_socket);
-    let runtime = resolve(var("SHELL_HOST_LOCK_RUNTIME"));
+    let runtime = resolve(var("BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME"));
     let marker = runtime
         .as_deref()
         .is_some_and(|dir| dir.join(MARKER).is_file());
     LockEnv {
-        allow: var("SHELL_HOST_ALLOW_LOCK"),
+        allow: var("BARDO_LAYER_SHELL_HOST_ALLOW_LOCK"),
         socket_fd: var("WAYLAND_SOCKET"),
         display,
         display_resolved,
@@ -148,12 +148,12 @@ mod tests {
             (
                 "no permission",
                 |env| env.allow = None,
-                "SHELL_HOST_ALLOW_LOCK",
+                "BARDO_LAYER_SHELL_HOST_ALLOW_LOCK",
             ),
             (
                 "another permission word",
                 |env| env.allow = Some("1".to_owned()),
-                "SHELL_HOST_ALLOW_LOCK",
+                "BARDO_LAYER_SHELL_HOST_ALLOW_LOCK",
             ),
             (
                 "WAYLAND_SOCKET set",
@@ -174,7 +174,7 @@ mod tests {
             (
                 "no runtime dir",
                 |env| env.runtime = None,
-                "SHELL_HOST_LOCK_RUNTIME",
+                "BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME",
             ),
             ("no marker", |env| env.marker = false, "has no"),
             (

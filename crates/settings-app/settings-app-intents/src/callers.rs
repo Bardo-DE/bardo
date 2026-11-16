@@ -21,7 +21,7 @@ pub(crate) fn activators() -> Vec<Requirement> {
         .collect()
 }
 
-/// The role the owner of `org.quire.Settings` must hold before a second `detent` sends it an
+/// The role the owner of `org.bardo.Settings` must hold before a second `detent` sends it an
 /// activation token: Settings itself.
 pub(crate) fn settings_owner() -> Vec<Requirement> {
     allowing(roles::SETTINGS, Proof::Full)

@@ -1,4 +1,4 @@
-//! `org.quire.Identities1` at `/org/quire/Identities1`, on accountd's connection: the identities
+//! `org.bardo.Identities1` at `/org/bardo/Identities1`, on accountd's connection: the identities
 //! signed in on this machine, so an app can say "Continue as ada@example.org" without holding
 //! the sign-in itself. An identity is an account of a sign-in kind (OAuth, a password, an app
 //! password); local runtimes, Tailscale, AI keys and agent logins are not identities. Nothing
@@ -81,9 +81,9 @@ pub fn identity_from_dbus(row: &(String, Details)) -> Result<Identity, CoreError
 /// The interface, written once. `#[bus_interface]` makes [`IdentitiesProxy`] for its callers from this
 /// trait, [`IdentitiesServer`] for the daemon to implement and [`IdentitiesServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Identities1",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Identities1"
+    interface = "org.bardo.Identities1",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Identities1"
 )]
 pub trait Identities {
     /// The identities signed in on this machine, in the order the registry holds them: the

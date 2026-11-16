@@ -292,7 +292,7 @@ mod tests {
             opening: Opening {
                 task: TaskId::parse("t-4").expect("task"),
                 space: SpaceId::parse("work").expect("space"),
-                opener: Some(AppName::parse("org.quire.Shell").expect("app")),
+                opener: Some(AppName::parse("org.bardo.Shell").expect("app")),
                 agent: Some(AgentRef::Companion),
                 backend: BackendKind::Native,
                 parent: None,
@@ -408,7 +408,7 @@ mod tests {
         let open = CallOpen {
             call: CallId(12),
             action: action_vocab::ActionRef {
-                app: AppName::parse("org.quire.Mail").expect("app"),
+                app: AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse("mail.thread.archive").expect("action"),
             },
             effect: Effect::UndoableWrite,

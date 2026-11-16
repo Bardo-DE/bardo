@@ -1,7 +1,7 @@
 //! Remote input over EIS (P2-T3): the socket the desktop portal's RemoteDesktop session
 //! gets, and what comes down it.
 //!
-//! `org.quire.Compositor1.ConnectEis` asks [`open`] for a socket pair. The client end goes
+//! `org.bardo.Compositor1.ConnectEis` asks [`open`] for a socket pair. The client end goes
 //! back to the portal (which hands it to the app); the server end is a calloop source,
 //! [`RemoteEisSource`], that speaks the EIS protocol with the app, offers the devices the
 //! person allowed, and turns what the app sends into [`RemoteInput`]. Every event is tagged

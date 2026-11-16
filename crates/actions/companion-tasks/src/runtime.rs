@@ -71,7 +71,7 @@ pub(crate) struct Narration {
 /// use std::{collections::BTreeSet, sync::Arc};
 ///
 /// let router = Arc::new(fake_router(AgentConfig::default())?);
-/// let shell = AppName::parse("org.quire.Shell")?;
+/// let shell = AppName::parse("org.bardo.Shell")?;
 /// let caller = CallerId {
 ///     app: AppId {
 ///         name: shell.clone(),

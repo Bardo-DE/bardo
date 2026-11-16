@@ -1,4 +1,4 @@
-//! The real `readerd` binary on a private bus: it claims `org.quire.Reader1`, refuses a caller that
+//! The real `readerd` binary on a private bus: it claims `org.bardo.Reader1`, refuses a caller that
 //! is not intentd's unit, claims the name once and frees it when it stops. Nothing of the real
 //! session is named: the bus, HOME and every XDG directory are scratch. The binary reads the
 //! system's `/proc`, which no test may move, so who it does answer (intentd's unit, as the
@@ -46,12 +46,12 @@ async fn has_owner(connection: &zbus::Connection, name: &str) -> bool {
 
 async fn until_served(connection: &zbus::Connection) {
     for _ in 0..200 {
-        if has_owner(connection, "org.quire.Reader1").await {
+        if has_owner(connection, "org.bardo.Reader1").await {
             return;
         }
         tokio::time::sleep(Duration::from_millis(50)).await;
     }
-    panic!("readerd never claimed org.quire.Reader1");
+    panic!("readerd never claimed org.bardo.Reader1");
 }
 
 fn ask() -> String {
@@ -72,7 +72,7 @@ async fn the_binary_refuses_a_stranger_claims_the_name_once_and_frees_it_when_it
     until_served(&me).await;
 
     // A process that is not intentd's unit is refused before the ask is read, whatever the
-    // system's `/proc` says this test process is: only intentd.service's main process passes.
+    // system's `/proc` says this test process is: only bardo-actiond.service's main process passes.
     let stranger = ReaderProxy::new(&me).await.expect("proxy");
     let refused = stranger
         .extract("s-1", &ask(), &Details::new())
@@ -94,13 +94,13 @@ async fn the_binary_refuses_a_stranger_claims_the_name_once_and_frees_it_when_it
         !status.success(),
         "a second readerd is not served: {status:?}"
     );
-    assert!(has_owner(&me, "org.quire.Reader1").await);
+    assert!(has_owner(&me, "org.bardo.Reader1").await);
 
     // Stopping it frees the name.
     daemon.0.kill().expect("kill");
     daemon.0.wait().expect("wait");
     for _ in 0..100 {
-        if !has_owner(&me, "org.quire.Reader1").await {
+        if !has_owner(&me, "org.bardo.Reader1").await {
             return;
         }
         tokio::time::sleep(Duration::from_millis(50)).await;

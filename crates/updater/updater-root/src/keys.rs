@@ -3,8 +3,8 @@
 use std::path::Path;
 use updater_core::{PublicKey, SignError};
 
-/// A key compiled in at build time (`SLIPWAY_RELEASE_PUBKEY`), used when no key file exists.
-pub const COMPILED_KEY: Option<&str> = option_env!("SLIPWAY_RELEASE_PUBKEY");
+/// A key compiled in at build time (`BARDO_UPDATER_RELEASE_PUBKEY`), used when no key file exists.
+pub const COMPILED_KEY: Option<&str> = option_env!("BARDO_UPDATER_RELEASE_PUBKEY");
 
 /// Why there is no usable key.
 #[derive(Debug, thiserror::Error)]

@@ -8,16 +8,16 @@
 #
 # usage: scripts/check-intents.sh [repository dir]       (default: the repository this file is in)
 # environment:
-#   DOCKET_EVAL  a built docket-eval binary to run instead of building one
-#   DOCKET_DIR   the docket checkout to build it from (default: the bardo tree this repository folder is in)
+#   BARDO_ACTIONS_EVAL  a built agent-eval binary to run instead of building one
+#   BARDO_ACTIONS_DIR   the docket checkout to build it from (default: the bardo tree this repository folder is in)
 set -euo pipefail
 repo=${1:-$(cd "$(dirname "$0")/.." && pwd)}
-if [ -n "${DOCKET_EVAL:-}" ]; then
-  exec "$DOCKET_EVAL" --check-app "$repo"
+if [ -n "${BARDO_ACTIONS_EVAL:-}" ]; then
+  exec "$BARDO_ACTIONS_EVAL" --check-app "$repo"
 fi
-docket=${DOCKET_DIR:-$repo/../..}
+docket=${BARDO_ACTIONS_DIR:-$repo/../..}
 if [ ! -f "$docket/Cargo.toml" ]; then
-  echo "check-intents: no docket checkout at $docket (set DOCKET_DIR, or DOCKET_EVAL to a built docket-eval)" >&2
+  echo "check-intents: no docket checkout at $docket (set BARDO_ACTIONS_DIR, or BARDO_ACTIONS_EVAL to a built agent-eval)" >&2
   exit 2
 fi
-exec cargo run --quiet --manifest-path "$docket/Cargo.toml" -p action-eval --bin docket-eval -- --check-app "$repo"
+exec cargo run --quiet --manifest-path "$docket/Cargo.toml" -p action-eval --bin agent-eval -- --check-app "$repo"

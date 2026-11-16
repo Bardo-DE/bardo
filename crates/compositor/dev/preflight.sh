@@ -8,9 +8,9 @@ tier="${GATE_TIER:-fast}"
 source dev/lib/packages.sh
 need() { echo "preflight: $1" >&2; echo "preflight: fix: $2" >&2; exit 3; }
 
-jail="${CASEMENT_JAIL:-../../packaging/harness/jail.sh}"
+jail="${BARDO_COMPOSITOR_JAIL:-../../packaging/harness/jail.sh}"
 [ -x "$jail" ] || need "the jail script $jail is missing or not executable" \
-  "run this from crates/compositor of a bardo tree (the jail is packaging/harness/jail.sh) or set CASEMENT_JAIL"
+  "run this from crates/compositor of a bardo tree (the jail is packaging/harness/jail.sh) or set BARDO_COMPOSITOR_JAIL"
 command -v bwrap >/dev/null || need "bubblewrap (bwrap) is not on PATH" "$(pkg_hint bubblewrap)"
 [ -e /dev/udmabuf ] || need "/dev/udmabuf is missing" "log in locally (Q-T1), or: sudo modprobe udmabuf"
 [ -r /dev/udmabuf ] || need "/dev/udmabuf is not readable" "log in locally (Q-T1): the uaccess ACL comes with a local seat session"
@@ -34,7 +34,7 @@ fi
 
 case "$tier" in
   merge|phase)
-    tools="${CASEMENT_TOOLS:-dev/out/tools}"
+    tools="${BARDO_COMPOSITOR_TOOLS:-dev/out/tools}"
     for tool in foot xwayland-satellite wlcs; do
       [ -e "$tools/$tool" ] || [ -e "$tools/bin/$tool" ] \
         || need "bootstrap artefact $tools/$tool is missing" "run dev/bootstrap.sh (outside the jail)"

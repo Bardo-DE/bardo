@@ -10,7 +10,7 @@ use zbus::zvariant::{OwnedValue, Value};
 
 /// The vardict key of the state (`s`): see [`RunState`].
 pub const RUNNING_KEY_STATE: &str = "state";
-/// The vardict key of the engine kind (`s`): `vllm`, `llama-server`, `speech-host` or `kokoro`.
+/// The vardict key of the engine kind (`s`): `vllm`, `llama-server`, `bardo-speech-host` or `kokoro`.
 pub const RUNNING_KEY_ENGINE: &str = "engine";
 /// The vardict key of the graphics memory the engine takes, in MiB (`u`).
 pub const RUNNING_KEY_MEMORY_MIB: &str = "memory_mib";
@@ -59,7 +59,7 @@ pub struct RunningModel {
     pub model: String,
     /// What its engine is doing.
     pub state: RunState,
-    /// The engine kind (`vllm`, `llama-server`, `speech-host`, `kokoro`).
+    /// The engine kind (`vllm`, `llama-server`, `bardo-speech-host`, `kokoro`).
     pub engine: String,
     /// The graphics memory it takes, in MiB.
     pub memory_mib: u32,

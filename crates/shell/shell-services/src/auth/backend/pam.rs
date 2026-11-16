@@ -139,8 +139,8 @@ mod tests {
     #[test]
     fn sills_own_file_wins_else_login() {
         let cases: [(&[&str], &str); 4] = [
-            (&["/etc/pam.d/sill"], "sill"),
-            (&["/usr/lib/pam.d/sill"], "sill"),
+            (&["/etc/pam.d/bardo-shell"], "sill"),
+            (&["/usr/lib/pam.d/bardo-shell"], "sill"),
             (&["/etc/pam.d/login"], "login"),
             (&[], "login"),
         ];

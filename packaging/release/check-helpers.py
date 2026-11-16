@@ -11,12 +11,12 @@ import stat as S
 import sys
 import xml.etree.ElementTree as ET
 
-PROGRAMS = ("slipway-apply", "slipway-rollback", "slipway-health")
+PROGRAMS = ("bardo-updater-apply", "bardo-updater-rollback", "bardo-updater-health")
 # action id -> (program, what an active session at the keyboard gets)
 ACTIONS = {
-    "org.quire.slipway.apply": ("slipway-apply", "yes"),
-    "org.quire.slipway.rollback": ("slipway-rollback", "auth_admin_keep"),
-    "org.quire.slipway.health": ("slipway-health", "yes"),
+    "org.bardo.updater.apply": ("bardo-updater-apply", "yes"),
+    "org.bardo.updater.rollback": ("bardo-updater-rollback", "auth_admin_keep"),
+    "org.bardo.updater.health": ("bardo-updater-health", "yes"),
 }
 EXEC_PATH = "org.freedesktop.policykit.exec.path"
 
@@ -60,7 +60,7 @@ def problems(libexec, policy, root):
 
 
 def main(argv):
-    libexec, policy, root = "/usr/libexec", "/usr/share/polkit-1/actions/org.quire.slipway.policy", "/"
+    libexec, policy, root = "/usr/libexec", "/usr/share/polkit-1/actions/org.bardo.updater.policy", "/"
     args = iter(argv)
     for arg in args:
         if arg == "--libexec":

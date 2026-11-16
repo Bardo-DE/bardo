@@ -1,15 +1,15 @@
-//! The `org.quire.Memory1.Record` object over a [`Serve`] handler.
+//! The `org.bardo.Memory1.Record` object over a [`Serve`] handler.
 
 use super::{Serve, first, forward, none, shape, text, two};
 use memory_dbus::{Iface, MemoryError};
 use std::sync::Arc;
 use zbus::message::Header;
 
-/// `org.quire.Memory1.Record`.
+/// `org.bardo.Memory1.Record`.
 #[derive(Debug)]
 pub struct RecordObject<S>(pub(super) Arc<S>);
 
-#[zbus::interface(name = "org.quire.Memory1.Record")]
+#[zbus::interface(name = "org.bardo.Memory1.Record")]
 impl<S: Serve> RecordObject<S> {
     async fn record(
         &self,

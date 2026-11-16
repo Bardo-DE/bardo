@@ -24,30 +24,30 @@ pub(crate) struct Env {
     /// `$NOTIFY_SOCKET`: where `READY=1` goes; none outside systemd. A leading `@` is an
     /// abstract socket.
     pub notify_socket: Option<String>,
-    /// `$KEYCAP_CONFIG_DIR`, else `/etc/keycap`.
+    /// `$BARDO_KEY_REMAP_CONFIG_DIR`, else `/etc/keycap`.
     pub config_dir: PathBuf,
-    /// `$KEYCAP_VENDOR_DIR`, else `/usr/lib/keycap`: where the desktop's shipped defaults are
+    /// `$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/keycap`: where the desktop's shipped defaults are
     /// read from, under the file in the config directory. Injectable so tests need no root.
     pub vendor_dir: PathBuf,
     /// `$RUNTIME_DIRECTORY` (systemd's), else `/run/keycap`: where the socket lives.
     pub runtime_dir: PathBuf,
-    /// `$KEYCAP_SEAT_FILE`, else logind's `seat0` state file: where the active user is read
+    /// `$BARDO_KEY_REMAP_SEAT_FILE`, else logind's `seat0` state file: where the active user is read
     /// from; injectable so tests need no logind.
     pub seat_file: PathBuf,
-    /// `$KEYCAP_SYS_INPUT`, else `/sys/class/input`: where discovery lists the nodes.
+    /// `$BARDO_KEY_REMAP_SYS_INPUT`, else `/sys/class/input`: where discovery lists the nodes.
     pub sys_input: PathBuf,
-    /// `$KEYCAP_DEV_INPUT`, else `/dev/input`: where the nodes are opened and watched.
+    /// `$BARDO_KEY_REMAP_DEV_INPUT`, else `/dev/input`: where the nodes are opened and watched.
     pub dev_input: PathBuf,
-    /// `$KEYCAP_UDEV_DATA`, else `/run/udev/data`: where discovery reads a node's seat.
+    /// `$BARDO_KEY_REMAP_UDEV_DATA`, else `/run/udev/data`: where discovery reads a node's seat.
     pub udev_data: PathBuf,
-    /// `$KEYCAP_GRAB_VIRTUAL`: the one virtual device, by exact name, discovery may grab. Only
+    /// `$BARDO_KEY_REMAP_GRAB_VIRTUAL`: the one virtual device, by exact name, discovery may grab. Only
     /// the unit's environment sets it; it exists for tests whose keyboard is a uinput device.
     pub grab_virtual: VirtualAllowance,
-    /// `$KEYCAP_DEVICE_SERVICE`, else `/run/turnstile/input.sock`: where the service that makes
+    /// `$BARDO_KEY_REMAP_DEVICE_SERVICE`, else `/run/bardo/input-broker/input.sock`: where the service that makes
     /// the virtual devices listens. Devices come from it when the socket is there, and from
     /// `/dev/uinput` when it is not.
     pub device_service: PathBuf,
-    /// `$KEYCAP_STEERING`: who may steer. Only the unit's environment sets it; it exists for
+    /// `$BARDO_KEY_REMAP_STEERING`: who may steer. Only the unit's environment sets it; it exists for
     /// tests whose client is not in the shell's unit.
     pub seat_user: bool,
     /// Whether `--check-uinput` may open the uinput node.
@@ -64,18 +64,18 @@ impl Env {
             |k: &str, default: &str| PathBuf::from(non_empty(k).as_deref().unwrap_or(default));
         Self {
             notify_socket: non_empty("NOTIFY_SOCKET"),
-            config_dir: dir("KEYCAP_CONFIG_DIR", DEFAULT_CONFIG_DIR),
-            vendor_dir: dir("KEYCAP_VENDOR_DIR", DEFAULT_VENDOR_DIR),
+            config_dir: dir("BARDO_KEY_REMAP_CONFIG_DIR", DEFAULT_CONFIG_DIR),
+            vendor_dir: dir("BARDO_KEY_REMAP_VENDOR_DIR", DEFAULT_VENDOR_DIR),
             runtime_dir: dir("RUNTIME_DIRECTORY", DEFAULT_RUNTIME_DIR),
-            seat_file: dir("KEYCAP_SEAT_FILE", DEFAULT_SEAT_FILE),
-            sys_input: dir("KEYCAP_SYS_INPUT", SYS_INPUT),
-            dev_input: dir("KEYCAP_DEV_INPUT", DEV_INPUT),
-            udev_data: dir("KEYCAP_UDEV_DATA", UDEV_DATA),
+            seat_file: dir("BARDO_KEY_REMAP_SEAT_FILE", DEFAULT_SEAT_FILE),
+            sys_input: dir("BARDO_KEY_REMAP_SYS_INPUT", SYS_INPUT),
+            dev_input: dir("BARDO_KEY_REMAP_DEV_INPUT", DEV_INPUT),
+            udev_data: dir("BARDO_KEY_REMAP_UDEV_DATA", UDEV_DATA),
             grab_virtual: VirtualAllowance::from_env_value(
-                lookup("KEYCAP_GRAB_VIRTUAL").as_deref(),
+                lookup("BARDO_KEY_REMAP_GRAB_VIRTUAL").as_deref(),
             ),
-            device_service: dir("KEYCAP_DEVICE_SERVICE", DEFAULT_SERVICE_SOCKET),
-            seat_user: seat_user_asked(lookup("KEYCAP_STEERING").as_deref()),
+            device_service: dir("BARDO_KEY_REMAP_DEVICE_SERVICE", DEFAULT_SERVICE_SOCKET),
+            seat_user: seat_user_asked(lookup("BARDO_KEY_REMAP_STEERING").as_deref()),
             probe: probe_permitted(lookup(PROBE_PERMIT).as_deref()),
             watchdog: non_empty("WATCHDOG_USEC")
                 .and_then(|s| s.parse::<u64>().ok())
@@ -102,18 +102,18 @@ mod tests {
     fn reads_each_variable_from_the_lookup() {
         let env = Env::from_lookup(lookup(&[
             ("NOTIFY_SOCKET", "/run/systemd/notify"),
-            ("KEYCAP_CONFIG_DIR", "/tmp/cfg"),
-            ("KEYCAP_VENDOR_DIR", "/tmp/vendor"),
+            ("BARDO_KEY_REMAP_CONFIG_DIR", "/tmp/cfg"),
+            ("BARDO_KEY_REMAP_VENDOR_DIR", "/tmp/vendor"),
             ("RUNTIME_DIRECTORY", "/run/keycap"),
             (PROBE_PERMIT, "1"),
             ("WATCHDOG_USEC", "1000000"),
-            ("KEYCAP_SEAT_FILE", "/tmp/seat0"),
-            ("KEYCAP_SYS_INPUT", "/tmp/sys"),
-            ("KEYCAP_DEV_INPUT", "/tmp/dev"),
-            ("KEYCAP_UDEV_DATA", "/tmp/udev"),
-            ("KEYCAP_GRAB_VIRTUAL", "test keyboard"),
-            ("KEYCAP_DEVICE_SERVICE", "/tmp/input.sock"),
-            ("KEYCAP_STEERING", "seat-user"),
+            ("BARDO_KEY_REMAP_SEAT_FILE", "/tmp/seat0"),
+            ("BARDO_KEY_REMAP_SYS_INPUT", "/tmp/sys"),
+            ("BARDO_KEY_REMAP_DEV_INPUT", "/tmp/dev"),
+            ("BARDO_KEY_REMAP_UDEV_DATA", "/tmp/udev"),
+            ("BARDO_KEY_REMAP_GRAB_VIRTUAL", "test keyboard"),
+            ("BARDO_KEY_REMAP_DEVICE_SERVICE", "/tmp/input.sock"),
+            ("BARDO_KEY_REMAP_STEERING", "seat-user"),
         ]));
         assert_eq!(env.notify_socket.as_deref(), Some("/run/systemd/notify"));
         assert_eq!(env.config_dir, PathBuf::from("/tmp/cfg"));
@@ -147,7 +147,7 @@ mod tests {
         assert_eq!(env.grab_virtual, VirtualAllowance::Nobody);
         assert_eq!(
             env.device_service,
-            PathBuf::from("/run/turnstile/input.sock")
+            PathBuf::from("/run/bardo/input-broker/input.sock")
         );
         assert!(!env.seat_user);
         assert!(!env.probe);

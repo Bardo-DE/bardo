@@ -41,7 +41,7 @@ service-locator = { path = ".", features = ["test-agent", "guard"] }
 caller-identity-linux = {features = ["fake"], path = "../../identity/caller-identity-linux"}
 
 [features]
-# Builds the `latchkey-test-agent` binary the cross-process tests drive. Not for users.
+# Builds the `service-locator-test-agent` binary the cross-process tests drive. Not for users.
 test-agent = []
 # `latchkey::guard`: the guards of a socket that every local account can reach (Unix only).
 guard = ["dep:caller-identity-linux", "dep:caller-identity-core"]
@@ -56,7 +56,7 @@ missing_debug_implementations = "warn"
 # copy and includes this same source. `test = false`: it has no tests of its own.
 # `required-features`: without it `cargo install latchkey` put this binary on the user's PATH.
 [[bin]]
-name = "latchkey-test-agent"
+name = "service-locator-test-agent"
 path = "tests/support/agent.rs"
 required-features = ["test-agent"]
 test = false

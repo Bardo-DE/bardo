@@ -16,7 +16,7 @@ const VERSION: u16 = 1;
 pub fn schema() -> Schema {
     Schema {
         app: AppId("casement".to_owned()),
-        file: FilePath("casement/settings.toml".to_owned()),
+        file: FilePath("compositor/settings.toml".to_owned()),
         version: VERSION,
         foreign: Default::default(),
         key: [
@@ -39,7 +39,7 @@ pub fn schema() -> Schema {
     }
 }
 
-/// Writes `casement.settings.toml` into `to` (created if needed, replaced atomically).
+/// Writes `compositor.settings.toml` into `to` (created if needed, replaced atomically).
 pub fn write_schema(to: &Path) -> Result<(), ConfigError> {
     schema().write_to(to)?;
     Ok(())

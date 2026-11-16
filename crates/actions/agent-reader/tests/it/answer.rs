@@ -17,7 +17,7 @@ fn c(id: &str) -> ChoiceId {
 
 fn thread(key: &str) -> EntityId {
     EntityId {
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         kind: EntityKind::parse("mail.thread").expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }
@@ -110,13 +110,13 @@ fn answers_table() {
         ),
         (
             "entities the ask offered",
-            r#"{"answer": ["org.quire.Mail/mail.thread/t2"]}"#,
+            r#"{"answer": ["org.bardo.Mail/mail.thread/t2"]}"#,
             among.clone(),
             Ok(Value::Entities(vec![thread("t2")])),
         ),
         (
             "an entity it did not",
-            r#"{"answer": ["org.quire.Mail/mail.thread/t9"]}"#,
+            r#"{"answer": ["org.bardo.Mail/mail.thread/t9"]}"#,
             among,
             Err(ReaderError::OutOfSchema(SchemaFault::NotInSet)),
         ),

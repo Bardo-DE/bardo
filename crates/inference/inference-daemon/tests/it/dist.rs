@@ -26,8 +26,8 @@ fn key<'a>(text: &'a str, name: &str) -> Option<&'a str> {
 
 #[test]
 fn the_activation_file_and_the_unit_name_the_bus_name_and_each_other() {
-    let activation = dist("dbus/org.quire.Inference1.service");
-    let unit = dist("inferd.service");
+    let activation = dist("dbus/org.bardo.Inference1.service");
+    let unit = dist("bardo-inferd.service");
     assert_eq!(
         key(&activation, "Name"),
         Some(inference_dbus::inference::INFERENCE_BUS)
@@ -36,13 +36,13 @@ fn the_activation_file_and_the_unit_name_the_bus_name_and_each_other() {
         key(&unit, "BusName"),
         Some(inference_dbus::inference::INFERENCE_BUS)
     );
-    assert_eq!(key(&activation, "SystemdService"), Some("inferd.service"));
+    assert_eq!(key(&activation, "SystemdService"), Some("bardo-inferd.service"));
     assert_eq!(key(&activation, "Exec"), key(&unit, "ExecStart"));
     assert_eq!(key(&unit, "Type"), Some("dbus"));
 }
 
 /// sec-3 follow-up: the shipped table gives the settings module to the Settings app's unit
-/// (`org.quire.Settings.service`, as accountd's callers.toml), never by the app's name alone.
+/// (`org.bardo.Settings.service`, as accountd's callers.toml), never by the app's name alone.
 #[test]
 fn the_shipped_table_names_settings_by_its_unit() {
     let rows = shipped_callers().rows();
@@ -55,8 +55,8 @@ fn the_shipped_table_names_settings_by_its_unit() {
     assert_eq!(
         settings,
         [(
-            Some("org.quire.Settings.service"),
-            "org.quire.Settings".to_owned()
+            Some("org.bardo.Settings.service"),
+            "org.bardo.Settings".to_owned()
         )]
     );
 }
@@ -73,15 +73,15 @@ fn the_shipped_table_names_the_placers_and_the_shell_by_unit() {
             .map(|c| (c.app.name.to_string(), c.role))
     };
     for (unit, app) in [
-        ("companiond.service", "org.quire.Companion"),
-        ("readerd.service", "org.quire.Reader"),
-        ("intentd.service", "org.quire.Intents"),
+        ("bardo-companiond.service", "org.bardo.Companion"),
+        ("bardo-readerd.service", "org.bardo.Reader"),
+        ("bardo-actiond.service", "org.bardo.Intents"),
     ] {
         assert_eq!(role(unit), Some((app.to_owned(), Role::Placer)), "{unit}");
     }
     assert_eq!(
-        role("sill.service"),
-        Some(("org.quire.Shell".to_owned(), Role::Shell))
+        role("bardo-shell.service"),
+        Some(("org.bardo.Shell".to_owned(), Role::Shell))
     );
     assert_eq!(
         role("sill-shell.scope"),
@@ -89,14 +89,14 @@ fn the_shipped_table_names_the_placers_and_the_shell_by_unit() {
         "the old scope is no longer the shell"
     );
     assert_eq!(
-        role("memoryd.service"),
-        Some(("org.quire.Memory".to_owned(), Role::App))
+        role("bardo-memoryd.service"),
+        Some(("org.bardo.Memory".to_owned(), Role::App))
     );
 }
 
 #[test]
 fn the_unit_gives_engines_the_gpu_and_only_this_computers_own_addresses() {
-    let unit = dist("inferd.service");
+    let unit = dist("bardo-inferd.service");
     // Loopback is reachable (the local runtimes the probe asks, the agent endpoint's listener):
     // no private network, the internet families open, and every address but loopback denied.
     assert_eq!(key(&unit, "PrivateNetwork"), None);
@@ -119,7 +119,7 @@ fn the_unit_gives_engines_the_gpu_and_only_this_computers_own_addresses() {
     assert_eq!(key(&unit, "ReadWritePaths"), None);
     // The mount-namespace keys are the drop-in's, which the installer leaves out where the system
     // refuses a user service its own mount namespace.
-    let sandbox = dist("inferd.service.d/sandbox.conf");
+    let sandbox = dist("bardo-inferd.service.d/sandbox.conf");
     assert_eq!(key(&sandbox, "ProtectHome"), Some("read-only"));
     assert_eq!(key(&sandbox, "ProtectSystem"), Some("strict"));
     assert_eq!(key(&sandbox, "ReadWritePaths"), None);
@@ -172,7 +172,7 @@ fn the_tailnet_drop_in_opens_the_networks_own_addresses_and_nothing_else() {
         "the internet stays out of reach"
     );
     assert_eq!(
-        key(&dist("inferd.service"), "IPAddressAllow"),
+        key(&dist("bardo-inferd.service"), "IPAddressAllow"),
         Some("localhost")
     );
 }
@@ -180,7 +180,7 @@ fn the_tailnet_drop_in_opens_the_networks_own_addresses_and_nothing_else() {
 #[test]
 fn the_shipped_table_names_the_callers_the_design_calls_for() {
     let callers = shipped_callers();
-    let cua = callers.resolve("cuad.service").expect("cuad");
+    let cua = callers.resolve("bardo-computer-use.service").expect("cuad");
     assert_eq!(cua.role, inference_daemon::peers::Role::Cua);
     for exe in ["memoryd", "intentd", "companiond", "readerd", "voiced"] {
         let caller = callers
@@ -213,7 +213,7 @@ fn the_agent_launcher_is_listed_by_the_machine_that_runs_it_never_by_default() {
         .map(|rest| format!("agent_launcher = {rest}"))
         .expect("the documented line");
     let mine = CallerTable::from_toml_text(&documented).expect("the documented line reads");
-    let launcher = mine.resolve("docket-acp.service").expect("the unit");
+    let launcher = mine.resolve("bardo-agent-acp.service").expect("the unit");
     assert_eq!(launcher.role, inference_daemon::peers::Role::AgentLauncher);
 }
 
@@ -229,7 +229,7 @@ fn the_sample_configuration_gives_no_callers() {
 }
 
 fn schema() -> Schema {
-    Schema::from_toml(&dist("inferd.settings.toml")).expect("the schema parses and is hands-off")
+    Schema::from_toml(&dist("inference.settings.toml")).expect("the schema parses and is hands-off")
 }
 
 #[test]
@@ -359,15 +359,15 @@ fn the_test_proc_root_is_in_no_default_feature_and_no_unit() {
         "default features must not enable test-proc-root"
     );
     for file in [
-        "inferd.service",
+        "bardo-inferd.service",
         "inferd.toml",
-        "dbus/org.quire.Inference1.service",
+        "dbus/org.bardo.Inference1.service",
     ] {
-        assert!(!dist(file).contains("INFERD_PROC_ROOT"), "{file}");
+        assert!(!dist(file).contains("BARDO_INFERD_PROC_ROOT"), "{file}");
     }
 }
 
-/// The shipped table knows docket-acp in its scope by its program, so the editor-agent launcher's
+/// The shipped table knows bardo-agent-acp in its scope by its program, so the editor-agent launcher's
 /// planner turns reach inferd on an installed desktop; a scope's name alone gives no program.
 #[test]
 fn the_shipped_table_names_docket_acps_programs() {
@@ -375,16 +375,16 @@ fn the_shipped_table_names_docket_acps_programs() {
     let acp = rows
         .callers
         .iter()
-        .find(|row| row.unit.as_deref() == Some("docket-acp.scope"))
-        .expect("a docket-acp.scope row");
-    assert_eq!(acp.app.to_string(), "org.quire.Companion");
+        .find(|row| row.unit.as_deref() == Some("bardo-agent-acp.scope"))
+        .expect("a bardo-agent-acp.scope row");
+    assert_eq!(acp.app.to_string(), "org.bardo.Companion");
     assert_eq!(acp.role, account_callers::CallerRole::App);
     assert_eq!(
         acp.exe,
         [
-            "/usr/bin/docket-acp",
-            "/usr/local/bin/docket-acp",
-            "/opt/quire/releases/*/bin/docket-acp"
+            "/usr/bin/bardo-agent-acp",
+            "/usr/local/bin/bardo-agent-acp",
+            "/opt/bardo/releases/*/bin/bardo-agent-acp"
         ]
     );
 }

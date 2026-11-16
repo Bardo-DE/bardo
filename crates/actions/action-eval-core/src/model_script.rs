@@ -5,7 +5,7 @@
 //!
 //! The words are the model's own reply, raw: a fenced block, a verdict with an extra key, an
 //! empty string. They are not checked here; the point is that the code reading them is. A live
-//! run plays them through inferd's replay engine (`docket-live`), the gate's deterministic suite
+//! run plays them through inferd's replay engine (`agent-live`), the gate's deterministic suite
 //! through `action_review::parse_verdict`.
 
 use permission_core::Stage;

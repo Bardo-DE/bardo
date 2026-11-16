@@ -3,7 +3,7 @@
 transom is the quire desktop's portal backend. `xdg-desktop-portal` (a separate process) asks it
 over the session bus; it answers with the `org.freedesktop.impl.portal.*` interfaces. It serves
 Screenshot, ScreenCast, RemoteDesktop, Settings, Inhibit and Access. The file chooser stays with the GTK
-backend (see `dist/quire-portals.conf`).
+backend (see `dist/bardo-portals.conf`).
 
 ## 1. Crates and allowed edges
 
@@ -29,7 +29,7 @@ crates/transom/src/{lib, main, error, link, peers, table, dev_rows (feature debu
                    inhibit/{mod, hub, effect}.rs
                    screencast/{mod, flow, options, run, session, stream, pipewire, pixels, restore}.rs
                    capture/{mod, display, fake, job, line, output, toplevel, wl}.rs  capture/line/{casement, fake}.rs  capture/wl/{outputs, wait, wire}.rs
-dist/   quire.portal  quire-portals.conf  org.freedesktop.impl.portal.desktop.quire.service  transom.service
+dist/   bardo.portal  bardo-portals.conf  org.freedesktop.impl.portal.desktop.bardo.service  bardo-portal.service
 scripts/install.sh   installs the binary, the unit, the D-Bus file and the portal file (standalone; --prefix, --destdir, --bin-dir)
 dev/    up.sh down.sh lib/{jail,chain}.sh accept/*.sh        (the jailed portal chain)
 scripts/check-boundary.sh
@@ -43,14 +43,14 @@ scripts/check-boundary.sh
 | `screencast::stream::FrameSink` | `PipewireSink` | `FakeSink` | P2-T2 |
 | `screencast::restore::RestoreStore` | `FileStore` | `MemoryStore` | P2-T2 |
 | `screenshot::OutputLayout` | `LiveLayout` (asks the compositor at each screenshot) | `FixedLayout` | transom-shot |
-| `screenshot::ColorPicker` | `ShellColorPicker` (`org.quire.Shell1.PickColor`) | `FakeColorPicker` | transom-shot |
+| `screenshot::ColorPicker` | `ShellColorPicker` (`org.bardo.Shell1.PickColor`) | `FakeColorPicker` | transom-shot |
 | `chooser::Chooser` | `ShellChooser` (calls the shell's picker) | `FakeChooser` | P2-T2 (chooser client) |
 | `link::BusLink` | the connection that owns the portal's name and the `peers::Peers` that tell callers apart, both attached by `serve` | (none: tests use `serve_on` on a private bus and `Peers::introduce`) | PORTAL-01, 03, 10 |
 | `settings::AppearanceSource` | `DesktopAppearance` | (none: tests bring their own source) | P2-T1 |
-| `access::Asker` | `ShellAsker` (`org.quire.Shell1.AskPermission`) | `FakeAsker` | transom-access |
+| `access::Asker` | `ShellAsker` (`org.bardo.Shell1.AskPermission`) | `FakeAsker` | transom-access |
 | `access::Asker` (remote control) | `ShellAsker` (its own `AskPermission` question naming the input, built by `remote_control_question`) | `FakeAsker` | P2-T3 |
-| `remote_desktop::EisHandout` | `CasementEis` (`org.quire.Compositor1.ConnectEis` and `EndEis`) | `FakeEis` | P2-T3 |
-| `capture::PortalLine` | `CasementLine` (`org.quire.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; casement limits how often a caller may ask, so a capture job, `capture::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
+| `remote_desktop::EisHandout` | `CasementEis` (`org.bardo.Compositor1.ConnectEis` and `EndEis`) | `FakeEis` | P2-T3 |
+| `capture::PortalLine` | `CasementLine` (`org.bardo.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; casement limits how often a caller may ask, so a capture job, `capture::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
 
 `Pump` (`screencast/stream.rs`) is the loop body between a `CaptureSource` and a `FrameSink`, and
 is implemented and tested against the fakes. A turn waits at most `QUIET_TURN` for a frame and reports
@@ -73,7 +73,7 @@ again at the stream's negotiated pace (`transom_core::decide`), so a still scree
 ## 3b. Who asks, and from where
 
 Every question to the shell or the compositor goes out on the one connection that owns
-`org.freedesktop.impl.portal.desktop.quire` (`link::BusLink`, attached by `serve` before the name is
+`org.freedesktop.impl.portal.desktop.bardo` (`link::BusLink`, attached by `serve` before the name is
 claimed). The shell answers only the owner of that name, and a second connection has another
 unique name. `tests/it/shell_bus.rs` pairs the real clients with a stand-in shell that applies the
 shell's owner check, on a private bus.
@@ -82,7 +82,7 @@ shell's owner check, on a private bus.
 
 Caller identity is `caller-identity-dbus` (git, tag v0.1.4, feature `tokio` and `desktop`); `serve` builds one
 `peers::Peers` on the name-owning connection from the root-owned caller table
-(`/etc/quire/desktop-callers.toml`, loaded by `main.rs`; a table that cannot be loaded is empty, so nobody is
+(`/etc/bardo/desktop-callers.toml`, loaded by `main.rs`; a table that cannot be loaded is empty, so nobody is
 recognised, every call is refused and the shell is never asked).
 
 - **Inbound.** Every method of every `org.freedesktop.impl.portal.*` interface (Screenshot, ScreenCast,
@@ -96,24 +96,24 @@ recognised, every call is refused and the shell is never asked).
   call about it (`Select*`, `Start`, `ConnectToEIS`, `Notify*`, `QueryEndResponse`, `Close`) must come from that
   same peer (`RoleGuard::admit_creator`). A call about a session that is not open gets only the frontend check
   and then the old answer (response 2), so a refusal says nothing about which handles exist.
-- **Outbound.** `shell::Door::open` runs once per question: subscribe to changes of the owner of `org.quire.Shell`,
+- **Outbound.** `shell::Door::open` runs once per question: subscribe to changes of the owner of `org.bardo.Shell`,
   require that the owner holds role `shell`, proved `Full`, and address the question to that owner's unique name.
   Nothing is cached, so a shell restart is seen by the next question. `shell::answered` ends a question that is open
   when the name changes hands (`ShellError::ShellChanged`). A name nobody owns, an owner that is not the shell and a
   bus that does not answer are `ShellError::NotTheShell`. `ShellError::is_refusal` groups these with
   `Unavailable`: the picker is a cancel, a sheet is a no, remote control grants nothing. Picker, sheets and colour
   picker all go through `Door`.
-- **The person's own rows (feature `debug`).** The desktop's test jail has no `/etc/quire/desktop-callers.toml` and no
+- **The person's own rows (feature `debug`).** The desktop's test jail has no `/etc/bardo/desktop-callers.toml` and no
   unit manager, so a stand-in frontend or shell built in a checkout could never be recognised. Built with
   `--features debug` (which alone turns on `caller-identity-dbus/dev-rows`; it is no default feature and no shipped build has
-  it), `main.rs` reads `TRANSOM_DEV_CALLERS=FILE`, the only place it is read, and `dev_rows::with_dev_rows` adds the
+  it), `main.rs` reads `BARDO_PORTAL_DEV_CALLERS=FILE`, the only place it is read, and `dev_rows::with_dev_rows` adds the
   file's `[[peer]]` rows after the shipped table (a plain file of the person's, or root's, that group and others cannot
   write; a link is refused). A file that cannot be taken stops the start with the reason in the log. A caller a row names
   has `Proof::Dev`, below every real proof; `peers::need` lists `Proof::Dev` beside `Proof::Full` for the frontend and the
   shell in that build only (which also lets in the real program at any proof). A release build has no variable, no
   module and no `dev-rows`. Limits: a debug build is not a security boundary (the person's own file says who is a
   service), and a row never outranks a shipped row for the same image or unit. The jail's scripts pass
-  `TRANSOM_DEV_CALLERS` on (`dev/lib/chain.sh`).
+  `BARDO_PORTAL_DEV_CALLERS` on (`dev/lib/chain.sh`).
 - Tests: `tests/it/guard.rs` (each method refuses a stranger, the shell and a frontend proved only by image; sessions
   and monitors are closed and changed only by their opener) and `tests/it/shell_check.rs` (a squatter is never asked,
   the owner is looked up again after a restart, a question open when the shell changes ends as a no), on a private
@@ -194,7 +194,7 @@ service's keeper and prover.
 
 ### Taking a remembered share back (NEW-PI-7)
 
-`org.quire.Portal1` is served at the portal's path beside the portal interfaces, over the same book as ScreenCast
+`org.bardo.Portal1` is served at the portal's path beside the portal interfaces, over the same book as ScreenCast
 (`screencast/grants.rs`). `ListGrants() -> a(ssut)` gives one entry per app that has a grant still in force: app id,
 the name to show, the persist mode (1 while it runs, 2 until taken back) and the date. `Revoke(app_id: s) -> u` forgets
 every grant of the app and says how many went. Neither names a token. Only the Settings app may call, proved `Full`
@@ -205,7 +205,7 @@ FINDINGS). A running share is not stopped by taking back its grant.
 
 Some apps never ask to be remembered (RustDesk 1.5.0 sends no `persist_mode`), and the frontend only issues a token to
 an app that asks, so a token cannot carry them. The person says it instead: `Allow(app_id: s, screens: s, input: u)`
-on `org.quire.Portal1`, Settings only, proved `Full`. `screens` is `none`, `every` or `output:<name>` (that display, else
+on `org.bardo.Portal1`, Settings only, proved `Full`. `screens` is `none`, `every` or `output:<name>` (that display, else
 the first one there is: nothing names this machine's hardware); `input` is the portal's device bit set. The grant
 (`transom_core::StandingGrant`) lives in the same book and file as the tokens (file version 3; version 2 still reads),
 keyed by the app's proven id, and it does not run out. `Start` consults it when there is no token or the token does not
@@ -222,5 +222,5 @@ and sends one only when the window changed; transom does not poll.
 ## 6. The jailed chain
 
 `dev/up.sh` starts a private bus, PipeWire, WirePlumber, transom and `xdg-desktop-portal` inside
-the desktop harness's jail, with `dist/quire.portal` found through `XDG_DESKTOP_PORTAL_DIR`.
+the desktop harness's jail, with `dist/bardo.portal` found through `XDG_DESKTOP_PORTAL_DIR`.
 `dev/accept/*.sh` drive it. Unit tests never need it.

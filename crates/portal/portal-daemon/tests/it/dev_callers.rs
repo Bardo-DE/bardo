@@ -1,4 +1,4 @@
-//! `TRANSOM_DEV_CALLERS` (feature `debug`): the person's own rows file names the stand-ins for the
+//! `BARDO_PORTAL_DEV_CALLERS` (feature `debug`): the person's own rows file names the stand-ins for the
 //! portal frontend and the shell. A release build has none of it, so the file is only read here
 //! under the feature; the other half is a frontend that a release build refuses at a weak proof
 //! (`guard.rs`). Scratch folders only; nothing reads the desktop's table.
@@ -17,7 +17,7 @@ use crate::guard::{
 };
 
 /// What the harness writes: the frontend and the shell, each by the image that stands in for it.
-const ROWS: &str = "[[peer]]\napp = \"org.freedesktop.portal.Desktop\"\nrole = \"portal_frontend\"\nexe = [\"/usr/libexec/xdg-desktop-portal\"]\n\n[[peer]]\napp = \"org.quire.Shell\"\nrole = \"shell\"\nexe = [\"/opt/checkout/target/debug/standin-shell\"]\n";
+const ROWS: &str = "[[peer]]\napp = \"org.freedesktop.portal.Desktop\"\nrole = \"portal_frontend\"\nexe = [\"/usr/libexec/xdg-desktop-portal\"]\n\n[[peer]]\napp = \"org.bardo.Shell\"\nrole = \"shell\"\nexe = [\"/opt/checkout/target/debug/standin-shell\"]\n";
 
 fn write(dir: &Path, name: &str, text: &str, mode: u32) -> PathBuf {
     let file = dir.join(name);
@@ -50,7 +50,7 @@ fn only_the_persons_own_plain_unshared_file_that_parses_adds_rows() {
             write(
                 dir.path(),
                 "noexe.toml",
-                "[[peer]]\napp = \"org.quire.Shell\"\nrole = \"shell\"\n",
+                "[[peer]]\napp = \"org.bardo.Shell\"\nrole = \"shell\"\n",
                 0o600,
             ),
             false,

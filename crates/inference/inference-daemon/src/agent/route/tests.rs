@@ -55,7 +55,7 @@ fn routes_that_say_nothing_clear_are_refused_invalid() {
 fn a_program_is_an_app_named_for_it() {
     let program = AgentProgram::parse("claude-code").expect("program");
     let app = agent_app(&program);
-    assert_eq!(app.name.as_str(), "org.quire.Agent.claude-code");
+    assert_eq!(app.name.as_str(), "org.bardo.Agent.claude-code");
     assert_eq!(app.isolation, Isolation::Unsandboxed);
 }
 

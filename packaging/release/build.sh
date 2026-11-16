@@ -13,7 +13,7 @@
 #
 # Everything is one cargo workspace: each component is built with `cargo build --release --locked -p ...` at the
 # tree's root into one target directory ($CARGO_TARGET_ROOT, else OUT/target), and installed with the prefix
-# /opt/quire/current under the destdir OUT/stage, through the component's own installer where it can stage
+# /opt/bardo/current under the destdir OUT/stage, through the component's own installer where it can stage
 # (porter, steward, ferry, stoker, almanac, docket, cua, detent, files, and the session in install/). The others (casement, sill, transom, turnstile,
 # keycap, palmrest, slipway) have an installer that cannot stage without sudo or writes $HOME; their staging below is marked
 # INTERIM and listed in FINDINGS.md with what each installer must learn. The tree's own commit is the version of every
@@ -25,7 +25,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
-P=/opt/quire/current
+P=/opt/bardo/current
 # shellcheck source=../install/cargo.sh
 source "$ROOT/install/cargo.sh"
 ALL=(casement sill session porter steward ferry stoker almanac docket cua detent transom turnstile keycap palmrest files slipway satellite)
@@ -106,7 +106,7 @@ tdir() { printf '%s/release' "${CARGO_TARGET_ROOT:-$out/target}"; }
 
 # put MODE SRC REL: install SRC at $root/REL.
 put() { install -Dm"$1" "$2" "$root/$3"; }
-# put_system MODE SRC DEST: a file slipway-apply copies (as root) to the absolute DEST on the computer. It
+# put_system MODE SRC DEST: a file bardo-updater-apply copies (as root) to the absolute DEST on the computer. It
 # travels in the bundle at system/DEST and pack.sh lists it; DEST must be a file release/system-files.list (slipway's
 # list, exactly) names: anything else is refused when the release is packed.
 put_system() { put "$1" "$2" "system$3"; }
@@ -121,63 +121,63 @@ retarget() {
 build_casement() {
   local d; d=$(repo_dir casement)
   cargo_in -p compositor-app -p compositor-ctl
-  # INTERIM: casement has no installer here; it ships dist/casement.service with ExecStart=/usr/bin/casement
-  # $CASEMENT_SESSION_ARGS (retarget keeps the arguments). The unit is root-held, as the account service requires of a fixed
+  # INTERIM: casement has no installer here; it ships dist/bardo-compositor.service with ExecStart=/usr/bin/bardo-compositor
+  # $BARDO_COMPOSITOR_SESSION_ARGS (retarget keeps the arguments). The unit is root-held, as the account service requires of a fixed
   # role: staged in lib/systemd/user here, and made a plain system file at /usr/lib/systemd/user by plain_units below.
   put 755 "$(tdir)/casement" bin/casement
-  put 755 "$(tdir)/casementctl" bin/casementctl
-  put 644 "$d/dist/casement.service" lib/systemd/user/casement.service
+  put 755 "$(tdir)/bardo-compositorctl" bin/bardo-compositorctl
+  put 644 "$d/dist/bardo-compositor.service" lib/systemd/user/bardo-compositor.service
   # Its settings schema, so Settings draws its rows (Spaces: switch to an app's Space).
   local schema; schema=$(mktemp -d)
   "$(tdir)/casement" --write-schema "$schema" >/dev/null
-  put 644 "$schema/casement.settings.toml" share/quire/settings/casement.settings.toml
+  put 644 "$schema/compositor.settings.toml" share/quire/settings/compositor.settings.toml
   rm -rf "$schema"
-  retarget "$root/lib/systemd/user/casement.service" /usr/bin/casement
+  retarget "$root/lib/systemd/user/bardo-compositor.service" /usr/bin/bardo-compositor
 }
 
 build_sill() {
   local d; d=$(repo_dir sill)
   cargo_in -p shell-app
   # INTERIM: dist/install.sh has fixed destinations and sudo. Same files, under the prefix; the PAM
-  # service is a system file (slipway-apply places it), and the keycap layer sits under share/sill
+  # service is a system file (bardo-updater-apply places it), and the keycap layer sits under share/sill
   # (FINDINGS.md).
   put 755 "$(tdir)/sill" bin/sill
-  put 644 "$d/dist/intents/org.quire.Shell.toml" share/quire/intents/org.quire.Shell.toml
+  put 644 "$d/dist/intents/org.bardo.Shell.toml" share/quire/intents/org.bardo.Shell.toml
   (cd "$d/dist/skills" && find . -type f | sort) | while IFS= read -r f; do
     put 644 "$d/dist/skills/$f" "share/quire/skills/${f#./}"
   done
   local schema; schema=$(mktemp -d)
   "$(tdir)/sill" --write-schema "$schema" >/dev/null
-  put 644 "$schema/sill.settings.toml" share/quire/settings/sill.settings.toml
+  put 644 "$schema/shell.settings.toml" share/quire/settings/shell.settings.toml
   rm -rf "$schema"
   # Its published style names, so Settings can tell a person's style using one from an internal name .
   local parts; parts=$(mktemp -d)
   "$(tdir)/sill" --write-selectors "$parts" >/dev/null
   put 644 "$parts/sill.toml" share/quire/selectors/sill.toml
   rm -rf "$parts"
-  put_system 644 "$d/dist/pam.d/sill" /etc/pam.d/sill
+  put_system 644 "$d/dist/pam.d/sill" /etc/pam.d/bardo-shell
   # External-monitor brightness (distro audit D7): the uaccess rule for the i2c buses and the list that loads
   # i2c-dev. Both folders are on slipway's list of system folders. Fedora's ddcutil package ships a rule with the
   # same tag; two rules with the same tag are harmless, so the install.sh "unless ddcutil has it" test is not needed.
-  put_system 644 "$d/dist/udev/60-sill-ddc.rules" /etc/udev/rules.d/60-sill-ddc.rules
-  put_system 644 "$d/dist/modules-load.d/sill-ddc.conf" /etc/modules-load.d/sill-ddc.conf
+  put_system 644 "$d/dist/udev/60-bardo-shell-ddc.rules" /etc/udev/rules.d/60-bardo-shell-ddc.rules
+  put_system 644 "$d/dist/modules-load.d/bardo-shell-ddc.conf" /etc/modules-load.d/bardo-shell-ddc.conf
   put 644 "$d/dist/keycap/keycap.toml" share/sill/keycap.toml
   # The shell's unit, root-held like casement's (the account service trusts fixed roles only from such units; plain_units below).
-  put 644 "$d/dist/sill.service" lib/systemd/user/sill.service
-  retarget "$root/lib/systemd/user/sill.service" /usr/bin/sill
+  put 644 "$d/dist/bardo-shell.service" lib/systemd/user/bardo-shell.service
+  retarget "$root/lib/systemd/user/bardo-shell.service" /usr/bin/bardo-shell
 }
 
 build_session() {
   echo "desktop $tree_rev" >"$out/components.d/desktop.txt"
-  # The units casement.service and sill.service are staged by their own components (they are not
+  # The units bardo-compositor.service and bardo-shell.service are staged by their own components (they are not
   # necessarily in this job); the sessions entry lands in the exported directory, the user target in
   # lib/systemd/user (this installer puts it under <sysconfdir>/systemd/user).
   "$ROOT/install/install.sh" --prefix "$P" --destdir "$stage" --tree /nonexistent \
     --sysconfdir "$P/lib" --sessions-dir "$P/share/wayland-sessions"
-  # The table of the desktop's own programs, a system file slipway places at /etc/quire/desktop-callers.toml (the rule
-  # `/etc/quire/*-callers.toml` names it). slipway's update service, the portal backend and the input service read it
+  # The table of the desktop's own programs, a system file slipway places at /etc/bardo/desktop-callers.toml (the rule
+  # `/etc/bardo/*-callers.toml` names it). slipway's update service, the portal backend and the input service read it
   # and refuse every caller without it, so it travels in every release.
-  put_system 644 "$ROOT/dist/desktop-callers.toml" /etc/quire/desktop-callers.toml
+  put_system 644 "$ROOT/dist/desktop-callers.toml" /etc/bardo/desktop-callers.toml
   # The colour emoji font (install.sh puts the same two files in <prefix>/share/fonts/quire/): ubuntu and arch ship
   # a bitmap build our renderer cannot draw. share/fonts is exported to /usr/share/fonts, where quire's search
   # (ui-blitz emoji_file.rs: <data dir>/fonts/quire/Noto-COLRv1.ttf for each XDG data dir, /usr/share included) finds it.
@@ -194,7 +194,7 @@ build_porter() {
   local d; d=$(repo_dir porter)
   cargo_in -p account-daemon
   # --sysconfdir under the bundle's system tree: the caller table lands at system/etc/porter/callers.toml, a system
-  # file slipway-apply places at /etc/porter/ (where porter reads it).
+  # file bardo-updater-apply places at /etc/porter/ (where porter reads it).
   (cd "$d" && CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" \
     ./scripts/install.sh --no-build --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
 }
@@ -202,7 +202,7 @@ build_porter() {
 build_steward() {
   local d; d=$(repo_dir steward)
   cargo_in -p inference-daemon
-  # Same as porter's: system/etc/porter/inferd-callers.toml, a system file slipway-apply places at /etc/porter/.
+  # Same as porter's: system/etc/porter/inferd-callers.toml, a system file bardo-updater-apply places at /etc/porter/.
   (cd "$d" && CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" \
     ./scripts/install.sh --no-build --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
 }
@@ -219,7 +219,7 @@ build_ferry() {
 build_stoker() {
   local d; d=$(repo_dir stoker)
   # The installer copies the model catalogue to share/stoker/catalog, an exported folder (pack.sh links it under
-  # /usr/share/stoker), and the engine installer's helper (engine-helper) to libexec/quire; both were built above.
+  # /usr/share/stoker), and the engine installer's helper (bardo-engine-helper) to libexec/quire; both were built above.
   cargo_in -p engine-install
   (cd "$d" && CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" ./scripts/install.sh --no-build --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
 }
@@ -228,7 +228,7 @@ build_almanac() {
   local d; d=$(repo_dir almanac)
   cargo_in -p memory-daemon
   # The caller table
-  # lands at system/etc/quire/memory-callers.toml, a system file slipway-apply places at /etc/quire. The unit and the
+  # lands at system/etc/quire/memoryd-callers.toml, a system file bardo-updater-apply places at /etc/bardo. The unit and the
   # activation file name the prefix's libexec. Built above, so the installer only installs (--bin-dir).
   (cd "$d" && ./scripts/install.sh --bin-dir "$(tdir)" --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
 }
@@ -237,7 +237,7 @@ build_docket() {
   local d; d=$(repo_dir docket)
   cargo_in -p action-daemon -p companion-daemon -p agent-reader-daemon -p action-mcp -p action-cli -p agent-acp-bin
   # The caller tables land at system/etc/quire/*-callers.toml
-  # and the default settings at system/etc/xdg/quire/, both system files slipway places (/etc/xdg/quire needs
+  # and the default settings at system/etc/xdg/quire/, both system files slipway places (/etc/xdg/bardo needs
   # slipway >= aa427f2). Not built with --with-voice (the voice daemon needs the sound and clang development packages).
   (cd "$d" && ./scripts/install.sh --bin-dir "$(tdir)" --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
 }
@@ -248,8 +248,8 @@ build_cua() {
   # The daemon lands in libexec/quire, the unit (with its
   # protections) in lib/systemd/user, the activation files in share/dbus-1/services and the Settings schema in
   # share/quire/settings, all exported folders; the interface XML in share/dbus-1/interfaces stays in the bundle
-  # unlinked (nothing reads it at run time). The caller table lands at system/etc/quire/cuad-callers.toml, a system file
-  # slipway places at /etc/quire. Its dependencies build sqlite with a vendored openssl, which needs perl and make (deps.sh has them).
+  # unlinked (nothing reads it at run time). The caller table lands at system/etc/quire/computer-use-callers.toml, a system file
+  # slipway places at /etc/bardo. Its dependencies build sqlite with a vendored openssl, which needs perl and make (deps.sh has them).
   (cd "$d" && ./scripts/install.sh --bin-dir "$(tdir)" --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
 }
 
@@ -262,8 +262,8 @@ build_detent() {
 build_files() {
   local d; d=$(repo_dir files)
   cargo_in -p files --bin files
-  # FILES_PREFIX is the installed path (the service files name it), FILES_DESTDIR the stage.
-  (cd "$d" && FILES_BIN="$(tdir)/files" FILES_PREFIX="$P" FILES_DESTDIR="$stage" ./dist/install.sh --no-build)
+  # BARDO_FILES_PREFIX is the installed path (the service files name it), BARDO_FILES_DESTDIR the stage.
+  (cd "$d" && BARDO_FILES_BIN="$(tdir)/files" BARDO_FILES_PREFIX="$P" BARDO_FILES_DESTDIR="$stage" ./dist/install.sh --no-build)
 }
 
 build_transom() {
@@ -272,17 +272,17 @@ build_transom() {
   # The portal backend (screen sharing, screenshots). Same files and places as transom's scripts/install.sh,
   # under the prefix: the program in libexec, the user unit in lib/systemd/user, the D-Bus activation file
   # and the portal file in the exported share directories (pack.sh links those under /usr). Both the unit and
-  # the activation file name /usr/libexec/transom; they must name the installed program. The routing file
-  # (quire-portals.conf) is the session's, staged by the session component.
+  # the activation file name /usr/libexec/bardo/bardo-portal; they must name the installed program. The routing file
+  # (bardo-portals.conf) is the session's, staged by the session component.
   put 755 "$(tdir)/transom" libexec/transom
-  put 644 "$d/dist/transom.service" lib/systemd/user/transom.service
-  put 644 "$d/dist/org.freedesktop.impl.portal.desktop.quire.service" \
-    share/dbus-1/services/org.freedesktop.impl.portal.desktop.quire.service
-  put 644 "$d/dist/quire.portal" share/xdg-desktop-portal/portals/quire.portal
+  put 644 "$d/dist/bardo-portal.service" lib/systemd/user/bardo-portal.service
+  put 644 "$d/dist/org.freedesktop.impl.portal.desktop.bardo.service" \
+    share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service
+  put 644 "$d/dist/bardo.portal" share/xdg-desktop-portal/portals/bardo.portal
   local f
-  for f in lib/systemd/user/transom.service share/dbus-1/services/org.freedesktop.impl.portal.desktop.quire.service; do
-    sed -i "s|/usr/libexec/transom|$P/libexec/transom|g" "$root/$f"
-    grep -q "$P/libexec/transom" "$root/$f" || die "$f: no /usr/libexec/transom to retarget"
+  for f in lib/systemd/user/bardo-portal.service share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service; do
+    sed -i "s|/usr/libexec/bardo/bardo-portal|$P/libexec/transom|g" "$root/$f"
+    grep -q "$P/libexec/transom" "$root/$f" || die "$f: no /usr/libexec/bardo/bardo-portal to retarget"
   done
 }
 
@@ -290,35 +290,35 @@ build_turnstile() {
   local d; d=$(repo_dir turnstile)
   # The root service that makes palmrest's and keycap's virtual input devices. Only the daemon is built (-p input-broker-daemon,
   # no feature: its `fake` kernel and identity are for its tests and never ship; gate/check-no-fake.sh). The program is
-  # exported to /usr/local/bin/turnstile (exports.toml), which the unit starts as shipped. The four files are system
+  # exported to /usr/local/bin/bardo-input-broker (exports.toml), which the unit starts as shipped. The four files are system
   # files (turnstile's lane named them; slipway's list has them since its input-service change): the socket and the
   # service in the vendor folder, the rule that makes /dev/uinput root-only and takes the `uaccess` tag off it, and the
   # module list. Nothing here gives the node to the person or to the `input` group.
   cargo_in -p input-broker-daemon
   put 755 "$(tdir)/turnstile" bin/turnstile
-  put_system 644 "$d/dist/turnstile.socket" /usr/lib/systemd/system/turnstile.socket
-  put_system 644 "$d/dist/turnstile.service" /usr/lib/systemd/system/turnstile.service
-  put_system 644 "$d/dist/72-turnstile.rules" /etc/udev/rules.d/72-turnstile.rules
-  put_system 644 "$d/dist/turnstile-modules.conf" /etc/modules-load.d/turnstile.conf
+  put_system 644 "$d/dist/bardo-input-broker.socket" /usr/lib/systemd/system/bardo-input-broker.socket
+  put_system 644 "$d/dist/bardo-input-broker.service" /usr/lib/systemd/system/bardo-input-broker.service
+  put_system 644 "$d/dist/72-bardo-input-broker.rules" /etc/udev/rules.d/72-bardo-input-broker.rules
+  put_system 644 "$d/dist/bardo-input-broker-modules.conf" /etc/modules-load.d/turnstile.conf
 }
 
 build_keycap() {
   local d; d=$(repo_dir keycap)
   cargo_in -p key-remap-daemon
   # INTERIM: install.sh stages under DESTDIR but at /etc and /usr/local, outside the prefix. The unit and the polkit
-  # rule are system files (slipway-apply places them); the unit goes to /usr/lib/systemd/system (the vendor folder; /etc
+  # rule are system files (bardo-updater-apply places them); the unit goes to /usr/lib/systemd/system (the vendor folder; /etc
   # stays the administrator's). On the desktop the input service (turnstile) owns /dev/uinput and hands keycap each
-  # device, so none of keycap's standalone pieces for that node ship: not its 70-keycap.rules (the `input` group may
-  # write the node), not the drop-in dist/keycap.uinput.conf (DeviceAllow=/dev/uinput), and not a module list of its own
-  # (turnstile's turnstile.conf loads uinput). The unit is staged as keycap ships it, starting /usr/local/bin/keycap, the
+  # device, so none of keycap's standalone pieces for that node ship: not its 70-bardo-key-remap.rules (the `input` group may
+  # write the node), not the drop-in dist/bardo-key-remap.uinput.conf (DeviceAllow=/dev/uinput), and not a module list of its own
+  # (turnstile's turnstile.conf loads uinput). The unit is staged as keycap ships it, starting /usr/local/bin/bardo-key-remap, the
   # link exports.toml makes to bin/keycap (turnstile's unit does the same): that is also what install/system.sh writes at
   # the default prefix, so slipway sees the same file from a release and from install.sh (it replaces a system file only
   # when it is absent, equal or its own earlier one). The desktop's Caps Lock rule travels as keycap's vendor file,
-  # /usr/lib/keycap/keycap.toml; /etc/keycap stays the administrator's, so no release writes a file there.
+  # /usr/lib/bardo/key-remap/key-remap.toml; /etc/keycap stays the administrator's, so no release writes a file there.
   put 755 "$(tdir)/keycap" bin/keycap
-  put_system 644 "$d/dist/keycap.service" /usr/lib/systemd/system/keycap.service
-  put_system 644 "$d/dist/keycap.polkit.rules" /etc/polkit-1/rules.d/keycap.polkit.rules
-  put_system 644 "$ROOT/dist/keycap.toml" /usr/lib/keycap/keycap.toml
+  put_system 644 "$d/dist/bardo-key-remap.service" /usr/lib/systemd/system/bardo-key-remap.service
+  put_system 644 "$d/dist/bardo-key-remap.polkit.rules" /etc/polkit-1/rules.d/bardo-key-remap.polkit.rules
+  put_system 644 "$ROOT/dist/keycap.toml" /usr/lib/bardo/key-remap/key-remap.toml
   put 644 "$d/dist/keycap.plasma.toml" share/keycap/keycap.plasma.toml
 }
 
@@ -327,24 +327,24 @@ build_palmrest() {
   cargo_in -p mouse-gestures-daemon
   # INTERIM: install.sh stages under DESTDIR but at /etc and /usr/local, outside the prefix. palmrest is a system service like
   # keycap (owner decision 2026-10-17): its unit is a system file in /usr/lib/systemd/system, staged as palmrest ships it,
-  # starting /usr/local/bin/palmrest, the link exports.toml makes to bin/palmrest (that is also what install/system.sh writes at
+  # starting /usr/local/bin/bardo-mouse-gestures, the link exports.toml makes to bin/palmrest (that is also what install/system.sh writes at
   # the default prefix, so slipway sees the same file from a release and from install.sh). The input service serves only a
-  # palmrest only root can change, and believes it only in /system.slice/palmrest.service. Its device rule gives the mouse's
+  # palmrest only root can change, and believes it only in /system.slice/bardo-mouse-gestures.service. Its device rule gives the mouse's
   # raw node to the `input` group and to no person; no rule for /dev/uinput and no module list (turnstile's loads uinput).
   put 755 "$(tdir)/palmrest" bin/palmrest
-  put_system 644 "$d/dist/palmrest.service" /usr/lib/systemd/system/palmrest.service
-  put_system 644 "$d/dist/70-palmrest.rules" /etc/udev/rules.d/70-palmrest.rules
-  put_system 644 "$d/dist/99-palmrest.conf" /etc/modprobe.d/99-palmrest.conf
+  put_system 644 "$d/dist/bardo-mouse-gestures.service" /usr/lib/systemd/system/bardo-mouse-gestures.service
+  put_system 644 "$d/dist/70-bardo-mouse-gestures.rules" /etc/udev/rules.d/70-bardo-mouse-gestures.rules
+  put_system 644 "$d/dist/99-bardo-mouse-gestures.conf" /etc/modprobe.d/99-bardo-mouse-gestures.conf
 }
 
 build_slipway() {
   local d; d=$(repo_dir slipway)
-  # updater-root is the crate of the three programs that run as root (slipway-apply, slipway-rollback,
-  # slipway-health); they are built here, in the same target folder, so the workflow can hand them to the smoke job.
+  # updater-root is the crate of the three programs that run as root (bardo-updater-apply, bardo-updater-rollback,
+  # bardo-updater-health); they are built here, in the same target folder, so the workflow can hand them to the smoke job.
   cargo_in -p updater-daemon -p updater-root
   # INTERIM: slipway's scripts/install.sh installs the helpers, polkit action, unit and bus file on a machine
-  # (first install, release/bootstrap.sh); the release carries only the user program. slipway-apply,
-  # slipway-rollback and slipway-health are not in the bundle: a release must not replace a binary that runs as root.
+  # (first install, release/bootstrap.sh); the release carries only the user program. bardo-updater-apply,
+  # bardo-updater-rollback and bardo-updater-health are not in the bundle: a release must not replace a binary that runs as root.
   put 755 "$(tdir)/slipway" bin/slipway
 }
 
@@ -376,13 +376,13 @@ build_satellite() {
 }
 
 # plain_units: every user unit that dist/desktop-callers.toml names (a `unit =` row, so it can be proven at `Full`) travels as a
-# system file that slipway-apply copies, as a plain root-owned file, to /usr/lib/systemd/user. A file staged in lib/systemd/user
-# is exported as a link into /opt/quire/current instead, and the unit manager's judge reads a link as writable (its mode is
+# system file that bardo-updater-apply copies, as a plain root-owned file, to /usr/lib/systemd/user. A file staged in lib/systemd/user
+# is exported as a link into /opt/bardo/current instead, and the unit manager's judge reads a link as writable (its mode is
 # 0777), so a unit laid out that way, or with a drop-in that is such a link, is refused at `Full`: the shell, the compositor,
 # the portal backend and the accounts services would not be trusted. The drop-ins of a unit staged here (the sandbox.conf
 # of each background service) are appended to the unit's own text, in file-name order, which systemd reads the same as
 # the drop-in; a drop-in of a unit staged elsewhere (the portal frontend is the distribution's) is a system file of its own, which
-# a rule of release/system-files.list must name. Other user units (mailo-watch.service, desktop-session.target) stay exported
+# a rule of release/system-files.list must name. Other user units (mailo-watch.service, bardo-session.target) stay exported
 # links. Runs in every job on whatever that job staged.
 callers_units() { awk '$1 == "unit" { gsub(/"/, "", $3); print $3 }' "$ROOT/dist/desktop-callers.toml" | sort -u; }
 plain_units() {
@@ -424,7 +424,7 @@ done
 plain_units
 
 # Nothing may land outside the prefix, and the bundle has no links.
-stray=$(cd "$stage" && find . -mindepth 1 -not -path "./opt" -not -path "./opt/quire" -not -path "./opt/quire/current*" | head -n 3)
+stray=$(cd "$stage" && find . -mindepth 1 -not -path "./opt" -not -path "./opt/quire" -not -path "./opt/bardo/current*" | head -n 3)
 [ -z "$stray" ] || die "files outside $P: $stray"
 links=$(find "$stage" -type l | head -n 3)
 [ -z "$links" ] || die "symlinks in the stage (the bundle has none): $links"

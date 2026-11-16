@@ -16,7 +16,7 @@ pub fn private_peers(connection: &Connection) -> BusPeers {
 /// caller table had matched it.
 pub fn introduce_service(peers: &BusPeers, owner: &str, role: &RoleName) {
     let standing = introduced_service(
-        "org.quire.Test",
+        "org.bardo.Test",
         &role.to_string(),
         Proof::Full,
         Pin::AtConnect,

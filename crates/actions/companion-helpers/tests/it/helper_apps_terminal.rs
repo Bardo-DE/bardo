@@ -198,7 +198,7 @@ async fn a_conversation_a_terminal_started_is_listed_and_brought_into_docket() {
     // A terminal that names its agent app and the app's own id for the conversation.
     let temor = Intents::over(InProcess::new(
         w.router.clone(),
-        caller("org.quire.Temor", CallerRole::Cli),
+        caller("org.bardo.Temor", CallerRole::Cli),
     ));
     let named = temor
         .checkpoint_watch_agent(

@@ -3,9 +3,9 @@
 
 // inferd's bus name and object live with porter's other bus names.
 pub use account_wire::names::{INFERENCE_BUS, INFERENCE_PATH};
-/// inferd's settings module (`org.quire.SettingsModule1`, declared in design/22 §9.4, not
+/// inferd's settings module (`org.bardo.SettingsModule1`, declared in design/22 §9.4, not
 /// here): the picker rows per kind and the `ai.model.<kind>.<tier>` map.
-pub const INFERENCE_SETTINGS_PATH: &str = "/org/quire/Inference1/settings";
+pub const INFERENCE_SETTINGS_PATH: &str = "/org/bardo/Inference1/settings";
 /// The reserved key of the W3C trace context in an `options` vardict (`Inference1.Open`,
 /// `Prepare`, `Availability`, and the same dictionary on the companion and intents interfaces).
 /// The value is a version 00 `traceparent` string (`inference_core::Traceparent`); a daemon that
@@ -55,12 +55,12 @@ pub const COMPUTER_KEY_PORT: &str = "port";
 /// See [`COMPUTER_KEY_SOCKET`].
 pub const COMPUTER_KEY_KEY: &str = "key";
 /// The prefix of the errors `AddComputer`, `RemoveComputer`, `AddTailnetComputer`, `AnswerGuest`
-/// and `ForgetGuest` answer with: `org.quire.Inference1.Error.Computer.<Name>`, the name one of
+/// and `ForgetGuest` answer with: `org.bardo.Inference1.Error.Computer.<Name>`, the name one of
 /// `BadName`, `NoModels`, `TooMany`, `AlreadyThere`, `UnknownModel`, `ModelNotUsable`,
 /// `ModelTaken`, `BadAddress`, `BadKey`, `NotSaved`, `NotThere`, `AddedByHand`, `Unavailable`,
 /// and, since `AddTailnetComputer` and the guests: `NotOnTailscale`, `NotAnswering`,
 /// `NotAsking`, `TooManyAsking`. The reply's text is a plain sentence for the person.
-pub const COMPUTER_ERROR_PREFIX: &str = "org.quire.Inference1.Error.Computer.";
+pub const COMPUTER_ERROR_PREFIX: &str = "org.bardo.Inference1.Error.Computer.";
 /// The keys of a row of `Inference1.Candidates` (`a(sa{sv})`: the computer's Tailscale node id,
 /// then these). `name` is the name people call the computer by (`s`); `models` lists the models
 /// it lends, as `a(ss)` of model id and display name; `needs_approval` says whether the person

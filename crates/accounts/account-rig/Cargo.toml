@@ -1,6 +1,6 @@
 [package]
 name = "account-rig"
-description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives porter with. porter-rig-servers starts account-fake-servers' fakes on loopback and plants known secrets, porter-rig-client acts as an app over the session bus, porter-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives porter with. account-rig-servers starts account-fake-servers' fakes on loopback and plants known secrets, account-rig-client acts as an app over the session bus, account-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -9,16 +9,16 @@ repository = "https://github.com/Bardo-DE/porter"
 publish = false
 
 [[bin]]
-name = "porter-rig-servers"
-path = "src/bin/porter-rig-servers.rs"
+name = "account-rig-servers"
+path = "src/bin/account-rig-servers.rs"
 
 [[bin]]
-name = "porter-rig-client"
-path = "src/bin/porter-rig-client.rs"
+name = "account-rig-client"
+path = "src/bin/account-rig-client.rs"
 
 [[bin]]
-name = "porter-rig-secrets"
-path = "src/bin/porter-rig-secrets.rs"
+name = "account-rig-secrets"
+path = "src/bin/account-rig-secrets.rs"
 
 [dependencies]
 base-testkit = {path = "../../base/base-testkit"}

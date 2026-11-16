@@ -12,11 +12,11 @@
 # it cannot be told otherwise, so a new boot id is bound over /proc/sys/kernel/random/boot_id for each restart (this
 # needs root and the right to mount, which `docker run --privileged` has). `pkexec` is a stand-in that runs the program
 # it is given, because the container is already root and has no polkit agent. Everything else is real: the signed
-# releases (a throwaway key, the repo's own pack.sh), slipway-apply, slipway-health, and `slipway`, as the session runs them.
+# releases (a throwaway key, the repo's own pack.sh), bardo-updater-apply, bardo-updater-health, and `slipway`, as the session runs them.
 #
 #   release/health-scenarios.sh --helpers DIR --policy FILE --really
 #
-#   --helpers DIR  the built slipway, slipway-apply, slipway-rollback and slipway-health
+#   --helpers DIR  the built slipway, bardo-updater-apply, bardo-updater-rollback and bardo-updater-health
 #   --policy FILE  slipway's polkit file (installed, then checked, as release/smoke.sh does)
 #   --really       yes, this machine may be changed (/etc/slipway, /usr/libexec, /opt, a mount over /proc)
 #
@@ -44,7 +44,7 @@ done
 for tool in python3 zstd minisign mount umount; do
   command -v "$tool" >/dev/null || { echo "health-scenarios.sh: $tool is not installed ($(install_hint "$tool"))" >&2; exit 2; }
 done
-for program in slipway slipway-apply slipway-rollback slipway-health; do
+for program in slipway bardo-updater-apply bardo-updater-rollback bardo-updater-health; do
   [ -x "$helpers/$program" ] || { echo "health-scenarios.sh: $helpers/$program is not there" >&2; exit 2; }
 done
 
@@ -60,12 +60,12 @@ fail=0
 check() { echo "FAIL health scenarios: $*" >&2; fail=1; }
 
 # --- the machine: slipway's own install, a key, three signed releases, a fake pkexec, a boot id we control ---------
-for program in slipway-apply slipway-rollback slipway-health; do install -Dm755 "$helpers/$program" "/usr/libexec/$program"; done
-install -Dm644 "$policy" /usr/share/polkit-1/actions/org.quire.slipway.policy
+for program in bardo-updater-apply bardo-updater-rollback bardo-updater-health; do install -Dm755 "$helpers/$program" "/usr/libexec/$program"; done
+install -Dm644 "$policy" /usr/share/polkit-1/actions/org.bardo.updater.policy
 "$HERE/check-helpers.sh" >/dev/null
 
 minisign -G -W -p "$tmp/key.pub" -s "$tmp/key.sec" >/dev/null
-install -Dm644 "$tmp/key.pub" /usr/share/slipway/release.pub
+install -Dm644 "$tmp/key.pub" /usr/share/bardo/updater/release.pub
 : >"$tmp/exports.toml"
 printf 'A release made for a scenario.\n' >"$tmp/notes.txt"
 for version in 1.0.0 2.0.0 3.0.0; do
@@ -106,9 +106,9 @@ fresh_machine() {
   rm -rf -- "$root" "$tmp/home"
   mkdir -p "$tmp/home"
   install -d -m 755 /etc/slipway
-  printf 'root = "%s"\npubkey_path = "/usr/share/slipway/release.pub"\n' "$root" >/etc/slipway/config.toml
-  /usr/libexec/slipway-apply "$tmp/release-1.0.0" >/dev/null
-  /usr/libexec/slipway-apply "$tmp/release-2.0.0" >/dev/null
+  printf 'root = "%s"\npubkey_path = "/usr/share/bardo/updater/release.pub"\n' "$root" >/etc/bardo/updater.toml
+  /usr/libexec/bardo/bardo-updater-apply "$tmp/release-1.0.0" >/dev/null
+  /usr/libexec/bardo/bardo-updater-apply "$tmp/release-2.0.0" >/dev/null
 }
 installed() { basename "$(readlink -f "$root/current")"; }
 expect_installed() { # VERSION WHEN
@@ -153,7 +153,7 @@ failed_starts_restore() {
   done
   expect_installed 1.0.0 "after the restarts that followed"
   # A newer release then starts its own count.
-  /usr/libexec/slipway-apply "$tmp/release-3.0.0" >/dev/null
+  /usr/libexec/bardo/bardo-updater-apply "$tmp/release-3.0.0" >/dev/null
   restart_computer
   expect 0 "the first restart on 3.0.0" recover
   expect_installed 3.0.0 "after the first restart on 3.0.0"

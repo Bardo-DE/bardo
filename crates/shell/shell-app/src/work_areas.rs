@@ -1,7 +1,7 @@
 //! Each output's work area, worked out from what the shell has spawned: the output less the
 //! exclusive zones of its bar and dock (the same layer configurations the surfaces are spawned
 //! with, so the numbers cannot drift from what the compositor reserves), and published to the
-//! work-areas service for `org.quire.Outputs1`.
+//! work-areas service for `org.bardo.Outputs1`.
 
 use layer_shell_host::{Anchor, ExclusiveZone, LayerConfig, OutputInfo, Rect as HostRect};
 use shell_bar::Bar;

@@ -8,7 +8,7 @@ use ui_settings::schema::Page;
 /// `spaces.*`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "spaces", page = Page::Spaces)]
+#[settings(file = "compositor/settings.toml", domain = "spaces", page = Page::Spaces)]
 pub struct SpacesSection {
     /// `spaces.per_display`. Held but not yet a behaviour (every display has its own Spaces), so
     /// the Settings app draws no row for it.

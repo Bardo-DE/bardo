@@ -138,8 +138,8 @@ fn problems_the_daemon_reports_are_passed_on_without_repeating_the_refusals() {
 #[test]
 fn the_machine_source_reads_its_paths_from_the_environment() {
     let pairs = [
-        ("KEYCAP_CONFIG_DIR", "/tmp/cfg"),
-        ("KEYCAP_SOCKET", "/tmp/k.sock"),
+        ("BARDO_KEY_REMAP_CONFIG_DIR", "/tmp/cfg"),
+        ("BARDO_KEY_REMAP_SOCKET", "/tmp/k.sock"),
         ("XDG_CONFIG_HOME", "/tmp/xdg"),
         ("HOME", "/home/me"),
     ];
@@ -252,7 +252,7 @@ fn registered_actions_are_listed_and_end_with_their_registration() {
 #[test]
 fn registering_with_an_absent_daemon_says_so() {
     let app = keymap::AppId::new("mail").expect("app");
-    let absent = KeycapSource::new("/nonexistent/keycap.sock", "/nonexistent/keymap", "");
+    let absent = KeycapSource::new("/nonexistent/key-remap.sock", "/nonexistent/keymap", "");
     assert!(matches!(
         absent.register(&app, &[]),
         Err(crate::ClientError::Connect { .. })

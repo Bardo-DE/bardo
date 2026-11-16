@@ -1,7 +1,7 @@
 # Exports beyond the ones pack.sh derives from the staged tree (everything under share/wayland-sessions,
 # share/xdg-desktop-portal, share/dbus-1/services, lib/systemd/user, share/applications and
 # share/polkit-1/actions maps to the same path under /usr). A link may only go under one of those
-# directories or /usr/local/bin; the target is a path relative to /opt/quire/current and must be in the bundle.
+# directories or /usr/local/bin; the target is a path relative to /opt/bardo/current and must be in the bundle.
 # Commands a person or a unit starts by name.
 
 [[export]]
@@ -9,32 +9,32 @@ link = "/usr/local/bin/casement"
 target = "bin/casement"
 
 [[export]]
-link = "/usr/local/bin/casementctl"
-target = "bin/casementctl"
+link = "/usr/local/bin/bardo-compositorctl"
+target = "bin/bardo-compositorctl"
 
 [[export]]
-link = "/usr/local/bin/sill"
+link = "/usr/local/bin/bardo-shell"
 target = "bin/sill"
 
 [[export]]
-link = "/usr/local/bin/desktop-session"
-target = "bin/desktop-session"
+link = "/usr/local/bin/bardo-session"
+target = "bin/bardo-session"
 
 [[export]]
 link = "/usr/local/bin/detent"
 target = "bin/detent"
 
 [[export]]
-link = "/usr/local/bin/keycap"
+link = "/usr/local/bin/bardo-key-remap"
 target = "bin/keycap"
 
-# The input service's unit starts this link (turnstile.service: ExecStart=/usr/local/bin/turnstile).
+# The input service's unit starts this link (bardo-input-broker.service: ExecStart=/usr/local/bin/bardo-input-broker).
 [[export]]
-link = "/usr/local/bin/turnstile"
+link = "/usr/local/bin/bardo-input-broker"
 target = "bin/turnstile"
 
 [[export]]
-link = "/usr/local/bin/palmrest"
+link = "/usr/local/bin/bardo-mouse-gestures"
 target = "bin/palmrest"
 
 [[export]]
@@ -50,7 +50,7 @@ link = "/usr/local/bin/files"
 target = "bin/files"
 
 [[export]]
-link = "/usr/local/bin/slipway"
+link = "/usr/local/bin/bardo-updater"
 target = "bin/slipway"
 
 [[export]]

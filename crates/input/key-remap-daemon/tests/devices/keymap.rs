@@ -28,7 +28,7 @@ fn counter() -> (Arc<AtomicUsize>, ChangeCallback) {
 }
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
     let scene = Scene::new("keymap-file");
     let config = scene.dir().join("config");
@@ -71,7 +71,7 @@ fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
 }
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn registrations_are_listed_and_end_when_the_app_lets_go() {
     let scene = Scene::new("keymap-register");
     let daemon = scene.daemon();

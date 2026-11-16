@@ -1,4 +1,4 @@
-//! A window's `quire_window_v1`, made through `adopt` and `attach` against a fake compositor: what
+//! A window's `bardo_window_v1`, made through `adopt` and `attach` against a fake compositor: what
 //! it receives is `set_frame(compositor_shadow, the window radius token)`, and a compositor
 //! without the global is told nothing and nothing fails.
 

@@ -4,7 +4,7 @@
 //! [`AudioSource`] and pushes [`TranscriptEvent`]s into a [`TranscriptSink`]; [`TextToSpeech`]
 //! pushes [`AudioChunk`]s into an [`AudioSink`]. Cancellation is dropping the future, as in
 //! `model-provider`. [`VoiceActivity`] is synchronous: CPU only, one 32 ms frame at a time.
-//! `host_wire` is the framed JSON between inferd and the `speech-host` engine process.
+//! `host_wire` is the framed JSON between inferd and the `bardo-speech-host` engine process.
 //!
 //! What a person said, what a model heard and every sample are personal: `PcmBytes`, `HeardText`
 //! and `SpokenText` write `Debug` by hand and print a length, never the content.

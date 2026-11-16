@@ -50,7 +50,7 @@ fn spawn(bus: &PrivateBus, home: &Path, proc_root: Option<&Path>) -> Daemon {
         .stdout(Stdio::null())
         .stderr(std::fs::File::create(&stderr).expect("stderr file"));
     if let Some(root) = proc_root {
-        command.env("SYNCD_PROC_ROOT", root);
+        command.env("BARDO_SYNCD_PROC_ROOT", root);
     }
     Daemon {
         child: command.spawn().expect("syncd starts"),
@@ -146,7 +146,7 @@ async fn accountd_saying_an_account_is_gone_does_not_wipe_syncds_copy() {
         .emit_signal(
             None::<zbus::names::BusName<'_>>,
             account_wire::names::ACCOUNTS_PATH,
-            "org.quire.Accounts1.Manager",
+            "org.bardo.Accounts1.Manager",
             "AccountRemoved",
             &(path,),
         )

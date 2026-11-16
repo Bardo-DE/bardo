@@ -1,7 +1,7 @@
-//! The Quire arm over desktop-client's fake: a scripted `quire_desktop_v1` session becomes the
+//! The Quire arm over desktop-client's fake: a scripted `bardo_desktop_v1` session becomes the
 //! shell's view (apps, windows, Spaces, what is active), the shell's commands become Quire
 //! requests, the shell protocol's events become notes, and the handed connection comes from a
-//! stand-in `org.quire.Compositor1` on a private bus (never the person's session bus).
+//! stand-in `org.bardo.Compositor1` on a private bus (never the person's session bus).
 
 use std::collections::BTreeSet;
 use std::io::{Read, Write};
@@ -799,14 +799,14 @@ async fn a_fake_handout_gives_its_socket_once() {
     assert!(matches!(again, Err(HandoutError::Nothing)));
 }
 
-/// `org.quire.Compositor1` as far as the shell uses it: each `Connect` records its role and
+/// `org.bardo.Compositor1` as far as the shell uses it: each `Connect` records its role and
 /// hands over one end of a socket pair, keeping the other.
 struct Compositor {
     roles: Arc<Mutex<Vec<String>>>,
     kept: Arc<Mutex<Vec<UnixStream>>>,
 }
 
-#[zbus::interface(name = "org.quire.Compositor1")]
+#[zbus::interface(name = "org.bardo.Compositor1")]
 impl Compositor {
     fn connect(&self, role: &str) -> zbus::fdo::Result<zbus::zvariant::OwnedFd> {
         let (handed, ours) =
@@ -837,14 +837,14 @@ async fn the_compositor_on_the_bus_hands_the_shell_a_connected_socket() {
     let _compositor = zbus::connection::Builder::address(bus.address.as_str())
         .unwrap_or_else(|e| panic!("{e}"))
         .serve_at(
-            "/org/quire/Compositor1",
+            "/org/bardo/Compositor1",
             Compositor {
                 roles: Arc::clone(&roles),
                 kept: Arc::clone(&kept),
             },
         )
         .unwrap_or_else(|e| panic!("{e}"))
-        .name("org.quire.Compositor1")
+        .name("org.bardo.Compositor1")
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await

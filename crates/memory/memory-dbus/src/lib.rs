@@ -1,9 +1,9 @@
-//! almanac's D-Bus API, the caller's half (memory.md section 3.10): `org.quire.Memory1` at
-//! `/org/quire/Memory1` as three interfaces (`Record`, `Recall`, `Control`) with a zbus proxy
+//! almanac's D-Bus API, the caller's half (memory.md section 3.10): `org.bardo.Memory1` at
+//! `/org/bardo/Memory1` as three interfaces (`Record`, `Recall`, `Control`) with a zbus proxy
 //! each, the argument codec between `memory-core` requests and the member arguments, `invoke`
 //! (a call over a connection) and the typed errors. Bodies are the serde JSON of `memory-core`
 //! types in `s` arguments. The daemon's half (skeletons, served objects, signals, the
-//! introspection checked against `dbus/org.quire.Memory1.xml`) is `memory-dbus-serve`.
+//! introspection checked against `dbus/org.bardo.Memory1.xml`) is `memory-dbus-serve`.
 
 mod codec;
 mod control;

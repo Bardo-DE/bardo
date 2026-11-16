@@ -11,7 +11,7 @@ use action_wire::{CallerId, IntentsReply, IntentsRequest, WireRefusal};
 use provenance::{EntityKey, EntityKind, Integrity, SpaceScope, UnixSeconds};
 
 fn mail_caller() -> CallerId {
-    caller("org.quire.Mail", CallerRole::App)
+    caller("org.bardo.Mail", CallerRole::App)
 }
 
 fn entry(kind: &str, key: &str, title: &str) -> IndexEntry {
@@ -210,7 +210,7 @@ async fn a_search_answers_from_the_index_and_asks_no_app() {
     router
         .seams
         .link
-        .answer_from(&app("org.quire.Files"), Answering::Stopped);
+        .answer_from(&app("org.bardo.Files"), Answering::Stopped);
     push(&router, 1, vec![entry("mail.thread", "t1", "Invoice")]).await;
     assert_eq!(found(&router, "invoice").await, ["t1"]);
     assert!(found(&router, "zzz").await.is_empty());
@@ -224,7 +224,7 @@ async fn a_search_answers_from_the_index_and_asks_no_app() {
 async fn a_preview_of_an_app_that_is_not_running_is_refused() {
     use action_fake::Answering;
     let router = router();
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     router.seams.link.answer_from(&files, Answering::Stopped);
     let file = provenance::EntityId {
         app: files,
@@ -309,7 +309,7 @@ async fn shipped_entries_survive_a_reset_and_a_pushed_one_wins_the_same_key() {
 #[tokio::test]
 async fn shipped_entries_of_a_kind_that_is_not_indexed_are_dropped() {
     let router = router();
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     router.ship_index(&files, vec![entry("files.file", "f1", "Lisbon receipts")]);
     router.ship_index(
         &app("com.evil.Tool"),

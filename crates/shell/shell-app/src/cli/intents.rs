@@ -12,7 +12,7 @@ pub enum IntentsAction {
     /// Whether sill serves intentd's sheet, what waits on it, and what the terminal may do
     /// without asking.
     Status,
-    /// Withdraw one standing terminal grant: `sill intents revoke org.quire.Shell:shell.dock.pin`.
+    /// Withdraw one standing terminal grant: `sill intents revoke org.bardo.Shell:shell.dock.pin`.
     Revoke {
         #[arg(value_name = "APP:ACTION", value_parser = parse_grant)]
         grant: ActionRef,

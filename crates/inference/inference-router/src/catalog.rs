@@ -31,7 +31,7 @@ use std::path::{Path, PathBuf};
 /// Where the catalog files live.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CatalogDirs {
-    /// `/usr/share/stoker/catalog`.
+    /// `/usr/share/bardo/models/catalog`.
     pub system: PathBuf,
     /// `$XDG_DATA_HOME/stoker/catalog`; a file here replaces the system file of the same id.
     pub user: PathBuf,

@@ -11,15 +11,15 @@ rust-version = "1.92"
 repository = "https://github.com/Bardo-DE/slipway"
 publish = false
 [[bin]]
-name = "slipway-apply"
+name = "bardo-updater-apply"
 path = "src/bin/slipway_apply.rs"
 
 [[bin]]
-name = "slipway-rollback"
+name = "bardo-updater-rollback"
 path = "src/bin/slipway_rollback.rs"
 
 [[bin]]
-name = "slipway-health"
+name = "bardo-updater-health"
 path = "src/bin/slipway_health.rs"
 
 [dependencies]

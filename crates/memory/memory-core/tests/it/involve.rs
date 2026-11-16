@@ -6,8 +6,8 @@ use memory_core::*;
 #[test]
 fn an_event_involves_its_things_owners_and_its_acting_app_but_not_a_terminal() {
     let body = archived_body();
-    let mail = app("org.quire.Mail");
-    let other = app("org.quire.Other");
+    let mail = app("org.bardo.Mail");
+    let other = app("org.bardo.Other");
     assert!(body.involves_app(&companion(), &mail));
     assert!(!body.involves_app(&companion(), &other));
     assert!(body.involves_app(&Actor::App { app: other.clone() }, &other));

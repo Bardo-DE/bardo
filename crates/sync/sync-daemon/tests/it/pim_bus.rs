@@ -345,7 +345,7 @@ async fn rig(with_grants: bool) -> Rig {
 }
 
 fn settings_caller() -> Caller {
-    caller_of("org.quire.Settings", CallerRole::Settings)
+    caller_of("org.bardo.Settings", CallerRole::Settings)
 }
 
 fn names(rig: &Rig) -> Vec<String> {

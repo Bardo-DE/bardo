@@ -38,7 +38,7 @@ impl FakeDesktop {
     }
 
     /// A fake whose compositor offers `protocols`, for a client configured with `config`
-    /// (`DesktopConfig::holding_shell()` binds `quire_shell_v1`).
+    /// (`DesktopConfig::holding_shell()` binds `bardo_shell_v1`).
     ///
     /// ```
     /// use desktop_client::fake::FakeDesktop;

@@ -50,7 +50,7 @@ pub const MAX_PENDING_PER_USER: usize = 2;
 /// Connections being identified at once in all: each is a thread beyond the 24 that can hold a slot,
 /// so this is what is left of the unit's thread limit after the accept loop and those 24.
 pub const MAX_PENDING_IDENTIFICATIONS: usize = 6;
-/// Threads the unit allows, `TasksMax=` in `dist/turnstile.service`: keep the two in step.
+/// Threads the unit allows, `TasksMax=` in `dist/bardo-input-broker.service`: keep the two in step.
 pub const SERVICE_TASKS_MAX: usize = 32;
 
 // The accept loop, every slot (strangers and both reserves) and every pending identification each

@@ -1,4 +1,4 @@
-//! Space pictures for the shell's Spaces bar (`quire_shell_v1.get_space_capture_source`): the
+//! Space pictures for the shell's Spaces bar (`bardo_shell_v1.get_space_capture_source`): the
 //! sources and sessions of the ext-image-copy-capture objects that show one Space of an output
 //! as a small picture, and the damage gate that holds a frame request until something in the
 //! Space changed.

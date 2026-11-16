@@ -1,5 +1,5 @@
 //! The router's sheets for an editor's session go to the editor, over the bus: intentd hands them
-//! to the `docket-acp` process (which serves `Confirm1` under its own name), and the editor sees
+//! to the `bardo-agent-acp` process (which serves `Confirm1` under its own name), and the editor sees
 //! them as ACP permission requests. The desktop's sheet (sill) is never asked for these.
 
 use crate::acp::{editor_of, permissions, prompt, session, sheet_titles, titles};

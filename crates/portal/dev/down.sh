@@ -11,7 +11,7 @@ source "$root/dev/lib/jail.sh"
 require_jail
 # shellcheck source=dev/lib/chain.sh
 source "$root/dev/lib/chain.sh"
-TRANSOM_STATE=$(dirname "${1:?usage: dev/down.sh ENV_FILE}")
-export TRANSOM_STATE
+BARDO_PORTAL_STATE=$(dirname "${1:?usage: dev/down.sh ENV_FILE}")
+export BARDO_PORTAL_STATE
 stop_chain
 echo "the portal chain is down"

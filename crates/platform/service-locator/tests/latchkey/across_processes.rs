@@ -18,7 +18,7 @@ use std::time::{Duration, Instant};
 fn the_example() -> std::path::PathBuf {
     let built = std::env::var_os("NEXTEST_BIN_EXE_latchkey-test-agent")
         .map(std::path::PathBuf::from)
-        .unwrap_or_else(|| env!("CARGO_BIN_EXE_latchkey-test-agent").into());
+        .unwrap_or_else(|| env!("CARGO_BIN_EXE_service-locator-test-agent").into());
     assert!(built.exists(), "{} is missing", built.display());
     built
 }
@@ -48,8 +48,8 @@ fn stop(agent: &service_locator::Agent) {
 fn demo(world: &World, command: &str) -> Command {
     let mut it = Command::new(the_example());
     it.arg(command)
-        .env("LATCHKEY_DEMO_DIR", world.path())
-        .env("LATCHKEY_DEMO_NAME", &world.name)
+        .env("BARDO_SERVICE_LOCATOR_DEMO_DIR", world.path())
+        .env("BARDO_SERVICE_LOCATOR_DEMO_NAME", &world.name)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
     it

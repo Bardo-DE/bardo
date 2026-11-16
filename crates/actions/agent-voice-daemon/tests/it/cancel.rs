@@ -16,7 +16,7 @@ const ALLOWED: [CancelCause; 4] = [
 
 fn is_malformed(error: &zbus::Error) -> bool {
     matches!(error, zbus::Error::MethodError(name, _, _)
-        if name.as_str() == "org.quire.Voice1.Error.Malformed")
+        if name.as_str() == "org.bardo.Voice1.Error.Malformed")
 }
 
 #[tokio::test]

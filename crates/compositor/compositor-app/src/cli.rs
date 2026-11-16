@@ -48,7 +48,7 @@ pub struct StartConfig {
     /// Normal, or the crash guard's safe mode.
     pub mode: StartMode,
     /// Where the settings document lives: the directory that stands in for `$XDG_CONFIG_HOME`
-    /// (the file is `DIR/casement/settings.toml`), or none for the real `$XDG_CONFIG_HOME` (read
+    /// (the file is `DIR/compositor/settings.toml`), or none for the real `$XDG_CONFIG_HOME` (read
     /// where the binary starts, which the parser must not do).
     pub config_home: Option<PathBuf>,
     /// Where Space-id entropy comes from.
@@ -56,7 +56,7 @@ pub struct StartConfig {
     /// Where state files (the Spaces file) live: `Some` when `--state-home DIR` named one, else
     /// none and `main` resolves it from the backend and the environment.
     pub state_home: Option<StateDirs>,
-    /// Where the administrator's files are looked for (`--system-dir`; `/etc/quire` unless a
+    /// Where the administrator's files are looked for (`--system-dir`; `/etc/bardo` unless a
     /// jailed run or a test names its own).
     pub system_dir: SystemDir,
     /// How X11 clients are served (A5).
@@ -117,7 +117,7 @@ impl DirectTty {
 pub enum ClockChoice {
     /// The monotonic wall clock.
     Wall,
-    /// A virtual clock stepped by `casementctl debug clock` (the jailed binary's tests).
+    /// A virtual clock stepped by `bardo-compositorctl debug clock` (the jailed binary's tests).
     Stepped,
     /// A virtual clock the test kit's `Fixture` advances (never on the command line).
     Virtual,
@@ -164,7 +164,7 @@ impl Entropy {
 pub enum Command {
     /// Run the compositor.
     Run(Box<StartConfig>),
-    /// Write the settings schema (`casement.settings.toml`) into this directory and exit
+    /// Write the settings schema (`compositor.settings.toml`) into this directory and exit
     /// (detent reads it).
     WriteSchema(PathBuf),
     /// Print the usage and exit.
@@ -367,7 +367,7 @@ pub const USAGE: &str = concat!(
     "[--xwayland-satellite PATH]\n",
     "       casement --write-schema DIR\n",
     "\n",
-    "The administrator's privacy settings are read from /etc/quire; --system-dir DIR reads them\n",
+    "The administrator's privacy settings are read from /etc/bardo; --system-dir DIR reads them\n",
     "from DIR instead (privacy.toml and privacy.d/), for a jailed run or a test.\n",
     "\n",
     "Without --xwayland, older X11 apps follow xwayland.mode in settings.toml (auto, satellite\n",

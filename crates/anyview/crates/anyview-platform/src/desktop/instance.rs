@@ -1,4 +1,4 @@
-//! Single instance over the session bus: the first viewer owns `org.quire.Anyview1`, and a
+//! Single instance over the session bus: the first viewer owns `org.bardo.Anyview1`, and a
 //! later launch calls `Open`, `Peek`, `Play` or `Handoff` on it. The `.service` file in `dist/` lets the
 //! bus start the viewer when someone calls the name while none runs.
 
@@ -13,8 +13,8 @@ use std::sync::mpsc::{Sender, channel};
 use zbus::{fdo, interface};
 
 /// The well-known name the viewer owns.
-pub const BUS_NAME: &str = "org.quire.Anyview1";
-const OBJECT_PATH: &str = "/org/quire/Anyview1";
+pub const BUS_NAME: &str = "org.bardo.Anyview1";
+const OBJECT_PATH: &str = "/org/bardo/Anyview1";
 
 /// [`Instance`] on the session bus.
 #[derive(Debug, Clone)]
@@ -33,8 +33,8 @@ impl DbusInstance {
     }
 
     /// The same, finding docket's router in the fixture tree `root` instead of the system's
-    /// `/proc`: `<root>/<pid>/cgroup` names a process's unit and `<root>/units/intentd.service`
-    /// holds the router's pid. How a test on a private bus stands in for `intentd.service`; docket
+    /// `/proc`: `<root>/<pid>/cgroup` names a process's unit and `<root>/units/bardo-actiond.service`
+    /// holds the router's pid. How a test on a private bus stands in for `bardo-actiond.service`; docket
     /// reads the tree only in a build with action-dbus's `fixture-callers` (a test build's), and
     /// any other build answers nobody, so a shipped viewer cannot be pointed at a fake `/proc`.
     pub fn with_proc_root(self, root: PathBuf) -> Self {
@@ -171,7 +171,7 @@ impl Service {
     }
 }
 
-#[interface(name = "org.quire.Anyview1")]
+#[interface(name = "org.bardo.Anyview1")]
 impl Service {
     /// Open files in the window; an empty list shows the window.
     fn open(&self, files: Vec<String>) -> fdo::Result<()> {

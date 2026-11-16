@@ -1,9 +1,9 @@
-//! `quire_shell_v1` dispatch: the shell's system events.
+//! `bardo_shell_v1` dispatch: the shell's system events.
 
 use wayland_client::protocol::wl_surface::WlSurface;
 use wayland_client::{Connection, Dispatch, QueueHandle};
 
-use desktop_protocols::client::quire_shell_v1::quire_shell_v1::{self, QuireShellV1};
+use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::{self, BardoShellV1};
 use desktop_protocols::vocab::{AskId, HeldMods, TrialId, WindowEntries};
 
 use super::wire::{Wire, raw, vocab};
@@ -22,8 +22,8 @@ fn key_of(wire: &Wire, surface: &WlSurface) -> Option<SurfaceKey> {
 }
 
 /// The state-event for a shell event; `None` for a code the vocab does not know.
-fn translate(wire: &Wire, event: quire_shell_v1::Event) -> Option<ShellEvent> {
-    use quire_shell_v1::Event;
+fn translate(wire: &Wire, event: bardo_shell_v1::Event) -> Option<ShellEvent> {
+    use bardo_shell_v1::Event;
     Some(match event {
         Event::Modifiers { surface, mods } => ShellEvent::Modifiers {
             surface: key_of(wire, &surface),
@@ -157,17 +157,17 @@ fn translate(wire: &Wire, event: quire_shell_v1::Event) -> Option<ShellEvent> {
 }
 
 /// A shell event, reduced like any other.
-pub(super) fn on_shell(wire: &mut Wire, event: quire_shell_v1::Event) {
+pub(super) fn on_shell(wire: &mut Wire, event: bardo_shell_v1::Event) {
     if let Some(event) = translate(wire, event) {
         wire.emit(DesktopEvent::Shell(event));
     }
 }
 
-impl Dispatch<QuireShellV1, ()> for Wire {
+impl Dispatch<BardoShellV1, ()> for Wire {
     fn event(
         state: &mut Self,
-        _proxy: &QuireShellV1,
-        event: quire_shell_v1::Event,
+        _proxy: &BardoShellV1,
+        event: bardo_shell_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<Self>,

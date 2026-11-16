@@ -5,7 +5,7 @@ runs: it plays the eval corpora and the acceptance flows through the real code w
 inferd, on a private bus that cannot reach the owner's desktop, and writes a transcript of everything a
 model was sent and said. A failure seen live becomes a deterministic gate test.
 
-Everything below is `docket-live` (the crate `crates/docket-live`; the world it runs in is `action-accept`'s), started by
+Everything below is `agent-live` (the crate `crates/agent-live`; the world it runs in is `action-accept`'s), started by
 two scripts. The gate runs the same code with `--engine scripted` (a cassette): no network, no model.
 
 | Script | What it runs |
@@ -30,7 +30,7 @@ Both scripts take `--engine`:
 
 ## Isolation
 
-- The scripts start `docket-live` under `env -i` with a scratch `HOME` and `XDG_*` and no
+- The scripts start `agent-live` under `env -i` with a scratch `HOME` and `XDG_*` and no
   `DBUS_SESSION_BUS_ADDRESS`. It starts its own `dbus-daemon`; every daemon is started with
   `env_clear`, the scratch directories and that bus (session and system address alike). Nothing reads or
   writes `~/.config`, `~/.local`, the real bus, the real mail or memory.
@@ -39,14 +39,14 @@ Both scripts take `--engine`:
 - The network is reached only by inferd, only with `--engine cloud`. inferd's `[ai]` rows in your config
   say which classes may leave the machine; the harness adds nothing.
 - The key never passes through the scripts: not an environment variable, not a file they read. See Cloud.
-- The daemons' **model tap** (`DOCKET_MODEL_TRACE`, `action-trace`) writes prompts to disk.
+- The daemons' **model tap** (`BARDO_ACTIONS_MODEL_TRACE`, `action-trace`) writes prompts to disk.
   It is on only in a harness world (the harness's `accept-*` mains read the variable and pass the tap in; no packaged daemon reads it), and the file is `<scratch>/model.jsonl`, mode 0600, under the
   scratch root the run keeps (`<scratch>/out/scratch/world-*`). Delete the scratch directory when you
   are done with it.
 
 ## What is real in each script
 
-`eval-release.sh` plays the router in the `docket-live` process: `Router` over action-fake's providers
+`eval-release.sh` plays the router in the `agent-live` process: `Router` over action-fake's providers
 (mail, files) with intentd's `InferdWriter` and action-review's `InferReviewer` asking inferd over the
 private bus, and the system clock (so review deadlines are real). The scripted planner steps of a case
 mint handles in the router's session state, which the bus cannot do, so the cases do not go through
@@ -74,7 +74,7 @@ scripts/eval-release.sh --engine local --inferd-config dev/live/inferd.local.tom
 scripts/eval-release.sh --engine local --inferd-config dev/live/inferd.local.toml --case injection-mail-body-send
 ```
 
-Options of `eval-release.sh` (all passed to `docket-live corpus`): `--label NAME` (default
+Options of `eval-release.sh` (all passed to `agent-live corpus`): `--label NAME` (default
 `<utc date>-<engine>`; the report is `eval/reports/<label>.md`), `--corpus NAME` (injection, overeager,
 exfiltration, adaptive-judge, benign; repeatable), `--case ID` (repeatable), `--timeout-ms N` (one bound
 for every review stage; default is the shipped 300/3000/3000 ms for `scripted` and 30000 for live
@@ -104,9 +104,9 @@ The catalogue has two local text models with tools, `qwen3-4b-instruct-2507-fp8`
 qwen and best on granite, so the second opinion is a different family. They cannot be resident together
 on 16 GB: inferd evicts one for the other, so a run pays a model swap whenever the stage changes family.
 
-**Catalogue.** inferd reads `$XDG_DATA_HOME/stoker/catalog` and `/usr/share/stoker/catalog`; in a harness
+**Catalogue.** inferd reads `$XDG_DATA_HOME/stoker/catalog` and `/usr/share/bardo/models/catalog`; in a harness
 world the first is scratch and the second may be absent, so a run would find no models. `--catalog DIR`
-(both scripts and `docket-live`; default the sibling stoker checkout's `catalog/`, `../stoker/catalog`
+(both scripts and `agent-live`; default the sibling stoker checkout's `catalog/`, `../stoker/catalog`
 made absolute) names a directory whose `*.toml` files are copied into `<scratch>/data/stoker/catalog`
 before inferd starts. They are copied, never linked, so nothing in the real tree can be written through
 the world. The report header, `index.txt` and each smoke transcript name the catalogue directory and its
@@ -124,8 +124,8 @@ thought-free answer and the milliseconds each stage took.
 
 The key comes from accountd, which holds the AI keys and the permits ("may this app use my AI keys");
 inferd asks it for the key behind a permit. On the private bus there is no Secret Service, so the run
-uses a porter accountd built with `test-keys` (a 0600 key file, `ACCOUNTD_KEYS=file:<path>`; test builds
-only). The packaged `docket-live` already builds its own accountd that way, and starts it beside inferd in
+uses a porter accountd built with `test-keys` (a 0600 key file, `BARDO_ACCOUNTD_KEYS=file:<path>`; test builds
+only). The packaged `agent-live` already builds its own accountd that way, and starts it beside inferd in
 every world; `accountd add` below needs one too.
 
 The key is entered ONCE into a durable key home outside every repository, and every world reuses it
@@ -162,13 +162,13 @@ same name.
 
 A local model's first request waits for its load (75 to 200 s for the 8B planner on vLLM), longer than
 any product timeout, and the turn would fail on it. So a live engine (`local`, `cloud`) warms first:
-after each world's inferd is up and before its first flow or case, `docket-live` asks inferd to prepare
+after each world's inferd is up and before its first flow or case, `agent-live` asks inferd to prepare
 every model the config's `[ai.model.text]` routes (`warm.rs`: one per distinct model, the `fast` tier
 last because the first request uses it), through inference-client's `Transport::prepare`, polling every 2 s
-up to `--patience-s` per model. Each is printed as `docket-live: warm <Tier> <model> ready in N.Ns`.
+up to `--patience-s` per model. Each is printed as `agent-live: warm <Tier> <model> ready in N.Ns`.
 A model that is unavailable or never comes up is a `[setup]` failure (a smoke run stops there; a corpus
 run errors) and no flow starts. A scripted engine skips it. The warm-up runs once per world, because a
-world is a fresh inferd: the engine's compile cache (`DOCKET_LIVE_ENGINE_CACHE`) is what is shared.
+world is a fresh inferd: the engine's compile cache (`BARDO_ACTIONS_LIVE_ENGINE_CACHE`) is what is shared.
 
 ## Reading a trace
 
@@ -231,7 +231,7 @@ The judgement is a pure function of what was observed (`live::flows::judge`) wit
 
 The harness is general-purpose: no flow tests an app, each tests a **pattern** every app of the desktop will
 meet, and the app is only the test app it is played on. Three fake apps are served from their manifests
-(`dev/accept/fixtures/org.quire.<App>.toml`): mail (`provider::AcceptMail`, the first, with a contact lookup and a
+(`dev/accept/fixtures/org.bardo.<App>.toml`): mail (`provider::AcceptMail`, the first, with a contact lookup and a
 window the person has open), and notes and files (`things::AcceptThings`, which reads the manifest to know what an
 action is: a read of nothing that returns things is a search, a read of one thing returns its words, every other
 action is held for the undo window with a token). The things they hold are somebody else's words, labelled
@@ -318,15 +318,15 @@ succeed, and the marker comes off when it stops.
 
 ```sh
 # the gate's own run: the scripted hostile planner, reviewers that allow everything, no network
-docket-eval --attacks eval
-docket-eval --attacks eval --summary-dir eval/results     # also keep eval/results/<date>-<commit>.json
+agent-eval --attacks eval
+agent-eval --attacks eval --summary-dir eval/results     # also keep eval/results/<date>-<commit>.json
 
 # over real models (policy writer and reviewers), the same cases
 scripts/eval-release.sh --engine local --inferd-config dev/live/inferd.local.toml \
     --corpus attacks --attack-summary eval/results          # eval/results/<date>-<commit>-local.json
 
 # compare two commits: exits 1 when the ASR rose or an attack reaches its goal that did not before
-docket-eval --attack-diff eval/results/2026-10-15-abc1234.json eval/results/2026-10-22-def5678.json
+agent-eval --attack-diff eval/results/2026-10-15-abc1234.json eval/results/2026-10-22-def5678.json
 ```
 
 `--corpus attacks` (or `--case <attack id>`, the id of either of its two cases) is the only way a live run
@@ -344,7 +344,7 @@ with and without the attack.
 AgentDojo's own measurement: the companion's real planner model is given the person's words
 (`user_task`) over the attack's world, once with the carrier holding the filler and once holding the
 injection, and chooses its own steps. Nothing is scripted. The planner is the companion's real loop (the
-same one the smoke flows run), in `docket-live`'s process, over the same router and fake apps as the
+same one the smoke flows run), in `agent-live`'s process, over the same router and fake apps as the
 scripted run; the policy writer, the reviewers and the reader that reads untrusted text are real models
 over inferd, so the planner sees the injected text only as the product shows it. The scripted person
 says yes to the sheet of any action the task itself needs (`user_steps`: the app and the label its
@@ -397,7 +397,7 @@ stands (the task not done), and its trace says so.
 `--attack-summary DIR` keeps the run in a file of its own, named for the model so results of different
 models are never compared by accident: `<date>-<commit>-<engine>-live-planner-<model>.json` (the model's
 name with every character outside letters, digits, `.`, `_` and `-` turned into `-`). The same
-`docket-eval --attack-diff` compares two of them (use two runs of the same model).
+`agent-eval --attack-diff` compares two of them (use two runs of the same model).
 
 How long: each attack is two full planner runs, each a writer call, several planner calls, a reader call
 for each read and three reviewer stages for each gated action, and a model swap whenever the second
@@ -421,9 +421,9 @@ hostile-model`, `--case <id>`, `--flow <id>`): their expectation is the spoiled 
 model answers in its own words, so a live run of them measures nothing (the first local run, 2026-10-07,
 showed 37 such "misses"). The gate plays them all on their cassettes.
 
-`docket-live corpus` plays the first two (a spoiled stage's reply is picked out of the one cassette by
-quoting the case's first turn, so those turns are unique), and `docket-live smoke` plays the third after
-the flows (`--flow <id>` picks one). `docket-eval` plays the reviewer cases through `action_review::parse_verdict`
+`agent-live corpus` plays the first two (a spoiled stage's reply is picked out of the one cassette by
+quoting the case's first turn, so those turns are unique), and `agent-live smoke` plays the third after
+the flows (`--flow <id>` picks one). `agent-eval` plays the reviewer cases through `action_review::parse_verdict`
 and the router cases over the fake router, with no daemon. A planner case is judged by `live::hostile::judge`
 (`ends`, `nothing_sent`, `never_performs`, `sheets_at_most`, `sheets_at_least`, `shows_nothing_of`,
 `shows_at_most`, `shows_refusal`): safety only, so a live model is judged on the same conditions.
@@ -432,11 +432,11 @@ and the router cases over the fake router, with no daemon. A planner case is jud
 
 ## An external agent instead of the planner (`--agent acp`)
 
-`docket-live` can play the companion's part with an external ACP agent (Claude Code through its ACP adapter, say)
+`agent-live` can play the companion's part with an external ACP agent (Claude Code through its ACP adapter, say)
 instead of companiond's planner, so that using an agent over ACP is measured the way the API model is. The world is the
 same (private bus, scratch HOME and XDG, the fake mail, the scripted person answering the sheets), the flows are the same,
 the outcome checks are the same and so are the PASS/FAIL lines and the trace per flow. The agent is hosted as
-`docket-agent` hosts it: in bubblewrap, every call it makes a router call, the desktop's actions offered to it as an MCP
+`bardo-agent` hosts it: in bubblewrap, every call it makes a router call, the desktop's actions offered to it as an MCP
 server over a per-session socket (FINDINGS, "acp-edge"). `--engine` still names the model of the policy writer and the
 reviewers (`scripted` uses `agent_cassette`: Mail up to outbound, the judges pass); the agent brings its own model and
 login.
@@ -462,7 +462,7 @@ judges the router's ruling on each, and an agent chooses its own.
 | `--acp-command ABS` | the agent program (required, unless `--acp-agent`) |
 | `--acp-agent ID` | an agent installed from the registry (below), instead of `--acp-command`; needs `--acp-version` and `--acp-agents-dir`; its program name defaults to the id |
 | `--acp-version V` | the pinned version of that agent |
-| `--acp-agents-dir ABS` | the agents directory `docket-agents` installed it into; the agent signs in inside its own home there and keeps the login between runs (no `--acp-credentials`, no `--acp-state`) |
+| `--acp-agents-dir ABS` | the agents directory `bardo-agents` installed it into; the agent signs in inside its own home there and keeps the login between runs (no `--acp-credentials`, no `--acp-state`) |
 | `--acp-model ID` | the model to switch to once the session is open (`model` in the entry); refused with the list of models the agent offers if it is not one of them |
 | `--acp-list-models` | open a session, print the models the agent offers (`*` marks the one in use) and stop |
 | `--acp-program NAME` | its name in grants and records (default `claude-code`) |
@@ -483,7 +483,7 @@ the scratch settings; it reads neither from the person's configuration.
 **Confining Claude Code (`--acp-profile claude-code`).** Signed in with a claude.ai login, Claude Code asks its own
 permission before each MCP tool call (a second sheet beside the router's), loads the account's claude.ai connectors and
 syncs its skills and plugins; none of that passes the router. The preset has docket send settings in the `session/new`
-request (`_meta.claudeCode.options.settings`: connectors, skills and plugins off; `mcp__quire` pre-allowed, which is the
+request (`_meta.claudeCode.options.settings`: connectors, skills and plugins off; `mcp__bardo` pre-allowed, which is the
 desktop's server and no other) and set the isolated-mode variables. A run with it:
 
 ```
@@ -497,15 +497,15 @@ dev/live-smoke.sh --engine scripted --agent acp \
 
 See `FINDINGS.md`, "acp-isolation".
 
-**An agent from the registry.** Docket ships no list of agents. `docket-agents` reads the agent registry's snapshot,
+**An agent from the registry.** Docket ships no list of agents. `bardo-agents` reads the agent registry's snapshot,
 installs the version you name (the archive is checked against the registry's SHA-256; when the registry gives none the
 install record says "first use") under the agents directory, and never updates by itself:
-`docket-agents --dir DIR check ID` says what is on offer, `docket-agents --dir DIR install ID VERSION` installs exactly
+`bardo-agents --dir DIR check ID` says what is on offer, `bardo-agents --dir DIR install ID VERSION` installs exactly
 that version. Only these two reach the network; starting an agent never does. The agent signs in inside its own home
 (`DIR/state/ID/home`), once, and the login stays there.
 
 ```sh
-docket-agents --dir /scratch/agents install antigravity-acp 1.3.0
+bardo-agents --dir /scratch/agents install antigravity-acp 1.3.0
 dev/live-smoke.sh --engine scripted --agent acp --acp-agent antigravity-acp --acp-version 1.3.0 \
   --acp-agents-dir /scratch/agents --acp-list-models
 dev/live-smoke.sh --engine scripted --agent acp --acp-agent antigravity-acp --acp-version 1.3.0 \

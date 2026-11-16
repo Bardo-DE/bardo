@@ -1,5 +1,5 @@
-//! The host's side of the `org.quire.AcpAgent` pseudo-app on the bus: intentd calls
-//! `org.quire.IntentProvider1` here after the router allowed an agent's call, and the performer
+//! The host's side of the `org.bardo.AcpAgent` pseudo-app on the bus: intentd calls
+//! `org.bardo.IntentProvider1` here after the router allowed an agent's call, and the performer
 //! does it. Only intentd may call a provider (`action-client` enforces it), so nothing reaches
 //! the performer that the gate did not allow.
 
@@ -31,7 +31,7 @@ impl<F: Files + 'static, S: Sandbox + 'static> std::fmt::Debug for PerformerProv
 }
 
 impl<F: Files + 'static, S: Sandbox + 'static> PerformerProvider<F, S> {
-    /// Serves `performer` under `manifest` (`manifests/org.quire.AcpAgent.toml`).
+    /// Serves `performer` under `manifest` (`manifests/org.bardo.AcpAgent.toml`).
     pub fn new(manifest: ValidManifest, performer: Performer<F, S>) -> Self {
         Self {
             manifest,

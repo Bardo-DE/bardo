@@ -15,7 +15,7 @@ use crate::callers::{Claim, Peers, SignalSenders};
 use crate::stream::next;
 use agent_voice_dbus::{UTTERANCE_PREFIX, VOICE_BUS};
 
-/// The role the caller table gives voiced's program. Owning `org.quire.Voice1` proves nothing: any
+/// The role the caller table gives voiced's program. Owning `org.bardo.Voice1` proves nothing: any
 /// process may claim a name nobody owns yet, so a signal or a call counts as voiced's only when
 /// the system says the process behind the name is voiced.
 const VOICED_ROLE: RoleName = RoleName::from_static("voice");
@@ -39,7 +39,7 @@ fn open(text: &str) -> Option<UtteranceEnd> {
 pub(super) async fn subscribe(connection: &Connection) -> zbus::Result<MessageStream> {
     let rule = MatchRule::builder()
         .msg_type(Type::Signal)
-        .interface("org.quire.Voice1.Utterance")?
+        .interface("org.bardo.Voice1.Utterance")?
         .member("Ended")?
         .path_namespace(UTTERANCE_PREFIX)?
         .build();

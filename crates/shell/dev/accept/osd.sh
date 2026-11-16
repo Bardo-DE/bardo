@@ -25,8 +25,8 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-osd"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-osd"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 HOLD_MS=1500
 

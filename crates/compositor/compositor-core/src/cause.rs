@@ -39,7 +39,7 @@ pub struct SwipeRelease {
     pub velocity: Velocity,
 }
 
-/// Where a minimising window goes: the dock tile sill named (`quire_shell_v1`,
+/// Where a minimising window goes: the dock tile sill named (`bardo_shell_v1`,
 /// `set_minimise_target`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MinimiseTarget {

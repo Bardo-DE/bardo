@@ -75,7 +75,7 @@ fn kind_patterns_cover_and_rank() {
 
 #[test]
 fn user_text_never_shows_in_debug() {
-    let view = crate::support::view("org.quire.Mail", "mail.thread", "k", "Secret plans");
+    let view = crate::support::view("org.bardo.Mail", "mail.thread", "k", "Secret plans");
     assert!(!format!("{view:?}").contains("Secret plans"));
     assert!(!format!("{:?}", FactText::parse("hidden words").expect("text")).contains("hidden"));
     assert!(!format!("{:?}", UserText::new("hidden")).contains("hidden"));

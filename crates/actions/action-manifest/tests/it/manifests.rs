@@ -20,8 +20,8 @@ fn shipped(name: &str) -> Manifest {
 #[test]
 fn shipped_manifests_parse_and_validate() {
     for (file, prefix, actions) in [
-        ("org.quire.Memory.toml", "memory", 4),
-        ("org.quire.Companion.toml", "companion", 8),
+        ("org.bardo.Memory.toml", "memory", 4),
+        ("org.bardo.Companion.toml", "companion", 8),
     ] {
         let manifest = shipped(file);
         assert_eq!(manifest.actions.len(), actions, "{file}");
@@ -42,7 +42,7 @@ fn shipped_manifests_parse_and_validate() {
 
 #[test]
 fn memory_forget_is_hidden_from_agents_and_staged_writes_are_declared() {
-    let memory = shipped("org.quire.Memory.toml");
+    let memory = shipped("org.bardo.Memory.toml");
     let by = |n: &str| {
         memory
             .actions
@@ -58,7 +58,7 @@ fn memory_forget_is_hidden_from_agents_and_staged_writes_are_declared() {
 
 #[test]
 fn companion_task_actions_only_read() {
-    let companion = shipped("org.quire.Companion.toml");
+    let companion = shipped("org.bardo.Companion.toml");
     assert!(companion.actions.iter().all(|a| a.effect == Effect::Read));
 }
 
@@ -87,19 +87,19 @@ fn validate_rejects_one_row_per_rule() {
         let mut p = text_param("said", ArgSink::Inert, need);
         p.filled = Some(how);
         a.params = vec![p];
-        manifest("org.quire.Mail", vec![a])
+        manifest("org.bardo.Mail", vec![a])
     };
     let history = |kinds: &str| Filled::OwnHistory {
         kinds: kinds.to_owned(),
     };
 
-    let mut newer = manifest("org.quire.Mail", vec![]);
+    let mut newer = manifest("org.bardo.Mail", vec![]);
     newer.vocab = IntentsVocab(IntentsVocab::CURRENT.0 + 1);
 
     let cases: Vec<(&str, Manifest, Option<ManifestError>)> = vec![
         (
             "ok: outbound with a recipient and no undo",
-            manifest("org.quire.Mail", vec![outbound.clone()]),
+            manifest("org.bardo.Mail", vec![outbound.clone()]),
             None,
         ),
         (
@@ -107,7 +107,7 @@ fn validate_rejects_one_row_per_rule() {
             {
                 let mut held = outbound.clone();
                 held.undo = true;
-                manifest("org.quire.Mail", vec![held])
+                manifest("org.bardo.Mail", vec![held])
             },
             None,
         ),
@@ -118,13 +118,13 @@ fn validate_rejects_one_row_per_rule() {
         ),
         (
             "duplicate action",
-            manifest("org.quire.Mail", vec![outbound.clone(), outbound.clone()]),
+            manifest("org.bardo.Mail", vec![outbound.clone(), outbound.clone()]),
             Some(E::DuplicateAction(action("mail.message.send"))),
         ),
         (
             "read with undo",
             manifest(
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 vec![decl("mail.thread.list", Effect::Read, true)],
             ),
             Some(E::ReadWithUndo(action("mail.thread.list"))),
@@ -132,7 +132,7 @@ fn validate_rejects_one_row_per_rule() {
         (
             "write without undo",
             manifest(
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 vec![decl("mail.thread.tag", Effect::UndoableWrite, false)],
             ),
             Some(E::WriteWithoutUndo(action("mail.thread.tag"))),
@@ -140,7 +140,7 @@ fn validate_rejects_one_row_per_rule() {
         (
             "destructive without undo is fine",
             manifest(
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 vec![decl("mail.thread.delete", Effect::Destructive, false)],
             ),
             None,
@@ -148,14 +148,14 @@ fn validate_rejects_one_row_per_rule() {
         (
             "outside the app's prefix",
             manifest(
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 vec![decl("files.thing.read", Effect::Read, false)],
             ),
             Some(E::ActionOutsideApp(action("files.thing.read"))),
         ),
         (
             "default out of type",
-            manifest("org.quire.Mail", vec![bad_default]),
+            manifest("org.bardo.Mail", vec![bad_default]),
             Some(E::DefaultOutOfType {
                 action: action("mail.thread.tag"),
                 param: param("tag"),
@@ -163,7 +163,7 @@ fn validate_rejects_one_row_per_rule() {
         ),
         (
             "duplicate param",
-            manifest("org.quire.Mail", vec![twice]),
+            manifest("org.bardo.Mail", vec![twice]),
             Some(E::DuplicateParam {
                 action: action("mail.thread.tag2"),
                 param: param("x"),
@@ -208,7 +208,7 @@ fn validate_rejects_one_row_per_rule() {
         ),
         (
             "outbound without a sink",
-            manifest("org.quire.Mail", vec![no_sink]),
+            manifest("org.bardo.Mail", vec![no_sink]),
             Some(E::OutboundWithoutSink(action("mail.message.forward"))),
         ),
     ];
@@ -228,7 +228,7 @@ fn open_decl() -> ActionDecl {
 fn an_indexed_kind_declares_its_open_action_and_every_open_has_the_one_shape() {
     use ManifestError as E;
     let with = |index, actions| {
-        let mut m = manifest("org.quire.Mail", actions);
+        let mut m = manifest("org.bardo.Mail", actions);
         m.entities = vec![thread_kind(index)];
         m
     };

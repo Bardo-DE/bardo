@@ -22,7 +22,7 @@ Allowed edges (everything else is forbidden):
 
 | From | May depend on |
 |---|---|
-| `layer-shell-host` | `blitz-embed`, `mouse-gestures-proto`, `desktop-protocols` (feature `client`: `quire_window_v1`'s bindings and the wire vocab, git rev pin), and the pinned third-party block (blitz-*, dioxus, sctk, wayland-*, calloop, wgpu, vello, parley, rustix, `nix` (`socket` only, for `SO_PEERPIDFD`), tokio, serde) |
+| `layer-shell-host` | `blitz-embed`, `mouse-gestures-proto`, `desktop-protocols` (feature `client`: `bardo_window_v1`'s bindings and the wire vocab, git rev pin), and the pinned third-party block (blitz-*, dioxus, sctk, wayland-*, calloop, wgpu, vello, parley, rustix, `nix` (`socket` only, for `SO_PEERPIDFD`), tokio, serde) |
 | `blitz-embed` | `blitz-dom`, `blitz-traits`, `parley`, `wgpu` (feature `adapter`), `thiserror` |
 | `mouse-gestures-proto` | `serde`, `serde_json`, `thiserror` |
 
@@ -232,13 +232,13 @@ implementations are swapped at a boundary.
 A `quire_*` protocol is bound only where the compositor advertises it (`Option<..>` on
 `HostState`, bound with `.ok()`), and every request that needs it is a silent no-op without it,
 so the same binary runs on KWin, wlroots and casement. `handlers/quire_window` binds
-`quire_window_manager_v1` at version 1 or 2 and sends `request_placement` (`decide.rs` maps a
+`bardo_window_manager_v1` at version 1 or 2 and sends `request_placement` (`decide.rs` maps a
 `WindowPlacement` and the seat's latest input serial to the wire request, or refuses with no
 serial); it keeps the manager bound because version 2 adds the manager's `quit` event, which
 `quit.rs` turns into `HostEvent::QuitAsked` (the person asked the whole app to quit; a version 1
 compositor never sends it, and the app sees only `SurfaceClosed`);
 `SurfaceHandle::placement_support` tells a menu whether to show the choices. The shell's own
-`quire_*` objects (`quire_shell_v1`, on the connection it was handed) are created on
+`quire_*` objects (`bardo_shell_v1`, on the connection it was handed) are created on
 `HostCtx::wl_surface` / `SurfaceHandle::wl_surface` after `HostEvent::SurfaceMapped`; a hidden
 surface that is shown again gets a new `wl_surface`, and the handle follows it.
 

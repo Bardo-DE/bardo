@@ -1,6 +1,6 @@
-//! A hand-written accountd for the client's key and launcher tests: `org.quire.Accounts1.Keys` and
-//! `org.quire.Accounts1.Launcher` on accountd's name, with Request objects under
-//! `/org/quire/Accounts1/request`. How its sheets end is a `Sheets` the test sets, so the
+//! A hand-written accountd for the client's key and launcher tests: `org.bardo.Accounts1.Keys` and
+//! `org.bardo.Accounts1.Launcher` on accountd's name, with Request objects under
+//! `/org/bardo/Accounts1/request`. How its sheets end is a `Sheets` the test sets, so the
 //! client's paths all run: an answer that beats the method's reply, a forged one from a
 //! connection that does not own the name, a sheet nobody answers, a refusal. It records what it
 //! was asked.
@@ -71,7 +71,7 @@ pub struct FakeAccountd {
 
 /// What the fake answers a call with when it refuses.
 #[derive(Debug, DBusError)]
-#[zbus(prefix = "org.quire.Accounts1.Error")]
+#[zbus(prefix = "org.bardo.Accounts1.Error")]
 pub enum Fault {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -174,7 +174,7 @@ impl FakeAccountd {
             .emit_signal(
                 Some(to),
                 account_wire::names::ACCOUNTS_PATH,
-                "org.quire.Accounts1.Launcher",
+                "org.bardo.Accounts1.Launcher",
                 signal,
                 &body,
             )
@@ -195,7 +195,7 @@ impl FakeAccountd {
             .emit_signal(
                 Some(to),
                 account_wire::names::ACCOUNTS_PATH,
-                "org.quire.Accounts1.Launcher",
+                "org.bardo.Accounts1.Launcher",
                 "ProcessCredentialRevoked",
                 &(id, reason),
             )
@@ -209,7 +209,7 @@ struct RequestObject {
     shared: Arc<Shared>,
 }
 
-#[zbus::interface(name = "org.quire.Accounts1.Request")]
+#[zbus::interface(name = "org.bardo.Accounts1.Request")]
 impl RequestObject {
     async fn close(&self) {
         self.shared.seen.lock().expect("lock").closed += 1;
@@ -284,7 +284,7 @@ struct Keys {
     shared: Arc<Shared>,
 }
 
-#[zbus::interface(name = "org.quire.Accounts1.Keys")]
+#[zbus::interface(name = "org.bardo.Accounts1.Keys")]
 impl Keys {
     async fn request_key(
         &self,
@@ -317,7 +317,7 @@ struct Launcher {
     shared: Arc<Shared>,
 }
 
-#[zbus::interface(name = "org.quire.Accounts1.Launcher")]
+#[zbus::interface(name = "org.bardo.Accounts1.Launcher")]
 impl Launcher {
     async fn register_launcher(
         &self,

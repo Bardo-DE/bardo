@@ -55,7 +55,7 @@ impl Printed {
     }
 }
 
-/// The apps `quire-do apps` lists.
+/// The apps `bardo-do apps` lists.
 pub fn apps(apps: &Apps) -> Printed {
     let rows: Vec<Value> = apps
         .all()

@@ -7,7 +7,7 @@ use crate::app_handle::AppHandle;
 use ui_desktop::Outputs;
 
 impl AppHandle {
-    /// Read `org.quire.Outputs1` on the session bus now and on every change, feeding
+    /// Read `org.bardo.Outputs1` on the session bus now and on every change, feeding
     /// [`set_desktop_outputs`](AppHandle::set_desktop_outputs), on a thread of its own. The thread
     /// ends when the app has ended (found at the next change) or the bus goes away. Call it before
     /// `launch`; it is a no-op where there is no session bus.

@@ -17,7 +17,7 @@ use computer_use_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
     ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
 };
-use desktop_protocols::server::quire_agent_v1::quire_agent_lease_v1::RevokeReason;
+use desktop_protocols::server::bardo_agent_v1::bardo_agent_lease_v1::RevokeReason;
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};

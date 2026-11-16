@@ -15,8 +15,8 @@ Five jobs, each with one token: display for names and headings, UI for reading a
 data for anything machine-shaped, code where a fixed pitch carries meaning, serif for a message a
 person writes in a serif. There is one voice: Inter, with Inter Display for display. The earlier
 second typeface ("Editorial": Bricolage Grotesque, Karla, Space Mono) is no longer a setting or a
-`data-typeface` value (30 section 3.4). It is the look Extension `org.quire.look.Editorial`
-(`extensions/org.quire.look.Editorial/`), which a person picks under Settings > Look and which
+`data-typeface` value (30 section 3.4). It is the look Extension `org.bardo.look.Editorial`
+(`extensions/org.bardo.look.Editorial/`), which a person picks under Settings > Look and which
 layers its own stacks, tracking and sizes after quire's sheet. The Editorial values in the tables
 below are the prototype's record (marked "history"). Bricolage Grotesque and Karla still ship in
 `ui-style` so the look can name them.

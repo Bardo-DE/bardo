@@ -1,7 +1,7 @@
 //! Which client id this build presents to an issuer: the ones shipped, with a person's own
 //! (written only by Settings) laid over them.
 //!
-//! Nothing here finds a file: the caller passes the paths (`/usr/share/porter/clients.toml`,
+//! Nothing here finds a file: the caller passes the paths (`/usr/share/bardo/accounts/clients.toml`,
 //! `$XDG_CONFIG_HOME/porter/clients.toml`), so a test never reads the machine's. The Microsoft
 //! client is ours and is shipped in the first file; no Google client id is shipped (the owner
 //! registers one, docs/google.md), and a person may register their own. The mailo migration reads mailo's

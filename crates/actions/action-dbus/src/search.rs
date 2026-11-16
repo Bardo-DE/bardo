@@ -1,13 +1,13 @@
-//! `org.quire.Intents1.Search`: search over the index.
+//! `org.bardo.Intents1.Search`: search over the index.
 
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Search",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Search",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Search {
     /// Searches the index (`SearchScope` JSON); answers all the hits (`Vec<Hit>` JSON), best first.
@@ -26,7 +26,7 @@ pub trait Search {
 #[derive(Debug, Default)]
 pub struct SearchSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Search")]
+#[zbus::interface(name = "org.bardo.Intents1.Search")]
 impl SearchSkeleton {
     fn query(&self, text: String, scope: String, generation: u64) -> fdo::Result<String> {
         let _ = (text, scope, generation);

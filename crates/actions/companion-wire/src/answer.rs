@@ -1,4 +1,4 @@
-//! The answer object: `/org/quire/Companion1/answer/<task>`.
+//! The answer object: `/org/bardo/Companion1/answer/<task>`.
 
 use account_core::{AppName, DataClass};
 use action_core::{BudgetKind, CallRefusal, ConfirmId, ContextKeep, Reveal, TimeRange};

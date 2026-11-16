@@ -1,6 +1,6 @@
 [package]
 name = "agent-registry"
-description = "The coding-agent registry as values: a registry snapshot, names and SHA-256 digests, the layout of the agents directory as paths, and the install record and the offered record as values and text. Reads no disk, network or environment; docket-agents installs and reads."
+description = "The coding-agent registry as values: a registry snapshot, names and SHA-256 digests, the layout of the agents directory as paths, and the install record and the offered record as values and text. Reads no disk, network or environment; bardo-agents installs and reads."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

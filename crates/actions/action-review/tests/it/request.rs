@@ -26,7 +26,7 @@ fn request() -> ReviewRequest {
             mode: None,
         }],
         proposed: ProposedAction {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             action: ActionName::parse("mail.message.forward").expect("action"),
             label: LabelText::parse("Forward").expect("label"),
             effect: Effect::Outbound,
@@ -320,7 +320,7 @@ fn the_prompt_names_the_typed_action_labels_policy_and_history() {
     req.history.push(TypedStep {
         call: CallId(7),
         action: ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: ActionName::parse("mail.thread.read").expect("action"),
         },
         effect: Effect::Read,

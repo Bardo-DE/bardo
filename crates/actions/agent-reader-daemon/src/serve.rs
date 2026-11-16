@@ -1,4 +1,4 @@
-//! Serving `org.quire.Reader1`.
+//! Serving `org.bardo.Reader1`.
 
 use crate::service::ReaderService;
 use action_client::Transport as IntentsTransport;
@@ -27,7 +27,7 @@ fn bus(error: zbus::Error) -> ServeFault {
     ServeFault::Bus(error.to_string())
 }
 
-/// `org.quire.Reader1` over a service.
+/// `org.bardo.Reader1` over a service.
 struct ReaderObject<P: InferTransport, I: IntentsTransport> {
     service: Arc<ReaderService<P, I>>,
     callers: Arc<Identity>,
@@ -39,7 +39,7 @@ impl<P: InferTransport, I: IntentsTransport> std::fmt::Debug for ReaderObject<P,
     }
 }
 
-#[zbus::interface(name = "org.quire.Reader1")]
+#[zbus::interface(name = "org.bardo.Reader1")]
 impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P, I> {
     async fn extract(
         &self,
@@ -77,8 +77,8 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
     }
 }
 
-/// Exports `org.quire.Reader1` at its path on `connection` and claims the name. Only the process
-/// that `callers` names as intentd (the `agent` role of the app `org.quire.Intents`) may ask.
+/// Exports `org.bardo.Reader1` at its path on `connection` and claims the name. Only the process
+/// that `callers` names as intentd (the `agent` role of the app `org.bardo.Intents`) may ask.
 /// Returns once the name is ours; the connection keeps serving until it closes.
 pub async fn serve_on<P, I>(
     connection: &BusConnection,
@@ -108,9 +108,9 @@ where
     }
 }
 
-/// Claims `org.quire.Reader1` on the session bus and serves `Extract(session, ask)` until the
+/// Claims `org.bardo.Reader1` on the session bus and serves `Extract(session, ask)` until the
 /// connection closes. Only intentd may call it: the process behind the caller is named by
-/// `readerd-callers.toml` (the system's under `/etc/quire`, the person's over it) before the ask
+/// `readerd-callers.toml` (the system's under `/etc/bardo`, the person's over it) before the ask
 /// is read.
 pub async fn serve<P, I>(
     service: Arc<ReaderService<P, I>>,

@@ -41,7 +41,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         session: &SessionId,
         call: &action_vocab::CallRequest,
     ) {
-        let is_load = call.action.app.as_str() == "org.quire.Companion"
+        let is_load = call.action.app.as_str() == "org.bardo.Companion"
             && call.action.name.as_str() == "companion.skill.load";
         let id = action_vocab::ParamName::parse("id")
             .ok()

@@ -28,7 +28,7 @@ const SHOWN: [EngineKind; 3] = [
 
 /// Polkit's launcher, and the install helper stoker's install step places.
 const PKEXEC: &str = "/usr/bin/pkexec";
-const HELPER: &str = "/usr/libexec/quire/engine-helper";
+const HELPER: &str = "/usr/libexec/bardo/bardo-engine-helper";
 
 /// What the person calls the engine (copy text: the engine spec holds no words a person reads).
 fn name_of(kind: EngineKind) -> &'static str {

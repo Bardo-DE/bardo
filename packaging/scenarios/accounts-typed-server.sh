@@ -65,7 +65,7 @@ step_boot() {
 }
 
 step_form() {
-  acc_add_start org.quire.Mail generic-imap
+  acc_add_start org.bardo.Mail generic-imap
   sheet_await || return 1; sheet_settled; sleep 1
   sheet_shot 1-address-and-password
   sheet_type ada@fastmail.com; sheet_key Tab; sheet_type "$(rigj pop3.password)"; sheet_key Enter; sleep 3
@@ -97,13 +97,13 @@ step_stored() {
   # The account must carry the ports typed in step_typed: a default port here means a typed field was lost.
   grep -q "127.0.0.1:$(rigj pop3.port)" "$STATE/porter/registry.json" || { echo "the account's POP3 endpoint is not the typed port $(rigj pop3.port) (step_typed lost a field; capture 4 shows the form): $(cat "$STATE/porter/registry.json")" >&2; return 1; }
   grep -q "127.0.0.1:$(rigj smtp.port)" "$STATE/porter/registry.json" || { echo "the account's SMTP endpoint is not the typed port $(rigj smtp.port): $(cat "$STATE/porter/registry.json")" >&2; return 1; }
-  rigc_bg "$OUT_DIR/offer.log" org.quire.Mail identities offer
+  rigc_bg "$OUT_DIR/offer.log" org.bardo.Mail identities offer
   sheet_await || { cat "$OUT_DIR/offer.log" >&2; return 1; }
   sleep 1; sheet_key Enter
   acc_wait 20 grep -q '"result":"picked"' "$OUT_DIR/offer.log" || { echo "the app was not offered the identity: $(cat "$OUT_DIR/offer.log")" >&2; return 1; }
   sheet_gone || return 1
   local id; id=$(python3 -I -c 'import json,sys; print(json.loads(sys.stdin.readline())["identity"])' <"$OUT_DIR/offer.log")
-  rigc org.quire.Mail identities register-use "$id" >"$OUT_DIR/use.log" 2>&1 || { echo "register-use refused: $(cat "$OUT_DIR/use.log")" >&2; return 1; }
+  rigc org.bardo.Mail identities register-use "$id" >"$OUT_DIR/use.log" 2>&1 || { echo "register-use refused: $(cat "$OUT_DIR/use.log")" >&2; return 1; }
   echo "identity: $(cat "$OUT_DIR/offer.log")" >&2
 }
 

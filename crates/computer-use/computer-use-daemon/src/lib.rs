@@ -2,8 +2,8 @@
 //!
 //! It owns the step loop of every run: the pure machine ([`computer_use_run::Run`]) says what to do, the
 //! [`Supervisor`] does it against the seams (`computer_use_system::SystemSeams` in the daemon, `computer-use-fake`
-//! in tests) and feeds the answers back. It serves `org.quire.Cua1` (`computer-use-dbus`) and
-//! `org.quire.IntentProvider1` as `org.quire.Cua` with one action, `cua.run.start`
+//! in tests) and feeds the answers back. It serves `org.bardo.ComputerUse1` (`computer-use-dbus`) and
+//! `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` with one action, `cua.run.start`
 //! ([`CuaProvider`]).
 //!
 //! On a stock compositor masking is cuad's (`MaskReport::applied_by = Cuad`) and the consent

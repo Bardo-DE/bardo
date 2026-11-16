@@ -25,7 +25,7 @@ pub enum NightLightMode {
 /// controls is warmed by sill instead and listed in `skip_outputs`; this is for the rest.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "night_light", page = Page::Appearance)]
+#[settings(file = "compositor/settings.toml", domain = "night_light", page = Page::Appearance)]
 pub struct NightLightSection {
     /// `night_light.mode`.
     #[settings(

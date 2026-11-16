@@ -24,7 +24,7 @@ fn install_under(scratch: &Scratch, prefix: &str) -> PathBuf {
         .env("PATH", std::env::var_os("PATH").unwrap_or_default())
         .env("DESTDIR", &stage)
         .env("PREFIX", prefix)
-        .env("DETENT_BIN", env!("CARGO_BIN_EXE_detent"))
+        .env("BARDO_SETTINGS_BIN", env!("CARGO_BIN_EXE_detent"))
         .status()
         .expect("bash runs the installer");
     assert!(status.success(), "the installer failed");
@@ -35,8 +35,8 @@ fn install_under(scratch: &Scratch, prefix: &str) -> PathBuf {
 fn the_manifest_is_installed_where_intentd_reads_it() {
     let scratch = Scratch::under(TMP, "install-manifest");
     let usr = install_into(&scratch);
-    let installed = usr.join("share/quire/intents/org.quire.Settings.toml");
-    let shipped = repo().join("dist/intents/org.quire.Settings.toml");
+    let installed = usr.join("share/quire/intents/org.bardo.Settings.toml");
+    let shipped = repo().join("dist/intents/org.bardo.Settings.toml");
     assert_eq!(
         std::fs::read_to_string(&installed).expect("installed"),
         std::fs::read_to_string(shipped).expect("shipped")
@@ -47,7 +47,7 @@ fn the_manifest_is_installed_where_intentd_reads_it() {
         .expect("a TOML manifest");
     assert_eq!(
         table["app"].as_str(),
-        Some("org.quire.Settings"),
+        Some("org.bardo.Settings"),
         "the file is named for the app it declares"
     );
 }
@@ -59,7 +59,7 @@ const ROW_FIELDS: [&str; 5] = ["kind", "key", "title", "subtitle", "keywords"];
 fn the_search_entries_are_installed_where_intentd_reads_them() {
     let scratch = Scratch::under(TMP, "install-search");
     let usr = install_into(&scratch);
-    let text = std::fs::read_to_string(usr.join("share/quire/search/org.quire.Settings.toml"))
+    let text = std::fs::read_to_string(usr.join("share/quire/search/org.bardo.Settings.toml"))
         .expect("the search file is installed beside the manifest");
     let file: toml::Table = text.parse().expect("a TOML search file");
     let rows = file["entries"].as_array().expect("the entries");
@@ -86,20 +86,20 @@ fn the_service_file_names_the_app_and_the_installed_binary() {
     let scratch = Scratch::under(TMP, "install-service");
     let usr = install_into(&scratch);
     let service =
-        std::fs::read_to_string(usr.join("share/dbus-1/services/org.quire.Settings.service"))
+        std::fs::read_to_string(usr.join("share/dbus-1/services/org.bardo.Settings.service"))
             .expect("the service file is installed beside the manifest");
-    assert!(service.contains("Name=org.quire.Settings\n"), "{service}");
+    assert!(service.contains("Name=org.bardo.Settings\n"), "{service}");
     assert!(
-        service.contains("Exec=/usr/bin/detent --service\n"),
+        service.contains("Exec=/usr/bin/bardo-settings --service\n"),
         "{service}"
     );
     assert!(
-        service.contains("SystemdService=org.quire.Settings.service\n"),
+        service.contains("SystemdService=org.bardo.Settings.service\n"),
         "{service}"
     );
     assert!(usr.join("bin/detent").is_file());
     assert!(
-        usr.join("share/applications/org.quire.Settings.desktop")
+        usr.join("share/applications/org.bardo.Settings.desktop")
             .is_file()
     );
 }
@@ -108,12 +108,12 @@ fn the_service_file_names_the_app_and_the_installed_binary() {
 fn the_user_unit_is_the_one_the_service_file_names() {
     let scratch = Scratch::under(TMP, "install-unit");
     let usr = install_into(&scratch);
-    let unit = std::fs::read_to_string(usr.join("lib/systemd/user/org.quire.Settings.service"))
+    let unit = std::fs::read_to_string(usr.join("lib/systemd/user/org.bardo.Settings.service"))
         .expect("the user unit is installed");
     assert!(unit.contains("Type=dbus\n"), "{unit}");
-    assert!(unit.contains("BusName=org.quire.Settings\n"), "{unit}");
+    assert!(unit.contains("BusName=org.bardo.Settings\n"), "{unit}");
     assert!(
-        unit.contains("ExecStart=/usr/bin/detent --service\n"),
+        unit.contains("ExecStart=/usr/bin/bardo-settings --service\n"),
         "{unit}"
     );
 }
@@ -149,7 +149,7 @@ const LOADER_VARIABLES: [&str; 22] = [
 fn the_user_unit_clears_every_loader_variable() {
     let scratch = Scratch::under(TMP, "install-unit-loader");
     let usr = install_into(&scratch);
-    let unit = std::fs::read_to_string(usr.join("lib/systemd/user/org.quire.Settings.service"))
+    let unit = std::fs::read_to_string(usr.join("lib/systemd/user/org.bardo.Settings.service"))
         .expect("the user unit is installed");
     let unset: Vec<&str> = unit
         .lines()
@@ -169,13 +169,13 @@ fn a_prefix_with_characters_sed_reads_as_syntax_is_written_as_it_is() {
     let prefix = "/opt/a|b&c\\d";
     let root = install_under(&scratch, prefix);
     let service =
-        std::fs::read_to_string(root.join("share/dbus-1/services/org.quire.Settings.service"))
+        std::fs::read_to_string(root.join("share/dbus-1/services/org.bardo.Settings.service"))
             .expect("the service file");
     assert!(
         service.contains(&format!("Exec={prefix}/bin/detent --service\n")),
         "{service}"
     );
-    let unit = std::fs::read_to_string(root.join("lib/systemd/user/org.quire.Settings.service"))
+    let unit = std::fs::read_to_string(root.join("lib/systemd/user/org.bardo.Settings.service"))
         .expect("the unit");
     assert!(
         unit.contains(&format!("ExecStart={prefix}/bin/detent --service\n")),

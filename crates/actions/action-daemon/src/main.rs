@@ -1,4 +1,4 @@
-//! intentd: serves `org.quire.Intents1` on the session bus until the bus closes.
+//! intentd: serves `org.bardo.Intents1` on the session bus until the bus closes.
 
 use std::process::ExitCode;
 

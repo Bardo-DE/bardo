@@ -1,4 +1,4 @@
-//! Requests from the shell's desktop manager (`quire_desktop_manager_v1`; P2-Z): the same
+//! Requests from the shell's desktop manager (`bardo_desktop_manager_v1`; P2-Z): the same
 //! transitions a window's own requests, a window-list client, a workspace client or a key
 //! binding take, reached by name. Everything here is the person's: the wire layer refuses
 //! management on an agent connection before an event is made.

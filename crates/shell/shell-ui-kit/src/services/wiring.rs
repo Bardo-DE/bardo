@@ -22,7 +22,7 @@ pub struct Wiring {
     pub consents: UnboundedSender<VoiceConsent>,
     /// Where the answer to a question the compositor asked goes.
     pub permission_answers: UnboundedSender<DesktopCommand>,
-    /// The connection the intents service claims `org.quire.Shell` on, which the companion
+    /// The connection the intents service claims `org.bardo.Shell` on, which the companion
     /// speaks on as the launcher.
     pub seat_publisher: SeatPublisher,
     pub seat_view: SeatView,

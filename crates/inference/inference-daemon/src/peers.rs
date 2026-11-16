@@ -2,7 +2,7 @@
 //!
 //! The caller is derived by the transport, never sent: the bus says which process owns a
 //! connection, and `account_callers::ProcCallers` (shared with accountd) names it. inferd's own
-//! caller table, the system file `/etc/porter/inferd-callers.toml`
+//! caller table, the system file `/etc/bardo/inferd-callers.toml`
 //! (`account_callers::INFERD_CALLERS`, which a person cannot write; never `inferd.toml`), is rows of
 //! that shared table, keyed by systemd unit (the programs a unit runs are `account_callers::CallerRow::images`:
 //! daemons by convention, detent and sill in `bin`): cuad's units with the `Cua` role,
@@ -27,9 +27,9 @@ pub enum Role {
     App,
     /// cuad: the one caller that may open a computer-use session.
     Cua,
-    /// detent, the Settings app: the one caller of `org.quire.SettingsModule1`.
+    /// detent, the Settings app: the one caller of `org.bardo.SettingsModule1`.
     Settings,
-    /// The agent launcher (docket-acp): the one caller of `org.quire.Inference1.Agents`, and of
+    /// The agent launcher (bardo-agent-acp): the one caller of `org.bardo.Inference1.Agents`, and of
     /// nothing else here.
     AgentLauncher,
     /// An app that may choose where the assistant runs (`places` in the options of `Open`,
@@ -41,7 +41,7 @@ pub enum Role {
 }
 
 /// The app docket's companion daemon is: with Settings and the shell, the callers of `Places`.
-const COMPANION_APP: &str = "org.quire.Companion";
+const COMPANION_APP: &str = "org.bardo.Companion";
 
 /// Why a caller table's text was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -109,11 +109,11 @@ impl Caller {
 /// Which systemd unit is which caller.
 ///
 /// ```toml
-/// cua = ["cuad.service"]
-/// settings = ["org.quire.Settings.service"]
+/// cua = ["bardo-computer-use.service"]
+/// settings = ["org.bardo.Settings.service"]
 /// [apps]
-/// "org.quire.Memory" = ["memoryd.service"]
-/// "org.quire.Companion" = [{ unit = "docket-acp.scope", exe = ["/usr/bin/docket-acp"] }]
+/// "org.bardo.Memory" = ["bardo-memoryd.service"]
+/// "org.bardo.Companion" = [{ unit = "bardo-agent-acp.scope", exe = ["/usr/bin/bardo-agent-acp"] }]
 /// ```
 ///
 /// An `[apps]` or `agent_launcher` entry may name the programs that run in its unit ([`Unit`]):
@@ -129,12 +129,12 @@ pub struct CallerTable {
     apps: BTreeMap<AppName, BTreeSet<Unit>>,
     /// The Settings app's units: the only callers of the settings module, each only as its unit's
     /// main process (as accountd's `callers.toml` row for Settings). An entry that is an app name
-    /// (the form this table had, `"org.quire.Settings"`) stands for that app's unit,
+    /// (the form this table had, `"org.bardo.Settings"`) stands for that app's unit,
     /// `<app>.service`: never for any process in an app scope of that name, which any program can
     /// start.
     #[serde(default)]
     settings: BTreeSet<String>,
-    /// The shell's units (`sill.service`): the shell may list the places and ask for nothing
+    /// The shell's units (`bardo-shell.service`): the shell may list the places and ask for nothing
     /// else. Services only, so the role goes to the unit's main process.
     #[serde(default)]
     shell: BTreeSet<String>,
@@ -309,16 +309,16 @@ impl CallerTable {
 }
 
 /// The app cuad is.
-const CUA_APP: &str = "org.quire.Cua";
+const CUA_APP: &str = "org.bardo.ComputerUse";
 
 /// The app the agent launcher is.
-const LAUNCHER_APP: &str = "org.quire.AgentLauncher";
+const LAUNCHER_APP: &str = "org.bardo.AgentLauncher";
 
 /// The Settings app, which a `settings` entry that is a unit runs.
-const SETTINGS_APP: &str = "org.quire.Settings";
+const SETTINGS_APP: &str = "org.bardo.Settings";
 
 /// The shell, which a `shell` entry runs.
-const SHELL_APP: &str = "org.quire.Shell";
+const SHELL_APP: &str = "org.bardo.Shell";
 
 /// The programs the Settings app and the shell are installed as (in `bin`): the unit manager must
 /// say their units start one of these before they keep a fixed role.
@@ -387,7 +387,7 @@ impl ProcPeers {
     }
 }
 
-/// Whether this build honours `INFERD_PROC_ROOT`: only with the `test-proc-root` feature.
+/// Whether this build honours `BARDO_INFERD_PROC_ROOT`: only with the `test-proc-root` feature.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
 impl Peers for ProcPeers {

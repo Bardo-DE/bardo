@@ -28,7 +28,7 @@ fn fact(n: u8, text: &str) -> Fact {
         text: FactText::parse(text).expect("text"),
         recorded: NOW,
         by: Actor::User {
-            via: AppName::parse("org.quire.Shell").expect("app"),
+            via: AppName::parse("org.bardo.Shell").expect("app"),
         },
         label: trusted_label(),
         links: vec![],
@@ -264,7 +264,7 @@ async fn a_forgotten_event_whose_text_is_only_in_a_pre_image_stays_forgotten() {
     put(&service, "prefs/tea", &render(&file));
     let mut record = mail_thread_archived().expect("fixture");
     record.body = EventBody::Search {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         text: "Zebra Corp quarterly".into(),
         scope: ThingKind::parse("mail.thread").expect("kind"),
         results: Count(1),

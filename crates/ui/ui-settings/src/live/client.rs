@@ -16,8 +16,8 @@ use super::value::{from_wire, to_wire};
 use super::{LiveError, LiveSchema, OwnerCheck, Snapshot, Timeouts, limits};
 use crate::schema::KeyPath;
 
-/// The raw proxy of `org.quire.SettingsModule1`: the frozen signatures, no conversion.
-#[zbus::proxy(interface = "org.quire.SettingsModule1", gen_blocking = false)]
+/// The raw proxy of `org.bardo.SettingsModule1`: the frozen signatures, no conversion.
+#[zbus::proxy(interface = "org.bardo.SettingsModule1", gen_blocking = false)]
 pub trait SettingsModule1 {
     fn describe(&self) -> Result<String, LiveError>;
     fn get(&self, key: &str) -> Result<OwnedValue, LiveError>;
@@ -64,7 +64,7 @@ pub struct LiveClient {
 
 impl LiveClient {
     /// A client of the module at `path` on the peer named `destination`
-    /// (`org.quire.Accounts1`, ...), whose owner `check` vouches for. Touches the bus only when
+    /// (`org.bardo.Accounts1`, ...), whose owner `check` vouches for. Touches the bus only when
     /// first used.
     pub fn new(
         connection: &Connection,

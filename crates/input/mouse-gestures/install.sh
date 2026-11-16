@@ -18,13 +18,13 @@
 #                 found first).
 #   --destdir D   stage the packaged layout under D as you (no root, no systemd, no udev); the
 #                 prefix defaults to /usr/local. $DESTDIR works too.
-#   --no-build    use the binary that is already built (or $PALMREST_BIN)
+#   --no-build    use the binary that is already built (or $BARDO_MOUSE_GESTURES_BIN)
 #   --dry-run     print every command, change nothing (does not build)
 #
 # Never run by the build or the tests: it changes which program owns the mouse's scrolling.
 set -euo pipefail
 
-UNIT=palmrest.service
+UNIT=bardo-mouse-gestures.service
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TREE="$(cd "$HERE/../.." && pwd)"   # the bardo tree
 DESTDIR="${DESTDIR:-}"
@@ -120,7 +120,7 @@ put_file() {
   fi
 }
 
-BIN="${PALMREST_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/palmrest}"
+BIN="${BARDO_MOUSE_GESTURES_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/palmrest}"
 if [[ "$BUILD" == yes ]]; then
   if [[ "$DRY_RUN" == yes ]]; then
     say "  would run: cargo build --release --locked -p mouse-gestures-daemon (in $TREE)"
@@ -132,13 +132,13 @@ fi
 # The unit names the installed program, never the DESTDIR-prefixed path, and always a root-owned one.
 RENDERED="$(mktemp -d)"
 trap 'rm -rf "$RENDERED"' EXIT
-sed "s|^ExecStart=.*|ExecStart=$BINDIR/palmrest|" "$HERE/dist/palmrest.service" >"$RENDERED/$UNIT"
+sed "s|^ExecStart=.*|ExecStart=$BINDIR/palmrest|" "$HERE/dist/bardo-mouse-gestures.service" >"$RENDERED/$UNIT"
 
 put_file 755 "$BIN" "$BINDIR/palmrest"
 put_file 644 "$RENDERED/$UNIT" "$UNITDIR/$UNIT"
-put_file 644 "$HERE/dist/70-palmrest.rules" "$UDEVDIR/70-palmrest.rules"
-put_file 644 "$HERE/dist/99-palmrest.conf" "$MODPROBEDIR/99-palmrest.conf"
-put_file 644 "$HERE/dist/palmrest-modules.conf" "$MODULESDIR/palmrest.conf"
+put_file 644 "$HERE/dist/70-bardo-mouse-gestures.rules" "$UDEVDIR/70-bardo-mouse-gestures.rules"
+put_file 644 "$HERE/dist/99-bardo-mouse-gestures.conf" "$MODPROBEDIR/99-bardo-mouse-gestures.conf"
+put_file 644 "$HERE/dist/bardo-mouse-gestures-modules.conf" "$MODULESDIR/palmrest.conf"
 
 if [[ "$LAYOUT" == package ]]; then
   say "Installed under $DESTDIR$PREFIX. On the machine: systemctl enable --now $UNIT"

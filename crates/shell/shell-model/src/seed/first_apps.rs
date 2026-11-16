@@ -26,10 +26,10 @@ enum Wanted {
 /// The Mac's order: Mail, then the viewer, then the terminal, with Settings last (System
 /// Settings sits at the end of the Mac's own dock).
 const ORDER: &[Wanted] = &[
-    Wanted::Id("org.quire.Mail"),
-    Wanted::Id("org.quire.Anyview"),
+    Wanted::Id("org.bardo.Mail"),
+    Wanted::Id("org.bardo.Anyview"),
     Wanted::Terminal,
-    Wanted::Id("org.quire.Settings"),
+    Wanted::Id("org.bardo.Settings"),
 ];
 
 /// The category that names a terminal in a desktop entry.

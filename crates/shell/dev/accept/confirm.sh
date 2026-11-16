@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# The confirmation sheet and the seat at intentd, end to end, with the REAL intentd and `quire-do`
+# The confirmation sheet and the seat at intentd, end to end, with the REAL intentd and `bardo-do`
 # from docket and the real sill daemon, on a private headless KWin started and stopped by the
 # script (a private copy of layer-shell-host's scripts/dev, so nothing of another session's
 # `.kwin-env` is read or written). The chain under test is the one a login has:
 #
-#   quire-do  ->  intentd (the gate)  ->  org.quire.Confirm1 (sill's sheet)  ->  the person's answer
-#                                    ->  org.quire.Shell IntentProvider1 (sill does the action)
+#   bardo-do  ->  intentd (the gate)  ->  org.bardo.Confirm1 (sill's sheet)  ->  the person's answer
+#                                    ->  org.bardo.Shell IntentProvider1 (sill does the action)
 #
 # Nothing here reaches the person's session bus, logind, polkit, ~/.config or a real keyboard.
 # One private bus is the daemon's session AND system bus (start_compositor refuses anything else);
-# intentd, quire-do and sill all run in a scratch HOME and scratch XDG directories, with an
+# intentd, bardo-do and sill all run in a scratch HOME and scratch XDG directories, with an
 # XDG_DATA_DIRS that names nothing, so the only manifests are the two the script copies in
-# (`dist/intents/org.quire.Shell.toml`, and docket's `org.quire.Memory.toml` for a hidden action).
+# (`dist/intents/org.bardo.Shell.toml`, and docket's `org.bardo.Memory.toml` for a hidden action).
 # The person's answers are `sill debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
 # the sheet where an xkb key does, whether or not the compositor gave it the keyboard.
 #
-# docket is built from $DOCKET_DIR (default crates/actions of this tree) into its own target
-# directory, $OUT_DIR/docket-target (override with DOCKET_TARGET), never docket's own.
+# docket is built from $BARDO_ACTIONS_DIR (default crates/actions of this tree) into its own target
+# directory, $OUT_DIR/docket-target (override with BARDO_ACTIONS_TARGET), never docket's own.
 #
-#   1. `quire-do apps` lists `shell`, and `quire-do shell --list` its actions.
+#   1. `bardo-do apps` lists `shell`, and `bardo-do shell --list` its actions.
 #   2. A read (`shell launcher.open`) runs with no sheet: exit 0.
 #   3. A write (`shell dock.pin`) asks: the sheet shows (captured into dev/out/confirm.png), then
-#      Return allows it once it is armed: exit 0, the pin is in the dock's file, and `quire-do
+#      Return allows it once it is armed: exit 0, the pin is in the dock's file, and `bardo-do
 #      undo --last` takes it back through the provider.
 #   4. Escape denies: exit 4, nothing pinned.
 #   5. "Allow from the terminal: this action, until logout" (Shift+Tab to it, Return): exit 0,
@@ -31,7 +31,7 @@
 #      button answers nothing, Space held for 1.5 s allows it: exit 0.
 #   8. Three refused calls in a row (a hidden action, exit 3) pause the terminal: the next call
 #      exits 7; `sill intents resume` lets it go on.
-#   9. With intentd gone, `quire-do` exits 6, no sheet is left on screen, and sill is still alive.
+#   9. With intentd gone, `bardo-do` exits 6, no sheet is left on screen, and sill is still alive.
 #
 # Exit 0 when every step passed, 1 on a failure, 2 when a step could not run.
 #
@@ -40,19 +40,19 @@ set -uo pipefail
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$SELF/../../../shell" && pwd)"
 PRIVATE_DEV="$(mktemp -d)"
-cp -r "${SHELL_HOST_DEV:-$REPO/../layer-shell/scripts/dev}" "$PRIVATE_DEV/dev"
+cp -r "${BARDO_LAYER_SHELL_HOST_DEV:-$REPO/../layer-shell/scripts/dev}" "$PRIVATE_DEV/dev"
 rm -f "$PRIVATE_DEV/dev/.kwin-env"
-export SHELL_HOST_DEV="$PRIVATE_DEV/dev"
+export BARDO_LAYER_SHELL_HOST_DEV="$PRIVATE_DEV/dev"
 # shellcheck source=dev/lib/all.sh
 source "$SELF/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-confirm"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-confirm"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
-DOCKET_DIR="${DOCKET_DIR:-$SILL_REPO/../actions}"
-DOCKET_TARGET="${DOCKET_TARGET:-$OUT_DIR/docket-target}"
-INTENTD="$DOCKET_TARGET/debug/accept-intentd"
-QUIRE_DO="$DOCKET_TARGET/debug/quire-do"
-INTENTD_PID=
+BARDO_ACTIONS_DIR="${BARDO_ACTIONS_DIR:-$BARDO_SHELL_REPO/../actions}"
+BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$OUT_DIR/docket-target}"
+INTENTD="$BARDO_ACTIONS_TARGET/debug/accept-actiond"
+BARDO_DO="$BARDO_ACTIONS_TARGET/debug/bardo-do"
+BARDO_ACTIOND_PID=
 ASKER=
 SHEET=
 
@@ -60,9 +60,9 @@ scratch_new
 mkdir -p "$CONFIG/sill" "$DATA/quire/intents"
 
 # intentd names a caller that owns no bus name by its cgroup, and only a terminal's child
-# (`vte-spawn-*.scope`) is the cli that `quire-do` must be; this script runs in whatever scope its
-# caller has (a gate, an agent's shell, a service), so it presents `quire-do` as a terminal's
-# child: it runs action-accept's `accept-intentd` (the shipped intentd ignores INTENTD_PROC_ROOT),
+# (`vte-spawn-*.scope`) is the cli that `bardo-do` must be; this script runs in whatever scope its
+# caller has (a gate, an agent's shell, a service), so it presents `bardo-do` as a terminal's
+# child: it runs action-accept's `accept-actiond` (the shipped intentd ignores BARDO_ACTIOND_PROC_ROOT),
 # which reads its callers from a scratch proc root, where `as_terminal` writes the cgroup of the
 # process it then execs.
 PROC_ROOT="$OUT_DIR/proc"
@@ -73,13 +73,13 @@ as_terminal() {
 }
 
 # intentd and the daemon each know the other by its systemd unit: intentd gives the sheet host's
-# role only to the main process of sill.service (the system's callers file, docket
-# dist/intentd-callers.toml, handed over as INTENTD_SYSTEM_CALLERS), and the daemon's provider
-# answers only intentd.service's main process. Each judges the other at its first call, at the
+# role only to the main process of bardo-shell.service (the system's callers file, docket
+# dist/actiond-callers.toml, handed over as BARDO_ACTIOND_SYSTEM_CALLERS), and the daemon's provider
+# answers only bardo-actiond.service's main process. Each judges the other at its first call, at the
 # start, so each is started through `as_unit UNIT`, which names its own process in the scratch proc
 # root as docket's own harness does (world.rs `place`): its cgroup, and it as the unit's main
 # process. It then execs the program, which keeps the pid. The daemon reads that root
-# (`--proc-root`), intentd too (INTENTD_PROC_ROOT).
+# (`--proc-root`), intentd too (BARDO_ACTIOND_PROC_ROOT).
 as_unit() {
   local unit="$1"
   shift
@@ -90,10 +90,10 @@ as_unit() {
 }
 unit_prefix() { UNIT_PREFIX=(bash -c "$(declare -f as_unit); PROC_ROOT=\$0 as_unit \"\$@\"" "$PROC_ROOT" "$1"); }
 
-# `quire-do ARGS` in the scratch environment, to completion.
-quire() { in_env bash -c "$(declare -f as_terminal); PROC_ROOT=\$0 as_terminal \"\$@\"" "$PROC_ROOT" "$QUIRE_DO" "$@"; }
+# `bardo-do ARGS` in the scratch environment, to completion.
+quire() { in_env bash -c "$(declare -f as_terminal); PROC_ROOT=\$0 as_terminal \"\$@\"" "$PROC_ROOT" "$BARDO_DO" "$@"; }
 
-# `quire-do ARGS` in the background: its output and exit code go to $OUT_DIR/NAME.{out,code}.
+# `bardo-do ARGS` in the background: its output and exit code go to $OUT_DIR/NAME.{out,code}.
 quire_bg() {
   local name="$1"
   shift
@@ -174,15 +174,15 @@ fresh() {
 
 start_intentd() {
   mkdir -p "$PROC_ROOT"
-  cp "$DOCKET_DIR/dist/intentd-callers.toml" "$OUT_DIR/intentd-callers.toml" || return 1
+  cp "$BARDO_ACTIONS_DIR/dist/actiond-callers.toml" "$OUT_DIR/actiond-callers.toml" || return 1
   unit_prefix intentd
-  in_env env INTENTD_PROC_ROOT="$PROC_ROOT" INTENTD_SYSTEM_CALLERS="$OUT_DIR/intentd-callers.toml" \
+  in_env env BARDO_ACTIOND_PROC_ROOT="$PROC_ROOT" BARDO_ACTIOND_SYSTEM_CALLERS="$OUT_DIR/actiond-callers.toml" \
     "${UNIT_PREFIX[@]}" "$INTENTD" >"$OUT_DIR/intentd.log" 2>&1 &
-  INTENTD_PID=$!
-  # intentd owns org.quire.Intents1 once `quire-do apps` answers.
+  BARDO_ACTIOND_PID=$!
+  # intentd owns org.bardo.Intents1 once `bardo-do apps` answers.
   for _ in $(seq 100); do
     quire apps >/dev/null 2>&1 && return 0
-    kill -0 "$INTENTD_PID" 2>/dev/null || { echo "intentd died (see $OUT_DIR/intentd.log)" >&2; return 1; }
+    kill -0 "$BARDO_ACTIOND_PID" 2>/dev/null || { echo "intentd died (see $OUT_DIR/intentd.log)" >&2; return 1; }
     sleep 0.1
   done
   echo "intentd never answered (see $OUT_DIR/intentd.log)" >&2
@@ -195,8 +195,8 @@ pinned() { grep -rqs -- "$1" "$CONFIG" "$DATA" "$STATE" 2>/dev/null; }
 # 1.
 step_manifest_listed() {
   local apps list
-  apps=$(quire apps 2>&1) || { echo "quire-do apps failed: $apps" >&2; return 1; }
-  list=$(quire shell --list 2>&1) || { echo "quire-do shell --list failed: $list" >&2; return 1; }
+  apps=$(quire apps 2>&1) || { echo "bardo-do apps failed: $apps" >&2; return 1; }
+  list=$(quire shell --list 2>&1) || { echo "bardo-do shell --list failed: $list" >&2; return 1; }
   echo "$apps" | tee "$OUT_DIR/1-apps.log" >&2
   echo "$list" | tee -a "$OUT_DIR/1-apps.log" >&2
   echo "$apps" | grep -qw shell || return 1
@@ -269,7 +269,7 @@ step_allow_from_the_terminal() {
   key Tab+shift
   key Enter
   code=$(code_of term)
-  await_field grants "org.quire.Shell:shell.dock.pin" 10 || return 1
+  await_field grants "org.bardo.Shell:shell.dock.pin" 10 || return 1
   echo "allow from the terminal: exit $code; grants: $(intents_field grants)" | tee "$log" >&2
   [ "$code" = 0 ] || return 1
   # The grant stands: the next call asks nobody.
@@ -283,7 +283,7 @@ step_allow_from_the_terminal() {
 step_revoke_asks_again() {
   fresh || return 1
   local log="$OUT_DIR/6-revoke.log" code
-  sill intents revoke org.quire.Shell:shell.dock.pin >>"$log" 2>&1 || return 1
+  sill intents revoke org.bardo.Shell:shell.dock.pin >>"$log" 2>&1 || return 1
   await_field grants "" 10 || return 1
   quire_bg again shell dock.pin --app e2e-term3.desktop
   await_sheet 10 >/dev/null || { echo "no sheet after the revoke" | tee -a "$log" >&2; return 1; }
@@ -345,9 +345,9 @@ step_intentd_gone() {
   local log="$OUT_DIR/9-gone.log" code
   quire_bg orphan shell dock.pin --app e2e-orphan.desktop
   await_sheet 10 >/dev/null || { echo "no sheet appeared" | tee "$log" >&2; return 1; }
-  kill "$INTENTD_PID" 2>/dev/null
-  wait "$INTENTD_PID" 2>/dev/null
-  INTENTD_PID=
+  kill "$BARDO_ACTIOND_PID" 2>/dev/null
+  wait "$BARDO_ACTIOND_PID" 2>/dev/null
+  BARDO_ACTIOND_PID=
   # Nobody waits for the answer: the sheet goes, sill stays.
   await_field showing "" 10 || return 1
   code=$(code_of orphan)
@@ -361,7 +361,7 @@ step_intentd_gone() {
 cleanup() {
   [ -n "$ASKER" ] && kill "$ASKER" 2>/dev/null
   stop_daemon
-  [ -n "$INTENTD_PID" ] && kill "$INTENTD_PID" 2>/dev/null
+  [ -n "$BARDO_ACTIOND_PID" ] && kill "$BARDO_ACTIOND_PID" 2>/dev/null
   stop_compositor
   scratch_drop
   rm -rf "$PRIVATE_DEV"
@@ -369,13 +369,13 @@ cleanup() {
 trap cleanup EXIT
 
 build_docket() {
-  if [ -n "${SILL_PREBUILT:-}" ]; then
-    # dev/accept.sh built docket outside the jail (DOCKET_TARGET); only check it is there.
-    [ -x "$INTENTD" ] && [ -x "$QUIRE_DO" ] || { echo "$INTENTD or $QUIRE_DO is missing: run dev/accept.sh --build" >&2; return 1; }
+  if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then
+    # dev/accept.sh built docket outside the jail (BARDO_ACTIONS_TARGET); only check it is there.
+    [ -x "$INTENTD" ] && [ -x "$BARDO_DO" ] || { echo "$INTENTD or $BARDO_DO is missing: run dev/accept.sh --build" >&2; return 1; }
     return 0
   fi
   {
-    (cd "$DOCKET_DIR" && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p action-accept --bin accept-intentd && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p action-cli --bins)
+    (cd "$BARDO_ACTIONS_DIR" && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-accept --bin accept-actiond && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-cli --bins)
   } >"$OUT_DIR/docket-build.log" 2>&1 || { echo "docket build failed (see $OUT_DIR/docket-build.log)" >&2; return 1; }
 }
 
@@ -383,13 +383,13 @@ build || exit 1
 build_docket || exit 1
 start_compositor --default kwin || exit 1
 IN_ENV_EXTRA=(XDG_DATA_DIRS="$DATA/none" XDG_CONFIG_DIRS="$CONFIG/none")
-cp "$SILL_REPO/dist/intents/org.quire.Shell.toml" "$DATA/quire/intents/"
-cp "$DOCKET_DIR/manifests/org.quire.Memory.toml" "$DATA/quire/intents/"
+cp "$BARDO_SHELL_REPO/dist/intents/org.bardo.Shell.toml" "$DATA/quire/intents/"
+cp "$BARDO_ACTIONS_DIR/manifests/org.bardo.Memory.toml" "$DATA/quire/intents/"
 backdrop_seed "$CONFIG" || exit 1
-: >"$CONFIG/sill/settings.toml"
+: >"$CONFIG/shell/settings.toml"
 status=0
 # The stand-in intentd is the router for this daemon only (a debug build's `--dev-callers`).
-dev_caller org.quire.Intents router "$INTENTD" || exit 1
+dev_caller org.bardo.Intents router "$INTENTD" || exit 1
 unit_prefix sill
 LAUNCH_PREFIX=("${UNIT_PREFIX[@]}")
 if start_intentd && launch_daemon --proc-root "$PROC_ROOT"; then

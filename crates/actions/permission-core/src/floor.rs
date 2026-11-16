@@ -1,4 +1,4 @@
-//! The administrator's floor: what a system file (`/etc/quire/docket-floor.toml`) fixes for the
+//! The administrator's floor: what a system file (`/etc/bardo/actions-floor.toml`) fixes for the
 //! agents on this machine, whatever the person's own settings and files say. It sets how loose
 //! the strictness may go and lists locked "always ask" and "never" entries. The person's files
 //! cannot loosen either, and nothing here touches the person's own launcher acts.

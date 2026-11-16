@@ -1,4 +1,4 @@
-//! The frozen skeleton of `org.quire.Memory1.Record`: its signatures, the source of the introspection.
+//! The frozen skeleton of `org.bardo.Memory1.Record`: its signatures, the source of the introspection.
 
 use zbus::fdo;
 
@@ -6,7 +6,7 @@ use zbus::fdo;
 #[derive(Debug, Default)]
 pub(crate) struct RecordSkeleton;
 
-#[zbus::interface(name = "org.quire.Memory1.Record")]
+#[zbus::interface(name = "org.bardo.Memory1.Record")]
 impl RecordSkeleton {
     fn record(&self, space: String, record: String) -> fdo::Result<String> {
         let _ = (space, record);

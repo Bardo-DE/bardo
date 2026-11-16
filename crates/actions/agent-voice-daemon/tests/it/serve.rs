@@ -472,7 +472,7 @@ async fn a_malformed_or_foreign_body_is_refused_before_anything_opens() {
         let error = world.voice.begin(body).await.expect_err("refused");
         assert!(
             matches!(&error, zbus::Error::MethodError(name, _, _)
-            if name.as_str() == "org.quire.Voice1.Error.Malformed"),
+            if name.as_str() == "org.bardo.Voice1.Error.Malformed"),
             "{error}"
         );
     }

@@ -13,7 +13,7 @@ use provenance::{EntityId, EntityKey, EntityKind, SpaceId, SpaceScope, UnixSecon
 use std::collections::BTreeMap;
 
 fn mail_caller() -> CallerId {
-    caller("org.quire.Mail", CallerRole::App)
+    caller("org.bardo.Mail", CallerRole::App)
 }
 
 async fn index(

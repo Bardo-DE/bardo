@@ -32,8 +32,8 @@ set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
 [ "$#" = 0 ] || { echo "usage: dev/accept/notification-center.sh" >&2; exit 2; }
-OUT_DIR="$SILL_OUT_ROOT/accept-notification-center"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-notification-center"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 scratch_new
 

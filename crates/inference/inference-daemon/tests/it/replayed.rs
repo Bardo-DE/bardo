@@ -48,7 +48,7 @@ fn request(text: &str, tools: Vec<ToolDecl>) -> InferRequest {
 
 fn tool() -> ToolDecl {
     ToolDecl {
-        name: ToolName::new("org.quire.Mail-mail.thread.search").expect("name"),
+        name: ToolName::new("org.bardo.Mail-mail.thread.search").expect("name"),
         description: "find threads".into(),
         params: SchemaText(JsonText::new(r#"{"type":"object"}"#).expect("json")),
     }
@@ -90,7 +90,7 @@ async fn a_chat_session_is_answered_from_the_cassette() {
     assert_eq!(first.tool_calls.len(), 1);
     assert_eq!(
         first.tool_calls[0].name.as_str(),
-        "org.quire.Mail-mail.thread.search"
+        "org.bardo.Mail-mail.thread.search"
     );
     assert_eq!(first.tool_calls[0].args.as_str(), r#"{"query":"Lisbon"}"#);
     // Entries are played in order: the next planner request gets the next step.
@@ -100,7 +100,7 @@ async fn a_chat_session_is_answered_from_the_cassette() {
     };
     assert_eq!(
         second.tool_calls[0].name.as_str(),
-        "org.quire.Mail-mail.contact.search"
+        "org.bardo.Mail-mail.contact.search"
     );
     // Nothing was spawned: the engine is the daemon's own task.
     assert_eq!(

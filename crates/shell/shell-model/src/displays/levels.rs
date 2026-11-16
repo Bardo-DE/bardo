@@ -1,4 +1,4 @@
-//! The brightness each display is at, as the shell's bus lists it (`org.quire.Displays1`).
+//! The brightness each display is at, as the shell's bus lists it (`org.bardo.Displays1`).
 //! Pure: the outputs whose brightness can be read, in the compositor's order.
 
 use super::Displays;

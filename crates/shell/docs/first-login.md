@@ -42,14 +42,14 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    `--manifest-path`, so the repo's `.cargo/config.toml` (`clang` and `mold`, for development) is not read.
    Nothing is installed for the linker.
 
-   It installs `/usr/local/bin/sill`, `/etc/pam.d/sill`, the intents manifest
-   `/usr/local/share/quire/intents/org.quire.Shell.toml`, the skills and the settings schema; it also
+   It installs `/usr/local/bin/bardo-shell`, `/etc/pam.d/bardo-shell`, the intents manifest
+   `/usr/local/share/quire/intents/org.bardo.Shell.toml`, the skills and the settings schema; it also
    copies the keycap layer to `~/.config/keycap/keycap.toml` when you have none (an existing file is
    never touched). It is safe to run again. Then install the session from `~/desktop` (it writes
-   `desktop-session` and the `sill (casement)` entry in `wayland-sessions`). Confirm:
+   `bardo-session` and the `sill (casement)` entry in `wayland-sessions`). Confirm:
 
    ```sh
-   ls /usr/local/bin/sill /etc/pam.d/sill ~/.config/keycap/keycap.toml
+   ls /usr/local/bin/bardo-shell /etc/pam.d/bardo-shell ~/.config/keycap/keycap.toml
    ls /usr/share/wayland-sessions/ | grep -i casement
    ```
    **System services sill uses (all optional).** Each feature below works only while its service runs
@@ -74,7 +74,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    `~/keycap/install.sh` (it builds and installs with sudo; see `~/keycap/README.md`, "Install").
    Check `systemctl status keycap` and Cmd+C / Cmd+V in a text field in Plasma.
 
-   `/etc/keycap/keycap.toml` is the Plasma overlay and is shared by every session: it writes
+   `/etc/bardo/key-remap/key-remap.toml` is the Plasma overlay and is shared by every session: it writes
    Cmd+Space as Alt+Space (KRunner), which opens nothing in sill. So the sill session has its own layer,
    `~/.config/keycap/keycap.toml` (copied from `dist/keycap/keycap.toml` by the install). sill forwards
    that file to keycap and keycap lays it over the machine file, so in sill Cmd+Space is Super+Space and
@@ -88,7 +88,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    ```sh
    printf '0 press 1 apple leftmeta\n10 press 1 apple space\n20 release 1 apple space\n30 release 1 apple leftmeta\n' > /tmp/cmd-space.txt
    keycap replay /tmp/cmd-space.txt                           # built-in mapping: +leftmeta +space (Super+Space)
-   keycap replay --config /etc/keycap/keycap.toml /tmp/cmd-space.txt   # the Plasma overlay alone: +leftalt +space
+   keycap replay --config /etc/bardo/key-remap/key-remap.toml /tmp/cmd-space.txt   # the Plasma overlay alone: +leftalt +space
    ```
 
    Replay takes one file, so the layered result is checked after login: Cmd+Space opens the launcher
@@ -101,15 +101,15 @@ screen's session list the whole time. Nothing below changes Plasma's files.
      toshy-kwin-dbus.service toshy-wlroots-dbus.service toshy-session-monitor.service
    mkdir -p ~/toshy-off && mv ~/.config/autostart/Toshy_*.desktop ~/toshy-off/   # tray and kickstart
    ```
-7. **Chrome and Electron passwords.** Under `XDG_CURRENT_DESKTOP=quire` Chrome no longer picks
+7. **Chrome and Electron passwords.** Under `XDG_CURRENT_DESKTOP=bardo` Chrome no longer picks
    KWallet by itself. If an app asks you to sign in again, start it with `--password-store=kwallet6`
    (the LINE and Teams wrappers in `~/.local/bin`, Chrome's launcher, Cursor); that reads the same
    wallet Plasma used. `--password-store=gnome-libsecret` also works through the Secret Service but
    is a different store (you sign in once more).
 8. **Mouse settings.** Plasma's per-mouse settings are not copied. casement's settings
-   (`~/.config/casement/settings.toml`, `[pointer] natural_scroll`) hold the mouse options, and natural
+   (`~/.config/compositor/settings.toml`, `[pointer] natural_scroll`) hold the mouse options, and natural
    scroll is on by default. Change it there if you want the other direction.
-9. Do not install `dist/sill.service` yourself (the desktop repo's installer puts it under `/etc/systemd/user`, root-held, and the session starts it; a copy under `~/.config` is not trusted) and do not enable `voiced.service` (see "The agent stack" in
+9. Do not install `dist/bardo-shell.service` yourself (the desktop repo's installer puts it under `/etc/systemd/user`, root-held, and the session starts it; a copy under `~/.config` is not trusted) and do not enable `bardo-voiced.service` (see "The agent stack" in
    section 3). `dist/udev` and `dist/modules-load.d` (external monitor brightness) are installed by
    `dist/install.sh` itself, and only when no ddcutil udev rule exists on the machine.
 10. Log out of Plasma.
@@ -128,7 +128,7 @@ Go/no-go set is 1 to 8 (if 1, 2, 4, 6 or 7 fail, log out and use section 5):
 # 1 the session is up
 systemctl --user is-active graphical-session.target; echo $XDG_CURRENT_DESKTOP $XDG_SESSION_TYPE $XMODIFIERS
 sill ping; sill polkit status; sill idle status        # pong; registered; {"kind":"own"}
-journalctl -b --no-pager | grep -E 'desktop-session|guard' | tail     # no quick exits; cat $XDG_RUNTIME_DIR/desktop-session/guard.log is empty
+journalctl -b --no-pager | grep -E 'bardo-session|guard' | tail     # no quick exits; cat $XDG_RUNTIME_DIR/bardo-session/guard.log is empty
 # 2 launcher by keyboard (G1/G2/L2): Cmd+Space opens it, again closes it; type "term", Enter; also Super+Space
 #   (Cmd+Space does nothing: Alt+Space is being sent, so ~/.config/keycap/keycap.toml is missing; section 1, item 5)
 # 3 GPU (B3): which device did it pick, is sill quiet
@@ -149,11 +149,11 @@ Then, in this order, tick them in `docs/manual-checks.md`:
 
 ```sh
 # 9  Cmd+Tab: tap switches to the previous app, hold shows the panel
-# 10 Chinese input: pgrep -a fcitx5; type in Zen and in the launcher (Caps Lock switches input: the desktop vendor file /usr/lib/keycap/keycap.toml maps it to Ctrl+Space; keycap refuses that rule in the user file)
+# 10 Chinese input: pgrep -a fcitx5; type in Zen and in the launcher (Caps Lock switches input: the desktop vendor file /usr/lib/bardo/key-remap/key-remap.toml maps it to Ctrl+Space; keycap refuses that rule in the user file)
 # 11 secrets: secret-tool search xdg:schema org.freedesktop.Secret.Generic 2>&1 | head -3 ; open Chrome, Cursor, Teams: signed in?
 #    busctl --user status org.freedesktop.secrets | head -3   # owned (ksecretd)
 #    (if not: start them with --password-store=kwallet6; section 1, item 7)
-# 12 display: casementctl debug output list (3840x2160, scale 2); sill display brightness up (the BenQ moves, OSD shows)
+# 12 display: bardo-compositorctl debug output list (3840x2160, scale 2); sill display brightness up (the BenQ moves, OSD shows)
 # 13 video in Zen: the screen must not dim; sill idle status shows "inhibition":"held"
 # 14 power menu offers (N14): the menu lists Log Out, Restart, Shut Down (do not press Restart or Shut Down)
 # 15 workspaces and the mouse: sill workspace next; sill workspace prev; sill workspace overview (Mission Control opens); scroll the Magic Mouse: direction (section 1, item 8; else Settings > Mouse)
@@ -167,7 +167,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 
 ### The agent stack (none of it blocks the session)
 
-- Do not install or enable `voiced.service`: its binary is still a skeleton that exits 2.
+- Do not install or enable `bardo-voiced.service`: its binary is still a skeleton that exits 2.
 - Summon the assistant once with no model installed (`sill companion summon`): it must
   end with a plain failure within a few seconds, and the session keeps working.
 - `journalctl --user -u memoryd -b`: no crash loop. With the keyring locked or absent, memoryd reports the
@@ -184,7 +184,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   for its Force Quit chord (today the chord is swallowed by a command that does nothing). Run
   `sill force-quit toggle` from a terminal to see the panel.
 - No sink list in the control centre (G352): switch audio in Settings > Sound or `wpctl set-default <id>`.
-- Mouse settings are casement's (`~/.config/casement/settings.toml`, section 1, item 8), or per device in
+- Mouse settings are casement's (`~/.config/compositor/settings.toml`, section 1, item 8), or per device in
   Settings > Mouse (the "palmrest" devices).
 - Night Shift: the control centre's Display module switches casement's software night light on until
   tomorrow and sets its warmth; the schedule (times, "always") is casement's `[night_light]`, set in
@@ -214,19 +214,19 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   or no adapter matches, wgpu's own order applies (a discrete GPU first), and any adapter that fails
   a first test frame is skipped. The journal line `layer-shell-host: adapter <name> ...` names the one
   chosen. To override, put `WGPU_ADAPTER_NAME=<part of the adapter's name>` (for example `AMD` or
-  `NVIDIA`) in `~/.config/desktop-session/session.env` (plain `NAME=value`, read at the next login;
+  `NVIDIA`) in `~/.config/bardo-session/session.env` (plain `NAME=value`, read at the next login;
   the file is never created for you): it wins over the detection. If the shell is slow or the CPU is
   busy, check that line first.
 
 ## 6. Where the logs are
 
 ```sh
-journalctl -b --no-pager | grep -iE 'sill|casement|desktop-session' | tail -100   # the session script, compositor, shell
-journalctl --user -b -u casement.service -u desktop-session.target -u xdg-desktop-portal
+journalctl -b --no-pager | grep -iE 'sill|casement|bardo-session' | tail -100   # the session script, compositor, shell
+journalctl --user -b -u bardo-compositor.service -u bardo-session.target -u xdg-desktop-portal
 journalctl --user -b -u palmrest -u 'app-org.fcitx.Fcitx5@autostart'
 journalctl -b -u keycap                                              # system unit
-cat "$XDG_RUNTIME_DIR"/desktop-session/guard.log                     # the crash-loop guard's decisions
+cat "$XDG_RUNTIME_DIR"/bardo-session/guard.log                     # the crash-loop guard's decisions
 ```
 
 The session script runs casement as a user unit and gives up after three quick exits (then
-`casement --safe`, then it ends the session); see the desktop repo's `session/desktop-session`.
+`casement --safe`, then it ends the session); see the desktop repo's `session/bardo-session`.

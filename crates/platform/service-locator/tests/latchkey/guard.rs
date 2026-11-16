@@ -10,13 +10,13 @@ const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";
 const SHELL: RoleName = RoleName::from_static("shell");
 const TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
 exe  = [
-  "/opt/quire/releases/*/bin/sill",
-  "/opt/quire/current/bin/sill",
-  "/usr/local/bin/sill",
-  "/usr/bin/sill",
+  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/current/bin/bardo-shell",
+  "/usr/local/bin/bardo-shell",
+  "/usr/bin/bardo-shell",
 ]
 role = "shell"
 "#;
@@ -98,7 +98,7 @@ fn only_the_trusted_unit_under_the_users_manager_claims_the_shell() {
     let cases: &[(&str, String, Claim)] = &[
         (
             "the shell",
-            format!("{MANAGER_1000}/session.slice/sill.service"),
+            format!("{MANAGER_1000}/session.slice/bardo-shell.service"),
             shell,
         ),
         (
@@ -113,17 +113,17 @@ fn only_the_trusted_unit_under_the_users_manager_claims_the_shell() {
         ),
         (
             "a system service of that name",
-            "/system.slice/sill.service".to_owned(),
+            "/system.slice/bardo-shell.service".to_owned(),
             Claim::Other,
         ),
         (
             "a manager of another user than the slice",
-            "/user.slice/user-999.slice/user@1000.service/session.slice/sill.service".to_owned(),
+            "/user.slice/user-999.slice/user@1000.service/session.slice/bardo-shell.service".to_owned(),
             Claim::Other,
         ),
         (
             "not under user.slice",
-            "/machine.slice/user-1000.slice/user@1000.service/sill.service".to_owned(),
+            "/machine.slice/user-1000.slice/user@1000.service/bardo-shell.service".to_owned(),
             Claim::Other,
         ),
     ];
@@ -134,12 +134,12 @@ fn only_the_trusted_unit_under_the_users_manager_claims_the_shell() {
 
 #[test]
 fn a_readable_image_must_be_the_shells_and_root_owned() {
-    let cgroup = format!("{MANAGER_1000}/session.slice/sill.service");
+    let cgroup = format!("{MANAGER_1000}/session.slice/bardo-shell.service");
     let shell = Claim::Shell { user: 1000 };
     let cases: &[(&str, FixtureImage<'_>, Claim)] = &[
         (
             "the installed shell",
-            FixtureImage::Present("/usr/bin/sill", FileTrust::RootOnly),
+            FixtureImage::Present("/usr/bin/bardo-shell", FileTrust::RootOnly),
             shell,
         ),
         (
@@ -149,7 +149,7 @@ fn a_readable_image_must_be_the_shells_and_root_owned() {
         ),
         (
             "the shell's path, but writable",
-            FixtureImage::Present("/usr/bin/sill", FileTrust::Writable(Writer::Group)),
+            FixtureImage::Present("/usr/bin/bardo-shell", FileTrust::Writable(Writer::Group)),
             Claim::Other,
         ),
     ];

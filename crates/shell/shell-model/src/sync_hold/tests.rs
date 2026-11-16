@@ -13,7 +13,7 @@ fn hold(dataset: &str, discard: u64, held: u64) -> Hold {
         discard,
         held,
         account: SettingsTarget::Account(AccountRef(
-            "/org/quire/Accounts1/account/work".to_owned(),
+            "/org/bardo/Accounts1/account/work".to_owned(),
         )),
     }
 }

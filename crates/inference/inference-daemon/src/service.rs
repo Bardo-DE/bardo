@@ -1,9 +1,9 @@
-//! `org.quire.Inference1` at `/org/quire/Inference1`: the daemon's object. `Open` checks the
+//! `org.bardo.Inference1` at `/org/bardo/Inference1`: the daemon's object. `Open` checks the
 //! caller (connection to pid to executable to caller), makes a socketpair, hands one end back as
 //! the reply descriptor and runs [`serve_session`] on the other, over the four seams: this
 //! session's router (which decides once and pins the runner), the shared engines, the session's
 //! turns and its audit sink. The introspection of this object is the checked-in
-//! `dbus/org.quire.Inference1.xml` (`tests/introspection.rs`).
+//! `dbus/org.bardo.Inference1.xml` (`tests/introspection.rs`).
 
 use self::error::InferError;
 use self::own::{Own, own_of};
@@ -132,7 +132,7 @@ impl<P, O, C> Inference<P, O, C> {
         }
     }
 
-    /// The same object, also serving `org.quire.Inference1.Agents` to the agent launcher over
+    /// The same object, also serving `org.bardo.Inference1.Agents` to the agent launcher over
     /// these endpoints (`serve_on` puts it on the bus).
     pub fn agents(self, agents: Agents) -> Self {
         Self {
@@ -1122,7 +1122,7 @@ where
 }
 
 /// As [`serve_on`], with `settings` served at [`inference_dbus::inference::INFERENCE_SETTINGS_PATH`] before the
-/// name is claimed: whoever sees `org.quire.Inference1` owned finds every object of it, the
+/// name is claimed: whoever sees `org.bardo.Inference1` owned finds every object of it, the
 /// settings module among them.
 pub async fn serve_with_settings<P, O, C, S>(
     connection: &zbus::Connection,

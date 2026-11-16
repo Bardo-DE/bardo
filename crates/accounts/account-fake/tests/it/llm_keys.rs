@@ -151,7 +151,7 @@ async fn permit(rig: &Rig, who: &AppId) -> GrantId {
 #[tokio::test]
 async fn an_app_sees_its_permit_and_every_other_app_or_class_is_asked() {
     let rig = rig(1).await;
-    let companion = app("org.quire.Companion");
+    let companion = app("org.bardo.Companion");
     let grant = permit(&rig, &companion).await;
     let verdict = |app: AppId, class| {
         let rows = rig
@@ -169,7 +169,7 @@ async fn an_app_sees_its_permit_and_every_other_app_or_class_is_asked() {
     );
     assert_eq!(verdict(companion.clone(), DataClass::Mail), Verdict::Ask);
     assert_eq!(
-        verdict(app("org.quire.Other"), DataClass::Prompt),
+        verdict(app("org.bardo.Other"), DataClass::Prompt),
         Verdict::Ask
     );
 
@@ -202,7 +202,7 @@ async fn the_verdicts_list_only_the_accounts_that_serve_language_models() {
         FixedClock(NOW),
     )
     .with_store(MemoryStore::default());
-    let companion = app("org.quire.Companion");
+    let companion = app("org.bardo.Companion");
     let rows = |who: &AppId, class| {
         service.llm_verdicts(who, class, Usage::Interactive, &|provider| {
             Some(format!("label of {}", provider.as_str()))
@@ -242,7 +242,7 @@ async fn the_verdicts_list_only_the_accounts_that_serve_language_models() {
     ));
     assert_eq!(rows(&companion, DataClass::Mail)[0].verdict, Verdict::Ask);
     assert_eq!(
-        rows(&app("org.quire.Other"), DataClass::Prompt)[0].verdict,
+        rows(&app("org.bardo.Other"), DataClass::Prompt)[0].verdict,
         Verdict::Ask
     );
 }
@@ -250,7 +250,7 @@ async fn the_verdicts_list_only_the_accounts_that_serve_language_models() {
 #[tokio::test]
 async fn a_permit_opens_the_key_in_process_and_the_release_is_audited_without_the_key() {
     let rig = rig(1).await;
-    let companion = app("org.quire.Companion");
+    let companion = app("org.bardo.Companion");
     let grant = permit(&rig, &companion).await;
     let key = rig.service.release_key(&grant).await.expect("key");
     assert_eq!(key.expose(), KEY);
@@ -271,7 +271,7 @@ async fn a_permit_opens_the_key_in_process_and_the_release_is_audited_without_th
 #[tokio::test]
 async fn a_permit_that_does_not_open_a_key_is_refused() {
     let rig = rig(1).await;
-    let grant = permit(&rig, &app("org.quire.Companion")).await;
+    let grant = permit(&rig, &app("org.bardo.Companion")).await;
     let account = llm_account().id;
 
     // A permit nobody holds.
@@ -328,7 +328,7 @@ async fn a_permit_that_does_not_open_a_key_is_refused() {
 
     // An allow-once permit is spent by the first key read that succeeds, not by one that fails.
     let once = rig_scoped(GrantScope::Once, 1).await;
-    let grant = permit(&once, &app("org.quire.Companion")).await;
+    let grant = permit(&once, &app("org.bardo.Companion")).await;
     once.secrets.delete(&llm_key()).await.expect("delete");
     assert_eq!(
         once.service.release_key(&grant).await.map(drop),

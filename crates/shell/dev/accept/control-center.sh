@@ -89,8 +89,8 @@ case "${1:-}" in
   "") MODE=nested ;;
   *) usage ;;
 esac
-OUT_DIR="$SILL_OUT_ROOT/accept-control-center"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-control-center"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 # The panel's popup: the card (`--cc-width`, 320) plus the transparent
 # shadow room on each side (`SIDE` in crates/shell/shell-bar/src/bar/popup.rs, read from the source so
@@ -99,7 +99,7 @@ mkdir -p "$OUT_DIR" "$SHOTS"
 # the most a hairline plus rounding can add. (It was a hard 376 and failed at 378.)
 PANEL_CARD_W=320
 PANEL_SIDE=$(sed -n 's/^pub(crate) const SIDE: i32 = \([0-9]*\);.*/\1/p' \
-  "$SILL_REPO/shell-bar/src/bar/popup.rs")
+  "$BARDO_SHELL_REPO/shell-bar/src/bar/popup.rs")
 PANEL_SIDE="${PANEL_SIDE:-28}"
 PANEL_POPUP_MIN=$(( PANEL_CARD_W + 2 * PANEL_SIDE ))
 PANEL_POPUP_MAX=$(( PANEL_POPUP_MIN + 8 ))
@@ -137,7 +137,7 @@ SAFE=unproven
 write_settings() {
   mkdir -p "$CONFIG/sill"
   printf '[control_center]\nmenu_bar_sound = false\nmenu_bar_battery = false\n' \
-    >"$CONFIG/sill/settings.toml"
+    >"$CONFIG/shell/settings.toml"
 }
 
 # The status items' centres, right to left (the clock's first), from a capture of the bar: runs of
@@ -188,7 +188,7 @@ click_bar() { # x y
 
 escape_key() {
   case "$COMPOSITOR" in
-    casement) casementctl debug inject "key Escape down" "sleep 30" "key Escape up" "sleep 150" ;;
+    casement) bardo-compositorctl debug inject "key Escape down" "sleep 30" "key Escape up" "sleep 150" ;;
     *) sill debug key "$POPUP" Escape ;;
   esac
 }
@@ -241,7 +241,7 @@ step_item_click() {
   if [ "$COMPOSITOR" = casement ]; then
     echo "item click: popup ${width} wide (want $PANEL_POPUP_MIN to $PANEL_POPUP_MAX); a second click closed it" | tee -a "$log" >&2
     panel_width_ok "$width" || return 1
-    expected_skip "the card's distance from the output's right edge is read off an output screenshot (casementctl shot, P1-C1)"
+    expected_skip "the card's distance from the output's right edge is read off an output screenshot (bardo-compositorctl shot, P1-C1)"
     return 2
   fi
   echo "item click: popup ${width} wide (want $PANEL_POPUP_MIN to $PANEL_POPUP_MAX), card ${gap} px from the output's right edge (want about 8); a second click closed it" \
@@ -432,7 +432,7 @@ start_real_daemon() {
 # The fake BlueZ on KWin's private bus, before the daemon (its Bluetooth service seeds once).
 start_bluez() {
   : >"$BTLOG"
-  python3 "$SILL_REPO/dev/fake-bluez.py" "$BUS" "$BTLOG" >"$OUT_DIR/bluez.log" 2>&1 &
+  python3 "$BARDO_SHELL_REPO/dev/fake-bluez.py" "$BUS" "$BTLOG" >"$OUT_DIR/bluez.log" 2>&1 &
   BLUEZ=$!
   for _ in $(seq 50); do
     grep -q "fake-bluez: org.bluez on $BUS" "$OUT_DIR/bluez.log" && return 0
@@ -447,7 +447,7 @@ start_bluez() {
 # seed once). It logs scans, radio and connection requests to $NMLOG and changes nothing real.
 start_nm() {
   : >"$NMLOG"
-  python3 "$SILL_REPO/dev/fake-nm.py" "$BUS" "$NMLOG" >"$OUT_DIR/nm.log" 2>&1 &
+  python3 "$BARDO_SHELL_REPO/dev/fake-nm.py" "$BUS" "$NMLOG" >"$OUT_DIR/nm.log" 2>&1 &
   NM_PID=$!
   for _ in $(seq 50); do
     grep -q "fake-nm: org.freedesktop.NetworkManager on $BUS" "$OUT_DIR/nm.log" && return 0
@@ -492,7 +492,7 @@ popup_origin() {
   local size
   size=$(python3 -c 'import sys; from PIL import Image; print(*Image.open(sys.argv[1]).size)' \
     "$OUT_DIR/popup-size.png")
-  "$SHELL_HOST_DEV/kwin-windows.sh" >"$OUT_DIR/windows.log" 2>&1
+  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" >"$OUT_DIR/windows.log" 2>&1
   # shellcheck disable=SC2086
   python3 - "$OUT_DIR/windows.log" $size "$SCALE" <<'EOF'
 import json, sys

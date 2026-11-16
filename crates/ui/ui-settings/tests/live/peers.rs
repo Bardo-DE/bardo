@@ -15,8 +15,8 @@ use zbus::{MatchRule, MessageStream};
 use crate::bus::PrivateBus;
 use crate::module::{Accounts, TOGGLE};
 
-const PATH: &str = "/org/quire/Peers1/settings";
-const NAME: &str = "org.quire.Peers1";
+const PATH: &str = "/org/bardo/Peers1/settings";
+const NAME: &str = "org.bardo.Peers1";
 
 async fn next<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
     std::future::poll_fn(|cx| Pin::new(&mut *stream).poll_next(cx)).await

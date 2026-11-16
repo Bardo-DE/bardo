@@ -1,4 +1,4 @@
-//! `org.quire.Memory`, over memoryd: the planner reaches memory only through these router
+//! `org.bardo.Memory`, over memoryd: the planner reaches memory only through these router
 //! actions, so the router can label what it delivers. Every request goes as the router's own
 //! `Caller` for the Space of the invocation, and `memory.propose` always lands in the pending
 //! queue (memoryd labels the router's proposals untrusted).
@@ -24,7 +24,7 @@ use provenance::{
 use std::collections::BTreeSet;
 
 /// The name the provider answers to.
-pub const MEMORY_APP: &str = "org.quire.Memory";
+pub const MEMORY_APP: &str = "org.bardo.Memory";
 
 /// How many hits or facts one call returns at most.
 const LIMIT: Count = Count(10);
@@ -32,7 +32,7 @@ const LIMIT: Count = Count(10);
 /// Where an agent's proposal is filed until the person keeps or drops it.
 const PROPOSAL_TOPIC: &str = "notes/agent";
 
-/// `org.quire.Memory`, over memoryd.
+/// `org.bardo.Memory`, over memoryd.
 #[derive(Debug)]
 pub struct MemoryProvider<T: Transport> {
     manifest: ValidManifest,
@@ -50,7 +50,7 @@ impl<T: Transport> MemoryProvider<T> {
 }
 
 fn app() -> AppName {
-    AppName::parse(MEMORY_APP).expect("`org.quire.Memory` is a valid app name")
+    AppName::parse(MEMORY_APP).expect("`org.bardo.Memory` is a valid app name")
 }
 
 fn failed(why: &str) -> AppRefusal {

@@ -1,7 +1,7 @@
 # The desktop's own processes: which program is which, and the role it plays.
 #
-# One shipped table, root-owned: /etc/quire/desktop-callers.toml, with additions for an
-# administrator or a developer in /etc/quire/desktop-callers.d/*.toml. peephole reads no user
+# One shipped table, root-owned: /etc/bardo/desktop-callers.toml, with additions for an
+# administrator or a developer in /etc/bardo/desktop-callers.d/*.toml. peephole reads no user
 # file: nothing a person's file says makes a process more trusted. A file that is not owned by
 # root alone is refused, and so is any file whose directory is writable by someone else.
 #
@@ -18,24 +18,24 @@
 
 # The shell: draws the desktop and asks the person on behalf of other programs.
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
 exe  = [
-  "/opt/quire/releases/*/bin/sill",
-  "/opt/quire/current/bin/sill",
-  "/usr/local/bin/sill",
-  "/usr/bin/sill",
+  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/current/bin/bardo-shell",
+  "/usr/local/bin/bardo-shell",
+  "/usr/bin/bardo-shell",
 ]
 role = "shell"
 
 # The portal backend: asks the shell, is handed an input socket, captures the screen.
 [[peer]]
-app  = "org.quire.Portal"
-unit = "transom.service"
+app  = "org.bardo.Portal"
+unit = "bardo-portal.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/transom",
-  "/opt/quire/releases/*/bin/transom",
-  "/usr/libexec/transom",
+  "/opt/bardo/releases/*/libexec/transom",
+  "/opt/bardo/releases/*/bin/transom",
+  "/usr/libexec/bardo/bardo-portal",
 ]
 role = "portal"
 
@@ -51,142 +51,142 @@ role = "portal_frontend"
 
 # The compositor.
 [[peer]]
-app  = "org.quire.Compositor"
-unit = "casement.service"
+app  = "org.bardo.Compositor"
+unit = "bardo-compositor.service"
 exe  = [
-  "/opt/quire/releases/*/bin/casement",
-  "/opt/quire/current/bin/casement",
+  "/opt/bardo/releases/*/bin/casement",
+  "/opt/bardo/current/bin/bardo-compositor",
   "/usr/local/bin/casement",
-  "/usr/bin/casement",
+  "/usr/bin/bardo-compositor",
 ]
 role = "compositor"
 
 # The agent tier.
 [[peer]]
-app  = "org.quire.Agent"
-unit = "cuad.service"
+app  = "org.bardo.Agent"
+unit = "bardo-computer-use.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/cuad",
-  "/usr/libexec/quire/cuad",
+  "/opt/bardo/releases/*/libexec/quire/cuad",
+  "/usr/libexec/bardo/bardo-computer-use",
 ]
 role = "agent_tier"
 
 # The Settings app.
 [[peer]]
-app  = "org.quire.Settings"
-unit = "org.quire.Settings.service"
+app  = "org.bardo.Settings"
+unit = "org.bardo.Settings.service"
 exe  = [
-  "/opt/quire/releases/*/bin/detent",
+  "/opt/bardo/releases/*/bin/detent",
   "/usr/local/bin/detent",
-  "/usr/bin/detent",
+  "/usr/bin/bardo-settings",
 ]
 role = "settings"
 
 # The software-update service.
 [[peer]]
-app  = "org.quire.Updates"
-unit = "slipway.service"
+app  = "org.bardo.Updates"
+unit = "bardo-updater.service"
 exe  = [
-  "/opt/quire/releases/*/bin/slipway",
-  "/opt/quire/current/bin/slipway",
+  "/opt/bardo/releases/*/bin/slipway",
+  "/opt/bardo/current/bin/bardo-updater",
 ]
 role = "updater"
 
 # The slipway command line. A program: it has no unit, so its ceiling is Exe.
 [[peer]]
-app  = "org.quire.Updater"
+app  = "org.bardo.Updater"
 exe  = [
-  "/opt/quire/releases/*/bin/slipway",
-  "/opt/quire/current/bin/slipway",
-  "/usr/local/bin/slipway",
+  "/opt/bardo/releases/*/bin/slipway",
+  "/opt/bardo/current/bin/bardo-updater",
+  "/usr/local/bin/bardo-updater",
 ]
 role = "updater_cli"
 
 # The touchpad daemon.
 [[peer]]
-app  = "org.quire.Palmrest"
-unit = "palmrest.service"
+app  = "org.bardo.MouseGestures"
+unit = "bardo-mouse-gestures.service"
 exe  = [
-  "/opt/quire/releases/*/bin/palmrest",
-  "/usr/local/bin/palmrest",
+  "/opt/bardo/releases/*/bin/palmrest",
+  "/usr/local/bin/bardo-mouse-gestures",
   "/usr/bin/palmrest",
 ]
 role = "pad_daemon"
 
 # The keymap daemon.
 [[peer]]
-app  = "org.quire.Keycap"
-unit = "keycap.service"
+app  = "org.bardo.KeyRemap"
+unit = "bardo-key-remap.service"
 exe  = [
-  "/opt/quire/releases/*/bin/keycap",
-  "/usr/local/bin/keycap",
+  "/opt/bardo/releases/*/bin/keycap",
+  "/usr/local/bin/bardo-key-remap",
   "/usr/bin/keycap",
 ]
 role = "keymap_daemon"
 
 # The accounts service.
 [[peer]]
-app  = "org.quire.Accounts"
-unit = "accountd.service"
+app  = "org.bardo.Accounts"
+unit = "bardo-accountd.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/accountd",
-  "/usr/libexec/quire/accountd",
+  "/opt/bardo/releases/*/libexec/quire/accountd",
+  "/usr/libexec/bardo/bardo-accountd",
 ]
 role = "accounts"
 
 # The model-access service.
 [[peer]]
-app  = "org.quire.Inference"
-unit = "inferd.service"
+app  = "org.bardo.Inference"
+unit = "bardo-inferd.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/inferd",
-  "/usr/libexec/quire/inferd",
+  "/opt/bardo/releases/*/libexec/quire/inferd",
+  "/usr/libexec/bardo/bardo-inferd",
 ]
 role = "inference"
 
 # The sync service.
 [[peer]]
-app  = "org.quire.Sync"
-unit = "syncd.service"
+app  = "org.bardo.Sync"
+unit = "bardo-syncd.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/syncd",
-  "/usr/libexec/quire/syncd",
+  "/opt/bardo/releases/*/libexec/quire/syncd",
+  "/usr/libexec/bardo/bardo-syncd",
 ]
 role = "sync"
 
 # The intent router.
 [[peer]]
-app  = "org.quire.Intents"
-unit = "intentd.service"
+app  = "org.bardo.Intents"
+unit = "bardo-actiond.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/intentd",
-  "/usr/libexec/quire/intentd",
+  "/opt/bardo/releases/*/libexec/quire/intentd",
+  "/usr/libexec/bardo/bardo-actiond",
 ]
 role = "router"
 
 # The assistant companion.
 [[peer]]
-app  = "org.quire.Companion"
-unit = "companiond.service"
+app  = "org.bardo.Companion"
+unit = "bardo-companiond.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/companiond",
-  "/usr/libexec/quire/companiond",
+  "/opt/bardo/releases/*/libexec/quire/companiond",
+  "/usr/libexec/bardo/bardo-companiond",
 ]
 role = "companion"
 
 # The memory service.
 [[peer]]
-app  = "org.quire.Memory"
-unit = "memoryd.service"
+app  = "org.bardo.Memory"
+unit = "bardo-memoryd.service"
 exe  = [
-  "/opt/quire/releases/*/libexec/quire/memoryd",
-  "/usr/libexec/quire/memoryd",
+  "/opt/bardo/releases/*/libexec/quire/memoryd",
+  "/usr/libexec/bardo/bardo-memoryd",
 ]
 role = "memory"
 
 # May create security contexts for the sandboxes it starts.
 [[peer]]
-app  = "org.quire.Flatpak"
+app  = "org.bardo.Flatpak"
 exe  = [
   "/usr/bin/flatpak",
 ]

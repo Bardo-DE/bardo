@@ -1,4 +1,4 @@
-//! `quire-do ask` over the fake router and a scripted companion: the turn is recorded by the
+//! `bardo-do ask` over the fake router and a scripted companion: the turn is recorded by the
 //! router as the terminal's, the companion is asked with it, the answer is printed (text, plan
 //! steps, footer), a confirmation is never answered here, and the exit code says how it ended.
 
@@ -121,7 +121,7 @@ fn plan() -> AnswerBody {
         steps: vec![PlanStepWire {
             id: StepId(1),
             action: ActionRef {
-                app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse("mail.thread.archive").expect("action"),
             },
             label: LabelText::parse("Archive the digest").expect("label"),
@@ -144,7 +144,7 @@ async fn ask(views: Vec<AnswerWire>, down: bool, stdout: Stdout, json: JsonFlag)
     let companion = Scripted {
         opener: Intents::over(InProcess::new(
             desk.router.clone(),
-            caller("org.quire.Companion1", CallerRole::Companion),
+            caller("org.bardo.Companion1", CallerRole::Companion),
         )),
         views,
         seen: seen.clone(),
@@ -152,7 +152,7 @@ async fn ask(views: Vec<AnswerWire>, down: bool, stdout: Stdout, json: JsonFlag)
     };
     let terminal = Intents::over(InProcess::new(
         desk.router.clone(),
-        caller("org.quire.Do", CallerRole::Cli),
+        caller("org.bardo.Do", CallerRole::Cli),
     ));
     let report = ask_companion(
         &terminal,
@@ -233,7 +233,7 @@ async fn a_confirmation_is_printed_never_answered_and_the_conversation_stays_ope
         run.seen.lock().expect("lock").closed.is_empty(),
         "left open for the sheet"
     );
-    assert_eq!(run.desk.sheets(), 0, "quire-do is not Confirm1");
+    assert_eq!(run.desk.sheets(), 0, "bardo-do is not Confirm1");
 }
 
 #[tokio::test]
@@ -257,7 +257,7 @@ async fn a_companion_that_is_not_there_is_unavailable() {
     assert!(
         run.report
             .stderr
-            .starts_with("quire-do: the assistant is not running")
+            .starts_with("bardo-do: the assistant is not running")
     );
     assert!(run.report.stdout.is_empty());
 }

@@ -1,4 +1,4 @@
-//! `sill/settings.toml`, whole (design/22 §2): a [`SettingsDoc`] that `ui_settings::Store` reads
+//! `shell/settings.toml`, whole (design/22 §2): a [`SettingsDoc`] that `ui_settings::Store` reads
 //! leniently (a bad value costs its own key), writes atomically and watches. A key this build
 //! does not know (a removed setting included) is reported in `Loaded::unknown` and kept in the
 //! file by the next save; `shell_app::daemon::settings` owns the reading, saving and watching.

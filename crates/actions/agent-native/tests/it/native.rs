@@ -20,7 +20,7 @@ fn opening() -> Opening {
     Opening {
         task: provenance::TaskId::parse("acp-t-1").expect("task"),
         space: work(),
-        opener: Some(app("org.quire.Acp")),
+        opener: Some(app("org.bardo.Acp")),
         agent: Some(AgentRef::Companion),
         backend: BackendKind::Native,
         parent: None,
@@ -37,7 +37,7 @@ fn said(text: &str) -> UserTurn {
         id: TurnId(1),
         text: text.into(),
         at: UnixSeconds(1_000),
-        from: Caller::editor(app("org.quire.Acp")),
+        from: Caller::editor(app("org.bardo.Acp")),
         via: TurnVia::Typed,
         mode: None,
     }
@@ -96,7 +96,7 @@ async fn a_turn_is_announced_made_and_told_and_the_router_records_it() {
     };
     assert_eq!(o.cwd, Some(Workspace::parse("/work/a").expect("cwd")));
     assert!(log.iter().any(
-        |e| matches!(e, SessionEntry::Turn(t) if t.from == Caller::editor(app("org.quire.Acp")))
+        |e| matches!(e, SessionEntry::Turn(t) if t.from == Caller::editor(app("org.bardo.Acp")))
     ));
     assert!(log.iter().any(|e| matches!(e, SessionEntry::Call(_))));
     assert!(log.iter().any(|e| matches!(e, SessionEntry::Step(_))));
@@ -109,7 +109,7 @@ async fn router_says_working(
 ) -> TurnState {
     let launcher = CallerId {
         app: AppId {
-            name: app("org.quire.Shell"),
+            name: app("org.bardo.Shell"),
             isolation: Isolation::Unsandboxed,
         },
         roles: std::collections::BTreeSet::from([CallerRole::Launcher]),
@@ -263,7 +263,7 @@ impl SheetDesk for Canned {
                 id: id.clone(),
                 space: work(),
                 actor: provenance::Actor::Unknown,
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 action: LabelText::parse("Archive messages").expect("label"),
                 effect: provenance::Effect::UndoableWrite,
                 count: account_ids::Count(1),

@@ -1,4 +1,4 @@
-//! The speech-host wire in both directions: frames from the host through the client's buffer, and
+//! The bardo-speech-host wire in both directions: frames from the host through the client's buffer, and
 //! the bodies of both message types decoded directly.
 #![no_main]
 

@@ -35,10 +35,10 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 /// The service whose sandbox the file opens.
-pub const INFERD_UNIT: &str = "inferd.service";
+pub const INFERD_UNIT: &str = "bardo-inferd.service";
 
 /// The directory beside the unit that holds its drop-ins, and the drop-in's name in it.
-const DROP_IN_DIR: &str = "inferd.service.d";
+const DROP_IN_DIR: &str = "bardo-inferd.service.d";
 const DROP_IN_FILE: &str = "tailnet.conf";
 
 /// The name porter's shipped file has under `share/porter`.

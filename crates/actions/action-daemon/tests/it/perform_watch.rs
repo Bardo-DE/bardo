@@ -10,7 +10,7 @@ use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue
 use provenance::{ActionName, EntityId, EntityKey, EntityKind};
 use std::collections::BTreeMap;
 
-const TERMINAL: &str = "org.quire.Do";
+const TERMINAL: &str = "org.bardo.Do";
 
 fn config() -> IntentdConfig {
     IntentdConfig {
@@ -23,11 +23,11 @@ fn config() -> IntentdConfig {
 fn delete(key: &str) -> CallRequest {
     CallRequest {
         action: ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: ActionName::parse("mail.thread.delete").expect("action"),
         },
         target: TargetValue::Entities(vec![EntityId {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             kind: EntityKind::parse("mail.thread").expect("kind"),
             key: EntityKey::parse(key).expect("key"),
         }]),

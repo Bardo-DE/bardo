@@ -27,7 +27,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]
@@ -83,7 +83,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]
@@ -139,7 +139,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]
@@ -201,7 +201,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]
@@ -257,7 +257,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]
@@ -318,7 +318,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]
@@ -379,7 +379,7 @@
             {
               "kind": "screen",
               "v": {
-                "app": "org.quire.Mail"
+                "app": "org.bardo.Mail"
               }
             }
           ]

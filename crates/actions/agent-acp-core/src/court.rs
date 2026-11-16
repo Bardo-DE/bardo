@@ -1,6 +1,6 @@
 //! The seam between the host of an external agent and the router. Every call the agent asks of
 //! its host (a file read or write, a command, a permission request) is made through it as an
-//! ordinary router call of the `org.quire.AcpAgent` pseudo-app (`call`), and the host performs it
+//! ordinary router call of the `org.bardo.AcpAgent` pseudo-app (`call`), and the host performs it
 //! only after the router has allowed it. The host decides nothing: not whether to ask the
 //! person, not whether a grant stands in, not whether the breaker is tripped.
 //!

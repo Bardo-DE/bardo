@@ -95,7 +95,7 @@ async fn an_owned_name_is_here_and_releasing_it_flips_to_absent() {
     assert!(Capability::ALL.iter().all(|&c| !before.here(c)));
 
     service
-        .request_name("org.quire.Memory1")
+        .request_name("org.bardo.Memory1")
         .await
         .expect("claims the name");
     let after = Desktop::probe_on(Some(&client), None).await;
@@ -106,7 +106,7 @@ async fn an_owned_name_is_here_and_releasing_it_flips_to_absent() {
     let mut watch = Desktop::watch_on(Some(&client), None).await;
     assert!(watch.current().here(Capability::Memory));
     service
-        .release_name("org.quire.Memory1")
+        .release_name("org.bardo.Memory1")
         .await
         .expect("releases the name");
     let gone = tokio::time::timeout(WAIT, watch.changed())
@@ -116,7 +116,7 @@ async fn an_owned_name_is_here_and_releasing_it_flips_to_absent() {
     assert!(!gone.here(Capability::Memory));
 
     service
-        .request_name("org.quire.Memory1")
+        .request_name("org.bardo.Memory1")
         .await
         .expect("claims it again");
     let back = tokio::time::timeout(WAIT, watch.changed())
@@ -128,7 +128,7 @@ async fn an_owned_name_is_here_and_releasing_it_flips_to_absent() {
 
 #[tokio::test]
 async fn an_activatable_name_is_here_before_anyone_owns_it() {
-    let bus = PrivateBus::start("activatable", &["org.quire.Intents1"]);
+    let bus = PrivateBus::start("activatable", &["org.bardo.Intents1"]);
     let client = bus.connect().await;
     let desktop = Desktop::probe_on(Some(&client), None).await;
     assert!(desktop.here(Capability::Intents));
@@ -169,10 +169,10 @@ async fn the_system_bus_carries_packagekit() {
 
 type Row = (u32, String, (i32, i32, u32, u32), (i32, i32, u32, u32), u32);
 
-/// A stand-in for the shell's `org.quire.Outputs1`.
+/// A stand-in for the shell's `org.bardo.Outputs1`.
 struct FakeOutputs(Vec<Row>);
 
-#[zbus::interface(name = "org.quire.Outputs1")]
+#[zbus::interface(name = "org.bardo.Outputs1")]
 impl FakeOutputs {
     #[zbus(property)]
     fn work_areas(&self) -> Vec<Row> {
@@ -208,14 +208,14 @@ async fn the_outputs_are_read_and_a_change_is_followed() {
 
     shell
         .object_server()
-        .at("/org/quire/Outputs1", FakeOutputs(vec![row(1, 32)]))
+        .at("/org/bardo/Outputs1", FakeOutputs(vec![row(1, 32)]))
         .await
         .expect("exports the object");
     zbus_ready::serving(&shell)
         .await
         .expect("the object server answers");
     shell
-        .request_name("org.quire.Outputs1")
+        .request_name("org.bardo.Outputs1")
         .await
         .expect("claims the name");
     assert!(
@@ -233,7 +233,7 @@ async fn the_outputs_are_read_and_a_change_is_followed() {
     assert_eq!(watch.current().await.areas().len(), 1);
     let iface = shell
         .object_server()
-        .interface::<_, FakeOutputs>("/org/quire/Outputs1")
+        .interface::<_, FakeOutputs>("/org/bardo/Outputs1")
         .await
         .expect("the object");
     iface.get_mut().await.0 = vec![row(1, 32), row(2, 0)];
@@ -250,7 +250,7 @@ async fn the_outputs_are_read_and_a_change_is_followed() {
     assert_eq!(after.areas().len(), 2);
 }
 
-/// What a process holding `org.quire.Outputs1` says when asked for the work areas.
+/// What a process holding `org.bardo.Outputs1` says when asked for the work areas.
 #[derive(Clone)]
 enum Answer {
     Rows(Vec<Row>),
@@ -260,7 +260,7 @@ enum Answer {
 
 struct Shell(Answer);
 
-#[zbus::interface(name = "org.quire.Outputs1")]
+#[zbus::interface(name = "org.bardo.Outputs1")]
 impl Shell {
     #[zbus(property)]
     async fn work_areas(&self) -> Vec<Row> {
@@ -271,19 +271,19 @@ impl Shell {
     }
 }
 
-/// A connection on `bus` that holds `org.quire.Outputs1` and answers as `answer` says.
+/// A connection on `bus` that holds `org.bardo.Outputs1` and answers as `answer` says.
 async fn hold_outputs(bus: &PrivateBus, answer: Answer) -> zbus::Connection {
     let holder = bus.connect().await;
     holder
         .object_server()
-        .at("/org/quire/Outputs1", Shell(answer))
+        .at("/org/bardo/Outputs1", Shell(answer))
         .await
         .expect("served");
     zbus_ready::serving(&holder)
         .await
         .expect("the object server answers");
     holder
-        .request_name("org.quire.Outputs1")
+        .request_name("org.bardo.Outputs1")
         .await
         .expect("claims the name");
     holder

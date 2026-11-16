@@ -29,7 +29,7 @@ enum Answers {
     Never,
 }
 
-#[zbus::interface(name = "org.quire.Shell1")]
+#[zbus::interface(name = "org.bardo.Shell1")]
 impl StandIn {
     #[allow(clippy::too_many_arguments)] // the shell's own signature
     async fn ask_permission(
@@ -57,7 +57,7 @@ async fn stand_in(portal: &Portal, answers: Answers) -> (Connection, Arc<AtomicU
         .name(SHELL_NAME)
         .and_then(|b| {
             b.serve_at(
-                "/org/quire/Shell1",
+                "/org/bardo/Shell1",
                 StandIn {
                     asked: Arc::clone(&asked),
                     answers,

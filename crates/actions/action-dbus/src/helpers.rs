@@ -1,5 +1,5 @@
-//! `org.quire.Companion1.Helpers`: the helpers the person keeps, on the same object as
-//! `org.quire.Companion1`. Only the shell speaks for the person here: it lists the helpers, reads
+//! `org.bardo.Companion1.Helpers`: the helpers the person keeps, on the same object as
+//! `org.bardo.Companion1`. Only the shell speaks for the person here: it lists the helpers, reads
 //! a card, makes, changes, pauses, resumes and removes one, and gives one a job. Every body is
 //! JSON of `companion-wire`'s helper types, and every sentence in them is plain words.
 
@@ -8,9 +8,9 @@ use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Companion1.Helpers",
-    default_service = "org.quire.Companion1",
-    default_path = "/org/quire/Companion1"
+    interface = "org.bardo.Companion1.Helpers",
+    default_service = "org.bardo.Companion1",
+    default_path = "/org/bardo/Companion1"
 )]
 pub trait CompanionHelpers {
     /// The helpers (`HelpersView` JSON): one line each, and what they told the person after the
@@ -51,7 +51,7 @@ pub trait CompanionHelpers {
 #[derive(Debug, Default)]
 pub struct CompanionHelpersSkeleton;
 
-#[zbus::interface(name = "org.quire.Companion1.Helpers")]
+#[zbus::interface(name = "org.bardo.Companion1.Helpers")]
 impl CompanionHelpersSkeleton {
     fn list(&self, after: u64) -> fdo::Result<String> {
         let _ = (after,);

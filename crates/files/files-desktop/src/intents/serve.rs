@@ -21,8 +21,8 @@ pub(super) fn load_manifest() -> Result<ValidManifest, IntentError> {
 }
 
 /// Offers Files' actions on `connection`, answered by `window`. The connection keeps serving for
-/// as long as it lives. Only intentd is answered, known by its unit (`intentd.service`) as
-/// `/proc` reports it. `connection` is the one that owns `org.quire.Files`.
+/// as long as it lives. Only intentd is answered, known by its unit (`bardo-actiond.service`) as
+/// `/proc` reports it. `connection` is the one that owns `org.bardo.Files`.
 pub async fn offer<W: Window>(connection: &Connection, window: Arc<W>) -> Result<(), IntentError> {
     let callers = Identity::on_system(connection.clone(), intentd_only());
     serve(connection, window, callers).await
@@ -38,7 +38,7 @@ pub async fn offer_for_router<W: Window>(
 ) -> Result<(), IntentError> {
     use action_dbus::callers::Role;
     let callers = Identity::on_system(connection.clone(), intentd_only());
-    callers.introduce_app(router, "org.quire.Intents", Role::Agent);
+    callers.introduce_app(router, "org.bardo.Intents", Role::Agent);
     serve(connection, window, callers).await
 }
 

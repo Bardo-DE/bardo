@@ -17,10 +17,10 @@ pub struct Env {
     pub config_dir: Option<PathBuf>,
     /// `$RUNTIME_DIRECTORY` (systemd's), else `/run/palmrest`: where the socket lives.
     pub runtime_dir: PathBuf,
-    /// `$PALMREST_SEAT_FILE`, else logind's `seat0` state file: where the person at the seat is
+    /// `$BARDO_MOUSE_GESTURES_SEAT_FILE`, else logind's `seat0` state file: where the person at the seat is
     /// read from; injectable so tests need no logind.
     pub seat_file: SeatFile,
-    /// `$PALMREST_STEERING`: which connection is believed about the lock screen (only
+    /// `$BARDO_MOUSE_GESTURES_STEERING`: which connection is believed about the lock screen (only
     /// `seat-user` changes the default, for a development run outside the shell's unit).
     pub steering: Steering,
 }
@@ -33,11 +33,11 @@ impl Env {
             runtime_dir: config::first_directory(lookup("RUNTIME_DIRECTORY"))
                 .unwrap_or_else(|| PathBuf::from(DEFAULT_RUNTIME_DIR)),
             seat_file: SeatFile(
-                lookup("PALMREST_SEAT_FILE")
+                lookup("BARDO_MOUSE_GESTURES_SEAT_FILE")
                     .filter(|s| !s.is_empty())
                     .map_or_else(|| PathBuf::from(SEAT_FILE), PathBuf::from),
             ),
-            steering: Steering::from_env_value(lookup("PALMREST_STEERING").as_deref()),
+            steering: Steering::from_env_value(lookup("BARDO_MOUSE_GESTURES_STEERING").as_deref()),
         }
     }
 }

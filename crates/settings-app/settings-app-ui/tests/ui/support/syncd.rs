@@ -1,4 +1,4 @@
-//! A fake syncd: `org.quire.Sync1` at its path on a private bus, holding the deletions a test
+//! A fake syncd: `org.bardo.Sync1` at its path on a private bus, holding the deletions a test
 //! sets. `Watch` tells the holds on now; `ConfirmDiscard` clears one and tells the end, or answers
 //! `NothingHeld`; every call is recorded.
 
@@ -12,7 +12,7 @@ use zbus::zvariant::Value;
 
 /// The answers of `ConfirmDiscard` that are not success.
 #[derive(zbus::DBusError, Debug)]
-#[zbus(prefix = "org.quire.Sync1.Error")]
+#[zbus(prefix = "org.bardo.Sync1.Error")]
 enum SyncFault {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -58,7 +58,7 @@ pub struct Syncd {
 }
 
 impl Syncd {
-    /// Serves `org.quire.Sync1` on `bus`; the connection must be kept alive.
+    /// Serves `org.bardo.Sync1` on `bus`; the connection must be kept alive.
     pub async fn serve_on(&self, bus: &PrivateBus) -> zbus::Connection {
         let connection = bus.connect().await;
         connection
@@ -74,7 +74,7 @@ impl Syncd {
     }
 
     /// Serves the object on `bus` without taking the name; the connection must be kept alive. A
-    /// test makes this program take `org.quire.Sync1` later.
+    /// test makes this program take `org.bardo.Sync1` later.
     pub async fn serve_unnamed(&self, bus: &PrivateBus) -> zbus::Connection {
         let connection = bus.connect().await;
         connection
@@ -133,7 +133,7 @@ impl Syncd {
     }
 }
 
-#[zbus::interface(name = "org.quire.Sync1")]
+#[zbus::interface(name = "org.bardo.Sync1")]
 impl Syncd {
     async fn watch(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
         *self.watched.lock().expect("watched") += 1;

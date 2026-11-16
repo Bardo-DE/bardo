@@ -151,7 +151,7 @@ pub fn reach() -> TaskPolicy {
         space: space("work"),
         from: vec![],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::UndoableWrite,
         )]),
         kinds: BTreeSet::from([EntityKind::parse("mail.thread").expect("kind")]),

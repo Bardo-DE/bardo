@@ -8,7 +8,7 @@
 use companion_model::routine::TimerEntry;
 
 /// The name every routine unit starts with.
-pub const UNIT_PREFIX: &str = "quire-routine-";
+pub const UNIT_PREFIX: &str = "bardo-routine-";
 
 /// One unit file.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -55,7 +55,7 @@ fn service(entry: &TimerEntry) -> UnitFile {
          \n\
          [Service]\n\
          Type=oneshot\n\
-         ExecStart=/usr/bin/systemctl --user start companiond.service\n",
+         ExecStart=/usr/bin/systemctl --user start bardo-companiond.service\n",
         id = entry.routine,
     );
     UnitFile {

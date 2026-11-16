@@ -45,7 +45,7 @@ LAYERS=(
 
 # KNOWN: a violation that exists today, with the plan lane (~/rs-wt/agent-layers/PLAN.md) that
 # removes it. "crate: ban: lane". A row whose violation is gone fails, so the list only shrinks.
-# cua-eval-cloud reads the environment inside a library module instead of main.rs.
+# computer-use-eval-cloud reads the environment inside a library module instead of main.rs.
 # `Role::SheetHost` is a action-core wire name; cua names it only in test code, which the bans
 # skip, so it needs no row.
 KNOWN=(

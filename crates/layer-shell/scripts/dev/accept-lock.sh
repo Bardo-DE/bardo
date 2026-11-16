@@ -7,10 +7,10 @@
 #
 #   COMPOSITOR=casement scripts/dev/accept-lock.sh   (the default here)
 #
-# There is no screenshot: casementctl has no `shot` until P1-C1, so what a pixel check would prove (the
+# There is no screenshot: bardo-compositorctl has no `shot` until P1-C1, so what a pixel check would prove (the
 # lock covers the session; the session shows again after the unlock) is read from the compositor's
 # input instead: while locked, a real click on the session's probe window must not activate it
-# (`casementctl debug windows`: active), and after the unlock the same click must. Steps:
+# (`bardo-compositorctl debug windows`: active), and after the unlock the same click must. Steps:
 #   lock          `locked` from the host, a lock surface per output (stats), the session covered
 #   finished      a second demo_lock's lock while the first holds it: LockState::Finished
 #   typing        "abc" with no click reaches the focused lock surface's field
@@ -74,7 +74,7 @@ fail() { echo "FAIL $1: $2"; status=1; }
 # The demo, with the guard's variables and the session's own XDG_RUNTIME_DIR, on socket $1.
 demo_env() {
   env -u WAYLAND_SOCKET WAYLAND_DISPLAY="$1" XDG_RUNTIME_DIR="$SESSION_RUNTIME" \
-    SHELL_HOST_ALLOW_LOCK=virtual SHELL_HOST_LOCK_RUNTIME="$RUNTIME" \
+    BARDO_LAYER_SHELL_HOST_ALLOW_LOCK=virtual BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME="$RUNTIME" \
     DBUS_SESSION_BUS_ADDRESS="$(comp_source; echo "$DBUS_SESSION_BUS_ADDRESS")" \
     "${@:2}"
 }
@@ -139,9 +139,9 @@ stats() {
 }
 
 # --- what "the session is covered" means ---------------------------------------------------------
-# casement has no screenshot until P1-C1 (`casementctl shot`), so the cover is read from its input: a
+# casement has no screenshot until P1-C1 (`bardo-compositorctl shot`), so the cover is read from its input: a
 # real click on the session's probe window must not activate it while the session is locked, and must
-# once it is not (`casementctl debug windows`: active). Each check sets EVIDENCE.
+# once it is not (`bardo-compositorctl debug windows`: active). Each check sets EVIDENCE.
 EVIDENCE=""
 
 # probe_frame: the probe window's frame as "x y w h" (the first one `windows.sh` lists).
@@ -169,10 +169,10 @@ covered() {
   # field, so a Tab puts the keyboard back on the password field.
   input "key Tab down" "key Tab up" "sleep 200"
   if probe_active; then
-    EVIDENCE="a click on the session's window activated it (input reached the session; no pixel check until casementctl shot, P1-C1)"
+    EVIDENCE="a click on the session's window activated it (input reached the session; no pixel check until bardo-compositorctl shot, P1-C1)"
     return 1
   fi
-  EVIDENCE="a click on the session's window left it inactive (no pixel check until casementctl shot, P1-C1)"
+  EVIDENCE="a click on the session's window left it inactive (no pixel check until bardo-compositorctl shot, P1-C1)"
 }
 
 # uncovered TAG: the session shows again, as it did before the lock.

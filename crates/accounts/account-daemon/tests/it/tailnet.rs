@@ -2,7 +2,7 @@
 //! Tailscale over a fake LocalAPI on a scratch socket (never the real tailscaled), a sheet host
 //! written by hand that does what a person would, and clients introduced by role. Adding the
 //! account (running, signed out, every refusal), the account's state following Tailscale, and
-//! `org.quire.Tailnet1`: the rows for every kind of computer, `Changed` once for a burst, an
+//! `org.bardo.Tailnet1`: the rows for every kind of computer, `Changed` once for a burst, an
 //! empty list with no account, and who may ask.
 
 use crate::common;
@@ -763,7 +763,7 @@ async fn who_may_read_the_computers() {
         .expect("step 3: the broker reads the computers");
     assert_eq!(rows.len(), 4, "step 3: the broker's list");
     // Step 4, the terminal reads the computers and is refused everything else.
-    let terminal = world.client("org.quire.Temor", CallerRole::Terminal).await;
+    let terminal = world.client("org.bardo.Temor", CallerRole::Terminal).await;
     assert_eq!(
         read(&terminal).await.expect("step 4: machines").len(),
         4,
@@ -787,7 +787,7 @@ async fn a_renamed_computer_keeps_its_node_id() {
     )
     .await;
     let world = World::start(scene, true).await;
-    let terminal = world.client("org.quire.Temor", CallerRole::Terminal).await;
+    let terminal = world.client("org.bardo.Temor", CallerRole::Terminal).await;
     let before = read(&terminal).await.expect("machines");
     let old = before
         .iter()

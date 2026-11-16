@@ -1,4 +1,4 @@
-//! The real `actions-mcp` binary on a private bus: intentd's own `serve_on` behind the fake router
+//! The real `bardo-actions-mcp` binary on a private bus: intentd's own `serve_on` behind the fake router
 //! and the shipped roles, the binary over stdio (an rmcp client on its pipes) and over a Unix
 //! socket. Nothing of the real session is named: the bus, HOME and every XDG directory are scratch,
 //! the daemon's environment is cleared, and the child is killed when the test ends.
@@ -43,7 +43,7 @@ fn router() -> action_router::Router<action_fake::FakeSeams> {
             id: account_core::GrantId::parse(&format!("g-{n}")).expect("grant"),
             key: ActionGrantKey {
                 caller: GrantCaller::Mcp(client.clone()),
-                owner: AppName::parse("org.quire.Mail").expect("app"),
+                owner: AppName::parse("org.bardo.Mail").expect("app"),
                 target: GrantTarget::App,
                 class: DataClass::Mail,
                 usage,
@@ -69,7 +69,7 @@ impl Drop for Edge {
 }
 
 fn spawn(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
-    let child = Command::new(env!("CARGO_BIN_EXE_actions-mcp"))
+    let child = Command::new(env!("CARGO_BIN_EXE_bardo-actions-mcp"))
         .env_clear()
         .env("HOME", dir)
         .env("XDG_CONFIG_HOME", dir.join("config"))
@@ -80,11 +80,11 @@ fn spawn(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .expect("actions-mcp starts");
+        .expect("bardo-actions-mcp starts");
     Edge { child }
 }
 
-/// `spawn`, with the edge's process placed in `actions-mcp.service` of the fake proc root intentd
+/// `spawn`, with the edge's process placed in `bardo-actions-mcp.service` of the fake proc root intentd
 /// reads (the child is a process of its own, so intentd can tell it from this test): its main
 /// process, which is all a service's role goes to.
 fn spawn_as_the_unit(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
@@ -93,17 +93,17 @@ fn spawn_as_the_unit(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
     let slice = "0::/user.slice/user-1000.slice/user@1000.service/app.slice";
     let at = dir.join("proc").join(pid.to_string());
     std::fs::create_dir_all(&at).expect("fake proc");
-    std::fs::write(at.join("cgroup"), format!("{slice}/actions-mcp.service\n")).expect("cgroup");
+    std::fs::write(at.join("cgroup"), format!("{slice}/bardo-actions-mcp.service\n")).expect("cgroup");
     let units = dir.join("proc/units");
     std::fs::create_dir_all(&units).expect("units");
-    std::fs::write(units.join("actions-mcp.service"), pid.to_string()).expect("main pid");
+    std::fs::write(units.join("bardo-actions-mcp.service"), pid.to_string()).expect("main pid");
     edge
 }
 
 fn configure(dir: &Path, text: &str) {
     let config = dir.join("config/quire");
     std::fs::create_dir_all(&config).expect("dirs");
-    std::fs::write(config.join("actions-mcp.toml"), text).expect("config");
+    std::fs::write(config.join("bardo-actions-mcp.toml"), text).expect("config");
 }
 
 /// The person switches the edge on in docket's settings.
@@ -122,7 +122,7 @@ async fn client_over_stdio(edge: &mut Edge) -> RunningService<RoleClient, ()> {
 }
 
 async fn read_thread(client: &RunningService<RoleClient, ()>) -> CallToolResult {
-    let target = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let target = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let Json::Object(arguments) = json!({ "target": target }) else {
         unreachable!()
     };
@@ -257,7 +257,7 @@ fn the_command_line_reads_socket_and_client_and_refuses_the_rest() {
 fn the_units_command_line_is_one_the_binary_reads() {
     let unit = std::fs::read_to_string(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../dist/actions-mcp.service"
+        "/../dist/bardo-actions-mcp.service"
     ))
     .expect("unit");
     let exec = unit
@@ -273,12 +273,12 @@ fn the_units_command_line_is_one_the_binary_reads() {
 fn write_schema_installs_the_settings_schema_without_touching_the_bus() {
     let dir = tempfile::tempdir().expect("scratch");
     let out = dir.path().join("schemas");
-    let status = std::process::Command::new(env!("CARGO_BIN_EXE_actions-mcp"))
+    let status = std::process::Command::new(env!("CARGO_BIN_EXE_bardo-actions-mcp"))
         .env_clear()
         .args(["--write-schema", out.to_str().expect("utf-8")])
         .status()
-        .expect("actions-mcp starts");
+        .expect("bardo-actions-mcp starts");
     assert!(status.success());
-    let written = std::fs::read_to_string(out.join("docket.settings.toml")).expect("schema");
+    let written = std::fs::read_to_string(out.join("actions.settings.toml")).expect("schema");
     assert_eq!(written, action_mcp::SCHEMA);
 }

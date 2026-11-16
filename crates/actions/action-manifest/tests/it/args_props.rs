@@ -138,7 +138,7 @@ proptest! {
         after in "[a-z@.]{0,8}",
     ) {
         let d = decl_under_test();
-        let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+        let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
         let given = json!({ "to": format!("{before}{mark}{after}"), "target": [thread] });
         let given = given.as_object().cloned().unwrap_or_default();
         prop_assert!(args_from_json(&d, Some(&given), &trusted()).is_err());
@@ -148,7 +148,7 @@ proptest! {
 #[test]
 fn the_mark_free_text_of_the_same_shape_is_taken() {
     let d = decl_under_test();
-    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
     let given = json!({ "to": "alice@example.test", "target": [thread] });
     let (_, args) = args_from_json(&d, given.as_object(), &trusted()).expect("taken");
     assert_eq!(

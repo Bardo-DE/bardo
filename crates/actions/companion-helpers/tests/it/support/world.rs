@@ -42,7 +42,7 @@ pub fn caller(name: &str, role: CallerRole) -> CallerId {
 }
 pub fn entity(kind: &str, key: &str) -> EntityId {
     EntityId {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: EntityKind::parse(kind).expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }
@@ -106,23 +106,23 @@ fn world_all(
     grant_mail(&router, "work");
     grant_mail(&router, "home");
     let router = Arc::new(router);
-    // The built-in `org.quire.Companion` provider answers through the router, as in intentd.
+    // The built-in `org.bardo.Companion` provider answers through the router, as in intentd.
     action_fake::host_companion(&router);
     let infer = ScriptedInfer::new(script);
     let clock = FixedClock::at(provenance::UnixSeconds(1_000));
     let companion = Tasks::new(
         Intents::over(InProcess::new(
             router.clone(),
-            caller("org.quire.Companiond", CallerRole::Companion),
+            caller("org.bardo.Companion", CallerRole::Companion),
         )),
         PlannerModel::new(infer.clone()),
         AgentConfig::default(),
         clock.clone(),
-        app("org.quire.Shell"),
+        app("org.bardo.Shell"),
     );
     let launcher = Intents::over(InProcess::new(
         router.clone(),
-        caller("org.quire.Shell", CallerRole::Launcher),
+        caller("org.bardo.Shell", CallerRole::Launcher),
     ));
     World {
         router,
@@ -139,9 +139,9 @@ fn grant_mail(router: &Router<FakeSeams>, in_space: &str) {
     use account_core::consent::{Decision, Grant, GrantScope, Usage};
     use action_router::GrantStore;
     let uses = [
-        ("org.quire.Mail", DataClass::Mail),
-        ("org.quire.Mail", DataClass::Contacts),
-        ("org.quire.Companion", DataClass::AppOwn),
+        ("org.bardo.Mail", DataClass::Mail),
+        ("org.bardo.Mail", DataClass::Contacts),
+        ("org.bardo.Companion", DataClass::AppOwn),
     ];
     for (n, (owner, class)) in uses.into_iter().enumerate() {
         for usage in [Usage::Interactive, Usage::Background] {
@@ -235,12 +235,12 @@ impl World {
         Tasks::new(
             Intents::over(InProcess::new(
                 self.router.clone(),
-                caller("org.quire.Companiond", CallerRole::Companion),
+                caller("org.bardo.Companion", CallerRole::Companion),
             )),
             PlannerModel::new(self.infer.clone()),
             AgentConfig::default(),
             clock,
-            app("org.quire.Shell"),
+            app("org.bardo.Shell"),
         )
     }
 
@@ -274,12 +274,12 @@ pub fn companion_for(
     Tasks::new(
         Intents::over(InProcess::new(
             router.clone(),
-            caller("org.quire.Companiond", CallerRole::Companion),
+            caller("org.bardo.Companion", CallerRole::Companion),
         )),
         PlannerModel::new(infer).with_open_options(companion_tasks::open_options(card)),
         AgentConfig::default(),
         clock,
-        app("org.quire.Shell"),
+        app("org.bardo.Shell"),
     )
 }
 

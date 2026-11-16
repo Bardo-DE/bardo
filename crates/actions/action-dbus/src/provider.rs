@@ -1,4 +1,4 @@
-//! `org.quire.IntentProvider1`: what every provider (an app, `org.quire.Shell`, `org.quire.Cua`) serves on its own bus name.
+//! `org.bardo.IntentProvider1`: what every provider (an app, `org.bardo.Shell`, `org.bardo.ComputerUse`) serves on its own bus name.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -6,8 +6,8 @@ use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.IntentProvider1",
-    default_path = "/org/quire/IntentProvider1"
+    interface = "org.bardo.IntentProvider1",
+    default_path = "/org/bardo/IntentProvider1"
 )]
 pub trait IntentProvider {
     /// Performs (`Invocation` JSON, flattened with an optional `activation` token and, for an action that classifies per call, the `classified` effect the router gated on; answers `Outcome` or `AppRefusal` JSON). The app labels its undo entry with the invocation's actor.
@@ -53,7 +53,7 @@ pub trait IntentProvider {
 #[derive(Debug, Default)]
 pub struct IntentProviderSkeleton;
 
-#[zbus::interface(name = "org.quire.IntentProvider1")]
+#[zbus::interface(name = "org.bardo.IntentProvider1")]
 impl IntentProviderSkeleton {
     fn perform(&self, invocation: String, options: Details) -> fdo::Result<String> {
         let _ = (invocation, options);

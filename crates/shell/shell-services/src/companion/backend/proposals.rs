@@ -1,4 +1,4 @@
-//! The routines helpers suggest, on `org.quire.Companion1.Helpers2`: the list, accepting one
+//! The routines helpers suggest, on `org.bardo.Companion1.Helpers2`: the list, accepting one
 //! (answered like making a routine) and turning one down. This file is the only place that names
 //! the suggestion calls. The companion tells `Changed` when the list changes.
 

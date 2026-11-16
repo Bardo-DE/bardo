@@ -1,5 +1,5 @@
-# X11 clients for the XWayland suite: `casement-x11probe session` processes driven like
-# `casement-probe` ones (dev/lib/probe.sh; probe_wait, probe_has, probe_count, probe_log and
+# X11 clients for the XWayland suite: `compositor-x11probe session` processes driven like
+# `compositor-probe` ones (dev/lib/probe.sh; probe_wait, probe_has, probe_count, probe_log and
 # probe_stop work on their names, which carry the prefix x11-). Run only by the user or the
 # jailed accept runner, never by the gate.
 #
@@ -18,7 +18,7 @@
 x11_compositor() {
   local state wrapper satellite
   satellite=$(casement_tool xwayland-satellite) || return 3
-  if [ -z "${CASEMENT_STATE:-}" ]; then casement_new_state; _CASEMENT_STATE_OWNED=1; fi
+  if [ -z "${BARDO_COMPOSITOR_STATE:-}" ]; then casement_new_state; _CASEMENT_STATE_OWNED=1; fi
   state=$(casement_state_dir)
   wrapper="$state/xwayland-satellite-wrapper"
   # The wrapper keeps the inherited listening descriptors (exec) and adds the software flag.
@@ -38,7 +38,7 @@ x11_start() {
   require_jail
   local name=${1:?x11_start NAME} dir tool pid
   dir=$(_probe_dir)
-  tool=$(casement_tool casement-x11probe) || return 3
+  tool=$(casement_tool compositor-x11probe) || return 3
   rm -f "$dir/x11-$name.in" "$dir/x11-$name.log"
   mkfifo "$dir/x11-$name.in"
   DISPLAY=$X11_DISPLAY "$tool" session <>"$dir/x11-$name.in" >"$dir/x11-$name.log" 2>&1 &
@@ -67,4 +67,4 @@ x11_has() { probe_has "x11-$1" "$2"; }
 x11_count() { probe_count "x11-$1" "$2"; }
 x11_log() { probe_log "x11-$1"; }
 
-x11_satellite_pid() { pgrep -P "$CASEMENT_PID" -f xwayland-satellite | head -1 || true; }
+x11_satellite_pid() { pgrep -P "$BARDO_COMPOSITOR_PID" -f xwayland-satellite | head -1 || true; }

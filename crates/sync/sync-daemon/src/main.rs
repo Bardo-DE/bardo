@@ -1,16 +1,16 @@
-//! syncd: the sync daemon (`org.quire.Sync1`, design/31 §4.1, §6).
+//! syncd: the sync daemon (`org.bardo.Sync1`, design/31 §4.1, §6).
 //!
 //! The binary reads its arguments, asks `Config::from_env` for the environment's answers, then
 //! builds and runs the daemon, all in the library (`sync_daemon::daemon`): it loads the caller tables
 //! (the files accountd reads), reaches accountd over the session bus (the accounts, the grants
 //! and the relays are accountd's: syncd holds no token), serves its Settings rows and
-//! `org.quire.Sync1` over the hub of running datasets. The PIM
+//! `org.bardo.Sync1` over the hub of running datasets. The PIM
 //! supervisor (W6e) keeps a calendar or address book mirror running for every Calendar or
 //! Contacts grant syncd holds (its own grants, made by the sync switches); with no grant `Datasets` answers an empty list and every name the
 //! refusal `NoFittingAccount`. The storage supervisor keeps an app folder mirror running for
 //! every Storage grant (class Files) on a Microsoft account, and the Photos datasets for every one
 //! of class Photos (the account's Photos row in Settings). A test build (`test-proc-root`) reads
-//! `SYNCD_RESCAN_S` as how often both supervisors read grants again; the default is ten minutes.
+//! `BARDO_SYNCD_RESCAN_S` as how often both supervisors read grants again; the default is ten minutes.
 //!
 //! What stays here is the network: NetworkManager is not read yet, so the network is taken as
 //! unmetered and up.
@@ -23,7 +23,7 @@ use std::process::ExitCode;
 use sync_daemon::scheduler::Network;
 use sync_daemon::{Config, Daemon};
 
-/// ferry's sync service (`org.quire.Sync1`).
+/// ferry's sync service (`org.bardo.Sync1`).
 #[derive(Debug, Parser)]
 #[command(name = "syncd", version)]
 struct Args {}

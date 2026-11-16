@@ -16,7 +16,7 @@ pub enum ShellNote {
     /// `window` now minimises into this rectangle (global logical pixels); the protocol layer
     /// has nothing to send until P3's dock bounce, so it only keeps the table.
     MinimiseTarget(WindowId, LogicalRect),
-    /// The modifier keys held changed (`quire_shell_v1.modifiers`, to the role surfaces).
+    /// The modifier keys held changed (`bardo_shell_v1.modifiers`, to the role surfaces).
     Modifiers(HeldMods),
     /// An edge reveal (the dock or the bar over a full-screen window) opened or closed on
     /// `output` (`reveal_on_output` to a shell that bound version 7, `reveal` to an older one).

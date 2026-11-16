@@ -1,8 +1,8 @@
 vocab = 1
 id = "focused-app-menus"
-owner = "org.quire.Shell"
+owner = "org.bardo.Shell"
 version = "0.1.0"
-uses = ["org.quire.Shell:shell.menu.list", "org.quire.Shell:shell.menu.activate"]
+uses = ["org.bardo.Shell:shell.menu.list", "org.bardo.Shell:shell.menu.activate"]
 [when]
 focused_app = []
 kinds = []

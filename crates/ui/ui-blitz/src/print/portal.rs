@@ -169,7 +169,7 @@ async fn submit(
 fn sealed_file(pdf: &[u8]) -> Result<OwnedFd, PrintError> {
     let memfd = memfd::MemfdOptions::default()
         .allow_sealing(true)
-        .create("quire-print")
+        .create("bardo-print")
         .map_err(|error| PrintError::Portal(error.to_string()))?;
     let mut file = memfd.as_file();
     file.write_all(pdf)?;

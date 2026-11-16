@@ -1,5 +1,5 @@
-//! Waiting for the answer of a Request object: the portal shape `org.quire.Intents1` and
-//! `org.quire.Confirm1` share. The method returns the path of an object at once; the answer is
+//! Waiting for the answer of a Request object: the portal shape `org.bardo.Intents1` and
+//! `org.bardo.Confirm1` share. The method returns the path of an object at once; the answer is
 //! its `Response(code, body)` signal, sent to the caller alone.
 
 use crate::transport::TransportError;
@@ -42,7 +42,7 @@ pub async fn requested(
     let owner = owner_of(connection, service).await?;
     let rule = MatchRule::builder()
         .msg_type(Type::Signal)
-        .interface("org.quire.Intents1.Request")
+        .interface("org.bardo.Intents1.Request")
         .and_then(|b| b.member("Response"))
         .map_err(bus)?
         .build();

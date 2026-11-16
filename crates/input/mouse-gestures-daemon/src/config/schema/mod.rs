@@ -17,7 +17,7 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 
 /// The file this schema describes, under `$XDG_CONFIG_HOME`.
-const FILE: &str = "palmrest/gestures.toml";
+const FILE: &str = "mouse-gestures/gestures.toml";
 /// The schema file format's version (quire design/22 section 9.2).
 const VERSION: u16 = 1;
 

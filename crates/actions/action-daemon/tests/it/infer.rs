@@ -270,7 +270,7 @@ fn review_request() -> action_review::ReviewRequest {
             mode: None,
         }],
         proposed: action_review::ProposedAction {
-            app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+            app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
             action: provenance::ActionName::parse("mail.thread.archive").expect("action"),
             label: LabelText::parse("Archive").expect("label"),
             effect: provenance::Effect::UndoableWrite,

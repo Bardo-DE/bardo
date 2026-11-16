@@ -16,7 +16,7 @@
 //! directory, a
 //! fingerprint reader) is killed with its child instead of wedging a thread, and the lock
 //! surface's process never holds a PAM handle. The PAM service is `sill` when
-//! `/etc/pam.d/sill` exists (`dist/pam.d/sill`: `auth include login`, as swaylock's), else
+//! `/etc/pam.d/bardo-shell` exists (`dist/pam.d/sill`: `auth include login`, as swaylock's), else
 //! `login` ([`backend::pam::service`]).
 //!
 //! Nothing here runs PAM until a [`AuthCommand::Submit`] arrives, and every test drives a

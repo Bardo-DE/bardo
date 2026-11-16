@@ -47,7 +47,7 @@ async fn a_storage_need_finds_the_fake_cloud_after_consent() {
     let prompter = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
     let log = prompter.log();
     let service = Arc::new(fake_service(prompter).await);
-    let photos = app(&service, "org.quire.Photos");
+    let photos = app(&service, "org.bardo.Photos");
     let need = storage(Delta::Poll);
 
     let offer = needs_consent(
@@ -87,7 +87,7 @@ async fn a_storage_need_finds_the_fake_cloud_after_consent() {
     }
     let plan = service
         .open_authenticated(
-            &app_id("org.quire.Photos"),
+            &app_id("org.bardo.Photos"),
             &chosen.grant,
             &chosen.endpoints[0].url,
         )
@@ -99,7 +99,7 @@ async fn a_storage_need_finds_the_fake_cloud_after_consent() {
         plan.auth
     );
 
-    let files = app(&service, "org.quire.Files");
+    let files = app(&service, "org.bardo.Files");
     let other = files
         .grants()
         .find(&need, DataClass::Photos, Usage::Interactive)
@@ -114,7 +114,7 @@ async fn a_storage_need_finds_the_fake_cloud_after_consent() {
 #[tokio::test]
 async fn a_refusal_sticks_for_that_app() {
     let service = Arc::new(fake_service(ScriptedSheets::answering([Scripted::Deny])).await);
-    let photos = app(&service, "org.quire.Photos");
+    let photos = app(&service, "org.bardo.Photos");
     let need = storage(Delta::Poll);
     let offer = needs_consent(
         photos
@@ -139,7 +139,7 @@ async fn a_refusal_sticks_for_that_app() {
 #[tokio::test]
 async fn a_need_no_provider_meets_is_unsupported() {
     let service = Arc::new(fake_service(ScriptedSheets::default()).await);
-    let photos = app(&service, "org.quire.Photos");
+    let photos = app(&service, "org.bardo.Photos");
     let found = photos
         .grants()
         .find(&storage(Delta::Push), DataClass::Photos, Usage::Interactive)
@@ -156,7 +156,7 @@ async fn a_once_grant_is_spent_by_its_first_relay() {
         )]))
         .await,
     );
-    let photos = app(&service, "org.quire.Photos");
+    let photos = app(&service, "org.bardo.Photos");
     let need = storage(Delta::Poll);
     let offer = needs_consent(
         photos
@@ -170,7 +170,7 @@ async fn a_once_grant_is_spent_by_its_first_relay() {
         .request_grant(&offer, &ParentWindow::Unparented)
         .await
         .expect("granted");
-    let me = app_id("org.quire.Photos");
+    let me = app_id("org.bardo.Photos");
     let relay = |grant| service.open_authenticated(&me, grant, &chosen.endpoints[0].url);
     relay(&chosen.grant).await.expect("first relay");
     let again = relay(&chosen.grant).await.map(|_| ());
@@ -191,7 +191,7 @@ async fn revoking_a_grant_ends_it() {
         )]))
         .await,
     );
-    let photos = app(&service, "org.quire.Photos");
+    let photos = app(&service, "org.bardo.Photos");
     let need = storage(Delta::Poll);
     let offer = needs_consent(
         photos
@@ -205,7 +205,7 @@ async fn revoking_a_grant_ends_it() {
         .request_grant(&offer, &ParentWindow::Unparented)
         .await
         .expect("granted");
-    let me = app_id("org.quire.Photos");
+    let me = app_id("org.bardo.Photos");
     assert_eq!(service.grants(&me).len(), 1);
     service.revoke(&me, &chosen.grant).await.expect("revoke");
     assert_eq!(service.grants(&me), vec![]);
@@ -287,7 +287,7 @@ async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_a
         sheets,
         FixedClock(NOW),
     ));
-    let calendar = app_over(&service, "org.quire.Calendar");
+    let calendar = app_over(&service, "org.bardo.Calendar");
 
     let added = calendar
         .accounts()
@@ -330,7 +330,7 @@ async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_a
         "the server refused the password"
     );
     // Another app was never granted the account, so it cannot sign it in again.
-    let other = app_over(&service, "org.quire.Other");
+    let other = app_over(&service, "org.bardo.Other");
     assert_eq!(
         other
             .accounts()
@@ -400,7 +400,7 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
         sheets,
         FixedClock(NOW),
     ));
-    let calendar = app_over(&service, "org.quire.Calendar");
+    let calendar = app_over(&service, "org.bardo.Calendar");
     let added = calendar
         .accounts()
         .add(account_core::ProviderHint::Any, &ParentWindow::Unparented)
@@ -510,7 +510,7 @@ async fn a_typed_pop3_server_is_added_through_the_sheet_and_found_by_a_mail_need
         sheets,
         FixedClock(NOW),
     ));
-    let mail = app_over(&service, "org.quire.Mail");
+    let mail = app_over(&service, "org.bardo.Mail");
     let added = mail
         .accounts()
         .add(account_core::ProviderHint::Any, &ParentWindow::Unparented)

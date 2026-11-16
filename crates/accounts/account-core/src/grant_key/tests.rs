@@ -48,7 +48,7 @@ fn granted(id: &str, scope: GrantScope) -> Verdict {
 fn decide_reads_the_newest_grant_for_the_exact_key() {
     use Decision::{Allow, Deny};
     use GrantScope::{Always, Once};
-    let photos = || key("org.quire.Photos", Usage::Interactive);
+    let photos = || key("org.bardo.Photos", Usage::Interactive);
     let cases: Vec<(&str, Vec<Grant>, GrantKey, Verdict)> = vec![
         ("nothing stored asks", vec![], photos(), Verdict::Ask),
         (
@@ -100,7 +100,7 @@ fn decide_reads_the_newest_grant_for_the_exact_key() {
             "another app's grant does not count",
             vec![grant(
                 "g1",
-                key("org.quire.Files", Usage::Interactive),
+                key("org.bardo.Files", Usage::Interactive),
                 Allow,
                 Always,
                 1,
@@ -111,7 +111,7 @@ fn decide_reads_the_newest_grant_for_the_exact_key() {
         (
             "an interactive grant does not cover background use",
             vec![grant("g1", photos(), Allow, Always, 1)],
-            key("org.quire.Photos", Usage::Background),
+            key("org.bardo.Photos", Usage::Background),
             Verdict::Ask,
         ),
         (
@@ -136,15 +136,15 @@ fn decide_reads_the_newest_grant_for_the_exact_key() {
 fn another_apps_own_space_is_refused_and_shared_spaces_pass() {
     use Decision::Allow;
     use GrantScope::Always;
-    let photos = || key("org.quire.Photos", Usage::Interactive);
-    let files = || key("org.quire.Files", Usage::Interactive);
+    let photos = || key("org.bardo.Photos", Usage::Interactive);
+    let files = || key("org.bardo.Files", Usage::Interactive);
     // Photos' own Space 3, and a grant for Files over it slipped into the store.
-    let theirs = || in_space(files(), "app:org.quire.Photos:3");
+    let theirs = || in_space(files(), "app:org.bardo.Photos:3");
     let stored = vec![
         grant("g1", theirs(), Allow, Always, 1),
         grant(
             "g2",
-            in_space(photos(), "app:org.quire.Photos:3"),
+            in_space(photos(), "app:org.bardo.Photos:3"),
             Allow,
             Always,
             1,
@@ -162,14 +162,14 @@ fn another_apps_own_space_is_refused_and_shared_spaces_pass() {
         (
             "and never asked",
             in_space(
-                key("org.quire.Mail", Usage::Interactive),
-                "app:org.quire.Photos:3",
+                key("org.bardo.Mail", Usage::Interactive),
+                "app:org.bardo.Photos:3",
             ),
             Verdict::Denied,
         ),
         (
             "the owner's own Space passes",
-            in_space(photos(), "app:org.quire.Photos:3"),
+            in_space(photos(), "app:org.bardo.Photos:3"),
             granted("g2", Always),
         ),
         (

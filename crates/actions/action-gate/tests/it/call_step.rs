@@ -9,7 +9,7 @@ use permission_core::{AskReason, DenyCode, ReasonCode, ReasonText, ReviewError, 
 use provenance::{ConfirmReceipt, InputProof, SpaceScope, UnixSeconds};
 
 fn app() -> account_core::AppName {
-    account_core::AppName::parse("org.quire.Mail").expect("app")
+    account_core::AppName::parse("org.bardo.Mail").expect("app")
 }
 
 fn confirm_id() -> ConfirmId {
@@ -21,7 +21,7 @@ fn sheet(id: &str) -> ConfirmRequest {
         id: ConfirmId::parse(id).expect("id"),
         space: provenance::SpaceId::parse("work").expect("space"),
         actor: provenance::Actor::Unknown,
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         action: LabelText::parse("Send 1 message").expect("words"),
         effect: provenance::Effect::Outbound,
         count: account_ids::Count(1),

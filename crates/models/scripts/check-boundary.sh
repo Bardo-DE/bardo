@@ -51,7 +51,7 @@ LAYERS=(
   # client moves to its own crate (T1.2).
   "model-http: P"
   "speech-host-client: C"
-  "speech-host: C"
+  "bardo-speech-host: C"
   # What differs between the engines as one trait (engine-spec), the engines as data (engine-manifest), the reads of this computer (engine-probe) and the
   # install (engine-install: downloads through model-http, child processes, the helper program).
   "engine-spec: P"
@@ -125,7 +125,7 @@ RULES=(
   "speech-provider: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
   "speech-vad: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
   "speech-host-client: $IO_FORBIDDEN $PORTER $AUDIO_DEVICES $GPL_TTS"
-  "speech-host: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
+  "bardo-speech-host: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
   "engine-spec: $EFFECTS $PORTER"
   "engine-manifest: $EFFECTS $PORTER"
   "engine-probe: $EFFECTS $PORTER"

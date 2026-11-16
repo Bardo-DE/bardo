@@ -44,7 +44,7 @@ fn write_seat(path: &Path, uid: Option<u32>) {
     std::fs::write(path, text).unwrap();
 }
 
-/// A socket thread on `<dir>/keycap.sock` reading the seat from `<dir>/seat0`.
+/// A socket thread on `<dir>/key-remap.sock` reading the seat from `<dir>/seat0`.
 struct Harness {
     _dir: Scratch,
     socket: PathBuf,
@@ -142,7 +142,7 @@ fn the_socket_is_world_connectable_and_a_stale_file_is_replaced() {
     assert_eq!(mode & 0o777, 0o666);
     assert_eq!(
         path.file_name().and_then(|n| n.to_str()),
-        Some("keycap.sock")
+        Some("key-remap.sock")
     );
 }
 

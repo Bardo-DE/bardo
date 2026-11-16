@@ -1,6 +1,6 @@
 //! Who speaks for the person. Two callers may: the shell (sill: the process porter's callers
-//! table names as the shell's unit, `sill.service`, with the system's `sheet_host` role and the
-//! app `companiond.toml` gives it), and a terminal (`quire-do ask`: a process in a terminal's scope
+//! table names as the shell's unit, `bardo-shell.service`, with the system's `sheet_host` role and the
+//! app `companiond.toml` gives it), and a terminal (`bardo-do ask`: a process in a terminal's scope
 //! that nothing else names, run by the same user), which may only open, ask and close, stop its
 //! own answer and read answers.
 //!
@@ -12,8 +12,8 @@
 //! the person at a keyboard, or whatever is typing in one, and that is why it gets no more than
 //! the conversation: it cannot press a card (`Act`) and cannot tell a subagent anything (`Told`).
 //! A third caller reads the helpers and speaks in a helper's conversation, and does nothing
-//! else: our own editor bridge (`docket-acp`, the
-//! process the table names as the app `org.quire.Acp` in the role `agent`, by its scope and its
+//! else: our own editor bridge (`bardo-agent-acp`, the
+//! process the table names as the app `org.bardo.Acp` in the role `agent`, by its scope and its
 //! program path), so an editor can show the helpers the person keeps. It is identified by the
 //! table alone, never by a name it sends or a bus name it owns.
 //! Every call the companion then makes goes through intentd's gate in the role `companion`, and
@@ -32,7 +32,7 @@ use zbus::message::Header;
 use zbus::names::BusName;
 
 /// The app the table names for our own editor bridge.
-pub(crate) const EDITOR_APP: &str = "org.quire.Acp";
+pub(crate) const EDITOR_APP: &str = "org.bardo.Acp";
 
 fn denied() -> fdo::Error {
     fdo::Error::AccessDenied("only the shell or a terminal speaks for the person".into())
@@ -60,7 +60,7 @@ async fn owns_a_name(dbus: &DBusProxy<'_>, unique: &str) -> fdo::Result<bool> {
 
 /// Who the process is that the callers table names as `named` (or does not name, `None`) and whose
 /// cgroup is `terminal` (if it is a terminal's child): the shell is the table's `sheet_host` of the
-/// app `shell`; the editor bridge is the table's `agent` of the app `org.quire.Acp`; a process the table names as anything else is nobody here; a process the table
+/// app `shell`; the editor bridge is the table's `agent` of the app `org.bardo.Acp`; a process the table names as anything else is nobody here; a process the table
 /// does not name is a terminal when its cgroup says so.
 pub(crate) fn speaker_of(
     shell: &AppName,
@@ -186,7 +186,7 @@ mod tests {
 
     /// Who the process is, by the table and the fake proc root, as `Speakers::identify` reads it.
     fn speaker(root: &Path, pid: u32, table: &CallerTable) -> Option<Speaker> {
-        let shell = AppName::parse("org.quire.Shell").expect("app");
+        let shell = AppName::parse("org.bardo.Shell").expect("app");
         let named = ProcCallers::caller_of_pid(root, pid, table);
         let terminal = match named {
             Some(_) => None,
@@ -201,14 +201,14 @@ mod tests {
         let root = root.path();
         let table = crate::callers::shipped();
         for (pid, leaf, main) in [
-            (1, "sill.service", true),
-            (2, "sill.service", false),
+            (1, "bardo-shell.service", true),
+            (2, "bardo-shell.service", false),
             (3, "sill-shell.scope", false),
-            (4, "app-org.quire.Shell-1.scope", false),
+            (4, "app-org.bardo.Shell-1.scope", false),
             (5, "vte-spawn-abc.scope", false),
             (6, "tmux-spawn-abc.scope", false),
-            (7, "companiond.service", true),
-            (8, "app-org.quire.Mail-1.scope", false),
+            (7, "bardo-companiond.service", true),
+            (8, "app-org.bardo.Mail-1.scope", false),
         ] {
             put(root, pid, leaf, main);
         }
@@ -244,14 +244,14 @@ mod tests {
     #[test]
     fn a_user_row_cannot_make_a_process_the_shell_and_a_lowered_unit_is_not() {
         let user = table_from_toml(
-            "[[caller]]\napp = \"org.quire.Shell\"\nunit = \"mine.service\"\nrole = \"sheet_host\"\n\n\
-             [[caller]]\napp = \"org.quire.Shell\"\nunit = \"sill.service\"\nrole = \"agent\"\n",
+            "[[caller]]\napp = \"org.bardo.Shell\"\nunit = \"mine.service\"\nrole = \"sheet_host\"\n\n\
+             [[caller]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nrole = \"agent\"\n",
         )
         .expect("user");
         let table = CallerTable::layered(crate::callers::shipped(), user);
         let root = tempfile::tempdir().expect("scratch");
         put(root.path(), 1, "mine.service", true);
-        put(root.path(), 2, "sill.service", true);
+        put(root.path(), 2, "bardo-shell.service", true);
         assert_eq!(speaker(root.path(), 1, &table), None);
         assert_eq!(speaker(root.path(), 2, &table), None);
     }

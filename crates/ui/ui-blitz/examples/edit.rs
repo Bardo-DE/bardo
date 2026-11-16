@@ -1,7 +1,7 @@
 //! An edit surface in a real window, for trying the IME by hand: click in the text, type, compose
 //! with an input method (fcitx5, IBus), paste. Every input the surface hands the app is printed on
 //! stdout, and the caret the app would draw sits at the last position a press reported. With
-//! `QUIRE_EDIT_SECONDS=n` it closes itself after n seconds.
+//! `BARDO_EDIT_SECONDS=n` it closes itself after n seconds.
 //!
 //! `cargo run -p ui-blitz --example edit`
 
@@ -28,7 +28,7 @@ fn main() -> Result<(), ui_blitz::LaunchError> {
 #[allow(non_snake_case)]
 fn App() -> Element {
     use_hook(|| {
-        let seconds = std::env::var("QUIRE_EDIT_SECONDS").ok()?.parse().ok()?;
+        let seconds = std::env::var("BARDO_EDIT_SECONDS").ok()?.parse().ok()?;
         Some(spawn(async move {
             sleep(Duration::from_secs(seconds)).await;
             std::process::exit(0);

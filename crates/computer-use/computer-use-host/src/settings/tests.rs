@@ -458,7 +458,7 @@ fn browsers_are_told_by_their_ids() {
     for id in [
         "org.gnome.Calculator",
         "org.gnome.TextEditor",
-        "org.quire.Mail",
+        "org.bardo.Mail",
     ] {
         assert!(!is_browser(&app(id)), "{id}");
     }

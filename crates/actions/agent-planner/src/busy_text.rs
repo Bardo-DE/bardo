@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     fn busy_names_the_planners_own_task_only_when_one_of_them_last_used_that_app() {
-        let cua = "org.quire.Cua";
+        let cua = "org.bardo.ComputerUse";
         let table = [
             (
                 "nobody",
@@ -136,7 +136,7 @@ mod tests {
             ),
             (
                 "another app",
-                vec![worker("org.quire.Mail", RosterState::Working)],
+                vec![worker("org.bardo.Mail", RosterState::Working)],
                 vec![task_card(4)],
                 "so this one cannot start;",
             ),

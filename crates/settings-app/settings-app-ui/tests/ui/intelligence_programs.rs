@@ -105,35 +105,35 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
     let sandbox = Sandbox::new("programs-writes");
     let mut harness = sandbox.harness(intelligence());
     for file in [
-        "docket/settings.toml",
-        "almanac/settings.toml",
-        "cua/settings.toml",
+        "actions/settings.toml",
+        "memory/settings.toml",
+        "computer-use/settings.toml",
     ] {
         assert_eq!(sandbox.read(file), None, "{file}: looking writes nothing");
     }
 
     // Top to bottom, because the page is only ever scrolled down: the Assistant section first.
     flip(&mut harness, "Other apps");
-    let docket = sandbox.read("docket/settings.toml").expect("docket's file");
+    let docket = sandbox.read("actions/settings.toml").expect("docket's file");
     assert!(docket.contains("expose = true"), "{docket}");
     assert!(
         !docket.contains("autopause") && !docket.contains("when"),
         "{docket}"
     );
-    assert_eq!(sandbox.read("almanac/settings.toml"), None);
-    assert_eq!(sandbox.read("cua/settings.toml"), None);
+    assert_eq!(sandbox.read("memory/settings.toml"), None);
+    assert_eq!(sandbox.read("computer-use/settings.toml"), None);
 
     let tidy = ".ds-segmented[aria-label=\"Tidy memory\"] .ds-segmented-segment:nth-of-type(2)";
     scroll_into_view(&mut harness, tidy);
     click(&mut harness, tidy);
     let almanac = sandbox
-        .read("almanac/settings.toml")
+        .read("memory/settings.toml")
         .expect("almanac's file");
     assert!(almanac.contains("when = \"manual\""), "{almanac}");
-    assert_eq!(sandbox.read("cua/settings.toml"), None);
+    assert_eq!(sandbox.read("computer-use/settings.toml"), None);
 
     flip(&mut harness, "Pause when I touch the window");
-    let cua = sandbox.read("cua/settings.toml").expect("cua's file");
+    let cua = sandbox.read("computer-use/settings.toml").expect("cua's file");
     assert!(cua.contains("autopause = false"), "{cua}");
     assert!(!cua.contains("when"), "{cua}");
 
@@ -174,9 +174,9 @@ fn lending_this_computers_models_is_off_until_the_switch_is_flipped() {
 fn rows_that_do_not_fit_are_shown_as_written_and_never_rewritten() {
     let sandbox = Sandbox::new("programs-rows-foreign");
     let written = "[cua]\napps = [{ app = \"org.a.B\", allow = \"ask\", note = \"mine\" }]\n";
-    sandbox.write("cua/settings.toml", written);
+    sandbox.write("computer-use/settings.toml", written);
     let harness = sandbox.harness(intelligence());
     assert_eq!(harness.count(".key-rows"), 0);
     assert!(harness.html().contains("Edit in file"));
-    assert_eq!(sandbox.read("cua/settings.toml").as_deref(), Some(written));
+    assert_eq!(sandbox.read("computer-use/settings.toml").as_deref(), Some(written));
 }

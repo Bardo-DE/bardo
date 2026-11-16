@@ -2,12 +2,12 @@
 # Sources the other libraries, installs the exit trap (test clients first, then the compositor),
 # and gives the small helpers the scripts share. Owner: P0-accept. Sourceable.
 #
-#   ctl ARGS...              casementctl
+#   ctl ARGS...              bardo-compositorctl
 #   step N                   N vblanks of the stepped clock
 #   settle                   step until no window is moving
 #   win FIELD CLASS          one field of a window in `debug windows`: frame (x y w h), active, ...
 #   win_rect CLASS           the window's frame as `x y w h`
-#   output_json              the first output as JSON (`casementctl output list`)
+#   output_json              the first output as JSON (`bardo-compositorctl output list`)
 #   plug_devices             plug a virtual keyboard and pointer (clients bind seats after this)
 #   click X Y                move there, press and release the left button
 #   expect_line NAME CMD...  see assert_ok; the same with a reason printed on failure
@@ -38,7 +38,7 @@ trap accept_cleanup EXIT
 
 command -v jq >/dev/null || { echo "accept: jq is not installed: $(pkg_hint jq)" >&2; exit 2; }
 
-ctl() { "$(casement_tool casementctl)" "$@"; }
+ctl() { "$(casement_tool bardo-compositorctl)" "$@"; }
 
 step() { ctl debug clock step "${1:-1}"; }
 

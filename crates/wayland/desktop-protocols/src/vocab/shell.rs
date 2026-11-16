@@ -1,10 +1,10 @@
-//! Shell vocabulary: `quire_shell_v1`'s enums (its modifier bitfield is `HeldMods`).
+//! Shell vocabulary: `bardo_shell_v1`'s enums (its modifier bitfield is `HeldMods`).
 
 use super::code::{WireCode, wire_enum};
 use std::collections::BTreeSet;
 
 wire_enum! {
-    /// What a shell surface is (`quire_shell_v1.shell_role`).
+    /// What a shell surface is (`bardo_shell_v1.shell_role`).
     ShellRole {
         /// The menu bar.
         Bar = 0,
@@ -30,7 +30,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// A modifier gesture the compositor recognised (`quire_shell_v1.key_gesture`).
+    /// A modifier gesture the compositor recognised (`bardo_shell_v1.key_gesture`).
     KeyGesture {
         /// A double tap of Command.
         Summon = 0,
@@ -44,7 +44,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// A screen edge (`quire_shell_v1.screen_edge`).
+    /// A screen edge (`bardo_shell_v1.screen_edge`).
     ScreenEdge {
         /// Top.
         Top = 0,
@@ -58,7 +58,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// A screen corner (`quire_shell_v1.corner`).
+    /// A screen corner (`bardo_shell_v1.corner`).
     Corner {
         /// Top left.
         TopLeft = 0,
@@ -72,7 +72,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Whether something is on screen (`quire_shell_v1.shown`).
+    /// Whether something is on screen (`bardo_shell_v1.shown`).
     Shown {
         /// Hidden.
         Hidden = 0,
@@ -82,7 +82,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// What the bar does in full screen (`quire_shell_v1.full_screen_bar`, version 7).
+    /// What the bar does in full screen (`bardo_shell_v1.full_screen_bar`, version 7).
     FullScreenBar {
         /// Hidden; it slides in when the pointer rests at the top edge.
         Reveal = 0,
@@ -92,7 +92,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// How much motion the person allows (`quire_shell_v1.motion`, version 7).
+    /// How much motion the person allows (`bardo_shell_v1.motion`, version 7).
     Motion {
         /// Slides and zooms.
         Full = 0,
@@ -102,7 +102,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Which overview (`quire_shell_v1.overview_mode`).
+    /// Which overview (`bardo_shell_v1.overview_mode`).
     OverviewMode {
         /// Every window of every app.
         MissionControl = 0,
@@ -114,7 +114,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Where the overview is in its life (`quire_shell_v1.overview_state`).
+    /// Where the overview is in its life (`bardo_shell_v1.overview_state`).
     OverviewState {
         /// Not shown.
         Closed = 0,
@@ -130,7 +130,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// An entry of a window's menu, in menu order (`quire_shell_v1.window_entry`).
+    /// An entry of a window's menu, in menu order (`bardo_shell_v1.window_entry`).
     WindowEntry {
         /// Enter Full Screen.
         EnterFullScreen = 0,
@@ -165,7 +165,7 @@ wire_enum! {
     }
 }
 
-/// The entries of a window's menu that can be picked now (`quire_shell_v1.window_menu`'s
+/// The entries of a window's menu that can be picked now (`bardo_shell_v1.window_menu`'s
 /// `enabled`, a bit per [`WindowEntry`] code on the wire).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct WindowEntries(BTreeSet<WindowEntry>);
@@ -208,7 +208,7 @@ impl FromIterator<WindowEntry> for WindowEntries {
 }
 
 wire_enum! {
-    /// A half of the screen in a Split View (`quire_shell_v1.split_side`).
+    /// A half of the screen in a Split View (`bardo_shell_v1.split_side`).
     SplitSide {
         /// The left half.
         Left = 0,
@@ -218,7 +218,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// How a window drag in Mission Control ended (`quire_shell_v1.drag_outcome`).
+    /// How a window drag in Mission Control ended (`bardo_shell_v1.drag_outcome`).
     DragOutcome {
         /// Dropped on a Space of the Spaces bar.
         DroppedOnSpace = 0,

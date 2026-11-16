@@ -1,5 +1,5 @@
-//! Giving a turn to the agent host over the session bus: `org.quire.AgentHost1`, served by
-//! `docket-agent --serve` under the name `org.quire.AcpAgent`. Asking the name starts the host if
+//! Giving a turn to the agent host over the session bus: `org.bardo.AgentHost1`, served by
+//! `bardo-agent --serve` under the name `org.bardo.AcpAgent`. Asking the name starts the host if
 //! it is not running. The host opens the agent's session and makes its calls; this only hands it
 //! the person's turn and waits for the agent to finish it.
 

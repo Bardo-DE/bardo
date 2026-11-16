@@ -1,4 +1,4 @@
-//! `org.quire.Companion1` on a private bus: served as declared, an ask answered at once with the
+//! `org.bardo.Companion1` on a private bus: served as declared, an ask answered at once with the
 //! answer's object path while the loop runs behind it, the roster and the front task read without
 //! waiting for the loop, and the answer object's view.
 
@@ -140,7 +140,7 @@ async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
         .await
         .expect("ask");
     assert!(
-        path.as_str().starts_with("/org/quire/Companion1/answer/"),
+        path.as_str().starts_with("/org/bardo/Companion1/answer/"),
         "{path}"
     );
     let signalled = tokio::time::timeout(Duration::from_secs(2), added.next())
@@ -178,16 +178,16 @@ async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
     assert_eq!(
         block(
             &introspect(&client, COMPANION_PATH).await,
-            "org.quire.Companion1"
+            "org.bardo.Companion1"
         ),
-        block(&declared, "org.quire.Companion1")
+        block(&declared, "org.bardo.Companion1")
     );
     assert_eq!(
         block(
             &introspect(&client, path.as_str()).await,
-            "org.quire.Companion1.Answer"
+            "org.bardo.Companion1.Answer"
         ),
-        block(&declared, "org.quire.Companion1.Answer")
+        block(&declared, "org.bardo.Companion1.Answer")
     );
 
     // Closing the session removes the answer object.

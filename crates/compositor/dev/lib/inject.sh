@@ -1,5 +1,5 @@
 # inject LINE...: sends inject lines (11 section 4.1 grammar, a superset of layer-shell-host's
-# fake-input.sh: wheel value120 and axis_source explicit) through `casementctl debug inject`, and
+# fake-input.sh: wheel value120 and axis_source explicit) through `bardo-compositorctl debug inject`, and
 # prints the `ok <line>` each one is answered with. With no arguments the lines come from stdin,
 # so layer-shell-host's `printf 'move 300 200\npress left\n' | fake-input.sh` becomes
 # `printf ... | inject`. Exit 1 when casement refused a line (nothing was injected then).
@@ -20,7 +20,7 @@ inject() {
   require_jail
   _session || return 1
   local ctl
-  ctl=$(casement_tool casementctl) || return 3
+  ctl=$(casement_tool bardo-compositorctl) || return 3
   if [ $# -gt 0 ]; then
     printf '%s\n' "$@" | "$ctl" debug inject
   else

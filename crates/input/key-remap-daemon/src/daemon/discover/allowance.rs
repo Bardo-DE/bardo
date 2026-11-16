@@ -15,7 +15,7 @@ pub(crate) enum VirtualAllowance {
 }
 
 impl VirtualAllowance {
-    /// The allowance a `$KEYCAP_GRAB_VIRTUAL` value gives: a non-empty value names the device.
+    /// The allowance a `$BARDO_KEY_REMAP_GRAB_VIRTUAL` value gives: a non-empty value names the device.
     pub(crate) fn from_env_value(value: Option<&str>) -> Self {
         match value {
             Some(name) if !name.is_empty() => Self::Named(name.to_owned()),

@@ -1,4 +1,4 @@
-//! Live settings modules: `org.quire.SettingsModule1` (design/22-SETTINGS.md section 9.4).
+//! Live settings modules: `org.bardo.SettingsModule1` (design/22-SETTINGS.md section 9.4).
 //!
 //! Runtime state that is not a file (accounts, local runtimes, later Wi-Fi and Bluetooth) is
 //! served by its daemon on the session bus and rendered by the Settings app with the same widgets
@@ -7,7 +7,7 @@
 //! - the daemon implements [`LiveModule`] over its own state and hands it to [`serve`];
 //! - the Settings app talks to it through [`LiveClient`] (or the raw [`SettingsModule1Proxy`]).
 //!
-//! The wire interface is frozen; `org.quire.SettingsModule1.xml` beside this file is its
+//! The wire interface is frozen; `org.bardo.SettingsModule1.xml` beside this file is its
 //! introspection XML and a test keeps the skeleton equal to it:
 //!
 //! | Member | Signature | Meaning |
@@ -65,7 +65,7 @@ pub use timeouts::Timeouts;
 pub use ui_peer::Deadline;
 
 /// The D-Bus interface name.
-pub const INTERFACE: &str = "org.quire.SettingsModule1";
+pub const INTERFACE: &str = "org.bardo.SettingsModule1";
 
 /// The introspection XML of [`INTERFACE`], the frozen wire form.
-pub const INTROSPECTION_XML: &str = include_str!("org.quire.SettingsModule1.xml");
+pub const INTROSPECTION_XML: &str = include_str!("org.bardo.SettingsModule1.xml");

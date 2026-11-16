@@ -35,7 +35,7 @@ impl HostedApp for Recall {
             Ok(Outcome {
                 value: Some(Labelled {
                     value: Value::Entities(vec![provenance::EntityId {
-                        app: app("org.quire.Memory"),
+                        app: app("org.bardo.Memory"),
                         kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
                         key: provenance::EntityKey::parse("f1").expect("key"),
                     }]),
@@ -56,7 +56,7 @@ fn with_memory(script: Vec<Say>) -> (World, Arc<Recall>) {
     w.router
         .seams
         .link
-        .host(app("org.quire.Memory"), memory.clone());
+        .host(app("org.bardo.Memory"), memory.clone());
     (w, memory)
 }
 
@@ -105,7 +105,7 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
     // A worker's turns are not the person's: one search, for the person's turn.
     let (mut w, memory) = with_memory(vec![
         call(
-            "org_quire_Companion-companion_task_start",
+            "org_bardo_Companion-companion_task_start",
             json!({ "goal": "tidy the downloads" }),
         ),
         words("on it"),
@@ -120,7 +120,7 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
     w.router
         .seams
         .link
-        .answer_from(&app("org.quire.Memory"), Answering::Absent);
+        .answer_from(&app("org.bardo.Memory"), Answering::Absent);
     let opened = w.open("work").await;
     w.say(&opened.session, "What is the capital of Taiwan?")
         .await;

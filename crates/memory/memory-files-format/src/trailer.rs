@@ -2,7 +2,7 @@
 //!
 //! ```text
 //! - Prefers meetings after 10:00.
-//!   <!-- fact: 01j9zk3m0q8h2v6x4c1b7n5t2a; at: 2026-10-01T09:12:44Z; by: {"kind":"user","v":{"via":"org.quire.Mail"}}; label: {...}; from: [{"kind":"thing","v":{...}}]; supersedes: ["01j9..."] -->
+//!   <!-- fact: 01j9zk3m0q8h2v6x4c1b7n5t2a; at: 2026-10-01T09:12:44Z; by: {"kind":"user","v":{"via":"org.bardo.Mail"}}; label: {...}; from: [{"kind":"thing","v":{...}}]; supersedes: ["01j9..."] -->
 //! ```
 //!
 //! Keys, in the order written: `fact`, `at` (UTC, RFC 3339 with `Z`), `by` (the actor's serde

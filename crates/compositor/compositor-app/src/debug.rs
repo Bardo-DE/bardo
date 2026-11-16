@@ -1,4 +1,4 @@
-//! `org.quire.Casement.Debug1` in the event loop (feature `debug-inject`, the jail's private
+//! `org.bardo.Compositor.Debug1` in the event loop (feature `debug-inject`, the jail's private
 //! bus only): the D-Bus object forwards every call down a calloop channel and this module
 //! answers it with the `State` in hand. A call that needs time to pass (a wait, a sleep, a
 //! clock step) becomes a job the loop works on each turn; one that does not is answered at

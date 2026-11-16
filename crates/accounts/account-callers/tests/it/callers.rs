@@ -59,19 +59,19 @@ impl Procs {
 
 fn table() -> CallerTable {
     serde_json::from_value(serde_json::json!({"caller": [
-        {"app": "org.quire.Settings", "role": "settings"},
-        {"app": "org.quire.Intent", "unit": "intentd.service", "role": "agent"},
-        {"app": "org.quire.Cua", "unit": "cuad.service", "role": "cua"},
-        {"app": "org.quire.Sill", "role": "sheet_host"},
-        {"app": "org.quire.Inference", "unit": "inferd.service", "role": "porter_daemon"},
+        {"app": "org.bardo.Settings", "role": "settings"},
+        {"app": "org.bardo.Intent", "unit": "bardo-actiond.service", "role": "agent"},
+        {"app": "org.bardo.ComputerUse", "unit": "bardo-computer-use.service", "role": "cua"},
+        {"app": "org.bardo.Shell", "role": "sheet_host"},
+        {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "porter_daemon"},
         {"app": "org.example.Sheets", "role": "sheet_host"},
-        {"app": "org.quire.Shell", "unit": "sill-shell.scope", "role": "sheet_host",
-         "exe": ["/usr/bin/sill"]},
-        {"app": "org.quire.Shell", "unit": "sill.service", "role": "sheet_host",
-         "exe": ["/usr/bin/sill"]},
+        {"app": "org.bardo.Shell", "unit": "sill-shell.scope", "role": "sheet_host",
+         "exe": ["/usr/bin/bardo-shell"]},
+        {"app": "org.bardo.Shell", "unit": "bardo-shell.service", "role": "sheet_host",
+         "exe": ["/usr/bin/bardo-shell"]},
         {"app": "org.example.Odd", "unit": "odd.scope", "role": "settings",
          "exe": ["/usr/bin/odd"]},
-        {"app": "org.quire.Trap", "unit": "app-org.quire.Trap-1.scope", "role": "settings"},
+        {"app": "org.bardo.Trap", "unit": "app-org.bardo.Trap-1.scope", "role": "settings"},
     ]}))
     .expect("table")
 }
@@ -100,22 +100,22 @@ fn a_process_is_named_by_its_scope_or_unit() {
     s.process(11, Some(&scope("app-gnome-org.example.Calc-77.scope")));
     s.process(12, Some(&scope("app-flatpak-org.example.Photos-5.scope")));
     s.process(13, Some(&scope("app-flatpak-org.example.Sheets-6.scope")));
-    s.process(14, Some(&scope("app-org.quire.Settings-9.scope")));
+    s.process(14, Some(&scope("app-org.bardo.Settings-9.scope")));
     s.process(15, Some(&scope("app-org.example.Mail\\x2dbeta-9.scope")));
     s.process(
         16,
-        Some("/user.slice/user@1000.service/app.slice/inferd.service"),
+        Some("/user.slice/user@1000.service/app.slice/bardo-inferd.service"),
     );
-    s.process(17, Some("/system.slice/cuad.service"));
+    s.process(17, Some("/system.slice/bardo-computer-use.service"));
     s.process(
         18,
-        Some("/user.slice/user@1000.service/app.slice/intentd.service"),
+        Some("/user.slice/user@1000.service/app.slice/bardo-actiond.service"),
     );
     s.flatpak(12, "org.example.Photos");
     s.flatpak(13, "org.example.Sheets");
-    s.main_of("inferd.service", 16);
-    s.main_of("cuad.service", 17);
-    s.main_of("intentd.service", 18);
+    s.main_of("bardo-inferd.service", 16);
+    s.main_of("bardo-computer-use.service", 17);
+    s.main_of("bardo-actiond.service", 18);
     let cases = [
         (
             10,
@@ -141,7 +141,7 @@ fn a_process_is_named_by_its_scope_or_unit() {
         (
             14,
             got(
-                "org.quire.Settings",
+                "org.bardo.Settings",
                 Isolation::Unsandboxed,
                 CallerRole::Settings,
             ),
@@ -158,19 +158,19 @@ fn a_process_is_named_by_its_scope_or_unit() {
         (
             16,
             got(
-                "org.quire.Inference",
+                "org.bardo.Inference",
                 Isolation::Unsandboxed,
                 CallerRole::PorterDaemon,
             ),
         ),
         (
             17,
-            got("org.quire.Cua", Isolation::Unsandboxed, CallerRole::Cua),
+            got("org.bardo.ComputerUse", Isolation::Unsandboxed, CallerRole::Cua),
         ),
         (
             18,
             got(
-                "org.quire.Intent",
+                "org.bardo.Intent",
                 Isolation::Unsandboxed,
                 CallerRole::Agent,
             ),
@@ -185,22 +185,22 @@ fn a_process_is_named_by_its_scope_or_unit() {
 fn a_scope_named_after_a_daemons_app_is_an_app() {
     // Any process may start a scope by any name: only the unit itself carries the unit's role.
     let s = Procs::new();
-    s.process(30, Some(&scope("app-org.quire.Cua-1.scope")));
-    s.process(31, Some(&scope("app-flatpak-org.quire.Inference-2.scope")));
-    s.process(32, Some(&scope("app-org.quire.Intent-3.scope")));
-    s.flatpak(31, "org.quire.Inference");
+    s.process(30, Some(&scope("app-org.bardo.Cua-1.scope")));
+    s.process(31, Some(&scope("app-flatpak-org.bardo.Inference-2.scope")));
+    s.process(32, Some(&scope("app-org.bardo.Intent-3.scope")));
+    s.flatpak(31, "org.bardo.Inference");
     let cases = [
         (
             30,
-            got("org.quire.Cua", Isolation::Unsandboxed, CallerRole::App),
+            got("org.bardo.ComputerUse", Isolation::Unsandboxed, CallerRole::App),
         ),
         (
             31,
-            got("org.quire.Inference", Isolation::Flatpak, CallerRole::App),
+            got("org.bardo.Inference", Isolation::Flatpak, CallerRole::App),
         ),
         (
             32,
-            got("org.quire.Intent", Isolation::Unsandboxed, CallerRole::App),
+            got("org.bardo.Intent", Isolation::Unsandboxed, CallerRole::App),
         ),
     ];
     for (pid, want) in cases {
@@ -212,37 +212,37 @@ fn a_scope_named_after_a_daemons_app_is_an_app() {
 fn a_scope_a_row_names_as_its_unit_is_that_unit_exactly_and_no_more_than_an_app() {
     let s = Procs::new();
     s.process(40, Some(&scope("sill-shell.scope")));
-    s.image(40, "/usr/bin/sill");
+    s.image(40, "/usr/bin/bardo-shell");
     s.process(41, Some(&scope("sill-shell-2.scope")));
     s.process(42, Some(&scope("xsill-shell.scope")));
     // An app scope never takes a unit row's role, even one naming it exactly.
-    s.process(43, Some(&scope("app-org.quire.Trap-1.scope")));
+    s.process(43, Some(&scope("app-org.bardo.Trap-1.scope")));
     // A scope has no main process, so the row's fixed role is a plain app's.
     assert_eq!(
         resolve(&s, 40),
-        got("org.quire.Shell", Isolation::Unsandboxed, CallerRole::App)
+        got("org.bardo.Shell", Isolation::Unsandboxed, CallerRole::App)
     );
     assert_eq!(resolve(&s, 41), None);
     assert_eq!(resolve(&s, 42), None);
     assert_eq!(
         resolve(&s, 43),
-        got("org.quire.Trap", Isolation::Unsandboxed, CallerRole::App)
+        got("org.bardo.Trap", Isolation::Unsandboxed, CallerRole::App)
     );
 }
 
 #[test]
 fn the_shell_as_a_service_keeps_its_role_only_as_the_units_main_process() {
     let s = Procs::new();
-    let unit = "/user.slice/user-1000.slice/user@1000.service/app.slice/sill.service";
+    let unit = "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service";
     s.process(60, Some(unit));
     s.process(61, Some(unit));
-    s.image(60, "/usr/bin/sill");
-    s.image(61, "/usr/bin/sill");
-    s.main_of("sill.service", 60);
+    s.image(60, "/usr/bin/bardo-shell");
+    s.image(61, "/usr/bin/bardo-shell");
+    s.main_of("bardo-shell.service", 60);
     assert_eq!(
         resolve(&s, 60),
         got(
-            "org.quire.Shell",
+            "org.bardo.Shell",
             Isolation::Unsandboxed,
             CallerRole::SheetHost
         )
@@ -251,7 +251,7 @@ fn the_shell_as_a_service_keeps_its_role_only_as_the_units_main_process() {
     // program only, so a plain app.
     assert_eq!(
         resolve(&s, 61),
-        got("org.quire.Shell", Isolation::Unsandboxed, CallerRole::App)
+        got("org.bardo.Shell", Isolation::Unsandboxed, CallerRole::App)
     );
 }
 
@@ -295,9 +295,9 @@ fn an_unreadable_sandbox_root_leaves_the_cgroup_and_the_image_to_decide() {
     use std::os::unix::fs::PermissionsExt;
     let s = Procs::new();
     s.process(50, Some(&scope("app-flatpak-org.example.Photos-5.scope")));
-    s.process(51, Some("/system.slice/inferd.service"));
+    s.process(51, Some("/system.slice/bardo-inferd.service"));
     s.process(52, Some(&scope("app-org.example.Mail-4242.scope")));
-    s.main_of("inferd.service", 51);
+    s.main_of("bardo-inferd.service", 51);
     // `root` is there and unreadable, as ptrace-gated entries are under Landlock.
     for pid in [50, 51, 52] {
         let root = s.path().join(pid.to_string()).join("root");
@@ -308,7 +308,7 @@ fn an_unreadable_sandbox_root_leaves_the_cgroup_and_the_image_to_decide() {
     assert_eq!(
         resolve(&s, 51),
         got(
-            "org.quire.Inference",
+            "org.bardo.Inference",
             Isolation::Unsandboxed,
             CallerRole::PorterDaemon
         )
@@ -328,10 +328,10 @@ fn a_service_whose_program_is_not_the_rows_is_nobody() {
     let s = Procs::new();
     s.process(
         90,
-        Some("/user.slice/user@1000.service/app.slice/inferd.service"),
+        Some("/user.slice/user@1000.service/app.slice/bardo-inferd.service"),
     );
     s.image(90, "/usr/bin/other");
-    s.main_of("inferd.service", 90);
+    s.main_of("bardo-inferd.service", 90);
     assert_eq!(resolve(&s, 90), None);
 }
 
@@ -377,24 +377,24 @@ async fn on_a_private_bus_a_service_is_its_unit_only_as_the_units_main_process()
     let pid = std::process::id();
     s.process(
         pid,
-        Some("/user.slice/user@1000.service/app.slice/inferd.service"),
+        Some("/user.slice/user@1000.service/app.slice/bardo-inferd.service"),
     );
     let callers = ProcCallers::with_proc_root(service.clone(), table(), s.path().to_owned());
 
     // The tree states no main process: this one only moved in.
     assert_eq!(callers.caller_of(&sender).await, None);
-    s.main_of("inferd.service", pid + 1);
+    s.main_of("bardo-inferd.service", pid + 1);
     assert_eq!(callers.caller_of(&sender).await, None);
 
     // The tree names this process.
-    s.main_of("inferd.service", pid);
+    s.main_of("bardo-inferd.service", pid);
     let caller = callers.caller_of(&sender).await.expect("the daemon");
     assert_eq!(
         (caller.app.name.as_str(), caller.role),
-        ("org.quire.Inference", CallerRole::PorterDaemon)
+        ("org.bardo.Inference", CallerRole::PorterDaemon)
     );
 
     // A unit the tree has not loaded is nobody's.
-    s.process(pid, Some("/system.slice/cuad.service"));
+    s.process(pid, Some("/system.slice/bardo-computer-use.service"));
     assert_eq!(callers.caller_of(&sender).await, None);
 }

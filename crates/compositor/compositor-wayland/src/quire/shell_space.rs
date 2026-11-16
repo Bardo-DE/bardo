@@ -1,4 +1,4 @@
-//! `quire_shell_v1` versions 2 to 4, the Spaces bar's part: which outputs Mission Control is up on
+//! `bardo_shell_v1` versions 2 to 4, the Spaces bar's part: which outputs Mission Control is up on
 //! (`overview_output`), the rectangles a dragged window can be dropped on (`space_target_clear`,
 //! `space_target`, and from version 3 `space_target_new`, the "add desktop" tile) and the target
 //! under it (`drop_target`, `drop_target_new`), and from version 4 where a window drag begins and ends
@@ -11,7 +11,7 @@ use account_core::SpaceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::overview_drag::SpaceTarget;
 use compositor_core::{OutputKey, WindowId};
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1;
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1;
 use desktop_protocols::vocab::{DragOutcome, WireCode};
 use smithay::output::Output;
 use smithay::reexports::wayland_server::{DataInit, Resource};
@@ -108,7 +108,7 @@ pub fn forget_targets(part: &mut QuireShellPart) {
 pub fn send_overview_outputs(
     part: &QuireShellPart,
     outputs: &BTreeMap<OutputKey, Output>,
-    shown: quire_shell_v1::Shown,
+    shown: bardo_shell_v1::Shown,
 ) {
     for shell in part.bound.iter().filter(|shell| shell.version() >= 2) {
         let Some(client) = shell.client() else {
@@ -148,7 +148,7 @@ pub fn send_drop_target_new(
     part: &QuireShellPart,
     outputs: &BTreeMap<OutputKey, Output>,
     output: &OutputKey,
-    over: quire_shell_v1::Shown,
+    over: bardo_shell_v1::Shown,
 ) {
     let Some(output) = outputs.get(output) else {
         return;
@@ -210,11 +210,11 @@ pub fn send_window_drag_end(
 /// A version 2, 3 or 4 request of the shell; every other request is ignored here.
 pub fn on_request<D: QuireShellHandler>(
     state: &mut D,
-    resource: &quire_shell_v1::QuireShellV1,
-    request: quire_shell_v1::Request,
+    resource: &bardo_shell_v1::BardoShellV1,
+    request: bardo_shell_v1::Request,
     data_init: &mut DataInit<'_, D>,
 ) {
-    use quire_shell_v1::Request;
+    use bardo_shell_v1::Request;
     match request {
         Request::SpaceTargetClear { output } => {
             let output = state.output_key_of(&output);
@@ -234,7 +234,7 @@ pub fn on_request<D: QuireShellHandler>(
                 on_space_target(state.quire_shell_part(), output, space, rect);
             }
             Err(EmptyTarget) => resource.post_error(
-                quire_shell_v1::Error::BadTarget,
+                bardo_shell_v1::Error::BadTarget,
                 "a Space target needs a width and a height",
             ),
         },

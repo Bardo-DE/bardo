@@ -17,7 +17,7 @@ pub fn action(name: &str) -> ActionName {
 }
 pub fn entity(kind_name: &str, key: &str) -> EntityId {
     EntityId {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: EntityKind::parse(kind_name).expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }

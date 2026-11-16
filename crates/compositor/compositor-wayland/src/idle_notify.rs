@@ -300,7 +300,7 @@ mod tests {
 
     fn proven(isolation: Isolation) -> PeerIdentity {
         PeerIdentity::Proven(AppId {
-            name: AppName::parse("org.quire.Mail").expect("an app name"),
+            name: AppName::parse("org.bardo.Mail").expect("an app name"),
             isolation,
         })
     }

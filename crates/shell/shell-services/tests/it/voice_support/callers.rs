@@ -23,7 +23,7 @@ impl VoicedIs {
     fn standing(self) -> Standing {
         match self {
             VoicedIs::TheVoiceService => {
-                introduced_service("org.quire.Voice", "voice", Proof::Full, Pin::AtConnect)
+                introduced_service("org.bardo.Voice", "voice", Proof::Full, Pin::AtConnect)
             }
             VoicedIs::OnlyOwnsTheName => introduced_program("/usr/bin/stranger"),
         }

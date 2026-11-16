@@ -56,7 +56,7 @@ impl From<TransportError> for ClientError {
 /// let router = Arc::new(fake_router(AgentConfig::default())?);
 /// let caller = CallerId {
 ///     app: AppId {
-///         name: AppName::parse("org.quire.Shell")?,
+///         name: AppName::parse("org.bardo.Shell")?,
 ///         isolation: Isolation::Unsandboxed,
 ///     },
 ///     roles: BTreeSet::from([CallerRole::Editor]),

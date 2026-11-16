@@ -40,8 +40,8 @@ fn nothing_is_drawn_while_the_terminal_has_nothing_to_say() {
 
 #[test]
 fn each_grant_is_a_row_and_revoke_sends_that_grant() {
-    let mail = grant("org.quire.Mail", "mail.thread.archive");
-    let shell = grant("org.quire.Shell", "shell.dock.pin");
+    let mail = grant("org.bardo.Mail", "mail.thread.archive");
+    let shell = grant("org.bardo.Shell", "shell.dock.pin");
     let mut running = center(|feeds| {
         feeds.intents.send_replace(seat(Terminal {
             grants: vec![mail.clone(), shell.clone()],

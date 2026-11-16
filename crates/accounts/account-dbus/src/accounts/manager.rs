@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Manager` at `/org/quire/Accounts1`: adding an identity through the sheet
+//! `org.bardo.Accounts1.Manager` at `/org/bardo/Accounts1`: adding an identity through the sheet
 //! and the signals about the identities signed in. accountd keeps identities and nothing
 //! grant-keyed, so there is no finding, choosing or granting here: an app that wants an identity
 //! asks `Identities1.Offer`, and one that wants an AI key asks inferd's `Keys`.
@@ -10,9 +10,9 @@ use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 /// The interface, written once. `#[bus_interface]` makes [`ManagerProxy`] for its callers from this
 /// trait, [`ManagerServer`] for the daemon to implement and [`ManagerServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Accounts1.Manager",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Accounts1"
+    interface = "org.bardo.Accounts1.Manager",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Accounts1"
 )]
 pub trait Manager {
     /// Shows the add-account sheet; returns a Request object.

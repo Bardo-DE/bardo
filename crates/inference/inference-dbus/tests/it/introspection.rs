@@ -47,6 +47,6 @@ fn inference_calls_carry_an_options_dict_for_the_reserved_traceparent() {
 fn computer_errors_keep_their_wire_prefix() {
     assert_eq!(
         inference::COMPUTER_ERROR_PREFIX,
-        "org.quire.Inference1.Error.Computer."
+        "org.bardo.Inference1.Error.Computer."
     );
 }

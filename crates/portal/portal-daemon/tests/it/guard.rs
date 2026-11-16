@@ -58,7 +58,7 @@ pub fn as_shell(peers: &Peers, who: &Connection) {
 
 /// Make `who` stand as the shell, proved only as far as `proof`.
 pub fn as_shell_at(peers: &Peers, who: &Connection, proof: Proof) {
-    let standing = introduced_service("org.quire.Shell", "shell", proof, Pin::AtConnect);
+    let standing = introduced_service("org.bardo.Shell", "shell", proof, Pin::AtConnect);
     introduce(peers, who, standing);
 }
 

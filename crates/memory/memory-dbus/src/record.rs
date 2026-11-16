@@ -1,11 +1,11 @@
-//! `org.quire.Memory1.Record`: writers. Bodies are the serde JSON of the `memory-core` types
+//! `org.bardo.Memory1.Record`: writers. Bodies are the serde JSON of the `memory-core` types
 //! in `s` arguments.
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Memory1.Record",
-    default_service = "org.quire.Memory1",
-    default_path = "/org/quire/Memory1"
+    interface = "org.bardo.Memory1.Record",
+    default_service = "org.bardo.Memory1",
+    default_path = "/org/bardo/Memory1"
 )]
 pub trait Record {
     /// Records one event (`Record` JSON); answers the `EventRef` JSON.

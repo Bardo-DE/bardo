@@ -32,7 +32,7 @@ fn grant(id: &str, caller: GrantCaller, space: SpaceScope) -> ActionGrant {
         id: GrantId::parse(id).expect("id"),
         key: ActionGrantKey {
             caller,
-            owner: app("org.quire.Mail"),
+            owner: app("org.bardo.Mail"),
             target: GrantTarget::Action(ActionName::parse("mail.thread.archive").expect("action")),
             class: DataClass::Mail,
             usage: Usage::Interactive,
@@ -54,9 +54,9 @@ fn held(store: &FileGrants) -> Vec<String> {
 fn an_app_cannot_hold_a_grant_over_another_apps_own_space() {
     let dir = tempfile::tempdir().expect("scratch");
     let store = FileGrants::at(dir.path().join("grants.json"));
-    let photos = GrantCaller::App(app("org.quire.Photos"));
-    store.record(grant("g-1", photos.clone(), only("app:org.quire.Mail:1")));
-    store.record(grant("g-2", photos.clone(), only("app:org.quire.Photos:1")));
+    let photos = GrantCaller::App(app("org.bardo.Photos"));
+    store.record(grant("g-1", photos.clone(), only("app:org.bardo.Mail:1")));
+    store.record(grant("g-2", photos.clone(), only("app:org.bardo.Photos:1")));
     store.record(grant("g-3", photos, only("work")));
     assert_eq!(
         held(&store),
@@ -68,8 +68,8 @@ fn an_app_cannot_hold_a_grant_over_another_apps_own_space() {
     let planted = vec![
         grant(
             "g-4",
-            GrantCaller::App(app("org.quire.Photos")),
-            only("app:org.quire.Mail:1"),
+            GrantCaller::App(app("org.bardo.Photos")),
+            only("app:org.bardo.Mail:1"),
         ),
         grant("g-5", GrantCaller::Companion, SpaceScope::Any),
     ];
@@ -238,7 +238,7 @@ async fn a_restart_drops_the_grants_of_a_space_that_went_and_audits_it() {
                 grant("g-1", GrantCaller::Companion, only("work")),
                 grant("g-2", GrantCaller::Companion, only("home")),
                 grant("g-3", GrantCaller::Companion, SpaceScope::Any),
-                grant("g-4", GrantCaller::Cua, only("app:org.quire.Mail:2")),
+                grant("g-4", GrantCaller::Cua, only("app:org.bardo.Mail:2")),
             ],
             &[],
         );

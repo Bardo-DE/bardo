@@ -514,7 +514,7 @@ fn a_sign_in_that_fails_after_confirm_stores_nothing() {
 #[test]
 fn add_and_allow_stores_the_same_way_and_the_view_names_the_app() {
     let app = account_core::AppId {
-        name: account_core::AppName::parse("org.quire.Mail").expect("name"),
+        name: account_core::AppName::parse("org.bardo.Mail").expect("name"),
         isolation: account_core::Isolation::Flatpak,
     };
     let purpose = Purpose::Add {

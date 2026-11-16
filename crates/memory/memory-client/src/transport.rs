@@ -94,7 +94,7 @@ impl Transport for Absent {
     }
 }
 
-/// `org.quire.Memory1` on the session bus.
+/// `org.bardo.Memory1` on the session bus.
 #[cfg(feature = "dbus")]
 #[derive(Debug)]
 pub struct DbusTransport {

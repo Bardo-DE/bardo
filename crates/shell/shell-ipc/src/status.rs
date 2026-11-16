@@ -128,7 +128,7 @@ pub struct IntentsStatus {
 pub enum LinkStatus {
     /// Not asked to serve yet.
     Passive,
-    /// `org.quire.Confirm1` and `org.quire.Shell` are sill's.
+    /// `org.bardo.Confirm1` and `org.bardo.Shell` are sill's.
     Serving,
     /// It could not take the names (no bus, a name taken); the log says which.
     Unavailable,

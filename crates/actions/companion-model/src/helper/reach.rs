@@ -103,7 +103,7 @@ fn how_far(effect: Effect) -> &'static str {
     }
 }
 
-/// What a reach lets a helper do, one plain line per app: "org.quire.Mail: look at things".
+/// What a reach lets a helper do, one plain line per app: "org.bardo.Mail: look at things".
 pub fn reach_lines(policy: &TaskPolicy) -> Vec<String> {
     policy
         .actions

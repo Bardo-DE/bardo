@@ -15,7 +15,7 @@ use ui_settings::schema::{
 mod forms;
 mod sheet;
 
-const FILE: &str = "sill/settings.toml";
+const FILE: &str = "shell/settings.toml";
 
 /// One corner key of the stand-in schema, as quire declares it: text, drawn by the `corners`
 /// control, empty at first.

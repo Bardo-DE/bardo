@@ -40,7 +40,7 @@ impl Dirs {
         self.cache_home.join("quire").join("memory")
     }
 
-    /// `<config>/quire`: where memoryd's two files live (`memory.toml`, `memory-callers.toml`).
+    /// `<config>/quire`: where memoryd's two files live (`memory.toml`, `memoryd-callers.toml`).
     pub fn config(&self) -> PathBuf {
         self.config_home.join("quire")
     }

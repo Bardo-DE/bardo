@@ -1,4 +1,4 @@
-//! `org.quire.AccountsSheet1`, as the shell exports it. The object only checks who is calling and
+//! `org.bardo.AccountsSheet1`, as the shell exports it. The object only checks who is calling and
 //! hands the call to the loop, which decides and answers.
 
 use std::sync::Arc;
@@ -72,7 +72,7 @@ async fn asked(
         .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()))?
 }
 
-#[interface(name = "org.quire.AccountsSheet1")]
+#[interface(name = "org.bardo.AccountsSheet1")]
 impl SheetObject {
     async fn open(
         &self,

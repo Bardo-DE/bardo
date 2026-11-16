@@ -16,7 +16,7 @@ use shell_model::windows::{Sizing, Toplevel, Toplevels};
 /// App ids the fixtures use.
 pub const TERM: &str = "foot";
 pub const FILES: &str = "org.gnome.Nautilus";
-pub const SETTINGS: &str = "org.quire.Settings";
+pub const SETTINGS: &str = "org.bardo.Settings";
 pub const FIREFOX: &str = "org.mozilla.firefox";
 
 /// An entry named `name` whose icon is the fixture's own `fixtures/icons/<id>.svg` when it ships

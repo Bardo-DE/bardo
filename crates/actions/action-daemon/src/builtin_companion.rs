@@ -1,4 +1,4 @@
-//! `org.quire.Companion`: `companion.task.start` opens a child session (its task policy never
+//! `org.bardo.Companion`: `companion.task.start` opens a child session (its task policy never
 //! wider than the parent's) and records `task.started`; `companion.task.message` sends a
 //! message through the router's delivery path. Both are the router's own business
 //! (`Router::companion_perform`); the provider reaches the router through a port that is
@@ -56,7 +56,7 @@ fn not_ready() -> AppRefusal {
     AppRefusal::Failed(FailText("the router is not ready".to_owned()))
 }
 
-/// `org.quire.Companion`.
+/// `org.bardo.Companion`.
 #[derive(Debug)]
 pub struct CompanionProvider {
     manifest: ValidManifest,

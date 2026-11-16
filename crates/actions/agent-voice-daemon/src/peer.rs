@@ -93,7 +93,7 @@ mod tests {
 
     fn config() -> VoicedConfig {
         VoicedConfig::parse(
-            "earcons = true\n[roles]\nshell = [\"org.quire.Shell\"]\napp = [\"org.quire.Mailo\"]\n",
+            "earcons = true\n[roles]\nshell = [\"org.bardo.Shell\"]\napp = [\"org.bardo.Mailo\"]\n",
         )
         .expect("config")
     }
@@ -124,11 +124,11 @@ mod tests {
         let root = root.path();
         let table = crate::callers::shipped();
         for (pid, leaf, main) in [
-            (1, "sill.service", true),
-            (2, "sill.service", false),
+            (1, "bardo-shell.service", true),
+            (2, "bardo-shell.service", false),
             (3, "sill-shell.scope", false),
-            (4, "app-org.quire.Shell-1.scope", false),
-            (5, "app-org.quire.Mailo-1.scope", false),
+            (4, "app-org.bardo.Shell-1.scope", false),
+            (5, "app-org.bardo.Mailo-1.scope", false),
             (6, "curl.service", true),
             (7, "vte-spawn-1.scope", false),
         ] {
@@ -156,7 +156,7 @@ mod tests {
     #[test]
     fn a_users_row_cannot_make_an_app_the_shell() {
         let user = table_from_toml(
-            "[[caller]]\napp = \"org.quire.Shell\"\nunit = \"mine.service\"\nrole = \"sheet_host\"\n",
+            "[[caller]]\napp = \"org.bardo.Shell\"\nunit = \"mine.service\"\nrole = \"sheet_host\"\n",
         )
         .expect("user");
         let table = CallerTable::layered(crate::callers::shipped(), user);

@@ -5,7 +5,7 @@ use account_core::AppName;
 use provenance::{EntityId, EntityKey, EntityKind, SessionId};
 
 /// The app whose things the sessions are.
-const SESSION_APP: &str = "org.quire.Companion";
+const SESSION_APP: &str = "org.bardo.Companion";
 
 /// The kind of the thing a session names itself as.
 pub const SESSION_KIND: &str = "companion.session";

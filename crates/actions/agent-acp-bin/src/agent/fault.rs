@@ -1,7 +1,7 @@
-//! Why `docket-agent` stopped.
+//! Why `bardo-agent` stopped.
 
 /// Why the agent host could not start or went on no longer. The words are the ones the program
-/// prints, after `docket-agent: `.
+/// prints, after `bardo-agent: `.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum AgentFault {
     /// The settings do not let an agent run.
@@ -17,7 +17,7 @@ pub enum AgentFault {
     #[error("no sandbox (bubblewrap) here ({0}): no agent is started unconfined")]
     NoSandbox(sandbox::CannotSandbox),
     /// The network forwarder is not beside this program.
-    #[error("cannot find docket-net-forward beside this program")]
+    #[error("cannot find bardo-agent-net-forward beside this program")]
     NoForwarder,
     /// The runtime directory is not named.
     #[error("no XDG_RUNTIME_DIR")]
@@ -25,7 +25,7 @@ pub enum AgentFault {
     /// The session bus, or the launcher on it, did not answer.
     #[error("{0}")]
     Bus(String),
-    /// `acp-callers.toml` exists and cannot be used.
+    /// `agent-acp-callers.toml` exists and cannot be used.
     #[error("{0}")]
     Callers(String),
     /// The working directory cannot be used.

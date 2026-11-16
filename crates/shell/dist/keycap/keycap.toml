@@ -1,6 +1,6 @@
 # keycap: the sill session's layer. dist/install.sh copies it to ~/.config/keycap/keycap.toml when
 # that file is missing (never over yours). sill forwards that file to keycap as the seat owner's
-# settings, which lie over /etc/keycap/keycap.toml, so the machine file can stay the Plasma one:
+# settings, which lie over /etc/bardo/key-remap/key-remap.toml, so the machine file can stay the Plasma one:
 # Plasma never forwards a user file and keeps its own mapping.
 #
 # Only the chords where the Plasma overlay and the sill session differ are listed. A later layer
@@ -32,7 +32,7 @@ rules = [
   { when = "control+right", then = "ctrl+super+right" },
   # Caps Lock rules are not here: keycap's user layer refuses a rule whose trigger has no modifier
   # or only Shift. Both (Caps Lock -> Ctrl+Space, and Shift+Caps Lock -> Caps Lock) live in the
-  # desktop's vendor file, /usr/lib/keycap/keycap.toml (the desktop repo's dist/keycap.toml);
+  # desktop's vendor file, /usr/lib/bardo/key-remap/key-remap.toml (the desktop repo's dist/keycap.toml);
   # sill ships no machine file.
 ]
 

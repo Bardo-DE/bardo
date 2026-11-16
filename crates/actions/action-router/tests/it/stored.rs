@@ -80,7 +80,7 @@ async fn an_editor_lists_and_reads_its_own_sessions_and_nobody_elses() {
     let all = sessions(
         ask(
             &router,
-            &caller("org.quire.Shell", CallerRole::Launcher),
+            &caller("org.bardo.Shell", CallerRole::Launcher),
             IntentsRequest::SessionStored {
                 ask: StoredAsk::List,
             },
@@ -95,7 +95,7 @@ async fn an_app_without_the_role_cannot_read_the_log() {
     let router = router();
     let reply = ask(
         &router,
-        &caller("org.quire.Mail", CallerRole::App),
+        &caller("org.bardo.Mail", CallerRole::App),
         IntentsRequest::SessionStored {
             ask: StoredAsk::List,
         },
@@ -160,17 +160,17 @@ async fn a_terminal_reads_the_log_by_the_same_opener_rule() {
     let router = router();
     // The terminal's own app opened one (the launcher role is what may open; the rule reads the
     // app's name), the shell another.
-    let terminal = caller("org.quire.Do", CallerRole::Cli);
+    let terminal = caller("org.bardo.Do", CallerRole::Cli);
     let mine = open_as(
         &router,
-        &caller("org.quire.Do", CallerRole::Launcher),
+        &caller("org.bardo.Do", CallerRole::Launcher),
         "work",
         AgentRef::Companion,
     )
     .await;
     let shells = open_as(
         &router,
-        &caller("org.quire.Shell", CallerRole::Launcher),
+        &caller("org.bardo.Shell", CallerRole::Launcher),
         "work",
         AgentRef::Companion,
     )

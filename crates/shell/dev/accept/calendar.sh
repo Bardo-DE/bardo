@@ -38,8 +38,8 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-calendar"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-calendar"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 
 scratch_new
@@ -162,7 +162,7 @@ disc_of() { sed -e 's/^.*DISC //' <<<"$1"; }
 
 write_settings() {
   mkdir -p "$CONFIG/sill"
-  cat >"$CONFIG/sill/settings.toml" <<TOML
+  cat >"$CONFIG/shell/settings.toml" <<TOML
 [calendar]
 sources = "$CAL/work.ics;$CAL/team.ics;$CAL/personal.ics"
 week_numbers = $1

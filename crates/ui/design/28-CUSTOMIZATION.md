@@ -525,7 +525,7 @@ modifier waits on the fork.
 (swipe between pages with one or two fingers, and so on). The reference's choice set is closed
 per gesture.
 
-**Today.** `gestures.gesture_action_map: Map<Gesture, Action>` in `palmrest/gestures.toml`
+**Today.** `gestures.gesture_action_map: Map<Gesture, Action>` in `mouse-gestures/gestures.toml`
 (22 §3.9; 12 §12.6).
 
 **Mapping.** Owner: palmrest (the map), sill (the action registry, 4.9). The map's values become
@@ -569,7 +569,7 @@ chord.
 | `shortcuts.bindings` | `Vec<Binding { action: KindId, chord: Shortcut, shown: Shown }>` | the reference's bindings for the actions we have | `Shortcut::custom` rules apply; a clash with the compositor is shown, not written | mchlp2271; 27 §6.2 | proposed (design/28) |
 | `shortcuts.app_shortcuts` | `Vec<AppShortcut { app: AppId, menu_path: Text, chord: Shortcut }>` | `[]` | the menu path in `File->Export as PDF…` form | mchlp2271 | proposed (design/28), nice |
 
-Both are behaviour, not placement: they are `sill/settings.toml` keys (a new §3 domain in design/22,
+Both are behaviour, not placement: they are `shell/settings.toml` keys (a new §3 domain in design/22,
 added together with sill's specs, section 6.0), and they need the
 record list kind of P5.
 
@@ -649,7 +649,7 @@ and must not keep content only to remember that an app exists.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `notifications.apps` | `Vec<AppNotify>`; each `{ app: AppId, allow: Allow::{On,Off}, style: BannerStyle::{None,Banner,Alert}, lock_screen: Shown, center: Shown, badge: Shown, sound: Shown, previews: Previews::{Default,Always,WhenUnlocked,Never}, grouping: Grouping::{Automatic,ByApp,Off} }` | `[]` (an app without a row uses the defaults: allow, `banner_style`, all Shown, `Default`, `Automatic`) | an array of tables in `sill/settings.toml` (behaviour, not placement); needs P5's record list kind | mh40583; F270 | proposed (design/28) |
+| `notifications.apps` | `Vec<AppNotify>`; each `{ app: AppId, allow: Allow::{On,Off}, style: BannerStyle::{None,Banner,Alert}, lock_screen: Shown, center: Shown, badge: Shown, sound: Shown, previews: Previews::{Default,Always,WhenUnlocked,Never}, grouping: Grouping::{Automatic,ByApp,Off} }` | `[]` (an app without a row uses the defaults: allow, `banner_style`, all Shown, `Default`, `Automatic`) | an array of tables in `shell/settings.toml` (behaviour, not placement); needs P5's record list kind | mh40583; F270 | proposed (design/28) |
 | `notifications.previews` | `Previews::{Always,WhenUnlocked,Never}` | `Always` | the global default the per-app `Default` follows | mh40583 | proposed (design/28) |
 
 **Priority.** must; before the app pass.
@@ -876,7 +876,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
    config_schema = "today.settings.toml"   # the ConfigForm, 22 §9.2 format
    ```
 
-2. **Live**: the app owns `org.quire.Kinds1` at `/org/quire/Kinds1` on the session bus:
+2. **Live**: the app owns `org.bardo.Kinds1` at `/org/bardo/Kinds1` on the session bus:
    `Describe() -> manifest JSON`; per host, `Timeline(id, instance) -> wire timeline` and signal
    `TimelineChanged(id, instance, wire)` (widgets; `ds::widget::wire` is the format);
    `Query(query_json) -> results` and `Activate(item, choice)` (launcher);
@@ -978,13 +978,13 @@ Shell; each a quire lane plus a sill lane where named.
 11. **A3 Previewers**: `Previewer` registry shared by the launcher pane and the Quick Look app;
     thumbnailer files.
 12. **A4 Launcher providers from apps**: Mail and Notes search as in-tree providers first, then
-    the KRunner and GNOME search provider bridges (5.7.4), then `org.quire.Kinds1` `Query`.
+    the KRunner and GNOME search provider bridges (5.7.4), then `org.bardo.Kinds1` `Query`.
 13. **A5 Share menu**: `ShareTarget`, `ShareMenu`, the Extensions page.
 14. **A6 App Shortcuts**: after `MenuModel`.
 
 ### 6.3 After
 
-Focus modes and filters (4.15), stacks (4.5), out-of-process widgets over `org.quire.Kinds1`
+Focus modes and filters (4.15), stacks (4.5), out-of-process widgets over `org.bardo.Kinds1`
 with templates (5.7.3), preview options per type (4.8), the hot-corner modifier once the
 compositor fork reports held modifiers (4.9).
 

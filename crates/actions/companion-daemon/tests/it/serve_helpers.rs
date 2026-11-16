@@ -1,4 +1,4 @@
-//! The helpers on `org.quire.Companion1.Helpers`, `.Helpers2` and `.Terminals` on a private bus:
+//! The helpers on `org.bardo.Companion1.Helpers`, `.Helpers2` and `.Terminals` on a private bus:
 //! served beside the conversation to the shell alone, with sign-in and routines, and the editor
 //! bridge reading them and changing nothing.
 
@@ -52,8 +52,8 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
     let declared = introspection(Bus::Companion);
     let served = introspect(&shell, COMPANION_PATH).await;
     assert_eq!(
-        block(&served, "org.quire.Companion1.Helpers"),
-        block(&declared, "org.quire.Companion1.Helpers")
+        block(&served, "org.bardo.Companion1.Helpers"),
+        block(&declared, "org.bardo.Companion1.Helpers")
     );
 
     // The shell lists none, makes one, and hears that something changed.
@@ -67,7 +67,7 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
         role: Role::parse("Looks things up.").expect("role"),
         space: space("work"),
         model: HelperModel::Unset,
-        apps: vec![app("org.quire.Mail")],
+        apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: account_ids::Count(8),
         kind: Default::default(),
@@ -163,9 +163,9 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
     let declared = introspection(Bus::Companion);
     let served = introspect(&shell, COMPANION_PATH).await;
     for name in [
-        "org.quire.Companion1.Helpers",
-        "org.quire.Companion1.Helpers2",
-        "org.quire.Companion1.Terminals",
+        "org.bardo.Companion1.Helpers",
+        "org.bardo.Companion1.Helpers2",
+        "org.bardo.Companion1.Terminals",
     ] {
         assert_eq!(block(&served, name), block(&declared, name));
     }
@@ -181,7 +181,7 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
         role: Role::parse("Looks things up.").expect("role"),
         space: space("work"),
         model: HelperModel::Unset,
-        apps: vec![app("org.quire.Mail")],
+        apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: account_ids::Count(8),
         kind: Default::default(),
@@ -280,14 +280,14 @@ async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(&editor, "org.quire.Acp", action_dbus::callers::Role::Agent);
+    who.introduce_app(&editor, "org.bardo.Acp", action_dbus::callers::Role::Agent);
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),
         role: Role::parse("Looks things up.").expect("role"),
         space: space("work"),
         model: HelperModel::Unset,
-        apps: vec![app("org.quire.Mail")],
+        apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: account_ids::Count(8),
         kind: Default::default(),

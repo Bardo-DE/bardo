@@ -9,7 +9,7 @@ use std::time::Duration;
 const QUIET: Duration = Duration::from_millis(500);
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn a_key_held_before_the_daemon_starts_delays_the_grab_until_it_is_released() {
     let scene = Scene::new("grab-gate");
     let fake = ok(
@@ -49,7 +49,7 @@ fn a_key_held_before_the_daemon_starts_delays_the_grab_until_it_is_released() {
 }
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn unplugging_the_keyboard_mid_chord_releases_what_it_wrote() {
     let mut r = Rig::start("unplug-mid-chord");
     r.press("leftmeta", "+leftctrl SYN");
@@ -79,7 +79,7 @@ fn unplugging_the_keyboard_mid_chord_releases_what_it_wrote() {
 }
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn killing_the_daemon_mid_chord_removes_its_keyboard_and_a_restart_grabs_afresh() {
     let mut r = Rig::start("kill-mid-chord");
     r.press("leftmeta", "+leftctrl SYN");

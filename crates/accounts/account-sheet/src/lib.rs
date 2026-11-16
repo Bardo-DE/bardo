@@ -8,7 +8,7 @@
 //! what a whole store's access says), so no value type of porter carries a label. An app that
 //! words them itself takes the typed values and ignores `words`.
 //!
-//! A view and an input cross the bus as JSON (`org.quire.AccountsSheet1`). An input may carry
+//! A view and an input cross the bus as JSON (`org.bardo.AccountsSheet1`). An input may carry
 //! secret text from the sheet into the daemon (a typed password); nothing on that interface
 //! flows outward.
 

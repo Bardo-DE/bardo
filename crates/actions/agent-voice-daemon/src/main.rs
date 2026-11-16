@@ -1,4 +1,4 @@
-//! The voiced binary: reads `voiced.toml`, then serves `org.quire.Voice1` on the session bus over
+//! The voiced binary: reads `voiced.toml`, then serves `org.bardo.Voice1` on the session bus over
 //! PipeWire until the bus closes.
 
 use agent_voice_daemon::{ConfigError, FileUse, VoicedConfig};
@@ -8,10 +8,10 @@ use std::process::ExitCode;
 
 /// The voice daemon.
 #[derive(Debug, Parser)]
-#[command(name = "voiced", about = "The voice daemon (org.quire.Voice1)")]
+#[command(name = "voiced", about = "The voice daemon (org.bardo.Voice1)")]
 struct Args {
     /// Path of voiced.toml.
-    #[arg(long, default_value = "/etc/quire/voiced.toml")]
+    #[arg(long, default_value = "/etc/bardo/voiced.toml")]
     config: std::path::PathBuf,
 }
 

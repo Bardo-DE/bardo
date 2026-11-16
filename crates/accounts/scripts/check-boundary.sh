@@ -408,7 +408,7 @@ else
   echo "boundary holds: account_dbus::accounts is named by the daemons and the client's bus transport alone"
 fi
 
-# accountd's test-only knob (`ACCOUNTD_PROC_ROOT`, feature `test-proc-root`) is never on in a
+# accountd's test-only knob (`BARDO_ACCOUNTD_PROC_ROOT`, feature `test-proc-root`) is never on in a
 # default build: the features cargo resolves for accountd without any flag must not name it.
 if cargo tree -p account-daemon --depth 0 -f '{p} {f}' 2>/dev/null | grep -q 'test-proc-root'; then
   echo "LEAK: accountd enables test-proc-root by default"
@@ -417,7 +417,7 @@ else
   echo "test-only: accountd's default features do not include test-proc-root"
 fi
 
-# accountd's file key store (`ACCOUNTD_KEYS=file:`, feature `test-keys`, account-secrets'
+# accountd's file key store (`BARDO_ACCOUNTD_KEYS=file:`, feature `test-keys`, account-secrets'
 # `FileSecrets`) keeps credentials as plain text: neither crate's default build, nor accountd's
 # whole normal dependency tree, may have the feature on.
 for crate in account-daemon account-secrets; do
@@ -445,10 +445,10 @@ done
 # Sync1 and Storage1) are ferry's, in a repo of its own that pins porter by git rev. No manifest
 # here names one of ferry's crates, and no dependency tree of the workspace (normal, build or dev)
 # reaches one.
-FERRY_CRATES='sync-daemon|sync-fakes|replica-[a-z]+|sync-[a-z-]+|drive-[a-z-]+'
-named=$(grep -lE "^($FERRY_CRATES)[ .=]" */Cargo.toml || true)
+BARDO_SYNC_CRATES='sync-daemon|sync-fakes|replica-[a-z]+|sync-[a-z-]+|drive-[a-z-]+'
+named=$(grep -lE "^($BARDO_SYNC_CRATES)[ .=]" */Cargo.toml || true)
 reached=$(cargo tree --workspace -e normal,build,dev --prefix none 2>/dev/null \
-  | awk '{print $1}' | grep -xE "$FERRY_CRATES" | sort -u | tr '\n' ' ')
+  | awk '{print $1}' | grep -xE "$BARDO_SYNC_CRATES" | sort -u | tr '\n' ' ')
 if [ -n "$named" ] || [ -n "$reached" ]; then
   echo "LEAK: a manifest names [$(echo $named)] or the workspace reaches [${reached% }], which are ferry's"
   fail=1

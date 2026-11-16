@@ -52,7 +52,7 @@ action = "lock"
 [[hot_corners.bottom_right]]
 keys = ["command"]
 action = "app_action"
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 intent = "compose"
 
 [[hot_corners.bottom_left]]
@@ -88,7 +88,7 @@ fn the_list_form_loads_round_trips_and_writes_keys_in_a_stable_order() {
         [bind(
             &[CornerKey::Command],
             CornerDo::AppAction {
-                app: "org.quire.Mail".to_owned(),
+                app: "org.bardo.Mail".to_owned(),
                 intent: "compose".to_owned()
             }
         )]

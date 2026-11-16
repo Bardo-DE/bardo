@@ -206,7 +206,7 @@ fn presence_priority_table() {
 }
 
 fn mail() -> AppName {
-    AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}"))
+    AppName::parse("org.bardo.Mail").unwrap_or_else(|e| panic!("{e}"))
 }
 
 fn focus(launcher: Option<LauncherMode>, serves: bool) -> FocusFacts {

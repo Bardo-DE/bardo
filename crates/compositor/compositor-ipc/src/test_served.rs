@@ -154,7 +154,7 @@ impl Served {
             .get()
             .expect("served")
             .introduce(&name_of(&client), standing);
-        zbus::Proxy::new(&client, BUS_NAME, OBJECT_PATH, "org.quire.Compositor1")
+        zbus::Proxy::new(&client, BUS_NAME, OBJECT_PATH, "org.bardo.Compositor1")
             .await
             .expect("proxy")
     }
@@ -162,7 +162,7 @@ impl Served {
 
 /// A service of `role` proven up to `proof`.
 pub(crate) fn service(role: &str, proof: Proof) -> Standing {
-    introduced_service("org.quire.Test", role, proof, Pin::Reopened).expect("a standing")
+    introduced_service("org.bardo.Test", role, proof, Pin::Reopened).expect("a standing")
 }
 
 /// What a call came to: `granted`, or the error's D-Bus name.

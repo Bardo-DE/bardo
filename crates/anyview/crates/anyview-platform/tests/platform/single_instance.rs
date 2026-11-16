@@ -57,7 +57,7 @@ async fn a_request_naming_a_relative_path_is_refused_by_the_running_viewer() {
     let reply = connection
         .call_method(
             Some(BUS_NAME),
-            "/org/quire/Anyview1",
+            "/org/bardo/Anyview1",
             Some(BUS_NAME),
             "Peek",
             &("relative/file.png",),
@@ -151,7 +151,7 @@ async fn a_handoff_whose_file_is_not_among_its_results_is_refused_by_the_viewer(
         connection
             .call_method(
                 Some(BUS_NAME),
-                "/org/quire/Anyview1",
+                "/org/bardo/Anyview1",
                 Some(BUS_NAME),
                 "Handoff",
                 &(file.to_owned(), resume.to_owned(), 1_u64, entries),

@@ -94,7 +94,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   the chord hint on the selected row only. If ⌘ chords act like a terminal's, keycap still thinks
   the terminal has focus (`keycap status` names the profile): note it.
 - [ ] **A file from the launcher in the viewer** (needs `anyview` installed with its
-  `org.quire.Anyview1.service` activation file, or already running). Type part of a document's
+  `org.bardo.Anyview1.service` activation file, or already running). Type part of a document's
   name with other documents listed: the pane shows the viewer's own picture of it (a picture, a
   page, lines, a table, an archive's listing, a font's specimen); a picture and a PDF page must
   show on casement, where the pane's picture is a `TextureLayer` that the headless harness cannot
@@ -118,7 +118,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   wallpaper): press the secondary button on the bare wallpaper: a menu opens with its corner at
   the pointer (and flips left or up near the right and bottom edges) with one entry, Change
   Wallpaper.... Release without moving: nothing is picked. Change Wallpaper... opens Settings on
-  its Wallpaper page (`org.quire.Settings.Wallpaper`; without Settings installed nothing opens).
+  its Wallpaper page (`org.bardo.Settings.Wallpaper`; without Settings installed nothing opens).
   A secondary press while the menu is open closes it and a second press opens a new one; it
   must never end the session. A press on a window never reaches the wallpaper.
 - [ ] **The notification center's widgets** (2026-10-20): open the notification center: under
@@ -143,7 +143,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 ## Needs a real sill (casement) login (not the headless compositor)
 
 - [ ] **Cmd+Space through keycap** opens the launcher (keycap writes Super+Space from the sill layer
-  `~/.config/keycap/keycap.toml`; Alt+Space means the layer is missing and only `/etc/keycap/keycap.toml`, the
+  `~/.config/keycap/keycap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
   Plasma overlay, applies).
 - [ ] **Super shortcuts** reach the shell (the headless compositor never gets them).
 - [ ] **A compositor shortcut runs `sill launcher toggle`**: bind Ctrl+Alt+Space to run
@@ -286,7 +286,7 @@ and a stand-in helper; these need polkitd, polkit's own helper and a real passwo
 `cargo test -p shell-services --test it keycap_socket` covers the socket against a fake daemon; these
 need the real daemon on a machine with a Mac keyboard (or a PC keyboard with the Mac layout) and
 root for the unit. Install keycap first (`install.sh` in the keycap repo, with its unit, config
-folder and polkit rule `dist/keycap.polkit.rules`), run sill's `dist/install.sh` (it copies the
+folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run sill's `dist/install.sh` (it copies the
 sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when missing), then log in to a sill session.
 
 - [ ] `sill keycap status` says `connected` with your keyboard listed and `grab` `active`.
@@ -295,7 +295,7 @@ sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when miss
 - [ ] Focus a terminal (foot, Alacritty): Cmd+C copies in it, and Ctrl+C still
   interrupts a running program. Focus a browser: Cmd+C copies there too. Moving between the two
   changes nothing visible and loses no keystroke.
-- [ ] Add an override in `~/.config/sill/settings.toml` (`[[keyboard.overrides]]` with `app = "<the
+- [ ] Add an override in `~/.config/shell/settings.toml` (`[[keyboard.overrides]]` with `app = "<the
   desktop-entry id of an app that is open>"` and `profile = "<a profile in keycap.toml>"`): within
   a second, that app's windows switch to the profile (a key the profile remaps behaves
   differently there) and other apps do not. Change the `profile`, then delete the row: each
@@ -330,31 +330,31 @@ sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when miss
   pick a row and detent runs it. A window that is not a quire app shows only its name's menu (Hide,
   Quit, its windows).
 
-## The confirmation sheet and `quire-do` on a real sill (casement) login
+## The confirmation sheet and `bardo-do` on a real sill (casement) login
 
 Needs docket's `intentd` running (`systemctl --user start intentd` from docket's `dist/`) and
-`quire-do` on the PATH; `dist/install.sh` has put `org.quire.Shell.toml` where intentd reads it.
+`bardo-do` on the PATH; `dist/install.sh` has put `org.bardo.Shell.toml` where intentd reads it.
 `dev/accept/confirm.sh` runs the whole chain on a private headless KWin; these are the parts that
 need a person, a real compositor or real eyes.
 
-- [ ] **The sheet's look**: `quire-do shell dock.pin --app firefox.desktop` in a terminal. A
+- [ ] **The sheet's look**: `bardo-do shell dock.pin --app firefox.desktop` in a terminal. A
   narrow sheet appears centred on the main display: "Keep an app in the dock?", "The terminal wants
   to do this in Shell.", the app as a fact, the reasons, "Allow from the terminal: this action,
   until logout", Don't Allow and Allow. The buttons are greyed for about half a second; Return in
   that half second does nothing; afterwards Return allows. Compare with
   `dev/out/confirm.png` from the acceptance run. Dark and light.
-- [ ] **Hold to confirm**: `quire-do shell lock`. The Allow button reads "Hold to Allow"; a click does
+- [ ] **Hold to confirm**: `bardo-do shell lock`. The Allow button reads "Hold to Allow"; a click does
   nothing; holding it with the mouse for a second locks the screen (the label says
   "Keep holding" meanwhile); letting go early abandons it. From the keyboard, Tab to it and hold
   Return or Space for a second; a tap does nothing. The keyboard starts on Don't Allow.
 - [ ] **Escape and the scrim**: Escape denies at once, also in the first half second; the terminal
   exits 4.
-- [ ] **A second question waits**: run two `quire-do shell dock.pin` calls back to back: the second
+- [ ] **A second question waits**: run two `bardo-do shell dock.pin` calls back to back: the second
   shows "1 more waiting" under the first, and appears (arming again) after the first is answered.
 - [ ] **Control center, Terminal**: after "Allow from the terminal" a Terminal module appears at
   the foot of the control center listing the action with Revoke. Revoke it: the row goes and the
-  next `quire-do` call asks again. (The module is absent while nothing is granted.)
-- [ ] **A paused terminal**: three refused calls in a row (`quire-do memory forget memory.fact:x`,
+  next `bardo-do` call asks again. (The module is absent while nothing is granted.)
+- [ ] **A paused terminal**: three refused calls in a row (`bardo-do memory forget memory.fact:x`,
   exit 3) pause it; the next call exits 7. Intentd does not yet announce the pause
   (`BreakerTripped` is declared and not emitted), so the Terminal module shows nothing until a grant
   exists; `sill intents resume` is the way back today.
@@ -562,7 +562,7 @@ the real daemons or a real keyboard.
 - [ ] **One theme watch**: change light/dark in the control centre. The bar, dock, launcher, notification centre, banners and an open sheet all change at once.
 - [ ] **Focus loss**: open the notification centre, the switcher and the split picker in turn, then click a window. Each closes. Force Quit and the display trial stay open when a window is clicked.
 - [ ] **Lock from the bar and launcher**: the Apple menu's Lock Screen and the launcher's "Lock Screen" row each lock at once.
-- [ ] **Sheets on the focused window's output** (two displays): focus a window on the second display, then trigger a confirm (`quire-do shell lock`). The sheet shows on that display. A second question while the first is up stays on the same display.
+- [ ] **Sheets on the focused window's output** (two displays): focus a window on the second display, then trigger a confirm (`bardo-do shell lock`). The sheet shows on that display. A second question while the first is up stays on the same display.
 - [ ] **Confirm click-through**: answer a confirm and click the window under it at once. The click lands. With a confirm up, click another window beside the card. The click lands and the confirm stays.
 - [ ] **Lock links**: lock, then unlock with the password, on each output. The prompt works on every output (the lock now gets only its own link).
 - [ ] **Brightness in Settings**: Settings > Displays shows a Brightness slider under each display that has one (the built-in panel, a monitor that answers DDC/CI) and none under one that does not. Drag it and that display dims. Press a brightness key and the slider follows.
@@ -581,7 +581,7 @@ the real daemons or a real keyboard.
 
 - [ ] **Show in Files**: the launcher's "Show in Files" on a file opens Files on its folder with the file selected. With Files already open, the same window changes folder and comes to the front; no second window opens.
 - [ ] **Dock Trash**: the dock Trash tile's Open shows Files on the Trash (rows say where each item came from; the date column reads Date Deleted).
-- [ ] **Default for folders**: `xdg-open ~/Documents` opens Files once org.quire.Files.desktop is installed and set as the folder default (`xdg-mime default org.quire.Files.desktop inode/directory`).
+- [ ] **Default for folders**: `xdg-open ~/Documents` opens Files once org.bardo.Files.desktop is installed and set as the folder default (`xdg-mime default org.bardo.Files.desktop inode/directory`).
 - [ ] **Open a file**: double-click a PDF or image; it opens in its default app. A file type with no app set shows "There is no app set to open “name”."
 - [ ] **Trash round trip**: ⌘⌫ a file; the toast says Moved “name” to the Trash with Undo, and Undo brings it back. Trash it again, open the Trash, Put Back returns it to its folder. Empty Trash asks first.
 - [ ] **New Folder and rename**: ⇧⌘N makes "untitled folder" with its name ready to type; Return renames. ⌘Z undoes the rename.
@@ -591,7 +591,7 @@ the real daemons or a real keyboard.
 - [ ] **Remembered view**: change a folder's sort, quit Files, reopen that folder: the sort is kept (stored in the state folder's files/folders.toml).
 
 - [ ] **Disks** (files 909056d): plug in a USB stick: it appears under Locations; click opens it. Eject takes it away and the stick can be pulled. With a terminal `cd`'d into it, Eject says "The disk “name” wasn't ejected because one or more programs may be using it: bash." An unmounted partition is listed and mounts on click (a password prompt if the system asks).
-- [ ] **From the command line** (files 909056d): `quire-do files open ~/Documents` shows it in the window; `quire-do files selection` prints the selected paths; `quire-do files trash <file>` moves it with the Undo toast; an assistant's Empty Trash only puts up the window's own question.
+- [ ] **From the command line** (files 909056d): `bardo-do files open ~/Documents` shows it in the window; `bardo-do files selection` prints the selected paths; `bardo-do files trash <file>` moves it with the Undo toast; an assistant's Empty Trash only puts up the window's own question.
 - [ ] **Tabs** (files bfc7579): ⌘T opens a tab on the same folder and the tab bar appears; ⇧⌘[ and ⇧⌘] switch, each tab keeps its folder; ⌘W closes the tab and the bar goes at one. Right-click a folder, Open in New Tab, then keys still work in the new tab.
 - [ ] **Tags** (files bfc7579): right-click a file, Tags, Red: a red dot shows after its name, and `getfattr -n user.xdg.tags <file>` reads `Red`. The sidebar's Red lists it (and other red-tagged files under home). On a FAT stick it says "Tags can't be added on this disk."
 - [ ] **Icon view** (files 234a3f3, quire v0.3.39): ⌘1 shows icons, ⌘2 the list, and the toolbar switch does the same; arrows move in two directions, a click selects, Shift and ⌘ extend. Double-click or ⌘↓ opens, ⌘↑ goes to the enclosing folder (in the list too). Return renames the tile in place, and Space shows Quick Look. Quit and reopen a folder you set to icons: it is still icons.
@@ -614,7 +614,7 @@ the real daemons or a real keyboard.
 - [ ] **Mid-task switch**: ask for something with several steps and switch to Manual while it works. "From the next step" shows beside the control, the step already running finishes, and the next change asks. The note goes when the next step starts or the answer ends. A change already waiting on its sheet keeps its sheet.
 - [ ] **A new conversation's start**: Settings > Intelligence "New conversations start in" set to Manual; open the assistant and ask: the control reads Manual from the first answer. Set it to Auto and ask again in a fresh conversation: Auto.
 - [ ] **Locked by an administrator**: with the admin floor holding Manual, the first switch shows the control unavailable on Manual with "Your administrator keeps conversations in Manual."; ⇧⌘M does nothing.
-- [ ] **Follows other changes**: switch the same conversation from another shell or the control role (`quire-do`); the box follows without reopening.
+- [ ] **Follows other changes**: switch the same conversation from another shell or the control role (`bardo-do`); the box follows without reopening.
 
 ## Wallpaper pictures (detent wallthumb lane, a real login)
 
@@ -638,10 +638,10 @@ Settings > Appearance, "Automatically hide and show the menu bar" (`bar.autohide
 ## Cloud drives in Files (porter ae56db17 S2a, files 7b64cc4, detent 5c18e4d; a real login with the release installed)
 
 The first real mount: the test machines have no `/dev/fuse`. Steps from porter `docs/drive-files.md`
-"The check" (that page says how syncd and porter-mountd fit). The drive is read-only in S2a.
+"The check" (that page says how syncd and bardo-drive-mount fit). The drive is read-only in S2a.
 
 - [ ] **Installed and listening.** `fuse3` is installed (`command -v fusermount3`, `ls /dev/fuse`).
-  `systemctl --user status porter-mountd.socket` is listening and `syncd.service` runs in its unit.
+  `systemctl --user status bardo-drive-mount.socket` is listening and `bardo-syncd.service` runs in its unit.
 - [ ] **The drive shows.** In Settings → Accounts, turn on "Show in Files" for an account with a few
   files, a folder of photos and, for Google, a Doc and a Sheet. `ls ~/Cloud/` lists `OneDrive` or
   `Google Drive` (the account's label after the name when one provider has two); `ls -la` inside
@@ -665,11 +665,11 @@ The first real mount: the test machines have no `/dev/fuse`. Steps from porter `
   kept and open ones stay.
 - [ ] **Turning it off.** "Show in Files" off: `mount | grep Cloud` says nothing, also with a terminal
   sitting in the folder (it goes at once and the terminal's folder reads as gone). On again, then
-  `systemctl --user stop syncd.service`: the mount goes with it. `systemctl --user kill -s KILL
-  syncd.service` and let it start: the stale mount is cleared and the folder comes back.
+  `systemctl --user stop bardo-syncd.service`: the mount goes with it. `systemctl --user kill -s KILL
+  bardo-syncd.service` and let it start: the stale mount is cleared and the folder comes back.
 - [ ] **A folder that isn't porter's.** Stop syncd, put a file in an empty `~/Cloud/OneDrive`, start
   it: the drive says "The drive's folder in Cloud already has other files in it. Move them, then try
   again." and the file is still there.
-- [ ] **syncd's sandbox is whole.** `systemctl --user show syncd.service -p NoNewPrivileges -p
+- [ ] **syncd's sandbox is whole.** `systemctl --user show bardo-syncd.service -p NoNewPrivileges -p
   PrivateDevices -p ProtectHome` says `yes`, `yes`, `read-only`; `journalctl --user -u
-  porter-mountd` says why each refusal was made.
+  bardo-drive-mount` says why each refusal was made.

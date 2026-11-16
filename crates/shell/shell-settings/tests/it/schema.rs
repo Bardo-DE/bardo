@@ -17,7 +17,7 @@ fn schema_round_trip() {
 fn every_domain_names_sills_file() {
     for schema in schemas().into_iter().chain([schema()]) {
         assert_eq!(schema.app.0, "sill");
-        assert_eq!(schema.file.0, "sill/settings.toml");
+        assert_eq!(schema.file.0, "shell/settings.toml");
         assert_eq!(schema.version, 1);
     }
 }

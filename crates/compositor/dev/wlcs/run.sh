@@ -21,7 +21,7 @@ case "$tier" in
   *) echo "usage: dev/wlcs/run.sh --merge|--phase" >&2; exit 64 ;;
 esac
 
-tools="${CASEMENT_TOOLS:-$root/dev/out/tools}"
+tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}"
 wlcs="$tools/wlcs/wlcs"
 shim="$tools/libwlcs_casement.so"
 for f in "$wlcs" "$shim"; do

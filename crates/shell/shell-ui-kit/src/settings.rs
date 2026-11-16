@@ -22,14 +22,14 @@ pub struct TurnOnStyles;
 pub struct SettingsFeed {
     /// The settled `settings.toml`.
     pub settings: watch::Receiver<ShellFile>,
-    /// The settled styles: the desktop-wide `quire/style.css` and sill's own `style.css`, and the
+    /// The settled styles: the desktop-wide `bardo/style.css` and sill's own `style.css`, and the
     /// look (empty until the look setting lands), with the folder each may read files from.
     pub styles: watch::Receiver<Styles>,
     /// The crash guard of this start's styles; none in a render that has no guard.
     pub guard: watch::Receiver<Option<StylesGuard>>,
     /// Where the notice says Turn On Again; the daemon follows it.
     pub turn_on: Outbox<TurnOnStyles>,
-    /// The settled appearance: `quire/appearance.toml` and the desktop's preferences. The daemon
+    /// The settled appearance: `bardo/appearance.toml` and the desktop's preferences. The daemon
     /// owns the one watch on both; [`crate::hooks::use_appearance`] reads this.
     pub appearance: watch::Receiver<Environment>,
 }

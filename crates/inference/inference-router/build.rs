@@ -28,7 +28,7 @@ fn main() {
     code.push_str("]\n");
     let out = PathBuf::from(std::env::var_os("OUT_DIR").expect("out dir"));
     std::fs::write(out.join("stoker_catalog.rs"), code).expect("write the embedded catalog");
-    println!("cargo:rustc-env=PORTER_STOKER_CATALOG_REV={hash:016x}");
+    println!("cargo:rustc-env=BARDO_ENGINE_CATALOG_REV={hash:016x}");
 }
 
 /// The catalog's `.toml` files, by name.

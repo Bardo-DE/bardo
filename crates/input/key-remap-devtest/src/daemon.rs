@@ -15,7 +15,7 @@ pub struct DaemonSpec<'a> {
     pub binary: &'a Path,
     /// Where the runtime directory, config directory, seat file, notify socket and stderr log go.
     pub scratch: &'a Path,
-    /// The value of `KEYCAP_GRAB_VIRTUAL`: the fake keyboard's name.
+    /// The value of `BARDO_KEY_REMAP_GRAB_VIRTUAL`: the fake keyboard's name.
     pub grab_virtual: &'a str,
     /// `WATCHDOG_USEC`; the daemon pings at least every half of it.
     pub watchdog: Duration,
@@ -57,20 +57,20 @@ impl Daemon {
             .map_err(io("opening the stderr log"))?;
         let child = Command::new(spec.binary)
             .env_clear()
-            .env("KEYCAP_GRAB_VIRTUAL", spec.grab_virtual)
+            .env("BARDO_KEY_REMAP_GRAB_VIRTUAL", spec.grab_virtual)
             // No device service here: the harness makes devices on /dev/uinput itself, and its
             // client is not in the shell's unit, so it steers as the seat's user.
             .env(
-                "KEYCAP_DEVICE_SERVICE",
+                "BARDO_KEY_REMAP_DEVICE_SERVICE",
                 spec.scratch.join("no-device-service"),
             )
-            .env("KEYCAP_STEERING", "seat-user")
+            .env("BARDO_KEY_REMAP_STEERING", "seat-user")
             // The scratch folder is the test user's, so a machine file written here is refused
             // (the daemon reads that file only when root-only); a run has no machine layer.
-            .env("KEYCAP_CONFIG_DIR", &config_dir)
+            .env("BARDO_KEY_REMAP_CONFIG_DIR", &config_dir)
             // A folder that is not there is no vendor layer, so a run never reads the machine's.
-            .env("KEYCAP_VENDOR_DIR", spec.scratch.join("no-vendor-config"))
-            .env("KEYCAP_SEAT_FILE", &seat_file)
+            .env("BARDO_KEY_REMAP_VENDOR_DIR", spec.scratch.join("no-vendor-config"))
+            .env("BARDO_KEY_REMAP_SEAT_FILE", &seat_file)
             .env("RUNTIME_DIRECTORY", &runtime_dir)
             .env("NOTIFY_SOCKET", &notify_path)
             .env("WATCHDOG_USEC", spec.watchdog.as_micros().to_string())
@@ -91,7 +91,7 @@ impl Daemon {
 
     /// The control socket.
     pub fn socket_path(&self) -> PathBuf {
-        self.runtime_dir.join("keycap.sock")
+        self.runtime_dir.join("key-remap.sock")
     }
 
     /// The process id.

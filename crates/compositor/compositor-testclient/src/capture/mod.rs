@@ -3,7 +3,7 @@
 //! memory buffer. One [`OutputCapture`] is one session, on its own queue next to the client's.
 //!
 //! The events are folded by [`desktop_client`]'s reducer and the frame is its [`Frame`], so the
-//! test client and `casementctl shot` read a capture the same way (`Frame::to_rgba8`). The
+//! test client and `bardo-compositorctl shot` read a capture the same way (`Frame::to_rgba8`). The
 //! wire is not `desktop_client::client::DesktopClient`: that client waits for the compositor
 //! with blocking round trips, which a fixture serving the compositor on the same thread can
 //! never answer (FINDINGS, p1-c1).

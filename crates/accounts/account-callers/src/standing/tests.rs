@@ -26,7 +26,7 @@ fn table() -> CallerTable {
     CallerTable {
         callers: vec![
             row("org.example.Sheets", CallerRole::SheetHost),
-            row("org.quire.Settings", CallerRole::Settings),
+            row("org.bardo.Settings", CallerRole::Settings),
         ],
     }
 }
@@ -47,13 +47,13 @@ fn want(
 fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
     let cases = [
         (
-            "org.quire.Inference",
+            "org.bardo.Inference",
             "porter_daemon",
             CallerRole::PorterDaemon,
         ),
-        ("org.quire.Shell", "sheet_host", CallerRole::SheetHost),
-        ("org.quire.Cua", "cua", CallerRole::Cua),
-        ("org.quire.Settings", "settings", CallerRole::Settings),
+        ("org.bardo.Shell", "sheet_host", CallerRole::SheetHost),
+        ("org.bardo.ComputerUse", "cua", CallerRole::Cua),
+        ("org.bardo.Settings", "settings", CallerRole::Settings),
     ];
     for (app, role, expected) in cases {
         for proof in [Proof::Unit, Proof::Full] {
@@ -70,9 +70,9 @@ fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
 fn a_fixed_role_service_with_only_its_program_or_its_cgroup_is_a_plain_app() {
     for proof in [Proof::Exe, Proof::Cgroup] {
         assert_eq!(
-            shown(&service("org.quire.Inference", "porter_daemon", proof)),
+            shown(&service("org.bardo.Inference", "porter_daemon", proof)),
             want(
-                "org.quire.Inference",
+                "org.bardo.Inference",
                 Isolation::Unsandboxed,
                 CallerRole::App
             ),
@@ -84,9 +84,9 @@ fn a_fixed_role_service_with_only_its_program_or_its_cgroup_is_a_plain_app() {
 #[test]
 fn a_role_that_is_no_more_than_an_app_needs_no_more_than_the_row() {
     assert_eq!(
-        shown(&service("org.quire.Intents", "agent", Proof::Cgroup)),
+        shown(&service("org.bardo.Intents", "agent", Proof::Cgroup)),
         want(
-            "org.quire.Intents",
+            "org.bardo.Intents",
             Isolation::Unsandboxed,
             CallerRole::Agent
         )
@@ -139,9 +139,9 @@ fn a_program_is_an_app_only_by_the_scope_a_launcher_gave_it() {
     );
     // The role is the table's, by the app's name.
     assert_eq!(
-        shown(&program(Some("org.quire.Settings"))),
+        shown(&program(Some("org.bardo.Settings"))),
         want(
-            "org.quire.Settings",
+            "org.bardo.Settings",
             Isolation::Unsandboxed,
             CallerRole::Settings
         )
@@ -169,11 +169,11 @@ fn an_unverified_process_is_nobody_unless_it_is_a_writable_image_in_an_app_scope
     );
     assert_eq!(
         shown(&unverified(
-            Some("org.quire.Settings"),
+            Some("org.bardo.Settings"),
             WhyNot::ImageWritable
         )),
         want(
-            "org.quire.Settings",
+            "org.bardo.Settings",
             Isolation::Unsandboxed,
             CallerRole::App
         )

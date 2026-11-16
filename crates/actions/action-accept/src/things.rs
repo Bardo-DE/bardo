@@ -1,5 +1,5 @@
 //! The acceptance run's fake apps other than mail: an app whose manifest, not its code, says what
-//! it can do. Each app is a manifest (`dev/accept/fixtures/org.quire.<App>.toml`) and a few
+//! it can do. Each app is a manifest (`dev/accept/fixtures/org.bardo.<App>.toml`) and a few
 //! things to find; the provider reads the manifest to know what an action is. A read that
 //! takes nothing and returns things is a search over the titles; a read of one thing returns its
 //! words; any other action is held for the undo window, as a real app holds a send or a change
@@ -56,9 +56,9 @@ impl App {
     /// The app's name.
     pub const fn name(self) -> &'static str {
         match self {
-            App::Mail => "org.quire.Mail",
-            App::Notes => "org.quire.Notes",
-            App::Files => "org.quire.Files",
+            App::Mail => "org.bardo.Mail",
+            App::Notes => "org.bardo.Notes",
+            App::Files => "org.bardo.Files",
         }
     }
 
@@ -66,8 +66,8 @@ impl App {
     pub const fn manifest(self) -> &'static str {
         match self {
             App::Mail => crate::world::MAIL_MANIFEST,
-            App::Notes => include_str!("../../dev/accept/fixtures/org.quire.Notes.toml"),
-            App::Files => include_str!("../../dev/accept/fixtures/org.quire.Files.toml"),
+            App::Notes => include_str!("../../dev/accept/fixtures/org.bardo.Notes.toml"),
+            App::Files => include_str!("../../dev/accept/fixtures/org.bardo.Files.toml"),
         }
     }
 

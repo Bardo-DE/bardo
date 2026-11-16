@@ -1,6 +1,6 @@
 //! The setting of the hot-corner machine in `ui-behaviour`: `hot_corners.*` (design/13
 //! §13.3.12). It lives here, beside the schema, so the shell and the compositor read one
-//! definition of each key; the keys stay in `sill/settings.toml`. The four corners are one custom
+//! definition of each key; the keys stay in `shell/settings.toml`. The four corners are one custom
 //! control; the timing and the hot spot's size are constants of the machine
 //! (`ui_behaviour::hot_corner::CornerParams`).
 
@@ -42,7 +42,7 @@ pub enum CornerAction {
 /// writes the list form only.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(try_from = "StoredHotCorners")]
-#[settings(file = "sill/settings.toml", domain = "hot_corners", page = Page::Dock)]
+#[settings(file = "shell/settings.toml", domain = "hot_corners", page = Page::Dock)]
 pub struct HotCornerSettings {
     #[settings(
         label = "Top left",

@@ -1,6 +1,6 @@
 //! inferd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
 //! reads the configuration and the catalog, starts the engine supervisor and the watchers and
-//! serves `org.quire.Inference1`, and [`Daemon::run`] keeps it going until a stop is asked for
+//! serves `org.bardo.Inference1`, and [`Daemon::run`] keeps it going until a stop is asked for
 //! and then ends every engine. The binary reads its arguments, starts listening for signals, asks
 //! [`Config::from_env`] for the environment's answers and calls these.
 //!
@@ -56,11 +56,11 @@ const PROBE_TIMEOUT: Duration = Duration::from_secs(10);
 const PROBE_MAX_BODY: usize = 1024 * 1024;
 
 /// The variable that names Tailscale's socket (an absolute path; a relative one is ignored).
-pub const TAILSCALE_SOCKET_VAR: &str = "INFERD_TAILSCALE_SOCKET";
+pub const TAILSCALE_SOCKET_VAR: &str = "BARDO_INFERD_TAILSCALE_SOCKET";
 
 /// The variable that names a directory to read callers from in place of `/proc` (a test build
 /// only).
-pub const PROC_ROOT_VAR: &str = "INFERD_PROC_ROOT";
+pub const PROC_ROOT_VAR: &str = "BARDO_INFERD_PROC_ROOT";
 
 /// Everything inferd needs to start, as typed values.
 #[derive(Debug, Clone)]
@@ -140,7 +140,7 @@ impl Config {
     /// The configuration the process's environment gives; `config_file` is the command line's
     /// `--config`, else the file under `$XDG_CONFIG_HOME`. The one place inferd reads the
     /// environment: `HOME`, the XDG directories and `HF_HOME` (`Dirs::from_env`),
-    /// `INFERD_TAILSCALE_SOCKET`, `INFERD_PROC_ROOT` and `PORTER_INFERD_CALLERS`.
+    /// `BARDO_INFERD_TAILSCALE_SOCKET`, `BARDO_INFERD_PROC_ROOT` and `BARDO_INFERD_CALLERS`.
     ///
     /// # Errors
     /// There is nowhere to put the sockets and files.
@@ -336,7 +336,7 @@ fn installed_engines(dirs: &Dirs, file: &ConfigFile) -> Installed {
     )
 }
 
-/// inferd, serving `org.quire.Inference1` with its engine supervisor and watchers running.
+/// inferd, serving `org.bardo.Inference1` with its engine supervisor and watchers running.
 #[derive(Debug)]
 pub struct Daemon {
     connection: Connection,
@@ -345,7 +345,7 @@ pub struct Daemon {
 
 impl Daemon {
     /// Reads the configuration and the catalog, starts the supervisor, the watchers and the
-    /// tailnet, and serves `org.quire.Inference1`. Nothing starts an engine until a session asks
+    /// tailnet, and serves `org.bardo.Inference1`. Nothing starts an engine until a session asks
     /// for its model. When this returns the name is owned and calls are answered.
     ///
     /// # Errors

@@ -70,7 +70,7 @@ fn is_item(action: &str) -> bool {
 }
 
 fn app_name() -> AppName {
-    AppName::parse("org.quire.Menu").unwrap_or_else(|_| unreachable!("a valid app name"))
+    AppName::parse("org.bardo.Menu").unwrap_or_else(|_| unreachable!("a valid app name"))
 }
 
 /// The fake menu app.

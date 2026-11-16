@@ -30,8 +30,8 @@ impl Host {
     pub(crate) const fn bus(self) -> &'static str {
         match self {
             Host::Accounts => ACCOUNTS_BUS,
-            Host::Inference => "org.quire.Inference1",
-            Host::Sync => "org.quire.Sync1",
+            Host::Inference => "org.bardo.Inference1",
+            Host::Sync => "org.bardo.Sync1",
         }
     }
 

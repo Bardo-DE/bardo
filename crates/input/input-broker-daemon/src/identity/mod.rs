@@ -32,7 +32,7 @@ pub struct Caller {
     pub pid: Pid,
     /// The user the kernel vouches for.
     pub uid: Uid,
-    /// Its control group path, for example `/system.slice/keycap.service`.
+    /// Its control group path, for example `/system.slice/bardo-key-remap.service`.
     pub cgroup: CgroupPath,
     /// Its image, for the log (`None` when the kernel hides it).
     pub image: Option<ExePath>,

@@ -1,5 +1,5 @@
 //! The administrator's floor on disk: `privacy.toml` and the `*.toml` files of `privacy.d`
-//! beside it, in `/etc/quire`. casement only reads them, and believes a file only when it and
+//! beside it, in `/etc/bardo`. casement only reads them, and believes a file only when it and
 //! the folder it is in belong to the administrator alone: owned by them and not writable by
 //! the group or anyone else. A file that is not trusted is reported, never read.
 
@@ -43,9 +43,9 @@ pub struct FloorFiles {
 }
 
 impl FloorFiles {
-    /// The floor in `/etc/quire`, owned by the administrator.
+    /// The floor in `/etc/bardo`, owned by the administrator.
     pub fn system() -> FloorFiles {
-        FloorFiles::in_dir(Path::new("/etc/quire"), Owner::Root)
+        FloorFiles::in_dir(Path::new("/etc/bardo"), Owner::Root)
     }
 
     /// The floor in `dir` (`privacy.toml` and `privacy.d/`), whose files `owner` must own.

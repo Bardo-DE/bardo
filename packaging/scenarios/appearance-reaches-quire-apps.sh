@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Scenario `appearance-reaches-quire-apps` (plan §4.14, the second half of appearance-reaches-apps; FD-08, P1):
-# an appearance change written to `quire/appearance.toml` reaches a quire app that is not sill,
+# an appearance change written to `bardo/appearance.toml` reaches a quire app that is not sill,
 # running on the jailed headless casement.
 #
 # The app is detent (the Settings app, built from this tree by harness/scenario-build.sh): a quire ds
-# root that follows `quire/appearance.toml` through ui-settings' watch. The change is made the way a
+# root that follows `bardo/appearance.toml` through ui-settings' watch. The change is made the way a
 # settings app makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one). The proof is
-# pixels: `casementctl shot --output` (P1-C1: the output's last frame through the debug bus), cropped to the
-# window's frame from `casementctl debug windows`, its mean luminance compared. Nothing is read from the app.
+# pixels: `bardo-compositorctl shot --output` (P1-C1: the output's last frame through the debug bus), cropped to the
+# window's frame from `bardo-compositorctl debug windows`, its mean luminance compared. Nothing is read from the app.
 #
 #   boot      casement up (1920x1080, scale 1), devices plugged
 #   baseline  theme = "light", detent started: it maps 900x640 and its window interior is light (mean luminance >= 150)
@@ -24,19 +24,19 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 DETENT="$SCEN_BUILD/detent-target/debug/detent"
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
 
-export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
-floor_shim appearance-quire casementctl detent casement   # casementctl shot watches the screen; detent is the Settings app (both run from build/)
+export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+floor_shim appearance-quire bardo-compositorctl detent casement   # bardo-compositorctl shot watches the screen; detent is the Settings app (both run from build/)
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out appearance-quire)
-DETENT_PID=
+BARDO_SETTINGS_PID=
 BASE_LUM=
 
 cleanup() {
-  [ -z "$DETENT_PID" ] || kill "$DETENT_PID" 2>/dev/null
+  [ -z "$BARDO_SETTINGS_PID" ] || kill "$BARDO_SETTINGS_PID" 2>/dev/null
   stop_compositor
   scratch_drop
 }
@@ -45,10 +45,10 @@ trap cleanup EXIT
 # The appearance file, as the settings app writes it.
 write_theme() {
   mkdir -p "$SCRATCH/home/.config/quire"
-  printf '[appearance]\ntheme = "%s"\n' "$1" >"$SCRATCH/home/.config/quire/appearance.toml"
+  printf '[appearance]\ntheme = "%s"\n' "$1" >"$SCRATCH/home/.config/bardo/appearance.toml"
 }
 
-windows() { casementctl debug windows; }
+windows() { bardo-compositorctl debug windows; }
 # frame: "X,Y,W,H" of the first window, nothing (exit 1) while there is none.
 frame() { windows | python3 -c 'import json,sys; w=json.load(sys.stdin); print("%d,%d,%d,%d" % tuple(w[0]["frame"])) if w else sys.exit(1)'; }
 
@@ -70,7 +70,7 @@ PY
 # shot_lum NAME: shoots the output to OUT_DIR/NAME.png and prints the window interior's mean luminance.
 shot_lum() {
   local fr; fr=$(frame) || return 1
-  casementctl shot --output HEADLESS-1 "$OUT_DIR/$1.png" >"$OUT_DIR/shot.log" 2>&1 || { cat "$OUT_DIR/shot.log" >&2; return 1; }
+  bardo-compositorctl shot --output HEADLESS-1 "$OUT_DIR/$1.png" >"$OUT_DIR/shot.log" 2>&1 || { cat "$OUT_DIR/shot.log" >&2; return 1; }
   interior_lum "$OUT_DIR/$1.png" "$fr"
 }
 
@@ -88,7 +88,7 @@ wait_lum() {
 
 step_boot() {
   start_compositor 1920x1080 || return 1
-  casementctl debug inject "device plug keyboard" "device plug pointer" >/dev/null || return 1
+  bardo-compositorctl debug inject "device plug keyboard" "device plug pointer" >/dev/null || return 1
 }
 
 step_baseline() {
@@ -97,11 +97,11 @@ step_baseline() {
   write_theme light
   nested env HOME="$SCRATCH/home" XDG_CONFIG_HOME="$SCRATCH/home/.config" XDG_DATA_HOME="$SCRATCH/data" \
     XDG_DATA_DIRS="$SCRATCH/data" "$DETENT" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$OUT_DIR/detent.log" 2>&1 &
-  DETENT_PID=$!
+  BARDO_SETTINGS_PID=$!
   local i
   for i in $(seq 100); do [ "$(frame 2>/dev/null | cut -d, -f3,4)" = 900,640 ] && break; sleep 0.1; done
   [ "$(frame 2>/dev/null | cut -d, -f3,4)" = 900,640 ] || { echo "detent never mapped at 900x640" >&2; return 1; }
-  casementctl debug wait settled --timeout 10000 >/dev/null
+  bardo-compositorctl debug wait settled --timeout 10000 >/dev/null
   wait_lum base 'lum >= 150' || return 1
   BASE_LUM=$LUM
   echo "light: interior luminance $BASE_LUM" >&2
@@ -120,14 +120,14 @@ step_light() {
 }
 
 step_alive() {
-  kill -0 "$DETENT_PID" 2>/dev/null || { echo "detent exited during the run" >&2; return 1; }
+  kill -0 "$BARDO_SETTINGS_PID" 2>/dev/null || { echo "detent exited during the run" >&2; return 1; }
   [ "$(frame | cut -d, -f3,4)" = 900,640 ] || { echo "the window is no longer 900x640" >&2; return 1; }
 }
 
 run_steps step_boot step_baseline step_dark step_light step_alive
 if [ "$STATUS" != 0 ]; then
   echo "--- detent.log (tail)" >&2; tail -15 "$OUT_DIR/detent.log" >&2
-  [ -z "${CASEMENT_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$CASEMENT_ENV")/casement.log" >&2; }
+  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" >&2; }
   echo "--- shots in the scratch dir: $OUT_DIR" >&2
 fi
 exit "$STATUS"

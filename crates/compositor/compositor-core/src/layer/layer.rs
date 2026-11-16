@@ -23,7 +23,7 @@ pub struct LayerSpec {
     pub keyboard: KeyboardInteractivity,
     /// The namespace its client gave (`"bar"`, `"dock"`).
     pub namespace: String,
-    /// The shell role sill gave it through `quire_shell_v1`.
+    /// The shell role sill gave it through `bardo_shell_v1`.
     pub role: ShellRoleTag,
     /// Whether it came through the shell's own connection (the bar, the dock, the launcher:
     /// trusted with the keyboard and with room taken from windows), not any other client's.

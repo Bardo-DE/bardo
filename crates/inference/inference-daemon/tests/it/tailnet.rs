@@ -24,7 +24,7 @@ use std::net::{IpAddr, SocketAddr};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpSocket;
 
-const COMPANION: &str = "org.quire.Companion";
+const COMPANION: &str = "org.bardo.Companion";
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -84,7 +84,7 @@ async fn pair(name: &str, serving: bool) -> Pair {
         }],
         policy: policy(),
         role: Role::Shell,
-        app: Some(app("org.quire.Shell")),
+        app: Some(app("org.bardo.Shell")),
         tailnet: Some(TailnetPlan {
             network: network(("nPI", "pi", a.pi), ("nDESK", "desk", a.desk)),
             port,
@@ -173,7 +173,7 @@ fn chat_body(model: &str) -> String {
 async fn add_pi(pair: &Pair) -> String {
     let (settings, _) = pair
         .desk
-        .connect_as(Role::Settings, app("org.quire.Settings"))
+        .connect_as(Role::Settings, app("org.bardo.Settings"))
         .await;
     let rows = proxy(&settings)
         .await
@@ -197,12 +197,12 @@ async fn a_cloud_account_is_never_reached_from_a_peer_even_when_it_is_the_only_e
         catalog: vec![("c-claude.toml", entries::claude())],
         policy: policy(),
         role: Role::Shell,
-        app: Some(app("org.quire.Shell")),
+        app: Some(app("org.bardo.Shell")),
         hosted: Some(Hosted {
             accounts: vec![FakeAccount {
                 id: "openrouter",
                 standing: Standing::Granted {
-                    to: vec![COMPANION, "org.quire.Guest", "org.quire.Guest.nDESK"],
+                    to: vec![COMPANION, "org.bardo.Guest", "org.bardo.Guest.nDESK"],
                     grant: "grant-openrouter",
                     key: Some("sk-or-test-key"),
                 },
@@ -225,7 +225,7 @@ async fn a_cloud_account_is_never_reached_from_a_peer_even_when_it_is_the_only_e
     listening(&pi, at).await;
     // The person said yes to desk ahead of time, so only what is lent can stop the request.
     let (settings, _) = pi
-        .connect_as(Role::Settings, app("org.quire.Settings"))
+        .connect_as(Role::Settings, app("org.bardo.Settings"))
         .await;
     proxy(&settings)
         .await
@@ -295,7 +295,7 @@ async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_
     listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
     let (settings, _) = p
         .desk
-        .connect_as(Role::Settings, app("org.quire.Settings"))
+        .connect_as(Role::Settings, app("org.bardo.Settings"))
         .await;
     let settings = proxy(&settings).await;
     // Nobody read the list: nobody was looked at.
@@ -317,7 +317,7 @@ async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_
         .store(false, std::sync::atomic::Ordering::SeqCst);
     let (settings, _) = q
         .desk
-        .connect_as(Role::Settings, app("org.quire.Settings"))
+        .connect_as(Role::Settings, app("org.bardo.Settings"))
         .await;
     let settings = proxy(&settings).await;
     assert!(settings.candidates().await.expect("candidates").is_empty());
@@ -335,7 +335,7 @@ async fn adding_a_computer_that_is_not_there_or_twice_is_refused_in_plain_words(
     listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
     let (settings, _) = p
         .desk
-        .connect_as(Role::Settings, app("org.quire.Settings"))
+        .connect_as(Role::Settings, app("org.bardo.Settings"))
         .await;
     let settings = proxy(&settings).await;
     for (node, name) in [("nNOBODY", "NotOnTailscale"), ("nDESK", "NotOnTailscale")] {
@@ -399,8 +399,8 @@ async fn only_settings_may_add_or_look_and_only_settings_and_the_shell_may_answe
     let denied = "org.freedesktop.DBus.Error.AccessDenied";
     // On desk: an app, the shell and the companion may not look at or add computers.
     for (role, who) in [
-        (Role::App, "org.quire.Memory"),
-        (Role::Shell, "org.quire.Shell"),
+        (Role::App, "org.bardo.Memory"),
+        (Role::Shell, "org.bardo.Shell"),
         (Role::Placer, COMPANION),
     ] {
         let (connection, _) = p.desk.connect_as(role, app(who)).await;
@@ -416,7 +416,7 @@ async fn only_settings_may_add_or_look_and_only_settings_and_the_shell_may_answe
         assert_eq!(error_name(&e), denied, "{who}");
     }
     // On pi: an app and the companion may neither see nor answer the computers that ask.
-    for (role, who) in [(Role::App, "org.quire.Memory"), (Role::Placer, COMPANION)] {
+    for (role, who) in [(Role::App, "org.bardo.Memory"), (Role::Placer, COMPANION)] {
         let (connection, _) = p.pi.connect_as(role, app(who)).await;
         let inference = proxy(&connection).await;
         let e = inference.guests().await.expect_err("refused");
@@ -438,7 +438,7 @@ async fn only_settings_may_add_or_look_and_only_settings_and_the_shell_may_answe
     assert_eq!(error_name(&e), denied);
     // Settings at pi may answer one that never asked, if it is on the person's network.
     let (settings, _) =
-        p.pi.connect_as(Role::Settings, app("org.quire.Settings"))
+        p.pi.connect_as(Role::Settings, app("org.bardo.Settings"))
             .await;
     let settings = proxy(&settings).await;
     settings

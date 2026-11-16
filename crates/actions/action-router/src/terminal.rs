@@ -101,7 +101,7 @@ impl<S: Seams> Router<S> {
     /// The person resumed (`Control.Resume`, the control centre's alone): every terminal session
     /// the breaker paused in `scope` takes calls again with a fresh breaker. A terminal has no
     /// turn to record (`Session.Turn` is the launcher's and the fields'), so without this a
-    /// session the breaker paused would refuse every `quire-do` call until logout. Nothing a
+    /// session the breaker paused would refuse every `bardo-do` call until logout. Nothing a
     /// terminal can send reaches it: the member is the control role's, and the answer to a
     /// sheet cannot do it because a paused session shows none.
     pub(crate) fn resume_terminals(&self, scope: &SpaceScope) {

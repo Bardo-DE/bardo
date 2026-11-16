@@ -1,5 +1,5 @@
 //! The palmrest client (design/12 §12.3.10-11, design/11 §11.7): connects to
-//! `/run/palmrest/events.sock` (`SOCK_SEQPACKET`) when the daemon runs, tells it when the pointer
+//! `/run/bardo/mouse-gestures/events.sock` (`SOCK_SEQPACKET`) when the daemon runs, tells it when the pointer
 //! is over one of our surfaces (`PointerOver`), whether the session is locked (`SessionLock`) and
 //! what the person's gesture settings say (`UserConfig`, `user_config`), and reads its scroll,
 //! touch, tap and swipe events for the engine (`input::scroll`) and the actions it asks of the
@@ -42,12 +42,12 @@ const MAX_DATAGRAMS_PER_READ: usize = 256;
 
 /// The daemon's socket. The daemon is a system service, so this is a fixed path and not one under
 /// the person's runtime folder.
-pub(crate) const SOCKET: &str = "/run/palmrest/events.sock";
+pub(crate) const SOCKET: &str = "/run/bardo/mouse-gestures/events.sock";
 
 /// The control group of palmrest's unit: only the system manager can put a process there, so a
 /// process in it is palmrest, whoever it runs as. Any other process at the socket's path would be
 /// feeding scroll and touch input, and asking the shell to run programs.
-const DAEMON_CGROUP: &str = "/system.slice/palmrest.service";
+const DAEMON_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
 
 /// Whether a process whose `/proc/<pid>/cgroup` reads `text` is the daemon: the unified
 /// hierarchy's line `0::<path>` names the unit's group, exactly. `true`: the host trusts it.

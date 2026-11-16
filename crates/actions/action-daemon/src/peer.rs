@@ -2,7 +2,7 @@
 //! says about the connection and never from anything the caller sends, and never from a name it
 //! owns: porter's `ProcCallers` (through [`Identity`]) names the process behind the connection
 //! (the bus gives its pid; `/proc/<pid>/cgroup` names its unit or app scope; the callers file,
-//! `intentd-callers.toml`, gives the role). The roles of `intentd.toml` are those of the app the
+//! `actiond-callers.toml`, gives the role). The roles of `actiond.toml` are those of the app the
 //! process is, and a role that stands for more than an app is played only by a process whose
 //! callers-file role backs it ([`backs`]): the sheet roles (`launcher`, `confirm`, `control`) by
 //! the `sheet_host` of the system's table, `cua` by `cua`, the other daemons' roles by a role
@@ -10,15 +10,15 @@
 //!
 //! A connection nothing identifies is nobody and is refused, with one exception that is not a
 //! name: a terminal's child (`vte-spawn-*`, `tmux-spawn-*`, a login `session-*` scope) has no
-//! unit or app of its own, and is the cli role, whose one member is `org.quire.Do`:
+//! unit or app of its own, and is the cli role, whose one member is `org.bardo.Do`:
 //! - an app scope (`app-[<launcher>-]<id>-<n>.scope`, a Flatpak app by its metadata) is that
-//!   app, with the roles `intentd.toml` lists under its name (none, for most);
+//!   app, with the roles `actiond.toml` lists under its name (none, for most);
 //! - anything else (a service unit the table does not name, an unreadable cgroup) is refused.
 //!
 //! This is advisory on a desktop where every process runs as the person: a process can start a
 //! scope. What it cannot do is be more than the role its unit, as the systemd manager names it,
 //! plays, and the cli role asks for everything that is not a read. One narrowing:
-//! `org.quire.Acp` counts as an app only while `agent.acp.expose` is on (`AcpGate`), because the
+//! `org.bardo.Acp` counts as an app only while `agent.acp.expose` is on (`AcpGate`), because the
 //! process is usually not there.
 
 use crate::acp_gate::AcpGate;
@@ -36,7 +36,7 @@ use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
 /// The name the cli role is listed under: what a terminal's child is.
-const CLI_NAME: &str = "org.quire.Do";
+const CLI_NAME: &str = "org.bardo.Do";
 
 /// Why a connection has no identity.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -68,7 +68,7 @@ pub(crate) enum Found {
 /// The sheet roles need the system's `sheet_host`, `cua` and `compositor` need their own, and
 /// the roles of the other daemons and of the editor hosts need a role above a plain app (`agent`,
 /// or any fixed role). The roles of a plain app, a terminal's child and a field are open to any
-/// identified caller: `intentd.toml` lists who plays them.
+/// identified caller: `actiond.toml` lists who plays them.
 pub(crate) fn backs(role: CallerRole, held: Role) -> bool {
     match role {
         CallerRole::Launcher | CallerRole::Confirm | CallerRole::Control => held == Role::SheetHost,
@@ -147,7 +147,7 @@ impl Peers {
         Self::gated(connection, config, who, proc_root, AcpGate::shut())
     }
 
-    /// As [`Peers::with_proc_root`], honouring the roles held through `org.quire.Acp` only while
+    /// As [`Peers::with_proc_root`], honouring the roles held through `org.bardo.Acp` only while
     /// `acp` shows the setting on.
     pub fn gated(
         connection: BusConnection,
@@ -165,7 +165,7 @@ impl Peers {
         }
     }
 
-    /// The roles `intentd.toml` gives.
+    /// The roles `actiond.toml` gives.
     pub fn config(&self) -> &IntentdConfig {
         &self.config
     }

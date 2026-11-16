@@ -23,7 +23,7 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 # shellcheck source=dev/lib/jail.sh
 source "$root/dev/lib/jail.sh"
 
-parallel=4 build=no out="" bound=${ACCEPT_SCRIPT_TIMEOUT:-240} names=()
+parallel=4 build=no out="" bound=${BARDO_ACCEPT_SCRIPT_TIMEOUT:-240} names=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --jobs) parallel=${2:?--jobs needs a value}; shift 2 ;;
@@ -48,8 +48,8 @@ if [ "$build" = yes ]; then
   "$root/dev/bootstrap.sh" --build-only
 fi
 
-tools="${CASEMENT_TOOLS:-$root/dev/out/tools}"
-for tool in casement casementctl fake-logind; do
+tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}"
+for tool in casement bardo-compositorctl fake-logind; do
   if [ ! -x "$tools/bin/$tool" ]; then
     echo "accept.sh: artefact $tools/bin/$tool is missing" >&2
     echo "accept.sh: fix: run dev/bootstrap.sh (or dev/accept.sh --build) outside the jail" >&2
@@ -57,7 +57,7 @@ for tool in casement casementctl fake-logind; do
   fi
 done
 
-jail="${CASEMENT_JAIL:-$_casement_desktop/harness/jail.sh}"
+jail="${BARDO_COMPOSITOR_JAIL:-$_casement_desktop/harness/jail.sh}"
 [ -x "$jail" ] || { echo "accept.sh: the jail script $jail is missing" >&2; exit 3; }
 
 # The scripts to run, as names.
@@ -77,11 +77,11 @@ mkdir -p "$out"
 out=$(cd "$out" && pwd)
 
 jail_env=()
-for var in CASEMENT_TOOLS CASEMENT_START_TENTHS; do
+for var in BARDO_COMPOSITOR_TOOLS BARDO_COMPOSITOR_START_TENTHS; do
   [ -z "${!var:-}" ] || jail_env+=(--env "$var=${!var}")
 done
 # More K=V pairs for the jails (the environment is otherwise cleared), space separated.
-for pair in ${CASEMENT_JAIL_ENV:-}; do jail_env+=(--env "$pair"); done
+for pair in ${BARDO_COMPOSITOR_JAIL_ENV:-}; do jail_env+=(--env "$pair"); done
 
 # run_one NAME: one script in its own jail; leaves "<exit> <seconds>" in OUT/NAME.result.
 run_one() {

@@ -1,4 +1,4 @@
-//! accountd (`org.quire.Accounts1`), as the shell hears it: when an account needs the person to
+//! accountd (`org.bardo.Accounts1`), as the shell hears it: when an account needs the person to
 //! sign in again, sill says so in a notification with a "Sign in again" button, and takes the
 //! notice back when the account is well again (design/31 §4.4, PLAN §2.8).
 //!
@@ -8,7 +8,7 @@
 //! needs the person posts the notice, any other state (or the account going) takes it back. The button's key carries the account, and its `ActionInvoked` from the
 //! notifications server answers only when its id is the notice sill holds for that account: the
 //! service then calls the account's `Reauthenticate`,
-//! and accountd asks sill's own sheet (`org.quire.AccountsSheet1`) to draw the sign-in.
+//! and accountd asks sill's own sheet (`org.bardo.AccountsSheet1`) to draw the sign-in.
 //!
 //! Without accountd the state stays at its default. A bus that is absent by choice ends the
 //! service silently.

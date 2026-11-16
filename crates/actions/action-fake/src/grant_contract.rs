@@ -24,7 +24,7 @@ pub fn contract_grant(id: &str, action: &str, scope: GrantScope) -> ActionGrant 
         id: GrantId::parse(id).expect("id"),
         key: ActionGrantKey {
             caller: GrantCaller::Companion,
-            owner: AppName::parse("org.quire.Mail").expect("app"),
+            owner: AppName::parse("org.bardo.Mail").expect("app"),
             target: GrantTarget::Action(ActionName::parse(action).expect("action")),
             class: DataClass::Mail,
             usage: Usage::Interactive,
@@ -42,7 +42,7 @@ pub fn contract_standing(prefix: &str) -> StandingGrant {
         GrantCaller::Companion,
         StandingScope::Files {
             action: ActionRef {
-                app: AppName::parse("org.quire.Files").expect("app"),
+                app: AppName::parse("org.bardo.Files").expect("app"),
                 name: ActionName::parse("files.file.move").expect("action"),
             },
             under: AbsPath::parse(prefix).expect("path"),

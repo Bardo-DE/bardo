@@ -1,5 +1,5 @@
 //! docket's settings (design/22 section 3.27): the `agent.*` keys the Settings app writes to
-//! `$XDG_CONFIG_HOME/docket/settings.toml`, the schema it draws them from, and the lenient reader
+//! `$XDG_CONFIG_HOME/actions/settings.toml`, the schema it draws them from, and the lenient reader
 //! the daemons share. A bad value falls back per key and is reported; the file is never fatal.
 //! Reading is a pure function of text; only [`Locator::read`] touches the disk, and the live
 //! watch is the daemon's (intentd), so this crate reaches no runtime and no watcher.
@@ -30,10 +30,10 @@ pub use places::{
 pub use read::{Fallback, Loaded, Why, read};
 
 /// The schema docket ships for its settings (design/22 section 9.2).
-pub const SCHEMA: &str = include_str!("../../dist/settings/docket.settings.toml");
+pub const SCHEMA: &str = include_str!("../../dist/settings/actions.settings.toml");
 
 /// The file the settings live in, under the configuration directory.
-pub const SETTINGS_FILE: &str = "docket/settings.toml";
+pub const SETTINGS_FILE: &str = "actions/settings.toml";
 
 /// The reviewers' own timeouts when the router enforces its deadline: long ones, so the router's
 /// live deadline is the one that fires.

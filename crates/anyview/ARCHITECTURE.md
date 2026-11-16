@@ -365,7 +365,7 @@ desktop ability is a trait the host still holds, answered by a portable stand-in
 
 | Ability | With `quire-desktop` (Linux) | Without it |
 | --- | --- | --- |
-| Single instance | `DbusInstance`: the name `org.quire.Anyview1`, with bus activation (the `.service` file starts the viewer for a call) | `LatchkeyInstance`: the per-user socket |
+| Single instance | `DbusInstance`: the name `org.bardo.Anyview1`, with bus activation (the `.service` file starts the viewer for a call) | `LatchkeyInstance`: the per-user socket |
 | Link | `SystemOpen` (`xdg-open`; `linux::XdgOpen` is the same type) | `SystemOpen` (`xdg-open`, `open`, `explorer`) |
 | Show in Folder | `FileManagerReveal` (`FileManager1.ShowItems`, the file selected) | `SystemReveal` (`open -R`, `explorer /select,`, else the folder through `xdg-open`) |
 | Share | `MailShare` (`xdg-email`) | `NoShare`: no targets |
@@ -438,7 +438,7 @@ generic over it rather than holding a `dyn`):
 
 | Trait | Methods |
 | --- | --- |
-| `Instance` | `claim(&Request) -> Result<Claim>`: own `org.quire.Anyview1` (`Claim::Primary`, whose `Primary::next` yields what later launches forwarded) or forward the request to the owner (`Claim::Forwarded`) |
+| `Instance` | `claim(&Request) -> Result<Claim>`: own `org.bardo.Anyview1` (`Claim::Primary`, whose `Primary::next` yields what later launches forwarded) or forward the request to the owner (`Claim::Forwarded`) |
 | `MediaSession` | `publish(&MediaState) -> Result<()>`; `next_control() -> Option<MediaControl>` |
 | `ThumbnailCache` | `lookup(&FilePath, &FileStamp, ThumbSize) -> Result<Option<ThumbPixels>>`; `store(.., &ThumbPixels) -> Result<()>` |
 | `Printer` | `print(&[u8], &str) -> Result<PrintOutcome>` |
@@ -446,7 +446,7 @@ generic over it rather than holding a `dyn`):
 | `Reveal` | `reveal(&FilePath) -> Result<()>` |
 | `WindowStacking` | `request(keep_above: bool) -> bool` |
 
-On the bus: `org.quire.Anyview1` at `/org/quire/Anyview1` has `Open(as)`, `Peek(s)`, `Play(s)` and
+On the bus: `org.bardo.Anyview1` at `/org/bardo/Anyview1` has `Open(as)`, `Peek(s)`, `Play(s)` and
 `Handoff(s file, s resume, t results, as entries)` over absolute paths (a relative one is an
 `InvalidArgs` error). A handoff is a file the launcher's pane was showing: `resume` is the JSON a
 `Resume` is stored as (`Resume::Nothing` when the pane held no place of its own, which leaves the
@@ -455,10 +455,10 @@ results in the order shown with `file` among them, and `results` the id of that 
 (`SequenceOrigin::Results`), so ← and → walk the results; no entries means no list. A file that is
 not among its entries, or a place that is not a `Resume`, is an `InvalidArgs` error. The launcher
 calls it with `forward_over(&connection, &Request::Handoff(..))` on its own connection, so the
-wire is written once, here. `dist/org.quire.Anyview1.service` is the activation file that starts
+wire is written once, here. `dist/org.bardo.Anyview1.service` is the activation file that starts
 `anyview` when a call arrives while none runs. The player is
 `org.mpris.MediaPlayer2.anyview` at `/org/mpris/MediaPlayer2`; its track id is
-`/org/quire/Anyview1/Track/<track serial>`. Thumbnails live at
+`/org/bardo/Anyview1/Track/<track serial>`. Thumbnails live at
 `<cache>/thumbnails/{normal,large,x-large}/<md5 of the file URI>.png` with `Thumb::URI`,
 `Thumb::MTime` and `Thumb::Size` text chunks. The tests of the bus implementations run against a
 `dbus-daemon` the test starts with its own configuration (no service directories) and skip with a
@@ -466,7 +466,7 @@ message when the program is not installed.
 
 `anyview-platform` depends on `latchkey`, `tokio` (channels, `spawn_blocking` and a timeout), `md-5`, `png`,
 `percent-encoding`, `serde_json`, `dirs`, and, behind `quire-desktop` on Linux, `zbus` (its `tokio` feature, so
-the binary's runtime drives it), `memfd` and `futures-util`; also quire's `ui-extensions` (the Extension folder scan and the off list) and `ui-settings` without its D-Bus client (reading `quire/extensions.toml`), bayonet with its `host` feature (reading the manifests and running the plugins: `poll` on the plugin's pipe, so it is read with a deadline and no thread, and the process group it is killed with), `thiserror`, `anyview-core`, `anyview-plugin`, `anyview-plugin-protocol` and `ui-core`.
+the binary's runtime drives it), `memfd` and `futures-util`; also quire's `ui-extensions` (the Extension folder scan and the off list) and `ui-settings` without its D-Bus client (reading `bardo/extensions.toml`), bayonet with its `host` feature (reading the manifests and running the plugins: `poll` on the plugin's pipe, so it is read with a deadline and no thread, and the process group it is killed with), `thiserror`, `anyview-core`, `anyview-plugin`, `anyview-plugin-protocol` and `ui-core`.
 ## 2f. Modules inside `anyview-peek`
 
 Same rules as section 2: private modules, each public item re-exported once at the crate root. The peeks
@@ -766,20 +766,20 @@ A plugin is an Extension (design: customization, section 4): a folder named for 
 manifest, `quire/extensions/<id>/extension.toml`, under a data directory: `$XDG_DATA_HOME` (the person's) and
 each of `$XDG_DATA_DIRS` (the system's). The directories come from `Env`; a test builds its own. The scan is
 quire's (`ui-extensions`: `Search::new(person, system)`), which returns every copy of every id unranked and
-sets apart the ids turned off in `quire/extensions.toml` (in the config directory); `anyview-platform` then
+sets apart the ids turned off in `bardo/extensions.toml` (in the config directory); `anyview-platform` then
 reads this viewer's six words from each copy (`bayonet::reparse::<Provision>`; the words of other owners, such
 as `file_icons`, are left alone), and `Registry::resolve` sets the unusable ones aside and ranks the rest. A
 file that cannot be read, is not a manifest, or sits in a folder not named for its id is reported
 (`Discovery::rejected`) and skipped.
 
-The four plugins this repository ships are `org.quire.anyview.Ffmpeg`, `.Heif`, `.Raw` and `.Mpv`. For one
+The four plugins this repository ships are `org.bardo.anyview.Ffmpeg`, `.Heif`, `.Raw` and `.Mpv`. For one
 more release discovery also reads the old flat place, `anyview/plugins/<id>.toml` (bayonet's flat layout),
 and gives `ffmpeg`, `heif`, `raw` and `mpv` the id they have now before ranking, so an old install is one
 id with two copies and the new place wins at the same root (`discover.rs`, `legacy`: delete it after that
 release, with `remove_legacy_manifests` in `dist/uninstall.sh`).
 
 ```toml
-id = "org.quire.anyview.Ffmpeg"  # dotted words; must equal the folder name
+id = "org.bardo.anyview.Ffmpeg"  # dotted words; must equal the folder name
 name = "FFmpeg"                # for people
 protocol = 1                   # the newest protocol version the program speaks
 version = "0.1.0"              # dotted numbers; shown, and breaks a tie between two copies
@@ -1015,9 +1015,9 @@ processes are removed at the next export. `cancel` (or the host closing
 its pipe) kills ffmpeg, removes the partial file and answers `cancelled`; ffmpeg's last stderr lines ride in
 the message when it fails.
 
-**Install.** `dist/extensions/org.quire.anyview.Ffmpeg.toml.in` is the manifest template; `dist/install.sh`
+**Install.** `dist/extensions/org.bardo.anyview.Ffmpeg.toml.in` is the manifest template; `dist/install.sh`
 installs the program as `<prefix>/libexec/anyview/anyview-ffmpeg` and the template, with `@PREFIX@`
-filled in, as `<prefix>/share/quire/extensions/org.quire.anyview.Ffmpeg/extension.toml`; `uninstall.sh`
+filled in, as `<prefix>/share/quire/extensions/org.bardo.anyview.Ffmpeg/extension.toml`; `uninstall.sh`
 removes both, and the old `<prefix>/share/anyview/plugins/ffmpeg.toml` of an earlier install. `dev/install-test.sh`
 covers it. The plugin tests spawn the built program through `PluginRunner` against the media crate's fixtures,
 using the shipped template.
@@ -1127,7 +1127,7 @@ codecs come from there: Fedora's `ffmpeg-free` plus RPM Fusion's `ffmpeg`, Debia
 plugins, which a plain `dist/install.sh` installs: it builds mpv-wgpu's C plugin (from `--with-mpv-from`,
 `MPV_WGPU_DIR` or `../mpv`, else a shallow fetch of the revision pinned in `install.sh` into
 `$XDG_CACHE_HOME/anyview/build`) and the FFmpeg plugin, finds `mpv` on the search path at install time
-(`--mpv PATH` names another) and writes the Extension manifests `org.quire.anyview.Mpv`, `.Ffmpeg`, `.Heif` and `.Raw` under `<prefix>/share/quire/extensions`.
+(`--mpv PATH` names another) and writes the Extension manifests `org.bardo.anyview.Mpv`, `.Ffmpeg`, `.Heif` and `.Raw` under `<prefix>/share/quire/extensions`.
 Distribution packages are named `anyview-mpv` and `anyview-ffmpeg`.
 
 Pictures the viewer cannot decode work the same way: a HEIC opens as its facts with a `Needs: anyview-heif` row
@@ -1800,7 +1800,7 @@ and agrees with `has_stage`. `ANYVIEW_SHOTS=<dir>` makes the window tests save a
 
 ## 7d. Appearance
 
-The one desktop appearance (`quire/appearance.toml`, the settings portal) is read and watched by the binary alone:
+The one desktop appearance (`bardo/appearance.toml`, the settings portal) is read and watched by the binary alone:
 `host/appearance.rs` (`Appearances::follow`) loads `ds_settings::AppearanceFile` from a `Store` rooted at
 `env.dirs.config`, starts `SystemPrefsWatch`, and publishes each settled change as a `Look` through a
 `LookSender` (`anyview-ui`'s `LookFeed::new`, std only, no runtime in the type). Every window gets the `LookFeed` as a root context; `ViewerApp` follows it (a window
@@ -1809,7 +1809,7 @@ never writes the file and keeps none of its own. The host (`ui-blitz`) calls `fo
 switch repaints text; the viewer runs no frame loop of its own.
 
 The look is customizable (quire customization design section 7). The same `Look` carries `styles` (the chosen look
-Extension's sheet from `ds_extensions::look::stylesheet_for`, `~/.config/quire/style.css` and
+Extension's sheet from `ds_extensions::look::stylesheet_for`, `~/.config/bardo/style.css` and
 `~/.config/anyview/style.css`, with `StyleHomes` set to each sheet's own folder) and `custom_styles` (`appearance.custom_styles`,
 forced `Off` while the crash guard has the styles off). `host/appearance/styling.rs` reads them: the two `style.css`
 files are watched like the appearance file; the look's sheet is read when `appearance.look` changes. `ViewerApp`, `PaneApp` (when it is its
@@ -1820,9 +1820,9 @@ The viewer publishes no selector table yet: its parts are `viewer-` classes, and
 
 ## 7c. Packaging (`dist/`)
 
-`dist/org.quire.Anyview.desktop` is the desktop entry (`Exec=anyview %U`, and no `DBusActivatable` line: neither
-bus name serves `org.freedesktop.Application`). Its `X-Quire-BusNames` (`org.quire.Anyview1;org.quire.Anyview;`) and
-`X-Quire-IntentsApp` (`org.quire.Anyview`) are the identity sill reads through ui-helpers' `AppIdentity`. Its `MimeType` line is
+`dist/org.bardo.Anyview.desktop` is the desktop entry (`Exec=anyview %U`, and no `DBusActivatable` line: neither
+bus name serves `org.freedesktop.Application`). Its `X-Bardo-BusNames` (`org.bardo.Anyview1;org.bardo.Anyview;`) and
+`X-Bardo-IntentsApp` (`org.bardo.Anyview`) are the identity sill reads through ui-helpers' `AppIdentity`. Its `MimeType` line is
 `anyview_core::opened_mimes()`: the media types of the kinds for which `has_stage` is true, the one kind-to-MIME
 map; `crates/anyview-core/tests/anyview-core/dist.rs` fails if the line drifts. `%U` hands the viewer `file://` URIs, which
 `cli/parse.rs` decodes (another scheme or host is `CliError::NotLocal`). `dist/install.sh` and
@@ -1831,7 +1831,7 @@ binary, the entry, the service file (Exec rewritten to the installed binary) and
 `$QUIRE_DIR/assets/icons/apps/viewer/<px>.png`; `--set-default` is opt-in; every plugin installs by default (`--without-plugin NAME` and `--no-plugins` leave them out; `--with-plugin` is an ignored
 leftover; section 2m). A plugin whose tool is missing is still installed, since it greets the viewer with nothing on offer
 until the tool is there. The mpv plugin is skipped with one warning, and the rest installs, when there is no git, network or build; with no `mpv` it still installs, naming `/usr/bin/mpv` (a warning says so), so the plugin works the moment mpv is installed. The helpers file `dist/helpers/anyview.toml` installs to `<prefix>/share/quire/helpers/anyview.toml`. The mpv plugin's manifest template is
-`dist/extensions/org.quire.anyview.Mpv.toml.in`: `mpv` is the one found on the search path at install time (or `--mpv`) and the
+`dist/extensions/org.bardo.anyview.Mpv.toml.in`: `mpv` is the one found on the search path at install time (or `--mpv`) and the
 C plugin is installed as `<prefix>/libexec/anyview/mpv-wgpu-cplugin.so`. `dev/install-test.sh` (also run by
 `cargo test -p anyview-core --test anyview-core dist::`) runs both in a scratch HOME with shimmed registration tools and a shim `cargo`, and fetches mpv-wgpu only from a local repository.
 
@@ -1875,22 +1875,22 @@ C plugin is installed as `<prefix>/libexec/anyview/mpv-wgpu-cplugin.so`. `dev/in
 The viewer is reachable by docket, the desktop's agent layer, through the same edge as single instance and
 only with `quire-desktop` (design/36): `scripts/check-portable.sh` still builds without docket or zbus.
 
-- **Declaration.** `dist/intents/org.quire.Anyview.toml` is docket's intents manifest (vocab 1, app
-  `org.quire.Anyview`). It declares `anyview.file.open`: Read, reach `offered`, target `files` (one or several
+- **Declaration.** `dist/intents/org.bardo.Anyview.toml` is docket's intents manifest (vocab 1, app
+  `org.bardo.Anyview`). It declares `anyview.file.open`: Read, reach `offered`, target `files` (one or several
   absolute paths). docket requires an action's name to start with the app's last name element, so it is
   `anyview.file.open`, not `file.open`. No action writes, converts or deletes; the viewer's editing and exports are
   not declared. The file is embedded in `anyview-platform` (`include_str!`) and parsed with action-core's
   `Manifest` and `validate`, so the file the installer ships is the file the viewer answers for.
-- **Serving.** `DbusInstance::claim` already owns `org.quire.Anyview1` for single instance; once it holds the name
-  it calls action-provider's `serve_on_with` on the same connection, which exports `org.quire.IntentProvider1` and
-  claims `org.quire.Anyview` (the name docket calls). Only intentd is answered: action-dbus's `Identity` finds the
-  caller's process in `/proc` and asks the systemd manager for `intentd.service`'s main process, never trusting a
+- **Serving.** `DbusInstance::claim` already owns `org.bardo.Anyview1` for single instance; once it holds the name
+  it calls action-provider's `serve_on_with` on the same connection, which exports `org.bardo.IntentProvider1` and
+  claims `org.bardo.Anyview` (the name docket calls). Only intentd is answered: action-dbus's `Identity` finds the
+  caller's process in `/proc` and asks the systemd manager for `bardo-actiond.service`'s main process, never trusting a
   bus name. `DbusInstance::with_proc_root` gives it a fixture `/proc` instead, for a test on a private bus. `ViewerIntents::perform` turns `anyview.file.open` into the
   `Request::Open` a second launch would have forwarded, on the same channel the program already reads, so a call
   opens in the running window like any forwarded launch. Every path must be absolute and exist, or the whole call is
   refused and nothing opens. A failure to serve is logged and the viewer carries on without the agent layer.
-- **Activation.** `dist/org.quire.Anyview.service` (beside `org.quire.Anyview1.service`) lets the bus start the
-  viewer when the router calls `org.quire.Anyview`; the request that started it waits in the channel until the
+- **Activation.** `dist/org.bardo.Anyview.service` (beside `org.bardo.Anyview1.service`) lets the bus start the
+  viewer when the router calls `org.bardo.Anyview`; the request that started it waits in the channel until the
   program reads it. `install.sh` installs the service, the manifest (`share/quire/intents/`) and the skill
   (`share/quire/skills/files-viewer/`); `uninstall.sh` removes them through the receipt.
 - **Context.** The window is reported as private: the viewer holds no entities, and what is open is the person's.

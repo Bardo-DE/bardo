@@ -32,7 +32,7 @@ const VIEWPORT: Viewport = Viewport {
 /// The wire form of a `ConfirmRequest`: a terminal call to archive a thread.
 pub(crate) fn wire(id: &str, offer: &str, gesture: &str, effect: &str) -> String {
     format!(
-        r#"{{"id":"{id}","space":"desktop","actor":{{"kind":"cli"}},"app":"org.quire.Mail",
+        r#"{{"id":"{id}","space":"desktop","actor":{{"kind":"cli"}},"app":"org.bardo.Mail",
         "action":"Archive a thread","effect":"{effect}","count":1,"detail":{{"kind":"plain"}},
         "lines":[{{"label":"Thread","value":{{"kind":"plain","v":"Digest"}}}},
                  {{"label":"Subject","value":{{"kind":"quoted","v":{{"text":"Invoice 7","from":{{"kind":"mail"}}}}}}}}],

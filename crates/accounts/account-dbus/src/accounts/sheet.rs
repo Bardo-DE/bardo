@@ -6,7 +6,7 @@
 //! response codes and the results vardict. `await_response` (the caller's half, `pending.rs`)
 //! owns the race with the signal.
 //!
-//! - **Path.** `/org/quire/Accounts1/request/<sender>/<token>`: the caller's unique name with
+//! - **Path.** `/org/bardo/Accounts1/request/<sender>/<token>`: the caller's unique name with
 //!   the colon dropped and each dot an underscore (the portals' form), then the `handle_token`
 //!   the caller put in the call's `options`. A daemon uses a valid token as given and mints one
 //!   otherwise, so a caller can subscribe before it calls, by path namespace.
@@ -34,10 +34,10 @@ use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue, Value};
 pub const OPTION_HANDLE_TOKEN: &str = "handle_token";
 
 /// The interface of a Request object.
-pub const REQUEST_INTERFACE: &str = "org.quire.Accounts1.Request";
+pub const REQUEST_INTERFACE: &str = "org.bardo.Accounts1.Request";
 
 /// The parent of every Request object's path segment pair.
-pub const REQUEST_PATH_ROOT: &str = "/org/quire/Accounts1/request";
+pub const REQUEST_PATH_ROOT: &str = "/org/bardo/Accounts1/request";
 
 /// What a sheet method asked for, which decides how its `Response` is read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

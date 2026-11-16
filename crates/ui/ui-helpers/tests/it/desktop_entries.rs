@@ -295,17 +295,17 @@ fn an_identity_reads_x_keys_and_falls_back_to_the_entry() {
         AppIdentity::from_entry(id_of(id), file.entry().expect("entry group"))
     };
     let declared = identity(
-        "org.quire.Mail.desktop",
+        "org.bardo.Mail.desktop",
         "[Desktop Entry]\nStartupWMClass=mailo\nX-Quire-WindowId=mailo-main\n\
-         X-Quire-BusNames=org.quire.Mail; io.github.PoHsuanLai.mailo;;\nX-Quire-IntentsApp=org.quire.Mail\n",
+         X-Bardo-BusNames=org.bardo.Mail; io.github.PoHsuanLai.mailo;;\nX-Quire-IntentsApp=org.bardo.Mail\n",
     );
-    assert_eq!(declared.desktop_id, id_of("org.quire.Mail"));
+    assert_eq!(declared.desktop_id, id_of("org.bardo.Mail"));
     assert_eq!(declared.window_id, "mailo-main");
     assert_eq!(
         declared.bus_names,
-        ["org.quire.Mail", "io.github.PoHsuanLai.mailo"]
+        ["org.bardo.Mail", "io.github.PoHsuanLai.mailo"]
     );
-    assert_eq!(declared.intents_app.as_deref(), Some("org.quire.Mail"));
+    assert_eq!(declared.intents_app.as_deref(), Some("org.bardo.Mail"));
 
     let by_class = identity("foo.desktop", "[Desktop Entry]\nStartupWMClass=Foo\n");
     assert_eq!(by_class.window_id, "Foo");

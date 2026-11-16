@@ -1,4 +1,4 @@
-//! The brightness sill lists for each display (`org.quire.Displays1`): only the displays whose
+//! The brightness sill lists for each display (`org.bardo.Displays1`): only the displays whose
 //! brightness it can read have one, so a display it does not list has no slider.
 
 use super::model::OutputId;

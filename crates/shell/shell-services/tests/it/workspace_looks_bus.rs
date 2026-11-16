@@ -22,9 +22,9 @@ const SETTLE: Duration = Duration::from_secs(5);
 type Wire = (String, String, String, String, bool);
 
 #[proxy(
-    interface = "org.quire.Workspaces1",
-    default_service = "org.quire.Workspaces1",
-    default_path = "/org/quire/Workspaces1"
+    interface = "org.bardo.Workspaces1",
+    default_service = "org.bardo.Workspaces1",
+    default_path = "/org/bardo/Workspaces1"
 )]
 trait Workspaces {
     #[zbus(property)]
@@ -129,7 +129,7 @@ async fn a_taken_name_is_reported() {
         return;
     };
     let _owner = Builder::address(bus.address.as_str())
-        .and_then(|b| b.name("org.quire.Workspaces1"))
+        .and_then(|b| b.name("org.bardo.Workspaces1"))
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await

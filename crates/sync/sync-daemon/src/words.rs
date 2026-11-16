@@ -1,5 +1,5 @@
 //! The words Files shows for a drive's items and folders, written from the typed reasons
-//! drive-core, drive-fuse and porter-mountd return. syncd serves `org.quire.Storage1`
+//! drive-core, drive-fuse and bardo-drive-mount return. syncd serves `org.bardo.Storage1`
 //! and the sync settings rows, so the sentences live here and nowhere in those
 //! libraries.
 
@@ -35,7 +35,7 @@ pub fn reason(reason: Reason) -> &'static str {
     }
 }
 
-/// What porter-mountd's refusal says.
+/// What bardo-drive-mount's refusal says.
 pub fn refusal(code: Code) -> &'static str {
     match code {
         Code::NotHere => NO_FILES_HERE,

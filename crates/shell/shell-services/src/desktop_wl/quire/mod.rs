@@ -1,5 +1,5 @@
 //! The desktop's own compositor as `desktop_wl`'s Quire arm: apps, windows and Spaces from
-//! `quire_desktop_v1` mapped into the shell's [`shell_model::desktop::DesktopView`], the shell's
+//! `bardo_desktop_v1` mapped into the shell's [`shell_model::desktop::DesktopView`], the shell's
 //! commands as Quire requests, the shell protocol's notes in the shell's words, and the
 //! connection the compositor hands the shell.
 //!

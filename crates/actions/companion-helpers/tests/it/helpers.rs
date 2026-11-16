@@ -125,12 +125,12 @@ async fn two_helpers_work_at_the_same_time_and_stopping_one_ends_only_its_job() 
         .tools
         .iter()
         .map(|t| t.name.as_str().to_owned())
-        .filter(|name| name.starts_with("org_quire_"))
+        .filter(|name| name.starts_with("org_bardo_"))
         .collect();
     assert!(!offered.is_empty());
     for name in &offered {
         assert!(
-            name.starts_with("org_quire_Mail-")
+            name.starts_with("org_bardo_Mail-")
                 || name.ends_with("companion_helper_post_job")
                 || name.ends_with("companion_routine_propose"),
             "{name} is beyond the helper's reach"

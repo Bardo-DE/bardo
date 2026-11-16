@@ -13,7 +13,7 @@ struct Inner {
     failures: Vec<RegisterFailure>,
 }
 
-/// A recorder standing in for `org.quire.Spaces1`.
+/// A recorder standing in for `org.bardo.Spaces1`.
 #[derive(Debug, Clone, Default)]
 pub struct FakeSpaceRegistry {
     inner: Arc<Mutex<Inner>>,

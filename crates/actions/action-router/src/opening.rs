@@ -84,7 +84,7 @@ impl<S: Seams> Router<S> {
     }
 
     /// Opens a session for `opener`: the one body of `.Session.Open`, which the hosted
-    /// `org.quire.Companion` provider also uses to start a worker.
+    /// `org.bardo.Companion` provider also uses to start a worker.
     pub(crate) fn open_session(&self, opener: &AppName, open: SessionOpen) -> IntentsReply {
         let now = self.seams.clock().now();
         let mut st = self.locked();

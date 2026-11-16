@@ -48,7 +48,7 @@ impl FakeTailscale {
         }
     }
 
-    /// `org.quire.Tailnet1` as accountd serves it: this fake's computers, none when Tailscale
+    /// `org.bardo.Tailnet1` as accountd serves it: this fake's computers, none when Tailscale
     /// is not an account.
     pub fn object(&self) -> FakeTailnet {
         FakeTailnet {
@@ -68,14 +68,14 @@ impl FakeTailscale {
     }
 }
 
-/// The `org.quire.Tailnet1` object of the fake accountd.
+/// The `org.bardo.Tailnet1` object of the fake accountd.
 #[derive(Debug)]
 pub struct FakeTailnet {
     api: LocalApi,
     account: Arc<AtomicBool>,
 }
 
-#[zbus::interface(name = "org.quire.Tailnet1")]
+#[zbus::interface(name = "org.bardo.Tailnet1")]
 impl FakeTailnet {
     async fn machines(&self) -> fdo::Result<Vec<(String, Details)>> {
         if !self.account.load(Ordering::SeqCst) {

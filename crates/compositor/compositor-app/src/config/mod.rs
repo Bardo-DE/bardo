@@ -1,4 +1,4 @@
-//! The stored settings: `casement/settings.toml` through ui-settings (lenient read, atomic
+//! The stored settings: `compositor/settings.toml` through ui-settings (lenient read, atomic
 //! write, a debounced watch), its schema for detent (`casement --write-schema`), and the one
 //! conversion into the model's `CasementSettings` (ARCHITECTURE.md, "Add a settings key").
 

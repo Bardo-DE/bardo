@@ -193,7 +193,7 @@ in the Wheel output (12.3.9); the socket carries f32 px.
 
 | Output | For | Specification | Status |
 | --- | --- | --- | --- |
-| O1 Socket | our Blitz surfaces (every layer-shell-host process) | `$XDG_RUNTIME_DIR/palmrest/events.sock`, `SOCK_SEQPACKET`, mode 0600, many subscribers; messages 12.3.10 | settled (plan B), protocol proposed |
+| O1 Socket | our Blitz surfaces (every layer-shell-host process) | `$XDG_RUNTIME_DIR/bardo/mouse-gestures/events.sock`, `SOCK_SEQPACKET`, mode 0600, many subscribers; messages 12.3.10 | settled (plan B), protocol proposed |
 | O2 Virtual touchpad | every other client, via the compositor and libinput | uinput device "palmrest touchpad", `BUS_VIRTUAL`, vendor 0x0001 product 0x0002; `INPUT_PROP_POINTER`; `EV_KEY` BTN_LEFT (never pressed), BTN_TOUCH, BTN_TOOL_FINGER / DOUBLETAP / TRIPLETAP / QUADTAP; `EV_ABS` ABS_X/Y, ABS_MT_SLOT 0..4, ABS_MT_TRACKING_ID, ABS_MT_POSITION_X 0..4000 and Y 0..2800 with resolution 40 units/mm (100 x 70 mm) | settled (plan B), fields proposed |
 | O2 contact rules | never exactly one contact (a 1-finger touchpad contact would move the pointer); scroll = 2 contacts 20 mm apart moved by the identical delta (no pinch); contacts land at Began (never at MayBegin) and lift at Ended/Cancelled; if the stroke lasted < 200 ms or moved < 2 mm, the lift is delayed to 200 ms after landing (defeats libinput tap-to-click, tap timeout 180 ms); live swipe = 4 contacts | proposed (M: libinput behaviour) |
 | O2 scale | virtual mm per px chosen so that a libinput 2-finger scroll in GTK4 moves the same px as the O1 path for the same stroke; start value 0.25 mm/px, calibrated by acceptance test 9 | proposed (L) |
@@ -245,7 +245,7 @@ their toolkit via O2's `axis_stop`.
 | Threads | one reader thread: `poll` on the hidraw fd, `read(64)`, decode, `Tracker::step`, outputs; one socket thread (accept, fan-out); no async runtime |
 | Pure core | `decode`, `Tracker::step(tracker, report, now) -> (Tracker, Vec<Out>)`, `feel`, `gestures`, `action_for` |
 | Device discovery | scan `/sys/class/hidraw/*/device/uevent` for vendor 004C product 0269 (Python `find_hidraw_device`); reconnect backoff 1 s x2 up to 30 s; 10 consecutive read errors = disconnect (Python) |
-| Service | `palmrest.service` (systemd user, `graphical-session.target`, `Restart=on-failure`); installing it disables the Python service; uinput ACL wait loop as Python `wait_for_scroll_output` (1 s x2 up to 5 s) |
+| Service | `bardo-mouse-gestures.service` (systemd user, `graphical-session.target`, `Restart=on-failure`); installing it disables the Python service; uinput ACL wait loop as Python `wait_for_scroll_output` (1 s x2 up to 5 s) |
 | Tools | `palmrest record FILE` (raw reports + monotonic times), `palmrest replay FILE` (drives the pure core; used by tests and tuning), `palmrest --check-uinput` |
 | Config | `~/.config/palmrest/config.toml`, watched (debounce 30 ms); the Python env vars (`SCROLL_SPEED`, `SCROLL_LOCK_*`, `SCROLL_VELOCITY_GAIN_MAX`, `SCROLL_ACCEL_MAX`, `SWIPE_*`) still override for parity runs |
 

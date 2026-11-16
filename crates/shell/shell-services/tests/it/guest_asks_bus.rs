@@ -23,7 +23,7 @@ use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
 
 const SETTLE: Duration = Duration::from_secs(5);
-const PATH: &str = "/org/quire/Inference1";
+const PATH: &str = "/org/bardo/Inference1";
 const NODE: &str = "nodeABC";
 
 type Details = std::collections::HashMap<String, OwnedValue>;
@@ -57,7 +57,7 @@ fn asks(name: &str) -> Details {
 
 /// What `AnswerGuest` answers when the question is gone.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Inference1.Error.Computer")]
+#[zbus(prefix = "org.bardo.Inference1.Error.Computer")]
 enum Refusal {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -79,7 +79,7 @@ struct Inferd {
     book: Arc<Mutex<Book>>,
 }
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl Inferd {
     fn guests(&self) -> Vec<Row> {
         self.book.lock().unwrap_or_else(|e| e.into_inner()).reads += 1;
@@ -130,7 +130,7 @@ impl FakeInferd {
                 },
             )
             .unwrap_or_else(|e| panic!("{e}"))
-            .name("org.quire.Inference1")
+            .name("org.bardo.Inference1")
             .unwrap_or_else(|e| panic!("{e}"))
             .build()
             .await

@@ -41,7 +41,7 @@ pub trait Steering: Send + Sync {
     fn proceed(&self) -> Boxed<'_, Result<(), TransportError>>;
     /// Takes the request back: no answer follows, and a sheet that is up is withdrawn.
     fn close(&self) -> Boxed<'_, Result<(), TransportError>>;
-    /// The request's object path on the bus (`/org/quire/Intents1/request/<n>`), for a transport
+    /// The request's object path on the bus (`/org/bardo/Intents1/request/<n>`), for a transport
     /// that has one; none for the router in process.
     fn request(&self) -> Option<String> {
         None

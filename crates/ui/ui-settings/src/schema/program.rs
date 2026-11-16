@@ -20,8 +20,8 @@ use crate::xdg;
 #[serde(transparent)]
 pub struct AppId(pub String);
 
-/// The settings file a key lives in, relative to its app: `"quire/appearance.toml"`,
-/// `"sill/settings.toml"`.
+/// The settings file a key lives in, relative to its app: `"bardo/appearance.toml"`,
+/// `"shell/settings.toml"`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct FilePath(pub String);
@@ -103,7 +103,7 @@ impl Schema {
 
     /// Writes `<app-id>.<part>.settings.toml` into `dir`: the schema of a second file the same
     /// program owns, which [`discover`] admits beside its `<app-id>.settings.toml`
-    /// (`quire.extensions.settings.toml` for `quire/extensions.toml`).
+    /// (`bardo.extensions.settings.toml` for `bardo/extensions.toml`).
     pub fn write_part_to(&self, dir: &Path, part: &str) -> io::Result<PathBuf> {
         std::fs::create_dir_all(dir)?;
         let target = dir.join(format!("{}.{part}.settings.toml", self.app.0));
@@ -272,7 +272,7 @@ mod tests {
         Schema {
             footnotes: Vec::new(),
             app: AppId("quire".to_owned()),
-            file: FilePath("quire/appearance.toml".to_owned()),
+            file: FilePath("bardo/appearance.toml".to_owned()),
             version: 1,
             foreign: Default::default(),
             pages: Default::default(),
@@ -397,13 +397,13 @@ mod tests {
     fn a_schema_that_names_another_programs_file_or_name_is_not_admitted() {
         let dir = scratch("binding");
         let mut other_file = sample();
-        other_file.file = FilePath("sill/settings.toml".to_owned());
+        other_file.file = FilePath("shell/settings.toml".to_owned());
         other_file.write_to(&dir).unwrap();
         assert_eq!(discover(std::slice::from_ref(&dir)), Vec::new());
 
         // Named for one program, declaring another.
-        std::fs::remove_file(dir.join("quire.settings.toml")).unwrap();
-        std::fs::write(dir.join("sill.settings.toml"), sample().to_toml()).unwrap();
+        std::fs::remove_file(dir.join("bardo.settings.toml")).unwrap();
+        std::fs::write(dir.join("shell.settings.toml"), sample().to_toml()).unwrap();
         assert_eq!(discover(std::slice::from_ref(&dir)), Vec::new());
         std::fs::remove_dir_all(&dir).unwrap();
     }
@@ -412,7 +412,7 @@ mod tests {
     fn a_huge_schema_file_is_not_read() {
         let dir = scratch("huge");
         let text = format!("{}\n# {}", sample().to_toml(), "x".repeat(300 * 1024));
-        std::fs::write(dir.join("quire.settings.toml"), text).unwrap();
+        std::fs::write(dir.join("bardo.settings.toml"), text).unwrap();
         assert_eq!(discover(std::slice::from_ref(&dir)), Vec::new());
         std::fs::remove_dir_all(&dir).unwrap();
     }
@@ -459,7 +459,7 @@ mod tests {
                 os("/home/ada"),
                 vec![
                     "/usr/local/share/quire/settings",
-                    "/usr/share/quire/settings",
+                    "/usr/share/bardo/settings",
                     "/home/ada/.local/share/quire/settings",
                 ],
             ),
@@ -502,7 +502,7 @@ mod tests {
         )
         .unwrap();
         assert!(present);
-        assert!(dir.join("quire.settings.toml").exists());
+        assert!(dir.join("bardo.settings.toml").exists());
         std::fs::remove_dir_all(&dir).unwrap();
 
         // The flag without a directory is an error.
@@ -555,7 +555,7 @@ mod page_tests {
     use super::Schema;
     use crate::schema::{Page, PageStatus, PageTable};
 
-    const HEAD: &str = "app = \"sill\"\nfile = \"sill/settings.toml\"\nversion = 1\n";
+    const HEAD: &str = "app = \"sill\"\nfile = \"shell/settings.toml\"\nversion = 1\n";
     const PAGE: &str = "[[page]]\nid = \"lighting\"\ntitle = \"Lighting\"\nsymbol = \"sun\"\norder = 25\naliases = [\"light\"]\n";
     const KEY: &str = "[[key]]\npath = \"lamp.level\"\ndefault = \"x\"\nlabel = \"Level\"\nhelp = \"\"\nsection = \"\"\nexposure = \"basic\"\n[key.kind]\nkind = \"text\"\n[key.page]\nkind = \"lighting\"\n";
 

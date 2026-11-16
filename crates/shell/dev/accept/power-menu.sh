@@ -49,8 +49,8 @@ case "${1:-}" in
   "") MODE=keys ;;
   *) echo "usage: dev/accept/power-menu.sh [--real-input]" >&2; exit 2 ;;
 esac
-OUT_DIR="$SILL_OUT_ROOT/accept-power-menu"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-power-menu"
+SHOTS="$BARDO_SHELL_SHOTS"
 RECORD="$OUT_DIR/dry-run.record"
 mkdir -p "$OUT_DIR" "$SHOTS"
 scratch_new

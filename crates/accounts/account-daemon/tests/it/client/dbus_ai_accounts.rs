@@ -122,7 +122,7 @@ impl World {
             &name,
             Caller {
                 app: AppId {
-                    name: AppName::parse("org.quire.Inference").expect("name"),
+                    name: AppName::parse("org.bardo.Inference").expect("name"),
                     isolation: Isolation::Unsandboxed,
                 },
                 role,

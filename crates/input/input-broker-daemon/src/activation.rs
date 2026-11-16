@@ -1,5 +1,5 @@
 //! The socket systemd passes in. The service never binds a path of its own: the socket unit makes
-//! `/run/turnstile/input.sock` with the right mode, so the permissions live in one place.
+//! `/run/bardo/input-broker/input.sock` with the right mode, so the permissions live in one place.
 
 use listenfd::ListenFd;
 use std::os::fd::OwnedFd;

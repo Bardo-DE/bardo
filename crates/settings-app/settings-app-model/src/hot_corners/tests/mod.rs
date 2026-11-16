@@ -31,11 +31,11 @@ fn command(text: &str) -> HotDo {
 fn known() -> HotKnown {
     HotKnown {
         apps: vec![HotApp {
-            id: "org.quire.Mail".to_owned(),
+            id: "org.bardo.Mail".to_owned(),
             name: "Mail".to_owned(),
         }],
         actions: vec![HotActionChoice {
-            app: "org.quire.Mail".to_owned(),
+            app: "org.bardo.Mail".to_owned(),
             action: "compose".to_owned(),
             label: "Compose".to_owned(),
         }],

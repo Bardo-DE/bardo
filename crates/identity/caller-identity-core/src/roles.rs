@@ -16,7 +16,7 @@ pub const COMPOSITOR: RoleName = RoleName::from_static("compositor");
 pub const AGENT_TIER: RoleName = RoleName::from_static("agent_tier");
 /// The Settings app (`detent`).
 pub const SETTINGS: RoleName = RoleName::from_static("settings");
-/// The software-update service (`slipway.service`).
+/// The software-update service (`bardo-updater.service`).
 pub const UPDATER: RoleName = RoleName::from_static("updater");
 /// The `slipway` command line: a program, not a service.
 pub const UPDATER_CLI: RoleName = RoleName::from_static("updater_cli");

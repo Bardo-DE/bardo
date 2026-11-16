@@ -13,8 +13,8 @@ fn grant(app_name: &str, action: &str) -> ActionRef {
 
 #[test]
 fn grants_load_sorted_without_repeats_and_mark_the_control_reached() {
-    let a = grant("org.quire.Mail", "mail.thread.archive");
-    let b = grant("org.quire.Shell", "shell.lock");
+    let a = grant("org.bardo.Mail", "mail.thread.archive");
+    let b = grant("org.bardo.Shell", "shell.lock");
     let terminal = step(
         Terminal::default(),
         TerminalEvent::Loaded(vec![b.clone(), a.clone(), b.clone()]),
@@ -25,7 +25,7 @@ fn grants_load_sorted_without_repeats_and_mark_the_control_reached() {
 
 #[test]
 fn an_unreachable_intentd_keeps_what_was_shown_and_says_so() {
-    let a = grant("org.quire.Mail", "mail.thread.archive");
+    let a = grant("org.bardo.Mail", "mail.thread.archive");
     let loaded = step(Terminal::default(), TerminalEvent::Loaded(vec![a.clone()]));
     let after = step(loaded, TerminalEvent::Unreachable);
     assert_eq!(after.grants, vec![a]);
@@ -34,8 +34,8 @@ fn an_unreachable_intentd_keeps_what_was_shown_and_says_so() {
 
 #[test]
 fn a_revoked_grant_leaves_the_list_and_the_others_stay() {
-    let a = grant("org.quire.Mail", "mail.thread.archive");
-    let b = grant("org.quire.Shell", "shell.lock");
+    let a = grant("org.bardo.Mail", "mail.thread.archive");
+    let b = grant("org.bardo.Shell", "shell.lock");
     let loaded = step(
         Terminal::default(),
         TerminalEvent::Loaded(vec![a.clone(), b.clone()]),
@@ -59,16 +59,16 @@ fn the_breaker_trips_and_resumes() {
 fn a_grant_is_read_as_its_action_in_its_app() {
     let cases = [
         (
-            ("org.quire.Mail", "mail.thread.archive"),
+            ("org.bardo.Mail", "mail.thread.archive"),
             ("Thread archive", "Mail"),
         ),
-        (("org.quire.Shell", "shell.lock"), ("Lock", "Shell")),
+        (("org.bardo.Shell", "shell.lock"), ("Lock", "Shell")),
         (
-            ("org.quire.Shell", "shell.workspace.switch"),
+            ("org.bardo.Shell", "shell.workspace.switch"),
             ("Workspace switch", "Shell"),
         ),
         // A name that does not start with its app's slug is shown whole.
-        (("org.quire.Mail", "other.thing"), ("Other thing", "Mail")),
+        (("org.bardo.Mail", "other.thing"), ("Other thing", "Mail")),
     ];
     for ((app_name, action), (words, in_app)) in cases {
         assert_eq!(

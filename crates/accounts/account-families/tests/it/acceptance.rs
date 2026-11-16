@@ -107,7 +107,7 @@ async fn with_account(
     let id = added(
         service
             .handle(
-                &app("org.quire.Photos"),
+                &app("org.bardo.Photos"),
                 AccountsRequest::AddAccount {
                     hint: ProviderHint::Any,
                     window: ParentWindow::Unparented,
@@ -152,7 +152,7 @@ async fn adding_a_nextcloud_account_by_login_flow_then_a_second_app_asks_and_is_
     assert!(nextcloud.app_passwords().contains(&password));
 
     // A second app: nothing until it is allowed.
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     assert_eq!(candidates_of(&service, &files), vec![]);
     let reply = service
         .handle(
@@ -197,7 +197,7 @@ async fn adding_a_nextcloud_account_by_login_flow_then_a_second_app_asks_and_is_
     assert!(
         entries
             .iter()
-            .any(|e| e.event == AuditEvent::SignedIn && e.app == Some(app("org.quire.Photos"))),
+            .any(|e| e.event == AuditEvent::SignedIn && e.app == Some(app("org.bardo.Photos"))),
         "{entries:?}"
     );
     assert!(
@@ -216,7 +216,7 @@ async fn a_hint_skips_the_list_and_the_sheet_walks_the_sign_in() {
     let (service, _kept) = service(vec![provider()], sheets);
     let reply = service
         .handle(
-            &app("org.quire.Photos"),
+            &app("org.bardo.Photos"),
             AccountsRequest::AddAccount {
                 hint: ProviderHint::Provider(ProviderId::parse("nextcloud").expect("id")),
                 window: ParentWindow::Unparented,
@@ -251,7 +251,7 @@ async fn a_hint_for_a_provider_that_is_not_installed_is_unavailable() {
     let (service, _kept) = service(vec![provider()], TestSheets::new(vec![], consent(vec![])));
     let reply = service
         .handle(
-            &app("org.quire.Photos"),
+            &app("org.bardo.Photos"),
             AccountsRequest::AddAccount {
                 hint: ProviderHint::Provider(ProviderId::parse("nope").expect("id")),
                 window: ParentWindow::Unparented,
@@ -283,7 +283,7 @@ async fn add_and_allow_is_one_step_with_one_grant() {
         vec![provider()],
         TestSheets::new(vec![adding(nextcloud.base_url())], consent(vec![])),
     );
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let reply = service
         .add_and_allow(
             &files,
@@ -325,7 +325,7 @@ async fn add_and_allow_grants_nothing_when_the_new_account_does_not_meet_the_nee
     ));
     let reply = service
         .add_and_allow(
-            &app("org.quire.Mail"),
+            &app("org.bardo.Mail"),
             ProviderHint::Any,
             ParentWindow::Unparented,
             AllowFor {
@@ -385,7 +385,7 @@ async fn add_account_on_the_alert_adds_and_allows_in_one_step_with_one_grant() {
         vec![adding(nextcloud.base_url()), adding(another.base_url())],
     )
     .await;
-    let (files, request) = choose_as(&app("org.quire.Files"));
+    let (files, request) = choose_as(&app("org.bardo.Files"));
     let AccountsReply::Chosen(chosen) = service.handle(&files, request).await else {
         panic!("the new account is chosen");
     };
@@ -421,7 +421,7 @@ async fn cancelling_the_add_from_the_alert_grants_nothing() {
     )
     .await;
     nextcloud.set_login_policy(LoginPolicy::Pending);
-    let (files, request) = choose_as(&app("org.quire.Files"));
+    let (files, request) = choose_as(&app("org.bardo.Files"));
     let reply = service.handle(&files, request).await;
     assert!(
         matches!(reply, AccountsReply::Refused(_)),

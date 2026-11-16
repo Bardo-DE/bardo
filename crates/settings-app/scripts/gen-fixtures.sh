@@ -5,10 +5,10 @@
 #   sill        sill --write-schema <dir>
 #   palmrest    palmrest --write-schema <dir>
 #   quire       ui-settings' `write_schema` example (quire has no app binary)
-#   inferd      ../inference/dist/inferd.settings.toml (written by hand, no --write-schema yet)
-#   docket      ../actions/dist/settings/docket.settings.toml
-#   almanac     ../memory/memory-settings/schema/almanac.settings.toml
-#   cua         ../computer-use/dist/settings/cua.settings.toml
+#   inferd      ../inference/dist/inference.settings.toml (written by hand, no --write-schema yet)
+#   docket      ../actions/dist/settings/actions.settings.toml
+#   almanac     ../memory/memory-settings/schema/memory.settings.toml
+#   cua         ../computer-use/dist/settings/computer-use.settings.toml
 #
 # Usage: scripts/gen-fixtures.sh
 set -euo pipefail
@@ -30,7 +30,7 @@ private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Car
 
 mkdir -p fixtures/schemas
 cp "$scratch"/out/*.settings.toml fixtures/schemas/
-cp ../inference/dist/inferd.settings.toml fixtures/schemas/
-cp ../actions/dist/settings/docket.settings.toml ../memory/memory-settings/schema/almanac.settings.toml \
-  ../computer-use/dist/settings/cua.settings.toml fixtures/schemas/
+cp ../inference/dist/inference.settings.toml fixtures/schemas/
+cp ../actions/dist/settings/actions.settings.toml ../memory/memory-settings/schema/memory.settings.toml \
+  ../computer-use/dist/settings/computer-use.settings.toml fixtures/schemas/
 ls -l fixtures/schemas

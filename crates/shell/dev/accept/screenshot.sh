@@ -42,12 +42,12 @@ set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
 case "${1:-}" in
-  --real-input) MODE=real; OUT_DIR="$SILL_OUT_ROOT/accept-screenshot-drag" ;;
-  "") MODE=nested; OUT_DIR="$SILL_OUT_ROOT/accept-screenshot" ;;
+  --real-input) MODE=real; OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-screenshot-drag" ;;
+  "") MODE=nested; OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-screenshot" ;;
   *) echo "usage: dev/accept/screenshot.sh [--real-input]" >&2; exit 2 ;;
 esac
-SHOTS="$SILL_SHOTS"
-FIXTURE="$SILL_REPO/shell-services/tests/fixtures/shots/Screenshot_fixture.png"
+SHOTS="$BARDO_SHELL_SHOTS"
+FIXTURE="$BARDO_SHELL_REPO/shell-services/tests/fixtures/shots/Screenshot_fixture.png"
 SIZE=1920x1080
 WIDTH=${SIZE%x*}
 HEIGHT=${SIZE#*x}
@@ -110,7 +110,7 @@ stubs() {
 
 # Starts the daemon with the stand-in portal, the stubs first on its PATH and a backdrop wallpaper.
 start_nested_daemon() {
-  cat >"$CONFIG/sill/settings.toml" <<TOML
+  cat >"$CONFIG/shell/settings.toml" <<TOML
 [screenshot]
 folders = "$WATCHED"
 TOML
@@ -125,7 +125,7 @@ TOML
 
 # Starts the daemon on the headless KWin with the dock on the left.
 start_real_daemon() {
-  cat >"$CONFIG/sill/settings.toml" <<TOML
+  cat >"$CONFIG/shell/settings.toml" <<TOML
 [dock]
 position = "left"
 [screenshot]

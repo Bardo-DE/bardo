@@ -68,7 +68,7 @@ pub fn app(name: &str) -> AppId {
 }
 
 pub fn photos() -> AppId {
-    app("org.quire.Photos")
+    app("org.bardo.Photos")
 }
 
 pub fn caller(name: &str, role: CallerRole) -> Caller {
@@ -307,7 +307,7 @@ pub async fn settings_as(rig: &Rig, who: Caller) -> LiveClient {
     let connection = rig.client_as(who).await;
     LiveClient::new(
         &connection,
-        "org.quire.Accounts1",
+        "org.bardo.Accounts1",
         &account_daemon::settings_path(),
         AnyOwner,
     )
@@ -316,7 +316,7 @@ pub async fn settings_as(rig: &Rig, who: Caller) -> LiveClient {
 
 /// The Settings app's own client.
 pub async fn settings(rig: &Rig) -> LiveClient {
-    settings_as(rig, caller("org.quire.Settings", CallerRole::Settings)).await
+    settings_as(rig, caller("org.bardo.Settings", CallerRole::Settings)).await
 }
 
 pub fn key(path: &str) -> KeyPath {
@@ -327,7 +327,7 @@ pub fn key(path: &str) -> KeyPath {
 pub async fn listen(connection: &zbus::Connection) -> zbus::MessageStream {
     let rule = zbus::MatchRule::builder()
         .msg_type(zbus::message::Type::Signal)
-        .interface("org.quire.Accounts1.Manager")
+        .interface("org.bardo.Accounts1.Manager")
         .expect("interface")
         .build();
     zbus::MessageStream::for_match_rule(rule, connection, None)

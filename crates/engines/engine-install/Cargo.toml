@@ -9,8 +9,8 @@ repository = "https://github.com/Bardo-DE/stoker"
 publish = false
 
 [[bin]]
-name = "engine-helper"
-path = "src/bin/engine-helper.rs"
+name = "bardo-engine-helper"
+path = "src/bin/bardo-engine-helper.rs"
 
 [dependencies]
 engine-manifest = {path = "../engine-manifest"}

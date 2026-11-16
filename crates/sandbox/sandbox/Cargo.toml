@@ -10,12 +10,12 @@ readme = "README.md"
 publish = false
 
 [[bin]]
-name = "bulkhead-forward"
-path = "src/bin/bulkhead-forward.rs"
+name = "bardo-sandbox-forward"
+path = "src/bin/bardo-sandbox-forward.rs"
 
 [[bin]]
-name = "bulkhead-enter"
-path = "src/bin/bulkhead-enter.rs"
+name = "bardo-sandbox-enter"
+path = "src/bin/bardo-sandbox-enter.rs"
 required-features = ["landlock"]
 
 [dependencies]
@@ -26,7 +26,7 @@ thiserror = "2"
 landlock = { version = "0.4", optional = true }
 
 [features]
-# The exec stage's Landlock calls (`enter::apply`, `enter::enter_main` and the `bulkhead-enter`
+# The exec stage's Landlock calls (`enter::apply`, `enter::enter_main` and the `bardo-sandbox-enter`
 # binary). Off by default: a crate that only builds the agent's command line (the plan, the argv,
 # the report line) links no sandbox library; the binary that IS the exec stage turns it on.
 landlock = ["dep:landlock"]

@@ -19,14 +19,14 @@ address = "accounting@example.test"
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 targets = [{ kind = "mail.thread", key = "t1" }]
 
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 to = { kind = "mail_header", v = { msg = "t1", field = "from" } }

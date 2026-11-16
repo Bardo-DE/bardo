@@ -1,4 +1,4 @@
-//! `quire_shell_v1` version 7: what the bar does in full screen (`set_full_screen_bar`), how much
+//! `bardo_shell_v1` version 7: what the bar does in full screen (`set_full_screen_bar`), how much
 //! motion the person allows (`set_motion`), and the edge reveal that names its output
 //! (`reveal_on_output`, sent in place of `reveal` to a shell that bound version 7). The model
 //! decides; this only carries.
@@ -6,7 +6,7 @@
 use super::shell::QuireShellPart;
 use compositor_core::shell::ShellRequest;
 use compositor_core::{Event, OutputKey};
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1;
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1;
 use desktop_protocols::vocab::{FullScreenBar, Motion, ScreenEdge, Shown, WireCode};
 use smithay::output::Output;
 use smithay::reexports::wayland_server::Resource;
@@ -56,9 +56,9 @@ pub fn send_reveal(
     edge: ScreenEdge,
     shown: Shown,
 ) {
-    let wire = quire_shell_v1::ScreenEdge::try_from(edge.code())
+    let wire = bardo_shell_v1::ScreenEdge::try_from(edge.code())
         .ok()
-        .zip(quire_shell_v1::Shown::try_from(shown.code()).ok());
+        .zip(bardo_shell_v1::Shown::try_from(shown.code()).ok());
     let Some((edge, shown)) = wire else {
         return;
     };

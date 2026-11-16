@@ -1,4 +1,4 @@
-//! The whole of `palmrest/gestures.toml`, parsed leniently.
+//! The whole of `mouse-gestures/gestures.toml`, parsed leniently.
 
 use super::lenient::{Warning, section};
 use super::sections::{GestureSettings, ScrollSettings};

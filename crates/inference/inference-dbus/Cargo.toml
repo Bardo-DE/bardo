@@ -1,6 +1,6 @@
 [package]
 name = "inference-dbus"
-description = "steward's D-Bus API: org.quire.Inference1 (inference and agents) written once, as the zbus proxy its callers use, the trait inferd implements and the object that serves it, with the bus vocabulary and row codecs."
+description = "steward's D-Bus API: org.bardo.Inference1 (inference and agents) written once, as the zbus proxy its callers use, the trait inferd implements and the object that serves it, with the bus vocabulary and row codecs."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

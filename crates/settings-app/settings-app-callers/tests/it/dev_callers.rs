@@ -49,7 +49,7 @@ fn a_build_without_the_feature_accepts_only_the_real_proof() {
     use caller_identity_dbus::caller_identity_core::AppKey;
     assert_eq!(allowing(roles::ACCOUNTS, Proof::Full).len(), 1);
     let below = Standing::Service {
-        app: AppKey::new("org.quire.Accounts").expect("an app"),
+        app: AppKey::new("org.bardo.Accounts").expect("an app"),
         role: roles::ACCOUNTS,
         proof: Proof::Exe,
         pin: Pin::AtConnect,
@@ -68,7 +68,7 @@ mod with_feature {
     use std::path::{Path, PathBuf};
 
     /// A rows file naming the stand-in as accountd.
-    const ROWS: &str = "[[peer]]\napp = \"org.quire.Accounts\"\nrole = \"accounts\"\nexe = [\"/home/p/proj/target/debug/accountd_standin\"]\n";
+    const ROWS: &str = "[[peer]]\napp = \"org.bardo.Accounts\"\nrole = \"accounts\"\nexe = [\"/home/p/proj/target/debug/accountd_standin\"]\n";
 
     fn write(dir: &Path, name: &str, text: &str, mode: u32) -> PathBuf {
         let path = dir.join(name);
@@ -147,7 +147,7 @@ mod with_feature {
                 write(
                     dir.path(),
                     "noexe.toml",
-                    "[[peer]]\napp = \"org.quire.Accounts\"\nrole = \"accounts\"\n",
+                    "[[peer]]\napp = \"org.bardo.Accounts\"\nrole = \"accounts\"\n",
                     0o600,
                 ),
                 false,

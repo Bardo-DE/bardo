@@ -1,4 +1,4 @@
-//! Every reply of `org.quire.Intents1`.
+//! Every reply of `org.bardo.Intents1`.
 
 use crate::bodies::{
     Displayed, GrantAnswer, RecallView, Resolved, StoredView, UndoReport, WidenAnswer, WireRefusal,
@@ -15,7 +15,7 @@ use permission_core::TaskPolicy;
 use provenance::SessionId;
 use serde::{Deserialize, Serialize};
 
-/// Every reply of `org.quire.Intents1`.
+/// Every reply of `org.bardo.Intents1`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum IntentsReply {

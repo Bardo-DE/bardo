@@ -1,6 +1,6 @@
 //! The app-menu service and the agent's two menu actions against `shell-testkit`'s fake app on a
 //! private bus, never the real session bus. The fake app exports a menu bar as quire apps do
-//! (`org.quire.AppMenu.<app_id>`, `com.canonical.dbusmenu`) and logs every call it receives.
+//! (`org.bardo.AppMenu.<app_id>`, `com.canonical.dbusmenu`) and logs every call it receives.
 //! The service follows the app's menu, a click reaches the app as `Event "clicked"`, a menu
 //! changed under it is followed, and an app with no owner has no entry. The agent lists the menu
 //! and activates items by the effect table: a verified app's own command is handed back as the next call
@@ -53,7 +53,7 @@ fn app_menu_app() -> PathBuf {
 /// derivation (`shell_ui_kit::app_menu::menu_name_of`, held to it by its own test) is the prefix and
 /// the id.
 fn name_of(app: &MenuApp) -> Option<MenuName> {
-    Some(MenuName(format!("org.quire.AppMenu.{}", app.0)))
+    Some(MenuName(format!("org.bardo.AppMenu.{}", app.0)))
 }
 
 /// A fake app serving the menu of `app_id`, and its log.
@@ -970,7 +970,7 @@ mod routed {
     }
 
     fn shell_app() -> AppName {
-        AppName::parse("org.quire.Shell").unwrap_or_else(|e| panic!("{e}"))
+        AppName::parse("org.bardo.Shell").unwrap_or_else(|e| panic!("{e}"))
     }
 
     impl AppLink for Link {
@@ -1131,7 +1131,7 @@ mod routed {
     fn companion() -> CallerId {
         CallerId {
             app: AppId {
-                name: AppName::parse("org.quire.Companiond").unwrap_or_else(|e| panic!("{e}")),
+                name: AppName::parse("org.bardo.Companion").unwrap_or_else(|e| panic!("{e}")),
                 isolation: Isolation::Unsandboxed,
             },
             roles: BTreeSet::from([CallerRole::Companion]),

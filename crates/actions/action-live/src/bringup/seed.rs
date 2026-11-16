@@ -22,7 +22,7 @@ pub enum ExtraFault {
     Toml(String),
     /// It holds a table that `up` owns.
     #[error(
-        "it holds a [{0}] table; docket-bringup writes that one (no local engine, fixed callers)"
+        "it holds a [{0}] table; agent-bringup writes that one (no local engine, fixed callers)"
     )]
     Owned(&'static str),
 }
@@ -41,9 +41,9 @@ pub fn inferd_toml(root: &Path, extra: &str) -> Result<String, ExtraFault> {
 }
 
 /// The rows an install gives inferd beside the apps: `cua` (cuad, the only caller that may open a
-/// computer-use session), the shell's unit (here `sill.service`, the unit the fake proc root puts
+/// computer-use session), the shell's unit (here `bardo-shell.service`, the unit the fake proc root puts
 /// the shell in) and the daemons that may choose where the assistant runs.
-const SHELL_CALLERS: &str = "cua = [\"cuad.service\"]\nshell = [\"sill.service\"]\nplaces = [\"companiond.service\", \"readerd.service\", \"intentd.service\"]\n\n";
+const SHELL_CALLERS: &str = "cua = [\"bardo-computer-use.service\"]\nshell = [\"bardo-shell.service\"]\nplaces = [\"bardo-companiond.service\", \"bardo-readerd.service\", \"bardo-actiond.service\"]\n\n";
 
 /// inferd's system caller table for a root: the shell and the places rows, then the apps.
 pub fn inferd_callers() -> String {
@@ -98,7 +98,7 @@ pub const SHELL_UNIT: &str = "sill";
 pub fn files(root: &Path, shell_pid: u32, inferd_toml: &str) -> std::io::Result<()> {
     place(root, shell_pid, Cgroup::Unit(SHELL_UNIT))?;
     put(
-        &root.join("config/quire/memory-callers.toml"),
+        &root.join("config/quire/memoryd-callers.toml"),
         MEMORY_CALLERS,
     )?;
     put(&root.join("data/quire/memory/spaces.toml"), SPACES)?;

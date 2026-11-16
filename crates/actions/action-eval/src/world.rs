@@ -49,18 +49,18 @@ fn name(text: &str) -> Result<AppName, SetupFault> {
 pub(crate) fn companion() -> Result<CallerId, SetupFault> {
     Ok(CallerId {
         app: AppId {
-            name: name("org.quire.Companiond")?,
+            name: name("org.bardo.Companion")?,
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Companion]),
     })
 }
 
-/// The connection of a process running `quire-do`.
+/// The connection of a process running `bardo-do`.
 pub(crate) fn cli() -> Result<CallerId, SetupFault> {
     Ok(CallerId {
         app: AppId {
-            name: name("org.quire.Do")?,
+            name: name("org.bardo.Do")?,
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Cli]),
@@ -71,7 +71,7 @@ pub(crate) fn cli() -> Result<CallerId, SetupFault> {
 pub(crate) fn launcher() -> Result<CallerId, SetupFault> {
     Ok(CallerId {
         app: AppId {
-            name: name("org.quire.Shell")?,
+            name: name("org.bardo.Shell")?,
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Launcher]),

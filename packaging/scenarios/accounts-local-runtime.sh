@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Scenario `accounts-local-runtime` (design 31 §3.3, PLAN acceptance 6): a runtime on this computer is an account.
 # The rig's fake Ollama listens on 127.0.0.1; inferd (real, `[probe] ollama` set to the fake's port, a look a second)
-# finds it and reports it to accountd (Broker.ReportLocal, which accountd lets inferd.service make as the `ai_broker` of
+# finds it and reports it to accountd (Broker.ReportLocal, which accountd lets bardo-inferd.service make as the `ai_broker` of
 # dist/callers.toml; since porter's step 5c the registry of the AI accounts, the local runtimes among them, is accountd's);
 # the account `ollama` appears in accountd's settings module, its place is this computer, detent's Intelligence page lists
 # it; when the fake stops, inferd reports it offline: the account is `offline` and the page greys it. Real accountd, inferd and detent on casement; no sill (no sheet is needed).
 #
-#   boot       casement, recorded bus, the fake Ollama, Secret Service, accountd, inferd, detent (org.quire.Settings);
+#   boot       casement, recorded bus, the fake Ollama, Secret Service, accountd, inferd, detent (org.bardo.Settings);
 #              detent never starts a daemon, so every daemon its Accounts and Intelligence pages read runs first
 #   appears    the account `ollama` is in accountd's settings module and `ok`
 #   place      `accounts.ollama.place` is this_computer
@@ -49,15 +49,15 @@ runtime_button_y() { # prints the button's y in detent's window when it is insid
 scroll_to_runtimes() {
   local x y w h i cy
   read -r x y w h < <(detent_frame)
-  casementctl debug inject "move $((x + 500)) $((y + 300))" >/dev/null
-  for i in $(seq 40); do casementctl debug inject "axis vertical -150" >/dev/null; sleep 0.1; done   # to the top
+  bardo-compositorctl debug inject "move $((x + 500)) $((y + 300))" >/dev/null
+  for i in $(seq 40); do bardo-compositorctl debug inject "axis vertical -150" >/dev/null; sleep 0.1; done   # to the top
   sleep 0.5
   if [ -n "$RUNTIME_STEPS" ]; then
-    for i in $(seq "$RUNTIME_STEPS"); do casementctl debug inject "axis vertical 15" >/dev/null; sleep 0.25; done
+    for i in $(seq "$RUNTIME_STEPS"); do bardo-compositorctl debug inject "axis vertical 15" >/dev/null; sleep 0.25; done
   else
     for i in $(seq 0 80); do
       if runtime_button_y "$h" >/dev/null; then RUNTIME_STEPS=$i; break; fi
-      casementctl debug inject "axis vertical 15" >/dev/null; sleep 0.25
+      bardo-compositorctl debug inject "axis vertical 15" >/dev/null; sleep 0.25
     done
     [ -n "$RUNTIME_STEPS" ] || { echo "the Models on this computer row never came into view; detent shows:" >&2; detent_listing >&2; return 1; }
   fi
@@ -103,7 +103,7 @@ step_place() {
 
 step_listed() {
   # detent never starts a daemon: both modules its pages read must have an owner before it opens.
-  bus_has_owner org.quire.Accounts1 && bus_has_owner org.quire.Inference1 || { echo "accountd or inferd is not on the bus" >&2; return 1; }
+  bus_has_owner org.bardo.Accounts1 && bus_has_owner org.bardo.Inference1 || { echo "accountd or inferd is not on the bus" >&2; return 1; }
   detent_start
   acc_wait 30 detent_mapped || { echo "detent never mapped" >&2; return 1; }
   sleep 4; detent_focus

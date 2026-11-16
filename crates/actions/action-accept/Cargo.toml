@@ -13,8 +13,8 @@ license = "MIT OR Apache-2.0"
 rust-version = "1.92"
 repository = "https://github.com/Bardo-DE/docket"
 [[bin]]
-name = "accept-intentd"
-path = "src/bin/accept-intentd.rs"
+name = "accept-actiond"
+path = "src/bin/accept-actiond.rs"
 
 [[bin]]
 name = "accept-companiond"
@@ -25,17 +25,17 @@ name = "accept-acp"
 path = "src/bin/accept-acp.rs"
 
 [[bin]]
-name = "accept-docket-agent"
-path = "src/bin/accept-docket-agent.rs"
+name = "accept-agent"
+path = "src/bin/accept-agent.rs"
 
 [[bin]]
 name = "accept-readerd"
 path = "src/bin/accept-readerd.rs"
 
-# `quire-do` itself: the packaged main, built under a name of the acceptance harness (a test of this
+# `bardo-do` itself: the packaged main, built under a name of the acceptance harness (a test of this
 # package can only name this package's binaries).
 [[bin]]
-name = "accept-quire-do"
+name = "accept-bardo-do"
 path = "../action-cli/src/main.rs"
 
 [[bin]]

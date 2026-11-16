@@ -18,7 +18,7 @@ fn reach() -> TaskPolicy {
         space: SpaceId::parse("work").expect("space"),
         from: vec![],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            account_core::AppName::parse("org.quire.Mail").expect("app"),
+            account_core::AppName::parse("org.bardo.Mail").expect("app"),
             Effect::Read,
         )]),
         kinds: BTreeSet::new(),
@@ -157,7 +157,7 @@ fn a_card_shows_its_reach_in_words_and_its_jobs_with_why_one_did_not_finish() {
         JobWords::default()
     });
     assert_eq!(view.role, "Reads the mail.");
-    assert_eq!(view.reach, ["org.quire.Mail: look at things"]);
+    assert_eq!(view.reach, ["org.bardo.Mail: look at things"]);
     assert_eq!(view.steps, Count(8));
     assert_eq!(view.jobs.len(), 1);
     assert_eq!(view.jobs[0].state, JobShown::NeedsModel);
@@ -368,7 +368,7 @@ fn what_the_shell_reads_and_sends_pins_its_json() {
         role: Role::parse("Reads.").expect("role"),
         space: SpaceId::parse("work").expect("space"),
         model: HelperModel::Unset,
-        apps: vec![account_core::AppName::parse("org.quire.Mail").expect("app")],
+        apps: vec![account_core::AppName::parse("org.bardo.Mail").expect("app")],
         ceiling: Ceiling::Change,
         steps: Count(8),
         kind: Default::default(),

@@ -1,0 +1,78 @@
+# keycap: Mac keyboard mapping daemon. Install to /etc/systemd/system.
+#
+# It grabs the keyboards and writes one virtual keyboard, so a hang would leave the machine
+# without keys: the watchdog kills it after two seconds and the kernel drops the grab with the
+# process. After five failures in 30 s the unit stays failed and the desktop says so. It is
+# ordered before the display manager, so startup is bounded: keycap gives up on a missing
+# device source after five seconds, well inside TimeoutStartSec.
+#
+# Where the virtual devices come from. On the desktop the root service `turnstile` owns
+# /dev/uinput and hands keycap each finished device over its socket, so this unit has no access
+# to the node: there is no DeviceAllow=/dev/uinput below. A standalone install (any other
+# desktop, no turnstile) has no such service, so keycap opens /dev/uinput itself; install.sh
+# adds that one line as the drop-in bardo-key-remap.service.d/10-uinput.conf (dist/bardo-key-remap.uinput.conf)
+# next to this file, together with the udev rule that lets the `input` group write the node.
+# `After=` and `Wants=` of a unit that is not installed are ignored by systemd.
+[Unit]
+Description=keycap: Mac keyboard mapping
+Documentation=https://github.com/Bardo-DE/keycap
+Wants=bardo-input-broker.socket
+After=bardo-input-broker.socket
+Before=display-manager.service systemd-user-sessions.service
+StartLimitIntervalSec=30
+StartLimitBurst=5
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/bardo-key-remap
+# Every loader variable the manager may carry is dropped, so the unit proves its full standing to
+# turnstile (peephole's loader list; keep in step with peephole-core LOADER_VARIABLES).
+UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
+TimeoutStartSec=10
+WatchdogSec=2
+Restart=always
+RestartSec=200ms
+# The daemon holds a few megabytes; a client that makes it store more is killed with it, not the
+# machine's memory.
+MemoryMax=128M
+
+DynamicUser=yes
+SupplementaryGroups=input
+RuntimeDirectory=keycap
+RuntimeDirectoryMode=0755
+ConfigurationDirectory=keycap
+
+# Anything it creates is its own; the socket's 0666 is set explicitly.
+UMask=0077
+ProtectHome=yes
+ProtectSystem=strict
+PrivateTmp=yes
+PrivateNetwork=yes
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+# Only the control socket and $NOTIFY_SOCKET: the hotplug and config watches are inotify.
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+# keycap reads one thing of another process: which control group a client of its socket runs in
+# (/proc/<pid>/cgroup), to tell the desktop's shell from any other program of the person. That
+# needs the other users' processes visible, so not `invisible`; `pid` still hides everything in
+# /proc that is not a process entry.
+ProtectProc=default
+ProcSubset=pid
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+DevicePolicy=closed
+DeviceAllow=char-input rw
+
+[Install]
+WantedBy=multi-user.target

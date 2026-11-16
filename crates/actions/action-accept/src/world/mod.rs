@@ -50,13 +50,13 @@ pub async fn within<T>(what: &str, wait: impl std::future::Future<Output = T>) -
 }
 
 /// The manifest the mail provider answers for, installed for intentd to read.
-pub const MAIL_MANIFEST: &str = include_str!("../../../dev/accept/fixtures/org.quire.Mail.toml");
+pub const MAIL_MANIFEST: &str = include_str!("../../../dev/accept/fixtures/org.bardo.Mail.toml");
 
 /// Where the daemon binaries are (`env!("CARGO_BIN_EXE_*")` of the test), and the directory the
 /// engines of inferd keep their compile caches in, which only a main or a test names.
 #[derive(Debug, Clone)]
 pub struct Binaries {
-    /// `accept-intentd`.
+    /// `accept-actiond`.
     pub intentd: PathBuf,
     /// `accept-companiond`.
     pub companiond: PathBuf,
@@ -68,7 +68,7 @@ pub struct Binaries {
     pub accountd: PathBuf,
     /// porter's packaged `inferd`.
     pub inferd: PathBuf,
-    /// `accept-quire-do`.
+    /// `accept-bardo-do`.
     pub quire_do: PathBuf,
     /// `accept-actions-mcp`: the bridge an external agent starts.
     pub action_mcp: PathBuf,
@@ -81,7 +81,7 @@ pub struct Binaries {
 
 /// The variable that names the directory the engines of inferd share their compile caches in (set
 /// by the live scripts).
-pub const ENGINE_CACHE_VAR: &str = "DOCKET_LIVE_ENGINE_CACHE";
+pub const ENGINE_CACHE_VAR: &str = "BARDO_ACTIONS_LIVE_ENGINE_CACHE";
 
 impl Binaries {
     /// The binaries of a packaged run: the daemons beside `exe` (the program that runs them), and
@@ -90,13 +90,13 @@ impl Binaries {
     pub fn beside(exe: &Path, env: &impl Fn(&str) -> Option<String>) -> Self {
         let beside = |name: &str| exe.with_file_name(name);
         Self {
-            intentd: beside("accept-intentd"),
+            intentd: beside("accept-actiond"),
             companiond: beside("accept-companiond"),
             readerd: beside("accept-readerd"),
-            memoryd: PathBuf::from(env!("ACCEPT_MEMORYD")),
-            accountd: PathBuf::from(env!("ACCEPT_ACCOUNTD")),
-            inferd: PathBuf::from(env!("ACCEPT_INFERD")),
-            quire_do: beside("accept-quire-do"),
+            memoryd: PathBuf::from(env!("BARDO_ACCEPT_MEMORYD")),
+            accountd: PathBuf::from(env!("BARDO_ACCEPT_ACCOUNTD")),
+            inferd: PathBuf::from(env!("BARDO_ACCEPT_INFERD")),
+            quire_do: beside("accept-bardo-do"),
             action_mcp: beside("accept-actions-mcp"),
             relay: beside("accept-bus-relay"),
             engine_cache: env(ENGINE_CACHE_VAR)
@@ -122,7 +122,7 @@ pub enum ModelSource {
 }
 
 /// The person's `agent.acp.expose`, written into the scratch settings file. intentd honours the
-/// roles of `org.quire.Acp` only while it is on.
+/// roles of `org.bardo.Acp` only while it is on.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum AcpSetting {
     /// No settings file: the feature is off.
@@ -131,7 +131,7 @@ pub enum AcpSetting {
     /// `[agent.acp] expose = true`.
     On,
     /// `[agent.acp] agents = true`: intentd counts the host of an external agent
-    /// (`org.quire.AcpAgent`) and `agents.toml` may start programs.
+    /// (`org.bardo.AcpAgent`) and `agents.toml` may start programs.
     Agents,
 }
 
@@ -150,7 +150,7 @@ pub struct Options {
     /// Where the scratch root is made, and kept when the run ends (a live run's traces live in
     /// it). Absent: a temporary directory that goes with the world.
     pub keep_in: Option<PathBuf>,
-    /// Whether to turn on the model tap in every daemon (`DOCKET_MODEL_TRACE`): every request a daemon
+    /// Whether to turn on the model tap in every daemon (`BARDO_ACTIONS_MODEL_TRACE`): every request a daemon
     /// sends a model and its answer, appended to `<scratch>/model.jsonl`. THIS WRITES PROMPTS TO
     /// DISK, in the scratch root.
     pub tap: bool,
@@ -240,7 +240,7 @@ pub struct World {
     pub confirms: mpsc::UnboundedReceiver<ConfirmRequest>,
     /// What the app was asked and what it holds.
     pub app: AppLog,
-    /// A connection that owns `org.quire.Shell` and `org.quire.Confirm1`: sill.
+    /// A connection that owns `org.bardo.Shell` and `org.bardo.Confirm1`: sill.
     pub sill: zbus::Connection,
     _helpers: Vec<zbus::Connection>,
     /// The relays behind [`World::connect_as`]'s connections, ended with the world.

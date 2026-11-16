@@ -441,7 +441,7 @@ async fn problem_kind_seen_by(client: &zbus::Connection) -> String {
     zbus::proxy::Builder::<zbus::Proxy<'_>>::new(client)
         .destination(BUS_NAME)
         .and_then(|b| b.path(PATH))
-        .and_then(|b| b.interface("org.quire.Updates1"))
+        .and_then(|b| b.interface("org.bardo.Updates1"))
         .expect("a proxy for the update service")
         .cache_properties(zbus::proxy::CacheProperties::No)
         .build()

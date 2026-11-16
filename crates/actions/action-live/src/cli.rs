@@ -1,4 +1,4 @@
-//! The command line of `docket-live`, parsed into a request. Pure: it reads no file and no
+//! The command line of `agent-live`, parsed into a request. Pure: it reads no file and no
 //! environment, so a table of command lines tests it.
 
 use crate::acp::AcpSpec;
@@ -15,7 +15,7 @@ use std::path::PathBuf;
 pub enum Agent {
     /// The companion's own planner, over the model of `--engine`.
     Planner,
-    /// An external ACP agent, hosted as `docket-agent` hosts it. `--engine` still says where the
+    /// An external ACP agent, hosted as `bardo-agent` hosts it. `--engine` still says where the
     /// policy writer and the reviewers get their answers.
     Acp(Box<AcpSpec>),
 }
@@ -41,7 +41,7 @@ pub enum Command {
     Smoke(SmokeArgs),
 }
 
-/// `docket-live corpus`.
+/// `agent-live corpus`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CorpusArgs {
     /// Where the model answers come from.
@@ -82,7 +82,7 @@ pub struct CorpusArgs {
     pub planner: PlannerMode,
 }
 
-/// `docket-live smoke`.
+/// `agent-live smoke`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SmokeArgs {
     /// Where the model answers come from.
@@ -111,7 +111,7 @@ pub struct SmokeArgs {
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
 pub enum UsageError {
     /// No subcommand, or one that does not exist.
-    #[error("usage: docket-live corpus|smoke --engine scripted|local|cloud [options]")]
+    #[error("usage: agent-live corpus|smoke --engine scripted|local|cloud [options]")]
     Subcommand,
     /// A flag needs a value.
     #[error("{0} needs a value")]

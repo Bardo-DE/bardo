@@ -619,7 +619,7 @@ fn confirm_sheet_states() -> Vec<(&'static str, String)> {
     use shell_model::intents::{Intents, IntentsLink};
     let wire = |offer: &str, gesture: &str, effect: &str| {
         format!(
-            r#"{{"id":"c-1","space":"desktop","actor":{{"kind":"cli"}},"app":"org.quire.Mail",
+            r#"{{"id":"c-1","space":"desktop","actor":{{"kind":"cli"}},"app":"org.bardo.Mail",
             "action":"Archive a thread","effect":"{effect}","count":1,"detail":{{"kind":"plain"}},
             "lines":[{{"label":"Thread","value":{{"kind":"plain","v":"Digest"}}}},
                      {{"label":"Subject","value":{{"kind":"quoted","v":{{"text":"Invoice 7","from":{{"kind":"mail"}}}}}}}}],
@@ -728,7 +728,7 @@ fn accounts_sheet_states() -> Vec<(&'static str, String)> {
         ),
         (
             "consent",
-            r#"{"kind":"consent","v":{"app":{"name":"org.quire.Photos","isolation":"flatpak"},
+            r#"{"kind":"consent","v":{"app":{"name":"org.bardo.Photos","isolation":"flatpak"},
             "kind":"storage","class":"app_own","usage":"interactive","accounts":[
             {"account":"home","label":"ada@home.example","provider":"nextcloud"}]}}"#,
         ),

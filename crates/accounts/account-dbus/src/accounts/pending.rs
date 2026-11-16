@@ -9,7 +9,7 @@
 //!    gives the raw `(response, results)`, which `reply_of` reads.
 //!
 //! A signal counts only when it comes from the connection that owns the service's name
-//! (`org.quire.Accounts1`, or with [`Sheet::subscribe_on`] another service's, see
+//! (`org.bardo.Accounts1`, or with [`Sheet::subscribe_on`] another service's, see
 //! [`ServiceRoot`]) and from the returned path, so another process on the bus cannot answer for the person. If that
 //! owner leaves the bus before it answered, the wait ends in [`SheetError::Gone`] instead of
 //! never. [`Closer`] is the caller giving up (`Request.Close`): the task that waits for a sheet is

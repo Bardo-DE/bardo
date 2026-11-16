@@ -1,7 +1,7 @@
 use crate::support::{Recipe, Sandbox, build, read};
 use std::os::unix::fs::symlink;
 
-const SESSION: &str = "/usr/share/wayland-sessions/quire.desktop";
+const SESSION: &str = "/usr/share/wayland-sessions/bardo.desktop";
 
 fn is_link(path: &std::path::Path) -> bool {
     std::fs::symlink_metadata(path).is_ok_and(|m| m.file_type().is_symlink())
@@ -12,7 +12,7 @@ fn links_follow_the_release_added_kept_and_dropped() {
     let sandbox = Sandbox::new();
     let mut first = Recipe::new("0.1.0");
     first.exports = vec![
-        (SESSION, "share/wayland-sessions/quire.desktop"),
+        (SESSION, "share/wayland-sessions/bardo.desktop"),
         ("/usr/local/bin/casement", "bin/casement"),
     ];
     sandbox.install(&build(&first)).expect("install");
@@ -21,7 +21,7 @@ fn links_follow_the_release_added_kept_and_dropped() {
 
     let mut second = Recipe::new("0.2.0");
     second.exports = vec![
-        (SESSION, "share/wayland-sessions/quire.desktop"),
+        (SESSION, "share/wayland-sessions/bardo.desktop"),
         ("/usr/local/bin/other", "bin/casement"),
     ];
     sandbox.install(&build(&second)).expect("install");

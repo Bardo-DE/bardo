@@ -1,7 +1,7 @@
-//! The shell's names on the session bus. `org.quire.Shell` (the shell's own actions) and
-//! `org.quire.Confirm1` (the confirmation sheet) are asked for without queueing: a program that
+//! The shell's names on the session bus. `org.bardo.Shell` (the shell's own actions) and
+//! `org.bardo.Confirm1` (the confirmation sheet) are asked for without queueing: a program that
 //! already owns either is not waited for, and the shell does not run beside it. The portal asks the
-//! person through the owner of `org.quire.Shell`, so a program that took the name during a restart
+//! person through the owner of `org.bardo.Shell`, so a program that took the name during a restart
 //! must not be left holding it while the shell goes on without. [`spawn`] watches the seat and,
 //! when a name is taken, says so in one line, ends the host and hands the daemon the line, which
 //! becomes its failure. The unit restarts the shell a second later, and the name is asked for
@@ -86,9 +86,9 @@ mod tests {
             (
                 "taken",
                 IntentsLink::Unavailable(ClaimError::NameTaken(
-                    "org.quire.Shell is taken".to_owned(),
+                    "org.bardo.Shell is taken".to_owned(),
                 )),
-                Some("org.quire.Shell is taken"),
+                Some("org.bardo.Shell is taken"),
             ),
         ];
         for (name, link, want) in cases {
@@ -98,8 +98,8 @@ mod tests {
 
     #[test]
     fn the_line_names_what_the_bus_said() {
-        let said = line("org.quire.Shell is taken");
-        assert!(said.contains("org.quire.Shell is taken"));
+        let said = line("org.bardo.Shell is taken");
+        assert!(said.contains("org.bardo.Shell is taken"));
         assert!(said.contains("this shell stops"));
     }
 
@@ -107,7 +107,7 @@ mod tests {
     async fn a_name_taken_before_or_after_the_watch_began_ends_it_with_the_line() {
         let held = Intents {
             link: IntentsLink::Unavailable(ClaimError::NameTaken(
-                "org.quire.Shell is taken".to_owned(),
+                "org.bardo.Shell is taken".to_owned(),
             )),
             ..Intents::default()
         };
@@ -115,7 +115,7 @@ mod tests {
         let (_tx, rx) = watch::channel(held.clone());
         assert_eq!(
             until_taken(rx).await,
-            Some(line("org.quire.Shell is taken"))
+            Some(line("org.bardo.Shell is taken"))
         );
         // After: serving first, then the bus says the name is taken.
         let (tx, rx) = watch::channel(Intents {
@@ -125,7 +125,7 @@ mod tests {
         let watching = tokio::spawn(until_taken(rx));
         tx.send_replace(held);
         let said = watching.await.unwrap_or_else(|e| panic!("{e}"));
-        assert_eq!(said, Some(line("org.quire.Shell is taken")));
+        assert_eq!(said, Some(line("org.bardo.Shell is taken")));
         // The service going ends it with nothing to say.
         let (tx, rx) = watch::channel(Intents::default());
         drop(tx);

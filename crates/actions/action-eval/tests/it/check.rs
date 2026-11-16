@@ -42,15 +42,15 @@ fn a_desktop_file_with_its_manifest_passes() {
     put(dir.path(), "dist/mailo.desktop", DESKTOP);
     put(
         dir.path(),
-        "dist/intents/org.quire.Mail.toml",
+        "dist/intents/org.bardo.Mail.toml",
         MAIL_MANIFEST,
     );
     assert_eq!(failures(dir.path()), Vec::<String>::new());
     // The shipped built-in manifests are manifests too.
     put(
         dir.path(),
-        "dist/intents/org.quire.Memory.toml",
-        include_str!("../../../manifests/org.quire.Memory.toml"),
+        "dist/intents/org.bardo.Memory.toml",
+        include_str!("../../../manifests/org.bardo.Memory.toml"),
     );
     assert_eq!(failures(dir.path()), Vec::<String>::new());
 }
@@ -58,20 +58,20 @@ fn a_desktop_file_with_its_manifest_passes() {
 #[test]
 fn a_reverse_dns_desktop_file_needs_its_own_apps_manifest() {
     let dir = tempfile::tempdir().expect("dir");
-    put(dir.path(), "dist/org.quire.Detent.desktop", DESKTOP);
+    put(dir.path(), "dist/org.bardo.Settings.desktop", DESKTOP);
     put(
         dir.path(),
-        "dist/intents/org.quire.Mail.toml",
+        "dist/intents/org.bardo.Mail.toml",
         MAIL_MANIFEST,
     );
     let found = failures(dir.path());
     assert_eq!(found.len(), 1, "{found:?}");
-    assert!(found[0].contains("org.quire.Detent"), "{found:?}");
+    assert!(found[0].contains("org.bardo.Settings"), "{found:?}");
     put(
         dir.path(),
-        "dist/intents/org.quire.Detent.toml",
+        "dist/intents/org.bardo.Settings.toml",
         &MAIL_MANIFEST
-            .replace("org.quire.Mail", "org.quire.Detent")
+            .replace("org.bardo.Mail", "org.bardo.Settings")
             .replace("mail.", "detent."),
     );
     assert_eq!(failures(dir.path()), Vec::<String>::new());
@@ -112,7 +112,7 @@ fn a_manifest_that_is_not_valid_fails_and_says_why() {
     for (name, text, why) in cases {
         let dir = tempfile::tempdir().expect("dir");
         put(dir.path(), "dist/mailo.desktop", DESKTOP);
-        put(dir.path(), "dist/intents/org.quire.Mail.toml", &text);
+        put(dir.path(), "dist/intents/org.bardo.Mail.toml", &text);
         let found = failures(dir.path());
         assert!(found.iter().any(|f| f.contains(why)), "{name}: {found:?}");
         assert!(
@@ -145,7 +145,7 @@ fn fixtures_build_output_links_and_hidden_directories_are_not_the_app() {
 
 const MAIL_UI: &str = r#"
 vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 
 [[commands]]
 id = "file.new"
@@ -173,10 +173,10 @@ fn with_ui(ui: &str) -> tempfile::TempDir {
     put(dir.path(), "dist/mailo.desktop", DESKTOP);
     put(
         dir.path(),
-        "dist/intents/org.quire.Mail.toml",
+        "dist/intents/org.bardo.Mail.toml",
         MAIL_MANIFEST,
     );
-    put(dir.path(), "dist/intents/org.quire.Mail.ui.toml", ui);
+    put(dir.path(), "dist/intents/org.bardo.Mail.ui.toml", ui);
     dir
 }
 
@@ -205,8 +205,8 @@ fn every_menu_command_and_shortcut_is_an_action_or_ui_only_with_a_reason() {
         ),
         (
             "a file for another app",
-            MAIL_UI.replace("org.quire.Mail", "org.quire.Files"),
-            "not org.quire.Mail",
+            MAIL_UI.replace("org.bardo.Mail", "org.bardo.Files"),
+            "not org.bardo.Mail",
         ),
         (
             "a file that is not the shape",
@@ -227,7 +227,7 @@ fn without_a_ui_file_the_check_says_what_it_cannot_see_and_does_not_fail() {
     put(dir.path(), "dist/mailo.desktop", DESKTOP);
     put(
         dir.path(),
-        "dist/intents/org.quire.Mail.toml",
+        "dist/intents/org.bardo.Mail.toml",
         MAIL_MANIFEST,
     );
     let report = check_app(dir.path()).expect("readable");
@@ -243,7 +243,7 @@ fn without_a_ui_file_the_check_says_what_it_cannot_see_and_does_not_fail() {
 }
 
 fn binary() -> PathBuf {
-    PathBuf::from(env!("CARGO_BIN_EXE_docket-eval"))
+    PathBuf::from(env!("CARGO_BIN_EXE_agent-eval"))
 }
 
 #[test]
@@ -252,7 +252,7 @@ fn the_binary_exits_0_1_or_2() {
     put(good.path(), "dist/mailo.desktop", DESKTOP);
     put(
         good.path(),
-        "dist/intents/org.quire.Mail.toml",
+        "dist/intents/org.bardo.Mail.toml",
         MAIL_MANIFEST,
     );
     let bad = tempfile::tempdir().expect("dir");
@@ -271,7 +271,7 @@ fn the_binary_exits_0_1_or_2() {
         "{}",
         String::from_utf8_lossy(&ok.stderr)
     );
-    assert!(String::from_utf8_lossy(&ok.stdout).contains("ok   dist/intents/org.quire.Mail.toml"));
+    assert!(String::from_utf8_lossy(&ok.stdout).contains("ok   dist/intents/org.bardo.Mail.toml"));
     let fail = run(bad.path());
     assert_eq!(fail.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&fail.stdout).contains("FAIL dist/mailo.desktop"));
@@ -288,7 +288,7 @@ fn the_script_runs_the_binary_and_passes_its_exit_code_on() {
     put(good.path(), "dist/mailo.desktop", DESKTOP);
     put(
         good.path(),
-        "dist/intents/org.quire.Mail.toml",
+        "dist/intents/org.bardo.Mail.toml",
         MAIL_MANIFEST,
     );
     let bad = tempfile::tempdir().expect("dir");
@@ -297,7 +297,7 @@ fn the_script_runs_the_binary_and_passes_its_exit_code_on() {
         Command::new("bash")
             .arg(&script)
             .arg(dir)
-            .env("DOCKET_EVAL", binary())
+            .env("BARDO_ACTIONS_EVAL", binary())
             .output()
             .expect("runs")
     };
@@ -306,8 +306,8 @@ fn the_script_runs_the_binary_and_passes_its_exit_code_on() {
     let nowhere = Command::new("bash")
         .arg(&script)
         .arg(good.path())
-        .env_remove("DOCKET_EVAL")
-        .env("DOCKET_DIR", good.path().join("no-docket-here"))
+        .env_remove("BARDO_ACTIONS_EVAL")
+        .env("BARDO_ACTIONS_DIR", good.path().join("no-docket-here"))
         .output()
         .expect("runs");
     assert_eq!(nowhere.status.code(), Some(2));
@@ -317,7 +317,7 @@ fn the_script_runs_the_binary_and_passes_its_exit_code_on() {
 // ---- --check-skills ----
 
 const SHELL_MANIFEST: &str = r#"vocab = 1
-app = "org.quire.Shell"
+app = "org.bardo.Shell"
 entities = []
 
 [[actions]]
@@ -338,7 +338,7 @@ params = []
 
 const HIDE_MD: &str = "---\nname: hiding\ndescription: Hide a window.\n---\n# Hiding\n\nHide it.\n";
 
-const HIDE_SKILL: &str = "vocab = 1\nid = \"hiding\"\nowner = \"org.quire.Shell\"\nversion = \"0.1.0\"\nuses = [\"org.quire.Shell:shell.window.hide\"]\n[when]\nalways = true\n";
+const HIDE_SKILL: &str = "vocab = 1\nid = \"hiding\"\nowner = \"org.bardo.Shell\"\nversion = \"0.1.0\"\nuses = [\"org.bardo.Shell:shell.window.hide\"]\n[when]\nalways = true\n";
 
 fn skill_repo(dir: &Path) {
     put(dir, "dist/skills/hiding/skill.toml", HIDE_SKILL);
@@ -368,7 +368,7 @@ fn a_repo_with_dist_intents_and_dist_skills_validates_whichever_directory_is_nam
     assert!(said.contains("which no manifest declares"), "{said}");
     put(
         repo.path(),
-        "dist/intents/org.quire.Shell.toml",
+        "dist/intents/org.bardo.Shell.toml",
         SHELL_MANIFEST,
     );
     // Named by the repository root, and by its skills directory alone.
@@ -385,7 +385,7 @@ fn manifests_adds_a_directory_of_manifests_and_may_be_repeated() {
     put(repo.path(), "skills/hiding/skill.toml", HIDE_SKILL);
     put(repo.path(), "skills/hiding/SKILL.md", HIDE_MD);
     let elsewhere = tempfile::tempdir().expect("dir");
-    put(elsewhere.path(), "org.quire.Shell.toml", SHELL_MANIFEST);
+    put(elsewhere.path(), "org.bardo.Shell.toml", SHELL_MANIFEST);
     let nothing = tempfile::tempdir().expect("dir");
     let skills = repo.path().join("skills");
     let (code, said) = run_skills(&[skills.as_os_str()]);

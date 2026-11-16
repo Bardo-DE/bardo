@@ -1,5 +1,5 @@
-//! readerd serves `org.quire.Reader1` as declared: the interface on the bus is the one in
-//! `dbus/org.quire.Reader1.xml`, and the name is claimed once.
+//! readerd serves `org.bardo.Reader1` as declared: the interface on the bus is the one in
+//! `dbus/org.bardo.Reader1.xml`, and the name is claimed once.
 
 use crate::support::bus::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
@@ -19,7 +19,7 @@ pub(crate) fn service() -> Arc<ReaderService<ScriptedInferd, InProcess<action_fa
     let router = Arc::new(fake_router(AgentConfig::default()).expect("router"));
     let reader = CallerId {
         app: AppId {
-            name: AppName::parse("org.quire.Reader1").expect("app"),
+            name: AppName::parse("org.bardo.Reader1").expect("app"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Reader]),
@@ -71,8 +71,8 @@ async fn the_served_interface_is_the_declared_one_and_the_name_is_claimed_once()
         .expect("proxy");
     let served = proxy.introspect().await.expect("introspection");
     assert_eq!(
-        block(&served, "org.quire.Reader1"),
-        block(&introspection(Bus::Reader), "org.quire.Reader1")
+        block(&served, "org.bardo.Reader1"),
+        block(&introspection(Bus::Reader), "org.bardo.Reader1")
     );
 
     let second = bus.connect().await;

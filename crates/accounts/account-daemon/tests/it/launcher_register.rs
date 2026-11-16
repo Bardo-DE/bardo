@@ -1,5 +1,5 @@
 //! The agent launcher's registration and caller rule
-//! (`org.quire.Accounts1.Launcher`, from accountd's agent_launcher tests): one launcher per
+//! (`org.bardo.Accounts1.Launcher`, from accountd's agent_launcher tests): one launcher per
 //! program, only the launcher calls, and a program has its launcher only while the connection that registered it is on the bus.
 
 use crate::launcher_rig::*;

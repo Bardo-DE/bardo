@@ -3,7 +3,7 @@
 //!
 //! Every program does the same first thing: reset the process state it inherited from whoever ran it
 //! ([`crate::apply::harden`]), before anything is created or read. The root, the key and the helper's
-//! settings come from `/etc/slipway/config.toml` only, never from the caller.
+//! settings come from `/etc/bardo/updater.toml` only, never from the caller.
 
 use crate::apply::harden::reset_process;
 use crate::apply::{
@@ -21,15 +21,15 @@ use updater_core::PublicKey;
 /// Where the kernel names this boot of the computer.
 pub const BOOT_ID_PATH: &str = "/proc/sys/kernel/random/boot_id";
 
-const INSTALL_USAGE: &str = "usage: slipway-apply <staged folder>
+const INSTALL_USAGE: &str = "usage: bardo-updater-apply <staged folder>
 
 Installs the signed release staged in the folder. It cannot go back to an earlier release: that is
-slipway-rollback, which asks for the administrator's password.
+bardo-updater-rollback, which asks for the administrator's password.
 
 exit codes: 0 done, 1 failed, 2 wrong command, 3 refused (not newer), 4 the release did not check out,
             5 another update is running, 6 no key to check with";
 
-const ROLLBACK_USAGE: &str = "usage: slipway-rollback
+const ROLLBACK_USAGE: &str = "usage: bardo-updater-rollback
 
 Goes back to the previous release; the release left becomes the one a second run goes back to. The
 system asks for the administrator's password before this runs.
@@ -37,8 +37,8 @@ system asks for the administrator's password before this runs.
 exit codes: 0 done, 1 failed, 2 wrong command, 3 refused (nothing to go back to), 4 the kept record of
             the release did not check out, 5 another update is running, 6 no key to check with";
 
-const HEALTH_USAGE: &str = "usage: slipway-health recover
-       slipway-health confirmed
+const HEALTH_USAGE: &str = "usage: bardo-updater-health recover
+       bardo-updater-health confirmed
 
 recover    note that the session is about to start the current release; if it has failed to start in
            too many boots, put the previous release back
@@ -58,7 +58,7 @@ pub enum Parsed<T> {
     Run(T),
 }
 
-/// What `slipway-health` can be asked.
+/// What `bardo-updater-health` can be asked.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum HealthRequest {
     /// A start of the session is about to happen.
@@ -67,7 +67,7 @@ pub enum HealthRequest {
     Confirmed,
 }
 
-/// Reads the arguments of `slipway-apply`: the folder a release is staged in.
+/// Reads the arguments of `bardo-updater-apply`: the folder a release is staged in.
 pub fn parse_install(mut args: impl Iterator<Item = String>) -> Parsed<PathBuf> {
     let Some(first) = args.next() else {
         return Parsed::Bad;
@@ -82,7 +82,7 @@ pub fn parse_install(mut args: impl Iterator<Item = String>) -> Parsed<PathBuf> 
     }
 }
 
-/// Reads the arguments of `slipway-rollback`: there are none.
+/// Reads the arguments of `bardo-updater-rollback`: there are none.
 pub fn parse_rollback(mut args: impl Iterator<Item = String>) -> Parsed<()> {
     match (args.next().as_deref(), args.next()) {
         (None, _) => Parsed::Run(()),
@@ -91,7 +91,7 @@ pub fn parse_rollback(mut args: impl Iterator<Item = String>) -> Parsed<()> {
     }
 }
 
-/// Reads the arguments of `slipway-health`.
+/// Reads the arguments of `bardo-updater-health`.
 pub fn parse_health(mut args: impl Iterator<Item = String>) -> Parsed<HealthRequest> {
     let Some(first) = args.next() else {
         return Parsed::Bad;
@@ -164,9 +164,9 @@ fn conclude(program: &str, result: Result<Applied, ApplyError>) -> ExitCode {
     }
 }
 
-/// `slipway-apply`: install a staged release.
+/// `bardo-updater-apply`: install a staged release.
 pub fn install_main() -> ExitCode {
-    const NAME: &str = "slipway-apply";
+    const NAME: &str = "bardo-updater-apply";
     if let Err(code) = reset(NAME) {
         return finish(code);
     }
@@ -191,9 +191,9 @@ pub fn install_main() -> ExitCode {
     )
 }
 
-/// `slipway-rollback`: go back to the previous release. Its polkit action asks for a password.
+/// `bardo-updater-rollback`: go back to the previous release. Its polkit action asks for a password.
 pub fn rollback_main() -> ExitCode {
-    const NAME: &str = "slipway-rollback";
+    const NAME: &str = "bardo-updater-rollback";
     if let Err(code) = reset(NAME) {
         return finish(code);
     }
@@ -218,9 +218,9 @@ pub fn rollback_main() -> ExitCode {
     )
 }
 
-/// `slipway-health`: keep the root-side health record.
+/// `bardo-updater-health`: keep the root-side health record.
 pub fn health_main() -> ExitCode {
-    const NAME: &str = "slipway-health";
+    const NAME: &str = "bardo-updater-health";
     if let Err(code) = reset(NAME) {
         return finish(code);
     }

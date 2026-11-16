@@ -5,9 +5,9 @@
 //! builds and runs the daemon, all in the library (`account_daemon::daemon`): it resolves its paths,
 //! loads the caller tables, the provider files and the registry (refusing to start over a
 //! registry it cannot read), builds the service over its seams (the Secret Service through oo7 in
-//! the `porter.accountd` namespace, or in a `test-keys` build the key file `ACCOUNTD_KEYS` names,
-//! the sheet host over `org.quire.AccountsSheet1`, the families, the file store and audit) and
-//! serves `org.quire.Accounts1`. `accountd add` adds an AI key from a terminal.
+//! the `porter.accountd` namespace, or in a `test-keys` build the key file `BARDO_ACCOUNTD_KEYS` names,
+//! the sheet host over `org.bardo.AccountsSheet1`, the families, the file store and audit) and
+//! serves `org.bardo.Accounts1`. `accountd add` adds an AI key from a terminal.
 
 // The daemon's future holds the service's, whose domain traits each wrap their async bodies.
 #![recursion_limit = "256"]
@@ -17,7 +17,7 @@ use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-/// porter's identity service (`org.quire.Accounts1`).
+/// porter's identity service (`org.bardo.Accounts1`).
 #[derive(Debug, Parser)]
 #[command(name = "accountd", version)]
 struct Args {
@@ -46,12 +46,12 @@ enum Command {
     /// ai.floor.<class> settings.
     ///
     /// accountd reads its accounts only when it starts, so this command takes the bus name
-    /// org.quire.Accounts1 while it runs and stops if the daemon already owns it: stop the unit
-    /// (systemctl --user stop accountd.service), run this, then start the unit again.
+    /// org.bardo.Accounts1 while it runs and stops if the daemon already owns it: stop the unit
+    /// (systemctl --user stop bardo-accountd.service), run this, then start the unit again.
     Add {
         /// The provider file's id, such as `anthropic` or `openai`
         provider: String,
-        /// An app to give the account to: `org.quire.Companion`, or `name:flatpak` for a
+        /// An app to give the account to: `org.bardo.Companion`, or `name:flatpak` for a
         /// sandboxed one (a native app is the default). May be repeated
         #[arg(long = "allow", value_name = "APP-ID")]
         allow: Vec<String>,

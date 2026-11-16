@@ -192,7 +192,7 @@ fn undo_all_replays_newest_first_and_only_what_is_available() {
         },
     };
     let act = ActionRef {
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         name: provenance::ActionName::parse("mail.thread.archive").expect("a"),
     };
     let run = |n: &str| Some(RunId::parse(n).expect("run"));
@@ -224,10 +224,10 @@ fn undo_all_replays_newest_first_and_only_what_is_available() {
 fn old_entries_expire() {
     let mut journal = UndoJournal::new();
     let actor = Actor::User {
-        via: account_core::AppName::parse("org.quire.Shell").expect("app"),
+        via: account_core::AppName::parse("org.bardo.Shell").expect("app"),
     };
     let act = ActionRef {
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         name: provenance::ActionName::parse("mail.thread.archive").expect("a"),
     };
     let id = journal.record(

@@ -1,5 +1,5 @@
-//! The typed errors of the launcher interface (`org.quire.Accounts1.Launcher`, served by accountd),
-//! beside the refusals of `refusal`: `org.quire.Accounts1.Error.<Name>`. The fault values are
+//! The typed errors of the launcher interface (`org.bardo.Accounts1.Launcher`, served by accountd),
+//! beside the refusals of `refusal`: `org.bardo.Accounts1.Error.<Name>`. The fault values are
 //! `account_wire::LauncherFault`; this reads and writes their bus error names. A reader takes the
 //! same names under any service's prefix.
 

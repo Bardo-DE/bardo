@@ -65,7 +65,7 @@ pub enum Source {
     Model(ModelRole),
     /// An external MCP client's arguments.
     Mcp(ClientName),
-    /// Arguments typed or piped into the `quire-do` command line.
+    /// Arguments typed or piped into the `bardo-do` command line.
     Cli,
 }
 
@@ -330,7 +330,7 @@ mod tests {
             Just(Source::Mail),
             Just(Source::Web),
             Just(Source::Clipboard),
-            Just(Source::App(AppName::parse("org.quire.Mail").expect("app"))),
+            Just(Source::App(AppName::parse("org.bardo.Mail").expect("app"))),
             Just(Source::Model(ModelRole::Reader)),
         ]
     }

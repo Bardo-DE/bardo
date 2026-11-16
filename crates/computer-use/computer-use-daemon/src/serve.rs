@@ -1,5 +1,5 @@
-//! cuad on the bus: `org.quire.Cua1` for the shell, the planner and the router, and
-//! `org.quire.IntentProvider1` as `org.quire.Cua` with the one action `cua.run.start`.
+//! cuad on the bus: `org.bardo.ComputerUse1` for the shell, the planner and the router, and
+//! `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` with the one action `cua.run.start`.
 
 use crate::bus::ManagerObject;
 use crate::provider::CuaProvider;
@@ -40,7 +40,7 @@ struct NoContext;
 impl ContextSource for NoContext {
     fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
-            app: AppName::parse("org.quire.Cua").expect("an app name"),
+            app: AppName::parse("org.bardo.ComputerUse").expect("an app name"),
             window: Labelled::new(String::new(), Label::trusted_user()),
             here: Here::Nowhere,
             selection: Selection::Nothing,
@@ -85,9 +85,9 @@ enum Answering {
     Told(Arc<Identity>),
 }
 
-/// Serves `org.quire.Cua1` (`Manager` at `/org/quire/Cua1`, a `Run` per live run at
-/// `/org/quire/Cua1/run/<id>`) and `org.quire.IntentProvider1` as `org.quire.Cua` on
-/// `connection`. Each caller's role is its process's, named by `table` (`cuad-callers.toml`) over
+/// Serves `org.bardo.ComputerUse1` (`Manager` at `/org/bardo/ComputerUse1`, a `Run` per live run at
+/// `/org/bardo/ComputerUse1/run/<id>`) and `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` on
+/// `connection`. Each caller's role is its process's, named by `table` (`computer-use-callers.toml`) over
 /// the system's `/proc`, never a bus name it owns; the provider answers intentd's unit alone.
 /// Returns once the names are ours; the connection keeps serving until the returned guard is
 /// dropped.
@@ -141,7 +141,7 @@ async fn serve_as<S: Seams>(
         )
         .await
         .map_err(bus)?;
-    // `org.quire.IntentReach1` beside `IntentProvider1`: the live value of the one action.
+    // `org.bardo.IntentReach1` beside `IntentProvider1`: the live value of the one action.
     connection
         .object_server()
         .at(
@@ -185,7 +185,7 @@ async fn serve_as<S: Seams>(
 }
 
 /// Serves cuad on the session bus until the bus goes away, naming callers by `table` (the
-/// caller reads `cuad-callers.toml`, with [`crate::read_callers`], from its own environment).
+/// caller reads `computer-use-callers.toml`, with [`crate::read_callers`], from its own environment).
 pub async fn serve<S: Seams>(
     supervisor: Supervisor<S>,
     table: CallerTable,

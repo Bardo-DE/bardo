@@ -1,4 +1,4 @@
-"""Finds a control in the files quire's debug probe wrote (QUIRE_DEBUG_PROBE, ui-blitz `debug-probe`).
+"""Finds a control in the files quire's debug probe wrote (BARDO_DEBUG_PROBE, ui-blitz `debug-probe`).
 
   probe-find.py DIR PID ROLE NAME [--nth N] [--window W] [--state]
 

@@ -1,12 +1,12 @@
-//! The introspection XML of `org.quire.Cua1`, from the skeletons: the checked-in
-//! `dbus/org.quire.Cua1.xml` must equal it.
+//! The introspection XML of `org.bardo.ComputerUse1`, from the skeletons: the checked-in
+//! `dbus/org.bardo.ComputerUse1.xml` must equal it.
 
 use crate::{ManagerSkeleton, RunSkeleton};
 use zbus::fdo;
 use zbus::object_server::Interface;
 
 /// The file under `dbus/` holding the introspection.
-pub const FILE_NAME: &str = "org.quire.Cua1.xml";
+pub const FILE_NAME: &str = "org.bardo.ComputerUse1.xml";
 
 /// The introspection document: both interfaces, in one `<node>`.
 pub fn introspection() -> String {

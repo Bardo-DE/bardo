@@ -3,8 +3,8 @@
 
 use action_manifest::{Manifest, ManifestError, ValidManifest, validate};
 
-/// `dist/intents/org.quire.Settings.toml`.
-const TEXT: &str = include_str!("../../dist/intents/org.quire.Settings.toml");
+/// `dist/intents/org.bardo.Settings.toml`.
+const TEXT: &str = include_str!("../../dist/intents/org.bardo.Settings.toml");
 
 /// The shipped manifest is not usable. A test holds this from happening.
 #[derive(Debug, PartialEq, Eq, thiserror::Error)]
@@ -17,7 +17,7 @@ pub enum ManifestFault {
     Invalid(ManifestError),
 }
 
-/// The validated manifest of `org.quire.Settings`.
+/// The validated manifest of `org.bardo.Settings`.
 pub fn manifest() -> Result<ValidManifest, ManifestFault> {
     let parsed: Manifest = toml::from_str(TEXT).map_err(|e| ManifestFault::Parse(e.to_string()))?;
     validate(parsed).map_err(ManifestFault::Invalid)
@@ -32,7 +32,7 @@ mod tests {
     fn the_shipped_manifest_validates_and_names_its_actions_with_their_effects() {
         let manifest = manifest().expect("a valid manifest");
         let m = manifest.manifest();
-        assert_eq!(m.app.as_str(), "org.quire.Settings");
+        assert_eq!(m.app.as_str(), "org.bardo.Settings");
         // Nothing offers to change an account or an `ai.*` row: only a key may be set, and it
         // can be taken back.
         let actions: Vec<(&str, Effect)> = m

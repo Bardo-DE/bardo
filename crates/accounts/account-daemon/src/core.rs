@@ -38,13 +38,13 @@ pub struct Options {
     /// The directory the desktop-wide Spaces are kept in (`spaces.json` in the registry's
     /// directory); none, the default, keeps them in memory only.
     pub spaces: Option<std::path::PathBuf>,
-    /// Tailscale, and how it is followed: the account's state, and `org.quire.Tailnet1`'s
+    /// Tailscale, and how it is followed: the account's state, and `org.bardo.Tailnet1`'s
     /// computers and signal. The default follows nothing: no computers are listed.
     pub tailnet: Option<crate::tailnet::TailnetWatch>,
     /// The directory the apps that use each identity are kept in (`identity-uses.json` in the
     /// registry's directory); none, the default, keeps them in memory only.
     pub uses: Option<std::path::PathBuf>,
-    /// The picker and the passwords behind `org.quire.Identities1`'s `Offer` and `TakePassword`;
+    /// The picker and the passwords behind `org.bardo.Identities1`'s `Offer` and `TakePassword`;
     /// none refuses both as unavailable (`List`, `RegisterUse` and `Uses` need no desk).
     pub identities: Option<Arc<dyn account_identities::IdentityDesk>>,
     /// The roster of agent launchers, with the clock, the bound and the audit of a request to
@@ -75,7 +75,7 @@ impl std::fmt::Debug for Options {
     }
 }
 
-/// Serves `org.quire.Accounts1` on `connection` over `host`, answering for the apps `callers`
+/// Serves `org.bardo.Accounts1` on `connection` over `host`, answering for the apps `callers`
 /// names, and takes the name. One `Account` object is registered per account the registry holds
 /// now; the settings module, `Spaces1`, `Identities1` and `Tailnet1` are served.
 pub async fn serve<H: Host, C: Callers>(

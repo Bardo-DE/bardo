@@ -30,7 +30,7 @@ async fn the_shell_and_settings_read_the_account_and_every_kind_it_offers() {
     let rig = Rig::start().await;
     for who in [
         caller("org.example.SheetHost", CallerRole::SheetHost),
-        caller("org.quire.Settings", CallerRole::Settings),
+        caller("org.bardo.Settings", CallerRole::Settings),
     ] {
         let connection = rig.client_as(who).await;
         let storage = proxy_of(&connection, &storage_account().id).await;
@@ -55,8 +55,8 @@ async fn the_shell_and_settings_read_the_account_and_every_kind_it_offers() {
 async fn for_an_app_the_account_does_not_exist_and_a_stranger_is_denied() {
     let rig = Rig::start().await;
     for who in [
-        caller("org.quire.Mail", CallerRole::App),
-        caller("org.quire.Inference", CallerRole::PorterDaemon),
+        caller("org.bardo.Mail", CallerRole::App),
+        caller("org.bardo.Inference", CallerRole::PorterDaemon),
     ] {
         let app = rig.client_as(who).await;
         let storage = proxy_of(&app, &storage_account().id).await;

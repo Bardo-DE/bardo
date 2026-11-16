@@ -1,4 +1,4 @@
-//! The bodies of `org.quire.Intents1` that are not the request or reply enums themselves: the
+//! The bodies of `org.bardo.Intents1` that are not the request or reply enums themselves: the
 //! envelope, the asks and answers of the session and gate members, recall, notes, stored
 //! sessions and the wire refusal.
 

@@ -5,7 +5,7 @@
 //! transition has to remember them: `PublishToplevel` for each window whose title, app id,
 //! state, key flag or output changed (or that appeared), `PublishWorkspaces` when the Spaces
 //! changed, `PersistSpaces` when what the Spaces file stores changed, and the desktop's notes
-//! (`desktop_notes`) for `quire_desktop_v1`.
+//! (`desktop_notes`) for `bardo_desktop_v1`.
 
 use super::Model;
 use super::desktop_notes::DeskSnapshot;

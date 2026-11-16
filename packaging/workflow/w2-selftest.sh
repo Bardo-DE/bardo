@@ -182,7 +182,7 @@ path, age, phases = sys.argv[1], float(sys.argv[2]), sys.argv[3:]
 with open(path, "w") as out:
     for n, phase in enumerate(phases):
         answer = {"task": f"t-{n}", "phase": json.loads(phase)}
-        out.write(json.dumps({"type": "signal", "interface": "org.quire.Companion1.Answer", "member": "Updated",
+        out.write(json.dumps({"type": "signal", "interface": "org.bardo.Companion1.Answer", "member": "Updated",
                               "timestamp-realtime": int((time.time() - age) * 1e6),
                               "payload": {"type": "s", "data": [json.dumps(answer)]}}) + "\n")
 P
@@ -204,24 +204,24 @@ python3 -I - "$scratch/bus.jsonl" <<'P'
 import json, sys
 brief = "Specs: base 160 mm, height 228 mm, shade 110 mm. Draw the front view with sizes."
 def request(i, brief_text=None, gesture="press"):
-    r = {"id": f"c-{i}", "app": "org.quire.Cua", "action": "Use an app on screen", "effect": "write", "gesture": gesture}
+    r = {"id": f"c-{i}", "app": "org.bardo.ComputerUse", "action": "Use an app on screen", "effect": "write", "gesture": gesture}
     if brief_text is not None:
-        r.update(app="org.quire.Companion", action="Check what the helpers will work from", effect="read",
+        r.update(app="org.bardo.Companion", action="Check what the helpers will work from", effect="read",
                  brief={"title": "Lamp", "text": brief_text, "flags": [], "pieces": ["base", "arms", "shade"]})
     return r
-def call(r, cookie): return {"type": "method_call", "cookie": cookie, "interface": "org.quire.Confirm1", "member": "Confirm", "payload": {"data": [json.dumps(r)]}}
+def call(r, cookie): return {"type": "method_call", "cookie": cookie, "interface": "org.bardo.Confirm1", "member": "Confirm", "payload": {"data": [json.dumps(r)]}}
 def ret(cookie, reply_cookie, path): return {"type": "method_return", "cookie": cookie, "reply_cookie": reply_cookie, "payload": {"data": [path]}}
 def reply(path, written=None):
     v = {"scope": "once", "receipt": {"id": "x"}}
     if written is not None: v["written"] = written
-    return {"type": "signal", "path": path, "interface": "org.quire.Intents1.Request", "member": "Response",
+    return {"type": "signal", "path": path, "interface": "org.bardo.Intents1.Request", "member": "Response",
             "payload": {"data": [0, json.dumps({"kind": "allowed", "v": v})]}}
 # the router's own replies to its callers share the interface and member, with other paths: they must not be mixed in
-noise = {"type": "signal", "path": "/org/quire/Intents1/request/9", "interface": "org.quire.Intents1.Request", "member": "Response",
+noise = {"type": "signal", "path": "/org/bardo/Intents1/request/9", "interface": "org.bardo.Intents1.Request", "member": "Response",
          "payload": {"data": [0, json.dumps({"Err": {"kind": "denied"}})]}}
-lines = [noise, call(request(1), 10), ret(11, 10, "/org/quire/Confirm1/request/1"), call(request(2, brief), 12),
-         ret(13, 12, "/org/quire/Confirm1/request/2"), noise, reply("/org/quire/Confirm1/request/2", brief),
-         call(request(3), 14), ret(15, 14, "/org/quire/Confirm1/request/3"),   # a sheet nobody answered
+lines = [noise, call(request(1), 10), ret(11, 10, "/org/bardo/Confirm1/request/1"), call(request(2, brief), 12),
+         ret(13, 12, "/org/bardo/Confirm1/request/2"), noise, reply("/org/bardo/Confirm1/request/2", brief),
+         call(request(3), 14), ret(15, 14, "/org/bardo/Confirm1/request/3"),   # a sheet nobody answered
          {"type": "signal", "interface": "x", "member": "y"}]
 open(sys.argv[1], "w").write("\n".join(json.dumps(m) for m in lines) + "\nnot json\n")
 json.dump({"brief": brief}, open(sys.argv[1] + ".brief", "w"))
@@ -230,7 +230,7 @@ sheets=$("${PY[@]}" sheets --bus "$scratch/bus.jsonl"); code "sheets: read from 
 [ "$(wc -l <<<"$sheets")" = 3 ] && ok "sheets: three confirmations seen" || bad "sheets: three confirmations seen" "$sheets"
 has "sheets: a step sheet answered once" "$sheets" '"kind": "step"'
 has "sheets: the brief's words came back unchanged" "$sheets" '"written": "unchanged"'
-[ "$("${PY[@]}" sheet-info --bus "$scratch/bus.jsonl" --id c-2)" = "$(printf 'brief\tpress\torg.quire.Companion\tCheck what the helpers will work from')" ] \
+[ "$("${PY[@]}" sheet-info --bus "$scratch/bus.jsonl" --id c-2)" = "$(printf 'brief\tpress\torg.bardo.Companion\tCheck what the helpers will work from')" ] \
   && ok "sheet-info: a brief sheet is known as one" || bad "sheet-info: a brief sheet is known as one"
 [ "$("${PY[@]}" sheet-info --bus "$scratch/bus.jsonl" --id c-1 | cut -f1)" = step ] && ok "sheet-info: a step sheet" || bad "sheet-info: a step sheet"
 "${PY[@]}" sheet-info --bus "$scratch/bus.jsonl" --id nope >/dev/null; code "sheet-info: an unknown sheet" 1 $?
@@ -244,20 +244,20 @@ run="$scratch/run"
 mkdir -p "$run/out" "$run/shots" "$run/agents/.local/state/quire/inferd"
 cp "$FIX/trace.jsonl" "$run/"
 # a row in the shape companiond writes (by, n, tier, class, shape, route, answer, took_ms, tokens, messages)
-echo '{"by":"companiond","n":10,"tier":"balanced","class":"prompt","shape":"text","route":["routed to local/x"],"messages":[{"role":"system","text":"You are the assistant of this desktop. Be brief."}],"answer":{"kind":"replied","v":{"text":"Starting.","calls":[{"name":"org_quire_Companion-companion_task_start","args":"{\"goal\": \"Get the specs of the lamp on this page\", \"kind\": \"research\"}"}],"stop":"tool_use"}},"took_ms":1208,"input_tokens":3122,"output_tokens":41}' >>"$run/trace.jsonl"
+echo '{"by":"companiond","n":10,"tier":"balanced","class":"prompt","shape":"text","route":["routed to local/x"],"messages":[{"role":"system","text":"You are the assistant of this desktop. Be brief."}],"answer":{"kind":"replied","v":{"text":"Starting.","calls":[{"name":"org_bardo_Companion-companion_task_start","args":"{\"goal\": \"Get the specs of the lamp on this page\", \"kind\": \"research\"}"}],"stop":"tool_use"}},"took_ms":1208,"input_tokens":3122,"output_tokens":41}' >>"$run/trace.jsonl"
 cp "$FIX/audit.jsonl" "$run/agents/.local/state/quire/inferd/audit.jsonl"
 printf 'start\t1000000000000\t1000\ncasement_up\t1005000000000\t1005\nstack_up\t1010000000000\t1010\npage_open\t1015000000000\t1015\nasked\t1020000000000\t1020\nfirst_turn\t1025000000000\t1025\nfirst_screen_step\t1030000000000\t1030\ndrawing_saved\t1100000000000\t1100\nsvg_saved\t1110000000000\t1110\nfinished\t1120000000000\t1120\n' >"$run/stamps.tsv"
 cp "$scratch/drawings/good.excalidraw" "$run/out/lamp.excalidraw"
 printf '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>\n' >"$run/out/lamp.svg"
 cp "$scratch/bus.jsonl" "$run/bus.jsonl"
-printf '1030\tc-1\tstep\torg.quire.Cua: Use an app on screen\tAllow once\tEnter\tanswered\n1040\tc-2\tbrief\torg.quire.Companion: Check\tUse this brief (Allow once)\tEnter\tanswered\n' >"$run/sheets.tsv"
+printf '1030\tc-1\tstep\torg.bardo.Cua: Use an app on screen\tAllow once\tEnter\tanswered\n1040\tc-2\tbrief\torg.bardo.Companion: Check\tUse this brief (Allow once)\tEnter\tanswered\n' >"$run/sheets.tsv"
 : >"$run/shots/01-pages-open.png"
 printf 'out/lamp.excalidraw\nout/lamp.svg\n' >"$run/files-made.txt"
 report=$("${PY[@]}" report --run "$run" --expected "$FIX/expected.json"); code "report: a good run exits 0" 0 $?
 has "report: headline" "$report" "Workflow W2 (lamp page to a drawing): PASS"
 has "report: drawing check" "$report" "a drawing file (.excalidraw) was saved"
 has "report: brief check" "$report" "every brief sheet was answered with its words unchanged"
-has "report: turn by turn lists the call" "$report" "org_quire_Companion-companion_task_start({\"goal\": \"Get the specs of the lamp on this page\""
+has "report: turn by turn lists the call" "$report" "org_bardo_Companion-companion_task_start({\"goal\": \"Get the specs of the lamp on this page\""
 has "report: turn by turn lists the words" "$report" "says: Starting."
 has "report: no service stopped" "$report" "no service stopped on its own"
 has "report: svg noted" "$report" "lamp.svg"

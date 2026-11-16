@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Memory1
+Exec=/usr/libexec/bardo/bardo-memoryd
+SystemdService=bardo-memoryd.service

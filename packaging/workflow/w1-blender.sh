@@ -55,12 +55,12 @@ CASEMENT=${W1_CASEMENT:-$T_CASEMENT/debug/casement}
 FAKE_LOGIND=${W1_FAKE_LOGIND:-$T_TOOLS/debug/fake-logind}
 SILL=${W1_SILL:-$T_SILL/debug/sill}
 CUAD=${W1_CUAD:-$T_CUA/debug/cuad}
-BRINGUP=${W1_BRINGUP:-$T_DOCKET/debug/docket-bringup}
-QUIREDO=${W1_QUIRE_DO:-$T_DOCKET/debug/accept-quire-do}
+BRINGUP=${W1_BRINGUP:-$T_DOCKET/debug/agent-bringup}
+QUIREDO=${W1_QUIRE_DO:-$T_DOCKET/debug/accept-bardo-do}
 
 STARTED=()           # "name pid start-token", in start order
 BUS="" RT="" HOME_S="" AGENTS="" OUT="" DATA_DIRS="" PAGE_URL="" ASKED_NS=0 ASKED_EPOCH=0 ASK_PID="" WL_NAME="" TMP_RT=""
-SILL_PID="" CASEMENT_PID="" PARENT_WL="" SENTENCE="" RESULT=0
+BARDO_SHELL_PID="" BARDO_COMPOSITOR_PID="" PARENT_WL="" SENTENCE="" RESULT=0
 INTERRUPTED=no
 FINISHED=no
 
@@ -161,7 +161,7 @@ pick_browser() {
 require_built() {
   local missing=0 path
   for path in "$CASEMENT" "$FAKE_LOGIND" "$SILL" "$CUAD" "$BRINGUP" "$QUIREDO" \
-              "$(dirname "$BRINGUP")/accept-intentd" "$(dirname "$BRINGUP")/accept-companiond"; do
+              "$(dirname "$BRINGUP")/accept-actiond" "$(dirname "$BRINGUP")/accept-companiond"; do
     [ -x "$path" ] || { note "Not built yet: $path"; missing=1; }
   done
   if [ "$missing" = 1 ]; then
@@ -308,10 +308,10 @@ start_casement() {
     DBUS_SYSTEM_BUS_ADDRESS="$BUS" XDG_CONFIG_HOME="$HOME_S/.config" XDG_DATA_HOME="$HOME_S/.local/share" \
     XDG_STATE_HOME="$HOME_S/.local/state" XDG_CACHE_HOME="$HOME_S/.cache" \
     "$CASEMENT" "${args[@]}" >"$RUN/casement.log" 2>&1 </dev/null &
-  CASEMENT_PID=$!
-  record casement "$CASEMENT_PID"
+  BARDO_COMPOSITOR_PID=$!
+  record casement "$BARDO_COMPOSITOR_PID"
   while [ "$waited" -lt 300 ]; do
-    kill -0 "$CASEMENT_PID" 2>/dev/null || { tail -5 "$RUN/casement.log" >&2; die "the desktop window closed at start (see $RUN/casement.log)"; }
+    kill -0 "$BARDO_COMPOSITOR_PID" 2>/dev/null || { tail -5 "$RUN/casement.log" >&2; die "the desktop window closed at start (see $RUN/casement.log)"; }
     line=$(grep -ao 'listening on wayland-[0-9]*' "$RUN/casement.log" | head -1)
     WL_NAME=${line##* on }
     [ -n "$line" ] || WL_NAME=$(ls "$RT" 2>/dev/null | grep -E '^wayland-[0-9]+$' | head -1)
@@ -329,18 +329,18 @@ start_sill() {
   printf '{"displays":[]}\n' >"$HOME_S/.config/ddc.json"
   "$SILL" run --help 2>&1 | grep -q -- --fake-ddc && flags+=(--fake-ddc "$HOME_S/.config/ddc.json")
   if "$SILL" run --help 2>&1 | grep -q -- --dev-callers; then
-    printf '[[peer]]\napp = "org.quire.Intents"\nrole = "router"\nexe = ["%s"]\n' \
-      "$(readlink -f "$(dirname "$BRINGUP")/accept-intentd")" >"$RUN/dev-callers.toml"
+    printf '[[peer]]\napp = "org.bardo.Intents"\nrole = "router"\nexe = ["%s"]\n' \
+      "$(readlink -f "$(dirname "$BRINGUP")/accept-actiond")" >"$RUN/dev-callers.toml"
     chmod 600 "$RUN/dev-callers.toml"
     flags+=(--dev-callers "$RUN/dev-callers.toml")
   fi
   in_env "$SILL" run "${flags[@]}" >"$RUN/sill.log" 2>&1 </dev/null &
-  SILL_PID=$!
-  record sill "$SILL_PID"
+  BARDO_SHELL_PID=$!
+  record sill "$BARDO_SHELL_PID"
   local i
   for i in $(seq 200); do
     in_env "$SILL" ping >/dev/null 2>&1 && return 0
-    kill -0 "$SILL_PID" 2>/dev/null || break
+    kill -0 "$BARDO_SHELL_PID" 2>/dev/null || break
     sleep 0.1
   done
   tail -5 "$RUN/sill.log" >&2
@@ -366,14 +366,14 @@ prepare_models() {
     --screen-id "$SCREEN_MODEL" --screen-url "${W1_SCREEN_URL%/}" >"$AGENTS/config/inferd/inferd.toml"
   mkdir -p "$HOME_S/.config/cua"
   "${PY[@]}" cuad-settings --app "org.blender.Blender=${W1_BLENDER_ALLOW:-ask}" --app "$BROWSER_APP=ask" \
-    --steps "${W1_CUA_STEPS:-400}" --active-s "${W1_CUA_ACTIVE_S:-3600}" >"$HOME_S/.config/cua/settings.toml"
+    --steps "${W1_CUA_STEPS:-400}" --active-s "${W1_CUA_ACTIVE_S:-3600}" >"$HOME_S/.config/computer-use/settings.toml"
 }
 
 start_assistant() {
   local providers=${W1_PROVIDERS:-$SIB/porter/providers} extra=()
   [ ! -d "$providers" ] || extra+=(--providers "$providers")
   env -u DBUS_SESSION_BUS_ADDRESS -u DBUS_SYSTEM_BUS_ADDRESS "$BRINGUP" up --bus "$BUS" --root "$AGENTS" \
-    --shell-pid "$SILL_PID" --catalog "$RUN/catalog" "${extra[@]}" >"$RUN/bringup.log" 2>&1 \
+    --shell-pid "$BARDO_SHELL_PID" --catalog "$RUN/catalog" "${extra[@]}" >"$RUN/bringup.log" 2>&1 \
     || { tail -8 "$RUN/bringup.log" >&2; "$BRINGUP" down --root "$AGENTS" >/dev/null 2>&1; die "the assistant's services did not start (see $RUN/bringup.log)"; }
   STARTED+=("bringup 0 -")
   restart_companion_with_log
@@ -392,14 +392,14 @@ restart_companion_with_log() {
   while kill -0 "$pid" 2>/dev/null && [ "$waited" -lt 100 ]; do sleep 0.1; waited=$((waited + 1)); done
   local -a E
   mapfile -t E <"$envfile"
-  setsid env -i "${E[@]}" DOCKET_MODEL_TRACE="$RUN/trace.jsonl" /bin/bash -c '
+  setsid env -i "${E[@]}" BARDO_ACTIONS_MODEL_TRACE="$RUN/trace.jsonl" /bin/bash -c '
     mkdir -p "$1/proc/$$" "$1/proc/units"
     printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/%s.service\n" "$2" > "$1/proc/$$/cgroup"
     echo $$ > "$1/proc/units/$2.service"
     shift 2; exec "$@"' _ "$AGENTS" companiond "$exe" >>"$AGENTS/logs/companiond.log" 2>&1 </dev/null &
   local new=$!
   waited=0
-  until bus_has_owner org.quire.Companion1; do
+  until bus_has_owner org.bardo.Companion1; do
     kill -0 "$new" 2>/dev/null && [ "$waited" -lt 300 ] || die "the assistant did not come back with its log on"
     sleep 0.1; waited=$((waited + 1))
   done
@@ -407,24 +407,24 @@ restart_companion_with_log() {
 }
 
 start_screen_helper() {
-  cat >"$RUN/cuad-callers.toml" <<'EOF'
+  cat >"$RUN/computer-use-callers.toml" <<'EOF'
 [[caller]]
-app = "org.quire.Intents"
-unit = "intentd.service"
+app = "org.bardo.Intents"
+unit = "bardo-actiond.service"
 role = "agent"
 
 [[caller]]
-app = "org.quire.Companion1"
-unit = "companiond.service"
+app = "org.bardo.Companion1"
+unit = "bardo-companiond.service"
 role = "agent"
 
 [[caller]]
-app = "org.quire.Shell"
-unit = "sill.service"
+app = "org.bardo.Shell"
+unit = "bardo-shell.service"
 role = "sheet_host"
 EOF
-  in_env bash -c 'mkdir -p "$1/proc/$$" "$1/proc/units"; printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/cuad.service\n" > "$1/proc/$$/cgroup"; echo $$ > "$1/proc/units/cuad.service"; exec env CUAD_TEST_PROC_ROOT="$1/proc" CUAD_TEST_SYSTEM_CALLERS="$2" "$3"' \
-    _ "$AGENTS" "$RUN/cuad-callers.toml" "$CUAD" >"$RUN/cuad.log" 2>&1 </dev/null &
+  in_env bash -c 'mkdir -p "$1/proc/$$" "$1/proc/units"; printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-computer-use.service\n" > "$1/proc/$$/cgroup"; echo $$ > "$1/proc/units/bardo-computer-use.service"; exec env BARDO_COMPUTER_USE_TEST_PROC_ROOT="$1/proc" BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS="$2" "$3"' \
+    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/cuad.log" 2>&1 </dev/null &
   local cuad_pid=$!
   record cuad "$cuad_pid"
   sleep 2

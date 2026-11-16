@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # install.sh: install docket's programs (the action router, the companion, the reader, the tool
-# server and the quire-do command), for the whole machine or for one user.
+# server and the bardo-do command), for the whole machine or for one user.
 #
 #   scripts/install.sh                   build (release, --locked) and install under /usr/local;
 #                                        the steps that need root use $SUDO, else sudo, else doas,
@@ -25,7 +25,7 @@
 #                                        sound and clang compiler development packages)
 #
 # What goes where (system install; --user puts the same in your own folders, see --prefix):
-#   PREFIX/libexec/quire/                the daemons; PREFIX/bin/ has quire-do and docket-acp
+#   PREFIX/libexec/quire/                the daemons; PREFIX/bin/ has bardo-do and bardo-agent-acp
 #   PREFIX/lib/systemd/user/             the units, pointed at the prefix, and
 #                                        <unit>.service.d/sandbox.conf, their protections
 #   PREFIX/share/dbus-1/services/        activation files; interfaces/ has the interface XML
@@ -48,14 +48,14 @@ BINARIES=(
   "intentd|intentd|libexec"
   "companiond|companiond|libexec"
   "readerd|readerd|libexec"
-  "actions-mcp|actions-mcp|libexec"
-  "quire-do|action-cli|bin"
-  "docket-acp|agent-acp-bin|bin"
-  "docket-agent|agent-acp-bin|bin"
-  "docket-net-forward|agent-acp-bin|bin"
-  "docket-net-enter|agent-acp-bin|bin"
+  "bardo-actions-mcp|bardo-actions-mcp|libexec"
+  "bardo-do|action-cli|bin"
+  "bardo-agent-acp|agent-acp-bin|bin"
+  "bardo-agent|agent-acp-bin|bin"
+  "bardo-agent-net-forward|agent-acp-bin|bin"
+  "bardo-agent-net-enter|agent-acp-bin|bin"
 )
-UNITS=(intentd companiond readerd actions-mcp docket-agent)
+UNITS=(intentd companiond readerd bardo-actions-mcp bardo-agent)
 DBUS_NAMES=(Companion1 Intents1 Reader1 AcpAgent)
 CALLERS=(intentd companiond readerd acp)
 WITH_VOICE=0
@@ -78,20 +78,20 @@ install_rest() {
   local name
   for name in "${UNITS[@]}"; do put_unit "$ROOT/dist/$name.service"; done
   for name in "${DBUS_NAMES[@]}"; do
-    put 644 "$ROOT/dist/dbus/org.quire.$name.service" "$SHARE/dbus-1/services/org.quire.$name.service" unit
+    put 644 "$ROOT/dist/dbus/org.bardo.$name.service" "$SHARE/dbus-1/services/org.bardo.$name.service" unit
   done
   put_tree 644 "$ROOT/dbus" "$SHARE/dbus-1/interfaces"
   put_tree 644 "$ROOT/dist/settings" "$SHARE/quire/settings"
   put_tree 644 "$ROOT/dist/skills" "$SHARE/quire/skills"
   put_tree 644 "$ROOT/dist/intents" "$SHARE/quire/intents"
   put_tree 644 "$ROOT/policy/presets" "$SHARE/quire/permissions"
-  for name in intentd companiond actions-mcp; do
+  for name in intentd companiond bardo-actions-mcp; do
     put 644 "$ROOT/dist/$name.toml" "$CONF_DIR/$name.toml" copy keep
   done
   if [ "$WITH_VOICE" = 1 ]; then put 644 "$ROOT/dist/voiced.toml" "$SYS_QUIRE/voiced.toml" copy keep; fi
-  put 644 "$ROOT/dist/completions/quire-do.bash" "$SHARE/bash-completion/completions/quire-do" copy
+  put 644 "$ROOT/dist/completions/bardo-do.bash" "$SHARE/bash-completion/completions/bardo-do" copy
   put 644 "$ROOT/dist/completions/_quire-do" "$SHARE/zsh/site-functions/_quire-do" copy
-  put 644 "$ROOT/dist/completions/quire-do.fish" "$SHARE/fish/vendor_completions.d/quire-do.fish" copy
+  put 644 "$ROOT/dist/completions/bardo-do.fish" "$SHARE/fish/vendor_completions.d/bardo-do.fish" copy
   for name in "${CALLERS[@]}"; do install_callers "$ROOT/dist/$name-callers.toml" "$name-callers.toml"; done
 }
 
@@ -246,8 +246,8 @@ priv() {
 }
 
 # ---- text rewrites ----
-rewrite_exec() { # the shipped /usr/libexec/quire is now under the prefix
-  sed -E -e "s|^(ExecStart=)/usr/libexec/quire/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/quire/|\1$LIBEXEC/|"
+rewrite_exec() { # the shipped /usr/libexec/bardo is now under the prefix
+  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$LIBEXEC/|"
 }
 render() { # kind source -> text on stdout
   case "$1" in

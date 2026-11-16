@@ -191,7 +191,7 @@ mod trusted_files {
 
     #[test]
     fn a_file_on_the_real_system_in_a_folder_a_person_owns_is_refused() {
-        // The seam for tests that point `$KEYCAP_CONFIG_DIR` at a scratch folder: a machine file
+        // The seam for tests that point `$BARDO_KEY_REMAP_CONFIG_DIR` at a scratch folder: a machine file
         // written there is the person's, so it gives no layer. A test that needs one has to say so.
         let dir = Scratch::new("person-owned");
         std::fs::write(dir.path().join(FILE_NAME), CAPS_RULE).expect("scratch file is writable");

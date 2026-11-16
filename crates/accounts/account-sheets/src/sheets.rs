@@ -1,9 +1,9 @@
-//! The sheets drawn by the sheet host (sill) over `org.quire.AccountsSheet1`.
+//! The sheets drawn by the sheet host (sill) over `org.bardo.AccountsSheet1`.
 //!
 //! The daemon (accountd) is the only caller of `Open`, `Update` and `Close`; the
 //! host answers with `Input` signals. Who counts:
 //!
-//! - the host is the connection that owns `org.quire.AccountsSheet1` **and** whose caller role is
+//! - the host is the connection that owns `org.bardo.AccountsSheet1` **and** whose caller role is
 //!   `SheetHost`: a process that merely claimed the name is refused (`Unavailable`), so it can
 //!   neither see a sheet nor answer one;
 //! - calls go to the owner's unique name, never the well-known one, so the owner cannot change
@@ -87,7 +87,7 @@ impl<C: Callers> BusSheets<C> {
         let rule = zbus::MatchRule::builder()
             .msg_type(zbus::message::Type::Signal)
             .sender(owner.clone())
-            .and_then(|b| b.interface("org.quire.AccountsSheet1"))
+            .and_then(|b| b.interface("org.bardo.AccountsSheet1"))
             .and_then(|b| b.member("Input"))
             .map(|b| b.build())
             .map_err(|_| SheetFault::Unavailable)?;
@@ -284,7 +284,7 @@ mod tests {
     fn names() -> AppNames {
         let table = CallerTable {
             callers: vec![CallerRow {
-                app: AppName::parse("org.quire.Mail").expect("name"),
+                app: AppName::parse("org.bardo.Mail").expect("name"),
                 unit: None,
                 role: CallerRole::App,
                 exe: Vec::new(),
@@ -303,14 +303,14 @@ mod tests {
 
     #[test]
     fn a_consent_for_an_agent_app_carries_the_agents_provider_label() {
-        let view = SheetView::Consent(ask(app("org.quire.Agent.claude-code")));
+        let view = SheetView::Consent(ask(app("org.bardo.Agent.claude-code")));
         assert_eq!(label_of(view), Some(AppLabel("Claude Code".into())));
     }
 
     #[test]
     fn a_consent_for_a_plain_app_carries_its_table_name_and_an_unnamed_app_none() {
         assert_eq!(
-            label_of(SheetView::Consent(ask(app("org.quire.Mail")))),
+            label_of(SheetView::Consent(ask(app("org.bardo.Mail")))),
             Some(AppLabel("Mail".into()))
         );
         assert_eq!(
@@ -339,7 +339,7 @@ mod tests {
         };
         let names = names();
         let SheetView::Review(with) = labelled(
-            SheetView::Review(review(Some(app("org.quire.Agent.claude-code")))),
+            SheetView::Review(review(Some(app("org.bardo.Agent.claude-code")))),
             &names,
         ) else {
             panic!("a review");

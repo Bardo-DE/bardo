@@ -1,4 +1,4 @@
-//! `quire-do sessions`: list, load and fork the sessions the terminal may bring back. All of it
+//! `bardo-do sessions`: list, load and fork the sessions the terminal may bring back. All of it
 //! goes through `Session.Stored`: the router lists and pages only what the caller's role and app
 //! may restore (the same opener rule as a restore: a terminal brings back the sessions its own
 //! app opened) and answers any other session as one it does not hold. Nothing here writes a log;
@@ -13,7 +13,7 @@ use agent_session::{Logged, ResumePlan, SessionEntry, Standing, export, resume_p
 use provenance::{AgentRef, SessionId};
 use serde_json::{Value, json};
 
-/// What `quire-do sessions` was asked.
+/// What `bardo-do sessions` was asked.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SessionsCmd {
     /// `sessions`: the sessions that may be brought back.

@@ -1,5 +1,5 @@
-//! `quire_desktop_manager_v1` and the objects it makes (`quire_desktop_app_v1`,
-//! `quire_desktop_window_v1`, `quire_desktop_space_v1`): the compositor's model of apps,
+//! `bardo_desktop_manager_v1` and the objects it makes (`bardo_desktop_app_v1`,
+//! `bardo_desktop_window_v1`, `bardo_desktop_space_v1`): the compositor's model of apps,
 //! windows and Spaces, published to the shell (which also manages through it) and to the
 //! agent tier (which only reads it). Frozen at P2-Z; filled by P2-Q1.
 //!
@@ -28,11 +28,11 @@ use compositor_core::geometry::LogicalRect;
 use compositor_core::policy::{ConnectionRole, GlobalKind};
 use compositor_core::space::SpaceIndex;
 use compositor_core::{Event, Model, OutputKey, WindowId};
-use desktop_protocols::server::quire_desktop_v1::{
-    quire_desktop_app_v1::{self, QuireDesktopAppV1},
-    quire_desktop_manager_v1::{self, QuireDesktopManagerV1},
-    quire_desktop_space_v1::{self, QuireDesktopSpaceV1},
-    quire_desktop_window_v1::{self, QuireDesktopWindowV1},
+use desktop_protocols::server::bardo_desktop_v1::{
+    bardo_desktop_app_v1::{self, BardoDesktopAppV1},
+    bardo_desktop_manager_v1::{self, BardoDesktopManagerV1},
+    bardo_desktop_space_v1::{self, BardoDesktopSpaceV1},
+    bardo_desktop_window_v1::{self, BardoDesktopWindowV1},
 };
 use desktop_protocols::vocab::{Assign, PlaceTarget, Toggle, WireCode};
 use smithay::output::Output;
@@ -44,11 +44,11 @@ use smithay::wayland::foreign_toplevel_list::ForeignToplevelHandle;
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::BTreeMap;
 
-/// The version casement serves. Version 2 adds `quire_desktop_app_v1.subject`; the app objects
+/// The version casement serves. Version 2 adds `bardo_desktop_app_v1.subject`; the app objects
 /// take the manager's version, so only a client that bound the manager at 2 is sent it.
 pub const VERSION: u32 = 2;
 
-/// The first version that sends `quire_desktop_app_v1.subject`.
+/// The first version that sends `bardo_desktop_app_v1.subject`.
 pub const SUBJECT_SINCE: u32 = 2;
 
 /// The version of the window and Space objects: their interfaces have not grown, so they are
@@ -59,15 +59,15 @@ const OBJECT_VERSION: u32 = 1;
 #[derive(Debug)]
 pub struct Bound {
     /// The manager.
-    pub manager: QuireDesktopManagerV1,
+    pub manager: BardoDesktopManagerV1,
     /// Whether its connection may manage the model (the shell), not only read it.
     pub manages: bool,
     /// Its app objects.
-    pub apps: BTreeMap<AppKey, QuireDesktopAppV1>,
+    pub apps: BTreeMap<AppKey, BardoDesktopAppV1>,
     /// Its window objects.
-    pub windows: BTreeMap<WindowId, QuireDesktopWindowV1>,
+    pub windows: BTreeMap<WindowId, BardoDesktopWindowV1>,
     /// Its Space objects.
-    pub spaces: BTreeMap<SpaceId, QuireDesktopSpaceV1>,
+    pub spaces: BTreeMap<SpaceId, BardoDesktopSpaceV1>,
     /// Whether the client sent `stop` (no more `app`, `window` or `space` events).
     pub stopped: bool,
     /// The window objects the client made with `get_window_for`, beside the one the bind gave.
@@ -76,7 +76,7 @@ pub struct Bound {
     pub told: Told,
 }
 
-/// `quire_desktop_manager_v1` and everything bound on it.
+/// `bardo_desktop_manager_v1` and everything bound on it.
 #[derive(Debug)]
 pub struct QuireDesktopPart {
     /// The global.
@@ -91,13 +91,13 @@ impl QuireDesktopPart {
     /// The part; creates the global (at [`VERSION`]) behind the I7 filter.
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> QuireDesktopPart
     where
-        D: GlobalDispatch<QuireDesktopManagerV1, DesktopGlobal>
-            + Dispatch<QuireDesktopAppV1, AppData>
-            + Dispatch<QuireDesktopWindowV1, WindowData>
-            + Dispatch<QuireDesktopSpaceV1, SpaceData>
+        D: GlobalDispatch<BardoDesktopManagerV1, DesktopGlobal>
+            + Dispatch<BardoDesktopAppV1, AppData>
+            + Dispatch<BardoDesktopWindowV1, WindowData>
+            + Dispatch<BardoDesktopSpaceV1, SpaceData>
             + 'static,
     {
-        let global = display.create_global::<D, QuireDesktopManagerV1, _>(
+        let global = display.create_global::<D, BardoDesktopManagerV1, _>(
             VERSION,
             DesktopGlobal {
                 filter: role_filter,
@@ -117,17 +117,17 @@ impl QuireDesktopPart {
 #[derive(Debug, Clone)]
 pub struct Makers {
     display: DisplayHandle,
-    app: fn(&DisplayHandle, &QuireDesktopManagerV1, AppData) -> Option<QuireDesktopAppV1>,
-    window: fn(&DisplayHandle, &QuireDesktopManagerV1, WindowData) -> Option<QuireDesktopWindowV1>,
-    space: fn(&DisplayHandle, &QuireDesktopManagerV1, SpaceData) -> Option<QuireDesktopSpaceV1>,
+    app: fn(&DisplayHandle, &BardoDesktopManagerV1, AppData) -> Option<BardoDesktopAppV1>,
+    window: fn(&DisplayHandle, &BardoDesktopManagerV1, WindowData) -> Option<BardoDesktopWindowV1>,
+    space: fn(&DisplayHandle, &BardoDesktopManagerV1, SpaceData) -> Option<BardoDesktopSpaceV1>,
 }
 
 impl Makers {
     fn new<D>(display: &DisplayHandle) -> Makers
     where
-        D: Dispatch<QuireDesktopAppV1, AppData>
-            + Dispatch<QuireDesktopWindowV1, WindowData>
-            + Dispatch<QuireDesktopSpaceV1, SpaceData>
+        D: Dispatch<BardoDesktopAppV1, AppData>
+            + Dispatch<BardoDesktopWindowV1, WindowData>
+            + Dispatch<BardoDesktopSpaceV1, SpaceData>
             + 'static,
     {
         Makers {
@@ -135,7 +135,7 @@ impl Makers {
             app: |display, manager, data| {
                 let client = manager.client()?;
                 let handle = client
-                    .create_resource::<QuireDesktopAppV1, AppData, D>(
+                    .create_resource::<BardoDesktopAppV1, AppData, D>(
                         display,
                         manager.version(),
                         data,
@@ -147,7 +147,7 @@ impl Makers {
             window: |display, manager, data| {
                 let client = manager.client()?;
                 let handle = client
-                    .create_resource::<QuireDesktopWindowV1, WindowData, D>(
+                    .create_resource::<BardoDesktopWindowV1, WindowData, D>(
                         display,
                         manager.version().min(OBJECT_VERSION),
                         data,
@@ -159,7 +159,7 @@ impl Makers {
             space: |display, manager, data| {
                 let client = manager.client()?;
                 let handle = client
-                    .create_resource::<QuireDesktopSpaceV1, SpaceData, D>(
+                    .create_resource::<BardoDesktopSpaceV1, SpaceData, D>(
                         display,
                         manager.version().min(OBJECT_VERSION),
                         data,
@@ -175,27 +175,27 @@ impl Makers {
     /// caller's. `None` when the client is gone.
     pub fn make_app(
         &self,
-        manager: &QuireDesktopManagerV1,
+        manager: &BardoDesktopManagerV1,
         data: AppData,
-    ) -> Option<QuireDesktopAppV1> {
+    ) -> Option<BardoDesktopAppV1> {
         (self.app)(&self.display, manager, data)
     }
 
     /// Creates a window object on `manager` and announces it (`window`).
     pub fn make_window(
         &self,
-        manager: &QuireDesktopManagerV1,
+        manager: &BardoDesktopManagerV1,
         data: WindowData,
-    ) -> Option<QuireDesktopWindowV1> {
+    ) -> Option<BardoDesktopWindowV1> {
         (self.window)(&self.display, manager, data)
     }
 
     /// Creates a Space object on `manager` and announces it (`space`).
     pub fn make_space(
         &self,
-        manager: &QuireDesktopManagerV1,
+        manager: &BardoDesktopManagerV1,
         data: SpaceData,
-    ) -> Option<QuireDesktopSpaceV1> {
+    ) -> Option<BardoDesktopSpaceV1> {
         (self.space)(&self.display, manager, data)
     }
 }
@@ -249,7 +249,7 @@ pub struct AppData {
     /// What the connection may do.
     pub manages: bool,
     /// The manager it came from, which a refused request is raised on.
-    pub manager: QuireDesktopManagerV1,
+    pub manager: BardoDesktopManagerV1,
 }
 
 /// A window object's data.
@@ -260,7 +260,7 @@ pub struct WindowData {
     /// What the connection may do.
     pub manages: bool,
     /// The manager it came from, which a refused request is raised on.
-    pub manager: QuireDesktopManagerV1,
+    pub manager: BardoDesktopManagerV1,
 }
 
 /// A Space object's data.
@@ -271,19 +271,19 @@ pub struct SpaceData {
     /// What the connection may do.
     pub manages: bool,
     /// The manager it came from, which a refused request is raised on.
-    pub manager: QuireDesktopManagerV1,
+    pub manager: BardoDesktopManagerV1,
 }
 
-impl<D> GlobalDispatch2<QuireDesktopManagerV1, D> for DesktopGlobal
+impl<D> GlobalDispatch2<BardoDesktopManagerV1, D> for DesktopGlobal
 where
-    D: QuireDesktopHandler + Dispatch<QuireDesktopManagerV1, ManagerData> + 'static,
+    D: QuireDesktopHandler + Dispatch<BardoDesktopManagerV1, ManagerData> + 'static,
 {
     fn bind(
         &self,
         state: &mut D,
         _handle: &DisplayHandle,
         client: &Client,
-        resource: New<QuireDesktopManagerV1>,
+        resource: New<BardoDesktopManagerV1>,
         data_init: &mut DataInit<'_, D>,
     ) {
         let role = ClientState::of(client).map_or(ConnectionRole::Public, |data| data.role.clone());
@@ -305,32 +305,32 @@ where
 /// Posts the manager's `not_permitted` (an agent connection made a management request) and
 /// says whether the request was refused. The error is the manager's, so it goes on the
 /// manager, whichever of its objects asked.
-fn refused(manages: bool, manager: &QuireDesktopManagerV1) -> bool {
+fn refused(manages: bool, manager: &BardoDesktopManagerV1) -> bool {
     if manages {
         return false;
     }
     manager.post_error(
-        quire_desktop_manager_v1::Error::NotPermitted,
+        bardo_desktop_manager_v1::Error::NotPermitted,
         "management requests are not permitted on this connection",
     );
     true
 }
 
-impl<D> Dispatch2<QuireDesktopManagerV1, D> for ManagerData
+impl<D> Dispatch2<BardoDesktopManagerV1, D> for ManagerData
 where
-    D: QuireDesktopHandler + Dispatch<QuireDesktopWindowV1, WindowData>,
+    D: QuireDesktopHandler + Dispatch<BardoDesktopWindowV1, WindowData>,
 {
     fn request(
         &self,
         state: &mut D,
         _client: &Client,
-        resource: &QuireDesktopManagerV1,
-        request: quire_desktop_manager_v1::Request,
+        resource: &BardoDesktopManagerV1,
+        request: bardo_desktop_manager_v1::Request,
         _dhandle: &DisplayHandle,
         data_init: &mut DataInit<'_, D>,
     ) {
         match request {
-            quire_desktop_manager_v1::Request::GetWindowFor { id, toplevel } => {
+            bardo_desktop_manager_v1::Request::GetWindowFor { id, toplevel } => {
                 let window = ForeignToplevelHandle::from_resource(&toplevel)
                     .and_then(|handle| window_of_identifier(&handle.identifier()));
                 let object = data_init.init(
@@ -349,7 +349,7 @@ where
                     tracing::warn!(%fault, "a desktop window could not be given its state");
                 }
             }
-            quire_desktop_manager_v1::Request::CreateSpace { output } => {
+            bardo_desktop_manager_v1::Request::CreateSpace { output } => {
                 if refused(self.manages, resource) {
                     return;
                 }
@@ -362,7 +362,7 @@ where
                 });
                 let Some(key) = key else {
                     resource.post_error(
-                        quire_desktop_manager_v1::Error::UnknownOutput,
+                        bardo_desktop_manager_v1::Error::UnknownOutput,
                         "the wl_output is not a live output",
                     );
                     return;
@@ -370,7 +370,7 @@ where
                 let events = on_create_space(part, key);
                 state.feed(events);
             }
-            quire_desktop_manager_v1::Request::Stop => {
+            bardo_desktop_manager_v1::Request::Stop => {
                 let DesktopParts { part, .. } = state.quire_desktop_parts();
                 on_stop(part, resource);
             }
@@ -378,12 +378,12 @@ where
         }
     }
 
-    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &QuireDesktopManagerV1) {
+    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &BardoDesktopManagerV1) {
         on_manager_gone(state.quire_desktop_parts().part, resource);
     }
 }
 
-impl<D> Dispatch2<QuireDesktopAppV1, D> for AppData
+impl<D> Dispatch2<BardoDesktopAppV1, D> for AppData
 where
     D: QuireDesktopHandler,
 {
@@ -391,20 +391,20 @@ where
         &self,
         state: &mut D,
         _client: &Client,
-        _resource: &QuireDesktopAppV1,
-        request: quire_desktop_app_v1::Request,
+        _resource: &BardoDesktopAppV1,
+        request: bardo_desktop_app_v1::Request,
         _dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
         let ask = match request {
             // As for a window: the shell's serial (0 from `desktop-client`) is accepted unread.
-            quire_desktop_app_v1::Request::Activate { .. } => AppAsk::Activate,
-            quire_desktop_app_v1::Request::Hide => AppAsk::Hide,
-            quire_desktop_app_v1::Request::Unhide => AppAsk::Unhide,
-            quire_desktop_app_v1::Request::HideOthers => AppAsk::HideOthers,
-            quire_desktop_app_v1::Request::Quit => AppAsk::Quit,
-            quire_desktop_app_v1::Request::ForceQuit => AppAsk::ForceQuit,
-            quire_desktop_app_v1::Request::Reopen => AppAsk::Reopen,
+            bardo_desktop_app_v1::Request::Activate { .. } => AppAsk::Activate,
+            bardo_desktop_app_v1::Request::Hide => AppAsk::Hide,
+            bardo_desktop_app_v1::Request::Unhide => AppAsk::Unhide,
+            bardo_desktop_app_v1::Request::HideOthers => AppAsk::HideOthers,
+            bardo_desktop_app_v1::Request::Quit => AppAsk::Quit,
+            bardo_desktop_app_v1::Request::ForceQuit => AppAsk::ForceQuit,
+            bardo_desktop_app_v1::Request::Reopen => AppAsk::Reopen,
             _ => return,
         };
         if refused(self.manages, &self.manager) {
@@ -415,7 +415,7 @@ where
     }
 }
 
-impl<D> Dispatch2<QuireDesktopWindowV1, D> for WindowData
+impl<D> Dispatch2<BardoDesktopWindowV1, D> for WindowData
 where
     D: QuireDesktopHandler,
 {
@@ -423,8 +423,8 @@ where
         &self,
         state: &mut D,
         _client: &Client,
-        _resource: &QuireDesktopWindowV1,
-        request: quire_desktop_window_v1::Request,
+        _resource: &BardoDesktopWindowV1,
+        request: bardo_desktop_window_v1::Request,
         _dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
@@ -432,20 +432,20 @@ where
             // The input serial is not checked: the connection that may manage is the shell's,
             // and the shell's activation is the person's hand (a dock or switcher click), so a
             // serial of 0 from it is accepted; an agent connection is refused below.
-            quire_desktop_window_v1::Request::Activate { .. } => Some(WindowAsk::Activate),
-            quire_desktop_window_v1::Request::Close => Some(WindowAsk::Close),
-            quire_desktop_window_v1::Request::Minimise => Some(WindowAsk::Minimise),
-            quire_desktop_window_v1::Request::Unminimise => Some(WindowAsk::Unminimise),
-            quire_desktop_window_v1::Request::Place { target } => code_of(target)
+            bardo_desktop_window_v1::Request::Activate { .. } => Some(WindowAsk::Activate),
+            bardo_desktop_window_v1::Request::Close => Some(WindowAsk::Close),
+            bardo_desktop_window_v1::Request::Minimise => Some(WindowAsk::Minimise),
+            bardo_desktop_window_v1::Request::Unminimise => Some(WindowAsk::Unminimise),
+            bardo_desktop_window_v1::Request::Place { target } => code_of(target)
                 .and_then(|code| PlaceTarget::from_code(code).ok())
                 .map(WindowAsk::Place),
-            quire_desktop_window_v1::Request::FullScreen { toggle } => code_of(toggle)
+            bardo_desktop_window_v1::Request::FullScreen { toggle } => code_of(toggle)
                 .and_then(|code| Toggle::from_code(code).ok())
                 .map(WindowAsk::FullScreen),
-            quire_desktop_window_v1::Request::ToSpace { space } => space
+            bardo_desktop_window_v1::Request::ToSpace { space } => space
                 .data::<SpaceData>()
                 .map(|data| WindowAsk::ToSpace(data.space.clone())),
-            quire_desktop_window_v1::Request::Assign { assign } => code_of(assign)
+            bardo_desktop_window_v1::Request::Assign { assign } => code_of(assign)
                 .and_then(|code| Assign::from_code(code).ok())
                 .map(WindowAsk::Assign),
             _ => None,
@@ -461,7 +461,7 @@ where
     }
 }
 
-impl<D> Dispatch2<QuireDesktopSpaceV1, D> for SpaceData
+impl<D> Dispatch2<BardoDesktopSpaceV1, D> for SpaceData
 where
     D: QuireDesktopHandler,
 {
@@ -469,15 +469,15 @@ where
         &self,
         state: &mut D,
         _client: &Client,
-        _resource: &QuireDesktopSpaceV1,
-        request: quire_desktop_space_v1::Request,
+        _resource: &BardoDesktopSpaceV1,
+        request: bardo_desktop_space_v1::Request,
         _dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
         let ask = match request {
-            quire_desktop_space_v1::Request::Activate => SpaceAsk::Activate,
-            quire_desktop_space_v1::Request::Remove => SpaceAsk::Remove,
-            quire_desktop_space_v1::Request::MoveTo { position } => {
+            bardo_desktop_space_v1::Request::Activate => SpaceAsk::Activate,
+            bardo_desktop_space_v1::Request::Remove => SpaceAsk::Remove,
+            bardo_desktop_space_v1::Request::MoveTo { position } => {
                 SpaceAsk::MoveTo(SpaceIndex(position))
             }
             _ => return,
@@ -497,7 +497,7 @@ where
 pub fn on_bind(
     part: &mut QuireDesktopPart,
     view: &DesktopView<'_>,
-    manager: QuireDesktopManagerV1,
+    manager: BardoDesktopManagerV1,
     manages: bool,
 ) -> Result<(), WaylandFault> {
     let QuireDesktopPart { bound, makers, .. } = part;
@@ -526,9 +526,9 @@ pub fn on_bind(
 pub fn on_get_window_for(
     part: &mut QuireDesktopPart,
     view: &DesktopView<'_>,
-    manager: &QuireDesktopManagerV1,
+    manager: &BardoDesktopManagerV1,
     window: WindowId,
-    object: QuireDesktopWindowV1,
+    object: BardoDesktopWindowV1,
 ) -> Result<(), WaylandFault> {
     let QuireDesktopPart { bound, makers, .. } = part;
     let Some(held) = bound.iter_mut().find(|held| held.manager == *manager) else {
@@ -550,7 +550,7 @@ pub fn on_create_space(_part: &mut QuireDesktopPart, output: OutputKey) -> Vec<E
 }
 
 /// `stop`: send `manager` nothing new and answer `finished` (once).
-pub fn on_stop(part: &mut QuireDesktopPart, manager: &QuireDesktopManagerV1) {
+pub fn on_stop(part: &mut QuireDesktopPart, manager: &BardoDesktopManagerV1) {
     let Some(held) = part.bound.iter_mut().find(|held| held.manager == *manager) else {
         return;
     };
@@ -582,7 +582,7 @@ pub fn on_space(_part: &mut QuireDesktopPart, space: &SpaceId, ask: SpaceAsk) ->
 }
 
 /// A manager's object went away (the client destroyed it or disconnected).
-pub fn on_manager_gone(part: &mut QuireDesktopPart, manager: &QuireDesktopManagerV1) {
+pub fn on_manager_gone(part: &mut QuireDesktopPart, manager: &BardoDesktopManagerV1) {
     part.bound.retain(|bound| bound.manager != *manager);
 }
 

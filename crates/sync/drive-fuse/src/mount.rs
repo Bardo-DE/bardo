@@ -1,4 +1,4 @@
-//! Mounting: through porter-mountd when it listens (it runs `fusermount3` where syncd's sandbox
+//! Mounting: through bardo-drive-mount when it listens (it runs `fusermount3` where syncd's sandbox
 //! may not, and hands back the connection), or else through the system's `fusermount3`, which
 //! fuser runs as a separate process.
 
@@ -26,8 +26,8 @@ pub enum MountError {
     /// Mounting failed.
     #[error("mounting failed: {0}")]
     Failed(#[source] std::io::Error),
-    /// porter-mountd refused, for this reason.
-    #[error("porter-mountd refused: {0}")]
+    /// bardo-drive-mount refused, for this reason.
+    #[error("bardo-drive-mount refused: {0}")]
     Refused(Code),
 }
 
@@ -39,15 +39,15 @@ pub struct Mounter {
     /// The helper that mounts and unmounts: its path, or a name the host chose to leave to the
     /// system to find.
     pub helper: String,
-    /// porter-mountd's socket, when the drive is to be mounted through it
-    /// (`$XDG_RUNTIME_DIR/porter/mountd.sock`, [`drive_mount_daemon::wire::socket_in`]). It puts the
+    /// bardo-drive-mount's socket, when the drive is to be mounted through it
+    /// (`$XDG_RUNTIME_DIR/bardo/drive-mount.sock`, [`drive_mount_daemon::wire::socket_in`]). It puts the
     /// folder at `~/Cloud/<name>`, so the path mounted must be that. When nothing listens there,
     /// the drive is mounted directly, as with none.
     pub mountd: Option<PathBuf>,
 }
 
 impl Mounter {
-    /// Mounting with `helper` on the usual FUSE device, directly (no porter-mountd).
+    /// Mounting with `helper` on the usual FUSE device, directly (no bardo-drive-mount).
     pub fn new(helper: impl Into<String>) -> Self {
         Self {
             device: PathBuf::from("/dev/fuse"),
@@ -94,11 +94,11 @@ impl Mounter {
     }
 
     /// Mounts `fs` at `path`, read-write over a drive that takes changes and read-only over one
-    /// that does not: through porter-mountd when it listens at [`mountd`](Self::mountd), which
+    /// that does not: through bardo-drive-mount when it listens at [`mountd`](Self::mountd), which
     /// cleans a stale mount there and makes the folder; else directly, which does the same here.
     ///
     /// # Errors
-    /// porter-mountd refused; or, mounting directly, no device or helper, the folder could not
+    /// bardo-drive-mount refused; or, mounting directly, no device or helper, the folder could not
     /// be made, or the mount failed.
     pub fn mount(&self, fs: DriveFs, path: &Path) -> Result<Mounted, MountError> {
         let access = match fs.writable() {
@@ -181,7 +181,7 @@ fn take_away_directly(helper: &str, path: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-/// The folder name porter-mountd is asked for: `path`'s last part.
+/// The folder name bardo-drive-mount is asked for: `path`'s last part.
 fn helped(socket: &Path, path: &Path) -> std::io::Result<Through> {
     let name = path
         .file_name()
@@ -190,7 +190,7 @@ fn helped(socket: &Path, path: &Path) -> std::io::Result<Through> {
         .ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
-                format!("{} has no folder name porter-mountd takes", path.display()),
+                format!("{} has no folder name bardo-drive-mount takes", path.display()),
             )
         })?;
     Ok(Through {
@@ -199,7 +199,7 @@ fn helped(socket: &Path, path: &Path) -> std::io::Result<Through> {
     })
 }
 
-/// Serves `fs` over the connection porter-mountd mounted.
+/// Serves `fs` over the connection bardo-drive-mount mounted.
 fn serve_over(
     fs: DriveFs,
     fd: std::os::fd::OwnedFd,
@@ -227,7 +227,7 @@ fn serve_over(
     }
 }
 
-/// A mount porter-mountd made: taken away by asking it again.
+/// A mount bardo-drive-mount made: taken away by asking it again.
 #[derive(Debug)]
 struct Through {
     socket: PathBuf,
@@ -237,7 +237,7 @@ struct Through {
 /// Who mounted a drive's folder, and so takes it away.
 #[derive(Debug)]
 enum By {
-    /// porter-mountd.
+    /// bardo-drive-mount.
     Helper(Through),
     /// This process, with this `fusermount3`.
     Directly(String),

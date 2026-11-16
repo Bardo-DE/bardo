@@ -85,7 +85,7 @@ fn line(text: &str, max: usize) -> String {
 /// Who put a question to the person.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AskedBy {
-    /// The portal backend, through `org.quire.Shell1.AskPermission`: a caller waits on the bus.
+    /// The portal backend, through `org.bardo.Shell1.AskPermission`: a caller waits on the bus.
     Portal,
     /// The compositor, under this number: the answer goes back on its shell protocol.
     Compositor(ConsentId),

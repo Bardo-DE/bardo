@@ -26,11 +26,11 @@ impl TableFiles {
         TableFiles { main, drop_ins }
     }
 
-    /// The desktop's own place: `/etc/quire/desktop-callers.toml` and `/etc/quire/desktop-callers.d`.
+    /// The desktop's own place: `/etc/bardo/desktop-callers.toml` and `/etc/bardo/desktop-callers.d`.
     pub fn desktop() -> TableFiles {
         TableFiles::new(
-            PathBuf::from("/etc/quire/desktop-callers.toml"),
-            PathBuf::from("/etc/quire/desktop-callers.d"),
+            PathBuf::from("/etc/bardo/desktop-callers.toml"),
+            PathBuf::from("/etc/bardo/desktop-callers.d"),
         )
     }
 

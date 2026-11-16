@@ -1,4 +1,4 @@
-//! `quire_window_manager_v1` (C50): what an app says about its toplevel (first-mouse regions,
+//! `bardo_window_manager_v1` (C50): what an app says about its toplevel (first-mouse regions,
 //! frame, role, accessibility root, edited) and what it learns back (emphasis, placement).
 //! Advertised from P0 so layer-shell-host can tell casement apart by this global; requests are
 //! stored in the model, `request_placement` is acted on from P2 (the model's `place`).
@@ -28,10 +28,10 @@ use compositor_core::geometry::LogicalRect;
 use compositor_core::policy::GlobalKind;
 use compositor_core::window::{A11yRoot, FrameHint};
 use compositor_core::{ClientKey, Event, InputSerial, WindowHintChange, WindowId};
-use desktop_protocols::server::quire_window_v1::quire_window_manager_v1::{
-    self, QuireWindowManagerV1,
+use desktop_protocols::server::bardo_window_v1::bardo_window_manager_v1::{
+    self, BardoWindowManagerV1,
 };
-use desktop_protocols::server::quire_window_v1::quire_window_v1::{self, QuireWindowV1};
+use desktop_protocols::server::bardo_window_v1::bardo_window_v1::{self, BardoWindowV1};
 use desktop_protocols::vocab::{
     Edited, Emphasis, FrameMode, PlaceTarget, PlacementMark, Toggle, WindowRole, WireCode,
 };
@@ -52,13 +52,13 @@ pub const VERSION: u32 = 2;
 /// The first version that carries `quit`.
 pub const QUIT_VERSION: u32 = 2;
 
-/// `quire_window_manager_v1` and its per-toplevel objects.
+/// `bardo_window_manager_v1` and its per-toplevel objects.
 #[derive(Debug)]
 pub struct QuireWindowPart {
     /// The global.
     pub global: GlobalId,
     /// Each extended toplevel's object (at most one per window).
-    pub windows: BTreeMap<WindowId, QuireWindowV1>,
+    pub windows: BTreeMap<WindowId, BardoWindowV1>,
     /// The double-buffered values each window staged since its last commit.
     pub pending: BTreeMap<WindowId, PendingHints>,
     /// The last placement each window asked for with a proven press.
@@ -73,17 +73,17 @@ pub struct QuireWindowPart {
     /// they are fed again just after its `ToplevelMapped`.
     pub early: BTreeMap<WindowId, Vec<Event>>,
     /// Each live manager bound at [`QUIT_VERSION`] or later, with its client: where `quit` goes.
-    pub quit_managers: Vec<(ClientKey, QuireWindowManagerV1)>,
+    pub quit_managers: Vec<(ClientKey, BardoWindowManagerV1)>,
 }
 
 impl QuireWindowPart {
     /// Creates the global (version 2), filtered by the I7 table.
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> QuireWindowPart
     where
-        D: GlobalDispatch<QuireWindowManagerV1, QuireWindowGlobal> + 'static,
+        D: GlobalDispatch<BardoWindowManagerV1, QuireWindowGlobal> + 'static,
     {
         QuireWindowPart {
-            global: display.create_global::<D, QuireWindowManagerV1, _>(
+            global: display.create_global::<D, BardoWindowManagerV1, _>(
                 VERSION,
                 QuireWindowGlobal {
                     filter: role_filter,
@@ -146,16 +146,16 @@ pub struct QuireWindowData {
     pub window: Option<WindowId>,
 }
 
-impl<D> GlobalDispatch2<QuireWindowManagerV1, D> for QuireWindowGlobal
+impl<D> GlobalDispatch2<BardoWindowManagerV1, D> for QuireWindowGlobal
 where
-    D: QuireWindowHandler + Dispatch<QuireWindowManagerV1, QuireWindowManagerData> + 'static,
+    D: QuireWindowHandler + Dispatch<BardoWindowManagerV1, QuireWindowManagerData> + 'static,
 {
     fn bind(
         &self,
         state: &mut D,
         _handle: &DisplayHandle,
         client: &Client,
-        resource: New<QuireWindowManagerV1>,
+        resource: New<BardoWindowManagerV1>,
         data_init: &mut DataInit<'_, D>,
     ) {
         let manager = data_init.init(resource, QuireWindowManagerData);
@@ -174,21 +174,21 @@ where
     }
 }
 
-impl<D> Dispatch2<QuireWindowManagerV1, D> for QuireWindowManagerData
+impl<D> Dispatch2<BardoWindowManagerV1, D> for QuireWindowManagerData
 where
-    D: QuireWindowHandler + Dispatch<QuireWindowV1, QuireWindowData>,
+    D: QuireWindowHandler + Dispatch<BardoWindowV1, QuireWindowData>,
 {
     fn request(
         &self,
         state: &mut D,
         _client: &Client,
-        resource: &QuireWindowManagerV1,
-        request: quire_window_manager_v1::Request,
+        resource: &BardoWindowManagerV1,
+        request: bardo_window_manager_v1::Request,
         _dhandle: &DisplayHandle,
         data_init: &mut DataInit<'_, D>,
     ) {
         match request {
-            quire_window_manager_v1::Request::GetWindow { id, toplevel } => {
+            bardo_window_manager_v1::Request::GetWindow { id, toplevel } => {
                 let window = state.window_of_toplevel(&toplevel);
                 // The new id is always initialised (smithay's dispatch requires it), even when
                 // the request is an error.
@@ -198,8 +198,8 @@ where
                 };
                 if state.quire_window_part().windows.contains_key(&window) {
                     resource.post_error(
-                        quire_window_manager_v1::Error::AlreadyConstructed,
-                        "the toplevel already has a quire_window_v1 object",
+                        bardo_window_manager_v1::Error::AlreadyConstructed,
+                        "the toplevel already has a bardo_window_v1 object",
                     );
                     return;
                 }
@@ -212,12 +212,12 @@ where
                 }
                 state.quire_window_events(events);
             }
-            quire_window_manager_v1::Request::Destroy => {}
+            bardo_window_manager_v1::Request::Destroy => {}
             _ => {}
         }
     }
 
-    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &QuireWindowManagerV1) {
+    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &BardoWindowManagerV1) {
         let events = on_quit_manager_gone(state.quire_window_part(), resource);
         if !events.is_empty() {
             state.quire_window_events(events);
@@ -238,7 +238,7 @@ fn hook_commits<D: QuireWindowHandler>(state: &mut D, window: WindowId, surface:
     });
 }
 
-impl<D> Dispatch2<QuireWindowV1, D> for QuireWindowData
+impl<D> Dispatch2<BardoWindowV1, D> for QuireWindowData
 where
     D: QuireWindowHandler,
 {
@@ -246,12 +246,12 @@ where
         &self,
         state: &mut D,
         client: &Client,
-        resource: &QuireWindowV1,
-        request: quire_window_v1::Request,
+        resource: &BardoWindowV1,
+        request: bardo_window_v1::Request,
         _dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
-        if matches!(request, quire_window_v1::Request::Destroy) {
+        if matches!(request, bardo_window_v1::Request::Destroy) {
             return;
         }
         let live = self.window.filter(|window| {
@@ -259,19 +259,19 @@ where
         });
         let Some(window) = live else {
             resource.post_error(
-                quire_window_v1::Error::DefunctToplevel,
+                bardo_window_v1::Error::DefunctToplevel,
                 "the xdg_toplevel is gone",
             );
             return;
         };
         let events = match request {
-            quire_window_v1::Request::SetFirstMouse { region } => {
+            bardo_window_v1::Request::SetFirstMouse { region } => {
                 let first_mouse = region.as_ref().map_or_else(Vec::new, |region| {
                     first_mouse_of(&get_region_attributes(region))
                 });
                 on_set_first_mouse(state.quire_window_part(), window, first_mouse)
             }
-            quire_window_v1::Request::SetFrame {
+            bardo_window_v1::Request::SetFrame {
                 mode,
                 corner_radius,
             } => match code_of(mode).and_then(|code| FrameMode::from_code(code).ok()) {
@@ -282,7 +282,7 @@ where
                 ),
                 None => Vec::new(),
             },
-            quire_window_v1::Request::RequestPlacement { target, serial } => {
+            bardo_window_v1::Request::RequestPlacement { target, serial } => {
                 match code_of(target).and_then(|code| PlaceTarget::from_code(code).ok()) {
                     Some(target) if state.press_proves(client, InputSerial(serial)) => {
                         on_request_placement(
@@ -295,13 +295,13 @@ where
                     Some(_) | None => Vec::new(),
                 }
             }
-            quire_window_v1::Request::SetRole { role } => {
+            bardo_window_v1::Request::SetRole { role } => {
                 match code_of(role).and_then(|code| WindowRole::from_code(code).ok()) {
                     Some(role) => match role_request(role) {
                         Ok(role) => on_set_role(state.quire_window_part(), window, role),
                         Err(BadRole) => {
                             resource.post_error(
-                                quire_window_v1::Error::BadRole,
+                                bardo_window_v1::Error::BadRole,
                                 "dialog and shell are not roles a client may ask for",
                             );
                             return;
@@ -310,14 +310,14 @@ where
                     None => Vec::new(),
                 }
             }
-            quire_window_v1::Request::SetA11yRoot {
+            bardo_window_v1::Request::SetA11yRoot {
                 bus_name,
                 object_path,
             } => match a11y_of(&bus_name, &object_path) {
                 Ok(root) => on_set_a11y_root(state.quire_window_part(), window, root),
                 Err(A11yTooLong) => Vec::new(),
             },
-            quire_window_v1::Request::SetEdited { edited } => {
+            bardo_window_v1::Request::SetEdited { edited } => {
                 match code_of(edited).and_then(|code| Edited::from_code(code).ok()) {
                     Some(edited) => on_set_edited(state.quire_window_part(), window, edited),
                     None => Vec::new(),
@@ -328,7 +328,7 @@ where
         state.quire_window_events(events);
     }
 
-    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &QuireWindowV1) {
+    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &BardoWindowV1) {
         let Some(window) = self.window else {
             return;
         };
@@ -361,13 +361,13 @@ fn code_of<T: Into<u32>>(value: WEnum<T>) -> Option<u32> {
     }
 }
 
-fn send_emphasis(object: &QuireWindowV1, emphasis: Emphasis) {
+fn send_emphasis(object: &BardoWindowV1, emphasis: Emphasis) {
     if let Some(wire) = emphasis.to_wire() {
         object.emphasis(wire);
     }
 }
 
-fn send_placement(object: &QuireWindowV1, mark: PlacementMark) {
+fn send_placement(object: &BardoWindowV1, mark: PlacementMark) {
     if let Some(wire) = mark.to_wire() {
         object.placement(wire);
     }
@@ -378,7 +378,7 @@ fn send_placement(object: &QuireWindowV1, mark: PlacementMark) {
 pub fn on_quit_manager_bound(
     part: &mut QuireWindowPart,
     client: ClientKey,
-    manager: QuireWindowManagerV1,
+    manager: BardoWindowManagerV1,
 ) -> Vec<Event> {
     let first = !part.quit_managers.iter().any(|(held, _)| *held == client);
     part.quit_managers.push((client, manager));
@@ -395,7 +395,7 @@ pub fn on_quit_manager_bound(
 /// was the last one its client held at version 2 or later.
 pub fn on_quit_manager_gone(
     part: &mut QuireWindowPart,
-    manager: &QuireWindowManagerV1,
+    manager: &BardoWindowManagerV1,
 ) -> Vec<Event> {
     let Some(at) = part
         .quit_managers
@@ -418,7 +418,7 @@ pub fn on_quit_manager_gone(
 pub fn on_get_window(
     part: &mut QuireWindowPart,
     window: WindowId,
-    object: QuireWindowV1,
+    object: BardoWindowV1,
 ) -> Vec<Event> {
     part.windows.insert(window, object);
     part.pending.insert(window, PendingHints::none());
@@ -550,7 +550,7 @@ pub fn apply_placement(
 /// Tells `client` the person asked its app to quit: `quit` on each manager it holds at
 /// version 2 or later. A client with none (or none alive) has nobody to tell.
 pub fn apply_quit(part: &mut QuireWindowPart, client: ClientKey) -> Result<(), WaylandFault> {
-    let live: Vec<&QuireWindowManagerV1> = part
+    let live: Vec<&BardoWindowManagerV1> = part
         .quit_managers
         .iter()
         .filter(|(held, manager)| *held == client && manager.is_alive())

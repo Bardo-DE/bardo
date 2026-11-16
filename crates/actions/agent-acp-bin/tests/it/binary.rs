@@ -1,4 +1,4 @@
-//! The real `docket-acp` binary, with HOME and every XDG directory scratch: it refuses to serve
+//! The real `bardo-agent-acp` binary, with HOME and every XDG directory scratch: it refuses to serve
 //! while `agent.acp.expose` is off, and says why on stderr. Nothing of the real session is read.
 
 use std::process::{Command, Output};
@@ -10,7 +10,7 @@ fn run(settings: Option<&str>) -> Output {
         std::fs::create_dir_all(&dir).expect("dir");
         std::fs::write(dir.join("settings.toml"), text).expect("settings");
     }
-    Command::new(env!("CARGO_BIN_EXE_docket-acp"))
+    Command::new(env!("CARGO_BIN_EXE_bardo-agent-acp"))
         .env_clear()
         .env("HOME", home.path())
         .env("XDG_CONFIG_HOME", home.path().join("config"))

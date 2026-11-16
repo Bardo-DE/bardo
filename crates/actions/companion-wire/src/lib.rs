@@ -1,4 +1,4 @@
-//! The wire of `org.quire.Companion1`: what an app or the launcher asks, the answer object
+//! The wire of `org.bardo.Companion1`: what an app or the launcher asks, the answer object
 //! they watch (`AnswerWire`: a phase, a body, a footer), the cards, plans and forms inside it,
 //! the records companiond stores about its sessions, and the front pointer (the task the
 //! launcher returns to). Pure and serde-only; sill and the ds adapter read it, and quire

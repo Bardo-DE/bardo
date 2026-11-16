@@ -1,4 +1,4 @@
-//! Who is calling `org.quire.Compositor1`, proven on the bus thread before a call reaches the
+//! Who is calling `org.bardo.Compositor1`, proven on the bus thread before a call reaches the
 //! event loop (CASW-05). The proof is the caller-identity library's: the sender's pinned
 //! process, its image, and its unit as the unit manager states it, judged against the shipped
 //! caller table. A cgroup name alone proves nothing, so none is read here.
@@ -149,7 +149,7 @@ mod tests {
 
     fn shell_at(proof: Proof) -> Standing {
         Standing::Service {
-            app: AppKey::new("org.quire.Shell").expect("an app"),
+            app: AppKey::new("org.bardo.Shell").expect("an app"),
             role: roles::SHELL,
             proof,
             pin: Pinning::Reopened,

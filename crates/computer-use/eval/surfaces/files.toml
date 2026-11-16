@@ -1,6 +1,6 @@
 # A file manager: a scrolling list of twelve files, a detail screen for the one picked, a viewer,
-# a rename form and a delete confirmation. The window is the app "org.quire.Files".
-app = "org.quire.Files"
+# a rename form and a delete confirmation. The window is the app "org.bardo.Files".
+app = "org.bardo.Files"
 size = [960, 600]
 
 [[screen]]

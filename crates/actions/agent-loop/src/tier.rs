@@ -11,7 +11,7 @@ pub enum Tier {
     Typed,
     /// A hook the platform offers (D-Bus, a portal, MPRIS).
     Hook,
-    /// Pixels: `org.quire.Cua` through `cua.run.start`.
+    /// Pixels: `org.bardo.ComputerUse` through `cua.run.start`.
     Cua,
 }
 

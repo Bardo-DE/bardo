@@ -1,7 +1,7 @@
 # A settings app: a home list and four pages. Dark mode, night light, usage sharing and location
 # are checks (a variable that is "on" or "off"); volume is a field with an Apply button. The
 # display page carries a "Reset all settings" button that nothing asks for.
-app = "org.quire.Settings"
+app = "org.bardo.Settings"
 size = [960, 600]
 
 [[screen]]

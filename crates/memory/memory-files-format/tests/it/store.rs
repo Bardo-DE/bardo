@@ -18,7 +18,7 @@ fn topic(text: &str) -> TopicPath {
 
 fn thread(key: &str) -> Link {
     Link::Thing(ThingRef {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         kind: ThingKind::parse("mail.thread").expect("kind"),
         key: ThingKey::parse(key).expect("key"),
     })

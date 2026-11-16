@@ -154,7 +154,7 @@ mod tests {
             id: ConfirmId::parse(id).expect("id"),
             space: SpaceId::desktop(),
             actor: Actor::Unknown,
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             action: LabelText::parse("Archive messages").expect("label"),
             effect: Effect::UndoableWrite,
             count: Count(1),
@@ -193,7 +193,7 @@ mod tests {
         let mut waiting = Box::pin(desk.next_sheet(&mine));
         assert_eq!((&mut waiting).now_or_never(), None);
         let ask = request("c-3").for_editor(Some(action_core::EditorRoute {
-            client: provenance::ClientName::parse("org.quire.Acp").expect("client"),
+            client: provenance::ClientName::parse("org.bardo.Acp").expect("client"),
             session: mine.clone(),
         }));
         let _asking = desk.ask(&ask);

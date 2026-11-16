@@ -7,7 +7,7 @@
 //! repos are folders of the one workspace this package sits in, so each is built from its folder
 //! (`ACCEPT_<REPO>_DIR` names another checkout to build instead).
 //!
-//! The paths reach the tests as `ACCEPT_ACCOUNTD`, `ACCEPT_INFERD` and `ACCEPT_MEMORYD`. The nested cargo is the one
+//! The paths reach the tests as `BARDO_ACCEPT_ACCOUNTD`, `BARDO_ACCEPT_INFERD` and `BARDO_ACCEPT_MEMORYD`. The nested cargo is the one
 //! the outer cargo runs as (`$CARGO`, not the build-slot shim: the outer build already holds a
 //! slot), with every cargo variable of this build scrubbed so the two do not share flags, a
 //! jobserver or a target directory.

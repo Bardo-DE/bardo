@@ -124,8 +124,8 @@ async fn flow_a_prompt_plan_confirm_perform_journal_undo() {
     ));
     // Four planner turns, the cassette's four entries (the closing words are only reachable
     // after the other three), and the policy writer's one.
-    assert_eq!(turns_of(&world, "org.quire.Companion"), 4);
-    assert_eq!(turns_of(&world, "org.quire.Intents"), 1);
+    assert_eq!(turns_of(&world, "org.bardo.Companion"), 4);
+    assert_eq!(turns_of(&world, "org.bardo.Intents"), 1);
 
     // The router's audit records reached memoryd, from intentd's process, over the bus.
     let recorded = recorded(
@@ -182,7 +182,7 @@ async fn flow_a_the_person_refuses_the_sheet_and_nothing_is_sent() {
     // The planner was told, as a coarse step, that the call was not confirmed: the cassette's
     // closing words answer only a view that says so (`flow-a-refused`), so the turn is Done
     // only if it did.
-    assert_eq!(turns_of(&world, "org.quire.Companion"), 4);
+    assert_eq!(turns_of(&world, "org.bardo.Companion"), 4);
     // Nothing to undo.
     let journal = launcher
         .intents
@@ -219,13 +219,13 @@ async fn flow_c_an_injected_body_never_reaches_the_planner_and_the_send_still_as
     // 1 and 2. The planner never saw the body or the summary in any of its four turns, and the
     //    reader saw the body as fenced data in its one turn (both by the cassette, see above).
     //    inferd's audit trail counts the turns by app: never their content.
-    assert_eq!(turns_of(&world, "org.quire.Companion"), 4);
-    assert_eq!(turns_of(&world, "org.quire.Reader"), 1);
+    assert_eq!(turns_of(&world, "org.bardo.Companion"), 4);
+    assert_eq!(turns_of(&world, "org.bardo.Reader"), 1);
     // The reader's session was class `mail`, from inferd's audit trail.
     let reader: Vec<_> = world
         .model_turns()
         .into_iter()
-        .filter(|turn| turn.app.name.as_str() == "org.quire.Reader")
+        .filter(|turn| turn.app.name.as_str() == "org.bardo.Reader")
         .map(|turn| turn.class)
         .collect();
     assert_eq!(reader, [account_core::DataClass::Mail]);
@@ -290,8 +290,8 @@ async fn flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted(
     );
     // Five planner turns: read, summarise, relate, send, words. It never saw the body or the
     // address, which the cassette's `lacks` enforces.
-    assert_eq!(turns_of(&world, "org.quire.Companion"), 5);
-    assert_eq!(turns_of(&world, "org.quire.Reader"), 1);
+    assert_eq!(turns_of(&world, "org.bardo.Companion"), 5);
+    assert_eq!(turns_of(&world, "org.bardo.Reader"), 1);
 
     // The send asks once, with the sender quoted from mail, and says the session read untrusted
     // mail. The person refused it, so nothing went.
@@ -371,5 +371,5 @@ async fn first_use_of_mail_in_a_space_asks_nothing_for_a_read() {
     );
     let sheets = world.sheet.shown();
     assert!(sheets.is_empty(), "{sheets:#?}");
-    assert_eq!(turns_of(&world, "org.quire.Companion"), 3);
+    assert_eq!(turns_of(&world, "org.bardo.Companion"), 3);
 }

@@ -1,10 +1,10 @@
-//! The one writer of `quire/appearance.toml`: a view asks, this function writes, and the
+//! The one writer of `bardo/appearance.toml`: a view asks, this function writes, and the
 //! daemon's watch of the file then publishes the change to every surface.
 
 use ui_components::prelude::Appearance;
 use ui_settings::{AppName, AppearanceFile, ConfigRoot, Store};
 
-/// Write `next`'s theme, accent and motion into `quire/appearance.toml`, keeping everything else
+/// Write `next`'s theme, accent and motion into `bardo/appearance.toml`, keeping everything else
 /// in the file. A file that cannot be written leaves the appearance as it was, which the picker
 /// then shows.
 pub fn write_appearance(next: Appearance) {

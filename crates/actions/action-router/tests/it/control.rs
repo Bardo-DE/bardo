@@ -20,7 +20,7 @@ use provenance::{
 };
 
 fn cuad() -> CallerId {
-    caller("org.quire.Cuad", CallerRole::Cua)
+    caller("org.bardo.ComputerUse", CallerRole::Cua)
 }
 
 fn yes() -> ConfirmAnswer {
@@ -215,7 +215,7 @@ async fn a_halt_withdraws_every_sheet_in_scope_and_only_the_control_centre_resum
     assert!(kill.spaces.contains_key(&space("work")) && !kill.spaces.contains_key(&space("home")));
     let denied = ask(
         &router,
-        &caller("org.quire.Compositor", CallerRole::Compositor),
+        &caller("org.bardo.Compositor", CallerRole::Compositor),
         IntentsRequest::ControlResume {
             scope: SpaceScope::Any,
         },
@@ -290,7 +290,7 @@ async fn resuming_one_space_lifts_a_global_halt_for_that_space_alone() {
 }
 
 fn launcher_with(role: CallerRole) -> CallerId {
-    caller("org.quire.Shell", role)
+    caller("org.bardo.Shell", role)
 }
 
 #[tokio::test]

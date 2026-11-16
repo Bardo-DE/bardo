@@ -1,4 +1,4 @@
-//! `org.quire.IntentReach1`: which of a provider's actions are on right now. The installed manifest
+//! `org.bardo.IntentReach1`: which of a provider's actions are on right now. The installed manifest
 //! says what an action is; a provider whose actions come and go with a setting (computer use is
 //! off until the person turns it on) says so here, on the object it serves `IntentProvider1` at.
 //! intentd asks the provider's own bus name, caches the answer, and asks again on `ReachChanged`.
@@ -32,8 +32,8 @@ impl From<ReachNow> for AgentReach {
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.IntentReach1",
-    default_path = "/org/quire/IntentProvider1"
+    interface = "org.bardo.IntentReach1",
+    default_path = "/org/bardo/IntentProvider1"
 )]
 pub trait IntentReach {
     /// `{ "<action name>": "offered" | "hidden" }` as JSON.
@@ -82,7 +82,7 @@ impl ReachServer {
         serde_json::to_string(&*held).unwrap_or_else(|_| "{}".to_owned())
     }
 
-    /// Serves `org.quire.IntentReach1` on `connection`, at the object `IntentProvider1` is at.
+    /// Serves `org.bardo.IntentReach1` on `connection`, at the object `IntentProvider1` is at.
     pub async fn serve(&self, connection: &zbus::Connection) -> zbus::Result<()> {
         connection
             .object_server()
@@ -98,7 +98,7 @@ impl ReachServer {
     }
 }
 
-#[zbus::interface(name = "org.quire.IntentReach1")]
+#[zbus::interface(name = "org.bardo.IntentReach1")]
 impl ReachServer {
     fn reach(&self) -> fdo::Result<String> {
         Ok(self.json())

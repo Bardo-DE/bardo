@@ -1,11 +1,11 @@
 vocab = 1
 id = "desktop-basics"
-owner = "org.quire.Companion"
+owner = "org.bardo.Companion"
 version = "0.1.0"
 uses = [
-  "org.quire.Companion:companion.skill.load",
-  "org.quire.Companion:companion.task.start",
-  "org.quire.Companion:companion.task.message",
+  "org.bardo.Companion:companion.skill.load",
+  "org.bardo.Companion:companion.task.start",
+  "org.bardo.Companion:companion.task.message",
 ]
 
 [when]

@@ -1,4 +1,4 @@
-//! The daemon's start on the bus: once `org.quire.Inference1` is owned, a call is answered. zbus
+//! The daemon's start on the bus: once `org.bardo.Inference1` is owned, a call is answered. zbus
 //! starts a connection's object server on a task of its own at its first use, and a call that
 //! arrives before that task listens is dropped without an answer; a daemon that claimed its name
 //! first lost the first call after a start (the inferd tests that hung until the harness ended

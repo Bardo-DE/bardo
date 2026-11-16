@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Account`: one object per account, at `account_dbus::accounts::account_path`.
+//! `org.bardo.Accounts1.Account`: one object per account, at `account_dbus::accounts::account_path`.
 //! `Reauthenticate` and the properties (`Id`, `Provider`, `Label`, `State`, `ReauthReason`,
 //! `Capabilities`) are served; every one answers only the shell (`SheetHost`) and Settings, the two
 //! roles that read an account. No app holds a grant for an account any more: an app learns of an

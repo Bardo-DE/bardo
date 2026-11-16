@@ -14,8 +14,8 @@ use zbus::zvariant::Value;
 use crate::bus::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema};
 
-const PATH: &str = "/org/quire/Test1/settings";
-const NAME: &str = "org.quire.Test1";
+const PATH: &str = "/org/bardo/Test1/settings";
+const NAME: &str = "org.bardo.Test1";
 
 fn key(path: &str) -> KeyPath {
     KeyPath(path.to_owned())
@@ -67,7 +67,7 @@ impl LiveModule for Closed {
 /// The interface as it was before `Snapshot`: `Describe` and `Get` only.
 struct Legacy(Accounts);
 
-#[interface(name = "org.quire.SettingsModule1")]
+#[interface(name = "org.bardo.SettingsModule1")]
 impl Legacy {
     async fn describe(&self) -> Result<String, LiveError> {
         Ok(self.0.describe().await.to_json())

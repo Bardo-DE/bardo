@@ -1,4 +1,4 @@
-//! A fake inferd (`org.quire.Inference1`) for the Local models group: `Running`, `Start` and `Stop`
+//! A fake inferd (`org.bardo.Inference1`) for the Local models group: `Running`, `Start` and `Stop`
 //! with the `RunningChanged` signal, on a private bus. A Start can be held until the test lets it
 //! finish, a call can be refused with inferd's own sentence, and every call is written down.
 
@@ -47,7 +47,7 @@ impl Inference {
     }
 }
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl Inference {
     async fn running(&self) -> Vec<(String, Details)> {
         let rows = self.0.rows.lock().expect("rows");

@@ -10,12 +10,12 @@ use quick_xml::events::{BytesStart, Event};
 
 /// The six protocol files, by file name.
 pub const FILES: &[&str] = &[
-    "quire-desktop-v1.xml",
-    "quire-shell-v1.xml",
-    "quire-window-v1.xml",
-    "quire-sensitive-v1.xml",
-    "quire-agent-v1.xml",
-    "quire-trusted-surface-v1.xml",
+    "bardo-desktop-v1.xml",
+    "bardo-shell-v1.xml",
+    "bardo-window-v1.xml",
+    "bardo-sensitive-v1.xml",
+    "bardo-agent-v1.xml",
+    "bardo-trusted-surface-v1.xml",
 ];
 
 /// One `<protocol>`.

@@ -69,7 +69,7 @@ mod tests {
             episodes: vec![],
             recalled: vec![],
             context: ContextView {
-                app: AppName::parse("org.quire.Shell").expect("app"),
+                app: AppName::parse("org.bardo.Shell").expect("app"),
                 window: Reveal::Plain(window.into()),
                 here: HereView::Nowhere,
                 selection: SelectionView::Nothing,

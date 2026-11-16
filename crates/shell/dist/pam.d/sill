@@ -1,6 +1,6 @@
 #%PAM-1.0
 # sill's own lock screen: the password check `sill auth-check` runs.
-# Installed as /etc/pam.d/sill by dist/install.sh; without it sill falls back to the `login`
+# Installed as /etc/pam.d/bardo-shell by dist/install.sh; without it sill falls back to the `login`
 # service. The same shape as swaylock's own file: the login stack decides which modules run.
 auth     include  login
 account  include  login

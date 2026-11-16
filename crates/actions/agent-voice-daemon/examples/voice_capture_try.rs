@@ -16,9 +16,9 @@ use agent_voice_pipewire::PipeWireDevice;
 use std::process::ExitCode;
 use std::time::{Duration, Instant};
 
-/// The override to try: `VOICED_INPUT`, standing in for `input = "..."` in voiced.toml.
+/// The override to try: `BARDO_VOICED_INPUT`, standing in for `input = "..."` in voiced.toml.
 fn configured_input() -> Option<String> {
-    std::env::var("VOICED_INPUT").ok().filter(|v| !v.is_empty())
+    std::env::var("BARDO_VOICED_INPUT").ok().filter(|v| !v.is_empty())
 }
 
 async fn list(device: &PipeWireDevice) -> ExitCode {
@@ -42,7 +42,7 @@ async fn list(device: &PipeWireDevice) -> ExitCode {
         "voiced.toml input: {}",
         input
             .as_deref()
-            .unwrap_or("not set (VOICED_INPUT=<node.name> tries one)")
+            .unwrap_or("not set (BARDO_VOICED_INPUT=<node.name> tries one)")
     );
     match choose_capture(&nodes, default.as_deref(), input.as_deref()) {
         Some(chosen) => println!(

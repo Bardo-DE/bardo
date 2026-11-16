@@ -1,6 +1,6 @@
 //! The exec stage inside the sandbox: a small program that bubblewrap runs as the agent's
 //! command. It applies a Landlock ruleset to itself, reports the level it reached on standard
-//! error in one fixed line (`bulkhead-enter: landlock=<word>`), and then replaces itself with
+//! error in one fixed line (`bardo-sandbox-enter: landlock=<word>`), and then replaces itself with
 //! the agent. Landlock is a second layer behind bubblewrap and the syscall filter: bubblewrap
 //! decides what is mounted, Landlock decides what the agent may do with it.
 //!

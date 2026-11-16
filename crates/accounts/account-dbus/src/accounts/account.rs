@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Account`, one object per account at `account_path(id)`; readable only
+//! `org.bardo.Accounts1.Account`, one object per account at `account_path(id)`; readable only
 //! with a grant for it.
 
 use crate::Details;
@@ -8,8 +8,8 @@ use zbus::zvariant::OwnedObjectPath;
 /// The interface, written once. `#[bus_interface]` makes [`AccountProxy`] for its callers from this
 /// trait, [`AccountServer`] for the daemon to implement and [`AccountServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Accounts1.Account",
-    default_service = "org.quire.Accounts1"
+    interface = "org.bardo.Accounts1.Account",
+    default_service = "org.bardo.Accounts1"
 )]
 pub trait Account {
     /// The account id.

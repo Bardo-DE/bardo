@@ -75,9 +75,9 @@ impl DesktopClient {
     }
 
     /// Like [`DesktopClient::new`], for a caller that says more about itself: with
-    /// `DesktopConfig::holding_shell()` it also binds `quire_shell_v1` when that is offered.
+    /// `DesktopConfig::holding_shell()` it also binds `bardo_shell_v1` when that is offered.
     ///
-    /// On the Quire arm (`quire_desktop_v1` and the ext list offered) the toplevels come from
+    /// On the Quire arm (`bardo_desktop_v1` and the ext list offered) the toplevels come from
     /// those and the wlr manager is left unbound.
     pub fn with_config(connection: &Connection, config: DesktopConfig) -> Result<Self, WireError> {
         let (globals, mut queue) = registry_queue_init::<Wire>(connection)?;

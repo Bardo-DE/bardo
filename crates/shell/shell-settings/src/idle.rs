@@ -12,7 +12,7 @@ use ui_settings::schema::Page;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "idle", page = Page::Power,
+    file = "shell/settings.toml", domain = "idle", page = Page::Power,
     footnote(section = "Display & sleep", text = "Dimming warns you before the display turns off. Any input cancels it."),
 )]
 pub struct IdleSettings {

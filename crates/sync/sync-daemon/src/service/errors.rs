@@ -1,5 +1,5 @@
 //! What a method answers instead of a value: a refusal as the error
-//! `org.quire.Accounts1.Error.<Refusal>` (`account_dbus::accounts::refusal_error_name` pins the names; one
+//! `org.bardo.Accounts1.Error.<Refusal>` (`account_dbus::accounts::refusal_error_name` pins the names; one
 //! error vocabulary for porter's daemons), or one of the bus's own under its real name, so a
 //! client classifies it as it does a bus's refusal. Written by hand, as accountd's: the
 //! `DBusError` derive names every non-refusal `org.freedesktop.zbus.Error`.
@@ -46,7 +46,7 @@ impl RefusedError {
     }
 
     /// A conflict that is not there (unknown, or already settled):
-    /// `org.quire.Sync1.Error.NoSuchConflict`.
+    /// `org.bardo.Sync1.Error.NoSuchConflict`.
     pub fn no_such_conflict() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(SYNC_ERROR_NO_SUCH_CONFLICT),
@@ -54,7 +54,7 @@ impl RefusedError {
         }
     }
 
-    /// `ConfirmDiscard` on a dataset that is not held: `org.quire.Sync1.Error.NothingHeld`.
+    /// `ConfirmDiscard` on a dataset that is not held: `org.bardo.Sync1.Error.NothingHeld`.
     pub fn nothing_held() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(SYNC_ERROR_NOTHING_HELD),
@@ -62,7 +62,7 @@ impl RefusedError {
         }
     }
 
-    /// `SyncNow` on a dataset the person paused: `org.quire.Sync1.Error.Paused`.
+    /// `SyncNow` on a dataset the person paused: `org.bardo.Sync1.Error.Paused`.
     pub fn paused() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(SYNC_ERROR_PAUSED),
@@ -70,7 +70,7 @@ impl RefusedError {
         }
     }
 
-    /// `Import` before the person has finished picking: `org.quire.Photos1.Error.NotYet`.
+    /// `Import` before the person has finished picking: `org.bardo.Photos1.Error.NotYet`.
     #[cfg(feature = "photos-picker")]
     pub fn picker_not_yet() -> Self {
         Self {
@@ -79,7 +79,7 @@ impl RefusedError {
         }
     }
 
-    /// A session Google no longer has: `org.quire.Photos1.Error.NoSuchSession`.
+    /// A session Google no longer has: `org.bardo.Photos1.Error.NoSuchSession`.
     #[cfg(feature = "photos-picker")]
     pub fn picker_no_such_session() -> Self {
         Self {

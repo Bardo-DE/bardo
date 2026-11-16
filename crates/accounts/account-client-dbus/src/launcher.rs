@@ -1,10 +1,10 @@
 //! The launcher's side of an agent's login (accountd's `Launcher` over the bus; it is this crate's and
 //! not `Porter`'s, because the key it hands over is a sealed memfd, a Linux descriptor) (design/31 R7-R9, C5, C6). The agent launcher
-//! (docket-acp) registers the programs it runs, hears when accountd asks it to sign an agent in or
+//! (bardo-agent-acp) registers the programs it runs, hears when accountd asks it to sign an agent in or
 //! out, has the agent do it, and reports only a coarse [`LoginOutcome`]. Nothing of the login
 //! itself (a token, a URL, a code) crosses to porter: there is no way to send one.
 //!
-//! The launcher talks to accountd (`org.quire.Accounts1`), which holds the AI keys: whoever uses a
+//! The launcher talks to accountd (`org.bardo.Accounts1`), which holds the AI keys: whoever uses a
 //! credential holds it. An agent's yes to use one of the person's keys is a permit
 //! ([`GrantId`]), asked for with [`Launcher::request_agent_key`].
 //!
@@ -60,7 +60,7 @@ pub enum LauncherError {
     #[error("{0}")]
     Fault(LauncherFault),
     /// accountd refused the permit or the account for a reason an app also meets: `UnknownGrant`,
-    /// `AudienceNotGranted` (the permit is not for `org.quire.Agent.<program>`), `NeedsReauth`,
+    /// `AudienceNotGranted` (the permit is not for `org.bardo.Agent.<program>`), `NeedsReauth`,
     /// `Denied` (the person turned the account off), `Unavailable`.
     #[error("refused")]
     Refused(Refusal),
@@ -222,7 +222,7 @@ impl Launcher {
     }
 
     /// An API key for a process this launcher is about to spawn for `program`, under `permit`
-    /// (the person's yes for the app `org.quire.Agent.<program>` to use a key, scope always, or
+    /// (the person's yes for the app `org.bardo.Agent.<program>` to use a key, scope always, or
     /// "this session only" for a session this connection holds open), handed over on
     /// a sealed memfd to pass to the child, the one way a key is handed over. The program
     /// must be one this connection registered. A credential under a session permit ends when

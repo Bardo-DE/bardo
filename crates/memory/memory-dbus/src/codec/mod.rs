@@ -24,11 +24,11 @@ pub use request::{decode_request, encode_request};
 /// Which interface a call goes to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Iface {
-    /// `org.quire.Memory1.Record`.
+    /// `org.bardo.Memory1.Record`.
     Record,
-    /// `org.quire.Memory1.Recall`.
+    /// `org.bardo.Memory1.Recall`.
     Recall,
-    /// `org.quire.Memory1.Control`.
+    /// `org.bardo.Memory1.Control`.
     Control,
 }
 

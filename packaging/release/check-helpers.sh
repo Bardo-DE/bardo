@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Checks that slipway's install is complete on this computer: the three privileged programs
-# (slipway-apply installs a release, slipway-rollback goes back, slipway-health keeps the start record) in
+# (bardo-updater-apply installs a release, bardo-updater-rollback goes back, bardo-updater-health keeps the start record) in
 # /usr/libexec, and the one polkit file with their three actions: installing and noting a good start need no
 # password for the person at the keyboard, going back asks for the administrator's password.
 #
@@ -8,7 +8,7 @@
 #
 #   --root DIR      look under DIR instead of / (a staging directory); --libexec and --policy are inside it
 #   --libexec DIR   where the programs are (default /usr/libexec); the policy must name exactly these paths
-#   --policy FILE   the polkit file (default /usr/share/polkit-1/actions/org.quire.slipway.policy)
+#   --policy FILE   the polkit file (default /usr/share/polkit-1/actions/org.bardo.updater.policy)
 #
 # Exit: 0 complete, 1 something missing or wrong (each reason on standard error), 2 bad usage or no python3.
 set -euo pipefail

@@ -14,7 +14,7 @@ use account_wire::ParentWindow;
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Photos").expect("app name"),
+        name: AppName::parse("org.bardo.Photos").expect("app name"),
         isolation: Isolation::Flatpak,
     }
 }

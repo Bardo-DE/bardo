@@ -12,7 +12,7 @@ use super::open::{file_manager, show_items_at};
 use super::uri::file_uri;
 
 /// `org.freedesktop.Application.Activate` on the app's bus name ([`App::bus_name`]: what the
-/// entry declares in `X-Quire-BusNames`, else its desktop id), object path derived from it
+/// entry declares in `X-Bardo-BusNames`, else its desktop id), object path derived from it
 /// (GApplication's own convention: each `.` becomes `/`, each `-` becomes `_`, prefixed with
 /// `/`), with the activation token as `platform_data["desktop-startup-id"]` when one was
 /// granted.

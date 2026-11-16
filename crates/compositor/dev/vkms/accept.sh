@@ -18,7 +18,7 @@
 #
 # Exit: 0 all passed; 1 a step failed; 2 refused (not a terminal, not confirmed, wrong driver,
 # run as root); 3 the vkms device or a tool is absent (the gate convention: SKIP-VKMS);
-# 4 the casement binary lacks the hooks below; 5 a short run (CASEMENT_VKMS_IDLE_SECONDS under 600).
+# 4 the casement binary lacks the hooks below; 5 a short run (BARDO_COMPOSITOR_VKMS_IDLE_SECONDS under 600).
 #
 # casement contract (the hooks need --backend tty; --kms-report and --writeback-raw need --drm-node;
 # none is a general feature, and casement --help says so):
@@ -45,9 +45,9 @@ set -euo pipefail
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/packages.sh
 source "$root/dev/lib/packages.sh"
-tools="${CASEMENT_TOOLS:-$root/dev/out/tools}/bin"
-idle_seconds="${CASEMENT_VKMS_IDLE_SECONDS:-600}"
-device_name="${CASEMENT_VKMS_DEVICE:-casement}"
+tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}/bin"
+idle_seconds="${BARDO_COMPOSITOR_VKMS_IDLE_SECONDS:-600}"
+device_name="${BARDO_COMPOSITOR_VKMS_DEVICE:-casement}"
 cfs="/sys/kernel/config/vkms/$device_name"
 golden="$root/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768"
 extra_connector="hotplug1"
@@ -100,7 +100,7 @@ for hook in --drm-node --kms-report --writeback-raw; do
     exit 4 ;;
   esac
 done
-[ -f "$golden.png" ] || absent "the writeback golden $golden.png is missing (bless it: CASEMENT_BLESS=1 cargo test, see FINDINGS p1-v)"
+[ -f "$golden.png" ] || absent "the writeback golden $golden.png is missing (bless it: BARDO_COMPOSITOR_BLESS=1 cargo test, see FINDINGS p1-v)"
 
 printf 'This drives casement on the vkms device %s (%s) only. Your real displays are not touched.\nType "vkms only" to continue: ' "$card" "$node"
 read -r answer

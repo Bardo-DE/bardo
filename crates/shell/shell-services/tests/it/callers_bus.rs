@@ -2,9 +2,9 @@
 //! proves nothing; the system's account of the caller does. Each object answers one role, and the
 //! caller must also own the name of the service whose role it holds:
 //!
-//! - `org.quire.Shell1` (the picker, the colour, `AskPermission`): the portal backend;
-//! - `org.quire.AccountsSheet1`: accountd, inferd or syncd, each as the owner of its own name;
-//! - `org.quire.Confirm1`: intentd.
+//! - `org.bardo.Shell1` (the picker, the colour, `AskPermission`): the portal backend;
+//! - `org.bardo.AccountsSheet1`: accountd, inferd or syncd, each as the owner of its own name;
+//! - `org.bardo.Confirm1`: intentd.
 //!
 //! Every case names what the owner of the service's name is to the shell, who calls (the owner
 //! itself, or another connection) and what that caller is. A refusal is `AccessDenied` and draws
@@ -185,9 +185,9 @@ async fn a_stand_in_named_in_the_persons_rows_is_let_in_only_as_its_own_role() {
 #[tokio::test(flavor = "multi_thread")]
 async fn only_an_account_service_that_owns_its_own_name_drives_the_accounts_sheet() {
     use Verdict::{LetIn, Refused};
-    const ACCOUNTS: &str = "org.quire.Accounts1";
-    const INFERENCE: &str = "org.quire.Inference1";
-    const SYNC: &str = "org.quire.Sync1";
+    const ACCOUNTS: &str = "org.bardo.Accounts1";
+    const INFERENCE: &str = "org.bardo.Inference1";
+    const SYNC: &str = "org.bardo.Sync1";
     let accounts = Who::Service(Role::Accounts);
     // `(case, the name under test, what its owner is, who calls, what the shell does)`.
     let cases: [(&str, &str, Who, Caller, Verdict); 9] = [

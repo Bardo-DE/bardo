@@ -1,4 +1,4 @@
-//! What `porter-rig-client` does: one command as an app, over the session bus, answered as JSON
+//! What `account-rig-client` does: one command as an app, over the session bus, answered as JSON
 //! lines. Each command emits one or more objects with a `result` or an `event` key; a failure
 //! is `{"result":"error", ...}` and the process exits 1.
 //!
@@ -6,7 +6,7 @@
 //! ask for a permit to use the person's AI keys and add a key, run the agent launcher's calls.
 //! No credential crosses a bus, so there is nothing to ask a grant for or to open a relay to. The
 //! app's identity is the daemons' to find (see `fixture`). The sync commands (settle a conflict,
-//! watch for them) are `ferry-rig-client`'s.
+//! watch for them) are `sync-rig-client`'s.
 
 use account_capability::AgentProgram;
 use account_client::{Accounts, AccountsError, AiKeysError, IdentitiesError, Porter};
@@ -40,7 +40,7 @@ fn failure(why: impl std::fmt::Display) -> Value {
     json!({ "result": "error", "error": why.to_string() })
 }
 
-/// The commands: the command line of `porter-rig-client`, each word and id parsed where it enters
+/// The commands: the command line of `account-rig-client`, each word and id parsed where it enters
 /// (a word that is none is a `{"result":"error"}` line and exit 1, as a bus failure is).
 #[derive(Debug, Clone, Subcommand)]
 pub enum Command {

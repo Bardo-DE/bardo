@@ -139,13 +139,13 @@ struct Desk {
 }
 
 fn menu_app() -> AppName {
-    AppName::parse("org.quire.Menu").expect("app")
+    AppName::parse("org.bardo.Menu").expect("app")
 }
 
 fn companion() -> CallerId {
     CallerId {
         app: AppId {
-            name: AppName::parse("org.quire.Companiond").expect("app"),
+            name: AppName::parse("org.bardo.Companion").expect("app"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Companion]),

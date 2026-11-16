@@ -9,7 +9,7 @@ use ui_settings::schema::Page;
     Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema,
 )]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "wallpaper", page = Page::declared("wallpaper"))]
+#[settings(file = "shell/settings.toml", domain = "wallpaper", page = Page::declared("wallpaper"))]
 pub struct WallpaperSettings {
     /// `wallpaper.picture`: a picture file's path. Empty is no picture, so the desktop shows its
     /// plain paper colour.

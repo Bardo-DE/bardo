@@ -89,7 +89,7 @@ pub struct Env {
     /// `XDG_SESSION_ID` as the process was started with it, read once at the edge: the logind
     /// session to use when logind places this process in none by pid.
     pub session_id: Option<String>,
-    /// Whether the session fell back to the safe compositor (`QUIRE_SESSION_MODE`), read once at
+    /// Whether the session fell back to the safe compositor (`BARDO_SESSION_MODE`), read once at
     /// the edge.
     pub session_mode: SessionMode,
     /// The folder of the program this process runs, where the release's other programs are;
@@ -97,7 +97,7 @@ pub struct Env {
     pub release_bin: Option<PathBuf>,
 }
 
-/// Whether the services that serve a well-known bus name (`org.quire.Outputs1`, the accounts
+/// Whether the services that serve a well-known bus name (`org.bardo.Outputs1`, the accounts
 /// sheet, the seat at intentd) claim it when they start. A test's `start` never does, so it
 /// cannot take a name from the person's running shell.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

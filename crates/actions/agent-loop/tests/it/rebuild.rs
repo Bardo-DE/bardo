@@ -169,5 +169,5 @@ fn finishing_the_front_task_and_closing_episodes_end_their_roster_lines() {
         },
     ]);
     assert_eq!(rebuilt.tasks[0].state, RosterState::Failed);
-    let _ = AppName::parse("org.quire.Mail");
+    let _ = AppName::parse("org.bardo.Mail");
 }

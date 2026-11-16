@@ -19,12 +19,12 @@ use crate::popup::PopupGrab;
 /// Whether the host lifts a parent layer's keyboard for a grabbing popup on this compositor:
 /// everywhere except KWin and casement. KWin is recognised by `org_kde_plasma_shell` (wlroots
 /// compositors offer some `org_kde_kwin_*` globals, never this one); casement by
-/// `quire_window_manager_v1` (advertised from its first phase, C50). `interfaces` are the
+/// `bardo_window_manager_v1` (advertised from its first phase, C50). `interfaces` are the
 /// globals the compositor advertises.
 pub(crate) fn lifts_parent_keyboard<'a>(interfaces: impl IntoIterator<Item = &'a str>) -> bool {
     !interfaces
         .into_iter()
-        .any(|name| name == "org_kde_plasma_shell" || name == "quire_window_manager_v1")
+        .any(|name| name == "org_kde_plasma_shell" || name == "bardo_window_manager_v1")
 }
 
 /// The rule: a grabbing popup of a `None` layer lifts the parent (to `OnDemand` until its last
@@ -80,10 +80,10 @@ mod tests {
                 false,
             ),
             (
-                &["wl_compositor", "quire_window_manager_v1", "xdg_wm_base"],
+                &["wl_compositor", "bardo_window_manager_v1", "xdg_wm_base"],
                 false,
             ),
-            (&["quire_window_v1"], true),
+            (&["bardo_window_v1"], true),
             (&[], true),
         ];
         for (interfaces, want) in cases {

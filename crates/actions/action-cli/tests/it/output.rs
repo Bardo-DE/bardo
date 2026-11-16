@@ -1,4 +1,4 @@
-//! What `quire-do` prints: JSON goldens (`tests/golden`, rewritten with `UPDATE_GOLDEN=1`),
+//! What `bardo-do` prints: JSON goldens (`tests/golden`, rewritten with `UPDATE_GOLDEN=1`),
 //! text on a terminal and JSON when stdout is a pipe, standard input end to end, `describe`
 //! through stoker's `Shape::to_json_schema`, search, context and shell completion.
 
@@ -97,7 +97,7 @@ async fn text_on_a_terminal_and_json_on_a_pipe_unless_asked() {
         tty.stdout
     );
     assert!(
-        tty.stdout.contains("undo: quire-do undo "),
+        tty.stdout.contains("undo: bardo-do undo "),
         "{}",
         tty.stdout
     );
@@ -124,7 +124,7 @@ async fn text_on_a_terminal_and_json_on_a_pipe_unless_asked() {
 
     let failing = desk.tty(&["mail", "thread.read", "nope"]).await;
     assert_eq!(failing.stdout, "");
-    assert_eq!(failing.stderr, "quire-do: the app cannot find that thing\n");
+    assert_eq!(failing.stderr, "bardo-do: the app cannot find that thing\n");
 }
 
 #[tokio::test]
@@ -189,7 +189,7 @@ async fn search_prints_the_apps_things_and_context_prints_what_it_shows() {
     let files = json(&desk.quire(&["files", "search", "receipts"]).await);
     assert_eq!(files["hits"], serde_json::json!([]));
 
-    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let mail = AppName::parse("org.bardo.Mail").expect("app");
     let thread = EntityId {
         app: mail.clone(),
         kind: EntityKind::parse("mail.thread").expect("kind"),

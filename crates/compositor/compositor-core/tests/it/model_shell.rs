@@ -162,7 +162,7 @@ fn the_shell_chooses_the_bar_in_full_screen_and_the_motion_the_last_one_wins() {
 
 #[test]
 fn a_minimise_target_is_local_to_the_dock_and_stored_globally() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let placed = run(vec![
         plug("HEADLESS-1"),
         layer(1, ShellRoleTag::Unassigned),
@@ -196,7 +196,7 @@ fn a_minimise_target_is_local_to_the_dock_and_stored_globally() {
 
 #[test]
 fn the_docks_target_wins_over_a_window_list_clients_while_a_dock_holds_a_role() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let wlr_tile = |x: i32| {
         Op::Event(Event::WlrToplevel {
             window: WindowId(1),
@@ -245,7 +245,7 @@ fn the_docks_target_wins_over_a_window_list_clients_while_a_dock_holds_a_role() 
 
 #[test]
 fn a_window_minimises_toward_its_tile_else_the_bottom_centre_of_its_output() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let destination = |model: &compositor_core::Model| {
         let window = model.windows()[&WindowId(1)].clone();
         model.minimise_destination(&window).map(|t| t.rect)

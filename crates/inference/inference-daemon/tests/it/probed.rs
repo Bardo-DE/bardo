@@ -4,7 +4,7 @@
 //! granted to the app so that a call to it would be seen.
 //!
 //! Acceptance 6 of design/31 section 7.1: with `ai.local_only` on, a Mail-class summary from
-//! `org.quire.Mail` runs on the probed Ollama, and with the Ollama stopped it is `Unavailable`
+//! `org.bardo.Mail` runs on the probed Ollama, and with the Ollama stopped it is `Unavailable`
 //! and no cloud call is made.
 
 use crate::hosting;
@@ -31,7 +31,7 @@ use inference_daemon::probe::ProbeConfig;
 use inference_dbus::inference::InferenceProxy;
 use std::time::Duration;
 
-const MAIL: &str = "org.quire.Mail";
+const MAIL: &str = "org.bardo.Mail";
 const KEY: &str = "sk-or-v1-NOT-USED-LOCAL-ONLY";
 
 fn mail() -> AppId {

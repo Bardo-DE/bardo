@@ -72,7 +72,7 @@ async fn the_file_a_service_writes_holds_none_of_the_fake_secrets() {
         .await
         .with_audit(FileAudit::new(path.clone()));
     let me = AppId {
-        name: AppName::parse("org.quire.Photos").expect("name"),
+        name: AppName::parse("org.bardo.Photos").expect("name"),
         isolation: Isolation::Flatpak,
     };
     let need = Need::Storage(StorageNeed::new(

@@ -1,4 +1,4 @@
-//! The shell's notes: `quire_shell_v1` events.
+//! The shell's notes: `bardo_shell_v1` events.
 //!
 //! Most are moments (a hot corner, a bell, the kill chord) and change no state; the modifiers,
 //! the switcher, the overview layout and the reveals are state the shell draws from.
@@ -15,7 +15,7 @@ use desktop_protocols::vocab::{
     Shown, SplitSide, TrialId, WindowEntries,
 };
 
-/// One event of `quire_shell_v1`.
+/// One event of `bardo_shell_v1`.
 ///
 /// Apps and windows are named by string (an app key, an ext-foreign-toplevel identifier),
 /// because the protocol is bound on a different connection from the toplevel handles.

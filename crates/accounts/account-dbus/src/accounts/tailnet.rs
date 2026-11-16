@@ -1,4 +1,4 @@
-//! `org.quire.Tailnet1` at `/org/quire/Tailnet1`, on accountd's connection: the person's own
+//! `org.bardo.Tailnet1` at `/org/bardo/Tailnet1`, on accountd's connection: the person's own
 //! computers on their Tailscale network, for the shell, Settings and temor. temor never asks
 //! Tailscale itself: accountd does, once, through the account the person added.
 //!
@@ -14,9 +14,9 @@ use account_dbus_macros::bus_interface;
 /// The interface, written once. `#[bus_interface]` makes [`TailnetProxy`] for its callers from this
 /// trait, [`TailnetServer`] for the daemon to implement and [`TailnetServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Tailnet1",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Tailnet1"
+    interface = "org.bardo.Tailnet1",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Tailnet1"
 )]
 pub trait Tailnet {
     /// The other computers on the person's network, one row per computer and none for this one:

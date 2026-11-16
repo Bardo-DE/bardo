@@ -5,7 +5,7 @@ use super::sheet::Sheets;
 use super::terminal::Terminal;
 use crate::serve::ServeLink;
 
-/// Whether sill serves intentd's questions: `org.quire.Confirm1` and `org.quire.Shell` are ours.
+/// Whether sill serves intentd's questions: `org.bardo.Confirm1` and `org.bardo.Shell` are ours.
 /// When it could not, the sheet will never appear and intentd dismisses what it asks.
 pub type IntentsLink = ServeLink;
 

@@ -5,17 +5,17 @@
 //! `root/.flatpak-info` (a Flatpak scope's name alone proves nothing). A service unit's role goes
 //! only to the unit's main process, which a fixture tree states in `<proc root>/units/<unit>`
 //! (the decimal pid) where the real daemons ask the systemd manager. A build with the
-//! `test-proc-root` feature reads `<proc root>` from `ACCOUNTD_PROC_ROOT`, `SYNCD_PROC_ROOT` or
-//! `INFERD_PROC_ROOT` instead of `/proc`, and a release build ignores the variable. A scenario
+//! `test-proc-root` feature reads `<proc root>` from `BARDO_ACCOUNTD_PROC_ROOT`, `BARDO_SYNCD_PROC_ROOT` or
+//! `BARDO_INFERD_PROC_ROOT` instead of `/proc`, and a release build ignores the variable. A scenario
 //! therefore:
 //!
 //! 1. makes a directory, `proc`, and starts each daemon (a `test-proc-root` build) with
-//!    `ACCOUNTD_PROC_ROOT=<dir>/proc` (and the other two);
-//! 2. runs `porter-rig-client --app-id org.example.App --proc-root <dir>/proc <command>`, which
+//!    `BARDO_ACCOUNTD_PROC_ROOT=<dir>/proc` (and the other two);
+//! 2. runs `account-rig-client --app-id org.example.App --proc-root <dir>/proc <command>`, which
 //!    writes `<dir>/proc/<its pid>/cgroup` and `root/.flatpak-info` naming it a Flatpak app
 //!    `org.example.App` before it connects and removes them when it ends; or, for an app that is
 //!    some other process, runs
-//!    `porter-rig-client --app-id org.example.App --proc-root <dir>/proc write-identity --pid N`.
+//!    `account-rig-client --app-id org.example.App --proc-root <dir>/proc write-identity --pid N`.
 //!
 //! The role of the app (App, Settings, SheetHost, PorterDaemon, ...) is the daemons' own table
 //! (`callers.toml`), not something the fixture says.

@@ -238,27 +238,27 @@ fn only_the_unit_of_the_daemon_may_be_the_daemon() {
     let cases: &[(&str, &str, bool)] = &[
         (
             "palmrest's unit",
-            "0::/system.slice/palmrest.service\n",
+            "0::/system.slice/bardo-mouse-gestures.service\n",
             true,
         ),
         (
             "another system service",
-            "0::/system.slice/keycap.service\n",
+            "0::/system.slice/bardo-key-remap.service\n",
             false,
         ),
         (
             "a lookalike below the unit",
-            "0::/system.slice/palmrest.service/x\n",
+            "0::/system.slice/bardo-mouse-gestures.service/x\n",
             false,
         ),
         (
             "a user unit of that name",
-            "0::/user.slice/user-1000.slice/user@1000.service/app.slice/palmrest.service\n",
+            "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service\n",
             false,
         ),
         (
             "the old hierarchy",
-            "1:name=systemd:/system.slice/palmrest.service\n",
+            "1:name=systemd:/system.slice/bardo-mouse-gestures.service\n",
             false,
         ),
         ("nothing", "", false),

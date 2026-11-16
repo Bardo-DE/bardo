@@ -1,17 +1,17 @@
-//! The schema of `quire/appearance.toml`, as quire ships it (design/22-SETTINGS.md section 9.2).
+//! The schema of `bardo/appearance.toml`, as quire ships it (design/22-SETTINGS.md section 9.2).
 
 use super::settings::{AppearanceSettings, IconsSettings};
 use crate::region::RegionSettings;
 use crate::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
 
-/// `quire.settings.toml`: the keys of `appearance.toml`, the `appearance`, `icons` and `region`
+/// `bardo.settings.toml`: the keys of `appearance.toml`, the `appearance`, `icons` and `region`
 /// domains in one schema. quire has no program of its own, so `examples/write_schema.rs` writes it
 /// (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`).
 pub fn quire_schema() -> Schema {
     Schema {
         footnotes: Vec::new(),
         app: AppId("quire".to_owned()),
-        file: FilePath("quire/appearance.toml".to_owned()),
+        file: FilePath("bardo/appearance.toml".to_owned()),
         version: 1,
         foreign: ForeignTables::default(),
         pages: Default::default(),

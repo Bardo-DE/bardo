@@ -1,7 +1,7 @@
-//! The work areas on the session bus: `org.quire.Outputs1`, the shell's answer to "how much of
+//! The work areas on the session bus: `org.bardo.Outputs1`, the shell's answer to "how much of
 //! the screen may my window use, and at what scale".
 //!
-//! - **Interface `org.quire.Outputs1`** at `/org/quire/Outputs1`.
+//! - **Interface `org.bardo.Outputs1`** at `/org/bardo/Outputs1`.
 //!   - Property `WorkAreas`, type `a(us(iiuu)(iiuu)u)`: per output its id, connector name,
 //!     frame (x, y, width, height), work area (the frame less the bar's and the dock's exclusive
 //!     zones, same order) and scale in 120ths (120 is 1x). Logical pixels.
@@ -21,8 +21,8 @@ use crate::service::{Service, ServiceIo};
 
 /// The well-known name of the interface and its object path (quire's `ui-desktop` names the
 /// same one for its `Outputs` capability).
-pub const BUS_NAME: &str = "org.quire.Outputs1";
-pub const PATH: &str = "/org/quire/Outputs1";
+pub const BUS_NAME: &str = "org.bardo.Outputs1";
+pub const PATH: &str = "/org/bardo/Outputs1";
 
 /// The work areas as a [`Service`].
 #[derive(Debug)]

@@ -22,8 +22,8 @@ pub(super) fn offered(globals: &GlobalList) -> ProtocolSet {
         .with_list(|list| ProtocolSet::from_interfaces(list.iter().map(|g| g.interface.as_str())))
 }
 
-/// Binds each offered protocol at the version this crate implements (`quire_desktop_v1` only on
-/// the Quire arm, `quire_shell_v1` only when the caller holds the shell role), and the first seat, the
+/// Binds each offered protocol at the version this crate implements (`bardo_desktop_v1` only on
+/// the Quire arm, `bardo_shell_v1` only when the caller holds the shell role), and the first seat, the
 /// shm and every `wl_output` (at version 4 for `name`).
 ///
 /// An output below version 4 is refused with [`WireError::OutputTooOld`]: without the name a
@@ -40,7 +40,7 @@ pub(super) fn bind_all(
     if offered.contains(Protocol::ExtForeignToplevelList) {
         wire.handles.toplevel_list = Some(globals.bind(qh, 1..=1, ())?);
     }
-    // On the Quire arm the toplevels come from the ext list and `quire_desktop_v1`; the wlr
+    // On the Quire arm the toplevels come from the ext list and `bardo_desktop_v1`; the wlr
     // manager is left unbound so one window is not reported twice.
     let backend = backend_for(&offered);
     if offered.contains(Protocol::WlrForeignToplevelManagement)

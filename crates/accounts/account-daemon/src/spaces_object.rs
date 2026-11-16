@@ -1,4 +1,4 @@
-//! `org.quire.Spaces1` at `/org/quire/Spaces1`: the desktop-wide Spaces (`spaces`), on accountd's
+//! `org.bardo.Spaces1` at `/org/bardo/Spaces1`: the desktop-wide Spaces (`spaces`), on accountd's
 //! connection.
 //!
 //! - Any identified caller may `List`; `Create` an app, Settings or the shell (never an assistant,

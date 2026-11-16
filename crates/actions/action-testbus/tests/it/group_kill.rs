@@ -8,7 +8,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 /// Set in the doomed process's environment; its presence makes `doomed_process` do the work.
-const DOOMED: &str = "DOCKET_TESTBUS_DOOMED";
+const DOOMED: &str = "BARDO_ACTIONS_TESTBUS_DOOMED";
 /// How many 10 ms polls a process gets to disappear. A counted bound, not a timing assertion.
 const POLLS: usize = 1000;
 

@@ -198,31 +198,31 @@ fn export_links_are_allowed_only_below_the_listed_folders() {
     // (link, allowed)
     let table: [(&str, bool); 26] = [
         ("/usr/local/bin/casement", true),
-        ("/usr/share/wayland-sessions/quire.desktop", true),
-        ("/usr/share/xdg-desktop-portal/portals/quire.portal", true),
-        ("/usr/share/dbus-1/services/org.quire.Mail.service", true),
-        ("/usr/lib/systemd/user/casement.service", true),
+        ("/usr/share/wayland-sessions/bardo.desktop", true),
+        ("/usr/share/xdg-desktop-portal/portals/bardo.portal", true),
+        ("/usr/share/dbus-1/services/org.bardo.Mail.service", true),
+        ("/usr/lib/systemd/user/bardo-compositor.service", true),
         ("/usr/share/applications/mailo.desktop", true),
-        ("/usr/share/quire/intents/org.quire.Shell.toml", true),
-        ("/usr/share/quire/skills/mail/SKILL.md", true),
-        ("/usr/share/porter/providers/openai.toml", true),
-        ("/usr/share/stoker/catalog/models.toml", true),
-        ("/usr/share/fonts/quire/Noto-COLRv1.ttf", true),
+        ("/usr/share/bardo/intents/org.bardo.Shell.toml", true),
+        ("/usr/share/bardo/skills/mail/SKILL.md", true),
+        ("/usr/share/bardo/accounts/providers/openai.toml", true),
+        ("/usr/share/bardo/models/catalog/models.toml", true),
+        ("/usr/share/fonts/bardo/Noto-COLRv1.ttf", true),
         // Beside a listed folder, not inside it.
         ("/usr/share/quire2/x", false),
         ("/usr/share/quirex", false),
         ("/usr/share/fonts2/x.ttf", false),
         ("/usr/share/icons/hicolor/x.png", false),
         // The folder itself is not a place for a link.
-        ("/usr/share/quire", false),
+        ("/usr/share/bardo", false),
         ("/usr/share/fonts", false),
         // Other system places are the system step's, never an export.
-        ("/etc/porter/callers.toml", false),
-        ("/usr/lib/systemd/system/keycap.service", false),
+        ("/etc/bardo/accountd-callers.toml", false),
+        ("/usr/lib/systemd/system/bardo-key-remap.service", false),
         ("/usr/share/polkit-1/rules.d/keycap.rules", false),
         // A polkit action can make pkexec run a program as root with no password: a release never adds one.
         (
-            "/usr/share/polkit-1/actions/org.quire.slipway.policy",
+            "/usr/share/polkit-1/actions/org.bardo.updater.policy",
             false,
         ),
         (
@@ -232,7 +232,7 @@ fn export_links_are_allowed_only_below_the_listed_folders() {
         ("/usr/share/polkit-1/actions/sub/x.policy", false),
         ("/usr/share/dbus-1/system-services/x.service", false),
         // Climbing out of an allowed folder.
-        ("/usr/share/quire/../../../etc/passwd", false),
+        ("/usr/share/bardo/../../../etc/passwd", false),
         ("/usr/share/fonts//x.ttf", false),
     ];
     for (link, allowed) in table {

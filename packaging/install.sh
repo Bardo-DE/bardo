@@ -8,7 +8,7 @@
 #   --dry-run      print the plan (what runs, in which order, what is left to you), run nothing, build nothing
 #   --prefix DIR   where the software goes (default $PREFIX, else /usr/local)
 #   --destdir DIR  a staging root put in front of every path (default $DESTDIR, else none)
-#   --sysconfdir   where porter's and steward's caller tables go (default $SYSCONFDIR, else /etc); almanac, docket and cua always use /etc/quire; stoker writes nothing there
+#   --sysconfdir   where porter's and steward's caller tables go (default $SYSCONFDIR, else /etc); almanac, docket and cua always use /etc/bardo; stoker writes nothing there
 #   --tree DIR     the bardo tree (default $BARDO_TREE, else the parent of packaging/)
 #   --no-build     do not build: install the programs already in <tree>/target (or $CARGO_TARGET_DIR) release folder
 #   --check        change nothing: look for what the desktop needs on this machine (Fedora, Ubuntu/Debian, Arch;
@@ -17,13 +17,13 @@
 #   --only NAMES   just these components (comma separated: callers, porter, steward, ferry, stoker, almanac, docket, cua, detent, casement, sill,
 #                  transom, turnstile, keycap, files, palmrest, session, fonts)
 #
-# Order: callers (the list of the desktop's own programs, /etc/quire/desktop-callers.toml, this repo's dist/), porter (the account daemon and the caller table), steward (inferd, the AI broker, and its caller table), ferry (the sync daemon syncd and the helper that shows drives in ~/Cloud, with their units), stoker (the model catalogue inferd reads), almanac (the memory daemon and its caller table),
+# Order: callers (the list of the desktop's own programs, /etc/bardo/desktop-callers.toml, this repo's dist/), porter (the account daemon and the caller table), steward (inferd, the AI broker, and its caller table), ferry (the sync daemon syncd and the helper that shows drives in ~/Cloud, with their units), stoker (the model catalogue inferd reads), almanac (the memory daemon and its caller table),
 # docket (the action router, the companion, the reader and the tool server, with their caller tables; they read
 # porter's accounts), cua (the computer-use daemon cuad, for apps that are not ours, and its caller table), detent (Settings), casement (the compositor and
 # its user unit), sill (the shell), transom (the portal backend: screen sharing, screenshots; its
 # scripts/install.sh places it), turnstile (the input service that makes virtual keyboards and pads, from install/system.sh), keycap (the
 # keyboard map, also from install/system.sh), files (the file manager), palmrest (the touchpad service, also from install/system.sh), and last the session itself (this repo's
-# install/install.sh: the desktop-session script, the user target and the login entry "sill (casement)"). Each
+# install/install.sh: the bardo-session script, the user target and the login entry "sill (casement)"). Each
 # component's installer is its
 # own: this script passes the prefix, the staging root and the built programs' place through and nothing else, and stops at the first
 # one that fails. "callers" is first on purpose: the update service (slipway) and the portal backend (transom) read the
@@ -40,8 +40,8 @@
 #
 # keycap is not installed by keycap's own installer: that one gives the `input` group the device file /dev/uinput and the service a
 # drop-in to open it, which the desktop closes (the input service owns the node). install/system.sh puts the program, the service,
-# the restart rule and /usr/lib/keycap/keycap.toml (Caps Lock; keycap's vendor file, under the administrator's
-# /etc/keycap/keycap.toml, which is never touched) instead.
+# the restart rule and /usr/lib/bardo/key-remap/key-remap.toml (Caps Lock; keycap's vendor file, under the administrator's
+# /etc/bardo/key-remap/key-remap.toml, which is never touched) instead.
 #
 # Builds. The tree pins Rust 1.98.1 (rust-toolchain.toml) and needs rustup (a distro's rust package is the wrong
 # version). The tree is one cargo workspace: every program the selected components install is built by one
@@ -65,8 +65,8 @@
 #   - files: the binary, the desktop entry, the two bus services (its own and the desktop's file-manager name) and the intents
 #     under the prefix; its installer refuses to run as root and asks for sudo itself for a place you do not own, so outside a
 #     --destdir it is left to you, run as yourself (never under sudo)
-#   - almanac, docket, cua: their caller tables go to /etc/quire (always replaced) and docket's default settings to
-#     /etc/xdg/quire. Their installers refuse to run as root and ask for sudo, doas or pkexec themselves for
+#   - almanac, docket, cua: their caller tables go to /etc/bardo (always replaced) and docket's default settings to
+#     /etc/xdg/bardo. Their installers refuse to run as root and ask for sudo, doas or pkexec themselves for
 #     just those steps, so outside a --destdir they are left to you, run as yourself (never under sudo)
 # Exit: 0 done (or the plan printed), 1 a component failed, 2 bad usage or a missing component.
 set -euo pipefail
@@ -168,10 +168,10 @@ describe() {
   case "$1" in
     callers)
       # The list of the desktop's own programs, a file of this repo (dist/desktop-callers.toml), placed at the fixed
-      # /etc/quire/desktop-callers.toml, root-owned. First on purpose (see the header).
+      # /etc/bardo/desktop-callers.toml, root-owned. First on purpose (see the header).
       dir="$HERE"
       script=install/system.sh
-      blurb="the list of the desktop's own programs (/etc/quire/desktop-callers.toml): the update service and the screen-sharing service refuse everybody without it, so it goes in first"
+      blurb="the list of the desktop's own programs (/etc/bardo/desktop-callers.toml): the update service and the screen-sharing service refuse everybody without it, so it goes in first"
       args=(callers)
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir/etc/quire") ;;
@@ -189,7 +189,7 @@ describe() {
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir$sysconfdir") ;;
     ferry)
-      # syncd, the helper that shows drives in ~/Cloud (porter-mountd) and its socket, their units and org.quire.Sync1's activation
+      # syncd, the helper that shows drives in ~/Cloud (bardo-drive-mount) and its socket, their units and org.bardo.Sync1's activation
       # file. Its installer has no --sysconfdir: it writes nothing under /etc (syncd's caller row is in porter's table).
       script=scripts/install.sh
       args=(--prefix "$prefix" --no-build)
@@ -206,34 +206,34 @@ describe() {
       writes=("$destdir$prefix")
       [ -n "$destdir" ] || yourself="its installer asks for sudo, doas or pkexec itself for a system prefix; run it as yourself" ;;
     almanac)
-      # memoryd and /etc/quire/memory-callers.toml. The installer has no --sysconfdir: /etc/quire is fixed.
+      # memoryd and /etc/bardo/memoryd-callers.toml. The installer has no --sysconfdir: /etc/bardo is fixed.
       script=scripts/install.sh
       args=(--prefix "$prefix" --no-build)
       envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir/etc/quire")
-      [ -n "$destdir" ] || yourself="its caller table goes to /etc/quire; its installer asks for sudo itself and must not be run as root" ;;
+      [ -n "$destdir" ] || yourself="its caller table goes to /etc/bardo; its installer asks for sudo itself and must not be run as root" ;;
     docket)
-      # the daemons, quire-do and /etc/quire/*-callers.toml (fixed, like almanac's), defaults in /etc/xdg/quire.
+      # the daemons, bardo-do and /etc/bardo/*-callers.toml (fixed, like almanac's), defaults in /etc/xdg/bardo.
       script=scripts/install.sh
       args=(--prefix "$prefix" --no-build)
       envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir/etc/quire" "$destdir/etc/xdg/quire")
-      [ -n "$destdir" ] || yourself="its caller tables go to /etc/quire; its installer asks for sudo itself and must not be run as root" ;;
+      [ -n "$destdir" ] || yourself="its caller tables go to /etc/bardo; its installer asks for sudo itself and must not be run as root" ;;
     cua)
       # cuad (<prefix>/libexec/quire), its unit, the D-Bus activation files, the Settings schema and
-      # /etc/quire/cuad-callers.toml (fixed, like almanac's: cuad reads that path only). Needs at-spi2-core at run time
+      # /etc/bardo/computer-use-callers.toml (fixed, like almanac's: cuad reads that path only). Needs at-spi2-core at run time
       # (its installer prints a note when that is missing).
       script=scripts/install.sh
       args=(--prefix "$prefix" --no-build)
       envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir/etc/quire")
-      [ -n "$destdir" ] || yourself="its caller table goes to /etc/quire; its installer asks for sudo itself and must not be run as root" ;;
+      [ -n "$destdir" ] || yourself="its caller table goes to /etc/bardo; its installer asks for sudo itself and must not be run as root" ;;
     detent)
       script=scripts/install.sh
-      envs=("PREFIX=$prefix" "DESTDIR=$destdir" "DETENT_BIN=$target_dir/release/detent")
+      envs=("PREFIX=$prefix" "DESTDIR=$destdir" "BARDO_SETTINGS_BIN=$target_dir/release/detent")
       writes=("$destdir$prefix") ;;
     casement)
       script=scripts/install.sh
@@ -266,7 +266,7 @@ describe() {
       # The keyboard map, installed by install/system.sh and not by keycap's own installer (see the header).
       dir="$HERE"
       script=install/system.sh
-      blurb="the keyboard map: its program and service, the rule that lets you restart it, and /usr/lib/keycap/keycap.toml (Caps Lock switches the input method)"
+      blurb="the keyboard map: its program and service, the rule that lets you restart it, and /usr/lib/bardo/key-remap/key-remap.toml (Caps Lock switches the input method)"
       args=(keycap --prefix "$(root_prefix)")
       envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
@@ -275,7 +275,7 @@ describe() {
     files)
       script=dist/install.sh
       args=(--no-build)
-      envs=("FILES_PREFIX=$prefix" "FILES_DESTDIR=$destdir" "CARGO_TARGET_DIR=$target_dir")
+      envs=("BARDO_FILES_PREFIX=$prefix" "BARDO_FILES_DESTDIR=$destdir" "CARGO_TARGET_DIR=$target_dir")
       writes=("$destdir$prefix")
       [ -n "$destdir" ] || yourself="its installer refuses to run as root and asks for sudo itself; run it as yourself" ;;
     palmrest)
@@ -292,7 +292,7 @@ describe() {
       # This repo's own session installer (never sudo; it stops with the root command when a place is not writable).
       dir="$HERE"
       script=install/install.sh
-      # It also puts casement.service and sill.service, root-held, in <sysconfdir>/systemd/user, from the compositor and shell folders of the tree (--tree).
+      # It also puts bardo-compositor.service and bardo-shell.service, root-held, in <sysconfdir>/systemd/user, from the compositor and shell folders of the tree (--tree).
       args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       args+=(--tree "$tree")

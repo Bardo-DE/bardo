@@ -1,4 +1,4 @@
-//! The voice service on a private bus: a stand-in `voiced` owns `org.quire.Voice1`, the shell is
+//! The voice service on a private bus: a stand-in `voiced` owns `org.bardo.Voice1`, the shell is
 //! the connection the intents service would publish on its seat. Everything waits on the
 //! service's published state or on the stand-in's record, never on a clock; a test skips, saying
 //! so, without a `dbus-daemon`. Never the person's session bus.

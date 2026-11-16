@@ -1,10 +1,10 @@
 # Agent programs docket may run as session backends (acp-sessions.md S4). Copy to
-# ~/.config/docket/agents.toml, fix the paths, and switch it on with
+# ~/.config/actions/agents.toml, fix the paths, and switch it on with
 #
 #   [agent.acp]
 #   agents = true
 #
-# in ~/.config/docket/settings.toml. Nothing starts while that setting is off or the program is
+# in ~/.config/actions/settings.toml. Nothing starts while that setting is off or the program is
 # not listed here. Paths must be absolute.
 
 # Claude Code through its ACP adapter, signed in the way you sign it in today (a subscription or
@@ -25,7 +25,7 @@ label = "Claude Code"
 # The agent's own login, run where you can see it (a terminal), when the Settings app asks.
 login = ["konsole", "-e", "claude", "login"]
 # The desktop's actions (mail, contacts, memory) are offered to the agent as an MCP server it starts itself
-# (the `actions-mcp` program beside docket-agent); every call is a call of this session, asked about like the
+# (the `bardo-actions-mcp` program beside bardo-agent); every call is a call of this session, asked about like the
 # planner's. "off" keeps the agent to its own tools and the host's file and terminal methods.
 tools = true
 # Confines what Claude Code brings of its own (profile = "claude-code"). Claude Code ignores a managed-settings

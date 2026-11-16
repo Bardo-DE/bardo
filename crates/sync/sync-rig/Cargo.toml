@@ -1,6 +1,6 @@
 [package]
 name = "sync-rig"
-description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives ferry with. ferry-rig-servers starts the Microsoft Graph fake (the drive and the calendars) behind porter's fake OAuth issuer on loopback, plants known tokens and serves the scenario's levers; ferry-rig-client acts as an app over the session bus and talks to syncd's org.quire.Sync1. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives ferry with. sync-rig-servers starts the Microsoft Graph fake (the drive and the calendars) behind porter's fake OAuth issuer on loopback, plants known tokens and serves the scenario's levers; sync-rig-client acts as an app over the session bus and talks to syncd's org.bardo.Sync1. Nothing shipped depends on it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -9,12 +9,12 @@ repository = "https://github.com/Bardo-DE/ferry"
 publish = false
 
 [[bin]]
-name = "ferry-rig-servers"
-path = "src/bin/ferry-rig-servers.rs"
+name = "sync-rig-servers"
+path = "src/bin/sync-rig-servers.rs"
 
 [[bin]]
-name = "ferry-rig-client"
-path = "src/bin/ferry-rig-client.rs"
+name = "sync-rig-client"
+path = "src/bin/sync-rig-client.rs"
 
 [dependencies]
 sync-bus = {path = "../sync-bus"}

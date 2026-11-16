@@ -87,7 +87,7 @@ pub fn time_locale<'a>(
 /// `region.*`: the language and region preferences every program shares.
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "quire/appearance.toml", domain = "region", page = Page::Appearance)]
+#[settings(file = "bardo/appearance.toml", domain = "region", page = Page::Appearance)]
 pub struct RegionSettings {
     /// `region.hours`: Auto, 12 or 24.
     #[settings(

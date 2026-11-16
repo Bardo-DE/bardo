@@ -29,13 +29,13 @@ fn why(p: &str, at: i64, content: u8) -> WhyAt {
             path: path(p),
             content: ContentDigest([content; 32]),
             cause: ThingRef {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 kind: ThingKind::parse("mail.message").expect("k"),
                 key: ThingKey::parse("m1").expect("k"),
             },
             verb: Verb::Downloaded,
             by: Actor::User {
-                via: app("org.quire.Mail"),
+                via: app("org.bardo.Mail"),
             },
         },
         at: Stamp(at),
@@ -203,7 +203,7 @@ fn an_explained_event_carries_the_apps_claim() {
     assert_eq!(
         event.actor,
         Actor::User {
-            via: app("org.quire.Mail")
+            via: app("org.bardo.Mail")
         }
     );
     assert_eq!(event.file.inode, 77);

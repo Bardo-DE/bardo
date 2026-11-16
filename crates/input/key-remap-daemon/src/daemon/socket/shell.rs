@@ -18,22 +18,22 @@ use service_locator::guard::{SeatUser, ShellCheck, Vouch};
 /// be read at all, which a dynamic user cannot do for another user's process.
 pub(super) const STEERING_TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
 exe  = [
-  "/opt/quire/releases/*/bin/sill",
-  "/opt/quire/current/bin/sill",
-  "/usr/local/bin/sill",
-  "/usr/bin/sill",
+  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/current/bin/bardo-shell",
+  "/usr/local/bin/bardo-shell",
+  "/usr/bin/bardo-shell",
 ]
 role = "shell"
 
 [[peer]]
 app  = "org.keycap.FocusFeed"
-unit = "keycap-focus.service"
+unit = "bardo-key-remap-focus.service"
 exe  = [
-  "/usr/local/bin/keycap-focus",
-  "/home/*/.local/bin/keycap-focus",
+  "/usr/local/bin/bardo-key-remap-focus",
+  "/home/*/.local/bin/bardo-key-remap-focus",
 ]
 role = "focus_feed"
 "#;
@@ -41,7 +41,7 @@ role = "focus_feed"
 /// The role of the Plasma focus feed.
 const FOCUS_FEED: RoleName = RoleName::from_static("focus_feed");
 
-/// Whether `KEYCAP_STEERING` asks to trust every program of the seat's user, as before the
+/// Whether `BARDO_KEY_REMAP_STEERING` asks to trust every program of the seat's user, as before the
 /// shell was told apart (for tests whose client is not in a unit): only the exact word
 /// `seat-user` does; otherwise only the shell's unit steers.
 pub(crate) fn seat_user_asked(v: Option<&str>) -> bool {
@@ -114,12 +114,12 @@ mod tests {
         let cases: &[(&str, String, Claim)] = &[
             (
                 "the shell",
-                format!("{MANAGER_1000}/session.slice/sill.service"),
+                format!("{MANAGER_1000}/session.slice/bardo-shell.service"),
                 shell,
             ),
             (
                 "the focus feed",
-                format!("{MANAGER_1000}/app.slice/keycap-focus.service"),
+                format!("{MANAGER_1000}/app.slice/bardo-key-remap-focus.service"),
                 shell,
             ),
             (
@@ -140,12 +140,12 @@ mod tests {
 
     #[test]
     fn a_readable_image_must_be_the_shells_and_root_owned() {
-        let cgroup = format!("{MANAGER_1000}/session.slice/sill.service");
+        let cgroup = format!("{MANAGER_1000}/session.slice/bardo-shell.service");
         let shell = Claim::Shell { user: 1000 };
         let cases: &[(&str, FixtureImage<'_>, Claim)] = &[
             (
                 "the installed shell",
-                FixtureImage::Present("/usr/bin/sill", FileTrust::RootOnly),
+                FixtureImage::Present("/usr/bin/bardo-shell", FileTrust::RootOnly),
                 shell,
             ),
             (
@@ -155,7 +155,7 @@ mod tests {
             ),
             (
                 "the shell's path, but writable",
-                FixtureImage::Present("/usr/bin/sill", FileTrust::Writable(Writer::Group)),
+                FixtureImage::Present("/usr/bin/bardo-shell", FileTrust::Writable(Writer::Group)),
                 Claim::Other,
             ),
         ];

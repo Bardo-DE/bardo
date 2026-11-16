@@ -1,9 +1,9 @@
-//! The signals of `org.quire.Memory1.Control` and how they are emitted.
+//! The signals of `org.bardo.Memory1.Control` and how they are emitted.
 
 use memory_dbus::{CONTROL_INTERFACE, MEMORY_PATH};
 use zbus::Connection;
 
-/// The signals of `org.quire.Memory1.Control`.
+/// The signals of `org.bardo.Memory1.Control`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Signal {
     /// A record was stored.

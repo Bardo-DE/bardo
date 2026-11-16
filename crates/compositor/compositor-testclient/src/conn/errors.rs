@@ -86,14 +86,14 @@ pub(super) fn is_documented(interface: &str, code: u32) -> Option<bool> {
         ("zwlr_gamma_control_v1", wayland_protocols_wlr::gamma_control::v1::client::zwlr_gamma_control_v1::Error),
         ("zwp_virtual_keyboard_v1", wayland_protocols_misc::zwp_virtual_keyboard_v1::client::zwp_virtual_keyboard_v1::Error),
         ("zwp_virtual_keyboard_manager_v1", wayland_protocols_misc::zwp_virtual_keyboard_v1::client::zwp_virtual_keyboard_manager_v1::Error),
-        ("quire_window_manager_v1", desktop_protocols::client::quire_window_v1::quire_window_manager_v1::Error),
-        ("quire_window_v1", desktop_protocols::client::quire_window_v1::quire_window_v1::Error),
-        ("quire_sensitive_manager_v1", desktop_protocols::client::quire_sensitive_v1::quire_sensitive_manager_v1::Error),
-        ("quire_sensitive_surface_v1", desktop_protocols::client::quire_sensitive_v1::quire_sensitive_surface_v1::Error),
-        ("quire_agent_manager_v1", desktop_protocols::client::quire_agent_v1::quire_agent_manager_v1::Error),
-        ("quire_trusted_manager_v1", desktop_protocols::client::quire_trusted_surface_v1::quire_trusted_manager_v1::Error),
-        ("quire_desktop_manager_v1", desktop_protocols::client::quire_desktop_v1::quire_desktop_manager_v1::Error),
-        ("quire_shell_v1", desktop_protocols::client::quire_shell_v1::quire_shell_v1::Error),
+        ("bardo_window_manager_v1", desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::Error),
+        ("bardo_window_v1", desktop_protocols::client::bardo_window_v1::bardo_window_v1::Error),
+        ("bardo_sensitive_manager_v1", desktop_protocols::client::bardo_sensitive_v1::bardo_sensitive_manager_v1::Error),
+        ("bardo_sensitive_surface_v1", desktop_protocols::client::bardo_sensitive_v1::bardo_sensitive_surface_v1::Error),
+        ("bardo_agent_manager_v1", desktop_protocols::client::bardo_agent_v1::bardo_agent_manager_v1::Error),
+        ("bardo_trusted_manager_v1", desktop_protocols::client::bardo_trusted_surface_v1::bardo_trusted_manager_v1::Error),
+        ("bardo_desktop_manager_v1", desktop_protocols::client::bardo_desktop_v1::bardo_desktop_manager_v1::Error),
+        ("bardo_shell_v1", desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::Error),
     ]
 }
 

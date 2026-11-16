@@ -1,13 +1,13 @@
 vocab = 1
 id = "settings"
-owner = "org.quire.Settings"
+owner = "org.bardo.Settings"
 version = "0.1.0"
 uses = [
-  "org.quire.Settings:settings.key.read",
-  "org.quire.Settings:settings.key.set",
+  "org.bardo.Settings:settings.key.read",
+  "org.bardo.Settings:settings.key.set",
 ]
 
 [when]
-focused_app = ["org.quire.Settings"]
+focused_app = ["org.bardo.Settings"]
 kinds = []
 always = false

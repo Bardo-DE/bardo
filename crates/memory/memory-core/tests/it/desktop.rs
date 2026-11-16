@@ -57,7 +57,7 @@ fn the_desktop_scope_admits_only_what_the_person_stated() {
             label(
                 Integrity::Trusted,
                 Confidentiality::Public,
-                &[Source::App(AppName::parse("org.quire.Mail").expect("app"))],
+                &[Source::App(AppName::parse("org.bardo.Mail").expect("app"))],
             ),
             Err(NotUserStated),
         ),

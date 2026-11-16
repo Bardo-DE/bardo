@@ -13,10 +13,10 @@
 //! sync | quit
 //! ```
 //!
-//! The shell verbs need `casement-probe` to be the shell: the scenario starts casement with
-//! `CASEMENT_DEBUG_PEER_UNITS="casement-probe=sill.service"`. ROLE is bar, dock, launcher, switcher,
+//! The shell verbs need `compositor-probe` to be the shell: the scenario starts casement with
+//! `BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service"`. ROLE is bar, dock, launcher, switcher,
 //! overview, notifications, osd, control-centre, wallpaper or widget; LAYER is a session layer name;
-//! TOPLEVEL is a window identifier (`w<id>`, as `casementctl debug windows` lists it).
+//! TOPLEVEL is a window identifier (`w<id>`, as `bardo-compositorctl debug windows` lists it).
 //! After `shell-connect` the session's client is the shell connection: surfaces made before it
 //! are gone, so make the layers after it. Each shell verb answers one `probe: {json}` note.
 

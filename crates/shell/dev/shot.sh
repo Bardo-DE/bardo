@@ -7,6 +7,6 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/compositor.sh"
 if [ "${1:-}" = "--surface" ]; then
   [ "$#" -eq 3 ] || { echo "usage: dev/shot.sh --surface NAME OUT.png" >&2; exit 2; }
-  exec "$SHELL_HOST_DEV/run.sh" "$SILL_BIN" debug capture "$2" "$(realpath -m "$3")"
+  exec "$BARDO_LAYER_SHELL_HOST_DEV/run.sh" "$BARDO_SHELL_BIN" debug capture "$2" "$(realpath -m "$3")"
 fi
-exec "$SHELL_HOST_DEV/shot.sh" "$@"
+exec "$BARDO_LAYER_SHELL_HOST_DEV/shot.sh" "$@"

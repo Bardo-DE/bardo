@@ -18,7 +18,7 @@ fn grant(id: &str, action: &str, scope: GrantScope) -> ActionGrant {
         id: GrantId::parse(id).expect("id"),
         key: ActionGrantKey {
             caller: GrantCaller::Companion,
-            owner: AppName::parse("org.quire.Mail").expect("app"),
+            owner: AppName::parse("org.bardo.Mail").expect("app"),
             target: GrantTarget::Action(ActionName::parse(action).expect("action")),
             class: DataClass::Mail,
             usage: Usage::Interactive,
@@ -104,7 +104,7 @@ fn standing_grant(prefix: &str) -> permission_core::StandingGrant {
         GrantCaller::AcpAgent(permission_core::ProgramName::parse("claude-code").expect("program")),
         permission_core::StandingScope::Files {
             action: action_vocab::ActionRef {
-                app: AppName::parse("org.quire.Files").expect("app"),
+                app: AppName::parse("org.bardo.Files").expect("app"),
                 name: ActionName::parse("files.file.move").expect("action"),
             },
             under: sandbox::AbsPath::parse(prefix).expect("path"),
@@ -118,7 +118,7 @@ fn read_grant() -> permission_core::StandingGrant {
         GrantCaller::AcpAgent(permission_core::ProgramName::parse("claude-code").expect("program")),
         permission_core::StandingScope::Reads {
             action: action_vocab::ActionRef {
-                app: AppName::parse("org.quire.Mail").expect("app"),
+                app: AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse("mail.thread.search").expect("action"),
             },
         },

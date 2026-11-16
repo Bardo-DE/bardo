@@ -1,7 +1,7 @@
 //! The sync-hold service on a private bus: a stand-in syncd, a stand-in accountd for the account's
 //! name, and the real notifications server. A hold becomes a notification whose one button asks
 //! the launch service to open Settings at the account; its end takes the notification back; and
-//! `Watch` is called at start and again for every new owner of `org.quire.Sync1`. Never the
+//! `Watch` is called at start and again for every new owner of `org.bardo.Sync1`. Never the
 //! person's session bus; a test skips, saying so, without a `dbus-daemon`.
 
 use std::collections::HashMap;
@@ -28,7 +28,7 @@ use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
 
 const SETTLE: Duration = Duration::from_secs(5);
-const SYNC_PATH: &str = "/org/quire/Sync1";
+const SYNC_PATH: &str = "/org/bardo/Sync1";
 const DATASET: &str = "work/files";
 
 async fn wait_for<T>(receiver: &mut watch::Receiver<T>, want: impl Fn(&T) -> bool) -> bool {
@@ -48,14 +48,14 @@ fn counts(discard: u64, held: u64) -> Held {
     ])
 }
 
-/// `org.quire.Sync1` as far as the shell uses it: `Watch` is counted, and a hold that is already
+/// `org.bardo.Sync1` as far as the shell uses it: `Watch` is counted, and a hold that is already
 /// on is told before `Watch` returns.
 struct Syncd {
     watched: Arc<AtomicUsize>,
     already: Option<Held>,
 }
 
-#[zbus::interface(name = "org.quire.Sync1")]
+#[zbus::interface(name = "org.bardo.Sync1")]
 impl Syncd {
     async fn watch(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
         self.watched.fetch_add(1, Ordering::SeqCst);
@@ -90,7 +90,7 @@ impl FakeSyncd {
                 },
             )
             .unwrap_or_else(|e| panic!("{e}"))
-            .name("org.quire.Sync1")
+            .name("org.bardo.Sync1")
             .unwrap_or_else(|e| panic!("{e}"))
             .build()
             .await

@@ -1,0 +1,7 @@
+# The MCP edge's configuration as the package ships it: $XDG_CONFIG_HOME/quire/bardo-actions-mcp.toml (or
+# /etc/xdg/bardo/bardo-actions-mcp.toml) replaces it whole. Whether the edge is on is not here: it is the
+# setting `agent.mcp.expose` (Intelligence > Privacy), in $XDG_CONFIG_HOME/actions/settings.toml as
+# `[agent.mcp] expose = true`. Off by default (QUESTIONS S7): an edge that is off lists no tools
+# and refuses every call. `client` is the name this process's calls are labelled with (the person
+# sees it on a confirmation); `--client NAME` on the command line wins.
+client = "mcp-client"

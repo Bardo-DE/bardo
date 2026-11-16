@@ -14,7 +14,7 @@ What a bus message may carry (the design lets exactly these through; every other
     credentials there, by design: the store is the one place they live);
   - AccountsSheet1.Input, the unicast signal from the sheet host to accountd with the answers a person typed
     (a password goes from the sheet to accountd once, by design);
-  - org.quire.Casement.Debug1.Inject and its reply: the test typing the person's keys;
+  - org.bardo.Compositor.Debug1.Inject and its reply: the test typing the person's keys;
   - an ACCESS token (planted or minted) in the reply to Tokens.IssueToken: apps receive short-lived tokens.
 A refresh token, a password or an API key in any other message, or any secret in a log or a state file, is a hit.
 
@@ -95,7 +95,7 @@ def main():
                     to_secrets.add(key)
                 if member == "IssueToken":
                     to_issue.add(key)
-                if m.get("interface") == "org.quire.Casement.Debug1":
+                if m.get("interface") == "org.bardo.Compositor.Debug1":
                     to_inject.add(key)
         for m in msgs:
             out = []
@@ -111,9 +111,9 @@ def main():
                 why = "the Secret Service call"
             elif m["type"] == "method_return" and (dest, m.get("reply_cookie")) in to_secrets:
                 why = "the Secret Service reply"
-            elif m["type"] == "signal" and m.get("interface") == "org.quire.AccountsSheet1" and m.get("member") == "Input":
+            elif m["type"] == "signal" and m.get("interface") == "org.bardo.AccountsSheet1" and m.get("member") == "Input":
                 why = "the sheet host's Input to accountd"
-            elif m.get("interface") == "org.quire.Casement.Debug1" or (m["type"] == "method_return" and (dest, m.get("reply_cookie")) in to_inject):
+            elif m.get("interface") == "org.bardo.Compositor.Debug1" or (m["type"] == "method_return" and (dest, m.get("reply_cookie")) in to_inject):
                 why = "the test typing (casement Inject)"
             elif is_issue_reply:
                 why = "the access token in IssueToken's reply"

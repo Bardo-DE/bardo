@@ -15,7 +15,7 @@ const LABEL: &str = "Let my other computers use this computer's models";
 const ALLOW: &str = ".ds-alert .ds-button[data-answers=\"return\"]";
 const CANCEL: &str = ".ds-alert .ds-button[data-answers=\"escape\"]";
 const QUESTION: &str = "Let your other computers use this computer's models?";
-const DROP_IN: &str = "systemd/user/inferd.service.d/tailnet.conf";
+const DROP_IN: &str = "systemd/user/bardo-inferd.service.d/tailnet.conf";
 
 fn intelligence() -> Opening {
     Opening {
@@ -112,7 +112,7 @@ fn allow_sets_sharing_up_and_then_writes_the_setting() {
     assert_eq!(sandbox.drop_in().as_deref(), Some(SHIPPED));
     assert_eq!(
         sandbox.units().calls(),
-        ["reload", "restart inferd.service"]
+        ["reload", "restart bardo-inferd.service"]
     );
     settle(&mut harness, "the switch on", |h| {
         checked(h).as_deref() == Some("true")
@@ -163,7 +163,7 @@ fn turning_it_off_takes_sharing_away_without_asking() {
     assert!(!plain(&harness).contains(QUESTION), "off asks nothing");
     assert_eq!(
         sandbox.units().calls(),
-        ["reload", "restart inferd.service"]
+        ["reload", "restart bardo-inferd.service"]
     );
     settle(&mut harness, "the switch off", |h| {
         checked(h).as_deref() == Some("false")

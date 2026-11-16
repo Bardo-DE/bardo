@@ -1,4 +1,4 @@
-//! The desktop's appearance: `quire/appearance.toml` and the settings portal, watched once for
+//! The desktop's appearance: `bardo/appearance.toml` and the settings portal, watched once for
 //! the whole shell and published to the feed every surface root draws it from (ARCHITECTURE.md
 //! section 8). Like the other watches, the task sends each settled value to the host thread,
 //! which publishes it.
@@ -14,7 +14,7 @@ use ui_settings::{
 use super::store::report;
 use crate::daemon::msg::ShellMsg;
 
-/// The store of `quire/appearance.toml`, which every quire app shares.
+/// The store of `bardo/appearance.toml`, which every quire app shares.
 pub fn appearance_store() -> Store {
     Store::new(ConfigRoot::Xdg, AppName::QUIRE)
 }

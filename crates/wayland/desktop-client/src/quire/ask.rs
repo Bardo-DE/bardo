@@ -1,4 +1,4 @@
-//! A question from the compositor to the person (`quire_shell_v1`, version 5): may this program
+//! A question from the compositor to the person (`bardo_shell_v1`, version 5): may this program
 //! use this power?
 
 use desktop_protocols::vocab::{AskId, Memory, Power, SubjectKind};

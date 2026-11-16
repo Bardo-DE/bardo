@@ -1,5 +1,5 @@
 //! What the person did on the sheet, as the host reports it to the daemon (the `Input` signal of
-//! `org.quire.AccountsSheet1`). Only the sheet's owner's input counts; the daemon checks the
+//! `org.bardo.AccountsSheet1`). Only the sheet's owner's input counts; the daemon checks the
 //! sender, not this value.
 
 use super::fields::FieldAnswer;

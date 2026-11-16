@@ -33,7 +33,7 @@ fn policy(task_id: &str, in_space: &str) -> TaskPolicy {
         space: space(in_space),
         from: vec![TurnId(1)],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::Outbound,
         )]),
         kinds: BTreeSet::from([kind("mail.thread"), kind("mail.contact")]),
@@ -70,7 +70,7 @@ fn a_child_policy_is_never_wider_than_its_parents() {
             "an app the parent lacks",
             edit(|p| {
                 p.actions.insert(ActionMatch::AppUpTo(
-                    app("org.quire.Files"),
+                    app("org.bardo.Files"),
                     Effect::Destructive,
                 ));
             }),

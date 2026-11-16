@@ -1,12 +1,12 @@
 //! accountd's bus front end as a library, so the objects it serves are tested on a private bus
-//! without the daemon: `org.quire.Accounts1` over [`account_service::AccountService`].
+//! without the daemon: `org.bardo.Accounts1` over [`account_service::AccountService`].
 //!
 //! accountd holds identities (the accounts a person signs in to: OAuth, a password, an app
 //! password), Spaces and Tailscale, and the AI keys with the grants that let an app use them:
 //! one registry, one secret namespace, one grant store. The agent logins and the local runtimes
 //! the AI broker reports are accounts of it too. An app, or a daemon such as ferry's syncd, finds
 //! the accounts it holds a grant for, asks for one and opens a signed-in stream to an account's
-//! server through `org.quire.Grants1` (`grants_object`, `relay`): the credential stays here.
+//! server through `org.bardo.Grants1` (`grants_object`, `relay`): the credential stays here.
 //!
 //! - `Manager` (`AddAccount`, `NeedingReauth`, the signals `AccountAdded` and `AccountRemoved`) at
 //!   the accountd path; one `Account` object per account (`Reauthenticate`, and the `State`
@@ -14,7 +14,7 @@
 //! - The caller is the connection's, never the request's: a [`Callers`] seam says which app a
 //!   bus sender is, and a sender it does not know is refused `AccessDenied` by the bus's own
 //!   error name (a client reports that as `TransportError::Denied`).
-//! - A refusal is the error `org.quire.Accounts1.Error.<Refusal>` (`errors`), as the in-process
+//! - A refusal is the error `org.bardo.Accounts1.Error.<Refusal>` (`errors`), as the in-process
 //!   carrier's `AccountsReply::Refused`.
 //! - The two sheet methods return a Request object at once (`request`, over account-sheets'
 //!   `RequestObjects`): the answer is its `Response` signal, sent to the caller alone, and the
@@ -23,41 +23,41 @@
 //!
 //! - `Account` properties (`Id`, `Provider`, `Label`, `State`, `ReauthReason`, `Capabilities`),
 //!   readable only by the shell (`SheetHost`) and Settings; the manager's signals, unicast to
-//!   those two (`hub`); and `org.quire.SettingsModule1` at `settings_path()` for the Settings
+//!   those two (`hub`); and `org.bardo.SettingsModule1` at `settings_path()` for the Settings
 //!   role, through quire's `ui_settings::live`: one block per account, the apps using each
 //!   identity (`accounts.<id>.used_by.<n>`, read-only), a switch for each AI service and a Revoke
 //!   for each permit, and the client ids.
 //! - Roles: an `Agent` is refused `AddAccount`, `Reauthenticate` and `RequestKey`
 //!   (`Refusal::Denied`); the agent launcher may call `Launcher` and nothing else; the AI broker
 //!   may call `Broker` and read the computers on the tailnet, and nothing else.
-//! - `BusSheets` is the sheet link to the host over `org.quire.AccountsSheet1`
+//! - `BusSheets` is the sheet link to the host over `org.bardo.AccountsSheet1`
 //!   (account-sheets).
 //!
-//! - `org.quire.Grants1` at `/org/quire/Grants1`: `Candidates`, `Availability` and `Grants` for the
+//! - `org.bardo.Grants1` at `/org/bardo/Grants1`: `Candidates`, `Availability` and `Grants` for the
 //!   caller's own grants, `RequestGrant` (a Request object; the sheet is drawn each time, and the
 //!   answer is kept as a grant), `Revoke`, `OpenAuthenticated` and `OpenLinked` (a descriptor whose other end
 //!   accountd's relay holds), `Accounts` for a porter daemon, Settings or the shell, and
 //!   `ExtendAccess` and `AsksOnUse` for the access a provider asks only on use. Apps and the
 //!   porter daemons use it; every other role is refused.
 //!
-//! - The AI keys: `org.quire.Accounts1.Keys` (`keys`: an app's `RequestKey`, answered with the
-//!   permit it already holds or a consent sheet), `org.quire.Accounts1.Launcher` (`launcher`:
+//! - The AI keys: `org.bardo.Accounts1.Keys` (`keys`: an app's `RequestKey`, answered with the
+//!   permit it already holds or a consent sheet), `org.bardo.Accounts1.Launcher` (`launcher`:
 //!   the agent launcher's programs, sessions, the sheet for an agent's key, the logins and the key
-//!   handed to a process it spawns on a sealed memfd) and `org.quire.Accounts1.Broker`
+//!   handed to a process it spawns on a sealed memfd) and `org.bardo.Accounts1.Broker`
 //!   (`broker`: what an app's permits say and the key behind one, for inferd alone).
 //!
 //! - Tailscale (`tailnet`, `tailnet_object`): the Tailscale account's state follows what
 //!   Tailscale says (running and signed in `ok`, signed out `needs_login`, off or not running
 //!   `offline`), read from its watch stream with a look every half minute behind it; and
-//!   `org.quire.Tailnet1` at `/org/quire/Tailnet1` lists the person's other computers
+//!   `org.bardo.Tailnet1` at `/org/bardo/Tailnet1` lists the person's other computers
 //!   (`Machines`) with a `Changed` signal, for the shell, Settings, the terminal and the AI
 //!   broker.
 //!
-//! - `org.quire.Spaces1` at `/org/quire/Spaces1`: the registry of desktop-wide Spaces, kept in
+//! - `org.bardo.Spaces1` at `/org/bardo/Spaces1`: the registry of desktop-wide Spaces, kept in
 //!   `spaces.json` (`spaces`, `spaces_object`). Any identified app lists and creates (at most
 //!   `account_spaces::CREATES_PER_WINDOW` a minute each); Settings and the shell rename, restyle and remove.
 //!
-//! - `org.quire.Identities1` at `/org/quire/Identities1`: the identities signed in on this
+//! - `org.bardo.Identities1` at `/org/bardo/Identities1`: the identities signed in on this
 //!   machine, which are the registry's accounts of a sign-in kind (OAuth, a password, an app
 //!   password; `identities_object`). Any app lists them, `Offer`s "Continue as" (the picker is the
 //!   sheet `Choose` draws, `AskPurpose::ContinueAs`, through a `account_identities::IdentityDesk`; the answer is the

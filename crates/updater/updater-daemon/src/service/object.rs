@@ -1,4 +1,4 @@
-//! `org.quire.Updates1` on the session bus: the daemon's public face.
+//! `org.bardo.Updates1` on the session bus: the daemon's public face.
 
 use super::engine::{Engine, Job};
 use super::gate::Gate;
@@ -10,9 +10,9 @@ use zbus::message::Header;
 use zbus::{fdo, interface};
 
 /// The well-known name the daemon owns.
-pub const BUS_NAME: &str = "org.quire.Updates1";
+pub const BUS_NAME: &str = "org.bardo.Updates1";
 /// The object's path.
-pub const PATH: &str = "/org/quire/Updates1";
+pub const PATH: &str = "/org/bardo/Updates1";
 
 /// The exported object; every property reads the engine's current status.
 #[derive(Debug)]
@@ -46,7 +46,7 @@ fn denied(problem: Problem) -> fdo::Error {
     fdo::Error::AccessDenied(problem.plain().to_owned())
 }
 
-#[interface(name = "org.quire.Updates1")]
+#[interface(name = "org.bardo.Updates1")]
 impl Updates {
     /// Looks for a newer version; returns at once, watch `State`.
     async fn check(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
@@ -57,7 +57,7 @@ impl Updates {
     /// Downloads (if needed), verifies and installs the newer version; returns at once. `version` is
     /// the version the caller showed the person: when the one that would be installed is another
     /// (a newer release arrived meanwhile), nothing starts and the error is
-    /// `org.quire.Updates1.Error.VersionChanged`; text that is not a version is `...Error.NotAVersion`.
+    /// `org.bardo.Updates1.Error.VersionChanged`; text that is not a version is `...Error.NotAVersion`.
     async fn install(
         &self,
         #[zbus(header)] header: Header<'_>,

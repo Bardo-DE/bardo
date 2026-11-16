@@ -3,7 +3,7 @@
 //!
 //! The host opens the agent's session at the router, then makes a unix socket for that session
 //! alone and offers the agent an MCP server (`session/new` `mcpServers`, stdio form) that is
-//! `actions-mcp --host-socket <socket>` with the session's token in its environment. The agent
+//! `bardo-actions-mcp --host-socket <socket>` with the session's token in its environment. The agent
 //! starts that process itself, inside its sandbox, where the socket and the program are bound in.
 //! The process holds no authority: it forwards `tools/list` and `tools/call` over the socket, and
 //! the host makes each call as a router call in the session it opened, as the program it named,

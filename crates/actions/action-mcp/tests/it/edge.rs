@@ -76,7 +76,7 @@ fn allow_mail_for_the_client(router: &Router<FakeSeams>) {
             id: account_core::GrantId::parse(&format!("g-{n}")).expect("grant"),
             key: ActionGrantKey {
                 caller: GrantCaller::Mcp(client.clone()),
-                owner: AppName::parse("org.quire.Mail").expect("app"),
+                owner: AppName::parse("org.bardo.Mail").expect("app"),
                 target: GrantTarget::App,
                 class: DataClass::Mail,
                 usage,
@@ -120,7 +120,7 @@ async fn rig_with(configure: impl FnOnce(McpEdge<Recording>) -> McpEdge<Recordin
 }
 
 fn thread(key: &str) -> Json {
-    json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": key })
+    json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
 async fn call(rig: &Rig, tool: &str, arguments: Json) -> CallToolResult {
@@ -303,7 +303,7 @@ async fn a_refusal_names_a_kind_and_never_a_reason() {
     let result = call(
         &rig,
         "files__files_file_read",
-        json!({ "target": { "app": "org.quire.Files", "kind": "files.file", "key": "f1" } }),
+        json!({ "target": { "app": "org.bardo.Files", "kind": "files.file", "key": "f1" } }),
     )
     .await;
     assert_eq!(result.is_error, Some(true));
@@ -351,9 +351,9 @@ async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
     .await;
     let write = |text: &str| {
         std::fs::create_dir_all(home.path().join("docket")).expect("dir");
-        let temp = home.path().join("docket/settings.toml.tmp");
+        let temp = home.path().join("actions/settings.toml.tmp");
         std::fs::write(&temp, text).expect("write");
-        std::fs::rename(&temp, home.path().join("docket/settings.toml")).expect("rename");
+        std::fs::rename(&temp, home.path().join("actions/settings.toml")).expect("rename");
     };
     // No file: off.
     assert!(rig.client.list_all_tools().await.expect("list").is_empty());

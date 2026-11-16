@@ -27,7 +27,7 @@ use std::time::Duration;
 pub type Env<'a> = &'a dyn Fn(&str) -> Option<String>;
 
 /// The environment variable the test-only fixture `/proc` switch reads.
-pub const PROC_ROOT_VAR: &str = "MEMORYD_PROC_ROOT";
+pub const PROC_ROOT_VAR: &str = "BARDO_MEMORYD_PROC_ROOT";
 
 /// Whether this build honours [`PROC_ROOT_VAR`]: only one built with the `test-proc-root` feature.
 /// A release build ignores the variable and says so.
@@ -84,12 +84,12 @@ const CONSOLIDATE_EVERY: Duration = Duration::from_secs(24 * 60 * 60);
 const FIRST_CONSOLIDATION: Duration = Duration::from_secs(60 * 60);
 
 /// The system's callers file; the user's is next to `memory.toml` and wins.
-const SYSTEM_CALLERS: &str = "/etc/quire/memory-callers.toml";
+const SYSTEM_CALLERS: &str = "/etc/bardo/memoryd-callers.toml";
 
 /// The test-only stand-in for [`SYSTEM_CALLERS`], honoured under the same gate as
 /// [`PROC_ROOT_VAR`]: a harness that fakes `/proc` must also say which units are the system's,
 /// because only the system's table gives a fixed role. A release build ignores it.
-pub const SYSTEM_CALLERS_VAR: &str = "MEMORYD_SYSTEM_CALLERS";
+pub const SYSTEM_CALLERS_VAR: &str = "BARDO_MEMORYD_SYSTEM_CALLERS";
 
 /// The system callers file this build reads: [`SYSTEM_CALLERS`], or the variable's file in a
 /// `test-proc-root` build.
@@ -101,7 +101,7 @@ fn system_callers(honour: bool, env: Env<'_>) -> PathBuf {
 }
 
 fn user_callers(dirs: &Dirs) -> std::path::PathBuf {
-    dirs.memory_toml().with_file_name("memory-callers.toml")
+    dirs.memory_toml().with_file_name("memoryd-callers.toml")
 }
 
 /// The person's rules. No file is a fresh install (the standard rules); a file that cannot be
@@ -149,7 +149,7 @@ async fn run(
     )
     .with_registry(registry);
     let service = MemoryService::new(backend, read_rules(&dirs)?);
-    // The person's settings (`almanac/settings.toml`) now, and whenever the file changes.
+    // The person's settings (`memory/settings.toml`) now, and whenever the file changes.
     // A value looser than the shipped default waits for the person's confirmation, kept in our
     // own data directory (ALM-16).
     let locator = Locator::from_env(&|key| env(key)).confirming(dirs.confirmed_settings_toml());

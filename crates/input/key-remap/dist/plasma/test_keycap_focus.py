@@ -1,4 +1,4 @@
-"""Pure tests for keycap-focus: the profile choice and the wire packet. Run from this directory:
+"""Pure tests for bardo-key-remap-focus: the profile choice and the wire packet. Run from this directory:
 python3 -m unittest. The D-Bus path is checked by hand (docs/switch-from-toshy.md)."""
 
 import importlib.machinery
@@ -11,7 +11,7 @@ import threading
 import unittest
 
 here = os.path.dirname(os.path.abspath(__file__))
-loader = importlib.machinery.SourceFileLoader("keycap_focus", os.path.join(here, "keycap-focus"))
+loader = importlib.machinery.SourceFileLoader("keycap_focus", os.path.join(here, "bardo-key-remap-focus"))
 spec = importlib.util.spec_from_loader("keycap_focus", loader)
 keycap_focus = importlib.util.module_from_spec(spec)
 loader.exec_module(keycap_focus)
@@ -28,7 +28,7 @@ class ProfileChoice(unittest.TestCase):
             self.assertEqual(keycap_focus.profile_for(name), "ghostty", name)
 
     def test_temor_gets_terminal_on_plasma_where_kwin_takes_super(self):
-        for name in ["org.quire.Temor", "org.quire.temor"]:
+        for name in ["org.bardo.Temor", "org.bardo.temor"]:
             self.assertEqual(keycap_focus.profile_for(name), "terminal", name)
 
     def test_file_managers_get_the_filemanager_profile(self):
@@ -72,7 +72,7 @@ class AgainstAFakeDaemon(unittest.TestCase):
 
     def test_sends_focus_and_reconnects_after_the_daemon_drops_the_connection(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = os.path.join(tmp, "keycap.sock")
+            path = os.path.join(tmp, "key-remap.sock")
             received = []
             server = self.listen(path)
             client = keycap_focus.Keycap(path)
@@ -88,7 +88,7 @@ class AgainstAFakeDaemon(unittest.TestCase):
 
     def test_restore_resends_the_profile_to_a_daemon_that_came_back(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = os.path.join(tmp, "keycap.sock")
+            path = os.path.join(tmp, "key-remap.sock")
             received = []
             server = self.listen(path)
             client = keycap_focus.Keycap(path)
@@ -108,7 +108,7 @@ class AgainstAFakeDaemon(unittest.TestCase):
         self.assertEqual([m["v"]["profile"] for m in received], ["terminal", "terminal"])
 
     def test_an_unreachable_daemon_is_a_false_not_an_exception(self):
-        client = keycap_focus.Keycap("/nonexistent/keycap.sock")
+        client = keycap_focus.Keycap("/nonexistent/key-remap.sock")
         self.assertFalse(client.send("terminal"))
 
 

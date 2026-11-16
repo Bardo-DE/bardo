@@ -18,7 +18,7 @@ pub const NAME_MAX: usize = 128;
 /// One program of the desktop.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Row {
-    /// The program's app key (`org.quire.Shell`).
+    /// The program's app key (`org.bardo.Shell`).
     pub app: AppKey,
     /// The service unit it runs as. `None` for a program matched by its image alone.
     pub unit: Option<UnitName>,

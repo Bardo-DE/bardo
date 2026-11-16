@@ -2,7 +2,7 @@
 //! sits closer to the painted edge of its box than the policy allows (ui_harness::inset;
 //! ARCHITECTURE.md "Content inset check").
 //!
-//! `QUIRE_INSET_REPORT=<file>` writes every offence of every page to `<file>` and does not fail:
+//! `BARDO_INSET_REPORT=<file>` writes every offence of every page to `<file>` and does not fail:
 //! the way to see the whole list before fixing it.
 
 use crate::app::App;
@@ -59,7 +59,7 @@ fn every_gallery_page_keeps_its_content_off_the_box_edges() {
             all.merge(found);
         }
     }
-    if let Ok(file) = std::env::var("QUIRE_INSET_REPORT") {
+    if let Ok(file) = std::env::var("BARDO_INSET_REPORT") {
         lines.sort();
         lines.dedup();
         std::fs::write(&file, lines.join("\n") + "\n").expect("the report file is writable");

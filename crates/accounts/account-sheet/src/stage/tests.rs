@@ -177,7 +177,7 @@ fn every_stage_has_its_view() {
 #[test]
 fn the_review_names_the_app_to_allow_when_a_chooser_started_the_sheet() {
     let app = AppId {
-        name: account_core::AppName::parse("org.quire.Mail").expect("name"),
+        name: account_core::AppName::parse("org.bardo.Mail").expect("name"),
         isolation: account_core::Isolation::Flatpak,
     };
     let sheet = Sheet {

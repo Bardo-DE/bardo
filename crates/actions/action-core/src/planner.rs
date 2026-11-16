@@ -227,7 +227,7 @@ impl StepLine {
         Some(StepLine {
             call,
             action: ActionRef {
-                app: account_core::AppName::parse("org.quire.Companion").ok()?,
+                app: account_core::AppName::parse("org.bardo.Companion").ok()?,
                 name: provenance::ActionName::parse("companion.reply.unread").ok()?,
             },
             effect: Effect::Read,

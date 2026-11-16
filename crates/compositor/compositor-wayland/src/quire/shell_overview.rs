@@ -1,4 +1,4 @@
-//! `quire_shell_v1`, the overview part: the shell's `overview` request (its Mission Control key
+//! `bardo_shell_v1`, the overview part: the shell's `overview` request (its Mission Control key
 //! or gesture) and the `overview_state` event that tells it when to draw its Spaces bar. The
 //! model decides; this only carries.
 
@@ -6,7 +6,7 @@ use super::shell::QuireShellPart;
 use compositor_core::Event;
 use compositor_core::overview::Overview;
 use compositor_core::shell::ShellRequest;
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1;
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1;
 use desktop_protocols::vocab::{OverviewMode, OverviewState, Toggle, WireCode};
 
 /// The thousandths of progress an open overview reports.
@@ -38,9 +38,9 @@ pub fn send_state(part: &QuireShellPart, overview: Overview) {
         Overview::Leaving => (OverviewState::Leaving, OPEN),
         _ => (OverviewState::Closed, 0),
     };
-    let wire = quire_shell_v1::OverviewMode::try_from(OverviewMode::MissionControl.code())
+    let wire = bardo_shell_v1::OverviewMode::try_from(OverviewMode::MissionControl.code())
         .ok()
-        .zip(quire_shell_v1::OverviewState::try_from(state.code()).ok());
+        .zip(bardo_shell_v1::OverviewState::try_from(state.code()).ok());
     if let Some((mode, state)) = wire {
         for shell in &part.bound {
             shell.overview_state(mode, state, progress);

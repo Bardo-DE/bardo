@@ -117,12 +117,12 @@ fn the_parser_refuses_what_it_does_not_know() {
 #[test]
 fn the_report_line_names_the_level_and_nothing_else_is_one() {
     let rows = [
-        (LandlockLevel::Full, "bulkhead-enter: landlock=full"),
+        (LandlockLevel::Full, "bardo-sandbox-enter: landlock=full"),
         (
             LandlockLevel::FilesOnly,
-            "bulkhead-enter: landlock=files-only",
+            "bardo-sandbox-enter: landlock=files-only",
         ),
-        (LandlockLevel::None, "bulkhead-enter: landlock=none"),
+        (LandlockLevel::None, "bardo-sandbox-enter: landlock=none"),
     ];
     for (level, line) in rows {
         assert_eq!(level.report_line(), line);
@@ -135,9 +135,9 @@ fn the_report_line_names_the_level_and_nothing_else_is_one() {
     for other in [
         "",
         "landlock=full",
-        "bulkhead-enter: landlock=",
-        "bulkhead-enter: landlock=partial",
-        "bulkhead-enter: landlock=full extra",
+        "bardo-sandbox-enter: landlock=",
+        "bardo-sandbox-enter: landlock=partial",
+        "bardo-sandbox-enter: landlock=full extra",
         "xbulkhead-enter: landlock=full",
     ] {
         assert_eq!(LandlockLevel::from_report_line(other), None, "{other:?}");
@@ -157,7 +157,7 @@ fn landlocked(net: AgentNet) -> AgentRun {
             abs("/work/cfg/settings.json"),
             abs("/home/u/.claude/settings.json"),
         ))
-        .with_landlock(abs("/opt/bulkhead/bulkhead-enter"))
+        .with_landlock(abs("/opt/bulkhead/bardo-sandbox-enter"))
 }
 
 fn has(args: &[String], seq: &[&str]) -> bool {
@@ -168,7 +168,7 @@ fn has(args: &[String], seq: &[&str]) -> bool {
 #[test]
 fn the_exec_stage_starts_the_agent_and_its_plan_names_what_bubblewrap_mounts() {
     let bind = EndpointBind::new(
-        abs("/opt/bulkhead/bulkhead-forward"),
+        abs("/opt/bulkhead/bardo-sandbox-forward"),
         abs("/run/user/1000/bulkhead/ep.sock"),
         40123,
     );
@@ -184,7 +184,7 @@ fn the_exec_stage_starts_the_agent_and_its_plan_names_what_bubblewrap_mounts() {
         assert!(
             has(
                 &args,
-                &["--ro-bind", "/opt/bulkhead/bulkhead-enter", INSIDE_ENTER]
+                &["--ro-bind", "/opt/bulkhead/bardo-sandbox-enter", INSIDE_ENTER]
             ),
             "{name}: stage bound read-only"
         );

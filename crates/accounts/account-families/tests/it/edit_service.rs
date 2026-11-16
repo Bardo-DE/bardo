@@ -36,7 +36,7 @@ const PASSWORD: &str = "pw-example-one";
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Mail").expect("app name"),
+        name: AppName::parse("org.bardo.Mail").expect("app name"),
         isolation: Isolation::Flatpak,
     }
 }

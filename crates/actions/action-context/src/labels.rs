@@ -25,7 +25,7 @@ pub enum Voice {
     Model,
     /// An external client: everything it sends is untrusted.
     External(ClientName),
-    /// A terminal (`quire-do`): the person or an agent typing in it; everything is untrusted.
+    /// A terminal (`bardo-do`): the person or an agent typing in it; everything is untrusted.
     Cli,
     /// An external coding agent, through the host that launched it: a model's words like a
     /// planner's, so what it sends is as trusted as a planner that has seen nothing untrusted,
@@ -302,7 +302,7 @@ mod tests {
         SessionRecord::new(
             TaskId::parse("t-1").expect("task"),
             Actor::Cli,
-            AppName::parse("org.quire.Mail").expect("app"),
+            AppName::parse("org.bardo.Mail").expect("app"),
             SpaceId::desktop(),
             UnixSeconds(0),
         )
@@ -310,7 +310,7 @@ mod tests {
 
     fn thing() -> EntityId {
         EntityId {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             kind: EntityKind::parse("mail.thread").expect("kind"),
             key: EntityKey::parse("t1").expect("key"),
         }

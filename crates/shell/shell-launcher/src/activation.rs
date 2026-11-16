@@ -219,7 +219,7 @@ mod tests {
             (
                 Activation::Intent(Box::new(action_vocab::CallRequest {
                     action: action_vocab::ActionRef {
-                        app: provenance::AppName::parse("org.quire.Mail")
+                        app: provenance::AppName::parse("org.bardo.Mail")
                             .unwrap_or_else(|e| panic!("{e}")),
                         name: provenance::ActionName::parse("mail.message.open")
                             .unwrap_or_else(|e| panic!("{e}")),
@@ -228,7 +228,7 @@ mod tests {
                     args: action_vocab::Args::new(),
                     origin: action_vocab::Origin::Launcher,
                 })),
-                r#"{"kind":"intent","v":{"action":{"app":"org.quire.Mail","name":"mail.message.open"},"target":{"kind":"nothing"},"args":{},"origin":"launcher"}}"#,
+                r#"{"kind":"intent","v":{"action":{"app":"org.bardo.Mail","name":"mail.message.open"},"target":{"kind":"nothing"},"args":{},"origin":"launcher"}}"#,
             ),
             (
                 Activation::Companion(crate::CompanionAct::Mode(crate::LauncherMode::Search)),
@@ -247,9 +247,9 @@ mod tests {
     #[test]
     fn an_app_action_is_an_intent_on_nothing_and_a_bad_name_is_none() {
         let cases = [
-            ("org.quire.Mail", "mail.compose", true),
+            ("org.bardo.Mail", "mail.compose", true),
             ("not an app", "mail.compose", false),
-            ("org.quire.Mail", "", false),
+            ("org.bardo.Mail", "", false),
         ];
         for (app, action, ok) in cases {
             let made = Activation::app_action(app, action);

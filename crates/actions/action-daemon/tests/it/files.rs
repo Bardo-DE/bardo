@@ -15,7 +15,7 @@ fn grant(id: &str, action: &str, scope: GrantScope) -> ActionGrant {
         id: GrantId::parse(id).expect("id"),
         key: ActionGrantKey {
             caller: GrantCaller::Companion,
-            owner: AppName::parse("org.quire.Mail").expect("app"),
+            owner: AppName::parse("org.bardo.Mail").expect("app"),
             target: GrantTarget::Action(ActionName::parse(action).expect("action")),
             class: DataClass::Mail,
             usage: Usage::Interactive,
@@ -38,11 +38,11 @@ fn manifests_are_read_from_every_data_dir_and_an_earlier_dir_wins() {
     let mine = tempfile::tempdir().expect("scratch");
     let system = tempfile::tempdir().expect("scratch");
     let mail = action_fake::MAIL_MANIFEST;
-    write(mine.path(), "org.quire.Mail.toml", mail);
-    write(system.path(), "org.quire.Mail.toml", mail);
+    write(mine.path(), "org.bardo.Mail.toml", mail);
+    write(system.path(), "org.bardo.Mail.toml", mail);
     write(
         system.path(),
-        "org.quire.Files.toml",
+        "org.bardo.Files.toml",
         action_fake::FILES_MANIFEST,
     );
     write(system.path(), "broken.toml", "this is not a manifest");
@@ -53,7 +53,7 @@ fn manifests_are_read_from_every_data_dir_and_an_earlier_dir_wins() {
         .iter()
         .map(|m| m.manifest().app.to_string())
         .collect();
-    assert_eq!(apps, ["org.quire.Mail", "org.quire.Files"]);
+    assert_eq!(apps, ["org.bardo.Mail", "org.bardo.Files"]);
     assert_eq!(loaded.skipped.len(), 1, "{:?}", loaded.skipped);
     assert!(loaded.skipped[0].0.ends_with("broken.toml"));
     assert!(
@@ -69,7 +69,7 @@ fn the_environment_says_where_everything_is() {
     let home = tempfile::tempdir().expect("scratch");
     let config = home.path().join("config");
     let data = home.path().join("data");
-    write(&data, "org.quire.Mail.toml", action_fake::MAIL_MANIFEST);
+    write(&data, "org.bardo.Mail.toml", action_fake::MAIL_MANIFEST);
     let env = |key: &str| match key {
         "XDG_CONFIG_HOME" => Some(config.display().to_string()),
         "XDG_DATA_HOME" => Some(data.display().to_string()),
@@ -93,10 +93,10 @@ fn the_environment_says_where_everything_is() {
     // A file of its own replaces the shipped one whole.
     let folder = config.join("quire");
     std::fs::create_dir_all(&folder).expect("dir");
-    let shipped = include_str!("../../../dist/intentd.toml");
+    let shipped = include_str!("../../../dist/actiond.toml");
     std::fs::write(
-        folder.join("intentd.toml"),
-        shipped.replace("org.quire.Do", "org.quire.Mine"),
+        folder.join("actiond.toml"),
+        shipped.replace("org.bardo.Do", "org.bardo.Mine"),
     )
     .expect("write");
     let own = Setup::from_env(&env).expect("setup");
@@ -105,10 +105,10 @@ fn the_environment_says_where_everything_is() {
             .roles
             .values()
             .flatten()
-            .any(|n| n.as_str() == "org.quire.Mine")
+            .any(|n| n.as_str() == "org.bardo.Mine")
     );
     // A file that is not a configuration stops the daemon: it is not guessed at.
-    std::fs::write(folder.join("intentd.toml"), "roles = 3").expect("write");
+    std::fs::write(folder.join("actiond.toml"), "roles = 3").expect("write");
     assert!(Setup::from_env(&env).is_err());
 }
 
@@ -122,18 +122,18 @@ fn the_shipped_configuration_gives_a_terminal_the_cli_role_and_sill_the_rest() {
             .collect::<Vec<_>>()
     };
     use action_vocab::CallerRole as R;
-    assert_eq!(roles("org.quire.Do"), [R::Cli]);
+    assert_eq!(roles("org.bardo.Do"), [R::Cli]);
     assert_eq!(
-        roles("org.quire.Temor"),
+        roles("org.bardo.Temor"),
         [R::Cli],
         "a terminal in an app scope"
     );
     assert_eq!(
-        roles("org.quire.Shell"),
+        roles("org.bardo.Shell"),
         [R::Launcher, R::Confirm, R::Control]
     );
-    assert_eq!(roles("org.quire.Companion1"), [R::Companion]);
-    assert!(roles("org.quire.Mail").is_empty(), "an app is a plain app");
+    assert_eq!(roles("org.bardo.Companion1"), [R::Companion]);
+    assert!(roles("org.bardo.Mail").is_empty(), "an app is a plain app");
 }
 
 // ---- shipped default grants ----
@@ -143,7 +143,7 @@ const SHIPPED_DEFAULTS: &str = include_str!("../../../dist/intents/default-grant
 fn shell_key(usage: Usage) -> ActionGrantKey {
     ActionGrantKey {
         caller: GrantCaller::Companion,
-        owner: AppName::parse("org.quire.Shell").expect("app"),
+        owner: AppName::parse("org.bardo.Shell").expect("app"),
         target: GrantTarget::App,
         class: DataClass::AppOwn,
         usage,
@@ -283,7 +283,7 @@ fn the_floor_file_is_none_when_missing_and_an_error_when_it_does_not_read() {
     use action_daemon::{FloorError, read_floor};
     use permission_core::Strictness;
     let dir = tempfile::tempdir().expect("scratch");
-    let path = dir.path().join("docket-floor.toml");
+    let path = dir.path().join("actions-floor.toml");
     assert_eq!(
         read_floor(&path).expect("no file is no floor"),
         permission_core::Floor::none()
@@ -306,7 +306,7 @@ fn the_floor_file_is_none_when_missing_and_an_error_when_it_does_not_read() {
     }
     std::fs::write(
         &path,
-        "strictness = \"default\"\n[[locked]]\nlevel = \"never\"\napp = \"org.quire.Files\"\naction = \"files.file.delete\"\nfrom = \"destructive\"\n",
+        "strictness = \"default\"\n[[locked]]\nlevel = \"never\"\napp = \"org.bardo.Files\"\naction = \"files.file.delete\"\nfrom = \"destructive\"\n",
     )
     .expect("write");
     let floor = read_floor(&path).expect("a floor");
@@ -324,7 +324,7 @@ fn limits_are_kept_beside_the_grants_and_removed_by_the_one_revoke_path() {
     let limit = Limit::new(
         LimitKey {
             caller: LimitCaller::AnyAgent,
-            scope: LimitScope::App(AppName::parse("org.quire.Files").expect("app")),
+            scope: LimitScope::App(AppName::parse("org.bardo.Files").expect("app")),
             space: SpaceScope::Any,
             from: provenance::Effect::UndoableWrite,
             level: LimitLevel::Never,

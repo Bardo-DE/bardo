@@ -4,7 +4,7 @@
 # ORT_DYLIB_PATH and nothing is downloaded at build time. Build and test it by hand:
 #
 #   cargo test --manifest-path crates/speech-vad-silero/Cargo.toml
-#   STOKER_SILERO_ONNX=<silero_vad.onnx> ORT_DYLIB_PATH=<libonnxruntime.so> \
+#   BARDO_ENGINE_SILERO_ONNX=<silero_vad.onnx> ORT_DYLIB_PATH=<libonnxruntime.so> \
 #     cargo test --manifest-path crates/speech-vad-silero/Cargo.toml -- --ignored
 [package]
 name = "speech-vad-silero"

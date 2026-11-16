@@ -1,6 +1,6 @@
 //! cuad's configuration: the computer-use settings the person chooses, plus which backend. Parsed
 //! once, at the edge. Who may call is not here: it is the process behind a connection, named by
-//! `cuad-callers.toml`.
+//! `computer-use-callers.toml`.
 
 use account_capability::Tier;
 use computer_use_desktop::BackendKind;
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BackendChoice {
-    /// Detect: the fork when the compositor offers `quire_agent_manager_v1`, otherwise a stock
+    /// Detect: the fork when the compositor offers `bardo_agent_manager_v1`, otherwise a stock
     /// compositor, otherwise none.
     Detect,
     /// This one, whatever the compositor offers.

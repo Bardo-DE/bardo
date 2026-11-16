@@ -34,7 +34,7 @@ fn checked_in_introspection_matches_the_interfaces() {
 fn the_identities_object_declares_five_methods_and_one_signal_and_no_token() {
     let xml = account_dbus::accounts::IDENTITIES.introspection();
     for member in [
-        "<interface name=\"org.quire.Identities1\">",
+        "<interface name=\"org.bardo.Identities1\">",
         "<method name=\"List\">",
         "<arg type=\"a(sa{sv})\" direction=\"out\"/>",
         "<method name=\"Offer\">",
@@ -56,7 +56,7 @@ fn the_identities_object_declares_five_methods_and_one_signal_and_no_token() {
     assert_eq!(xml.matches("direction=\"out\"").count(), 6);
     assert_eq!(
         account_wire::names::IDENTITIES_PATH,
-        "/org/quire/Identities1"
+        "/org/bardo/Identities1"
     );
     // Additive: its own file, and the others are as they were.
     assert!(
@@ -80,7 +80,7 @@ fn the_identities_object_declares_five_methods_and_one_signal_and_no_token() {
 fn the_tailnet_object_declares_machines_and_changed_and_nothing_else() {
     let xml = account_dbus::accounts::TAILNET.introspection();
     for member in [
-        "<interface name=\"org.quire.Tailnet1\">",
+        "<interface name=\"org.bardo.Tailnet1\">",
         "<method name=\"Machines\">",
         "<arg type=\"a(sa{sv})\" direction=\"out\"/>",
         "<signal name=\"Changed\">",
@@ -92,7 +92,7 @@ fn the_tailnet_object_declares_machines_and_changed_and_nothing_else() {
     assert_eq!(xml.matches("<property ").count(), 0);
     // The signal carries nothing: a listener calls Machines again.
     assert!(xml.contains("<signal name=\"Changed\">\n   </signal>"));
-    assert_eq!(account_wire::names::TAILNET_PATH, "/org/quire/Tailnet1");
+    assert_eq!(account_wire::names::TAILNET_PATH, "/org/bardo/Tailnet1");
     // Additive: its own file, and Accounts1's and Spaces1's are as they were.
     assert!(
         !account_dbus::accounts::ACCOUNTS
@@ -155,14 +155,14 @@ fn the_sheet_backend_takes_views_in_and_sends_inputs_out() {
     }
     let declared = xml.matches("<method ").count() + xml.matches("<signal ").count();
     assert_eq!(declared, 4);
-    assert_eq!(account_wire::names::SHEET_BUS, "org.quire.AccountsSheet1");
+    assert_eq!(account_wire::names::SHEET_BUS, "org.bardo.AccountsSheet1");
 }
 
 #[test]
 fn accountds_launcher_is_the_old_ones_eight_methods_and_three_signals_with_a_memfd_reply() {
     let xml = account_dbus::accounts::LAUNCHER.introspection();
     for member in [
-        "<interface name=\"org.quire.Accounts1.Launcher\">",
+        "<interface name=\"org.bardo.Accounts1.Launcher\">",
         "<method name=\"RegisterLauncher\">",
         "<method name=\"BeginSession\">",
         "<method name=\"EndSession\">",
@@ -194,7 +194,7 @@ fn accountds_launcher_is_the_old_ones_eight_methods_and_three_signals_with_a_mem
 #[test]
 fn accountds_keys_interface_is_a_request_for_a_permit_and_nothing_else() {
     let xml = account_dbus::accounts::KEYS.introspection();
-    assert!(xml.contains("<interface name=\"org.quire.Accounts1.Keys\">"));
+    assert!(xml.contains("<interface name=\"org.bardo.Accounts1.Keys\">"));
     assert!(xml.contains("<method name=\"RequestKey\">"));
     // Adding a key is `Manager.AddAccount`; a Request object comes back.
     assert_eq!(xml.matches("<method ").count(), 1);
@@ -209,7 +209,7 @@ fn accountds_keys_interface_is_a_request_for_a_permit_and_nothing_else() {
 fn the_broker_declares_six_methods_and_one_signal_and_hands_keys_only_on_descriptors() {
     let xml = account_dbus::accounts::BROKER.introspection();
     for member in [
-        "<interface name=\"org.quire.Accounts1.Broker\">",
+        "<interface name=\"org.bardo.Accounts1.Broker\">",
         "<method name=\"Verdicts\">",
         "<arg name=\"app\" type=\"(ss)\" direction=\"in\"/>",
         "<method name=\"ReadKey\">",
@@ -241,7 +241,7 @@ fn the_broker_declares_six_methods_and_one_signal_and_hands_keys_only_on_descrip
 #[test]
 fn grants1_declares_the_grant_calls_and_hands_streams_only_on_descriptors() {
     let xml = account_dbus::accounts::GRANTS.introspection();
-    assert!(xml.contains("<interface name=\"org.quire.Grants1\">"));
+    assert!(xml.contains("<interface name=\"org.bardo.Grants1\">"));
     for member in [
         "Candidates",
         "Availability",
@@ -263,5 +263,5 @@ fn grants1_declares_the_grant_calls_and_hands_streams_only_on_descriptors() {
     assert_eq!(xml.matches("<signal ").count(), 0);
     // A relayed stream is a descriptor, and no member answers a token or a password.
     assert_eq!(xml.matches("type=\"h\" direction=\"out\"").count(), 2);
-    assert_eq!(account_wire::names::GRANTS_PATH, "/org/quire/Grants1");
+    assert_eq!(account_wire::names::GRANTS_PATH, "/org/bardo/Grants1");
 }

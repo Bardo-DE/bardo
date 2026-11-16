@@ -40,7 +40,7 @@ fn call(action: &str, query: &str) -> PlannedCall {
     PlannedCall {
         call: CallRequest {
             action: ActionRef {
-                app: AppName::parse("org.quire.Mail").expect("app"),
+                app: AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse(action).expect("action"),
             },
             target: TargetValue::Nothing,

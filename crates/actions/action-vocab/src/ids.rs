@@ -237,7 +237,7 @@ pub struct EntityRef {
 }
 
 /// The conventional action-name prefix of an app: its last name element, lowercased
-/// (`org.quire.Mail` owns `mail.*`).
+/// (`org.bardo.Mail` owns `mail.*`).
 pub fn action_prefix(app: &AppName) -> String {
     app.as_str()
         .rsplit('.')
@@ -341,9 +341,9 @@ mod tests {
     #[test]
     fn action_prefix_is_the_last_element_lowercased() {
         let cases = [
-            ("org.quire.Mail", "mail"),
-            ("org.quire.Memory", "memory"),
-            ("org.quire.Cua", "cua"),
+            ("org.bardo.Mail", "mail"),
+            ("org.bardo.Memory", "memory"),
+            ("org.bardo.ComputerUse", "cua"),
             ("com.example.WorkLog", "worklog"),
         ];
         for (app, want) in cases {

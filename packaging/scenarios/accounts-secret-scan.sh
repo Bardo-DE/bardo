@@ -20,7 +20,7 @@
 # password is dots; a capture is a picture, not scanned); (4) anything an app sends the fake over a socket it opened
 # itself; (5) IssueToken's access token is allowed to reach the app by design and is scanned for only elsewhere.
 # What it does see: every message on the private bus (both directions, unicast signals included, as the bus config lets
-# a monitor eavesdrop), the app side of every relay as porter-rig-client prints it (a log in the scenario's out dir), all
+# a monitor eavesdrop), the app side of every relay as account-rig-client prints it (a log in the scenario's out dir), all
 # daemon and sill logs, the registry, the audit file, the config and data trees.
 #
 # budget: 240
@@ -51,20 +51,20 @@ step_control() {
   mkdir -p "$d"
   local pw=RIG-SECRET-MAIL-PASSWORD-9d41c7 key=RIG-SECRET-API-KEY-f05d83
   # clean: ordinary traffic
-  { msg method_call :1.2 org.quire.Accounts1 org.quire.Accounts1.Manager Query 1 null '["x"]'
-    msg method_return org.quire.Accounts1 :1.2 "" "" 2 1 '["x"]'; } >"$d/clean.jsonl"
+  { msg method_call :1.2 org.bardo.Accounts1 org.bardo.Accounts1.Manager Query 1 null '["x"]'
+    msg method_return org.bardo.Accounts1 :1.2 "" "" 2 1 '["x"]'; } >"$d/clean.jsonl"
   scan --bus "$d/clean.jsonl" --secret "$pw" --pattern 'fake-refresh-[0-9]+' || { echo "a clean record failed the scan" >&2; return 1; }
   # a password in a call to a daemon other than the Secret Service: a hit
-  msg method_call :1.5 org.quire.Accounts1 org.quire.Accounts1.Manager AddAccount 3 null "[\"$pw\"]" >"$d/leak-bus.jsonl"
+  msg method_call :1.5 org.bardo.Accounts1 org.bardo.Accounts1.Manager AddAccount 3 null "[\"$pw\"]" >"$d/leak-bus.jsonl"
   scan --bus "$d/leak-bus.jsonl" --secret "$pw" && { echo "a password in an accountd call passed the scan" >&2; return 1; }
   # the same in a call to the Secret Service, in the sheet's Input, in the test's typing: allowed
   { msg method_call :1.5 org.freedesktop.secrets org.freedesktop.Secret.Collection CreateItem 4 null "[\"$pw\"]"
-    msg signal :1.9 :1.7 org.quire.AccountsSheet1 Input 5 null "[\"h\",\"$pw\"]"
-    msg method_call :1.72 org.quire.Casement.Debug1 org.quire.Casement.Debug1 Inject 6 null "[\"type $pw\"]"; } >"$d/allowed.jsonl"
+    msg signal :1.9 :1.7 org.bardo.AccountsSheet1 Input 5 null "[\"h\",\"$pw\"]"
+    msg method_call :1.72 org.bardo.Compositor.Debug1 org.bardo.Compositor.Debug1 Inject 6 null "[\"type $pw\"]"; } >"$d/allowed.jsonl"
   scan --bus "$d/allowed.jsonl" --secret "$pw" || { echo "an allowed flow failed the scan: $(cat "$OUT_DIR/control.out")" >&2; return 1; }
   # an access token in IssueToken's reply: allowed; in anything else: a hit
-  { msg method_call :1.5 org.quire.Accounts1 org.quire.Accounts1.Tokens IssueToken 7 null '["g"]'
-    msg method_return org.quire.Accounts1 :1.5 "" "" 8 7 "[\"fake-access-9\"]"; } >"$d/issue.jsonl"
+  { msg method_call :1.5 org.bardo.Accounts1 org.bardo.Accounts1.Tokens IssueToken 7 null '["g"]'
+    msg method_return org.bardo.Accounts1 :1.5 "" "" 8 7 "[\"fake-access-9\"]"; } >"$d/issue.jsonl"
   scan --bus "$d/issue.jsonl" --access-pattern 'fake-access-[0-9]+' || { echo "an access token in IssueToken's reply failed the scan" >&2; return 1; }
   msg method_return :1.2 :1.5 "" "" 9 3 "[\"fake-access-9\"]" >"$d/access-leak.jsonl"
   scan --bus "$d/access-leak.jsonl" --access-pattern 'fake-access-[0-9]+' && { echo "an access token outside IssueToken passed the scan" >&2; return 1; }
@@ -91,7 +91,7 @@ step_boot() {
 }
 
 step_api_key() {
-  acc_add_start org.quire.Companion
+  acc_add_start org.bardo.Companion
   sheet_await || return 1; sheet_settled; sleep 1
   sheet_type OpenAI; sleep 0.5; sheet_key Enter; sleep 1
   sheet_shot 1-api-key-form

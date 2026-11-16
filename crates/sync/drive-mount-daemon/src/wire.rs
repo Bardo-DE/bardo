@@ -1,6 +1,6 @@
-//! The wire format between syncd and porter-mountd, one request per connection.
+//! The wire format between syncd and bardo-drive-mount, one request per connection.
 //!
-//! The socket is a unix stream socket at `$XDG_RUNTIME_DIR/porter/mountd.sock` ([`socket_in`]),
+//! The socket is a unix stream socket at `$XDG_RUNTIME_DIR/bardo/drive-mount.sock` ([`socket_in`]),
 //! mode 0600 in a 0700 directory. The client connects, writes one request and shuts its writing
 //! half; the helper reads to the end, answers with one reply and closes.
 //!
@@ -39,7 +39,7 @@ pub const FSTYPE: &str = "fuse.porter";
 
 /// Where the helper listens, under the runtime directory `$XDG_RUNTIME_DIR`.
 pub fn socket_in(runtime_dir: &Path) -> PathBuf {
-    runtime_dir.join("porter/mountd.sock")
+    runtime_dir.join("bardo/drive-mount.sock")
 }
 
 /// A drive's folder name in `~/Cloud`: one path component, with no `/` and no NUL, not `.` or

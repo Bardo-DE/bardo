@@ -1,4 +1,4 @@
-//! A registry (`org.quire.Spaces1` on accountd's name) and a memory (`org.quire.Memory1.Control`)
+//! A registry (`org.bardo.Spaces1` on accountd's name) and a memory (`org.bardo.Memory1.Control`)
 //! on a private bus, writing what they were asked, in order, into one log.
 
 use crate::private_bus::PrivateBus;
@@ -21,7 +21,7 @@ fn owned(value: Value<'_>) -> OwnedValue {
     OwnedValue::try_from(value).expect("a plain value")
 }
 
-#[zbus::interface(name = "org.quire.Spaces1")]
+#[zbus::interface(name = "org.bardo.Spaces1")]
 impl Registry {
     async fn list(&self) -> Vec<(String, Details)> {
         let rows = self.rows.lock().expect("rows").clone();
@@ -56,7 +56,7 @@ struct Control {
     log: Log,
 }
 
-#[zbus::interface(name = "org.quire.Memory1.Control")]
+#[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl Control {
     async fn remove_space(&self, space: String, removal: String) -> String {
         self.log
@@ -89,7 +89,7 @@ async fn registry_holding(
     registry
         .object_server()
         .at(
-            "/org/quire/Spaces1",
+            "/org/bardo/Spaces1",
             Registry {
                 rows: Mutex::new(rows),
                 log: Arc::clone(log),
@@ -108,7 +108,7 @@ pub async fn serve(bus: &PrivateBus, spaces: &[(&str, &str)], memory: bool) -> F
     let log: Log = Arc::default();
     let registry = registry_holding(bus, spaces, &log).await;
     registry
-        .request_name("org.quire.Accounts1")
+        .request_name("org.bardo.Accounts1")
         .await
         .expect("accountd's name");
     let memory = if memory {
@@ -116,7 +116,7 @@ pub async fn serve(bus: &PrivateBus, spaces: &[(&str, &str)], memory: bool) -> F
         connection
             .object_server()
             .at(
-                "/org/quire/Memory1",
+                "/org/bardo/Memory1",
                 Control {
                     log: Arc::clone(&log),
                 },
@@ -127,7 +127,7 @@ pub async fn serve(bus: &PrivateBus, spaces: &[(&str, &str)], memory: bool) -> F
             .await
             .expect("the object server answers");
         connection
-            .request_name("org.quire.Memory1")
+            .request_name("org.bardo.Memory1")
             .await
             .expect("memory's name");
         Some(connection)

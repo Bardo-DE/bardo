@@ -1,5 +1,5 @@
 //! Consent vocabulary: the powers a program must be allowed, who asks and what the person said
-//! (`quire_shell_v1`'s `permission_ask`, `permission_withdraw` and `permission_answer`).
+//! (`bardo_shell_v1`'s `permission_ask`, `permission_withdraw` and `permission_answer`).
 //!
 //! The words a person reads for a power live here, once, so the sheet that asks and the page in
 //! Settings that lists the answers say the same thing.
@@ -7,7 +7,7 @@
 use super::code::wire_enum;
 
 wire_enum! {
-    /// One thing a program needs the person's consent for (`quire_shell_v1.power`).
+    /// One thing a program needs the person's consent for (`bardo_shell_v1.power`).
     Power {
         /// See what is on the screen, including other apps' windows.
         Screen = 0,
@@ -68,7 +68,7 @@ impl Power {
 }
 
 wire_enum! {
-    /// How well the compositor knows which program is asking (`quire_shell_v1.subject_kind`).
+    /// How well the compositor knows which program is asking (`bardo_shell_v1.subject_kind`).
     SubjectKind {
         /// A program whose image the system owns; the subject is its path.
         Program = 0,
@@ -80,7 +80,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// What an answer will be kept as (`quire_shell_v1.memory`).
+    /// What an answer will be kept as (`bardo_shell_v1.memory`).
     Memory {
         /// The answer is kept; the program is not asked again.
         Remembered = 0,
@@ -90,7 +90,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// What the person said (`quire_shell_v1.answer`).
+    /// What the person said (`bardo_shell_v1.answer`).
     Answer {
         /// Allow, or Allow Once when the ask's memory is `ThisTimeOnly`.
         Allow = 0,

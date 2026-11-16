@@ -20,8 +20,8 @@ elif [[ "$cargo_rev" != "$install_rev" ]]; then
 fi
 
 cargo_version="$(sed -n '/^\[workspace\.package\]/,/^\[/{s/^version = "\(.*\)"$/\1/p}' Cargo.toml)"
-meta_version="$(sed -n 's/.*<release version="\([^"]*\)".*/\1/p' dist/org.quire.Anyview.metainfo.xml | head -n 1)"
-meta_date="$(sed -n 's/.*<release version="[^"]*" date="\([^"]*\)".*/\1/p' dist/org.quire.Anyview.metainfo.xml | head -n 1)"
+meta_version="$(sed -n 's/.*<release version="\([^"]*\)".*/\1/p' dist/org.bardo.Anyview.metainfo.xml | head -n 1)"
+meta_date="$(sed -n 's/.*<release version="[^"]*" date="\([^"]*\)".*/\1/p' dist/org.bardo.Anyview.metainfo.xml | head -n 1)"
 log_line="$(grep -m 1 -E '^## [0-9]' CHANGELOG.md || true)"
 log_version="$(printf '%s' "$log_line" | sed -n 's/^## \([^ ]*\).*/\1/p')"
 log_date="$(printf '%s' "$log_line" | sed -n 's/^## [^ ]* (\([^)]*\)).*/\1/p')"

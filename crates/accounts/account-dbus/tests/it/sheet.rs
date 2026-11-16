@@ -224,7 +224,7 @@ fn a_response_that_breaks_its_promise_is_refused_not_guessed() {
                 (
                     "path",
                     OwnedValue::try_from(Value::from(
-                        zbus::zvariant::ObjectPath::try_from("/org/quire/Accounts1/account/other")
+                        zbus::zvariant::ObjectPath::try_from("/org/bardo/Accounts1/account/other")
                             .expect("path"),
                     ))
                     .expect("value"),
@@ -237,7 +237,7 @@ fn a_response_that_breaks_its_promise_is_refused_not_guessed() {
             0,
             with(&[
                 ("account", text("nextcloud-1")),
-                ("path", text("/org/quire/Accounts1/account/nextcloud_1")),
+                ("path", text("/org/bardo/Accounts1/account/nextcloud_1")),
             ]),
         ),
     ];
@@ -259,10 +259,10 @@ fn sender_names_become_path_segments_as_portals_write_them() {
     }
     assert_eq!(
         request_namespace(":1.42"),
-        "/org/quire/Accounts1/request/1_42"
+        "/org/bardo/Accounts1/request/1_42"
     );
     // The same caller's namespace under the service's own root.
-    let (service, root) = (ServiceRoot::Accounts, "/org/quire/Accounts1/request");
+    let (service, root) = (ServiceRoot::Accounts, "/org/bardo/Accounts1/request");
     assert_eq!(
         request_namespace_in(service, ":1.42"),
         format!("{root}/1_42")
@@ -294,7 +294,7 @@ fn a_handle_token_is_a_path_segment_or_it_is_not_one() {
         assert_eq!(path.is_some(), ok, "{token:?}");
         if let Some(path) = path {
             assert!(zbus::zvariant::ObjectPath::try_from(path.as_str()).is_ok());
-            assert_eq!(path, format!("/org/quire/Accounts1/request/1_42/{token}"));
+            assert_eq!(path, format!("/org/bardo/Accounts1/request/1_42/{token}"));
         }
     }
 }

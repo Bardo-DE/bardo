@@ -1,6 +1,6 @@
 [package]
 name = "memory-dbus-serve"
-description = "The daemon's half of almanac's D-Bus API: the org.quire.Memory1 objects served over a handler, the signals, and the introspection."
+description = "The daemon's half of almanac's D-Bus API: the org.bardo.Memory1 objects served over a handler, the signals, and the introspection."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

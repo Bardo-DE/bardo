@@ -1,4 +1,4 @@
-//! `org.quire.Workspaces1`, as the shell exports it: one read-only property over the published
+//! `org.bardo.Workspaces1`, as the shell exports it: one read-only property over the published
 //! state.
 
 use shell_model::workspace_looks::WorkspaceLooks;
@@ -11,7 +11,7 @@ pub(super) struct WorkspacesObject {
     pub state: watch::Receiver<WorkspaceLooks>,
 }
 
-#[interface(name = "org.quire.Workspaces1")]
+#[interface(name = "org.bardo.Workspaces1")]
 impl WorkspacesObject {
     #[zbus(property)]
     fn workspaces(&self) -> Vec<WireWorkspace> {

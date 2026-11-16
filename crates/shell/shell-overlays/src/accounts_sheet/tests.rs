@@ -122,7 +122,7 @@ fn agent_row() -> ProviderRow {
 #[test]
 fn every_sheet_view_becomes_the_props_of_its_part() {
     let consent = SheetView::Consent(ConsentAsk::new(
-        app("org.quire.Photos"),
+        app("org.bardo.Photos"),
         CapabilityKind::Storage,
         DataClass::AppOwn,
         Usage::Interactive,
@@ -203,7 +203,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
             ],
             endpoints: Vec::new(),
         },
-        allow: Some(app("org.quire.Mail")),
+        allow: Some(app("org.bardo.Mail")),
     });
     let url = WebUrl::parse("https://login.example.org/auth?x=1").unwrap_or_else(|e| panic!("{e}"));
     let device = EndpointUrl::parse("https://example.org/device").unwrap_or_else(|e| panic!("{e}"));
@@ -482,7 +482,7 @@ fn the_title_area_carries_the_steps_own_title() {
         (SheetView::Providers(vec![]), "Add Account"),
         (
             serde_json::from_str(
-                r#"{"kind":"consent","v":{"app":{"name":"org.quire.Photos","isolation":"flatpak"},
+                r#"{"kind":"consent","v":{"app":{"name":"org.bardo.Photos","isolation":"flatpak"},
                 "kind":"storage","class":"app_own","usage":"interactive","accounts":[]}}"#,
             )
             .unwrap_or_else(|e| panic!("{e}")),
@@ -598,16 +598,16 @@ fn events_become_what_the_person_did() {
 #[test]
 fn the_words_follow_the_table() {
     use super::words::{app_name, mark_of, request_phrase, service_key, service_of};
-    assert_eq!(app_name(&app("org.quire.Photos"), None), "Photos");
+    assert_eq!(app_name(&app("org.bardo.Photos"), None), "Photos");
     // The segment is shown as written: no lowercasing, no swapped separators.
     assert_eq!(
-        app_name(&app("org.quire.Agent.claude-code"), None),
+        app_name(&app("org.bardo.Agent.claude-code"), None),
         "claude-code"
     );
     assert_eq!(app_name(&app("com.example.my_App-2"), None), "my_App-2");
     // A label the app's entry gives wins.
     assert_eq!(
-        app_name(&app("org.quire.Agent.claude-code"), Some("Claude Code")),
+        app_name(&app("org.bardo.Agent.claude-code"), Some("Claude Code")),
         "Claude Code"
     );
     assert_eq!(mark_of("gemini"), MarkProvider::Google);
@@ -906,7 +906,7 @@ fn the_microsoft_failure_without_a_client_id_has_no_try_again() {
 
 #[test]
 fn consent_and_review_name_the_app_as_porter_resolved_it() {
-    let agent = app("org.quire.Agent.claude-code");
+    let agent = app("org.bardo.Agent.claude-code");
     let consent = SheetView::Consent(
         ConsentAsk::new(
             agent.clone(),
@@ -948,7 +948,7 @@ fn continue_as_is_its_own_step_and_an_empty_one_is_the_ordinary_question() {
     let ask = |accounts| {
         SheetView::Consent(
             ConsentAsk::new(
-                app("org.quire.Mail"),
+                app("org.bardo.Mail"),
                 CapabilityKind::Identity,
                 DataClass::AppOwn,
                 Usage::Interactive,

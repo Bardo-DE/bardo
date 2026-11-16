@@ -83,15 +83,15 @@ async fn a_fresh_dock_starts_with_the_desktops_apps_once_they_are_installed() {
     );
     assert!(!file.exists(), "nothing written for nothing");
     apps.send_replace(installed(&[
-        "org.quire.Settings",
+        "org.bardo.Settings",
         "firefox",
-        "org.quire.Mail",
-        "org.quire.Anyview",
+        "org.bardo.Mail",
+        "org.bardo.Anyview",
     ]));
     assert!(pinned_within(&mut pins, SETTLE, |p| !p.pinned.is_empty()).await);
     assert_eq!(
         ids(&pins.state.borrow()),
-        ["org.quire.Mail", "org.quire.Anyview", "org.quire.Settings"]
+        ["org.bardo.Mail", "org.bardo.Anyview", "org.bardo.Settings"]
     );
     assert!(
         file.exists(),
@@ -107,7 +107,7 @@ async fn an_emptied_dock_stays_empty() {
     std::fs::write(folder.join("layout.toml"), "version = 1\ndock = []\n")
         .unwrap_or_else(|e| panic!("{e}"));
     let (mut pins, apps, _) = start(&scratch);
-    apps.send_replace(installed(&["org.quire.Mail", "org.quire.Settings"]));
+    apps.send_replace(installed(&["org.bardo.Mail", "org.bardo.Settings"]));
     assert!(
         !pinned_within(&mut pins, QUIET, |p| !p.pinned.is_empty()).await,
         "a dock the person emptied is not filled again"
@@ -123,7 +123,7 @@ async fn a_pin_made_before_the_apps_were_known_is_kept() {
         at: PinAt::End,
     });
     assert!(pinned_within(&mut pins, SETTLE, |p| !p.pinned.is_empty()).await);
-    apps.send_replace(installed(&["org.quire.Mail", "org.quire.Settings"]));
+    apps.send_replace(installed(&["org.bardo.Mail", "org.bardo.Settings"]));
     assert!(
         !pinned_within(&mut pins, QUIET, |p| ids(p) != ["firefox"]).await,
         "the person's pin stands alone"
@@ -139,7 +139,7 @@ async fn an_old_dock_file_is_carried_over_and_never_seeded_over() {
     std::fs::write(folder.join("dock.json"), old).unwrap_or_else(|e| panic!("{e}"));
     let (mut pins, apps, file) = start(&scratch);
     assert!(pinned_within(&mut pins, SETTLE, |p| ids(p) == ["firefox"]).await);
-    apps.send_replace(installed(&["org.quire.Mail", "org.quire.Settings"]));
+    apps.send_replace(installed(&["org.bardo.Mail", "org.bardo.Settings"]));
     assert!(
         !pinned_within(&mut pins, QUIET, |p| ids(p) != ["firefox"]).await,
         "the carried-over dock is not filled with the desktop's apps"
@@ -179,16 +179,16 @@ async fn a_pin_under_an_old_id_is_the_renamed_app_and_the_file_follows_the_next_
         "version = 1\n{}{}{}",
         row("mailo"),
         row("firefox"),
-        row("org.quire.Mail")
+        row("org.bardo.Mail")
     );
     std::fs::write(folder.join("layout.toml"), &stored).unwrap_or_else(|e| panic!("{e}"));
     let (mut pins, apps, file) = start(&scratch);
     assert!(
         pinned_within(&mut pins, SETTLE, |p| ids(p)
-            == ["mailo", "firefox", "org.quire.Mail"])
+            == ["mailo", "firefox", "org.bardo.Mail"])
         .await
     );
-    let mut mail = app("org.quire.Mail");
+    let mut mail = app("org.bardo.Mail");
     mail.renamed_from = vec![AppId("mailo".to_owned())];
     apps.send_replace(step(
         AppIndex::default(),
@@ -196,7 +196,7 @@ async fn a_pin_under_an_old_id_is_the_renamed_app_and_the_file_follows_the_next_
     ));
     assert!(
         pinned_within(&mut pins, SETTLE, |p| ids(p)
-            == ["org.quire.Mail", "firefox"])
+            == ["org.bardo.Mail", "firefox"])
         .await,
         "old and new are one pin, in the old one's place"
     );
@@ -211,7 +211,7 @@ async fn a_pin_under_an_old_id_is_the_renamed_app_and_the_file_follows_the_next_
     });
     assert!(
         pinned_within(&mut pins, SETTLE, |p| ids(p)
-            == ["org.quire.Mail", "firefox", "foot"])
+            == ["org.bardo.Mail", "firefox", "foot"])
         .await
     );
     let saved = std::fs::read_to_string(&file).unwrap_or_default();

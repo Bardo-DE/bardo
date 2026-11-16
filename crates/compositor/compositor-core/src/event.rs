@@ -50,7 +50,7 @@ pub enum Event {
         /// The window.
         window: WindowId,
     },
-    /// The agent tier was granted `lease` on `window` (`org.quire.Compositor1.LeaseWindow`):
+    /// The agent tier was granted `lease` on `window` (`org.bardo.Compositor1.LeaseWindow`):
     /// input of that lease reaches the window and its popups, nothing else.
     LeaseGranted {
         /// The lease.
@@ -114,7 +114,7 @@ pub enum Event {
         /// Where it goes, in global logical coordinates.
         rect: LogicalRect,
     },
-    /// A window's `quire_window_v1` hint changed (C50).
+    /// A window's `bardo_window_v1` hint changed (C50).
     WindowHint {
         /// The window.
         window: WindowId,
@@ -179,7 +179,7 @@ pub enum Event {
         /// The client.
         client: ClientKey,
     },
-    /// A client holds (`On`) or no longer holds (`Off`) a `quire_window_manager_v1` bound at
+    /// A client holds (`On`) or no longer holds (`Off`) a `bardo_window_manager_v1` bound at
     /// version 2 or later, so it can be sent `quit` when its app is asked to quit.
     QuitListener {
         /// The client.
@@ -202,7 +202,7 @@ pub enum Event {
         by: Requester,
     },
     /// The person answered a question about a changed display setup
-    /// (`quire_shell_v1.displays_trial_answer`). An answer for a trial that is not open is
+    /// (`bardo_shell_v1.displays_trial_answer`). An answer for a trial that is not open is
     /// ignored.
     DisplaysAnswered {
         /// The trial.
@@ -234,10 +234,10 @@ pub enum Event {
     /// The Spaces file was read at start: the model adopts the stored ids, so a Space is the
     /// same Space after a restart (P1-M2).
     SpacesLoaded(Box<SpaceFile>),
-    /// The shell managed the desktop (`quire_desktop_manager_v1`; P2-Z). The wire layer has
+    /// The shell managed the desktop (`bardo_desktop_manager_v1`; P2-Z). The wire layer has
     /// refused these on an agent connection, so every one is the person's.
     Desktop(DesktopRequest),
-    /// The shell told the compositor something (`quire_shell_v1`; P2-Z).
+    /// The shell told the compositor something (`bardo_shell_v1`; P2-Z).
     Shell(ShellRequest),
     /// The composition root says who a public client's program is, once it has looked at the
     /// connection. Until it does, a public client is unproven and can only be asked for
@@ -277,7 +277,7 @@ pub enum Event {
         /// When.
         at: UnixSeconds,
     },
-    /// The shell can be asked a question: it bound `quire_shell_v1` at the version that
+    /// The shell can be asked a question: it bound `bardo_shell_v1` at the version that
     /// carries `permission_ask`.
     ShellReady,
     /// The shell cannot be asked any more (its connection or its protocol object ended).
@@ -349,7 +349,7 @@ pub enum ToplevelRequest {
         /// Where, in global logical coordinates.
         at: LogicalPoint,
     },
-    /// Placement (`quire_window_v1.request_placement`), answering this press.
+    /// Placement (`bardo_window_v1.request_placement`), answering this press.
     Place {
         /// Where.
         target: PlaceTarget,
@@ -392,7 +392,7 @@ pub enum ToplevelMeta {
     Limits(SizeLimits),
 }
 
-/// A `quire_window_v1` hint change.
+/// A `bardo_window_v1` hint change.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum WindowHintChange {
     /// Its first-mouse regions.

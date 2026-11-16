@@ -79,52 +79,52 @@ pub use tailnet::{
     TailnetServer,
 };
 
-/// `org.quire.Accounts1`: the add-account sheet, the accounts' objects and the Request object.
+/// `org.bardo.Accounts1`: the add-account sheet, the accounts' objects and the Request object.
 pub const ACCOUNTS: Document = Document {
-    file_name: "org.quire.Accounts1.xml",
+    file_name: "org.bardo.Accounts1.xml",
     interfaces: &[
         ManagerServed::<Unserved>::introspect,
         AccountServed::<Unserved>::introspect,
         RequestServed::<Unserved>::introspect,
     ],
 };
-/// `org.quire.Accounts1.Keys`, on accountd's bus name.
+/// `org.bardo.Accounts1.Keys`, on accountd's bus name.
 pub const KEYS: Document = Document {
-    file_name: "org.quire.Accounts1.Keys.xml",
+    file_name: "org.bardo.Accounts1.Keys.xml",
     interfaces: &[KeysServed::<Unserved>::introspect],
 };
-/// `org.quire.Grants1`, on accountd's bus name.
+/// `org.bardo.Grants1`, on accountd's bus name.
 pub const GRANTS: Document = Document {
-    file_name: "org.quire.Grants1.xml",
+    file_name: "org.bardo.Grants1.xml",
     interfaces: &[GrantsServed::<Unserved>::introspect],
 };
-/// `org.quire.Accounts1.Launcher`, on accountd's bus name.
+/// `org.bardo.Accounts1.Launcher`, on accountd's bus name.
 pub const LAUNCHER: Document = Document {
-    file_name: "org.quire.Accounts1.Launcher.xml",
+    file_name: "org.bardo.Accounts1.Launcher.xml",
     interfaces: &[LauncherServed::<Unserved>::introspect],
 };
-/// `org.quire.Accounts1.Broker`, on accountd's bus name.
+/// `org.bardo.Accounts1.Broker`, on accountd's bus name.
 pub const BROKER: Document = Document {
-    file_name: "org.quire.Accounts1.Broker.xml",
+    file_name: "org.bardo.Accounts1.Broker.xml",
     interfaces: &[BrokerServed::<Unserved>::introspect],
 };
-/// `org.quire.AccountsSheet1`, the sheet host's.
+/// `org.bardo.AccountsSheet1`, the sheet host's.
 pub const ACCOUNTS_SHEET: Document = Document {
-    file_name: "org.quire.AccountsSheet1.xml",
+    file_name: "org.bardo.AccountsSheet1.xml",
     interfaces: &[AccountsSheetServed::<Unserved>::introspect],
 };
-/// `org.quire.Spaces1`, on accountd's bus name.
+/// `org.bardo.Spaces1`, on accountd's bus name.
 pub const SPACES: Document = Document {
-    file_name: "org.quire.Spaces1.xml",
+    file_name: "org.bardo.Spaces1.xml",
     interfaces: &[SpacesServed::<Unserved>::introspect],
 };
-/// `org.quire.Identities1`, on accountd's bus name.
+/// `org.bardo.Identities1`, on accountd's bus name.
 pub const IDENTITIES: Document = Document {
-    file_name: "org.quire.Identities1.xml",
+    file_name: "org.bardo.Identities1.xml",
     interfaces: &[IdentitiesServed::<Unserved>::introspect],
 };
-/// `org.quire.Tailnet1`, on accountd's bus name.
+/// `org.bardo.Tailnet1`, on accountd's bus name.
 pub const TAILNET: Document = Document {
-    file_name: "org.quire.Tailnet1.xml",
+    file_name: "org.bardo.Tailnet1.xml",
     interfaces: &[TailnetServed::<Unserved>::introspect],
 };

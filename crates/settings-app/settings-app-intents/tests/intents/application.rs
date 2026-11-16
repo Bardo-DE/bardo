@@ -1,4 +1,4 @@
-//! `org.freedesktop.Application` on `org.quire.Settings`, called the way sill calls it.
+//! `org.freedesktop.Application` on `org.bardo.Settings`, called the way sill calls it.
 
 use crate::support::{World, peers_knowing};
 use settings_app_callers::roles;
@@ -9,7 +9,7 @@ use settings_app_model::{
 use std::collections::HashMap;
 use zbus::zvariant::{ObjectPath, Value};
 
-const ACCOUNT: &str = "/org/quire/Accounts1/account/work_example";
+const ACCOUNT: &str = "/org/bardo/Accounts1/account/work_example";
 
 async fn call(
     world: &World,
@@ -19,7 +19,7 @@ async fn call(
     let launcher = world.launcher().await;
     launcher
         .call_method(
-            Some("org.quire.Settings"),
+            Some("org.bardo.Settings"),
             APPLICATION_PATH,
             Some(APPLICATION_INTERFACE),
             method,
@@ -174,7 +174,7 @@ async fn the_account_may_arrive_as_text_the_way_sill_sends_it() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_path_that_is_no_account_gives_the_list() {
     let world = World::start("app-unknown-account", &[]).await;
-    for path in ["/elsewhere", "/org/quire/Accounts1/settings"] {
+    for path in ["/elsewhere", "/org/bardo/Accounts1/settings"] {
         call(
             &world,
             "ActivateAction",
@@ -267,7 +267,7 @@ async fn only_the_shell_a_second_settings_and_the_agent_tier_may_activate() {
         let page = Value::from("software-update");
         let answered = caller
             .call_method(
-                Some("org.quire.Settings"),
+                Some("org.bardo.Settings"),
                 APPLICATION_PATH,
                 Some(APPLICATION_INTERFACE),
                 "ActivateAction",
@@ -296,7 +296,7 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
     data.insert("activation-token", Value::from("stolen-focus"));
     let raised = stranger
         .call_method(
-            Some("org.quire.Settings"),
+            Some("org.bardo.Settings"),
             APPLICATION_PATH,
             Some(APPLICATION_INTERFACE),
             "Activate",
@@ -307,7 +307,7 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
     let path = ObjectPath::try_from(ACCOUNT).expect("a path");
     let opened = stranger
         .call_method(
-            Some("org.quire.Settings"),
+            Some("org.bardo.Settings"),
             APPLICATION_PATH,
             Some(APPLICATION_INTERFACE),
             "ActivateAction",

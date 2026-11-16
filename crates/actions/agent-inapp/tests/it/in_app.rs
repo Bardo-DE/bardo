@@ -38,11 +38,11 @@ fn agent(script: Vec<Say>, sheet: TestSheet) -> (Agent, ScriptedInfer) {
     (agent, model)
 }
 
-const ARCHIVE: &str = "org_quire_Mail-mail_thread_archive";
-const READ: &str = "org_quire_Mail-mail_thread_read";
+const ARCHIVE: &str = "org_bardo_Mail-mail_thread_archive";
+const READ: &str = "org_bardo_Mail-mail_thread_read";
 
 fn thread(key: &str) -> serde_json::Value {
-    json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": key })
+    json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
 #[tokio::test]

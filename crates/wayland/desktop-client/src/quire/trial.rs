@@ -1,4 +1,4 @@
-//! A question from the compositor to the person (`quire_shell_v1`, version 6): a program
+//! A question from the compositor to the person (`bardo_shell_v1`, version 6): a program
 //! changed the displays; keep the new setup?
 
 use std::time::Duration;

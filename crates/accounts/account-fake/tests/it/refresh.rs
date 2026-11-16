@@ -143,7 +143,7 @@ type Svc = AccountService<Rotating, MemorySecrets, ScriptedSheets, FixedClock, M
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Mail").expect("name"),
+        name: AppName::parse("org.bardo.Mail").expect("name"),
         isolation: Isolation::Flatpak,
     }
 }

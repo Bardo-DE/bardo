@@ -1,4 +1,4 @@
-//! The person's own computers on their Tailscale network (`org.quire.Tailnet1` on accountd), for
+//! The person's own computers on their Tailscale network (`org.bardo.Tailnet1` on accountd), for
 //! the shell, Settings and the terminal. Nothing here reads Tailscale: accountd does, once, for
 //! the Tailscale account the person added.
 //!

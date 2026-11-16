@@ -32,13 +32,13 @@ set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/all.sh"
 
-DEMO_DIR="$SILL_TARGET/demo"
+DEMO_DIR="$BARDO_SHELL_TARGET/demo"
 OUT_DIR="$DEMO_DIR"
 ENV_FILE="$DEMO_DIR/env"
 PROCS="$DEMO_DIR/procs"
 CLIENT="$DEMO_DIR/sill"
-SHOTS="$SILL_REPO/dev/out"
-PLAYER="$SILL_OUT/examples/mpris_player"
+SHOTS="$BARDO_SHELL_REPO/dev/out"
+PLAYER="$BARDO_SHELL_OUT/examples/mpris_player"
 # Set by start (or read back from $ENV_FILE): the scratch tree's directory (scratch_use), the
 # compositor's socket and bus, its kind and env file, the output's name.
 NAME=
@@ -123,7 +123,7 @@ await_compositor() {
 
 write_scene() {
   mkdir -p "$CONFIG/sill"
-  cat >"$CONFIG/sill/settings.toml" <<'EOF'
+  cat >"$CONFIG/shell/settings.toml" <<'EOF'
 [launcher]
 web_search = true
 EOF
@@ -161,7 +161,7 @@ write_monitor() {
 start_fake() {
   local script="$1" ready="$2" log="$OUT_DIR/$1.out" pid
   : >"$DEMO_DIR/${script%.py}.log"
-  in_env setsid python3 "$SILL_REPO/dev/$script" "$BUS" "$DEMO_DIR/${script%.py}.log" >"$log" 2>&1 &
+  in_env setsid python3 "$BARDO_SHELL_REPO/dev/$script" "$BUS" "$DEMO_DIR/${script%.py}.log" >"$log" 2>&1 &
   pid=$!
   record_proc "${script%.py}" "$pid"
   for _ in $(seq 100); do
@@ -259,7 +259,7 @@ write_client() {
       "$HOME_DIR" "$RUNTIME" "$WL" "$BUS"
     printf '  DBUS_SYSTEM_BUS_ADDRESS=%q XDG_CONFIG_HOME=%q XDG_DATA_HOME=%q XDG_STATE_HOME=%q \\\n' \
       "$BUS" "$CONFIG" "$DATA" "$STATE"
-    printf '  XDG_CACHE_HOME=%q %q "$@"\n' "$CACHE" "$SILL_BIN"
+    printf '  XDG_CACHE_HOME=%q %q "$@"\n' "$CACHE" "$BARDO_SHELL_BIN"
   } >"$CLIENT"
   chmod +x "$CLIENT"
 }
@@ -270,7 +270,7 @@ write_env() {
     printf 'BUS=%q\n' "$BUS"
     printf 'WL=%q\n' "$WL"
     printf 'NAME=%q\n' "$NAME"
-    printf 'COMPOSITOR=%q\nCASEMENT_ENV=%q\nCASEMENT_BUS=%q\n' "$COMPOSITOR" "$CASEMENT_ENV" "$CASEMENT_BUS"
+    printf 'COMPOSITOR=%q\nCASEMENT_ENV=%q\nCASEMENT_BUS=%q\n' "$COMPOSITOR" "$BARDO_COMPOSITOR_ENV" "$BARDO_COMPOSITOR_BUS"
   } >"$ENV_FILE"
   write_client
 }
@@ -292,8 +292,8 @@ teardown() {
     scratch_use "$SCRATCH"
   fi
   # The daemon quits through its own IPC first, so its surfaces go before the compositor does.
-  if [ -n "$(daemon_pid)" ] && [ -x "$SILL_BIN" ]; then
-    in_env timeout 10 "$SILL_BIN" quit >/dev/null 2>&1
+  if [ -n "$(daemon_pid)" ] && [ -x "$BARDO_SHELL_BIN" ]; then
+    in_env timeout 10 "$BARDO_SHELL_BIN" quit >/dev/null 2>&1
   fi
   record_scratch_clients
   end_recorded
@@ -322,7 +322,7 @@ cmd_start() {
   [ ! -f "$ENV_FILE" ] || teardown
   rm -f "$PROCS"
 
-  echo "demo.sh: building sill ($SILL_PROFILE)"
+  echo "demo.sh: building sill ($BARDO_SHELL_PROFILE)"
   build "-p shell-testkit --example mpris_player" || exit 1
 
   trap abort_start EXIT

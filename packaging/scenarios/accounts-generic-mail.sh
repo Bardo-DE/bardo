@@ -3,7 +3,7 @@
 # accountd's sheet as sill draws it, against fake IMAP and SMTP servers, and an app continues as that identity. Since
 # porter's accounts split (Phase B) accountd holds identities only: it no longer relays an app to the IMAP server, so the
 # app's side is "Continue as" (Identities1.Offer, a sheet) and "I use this identity" (RegisterUse), and Settings lists the app
-# under the identity. Real accountd, real sill on casement, the rig's fakes (porter-rig-servers) and its fake Secret
+# under the identity. Real accountd, real sill on casement, the rig's fakes (account-rig-servers) and its fake Secret
 # Service; no network (harness/lib/accounts.sh says how each is set up).
 #
 #   boot      casement, a recorded private bus, the fakes (IMAP and SMTP over implicit TLS, a scratch CA that accountd
@@ -12,7 +12,7 @@
 #   sign-in   "Fake" filters the list, Return picks it; the address and the password are typed (through the
 #             compositor), Return sends them, the review step shows Mail, Return is Done: the add-account answers `added`
 #   listed    accountd's settings module says the account is `ok` and labelled with the address
-#   identity  an app (porter-rig-client) lists the identities (the account is there), asks "Continue as" (the sheet is drawn,
+#   identity  an app (account-rig-client) lists the identities (the account is there), asks "Continue as" (the sheet is drawn,
 #             capture; Return picks the first) and gets the account's address back, says it uses the identity, and the
 #             identity's `used_by` row in accountd's settings module names the app. The IMAP login the app makes itself
 #             with the password Identities1 hands it (TakePassword) is not driven: the rig's client has no command for it
@@ -53,7 +53,7 @@ step_boot() {
 }
 
 step_list() {
-  acc_add_start org.quire.Mail
+  acc_add_start org.bardo.Mail
   sheet_await || return 1
   sleep 1
   sheet_shot 1-provider-list || return 1
@@ -83,9 +83,9 @@ step_listed() {
 
 step_identity() {
   local listed id
-  listed=$(rigc org.quire.Mail identities list 2>&1) || { echo "identities list failed: $listed" >&2; return 1; }
+  listed=$(rigc org.bardo.Mail identities list 2>&1) || { echo "identities list failed: $listed" >&2; return 1; }
   grep -q "$(rigj imap.user)" <<<"$listed" || { echo "the identity is not listed to the app: $listed" >&2; return 1; }
-  rigc_bg "$OUT_DIR/offer.log" org.quire.Mail identities offer
+  rigc_bg "$OUT_DIR/offer.log" org.bardo.Mail identities offer
   sheet_await || { cat "$OUT_DIR/offer.log" >&2; return 1; }
   sleep 1; sheet_shot 5-continue-as
   sheet_key Enter                              # Continue is the default, the first account is picked
@@ -94,7 +94,7 @@ step_identity() {
   grep -q "\"address\":\"$(rigj imap.user)\"" "$OUT_DIR/offer.log" || { echo "the app was offered another address: $(cat "$OUT_DIR/offer.log")" >&2; return 1; }
   sheet_gone || return 1
   id=$(python3 -I -c 'import json,sys; print(json.loads(sys.stdin.readline())["identity"])' <"$OUT_DIR/offer.log")
-  rigc org.quire.Mail identities register-use "$id" >"$OUT_DIR/use.log" 2>&1 || { echo "register-use refused: $(cat "$OUT_DIR/use.log")" >&2; return 1; }
+  rigc org.bardo.Mail identities register-use "$id" >"$OUT_DIR/use.log" 2>&1 || { echo "register-use refused: $(cat "$OUT_DIR/use.log")" >&2; return 1; }
   [ -n "$(settings_get "accounts.$ACCOUNT.used_by.0")" ] || { echo "the identity names no app after RegisterUse" >&2; return 1; }
   echo "identity: $(cat "$OUT_DIR/offer.log")" >&2
 }

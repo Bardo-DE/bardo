@@ -84,8 +84,8 @@ fn wanted(request: &Request) -> Wanted {
 
 /// The app a computer's requests are counted under in the audit trail.
 fn guest_app(node: &NodeId) -> AppId {
-    let name = AppName::parse(&format!("org.quire.Guest.{node}"))
-        .or_else(|_| AppName::parse("org.quire.Guest"))
+    let name = AppName::parse(&format!("org.bardo.Guest.{node}"))
+        .or_else(|_| AppName::parse("org.bardo.Guest"))
         .expect("a fixed app name is one");
     AppId {
         name,

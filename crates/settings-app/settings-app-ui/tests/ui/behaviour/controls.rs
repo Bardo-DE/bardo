@@ -32,7 +32,7 @@ fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
     let sandbox = Sandbox::new("toggle-writes");
     let mut harness = sandbox.harness(opening("dock"));
     assert_eq!(
-        sandbox.read("sill/settings.toml"),
+        sandbox.read("shell/settings.toml"),
         None,
         "nothing is written by looking"
     );
@@ -49,7 +49,7 @@ fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
         "the switch turned off"
     );
     let text = sandbox
-        .read("sill/settings.toml")
+        .read("shell/settings.toml")
         .expect("the file was written");
     assert!(text.contains("magnification = false"), "{text}");
 
@@ -70,7 +70,7 @@ fn the_theme_is_three_picture_choices_and_a_press_writes_its_word() {
     const GROUP: &str = "[*|data-key=\"appearance.theme\"]";
     let sandbox = Sandbox::new("theme-pictures");
     let mut harness = sandbox.harness(opening("appearance"));
-    assert_eq!(sandbox.read("quire/appearance.toml"), None);
+    assert_eq!(sandbox.read("bardo/appearance.toml"), None);
     assert_eq!(harness.count(&format!("{GROUP} .ds-radio-group-item")), 3);
     assert_eq!(
         harness.count(&format!("{GROUP} .ds-radio-group-image .ds-ext-icon")),
@@ -89,7 +89,7 @@ fn the_theme_is_three_picture_choices_and_a_press_writes_its_word() {
 
     click(&mut harness, &theme_choice(2));
     let text = sandbox
-        .read("quire/appearance.toml")
+        .read("bardo/appearance.toml")
         .expect("the file was written");
     assert!(text.contains("theme = \"dark\""), "{text}");
     assert_eq!(
@@ -98,7 +98,7 @@ fn the_theme_is_three_picture_choices_and_a_press_writes_its_word() {
         "Dark is selected"
     );
     click(&mut harness, &theme_choice(1));
-    let text = sandbox.read("quire/appearance.toml").expect("written");
+    let text = sandbox.read("bardo/appearance.toml").expect("written");
     assert!(text.contains("theme = \"light\""), "{text}");
 }
 
@@ -106,7 +106,7 @@ fn the_theme_is_three_picture_choices_and_a_press_writes_its_word() {
 fn the_dock_page_opens_with_a_preview_at_the_stored_tile_size() {
     const PREVIEW: &str = "[*|data-dock-preview]";
     let sandbox = Sandbox::new("dock-preview");
-    sandbox.write("sill/settings.toml", "[dock]\ntile_size_px = 64\n");
+    sandbox.write("shell/settings.toml", "[dock]\ntile_size_px = 64\n");
     let harness = sandbox.harness(opening("dock"));
     assert_eq!(harness.count(PREVIEW), 1);
     assert_eq!(
@@ -138,7 +138,7 @@ fn choosing_an_accent_swatch_writes_that_accent() {
     click(&mut harness, SWATCH_THREE);
     let want = ui_components::prelude::Accent::ALL[2].slug();
     let text = sandbox
-        .read("quire/appearance.toml")
+        .read("bardo/appearance.toml")
         .expect("the file was written");
     assert!(text.contains(&format!("accent = \"{want}\"")), "{text}");
     assert_eq!(
@@ -163,7 +163,7 @@ fn moving_a_slider_writes_a_number_in_its_range() {
     harness.send(Input::pointer_up(at));
     harness.advance(Duration::from_millis(400));
     let text = sandbox
-        .read("sill/settings.toml")
+        .read("shell/settings.toml")
         .expect("the file was written");
     let table: toml::Table = text.parse().expect("valid toml");
     let size = table["dock"]["tile_size_px"]
@@ -178,12 +178,12 @@ fn moving_a_slider_writes_a_number_in_its_range() {
 #[test]
 fn a_write_that_fails_says_so_and_leaves_the_file_alone() {
     let sandbox = Sandbox::new("write-refused");
-    sandbox.write("sill/settings.toml", "[dock\nmagnification = ");
+    sandbox.write("shell/settings.toml", "[dock\nmagnification = ");
     let mut harness = sandbox.harness(opening("dock"));
     click(&mut harness, ".ds-toggle");
     assert_eq!(harness.count(".ds-toast"), 1, "a toast reports the refusal");
     assert_eq!(
-        sandbox.read("sill/settings.toml").as_deref(),
+        sandbox.read("shell/settings.toml").as_deref(),
         Some("[dock\nmagnification = "),
         "what the person typed is kept"
     );
@@ -201,7 +201,7 @@ fn reduce_motion_is_two_segments_and_reduced_is_the_second() {
     );
     click(&mut harness, &reduced);
     let text = sandbox
-        .read("quire/appearance.toml")
+        .read("bardo/appearance.toml")
         .expect("the file was written");
     assert!(text.contains("motion_level = \"reduced\""), "{text}");
     assert_eq!(
@@ -225,7 +225,7 @@ fn a_two_word_choice_is_two_segments() {
         &format!("{start} .ds-segmented-segment:nth-of-type(2)"),
     );
     let text = sandbox
-        .read("docket/settings.toml")
+        .read("actions/settings.toml")
         .expect("the file was written");
     assert!(text.contains("start_mode = \"manual\""), "{text}");
 }

@@ -1,4 +1,4 @@
-//! Our own STT engine process (`speech-host`, sherpa-onnx without TTS), on the CPU.
+//! Our own STT engine process (`bardo-speech-host`, sherpa-onnx without TTS), on the CPU.
 
 use std::path::Path;
 
@@ -18,7 +18,7 @@ impl Engine for SpeechHost {
     }
 
     fn running_word(&self) -> &'static str {
-        "speech-host"
+        "bardo-speech-host"
     }
 
     fn hears(&self) -> bool {

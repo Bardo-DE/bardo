@@ -1,5 +1,5 @@
-//! The connection the compositor hands the shell: `org.quire.Compositor1.Connect("shell")`
-//! returns a connected Wayland socket on which the privileged globals (`quire_shell_v1`) are
+//! The connection the compositor hands the shell: `org.bardo.Compositor1.Connect("shell")`
+//! returns a connected Wayland socket on which the privileged globals (`bardo_shell_v1`) are
 //! offered. They are never on the session's socket.
 //!
 //! [`Handout`] is the seam: [`ZbusHandout`] calls the compositor over the session bus,
@@ -25,15 +25,15 @@ pub enum HandoutError {
 
 /// Something that hands the shell a Wayland connection.
 pub trait Handout {
-    /// A new connected socket for the shell's role: `quire_shell_v1` and the shell role.
+    /// A new connected socket for the shell's role: `bardo_shell_v1` and the shell role.
     fn connect(&self) -> impl Future<Output = Result<OwnedFd, HandoutError>>;
 }
 
-/// `org.quire.Compositor1`, which casement serves on the session bus.
+/// `org.bardo.Compositor1`, which casement serves on the session bus.
 #[zbus::proxy(
-    interface = "org.quire.Compositor1",
-    default_service = "org.quire.Compositor1",
-    default_path = "/org/quire/Compositor1"
+    interface = "org.bardo.Compositor1",
+    default_service = "org.bardo.Compositor1",
+    default_path = "/org/bardo/Compositor1"
 )]
 trait Compositor1 {
     /// A connected Wayland socket for `role` (`"shell"` or `"agent"`).

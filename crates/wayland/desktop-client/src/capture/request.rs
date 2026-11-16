@@ -21,7 +21,7 @@ pub struct CaptureRequest {
     /// The cursor.
     pub cursor: CursorMode,
     /// The Space of `output` to capture instead of the whole output, and the size of the
-    /// picture (quire_shell_v1 version 2); `None` for the output as it is shown.
+    /// picture (bardo_shell_v1 version 2); `None` for the output as it is shown.
     pub space: Option<SpaceShot>,
 }
 

@@ -1,5 +1,5 @@
-//! The shell side of the session: the connection `org.quire.Compositor1.Connect("shell")` hands
-//! out, and the `quire_shell_v1` requests made on it (roles and minimise targets). The grammar
+//! The shell side of the session: the connection `org.bardo.Compositor1.Connect("shell")` hands
+//! out, and the `bardo_shell_v1` requests made on it (roles and minimise targets). The grammar
 //! is in `command.rs`; every verb answers one JSON note.
 
 use compositor_testclient::quire::handout;
@@ -47,7 +47,7 @@ fn client_over(fd: OwnedFd) -> Result<TestClient, ClientError> {
     ))
 }
 
-/// Connects as the shell: the new client, and the bound `quire_shell_v1` on it.
+/// Connects as the shell: the new client, and the bound `bardo_shell_v1` on it.
 pub(crate) fn connect() -> Result<(TestClient, Shell), String> {
     let mut client = client_over(handout::shell()?).map_err(|e| e.to_string())?;
     let advertised = client
@@ -55,9 +55,9 @@ pub(crate) fn connect() -> Result<(TestClient, Shell), String> {
         .contents()
         .clone_list()
         .iter()
-        .any(|global| global.interface == "quire_shell_v1");
+        .any(|global| global.interface == "bardo_shell_v1");
     if !advertised {
-        return Err("the connection does not advertise quire_shell_v1".to_owned());
+        return Err("the connection does not advertise bardo_shell_v1".to_owned());
     }
     let handle = ShellHandle::bind(&mut client, 1);
     Ok((client, Shell { handle, dock: None }))

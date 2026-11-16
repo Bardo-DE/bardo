@@ -1,5 +1,5 @@
 //! Adds an agent from the agent registry to `agents.toml`, and takes an entry out. An added entry
-//! names the registry and the pinned version (docket installs it with `docket-agents` and gives it
+//! names the registry and the pinned version (docket installs it with `bardo-agents` and gives it
 //! a home of its own), signs in the agent's own way, and reaches the host's network, which it
 //! needs to reach its provider: the Settings app says so before it adds one. An entry with a
 //! command of its own is the person's to write by hand. The file is edited in place, so comments

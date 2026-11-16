@@ -454,7 +454,7 @@ pub fn run_controls(state: RunStateWire, place: RunPlaceWire) -> Vec<RunControl>
 ```rust
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "companion", page = Page::Intelligence)]
+#[settings(file = "shell/settings.toml", domain = "companion", page = Page::Intelligence)]
 pub struct CompanionSettings {
     #[settings(label = "Press ⌘ twice to ask", section = "Companion")]           pub summon: SummonKey,       // DoubleTapCommand | Off (toggle)
     #[settings(label = "In a text field", section = "Companion")]                pub in_field: InField,       // Prompt | Launcher
@@ -479,12 +479,12 @@ Keys on `Page::Intelligence` owned by other areas (UX fixes only the section ord
 | Owner | Member | UX use |
 |---|---|---|
 | context (app side, the app's own name) | `Summon(serial t, origin s) -> s` (`SummonAnswer` slug) | §4.1. ds answers via `CompanionPort` |
-| agent | `org.quire.Companion1`: property `Presence s`; `Ask(prompt s, context s, origin s, parent_window s) -> o` Answer; Answer `.Updated(answer s)` (serde `AnswerWire`), `.Act(action s) -> o`, `.Cancel()`; signal `ActivityAppended(s)`, `ActivityChanged(s)`; `Undo(entry s) -> o`; `PauseSpace(space s)` | launcher, ds port, bar |
-| cua | `org.quire.Cua1` as in cua-integration §3.4 (`State`, `Step`, `Window`, `StepStarted`, `ThoughtDelta`, `AskUser`, `Finished`, `Pause/Resume/TakeOver/HandBack/Cancel`) plus `Replay(run)` and `UndoAll(run)` | `RunRow` |
+| agent | `org.bardo.Companion1`: property `Presence s`; `Ask(prompt s, context s, origin s, parent_window s) -> o` Answer; Answer `.Updated(answer s)` (serde `AnswerWire`), `.Act(action s) -> o`, `.Cancel()`; signal `ActivityAppended(s)`, `ActivityChanged(s)`; `Undo(entry s) -> o`; `PauseSpace(space s)` | launcher, ds port, bar |
+| cua | `org.bardo.ComputerUse1` as in cua-integration §3.4 (`State`, `Step`, `Window`, `StepStarted`, `ThoughtDelta`, `AskUser`, `Finished`, `Pause/Resume/TakeOver/HandBack/Cancel`) plus `Replay(run)` and `UndoAll(run)` | `RunRow` |
 | memory | `Timeline(space s, before t, limit u) -> s`, `ForgetPreview(item s) -> s`, `Forget(item s) -> o`, `Keep(item s)`, `Discard(item s)`, `Diff(night s) -> s`, `Export(space s, fd h) -> o` | `MemoryTimeline` |
 | models | `Inference1.Usage`, and a `Models(tier s) -> s` list with state; `Choose(session, model)` | `ServedByChip` |
 | actions / security | `ConfirmRequest` type (router-generated text, effect, taint, offer) and the compositor delivery | `ConfirmCard` |
-| compositor | `quire_agent_glow_v1.set(toplevel, GlowState, GlowSpec)`; `quire_trusted_surface_v1` (role, hardware-only input, no agent seat, no capture, compositor frame) | glow, confirm |
+| compositor | `bardo_agent_glow_v1.set(toplevel, GlowState, GlowSpec)`; `bardo_trusted_surface_v1` (role, hardware-only input, no agent seat, no capture, compositor frame) | glow, confirm |
 
 Each area ships a **serde-only wire crate** (no zbus), the same way keycap ships `key-remap-proto`. `shell-model` depends on those crates.
 

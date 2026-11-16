@@ -16,14 +16,14 @@
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
 #   PREFIX/libexec/quire/accountd                     the daemon
-#   PREFIX/lib/systemd/user/accountd.service          the user unit
-#   PREFIX/lib/systemd/user/accountd.service.d/sandbox.conf
+#   PREFIX/lib/systemd/user/bardo-accountd.service          the user unit
+#   PREFIX/lib/systemd/user/bardo-accountd.service.d/sandbox.conf
 #                                                            the part of the unit's sandbox that needs a
 #                                                            mount namespace; left out (with one line saying
 #                                                            so) when a probe shows this system refuses a user
 #                                                            service one (Ubuntu 24.04's AppArmor restriction
 #                                                            on user namespaces); always installed with a destdir
-#   PREFIX/share/dbus-1/services/org.quire.*.service         D-Bus activation
+#   PREFIX/share/dbus-1/services/org.bardo.*.service         D-Bus activation
 #   PREFIX/share/porter/providers/*.toml                     the provider files
 #   PREFIX/share/porter/clients.toml                         only when dist/clients.toml exists
 #   SYSCONFDIR/porter/callers.toml                           the caller table (kept if the owner changed it)
@@ -185,11 +185,11 @@ for daemon in $daemons; do
     fi
 done
 
-# The files in dist/ name /usr/libexec/quire; a different prefix changes that one path.
+# The files in dist/ name /usr/libexec/bardo; a different prefix changes that one path.
 libexec=$prefix/libexec/quire
 for daemon in $daemons; do
     put 755 "$built/$daemon" "$libexec/$daemon"
-    put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/quire "$libexec"
+    put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/bardo "$libexec"
 done
 namespaces=0
 mount_namespace_for_user_units || namespaces=$?
@@ -209,7 +209,7 @@ else
     echo "The daemons run without their extra sandbox on this system, which does not let a user service have its own mount namespace. On Ubuntu, allow it with the kernel.apparmor_restrict_unprivileged_userns setting or an AppArmor profile, then run this again."
 fi
 for activation in "$dist"/dbus/*.service; do
-    put 644 "$activation" "$prefix/share/dbus-1/services/$(basename "$activation")" /usr/libexec/quire "$libexec"
+    put 644 "$activation" "$prefix/share/dbus-1/services/$(basename "$activation")" /usr/libexec/bardo "$libexec"
 done
 
 # --- Data ----------------------------------------------------------------------------------------

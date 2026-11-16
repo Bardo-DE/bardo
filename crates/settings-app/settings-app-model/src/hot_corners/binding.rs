@@ -95,7 +95,7 @@ pub enum HotDo {
     /// An action an app declares, with nothing for the person to fill in. `action` is the name
     /// without the app's prefix (`compose`, as the command line takes it).
     AppAction {
-        /// The app's name (`org.quire.Mail`).
+        /// The app's name (`org.bardo.Mail`).
         app: String,
         /// The action.
         action: String,

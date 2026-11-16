@@ -1,10 +1,10 @@
-//! Agent vocabulary: `quire_agent_v1`'s enums, the lease state `quire_desktop_window_v1`
+//! Agent vocabulary: `bardo_agent_v1`'s enums, the lease state `bardo_desktop_window_v1`
 //! reports, and the press edge of input receipts.
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// Where a run happens (`quire_agent_manager_v1.lease_mode`).
+    /// Where a run happens (`bardo_agent_manager_v1.lease_mode`).
     RunMode {
         /// On the person's own seat, where the window is.
         InPlace = 0,
@@ -16,7 +16,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Why a lease ended without the agent asking (`quire_agent_lease_v1.revoke_reason`).
+    /// Why a lease ended without the agent asking (`bardo_agent_lease_v1.revoke_reason`).
     RevokeReason {
         /// The hardware kill chord.
         KillChord = 0,
@@ -31,7 +31,7 @@ wire_enum! {
 
 wire_enum! {
     /// Why an agent's input stops without ending the lease
-    /// (`quire_agent_lease_v1.suspend_reason`).
+    /// (`bardo_agent_lease_v1.suspend_reason`).
     Suspend {
         /// The person took over.
         TakeOver = 0,
@@ -43,7 +43,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// What a run looks like from outside (`quire_agent_lease_v1.glow_state`).
+    /// What a run looks like from outside (`bardo_agent_lease_v1.glow_state`).
     GlowCode {
         /// Nothing.
         Off = 0,
@@ -57,7 +57,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Why a captured region is masked (`quire_agent_lease_v1.mask_reason`).
+    /// Why a captured region is masked (`bardo_agent_lease_v1.mask_reason`).
     MaskReason {
         /// A password field.
         PasswordField = 0,
@@ -75,7 +75,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Whether an agent holds a window (`quire_desktop_window_v1.lease_state`).
+    /// Whether an agent holds a window (`bardo_desktop_window_v1.lease_state`).
     LeaseState {
         /// No lease.
         Free = 0,

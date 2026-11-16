@@ -6,7 +6,7 @@ use std::path::PathBuf;
 /// Where the administrator's files are looked for.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub enum SystemDir {
-    /// `/etc/quire`, owned by the administrator.
+    /// `/etc/bardo`, owned by the administrator.
     #[default]
     Etc,
     /// This folder instead (`--system-dir`): a jailed run or a test whose floor is its own

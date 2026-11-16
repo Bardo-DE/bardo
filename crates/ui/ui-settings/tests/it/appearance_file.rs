@@ -1,4 +1,4 @@
-//! `quire/appearance.toml` through a `Store` on a scratch directory: the round trip, the first
+//! `bardo/appearance.toml` through a `Store` on a scratch directory: the round trip, the first
 //! run, a damaged file, a bad value and a key nobody reads.
 
 use crate::support;

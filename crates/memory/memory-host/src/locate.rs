@@ -1,4 +1,4 @@
-//! Where the settings file is: `$XDG_CONFIG_HOME/almanac/settings.toml`, then each of
+//! Where the settings file is: `$XDG_CONFIG_HOME/memory/settings.toml`, then each of
 //! `$XDG_CONFIG_DIRS` (design/22 section 2). The first file that reads wins.
 
 use crate::files::write_private_atomic;

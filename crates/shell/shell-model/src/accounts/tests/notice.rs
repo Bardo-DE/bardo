@@ -39,7 +39,7 @@ fn a_google_testing_app_sign_out_says_why() {
 
 #[test]
 fn an_action_key_carries_its_account_and_no_other_key_is_one() {
-    let account = AccountKey::new("/org/quire/Accounts1/account/work");
+    let account = AccountKey::new("/org/bardo/Accounts1/account/work");
     assert_eq!(account_of(&sign_in_key(&account)), Some(account));
     for other in ["default", "", "sign-in-again:", "open"] {
         assert_eq!(account_of(&ActionKey(other.to_owned())), None, "{other:?}");

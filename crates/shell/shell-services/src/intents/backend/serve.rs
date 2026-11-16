@@ -26,8 +26,8 @@ pub(super) struct Seat {
     pub connection: Connection,
 }
 
-/// Connect to `bus` and claim `org.quire.Shell` (the provider; it is what gives the connection
-/// its roles at intentd), then `org.quire.Confirm1`: intentd trusts the owner of the second only
+/// Connect to `bus` and claim `org.bardo.Shell` (the provider; it is what gives the connection
+/// its roles at intentd), then `org.bardo.Confirm1`: intentd trusts the owner of the second only
 /// while it also owns the first, so the sheet is never reachable before it is trusted.
 pub(super) async fn take(
     bus: &Bus,
@@ -77,7 +77,7 @@ pub(super) async fn take(
 
 /// Who may call the provider: intentd's unit only. Under the system's `/proc` its main process is
 /// asked of the systemd manager; any other root is a fixture tree (`<root>/<pid>/cgroup`, and
-/// `<root>/units/intentd.service` for the main process), which is how a test names intentd.
+/// `<root>/units/bardo-actiond.service` for the main process), which is how a test names intentd.
 fn intentd_at(connection: &Connection, proc_root: &Path) -> Identity {
     let fixture = (proc_root != Path::new("/proc")).then_some(proc_root);
     Identity::on(connection.clone(), intentd_only(), fixture)

@@ -235,7 +235,7 @@ pub fn quire_mail() -> A11ySnapshot {
         NodeState::Showing,
     ];
     snapshot(
-        "org.quire.Mail",
+        "org.bardo.Mail",
         TreeSource::QuireApp,
         vec![
             Spec::new(0, ROOT, Role::Window, "Inbox", (0, 0, 900, 600)),

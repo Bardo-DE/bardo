@@ -1,4 +1,4 @@
-//! `org.quire.SettingsModule1` at `/org/quire/Sync1/settings`, served through quire's
+//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through quire's
 //! `ui_settings::live`: the accounts the person has (accountd's) and what syncd keeps of them. Only
 //! the `Settings` role may `Get`, `Describe` or `Set`, as in accountd's module.
 //!
@@ -42,7 +42,7 @@ use ui_settings::schema::{
 use zbus::Connection;
 
 /// The settings module's path.
-pub const SETTINGS_PATH: &str = "/org/quire/Sync1/settings";
+pub const SETTINGS_PATH: &str = "/org/bardo/Sync1/settings";
 
 /// What a key names.
 #[derive(Debug, Clone, PartialEq, Eq)]

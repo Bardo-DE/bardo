@@ -8,9 +8,9 @@ use updater_root::apply::{
     rollback,
 };
 
-const UDEV: &str = "/etc/udev/rules.d/70-keycap.rules";
-const UDEV_IN_BUNDLE: &str = "system/etc/udev/rules.d/70-keycap.rules";
-const PAM: &str = "/etc/pam.d/sill";
+const UDEV: &str = "/etc/udev/rules.d/70-bardo-key-remap.rules";
+const UDEV_IN_BUNDLE: &str = "system/etc/udev/rules.d/70-bardo-key-remap.rules";
+const PAM: &str = "/etc/pam.d/bardo-shell";
 const PAM_IN_BUNDLE: &str = "system/etc/pam.d/sill";
 
 /// A release placing the udev rule with these contents.
@@ -109,9 +109,9 @@ fn a_link_in_the_way_is_not_followed() {
     assert_eq!(read(&elsewhere), "untouched");
 }
 
-const UNIT: &str = "/usr/lib/systemd/user/sill.service";
-const UNIT_IN_BUNDLE: &str = "system/usr/lib/systemd/user/sill.service";
-const UNIT_IN_TREE: &str = "lib/systemd/user/sill.service";
+const UNIT: &str = "/usr/lib/systemd/user/bardo-shell.service";
+const UNIT_IN_BUNDLE: &str = "system/usr/lib/systemd/user/bardo-shell.service";
+const UNIT_IN_TREE: &str = "lib/systemd/user/bardo-shell.service";
 
 #[test]
 fn a_unit_that_was_an_export_link_becomes_a_plain_file_and_the_old_release_is_untouched() {
@@ -230,12 +230,12 @@ fn a_release_listing_a_system_file_no_rule_names_is_refused_whole() {
         "/etc/udev/rules.d/99-evil.rules",
         "/usr/lib/systemd/system/evil.service",
         "/usr/lib/systemd/system/turnstile.timer",
-        "/etc/systemd/system/turnstile.socket",
+        "/etc/systemd/system/bardo-input-broker.socket",
         "/etc/udev/rules.d/73-turnstile.rules",
         "/etc/modules-load.d/turnstile.d.conf",
         "/usr/lib/systemd/user/sill.target",
         "/usr/lib/systemd/user/xdg-desktop-portal.service.d/20-evil.conf",
-        "/usr/lib/systemd/system/palmrest.service.d",
+        "/usr/lib/systemd/system/bardo-mouse-gestures.service.d",
     ];
     for dest in table {
         let sandbox = Sandbox::new();
@@ -253,10 +253,10 @@ fn a_release_listing_a_system_file_no_rule_names_is_refused_whole() {
 fn a_file_the_distribution_ships_in_usr_lib_is_not_replaced_by_a_new_one_in_etc() {
     // On Fedora and Arch the vendor's PAM and udev files live under /usr/lib, so the /etc name is empty.
     let table = [
-        (PAM, "/usr/lib/pam.d/sill", PAM_IN_BUNDLE),
+        (PAM, "/usr/lib/pam.d/bardo-shell", PAM_IN_BUNDLE),
         (
             UDEV,
-            "/usr/lib/udev/rules.d/70-keycap.rules",
+            "/usr/lib/udev/rules.d/70-bardo-key-remap.rules",
             UDEV_IN_BUNDLE,
         ),
     ];
@@ -299,7 +299,7 @@ fn a_system_file_that_cannot_be_placed_leaves_the_earlier_release_current() {
     assert_eq!(sandbox.current(), Some(v("0.1.0")));
     assert_eq!(sandbox.previous(), None);
     assert_eq!(
-        read(&sandbox.link("/usr/share/wayland-sessions/quire.desktop")),
+        read(&sandbox.link("/usr/share/wayland-sessions/bardo.desktop")),
         "[Desktop Entry]",
         "the links follow the release that is current"
     );
@@ -460,9 +460,9 @@ fn relabelling_runs_restorecon_only_where_selinux_is_in_use_and_never_fails_an_i
 }
 
 const INPUT_FILES: [&str; 4] = [
-    "/usr/lib/systemd/system/turnstile.socket",
-    "/usr/lib/systemd/system/turnstile.service",
-    "/etc/udev/rules.d/72-turnstile.rules",
+    "/usr/lib/systemd/system/bardo-input-broker.socket",
+    "/usr/lib/systemd/system/bardo-input-broker.service",
+    "/etc/udev/rules.d/72-bardo-input-broker.rules",
     "/etc/modules-load.d/turnstile.conf",
 ];
 
@@ -518,7 +518,7 @@ fn each_file_of_the_input_service_is_placed_and_the_system_is_told_once() {
             want("/usr/bin/udevadm", &["trigger", "--subsystem-match=misc"]),
             want(
                 "/usr/bin/systemctl",
-                &["enable", "--now", "turnstile.socket"]
+                &["enable", "--now", "bardo-input-broker.socket"]
             ),
         ]
     );
@@ -527,10 +527,10 @@ fn each_file_of_the_input_service_is_placed_and_the_system_is_told_once() {
 #[test]
 fn a_failing_or_missing_tool_is_a_note_and_never_stops_an_install() {
     let mut recipe = Recipe::new("0.1.0");
-    let dest = "/usr/lib/systemd/system/turnstile.socket";
+    let dest = "/usr/lib/systemd/system/bardo-input-broker.socket";
     recipe
         .listed
-        .push(("system/usr/lib/systemd/system/turnstile.socket", "socket"));
+        .push(("system/usr/lib/systemd/system/bardo-input-broker.socket", "socket"));
     recipe.system.push(dest);
 
     // (what the tools answer, notes expected)
@@ -563,7 +563,7 @@ fn what_the_system_is_told_follows_the_paths_that_changed() {
     // (case, changes, the commands as text)
     let table: Vec<(&str, Vec<Change>, Vec<&str>)> = vec![
         ("nothing changed", vec![], vec![]),
-        ("a login service", vec![placed("/etc/pam.d/sill")], vec![]),
+        ("a login service", vec![placed("/etc/pam.d/bardo-shell")], vec![]),
         (
             "a unit",
             vec![placed("/usr/lib/systemd/system/other.service")],
@@ -571,68 +571,68 @@ fn what_the_system_is_told_follows_the_paths_that_changed() {
         ),
         (
             "the keyboard map is placed: read again, then enabled and started",
-            vec![placed("/usr/lib/systemd/system/keycap.service")],
-            vec!["daemon-reload", "enable --now keycap.service"],
+            vec![placed("/usr/lib/systemd/system/bardo-key-remap.service")],
+            vec!["daemon-reload", "enable --now bardo-key-remap.service"],
         ),
         (
             "the keyboard map is removed: read again, not started",
-            vec![removed("/usr/lib/systemd/system/keycap.service")],
+            vec![removed("/usr/lib/systemd/system/bardo-key-remap.service")],
             vec!["daemon-reload"],
         ),
         (
             "both services: the socket first, the map after it",
             vec![
-                placed("/usr/lib/systemd/system/keycap.service"),
-                placed("/usr/lib/systemd/system/turnstile.socket"),
+                placed("/usr/lib/systemd/system/bardo-key-remap.service"),
+                placed("/usr/lib/systemd/system/bardo-input-broker.socket"),
             ],
             vec![
                 "daemon-reload",
-                "enable --now turnstile.socket",
-                "enable --now keycap.service",
+                "enable --now bardo-input-broker.socket",
+                "enable --now bardo-key-remap.service",
             ],
         ),
         (
             "the touchpad daemon is placed: read again, then enabled and started",
-            vec![placed("/usr/lib/systemd/system/palmrest.service")],
-            vec!["daemon-reload", "enable --now palmrest.service"],
+            vec![placed("/usr/lib/systemd/system/bardo-mouse-gestures.service")],
+            vec!["daemon-reload", "enable --now bardo-mouse-gestures.service"],
         ),
         (
             "the touchpad daemon is removed: read again, not started",
-            vec![removed("/usr/lib/systemd/system/palmrest.service")],
+            vec![removed("/usr/lib/systemd/system/bardo-mouse-gestures.service")],
             vec!["daemon-reload"],
         ),
         (
             "all three services: the socket, the map, then the touchpad daemon",
             vec![
-                placed("/usr/lib/systemd/system/palmrest.service"),
-                placed("/usr/lib/systemd/system/keycap.service"),
-                placed("/usr/lib/systemd/system/turnstile.socket"),
+                placed("/usr/lib/systemd/system/bardo-mouse-gestures.service"),
+                placed("/usr/lib/systemd/system/bardo-key-remap.service"),
+                placed("/usr/lib/systemd/system/bardo-input-broker.socket"),
             ],
             vec![
                 "daemon-reload",
-                "enable --now turnstile.socket",
-                "enable --now keycap.service",
-                "enable --now palmrest.service",
+                "enable --now bardo-input-broker.socket",
+                "enable --now bardo-key-remap.service",
+                "enable --now bardo-mouse-gestures.service",
             ],
         ),
         (
             "a rule",
-            vec![placed("/etc/udev/rules.d/70-keycap.rules")],
+            vec![placed("/etc/udev/rules.d/70-bardo-key-remap.rules")],
             vec!["control --reload-rules", "trigger --subsystem-match=misc"],
         ),
         (
             "the socket is placed",
-            vec![placed("/usr/lib/systemd/system/turnstile.socket")],
-            vec!["daemon-reload", "enable --now turnstile.socket"],
+            vec![placed("/usr/lib/systemd/system/bardo-input-broker.socket")],
+            vec!["daemon-reload", "enable --now bardo-input-broker.socket"],
         ),
         (
             "the socket is removed: read again, not started",
-            vec![removed("/usr/lib/systemd/system/turnstile.socket")],
+            vec![removed("/usr/lib/systemd/system/bardo-input-broker.socket")],
             vec!["daemon-reload"],
         ),
         (
             "the service alone is not started",
-            vec![placed("/usr/lib/systemd/system/turnstile.service")],
+            vec![placed("/usr/lib/systemd/system/bardo-input-broker.service")],
             vec!["daemon-reload"],
         ),
     ];

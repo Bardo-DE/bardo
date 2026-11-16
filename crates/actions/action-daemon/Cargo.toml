@@ -1,6 +1,6 @@
 [package]
 name = "action-daemon"
-description = "The daemon: builds the router over its seams (apps over D-Bus, the sheet, inferd, memoryd, the grant file) and serves org.quire.Intents1; also hosts the built-in org.quire.Memory and org.quire.Companion providers. The binary is a skeleton."
+description = "The daemon: builds the router over its seams (apps over D-Bus, the sheet, inferd, memoryd, the grant file) and serves org.bardo.Intents1; also hosts the built-in org.bardo.Memory and org.bardo.Companion providers. The binary is a skeleton."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

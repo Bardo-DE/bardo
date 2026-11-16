@@ -4,7 +4,7 @@
 //!
 //! Everything here creates or opens real input devices. Nothing in the workspace's ordinary
 //! tests may call it: the device tests that do are `#[ignore]`d and assert
-//! `KEYCAP_DEVICE_TESTS=1`.
+//! `BARDO_KEY_REMAP_DEVICE_TESTS=1`.
 
 mod client;
 mod daemon;

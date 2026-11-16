@@ -5,7 +5,7 @@
 //!
 //! ```toml
 //! vocab = 1
-//! app = "org.quire.Mail"
+//! app = "org.bardo.Mail"
 //!
 //! [[commands]]            # one per menu item and one per shortcut binding
 //! id = "file.new"         # the app's stable id for it

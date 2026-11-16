@@ -239,8 +239,8 @@ fn an_oversize_stream_is_cut_at_the_listed_size() {
 #[test]
 fn a_system_file_changed_after_it_was_unpacked_is_not_placed_and_the_old_release_comes_back() {
     let sandbox = Sandbox::new();
-    let udev = "/etc/udev/rules.d/70-keycap.rules";
-    let in_bundle = "system/etc/udev/rules.d/70-keycap.rules";
+    let udev = "/etc/udev/rules.d/70-bardo-key-remap.rules";
+    let in_bundle = "system/etc/udev/rules.d/70-bardo-key-remap.rules";
     for (version, rule) in [("0.1.0", "v1"), ("0.2.0", "v2")] {
         let mut recipe = Recipe::new(version);
         recipe.listed.push((in_bundle, rule));

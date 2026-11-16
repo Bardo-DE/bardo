@@ -1,5 +1,5 @@
 //! The guest and computer calls of `Inference` over the session bus, against a scripted
-//! `org.quire.Inference1` on a private bus: each call's decode into typed rows, the answer as
+//! `org.bardo.Inference1` on a private bus: each call's decode into typed rows, the answer as
 //! the slug the wire carries, a refusal read back as a typed reason, and the stream that hears
 //! of a computer asking and of the answers changing; and calls sent to the owner a caller
 //! checked, which a program that takes the name afterwards does not get.
@@ -47,7 +47,7 @@ struct Script {
 }
 
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Inference1.Error.Computer")]
+#[zbus(prefix = "org.bardo.Inference1.Error.Computer")]
 enum Refused {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -108,7 +108,7 @@ fn candidate_row(node: &str, name: &str, needs_approval: bool) -> (String, Detai
     )
 }
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl FakeInferd {
     async fn guests(&self) -> fdo::Result<Vec<(String, Details)>> {
         match self.script.denied {
@@ -648,7 +648,7 @@ async fn a_caller_the_daemon_refuses_is_denied_and_no_daemon_is_unreachable() {
 }
 
 /// The owner a caller checked keeps the calls aimed at it: a program that takes
-/// `org.quire.Inference1` once the daemon lets go of it answers the well-known name, never them.
+/// `org.bardo.Inference1` once the daemon lets go of it answers the well-known name, never them.
 #[tokio::test(flavor = "multi_thread")]
 async fn calls_aimed_at_the_checked_owner_never_reach_a_program_that_takes_the_name_later() {
     let world = World::start(Script {

@@ -1,7 +1,7 @@
 //! Asking the person what to share.
 //!
 //! The picker is a surface of the desktop shell, not of this process: [`ShellChooser`] calls
-//! `org.quire.Shell1.PickCaptureSource` on the shell's bus name and returns its answer.
+//! `org.bardo.Shell1.PickCaptureSource` on the shell's bus name and returns its answer.
 //! [`FakeChooser`] answers from a script, for tests.
 
 use std::sync::Mutex;
@@ -72,9 +72,9 @@ pub trait Chooser: Send + Sync + std::fmt::Debug {
 /// the deny button, 2 when they closed the sheet (Escape, or the sheet was replaced) without
 /// answering. Only the portal backend's name may ask.
 #[zbus::proxy(
-    interface = "org.quire.Shell1",
-    default_service = "org.quire.Shell",
-    default_path = "/org/quire/Shell1",
+    interface = "org.bardo.Shell1",
+    default_service = "org.bardo.Shell",
+    default_path = "/org/bardo/Shell1",
     gen_blocking = false
 )]
 pub trait Shell1 {

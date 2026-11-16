@@ -67,7 +67,7 @@ impl TraceDir {
         self.put(&name, &trace.render())?;
         self.put(
             &format!("{}.cassette.jsonl", case.id.0),
-            &cassette_from(exchanges, "docket-live"),
+            &cassette_from(exchanges, "agent-live"),
         )?;
         let toml = toml::to_string_pretty(case)
             .map_err(|e| TraceDirError::Toml(case.id.0.clone(), e.to_string()))?;

@@ -22,7 +22,7 @@ fn homes(name: &str) -> (Scratch, ConfigHome, DataHome) {
     let config = scratch.join("config");
     let data = scratch.join("data");
     std::fs::create_dir_all(config.join("docket")).expect("mkdir");
-    std::fs::write(config.join("docket/agents.toml"), AGENTS).expect("agents");
+    std::fs::write(config.join("actions/agents.toml"), AGENTS).expect("agents");
     let state = data.join("docket/agents/state/claude-code");
     std::fs::create_dir_all(&state).expect("mkdir");
     std::fs::write(state.join("offered.toml"), OFFERED).expect("offered");
@@ -71,7 +71,7 @@ fn a_choice_is_written_into_its_entry_and_nothing_else_moves() {
     let (scratch, config, data) = homes("agents-write");
     save_agent_choice(&config, "claude-code", &model_choice("opus")).expect("saved");
     save_agent_choice(&config, "claude-code", &way_choice("login")).expect("saved");
-    let text = std::fs::read_to_string(scratch.join("config/docket/agents.toml")).expect("file");
+    let text = std::fs::read_to_string(scratch.join("config/actions/agents.toml")).expect("file");
     assert!(text.starts_with("# mine\n"), "{text}");
     assert!(text.contains("program = \"mine\""), "{text}");
     let after = load_agents(&config, &data);
@@ -146,7 +146,7 @@ fn an_assistant_added_from_the_installed_ones_can_be_removed_again() {
     let form = AddForm::offline(&unlisted_found(&installed_agents(&data), &rows), &rows);
     let new = added(&form.typed("My Gemini".to_owned()));
     add_agent(&config, &new).expect("added");
-    let path = scratch.join("config/docket/agents.toml");
+    let path = scratch.join("config/actions/agents.toml");
     let text = std::fs::read_to_string(&path).expect("file");
     assert!(text.starts_with("# mine\n"), "the comment stays: {text}");
     for want in [

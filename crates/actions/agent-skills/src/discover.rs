@@ -52,7 +52,7 @@ impl Roots {
         Self::in_data_dirs(home.as_deref(), &dirs)
     }
 
-    /// Skill directories to read as they are (`docket-eval --check-skills <dirs>`): all shipped.
+    /// Skill directories to read as they are (`agent-eval --check-skills <dirs>`): all shipped.
     pub fn shipped_only(dirs: Vec<PathBuf>) -> Self {
         Self {
             own: None,

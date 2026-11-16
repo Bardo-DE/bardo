@@ -1,8 +1,8 @@
-//! The workspaces and their looks on the session bus: `org.quire.Workspaces1`, the shell's answer
+//! The workspaces and their looks on the session bus: `org.bardo.Workspaces1`, the shell's answer
 //! to "which workspace is this window on, and how is it tinted" for an app that keeps its Spaces
 //! from the desktop.
 //!
-//! - **Interface `org.quire.Workspaces1`** at `/org/quire/Workspaces1`.
+//! - **Interface `org.bardo.Workspaces1`** at `/org/bardo/Workspaces1`.
 //!   - Property `Workspaces`, type `a(ssssb)`: per workspace its id (the compositor's stable id,
 //!     else the shell's key for the session), name, output (the connector name of its group's first
 //!     output, empty when none), look (a `SpaceLook` as quire's compact JSON, at most 1024 bytes)
@@ -22,8 +22,8 @@ use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
 /// The well-known name of the interface and its object path.
-pub const BUS_NAME: &str = "org.quire.Workspaces1";
-pub const PATH: &str = "/org/quire/Workspaces1";
+pub const BUS_NAME: &str = "org.bardo.Workspaces1";
+pub const PATH: &str = "/org/bardo/Workspaces1";
 
 /// The workspaces and their looks as a [`Service`].
 #[derive(Debug)]

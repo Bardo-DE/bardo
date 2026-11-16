@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Reader1
+Exec=/usr/libexec/bardo/bardo-readerd
+SystemdService=bardo-readerd.service

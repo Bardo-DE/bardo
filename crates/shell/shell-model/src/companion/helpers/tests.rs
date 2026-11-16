@@ -63,7 +63,7 @@ fn card(helper: &str, name: &str, model: HelperModel) -> HelperCardView {
         role: "Reads the news each morning".to_owned(),
         app_name: None,
         model,
-        reach: vec!["org.quire.Notes: look at things".to_owned()],
+        reach: vec!["org.bardo.Notes: look at things".to_owned()],
         steps: Count(12),
         jobs: vec![job_json(
             r#"{"id":1,"goal":"Find the weekly digest","state":"done","note":null}"#,
@@ -119,23 +119,23 @@ fn sentence_of(model: &HelpersModel) -> Option<&str> {
 fn a_card_is_saved_only_with_a_name_a_role_and_an_app() {
     // (name, role, apps, what saving says)
     let cases: [(&str, &str, &[&str], Option<&str>); 6] = [
-        ("Research", "Reads the news", &["org.quire.Notes"], None),
+        ("Research", "Reads the news", &["org.bardo.Notes"], None),
         (
             "",
             "Reads the news",
-            &["org.quire.Notes"],
+            &["org.bardo.Notes"],
             Some("Give it a name."),
         ),
         (
             "   ",
             "Reads the news",
-            &["org.quire.Notes"],
+            &["org.bardo.Notes"],
             Some("Give it a name."),
         ),
         (
             "Research",
             " ",
-            &["org.quire.Notes"],
+            &["org.bardo.Notes"],
             Some("Say what it is for."),
         ),
         (
@@ -147,7 +147,7 @@ fn a_card_is_saved_only_with_a_name_a_role_and_an_app() {
         (
             "A name that goes on and on and on past what a card can keep",
             "Reads the news",
-            &["org.quire.Notes"],
+            &["org.bardo.Notes"],
             Some("That name is too long or has a character it cannot keep."),
         ),
     ];
@@ -173,7 +173,7 @@ fn a_new_card_has_no_model_and_still_saves_and_says_to_choose_one() {
             HelpersMsg::NewHelper,
             HelpersMsg::EditName("Research".to_owned()),
             HelpersMsg::EditRole("Reads the news".to_owned()),
-            HelpersMsg::ToggleApp(app("org.quire.Notes")),
+            HelpersMsg::ToggleApp(app("org.bardo.Notes")),
             HelpersMsg::SetCeiling(Ceiling::Change),
         ],
     );
@@ -194,7 +194,7 @@ fn a_new_card_has_no_model_and_still_saves_and_says_to_choose_one() {
             .unwrap_or_else(|e| panic!("{e}")),
         space: SpaceId::desktop(),
         model: HelperModel::Unset,
-        apps: vec![app("org.quire.Notes")],
+        apps: vec![app("org.bardo.Notes")],
         ceiling: Ceiling::Change,
         steps: Count(12),
         kind: HelperKind::Native,
@@ -602,38 +602,38 @@ fn a_card_reads_back_into_the_apps_and_limit_its_lines_say() {
     let apps = |names: &[&str]| names.iter().map(|n| app(n)).collect::<BTreeSet<_>>();
     let cases = [
         (
-            lines(&["org.quire.Notes: look at things"]),
+            lines(&["org.bardo.Notes: look at things"]),
             Reach::Chosen {
-                apps: apps(&["org.quire.Notes"]),
+                apps: apps(&["org.bardo.Notes"]),
                 ceiling: Ceiling::Look,
             },
         ),
         (
             lines(&[
-                "org.quire.Notes: look at things and change them (changes can be undone)",
-                "org.quire.Photos: look at things and change them (changes can be undone)",
+                "org.bardo.Notes: look at things and change them (changes can be undone)",
+                "org.bardo.Photos: look at things and change them (changes can be undone)",
             ]),
             Reach::Chosen {
-                apps: apps(&["org.quire.Notes", "org.quire.Photos"]),
+                apps: apps(&["org.bardo.Notes", "org.bardo.Photos"]),
                 ceiling: Ceiling::Change,
             },
         ),
         (
-            lines(&["org.quire.Notes: look at things, change them and send things out"]),
+            lines(&["org.bardo.Notes: look at things, change them and send things out"]),
             Reach::Chosen {
-                apps: apps(&["org.quire.Notes"]),
+                apps: apps(&["org.bardo.Notes"]),
                 ceiling: Ceiling::Send,
             },
         ),
         (
             lines(&[
-                "org.quire.Notes: look at things",
-                "org.quire.Photos: look at things, change them and send things out",
+                "org.bardo.Notes: look at things",
+                "org.bardo.Photos: look at things, change them and send things out",
             ]),
             Reach::Unreadable,
         ),
         (
-            lines(&["org.quire.Notes: do anything, including deleting"]),
+            lines(&["org.bardo.Notes: do anything, including deleting"]),
             Reach::Unreadable,
         ),
         (lines(&["no colon here"]), Reach::Unreadable),
@@ -646,7 +646,7 @@ fn a_card_reads_back_into_the_apps_and_limit_its_lines_say() {
 #[test]
 fn a_card_whose_lines_cannot_be_read_cannot_be_saved_until_apps_are_chosen_again() {
     let mut view = card("h-1", "Research", HelperModel::Unset);
-    view.reach = vec!["org.quire.Notes: do anything, including deleting".to_owned()];
+    view.reach = vec!["org.bardo.Notes: do anything, including deleting".to_owned()];
     let (model, _) = feed(
         HelpersModel::default(),
         vec![
@@ -662,7 +662,7 @@ fn a_card_whose_lines_cannot_be_read_cannot_be_saved_until_apps_are_chosen_again
     let (model, sent) = feed(
         model,
         vec![
-            HelpersMsg::ToggleApp(app("org.quire.Notes")),
+            HelpersMsg::ToggleApp(app("org.bardo.Notes")),
             HelpersMsg::Save,
         ],
     );
@@ -731,7 +731,7 @@ fn an_unknown_helper_closes_its_card_with_a_sentence() {
 
 #[test]
 fn an_app_is_named_by_the_last_word_of_its_name() {
-    for (name, label) in [("org.quire.Notes", "Notes"), ("org.quire.Photos", "Photos")] {
+    for (name, label) in [("org.bardo.Notes", "Notes"), ("org.bardo.Photos", "Photos")] {
         assert_eq!(app_label(&app(name)), label, "{name}");
     }
 }

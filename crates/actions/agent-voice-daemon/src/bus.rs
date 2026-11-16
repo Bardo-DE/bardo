@@ -1,9 +1,9 @@
-//! `org.quire.Voice1` and its two object interfaces, as skeletons for the daemon (voice.md §3.5);
+//! `org.bardo.Voice1` and its two object interfaces, as skeletons for the daemon (voice.md §3.5);
 //! the callers' proxies are in `agent-voice-dbus`. Bodies are JSON in `s` (`agent-voice-wire` types in an `Envelope`); the
 //! event stream is an fd of `VoiceEvent` frames. Caller identity comes from the connection,
 //! never an argument. A skeleton made with `Default` answers `NotSupported`: that is the one the
 //! introspection test reads. The serving ones hold the daemon's handle. Members carry no doc
-//! comments: zbus copies them into the introspection, which is held to `dbus/org.quire.Voice1.xml`.
+//! comments: zbus copies them into the introspection, which is held to `dbus/org.bardo.Voice1.xml`.
 
 use crate::command::{Command, Handle};
 use crate::error::VoiceError;
@@ -14,7 +14,7 @@ use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 
-/// The daemon's side of `org.quire.Voice1`.
+/// The daemon's side of `org.bardo.Voice1`.
 #[derive(Debug, Default)]
 pub struct VoiceSkeleton {
     serving: Option<Handle>,
@@ -32,7 +32,7 @@ impl VoiceSkeleton {
     }
 }
 
-#[zbus::interface(name = "org.quire.Voice1")]
+#[zbus::interface(name = "org.bardo.Voice1")]
 impl VoiceSkeleton {
     async fn begin(
         &self,
@@ -111,7 +111,7 @@ impl UtteranceSkeleton {
     }
 }
 
-#[zbus::interface(name = "org.quire.Voice1.Utterance")]
+#[zbus::interface(name = "org.bardo.Voice1.Utterance")]
 impl UtteranceSkeleton {
     async fn route(
         &self,
@@ -188,7 +188,7 @@ impl SpeechSkeleton {
     }
 }
 
-#[zbus::interface(name = "org.quire.Voice1.Speech")]
+#[zbus::interface(name = "org.bardo.Voice1.Speech")]
 impl SpeechSkeleton {
     async fn stop(&self, #[zbus(header)] header: Header<'_>) -> Result<(), VoiceError> {
         let (n, handle) = self.handle()?;

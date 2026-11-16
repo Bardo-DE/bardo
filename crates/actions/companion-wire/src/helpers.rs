@@ -1,4 +1,4 @@
-//! The helpers on `org.quire.Companion1.Helpers`: what the shell lists and reads, and the forms
+//! The helpers on `org.bardo.Companion1.Helpers`: what the shell lists and reads, and the forms
 //! it sends. Every sentence in it is plain words: a helper has a name, a job, a model and a
 //! pause; nothing here names how the machinery works.
 

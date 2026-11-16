@@ -6,11 +6,11 @@
 
 use wayland_client::{Connection, Dispatch, QueueHandle, event_created_child};
 
-use desktop_protocols::client::quire_desktop_v1::{
-    quire_desktop_app_v1::{self, QuireDesktopAppV1},
-    quire_desktop_manager_v1::{self, QuireDesktopManagerV1},
-    quire_desktop_space_v1::{self, QuireDesktopSpaceV1},
-    quire_desktop_window_v1::{self, QuireDesktopWindowV1},
+use desktop_protocols::client::bardo_desktop_v1::{
+    bardo_desktop_app_v1::{self, BardoDesktopAppV1},
+    bardo_desktop_manager_v1::{self, BardoDesktopManagerV1},
+    bardo_desktop_space_v1::{self, BardoDesktopSpaceV1},
+    bardo_desktop_window_v1::{self, BardoDesktopWindowV1},
 };
 use desktop_protocols::vocab::{ActorKind, GlowCode, PlaceKind, ProofKind};
 
@@ -33,10 +33,10 @@ fn emit_all(wire: &mut Wire, events: Vec<DesktopEvent>) {
 /// The manager's events: new objects, the active pair, `finished`.
 pub(super) fn on_manager(
     wire: &mut Wire,
-    proxy: &QuireDesktopManagerV1,
-    event: quire_desktop_manager_v1::Event,
+    proxy: &BardoDesktopManagerV1,
+    event: bardo_desktop_manager_v1::Event,
 ) {
-    use quire_desktop_manager_v1::Event;
+    use bardo_desktop_manager_v1::Event;
     match event {
         Event::App { id } => {
             let key = AppKey::new(number_of(&id));
@@ -68,7 +68,7 @@ pub(super) fn on_manager(
     }
 }
 
-fn app_change(wire: &mut Wire, proxy: &QuireDesktopAppV1, change: Option<AppChange>) {
+fn app_change(wire: &mut Wire, proxy: &BardoDesktopAppV1, change: Option<AppChange>) {
     if let Some(change) = change {
         let key = AppKey::new(number_of(proxy));
         wire.emit(DesktopEvent::App(AppEvent::Changed { key, change }));
@@ -78,10 +78,10 @@ fn app_change(wire: &mut Wire, proxy: &QuireDesktopAppV1, change: Option<AppChan
 /// An app's events.
 pub(super) fn on_app(
     wire: &mut Wire,
-    proxy: &QuireDesktopAppV1,
-    event: quire_desktop_app_v1::Event,
+    proxy: &BardoDesktopAppV1,
+    event: bardo_desktop_app_v1::Event,
 ) {
-    use quire_desktop_app_v1::Event;
+    use bardo_desktop_app_v1::Event;
     let key = AppKey::new(number_of(proxy));
     let change = match event {
         Event::Identity {
@@ -134,10 +134,10 @@ fn window_change(
 /// A window object's events, through the linker.
 pub(super) fn on_window(
     wire: &mut Wire,
-    proxy: &QuireDesktopWindowV1,
-    event: quire_desktop_window_v1::Event,
+    proxy: &BardoDesktopWindowV1,
+    event: bardo_desktop_window_v1::Event,
 ) {
-    use quire_desktop_window_v1::Event;
+    use bardo_desktop_window_v1::Event;
     let object = WindowObject::new(number_of(proxy));
     let events = match event {
         Event::Identifier { identifier } => wire
@@ -224,10 +224,10 @@ pub(super) fn on_window(
 /// A Space's events.
 pub(super) fn on_space(
     wire: &mut Wire,
-    proxy: &QuireDesktopSpaceV1,
-    event: quire_desktop_space_v1::Event,
+    proxy: &BardoDesktopSpaceV1,
+    event: bardo_desktop_space_v1::Event,
 ) {
-    use quire_desktop_space_v1::Event;
+    use bardo_desktop_space_v1::Event;
     let key = SpaceKey::new(number_of(proxy));
     let change = match event {
         Event::Id { space_id } => Some(SpaceChange::Id(SpaceId::new(space_id))),
@@ -253,11 +253,11 @@ pub(super) fn on_space(
     }
 }
 
-impl Dispatch<QuireDesktopManagerV1, ()> for Wire {
+impl Dispatch<BardoDesktopManagerV1, ()> for Wire {
     fn event(
         state: &mut Self,
-        proxy: &QuireDesktopManagerV1,
-        event: quire_desktop_manager_v1::Event,
+        proxy: &BardoDesktopManagerV1,
+        event: bardo_desktop_manager_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
@@ -265,18 +265,18 @@ impl Dispatch<QuireDesktopManagerV1, ()> for Wire {
         on_manager(state, proxy, event);
     }
 
-    event_created_child!(Wire, QuireDesktopManagerV1, [
-        quire_desktop_manager_v1::EVT_APP_OPCODE => (QuireDesktopAppV1, ()),
-        quire_desktop_manager_v1::EVT_WINDOW_OPCODE => (QuireDesktopWindowV1, ()),
-        quire_desktop_manager_v1::EVT_SPACE_OPCODE => (QuireDesktopSpaceV1, ()),
+    event_created_child!(Wire, BardoDesktopManagerV1, [
+        bardo_desktop_manager_v1::EVT_APP_OPCODE => (BardoDesktopAppV1, ()),
+        bardo_desktop_manager_v1::EVT_WINDOW_OPCODE => (BardoDesktopWindowV1, ()),
+        bardo_desktop_manager_v1::EVT_SPACE_OPCODE => (BardoDesktopSpaceV1, ()),
     ]);
 }
 
-impl Dispatch<QuireDesktopAppV1, ()> for Wire {
+impl Dispatch<BardoDesktopAppV1, ()> for Wire {
     fn event(
         state: &mut Self,
-        proxy: &QuireDesktopAppV1,
-        event: quire_desktop_app_v1::Event,
+        proxy: &BardoDesktopAppV1,
+        event: bardo_desktop_app_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
@@ -285,11 +285,11 @@ impl Dispatch<QuireDesktopAppV1, ()> for Wire {
     }
 }
 
-impl Dispatch<QuireDesktopWindowV1, ()> for Wire {
+impl Dispatch<BardoDesktopWindowV1, ()> for Wire {
     fn event(
         state: &mut Self,
-        proxy: &QuireDesktopWindowV1,
-        event: quire_desktop_window_v1::Event,
+        proxy: &BardoDesktopWindowV1,
+        event: bardo_desktop_window_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
@@ -298,11 +298,11 @@ impl Dispatch<QuireDesktopWindowV1, ()> for Wire {
     }
 }
 
-impl Dispatch<QuireDesktopSpaceV1, ()> for Wire {
+impl Dispatch<BardoDesktopSpaceV1, ()> for Wire {
     fn event(
         state: &mut Self,
-        proxy: &QuireDesktopSpaceV1,
-        event: quire_desktop_space_v1::Event,
+        proxy: &BardoDesktopSpaceV1,
+        event: bardo_desktop_space_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<Self>,

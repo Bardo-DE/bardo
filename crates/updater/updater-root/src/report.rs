@@ -4,7 +4,7 @@
 //!
 //! The helper prints it on its standard output, one line each (`current <version>`, `left-alone <path>`,
 //! `warning <text>`), and the service parses it. A helper that succeeds with something to say is not
-//! the same as one that has nothing to say: a person who edited `/etc/quire/intentd-callers.toml` must
+//! the same as one that has nothing to say: a person who edited `/etc/bardo/actiond-callers.toml` must
 //! be told that the new release's table was not put in place.
 
 use semver::Version;

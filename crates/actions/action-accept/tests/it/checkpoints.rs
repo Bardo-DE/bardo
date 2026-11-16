@@ -26,8 +26,8 @@ fn git_is_here() -> bool {
         .output()
         .is_ok_and(|out| out.status.success());
     assert!(
-        here || std::env::var_os("DOCKET_REQUIRE_TOOLS").is_none(),
-        "git is required (DOCKET_REQUIRE_TOOLS is set)"
+        here || std::env::var_os("BARDO_ACTIONS_REQUIRE_TOOLS").is_none(),
+        "git is required (BARDO_ACTIONS_REQUIRE_TOOLS is set)"
     );
     here
 }
@@ -58,7 +58,7 @@ fn restore_call(session: &provenance::SessionId, point: i64, plan: &str) -> Call
     };
     CallRequest {
         action: ActionRef {
-            app: AppName::parse("org.quire.Checkpoints").expect("app"),
+            app: AppName::parse("org.bardo.Checkpoints").expect("app"),
             name: ActionName::parse("checkpoints.restore").expect("action"),
         },
         target: TargetValue::Nothing,
@@ -239,7 +239,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
     // The harness is one process: it stands in as the terminal's app for these calls.
     let terminal = world.connect().await;
     let temor = Intents::over(DbusTransport::new(terminal));
-    let (watched, marked) = as_app(&world, "org.quire.Temor", async {
+    let (watched, marked) = as_app(&world, "org.bardo.Temor", async {
         let watched = temor
             .checkpoint_watch(
                 Workspace::parse(&pane.to_string_lossy()).expect("workspace"),
@@ -276,7 +276,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
     assert_eq!(list.turn, TurnState::Running);
 
     std::fs::write(pane.join("code.txt"), "after").expect("write");
-    as_app(&world, "org.quire.Temor", async {
+    as_app(&world, "org.bardo.Temor", async {
         temor
             .session_turn_ended(watched.clone(), marked, TurnEnd::Answered)
             .await
@@ -301,7 +301,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
         std::fs::read_to_string(pane.join("code.txt")).expect("read"),
         "before"
     );
-    as_app(&world, "org.quire.Temor", async {
+    as_app(&world, "org.bardo.Temor", async {
         temor
             .session_close(watched)
             .await

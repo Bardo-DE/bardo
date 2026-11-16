@@ -12,7 +12,7 @@ async fn the_tool_edge_is_bound_in_the_bridge_read_only_and_its_socket_read_writ
     let mut with_edge = plan("claude-code", "s-1");
     with_edge.edge = Some(agent_acp_host::EdgeBind {
         socket: super::support::abs("/run/user/1000/docket-edge-x/tools.sock"),
-        bridge: super::support::abs("/opt/docket/actions-mcp"),
+        bridge: super::support::abs("/opt/docket/bardo-actions-mcp"),
     });
     let mut spawned = rig.spawn.spawn(&with_edge).await.expect("spawned");
     let runs = rig.procs.runs();
@@ -22,7 +22,7 @@ async fn the_tool_edge_is_bound_in_the_bridge_read_only_and_its_socket_read_writ
         .map(|b| (b.path.as_str(), b.access))
         .collect();
     assert!(
-        binds.contains(&("/opt/docket/actions-mcp", Access::ReadOnly)),
+        binds.contains(&("/opt/docket/bardo-actions-mcp", Access::ReadOnly)),
         "{binds:?}"
     );
     assert!(
@@ -78,7 +78,7 @@ async fn no_network_mode_gives_the_agent_a_bus() {
         let mut with_edge = plan(program, &format!("s-{n}"));
         with_edge.edge = Some(agent_acp_host::EdgeBind {
             socket: super::support::abs("/run/user/1000/docket-edge-x/tools.sock"),
-            bridge: super::support::abs("/opt/docket/actions-mcp"),
+            bridge: super::support::abs("/opt/docket/bardo-actions-mcp"),
         });
         let mut spawned = rig.spawn.spawn(&with_edge).await.expect("spawned");
         let run = rig.procs.runs()[0].clone();

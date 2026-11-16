@@ -41,7 +41,7 @@ pub fn system_key_source(platform: Platform, var: &impl Fn(&str) -> Option<Strin
     source_for(platform, config_dir(var), Arc::new(run_dconf_dump))
 }
 
-/// The platform the lookup describes (`CHORDKIT_PLATFORM` wins).
+/// The platform the lookup describes (`BARDO_KEYMAP_PLATFORM` wins).
 pub(crate) fn platform_of(var: &impl Fn(&str) -> Option<String>) -> Platform {
     keymap::detect(HostOs::compiled(), var)
 }
@@ -283,11 +283,11 @@ mod tests {
         };
         let cases: &[(Vars, Platform)] = &[
             (
-                &[("CHORDKIT_PLATFORM", "linux-kde"), ("HOME", "/nowhere")],
+                &[("BARDO_KEYMAP_PLATFORM", "linux-kde"), ("HOME", "/nowhere")],
                 kde,
             ),
-            (&[("CHORDKIT_PLATFORM", "linux-ours")], ours),
-            (&[("CHORDKIT_PLATFORM", "windows")], Platform::Windows),
+            (&[("BARDO_KEYMAP_PLATFORM", "linux-ours")], ours),
+            (&[("BARDO_KEYMAP_PLATFORM", "windows")], Platform::Windows),
         ];
         for (vars, want) in cases {
             assert_eq!(

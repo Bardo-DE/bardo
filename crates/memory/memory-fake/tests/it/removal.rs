@@ -13,8 +13,8 @@ use std::collections::BTreeSet;
 
 type Service = MemoryService<FakeBackend>;
 
-const FILES: &str = "org.quire.Files";
-const SHELL: &str = "org.quire.Shell";
+const FILES: &str = "org.bardo.Files";
+const SHELL: &str = "org.bardo.Shell";
 
 fn work() -> SpaceId {
     SpaceId::parse("work").expect("space")
@@ -201,7 +201,7 @@ async fn memories_move_to_the_app_that_wrote_them_and_pending_stays_pending() {
         })
     );
     let (mail_home, files_home, shell_home) =
-        (home_of("org.quire.Mail"), home_of(FILES), home_of(SHELL));
+        (home_of("org.bardo.Mail"), home_of(FILES), home_of(SHELL));
     assert_eq!(
         store(&service, &mail_home).topics().expect("t"),
         vec![topic("people/ana")]
@@ -240,7 +240,7 @@ async fn deleting_instead_moves_nothing() {
             ..Relocation::NONE
         })
     );
-    for name in ["org.quire.Mail", FILES, SHELL] {
+    for name in ["org.bardo.Mail", FILES, SHELL] {
         let home = store(&service, &home_of(name));
         assert!(home.topics().expect("t").is_empty());
         assert!(home.pending().expect("p").is_empty());
@@ -253,13 +253,13 @@ async fn a_move_that_stopped_half_way_finishes_without_duplicates() {
     let service = service_with_work();
     // The daemon died after copying the mail fact and before deleting the Space.
     let copied = fact(1, Actor::User { via: mail() }, trusted_label());
-    store(&service, &home_of("org.quire.Mail"))
+    store(&service, &home_of("org.bardo.Mail"))
         .append(&topic("people/ana"), copied)
         .expect("append");
     let reply = remove(&service, Removal::KEEP_ALL).await;
     assert!(matches!(reply, MemoryReply::Relocated(_)), "{reply:?}");
     assert_eq!(
-        fact_ids(&store(&service, &home_of("org.quire.Mail"))).len(),
+        fact_ids(&store(&service, &home_of("org.bardo.Mail"))).len(),
         1
     );
     assert_eq!(service.backend().removed_spaces(), vec![work()]);
@@ -330,7 +330,7 @@ async fn service_with_history() -> (Service, Vec<EventRef>) {
 }
 
 fn cited_link(service: &Service) -> Vec<Link> {
-    let mail_store = store(service, &home_of("org.quire.Mail"));
+    let mail_store = store(service, &home_of("org.bardo.Mail"));
     mail_store
         .read(&topic("people/cy"))
         .expect("read")
@@ -354,7 +354,7 @@ async fn kept_history_follows_the_app_that_recorded_it() {
         (report.events_moved, report.events_deleted),
         (Count(3), Count(0))
     );
-    let mail_events = events_in(&service, &home_of("org.quire.Mail")).await;
+    let mail_events = events_in(&service, &home_of("org.bardo.Mail")).await;
     assert_eq!(kinds(&mail_events), vec!["thing.archived"]);
     assert_eq!(
         kinds(&events_in(&service, &home_of(FILES)).await),
@@ -391,7 +391,7 @@ async fn deleted_history_leaves_no_event_and_no_link() {
         (Count(0), Count(3))
     );
     assert_eq!(report.moved, Count(4));
-    for name in ["org.quire.Mail", FILES, SHELL] {
+    for name in ["org.bardo.Mail", FILES, SHELL] {
         assert!(
             events_in(&service, &home_of(name)).await.is_empty(),
             "{name}"
@@ -416,7 +416,7 @@ async fn history_can_be_kept_while_memories_are_deleted() {
         (Count(0), Count(4), Count(3))
     );
     assert_eq!(
-        kinds(&events_in(&service, &home_of("org.quire.Mail")).await),
+        kinds(&events_in(&service, &home_of("org.bardo.Mail")).await),
         vec!["thing.archived"]
     );
 }
@@ -426,14 +426,14 @@ async fn a_history_move_that_stopped_half_way_finishes_without_duplicates() {
     let (service, _) = service_with_history().await;
     // The daemon died after the archive event reached Mail's log and before the Space went.
     let mut copied = mail_thread_archived().expect("fixture");
-    copied.space = home_of("org.quire.Mail");
+    copied.space = home_of("org.bardo.Mail");
     let reply = service
         .handle(&Caller::Router, MemoryRequest::Record(copied))
         .await;
     assert!(matches!(reply, MemoryReply::Recorded(_)), "{reply:?}");
     let reply = remove(&service, Removal::KEEP_ALL).await;
     assert!(matches!(reply, MemoryReply::Relocated(_)), "{reply:?}");
-    let mail_events = events_in(&service, &home_of("org.quire.Mail")).await;
+    let mail_events = events_in(&service, &home_of("org.bardo.Mail")).await;
     assert_eq!(kinds(&mail_events), vec!["thing.archived"], "not twice");
     assert_eq!(
         cited_link(&service),

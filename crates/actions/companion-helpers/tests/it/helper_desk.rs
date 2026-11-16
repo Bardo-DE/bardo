@@ -32,7 +32,7 @@ async fn the_shell_makes_changes_pauses_and_removes_a_helper_and_reads_it_in_pla
     assert_eq!(card.model, HelperModel::Unset);
     assert_eq!(
         card.reach,
-        ["org.quire.Mail: look at things and change them (changes can be undone)"]
+        ["org.bardo.Mail: look at things and change them (changes can be undone)"]
     );
     assert_eq!(card.line.doing, "Nothing to do");
     assert_eq!(card.line.state, HelperPhase::Idle);
@@ -47,10 +47,10 @@ async fn the_shell_makes_changes_pauses_and_removes_a_helper_and_reads_it_in_pla
         HelperReply::Refused("There is already a helper called research.".to_owned())
     );
     let mut elsewhere = work_form("Notes", HelperModel::Unset);
-    elsewhere.apps = vec![app("org.quire.Chat")];
+    elsewhere.apps = vec![app("org.bardo.Chat")];
     assert_eq!(
         hub.create(elsewhere).await,
-        HelperReply::Refused("There is no app called org.quire.Chat.".to_owned())
+        HelperReply::Refused("There is no app called org.bardo.Chat.".to_owned())
     );
 
     // A job with no model: the list says what it needs, and the person is told once.
@@ -102,7 +102,7 @@ async fn the_shell_makes_changes_pauses_and_removes_a_helper_and_reads_it_in_pla
 
 #[tokio::test]
 async fn the_assistant_gives_a_job_to_a_helper_by_name_and_the_job_runs_under_the_helper() {
-    const POST: &str = "org_quire_Companion-companion_helper_post_job";
+    const POST: &str = "org_bardo_Companion-companion_helper_post_job";
     let mut w = world(vec![
         call(
             POST,
@@ -172,7 +172,7 @@ async fn the_assistant_gives_a_job_to_a_helper_by_name_and_the_job_runs_under_th
 
 #[tokio::test]
 async fn a_job_the_desk_refuses_is_failed_in_the_routers_record_and_not_done() {
-    const POST: &str = "org_quire_Companion-companion_helper_post_job";
+    const POST: &str = "org_bardo_Companion-companion_helper_post_job";
     let mut w = world(vec![
         call(
             POST,
@@ -204,7 +204,7 @@ async fn a_job_the_desk_refuses_is_failed_in_the_routers_record_and_not_done() {
 
 #[tokio::test]
 async fn a_goal_the_assistant_wrote_after_reading_something_untrusted_is_not_a_job() {
-    const POST: &str = "org_quire_Companion-companion_helper_post_job";
+    const POST: &str = "org_bardo_Companion-companion_helper_post_job";
     let mut w = world(vec![
         call(READ, thread("t1")),
         call(
@@ -231,14 +231,14 @@ async fn a_goal_the_assistant_wrote_after_reading_something_untrusted_is_not_a_j
 
 #[tokio::test]
 async fn the_assistant_only_proposes_a_helper_and_nothing_exists_until_the_person_says_yes() {
-    const PROPOSE: &str = "org_quire_Companion-companion_helper_propose";
+    const PROPOSE: &str = "org_bardo_Companion-companion_helper_propose";
     let proposal = |ceiling: &str| {
         call(
             PROPOSE,
             json!({
                 "name": "Inbox",
                 "role": "Reads the mail and says what needs me.",
-                "apps": "org.quire.Mail",
+                "apps": "org.bardo.Mail",
                 "ceiling": ceiling,
             }),
         )
@@ -293,7 +293,7 @@ async fn the_assistant_only_proposes_a_helper_and_nothing_exists_until_the_perso
     assert_eq!(card.space, space("work"));
     assert_eq!(
         companion_model::helper::reach_lines(&card.reach),
-        ["org.quire.Mail: look at things and change them (changes can be undone)"]
+        ["org.bardo.Mail: look at things and change them (changes can be undone)"]
     );
     assert_eq!(w.router.seams.confirmer.requests().len(), 2);
 }
@@ -353,7 +353,7 @@ async fn only_a_helpers_conversation_is_spoken_in_and_the_front_conversation_is_
             session: front.session.clone(),
             id: TurnId(1),
             text: "hello".into(),
-            from: Caller::editor(app("org.quire.Acp")),
+            from: Caller::editor(app("org.bardo.Acp")),
         },
     )
     .await;

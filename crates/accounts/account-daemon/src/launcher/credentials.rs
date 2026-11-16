@@ -25,7 +25,7 @@ pub(crate) struct Held {
     /// The launcher's connection (unique name) it was issued to: the only one that may end it,
     /// and the only one told when accountd ends it.
     pub(crate) owner: String,
-    /// The app the permit is for (`org.quire.Agent.<program>`).
+    /// The app the permit is for (`org.bardo.Agent.<program>`).
     pub(crate) audience: AppId,
     /// The account whose key it is.
     pub(crate) account: AccountId,

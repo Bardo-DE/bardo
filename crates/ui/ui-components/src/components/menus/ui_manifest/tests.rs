@@ -43,7 +43,7 @@ impl AppCommand for Cmd {
 }
 
 fn app() -> IntentsApp {
-    IntentsApp("org.quire.Mail".to_owned())
+    IntentsApp("org.bardo.Mail".to_owned())
 }
 
 fn archive_key() -> Vec<ShortcutBinding<Cmd>> {
@@ -70,7 +70,7 @@ fn the_file_is_the_shape_the_checker_reads() {
     assert_eq!(
         text,
         r#"vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 
 [[commands]]
 id = "file.new"
@@ -100,7 +100,7 @@ fn the_checkers_own_file_is_read_back_as_written() {
     // The sample the checker documents for its reader: bytes it produced or accepts.
     const FROM_CHECKER: &str = r#"
 vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 
 [[commands]]
 id = "file.new"

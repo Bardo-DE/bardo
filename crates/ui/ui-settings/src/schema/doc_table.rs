@@ -181,7 +181,7 @@ mod tests {
         Schema {
             footnotes: Vec::new(),
             app: AppId("sill".to_owned()),
-            file: FilePath("sill/settings.toml".to_owned()),
+            file: FilePath("shell/settings.toml".to_owned()),
             version: 1,
             foreign: Default::default(),
             pages: Vec::new(),

@@ -72,7 +72,7 @@ pub struct UnixSeconds(pub i64);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ProblemKind {
     /// An install named a version other than the one on offer: the same thing the refusal
-    /// `org.quire.Updates1.Error.VersionChanged` says, found by reading instead.
+    /// `org.bardo.Updates1.Error.VersionChanged` says, found by reading instead.
     VersionChanged,
     /// Any other failure, or none.
     #[default]
@@ -143,7 +143,7 @@ pub struct UpdateStatus {
     pub problem_kind: ProblemKind,
 }
 
-/// The service's properties as they come on the wire (`org.quire.Updates1`): what a read of them
+/// The service's properties as they come on the wire (`org.bardo.Updates1`): what a read of them
 /// gives, before it is parsed.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct UpdateWire {

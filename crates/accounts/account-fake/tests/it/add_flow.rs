@@ -532,7 +532,7 @@ async fn added(service: &Service, caller: &AppId) -> AccountsReply {
 async fn a_walk_through_the_sheet_stores_the_account_its_secrets_and_its_audit_line() {
     let script = Script::answering(vec![ask(), review("ada"), SignInStep::Done(signed("ada"))]);
     let (service, kept) = service(&script, vec![typist()]);
-    let reply = added(&service, &app("org.quire.Mail")).await;
+    let reply = added(&service, &app("org.bardo.Mail")).await;
     let AccountsReply::Added(id) = reply else {
         panic!("added: {reply:?}");
     };
@@ -594,7 +594,7 @@ async fn a_walk_through_the_sheet_stores_the_account_its_secrets_and_its_audit_l
             entries[0].app.clone(),
             entries[0].account.clone()
         ),
-        (AuditEvent::SignedIn, Some(app("org.quire.Mail")), Some(id))
+        (AuditEvent::SignedIn, Some(app("org.bardo.Mail")), Some(id))
     );
     assert!(!format!("{entries:?}").contains("pw"));
 }
@@ -616,7 +616,7 @@ async fn a_service_turned_off_on_the_review_is_stored_off() {
         other => typist()(other),
     });
     let (service, _kept) = service(&script, vec![off]);
-    let AccountsReply::Added(_) = added(&service, &app("org.quire.Mail")).await else {
+    let AccountsReply::Added(_) = added(&service, &app("org.bardo.Mail")).await else {
         panic!("added");
     };
     let registry = service.registry();
@@ -642,7 +642,7 @@ async fn a_failed_sign_in_ends_with_the_refusal_the_fault_means() {
         let script = Script::answering(vec![ask(), SignInStep::Failed(fault)]);
         let (service, kept) = service(&script, vec![typist()]);
         assert_eq!(
-            added(&service, &app("org.quire.Mail")).await,
+            added(&service, &app("org.bardo.Mail")).await,
             AccountsReply::Refused(refusal),
             "{fault:?}"
         );
@@ -683,7 +683,7 @@ async fn a_sign_in_as_an_identity_passes_the_hint_and_retries_a_repeat_once_as_a
         let provider = ProviderId::parse("scripted").expect("id");
         let identity = SignInAs::new(provider, hint.clone(), signed_in_before);
         let reply = service
-            .sign_in_as(&app("org.quire.Mail"), identity, ParentWindow::Unparented)
+            .sign_in_as(&app("org.bardo.Mail"), identity, ParentWindow::Unparented)
             .await;
         assert_eq!(
             matches!(reply, AccountsReply::Added(_)),
@@ -706,7 +706,7 @@ async fn a_sign_in_as_an_identity_passes_the_hint_and_retries_a_repeat_once_as_a
     // An add that is not for an identity names no address.
     let script = Script::answering(done());
     let (service, _kept) = service(&script, vec![typist()]);
-    added(&service, &app("org.quire.Mail")).await;
+    added(&service, &app("org.bardo.Mail")).await;
     assert_eq!(
         script.starts.lock().expect("starts").clone(),
         [(None, false)]
@@ -799,7 +799,7 @@ async fn an_agent_with_no_launcher_is_not_listed_until_one_registers() {
         })
     };
     let (service, kept) = agent_service_with(&script, vec![Arc::clone(&counts), typist()], roster);
-    let caller = app("org.quire.Mail");
+    let caller = app("org.bardo.Mail");
     assert_eq!(
         added(&service, &caller).await,
         AccountsReply::Refused(Refusal::Dismissed)
@@ -841,7 +841,7 @@ async fn adding_an_agent_whose_launcher_left_ends_no_launcher_and_stores_nothing
     };
     let (service, kept) = agent_service_with(&script, vec![typist()], roster);
     assert_eq!(
-        added(&service, &app("org.quire.Mail")).await,
+        added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::NoLauncher)
     );
     assert!(service.registry().accounts.is_empty());
@@ -854,7 +854,7 @@ async fn adding_an_agent_whose_launcher_left_ends_no_launcher_and_stores_nothing
 async fn adding_an_agent_with_a_launcher_makes_a_needs_login_account() {
     let script = Script::answering(vec![review("claude"), SignInStep::Done(signed("claude"))]);
     let (service, _kept) = agent_service(&script, &["claude-code"]);
-    let reply = added(&service, &app("org.quire.Mail")).await;
+    let reply = added(&service, &app("org.bardo.Mail")).await;
     assert!(matches!(reply, AccountsReply::Added(_)), "{reply:?}");
     let registry = service.registry();
     assert_eq!(registry.accounts.len(), 1);
@@ -865,7 +865,7 @@ async fn adding_an_agent_with_a_launcher_makes_a_needs_login_account() {
 async fn the_same_agent_added_twice_is_already_added_whatever_its_sign_in_shows() {
     let script = Script::answering(vec![review("claude"), SignInStep::Done(signed("claude"))]);
     let (service, kept) = agent_service(&script, &["claude-code"]);
-    let caller = app("org.quire.Mail");
+    let caller = app("org.bardo.Mail");
     assert!(matches!(
         added(&service, &caller).await,
         AccountsReply::Added(_)
@@ -892,7 +892,7 @@ async fn the_same_agent_added_twice_is_already_added_whatever_its_sign_in_shows(
 async fn the_same_login_added_twice_ends_at_the_review_and_stores_nothing_more() {
     let script = Script::answering(vec![ask(), review("ada"), SignInStep::Done(signed("ada"))]);
     let (service, kept) = service(&script, vec![typist(), typist(), typist()]);
-    let caller = app("org.quire.Mail");
+    let caller = app("org.bardo.Mail");
     let AccountsReply::Added(first) = added(&service, &caller).await else {
         panic!("the first add");
     };
@@ -948,7 +948,7 @@ async fn a_provider_that_will_not_start_a_sign_in_fails_the_sheet() {
         Shared::default(),
         vec![typist()],
     );
-    let reply = service.handle(&app("org.quire.Mail"), add_request()).await;
+    let reply = service.handle(&app("org.bardo.Mail"), add_request()).await;
     // Forbidden is not retryable; the person closes the failed sheet.
     assert_eq!(reply, AccountsReply::Refused(Refusal::Denied));
 }
@@ -962,7 +962,7 @@ async fn closing_the_sheet_cancels_the_sign_in_and_stores_nothing() {
     });
     let (service, kept) = service(&script, vec![closes_at_review]);
     assert_eq!(
-        added(&service, &app("org.quire.Mail")).await,
+        added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::Dismissed)
     );
     assert_eq!(script.told(), ["start", "fields", "cancel"]);
@@ -975,7 +975,7 @@ async fn a_host_with_no_sheet_is_unavailable() {
     let script = Script::default();
     let (service, _kept) = service(&script, vec![]);
     assert_eq!(
-        added(&service, &app("org.quire.Mail")).await,
+        added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
 }
@@ -992,7 +992,7 @@ async fn a_browser_step_is_polled_until_the_sign_in_is_done() {
         SignInStep::Done(signed("ada")),
     ]);
     let (service, kept) = service(&script, vec![typist()]);
-    let AccountsReply::Added(_) = added(&service, &app("org.quire.Mail")).await else {
+    let AccountsReply::Added(_) = added(&service, &app("org.bardo.Mail")).await else {
         panic!("added");
     };
     assert_eq!(
@@ -1025,7 +1025,7 @@ async fn a_code_step_is_polled_too() {
         SignInStep::Done(signed("ada")),
     ]);
     let (service, kept) = service(&script, vec![typist()]);
-    let AccountsReply::Added(_) = added(&service, &app("org.quire.Mail")).await else {
+    let AccountsReply::Added(_) = added(&service, &app("org.bardo.Mail")).await else {
         panic!("added");
     };
     assert_eq!(script.told(), ["start", "poll", "confirm"]);
@@ -1045,7 +1045,7 @@ async fn closing_the_sheet_ends_a_wait_for_the_browser_at_once() {
     let (service, _kept) = service(&script, vec![gives_up]);
     let reply = tokio::time::timeout(
         base_testkit::GENEROUS,
-        added(&service, &app("org.quire.Mail")),
+        added(&service, &app("org.bardo.Mail")),
     )
     .await
     .expect("the dismissal is heard while the sign-in waits");
@@ -1073,7 +1073,7 @@ async fn open_again_shows_the_browser_page_again_without_restarting_the_sign_in(
     let (service, kept) = service(&script, vec![person]);
     let reply = tokio::time::timeout(
         base_testkit::GENEROUS,
-        added(&service, &app("org.quire.Mail")),
+        added(&service, &app("org.bardo.Mail")),
     )
     .await
     .expect("ends");
@@ -1105,7 +1105,7 @@ async fn an_endpoint_porter_would_not_use_is_not_stored() {
     let script = Script::answering(vec![ask(), review("ada"), SignInStep::Done(bad)]);
     let (service, kept) = service(&script, vec![typist()]);
     assert_eq!(
-        added(&service, &app("org.quire.Mail")).await,
+        added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
     assert!(service.registry().accounts.is_empty());
@@ -1125,7 +1125,7 @@ async fn a_secret_that_cannot_be_filed_takes_back_the_ones_that_were() {
         vec![typist()],
     );
     assert_eq!(
-        service.handle(&app("org.quire.Mail"), add_request()).await,
+        service.handle(&app("org.bardo.Mail"), add_request()).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
     assert!(service.registry().accounts.is_empty());
@@ -1144,7 +1144,7 @@ async fn a_registry_that_cannot_be_saved_takes_back_the_account() {
     let (service, kept) = service(&script, vec![typist()]);
     kept.store.refusing(true);
     assert_eq!(
-        added(&service, &app("org.quire.Mail")).await,
+        added(&service, &app("org.bardo.Mail")).await,
         AccountsReply::Refused(Refusal::Unavailable)
     );
     assert!(service.registry().accounts.is_empty());
@@ -1178,7 +1178,7 @@ async fn providers_with_nothing_to_sign_in_are_not_listed() {
         vec![sees_list],
     );
     assert_eq!(
-        service.handle(&app("org.quire.Mail"), add_request()).await,
+        service.handle(&app("org.bardo.Mail"), add_request()).await,
         AccountsReply::Refused(Refusal::Dismissed)
     );
 }
@@ -1220,7 +1220,7 @@ async fn a_provider_with_no_client_is_not_listed_until_one_is_set() {
         Shared::default(),
         vec![seen(&lists), seen(&lists)],
     );
-    let caller = app("org.quire.Mail");
+    let caller = app("org.bardo.Mail");
     assert_eq!(
         service.handle(&caller, add_request()).await,
         AccountsReply::Refused(Refusal::Dismissed)
@@ -1287,7 +1287,7 @@ async fn the_providers_step_carries_the_face_a_provider_file_gives_its_mark() {
         vec![sees_face],
     );
     assert_eq!(
-        service.handle(&app("org.quire.Mail"), add_request()).await,
+        service.handle(&app("org.bardo.Mail"), add_request()).await,
         AccountsReply::Refused(Refusal::Dismissed)
     );
 }
@@ -1351,7 +1351,7 @@ fn reauth_request() -> AccountsRequest {
 
 #[tokio::test]
 async fn signing_in_again_replaces_the_secrets_sets_the_account_working_and_audits_it() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let script = Script::answering(vec![SignInStep::Done(signed("ada"))]);
     let (service, kept) = reauth_service(&script, AccountState::NeedsReauth, vec![typist()], &mail);
     assert_eq!(
@@ -1386,7 +1386,7 @@ async fn signing_in_again_replaces_the_secrets_sets_the_account_working_and_audi
 
 #[tokio::test]
 async fn signing_in_again_through_the_browser_is_stored_when_the_sign_in_is_done() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let page = WebUrl::parse("https://login.example.org/authorize?state=2").expect("url");
     let script = Script::answering(vec![
         SignInStep::OpenBrowser { url: page },
@@ -1405,7 +1405,7 @@ async fn signing_in_again_through_the_browser_is_stored_when_the_sign_in_is_done
 
 #[tokio::test]
 async fn a_sign_in_again_that_offers_a_review_is_never_asked_again_and_keeps_its_services() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     // The sign-in offers a review (as Microsoft's did), then is done once it is confirmed.
     let script = Script::answering(vec![review("ada"), SignInStep::Done(signed("ada"))]);
     let (service, kept) = reauth_service(&script, AccountState::NeedsReauth, vec![typist()], &mail);
@@ -1424,7 +1424,7 @@ async fn a_sign_in_again_that_offers_a_review_is_never_asked_again_and_keeps_its
 
 #[tokio::test]
 async fn another_persons_login_does_not_replace_the_credential() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let script = Script::answering(vec![SignInStep::Done(signed("eve"))]);
     let (service, kept) = reauth_service(&script, AccountState::NeedsReauth, vec![typist()], &mail);
     assert_eq!(
@@ -1445,7 +1445,7 @@ async fn another_persons_login_does_not_replace_the_credential() {
 
 #[tokio::test]
 async fn an_account_whose_provider_is_gone_cannot_sign_in_again() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let account = held_account("ada", AccountState::NeedsReauth);
     let registry = Registry {
         grants: vec![grant_to(&mail, &account)],
@@ -1461,7 +1461,7 @@ async fn an_account_whose_provider_is_gone_cannot_sign_in_again() {
 
 #[tokio::test]
 async fn a_denied_grant_is_not_a_grant_to_sign_in_again() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let account = held_account("ada", AccountState::NeedsReauth);
     let mut denied = grant_to(&mail, &account);
     denied.decision = Decision::Deny;
@@ -1485,7 +1485,7 @@ async fn a_denied_grant_is_not_a_grant_to_sign_in_again() {
 
 #[tokio::test]
 async fn removing_an_account_asks_the_provider_to_revoke_it_with_the_stored_account_first() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let script = Script::default();
     let (service, kept) = reauth_service(&script, AccountState::Ok, vec![], &mail);
     let key = SecretKey {
@@ -1505,7 +1505,7 @@ async fn removing_an_account_asks_the_provider_to_revoke_it_with_the_stored_acco
 
 #[tokio::test]
 async fn a_provider_that_cannot_revoke_never_stops_the_removal() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let script = Script::default();
     *script.revoke_fails.lock().expect("flag") = true;
     let (service, kept) = reauth_service(&script, AccountState::Ok, vec![], &mail);
@@ -1598,7 +1598,7 @@ async fn an_add_dropped_while_filing_secrets_leaves_no_row_and_no_save() {
         vec![typist()],
     );
     let dropped =
-        tokio::time::timeout(PATIENCE, added_over(&service, &app("org.quire.Mail"))).await;
+        tokio::time::timeout(PATIENCE, added_over(&service, &app("org.bardo.Mail"))).await;
     assert!(dropped.is_err(), "the add was still waiting for its secret");
     assert!(service.registry().accounts.is_empty());
     assert!(service.registry().toggles.is_empty());
@@ -1614,7 +1614,7 @@ async fn added_over<S: Secrets>(service: &Service<S>, caller: &AppId) -> Account
 /// account that was listed and could not sign in.
 #[tokio::test]
 async fn a_wipe_dropped_while_deleting_secrets_leaves_no_account_without_credentials() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let account = held_account("ada", AccountState::Ok);
     let registry = Registry {
         grants: vec![grant_to(&mail, &account)],
@@ -1638,7 +1638,7 @@ async fn a_wipe_dropped_while_deleting_secrets_leaves_no_account_without_credent
 /// The old promise kept: secrets that cannot be deleted leave the account exactly as it was.
 #[tokio::test]
 async fn a_wipe_whose_secrets_cannot_be_deleted_keeps_the_account_and_its_grants() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let account = held_account("ada", AccountState::Ok);
     let registry = Registry {
         grants: vec![grant_to(&mail, &account)],
@@ -1710,7 +1710,7 @@ fn incoming() -> SecretKey {
 
 #[tokio::test]
 async fn asking_for_one_more_access_reviews_it_and_keeps_the_account() {
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let script = Script::answering(vec![review("ada"), SignInStep::Done(signed("ada"))]);
     let (service, kept) = extend_service(&script);
     let before = service.registry().accounts[0].clone();
@@ -1746,7 +1746,7 @@ async fn asking_for_one_more_access_reviews_it_and_keeps_the_account() {
 
 #[tokio::test]
 async fn one_more_access_answered_by_another_person_stores_nothing() {
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let script = Script::answering(vec![review("eve"), SignInStep::Done(signed("eve"))]);
     let (service, kept) = extend_service(&script);
     let asked = service
@@ -1768,7 +1768,7 @@ async fn one_more_access_answered_by_another_person_stores_nothing() {
 
 #[tokio::test]
 async fn only_an_access_the_provider_asks_on_use_can_be_asked_for_later() {
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let script = Script::answering(vec![]);
     let (service, _kept) = extend_service(&script);
     let unknown = AccountId::parse("scripted-eve").expect("id");
@@ -1801,7 +1801,7 @@ fn whole_store() -> account_match::Need {
 
 fn availability_of_the_whole_store(service: &Service) -> account_core::consent::Availability {
     service.availability(
-        &app("org.quire.Files"),
+        &app("org.bardo.Files"),
         &whole_store(),
         DataClass::Files,
         Usage::Background,
@@ -1813,7 +1813,7 @@ fn availability_of_the_whole_store(service: &Service) -> account_core::consent::
 /// provider's on-use row, so the need fits it.
 #[tokio::test]
 async fn one_more_access_given_is_claimed_so_a_need_of_it_fits_the_account() {
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let script = Script::answering(vec![review("ada"), SignInStep::Done(signed("ada"))]);
     let (service, _kept) = extend_service(&script);
     let before = service.registry().accounts[0].capabilities.clone();
@@ -1883,7 +1883,7 @@ fn the_password() -> SecretKey {
 
 #[tokio::test]
 async fn a_sign_in_again_that_cannot_be_saved_leaves_the_account_as_it_was() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let script = Script::answering(vec![SignInStep::Done(signed("ada"))]);
     let (service, kept) = reauth_service(&script, AccountState::NeedsReauth, vec![typist()], &mail);
     let before = service.registry();
@@ -1899,7 +1899,7 @@ async fn a_sign_in_again_that_cannot_be_saved_leaves_the_account_as_it_was() {
 
 #[tokio::test]
 async fn one_more_access_that_cannot_be_saved_leaves_the_account_as_it_was() {
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let script = Script::answering(vec![review("ada"), SignInStep::Done(signed("ada"))]);
     let (service, kept) = extend_service(&script);
     let before = service.registry();
@@ -1923,7 +1923,7 @@ async fn one_more_access_that_cannot_be_saved_leaves_the_account_as_it_was() {
 /// not be written over by what the look read before it.
 #[tokio::test]
 async fn a_sign_in_again_during_a_look_at_the_account_is_not_written_over() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let script = Script::answering(vec![SignInStep::Done(signed_with("ada", "new"))]);
     let (service, kept) = reauth_service(&script, AccountState::NeedsReauth, vec![typist()], &mail);
     kept.secrets

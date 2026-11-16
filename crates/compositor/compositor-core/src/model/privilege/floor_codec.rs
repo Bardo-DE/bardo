@@ -1,4 +1,4 @@
-//! The floor as text: `/etc/quire/privacy.toml` and `/etc/quire/privacy.d/*.toml`. A pure
+//! The floor as text: `/etc/bardo/privacy.toml` and `/etc/bardo/privacy.d/*.toml`. A pure
 //! codec, strict because an administrator's file should fail loudly: a wrong word, a default
 //! of "allow" or a bad subject is an error, not a dropped row.
 //!

@@ -1,5 +1,5 @@
-//! inferd's settings module on a private bus: `org.quire.SettingsModule1` at
-//! `/org/quire/Inference1/settings`. Describe, Get and Set by the Settings role; everyone else is
+//! inferd's settings module on a private bus: `org.bardo.SettingsModule1` at
+//! `/org/bardo/Inference1/settings`. Describe, Get and Set by the Settings role; everyone else is
 //! `NotPermitted`; a Set reaches the file and the next route; `Rescan` reads the file again.
 
 use crate::hosting;
@@ -97,7 +97,7 @@ impl Rig {
         let connection = self.bus.connect().await;
         self.peers.introduce(
             connection.unique_name().expect("name").as_str(),
-            who("org.quire.Client", role),
+            who("org.bardo.Client", role),
         );
         connection
     }
@@ -142,7 +142,7 @@ fn key(path: &str) -> KeyPath {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_settings_module_answers_a_call_made_as_soon_as_the_name_is_owned() {
-    // Whoever sees `org.quire.Inference1` owned calls the module at once; an inferd that served
+    // Whoever sees `org.bardo.Inference1` owned calls the module at once; an inferd that served
     // the module after claiming the name answered such a call `UnknownObject`.
     let bus = PrivateBus::start();
     let file = bus.scratch().join("inferd.toml");
@@ -157,7 +157,7 @@ async fn the_settings_module_answers_a_call_made_as_soon_as_the_name_is_owned() 
     let client = bus.connect().await;
     peers.introduce(
         client.unique_name().expect("name").as_str(),
-        who("org.quire.Settings", Role::Settings),
+        who("org.bardo.Settings", Role::Settings),
     );
     let mut owned = zbus::fdo::DBusProxy::new(&client)
         .await
@@ -168,7 +168,7 @@ async fn the_settings_module_answers_a_call_made_as_soon_as_the_name_is_owned() 
     let daemon = bus.connect().await;
     let served = tokio::spawn(serving(&daemon, &engines, &peers, &file));
     within(
-        "org.quire.Inference1 to be owned",
+        "org.bardo.Inference1 to be owned",
         std::future::poll_fn(|cx| std::pin::Pin::new(&mut owned).poll_next(cx)),
     )
     .await
@@ -617,7 +617,7 @@ async fn a_slot_with_no_model_here_carries_no_note_about_missing_programs() {
     let client = bus.connect().await;
     peers.introduce(
         client.unique_name().expect("name").as_str(),
-        who("org.quire.Settings", Role::Settings),
+        who("org.bardo.Settings", Role::Settings),
     );
     let settings =
         LiveClient::new(&client, INFERENCE_BUS, INFERENCE_SETTINGS_PATH, AnyOwner).expect("client");

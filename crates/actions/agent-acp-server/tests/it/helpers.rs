@@ -129,7 +129,7 @@ async fn seed(log: &MemoryLog, id: &str) {
     let opening = Opening {
         task: TaskId::parse(&format!("t-{id}")).expect("task"),
         space: SpaceId::desktop(),
-        opener: Some(app("org.quire.Companion")),
+        opener: Some(app("org.bardo.Companion")),
         agent: Some(AgentRef::Companion),
         backend: BackendKind::Native,
         parent: None,
@@ -421,7 +421,7 @@ fn sheet(id: &str) -> BackendEvent {
         id: ConfirmId::parse(id).expect("id"),
         space: SpaceId::desktop(),
         actor: Actor::Unknown,
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         action: LabelText::parse("Archive messages").expect("label"),
         effect: Effect::UndoableWrite,
         count: Count(1),

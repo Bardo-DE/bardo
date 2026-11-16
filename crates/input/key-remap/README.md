@@ -30,7 +30,7 @@ so terminals get terminal-safe shortcuts. It works on any Linux with systemd.
 pkexec; with none it prints the commands), along with a systemd unit, the udev and polkit rules it
 needs, and `modules-load.d/keycap.conf` so `uinput` loads at boot. The unit has no access to `/dev/uinput`
 of its own on the desktop, where a root service hands it the virtual keyboards; `install.sh` is the standalone
-install and adds the one line (`keycap.service.d/10-uinput.conf`) and the udev rule that let the unit open the node. `--prefix P` installs under P
+install and adds the one line (`bardo-key-remap.service.d/10-uinput.conf`) and the udev rule that let the unit open the node. `--prefix P` installs under P
 (default `/usr/local`; any other prefix uses the vendor directories under it) and `--destdir D`
 stages everything under D without root, for packages. Running it again changes only what differs. Requires a Rust
 toolchain; the Plasma focus feed also needs `python3-gobject`. To switch from Toshy, see
@@ -82,7 +82,7 @@ Ctrl+Left/Right switch desktops. `keycap --print-config` lists every rule.
 Those Plasma rules are the machine file, which every session on the machine shares, so they must
 not be the whole story on a desktop that is not Plasma. What a few chords do:
 
-| Chord | Built-in mapping | Plasma (`/etc/keycap/keycap.toml`) | sill session (its layer on top) |
+| Chord | Built-in mapping | Plasma (`/etc/bardo/key-remap/key-remap.toml`) | sill session (its layer on top) |
 | --- | --- | --- | --- |
 | Cmd+Space | Super+Space | Alt+Space (KRunner) | Super+Space (sill's launcher) |
 | Cmd+H | Ctrl+H | Super+PageDown (minimise) | Ctrl+H (nothing minimises) |
@@ -96,10 +96,10 @@ forward a config" below.
 Settings are read in four layers, each overriding the one before:
 
 1. The built-in defaults.
-2. `/usr/lib/keycap/keycap.toml`, what a desktop ships (sill ships its Caps Lock rule here). Only
+2. `/usr/lib/bardo/key-remap/key-remap.toml`, what a desktop ships (sill ships its Caps Lock rule here). Only
    root may own it; keycap ignores it, and says so in the log, if anyone else could change it.
    Leave it alone: put your changes in the next file, which overrides it.
-3. `/etc/keycap/keycap.toml`, for the whole machine; changes apply as soon as you save. **It is
+3. `/etc/bardo/key-remap/key-remap.toml`, for the whole machine; changes apply as soon as you save. **It is
    shared by every session on the machine**, the login screen included. It is the administrator's.
 4. `~/.config/keycap/keycap.toml`, if your desktop forwards it. This layer is per user and per
    session: only the desktop you are logged into reads the file and sends it to keycap, and keycap
@@ -115,7 +115,7 @@ your config with a `[[device]]` entry.
 
 ### Desktops that forward a config
 
-On Plasma, `install.sh` puts `dist/keycap.plasma.toml` in `/etc/keycap/keycap.toml`. That file
+On Plasma, `install.sh` puts `dist/keycap.plasma.toml` in `/etc/bardo/key-remap/key-remap.toml`. That file
 sends Cmd+Space to Alt+Space (KRunner), Cmd+H to a Plasma minimise key and Cmd+Shift+3/4 to
 Spectacle's Print variants, none of which another desktop binds. Editing the machine file for a
 different desktop would break Plasma, because both desktops share it.
@@ -134,11 +134,11 @@ keyboard:
 
 ```bash
 keycap replay script.txt                                  # built-in defaults
-keycap replay --config /etc/keycap/keycap.toml script.txt # a file laid over them
+keycap replay --config /etc/bardo/key-remap/key-remap.toml script.txt # a file laid over them
 ```
 
 `install.sh` prints a reminder after its machine-config step when your desktop is not KDE and
-`/etc/keycap/keycap.toml` is the Plasma overlay.
+`/etc/bardo/key-remap/key-remap.toml` is the Plasma overlay.
 
 ### Per-app profiles
 
@@ -146,9 +146,9 @@ The desktop tells keycap which profile to use for the focused window. Define you
 `[profile.NAME]` and `inherits = "terminal"` (or any other profile). A profile nobody defined
 falls back to `default`.
 
-On Plasma, `--plasma-focus` installs a small KWin script and the `keycap-focus` helper that send
+On Plasma, `--plasma-focus` installs a small KWin script and the `bardo-key-remap-focus` helper that send
 the focused window's class to keycap: `ghostty`, `keymap-aware`, `terminal`, `filemanager` or `default`. The
-class lists are at the top of `dist/plasma/keycap-focus`. A terminal embedded in another window
+class lists are at the top of `dist/plasma/bardo-key-remap-focus`. A terminal embedded in another window
 (an editor panel) gets that window's profile.
 
 ## Keymap

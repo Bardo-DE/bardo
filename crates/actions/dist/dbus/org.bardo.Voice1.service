@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Voice1
+Exec=/usr/libexec/bardo/bardo-voiced
+SystemdService=bardo-voiced.service

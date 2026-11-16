@@ -17,8 +17,8 @@ use ui_shell::prelude::{Recovery, WorkingFor};
 
 /// What the person reads for an app. `resolved` is the label the app's own entry gives it (porter
 /// will send one with the ask: this is where it plugs in); without one the last element of its
-/// reverse-DNS name is shown as it is written (`org.quire.Photos` is "Photos",
-/// `org.quire.Agent.claude-code` is "claude-code"), never lowercased or re-spelled.
+/// reverse-DNS name is shown as it is written (`org.bardo.Photos` is "Photos",
+/// `org.bardo.Agent.claude-code` is "claude-code"), never lowercased or re-spelled.
 pub(super) fn app_name(app: &AppId, resolved: Option<&str>) -> String {
     match resolved {
         Some(label) => label.to_owned(),

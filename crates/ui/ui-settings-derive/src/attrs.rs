@@ -10,7 +10,7 @@ use syn::spanned::Spanned;
 /// `#[settings(file = "...", domain = "...", page = ...)]` on the struct.
 #[derive(Debug)]
 pub(crate) struct ContainerAttrs {
-    /// `"quire/appearance.toml"`: the owning app is its first path segment.
+    /// `"bardo/appearance.toml"`: the owning app is its first path segment.
     pub file: String,
     /// `"appearance"`: the dotted-path prefix for every field in this struct.
     pub domain: String,
@@ -353,11 +353,11 @@ mod tests {
     #[test]
     fn a_well_formed_container_parses() {
         let attrs = struct_attrs(
-            "#[settings(file = \"sill/settings.toml\", domain = \"dock\", page = Page::Dock)]\
+            "#[settings(file = \"shell/settings.toml\", domain = \"dock\", page = Page::Dock)]\
              struct S;",
         );
         let parsed = container_attrs(attrs[0].span(), &attrs).unwrap();
-        assert_eq!(parsed.file, "sill/settings.toml");
+        assert_eq!(parsed.file, "shell/settings.toml");
         assert_eq!(parsed.domain, "dock");
     }
 

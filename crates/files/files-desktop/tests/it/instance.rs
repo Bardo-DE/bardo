@@ -104,5 +104,5 @@ async fn forwarding_with_no_app_running_says_so() {
         matches!(result, Err(InstanceError::NotRunning)),
         "{result:?}"
     );
-    assert_eq!(APP_NAME, "org.quire.Files");
+    assert_eq!(APP_NAME, "org.bardo.Files");
 }

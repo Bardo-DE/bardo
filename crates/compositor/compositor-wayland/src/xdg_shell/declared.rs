@@ -21,7 +21,7 @@ pub fn claimed_of(app_id: Option<&str>, client: ClientKey) -> ClaimedId {
 }
 
 /// The window role the dialog hint implies: a dialog or a modal one is a `Dialog`; a toplevel
-/// with no `xdg_dialog` object is a `Document` until `quire_window_v1.set_role` says otherwise.
+/// with no `xdg_dialog` object is a `Document` until `bardo_window_v1.set_role` says otherwise.
 pub fn role_of(hint: ToplevelDialogHint) -> WindowRole {
     match hint {
         ToplevelDialogHint::Unknown => WindowRole::Document,
@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn a_declared_id_is_kept_and_a_missing_one_is_per_client() {
         let rows: [(&str, Option<&str>, u64, &str); 5] = [
-            ("declared", Some("org.quire.Mail"), 1, "org.quire.Mail"),
+            ("declared", Some("org.bardo.Mail"), 1, "org.bardo.Mail"),
             ("none", None, 7, "unnamed.client-7"),
             ("empty", Some(""), 8, "unnamed.client-8"),
             ("slash", Some("a/b"), 9, "unnamed.client-9"),

@@ -270,7 +270,7 @@ fn the_portal_is_trusted_for_the_screen_and_windows_and_asked_for_the_rest() {
     let mut desk = Desk::with_shell();
     let portal = ClientStanding::Service {
         role: ServiceRole::parse("portal").expect("a role"),
-        exe: Some(path("/usr/libexec/transom")),
+        exe: Some(path("/usr/libexec/bardo/bardo-portal")),
     };
     desk.public(1, portal);
     for power in [Power::Screen, Power::Windows] {
@@ -282,7 +282,7 @@ fn the_portal_is_trusted_for_the_screen_and_windows_and_asked_for_the_rest() {
     assert_eq!(outcome(&effects, 1, Power::Keys), None);
     let asked = questions(&effects);
     assert_eq!(asked.len(), 1);
-    assert_eq!(asked[0].2.text, "/usr/libexec/transom");
+    assert_eq!(asked[0].2.text, "/usr/libexec/bardo/bardo-portal");
 }
 
 /// NEW-FA-2: the connection casement hands the bus-proven portal is trusted for the screen and the
@@ -311,14 +311,14 @@ fn the_portals_image_known_only_as_a_program_is_asked_for_the_screen_and_windows
         desk.public(
             1,
             ClientStanding::Program {
-                exe: path("/usr/libexec/transom"),
+                exe: path("/usr/libexec/bardo/bardo-portal"),
             },
         );
         let effects = desk.uses(1, power);
         assert_eq!(outcome(&effects, 1, power), None, "{power:?} waits");
         let asked = questions(&effects);
         assert_eq!(asked.len(), 1, "{power:?}");
-        assert_eq!(asked[0].2.text, "/usr/libexec/transom");
+        assert_eq!(asked[0].2.text, "/usr/libexec/bardo/bardo-portal");
     }
 }
 

@@ -315,7 +315,7 @@ mod tests {
         let mut used = UsedBy::new();
         used.insert(
             storage.clone(),
-            vec![app("org.example.Mail"), app("org.quire.Photos")],
+            vec![app("org.example.Mail"), app("org.bardo.Photos")],
         );
         let schema = schema(&registry, &used, &Plain);
         let used_rows: Vec<(String, String)> = schema
@@ -336,7 +336,7 @@ mod tests {
                 ),
                 (
                     "accounts.fake-storage.used_by.1".to_owned(),
-                    "org.quire.Photos".to_owned()
+                    "org.bardo.Photos".to_owned()
                 ),
             ]
         );
@@ -555,7 +555,7 @@ mod tests {
                 id: GrantId::parse("g.1").expect("id"),
                 key: GrantKey {
                     app: account_core::AppId {
-                        name: app("org.quire.Companion"),
+                        name: app("org.bardo.Companion"),
                         isolation: account_core::Isolation::Unsandboxed,
                     },
                     account: account.id.clone(),
@@ -626,7 +626,7 @@ mod tests {
             .iter()
             .find(|k| k.path.0 == format!("accounts.{id}.grant.g.1"))
             .expect("revoke");
-        assert_eq!(revoke.label.0, "org.quire.Companion can use Language model");
+        assert_eq!(revoke.label.0, "org.bardo.Companion can use Language model");
     }
 
     #[test]
@@ -635,7 +635,7 @@ mod tests {
         let rows = schema(&registry, &no_apps(), &Plain).key;
         let id = &registry.accounts[0].id;
         let (app, labels) = fixed_row(&rows, &format!("accounts.{id}.grant.g.1.app"));
-        assert_eq!(app, "org.quire.Companion");
+        assert_eq!(app, "org.bardo.Companion");
         assert_eq!(labels, vec![(app.clone(), app)]);
         let (service, labels) = fixed_row(&rows, &format!("accounts.{id}.grant.g.1.service"));
         assert_eq!(service, word(&CapabilityKind::Llm));

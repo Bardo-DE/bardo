@@ -54,12 +54,12 @@ const CODE: &str = r#"{"kind":"show_code","v":{"provider":"microsoft","user_code
 const WORKING: &str = r#"{"kind":"working","v":{"provider":"nextcloud","row":{"id":"nextcloud","label":"Nextcloud","mark":"nextcloud"}}}"#;
 const FAILED: &str = r#"{"kind":"failed","v":{"provider":"nextcloud","row":{"id":"nextcloud","label":"Nextcloud","mark":"nextcloud"},"fault":"unreachable"}}"#;
 const DONE: &str = r#"{"kind":"done"}"#;
-const REVIEW: &str = r#"{"kind":"review","v":{"provider":"nextcloud","allow":{"name":"org.quire.Mail","isolation":"flatpak"}
+const REVIEW: &str = r#"{"kind":"review","v":{"provider":"nextcloud","allow":{"name":"org.bardo.Mail","isolation":"flatpak"}
   ,"review":{"label":"ada@example.org","endpoints":[],"services":[
   {"kind":"mail","state":{"kind":"offered","v":true},"limit":null},
   {"kind":"calendar","state":{"kind":"offered","v":true},"limit":null},
   {"kind":"photos","state":{"kind":"absent","v":"provider_offers_none"},"limit":null}]}}}"#;
-const CONSENT: &str = r#"{"kind":"consent","v":{"app":{"name":"org.quire.Photos","isolation":"flatpak"},
+const CONSENT: &str = r#"{"kind":"consent","v":{"app":{"name":"org.bardo.Photos","isolation":"flatpak"},
   "kind":"storage","class":"app_own","usage":"interactive","accounts":[
   {"account":"home","label":"ada@home.example","provider":"nextcloud"},
   {"account":"work","label":"ada@work.example","provider":"microsoft"}]}}"#;
@@ -408,7 +408,7 @@ fn add_account_on_an_alert_with_no_fitting_account_answers_add_account() {
     use account_core::consent::ConsentAnswer;
     let mut run = start();
     run.open(
-        r#"{"kind":"consent","v":{"app":{"name":"org.quire.Photos","isolation":"flatpak"},
+        r#"{"kind":"consent","v":{"app":{"name":"org.bardo.Photos","isolation":"flatpak"},
         "kind":"storage","class":"app_own","usage":"interactive","accounts":[]}}"#,
     );
     run.key(ShortcutKey::Enter);

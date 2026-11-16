@@ -1,6 +1,6 @@
 [package]
 name = "agent-voice-wire"
-description = "The bodies of org.quire.Voice1: begin, events on the utterance fd, ends, faults, status and refusals. Content-free except the transcript fields, which redact their Debug."
+description = "The bodies of org.bardo.Voice1: begin, events on the utterance fd, ends, faults, status and refusals. Content-free except the transcript fields, which redact their Debug."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

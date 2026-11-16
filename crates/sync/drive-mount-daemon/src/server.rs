@@ -157,7 +157,7 @@ impl Mounts for Fusermount {
             && why.kind() != io::ErrorKind::NotFound
         {
             eprintln!(
-                "porter-mountd: connection {connection} of {} was not ended: {why}",
+                "bardo-drive-mount: connection {connection} of {} was not ended: {why}",
                 path.display()
             );
         }
@@ -383,11 +383,11 @@ impl<M: Mounts> Helper<M> {
             match listener.accept() {
                 Ok((stream, _)) => {
                     if let Err(why) = self.answer(&stream) {
-                        eprintln!("porter-mountd: {why}");
+                        eprintln!("bardo-drive-mount: {why}");
                     }
                 }
                 Err(why) => {
-                    eprintln!("porter-mountd: a caller was not accepted: {why}");
+                    eprintln!("bardo-drive-mount: a caller was not accepted: {why}");
                     std::thread::sleep(Duration::from_millis(100));
                 }
             }
@@ -396,7 +396,7 @@ impl<M: Mounts> Helper<M> {
 }
 
 /// The socket systemd passed this process (socket activation: the caller took it from its
-/// environment), or else one bound at `$XDG_RUNTIME_DIR/porter/mountd.sock` for a helper
+/// environment), or else one bound at `$XDG_RUNTIME_DIR/bardo/drive-mount.sock` for a helper
 /// started by hand.
 ///
 /// # Errors
@@ -429,7 +429,7 @@ pub fn bind_at(socket: &Path) -> io::Result<UnixListener> {
     if UnixStream::connect(socket).is_ok() {
         return Err(io::Error::new(
             io::ErrorKind::AddrInUse,
-            format!("another porter-mountd answers at {}", socket.display()),
+            format!("another bardo-drive-mount answers at {}", socket.display()),
         ));
     }
     if std::fs::symlink_metadata(socket).is_ok_and(|meta| meta.file_type().is_socket()) {

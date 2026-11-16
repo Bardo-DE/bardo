@@ -29,7 +29,7 @@ sill() {
   case "$1 ${2:-}" in
     "debug stats"|"debug capture"|"debug launcher-rows"|"notifications status"|"idle status"|"lock status"|"ping ")
       sill_patient "$@" ;;
-    *) in_env "$SILL_BIN" "$@" ;;
+    *) in_env "$BARDO_SHELL_BIN" "$@" ;;
   esac
 }
 
@@ -47,9 +47,9 @@ sill_sent() {
 # `sill ARGS` made up to 6 times while it ends with "no reply within"; stdout and stderr stay apart.
 sill_patient() {
   local err out rc tries=0
-  err=$(mktemp "${TMPDIR:-/tmp}/sill-patient.XXXXXX") || { in_env "$SILL_BIN" "$@"; return; }
+  err=$(mktemp "${TMPDIR:-/tmp}/sill-patient.XXXXXX") || { in_env "$BARDO_SHELL_BIN" "$@"; return; }
   while :; do
-    out=$(in_env "$SILL_BIN" "$@" 2>"$err")
+    out=$(in_env "$BARDO_SHELL_BIN" "$@" 2>"$err")
     rc=$?
     tries=$(( tries + 1 ))
     if [ "$rc" != 0 ] && [ "$tries" -lt 6 ] && { grep -q "no reply within" "$err" || [[ "$out" == *"no reply within"* ]]; }; then
@@ -63,19 +63,19 @@ sill_patient() {
   return "$rc"
 }
 
-# Builds the daemon (SILL_PROFILE: debug or release, with `--features debug`) plus, as further arguments "$@", other cargo invocations' arguments
+# Builds the daemon (BARDO_SHELL_PROFILE: debug or release, with `--features debug`) plus, as further arguments "$@", other cargo invocations' arguments
 # (each one a quoted string such as "-p shell-testkit --example badge_emitter"), into
 # $OUT_DIR/build.log.
 build() {
   local extra
-  # Under dev/accept.sh (SILL_PREBUILT=1, inside a jail where nothing calls cargo or the network,
+  # Under dev/accept.sh (BARDO_SHELL_PREBUILT=1, inside a jail where nothing calls cargo or the network,
   # A7) everything was built outside first: only check that it is there.
-  if [ -n "${SILL_PREBUILT:-}" ]; then prebuilt "$@"; return; fi
+  if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then prebuilt "$@"; return; fi
   {
-    (cd "$SILL_REPO" && cargo build "${SILL_CARGO_PROFILE[@]}" -p shell-app --features debug) || return 1
+    (cd "$BARDO_SHELL_REPO" && cargo build "${BARDO_SHELL_CARGO_PROFILE[@]}" -p shell-app --features debug) || return 1
     for extra in "$@"; do
       # shellcheck disable=SC2086 # one word per cargo argument
-      (cd "$SILL_REPO" && cargo build "${SILL_CARGO_PROFILE[@]}" $extra) || return 1
+      (cd "$BARDO_SHELL_REPO" && cargo build "${BARDO_SHELL_CARGO_PROFILE[@]}" $extra) || return 1
     done
   } >"$OUT_DIR/build.log" 2>&1 || { echo "build failed (see $OUT_DIR/build.log)" >&2; return 1; }
 }
@@ -84,13 +84,13 @@ build() {
 # of the cargo arguments in "$@".
 prebuilt() {
   local extra word missing=0 prev
-  [ -x "$SILL_BIN" ] || { echo "$SILL_BIN is missing: run dev/accept.sh --build outside the jail" >&2; return 1; }
+  [ -x "$BARDO_SHELL_BIN" ] || { echo "$BARDO_SHELL_BIN is missing: run dev/accept.sh --build outside the jail" >&2; return 1; }
   for extra in "$@"; do
     prev=
     # shellcheck disable=SC2086 # one word per cargo argument
     for word in $extra; do
-      if [ "$prev" = --example ] && [ ! -x "$SILL_OUT/examples/$word" ]; then
-        echo "$SILL_OUT/examples/$word is missing: run dev/accept.sh --build outside the jail" >&2
+      if [ "$prev" = --example ] && [ ! -x "$BARDO_SHELL_OUT/examples/$word" ]; then
+        echo "$BARDO_SHELL_OUT/examples/$word is missing: run dev/accept.sh --build outside the jail" >&2
         missing=1
       fi
       prev=$word
@@ -106,7 +106,7 @@ launch_daemon() {
   use_fake_ddc "$CONFIG" >/dev/null
   require_private_system_bus "$BUS" || return 1
   require_fake_ddc || return 1
-  in_env "${LAUNCH_PREFIX[@]}" "$SILL_BIN" run "${FAKE_DDC_FLAGS[@]}" "${DEV_CALLERS_FLAGS[@]}" "$@" >"$OUT_DIR/daemon.log" 2>&1 &
+  in_env "${LAUNCH_PREFIX[@]}" "$BARDO_SHELL_BIN" run "${FAKE_DDC_FLAGS[@]}" "${DEV_CALLERS_FLAGS[@]}" "$@" >"$OUT_DIR/daemon.log" 2>&1 &
   DAEMON=$!
   wait_ping
 }
@@ -124,7 +124,7 @@ wait_ping() {
 stop_daemon() {
   [ -n "${DAEMON:-}" ] || return 0
   local result=0
-  in_env timeout 10 "$SILL_BIN" quit >/dev/null 2>&1
+  in_env timeout 10 "$BARDO_SHELL_BIN" quit >/dev/null 2>&1
   for _ in $(seq 100); do kill -0 "$DAEMON" 2>/dev/null || break; sleep 0.1; done
   if kill -0 "$DAEMON" 2>/dev/null; then
     echo "the daemon ($DAEMON) did not end after quit" >&2

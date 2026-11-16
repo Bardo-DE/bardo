@@ -74,7 +74,7 @@ impl MenuSource {
         }
     }
 
-    /// The path the shell is told for the window itself (`quire_desktop_window_v1.menu_path`):
+    /// The path the shell is told for the window itself (`bardo_desktop_window_v1.menu_path`):
     /// the dbusmenu object, or the GTK window's own object.
     pub fn window_path(&self) -> &str {
         match self {

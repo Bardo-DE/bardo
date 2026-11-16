@@ -20,7 +20,7 @@ use provenance::{Actor, EntityId, EntityKey, EntityKind, SpaceId};
 use std::time::Duration;
 
 fn mail() -> account_core::AppName {
-    app("org.quire.Mail")
+    app("org.bardo.Mail")
 }
 
 fn thread(key: &str) -> EntityId {
@@ -141,7 +141,7 @@ async fn every_member_reaches_the_app_and_comes_back_typed() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
     let (_dir, _bus, _daemon, link) = bus_with_intentd().await;
-    let gone = app("org.quire.Gone");
+    let gone = app("org.bardo.Gone");
     let performed = link
         .perform(&gone, invocation("gone.do", "x"), Latency::Instant)
         .await;
@@ -198,7 +198,7 @@ async fn a_slow_app_is_cut_at_its_latency() {
     let who = answering_intentd(&slow_connection, &daemon, dir.path());
     let manifest = validate(Manifest {
         vocab: IntentsVocab(1),
-        app: app("org.quire.Slow"),
+        app: app("org.bardo.Slow"),
         entities: vec![],
         actions: vec![],
         visibility: Visibility::Everyone,
@@ -207,13 +207,13 @@ async fn a_slow_app_is_cut_at_its_latency() {
     serve_on_with(
         &slow_connection,
         Slow(manifest),
-        Blank(app("org.quire.Slow")),
-        Blank(app("org.quire.Slow")),
+        Blank(app("org.bardo.Slow")),
+        Blank(app("org.bardo.Slow")),
         who,
     )
     .await
     .expect("serves");
-    let slow = app("org.quire.Slow");
+    let slow = app("org.bardo.Slow");
     let started = std::time::Instant::now();
     let performed = link
         .perform(&slow, invocation("slow.do", "x"), Latency::Instant)
@@ -238,18 +238,18 @@ async fn a_provider_answers_nobody_but_intentd() {
     let lookalike = bus.connect().await;
     who.introduce_app(
         &lookalike,
-        "org.quire.Intents",
+        "org.bardo.Intents",
         action_dbus::callers::Role::App,
     );
     let agent = bus.connect().await;
     who.introduce_app(
         &agent,
-        "org.quire.Companion1",
+        "org.bardo.Companion1",
         action_dbus::callers::Role::Agent,
     );
     for caller in [&lookalike, &agent] {
         let proxy = IntentProviderProxy::builder(caller)
-            .destination("org.quire.Mail")
+            .destination("org.bardo.Mail")
             .expect("destination")
             .build()
             .await
@@ -263,7 +263,7 @@ async fn a_provider_answers_nobody_but_intentd() {
         assert!(direct.is_err(), "{direct:?}");
     }
     let proxy = IntentProviderProxy::builder(&stranger)
-        .destination("org.quire.Mail")
+        .destination("org.bardo.Mail")
         .expect("destination")
         .build()
         .await
@@ -336,7 +336,7 @@ async fn the_activation_token_rides_beside_the_invocation_to_the_provider() {
     let who = answering_intentd(&connection, &daemon, dir.path());
     let manifest = validate(Manifest {
         vocab: IntentsVocab(1),
-        app: app("org.quire.Keeps"),
+        app: app("org.bardo.Keeps"),
         entities: vec![],
         actions: vec![],
         visibility: Visibility::Everyone,
@@ -346,13 +346,13 @@ async fn the_activation_token_rides_beside_the_invocation_to_the_provider() {
     serve_on_with(
         &connection,
         Keeps(manifest, seen.clone()),
-        Blank(app("org.quire.Keeps")),
-        Blank(app("org.quire.Keeps")),
+        Blank(app("org.bardo.Keeps")),
+        Blank(app("org.bardo.Keeps")),
         who,
     )
     .await
     .expect("serves");
-    let keeps = app("org.quire.Keeps");
+    let keeps = app("org.bardo.Keeps");
     let token = ActivationToken::parse("xdg-activation-77").expect("token");
     let _ = link
         .perform_activated(

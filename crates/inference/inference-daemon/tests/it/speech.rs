@@ -1,7 +1,7 @@
 //! Transcribe over the speech host, hosted: the real `Inference1` object on a private bus, a
 //! client opening a `Transcribe` session through `account-client`, the real router, supervisor and
 //! turn runner, and a fake speech host (the host protocol on a Unix socket) that the supervisor
-//! "runs" in place of the `speech-host` binary. No real binary, model, library, microphone or
+//! "runs" in place of the `bardo-speech-host` binary. No real binary, model, library, microphone or
 //! network is touched.
 
 use crate::hosting;
@@ -191,7 +191,7 @@ async fn transcribe_streams_partials_and_a_final_from_the_supervised_speech_host
     assert_eq!(units.len(), 1);
     let (id, unit) = &units[0];
     assert_eq!(id, &engine_of(&world));
-    assert_eq!(unit.program.0, PathBuf::from("/fake/speech-host"));
+    assert_eq!(unit.program.0, PathBuf::from("/fake/bardo-speech-host"));
     let args: Vec<&str> = unit.args.iter().map(|a| a.0.as_str()).collect();
     let flag = |name: &str| {
         args.iter()

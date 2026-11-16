@@ -1,6 +1,6 @@
 [package]
 name = "action-settings"
-description = "docket's settings file ($XDG_CONFIG_HOME/docket/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure but for reading the file and the agents records beside it; the watch lives in the daemon."
+description = "docket's settings file ($XDG_CONFIG_HOME/actions/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure but for reading the file and the agents records beside it; the watch lives in the daemon."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

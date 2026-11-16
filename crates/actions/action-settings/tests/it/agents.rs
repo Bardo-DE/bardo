@@ -43,7 +43,7 @@ fn installed(dir: &AgentsDir, id: &str, version: &str) {
     .expect("record");
 }
 
-/// What docket-agents does when a session opens: the record replaces the one before it.
+/// What bardo-agents does when a session opens: the record replaces the one before it.
 fn put(next: Offered, dir: &AgentsDir, id: &str) -> Offered {
     let path = dir.offered(&Slug::parse(id).expect("id"));
     let before = std::fs::read_to_string(&path)

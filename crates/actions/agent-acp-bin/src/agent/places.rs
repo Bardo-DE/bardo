@@ -87,7 +87,7 @@ impl Places {
         &self.data
     }
 
-    /// Where agents from the registry are installed (`docket-agents --dir`): `agents` in the
+    /// Where agents from the registry are installed (`bardo-agents --dir`): `agents` in the
     /// data directory.
     pub fn agents_dir(&self) -> AgentsDir {
         AgentsDir::at(&self.data.join("agents"))

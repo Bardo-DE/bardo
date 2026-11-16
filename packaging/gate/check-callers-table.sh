@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# The table of the desktop's own programs (dist/desktop-callers.toml, installed as /etc/quire/desktop-callers.toml)
+# The table of the desktop's own programs (dist/desktop-callers.toml, installed as /etc/bardo/desktop-callers.toml)
 # is complete and well formed. It is read by the update service, the portal backend and the input service, and each
 # refuses every caller when a row it needs is missing, so a hole here is a desktop that cannot update or share a screen.
 #
 #   gate/check-callers-table.sh [--table FILE] [--peephole DIR] [--crates DIR]
 #
 #   --table FILE     the table (default dist/desktop-callers.toml of this repo)
-#   --peephole DIR   the caller-identity folder: its caller-identity-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then
+#   --peephole DIR   the caller-identity folder: its caller-identity-core/src/roles.rs lists the roles (default: $BARDO_CALLER_IDENTITY_DIR, then
 #                    crates/identity of this tree). Without one the check cannot say which roles are missing: exit 2
 #   --crates DIR   the component domain folders (crates/<domain> of this tree), to compare each unit's ExecStart program with the row's `exe` list
 #                    (default: crates/ of this tree; a unit whose file is not found there is noted and skipped)
@@ -36,12 +36,12 @@ done
 command -v python3 >/dev/null || { echo "check-callers-table: python3 is not installed" >&2; exit 2; }
 [ -f "$table" ] || { echo "check-callers-table: no table at $table" >&2; exit 2; }
 if [ -z "$peephole" ]; then
-  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/identity"; do
+  for d in "${BARDO_CALLER_IDENTITY_DIR:-}" "$ROOT/../crates/identity"; do
     if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/roles.rs" ]; then peephole=$d; break; fi
   done
 fi
 if [ -z "$peephole" ] || [ ! -f "$peephole/caller-identity-core/src/roles.rs" ]; then
-  echo "check-callers-table: no peephole crate (caller-identity-core/src/roles.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
+  echo "check-callers-table: no peephole crate (caller-identity-core/src/roles.rs): give --peephole DIR or set BARDO_CALLER_IDENTITY_DIR" >&2
   exit 2
 fi
 exec python3 -I - "$table" "$peephole/caller-identity-core/src/roles.rs" "$crates_dir" <<'PY'

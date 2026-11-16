@@ -37,9 +37,9 @@ pub const SEAT_ID: &str = "seat0";
 pub const SEAT_PATH: &str = "/org/freedesktop/login1/seat/seat0";
 /// The control interface the fake serves for jailed scenarios (`Lock`, `Unlock`,
 /// `PrepareForSleep`, `Calls`).
-pub const CONTROL_INTERFACE: &str = "org.quire.Casement.FakeLogind1";
+pub const CONTROL_INTERFACE: &str = "org.bardo.Compositor.FakeLogind1";
 /// The control object's path.
-pub const CONTROL_PATH: &str = "/org/quire/Casement/FakeLogind1";
+pub const CONTROL_PATH: &str = "/org/bardo/Compositor/FakeLogind1";
 
 /// A call the fake recorded, for assertions.
 #[derive(Debug, Clone, PartialEq, Eq)]

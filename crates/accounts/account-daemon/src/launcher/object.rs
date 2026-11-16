@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Launcher` at `/org/quire/Accounts1`: what the agent launcher asks accountd
+//! `org.bardo.Accounts1.Launcher` at `/org/bardo/Accounts1`: what the agent launcher asks accountd
 //! (the registration of its programs, its sessions, the consent sheet for an agent's key, the
 //! reports of a login, and the keys it hands to the processes it spawns).
 //!

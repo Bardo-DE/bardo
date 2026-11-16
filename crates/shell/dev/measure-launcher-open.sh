@@ -24,7 +24,7 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/all.sh"
 
 BIN= LABEL= SAMPLES=30 COLD=8
-FIXTURES="${FIXTURES:-$SILL_REPO/../anyview/crates/anyview-media/tests/fixtures}"
+FIXTURES="${FIXTURES:-$BARDO_SHELL_REPO/../anyview/crates/anyview-media/tests/fixtures}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --bin) BIN="$2"; shift ;;
@@ -36,8 +36,8 @@ while [ $# -gt 0 ]; do
   shift
 done
 [ -x "$BIN" ] && [ -n "$LABEL" ] || { echo "need --bin (an executable) and --label" >&2; exit 2; }
-SILL_BIN="$(cd "$(dirname "$BIN")" && pwd)/$(basename "$BIN")"
-OUT_DIR="$SILL_REPO/target/measure-launcher/$LABEL"
+BARDO_SHELL_BIN="$(cd "$(dirname "$BIN")" && pwd)/$(basename "$BIN")"
+OUT_DIR="$BARDO_SHELL_REPO/target/measure-launcher/$LABEL"
 mkdir -p "$OUT_DIR"
 
 cleanup() {
@@ -90,11 +90,11 @@ mkdir -p "$HOME_DIR/Documents" "$CONFIG/sill"
 cp "$FIXTURES/clip.mkv" "$HOME_DIR/Documents/m9media-clip.mkv"
 cp "$FIXTURES/cover.mp3" "$HOME_DIR/Documents/m9media-cover.mp3"
 cp "$FIXTURES/tone.flac" "$HOME_DIR/Documents/m9media-tone.flac"
-printf '[launcher]\nweb_search = true\n' >"$CONFIG/sill/settings.toml"
+printf '[launcher]\nweb_search = true\n' >"$CONFIG/shell/settings.toml"
 start_private_bus || exit 1
 {
-  echo "label $LABEL, binary $SILL_BIN"
-  echo "size $(stat -c %s "$SILL_BIN") bytes"
+  echo "label $LABEL, binary $BARDO_SHELL_BIN"
+  echo "size $(stat -c %s "$BARDO_SHELL_BIN") bytes"
   echo "load average at start: $(cut -d' ' -f1-3 /proc/loadavg)"
 } | tee -a "$OUT_DIR/summary.txt"
 

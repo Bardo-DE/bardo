@@ -32,7 +32,7 @@ emit, and every housekeeping step between reads) and the **socket** thread (acce
 subscriber. palmrest is a system service (a dynamic user, as keycap is), so the socket is open
 to every local account and the socket thread decides whom to serve: only the person at the seat
 (logind's `seat0` state file, read when someone connects and once a second), and of their programs
-only the shell (the process in `sill.service` under that person's own manager, held by its pidfd,
+only the shell (the process in `bardo-shell.service` under that person's own manager, held by its pidfd,
 judged by peephole) is believed about the pointer and an unlocked session; any other program of
 theirs may subscribe and may say the session is locked. A user switch closes the old user's
 connections. At most 8 subscribers are served; each pass reads at most 16 packets from one, and a
@@ -80,7 +80,7 @@ it, and the kernel's fuzz filter delays small motions.
 
 ### The socket protocol (O1)
 
-`/run/palmrest/events.sock`, `SOCK_SEQPACKET`, mode 0666 (the daemon serves only the person at the seat; see Architecture), one JSON message per
+`/run/bardo/mouse-gestures/events.sock`, `SOCK_SEQPACKET`, mode 0666 (the daemon serves only the person at the seat; see Architecture), one JSON message per
 packet, adjacently tagged (`{"kind": "...", "v": {...}}`). The first packet on a connection is
 `Hello`; a client checks `version` (`PROTOCOL_VERSION = 3`) before reading on.
 
@@ -107,7 +107,7 @@ pub struct DeviceInfo { name: String, path: String, vendor: u16, product: u16 }
 subscriber says so, and a subscriber that disconnects stops saying it. Only the shell's `Unlocked`
 counts (another program of the person may say `Locked`, never `Unlocked`), and `PointerOver` and
 `UserConfig` count from the shell alone. `UserConfig` is the text of the person's
-`~/.config/palmrest/gestures.toml` (at most 24 KiB; blank takes the layer away): the daemon cannot
+`~/.config/mouse-gestures/gestures.toml` (at most 24 KiB; blank takes the layer away): the daemon cannot
 read a home folder, so the shell reads the file and sends it after connecting and when it changes.
 `Run` asks the shell to carry out a gesture's action in the person's session (the workspace steps,
 a shell line, a program); the daemon has no session of its own. While locked no gesture
@@ -151,25 +151,25 @@ palmrest drives the user's only pointing device, so:
 palmrest is a system service, like keycap. `install.sh` builds a release binary and installs, through
 `sudo`, `doas` or `pkexec` (whichever is found; `$SUDO` overrides; with none it prints the commands
 for you to run as root): the program in `/usr/local/bin` (a root-owned file: the input service
-serves only a palmrest that only root can change), `dist/palmrest.service` in `/etc/systemd/system`,
+serves only a palmrest that only root can change), `dist/bardo-mouse-gestures.service` in `/etc/systemd/system`,
 and the three system files below; then it enables and starts the service. The unit runs as a
 dynamic user, passes no library-path variables (`UnsetEnvironment=`), and reads its settings from
-`/etc/palmrest/gestures.toml`. `--prefix P` installs a packaged layout under P (the unit in
+`/etc/bardo/mouse-gestures/gestures.toml`. `--prefix P` installs a packaged layout under P (the unit in
 `P/lib/systemd/system`, the system files in `P/lib/udev/rules.d`, `P/lib/modprobe.d` and
 `P/lib/modules-load.d`) and `--destdir D` stages it under D without root or systemd. An earlier
 install ran palmrest as a service of the person; the script says how to remove that one.
 
-- `dist/70-palmrest.rules` to `/etc/udev/rules.d/`: the Magic Mouse 2's hidraw node belongs to the
+- `dist/70-bardo-mouse-gestures.rules` to `/etc/udev/rules.d/`: the Magic Mouse 2's hidraw node belongs to the
   `input` group, which the service is in, and to no person (the raw node, and the feature report
   written to it, are not reachable from the logged-in user's programs). `palmrest record` therefore
   needs root (or a person in `input`). There is no rule for `/dev/uinput`: the desktop installs the
   input service (turnstile), which owns that node and makes palmrest's devices. palmrest on its own,
   without the desktop, runs only with `--direct-uinput` and a `/dev/uinput` you have made writable
   for yourself.
-- `dist/99-palmrest.conf` to `/etc/modprobe.d/`: `hid_magicmouse` keeps the pointer and clicks
+- `dist/99-bardo-mouse-gestures.conf` to `/etc/modprobe.d/`: `hid_magicmouse` keeps the pointer and clicks
   (`emulate_3button=1`) and stops its own wheel emulation (`emulate_scroll_wheel=0`), because
   palmrest scrolls.
-- `dist/palmrest-modules.conf` to `/etc/modules-load.d/palmrest.conf`: loads `uinput` at boot, so
+- `dist/bardo-mouse-gestures-modules.conf` to `/etc/modules-load.d/palmrest.conf`: loads `uinput` at boot, so
   `/dev/uinput` exists on Ubuntu and Arch too (the input service ships the same line).
 
 ## Retiring the Python daemon
@@ -179,8 +179,8 @@ Run once, in this order, on a machine that still has `magic-mouse-kde`:
 ```bash
 ~/.local/lib/magic-mouse-kde/uninstall.sh      # stops the service, removes its udev/modprobe files
 sudo rm -f /etc/udev/rules.d/70-magic-mouse-kde.rules /etc/modprobe.d/99-magic-mouse-kde.conf
-sudo install -Dm644 dist/70-palmrest.rules /etc/udev/rules.d/70-palmrest.rules
-sudo install -Dm644 dist/99-palmrest.conf /etc/modprobe.d/99-palmrest.conf
+sudo install -Dm644 dist/70-bardo-mouse-gestures.rules /etc/udev/rules.d/70-bardo-mouse-gestures.rules
+sudo install -Dm644 dist/99-bardo-mouse-gestures.conf /etc/modprobe.d/99-bardo-mouse-gestures.conf
 echo 0 | sudo tee /sys/module/hid_magicmouse/parameters/emulate_scroll_wheel
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=hidraw --subsystem-match=misc
@@ -192,8 +192,8 @@ The `rm` repeats what `uninstall.sh` does, in case it was already removed. Then
 
 ## Configuration
 
-`/etc/palmrest/gestures.toml` for the service (the unit's `ConfigurationDirectory=`), and
-`$XDG_CONFIG_HOME/palmrest/gestures.toml` for the tools a person runs. Only what a person
+`/etc/bardo/mouse-gestures/gestures.toml` for the service (the unit's `ConfigurationDirectory=`), and
+`$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` for the tools a person runs. Only what a person
 chooses is a setting: `scroll.speed` and the six `gestures.gesture_action_map.*` rows (what
 each gesture does). Every other number (the axis lock, the acceleration curve, palm rejection,
 swipe and tap thresholds, the virtual touchpad) is a constant next to the code that uses it.
@@ -230,7 +230,7 @@ half of 10), and `tests/evdev_parity.rs` (every fixture re-expressed as evdev ev
 to the same outputs through `EvdevMultitouch`), against the fixtures in
 `crates/palmrest/tests/fixtures/`, which are synthesised from the documented report format by
 `tests/support/scenarios.rs` and must match it byte for byte
-(`PALMREST_REGEN_FIXTURES=1 cargo test --test fixtures_current` rewrites them).
+(`BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1 cargo test --test fixtures_current` rewrites them).
 
 The reference cases (`reference_cases.rs`) check the axis lock and the workspace swipe against
 the cases of the retired Python daemon. The decoder goldens in `tests/fixtures/reference/` are

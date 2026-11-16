@@ -16,7 +16,7 @@ use crate::role::{Role, Roles};
 pub const MAX_USER_RULES: usize = 256;
 
 /// Where the rules that are left out can still be set.
-const MACHINE_FILE: &str = "/etc/keycap/keycap.toml";
+const MACHINE_FILE: &str = "/etc/bardo/key-remap/key-remap.toml";
 
 /// Why a rule of the user layer is left out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,5 +1,5 @@
-//! A fake app that exports its menu bar as quire apps do (`org.quire.AppMenu.<app_id>` at
-//! `/org/quire/AppMenu`, `com.canonical.dbusmenu`), for the app-menu tests and dev scripts. It
+//! A fake app that exports its menu bar as quire apps do (`org.bardo.AppMenu.<app_id>` at
+//! `/org/bardo/AppMenu`, `com.canonical.dbusmenu`), for the app-menu tests and dev scripts. It
 //! owns the bus name it is given on the private bus at the address it is given, prints its pid,
 //! and logs every call it receives, one line each, to the file it is given. With `--handshake` it
 //! connects first, prints its unique name, and takes the bus name only after a line arrives on its
@@ -28,7 +28,7 @@ use zbus::interface;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{Array, Signature, StructureBuilder, Type, Value};
 
-const MENU_PATH: &str = "/org/quire/AppMenu";
+const MENU_PATH: &str = "/org/bardo/AppMenu";
 const REFRESH: i32 = 23;
 const EDIT: i32 = 20;
 
@@ -216,7 +216,7 @@ fn menu(id: i32, label: &str, rows: Vec<Value<'static>>) -> Value<'static> {
 }
 
 fn command(id: &str) -> (&'static str, Value<'static>) {
-    ("x-quire-command-id", text(id))
+    ("x-bardo-command-id", text(id))
 }
 
 /// The whole bar, with `Redo` after `Refresh` once it has been clicked.

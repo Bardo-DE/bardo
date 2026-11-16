@@ -11,7 +11,7 @@ use ui_settings::schema::{
     Section,
 };
 
-const FILE: &str = "sill/settings.toml";
+const FILE: &str = "shell/settings.toml";
 
 /// A stand-in for sill's schema with only the wallpaper's key (sill's fixture predates it).
 fn sill() -> Schema {

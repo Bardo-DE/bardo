@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Actor {
-    /// The person, through this app (`org.quire.Shell` for the launcher).
+    /// The person, through this app (`org.bardo.Shell` for the launcher).
     User {
         /// The app or shell they acted in.
         via: AppName,
@@ -39,7 +39,7 @@ pub enum Actor {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         label: Option<String>,
     },
-    /// A process running `quire-do`: a terminal cannot tell the person from an agent typing in it.
+    /// A process running `bardo-do`: a terminal cannot tell the person from an agent typing in it.
     Cli,
     /// An app acting on its own (sync, rules).
     App {

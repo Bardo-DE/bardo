@@ -11,7 +11,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 fn mail_action(name: &str) -> ActionRef {
     ActionRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         name: action(name),
     }
 }
@@ -22,7 +22,7 @@ pub(crate) fn policy() -> TaskPolicy {
         space: space("work"),
         from: vec![TurnId(1)],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::UndoableWrite,
         )]),
         kinds: BTreeSet::from([kind("mail.thread")]),
@@ -45,8 +45,8 @@ pub(crate) fn edit(f: impl FnOnce(&mut TaskPolicy)) -> TaskPolicy {
 
 #[test]
 fn task_policy_compare_table() {
-    let outbound = ActionMatch::AppUpTo(app("org.quire.Mail"), Effect::Outbound);
-    let other_app = ActionMatch::AppUpTo(app("org.quire.Files"), Effect::UndoableWrite);
+    let outbound = ActionMatch::AppUpTo(app("org.bardo.Mail"), Effect::Outbound);
+    let other_app = ActionMatch::AppUpTo(app("org.bardo.Files"), Effect::UndoableWrite);
     let cases: Vec<(&str, TaskPolicy, TaskPolicy, PolicyChange)> = vec![
         ("identical", policy(), policy(), PolicyChange::Same),
         (
@@ -256,14 +256,14 @@ fn covers_table() {
             policy(),
             CallRequest {
                 action: ActionRef {
-                    app: app("org.quire.Files"),
+                    app: app("org.bardo.Files"),
                     name: action("files.file.move"),
                 },
                 ..call("mail.thread.archive", &[], vec![])
             },
             labels(vec![]),
             Coverage::Outside(Widening::Action(ActionMatch::One(ActionRef {
-                app: app("org.quire.Files"),
+                app: app("org.bardo.Files"),
                 name: action("files.file.move"),
             }))),
         ),

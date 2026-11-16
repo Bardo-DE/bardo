@@ -11,15 +11,15 @@ use caller_identity_dbus::{BusPeers, ManagerCheck};
 use caller_identity_linux::fake::introduced_service;
 use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess};
 
-const IMAGE: &str = "/usr/bin/sill";
-const FRAGMENT: &str = "/usr/lib/systemd/user/sill.service";
-const CGROUP: &str = "0::/user.slice/user-1000.slice/user@1000.service/app.slice/sill.service\n";
+const IMAGE: &str = "/usr/bin/bardo-shell";
+const FRAGMENT: &str = "/usr/lib/systemd/user/bardo-shell.service";
+const CGROUP: &str = "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service\n";
 
 const TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
-exe  = ["/usr/bin/sill"]
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
+exe  = ["/usr/bin/bardo-shell"]
 role = "shell"
 "#;
 
@@ -131,12 +131,12 @@ fn a_manager_that_disagrees_leaves_the_shell_at_exe() {
     let cases = [
         // The definition is the person's.
         FakeUnit {
-            fragment: "/home/p/.config/systemd/user/sill.service".to_owned(),
+            fragment: "/home/p/.config/systemd/user/bardo-shell.service".to_owned(),
             ..healthy()
         },
         // A user drop-in.
         FakeUnit {
-            drop_ins: vec!["/home/p/.config/systemd/user/sill.service.d/x.conf".to_owned()],
+            drop_ins: vec!["/home/p/.config/systemd/user/bardo-shell.service.d/x.conf".to_owned()],
             ..healthy()
         },
         // Made with systemd-run.
@@ -167,12 +167,12 @@ fn a_manager_that_disagrees_leaves_the_shell_at_exe() {
                 FileTrust::Writable(Writer::Owner(Uid::new(1000))),
             )
             .file(
-                "/home/p/.config/systemd/user/sill.service",
+                "/home/p/.config/systemd/user/bardo-shell.service",
                 "",
                 FileTrust::Writable(Writer::Owner(Uid::new(1000))),
             )
             .file(
-                "/home/p/.config/systemd/user/sill.service.d/x.conf",
+                "/home/p/.config/systemd/user/bardo-shell.service.d/x.conf",
                 "",
                 FileTrust::Writable(Writer::Owner(Uid::new(1000))),
             );
@@ -265,7 +265,7 @@ fn an_introduced_standing_stands_for_its_sender_and_for_nobody_else() {
             bus.connect().await,
         );
         let peers = peers(asker, FixtureProc::new());
-        let standing = introduced_service("org.quire.Shell", "shell", Proof::Full, Pin::AtConnect)
+        let standing = introduced_service("org.bardo.Shell", "shell", Proof::Full, Pin::AtConnect)
             .expect("valid");
         peers.introduce(&name_of(&service), standing);
         let need = [Requirement::new(shell(), Proof::Full)];

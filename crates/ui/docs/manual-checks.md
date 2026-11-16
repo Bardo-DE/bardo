@@ -70,7 +70,7 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
   --example second_window`, press "Open message" twice. Close one message window with its
   title-bar button (or Alt+F4): it goes, the terminal prints its `VirtualDom dropped`, the other
   windows stay. Close the first window with a message window open: both go and the process
-  exits. The autopilot run (`QUIRE_AUTOPILOT=1`) covered closes from the app's side only, and
+  exits. The autopilot run (`BARDO_AUTOPILOT=1`) covered closes from the app's side only, and
   never looked at whether `handle.focus()` raised the window.
 
 - **Spelling (branch `spellcheck`, design/04 section 50).** `cargo run -p ui-gallery`, Edit

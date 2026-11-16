@@ -29,7 +29,7 @@ impl AppKey {
         }
     }
 
-    /// The key as `quire_desktop_app_v1.identity` sends it: the app name, or
+    /// The key as `bardo_desktop_app_v1.identity` sends it: the app name, or
     /// `claimed:<id>` for a claimed key (03 §1.1).
     pub fn wire(&self) -> String {
         match self {
@@ -91,22 +91,22 @@ mod tests {
             (
                 "a launcher's scope proves the app",
                 facts(
-                    &format!("{scope}app-org.quire.Mail-1234.scope"),
+                    &format!("{scope}app-org.bardo.Mail-1234.scope"),
                     SandboxFacts::Native,
                 ),
-                "org.quire.Mail",
-                "org.quire.Mail",
+                "org.bardo.Mail",
+                "org.bardo.Mail",
                 "scope",
                 ProofKind::Scope,
             ),
             (
                 "a proven peer's own declaration is ignored",
                 facts(
-                    &format!("{scope}app-org.quire.Mail-1234.scope"),
+                    &format!("{scope}app-org.bardo.Mail-1234.scope"),
                     SandboxFacts::Native,
                 ),
                 "evil",
-                "org.quire.Mail",
+                "org.bardo.Mail",
                 "scope",
                 ProofKind::Scope,
             ),
@@ -132,8 +132,8 @@ mod tests {
             (
                 "a session scope is not a proof",
                 facts("/user.slice/session-3.scope", SandboxFacts::Native),
-                "org.quire.Mail",
-                "claimed:org.quire.Mail",
+                "org.bardo.Mail",
+                "claimed:org.bardo.Mail",
                 "claimed",
                 ProofKind::Claimed,
             ),

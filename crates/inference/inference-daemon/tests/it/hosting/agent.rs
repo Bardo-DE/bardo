@@ -19,7 +19,7 @@ use tokio::net::TcpStream;
 pub const KEY_ANTHROPIC: &str = "sk-ant-api03-REAL-SECRET-KEY-0123456789";
 pub const KEY_OPENAI: &str = "sk-proj-OTHER-REAL-SECRET-9876543210";
 pub const PROGRAM: &str = "claude-code";
-pub const APP: &str = "org.quire.Agent.claude-code";
+pub const APP: &str = "org.bardo.Agent.claude-code";
 
 pub fn agent_app() -> AppId {
     AppId {

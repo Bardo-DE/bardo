@@ -1,4 +1,4 @@
-//! `org.quire.Sync1` at `/org/quire/Sync1`: syncd's datasets and their state.
+//! `org.bardo.Sync1` at `/org/bardo/Sync1`: syncd's datasets and their state.
 
 use account_dbus::Details;
 use account_dbus_macros::bus_interface;
@@ -6,9 +6,9 @@ use account_dbus_macros::bus_interface;
 /// The interface, written once. `#[bus_interface]` makes [`SyncProxy`] for its callers from this
 /// trait, [`SyncServer`] for the daemon to implement and [`SyncServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Sync1",
-    default_service = "org.quire.Sync1",
-    default_path = "/org/quire/Sync1"
+    interface = "org.bardo.Sync1",
+    default_service = "org.bardo.Sync1",
+    default_path = "/org/bardo/Sync1"
 )]
 pub trait Sync {
     /// The datasets the caller may see (dataset kind slugs).
@@ -23,9 +23,9 @@ pub trait Sync {
     /// the `Conflict` signal carried (its `number` key); `how` is `keep_local` (upload the local
     /// content over the replica's version) or `keep_remote` (take the replica's version and drop
     /// the local change), and the next cycle does it. Only the dataset's owning app may call it.
-    /// Errors: `InvalidArgs` for any other `how`; `org.quire.Accounts1.Error.NoFittingAccount`
-    /// when the caller sees no such dataset; `org.quire.Accounts1.Error.Denied` when it sees the
-    /// dataset but does not own it; `org.quire.Sync1.Error.NoSuchConflict` when the conflict is
+    /// Errors: `InvalidArgs` for any other `how`; `org.bardo.Accounts1.Error.NoFittingAccount`
+    /// when the caller sees no such dataset; `org.bardo.Accounts1.Error.Denied` when it sees the
+    /// dataset but does not own it; `org.bardo.Sync1.Error.NoSuchConflict` when the conflict is
     /// unknown or already settled.
     #[bus(docs)]
     fn resolve(&self, dataset: &str, conflict: i64, how: &str) -> zbus::Result<()>;
@@ -36,8 +36,8 @@ pub trait Sync {
     /// Anyone who may pause the dataset may call it (its owning app, Settings, the porter
     /// daemons). Keeping is not calling it: the dataset stays held and nothing is removed,
     /// every cycle asking the replica for its listing again. Errors:
-    /// `org.quire.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
-    /// `org.quire.Sync1.Error.NothingHeld` when nothing is held (never, or already confirmed).
+    /// `org.bardo.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
+    /// `org.bardo.Sync1.Error.NothingHeld` when nothing is held (never, or already confirmed).
     #[bus(docs)]
     fn confirm_discard(&self, dataset: &str) -> zbus::Result<()>;
     /// "Sync now": has `dataset` (`<account>/<dataset>`) sync at once instead of at its next
@@ -46,8 +46,8 @@ pub trait Sync {
     /// tell how it went); a dataset waiting for the network (offline, or metered when the
     /// setting says to wait) starts when the network allows. Anyone who may pause the dataset
     /// may call it (its owning app, Settings, the porter daemons). Errors:
-    /// `org.quire.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
-    /// `org.quire.Sync1.Error.Paused` when the person paused it (`Resume` first).
+    /// `org.bardo.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
+    /// `org.bardo.Sync1.Error.Paused` when the person paused it (`Resume` first).
     #[bus(docs)]
     fn sync_now(&self, dataset: &str) -> zbus::Result<()>;
     /// Joins the caller to the connections syncd tells, without asking for any data: any
@@ -67,7 +67,7 @@ pub trait Sync {
     fn conflict(&self, dataset: &str, conflict: Details) -> zbus::Result<()>;
     /// A hold started or ended. The details are those of `Status`'s `needs_confirmation` key
     /// (`discard` and `held`, both `t`) plus `account` (`s`, the account's object path under
-    /// `/org/quire/Accounts1/account/`) when the dataset is now held, and empty when the hold
+    /// `/org/bardo/Accounts1/account/`) when the dataset is now held, and empty when the hold
     /// ended (confirmed and done, or the replica listed its items again).
     #[zbus(signal)]
     #[bus(docs)]

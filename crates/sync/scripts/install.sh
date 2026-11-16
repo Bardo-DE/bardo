@@ -15,22 +15,22 @@
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
 #   PREFIX/libexec/quire/syncd                        the daemon
-#   PREFIX/libexec/quire/porter-mountd                the helper syncd asks to show a drive in
+#   PREFIX/libexec/quire/bardo-drive-mount                the helper syncd asks to show a drive in
 #                                                     ~/Cloud (runs fusermount3, which syncd's
 #                                                     sandbox refuses)
-#   PREFIX/lib/systemd/user/syncd.service             the user unit
-#   PREFIX/lib/systemd/user/syncd.service.d/sandbox.conf
+#   PREFIX/lib/systemd/user/bardo-syncd.service             the user unit
+#   PREFIX/lib/systemd/user/bardo-syncd.service.d/sandbox.conf
 #                                                     the part of the unit's sandbox that needs a
 #                                                     mount namespace; left out (with one line saying
 #                                                     so) when a probe shows this system refuses a
 #                                                     user service one (Ubuntu 24.04's AppArmor
 #                                                     restriction on user namespaces); always
 #                                                     installed with a destdir
-#   PREFIX/lib/systemd/user/porter-mountd.{service,socket}
+#   PREFIX/lib/systemd/user/bardo-drive-mount.{service,socket}
 #                                                     the helper's user units; the socket is enabled
 #                                                     for every user by the link
-#                                                     sockets.target.wants/porter-mountd.socket
-#   PREFIX/share/dbus-1/services/org.quire.Sync1.service
+#                                                     sockets.target.wants/bardo-drive-mount.socket
+#   PREFIX/share/dbus-1/services/org.bardo.Sync1.service
 #                                                     D-Bus activation
 #
 # The script is standalone: it knows nothing of any desktop. Run again, it changes nothing that is
@@ -203,18 +203,18 @@ done
 # The helper that shows drives in ~/Cloud, built beside the daemons. It is not a daemon on the bus
 # (its socket starts it), so it is not in the list above. The helper that installs an engine for
 # everyone is stoker's (its scripts/install.sh puts it and its polkit action in place).
-for helper in porter-mountd; do
+for helper in bardo-drive-mount; do
     if [ ! -x "$built/$helper" ]; then
         echo "install.sh: $built/$helper is not there; build first or point --bin-dir at it" >&2
         exit 1
     fi
 done
 
-# The files in dist/ name /usr/libexec/quire; a different prefix changes that one path.
+# The files in dist/ name /usr/libexec/bardo; a different prefix changes that one path.
 libexec=$prefix/libexec/quire
 for daemon in $daemons; do
     put 755 "$built/$daemon" "$libexec/$daemon"
-    put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/quire "$libexec"
+    put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/bardo "$libexec"
 done
 namespaces=0
 mount_namespace_for_user_units || namespaces=$?
@@ -233,15 +233,15 @@ else
     done
     echo "The daemons run without their extra sandbox on this system, which does not let a user service have its own mount namespace. On Ubuntu, allow it with the kernel.apparmor_restrict_unprivileged_userns setting or an AppArmor profile, then run this again."
 fi
-# porter-mountd and its socket. The socket is enabled for every user as a package does it: a link
+# bardo-drive-mount and its socket. The socket is enabled for every user as a package does it: a link
 # in sockets.target.wants beside the units (no `systemctl`, which would write under /etc or a home).
 # The service has no sandbox drop-in: what it may not have is said in its header.
-put 755 "$built/porter-mountd" "$libexec/porter-mountd"
-put 644 "$dist/porter-mountd.service" "$prefix/lib/systemd/user/porter-mountd.service" /usr/libexec/quire "$libexec"
-put 644 "$dist/porter-mountd.socket" "$prefix/lib/systemd/user/porter-mountd.socket"
-link "../porter-mountd.socket" "$prefix/lib/systemd/user/sockets.target.wants/porter-mountd.socket"
+put 755 "$built/bardo-drive-mount" "$libexec/bardo-drive-mount"
+put 644 "$dist/bardo-drive-mount.service" "$prefix/lib/systemd/user/bardo-drive-mount.service" /usr/libexec/bardo "$libexec"
+put 644 "$dist/bardo-drive-mount.socket" "$prefix/lib/systemd/user/bardo-drive-mount.socket"
+link "../bardo-drive-mount.socket" "$prefix/lib/systemd/user/sockets.target.wants/bardo-drive-mount.socket"
 for activation in "$dist"/dbus/*.service; do
-    put 644 "$activation" "$prefix/share/dbus-1/services/$(basename "$activation")" /usr/libexec/quire "$libexec"
+    put 644 "$activation" "$prefix/share/dbus-1/services/$(basename "$activation")" /usr/libexec/bardo "$libexec"
 done
 
 if [ "$changed" -eq 0 ]; then

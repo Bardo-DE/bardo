@@ -34,7 +34,7 @@ use wayland_protocols::ext::image_copy_capture::v1::server::ext_image_copy_captu
 use wayland_protocols::ext::image_copy_capture::v1::server::ext_image_copy_capture_session_v1::{
     self, ExtImageCopyCaptureSessionV1,
 };
-use desktop_protocols::server::quire_agent_v1::quire_agent_manager_v1::QuireAgentManagerV1;
+use desktop_protocols::server::bardo_agent_v1::bardo_agent_manager_v1::BardoAgentManagerV1;
 use wayland_server::backend::ClientData;
 use wayland_server::protocol::wl_buffer::{self, WlBuffer};
 use wayland_server::protocol::wl_shm::{self, Format, WlShm};
@@ -135,7 +135,7 @@ impl FakeCompositor {
         Self::start_with(windows, None)
     }
 
-    /// The same, also offering `quire_agent_manager_v1`, answering leases as `stance` says.
+    /// The same, also offering `bardo_agent_manager_v1`, answering leases as `stance` says.
     pub fn start_with_agent(windows: Vec<Window>, stance: Stance) -> Self {
         Self::start_with(windows, Some(stance))
     }
@@ -152,7 +152,7 @@ impl FakeCompositor {
         dh.create_global::<Compositor, ExtImageCopyCaptureManagerV1, _>(1, ());
         dh.create_global::<Compositor, WlShm, _>(1, ());
         if agent.is_some() {
-            dh.create_global::<Compositor, QuireAgentManagerV1, _>(1, ());
+            dh.create_global::<Compositor, BardoAgentManagerV1, _>(1, ());
         }
         dh.insert_client(server, Arc::new(Anyone)).expect("client");
         let n = windows.len();

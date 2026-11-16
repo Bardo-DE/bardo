@@ -14,9 +14,9 @@ use provenance::{DataClass, Integrity, SessionId};
 
 fn related(kind: &str, key: &str, relation: &str) -> CallRequest {
     let owner = app(if kind.starts_with("files") {
-        "org.quire.Files"
+        "org.bardo.Files"
     } else {
-        "org.quire.Mail"
+        "org.bardo.Mail"
     });
     CallRequest {
         action: ActionRef {
@@ -45,7 +45,7 @@ fn grant_files(router: &Router<FakeSeams>) {
         id: account_core::GrantId::parse("g-files").expect("grant"),
         key: ActionGrantKey {
             caller: GrantCaller::Companion,
-            owner: app("org.quire.Files"),
+            owner: app("org.bardo.Files"),
             target: GrantTarget::App,
             class: DataClass::Files,
             usage: Usage::Interactive,
@@ -185,7 +185,7 @@ async fn a_thing_found_through_untrusted_content_is_untrusted_even_by_a_trusted_
             .handles
             .mint_entity(
                 provenance::EntityId {
-                    app: app("org.quire.Files"),
+                    app: app("org.bardo.Files"),
                     kind: provenance::EntityKind::parse("files.file").expect("kind"),
                     key: provenance::EntityKey::parse("f1").expect("key"),
                 },

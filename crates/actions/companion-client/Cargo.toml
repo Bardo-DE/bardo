@@ -1,6 +1,6 @@
 [package]
 name = "companion-client"
-description = "The person's side of org.quire.Companion1: a CompanionTransport seam (open, ask, follow the answer object, close) and DbusCompanion over the session bus. What quire-do ask is written against. Kept out of action-client so the apps and cuad that use that crate do not take on the companion's wire."
+description = "The person's side of org.bardo.Companion1: a CompanionTransport seam (open, ask, follow the answer object, close) and DbusCompanion over the session bus. What bardo-do ask is written against. Kept out of action-client so the apps and cuad that use that crate do not take on the companion's wire."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

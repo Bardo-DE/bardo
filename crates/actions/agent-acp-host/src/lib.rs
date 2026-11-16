@@ -1,7 +1,7 @@
 //! The ACP client edge (design note `acp-sessions.md` section 3b, owner revisions R1 to R3): an
 //! external coding agent is a session backend whose every call goes through the router. This is
 //! the SDK's client role plus the IO under it: files, the working directory, the agent's tool
-//! socket, the sandboxed terminals. The server edge (an editor drives us) is `docket-acp`; our own
+//! socket, the sandboxed terminals. The server edge (an editor drives us) is `bardo-agent-acp`; our own
 //! rules, shared by both, are `agent-acp-core`.
 //!
 //! - `AcpBackend`: a `SessionBackend` over a process behind the `Spawn` seam. It speaks ACP as

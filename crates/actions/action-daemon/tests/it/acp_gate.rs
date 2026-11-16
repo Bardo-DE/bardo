@@ -1,7 +1,7 @@
-//! The roles held through `org.quire.Acp` count only while `agent.acp.expose` is on. The name is
+//! The roles held through `org.bardo.Acp` count only while `agent.acp.expose` is on. The name is
 //! usually unowned (the feature is off by default), so without the gate any process of the person
 //! could take it and play the editor and the companion. The host of an external coding agent
-//! (`org.quire.AcpAgent`) waits the same way on `agent.acp.agents`.
+//! (`org.bardo.AcpAgent`) waits the same way on `agent.acp.agents`.
 
 use crate::support::world::*;
 use action_client::Transport;
@@ -92,7 +92,7 @@ async fn other_names_do_not_wait_on_the_setting() {
         AcpGate::shut(),
     )
     .await;
-    let (sill, _keep) = world.client(&["org.quire.Shell"]).await;
+    let (sill, _keep) = world.client(&["org.bardo.Shell"]).await;
     assert!(!refused(&sill.call(open()).await.expect("a reply")));
 }
 

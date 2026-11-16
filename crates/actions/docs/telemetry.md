@@ -44,7 +44,7 @@ Run an OpenTelemetry collector or Jaeger on this machine (Jaeger's all-in-one im
 OTLP/HTTP on 4318), then add a drop-in for the daemon:
 
 ```ini
-# ~/.config/systemd/user/intentd.service.d/telemetry.conf
+# ~/.config/systemd/user/bardo-actiond.service.d/telemetry.conf
 [Service]
 Environment=OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
 Environment=OTEL_SERVICE_NAME=quire-intentd

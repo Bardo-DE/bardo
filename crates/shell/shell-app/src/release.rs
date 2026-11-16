@@ -28,7 +28,7 @@ pub const ANSWER_WITHIN: Duration = Duration::from_secs(5);
 
 /// Where the update service's program is exported on the computer, for a shell that does not run
 /// from a release folder.
-const EXPORTED: &str = "/usr/local/bin/slipway";
+const EXPORTED: &str = "/usr/local/bin/bardo-updater";
 
 /// Whether the host thread answered.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

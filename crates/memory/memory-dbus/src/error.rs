@@ -1,10 +1,10 @@
-//! `org.quire.Memory1.Error.<Variant>`: the bus form of `Refusal`, one to one.
+//! `org.bardo.Memory1.Error.<Variant>`: the bus form of `Refusal`, one to one.
 
 use memory_core::Refusal;
 
 /// The errors memoryd's methods return. Each maps 1:1 to a [`Refusal`].
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Memory1.Error")]
+#[zbus(prefix = "org.bardo.Memory1.Error")]
 pub enum MemoryError {
     /// zbus's own failures.
     #[zbus(error)]
@@ -98,7 +98,7 @@ impl From<crate::CodecError> for MemoryError {
 pub enum Failure {
     /// memoryd answered no.
     Refused(Refusal),
-    /// Nothing owns `org.quire.Memory1` and nothing can start it: there is no memory here.
+    /// Nothing owns `org.bardo.Memory1` and nothing can start it: there is no memory here.
     NoDaemon,
     /// The connection to the bus closed.
     Closed,

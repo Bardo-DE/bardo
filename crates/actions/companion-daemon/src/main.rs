@@ -1,4 +1,4 @@
-//! companiond: serves `org.quire.Companion1` on the session bus until the bus closes.
+//! companiond: serves `org.bardo.Companion1` on the session bus until the bus closes.
 
 use std::process::ExitCode;
 

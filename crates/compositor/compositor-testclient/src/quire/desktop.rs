@@ -1,4 +1,4 @@
-//! quire_desktop_v1 as a client (P2-Q1): the apps, windows and Spaces the compositor announced,
+//! bardo_desktop_v1 as a client (P2-Q1): the apps, windows and Spaces the compositor announced,
 //! and the requests a shell makes of them.
 //!
 //! Self-contained like `manage::workspace`: it reads its own events on a side queue of the
@@ -10,7 +10,7 @@ mod roster;
 use self::roster::{Origin, Roster};
 use crate::misc::idle::{pump_queue, side_queue};
 use crate::{ClientError, GlobalList};
-use desktop_protocols::client::quire_desktop_v1::quire_desktop_manager_v1::QuireDesktopManagerV1;
+use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_manager_v1::BardoDesktopManagerV1;
 use std::ops::RangeInclusive;
 use wayland_client::Connection;
 use wayland_client::EventQueue;
@@ -19,19 +19,19 @@ use wayland_client::protocol::wl_seat::WlSeat;
 use wayland_protocols::ext::foreign_toplevel_list::v1::client::ext_foreign_toplevel_list_v1::ExtForeignToplevelListV1;
 
 pub use self::roster::{ActiveView, AppView, GeometryView, SpaceView, WindowView};
-pub use desktop_protocols::client::quire_desktop_v1::quire_desktop_app_v1::{
+pub use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_app_v1::{
     AppLifeKind, AppVisibility, Attention, ProofKind,
 };
-pub use desktop_protocols::client::quire_desktop_v1::quire_desktop_manager_v1::{
+pub use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_manager_v1::{
     ActorKind, Error as ManagerError,
 };
-pub use desktop_protocols::client::quire_desktop_v1::quire_desktop_space_v1::{
+pub use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_space_v1::{
     SpaceActivity, SpaceKind,
 };
-pub use desktop_protocols::client::quire_desktop_v1::quire_desktop_window_v1::{
+pub use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_window_v1::{
     Assign, LeaseState, Modality, PlaceKind, Responsiveness, Toggle, WindowStateKind,
 };
-pub use desktop_protocols::client::quire_window_v1::quire_window_v1::{
+pub use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{
     Emphasis, PlaceTarget, PlacementMark, WindowRole,
 };
 
@@ -86,13 +86,13 @@ pub enum SpaceRequest {
     MoveTo(u32),
 }
 
-/// A bound `quire_desktop_manager_v1`.
+/// A bound `bardo_desktop_manager_v1`.
 #[derive(Debug)]
 pub struct DesktopWatch {
     connection: Connection,
     queue: EventQueue<Roster>,
     roster: Roster,
-    manager: QuireDesktopManagerV1,
+    manager: BardoDesktopManagerV1,
     output: WlOutput,
     seat: WlSeat,
     _list: Option<ExtForeignToplevelListV1>,
@@ -126,8 +126,8 @@ impl DesktopWatch {
             .bind::<ExtForeignToplevelListV1, _, _>(&qh, 1..=1, ())
             .ok();
         let manager = globals
-            .bind::<QuireDesktopManagerV1, _, _>(&qh, versions, ())
-            .map_err(|_| missing("quire_desktop_manager_v1"))?;
+            .bind::<BardoDesktopManagerV1, _, _>(&qh, versions, ())
+            .map_err(|_| missing("bardo_desktop_manager_v1"))?;
         connection
             .flush()
             .map_err(|error| ClientError::Dispatch(error.to_string()))?;

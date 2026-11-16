@@ -18,7 +18,7 @@ pub enum Origin {
     Shortcut,
     /// An external MCP client.
     Mcp,
-    /// A process running `quire-do`.
+    /// A process running `bardo-do`.
     Cli,
     /// An app calling itself.
     AppInternal,
@@ -30,7 +30,7 @@ pub enum Origin {
 }
 
 /// The app whose search the start of a person's turn may run unasked.
-pub const RECALL_APP: &str = "org.quire.Memory";
+pub const RECALL_APP: &str = "org.bardo.Memory";
 /// The one action of [`RECALL_APP`] a turn start may run unasked.
 pub const RECALL_ACTION: &str = "memory.recall";
 

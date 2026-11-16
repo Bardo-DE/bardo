@@ -6,8 +6,8 @@ use crate::launch::Launch;
 use crate::view::App;
 
 /// The desktop application id: the Wayland `app_id`, which the desktop matches to
-/// `org.quire.Files.desktop` for the window's name and icon.
-pub const APP_ID: &str = "org.quire.Files";
+/// `org.bardo.Files.desktop` for the window's name and icon.
+pub const APP_ID: &str = "org.bardo.Files";
 
 /// Opens the window on `launch` and runs until it closes.
 pub fn run(launch: Launch) -> Result<(), LaunchError> {

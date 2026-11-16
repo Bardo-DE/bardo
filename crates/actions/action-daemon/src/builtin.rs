@@ -1,8 +1,8 @@
-//! The providers intentd hosts itself: `org.quire.Memory` (the planner reaches memory only
+//! The providers intentd hosts itself: `org.bardo.Memory` (the planner reaches memory only
 //! through these router actions, so the router can label what it delivers) and
-//! `org.quire.Companion` (starting a worker task, messaging one), and `org.quire.Checkpoints`.
+//! `org.bardo.Companion` (starting a worker task, messaging one), and `org.bardo.Checkpoints`.
 //! `HostedLink` is the router's `AppLink` with those answered in process and every other app over
-//! D-Bus, and `builtin_manifests` are what `quire-do apps` lists for them.
+//! D-Bus, and `builtin_manifests` are what `bardo-do apps` lists for them.
 
 use crate::builtin_chain::{Builtins, Chain};
 use crate::builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
@@ -23,10 +23,10 @@ use permission_core::ACP_AGENT_APP;
 use permission_core::COMPANION_APP;
 use provenance::{Actor, EntityId};
 
-const MEMORY: &str = include_str!("../../manifests/org.quire.Memory.toml");
-const COMPANION: &str = include_str!("../../manifests/org.quire.Companion.toml");
-const ACP_AGENT: &str = include_str!("../../manifests/org.quire.AcpAgent.toml");
-const CHECKPOINTS: &str = include_str!("../../manifests/org.quire.Checkpoints.toml");
+const MEMORY: &str = include_str!("../../manifests/org.bardo.Memory.toml");
+const COMPANION: &str = include_str!("../../manifests/org.bardo.Companion.toml");
+const ACP_AGENT: &str = include_str!("../../manifests/org.bardo.AcpAgent.toml");
+const CHECKPOINTS: &str = include_str!("../../manifests/org.bardo.Checkpoints.toml");
 
 /// The built-in manifests, validated: Memory, Companion, the external agents' pseudo-app, then
 /// Checkpoints.
@@ -39,7 +39,7 @@ pub fn builtin_manifests() -> Result<Vec<ValidManifest>, ManifestFileError> {
 
 /// Whether `app` is one of the four names whose declarations are the built-in ones: no
 /// installed file may declare them. Memory, Companion and Checkpoints are answered in process; the external
-/// agents' pseudo-app (`org.quire.AcpAgent`) is answered by the host that launched the agent, on
+/// agents' pseudo-app (`org.bardo.AcpAgent`) is answered by the host that launched the agent, on
 /// that bus name, like an installed app.
 pub fn is_builtin(app: &AppName) -> bool {
     matches!(

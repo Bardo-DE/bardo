@@ -3,9 +3,9 @@
 //!
 //! ```ignore
 //! #[bus_interface(
-//!     interface = "org.quire.Spaces1",
-//!     default_service = "org.quire.Accounts1",
-//!     default_path = "/org/quire/Spaces1"
+//!     interface = "org.bardo.Spaces1",
+//!     default_service = "org.bardo.Accounts1",
+//!     default_path = "/org/bardo/Spaces1"
 //! )]
 //! pub trait Spaces {
 //!     /// Every desktop-wide Space.

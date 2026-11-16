@@ -1,4 +1,4 @@
-//! The real `actions-mcp --host-socket` binary as an external agent starts it: MCP on its stdio,
+//! The real `bardo-actions-mcp --host-socket` binary as an external agent starts it: MCP on its stdio,
 //! one unix socket to the host, the token in its environment. The host here is a small listener
 //! that records each line and answers as the real one does. The bus is unreachable, HOME and
 //! every XDG directory are scratch, and the child is killed by its handle when the test ends.
@@ -27,7 +27,7 @@ impl Drop for Bridge {
 }
 
 fn spawn(dir: &Path, socket: &Path, token: Option<&str>) -> Bridge {
-    let mut command = Command::new(env!("CARGO_BIN_EXE_actions-mcp"));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_bardo-actions-mcp"));
     command
         .env_clear()
         .env("HOME", dir)
@@ -44,7 +44,7 @@ fn spawn(dir: &Path, socket: &Path, token: Option<&str>) -> Bridge {
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .expect("actions-mcp starts");
+        .expect("bardo-actions-mcp starts");
     Bridge { child }
 }
 
@@ -148,7 +148,7 @@ async fn a_call_is_one_line_with_the_tool_and_the_arguments_as_given() {
     let mut bridge = spawn(dir.path(), &socket, Some(TOKEN));
     let client = client(&mut bridge).await;
     let arguments =
-        json!({"target": {"app": "org.quire.Mail", "kind": "mail.thread", "key": "t1"}});
+        json!({"target": {"app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1"}});
     let params = CallToolRequestParams::new("mail__mail_thread_read")
         .with_arguments(arguments.as_object().cloned().expect("object"));
     let result = client.call_tool(params).await.expect("call");

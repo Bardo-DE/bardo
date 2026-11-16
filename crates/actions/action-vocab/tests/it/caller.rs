@@ -10,7 +10,7 @@ fn app(name: &str) -> AppName {
 
 #[test]
 fn a_turn_is_recorded_as_from_the_surface_that_took_it() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let rows = [
         (CallerRole::Launcher, Caller::launcher()),
         (CallerRole::Cli, Caller::terminal()),
@@ -26,7 +26,7 @@ fn a_turn_is_recorded_as_from_the_surface_that_took_it() {
 
 #[test]
 fn a_caller_keeps_its_role_and_app() {
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let field = Caller::field(mail.clone());
     assert_eq!(field.role(), CallerRole::Field);
     assert_eq!(field.app(), Some(&mail));
@@ -40,16 +40,16 @@ fn the_stored_form_is_the_old_turn_source() {
         (Caller::launcher(), r#"{"kind":"launcher"}"#),
         (Caller::terminal(), r#"{"kind":"terminal"}"#),
         (
-            Caller::field(app("org.quire.Mail")),
-            r#"{"kind":"field","v":"org.quire.Mail"}"#,
+            Caller::field(app("org.bardo.Mail")),
+            r#"{"kind":"field","v":"org.bardo.Mail"}"#,
         ),
         (
-            Caller::editor(app("org.quire.Acp")),
-            r#"{"kind":"editor","v":"org.quire.Acp"}"#,
+            Caller::editor(app("org.bardo.Acp")),
+            r#"{"kind":"editor","v":"org.bardo.Acp"}"#,
         ),
         (
-            Caller::agent(app("org.quire.Agent")),
-            r#"{"kind":"agent","v":"org.quire.Agent"}"#,
+            Caller::agent(app("org.bardo.Agent")),
+            r#"{"kind":"agent","v":"org.bardo.Agent"}"#,
         ),
     ];
     for (caller, json) in rows {

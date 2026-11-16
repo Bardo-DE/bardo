@@ -1,6 +1,6 @@
 //! The provider files porter ships (`providers/*.toml`), compiled in: an app that links
 //! account-provider (mailo on macOS and Windows, a test with nothing installed) has the same files
-//! accountd reads from `/usr/share/porter/providers`, from the same porter rev, with no copy.
+//! accountd reads from `/usr/share/bardo/accounts/providers`, from the same porter rev, with no copy.
 
 use crate::{ProviderSet, ProviderSpec, parse_provider};
 

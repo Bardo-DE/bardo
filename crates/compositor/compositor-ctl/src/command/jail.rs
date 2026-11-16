@@ -1,5 +1,5 @@
 //! The structural jail check (20-FREEZE-PLAN §6.1) for this process: the conditions are
-//! `compositor_privacy::breach`'s. casementctl never opens a device.
+//! `compositor_privacy::breach`'s. bardo-compositorctl never opens a device.
 
 use compositor_privacy::{JailBreach, breach};
 use std::os::unix::fs::MetadataExt;

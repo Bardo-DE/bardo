@@ -5,7 +5,7 @@
 //! The client-surface scenes (windows, popups, layers, lock surfaces) are the fixture's, in
 //! `crates/casement-testkit/tests/it/scene/mod.rs`.
 //!
-//! Goldens live in `tests/golden/<name>.png`, blessed with `CASEMENT_BLESS=1`.
+//! Goldens live in `tests/golden/<name>.png`, blessed with `BARDO_COMPOSITOR_BLESS=1`.
 #![cfg(feature = "testing")]
 
 use crate::support;

@@ -11,9 +11,9 @@ use action_core::ExchangeAnswer;
 use agent_session::SheetChoice;
 
 /// The planner's name for the memory read of a question and for the write of a fact.
-const RECALL: &str = "org_quire_Memory-memory_recall";
-const FACTS: &str = "org_quire_Memory-memory_facts";
-const PROPOSE: &str = "org_quire_Memory-memory_propose";
+const RECALL: &str = "org_bardo_Memory-memory_recall";
+const FACTS: &str = "org_bardo_Memory-memory_facts";
+const PROPOSE: &str = "org_bardo_Memory-memory_propose";
 
 /// The words a plain answer must not hold: they talk about the machinery, not to the person.
 const META: &[&str] = &["memory", "tool", "history", "recall", "I can answer"];

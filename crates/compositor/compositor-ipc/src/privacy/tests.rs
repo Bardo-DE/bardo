@@ -15,7 +15,7 @@ use ui_settings::live::LiveSchema;
 use ui_settings::schema::{KeyKind, KeySpec};
 use zbus::zvariant::{OwnedValue, Value};
 
-const NOT_PERMITTED: &str = "org.quire.SettingsModule1.Error.NotPermitted";
+const NOT_PERMITTED: &str = "org.bardo.SettingsModule1.Error.NotPermitted";
 const ADMINISTRATOR: &str = "Set by your administrator";
 
 fn program(path: &str) -> Subject {
@@ -48,7 +48,7 @@ async fn module(caller: &zbus::Proxy<'_>) -> zbus::Proxy<'static> {
         caller.connection(),
         COMPOSITOR_BUS_NAME,
         PRIVACY_PATH,
-        "org.quire.SettingsModule1",
+        "org.bardo.SettingsModule1",
     )
     .await
     .expect("proxy")
@@ -197,7 +197,7 @@ async fn only_the_settings_app_may_write() {
     );
     assert_eq!(
         set(&module, &grim, Value::from(7_i64)).await,
-        "org.quire.SettingsModule1.Error.BadValue"
+        "org.bardo.SettingsModule1.Error.BadValue"
     );
     assert_eq!(set(&module, &forget, Value::from(true)).await, "granted");
     assert_eq!(

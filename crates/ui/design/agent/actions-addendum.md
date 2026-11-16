@@ -354,10 +354,10 @@ Agent prose is never shown. Untrusted values are drawn as `Shown::Quoted` with t
 
 ## A9. Shipped red-team and eval suite
 
-**Replaces** the injection-corpus bullet in §5.4. **Adds** crate `docket-eval` to the §2.1 table and edges: it may depend on `action-fake` and its dependencies, plus `inference-core`. **Adds** fill-wave agent F1e to §6.
+**Replaces** the injection-corpus bullet in §5.4. **Adds** crate `agent-eval` to the §2.1 table and edges: it may depend on `action-fake` and its dependencies, plus `inference-core`. **Adds** fill-wave agent F1e to §6.
 
 ```rust
-// docket-eval  (freeze now: types; runner fill 1)
+// agent-eval  (freeze now: types; runner fill 1)
 pub enum Corpus { Injection, Overeager, Exfiltration, AdaptiveJudge, Benign, UiSpoofing }
 pub struct Case { pub id: CaseId, pub corpus: Corpus, pub space: SpaceId, pub strictness: Strictness,
     pub turns: Vec<String>, pub world: WorldFixture, pub expect: Expect }
@@ -406,10 +406,10 @@ The coordinator's first message let the reviewer decide a grey zone, including A
 
 ## Work breakdown deltas (§6)
 
-- **Freeze wave (docket agent)** additionally writes: `task_policy.rs`, `breaker.rs`, `stage.rs`, the `docket-eval` types, `default.cedar` stubs with the ids `rule-of-two` and `untrusted-sink`, and the DryRun members in the XML.
+- **Freeze wave (docket agent)** additionally writes: `task_policy.rs`, `breaker.rs`, `stage.rs`, the `agent-eval` types, `default.cedar` stubs with the ids `rule-of-two` and `untrusted-sink`, and the DryRun members in the XML.
 - **F1a** owns the new Cedar rules and grid tests.
 - **F1b** owns the cascade and the breaker.
 - **F1c** owns `covers`, `compare`, `SessionSaw` and Previewing.
-- **F1e (new)** owns `crates/docket-eval/**` and `eval/**`.
+- **F1e (new)** owns `crates/agent-eval/**` and `eval/**`.
 - The verify commands are unchanged, plus `cargo test -p action-eval`.
 <!-- paths: end -->

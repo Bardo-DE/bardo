@@ -213,7 +213,7 @@ async fn a_halted_desktop_is_exit_7_and_so_is_a_paused_session() {
 #[tokio::test]
 async fn an_app_that_does_not_answer_is_the_app_failing_the_call() {
     let desk = Desk::new();
-    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let mail = AppName::parse("org.bardo.Mail").expect("app");
     desk.router.seams.link.answer_from(&mail, Answering::Silent);
     let report = desk.quire(&["mail", "thread.read", "t2"]).await;
     println!(
@@ -229,7 +229,7 @@ async fn an_app_that_does_not_answer_is_the_app_failing_the_call() {
 async fn an_app_that_is_not_installed_is_exit_6_not_5() {
     let desk = Desk::answering(vec![once()]);
     desk.router.seams.link.answer_from(
-        &AppName::parse("org.quire.Mail").expect("app"),
+        &AppName::parse("org.bardo.Mail").expect("app"),
         action_fake::Answering::Absent,
     );
     let report = desk.quire(&["mail", "thread.archive", "t1"]).await;
@@ -263,7 +263,7 @@ async fn intentd_being_down_is_exit_6_for_every_command() {
             report.exit.word()
         );
         assert_eq!(report.exit, Exit::Unavailable, "{words:?}: {report:?}");
-        assert!(report.stderr.starts_with("quire-do: "), "{report:?}");
+        assert!(report.stderr.starts_with("bardo-do: "), "{report:?}");
     }
 }
 

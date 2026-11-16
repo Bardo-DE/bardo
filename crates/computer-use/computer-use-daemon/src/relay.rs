@@ -23,7 +23,7 @@ where
     B: serde::Serialize + zbus::zvariant::DynamicType,
 {
     let _ = connection
-        .emit_signal(None::<&str>, path, "org.quire.Cua1.Run", member, body)
+        .emit_signal(None::<&str>, path, "org.bardo.ComputerUse1.Run", member, body)
         .await;
 }
 
@@ -48,7 +48,7 @@ async fn emit_to_shell<B>(
         .emit_signal(
             Some(shell.as_str()),
             path,
-            "org.quire.Cua1.Run",
+            "org.bardo.ComputerUse1.Run",
             member,
             body,
         )
@@ -75,7 +75,7 @@ async fn say<S: Seams>(
                     .emit_signal(
                         None::<&str>,
                         manager_signal_path(),
-                        "org.quire.Cua1.Manager",
+                        "org.bardo.ComputerUse1.Manager",
                         "RunAdded",
                         &(path,),
                     )
@@ -128,7 +128,7 @@ async fn say<S: Seams>(
                     .emit_signal(
                         None::<&str>,
                         manager_signal_path(),
-                        "org.quire.Cua1.Manager",
+                        "org.bardo.ComputerUse1.Manager",
                         "RunRemoved",
                         &(path,),
                     )

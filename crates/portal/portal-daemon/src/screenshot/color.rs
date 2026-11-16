@@ -15,7 +15,7 @@ pub trait ColorPicker: Send + Sync + std::fmt::Debug {
     fn pick<'a>(&'a self, app_label: &'a str) -> BoxFuture<'a, Result<Option<Rgb>, ShellError>>;
 }
 
-/// The real picker: `org.quire.Shell1.PickColor(app_label: s) -> (color: a(ddd))`. The shell
+/// The real picker: `org.bardo.Shell1.PickColor(app_label: s) -> (color: a(ddd))`. The shell
 /// answers with no tuple for a cancel and one tuple of red, green and blue (each 0 to 1) for a
 /// pick.
 #[derive(Debug)]

@@ -71,8 +71,8 @@ async fn cuad_without_a_compositor_serves_its_names_and_says_the_backend_is_none
     let bus = PrivateBus::start(dir.path());
     let mut daemon = Daemon::start(&bus, dir.path(), &[]);
     let me = bus.connect().await;
-    owned(&me, "org.quire.Cua1").await;
-    owned(&me, "org.quire.Cua").await;
+    owned(&me, "org.bardo.ComputerUse1").await;
+    owned(&me, "org.bardo.ComputerUse").await;
 
     let manager = ManagerProxy::new(&me).await.expect("manager");
     assert_eq!(manager.backend().await.expect("backend"), "none");
@@ -89,7 +89,7 @@ async fn cuad_stops_when_the_bus_goes_away() {
     let bus = PrivateBus::start(dir.path());
     let mut daemon = Daemon::start(&bus, dir.path(), &[]);
     let me = bus.connect().await;
-    owned(&me, "org.quire.Cua1").await;
+    owned(&me, "org.bardo.ComputerUse1").await;
     drop(me);
     drop(bus);
     assert!(daemon.wait().success(), "a closed bus is a clean stop");
@@ -104,7 +104,7 @@ async fn a_bad_configuration_is_a_start_failure_not_a_panic() {
     let mut daemon = Daemon::start(
         &bus,
         dir.path(),
-        &[("CUAD_CONFIG", config.to_str().unwrap())],
+        &[("BARDO_COMPUTER_USE_CONFIG", config.to_str().unwrap())],
     );
     let status = daemon.wait();
     assert_eq!(status.code(), Some(2));
@@ -118,10 +118,10 @@ async fn a_missing_configuration_file_means_the_defaults() {
     let mut daemon = Daemon::start(
         &bus,
         dir.path(),
-        &[("CUAD_CONFIG", missing.to_str().unwrap())],
+        &[("BARDO_COMPUTER_USE_CONFIG", missing.to_str().unwrap())],
     );
     let me = bus.connect().await;
-    owned(&me, "org.quire.Cua1").await;
+    owned(&me, "org.bardo.ComputerUse1").await;
     sigterm(daemon.pid());
     assert!(daemon.wait().success());
 }

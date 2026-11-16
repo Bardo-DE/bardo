@@ -134,6 +134,6 @@ body = "Number 21."
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.archive"
 targets = [{ kind = "mail.thread", key = "t1" }, { kind = "mail.thread", key = "t2" }, { kind = "mail.thread", key = "t3" }, { kind = "mail.thread", key = "t4" }, { kind = "mail.thread", key = "t5" }, { kind = "mail.thread", key = "t6" }, { kind = "mail.thread", key = "t7" }, { kind = "mail.thread", key = "t8" }, { kind = "mail.thread", key = "t9" }, { kind = "mail.thread", key = "t10" }, { kind = "mail.thread", key = "t11" }, { kind = "mail.thread", key = "t12" }, { kind = "mail.thread", key = "t13" }, { kind = "mail.thread", key = "t14" }, { kind = "mail.thread", key = "t15" }, { kind = "mail.thread", key = "t16" }, { kind = "mail.thread", key = "t17" }, { kind = "mail.thread", key = "t18" }, { kind = "mail.thread", key = "t19" }, { kind = "mail.thread", key = "t20" }, { kind = "mail.thread", key = "t21" }]

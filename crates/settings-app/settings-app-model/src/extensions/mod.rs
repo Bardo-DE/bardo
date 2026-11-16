@@ -1,6 +1,6 @@
 //! Extensions as Settings meets them: the choices a `Provided` key offers (the Look menu), and
 //! the Extensions page that lists what is installed with a switch each. Pure; the folders and
-//! `quire/extensions.toml` are `settings-app-files`'.
+//! `bardo/extensions.toml` are `settings-app-files`'.
 
 mod list;
 mod offers;

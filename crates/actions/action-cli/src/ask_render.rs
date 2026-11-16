@@ -1,4 +1,4 @@
-//! `quire-do ask`: an answer as lines for a terminal. Pure: the answer in, text out. A handle is
+//! `bardo-do ask`: an answer as lines for a terminal. Pure: the answer in, text out. A handle is
 //! printed as `#<n>` (the text it names was held for the companion, and a terminal may not have
 //! it displayed), the footer says which model answered and where it ran.
 
@@ -79,7 +79,7 @@ pub fn needs_you(needs: &NeedsYou) -> Vec<String> {
     match needs {
         NeedsYou::Confirm(id) => vec![
             format!("Waiting for your confirmation ({id})."),
-            "Confirmations are answered in the shell (sill's sheet); quire-do cannot answer them."
+            "Confirmations are answered in the shell (sill's sheet); bardo-do cannot answer them."
                 .to_owned(),
         ],
         NeedsYou::Question { text, choices } => {

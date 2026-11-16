@@ -5,7 +5,7 @@ use crate::state::State;
 use compositor_core::overview::Overview;
 use compositor_core::shell::ShellNote;
 use compositor_wayland::quire::{shell, shell_screen, shell_space};
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1::Shown;
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::Shown;
 
 /// Carries out one note for the shell. Also the way the edge reports the real modifier keys
 /// (`ShellNote::Modifiers`), which no model transition makes.

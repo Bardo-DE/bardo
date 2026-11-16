@@ -2,7 +2,7 @@
 
 Four hosted runs (2026-10-10) next to the two Holo 3.1 4B reports. Same prompt, parser, run machine and
 gate for all of them (stoker `CuaSession`, `Holo31` or `UiTars15` dialect). Hosted runs go through
-inferd on a private bus; the key is held by accountd and the `cua-eval-cloud` process refuses to start
+inferd on a private bus; the key is held by accountd and the `computer-use-eval-cloud` process refuses to start
 if it can reach a credential (see ARCHITECTURE section 8). One run per task, greedy where the provider
 takes a temperature. 28 playable tasks (3 are scripted-only). The Holo reports were taken on the earlier
 29-task set (26 greedy runs, 78 thinking runs: no `shop-pay-approved` or `bank-transfer-approved`), so

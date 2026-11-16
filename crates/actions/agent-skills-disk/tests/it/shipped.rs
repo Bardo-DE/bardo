@@ -11,8 +11,8 @@ fn dist() -> PathBuf {
 
 fn manifests() -> Vec<ValidManifest> {
     [
-        include_str!("../../../manifests/org.quire.Memory.toml"),
-        include_str!("../../../manifests/org.quire.Companion.toml"),
+        include_str!("../../../manifests/org.bardo.Memory.toml"),
+        include_str!("../../../manifests/org.bardo.Companion.toml"),
     ]
     .iter()
     .map(|t| toml::from_str(t).expect("manifest"))
@@ -33,7 +33,7 @@ fn desktop_basics_validates_is_always_and_fits_a_kilobyte() {
         skill
             .uses
             .iter()
-            .all(|u| u.app.as_str() == "org.quire.Companion")
+            .all(|u| u.app.as_str() == "org.bardo.Companion")
     );
     let library = Library::check(vec![skill], &manifests());
     assert!(library.hidden.is_empty());

@@ -4,7 +4,7 @@
 //!
 //! The book is read when casement starts and never again: the model's copy is the authority
 //! and the file is rewritten after every change. The floor is read at start and again when
-//! casement is told to (`casementctl privacy reload`, which sends `SIGHUP`).
+//! casement is told to (`bardo-compositorctl privacy reload`, which sends `SIGHUP`).
 
 mod background;
 mod host;
@@ -21,7 +21,7 @@ pub use host::{edited, keep, publish, reload_floor, start};
 use compositor_core::privilege::{ClientStanding, Floor};
 use compositor_ipc::dbus::peer::{Exe, Standing};
 
-/// The floor in `system`: `/etc/quire`, or an injected folder whose files this user owns in a
+/// The floor in `system`: `/etc/bardo`, or an injected folder whose files this user owns in a
 /// build for the jail (a test or a scenario cannot make a root-owned floor) and the
 /// administrator anywhere else.
 pub fn floor_in(system: &SystemDir) -> FloorFiles {

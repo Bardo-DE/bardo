@@ -31,11 +31,11 @@ expected() {
   } | sed '/^$/d' | sort
 }
 
-# actual: the `interface version` rows the session advertises, sorted. casement-probe's JSON lines
+# actual: the `interface version` rows the session advertises, sorted. compositor-probe's JSON lines
 # when it answers, else wayland-info's text.
 actual() {
   local rows=""
-  if probe=$(casement_tool casement-probe 2>/dev/null) && out=$(timeout 20 "$probe" globals 2>/dev/null); then
+  if probe=$(casement_tool compositor-probe 2>/dev/null) && out=$(timeout 20 "$probe" globals 2>/dev/null); then
     rows=$(printf '%s\n' "$out" | python3 -c '
 import json, sys
 for line in sys.stdin:
@@ -53,7 +53,7 @@ for line in sys.stdin:
 ' 2>/dev/null || true)
   fi
   if [ -z "$rows" ]; then
-    command -v wayland-info >/dev/null || { echo "globals.sh: neither casement-probe nor wayland-info answered" >&2; return 3; }
+    command -v wayland-info >/dev/null || { echo "globals.sh: neither compositor-probe nor wayland-info answered" >&2; return 3; }
     rows=$(timeout 20 wayland-info 2>/dev/null | sed -n "s/^interface: '\([^']*\)', *version: *\([0-9]*\).*/\1 \2/p")
   fi
   printf '%s\n' "$rows" | sed '/^$/d' | sort

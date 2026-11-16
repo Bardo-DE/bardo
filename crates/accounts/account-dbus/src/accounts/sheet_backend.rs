@@ -1,4 +1,4 @@
-//! `org.quire.AccountsSheet1` at `/org/quire/AccountsSheet1`: the sheet host's side (sill on our
+//! `org.bardo.AccountsSheet1` at `/org/bardo/AccountsSheet1`: the sheet host's side (sill on our
 //! desktop, a standalone host elsewhere). accountd calls `Open`, `Update` and `Close` with a
 //! `SheetView` as JSON; the host answers with `Input` signals carrying a `SheetInput` as JSON.
 //!
@@ -12,9 +12,9 @@ use account_dbus_macros::bus_interface;
 /// The interface, written once. `#[bus_interface]` makes [`AccountsSheetProxy`] for its callers from this
 /// trait, [`AccountsSheetServer`] for the daemon to implement and [`AccountsSheetServed`] to register.
 #[bus_interface(
-    interface = "org.quire.AccountsSheet1",
-    default_service = "org.quire.AccountsSheet1",
-    default_path = "/org/quire/AccountsSheet1"
+    interface = "org.bardo.AccountsSheet1",
+    default_service = "org.bardo.AccountsSheet1",
+    default_path = "/org/bardo/AccountsSheet1"
 )]
 pub trait AccountsSheet {
     /// Shows a sheet for `handle`, attached to `parent_window` (empty: none), drawing `view`.

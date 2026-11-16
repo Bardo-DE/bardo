@@ -15,12 +15,12 @@ fn app(name: &str) -> AppName {
 
 fn unreachable_name() -> AppName {
     // The fixtures only name valid apps; this keeps the helpers total without a panic path.
-    AppName::parse("org.quire.Shell").unwrap_or_else(|_| unreachable_name())
+    AppName::parse("org.bardo.Shell").unwrap_or_else(|_| unreachable_name())
 }
 
 /// The Mail app.
 pub fn mail() -> AppName {
-    app("org.quire.Mail")
+    app("org.bardo.Mail")
 }
 
 /// A thing in Mail.
@@ -176,7 +176,7 @@ pub fn policy_ask() -> Option<Record> {
 /// The thing a companion session's entries name as their `Subject`: the stream key.
 pub fn session_thing(session: &str) -> Option<ThingRef> {
     Some(ThingRef {
-        app: app("org.quire.Companion"),
+        app: app("org.bardo.Companion"),
         kind: ThingKind::parse("companion.session").ok()?,
         key: ThingKey::parse(session).ok()?,
     })

@@ -33,7 +33,7 @@ fn at(n: i64) -> UnixSeconds {
 
 fn thread(key: &str) -> EntityId {
     EntityId {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         kind: EntityKind::parse("mail.thread").expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }
@@ -52,7 +52,7 @@ fn call(n: u64, in_space: &str) -> AuditRecord {
         call: CallId(n),
         actor: planner(),
         action: ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: provenance::ActionName::parse("mail.thread.archive").expect("action"),
         },
         targets: vec![thread("t1"), thread("t2")],

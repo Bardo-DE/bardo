@@ -26,7 +26,7 @@ pub trait Engine: Sync {
         self.disk_word()
     }
 
-    /// The word a list of running models shows for the engine (`llama-server`, `speech-host`: the
+    /// The word a list of running models shows for the engine (`llama-server`, `bardo-speech-host`: the
     /// program's own name where it has one). Default: the slug.
     fn running_word(&self) -> &'static str {
         self.slug()

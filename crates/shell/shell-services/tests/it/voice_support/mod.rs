@@ -1,5 +1,5 @@
 //! The voice service's test bench: a private bus, a stand-in `voiced` that owns
-//! `org.quire.Voice1` and writes framed events to the stream it hands back, and the desk that
+//! `org.bardo.Voice1` and writes framed events to the stream it hands back, and the desk that
 //! holds the service under test and the connection the shell's seat would publish. Everything
 //! waits on the service's published state or on the stand-in's record, never on a clock.
 
@@ -53,7 +53,7 @@ pub enum BeginAnswer {
 pub enum CancelAnswer {
     /// Take it and record it.
     Accept,
-    /// Refuse it as `org.quire.Voice1.Error.Malformed`, as voiced does a cause it will not take.
+    /// Refuse it as `org.bardo.Voice1.Error.Malformed`, as voiced does a cause it will not take.
     Malformed,
 }
 
@@ -132,9 +132,9 @@ impl Script {
     }
 }
 
-/// The refusals as bus errors of `org.quire.Voice1.Error.*`.
+/// The refusals as bus errors of `org.bardo.Voice1.Error.*`.
 #[derive(Debug, DBusError)]
-#[zbus(prefix = "org.quire.Voice1.Error")]
+#[zbus(prefix = "org.bardo.Voice1.Error")]
 enum Refused {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -185,7 +185,7 @@ struct StandInVoice {
     next: Mutex<u64>,
 }
 
-#[zbus::interface(name = "org.quire.Voice1")]
+#[zbus::interface(name = "org.bardo.Voice1")]
 impl StandInVoice {
     async fn begin(
         &self,
@@ -213,7 +213,7 @@ impl StandInVoice {
             *next += 1;
             *next
         };
-        let path = format!("/org/quire/Voice1/utterance/{n}");
+        let path = format!("/org/bardo/Voice1/utterance/{n}");
         let (near, far) = UnixStream::pair().unwrap_or_else(|e| panic!("{e}"));
         self.script
             .streams
@@ -231,7 +231,7 @@ impl StandInVoice {
                 .emit_signal(
                     header.sender().cloned(),
                     path.as_str(),
-                    "org.quire.Voice1.Utterance",
+                    "org.bardo.Voice1.Utterance",
                     "Ended",
                     &(seal(&end).unwrap_or_else(|e| panic!("{e}")),),
                 )
@@ -250,7 +250,7 @@ struct StandInUtterance {
     script: Arc<Script>,
 }
 
-#[zbus::interface(name = "org.quire.Voice1.Utterance")]
+#[zbus::interface(name = "org.bardo.Voice1.Utterance")]
 impl StandInUtterance {
     async fn release(&self) {
         self.script.push("release");
@@ -327,7 +327,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
     voiced
         .object_server()
         .at(
-            "/org/quire/Voice1",
+            "/org/bardo/Voice1",
             StandInVoice {
                 script: Arc::clone(&script),
                 next: Mutex::new(0),
@@ -339,7 +339,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
         voiced
             .object_server()
             .at(
-                format!("/org/quire/Voice1/utterance/{n}"),
+                format!("/org/bardo/Voice1/utterance/{n}"),
                 StandInUtterance {
                     script: Arc::clone(&script),
                 },
@@ -351,7 +351,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     voiced
-        .request_name("org.quire.Voice1")
+        .request_name("org.bardo.Voice1")
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let (seat_publisher, seat_view) = seat();
@@ -392,8 +392,8 @@ impl Desk {
         self.voiced
             .emit_signal(
                 to,
-                format!("/org/quire/Voice1/utterance/{n}"),
-                "org.quire.Voice1.Utterance",
+                format!("/org/bardo/Voice1/utterance/{n}"),
+                "org.bardo.Voice1.Utterance",
                 "Ended",
                 &(seal(end).unwrap_or_else(|e| panic!("{e}")),),
             )

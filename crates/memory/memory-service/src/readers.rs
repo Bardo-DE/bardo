@@ -30,7 +30,7 @@ pub(crate) fn caller_actor(caller: &Caller) -> Actor {
         Caller::Cuad => Actor::System {
             part: SystemPart::Cua,
         },
-        Caller::ShellUi => memory_core::AppName::parse("org.quire.Shell")
+        Caller::ShellUi => memory_core::AppName::parse("org.bardo.Shell")
             .map_or(Actor::Unknown, |via| Actor::User { via }),
         // The Settings app records and reads nothing, so no audit entry names it; unknown is the
         // actor that claims nothing.

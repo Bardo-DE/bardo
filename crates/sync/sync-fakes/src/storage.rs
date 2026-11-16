@@ -1,8 +1,8 @@
-//! A fake `org.quire.Storage1` for building Files before syncd serves the real one: two drives
+//! A fake `org.bardo.Storage1` for building Files before syncd serves the real one: two drives
 //! of real files under a scratch folder, whose states move as the real ones will. Download Now
 //! fills a progress fraction ten times a second until the file is downloaded; Keep Downloaded and
 //! Remove Download change what they say; the commands of [`World::command`] (read from stdin by
-//! `porter-rig-storage`) take a drive offline, ask for sign-in again, add a file as another
+//! `sync-rig-storage`) take a drive offline, ask for sign-in again, add a file as another
 //! device would, or start an upload, an error or a conflict on one item.
 //!
 //! The files on disk are ordinary files with a line of text: nothing here is downloaded from
@@ -224,7 +224,7 @@ impl World {
         let drives = vec![
             Drive {
                 id: "onedrive".into(),
-                account: "/org/quire/Accounts1/account/fake_onedrive".into(),
+                account: "/org/bardo/Accounts1/account/fake_onedrive".into(),
                 label: "ada@example.test".into(),
                 provider: "OneDrive".into(),
                 path: root.join("OneDrive"),
@@ -235,7 +235,7 @@ impl World {
             },
             Drive {
                 id: "gdrive".into(),
-                account: "/org/quire/Accounts1/account/fake_gdrive".into(),
+                account: "/org/bardo/Accounts1/account/fake_gdrive".into(),
                 label: "ada@example.test".into(),
                 provider: "Google Drive".into(),
                 path: root.join("Google Drive"),
@@ -590,7 +590,7 @@ impl World {
         changed
     }
 
-    /// One command, as `porter-rig-storage` reads them from stdin; what it changed, and whether
+    /// One command, as `sync-rig-storage` reads them from stdin; what it changed, and whether
     /// the drives changed. `Err` holds what to print for a command it does not know.
     pub fn command(&mut self, line: &str) -> Result<(Changed, bool), String> {
         let mut changed = Changed::new();
@@ -951,7 +951,7 @@ impl World {
     }
 }
 
-/// What `porter-rig-storage` prints for a command it does not know.
+/// What `sync-rig-storage` prints for a command it does not know.
 pub const HELP: &str = "commands: offline <drive> | online <drive> | signin <drive> | pause <drive> \
      | resume <drive> | add <path> | upload <path> | wait <path> | conflict <path> \
      | error <path>   (drives: onedrive, gdrive)";
@@ -1143,7 +1143,7 @@ impl StorageServer for FakeStorage {
     }
 }
 
-/// Serves `storage` at `/org/quire/Storage1` on `connection` under `name`, and steps its
+/// Serves `storage` at `/org/bardo/Storage1` on `connection` under `name`, and steps its
 /// transfers every [`TICK`] until the connection closes.
 pub async fn serve(connection: &Connection, name: &str, storage: FakeStorage) -> zbus::Result<()> {
     connection

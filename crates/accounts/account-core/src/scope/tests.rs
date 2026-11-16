@@ -5,16 +5,16 @@ const WRITTEN: &[(&str, Option<&str>, &str, &str, &str)] = &[
     (
         "sill's launch",
         Some("sill"),
-        "org.quire.Mail",
+        "org.bardo.Mail",
         "12",
-        "app-sill-org.quire.Mail-12.scope",
+        "app-sill-org.bardo.Mail-12.scope",
     ),
     (
         "no launcher tag",
         None,
-        "org.quire.Mail",
+        "org.bardo.Mail",
         "a3f09c",
-        "app-org.quire.Mail-a3f09c.scope",
+        "app-org.bardo.Mail-a3f09c.scope",
     ),
     (
         "a dash in the id",
@@ -64,14 +64,14 @@ fn what_is_written_is_what_is_read_back() {
 #[test]
 fn only_an_app_scope_is_read() {
     for (case, unit) in [
-        ("a service", "app-org.quire.Mail-12.service"),
+        ("a service", "app-org.bardo.Mail-12.service"),
         ("not an app's", "run-u7.scope"),
-        ("no run", "app-org.quire.Mail.scope"),
+        ("no run", "app-org.bardo.Mail.scope"),
         (
             "a launcher that is not a word",
-            "app-si.ll-org.quire.Mail-1.scope",
+            "app-si.ll-org.bardo.Mail-1.scope",
         ),
-        ("a run that is not a word", "app-org.quire.Mail-1_2.scope"),
+        ("a run that is not a word", "app-org.bardo.Mail-1_2.scope"),
         ("too many parts", "app-a-b-c-d.scope"),
         ("a broken escape", r"app-org\x2.quire-1.scope"),
         ("a lone backslash", r"app-org\quire-1.scope"),
@@ -83,9 +83,9 @@ fn only_an_app_scope_is_read() {
 
 #[test]
 fn a_launcher_or_run_that_would_not_read_back_is_refused() {
-    assert!(ScopeName::new(Some("my-launcher"), "org.quire.Mail", "1").is_err());
-    assert!(ScopeName::new(None, "org.quire.Mail", "1-2").is_err());
-    assert!(ScopeName::new(None, "org.quire.Mail", "").is_err());
+    assert!(ScopeName::new(Some("my-launcher"), "org.bardo.Mail", "1").is_err());
+    assert!(ScopeName::new(None, "org.bardo.Mail", "1-2").is_err());
+    assert!(ScopeName::new(None, "org.bardo.Mail", "").is_err());
     assert!(ScopeName::new(None, "", "1").is_err());
 }
 
@@ -100,7 +100,7 @@ fn flatpak_is_its_tag_and_a_decimal_run() {
 #[test]
 fn a_unit_name_component_escapes_the_dash_the_slash_and_a_leading_dot() {
     const CASES: &[(&str, &str)] = &[
-        ("org.quire.Photos", "org.quire.Photos"),
+        ("org.bardo.Photos", "org.bardo.Photos"),
         ("org.example.My-App", r"org.example.My\x2dApp"),
         ("a_b:c", "a_b:c"),
         ("a/b", r"a\x2fb"),

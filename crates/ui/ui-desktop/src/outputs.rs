@@ -1,4 +1,4 @@
-//! The shell's per-output work areas, as an app reads them (`org.quire.Outputs1`, capability
+//! The shell's per-output work areas, as an app reads them (`org.bardo.Outputs1`, capability
 //! [`Capability::Outputs`](crate::Capability::Outputs)): each output's frame, its work area (the
 //! frame less the bar's and dock's exclusive zones) and its scale. The data and its lookups are
 //! plain and always built; reading the bus is [`Outputs::read`] (feature `dbus`).

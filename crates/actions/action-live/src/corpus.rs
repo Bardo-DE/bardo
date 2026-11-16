@@ -195,9 +195,9 @@ pub async fn run_corpus_live(
             .map(|c| TransportModel::new(link(), c))
             .ok_or(CorpusError::ModelCard(name))
     };
-    let quick = model_of("quire-quick")?;
-    let deliberate = model_of("quire-deliberate")?;
-    let second = model_of("quire-second")?;
+    let quick = model_of("bardo-quick")?;
+    let deliberate = model_of("bardo-deliberate")?;
+    let second = model_of("bardo-second")?;
     let reviewer = Judges(InferReviewer {
         quick,
         deliberate,

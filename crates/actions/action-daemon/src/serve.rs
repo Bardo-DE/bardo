@@ -60,9 +60,9 @@ fn search_port<S: Seams + 'static>(router: Arc<Router<S>>) -> IndexedSearch {
     })
 }
 
-/// Exports every interface of `org.quire.Intents1` on `connection` over `router` and claims the
+/// Exports every interface of `org.bardo.Intents1` on `connection` over `router` and claims the
 /// name; the roles of the callers are `config`'s, and the processes behind them are named by the
-/// shipped `intentd-callers.toml` over the system's `/proc`. Returns once the name is ours and the
+/// shipped `actiond-callers.toml` over the system's `/proc`. Returns once the name is ours and the
 /// connection keeps serving until it closes.
 pub async fn serve_on<S: Seams + 'static>(
     connection: &BusConnection,
@@ -97,7 +97,7 @@ pub async fn serve_on_with<S: Seams + 'static>(
     .await
 }
 
-/// As [`serve_on_with`], with callers named by `who` (the daemon's table) and `org.quire.Acp` an
+/// As [`serve_on_with`], with callers named by `who` (the daemon's table) and `org.bardo.Acp` an
 /// app only while `acp` shows the setting on. With an `index` store, what each app pushes is kept
 /// in it.
 pub async fn serve_on_gated<S: Seams + 'static>(
@@ -129,7 +129,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
     }
 }
 
-/// Claims `org.quire.Intents1` on the session bus and serves every interface of it over
+/// Claims `org.bardo.Intents1` on the session bus and serves every interface of it over
 /// `router`, deriving each caller's identity and role from the connection (never from a body)
 /// by `config`'s roles, until the connection closes.
 pub async fn serve<S: Seams + 'static>(

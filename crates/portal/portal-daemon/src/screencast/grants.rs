@@ -1,4 +1,4 @@
-//! `org.quire.Portal1`: the person's view of what the portal remembers, for the Settings app.
+//! `org.bardo.Portal1`: the person's view of what the portal remembers, for the Settings app.
 //!
 //! A share that is remembered "until revoked" needs a way to be revoked (NEW-PI-7). Settings lists
 //! the apps that may share the screen without asking again and takes any of them back. Only the
@@ -36,7 +36,7 @@ impl GrantsService {
     }
 }
 
-#[zbus::interface(name = "org.quire.Portal1")]
+#[zbus::interface(name = "org.bardo.Portal1")]
 impl GrantsService {
     /// The apps that may share the screen without asking again, one entry each:
     /// `(app id, name to show, mode, granted at)`. The mode is the portal's persist mode (1 while

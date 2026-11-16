@@ -1,6 +1,6 @@
 //! `.Run.DryRun`: what the app would change, asked through the same arguments check, labels,
 //! consent and policy as a call. It asks nobody, charges nothing and runs nothing; a call the
-//! gate would refuse is refused here with the same refusal, so `quire-do --dry-run` cannot be
+//! gate would refuse is refused here with the same refusal, so `bardo-do --dry-run` cannot be
 //! used to probe around the gate.
 
 use crate::router::Router;

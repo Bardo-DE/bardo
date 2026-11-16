@@ -17,31 +17,31 @@ DESTDIR=
 NO_BUILD=0
 
 # The sill session's keycap layer. sill forwards this user file to keycap, which lays it over
-# /etc/keycap/keycap.toml (the Plasma overlay, which Plasma never overrides); the file is copied
+# /etc/bardo/key-remap/key-remap.toml (the Plasma overlay, which Plasma never overrides); the file is copied
 # when missing and never overwritten.
-KEYCAP_LAYER_SRC="$DIST/keycap/keycap.toml"
-KEYCAP_LAYER_DEST="${XDG_CONFIG_HOME:-$HOME/.config}/keycap/keycap.toml"
+BARDO_KEY_REMAP_LAYER_SRC="$DIST/keycap/keycap.toml"
+BARDO_KEY_REMAP_LAYER_DEST="${XDG_CONFIG_HOME:-$HOME/.config}/keycap/keycap.toml"
 
 # DDC/CI for external monitors: a uaccess rule on the i2c buses and the i2c-dev module load. Put in
 # place only where no ddcutil rule exists (ddcutil_rule_present).
-DDC_RULE_SRC="$DIST/udev/60-sill-ddc.rules"
-DDC_RULE_DEST=/etc/udev/rules.d/60-sill-ddc.rules
-DDC_MODULES_SRC="$DIST/modules-load.d/sill-ddc.conf"
-DDC_MODULES_DEST=/etc/modules-load.d/sill-ddc.conf
+DDC_RULE_SRC="$DIST/udev/60-bardo-shell-ddc.rules"
+DDC_RULE_DEST=/etc/udev/rules.d/60-bardo-shell-ddc.rules
+DDC_MODULES_SRC="$DIST/modules-load.d/bardo-shell-ddc.conf"
+DDC_MODULES_DEST=/etc/modules-load.d/bardo-shell-ddc.conf
 
 # set_dests: every destination, from $PREFIX.
 set_dests() {
   BIN_DEST="$PREFIX/bin/sill"
-  PAM_DEST=/etc/pam.d/sill
-  # What the shell can be asked to do (`org.quire.Shell`): intentd reads every manifest under
+  PAM_DEST=/etc/pam.d/bardo-shell
+  # What the shell can be asked to do (`org.bardo.Shell`): intentd reads every manifest under
   # $XDG_DATA_DIRS/quire/intents/, and /usr/local/share is in the default XDG_DATA_DIRS.
-  INTENTS_DEST="$PREFIX/share/quire/intents/org.quire.Shell.toml"
+  INTENTS_DEST="$PREFIX/share/quire/intents/org.bardo.Shell.toml"
   # The skills sill teaches the companion (dist/skills/<id>/): docket's loader reads every directory
   # under $XDG_DATA_DIRS/quire/skills/.
   SKILLS_DEST="$PREFIX/share/quire/skills"
   # sill's settings schema (every domain's keys, app `sill`): Settings (detent) reads every schema
   # under $XDG_DATA_DIRS/quire/settings/. The binary writes it (`sill --write-schema <dir>`).
-  SCHEMA_DEST="$PREFIX/share/quire/settings/sill.settings.toml"
+  SCHEMA_DEST="$PREFIX/share/quire/settings/shell.settings.toml"
 }
 set_dests
 
@@ -54,7 +54,7 @@ keycap_rules() {
 
 # keycap_rules_lacking: the rules dist has and the person's layer lacks, one per line.
 keycap_rules_lacking() {
-  comm -23 <(keycap_rules "$KEYCAP_LAYER_SRC") <(keycap_rules "$KEYCAP_LAYER_DEST")
+  comm -23 <(keycap_rules "$BARDO_KEY_REMAP_LAYER_SRC") <(keycap_rules "$BARDO_KEY_REMAP_LAYER_DEST")
 }
 
 # parse_flags "$@": --dry-run, --prefix DIR, --destdir DIR, --no-build (only where the script sets

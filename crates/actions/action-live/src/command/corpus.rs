@@ -1,4 +1,4 @@
-//! `docket-live corpus`.
+//! `agent-live corpus`.
 
 use super::{CommandFault, say_agent, say_reach};
 use crate::acp::AcpSpec;
@@ -113,7 +113,7 @@ fn corpus_agent(args: &CorpusArgs, spec: &AcpSpec) -> Result<ExitCode, CommandFa
     print!("{text}");
     if let Some(path) = &args.report {
         write_report(path, &text)?;
-        eprintln!("docket-live: report written to {}", path.display());
+        eprintln!("agent-live: report written to {}", path.display());
     }
     Ok(ExitCode::SUCCESS)
 }
@@ -137,7 +137,7 @@ fn write_attack_summary(
     };
     let summary = stamp_summary(args.engine.slug(), metrics, &args.eval_dir, &today())?;
     let path = write_summary(&summary, dir)?;
-    eprintln!("docket-live: attack summary written to {}", path.display());
+    eprintln!("agent-live: attack summary written to {}", path.display());
     Ok(())
 }
 
@@ -158,7 +158,7 @@ async fn corpus_live_planner(
         return Err(CommandFault::NoAttacks);
     }
     eprintln!(
-        "docket-live: --planner live: {} attacks, two runs each, played by the companion's own planner model (a run takes a while)",
+        "agent-live: --planner live: {} attacks, two runs each, played by the companion's own planner model (a run takes a while)",
         attacks.len()
     );
     let ran = run_attacks_planner(binaries, &attacks, options).await?;
@@ -172,7 +172,7 @@ async fn corpus_live_planner(
     print!("{text}");
     if let Some(path) = &args.report {
         write_report(path, &text)?;
-        eprintln!("docket-live: report written to {}", path.display());
+        eprintln!("agent-live: report written to {}", path.display());
     }
     if let Some(dir) = &args.attack_summary {
         let engine = format!(
@@ -182,15 +182,15 @@ async fn corpus_live_planner(
         );
         let summary = stamp_summary(&engine, metrics.base.clone(), &args.eval_dir, &today())?;
         let path = write_summary(&summary, dir)?;
-        eprintln!("docket-live: attack summary written to {}", path.display());
+        eprintln!("agent-live: attack summary written to {}", path.display());
     }
     eprintln!(
-        "docket-live: traces in {} (index.txt, one .trace.txt, .cassette.jsonl and .case.toml per case)",
+        "agent-live: traces in {} (index.txt, one .trace.txt, .cassette.jsonl and .case.toml per case)",
         ran.trace_dir.display()
     );
     ran.unscored
         .iter()
-        .for_each(|(id, why)| eprintln!("docket-live: {id} was not scored: {why}"));
+        .for_each(|(id, why)| eprintln!("agent-live: {id} was not scored: {why}"));
     Ok(match ran.unscored.is_empty() {
         true => ExitCode::SUCCESS,
         false => ExitCode::from(1),
@@ -269,14 +269,14 @@ pub(super) async fn corpus(
     print!("{text}");
     if let Some(path) = &args.report {
         write_report(path, &text)?;
-        eprintln!("docket-live: report written to {}", path.display());
+        eprintln!("agent-live: report written to {}", path.display());
     }
     if let Some(dir) = &args.attack_summary {
         write_attack_summary(&args, &outcomes, dir)?;
     }
     for outcome in &outcomes {
         eprintln!(
-            "docket-live: traces in {} (index.txt, one .trace.txt, .cassette.jsonl and .case.toml per case)",
+            "agent-live: traces in {} (index.txt, one .trace.txt, .cassette.jsonl and .case.toml per case)",
             outcome.trace_dir.display()
         );
     }
@@ -290,7 +290,7 @@ pub(super) async fn corpus(
         })
         .unwrap_or_default();
     over.iter()
-        .for_each(|line| eprintln!("docket-live: {line}"));
+        .for_each(|line| eprintln!("agent-live: {line}"));
     Ok(match (misses.is_empty(), over.is_empty()) {
         (true, true) => ExitCode::SUCCESS,
         _ => ExitCode::from(1),

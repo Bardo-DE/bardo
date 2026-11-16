@@ -15,7 +15,7 @@ use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, Uni
 use std::sync::Arc;
 
 fn cuad() -> CallerId {
-    caller("org.quire.Cuad", CallerRole::Cua)
+    caller("org.bardo.ComputerUse", CallerRole::Cua)
 }
 
 fn yes() -> ConfirmAnswer {

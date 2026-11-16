@@ -1,4 +1,4 @@
-//! inferd: the AI broker (design/31 §4.1, §5.5): serves `org.quire.Inference1` on the session
+//! inferd: the AI broker (design/31 §4.1, §5.5): serves `org.bardo.Inference1` on the session
 //! bus. It reads `inferd.toml` (engine programs, the `ai.*` settings rows, the caller table), the stoker
 //! catalog, and runs engines as child processes of its own (the systemd transient-unit host is
 //! not built). Nothing starts an engine until a session asks for its model. `SIGTERM` and `SIGINT`
@@ -18,7 +18,7 @@ use inference_daemon::{Config, Daemon};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-/// porter's AI broker (`org.quire.Inference1`).
+/// porter's AI broker (`org.bardo.Inference1`).
 #[derive(Debug, Parser)]
 #[command(name = "inferd", version)]
 struct Args {

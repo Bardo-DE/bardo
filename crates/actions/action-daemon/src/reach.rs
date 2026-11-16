@@ -1,4 +1,4 @@
-//! Live reach: which actions a provider says are on right now (`org.quire.IntentReach1`). The
+//! Live reach: which actions a provider says are on right now (`org.bardo.IntentReach1`). The
 //! installed manifest is the app's declaration; a provider whose actions follow a setting may
 //! switch its own actions between `hidden` and `offered`, nothing else. The answer is asked of
 //! the owner of the app's own bus name (the identity check `Perform` uses), kept per app, and
@@ -159,7 +159,7 @@ pub async fn follow<S: Seams>(
     };
     let Ok(rule) = MatchRule::builder()
         .msg_type(Type::Signal)
-        .interface("org.quire.IntentReach1")
+        .interface("org.bardo.IntentReach1")
         .and_then(|b| b.member("ReachChanged"))
         .map(|b| b.build())
     else {

@@ -1,6 +1,6 @@
 //! The XML files against the frozen interface: names, versions, every message with its
 //! arguments in opcode order, enum codes, cross-references, the vocab, the licence notice, and
-//! `quire-agent-v1.xml`'s bytes.
+//! `bardo-agent-v1.xml`'s bytes.
 
 use crate::support;
 
@@ -39,120 +39,120 @@ fn entries<T: WireCode + serde::Serialize>() -> Vec<(String, u32)> {
 /// Every non-error, non-bitfield XML enum and its vocab type: (interface, enum, entries).
 const VOCAB: &[(&str, &str, Entries)] = &[
     (
-        "quire_desktop_manager_v1",
+        "bardo_desktop_manager_v1",
         "actor_kind",
         entries::<ActorKind>,
     ),
-    ("quire_desktop_app_v1", "proof_kind", entries::<ProofKind>),
+    ("bardo_desktop_app_v1", "proof_kind", entries::<ProofKind>),
     (
-        "quire_desktop_app_v1",
+        "bardo_desktop_app_v1",
         "app_life_kind",
         entries::<AppLifeKind>,
     ),
     (
-        "quire_desktop_app_v1",
+        "bardo_desktop_app_v1",
         "app_visibility",
         entries::<AppVisibility>,
     ),
     (
-        "quire_desktop_app_v1",
+        "bardo_desktop_app_v1",
         "menu_source_kind",
         entries::<MenuSourceKind>,
     ),
-    ("quire_desktop_app_v1", "attention", entries::<Attention>),
-    ("quire_desktop_window_v1", "modality", entries::<Modality>),
+    ("bardo_desktop_app_v1", "attention", entries::<Attention>),
+    ("bardo_desktop_window_v1", "modality", entries::<Modality>),
     (
-        "quire_desktop_window_v1",
+        "bardo_desktop_window_v1",
         "window_state_kind",
         entries::<WindowStateKind>,
     ),
     (
-        "quire_desktop_window_v1",
+        "bardo_desktop_window_v1",
         "place_kind",
         entries::<PlaceKind>,
     ),
     (
-        "quire_desktop_window_v1",
+        "bardo_desktop_window_v1",
         "responsiveness",
         entries::<Responsiveness>,
     ),
     (
-        "quire_desktop_window_v1",
+        "bardo_desktop_window_v1",
         "lease_state",
         entries::<LeaseState>,
     ),
-    ("quire_desktop_window_v1", "toggle", entries::<Toggle>),
-    ("quire_desktop_window_v1", "assign", entries::<Assign>),
-    ("quire_desktop_space_v1", "space_kind", entries::<SpaceKind>),
+    ("bardo_desktop_window_v1", "toggle", entries::<Toggle>),
+    ("bardo_desktop_window_v1", "assign", entries::<Assign>),
+    ("bardo_desktop_space_v1", "space_kind", entries::<SpaceKind>),
     (
-        "quire_desktop_space_v1",
+        "bardo_desktop_space_v1",
         "space_activity",
         entries::<SpaceActivity>,
     ),
-    ("quire_shell_v1", "shell_role", entries::<ShellRole>),
-    ("quire_shell_v1", "key_gesture", entries::<KeyGesture>),
-    ("quire_shell_v1", "overview_mode", entries::<OverviewMode>),
-    ("quire_shell_v1", "overview_state", entries::<OverviewState>),
-    ("quire_shell_v1", "corner", entries::<Corner>),
-    ("quire_shell_v1", "screen_edge", entries::<ScreenEdge>),
-    ("quire_shell_v1", "shown", entries::<Shown>),
-    ("quire_shell_v1", "window_entry", entries::<WindowEntry>),
-    ("quire_shell_v1", "split_side", entries::<SplitSide>),
-    ("quire_shell_v1", "drag_outcome", entries::<DragOutcome>),
-    ("quire_shell_v1", "power", entries::<Power>),
-    ("quire_shell_v1", "subject_kind", entries::<SubjectKind>),
-    ("quire_shell_v1", "memory", entries::<Memory>),
-    ("quire_shell_v1", "answer", entries::<Answer>),
-    ("quire_shell_v1", "trial_answer", entries::<TrialAnswer>),
+    ("bardo_shell_v1", "shell_role", entries::<ShellRole>),
+    ("bardo_shell_v1", "key_gesture", entries::<KeyGesture>),
+    ("bardo_shell_v1", "overview_mode", entries::<OverviewMode>),
+    ("bardo_shell_v1", "overview_state", entries::<OverviewState>),
+    ("bardo_shell_v1", "corner", entries::<Corner>),
+    ("bardo_shell_v1", "screen_edge", entries::<ScreenEdge>),
+    ("bardo_shell_v1", "shown", entries::<Shown>),
+    ("bardo_shell_v1", "window_entry", entries::<WindowEntry>),
+    ("bardo_shell_v1", "split_side", entries::<SplitSide>),
+    ("bardo_shell_v1", "drag_outcome", entries::<DragOutcome>),
+    ("bardo_shell_v1", "power", entries::<Power>),
+    ("bardo_shell_v1", "subject_kind", entries::<SubjectKind>),
+    ("bardo_shell_v1", "memory", entries::<Memory>),
+    ("bardo_shell_v1", "answer", entries::<Answer>),
+    ("bardo_shell_v1", "trial_answer", entries::<TrialAnswer>),
     (
-        "quire_shell_v1",
+        "bardo_shell_v1",
         "full_screen_bar",
         entries::<FullScreenBar>,
     ),
-    ("quire_shell_v1", "motion", entries::<Motion>),
-    ("quire_window_v1", "window_role", entries::<WindowRole>),
-    ("quire_window_v1", "tile_zone", entries::<TileZone>),
-    ("quire_window_v1", "place_target", entries::<PlaceTarget>),
+    ("bardo_shell_v1", "motion", entries::<Motion>),
+    ("bardo_window_v1", "window_role", entries::<WindowRole>),
+    ("bardo_window_v1", "tile_zone", entries::<TileZone>),
+    ("bardo_window_v1", "place_target", entries::<PlaceTarget>),
     (
-        "quire_window_v1",
+        "bardo_window_v1",
         "placement_mark",
         entries::<PlacementMark>,
     ),
-    ("quire_window_v1", "emphasis", entries::<Emphasis>),
-    ("quire_window_v1", "frame_mode", entries::<FrameMode>),
-    ("quire_window_v1", "edited", entries::<Edited>),
+    ("bardo_window_v1", "emphasis", entries::<Emphasis>),
+    ("bardo_window_v1", "frame_mode", entries::<FrameMode>),
+    ("bardo_window_v1", "edited", entries::<Edited>),
     (
-        "quire_sensitive_surface_v1",
+        "bardo_sensitive_surface_v1",
         "sensitivity_level",
         entries::<SensitivityLevel>,
     ),
-    ("quire_agent_manager_v1", "lease_mode", entries::<RunMode>),
+    ("bardo_agent_manager_v1", "lease_mode", entries::<RunMode>),
     (
-        "quire_agent_lease_v1",
+        "bardo_agent_lease_v1",
         "revoke_reason",
         entries::<RevokeReason>,
     ),
-    ("quire_agent_lease_v1", "suspend_reason", entries::<Suspend>),
-    ("quire_agent_lease_v1", "glow_state", entries::<GlowCode>),
-    ("quire_agent_lease_v1", "mask_reason", entries::<MaskReason>),
+    ("bardo_agent_lease_v1", "suspend_reason", entries::<Suspend>),
+    ("bardo_agent_lease_v1", "glow_state", entries::<GlowCode>),
+    ("bardo_agent_lease_v1", "mask_reason", entries::<MaskReason>),
     (
-        "quire_trusted_manager_v1",
+        "bardo_trusted_manager_v1",
         "trusted_kind",
         entries::<TrustedKind>,
     ),
     (
-        "quire_trusted_manager_v1",
+        "bardo_trusted_manager_v1",
         "trusted_anchor",
         entries::<TrustedAnchor>,
     ),
     (
-        "quire_trusted_surface_v1",
+        "bardo_trusted_surface_v1",
         "withdrawn",
         entries::<Withdrawn>,
     ),
 ];
 
-/// `quire_shell_v1.mac_mods` (the XML name), by entry name.
+/// `bardo_shell_v1.mac_mods` (the XML name), by entry name.
 const HELD_MODS: &[(&str, HeldMods)] = &[
     ("none", HeldMods::NONE),
     ("shift", HeldMods::SHIFT),
@@ -221,8 +221,8 @@ fn every_interface_is_a_quire_v1_interface_at_its_version() {
         // Only the shell's global, the window manager and the desktop's manager and app (whose
         // objects take the manager's version) have grown past version 1.
         let version = match interface.name.as_str() {
-            "quire_shell_v1" => "7",
-            "quire_window_manager_v1" | "quire_desktop_manager_v1" | "quire_desktop_app_v1" => "2",
+            "bardo_shell_v1" => "7",
+            "bardo_window_manager_v1" | "bardo_desktop_manager_v1" | "bardo_desktop_app_v1" => "2",
             _ => "1",
         };
         assert_eq!(interface.version, version, "{}", interface.name);
@@ -232,7 +232,7 @@ fn every_interface_is_a_quire_v1_interface_at_its_version() {
 #[test]
 fn the_shells_newer_messages_are_appended_in_version_order_and_say_since() {
     let protocols = protocols();
-    let shell = interface(&protocols, "quire_shell_v1");
+    let shell = interface(&protocols, "bardo_shell_v1");
     let names = |list: &[Message]| -> Vec<String> { list.iter().map(|m| m.name.clone()).collect() };
     // (kind, messages, the names added by version 2, 3, 4, 5, 6 and 7), each in wire order.
     for (kind, messages, added) in [
@@ -294,7 +294,7 @@ fn the_shells_newer_messages_are_appended_in_version_order_and_say_since() {
 #[test]
 fn the_newer_enums_are_used_only_by_messages_of_the_version_that_added_them() {
     let protocols = protocols();
-    let shell = interface(&protocols, "quire_shell_v1");
+    let shell = interface(&protocols, "bardo_shell_v1");
     for (version, enums) in [
         ("5", &["power", "subject_kind", "memory", "answer"][..]),
         ("6", &["trial_answer"][..]),
@@ -324,7 +324,7 @@ fn the_newer_enums_are_used_only_by_messages_of_the_version_that_added_them() {
 #[test]
 fn the_desktop_apps_subject_event_comes_last_and_says_since_2() {
     let protocols = protocols();
-    let app = interface(&protocols, "quire_desktop_app_v1");
+    let app = interface(&protocols, "bardo_desktop_app_v1");
     let (old, newer) = app.events.split_at(app.events.len() - 1);
     assert!(
         old.iter().all(|m| m.since.is_none()),
@@ -340,14 +340,14 @@ fn the_desktop_apps_subject_event_comes_last_and_says_since_2() {
         "the requests are version 1"
     );
     // Objects take their parent's version, so the manager is at the app's version.
-    let manager = interface(&protocols, "quire_desktop_manager_v1");
+    let manager = interface(&protocols, "bardo_desktop_manager_v1");
     assert_eq!(manager.version, app.version);
 }
 
 #[test]
 fn the_window_managers_quit_event_comes_last_and_says_since_2() {
     let protocols = protocols();
-    let manager = interface(&protocols, "quire_window_manager_v1");
+    let manager = interface(&protocols, "bardo_window_manager_v1");
     let names: Vec<&str> = manager.events.iter().map(|m| m.name.as_str()).collect();
     assert_eq!(names, ["quit"]);
     assert!(
@@ -491,12 +491,12 @@ fn every_xml_enum_has_a_vocab_type() {
 #[test]
 fn held_mods_bits_are_the_vocab_constants() {
     let protocols = protocols();
-    let shell = interface(&protocols, "quire_shell_v1");
+    let shell = interface(&protocols, "bardo_shell_v1");
     let mods = shell
         .enums
         .iter()
         .find(|e| e.name == "mac_mods")
-        .expect("quire_shell_v1.mac_mods");
+        .expect("bardo_shell_v1.mac_mods");
     assert_eq!(mods.bitfield.as_deref(), Some("true"));
     let got: Vec<(&str, u32)> = mods
         .entries
@@ -600,7 +600,7 @@ fn every_protocol_is_served_or_says_it_is_not_served_yet() {
 
 #[test]
 fn masking_applies_to_every_capture_trusted_ones_included() {
-    let text = std::fs::read_to_string(support::protocols_dir().join("quire-sensitive-v1.xml"))
+    let text = std::fs::read_to_string(support::protocols_dir().join("bardo-sensitive-v1.xml"))
         .expect("the XML");
     let flat = text.split_whitespace().collect::<Vec<_>>().join(" ");
     assert!(
@@ -614,23 +614,23 @@ fn masking_applies_to_every_capture_trusted_ones_included() {
 fn generated_interfaces_carry_the_xml_names_and_versions() {
     use desktop_protocols::{client, server};
     let generated = [
-        &client::quire_desktop_v1::__interfaces::QUIRE_DESKTOP_MANAGER_V1_INTERFACE,
-        &client::quire_desktop_v1::__interfaces::QUIRE_DESKTOP_APP_V1_INTERFACE,
-        &client::quire_desktop_v1::__interfaces::QUIRE_DESKTOP_WINDOW_V1_INTERFACE,
-        &client::quire_desktop_v1::__interfaces::QUIRE_DESKTOP_SPACE_V1_INTERFACE,
-        &client::quire_shell_v1::__interfaces::QUIRE_SHELL_V1_INTERFACE,
-        &client::quire_window_v1::__interfaces::QUIRE_WINDOW_MANAGER_V1_INTERFACE,
-        &client::quire_window_v1::__interfaces::QUIRE_WINDOW_V1_INTERFACE,
-        &client::quire_sensitive_v1::__interfaces::QUIRE_SENSITIVE_MANAGER_V1_INTERFACE,
-        &client::quire_sensitive_v1::__interfaces::QUIRE_SENSITIVE_SURFACE_V1_INTERFACE,
-        &client::quire_agent_v1::__interfaces::QUIRE_AGENT_MANAGER_V1_INTERFACE,
-        &client::quire_agent_v1::__interfaces::QUIRE_AGENT_LEASE_V1_INTERFACE,
-        &client::quire_trusted_surface_v1::__interfaces::QUIRE_TRUSTED_MANAGER_V1_INTERFACE,
-        &client::quire_trusted_surface_v1::__interfaces::QUIRE_TRUSTED_SURFACE_V1_INTERFACE,
-        &server::quire_desktop_v1::__interfaces::QUIRE_DESKTOP_WINDOW_V1_INTERFACE,
-        &server::quire_shell_v1::__interfaces::QUIRE_SHELL_V1_INTERFACE,
-        &server::quire_window_v1::__interfaces::QUIRE_WINDOW_V1_INTERFACE,
-        &server::quire_trusted_surface_v1::__interfaces::QUIRE_TRUSTED_SURFACE_V1_INTERFACE,
+        &client::bardo_desktop_v1::__interfaces::BARDO_DESKTOP_MANAGER_V1_INTERFACE,
+        &client::bardo_desktop_v1::__interfaces::BARDO_DESKTOP_APP_V1_INTERFACE,
+        &client::bardo_desktop_v1::__interfaces::BARDO_DESKTOP_WINDOW_V1_INTERFACE,
+        &client::bardo_desktop_v1::__interfaces::BARDO_DESKTOP_SPACE_V1_INTERFACE,
+        &client::bardo_shell_v1::__interfaces::BARDO_SHELL_V1_INTERFACE,
+        &client::bardo_window_v1::__interfaces::BARDO_WINDOW_MANAGER_V1_INTERFACE,
+        &client::bardo_window_v1::__interfaces::BARDO_WINDOW_V1_INTERFACE,
+        &client::bardo_sensitive_v1::__interfaces::BARDO_SENSITIVE_MANAGER_V1_INTERFACE,
+        &client::bardo_sensitive_v1::__interfaces::BARDO_SENSITIVE_SURFACE_V1_INTERFACE,
+        &client::bardo_agent_v1::__interfaces::BARDO_AGENT_MANAGER_V1_INTERFACE,
+        &client::bardo_agent_v1::__interfaces::BARDO_AGENT_LEASE_V1_INTERFACE,
+        &client::bardo_trusted_surface_v1::__interfaces::BARDO_TRUSTED_MANAGER_V1_INTERFACE,
+        &client::bardo_trusted_surface_v1::__interfaces::BARDO_TRUSTED_SURFACE_V1_INTERFACE,
+        &server::bardo_desktop_v1::__interfaces::BARDO_DESKTOP_WINDOW_V1_INTERFACE,
+        &server::bardo_shell_v1::__interfaces::BARDO_SHELL_V1_INTERFACE,
+        &server::bardo_window_v1::__interfaces::BARDO_WINDOW_V1_INTERFACE,
+        &server::bardo_trusted_surface_v1::__interfaces::BARDO_TRUSTED_SURFACE_V1_INTERFACE,
     ];
     let protocols = protocols();
     for generated in generated {

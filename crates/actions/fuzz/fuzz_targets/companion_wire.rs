@@ -1,4 +1,4 @@
-//! The bodies of org.quire.Companion1 from arbitrary text: what reads, reads back the same.
+//! The bodies of org.bardo.Companion1 from arbitrary text: what reads, reads back the same.
 #![no_main]
 
 use companion_wire::{AnswerWire, AskWire};

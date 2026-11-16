@@ -106,9 +106,9 @@ pub enum ToDaemon {
     /// gesture does nothing on a locked session. The session counts as locked while any connection
     /// says so; a connection that closes stops saying it.
     SessionLock { locked: bool },
-    /// The person's own gesture settings (the text of `~/.config/palmrest/gestures.toml`, at most
+    /// The person's own gesture settings (the text of `~/.config/mouse-gestures/gestures.toml`, at most
     /// [`crate::USER_CONFIG_MAX_BYTES`]), sent by the shell after connecting and when the file
-    /// changes. The daemon layers it over `/etc/palmrest/gestures.toml`; empty text takes the
+    /// changes. The daemon layers it over `/etc/bardo/mouse-gestures/gestures.toml`; empty text takes the
     /// person's layer away. Believed from the shell only.
     UserConfig { toml: String },
 }

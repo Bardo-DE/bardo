@@ -12,7 +12,7 @@ use memory_tidy::{RemovalLedger, Removals};
 
 type TestDaemon = Daemon<TestBackend, TablePeers>;
 
-const FILES: &str = "org.quire.Files";
+const FILES: &str = "org.bardo.Files";
 
 fn files_home() -> SpaceId {
     SpaceId::app(&AppName::parse(FILES).expect("app"), LocalSpace(0))
@@ -179,7 +179,7 @@ async fn a_removal_the_registry_announces_moves_the_memories() {
 
 fn mail_home() -> SpaceId {
     SpaceId::app(
-        &AppName::parse("org.quire.Mail").expect("app"),
+        &AppName::parse("org.bardo.Mail").expect("app"),
         LocalSpace(0),
     )
 }

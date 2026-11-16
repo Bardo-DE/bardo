@@ -1,11 +1,11 @@
-//! Whether the well-known name `org.quire.Acp` is anybody. `dist/intentd.toml` lists it as an editor
+//! Whether the well-known name `org.bardo.Acp` is anybody. `dist/actiond.toml` lists it as an editor
 //! and a companion, but the process that owns it exists only while `agent.acp.expose` is `on`.
 //! While the setting is off the name is usually unowned, so any process of the person could take it
 //! and play both roles. The gate closes that: [`Peers`](crate::Peers) drops the name from a
 //! connection's facts unless the setting is on, read at each call, so a flip of the setting
 //! changes the next call and nothing is cached.
 //!
-//! The same for `org.quire.AcpAgent`, the host of an external coding agent (`acp_agent`): it is
+//! The same for `org.bardo.AcpAgent`, the host of an external coding agent (`acp_agent`): it is
 //! anybody only while `agent.acp.agents` is `on`.
 //!
 //! This only narrows the exposure while the feature is off. Identity stays advisory for processes
@@ -16,7 +16,7 @@ use std::sync::Arc;
 use tokio::sync::watch;
 
 /// The bus name the ACP process owns.
-pub const ACP_NAME: &str = "org.quire.Acp";
+pub const ACP_NAME: &str = "org.bardo.Acp";
 
 /// The settings as last read, shared by the settings watch (which sets them) and the peers (which
 /// read them).
@@ -86,7 +86,7 @@ mod tests {
         let host = name(permission_core::ACP_AGENT_APP);
         assert!(!gate.keeps(&name(ACP_NAME)));
         assert!(!gate.keeps(&host));
-        assert!(gate.keeps(&name("org.quire.Shell")));
+        assert!(gate.keeps(&name("org.bardo.Shell")));
         gate.set(true);
         assert!(gate.keeps(&name(ACP_NAME)));
         assert!(!gate.keeps(&host), "the editor setting is not the agents'");

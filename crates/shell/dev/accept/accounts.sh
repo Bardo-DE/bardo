@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # The accounts sheet's acceptance, on a private headless compositor (casement under
 # dev/accept.sh --compositor casement, else KWin, started and stopped by the script), against a
-# stand-in accountd: examples/accountd_standin.rs owns `org.quire.Accounts1` on the private bus,
-# drives sill's `org.quire.AccountsSheet1` (Open, Update, Close) with SheetView JSON from this
+# stand-in accountd: examples/accountd_standin.rs owns `org.bardo.Accounts1` on the private bus,
+# drives sill's `org.bardo.AccountsSheet1` (Open, Update, Close) with SheetView JSON from this
 # directory's heredocs, and prints each `Input` the sheet sends back. Keys are `sill debug key
 # SURFACE KEY` (layer-shell-host's Inject::Key, which enters the sheet where an xkb key does).
 #
 # Nothing here reaches the person's accountd, session bus, secret store or ~/.config: the private
 # bus is the daemon's session AND system bus, HOME and the XDG directories are scratch.
 #
-#   1. The sheet's surface exists, hidden, and a stand-in that does not own org.quire.Accounts1
+#   1. The sheet's surface exists, hidden, and a stand-in that does not own org.bardo.Accounts1
 #      cannot open one (refused, still hidden).
 #   2. The provider list opens as a centred window (capture, dev/out/accounts-providers.png);
 #      Escape sends {"kind":"dismiss"}.
@@ -25,10 +25,10 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-accounts"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-accounts"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
-STANDIN_BIN="$SILL_OUT/examples/accountd_standin"
+STANDIN_BIN="$BARDO_SHELL_OUT/examples/accountd_standin"
 SECRET=sill-fake
 
 scratch_new
@@ -61,7 +61,7 @@ JSON
 {"kind":"show_code","v":{"provider":"microsoft","user_code":"ABCD-EFGH","url":"https://example.org/device"}}
 JSON
   cat >"$dir/consent.json" <<'JSON'
-{"kind":"consent","v":{"app":{"name":"org.quire.Photos","isolation":"flatpak"},
+{"kind":"consent","v":{"app":{"name":"org.bardo.Photos","isolation":"flatpak"},
  "kind":"storage","class":"app_own","usage":"interactive","accounts":[
  {"account":"home","label":"ada@home.example","provider":"nextcloud"},
  {"account":"work","label":"ada@work.example","provider":"microsoft"}]}}
@@ -254,9 +254,9 @@ start_compositor --default kwin || { echo "the headless KWin did not start (see 
 echo "headless KWin at $WL, private bus $BUS" >&2
 write_views
 backdrop_seed "$CONFIG" || exit 1
-: >"$CONFIG/sill/settings.toml"
+: >"$CONFIG/shell/settings.toml"
 # The stand-in is the accounts service for this daemon only (a debug build's `--dev-callers`).
-dev_caller org.quire.Accounts accounts "$STANDIN_BIN" || exit 1
+dev_caller org.bardo.Accounts accounts "$STANDIN_BIN" || exit 1
 start_standin || exit 1
 launch_daemon || exit 1
 NAME=$(output_name) || exit 1

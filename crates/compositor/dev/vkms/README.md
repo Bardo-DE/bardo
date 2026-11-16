@@ -71,9 +71,9 @@ dev/bootstrap.sh          # outside the jail: builds casement and writeback-comp
 dev/vkms/accept.sh        # a terminal; type "vkms only"; takes a little over 10 minutes
 ```
 
-Needs `jq` and `wlopm` (Fedora `sudo dnf install jq wlopm`; Debian or Ubuntu `sudo apt install jq wlopm`; Arch `sudo pacman -S jq wlopm`). `CASEMENT_VKMS_IDLE_SECONDS=30` shortens
+Needs `jq` and `wlopm` (Fedora `sudo dnf install jq wlopm`; Debian or Ubuntu `sudo apt install jq wlopm`; Arch `sudo pacman -S jq wlopm`). `BARDO_COMPOSITOR_VKMS_IDLE_SECONDS=30` shortens
 the idle step for a try-out; such a run ends with exit 5 (`VKMS PARTIAL`) even if every step
-passed. `CASEMENT_VKMS_DEVICE` names the configfs device if you did not call it `casement`.
+passed. `BARDO_COMPOSITOR_VKMS_DEVICE` names the configfs device if you did not call it `casement`.
 
 Exit codes: 0 all passed, 1 a step failed (scratch dir kept), 2 refused, 3 vkms or a tool is
 absent (a gate script prints `SKIP-VKMS` for this one), 4 the casement binary has no vkms
@@ -108,4 +108,4 @@ for (exit 4 when missing). The full contract is at the top of `accept.sh`.
 - SIGUSR1 is the session paused and SIGUSR2 the session activated: the VT switch, simulated.
 
 The three flags need `--backend tty`, and the last two need `--drm-node`. The writeback golden has
-to be blessed once with `CASEMENT_BLESS=1` (the scene test `empty-desktop-1024x768`).
+to be blessed once with `BARDO_COMPOSITOR_BLESS=1` (the scene test `empty-desktop-1024x768`).

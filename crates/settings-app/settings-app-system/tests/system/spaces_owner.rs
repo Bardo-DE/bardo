@@ -14,7 +14,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
-const ACCOUNTS: &str = "org.quire.Accounts1";
+const ACCOUNTS: &str = "org.bardo.Accounts1";
 
 /// The registry that lists Trip, a second registry that lists Imposter and takes accountd's name
 /// from the first once `armed` is set and the link has asked who owns it.

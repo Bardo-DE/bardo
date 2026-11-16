@@ -1,4 +1,4 @@
-//! What `quire_window_v1` requests mean, as pure functions: the double-buffered values, the
+//! What `bardo_window_v1` requests mean, as pure functions: the double-buffered values, the
 //! role the client may ask for, the accessibility root, the first-mouse regions, what a
 //! placement request does at each phase, and what destroying the object forgets.
 
@@ -94,7 +94,7 @@ pub fn frame_of(mode: FrameMode, corner_radius: u32) -> FrameHint {
 pub struct BadRole;
 
 /// The role `set_role` may set: `document`, `utility` and `pip`; `dialog` and `shell` are known
-/// from other protocols (xdg-dialog, quire_shell_v1) and a client cannot ask for them.
+/// from other protocols (xdg-dialog, bardo_shell_v1) and a client cannot ask for them.
 pub fn role_request(role: WindowRole) -> Result<WindowRole, BadRole> {
     match role {
         WindowRole::Document | WindowRole::Utility | WindowRole::Pip => Ok(role),

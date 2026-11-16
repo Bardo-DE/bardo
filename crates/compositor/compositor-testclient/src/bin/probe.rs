@@ -1,10 +1,10 @@
-//! `casement-probe`: one-shot probes against `$WAYLAND_DISPLAY` for dev scripts, JSON lines on
+//! `compositor-probe`: one-shot probes against `$WAYLAND_DISPLAY` for dev scripts, JSON lines on
 //! stdout: `globals`, `toplevel`, `layer`, `transcript`, `workspaces`; `capture` (P1) and `lease` (P5) say
 //! they are not there yet; an unknown flag is a usage error. Runs only inside the jail: it refuses (exit 2, "could not run
 //! safely") when a live session's sockets or `/dev/input` are visible.
 //!
 //! `session` also takes the shell verbs (`shell-connect`, `shell-role`, `minimise-target`, `minimise-clear`; see
-//! `probe/command.rs`), which need `CASEMENT_DEBUG_PEER_UNITS="casement-probe=sill.service"` in casement's environment.
+//! `probe/command.rs`), which need `BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service"` in casement's environment.
 //!
 //! Exit codes: 0 passed, 1 the probe failed, 2 refused or unavailable, 64 usage.
 
@@ -78,7 +78,7 @@ fn usage(command: Option<&str>, rest: &[String]) -> Result<(), Failure> {
 /// The usage line, and the usage exit code.
 fn usage_exit() -> ExitCode {
     eprintln!(
-        "usage: casement-probe globals | transcript | workspaces | session [shell verbs: see probe/command.rs] | toplevel [--title T] [--app-id A] [--size WxH] [--hold] [--maximised] | layer [--layer L] [--namespace N] [--size WxH] [--hold] | capture | lease"
+        "usage: compositor-probe globals | transcript | workspaces | session [shell verbs: see probe/command.rs] | toplevel [--title T] [--app-id A] [--size WxH] [--hold] [--maximised] | layer [--layer L] [--namespace N] [--size WxH] [--hold] | capture | lease"
     );
     ExitCode::from(64)
 }

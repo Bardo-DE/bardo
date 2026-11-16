@@ -1,6 +1,6 @@
 [package]
 name = "memory-daemon"
-description = "almanac's memory daemon: serves org.quire.Memory1 over memory-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
+description = "almanac's memory daemon: serves org.bardo.Memory1 over memory-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -9,11 +9,11 @@ repository = "https://github.com/Bardo-DE/almanac"
 publish = false
 
 [features]
-# `MEMORYD_KEYS=file:<path>` selects a file-backed key store (`almanac_keyfile::FileKeys`), for a
+# `BARDO_MEMORYD_KEYS=file:<path>` selects a file-backed key store (`almanac_keyfile::FileKeys`), for a
 # jailed acceptance run with no Secret Service. TEST ONLY: off by default, never in a release or
 # dist build; without it the variable is ignored.
 test-keys = ["dep:memory-keyfile"]
-# `MEMORYD_PROC_ROOT=<dir>` makes the daemon read `<dir>/<pid>/cgroup` for its callers instead of
+# `BARDO_MEMORYD_PROC_ROOT=<dir>` makes the daemon read `<dir>/<pid>/cgroup` for its callers instead of
 # `/proc/<pid>/cgroup`, so an acceptance run can present its test processes as units. TEST ONLY:
 # off by default, never in a release or dist build (check-boundary.sh fails if a default build
 # has it); without it the variable is ignored.

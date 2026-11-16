@@ -17,11 +17,11 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" \
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
   "$SCEN_BUILD/sill-target/debug/sill"
 
-export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
+export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 floor_shim sill-boots-on-casement sill   # sill takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
@@ -76,7 +76,7 @@ step_quit() {
   stop_daemon || return 1
   if grep -q panicked "$OUT_DIR/daemon.log"; then echo "the daemon panicked:" >&2; grep panicked "$OUT_DIR/daemon.log" >&2; return 1; fi
   local pid
-  pid=$(sed -n 's/^\(export \)\{0,1\}CASEMENT_PID=//p' "$CASEMENT_ENV")
+  pid=$(sed -n 's/^\(export \)\{0,1\}BARDO_COMPOSITOR_PID=//p' "$BARDO_COMPOSITOR_ENV")
   kill -0 "$pid" 2>/dev/null || { echo "casement ($pid) is gone" >&2; return 1; }
 }
 
@@ -84,6 +84,6 @@ run_steps step_boot step_surfaces step_capture step_quit
 if [ "$STATUS" != 0 ]; then
   echo "--- daemon.log (tail)" >&2; tail -20 "$OUT_DIR/daemon.log" >&2
   echo "--- casement-up.log (tail)" >&2; tail -20 "$OUT_DIR/casement-up.log" >&2
-  [ -z "${CASEMENT_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$CASEMENT_ENV")/casement.log" >&2; }
+  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" >&2; }
 fi
 exit "$STATUS"

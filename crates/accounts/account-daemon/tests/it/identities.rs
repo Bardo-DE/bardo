@@ -1,4 +1,4 @@
-//! `org.quire.Identities1` (lane split-identities): the identities signed in on this machine.
+//! `org.bardo.Identities1` (lane split-identities): the identities signed in on this machine.
 //! Who may call what, "Continue as" through the sheet host (and no grant from it), the one way a
 //! password leaves (a descriptor, only for the pick, once, audited), the apps-using list, and
 //! `IdentityRemoved`.
@@ -70,7 +70,7 @@ fn mail_identity() -> Identity {
 }
 
 fn settings_caller() -> account_callers::Caller {
-    caller("org.quire.Settings", CallerRole::Settings)
+    caller("org.bardo.Settings", CallerRole::Settings)
 }
 
 /// The identities `List` gives, read back into values.
@@ -87,7 +87,7 @@ async fn listed(proxy: &IdentitiesProxy<'_>) -> Vec<Identity> {
 #[tokio::test(flavor = "multi_thread")]
 async fn list_gives_the_sign_in_accounts_and_leaves_out_the_rest_and_every_secret() {
     let rig = Rig::start().await;
-    let app = identities(&rig.client("org.quire.Photos").await).await;
+    let app = identities(&rig.client("org.bardo.Photos").await).await;
     // The password account and the OAuth account, in the registry's order; the local runtime
     // (`fake-llm`) is an account but not an identity.
     assert_eq!(listed(&app).await, [storage_identity(), mail_identity()]);
@@ -167,7 +167,7 @@ fn storage_identity_account() -> AccountId {
 #[tokio::test(flavor = "multi_thread")]
 async fn offer_shows_the_picker_answers_the_pick_and_grants_nothing() {
     let rig = Rig::start_with(Default::default(), picking(storage_identity_account())).await;
-    let app = identities(&rig.client("org.quire.Photos").await).await;
+    let app = identities(&rig.client("org.bardo.Photos").await).await;
     let (id, address, provider) = app.offer("", "").await.expect("offer");
     assert_eq!(
         (id.as_str(), address.as_str(), provider.as_str()),
@@ -201,7 +201,7 @@ async fn offer_shows_the_picker_answers_the_pick_and_grants_nothing() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hint_lists_only_that_providers_identities() {
     let rig = Rig::start_with(Default::default(), picking(account_fake::mail_account().id)).await;
-    let app = identities(&rig.client("org.quire.Photos").await).await;
+    let app = identities(&rig.client("org.bardo.Photos").await).await;
     let (id, ..) = app.offer("fake-mail", "").await.expect("offer");
     assert_eq!(id, "fake-mail");
     let calls = rig.host_log.calls();
@@ -227,7 +227,7 @@ async fn an_offer_the_person_does_not_answer_with_a_pick_is_dismissed() {
     ];
     for input in inputs {
         let rig = Rig::start_with(Default::default(), SheetHost::answering(input.clone())).await;
-        let app = identities(&rig.client("org.quire.Photos").await).await;
+        let app = identities(&rig.client("org.bardo.Photos").await).await;
         let refused = app.offer("", "").await.expect_err("no pick");
         assert_eq!(error_name(&refused), dismissed, "{input:?}");
         // No pick, so no password.
@@ -239,7 +239,7 @@ async fn an_offer_the_person_does_not_answer_with_a_pick_is_dismissed() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hint_that_fits_no_identity_or_is_no_provider_shows_nothing() {
     let rig = Rig::start().await;
-    let app = identities(&rig.client("org.quire.Photos").await).await;
+    let app = identities(&rig.client("org.bardo.Photos").await).await;
     let none = app
         .offer("no-such-provider", "")
         .await
@@ -263,10 +263,10 @@ async fn a_hint_that_fits_no_identity_or_is_no_provider_shows_nothing() {
 async fn the_password_goes_on_a_descriptor_to_the_app_the_person_picked_it_for_once() {
     let rig = Rig::start_with(Default::default(), picking(storage_identity_account())).await;
     let mut tap = Tap::start(&rig.bus).await;
-    let client = rig.client("org.quire.Photos").await;
+    let client = rig.client("org.bardo.Photos").await;
     let app = identities(&client).await;
     // Nobody has picked yet: refused, from this connection and from another of the same app.
-    let other = identities(&rig.client("org.quire.Photos").await).await;
+    let other = identities(&rig.client("org.bardo.Photos").await).await;
     for proxy in [&app, &other] {
         let early = proxy
             .take_password("fake-storage")
@@ -317,7 +317,7 @@ async fn the_password_goes_on_a_descriptor_to_the_app_the_person_picked_it_for_o
 async fn an_identity_that_signs_in_with_oauth_has_no_password_to_hand_over() {
     let rig = Rig::start_with(Default::default(), picking(account_fake::mail_account().id)).await;
     let mut tap = Tap::start(&rig.bus).await;
-    let app = identities(&rig.client("org.quire.Mail").await).await;
+    let app = identities(&rig.client("org.bardo.Mail").await).await;
     let (id, ..) = app.offer("", "").await.expect("offer");
     assert_eq!(id, "fake-mail");
     // Picked, and still nothing goes: there is no password, and the refresh token never leaves.
@@ -342,7 +342,7 @@ async fn an_identity_that_signs_in_with_oauth_has_no_password_to_hand_over() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_has_one_picker_open_at_a_time_and_leaving_takes_it_down() {
     let rig = Rig::start().await;
-    let first = rig.client("org.quire.Photos").await;
+    let first = rig.client("org.bardo.Photos").await;
     let waiting = {
         let proxy = identities(&first).await;
         tokio::spawn(async move { proxy.offer("", "").await })
@@ -352,7 +352,7 @@ async fn an_app_has_one_picker_open_at_a_time_and_leaving_takes_it_down() {
     })
     .await;
     // The same app, from another connection, cannot stack a second sheet on the person.
-    let second = identities(&rig.client("org.quire.Photos").await).await;
+    let second = identities(&rig.client("org.bardo.Photos").await).await;
     let busy = second.offer("", "").await.expect_err("one at a time");
     assert_eq!(error_name(&busy), LIMITS_EXCEEDED);
     // The asker leaves: the sheet is taken down, and nobody is left waiting for an answer.
@@ -368,8 +368,8 @@ async fn an_app_has_one_picker_open_at_a_time_and_leaving_takes_it_down() {
 async fn apps_that_signed_in_are_listed_for_settings_and_go_with_the_identity() {
     let scratch = Scratch::new("it-identities");
     let rig = Rig::start_with(options(&scratch), SheetHost::quiet()).await;
-    let photos = identities(&rig.client("org.quire.Photos").await).await;
-    let mail = identities(&rig.client("org.quire.Mail").await).await;
+    let photos = identities(&rig.client("org.bardo.Photos").await).await;
+    let mail = identities(&rig.client("org.bardo.Mail").await).await;
     photos.register_use("fake-storage").await.expect("register");
     photos
         .register_use("fake-storage")
@@ -383,11 +383,11 @@ async fn apps_that_signed_in_are_listed_for_settings_and_go_with_the_identity() 
     let settings = identities(&rig.client_as(settings_caller()).await).await;
     assert_eq!(
         settings.uses("fake-storage").await.expect("uses"),
-        ["org.quire.Mail", "org.quire.Photos"]
+        ["org.bardo.Mail", "org.bardo.Photos"]
     );
     assert_eq!(
         settings.uses("fake-mail").await.expect("uses"),
-        ["org.quire.Mail"]
+        ["org.bardo.Mail"]
     );
     let denied = photos.uses("fake-storage").await.expect_err("an app");
     assert_eq!(error_name(&denied), ACCESS_DENIED);
@@ -397,14 +397,14 @@ async fn apps_that_signed_in_are_listed_for_settings_and_go_with_the_identity() 
     // Kept beside registry.json, and across a start.
     let saved = std::fs::read_to_string(file(&scratch)).expect("the uses file");
     assert!(
-        saved.contains("org.quire.Photos") && saved.contains("fake-mail"),
+        saved.contains("org.bardo.Photos") && saved.contains("fake-mail"),
         "{saved}"
     );
     let again = Rig::start_with(options(&scratch), SheetHost::quiet()).await;
     let settings_again = identities(&again.client_as(settings_caller()).await).await;
     assert_eq!(
         settings_again.uses("fake-storage").await.expect("uses"),
-        ["org.quire.Mail", "org.quire.Photos"]
+        ["org.bardo.Mail", "org.bardo.Photos"]
     );
 
     // Settings removes the identity: every app that has called is told, once, and its list goes.

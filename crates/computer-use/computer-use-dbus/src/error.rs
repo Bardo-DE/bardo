@@ -1,10 +1,10 @@
-//! `org.quire.Cua1.Error.<Variant>`: a control call refused. Mapped 1:1 from `ControlRefusal`.
+//! `org.bardo.ComputerUse1.Error.<Variant>`: a control call refused. Mapped 1:1 from `ControlRefusal`.
 
 use computer_use_bus::ControlRefusal;
 
 /// The errors the control interfaces return.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Cua1.Error")]
+#[zbus(prefix = "org.bardo.ComputerUse1.Error")]
 pub enum CuaError {
     /// zbus's own failures.
     #[zbus(error)]
@@ -76,7 +76,7 @@ mod tests {
             assert_eq!(error.refusal(), Some(refusal));
             assert_eq!(
                 error.name().as_str(),
-                format!("org.quire.Cua1.Error.{refusal:?}"),
+                format!("org.bardo.ComputerUse1.Error.{refusal:?}"),
                 "{refusal:?}"
             );
         }

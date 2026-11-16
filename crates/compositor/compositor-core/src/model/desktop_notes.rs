@@ -1,4 +1,4 @@
-//! What changed on the desktop in one step, for `quire_desktop_v1` clients (P2-Q1): one
+//! What changed on the desktop in one step, for `bardo_desktop_v1` clients (P2-Q1): one
 //! snapshot before the step and one comparison after it ask for a `DesktopNote` for every app,
 //! window and Space that appeared or changed, for a change of the active app or key window, and
 //! for every object that went. No transition has to remember to say so.
@@ -17,7 +17,7 @@ use desktop_protocols::vocab::{
 };
 use std::collections::BTreeMap;
 
-/// What an app shows `quire_desktop_v1` clients.
+/// What an app shows `bardo_desktop_v1` clients.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct AppDesk {
     life: AppLifeKind,
@@ -27,7 +27,7 @@ struct AppDesk {
     menu: MenuSource,
 }
 
-/// What a window shows `quire_desktop_v1` clients. The whole state is kept, not only its kind:
+/// What a window shows `bardo_desktop_v1` clients. The whole state is kept, not only its kind:
 /// a window that moves is a change.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct WindowDesk {

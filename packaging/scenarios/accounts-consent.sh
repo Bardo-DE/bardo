@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Scenario `accounts-consent` (design 31 §7.1 item on consent): an app asks to use the person's AI key, sill draws the
 # consent sheet (captured), and each answer gives the right permit, or none; a second request after Always asks nothing.
-# Since porter's step 5c the question is accountd's (org.quire.Accounts1.Keys.RequestKey, the rig's `ai-keys request`):
+# Since porter's step 5c the question is accountd's (org.bardo.Accounts1.Keys.RequestKey, the rig's `ai-keys request`):
 # accountd keeps the AI keys and their permits, and inferd asks it for the key behind a permit. Real accountd, inferd,
 # sill on casement, the rig's LLM API fake and Secret Service. Each case is its own app id
-# (porter-rig-client --app-id), so one answer cannot stand in for another. The permits are read from accountd's settings
+# (account-rig-client --app-id), so one answer cannot stand in for another. The permits are read from accountd's settings
 # module (`accounts.<id>.grant.<grant>` and its `.scope` row), as Settings reads them.
 #
 #   boot      casement, recorded bus, the rig, accountd, inferd (cloud models allowed for the class asked), sill; an OpenAI
@@ -69,7 +69,7 @@ TOML
 }
 
 step_always() {
-  local app=org.quire.Always out
+  local app=org.bardo.Always out
   ask $app always1
   sheet_await || return 1; sleep 1; sheet_shot 1-consent
   sheet_key Tab; sheet_key Enter
@@ -85,7 +85,7 @@ step_always() {
 }
 
 step_once() {
-  local app=org.quire.Once out
+  local app=org.bardo.Once out
   ask $app once1
   sheet_await || return 1; sleep 1
   sheet_key Enter                                  # Allow Once is first
@@ -112,7 +112,7 @@ step_once() {
 }
 
 step_deny() {
-  local app=org.quire.Never out
+  local app=org.bardo.Never out
   ask $app deny1
   sheet_await || return 1; sleep 1
   sheet_key Tab; sheet_key Tab; sheet_key Enter    # Don't Allow is third
@@ -128,7 +128,7 @@ step_deny() {
 }
 
 step_escape() {
-  local app=org.quire.Esc out
+  local app=org.bardo.Esc out
   ask $app esc1
   sheet_await || return 1; sleep 1
   sheet_key Escape

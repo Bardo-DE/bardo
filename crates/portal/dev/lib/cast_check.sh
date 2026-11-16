@@ -1,18 +1,18 @@
 # Sourceable helpers for the screencast and chooser checks. Callers have already run
-# require_jail and sourced chain.sh. The compositor session comes from $TRANSOM_COMPOSITOR_ENV
-# (an env file as dev/up.sh --env takes); a window check also needs $TRANSOM_TEST_WINDOW, the
+# require_jail and sourced chain.sh. The compositor session comes from $BARDO_PORTAL_COMPOSITOR_ENV
+# (an env file as dev/up.sh --env takes); a window check also needs $BARDO_PORTAL_TEST_WINDOW, the
 # identifier of a window open in that session. Unset: the check exits 2 (not runnable).
 
 step() { echo "$1 $2"; }
 
 need_compositor() {
-  if [ -z "${TRANSOM_COMPOSITOR_ENV:-}" ] || [ ! -f "$TRANSOM_COMPOSITOR_ENV" ]; then
-    echo "SKIP $1: set TRANSOM_COMPOSITOR_ENV to a headless compositor's env file"
+  if [ -z "${BARDO_PORTAL_COMPOSITOR_ENV:-}" ] || [ ! -f "$BARDO_PORTAL_COMPOSITOR_ENV" ]; then
+    echo "SKIP $1: set BARDO_PORTAL_COMPOSITOR_ENV to a headless compositor's env file"
     exit 2
   fi
 }
 
-# start_fake_shell ANSWER...: own org.quire.Shell in the background; sets SHELL_PID and SHELL_LOG.
+# start_fake_shell ANSWER...: own org.bardo.Shell in the background; sets SHELL_PID and SHELL_LOG.
 start_fake_shell() {
   SHELL_LOG=$(transom_state_dir)/fake-shell.log
   : > "$SHELL_LOG"
@@ -20,7 +20,7 @@ start_fake_shell() {
   SHELL_PID=$!
   local tenths=0
   until gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
-      --method org.freedesktop.DBus.NameHasOwner org.quire.Shell 2>/dev/null | grep -q true; do
+      --method org.freedesktop.DBus.NameHasOwner org.bardo.Shell 2>/dev/null | grep -q true; do
     tenths=$((tenths + 1))
     [ "$tenths" -gt 50 ] && { echo "FAIL: the fake shell did not come up"; return 1; }
     sleep 0.1

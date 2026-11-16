@@ -10,7 +10,7 @@ use ui_settings::{Environment, UserStyle};
 /// Which of the person's two `style.css` files a text is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Sheet {
-    /// `~/.config/quire/style.css`, every quire app's.
+    /// `~/.config/bardo/style.css`, every quire app's.
     Desktop,
     /// `~/.config/sill/style.css`, the shell's own.
     App,

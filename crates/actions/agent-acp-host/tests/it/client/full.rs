@@ -376,7 +376,7 @@ async fn a_resume_starts_a_new_agent_session_and_keeps_the_taint() {
 }
 
 fn meta() -> (agent_acp_host::SessionMeta, serde_json::Value) {
-    let value = json!({"claudeCode": {"options": {"settings": {"permissions": {"allow": ["mcp__quire"]}}}}});
+    let value = json!({"claudeCode": {"options": {"settings": {"permissions": {"allow": ["mcp__bardo"]}}}}});
     let serde_json::Value::Object(map) = value.clone() else {
         panic!("object")
     };
@@ -410,7 +410,7 @@ async fn session_new_has_no_meta_without_one() {
 async fn router_says_working(rig: &super::rig::Rig<super::rig::Fakes>) -> TurnState {
     let launcher = CallerId {
         app: AppId {
-            name: app("org.quire.Shell"),
+            name: app("org.bardo.Shell"),
             isolation: Isolation::Unsandboxed,
         },
         roles: std::collections::BTreeSet::from([CallerRole::Launcher]),

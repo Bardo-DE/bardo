@@ -79,7 +79,7 @@ impl EngineHost for Recorder {
 
 /// Where the fake speech host's program "is" (it is never run: the fake engine host serves the
 /// protocol in place of it).
-pub const SPEECH_HOST_PROGRAM: &str = "/fake/speech-host";
+pub const SPEECH_HOST_PROGRAM: &str = "/fake/bardo-speech-host";
 
 /// A speech host in the world: what it says, and the libraries its unit is told about.
 #[derive(Debug, Clone)]
@@ -202,7 +202,7 @@ pub struct Plan {
     /// Engines the person already runs (`[engines.attached.<id>]`), each over a catalog entry of
     /// `catalog`; inferd looks at them and never starts them.
     pub attached: Vec<Attached>,
-    /// The agent endpoints (`org.quire.Inference1.Agents`): served when present.
+    /// The agent endpoints (`org.bardo.Inference1.Agents`): served when present.
     pub agents: Option<AgentsPlan>,
     /// The runtime the daemon connection's object server is started on, when a test holds it
     /// back (zbus starts it on a task of its own, on the runtime of its first use); none starts
@@ -302,7 +302,7 @@ pub struct World {
 /// The app every test client is.
 pub fn test_app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Test").expect("name"),
+        name: AppName::parse("org.bardo.Test").expect("name"),
         isolation: Isolation::Unsandboxed,
     }
 }
@@ -618,9 +618,9 @@ impl World {
                 zbus_ready::serving(&held)
                     .await
                     .expect("the object server answers");
-                held.request_name("org.quire.Accounts1")
+                held.request_name("org.bardo.Accounts1")
                     .await
-                    .expect("own org.quire.Accounts1");
+                    .expect("own org.bardo.Accounts1");
                 let (guests, said) = inference_tailnet::Guests::open(&state.join("guests.toml"));
                 assert_eq!(said, None);
                 let tailnet = Tailnet::start(

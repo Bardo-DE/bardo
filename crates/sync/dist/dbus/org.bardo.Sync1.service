@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Sync1
+Exec=/usr/libexec/bardo/bardo-syncd
+SystemdService=bardo-syncd.service

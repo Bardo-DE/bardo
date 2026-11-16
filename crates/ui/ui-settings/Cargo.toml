@@ -47,7 +47,7 @@ quire-desktop = ["dep:zbus"]
 dioxus = ["dep:dioxus", "ui-style/dioxus"]
 # Drive zbus on the tokio runtime the shell already runs (see the workspace zbus note).
 tokio = ["quire-desktop", "zbus/tokio"]
-# `org.quire.SettingsModule1` (design/22-SETTINGS.md section 9.4): the live settings modules a
+# `org.bardo.SettingsModule1` (design/22-SETTINGS.md section 9.4): the live settings modules a
 # daemon serves (accountd, inferd) and the Settings app reads. Uses the `zbus` above under whatever
 # backend the build picked; this feature never selects an executor.
 live = ["quire-desktop"]

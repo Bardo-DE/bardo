@@ -27,7 +27,7 @@ not by anything the caller says. A kind of device is only made for the program i
 ```rust
 use turnstile_client::{Broker, Create, DeviceSource, Made, Session};
 
-let mut session = Broker::default().open()?;       // /run/turnstile/input.sock
+let mut session = Broker::default().open()?;       // /run/bardo/input-broker/input.sock
 let Made::Proxied(pad) = session.create(&Create::touchpad())? else { unreachable!() };
 session.send(pad, &frame)?;                        // Sent::Queued, or Sent::Dropped when the service is behind
 let Made::Handed { fd, .. } = session.create(&Create::keyboard())? else { unreachable!() };
@@ -37,14 +37,14 @@ let Made::Handed { fd, .. } = session.create(&Create::keyboard())? else { unreac
 
 | File | Placed at |
 |---|---|
-| `turnstile.socket`, `turnstile.service` | `/usr/lib/systemd/system/` |
-| `72-turnstile.rules` | `/etc/udev/rules.d/`: `/dev/uinput` becomes `root:root 0600` and loses the `uaccess` tag |
-| `turnstile-modules.conf` | `/etc/modules-load.d/turnstile.conf` |
-| the table of desktop programs | `/etc/quire/desktop-callers.toml`, from the desktop release |
+| `bardo-input-broker.socket`, `bardo-input-broker.service` | `/usr/lib/systemd/system/` |
+| `72-bardo-input-broker.rules` | `/etc/udev/rules.d/`: `/dev/uinput` becomes `root:root 0600` and loses the `uaccess` tag |
+| `bardo-input-broker-modules.conf` | `/etc/modules-load.d/turnstile.conf` |
+| the table of desktop programs | `/etc/bardo/desktop-callers.toml`, from the desktop release |
 
 The desktop installer places them; to try it by hand, copy them, then
 `systemctl daemon-reload`, `udevadm control --reload-rules && udevadm trigger --subsystem-match=misc`,
-`systemctl enable --now turnstile.socket`.
+`systemctl enable --now bardo-input-broker.socket`.
 
 ## Tests
 

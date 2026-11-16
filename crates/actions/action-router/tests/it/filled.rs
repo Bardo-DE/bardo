@@ -18,12 +18,12 @@ use permission_core::ActionMatch;
 use provenance::{ActionName, AgentRef, Effect, Label, Labelled, SessionId, Source};
 use std::sync::{Arc, Mutex};
 
-const WATCHER: &str = "org.quire.Watcher";
+const WATCHER: &str = "org.bardo.Watcher";
 
 /// An app with one read that takes the person's words and its own history, both filled.
 const MANIFEST: &str = r#"
 vocab = 1
-app = "org.quire.Watcher"
+app = "org.bardo.Watcher"
 entities = []
 
 [[actions]]

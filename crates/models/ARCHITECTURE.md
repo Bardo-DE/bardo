@@ -30,7 +30,7 @@ trait), section 6 (copy the recipe).
 | `model-http` | `HttpEndpoint` (with `Timeouts` and `ExtraHeader`s), `HttpTarget` (Tcp, Unix, Tls), `AuthHeader`, the pure `SseDecoder` and `NdjsonDecoder`, `ResponseHead`, `BodySink` (head, then chunks), `Exchange`, the `Transport` seam, `Upload` and `UploadTransport` (a POST of bytes), and `HttpClient: Transport + UploadTransport` (reqwest over TCP and Unix sockets, behind the `client` feature; TLS to a `Tls` target behind `tls`, with `TlsRoots` choosing the roots) | yes (the transport) |
 | `engine-manifest` | the engines as data: `Manifest` (pinned `Row`s by `EngineKind`, `Arch` and `Backend`: `Artifact`s with hashes and sizes, `Delivery`, `PythonEnv` and its lock, the tree seal), `Host` (`Arch`, `Gpus`, `OsRelease` with `ships(&PackageSource)`, `BackendChoice`), `preference`, `Failure` (the codes of an install), `TreeSeal` and `SealLine` (the seal's line format; `tools/seal.py` pins the rows with it), `engine_from_slug` (the disk word of an engine, `Engine::disk_word`, read back to an `EngineKind`) | none |
 | `engine-probe` | reading this computer for the manifest: `read_host`, `read_gpus` (the kernel's files and `os-release` under a given root), `Roots`, `InstallDir`, `Record` (where installs live and what one leaves), `Finder` (which engine is here, never running it), `Verifier` (the seal check before a person's own install starts), `seal_of`, `file_digest`, `entry_digests`. Every path and root is an argument | reads files |
-| `engine-install` | getting an engine from the manifest: `Fetcher` (an `https` download over `model-http`'s `HttpClient` that resumes, follows redirects as `PinnedUrl`s, can be stopped, is counted and kept only if its size and hash are the pinned ones), `Installer` (space checked, unpacked in process by `tar` and `flate2`, sealed, renamed into place whole; or a Python environment filled by the pinned `uv` from a hashed lock), `install_package`, `EngineInstalls` (the jobs a program offers and follows), `install_for_everyone` and `HelperProgram` (the caller names `pkexec` and the helper by path), and the `helper` module with the `engine-helper` program (`install <engine> <backend>`, nothing else) | HTTPS, files, child processes |
+| `engine-install` | getting an engine from the manifest: `Fetcher` (an `https` download over `model-http`'s `HttpClient` that resumes, follows redirects as `PinnedUrl`s, can be stopped, is counted and kept only if its size and hash are the pinned ones), `Installer` (space checked, unpacked in process by `tar` and `flate2`, sealed, renamed into place whole; or a Python environment filled by the pinned `uv` from a hashed lock), `install_package`, `EngineInstalls` (the jobs a program offers and follows), `install_for_everyone` and `HelperProgram` (the caller names `pkexec` and the helper by path), and the `helper` module with the `bardo-engine-helper` program (`install <engine> <backend>`, nothing else) | HTTPS, files, child processes |
 | `model-wire` | the wire half of an endpoint: `ChatCodec`, `ChatDecoder`, `EmbedCodec`, `ErrorWire`, `CodecError`, and `Driver<C, T>`, the `Provider` (and `Embedder`) made of a codec and a transport | none (pure over the `Transport` trait) |
 | `model-extract` | structured extraction as a pure machine: `choose` (native constraint, synthetic tool call or prompted), `ExtractSession`, `Extracted`, `ExtractFailure` | none |
 | `model-genai-names` | the OpenTelemetry GenAI attribute, metric, operation and finish-reason names as constants; zero dependencies; no content attribute exists | none |
@@ -39,12 +39,12 @@ trait), section 6 (copy the recipe).
 | `speech-vad` | `EnergyGate`, `Framer`, `level_of`, the `endpoint` machine | none |
 | `speech-host-client` | `SpeechHostClient: SpeechToText` over the host's Unix socket | yes (the socket, when filled) |
 | `speech-vad-silero` | `SileroVad: VoiceActivity` over `ort`; **excluded from the workspace** | the runtime |
-| `speech-host` | the STT engine binary: sherpa-onnx (built without TTS) behind a Unix socket; **excluded from the workspace**, runs only as a confined engine unit | the runtime and the socket |
+| `bardo-speech-host` | the STT engine binary: sherpa-onnx (built without TTS) behind a Unix socket; **excluded from the workspace**, runs only as a confined engine unit | the runtime and the socket |
 
 `scripts/check-boundary.sh` holds a LAYERS table: every crate is **P** (pure: no `std::fs`/`env`/`process`/`net`,
 no clock reads, no sleeps, no `tokio`, `hyper`, `reqwest`, `zbus` or `rustix`, no UI words), **C** (client/IO: may
 do IO, no `Label`, `Help`, `Sheet` or `SettingRow`) or **A** (wiring). A crate depends on its own tier or below.
-Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `speech-host` and
+Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `bardo-speech-host` and
 `speech-vad-silero` (C) and `speech-host-sherpa` (A). `model-http` is P with KNOWN rows: its feature-gated reqwest client (reqwest and tokio in
 the source) is the one violation, removed when the client moves to its own crate (plan lane T1.2). `--self-test` seeds a `std::fs` call in a P crate and
 checks the script fails; `--long-files` reports source files over 500 lines.
@@ -73,7 +73,7 @@ The direct edges in use (documentation; dev-dependencies are outside it):
 | `speech-vad` | `speech-provider` |
 | `speech-host-client` | `model-provider`, `speech-provider` |
 | `speech-vad-silero` (excluded) | `speech-provider`, `speech-vad` |
-| `speech-host` (excluded) | `speech-provider` |
+| `bardo-speech-host` (excluded) | `speech-provider` |
 
 External boundaries: the pure crates (everything but `model-http`, the one io crate) never reach `tokio`,
 `hyper`, `hyper-util`, `rustls`, `zbus`, `zvariant`, `reqwest`, `ureq`, `wayland-client`,
@@ -89,7 +89,7 @@ never reaches the second half of that list (a bus, a compositor, a database, an 
 crate reaches an audio device crate (`pipewire`, `libpulse-binding`, `libpulse-simple-binding`,
 `cpal`: capture and playback belong to docket's `voiced`) or a TTS stack with a GPL grapheme
 step (`espeak-rs`, `espeak-ng`, `espeak-ng-sys`, `piper-rs`): text to speech is a separate engine
-process (Kokoro-FastAPI), and `speech-host` links sherpa-onnx built without TTS. The two
+process (Kokoro-FastAPI), and `bardo-speech-host` links sherpa-onnx built without TTS. The two
 excluded crates are not workspace members; `check-boundary.sh` checks them from their own
 manifests (their direct edges and the same lists), and they alone may reach `ort` and `sherpa-onnx`.
 
@@ -124,7 +124,7 @@ stoker.
 | `speech-provider` | `audio`, `text` < `vad`, `stt`, `tts`, `caps` < `host_wire` < `testing` (feature `testing`) |
 | `speech-vad` | `level` < `energy`, `framer` < `endpoint` |
 | `speech-host-client` | `lib` |
-| `speech-vad-silero`, `speech-host` | `lib` (and `main` for the host) |
+| `speech-vad-silero`, `bardo-speech-host` | `lib` (and `main` for the host) |
 
 ## 3. One home per concept
 
@@ -175,7 +175,7 @@ stoker.
 | audio formats, positions and durations; the bytes of PCM | `speech-provider::audio` (`AudioFormat`, `SampleIndex`, `AudioMs`, `PcmBytes`) |
 | recognised and spoken text, languages and voices | `speech-provider::text` (`HeardText`, `SpokenText`, `Lang`, `VoiceId`) |
 | what a speech model can do | `speech-provider::SpeechCaps` |
-| the inferd to `speech-host` wire and its framing | `speech-provider::host_wire` |
+| the inferd to `bardo-speech-host` wire and its framing | `speech-provider::host_wire` |
 | voice-activity detection, loudness, endpointing | `speech-vad` (`EnergyGate`, `level_of`, `endpoint`); the Silero model in `speech-vad-silero` |
 | the speech request wire of OpenAI-compatible servers | `model-openai-compat::audio` |
 | speech cassettes | `model-replay::speech` |
@@ -317,7 +317,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 | `speech-provider`: every type, the checked names, `AudioChunk::{samples, duration}`, the host framing, the `testing` fakes | built, tested (round trips, pinned JSON, redaction, duration table, the fakes' scripts) |
 | `speech-vad`: types, defaults, `level_of`, `EnergyGate`, `Framer::push`, `endpoint` | built, tested (level rows, gate table, framer proptest, endpoint table, the chain over synthetic audio) |
 | `speech-host-client`: types | built; both trait bodies stubbed |
-| `speech-vad-silero`, `speech-host` | skeletons (excluded from the workspace); every body stubbed |
+| `speech-vad-silero`, `bardo-speech-host` | skeletons (excluded from the workspace); every body stubbed |
 | `model-replay::speech`: cassette format, round trip | built, tested; the prints, `SpeechReplay` and `RecordingSpeech` stubbed |
 
 ## 6. Recipes
@@ -444,7 +444,7 @@ run by hand against the user's own engine.
   ```
 
 - **No `unsafe`** anywhere (`unsafe_code = "deny"`).
-- **Excluded crates**: `speech-vad-silero` and `speech-host` are workspace `exclude`s and
+- **Excluded crates**: `speech-vad-silero` and `bardo-speech-host` are workspace `exclude`s and
   `deny.toml` `[graph] exclude`s, so the gate's clippy and test never build them (the runtimes
   they need are not in the pinned block). Build one by hand with
   `cargo build --manifest-path crates/<name>/Cargo.toml`; their `Cargo.lock` and `target/` stay
@@ -473,10 +473,10 @@ run by hand against the user's own engine.
 ## 9. Install
 
 `scripts/install.sh` installs `catalog/*.toml` under `PREFIX/share/stoker/catalog` (inferd reads
-`/usr/share/stoker/catalog` and `$XDG_DATA_HOME/stoker/catalog`, so use `--prefix /usr` for a
-machine-wide install). It builds and installs one program, engine-install's `engine-helper`, at
-`PREFIX/libexec/quire/engine-helper`, and on a system install its polkit action
-`org.quire.engines.install` (`dist/org.quire.engines.policy`, path rewritten to the prefix); the
+`/usr/share/bardo/models/catalog` and `$XDG_DATA_HOME/stoker/catalog`, so use `--prefix /usr` for a
+machine-wide install). It builds and installs one program, engine-install's `bardo-engine-helper`, at
+`PREFIX/libexec/quire/bardo-engine-helper`, and on a system install its polkit action
+`org.bardo.engines.install` (`dist/org.bardo.engines.policy`, path rewritten to the prefix); the
 action porter installed before the engines moved here is removed. The rest of stoker is libraries
 and data. Flags: `--prefix DIR` (default `/usr/local`), `--destdir DIR` (for packages), `--user`
 (under `~/.local`, no root, no polkit action), `--dry-run` (print every action), `--no-build` and

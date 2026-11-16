@@ -1,4 +1,4 @@
-//! `org.quire.Compositor1.Connect` in the event loop (P2-Z): the D-Bus object proves each caller
+//! `org.bardo.Compositor1.Connect` in the event loop (P2-Z): the D-Bus object proves each caller
 //! on the bus thread and forwards the call down a calloop channel, and [`answer`] decides it with
 //! the `State` in hand: the role the caller proved against the role it asked for
 //! (`compositor_agent::hand_out`), and the server end of the new socket inserted into the display

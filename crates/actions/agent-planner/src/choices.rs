@@ -69,7 +69,7 @@ mod tests {
     fn choices(keys: &[&str]) -> Option<ParamChoices> {
         ParamChoices::new(
             ActionRef {
-                app: account_core::AppName::parse("org.quire.Cua").expect("app"),
+                app: account_core::AppName::parse("org.bardo.ComputerUse").expect("app"),
                 name: ActionName::parse("cua.run.start").expect("action"),
             },
             ParamName::parse("app").expect("param"),

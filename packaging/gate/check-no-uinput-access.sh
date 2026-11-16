@@ -5,10 +5,10 @@
 #
 #   - a device rule that mentions uinput and is not exactly "root, 0600, and no `uaccess` tag" (a rule may remove the tag
 #     with TAG-=; it may not add it);
-#   - a service that lets itself open the node (`DeviceAllow=/dev/uinput`) other than turnstile.service, or a drop-in for
-#     any service that does (keycap's stand-alone `keycap.uinput.conf` / `10-uinput.conf`);
-#   - an install or release script that places keycap's stand-alone pieces (`70-keycap.rules`, `keycap.uinput.conf`,
-#     `10-uinput.conf`, `keycap-modules.conf`, `palmrest-modules.conf`), which only a machine without the input service needs.
+#   - a service that lets itself open the node (`DeviceAllow=/dev/uinput`) other than bardo-input-broker.service, or a drop-in for
+#     any service that does (keycap's stand-alone `bardo-key-remap.uinput.conf` / `10-uinput.conf`);
+#   - an install or release script that places keycap's stand-alone pieces (`70-bardo-key-remap.rules`, `bardo-key-remap.uinput.conf`,
+#     `10-uinput.conf`, `bardo-key-remap-modules.conf`, `bardo-mouse-gestures-modules.conf`), which only a machine without the input service needs.
 #
 #   gate/check-no-uinput-access.sh [--crates DIR] [--stage DIR]...
 #
@@ -82,7 +82,7 @@ def check_file(path, label):
     if name.endswith(".rules"):
         check_rule(path, label)
     elif name.endswith(".service") or parent.endswith(".service.d"):
-        check_unit(path, label, broker=(name == "turnstile.service"))
+        check_unit(path, label, broker=(name == "bardo-input-broker.service"))
         if parent.endswith(".service.d"):
             for number, text in code_lines(path):
                 if "uinput" in text:
@@ -92,7 +92,7 @@ def check_file(path, label):
 # 1. The files the build and install scripts name.
 scripts = [os.path.join(root, "release", "build.sh"), os.path.join(root, "install.sh")]
 scripts += [os.path.join(root, "install", n) for n in sorted(os.listdir(os.path.join(root, "install"))) if n.endswith(".sh")]
-STANDALONE = ("70-keycap.rules", "keycap.uinput.conf", "10-uinput.conf", "keycap-modules.conf", "palmrest-modules.conf")
+STANDALONE = ("70-bardo-key-remap.rules", "bardo-key-remap.uinput.conf", "10-uinput.conf", "bardo-key-remap-modules.conf", "bardo-mouse-gestures-modules.conf")
 PLACES = re.compile(r"\bput(_system)?\b|\binstall\s|\bcp\s|^echo \"[0-9]{3} ")
 named = set()
 for path in scripts:
@@ -123,7 +123,7 @@ for stage in stages:
             parent = os.path.basename(dirpath)
             if name.endswith((".rules", ".service")) or parent.endswith(".service.d"):
                 check_file(path, os.path.relpath(path, stage))
-            if name in STANDALONE and name != "keycap-modules.conf" and name != "palmrest-modules.conf":
+            if name in STANDALONE and name != "bardo-key-remap-modules.conf" and name != "bardo-mouse-gestures-modules.conf":
                 bad(f"{os.path.relpath(path, stage)}: a stand-alone piece of keycap is in what is shipped")
 
 if found:

@@ -14,7 +14,7 @@ use updater_daemon::service::{BUS_NAME, Gate, PATH, Updates, peers_on};
 use updater_daemon::state::StateStore;
 
 fn service(role: &str, proof: Proof) -> Standing {
-    introduced_service("org.quire.Test", role, proof, Pin::AtConnect).expect("a standing")
+    introduced_service("org.bardo.Test", role, proof, Pin::AtConnect).expect("a standing")
 }
 
 /// (case, who the caller is, may install, may roll back, may check)
@@ -189,7 +189,7 @@ fn a_refused_caller_is_told_access_is_denied_in_plain_words() {
         (
             service("portal", Proof::Full),
             "Install",
-            "org.quire.Updates1.Error.AccessDenied",
+            "org.bardo.Updates1.Error.AccessDenied",
             Some(denied_install),
         ),
         (
@@ -208,13 +208,13 @@ fn a_refused_caller_is_told_access_is_denied_in_plain_words() {
         (
             service("updater_cli", Proof::Exe),
             "Install",
-            "org.quire.Updates1.Error.NotAVersion",
+            "org.bardo.Updates1.Error.NotAVersion",
             None,
         ),
         (
             service("shell", Proof::Full),
             "Install",
-            "org.quire.Updates1.Error.NotAVersion",
+            "org.bardo.Updates1.Error.NotAVersion",
             None,
         ),
     ];
@@ -242,7 +242,7 @@ fn a_refused_caller_is_told_access_is_denied_in_plain_words() {
                         .call_method(
                             Some(BUS_NAME),
                             PATH,
-                            Some("org.quire.Updates1"),
+                            Some("org.bardo.Updates1"),
                             method,
                             &("nope",),
                         )
@@ -253,7 +253,7 @@ fn a_refused_caller_is_told_access_is_denied_in_plain_words() {
                         .call_method(
                             Some(BUS_NAME),
                             PATH,
-                            Some("org.quire.Updates1"),
+                            Some("org.bardo.Updates1"),
                             method,
                             &(),
                         )

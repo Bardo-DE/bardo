@@ -18,7 +18,7 @@ fn repo() -> PathBuf {
 fn stand_ins(root: &Path) -> PathBuf {
     let bins = root.join("bins");
     fs::create_dir_all(&bins).expect("bins");
-    for daemon in ["syncd", "porter-mountd"] {
+    for daemon in ["syncd", "bardo-drive-mount"] {
         let file = bins.join(daemon);
         fs::write(&file, format!("#!/bin/sh\necho {daemon}\n")).expect("write");
         fs::set_permissions(&file, fs::Permissions::from_mode(0o755)).expect("chmod");
@@ -112,7 +112,7 @@ fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_nam
         run.install(&["--prefix", prefix]);
         let units = run.at(&format!("{prefix}/lib/systemd/user"));
         let mut checked = 0;
-        for unit in ["syncd", "porter-mountd"] {
+        for unit in ["syncd", "bardo-drive-mount"] {
             let text = fs::read_to_string(units.join(format!("{unit}.service"))).expect("unit");
             let exec = value(&text, "ExecStart").expect("ExecStart");
             assert_eq!(program(&exec), format!("{prefix}/libexec/quire/{unit}"));
@@ -146,9 +146,9 @@ fn the_binaries_are_executable_and_the_units_are_not() {
             .mode()
             & 0o777
     };
-    assert_eq!(mode("/usr/libexec/quire/syncd"), 0o755);
-    assert_eq!(mode("/usr/libexec/quire/porter-mountd"), 0o755);
-    assert_eq!(mode("/usr/lib/systemd/user/syncd.service"), 0o644);
+    assert_eq!(mode("/usr/libexec/bardo/bardo-syncd"), 0o755);
+    assert_eq!(mode("/usr/libexec/bardo/bardo-drive-mount"), 0o755);
+    assert_eq!(mode("/usr/lib/systemd/user/bardo-syncd.service"), 0o644);
 }
 
 #[test]
@@ -156,7 +156,7 @@ fn a_second_run_changes_nothing_and_a_home_directory_is_never_written() {
     let run = Run::new("again");
     let first = run.install(&[]);
     assert!(
-        first.contains("installed /usr/libexec/quire/syncd"),
+        first.contains("installed /usr/libexec/bardo/bardo-syncd"),
         "{first}"
     );
     let before: Vec<_> = files_under(&run.destdir)
@@ -209,10 +209,10 @@ fn the_sandbox_drop_in_lands_next_to_its_unit_without_a_probe_when_staging() {
     // With a destdir the script does not ask this computer whether it allows mount namespaces.
     let out = run.install(&["--prefix", "/opt/ferry"]);
     assert!(!out.contains("without their extra sandbox"), "{out}");
-    let installed = run.at("/opt/ferry/lib/systemd/user/syncd.service.d/sandbox.conf");
+    let installed = run.at("/opt/ferry/lib/systemd/user/bardo-syncd.service.d/sandbox.conf");
     assert_eq!(
         fs::read(&installed).expect("the drop-in is installed"),
-        fs::read(repo().join("dist/syncd.service.d/sandbox.conf")).expect("shipped")
+        fs::read(repo().join("dist/bardo-syncd.service.d/sandbox.conf")).expect("shipped")
     );
     assert_eq!(
         fs::metadata(&installed).expect("meta").permissions().mode() & 0o777,
@@ -226,20 +226,20 @@ fn the_drive_folder_helper_is_installed_with_its_socket_enabled_for_everyone() {
     let run = Run::new("mountd");
     run.install(&["--prefix", "/opt/ferry"]);
     let units = run.at("/opt/ferry/lib/systemd/user");
-    for unit in ["porter-mountd.service", "porter-mountd.socket"] {
+    for unit in ["bardo-drive-mount.service", "bardo-drive-mount.socket"] {
         assert!(units.join(unit).is_file(), "{unit}");
     }
     // Enabled as a package enables it: a link beside the units, nothing under /etc or a home.
-    let wants = units.join("sockets.target.wants/porter-mountd.socket");
+    let wants = units.join("sockets.target.wants/bardo-drive-mount.socket");
     assert_eq!(
         fs::read_link(&wants).expect("the socket is enabled"),
-        Path::new("../porter-mountd.socket")
+        Path::new("../bardo-drive-mount.socket")
     );
     assert!(wants.is_file(), "the link resolves to the socket unit");
     assert!(!run.at("/etc/systemd").exists());
     assert!(files_under(&run.home).is_empty());
     // It has no sandbox drop-in: its unit says what it may not have.
-    assert!(!units.join("porter-mountd.service.d").exists());
+    assert!(!units.join("bardo-drive-mount.service.d").exists());
     let again = run.install(&["--prefix", "/opt/ferry"]);
     assert_eq!(again.trim(), "nothing to change");
 }

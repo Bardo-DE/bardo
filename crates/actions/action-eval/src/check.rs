@@ -1,4 +1,4 @@
-//! `docket-eval --check-app <dir>`: "every app has a CLI" holds by construction (cli.md section 6).
+//! `agent-eval --check-app <dir>`: "every app has a CLI" holds by construction (cli.md section 6).
 //! The check reads an app's repository as data and fails when
 //!
 //! - the app ships a `.desktop` file and no intents manifest (a reverse-DNS desktop file names

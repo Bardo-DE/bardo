@@ -26,11 +26,11 @@ fn from_terminal() -> ConfirmAnswer {
 fn archive() -> CallRequest {
     CallRequest {
         action: ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: ActionName::parse("mail.thread.archive").expect("action"),
         },
         target: TargetValue::Entities(vec![EntityId {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             kind: EntityKind::parse("mail.thread").expect("kind"),
             key: EntityKey::parse("t2").expect("key"),
         }]),
@@ -70,7 +70,7 @@ async fn terminal_with_a_grant() -> Arc<action_router::Router<action_fake::FakeS
     let mut router = mail_router();
     router.seams.confirmer = ScriptedConfirmer::answering(vec![from_terminal()]);
     let router = Arc::new(router);
-    let cli = caller("org.quire.Do", &[CallerRole::Cli]);
+    let cli = caller("org.bardo.Do", &[CallerRole::Cli]);
     let done = router
         .handle(
             &cli,
@@ -116,7 +116,7 @@ async fn the_persons_session_ending_takes_the_terminals_grants_with_it() {
         until(|| router.terminal_grants().is_empty()).await,
         "grants ended"
     );
-    let cli = caller("org.quire.Do", &[CallerRole::Cli]);
+    let cli = caller("org.bardo.Do", &[CallerRole::Cli]);
     let again = router
         .handle(
             &cli,

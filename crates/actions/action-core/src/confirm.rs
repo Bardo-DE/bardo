@@ -98,7 +98,7 @@ pub enum ConfirmOffer {
     /// Once, or always for this app, class and Space.
     OnceOrAlways,
     /// Once, or "allow from the terminal: this action, until logout" (a call made through
-    /// `quire-do`; never offered for a destructive act or an action that asks every time).
+    /// `bardo-do`; never offered for a destructive act or an action that asks every time).
     OnceOrFromTerminal,
 }
 
@@ -343,7 +343,7 @@ pub enum ConfirmAnswer {
         written: Option<BriefText>,
     },
     /// Yes, and from now until logout the same action may run from the terminal without
-    /// asking. Only a call made through `quire-do` honours it; the router drops it for any other
+    /// asking. Only a call made through `bardo-do` honours it; the router drops it for any other
     /// caller.
     AllowedFromTerminal {
         /// The proof.

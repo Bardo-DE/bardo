@@ -67,20 +67,20 @@ mod tests {
         let cases: Vec<Case> = vec![
             (
                 "renamed",
-                vec![renamed("org.quire.Mail", &["mailo"])],
+                vec![renamed("org.bardo.Mail", &["mailo"])],
                 "mailo",
-                "org.quire.Mail",
+                "org.bardo.Mail",
             ),
             (
                 "one of several old ids",
-                vec![renamed("org.quire.Mail", &["mailo", "mail"])],
+                vec![renamed("org.bardo.Mail", &["mailo", "mail"])],
                 "mail",
-                "org.quire.Mail",
+                "org.bardo.Mail",
             ),
             (
                 "an installed id wins over the claim",
                 vec![
-                    renamed("org.quire.Mail", &["mailo"]),
+                    renamed("org.bardo.Mail", &["mailo"]),
                     test_app("mailo", "Mailo"),
                 ],
                 "mailo",
@@ -94,7 +94,7 @@ mod tests {
             ),
             (
                 "an unknown id stays",
-                vec![renamed("org.quire.Mail", &["mailo"])],
+                vec![renamed("org.bardo.Mail", &["mailo"])],
                 "other",
                 "other",
             ),

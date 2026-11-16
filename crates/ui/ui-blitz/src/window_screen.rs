@@ -11,7 +11,7 @@
 //!   sent to clients, so the work area is the whole output (`WorkBasis::WholeOutput`), and a
 //!   fitted window is capped to 85% of it. winit has no work-area query on X11 either. Under
 //!   our shell the app can learn it anyway: `AppHandle::set_desktop_outputs` feeds what
-//!   `ui-desktop` read from `org.quire.Outputs1` (`WorkBasis::Desktop`).
+//!   `ui-desktop` read from `org.bardo.Outputs1` (`WorkBasis::Desktop`).
 //! - Which output a new window opens on is the compositor's choice and is not announced: before
 //!   the window exists it is the primary monitor, or the first one listed on Wayland (which has
 //!   no primary); once the window is mapped, `Window::current_monitor` is its output.

@@ -52,7 +52,7 @@ pub struct Nowhere;
 impl ContextSource for Nowhere {
     fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
-            app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+            app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
             window: Labelled {
                 value: String::new(),
                 label: provenance::Label::trusted_user(),
@@ -90,7 +90,7 @@ pub fn standing_mail_consent() -> agent_inapp::SessionGrants {
             id: GrantId::parse(&format!("g-{id}")).expect("grant"),
             key: ActionGrantKey {
                 caller: GrantCaller::Companion,
-                owner: AppName::parse("org.quire.Mail").expect("app"),
+                owner: AppName::parse("org.bardo.Mail").expect("app"),
                 target: GrantTarget::App,
                 class,
                 usage,

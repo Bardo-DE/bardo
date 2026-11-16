@@ -128,7 +128,7 @@ fn a_speech_host_model_runs_the_hosts_program_with_the_entrys_arguments_and_its_
     let scratch = Scratch::new("local-speech");
     let entry = parse_entry_text(&entries::speech_in()).expect("entry");
     let config = EngineConfig {
-        speech_host: Some(PathBuf::from("/usr/libexec/quire/speech-host")),
+        speech_host: Some(PathBuf::from("/usr/libexec/bardo/bardo-speech-host")),
         speech_host_libs: Some(PathBuf::from("/opt/sherpa/lib")),
         hf_cache: scratch.path().join("hf"),
         ..EngineConfig::default()
@@ -142,7 +142,7 @@ fn a_speech_host_model_runs_the_hosts_program_with_the_entrys_arguments_and_its_
     let unit = &model.spec.unit;
     assert_eq!(
         unit.program.0,
-        PathBuf::from("/usr/libexec/quire/speech-host")
+        PathBuf::from("/usr/libexec/bardo/bardo-speech-host")
     );
     let args: Vec<&str> = unit.args.iter().map(|a| a.0.as_str()).collect();
     let socket = model.socket.0.to_string_lossy();

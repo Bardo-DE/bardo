@@ -8,7 +8,7 @@ use ui_settings::schema::Page;
 /// `gestures.*`: the trackpad's multi-finger swipes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "gestures", page = Page::MouseAndGestures)]
+#[settings(file = "compositor/settings.toml", domain = "gestures", page = Page::MouseAndGestures)]
 pub struct GesturesSection {
     /// `gestures.spaces`.
     #[settings(

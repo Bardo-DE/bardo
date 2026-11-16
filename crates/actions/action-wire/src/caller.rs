@@ -1,5 +1,5 @@
 //! Who is calling the router, as the transport derived it. Roles ([`CallerRole`], in
-//! `action-vocab`) come from `intentd.toml` and the connection's identity; they are never sent
+//! `action-vocab`) come from `actiond.toml` and the connection's identity; they are never sent
 //! in a body.
 
 use account_core::AppId;
@@ -19,7 +19,7 @@ pub fn is_terminal_scope(cgroup: &str) -> bool {
     leaf.ends_with(".scope") && TERMINAL_SCOPES.iter().any(|p| leaf.starts_with(p))
 }
 
-/// A caller as the transport derived it: an identity and the roles `intentd.toml` gives that
+/// A caller as the transport derived it: an identity and the roles `actiond.toml` gives that
 /// bus name. One name may play several (sill is the launcher, the confirm server and the
 /// control centre); the role a call acts in is the first that may make it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

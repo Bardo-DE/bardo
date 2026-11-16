@@ -14,7 +14,7 @@ pub use shell_model::voice::{HoldToTalk, VoiceConsent};
     Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
 )]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "voice", page = Page::Intelligence)]
+#[settings(file = "shell/settings.toml", domain = "voice", page = Page::Intelligence)]
 pub struct VoiceSettings {
     #[settings(
         label = "Hold ⌘ to talk",

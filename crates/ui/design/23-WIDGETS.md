@@ -714,7 +714,7 @@ draws with `WidgetRegistry::sized(&kind, host, size) -> Result<Self, UnsizedKind
 
 An app that is not linked into the shell provides a widget the same way, across D-Bus:
 
-1. **Announce.** The app owns a bus name and exports `org.quire.Widgets1` at `/org/quire/Widgets`
+1. **Announce.** The app owns a bus name and exports `org.bardo.Widgets1` at `/org/bardo/Widgets`
    with a property `Kinds`, an array of `(kind, name, description, sizes)`
    (`("org.example.weather.today", "Weather", "…", ["small", "medium"])`), and emits
    `KindsChanged`. The shell adds each to its registry as a remote kind.

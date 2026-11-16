@@ -1,6 +1,6 @@
 //! inferd as an external coding agent's model endpoint over an API-key account, end to end on a
 //! private bus: the launcher (the world's client connection, role `AgentLauncher`) opens an endpoint
-//! over `org.quire.Inference1.Agents`, and a plain HTTP client plays the agent against the loopback
+//! over `org.bardo.Inference1.Agents`, and a plain HTTP client plays the agent against the loopback
 //! listener. The provider is the fake from `hosting` (TLS on loopback, the scratch CA), accountd is
 //! the fake one. The routes to a model on this computer are in `agents_local.rs`.
 
@@ -330,7 +330,7 @@ async fn a_closed_session_refuses_and_cancels_what_is_in_flight() {
         .expect_err("no such session");
     assert_eq!(
         error_name(&again),
-        "org.quire.Inference1.Error.NoSuchSession"
+        "org.bardo.Inference1.Error.NoSuchSession"
     );
 }
 
@@ -463,7 +463,7 @@ async fn the_setting_off_refuses_and_the_default_is_off() {
     .expect_err("off");
     assert_eq!(
         error_name(&refused),
-        "org.quire.Inference1.Error.EndpointOff"
+        "org.bardo.Inference1.Error.EndpointOff"
     );
     // Turned on while the daemon runs (the next open reads the settings in force).
     let mut settings = (*world.served.settings()).clone();
@@ -494,7 +494,7 @@ async fn outside_the_grant_the_bus_gets_the_cause_and_the_agent_gets_403() {
         .expect_err("not granted");
     assert_eq!(
         error_name(&refused),
-        "org.quire.Inference1.Error.NotGranted"
+        "org.bardo.Inference1.Error.NotGranted"
     );
 
     // A grant that is withdrawn while the session is open: the next request is refused.
@@ -607,7 +607,7 @@ async fn an_id_the_route_does_not_serve_is_an_error_and_never_a_substitute() {
     .expect_err("protocol");
     assert_eq!(
         error_name(&refused),
-        "org.quire.Inference1.Error.UnsupportedProtocol"
+        "org.bardo.Inference1.Error.UnsupportedProtocol"
     );
     let wrong = completions(
         &open(

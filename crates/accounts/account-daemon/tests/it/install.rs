@@ -18,7 +18,7 @@ fn repo() -> PathBuf {
 fn stand_ins(root: &Path) -> PathBuf {
     let bins = root.join("bins");
     fs::create_dir_all(&bins).expect("bins");
-    for daemon in ["accountd", "engine-helper"] {
+    for daemon in ["accountd", "bardo-engine-helper"] {
         let file = bins.join(daemon);
         fs::write(&file, format!("#!/bin/sh\necho {daemon}\n")).expect("write");
         fs::set_permissions(&file, fs::Permissions::from_mode(0o755)).expect("chmod");
@@ -112,7 +112,7 @@ fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_nam
         run.install(&["--prefix", prefix]);
         let units = run.at(&format!("{prefix}/lib/systemd/user"));
         let mut checked = 0;
-        let text = fs::read_to_string(units.join("accountd.service")).expect("unit");
+        let text = fs::read_to_string(units.join("bardo-accountd.service")).expect("unit");
         let exec = value(&text, "ExecStart").expect("ExecStart");
         assert_eq!(program(&exec), format!("{prefix}/libexec/quire/accountd"));
         assert!(run.at(program(&exec)).is_file(), "{exec}");
@@ -137,21 +137,21 @@ fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_nam
 fn the_data_the_daemons_read_lands_where_they_look_for_it() {
     let run = Run::new("data");
     run.install(&[]);
-    // accountd reads /usr/share/porter/providers and /etc/porter/callers.toml (paths.rs).
+    // accountd reads /usr/share/bardo/accounts/providers and /etc/bardo/accountd-callers.toml (paths.rs).
     let shipped: BTreeSet<String> = files_under(&repo().join("providers"))
         .iter()
         .map(|p| p.file_name().expect("name").to_string_lossy().into_owned())
         .collect();
-    let installed: BTreeSet<String> = files_under(&run.at("/usr/share/porter/providers"))
+    let installed: BTreeSet<String> = files_under(&run.at("/usr/share/bardo/accounts/providers"))
         .iter()
         .map(|p| p.file_name().expect("name").to_string_lossy().into_owned())
         .collect();
     assert!(!shipped.is_empty());
     assert_eq!(installed, shipped);
-    assert!(run.at("/etc/porter/callers.toml").is_file());
+    assert!(run.at("/etc/bardo/accountd-callers.toml").is_file());
     // No clients file is shipped until the owner has one to ship.
     assert_eq!(
-        run.at("/usr/share/porter/clients.toml").exists(),
+        run.at("/usr/share/bardo/accounts/clients.toml").exists(),
         repo().join("dist/clients.toml").exists()
     );
     // The daemons are executable, the data is not.
@@ -162,8 +162,8 @@ fn the_data_the_daemons_read_lands_where_they_look_for_it() {
             .mode()
             & 0o777
     };
-    assert_eq!(mode("/usr/libexec/quire/accountd"), 0o755);
-    assert_eq!(mode("/etc/porter/callers.toml"), 0o644);
+    assert_eq!(mode("/usr/libexec/bardo/bardo-accountd"), 0o755);
+    assert_eq!(mode("/etc/bardo/accountd-callers.toml"), 0o644);
 }
 
 #[test]
@@ -171,7 +171,7 @@ fn a_second_run_changes_nothing_and_a_home_directory_is_never_written() {
     let run = Run::new("again");
     let first = run.install(&[]);
     assert!(
-        first.contains("installed /usr/libexec/quire/accountd"),
+        first.contains("installed /usr/libexec/bardo/bardo-accountd"),
         "{first}"
     );
     let before: Vec<_> = files_under(&run.destdir)
@@ -227,10 +227,10 @@ fn the_sandbox_drop_ins_land_next_to_their_units_without_a_probe_when_staging() 
     // With a destdir the script does not ask this computer whether it allows mount namespaces.
     let out = run.install(&["--prefix", "/opt/porter"]);
     assert!(!out.contains("without their extra sandbox"), "{out}");
-    let installed = run.at("/opt/porter/lib/systemd/user/accountd.service.d/sandbox.conf");
+    let installed = run.at("/opt/porter/lib/systemd/user/bardo-accountd.service.d/sandbox.conf");
     assert_eq!(
         fs::read(&installed).expect("the drop-in is installed"),
-        fs::read(repo().join("dist/accountd.service.d/sandbox.conf")).expect("shipped")
+        fs::read(repo().join("dist/bardo-accountd.service.d/sandbox.conf")).expect("shipped")
     );
     assert_eq!(
         fs::metadata(&installed).expect("meta").permissions().mode() & 0o777,
@@ -243,13 +243,13 @@ fn the_sandbox_drop_ins_land_next_to_their_units_without_a_probe_when_staging() 
 fn a_caller_table_the_person_changed_is_kept_and_the_shipped_one_is_put_beside_it() {
     let run = Run::new("kept");
     run.install(&[]);
-    let table = run.at("/etc/porter/callers.toml");
+    let table = run.at("/etc/bardo/accountd-callers.toml");
     fs::write(&table, "# mine\n").expect("edit");
     let out = run.install(&[]);
-    assert!(out.contains("kept /etc/porter/callers.toml"), "{out}");
+    assert!(out.contains("kept /etc/bardo/accountd-callers.toml"), "{out}");
     assert_eq!(fs::read_to_string(&table).expect("read"), "# mine\n");
     assert_eq!(
-        fs::read_to_string(run.at("/etc/porter/callers.toml.dist")).expect("dist"),
+        fs::read_to_string(run.at("/etc/bardo/accountd-callers.toml.dist")).expect("dist"),
         fs::read_to_string(repo().join("dist/callers.toml")).expect("shipped")
     );
     // And that is also a state a further run leaves as it is.

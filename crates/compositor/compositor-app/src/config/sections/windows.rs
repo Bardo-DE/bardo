@@ -9,7 +9,7 @@ use ui_settings::schema::Page;
 /// `windows.*`: window management.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "windows", page = Page::Appearance)]
+#[settings(file = "compositor/settings.toml", domain = "windows", page = Page::Appearance)]
 pub struct WindowsSection {
     /// `windows.minimise_effect`.
     #[settings(

@@ -1,15 +1,15 @@
 //! casement's privacy files: where the person's book (which program may use which power) and
 //! the administrator's floor are kept, how they are read and written safely, and the list of
-//! both that `casementctl privacy list` prints. The consent machine itself is pure and lives in
+//! both that `bardo-compositorctl privacy list` prints. The consent machine itself is pure and lives in
 //! `compositor_core::privilege`; the composition root (`compositor_app::privacy`) feeds it what this
 //! crate reads and writes what it asks to keep.
 //!
 //! It also holds the structural jail check ([`breach`]) that the compositor's test builds and
-//! `casementctl` both run, because `casementctl` links this crate and not the compositor.
+//! `bardo-compositorctl` both run, because `bardo-compositorctl` links this crate and not the compositor.
 //!
 //! ```text
 //! $XDG_STATE_HOME/casement/privacy.toml        the person's book; casement alone writes it
-//! /etc/quire/privacy.toml, privacy.d/*.toml    the administrator's floor; casement only reads it
+//! /etc/bardo/privacy.toml, privacy.d/*.toml    the administrator's floor; casement only reads it
 //! ```
 //!
 //! The book is read when casement starts and never again: the model's copy is the authority and

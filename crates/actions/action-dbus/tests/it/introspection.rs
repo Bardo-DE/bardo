@@ -33,25 +33,25 @@ fn members(xml: &str) -> usize {
 fn every_intents_member_is_declared() {
     let xml = introspection(Bus::Intents);
     let want = [
-        "interface name=\"org.quire.Intents1.Registry\"",
+        "interface name=\"org.bardo.Intents1.Registry\"",
         "<method name=\"Manifests\">",
         "<signal name=\"ManifestChanged\">",
-        "interface name=\"org.quire.Intents1.Index\"",
+        "interface name=\"org.bardo.Intents1.Index\"",
         "<method name=\"Push\">",
         "<method name=\"Reset\">",
-        "interface name=\"org.quire.Intents1.Search\"",
+        "interface name=\"org.bardo.Intents1.Search\"",
         "<method name=\"Query\">",
         "<method name=\"Cancel\">",
         "<signal name=\"Hits\">",
-        "interface name=\"org.quire.Intents1.Run\"",
+        "interface name=\"org.bardo.Intents1.Run\"",
         "<method name=\"Perform\">",
         "<method name=\"Preview\">",
         "<method name=\"Suggest\">",
         "<method name=\"Undo\">",
         "<method name=\"UndoAll\">",
-        "interface name=\"org.quire.Intents1.Context\"",
+        "interface name=\"org.bardo.Intents1.Context\"",
         "<method name=\"Current\">",
-        "interface name=\"org.quire.Intents1.Session\"",
+        "interface name=\"org.bardo.Intents1.Session\"",
         "<method name=\"Open\">",
         "<method name=\"Turn\">",
         "<method name=\"Close\">",
@@ -66,7 +66,7 @@ fn every_intents_member_is_declared() {
         "<method name=\"Widen\">",
         "<method name=\"Note\">",
         "<method name=\"Recall\">",
-        "interface name=\"org.quire.Intents1.Checkpoint\"",
+        "interface name=\"org.bardo.Intents1.Checkpoint\"",
         "<method name=\"List\">",
         "<method name=\"Plan\">",
         "<method name=\"Watch\">",
@@ -74,14 +74,14 @@ fn every_intents_member_is_declared() {
         "<method name=\"WatchAgent\">",
         "<method name=\"Handover\">",
         "<method name=\"Watched\">",
-        "interface name=\"org.quire.Intents1.Message\"",
+        "interface name=\"org.bardo.Intents1.Message\"",
         "<method name=\"Send\">",
         "<method name=\"Inbox\">",
         "<signal name=\"Arrived\">",
-        "interface name=\"org.quire.Intents1.Gate\"",
+        "interface name=\"org.bardo.Intents1.Gate\"",
         "<method name=\"Grant\">",
         "<method name=\"Check\">",
-        "interface name=\"org.quire.Intents1.Control\"",
+        "interface name=\"org.bardo.Intents1.Control\"",
         "<method name=\"Halt\">",
         "<method name=\"Resume\">",
         "<method name=\"State\">",
@@ -93,7 +93,7 @@ fn every_intents_member_is_declared() {
         "<signal name=\"Resumed\">",
         "<signal name=\"JournalChanged\">",
         "<signal name=\"BreakerTripped\">",
-        "interface name=\"org.quire.Intents1.Request\"",
+        "interface name=\"org.bardo.Intents1.Request\"",
         "<method name=\"Proceed\">",
         "<signal name=\"Progress\">",
         "<signal name=\"Response\">",
@@ -143,7 +143,7 @@ fn provider_confirm_companion_and_reader_members() {
                 "<signal name=\"AnswerAdded\">",
                 "<signal name=\"AnswerRemoved\">",
                 "<signal name=\"RosterChanged\">",
-                "interface name=\"org.quire.Companion1.Terminals\"",
+                "interface name=\"org.bardo.Companion1.Terminals\"",
                 "<method name=\"OpenInTerminal\">",
                 "<method name=\"Say\">",
                 "<method name=\"Sessions\">",
@@ -177,7 +177,7 @@ fn interface<'a>(xml: &'a str, name: &str) -> &'a str {
 #[test]
 fn say_comes_last_among_the_methods_of_helpers2_after_the_ones_it_already_had() {
     let xml = introspection(Bus::Companion);
-    let block = interface(&xml, "org.quire.Companion1.Helpers2");
+    let block = interface(&xml, "org.bardo.Companion1.Helpers2");
     let methods: Vec<&str> = block
         .split("<method name=\"")
         .skip(1)
@@ -194,7 +194,7 @@ fn say_comes_last_among_the_methods_of_helpers2_after_the_ones_it_already_had() 
         assert!(block.contains(arg), "Say is missing {arg}");
     }
     // The first version of the interface is served as it was.
-    let first = interface(&xml, "org.quire.Companion1.Helpers");
+    let first = interface(&xml, "org.bardo.Companion1.Helpers");
     assert!(!first.contains("\"Say\""));
 }
 

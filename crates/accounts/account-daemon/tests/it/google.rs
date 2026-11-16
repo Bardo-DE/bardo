@@ -270,11 +270,11 @@ impl World {
     /// Settings' client, as the Settings app.
     async fn settings(&self) -> ui_settings::live::LiveClient {
         let connection = self
-            .connection_as("org.quire.Settings", CallerRole::Settings)
+            .connection_as("org.bardo.Settings", CallerRole::Settings)
             .await;
         ui_settings::live::LiveClient::new(
             &connection,
-            "org.quire.Accounts1",
+            "org.bardo.Accounts1",
             &account_daemon::settings_path(),
             ui_settings::live::AnyOwner,
         )
@@ -342,7 +342,7 @@ async fn a_client_in_testing_shows_when_google_signs_it_out_and_says_why_once_it
     use std::sync::atomic::Ordering::SeqCst;
     const DAY: i64 = 86_400;
     let world = World::start(TESTING).await;
-    let mail = world.app("org.quire.Mail").await;
+    let mail = world.app("org.bardo.Mail").await;
     let id = world.add(&mail).await;
     let signed_in = world
         .account()
@@ -412,7 +412,7 @@ async fn a_client_in_testing_shows_when_google_signs_it_out_and_says_why_once_it
 async fn a_google_account_is_added_with_its_capabilities_and_no_secret_on_the_bus() {
     let world = World::start(TESTING).await;
     let mut tap = Tap::start(&world.bus).await;
-    let mail = world.app("org.quire.Mail").await;
+    let mail = world.app("org.bardo.Mail").await;
 
     let id = world.add(&mail).await;
     let account = world.account();
@@ -462,7 +462,7 @@ async fn a_google_account_is_added_with_its_capabilities_and_no_secret_on_the_bu
 #[tokio::test(flavor = "multi_thread")]
 async fn signing_in_again_from_settings_renews_the_refresh_token() {
     let world = World::start(TESTING).await;
-    let mail = world.app("org.quire.Mail").await;
+    let mail = world.app("org.bardo.Mail").await;
     let id = world.add(&mail).await;
     let first = world.refresh_of(&id).await;
     assert!(
@@ -483,7 +483,7 @@ async fn signing_in_again_from_settings_renews_the_refresh_token() {
 #[tokio::test(flavor = "multi_thread")]
 async fn removing_the_account_revokes_it_at_google_and_forgets_its_secrets() {
     let world = World::start(TESTING).await;
-    let mail = world.app("org.quire.Mail").await;
+    let mail = world.app("org.bardo.Mail").await;
     let id = world.add(&mail).await;
     let refresh = world.refresh_of(&id).await;
     let settings = world.settings().await;

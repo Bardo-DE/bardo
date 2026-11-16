@@ -13,7 +13,7 @@ name = "agent_install"
 path = "src/lib.rs"
 
 [[bin]]
-name = "docket-agents"
+name = "bardo-agents"
 path = "src/main.rs"
 
 [dependencies]

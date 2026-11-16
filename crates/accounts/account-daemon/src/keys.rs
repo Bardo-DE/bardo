@@ -1,8 +1,8 @@
-//! `org.quire.Accounts1.Keys` at `/org/quire/Accounts1`: how an app gets a permit to use the
+//! `org.bardo.Accounts1.Keys` at `/org/bardo/Accounts1`: how an app gets a permit to use the
 //! person's AI keys.
 //!
 //! `RequestKey(class, usage, parent_window, options)` returns a Request object
-//! (`org.quire.Accounts1.Request`, under `/org/quire/Accounts1/request`) and answers on it when
+//! (`org.bardo.Accounts1.Request`, under `/org/bardo/Accounts1/request`) and answers on it when
 //! the sheet ends, as a portal does: the answer carries the permit's id. The permit is held by
 //! the app the caller is, never by a name it sends. An app that already holds a permit (Always,
 //! session or not yet spent) is answered with it at once and no sheet is drawn; after a Don't

@@ -1,6 +1,6 @@
-//! The sheet that asks the person: `org.quire.Confirm1`, served by sill. Only a process that
-//! `intentd-callers.toml` names as the sheet host (the shell's unit, with the `sheet_host` role of
-//! the system's table) and that plays the `confirm` role in `intentd.toml` is trusted with a
+//! The sheet that asks the person: `org.bardo.Confirm1`, served by sill. Only a process that
+//! `actiond-callers.toml` names as the sheet host (the shell's unit, with the `sheet_host` role of
+//! the system's table) and that plays the `confirm` role in `actiond.toml` is trusted with a
 //! question: the well-known name only says where to send it, and a process nobody trusted answers
 //! nothing. An unanswered sheet is a dismissal, never an allow.
 //!
@@ -11,7 +11,7 @@
 //! left, with nothing waiting to receive the answer.
 //!
 //! The same route serves the host of an external coding agent that asked, when it opened the
-//! session, to show that session's sheets itself (`docket-agent --tty`, a development fallback):
+//! session, to show that session's sheets itself (`bardo-agent --tty`, a development fallback):
 //! its process is trusted there while it plays the `acp_agent` role. Without that ask the router
 //! names no route, and the agent's sheets are the desktop's like any other.
 
@@ -95,7 +95,7 @@ pub struct SheetConfirmer {
 
 impl SheetConfirmer {
     /// Asks over `connection`, trusting the `confirm` role of the shipped configuration, held by
-    /// the processes the shipped `intentd-callers.toml` names.
+    /// the processes the shipped `actiond-callers.toml` names.
     pub fn new(connection: BusConnection) -> Self {
         let config = IntentdConfig::shipped().unwrap_or_else(|_| IntentdConfig::empty());
         let who = Arc::new(Identity::on_system(connection.clone(), callers::shipped()));
@@ -119,7 +119,7 @@ impl SheetConfirmer {
         }
     }
 
-    /// Trusts the editor role of the name `org.quire.Acp` only while `acp` shows the setting on.
+    /// Trusts the editor role of the name `org.bardo.Acp` only while `acp` shows the setting on.
     pub fn gated(mut self, acp: AcpGate, proc_root: &ProcRoot) -> Self {
         self.peers = Peers::gated(
             self.connection.clone(),

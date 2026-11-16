@@ -18,8 +18,8 @@ fn manifest(file: &str) -> ValidManifest {
 #[test]
 fn tools_only_offered_actions() {
     let registry = [
-        manifest("org.quire.Memory.toml"),
-        manifest("org.quire.Companion.toml"),
+        manifest("org.bardo.Memory.toml"),
+        manifest("org.bardo.Companion.toml"),
     ];
     let names: Vec<String> = offered(&registry)
         .into_iter()
@@ -39,7 +39,7 @@ fn tools_only_offered_actions() {
 
 #[test]
 fn tool_names_are_the_app_slug_and_the_action_with_underscores() {
-    let memory = manifest("org.quire.Memory.toml");
+    let memory = manifest("org.bardo.Memory.toml");
     let recall = memory
         .manifest()
         .actions
@@ -57,7 +57,7 @@ fn tool_names_are_the_app_slug_and_the_action_with_underscores() {
 
 #[test]
 fn a_name_over_sixty_four_characters_has_no_tool() {
-    let memory = manifest("org.quire.Memory.toml");
+    let memory = manifest("org.bardo.Memory.toml");
     let mut action = memory.manifest().actions[0].clone();
     action.name =
         provenance::ActionName::parse(&format!("memory.{}.{}", "a".repeat(30), "b".repeat(30)))
@@ -83,23 +83,23 @@ fn tool_hints_follow_effect() {
 
 #[test]
 fn the_registry_becomes_tools_with_schemas() {
-    let registry = [manifest("org.quire.Memory.toml")];
+    let registry = [manifest("org.bardo.Memory.toml")];
     let tools = tools(&registry);
     assert_eq!(tools.len(), 3);
     assert!(tools.iter().all(|t| t.schema.0.get("type").is_some()));
-    let _ = AppName::parse("org.quire.Memory");
+    let _ = AppName::parse("org.bardo.Memory");
 }
 
 #[test]
 fn a_host_only_app_is_not_offered_to_clients() {
     let registry = [
-        manifest("org.quire.Memory.toml"),
-        manifest("org.quire.AcpAgent.toml"),
+        manifest("org.bardo.Memory.toml"),
+        manifest("org.bardo.AcpAgent.toml"),
     ];
     assert!(
         offered(&registry)
             .into_iter()
-            .all(|(m, _)| m.manifest().app.as_str() != "org.quire.AcpAgent"),
+            .all(|(m, _)| m.manifest().app.as_str() != "org.bardo.AcpAgent"),
         "the pseudo-app's calls are refused to a client"
     );
 }

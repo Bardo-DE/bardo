@@ -18,7 +18,7 @@ slug_enum!(
         You => "you",
         /// The companion (including computer-use runs).
         Companion => "companion",
-        /// A terminal (`quire-do`): the person or an agent typing in it, which cannot be told
+        /// A terminal (`bardo-do`): the person or an agent typing in it, which cannot be told
         /// apart.
         Terminal => "terminal",
         /// An outside agent: an MCP client (Claude Desktop and the like), by whatever client name

@@ -1,5 +1,5 @@
 # A notes app: a list of three notes, an editor with a field, a Save button and a Pinned check.
-app = "org.quire.Notes"
+app = "org.bardo.Notes"
 size = [960, 600]
 
 [[screen]]

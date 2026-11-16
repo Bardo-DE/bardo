@@ -18,8 +18,8 @@ use zbus::zvariant::Value as BusValue;
 
 use crate::bus::PrivateBus;
 
-const PROVIDER_PATH: &str = "/org/quire/IntentProvider1";
-const PROVIDER_INTERFACE: &str = "org.quire.IntentProvider1";
+const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";
+const PROVIDER_INTERFACE: &str = "org.bardo.IntentProvider1";
 
 /// A window that remembers what it was asked and answers from a fixed state.
 #[derive(Default)]
@@ -82,7 +82,7 @@ pub(super) fn invocation(action: &str, target: TargetValue, args: &[(&str, Value
         target,
         args,
         actor: Actor::User {
-            via: AppName::parse("org.quire.Shell").unwrap(),
+            via: AppName::parse("org.bardo.Shell").unwrap(),
         },
         origin: Origin::Launcher,
         space: SpaceId::parse("work").unwrap(),

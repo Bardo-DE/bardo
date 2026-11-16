@@ -1,8 +1,8 @@
-//! porter-mountd: the one step syncd's sandbox refuses, done for it.
+//! bardo-drive-mount: the one step syncd's sandbox refuses, done for it.
 //!
 //! syncd runs with `NoNewPrivileges=yes` and a mount namespace of its own, so it can neither
-//! run the setuid `fusermount3` nor make a mount anyone else would see. porter-mountd is a small
-//! user service, started by its socket (`porter-mountd.socket`), that does that one step: asked
+//! run the setuid `fusermount3` nor make a mount anyone else would see. bardo-drive-mount is a small
+//! user service, started by its socket (`bardo-drive-mount.socket`), that does that one step: asked
 //! to show a drive, it makes `~/Cloud/<name>`, runs `fusermount3` and hands the caller the open
 //! FUSE connection; the caller serves the drive's files over it. It owns no state and reaches no
 //! network, keyring or account data.

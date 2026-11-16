@@ -23,8 +23,8 @@ pub fn requires(command: &DesktopCommand) -> &'static [Protocol] {
 /// [`backend_for`]), all of them.
 ///
 /// The plain window commands (`Activate`, `Close`, `Minimise`, ...) go to
-/// `quire_desktop_window_v1` on the Quire arm and to `zwlr-foreign-toplevel-management` on
-/// every other; the minimise target goes to `quire_shell_v1` on the Quire arm.
+/// `bardo_desktop_window_v1` on the Quire arm and to `zwlr-foreign-toplevel-management` on
+/// every other; the minimise target goes to `bardo_shell_v1` on the Quire arm.
 ///
 /// ```
 /// use desktop_client::{DesktopBackend, DesktopCommand, Protocol, ToplevelKey, requires_on};
@@ -70,7 +70,7 @@ pub fn missing(offered: &ProtocolSet, command: &DesktopCommand) -> Option<Protoc
 
 /// Whether `offered` carries `command`. The compositor may still refuse at run time (a
 /// workspace that lacks the ability, a closed toplevel); this answers the protocol question.
-/// Whether this client bound `quire_shell_v1` is the caller's choice, not the offer's; see
+/// Whether this client bound `bardo_shell_v1` is the caller's choice, not the offer's; see
 /// `admit`.
 pub fn supports(offered: &ProtocolSet, command: &DesktopCommand) -> bool {
     missing(offered, command).is_none()

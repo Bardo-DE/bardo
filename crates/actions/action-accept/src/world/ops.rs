@@ -1,4 +1,4 @@
-//! What a running world does: connections, the model's audit, `quire-do`, the daemons' logs.
+//! What a running world does: connections, the model's audit, `bardo-do`, the daemons' logs.
 
 use super::{Cgroup, World, env_of, place};
 use action_testbus::Reaped;
@@ -68,7 +68,7 @@ impl World {
         std::fs::read_to_string(self.dir.path().join("record.jsonl")).unwrap_or_default()
     }
 
-    /// The real `quire-do` (`binary`: `accept-quire-do`) with `words`, run as a terminal's child:
+    /// The real `bardo-do` (`binary`: `accept-bardo-do`) with `words`, run as a terminal's child:
     /// it starts through `sh`, which waits for a line on stdin, so its pid (kept by `exec`) is
     /// placed in a `vte-spawn-*` scope of the scratch proc root before the program exists. Its
     /// environment is the scratch one and the private bus, nothing else.
@@ -86,7 +86,7 @@ impl World {
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped()),
         )
-        .expect("quire-do starts");
+        .expect("bardo-do starts");
         place(self.dir.path(), process.pid(), Cgroup::Scope("vte-spawn-1"));
         let child = process.child_mut();
         let mut go = child.stdin.take().expect("stdin");
@@ -104,9 +104,9 @@ impl World {
                 err.read_to_end(&mut bytes).map(|_| bytes)
             });
             let mut stdout = Vec::new();
-            out.read_to_end(&mut stdout).expect("quire-do runs");
-            let stderr = reader.join().expect("joined").expect("quire-do runs");
-            let status = process.child_mut().wait().expect("quire-do runs");
+            out.read_to_end(&mut stdout).expect("bardo-do runs");
+            let stderr = reader.join().expect("joined").expect("bardo-do runs");
+            let status = process.child_mut().wait().expect("bardo-do runs");
             std::process::Output {
                 status,
                 stdout,

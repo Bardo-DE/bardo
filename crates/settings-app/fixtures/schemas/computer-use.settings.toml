@@ -1,0 +1,131 @@
+# cua's settings schema in the design/22 format (section 9.2). Installed to
+# $XDG_DATA_DIRS/quire/settings/computer-use.settings.toml; `cuad --write-schema <dir>` writes it for a local
+# install. The values live in $XDG_CONFIG_HOME/computer-use/settings.toml, for example `[cua]` then
+# `enabled = true`; cuad reads them live (crates/computer-use/computer-use-daemon/src/settings). Every row is hands-off
+# for an agent (no `agent = "settable"`): cua.* is never agent-settable, so the companion can never
+# switch computer use on for itself. The rows design/22 section 5 puts on the Intelligence page are
+# Computer use's four; the spending cap is Advanced. Not here, because nothing reads them yet:
+# `cua.screens.keep` and `cua.screens.keep_days` (FINDINGS).
+# The schema carries no live note, so the warning that no model reads images while computer use
+# is on is cuad's `SightNote` property (org.bardo.ComputerUse1.Manager), which the shell shows beside
+# `cua.enabled`.
+app = "cua"
+file = "computer-use/settings.toml"
+version = 1
+
+[[key]]
+path = "cua.enabled"
+default = false
+label = "Let the assistant use my apps for me"
+help = "Lets the assistant look at an app and click and type in it, only in the apps you list. Off by default."
+section = "Computer use"
+exposure = "basic"
+
+[key.kind]
+kind = "toggle"
+
+[key.page]
+kind = "intelligence"
+
+[[key]]
+path = "cua.apps"
+default = []
+label = "Apps it may use"
+help = "The apps the assistant may use. Ask checks with you the first time in a conversation; Always never asks."
+section = "Computer use"
+exposure = "basic"
+
+[key.kind]
+kind = "rows"
+
+[[key.kind.v.columns]]
+name = "app"
+label = "App"
+
+[key.kind.v.columns.kind]
+kind = "text"
+
+[key.kind.v.columns.kind.v]
+pattern = "[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z_][A-Za-z0-9_-]*)+"
+
+[[key.kind.v.columns]]
+name = "allow"
+label = "Asks"
+
+[key.kind.v.columns.kind]
+kind = "choice"
+
+[key.kind.v.columns.kind.v]
+variants = ["ask", "always"]
+
+[key.page]
+kind = "intelligence"
+
+[[key]]
+path = "cua.default_mode"
+default = "auto"
+label = "Where it works"
+help = "Where the assistant works: on its own screen, or in the window you see."
+section = "Computer use"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["auto", "in_place", "agent_workspace"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+auto = "Automatic"
+in_place = "In place"
+agent_workspace = "Agent workspace"
+
+[[key]]
+path = "cua.autopause"
+default = true
+label = "Pause when I touch the window"
+help = "Pauses the assistant when you use the mouse or keyboard on a shared screen."
+section = "Computer use"
+exposure = "basic"
+
+[key.kind]
+kind = "toggle"
+
+[key.page]
+kind = "intelligence"
+
+[[key]]
+path = "cua.accessibility"
+default = true
+label = "Read app controls"
+help = "Lets the assistant read the buttons and fields of the window it is using."
+section = "Computer use"
+exposure = "basic"
+
+[key.kind]
+kind = "toggle"
+
+[key.page]
+kind = "intelligence"
+
+[[key]]
+path = "cua.budget.spend_microusd"
+default = 0
+label = "Spending per run"
+help = "The most one run may spend on paid models. 0 keeps it on this computer."
+section = "Run limits"
+exposure = "advanced"
+
+[key.kind]
+kind = "bounded"
+
+[key.kind.v]
+min = 0
+max = 1000000000
+
+[key.page]
+kind = "intelligence"
+

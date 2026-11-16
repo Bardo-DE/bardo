@@ -39,7 +39,7 @@ async fn an_answer_is_spoken_sentence_by_sentence_and_finishes_done() {
         .speak(&speak_wire(&format!("{FIRST} {SECOND}"), None))
         .await
         .expect("speak");
-    assert!(path.as_str().starts_with("/org/quire/Voice1/speech/"));
+    assert!(path.as_str().starts_with("/org/bardo/Voice1/speech/"));
     assert_eq!(
         speech_end_of(&next_text(&mut finished).await),
         SpeechEnd::Done
@@ -249,7 +249,7 @@ async fn too_much_text_and_too_many_speeches_are_refused() {
         .expect_err("refused");
     assert!(
         matches!(&error, zbus::Error::MethodError(name, _, _)
-            if name.as_str() == "org.quire.Voice1.Error.Malformed"),
+            if name.as_str() == "org.bardo.Voice1.Error.Malformed"),
         "{error}"
     );
     let body = speak_wire(&"y".repeat(200_000), None);

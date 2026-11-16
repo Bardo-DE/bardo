@@ -1,5 +1,5 @@
 //! sill as the control center of intentd: the terminal's standing grants and the way back from the
-//! breaker. The connection owns `org.quire.Shell`, which the shipped `intentd.toml` gives the
+//! breaker. The connection owns `org.bardo.Shell`, which the shipped `actiond.toml` gives the
 //! `control` role, so these members answer it and nobody else.
 
 use action_dbus::{ControlProxy, INTENTS_BUS};

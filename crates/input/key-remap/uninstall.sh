@@ -44,19 +44,19 @@ TOSHY_UNITS=(toshy-config.service toshy-kwin-dbus.service
 say "keycap uninstall ($([[ $DRY_RUN == yes ]] && echo 'dry run: nothing is changed' || echo 'for real'))"
 
 say "1. stop the service"
-if unit_known keycap.service; then
-  system_step "stop and disable keycap (the keyboards go back to the kernel)" systemctl disable --now keycap.service
-  system_step "forget a failed state, if any" systemctl reset-failed keycap.service
+if unit_known bardo-key-remap.service; then
+  system_step "stop and disable keycap (the keyboards go back to the kernel)" systemctl disable --now bardo-key-remap.service
+  system_step "forget a failed state, if any" systemctl reset-failed bardo-key-remap.service
 else
-  say "  keycap.service is not installed"
+  say "  bardo-key-remap.service is not installed"
 fi
 
 say "2. files"
 remove_file "$BINDIR/keycap"
-remove_file "$UNITDIR/keycap.service"
-remove_file "$UNITDIR/keycap.service.d/10-uinput.conf"
-remove_file "$UDEVDIR/70-keycap.rules"
-remove_file "$POLKITDIR/keycap.polkit.rules"
+remove_file "$UNITDIR/bardo-key-remap.service"
+remove_file "$UNITDIR/bardo-key-remap.service.d/10-uinput.conf"
+remove_file "$UDEVDIR/70-bardo-key-remap.rules"
+remove_file "$POLKITDIR/bardo-key-remap.polkit.rules"
 remove_file "$MODULESDIR/keycap.conf"
 if [[ "$PURGE" == yes ]]; then
   if [[ -d "$(dest /etc/keycap)" ]]; then
@@ -75,12 +75,12 @@ manual_note
 
 if [[ "$PLASMA_FOCUS" == yes ]]; then
   say "3. Plasma focus feed"
-  step "stop and disable the helper" systemctl --user disable --now keycap-focus.service || true
-  step "remove its unit" rm -f "$HOME/.config/systemd/user/keycap-focus.service"
-  step "remove the helper" rm -f "$HOME/.local/bin/keycap-focus"
+  step "stop and disable the helper" systemctl --user disable --now bardo-key-remap-focus.service || true
+  step "remove its unit" rm -f "$HOME/.config/systemd/user/bardo-key-remap-focus.service"
+  step "remove the helper" rm -f "$HOME/.local/bin/bardo-key-remap-focus"
   step "reload the user manager" systemctl --user daemon-reload
   step "disable the KWin script" kwriteconfig6 --file kwinrc --group Plugins --key keycap-focusEnabled false
-  step "remove the KWin script" kpackagetool6 --type=KWin/Script -r keycap-focus || true
+  step "remove the KWin script" kpackagetool6 --type=KWin/Script -r bardo-key-remap-focus || true
   step "make KWin reload" gdbus call --session --dest org.kde.KWin --object-path /KWin --method org.kde.KWin.reconfigure || true
 fi
 

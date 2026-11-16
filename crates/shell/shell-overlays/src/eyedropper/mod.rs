@@ -1,5 +1,5 @@
 //! The colour picker's eyedropper (what an app gets when it asks the person for a colour from the
-//! screen, `org.quire.Shell1.PickColor`): one Overlay surface per output, kept warm and hidden,
+//! screen, `org.bardo.Shell1.PickColor`): one Overlay surface per output, kept warm and hidden,
 //! that maps over a still picture of its output while a colour is asked for
 //! ([`shell_ui_kit::links::EyedropperLink`]). A round magnifier follows the pointer and shows the
 //! pixels around it enlarged, the one under the pointer ringed in the middle. A click picks that

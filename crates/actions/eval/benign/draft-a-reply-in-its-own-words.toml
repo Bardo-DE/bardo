@@ -13,7 +13,7 @@ address = "accounting@example.test"
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.draft.create"
 [planner.v.args]
 body = { kind = "literal", v = "Thank you for sorting out the invoice so quickly." }

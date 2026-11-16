@@ -25,8 +25,8 @@ require_private_system_bus() {
 # fresh private session bus onto DBUS_SYSTEM_BUS_ADDRESS too before starting the daemon (one
 # private bus standing in for both), and refuses outright if dbus-run-session left it real.
 # Arguments after the binary go to `sill run`. Usage:
-#   dbus-run-session --config-file="$SILL_REPO/dev/private-bus.conf" -- \
-#     sh -c "$PRIVATE_BOTH_BUSES" "$SILL_BIN" "${FAKE_DDC_FLAGS[@]}"
+#   dbus-run-session --config-file="$BARDO_SHELL_REPO/dev/private-bus.conf" -- \
+#     sh -c "$PRIVATE_BOTH_BUSES" "$BARDO_SHELL_BIN" "${FAKE_DDC_FLAGS[@]}"
 read -r -d '' PRIVATE_BOTH_BUSES <<'SH' || true
 case "$DBUS_SESSION_BUS_ADDRESS" in
   ""|unix:path=/run/dbus/system_bus_socket)
@@ -41,7 +41,7 @@ SH
 # standing in for both the session and the system bus of a daemon on a nested compositor. $1: the
 # bus config (default dev/private-bus.conf). Call stop_private_bus when done.
 start_private_bus() {
-  local out conf="${1:-$SILL_REPO/dev/private-bus.conf}"
+  local out conf="${1:-$BARDO_SHELL_REPO/dev/private-bus.conf}"
   stop_private_bus # a script that starts one per group must not leak the last
   out=$(dbus-daemon --config-file="$conf" --fork --print-address=1 --print-pid=1) || return 1
   BUS=$(sed -n 1p <<<"$out")

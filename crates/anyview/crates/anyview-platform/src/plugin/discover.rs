@@ -48,7 +48,7 @@ pub fn discover(env: &Env) -> Discovery {
 /// are set aside before anything is ranked, so a person's copy that cannot run never hides a
 /// system one that can. Of the usable copies of one id the higher protocol wins, then the
 /// person's over the system's, then the newer version. An Extension turned off in
-/// `quire/extensions.toml` (in `env`'s config directory) serves nothing and is listed in
+/// `bardo/extensions.toml` (in `env`'s config directory) serves nothing and is listed in
 /// [`Plugins::off`].
 #[must_use]
 pub fn discover_in(env: &Env, folder: &Path) -> Discovery {
@@ -94,7 +94,7 @@ pub fn discover_in(env: &Env, folder: &Path) -> Discovery {
     }
 }
 
-/// The ids turned off in `quire/extensions.toml` in `env`'s config directory. A file that is not
+/// The ids turned off in `bardo/extensions.toml` in `env`'s config directory. A file that is not
 /// there, or cannot be read, turns nothing off.
 fn off_ids(env: &Env) -> Vec<ExtensionId> {
     let store = Store::new(ConfigRoot::Scratch(env.dirs.config.clone()), AppName::QUIRE);

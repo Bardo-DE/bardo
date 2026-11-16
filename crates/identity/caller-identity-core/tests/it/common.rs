@@ -10,13 +10,13 @@ pub const PID: u32 = 4242;
 /// A small table: one service with a unit, one program without.
 pub const TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
-exe  = ["/opt/quire/releases/*/bin/sill", "/usr/bin/sill"]
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
+exe  = ["/opt/bardo/releases/*/bin/sill", "/usr/bin/bardo-shell"]
 role = "shell"
 
 [[peer]]
-app  = "org.quire.Updater"
+app  = "org.bardo.Updater"
 exe  = ["/usr/bin/slipway"]
 role = "updater_cli"
 "#;
@@ -49,7 +49,7 @@ pub fn user_writable(path: &str) -> Exe {
 }
 
 pub fn in_sill_unit() -> &'static str {
-    "/user.slice/user-1000.slice/user@1000.service/app.slice/sill.service"
+    "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service"
 }
 
 pub fn facts(cgroup: &str, exe: Exe) -> Facts {
@@ -64,15 +64,15 @@ pub fn facts(cgroup: &str, exe: Exe) -> Facts {
     }
 }
 
-/// What the manager says of a healthy sill.service.
+/// What the manager says of a healthy bardo-shell.service.
 pub fn sill_unit() -> UnitFacts {
     UnitFacts {
-        name: UnitName::new("sill.service").expect("a unit"),
+        name: UnitName::new("bardo-shell.service").expect("a unit"),
         main_pid: Some(pid()),
         fragment: Fragment::RootOwned,
         drop_ins: DropIns::None,
         transient: Transient::No,
-        exec: Some(exe_path("/usr/bin/sill")),
+        exec: Some(exe_path("/usr/bin/bardo-shell")),
         exec_trust: Some(FileTrust::RootOnly),
         loader: Loader::Cleared,
     }

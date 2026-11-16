@@ -8,13 +8,13 @@
 #   dev/out/tools/libwlcs_casement.so  our MIT shim (wlcs-casement, an excluded crate), the
 #                                      cdylib wlcs dlopens.
 # Plain cargo (the shim serialises builds); CARGO_TARGET_DIR is honoured, else the shim builds
-# into <tools>/shim-target. <tools> is $CASEMENT_TOOLS, else dev/out/tools (the dir that
+# into <tools>/shim-target. <tools> is $BARDO_COMPOSITOR_TOOLS, else dev/out/tools (the dir that
 # dev/bootstrap.sh and dev/wlcs/run.sh use too), so a lane can keep it outside its checkout.
 set -euo pipefail
 cd "$(dirname "$0")/../../../compositor"
 sha=2b385328366de5db19521b9b3eef81861430d984
-# $CASEMENT_TOOLS moves the tools directory (dev/bootstrap.sh passes it); else dev/out/tools.
-tools="${CASEMENT_TOOLS:-$PWD/dev/out/tools}"
+# $BARDO_COMPOSITOR_TOOLS moves the tools directory (dev/bootstrap.sh passes it); else dev/out/tools.
+tools="${BARDO_COMPOSITOR_TOOLS:-$PWD/dev/out/tools}"
 dir="$tools/wlcs"
 mkdir -p "$tools"
 if [ ! -d "$dir/.git" ]; then

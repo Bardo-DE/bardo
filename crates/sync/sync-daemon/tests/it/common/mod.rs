@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 pub const ACCESS_DENIED: &str = "org.freedesktop.DBus.Error.AccessDenied";
 pub const INVALID_ARGS: &str = "org.freedesktop.DBus.Error.InvalidArgs";
-pub const NO_FITTING: &str = "org.quire.Accounts1.Error.NoFittingAccount";
+pub const NO_FITTING: &str = "org.bardo.Accounts1.Error.NoFittingAccount";
 
 /// Whether a rig's account holds syncd's Photos grant, which the account's Photos row in Settings
 /// makes and takes back: the only thing that runs Photos.

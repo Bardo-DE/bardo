@@ -59,7 +59,7 @@ use zbus::zvariant::OwnedValue;
 
 const GRANT: &str = "sync-grant";
 const ACCOUNT: &str = "graph-acct";
-const PHOTOS: &str = "org.quire.Photos";
+const PHOTOS: &str = "org.bardo.Photos";
 /// What the fake provider mints for the audience of this account's endpoint (its family's slug).
 const BEARER: &str = "fake:graph-acct:graph";
 

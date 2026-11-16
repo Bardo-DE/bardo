@@ -98,7 +98,7 @@ pub async fn supervise(
     }
 }
 
-/// Registers `org.quire.Voice1` on `connection` over `seams` and starts the loop. Returns when
+/// Registers `org.bardo.Voice1` on `connection` over `seams` and starts the loop. Returns when
 /// the name is owned, so a caller may use the interface at once; a second daemon on the same bus
 /// is an error.
 pub async fn start<D, T, W, U>(
@@ -166,7 +166,7 @@ where
     })
 }
 
-/// Serves `org.quire.Voice1` on the session bus over a device: registers the three
+/// Serves `org.bardo.Voice1` on the session bus over a device: registers the three
 /// interfaces, derives each caller's role from the connection, runs `agent-voice-loop` and talks to
 /// inferd through inference-client. `usage` is where the person's voice settings are read. Returns
 /// when the bus closes, or with an error if the loop dies first.

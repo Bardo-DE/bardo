@@ -105,7 +105,7 @@ fn the_agents_cassette_lets_the_flows_through_and_names_the_hosts_app() {
     let policy: serde_json::Value =
         serde_json::from_str(lines[1]["reply"]["v"].as_str().expect("text")).expect("policy");
     let apps = policy["apps"].as_array().expect("apps");
-    assert!(apps.iter().any(|a| a["app"] == "org.quire.AcpAgent"));
+    assert!(apps.iter().any(|a| a["app"] == "org.bardo.AcpAgent"));
 }
 
 fn failures_of(e: &Evidence) -> Vec<(Kind, String)> {

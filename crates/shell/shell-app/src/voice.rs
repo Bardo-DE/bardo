@@ -107,7 +107,7 @@ mod tests {
         crate::daemon::settings::save(&store, &before).unwrap_or_else(|e| panic!("{e}"));
         let (tx, rx) = watch::channel(before);
         let table_of = || -> toml::Table {
-            std::fs::read_to_string(dir.join("sill/settings.toml"))
+            std::fs::read_to_string(dir.join("shell/settings.toml"))
                 .unwrap_or_else(|e| panic!("{e}"))
                 .parse()
                 .unwrap_or_else(|e| panic!("{e}"))

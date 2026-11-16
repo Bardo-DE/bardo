@@ -20,8 +20,8 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-const CUAD: &str = "org.quire.Cuad";
-const SILL: &str = "org.quire.Shell";
+const CUAD: &str = "org.bardo.ComputerUse";
+const SILL: &str = "org.bardo.Shell";
 
 fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
@@ -35,7 +35,7 @@ fn step(run: &RunId) -> CuaAsk {
     CuaAsk {
         run: run.clone(),
         step: 1,
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         trust: WindowTrust::Quire,
         mode: RunMode::InPlace,
         space: space(),
@@ -107,12 +107,12 @@ impl Desk {
         setup.proc_root = action_daemon::ProcRoot::Honoured(dir.path().join("proc"));
         let intentd = start(&daemon, None, setup).await.expect("intentd");
         let sill_connection = bus.connect().await;
-        let sill = FakeSill::start(&sill_connection, &["org.quire.Confirm1", SILL]).await;
+        let sill = FakeSill::start(&sill_connection, &["org.bardo.Confirm1", SILL]).await;
         introduce(
             &who,
             &sill_connection,
             &config,
-            &["org.quire.Confirm1", SILL],
+            &["org.bardo.Confirm1", SILL],
         );
         let cuad_connection = bus.connect().await;
         cuad_connection.request_name(CUAD).await.expect("name");

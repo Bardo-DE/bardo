@@ -1,4 +1,4 @@
-//! Registering the Spaces casement mints with the account service (`org.quire.Spaces1.Register`).
+//! Registering the Spaces casement mints with the account service (`org.bardo.Spaces1.Register`).
 //!
 //! casement mints a Space's id (the ext-workspace id, kept in `spaces.toml`); the account service
 //! learns of it here, so an app's own Space can link to it. [`SpaceRegistry`] is the seam:

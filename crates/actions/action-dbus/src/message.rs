@@ -1,4 +1,4 @@
-//! `org.quire.Intents1.Message`: messages between agents, and between the person and an agent: one model, `provenance::Message`.
+//! `org.bardo.Intents1.Message`: messages between agents, and between the person and an agent: one model, `provenance::Message`.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -6,9 +6,9 @@ use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Message",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Message",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Message {
     /// Stamps and delivers a draft (`MessageDraft` JSON; answers `Result<Delivery, SendRefusal>` JSON).
@@ -26,7 +26,7 @@ pub trait Message {
 #[derive(Debug, Default)]
 pub struct MessageSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Message")]
+#[zbus::interface(name = "org.bardo.Intents1.Message")]
 impl MessageSkeleton {
     fn send(&self, session: String, draft: String, options: Details) -> fdo::Result<String> {
         let _ = (session, draft, options);

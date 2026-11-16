@@ -67,7 +67,7 @@ fn spawn_over(
         .stdout(Stdio::null())
         .stderr(std::fs::File::create(&stderr).expect("stderr file"));
     if let Some(root) = proc_root {
-        command.env("ACCOUNTD_PROC_ROOT", root);
+        command.env("BARDO_ACCOUNTD_PROC_ROOT", root);
     }
     Daemon {
         child: command.spawn().expect("accountd starts"),

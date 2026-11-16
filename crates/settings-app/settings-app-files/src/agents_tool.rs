@@ -1,4 +1,4 @@
-//! The program that reaches the network for coding assistants (`docket-agents`): it lists what
+//! The program that reaches the network for coding assistants (`bardo-agents`): it lists what
 //! the registry offers and downloads one. It is a separate program, run as a child process; this
 //! is the only place it is started.
 
@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 /// The file name of the program.
-const PROGRAM: &str = "docket-agents";
+const PROGRAM: &str = "bardo-agents";
 
 /// Where the program is: beside the running program (an install prefix's `bin`), else in a
 /// directory of `path` (the value of `PATH`).
@@ -52,7 +52,7 @@ fn candidate_of(line: &str) -> Option<Candidate> {
     })
 }
 
-/// `docket-agents` over docket's agents folder.
+/// `bardo-agents` over docket's agents folder.
 #[derive(Debug, Clone)]
 pub struct AgentsTool {
     program: PathBuf,

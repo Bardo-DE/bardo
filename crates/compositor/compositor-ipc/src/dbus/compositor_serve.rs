@@ -1,4 +1,4 @@
-//! Serving `org.quire.Compositor1` on the session bus: a thread of its own with a
+//! Serving `org.bardo.Compositor1` on the session bus: a thread of its own with a
 //! current-thread tokio runtime (casement itself reaches neither zbus nor tokio), and a bounded
 //! calloop channel carrying the calls that passed the caller check into casement's event loop.
 //! The same shape as `serve_debug_at`.
@@ -63,7 +63,7 @@ impl CallerSetup {
         }
     }
 
-    /// The same, also serving the Privacy list for Settings (`org.quire.SettingsModule1` at
+    /// The same, also serving the Privacy list for Settings (`org.bardo.SettingsModule1` at
     /// `PRIVACY_PATH`) over `link`, whose callers are told apart by the same check.
     pub fn with_privacy(self, link: PrivacyLink) -> CallerSetup {
         CallerSetup {

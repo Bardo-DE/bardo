@@ -45,7 +45,7 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 | `~/sill` | existing | launcher companion mode, companion service, providers, overlays (confirm and glow phase A), settings domain | no |
 | `~/detent` | existing | `Page::Intelligence` row and icon | no |
 | `~/mailo` | existing | first real provider (fill wave only) | no |
-| `~/shell-host` | existing | nothing in the freeze; later the `quire_sensitive_v1` client | no |
+| `~/shell-host` | existing | nothing in the freeze; later the `bardo_sensitive_v1` client | no |
 
 Why the companion agent lives in docket and not its own repo: the planner never links cua or almanac
 (it reaches CUA and memory as router actions, §4.2), so docket can host it without a repo cycle, and
@@ -61,7 +61,7 @@ the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`
 stoker  ←  porter  ←  almanac  ←  docket  ←  cua  ←  sill
    ↑          ↑          ↑          ↑   ↖quire(ui-intents only)
    └──────────┴──────────┴──────────┴── mailo, detent (clients only)
-quire depends on none of them.  casement → cua's quire-agent-protocol only.
+quire depends on none of them.  casement → cua's bardo-agent-protocol only.
 ```
 
 ### 1.3 Every crate (final names)
@@ -100,9 +100,9 @@ quire depends on none of them.  casement → cua's quire-agent-protocol only.
 | 29 | `action-dbus` | docket | zbus | action-core |
 | 30 | `action-client` | docket | per transport | action-core, action-router (InProcess), action-dbus (feature) |
 | 31 | `action-fake` | docket | test | 25-30 |
-| 32 | `docket-eval` | docket | test + release script | action-fake and its deps, **inference-core** |
-| 33 | `actions-mcp` | docket | rmcp edge binary, off by default | action-core, action-client |
-| 34 | `intentd` | docket | daemon (also hosts the built-in `org.quire.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
+| 32 | `agent-eval` | docket | test + release script | action-fake and its deps, **inference-core** |
+| 33 | `bardo-actions-mcp` | docket | rmcp edge binary, off by default | action-core, action-client |
+| 34 | `intentd` | docket | daemon (also hosts the built-in `org.bardo.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
 | 35 | `companion-wire` | docket | pure, serde-only | action-core, **prov, inference-core** (`ServedBy`) |
 | 36 | `agent-loop` | docket | pure step machine | action-core, companion-wire, **prov** |
 | 37 | `companiond` | docket | daemon | agent-loop, companion-wire, action-client, **account-client** |
@@ -111,8 +111,8 @@ quire depends on none of them.  casement → cua's quire-agent-protocol only.
 | 40 | `computer-use-a11y-tree` | cua | pure; `atspi` feature | **computer-use-action, prov** |
 | 41 | `computer-use-seat-input` | cua | pure; `ei` feature | **computer-use-action** |
 | 42 | `maskcap` | cua | pure; `wayland` feature | **computer-use-action** |
-| 43 | `computer-use-desktop` | cua | pure; `wayland` feature | **computer-use-action, action-core** (`RunMode`, `WindowTrust`), quire-agent-protocol (feature) |
-| 44 | `quire-agent-protocol` | cua | wayland-scanner | — |
+| 43 | `computer-use-desktop` | cua | pure; `wayland` feature | **computer-use-action, action-core** (`RunMode`, `WindowTrust`), bardo-agent-protocol (feature) |
+| 44 | `bardo-agent-protocol` | cua | wayland-scanner | — |
 | 45 | `computer-use-bus` (new split) | cua | pure, serde-only (`Cua1` bodies, `CuaRecord`) | **prov, action-core, inference-core** |
 | 46 | `computer-use-run` | cua | pure run machine | 40-43, 45, **action-core, prov, account-core, inference-core** |
 | 47 | `computer-use-dbus` | cua | zbus | computer-use-bus |
@@ -128,14 +128,14 @@ Later (named now, not frozen): `model-anthropic`, `model-openai-responses`, `mod
 Boundary rules per repo (each repo's `check-boundary.sh`): pure crates never reach `tokio hyper
 hyper-util rustls zbus zvariant reqwest wayland-client wayland-backend reis atspi oo7 ort fastembed
 rusqlite notify cedar-policy rmcp` except where the table says so (`permission-policy`→cedar;
-`actions-mcp`→rmcp; `eventlog`/`recall`→rusqlite; `*-dbus`, daemons, feature backends → io).
+`bardo-actions-mcp`→rmcp; `eventlog`/`recall`→rusqlite; `*-dbus`, daemons, feature backends → io).
 
 ### 1.4 Adopted external crates (join `quire/docs/workspace-deps.toml` in wave 0)
 
 | Crate | Version | For | Note |
 |---|---|---|---|
 | cedar-policy | 4.13 | permission-policy | `cargo deny` against its lalrpop tree first |
-| rmcp | 3.5, `default-features=false, ["server","transport-io"]` | actions-mcp | pin the minor |
+| rmcp | 3.5, `default-features=false, ["server","transport-io"]` | bardo-actions-mcp | pin the minor |
 | hyper / hyper-util / http-body-util | 1 / 0.1.21 / 0.1 | model-http | one HTTP stack, Unix sockets |
 | hyper-rustls + rustls | 0.27 / 0.23 | model-http cloud (later) | no OpenSSL |
 | base64 | 0.22 | inference-core inline images | |
@@ -243,7 +243,7 @@ pub enum Effect { Read, UndoableWrite, Outbound, Destructive }
 
 // prov/src/actor.rs  (set by the transport/daemon, never self-asserted)
 pub enum Actor {
-    User { via: AppName },                        // via = the app or org.quire.Shell (launcher)
+    User { via: AppName },                        // via = the app or org.bardo.Shell (launcher)
     Companion { session: SessionId, role: AgentRole },
     Mcp { client: ClientName },
     App { app: AppName },                         // an app on its own (sync, rules)
@@ -525,7 +525,7 @@ pub trait SummonTarget: Send + Sync { fn summon(&self, serial: SummonSerial, ori
 pub enum SummonAnswer { TookField, TookAnchored, Restored, Declined }
 ```
 
-### 3.6 docket `companion-wire` (new; the `org.quire.Companion1` bodies)
+### 3.6 docket `companion-wire` (new; the `org.bardo.Companion1` bodies)
 
 ```rust
 pub struct AskWire { pub session: SessionId, pub turn: TurnId, pub parent_window: WindowKey }
@@ -604,7 +604,7 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
   `Granting` calls `Intents1.Gate.Grant(app, space)`.
 - `RunBudget { steps, active, stall_frames, actions_per_min, model_failures, spend }` (no `denials`); `GateAnswer::Refused(Paused(_))` → `Finished(Blocked(PolicyDenials))`; `Refused(Halted(_))` → `Paused`.
 - `computer-use-bus` (new, serde-only): `RunStateSlug`, `CuaTask` (the `Start` body), `CuaResult`, `CuaOutcome`, `CuaRecord` (actor `prov::Actor::Companion{role: Cua{run}}`, served_by `porter_infer::ServedBy`), `ControlRefusal`, plus the `Cua1` XML (cua.md §3.8, unchanged; ux's `Replay`/`UndoAll` additions rejected: undo is `Intents1.Run.UndoAll(Run(id))`).
-- cuad also serves `IntentProvider1` as app **`org.quire.Cua`** with one action
+- cuad also serves `IntentProvider1` as app **`org.bardo.ComputerUse`** with one action
   `cua.run.start { goal: Text(sink Body), target: Entity(desktop.window) | app: Text, mode: Choice }`,
   `effect: Read`, `latency: Long`, `reach: Hidden` while `cua.enabled = off`. Each pixel step is gated on its own.
 
@@ -616,18 +616,18 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 
 | Daemon | Repo | Merges | Bus name / object | Serves | Calls |
 |---|---|---|---|---|---|
-| **inferd** (existing) | porter | models' engine host; 31's MCP host role removed (C16) | `org.quire.Inference1` `/org/quire/Inference1`; `org.quire.SettingsModule1` at `/org/quire/Inference1/settings` | `Availability`, `Open(need,class,tier)->h` (fd stream of ClientFrame/InferEvent, memfds), **`Prepare(need,class,tier)->s`**, `Usage`, `Rescan`; signal **`EnginesChanged()`**; property **`Gpu s`** | engines over Unix sockets (transient systemd units) |
-| **intentd** | docket | actions' router, ux's "security" checks, cua's per-step PDP, the planner's memory path | `org.quire.Intents1` `/org/quire/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (sill), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
-| **companiond** | docket | ux's "agent daemon", actions' "companion", cua's "planner/router that calls Start", memory's "agent-loop" | `org.quire.Companion1` `/org/quire/Companion1` | §4.2 | `Intents1` (role companion), inferd (planner) |
-| **readerd** | docket | actions' quarantined reader | `org.quire.Reader1` `/org/quire/Reader1` | `Extract(session s, ask s) -> s` (caller must be intentd) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
-| **memoryd** | almanac | ux's "memory daemon" | `org.quire.Memory1` `/org/quire/Memory1` (memory.md §3.10; ux's names mapped C27) | Record / Recall / Control | inferd (embed, consolidation) |
-| **cuad** | cua | cua-integration's cuad | `org.quire.Cua1` `/org/quire/Cua1` (+ `/run/<id>`); `IntentProvider1` as `org.quire.Cua` | cua.md §3.8 | `Intents1.Gate`, inferd (ComputerUse, class Screen), `Memory1.Record`, `the compositor's input service` (stock) or `quire-agent-v1` (fork) |
-| sill daemon (existing) | sill | ux's confirm phase A and glow phase A | serves **`org.quire.Confirm1`** `/org/quire/Confirm1` and `IntentProvider1` as `org.quire.Shell` | `Confirm(request s)->o`, `Cancel(id s)` | all of the above as a client |
-| actions-mcp | docket | — | not on the bus (stdio/unix socket), off by default | MCP tools generated from the registry | `Intents1` as role mcp |
+| **inferd** (existing) | porter | models' engine host; 31's MCP host role removed (C16) | `org.bardo.Inference1` `/org/bardo/Inference1`; `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | `Availability`, `Open(need,class,tier)->h` (fd stream of ClientFrame/InferEvent, memfds), **`Prepare(need,class,tier)->s`**, `Usage`, `Rescan`; signal **`EnginesChanged()`**; property **`Gpu s`** | engines over Unix sockets (transient systemd units) |
+| **intentd** | docket | actions' router, ux's "security" checks, cua's per-step PDP, the planner's memory path | `org.bardo.Intents1` `/org/bardo/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (sill), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
+| **companiond** | docket | ux's "agent daemon", actions' "companion", cua's "planner/router that calls Start", memory's "agent-loop" | `org.bardo.Companion1` `/org/bardo/Companion1` | §4.2 | `Intents1` (role companion), inferd (planner) |
+| **readerd** | docket | actions' quarantined reader | `org.bardo.Reader1` `/org/bardo/Reader1` | `Extract(session s, ask s) -> s` (caller must be intentd) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
+| **memoryd** | almanac | ux's "memory daemon" | `org.bardo.Memory1` `/org/bardo/Memory1` (memory.md §3.10; ux's names mapped C27) | Record / Recall / Control | inferd (embed, consolidation) |
+| **cuad** | cua | cua-integration's cuad | `org.bardo.ComputerUse1` `/org/bardo/ComputerUse1` (+ `/run/<id>`); `IntentProvider1` as `org.bardo.ComputerUse` | cua.md §3.8 | `Intents1.Gate`, inferd (ComputerUse, class Screen), `Memory1.Record`, `the compositor's input service` (stock) or `quire-agent-v1` (fork) |
+| sill daemon (existing) | sill | ux's confirm phase A and glow phase A | serves **`org.bardo.Confirm1`** `/org/bardo/Confirm1` and `IntentProvider1` as `org.bardo.Shell` | `Confirm(request s)->o`, `Cancel(id s)` | all of the above as a client |
+| bardo-actions-mcp | docket | — | not on the bus (stdio/unix socket), off by default | MCP tools generated from the registry | `Intents1` as role mcp |
 
 ### 4.2 Interfaces (bodies are JSON of the named type in `s`, envelope `{vocab, body}`; caller identity is always derived from the connection, never sent)
 
-**`org.quire.Intents1`** (intentd). actions.md §3.12 with the addendum, plus the rows marked new.
+**`org.bardo.Intents1`** (intentd). actions.md §3.12 with the addendum, plus the rows marked new.
 
 | Interface | Members | Callers |
 |---|---|---|
@@ -639,43 +639,43 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 | `.Session` | `Open(space s) -> s`; `Turn(session s, turn s) -> t` (`TurnIn`; **launcher and field roles**; derives/narrows TaskPolicy; snapshots context); `Close(s)`; `Resolve(handle t) -> s` (**reader only**); **`Display(session s, handle t) -> s`** (launcher and the summoning app only: text for the screen, never a model); **`Read(session s, ask s) -> s`** (companion: `ReaderAsk` → readerd → labelled value or a new handle); `TaskPolicy(session s) -> s`; `Widen(session s, turn t, change s) -> o` | launcher, field, companion, reader |
 | **`.Gate`** (new) | `Grant(app s, space s) -> o` (CUA consent, `ActionGrant` with caller Cua); `Check(ask s) -> o` (`CuaAsk` → `GateAnswer`) | cua |
 | `.Control` | `Halt(scope s, cause s)`, `Resume(scope s)`, `State() -> s`, `Journal(filter s) -> s`; sigs `Halted(s)`, `Resumed(s)`, `JournalChanged(t)`, **`BreakerTripped(session s)`** | compositor, control (sill) |
-| `.Request` `/org/quire/Intents1/request/<n>` | `Close()`, **`Proceed()`** (cua: lease suspended, show the confirm); sigs `Progress(s)` (`CallProgress`), `Response(u, s)` | requester |
+| `.Request` `/org/bardo/Intents1/request/<n>` | `Close()`, **`Proceed()`** (cua: lease suspended, show the confirm); sigs `Progress(s)` (`CallProgress`), `Response(u, s)` | requester |
 
-Caller roles (`intentd.toml`): `launcher` = sill; `field` = any quire app recording a turn from its own
+Caller roles (`actiond.toml`): `launcher` = sill; `field` = any quire app recording a turn from its own
 field (TurnSource::Field); `companion` = companiond; `reader` = readerd; `cua` = cuad; `mcp` =
-actions-mcp; `confirm` = sill (the only Confirm1 server it trusts); `compositor` = the fork; `control` = sill.
+bardo-actions-mcp; `confirm` = sill (the only Confirm1 server it trusts); `compositor` = the fork; `control` = sill.
 
-**`org.quire.IntentProvider1`** (every provider: apps, `org.quire.Shell`, `org.quire.Cua`; `org.quire.Memory` is built into intentd)
+**`org.bardo.IntentProvider1`** (every provider: apps, `org.bardo.Shell`, `org.bardo.ComputerUse`; `org.bardo.Memory` is built into intentd)
 `Perform(inv s)->s`, **`DryRun(inv s)->s`**, `Undo(token s, actor s)->s`, `Context(scope s)->s`,
 **`Summon(serial t, origin s)->s`** (`SummonAnswer`; ds answers via action-ui-adapter), `Search(text s, gen t)->s`,
 `Preview(entity s)->s`, `Suggest(ask s)->s`, `Resolve(keys s)->s`; sigs `UndoChanged(token s, state s)`, `IndexStale(epoch t)`.
 
-**`org.quire.Confirm1`** (sill): `Confirm(request s) -> o` (Request carries `Response(u, answer s)`),
+**`org.bardo.Confirm1`** (sill): `Confirm(request s) -> o` (Request carries `Response(u, answer s)`),
 `Cancel(id s)`. Phase A: a `shell-overlays` sheet, receipts `SheetFallback`. Phase B: the same sill
-surface placed on the fork's `quire_trusted_surface_v1` (hardware input only, nothing can draw over
+surface placed on the fork's `bardo_trusted_surface_v1` (hardware input only, nothing can draw over
 it, the agent seat cannot focus it), receipts `HardwareSeat`.
 
-**`org.quire.Companion1`** (companiond; replaces ux's sketch: no Presence, Undo, Activity or PauseSpace members)
+**`org.bardo.Companion1`** (companiond; replaces ux's sketch: no Presence, Undo, Activity or PauseSpace members)
 
 | Member | Notes |
 |---|---|
 | `Prepare()` | on summon; calls `Inference1.Prepare` for the planner role so the first turn skips a cold start |
 | `Open(space s) -> s` | opens an `Intents1` session as role companion; returns `SessionId` |
-| `Ask(ask s) -> o` | `AskWire` (session + a turn the UI already recorded); returns `/org/quire/Companion1/answer/<task>` |
+| `Ask(ask s) -> o` | `AskWire` (session + a turn the UI already recorded); returns `/org/bardo/Companion1/answer/<task>` |
 | `Close(session s)` | |
 | sigs `AnswerAdded(o)`, `AnswerRemoved(o)` | |
 | `.Answer` on each answer object: property `View s` (`AnswerWire`); sig `Updated(s)`; `Act(action s) -> o` (a card action → `Run.Perform`); `Cancel()` | |
 
-**`org.quire.Memory1`** (memoryd): memory.md §3.10 unchanged.
-**`org.quire.Cua1`** (cuad): cua.md §3.8 unchanged.
-**`org.quire.Inference1`**: models.md §3.8 table (additive).
-**`org.quire.Reader1`**: `Extract(session s, ask s) -> s`.
-**Wayland** (cua repo `quire-agent-protocol`): `quire-agent-v1` (manager, lease: `set_glow(state, rect)`
-replaces ux's `quire_agent_glow_v1`), later `quire_trusted_surface_v1` (sill client) and
-`quire_sensitive_v1` (layer-shell-host client). Stock: `the compositor's input service`.
+**`org.bardo.Memory1`** (memoryd): memory.md §3.10 unchanged.
+**`org.bardo.ComputerUse1`** (cuad): cua.md §3.8 unchanged.
+**`org.bardo.Inference1`**: models.md §3.8 table (additive).
+**`org.bardo.Reader1`**: `Extract(session s, ask s) -> s`.
+**Wayland** (cua repo `bardo-agent-protocol`): `quire-agent-v1` (manager, lease: `set_glow(state, rect)`
+replaces ux's `bardo_agent_glow_v1`), later `bardo_trusted_surface_v1` (sill client) and
+`bardo_sensitive_v1` (layer-shell-host client). Stock: `the compositor's input service`.
 
-Name rule: every interface we own is `org.quire.<Name>1`; objects at `/org/quire/<Name>1`; errors
-`org.quire.<Name>1.Error.<Variant>` mapped 1:1 from the refusal enum.
+Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo/<Name>1`; errors
+`org.bardo.<Name>1.Error.<Variant>` mapped 1:1 from the refusal enum.
 
 ---
 
@@ -686,9 +686,9 @@ Name rule: every interface we own is `org.quire.<Name>1`; objects at `/org/quire
 | # | Step | Owner |
 |---|---|---|
 | 1 | Toshy emits the chord → `sill companion tap` (route B) or `summon` (route A) → `ShowRequest::Companion` | ux (sill), Toshy spike |
-| 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.quire.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; sill calls `Companion1.Prepare()` in parallel | ux (sill), docket (method) |
+| 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.bardo.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; sill calls `Companion1.Prepare()` in parallel | ux (sill), docket (method) |
 | 3 | In mailo, action-ui-adapter asks ds's `CompanionPort`: the search field answers `TookField`; **ui-intents freezes the context at this moment** (query "lisbon receipts", 12 visible results, selection) before the field turns into a prompt; chips Query, Results(12) | quire ui-intents, action-ui-adapter |
-| 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.quire.Mail)`) → `Companion1.Ask` | docket |
+| 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.bardo.Mail)`) → `Companion1.Ask` | docket |
 | 5 | intentd: PolicyWriter derives a TaskPolicy from the turn only (Mail actions up to Outbound, kind mail.message, max 12; recipients unresolved); Field turns are capped to Mail + Read elsewhere | docket |
 | 6 | companiond/agent-loop: `PlannerView` (result titles are third-party → handles); planner calls `contacts.search("accounting")` (Read, AllowFinal; Contacts is a trusted store → the contact is a Trusted sink); if it must pick which results are receipts, `Session.Read(ReaderAsk{Classify, EntitiesAmong})` → plain entity ids, planner taint becomes Untrusted | docket (+ models for the planner/reader models) |
 | 7 | Plan card `Plan[forward 12 → Accounting]` streams to mailo's prompt (answer `Updated`); plans run at once, confirmations happen per call (C40) | docket, ux |
@@ -703,7 +703,7 @@ Name rule: every interface we own is `org.quire.<Name>1`; objects at `/org/quire
 | # | Step | Owner |
 |---|---|---|
 | 1 | Launcher companion mode → sill records `Session.Turn` (role launcher) → `Companion1.Ask` | ux, docket |
-| 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.quire.Cua: cua.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | docket |
+| 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.bardo.ComputerUse: cua.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | docket |
 | 3 | cuad: `Gate.Grant(firefox, space)` → first use Ask (Confirm1, OnceOrAlways unless a sensitive class) → lease (AgentWorkspace on the fork; stock: in place, HandsOff) → `Cua1.RunAdded` → sill run row | cua, docket, ux |
 | 4 | Observe: masked capture (cuad on stock, compositor on fork), a11y snapshot, `Inference1.Open(ComputerUse, Screen, tier)` → `CuaBegin`, `CuaStep` (memfd frame, tree text) → `CuaStepReply` in WindowSpace; `ActionProposed` → glow | cua, models (stoker in inferd) |
 | 5 | Each action: `classify_effect` → `Gate.Check(CuaAsk)` → router Ruling with screen taint (always Untrusted): clicks in an ordinary window AllowJudged → reviewer Quick; typing into a compose window = Outbound → Ask → `Progress(Confirming)` → cuad suspends EI (stock) → `Proceed` → Confirm1 → answer → `GateAnswer` | cua, docket |
@@ -720,7 +720,7 @@ Name rule: every interface we own is `org.quire.<Name>1`; objects at `/org/quire
 | 3 | The summary is shown via `Session.Display` (sill/mailo render it as data) | docket, ux |
 | 4 | Reply draft: `mail.draft.create` with body = handle → UndoableWrite, args Untrusted → AllowJudged → reviewer (input stripped: user turns, typed action, labels; no body) → run | docket |
 | 5 | Send: Outbound with Body and Recipient sinks Untrusted (the sender address comes from mail headers) → `untrusted-sink` + `rule-of-two` forbids → Ask; confirm shows recipients as `Shown::Quoted{from: Mail}` | docket, ux |
-| 6 | If the reader was steered into extracting `x@evil` as a recipient: the value is Untrusted → still Ask, quoted; no TaskPolicy, reviewer or breaker path can turn it into Allow (`injected_content_never_turns_ask_or_deny_into_allow`, `docket-eval` Injection corpus) | docket |
+| 6 | If the reader was steered into extracting `x@evil` as a recipient: the value is Untrusted → still Ask, quoted; no TaskPolicy, reviewer or breaker path can turn it into Allow (`injected_content_never_turns_ask_or_deny_into_allow`, `agent-eval` Injection corpus) | docket |
 | 7 | A fact proposed in this tainted session → `memory.propose` (`Lasting::Staged`) → memoryd puts it in `pending/` until the user keeps it | docket, almanac |
 | 8 | Repeated denials → breaker trips → `BreakerTripped` → answer NeedsYou | docket, ux |
 
@@ -773,9 +773,9 @@ JSON, step tables of the pure parts) pass.
 | 0 | **deps** (quire) | `docs/workspace-deps.toml` only (§1.4 lines, after S-SQL and S-Cedar) | quire gate |
 | 1 | **stoker** (new) | everything in `~/stoker`; S0 first; commits `computer-use-action` first so porter can path-patch it | porter-style gate |
 | 1 | **quire** | `ui-core/src/vocab.rs`, `ui-intents/**` (new), `ds/src/components/companion/**` + its `mod.rs` line, `ds/src/assembly/sheets.rs`, `ui-shell/src/{confirm,tokens/glow.rs}`, `ui-style` orb tokens (proposed values, marked), `ui-settings/src/schema/key.rs`; docs: `design/22` rows (all `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*` keys), `design/32-COMPANION.md` (from COMPANION.md), `design/33-AGENT.md` (this spec); **not** design/31, TextField or CommandPalette | quire gate incl. `check-consumer.sh`, `check-doc-paths.sh` |
-| 2 | **porter** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.quire.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/quire/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
+| 2 | **porter** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.bardo.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/quire/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
 | 3 | **almanac** (new) | everything in `~/almanac` | porter-style gate, `--exclude recall-fastembed` |
-| 3 | **docket** (new) | everything in `~/docket` (including companion crates, `action-ui-adapter`, `manifests/org.quire.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
+| 3 | **docket** (new) | everything in `~/docket` (including companion crates, `action-ui-adapter`, `manifests/org.bardo.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
 | 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to quire (reis/atspi landed in stage 0) | porter-style gate |
 | 4 | **fork-setup** | `~/casement` at the 1.8 tag, branch `quire`, `src/quire/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **sill** | ux.md §6 F2 file list with §3.8 here; design/22 is the quire agent's | sill gate |
@@ -803,11 +803,11 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
-| F1 pure | stoker: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. almanac: eventlog; memfiles; recall (+fastembed); seal + watch. docket: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; docket-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. quire W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
-| F2 io/backends | stoker: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. almanac: memory-service + memory-fake. docket: intentd (private bus, seams wired to memory-client); actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. quire W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
+| F1 pure | stoker: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. almanac: eventlog; memfiles; recall (+fastembed); seal + watch. docket: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. quire W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
+| F2 io/backends | stoker: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. almanac: memory-service + memory-fake. docket: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. quire W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
 | F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. almanac: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. docket: action-ui-adapter against quire. sill W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); sill W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/cua-step-holo.sh` (GPU, by hand) | — |
-| Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `quire_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
+| Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `bardo_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
 
 ---
 
@@ -827,13 +827,13 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C10 | cuad links `permission-policy` vs COMPANION "one decision point in the router" | `Intents1.Gate`; one PDP, one breaker, one audit |
 | C11 | CUA grant home | docket `ActionGrant` with caller Cua (both specs agreed) |
 | C12 | cua per-run `denials` budget vs router breaker | breaker only |
-| C13 | Confirm1 served by the fork (actions) vs sill sheet + trusted surface (ux) | sill serves Confirm1 in both phases; the fork supplies `quire_trusted_surface_v1` |
+| C13 | Confirm1 served by the fork (actions) vs sill sheet + trusted surface (ux) | sill serves Confirm1 in both phases; the fork supplies `bardo_trusted_surface_v1` |
 | C14 | "CUA must not ship on SheetFallback" (actions C3) vs "stock first" (cua Q2) | on stock a CUA confirm shows only after cuad stops emulating (`Request.Proceed`); shipping call is Q-P2 |
 | C15 | `Need::Cua` vs `Need::ComputerUse` | ComputerUse, VocabVersion 2 |
-| C16 | inferd as MCP host (31 §5.5) vs `actions-mcp` edge-only | actions-mcp; 31 edited |
+| C16 | inferd as MCP host (31 §5.5) vs `bardo-actions-mcp` edge-only | bardo-actions-mcp; 31 edited |
 | C17 | async-openai in the build map | not adopted |
 | C18 | memory re-declares policy/consent/CUA/session payloads | `EventBody::Area`; owners keep types |
-| C19 | companion reads memory directly, so the router cannot compute taint | memory reads/writes for the planner are router actions of `org.quire.Memory` (built into intentd); `Caller::Companion` removed |
+| C19 | companion reads memory directly, so the router cannot compute taint | memory reads/writes for the planner are router actions of `org.bardo.Memory` (built into intentd); `Caller::Companion` removed |
 | C20 | "Lasting from untrusted → Ask" (actions) vs pending facts (memory) | `Lasting::Staged`: pending queue is the confirmation |
 | C21 | Undo/activity duplicated in Companion1 and Cua1 (ux) | router journal and `Run.Undo/UndoAll`; `Replay` later |
 | C22 | UndoAll offered for every CUA run (ux) | only when the journal holds typed entries for the run |

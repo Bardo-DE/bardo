@@ -3,7 +3,7 @@
 //! A program on the compositor's public socket can be shown to be no more than a program, so its
 //! first screenshot or share would raise the compositor's own question on top of the portal's
 //! chooser. casement hands the portal a connection of its own instead, over the session bus
-//! (`org.quire.Compositor1.Connect("portal")`), where the portal is proven all the way; that
+//! (`org.bardo.Compositor1.Connect("portal")`), where the portal is proven all the way; that
 //! connection is trusted for the screen and the windows and for nothing else. [`PortalLine`] is
 //! the seam that asks for it, [`CasementLine`] the real one and [`FakeLine`] a test's. When no such
 //! connection can be had (another compositor, an older casement) the capture connects the way any

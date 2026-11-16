@@ -1,7 +1,7 @@
-//! `quire-do ask` as the real binary against the real daemons on a private bus: a terminal's
+//! `bardo-do ask` as the real binary against the real daemons on a private bus: a terminal's
 //! child (a `vte-spawn-*` scope of the fake proc root) opens a conversation with companiond, its
 //! turn is recorded by intentd, the replayed model searches and answers, and the answer is
-//! printed. A confirmation is shown on sill's sheet and never answered by `quire-do`.
+//! printed. A confirmation is shown on sill's sheet and never answered by `bardo-do`.
 
 use crate::support::*;
 use action_accept::world::{Cassette, Consent, World};
@@ -90,6 +90,6 @@ async fn quire_do_ask_leaves_a_confirmation_to_the_shell() {
     assert_eq!(sheet.action.as_str(), "Forward", "{sheet:#?}");
     assert!(
         world.app.messages().is_empty(),
-        "nothing was sent: quire-do answers nothing"
+        "nothing was sent: bardo-do answers nothing"
     );
 }

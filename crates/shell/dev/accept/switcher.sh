@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # App switcher acceptance (design/13 §13.3.5, design/20 §1.11), on casement
 # (brought up and ended by start_compositor). Starts `sill run`
-# from this checkout's build (SILL_PROFILE, debug by default; `--features debug`) with its own XDG_RUNTIME_DIR
+# from this checkout's build (BARDO_SHELL_PROFILE, debug by default; `--features debug`) with its own XDG_RUNTIME_DIR
 # (WAYLAND_DISPLAY as an absolute socket path) and a scratch XDG_CONFIG_HOME, and three windows of
 # its own inside the nested compositor, never the user's:
 #   term    `foot`;
@@ -42,10 +42,10 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-switcher"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-switcher"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
-HOST_TARGET="$SILL_OUT_ROOT/shell-host-examples"
+HOST_TARGET="$BARDO_SHELL_OUT_ROOT/shell-host-examples"
 DEMO="$HOST_TARGET/debug/examples/demo_window"
 SHOW_DELAY_MS=400
 
@@ -141,13 +141,13 @@ wait_demo() {
 # target directory so layer-shell-host's is left alone.
 build_switcher() {
   build || return 1
-  CARGO_TARGET_DIR="$HOST_TARGET" cargo build --manifest-path "$SILL_TREE/Cargo.toml" \
+  CARGO_TARGET_DIR="$HOST_TARGET" cargo build --manifest-path "$BARDO_SHELL_TREE/Cargo.toml" \
     -p layer-shell-host --features debug-inject --example demo_window >>"$OUT_DIR/build.log" 2>&1 || {
     echo "demo_window build failed (see $OUT_DIR/build.log)" >&2; return 1; }
 }
 
 start_switcher_daemon() {
-  printf '[switcher]\nshow_delay_ms = %s\n' "$SHOW_DELAY_MS" >"$CONFIG/sill/settings.toml"
+  printf '[switcher]\nshow_delay_ms = %s\n' "$SHOW_DELAY_MS" >"$CONFIG/shell/settings.toml"
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
   NAME=$(output_name) || return 1
@@ -188,7 +188,7 @@ stop_windows() {
   # foot may hand its window to a process of its own: the one on this socket started
   # from this checkout (never the host's, never another checkout's).
   for pid in $(pgrep -x foot); do
-    [ "$(readlink "/proc/$pid/cwd")" = "$SILL_REPO" ] || continue
+    [ "$(readlink "/proc/$pid/cwd")" = "$BARDO_SHELL_REPO" ] || continue
     tr '\0' '\n' <"/proc/$pid/environ" 2>/dev/null | grep -qx "WAYLAND_DISPLAY=$display" \
       && kill "$pid" 2>/dev/null
   done

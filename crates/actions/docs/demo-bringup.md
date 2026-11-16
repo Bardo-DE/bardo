@@ -1,46 +1,46 @@
 # Bringing up the agent services under a demo shell
 
-`docket-bringup` starts accountd, inferd, memoryd, intentd and companiond on a bus that already exists (the nested
+`agent-bringup` starts accountd, inferd, memoryd, intentd and companiond on a bus that already exists (the nested
 demo's private bus), so the companion pane answers. It is the acceptance `World`'s setup (same daemons, same
 `env_clear` scratch environment, same fake proc root) with daemons that outlive the command. Logic:
-`crates/docket-live/src/bringup`; the binary is a thin wrapper.
+`crates/agent-live/src/bringup`; the binary is a thin wrapper.
 
 ## Build and find it
 
 ```sh
-cd ~/docket && cargo build -p action-accept -p action-live --bins   # the daemons must sit beside docket-bringup
-~/docket/target/debug/docket-bringup ...                            # or: cargo run -p action-live --bin docket-bringup -- ...
+cd ~/docket && cargo build -p action-accept -p action-live --bins   # the daemons must sit beside agent-bringup
+~/docket/target/debug/agent-bringup ...                            # or: cargo run -p action-live --bin agent-bringup -- ...
 ```
 
-`cargo run --bin docket-bringup` alone does not build the sibling daemons (`accept-intentd`, `accept-companiond`);
+`cargo run --bin agent-bringup` alone does not build the sibling daemons (`accept-actiond`, `accept-companiond`);
 `up` says so if they are missing. accountd and memoryd are the test-keys builds, and inferd a test-proc-root build, that `build.rs` puts under
 `target/<profile>/accept-siblings/`.
 
 ## Commands
 
 ```sh
-docket-bringup up --bus <dbus address> --root <abs scratch dir> --shell-pid <pid> \
+agent-bringup up --bus <dbus address> --root <abs scratch dir> --shell-pid <pid> \
     [--keys-home <abs dir>] [--catalog <abs dir>] [--providers <abs dir>] [--inferd-config <abs file>]
-docket-bringup status --root <dir>
-docket-bringup down --root <dir>
+agent-bringup status --root <dir>
+agent-bringup down --root <dir>
 ```
 
 `up` prints one line per daemon, `accountd 4120 ok`, in start order (accountd, inferd, memoryd, intentd,
-companiond), after each has its bus name (`org.quire.Accounts1`, `Inference1`, `Memory1`, `Intents1`,
+companiond), after each has its bus name (`org.bardo.Accounts1`, `Inference1`, `Memory1`, `Intents1`,
 `Companion1`). On any failure it stops
 what it started and exits 1 (2 for a wrong command line). `status` prints `name pid running|gone`. `down`
 prints `name pid stopped|killed|gone`, last started first, and leaves the root on disk.
 
-- `--shell-pid` is the demo shell. The fake proc root (`<root>/proc`) puts it in `sill.service`, the unit
+- `--shell-pid` is the demo shell. The fake proc root (`<root>/proc`) puts it in `bardo-shell.service`, the unit
   memoryd gives the `sheet_host` role. Bus names give intentd and companiond their roles
-  (`org.quire.Shell`), so the shell must own those names on `--bus`.
+  (`org.bardo.Shell`), so the shell must own those names on `--bus`.
 - Root layout: `data config cache run keys proc logs`, plus `procs`. Daemon logs: `<root>/logs/<name>.log`.
 - `<root>/procs` has `name pid start-time` lines (field 22 of `/proc/<pid>/stat`). `down` signals only a pid
   whose start time still matches: SIGTERM, then SIGKILL after 5 s. Never by name.
 - `--keys-home DIR` (a directory `dev/live/cloud-key.sh` filled; mode 0700): accountd uses `DIR/accountd.keys`
   and the home's non-secret records are copied into the root. The key file is never opened by this tool.
   Without it accountd has a scratch key file, cloud models are unavailable, and `up` prints the exact
-  `env -i ... accountd add openrouter --allow org.quire.Companion --allow org.quire.Intents` line to add a key
+  `env -i ... accountd add openrouter --allow org.bardo.Companion --allow org.bardo.Intents` line to add a key
   into this root. Stop the services first (`down`), run it in your own terminal (the key is typed at accountd's
   prompt), then `up` again.
 - `--catalog DIR` copies the stoker catalogue entries (`*.toml`) in; cloud models need them.

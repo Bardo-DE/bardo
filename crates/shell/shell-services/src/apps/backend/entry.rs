@@ -435,14 +435,14 @@ mod tests {
     #[test]
     fn parse_entry_carries_the_names_the_entry_declares() {
         const TEXT: &str = "[Desktop Entry]\nName=Mail\nExec=mailo\n\
-            X-Quire-BusNames=io.github.PoHsuanLai.mailo;org.quire.Mail;\n\
-            X-Quire-IntentsApp=org.quire.Mail\n";
+            X-Bardo-BusNames=io.github.PoHsuanLai.mailo;org.bardo.Mail;\n\
+            X-Bardo-IntentsApp=org.bardo.Mail\n";
         let app = app(TEXT).unwrap_or_else(|| panic!("expected an App"));
         assert_eq!(
             app.bus_names,
-            ["io.github.PoHsuanLai.mailo", "org.quire.Mail"]
+            ["io.github.PoHsuanLai.mailo", "org.bardo.Mail"]
         );
-        assert_eq!(app.intents_app.as_deref(), Some("org.quire.Mail"));
+        assert_eq!(app.intents_app.as_deref(), Some("org.bardo.Mail"));
         let bare =
             self::app("[Desktop Entry]\nName=X\nExec=x\n").unwrap_or_else(|| panic!("no App"));
         assert!(bare.bus_names.is_empty() && bare.intents_app.is_none());

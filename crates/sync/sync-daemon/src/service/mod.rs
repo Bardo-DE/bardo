@@ -1,10 +1,10 @@
-//! `org.quire.Sync1` at `/org/quire/Sync1`, served over the [`Hub`] (design/31 §4.4).
+//! `org.bardo.Sync1` at `/org/bardo/Sync1`, served over the [`Hub`] (design/31 §4.4).
 //!
 //! - The caller is the connection's, found by account-dbus's `Callers` (cgroup, the one table both
 //!   daemons share); a sender nothing names is `AccessDenied` and a caller never says who it is.
 //! - A dataset is named `<account>/<dataset>` (`Hub`). A caller sees the datasets it owns;
 //!   Settings and the porter daemons see all. A name that is unknown, or not the caller's, answers
-//!   the refusal `NoFittingAccount` (`org.quire.Accounts1.Error.NoFittingAccount`): nothing is
+//!   the refusal `NoFittingAccount` (`org.bardo.Accounts1.Error.NoFittingAccount`): nothing is
 //!   there for this caller, and no dataset (the state before W6e/W6f) is the same answer, never a
 //!   panic. A malformed name is `InvalidArgs`.
 //! - `Status` is `anchor_age` (seconds, once there is an anchor), `pending`, `conflicts`,
@@ -14,12 +14,12 @@
 //!   `keep_remote`; the `Conflict` signal's `number` is the conflict). Only the dataset's owning
 //!   app may call it (Settings and the porter daemons see a dataset but do not own it: `Denied`);
 //!   a dataset the caller cannot see answers `NoFittingAccount` as for the other methods, a
-//!   conflict unknown or already settled `org.quire.Sync1.Error.NoSuchConflict`, any other `how`
+//!   conflict unknown or already settled `org.bardo.Sync1.Error.NoSuchConflict`, any other `how`
 //!   `InvalidArgs`. The dataset's driver settles it between cycles and runs the next soon.
 //! - `ConfirmDiscard(dataset)` lets one discard through for a dataset held with
 //!   `needs_confirmation` in `Status`; whoever may pause the dataset may call it (the owning
 //!   app, Settings, the porter daemons); a dataset the caller cannot see answers
-//!   `NoFittingAccount`, one not held `org.quire.Sync1.Error.NothingHeld`. The driver takes the
+//!   `NoFittingAccount`, one not held `org.bardo.Sync1.Error.NothingHeld`. The driver takes the
 //!   request between cycles and runs the next at once. `NeedsConfirmation(dataset, held)` tells
 //!   when a hold starts (the same `{discard, held}` as `Status`) and when it ends (empty).
 //!   syncd writes no audit events (it has none for pause and resume either), so this is not
@@ -27,7 +27,7 @@
 //! - `SyncNow(dataset)` ("Sync now") has a dataset sync at once instead of at its next scheduled
 //!   look: [`Hub::sync_now`] wakes its driver, which runs a cycle right away, or right after the
 //!   one running. Whoever may pause the dataset may call it; a dataset the caller cannot see
-//!   answers `NoFittingAccount`, a paused one `org.quire.Sync1.Error.Paused`. The reply comes
+//!   answers `NoFittingAccount`, a paused one `org.bardo.Sync1.Error.Paused`. The reply comes
 //!   when the request is taken, not when the cycle ends.
 //! - The shell (`SheetHost`) is told `NeedsConfirmation` for every dataset (it carries `account`,
 //!   the account's object path, too) but sees nothing else of a dataset it does not own: no

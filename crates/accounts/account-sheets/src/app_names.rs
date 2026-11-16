@@ -20,7 +20,7 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 /// The bus-id prefix of the app an agent program's grants are held under.
-const AGENT_APP_PREFIX: &str = "org.quire.Agent.";
+const AGENT_APP_PREFIX: &str = "org.bardo.Agent.";
 
 /// Where an app's display name comes from.
 #[derive(Debug, Clone, Default)]
@@ -41,7 +41,7 @@ impl AppNames {
         }
     }
 
-    /// Also name the agent apps `org.quire.Agent.<program>` after the label of the provider file
+    /// Also name the agent apps `org.bardo.Agent.<program>` after the label of the provider file
     /// that runs `<program>` and signs in itself (`agent_login`): "Claude Code" for
     /// `claude-code.toml`. A key provider that merely names the program (anthropic.toml) does
     /// not name the app. A program with no such file stays its id.
@@ -151,11 +151,11 @@ mod tests {
         let dir = scratch("table");
         entry(
             &dir,
-            "org.quire.Sync",
+            "org.bardo.Sync",
             "[Desktop Entry]\nName=From the entry\n",
         );
-        let names = AppNames::new(table("org.quire.Sync", "Sync"), vec![dir.to_path_buf()]);
-        assert_eq!(names.title_of(&app("org.quire.Sync")).0, "Sync");
+        let names = AppNames::new(table("org.bardo.Sync", "Sync"), vec![dir.to_path_buf()]);
+        assert_eq!(names.title_of(&app("org.bardo.Sync")).0, "Sync");
     }
 
     #[test]
@@ -167,7 +167,7 @@ mod tests {
             "# a comment\n[Desktop Entry]\nType=Application\nName[de]=Fotos\nName= Photos \nExec=photos\n\n\
              [Desktop Action new]\nName=New window\n",
         );
-        let names = AppNames::new(table("org.quire.Sync", "Sync"), vec![dir.to_path_buf()]);
+        let names = AppNames::new(table("org.bardo.Sync", "Sync"), vec![dir.to_path_buf()]);
         assert_eq!(names.title_of(&app("org.example.Photos")).0, "Photos");
     }
 
@@ -213,7 +213,7 @@ mod tests {
     fn an_agent_app_is_named_by_its_agent_provider_file() {
         let names = AppNames::default().with_agents(&account_provider::shipped_specs());
         assert_eq!(
-            names.title_of(&app("org.quire.Agent.claude-code")).0,
+            names.title_of(&app("org.bardo.Agent.claude-code")).0,
             "Claude Code"
         );
     }
@@ -222,22 +222,22 @@ mod tests {
     fn an_agent_with_no_provider_file_stays_its_id_and_a_table_name_still_wins() {
         let agents = scratch("agents");
         let names = AppNames::new(
-            table("org.quire.Agent.claude-code", "Mine"),
+            table("org.bardo.Agent.claude-code", "Mine"),
             vec![agents.to_path_buf()],
         )
         .with_agents(&account_provider::shipped_specs());
         assert_eq!(
-            names.title_of(&app("org.quire.Agent.claude-code")).0,
+            names.title_of(&app("org.bardo.Agent.claude-code")).0,
             "Mine"
         );
         assert_eq!(
-            names.title_of(&app("org.quire.Agent.nobody")).0,
-            "org.quire.Agent.nobody"
+            names.title_of(&app("org.bardo.Agent.nobody")).0,
+            "org.bardo.Agent.nobody"
         );
         let none = AppNames::default().with_agents(&[]);
         assert_eq!(
-            none.title_of(&app("org.quire.Agent.claude-code")).0,
-            "org.quire.Agent.claude-code"
+            none.title_of(&app("org.bardo.Agent.claude-code")).0,
+            "org.bardo.Agent.claude-code"
         );
     }
 

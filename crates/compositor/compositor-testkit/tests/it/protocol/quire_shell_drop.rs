@@ -1,4 +1,4 @@
-//! `quire_shell_v1` versions 3 and 4: the pictures of Spaces that are not shown, the new-Space tile
+//! `bardo_shell_v1` versions 3 and 4: the pictures of Spaces that are not shown, the new-Space tile
 //! (`space_target_new`, `drop_target_new`) and a window dragged to another output in Mission
 //! Control. Shell connections only. The desk and its helpers are `quire_shell_spaces.rs`'s.
 

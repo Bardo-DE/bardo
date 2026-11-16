@@ -6,7 +6,7 @@ use ui_components::stylesheet;
 use ui_style::tokens::type_scale::Family;
 
 /// The Editorial look's sheet, as quire ships it.
-const EDITORIAL: &str = include_str!("../../../extensions/org.quire.look.Editorial/look.css");
+const EDITORIAL: &str = include_str!("../../../extensions/org.bardo.look.Editorial/look.css");
 
 /// The `.ds` token block of the stylesheet.
 fn ds_block(css: &str) -> &str {

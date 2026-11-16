@@ -11,7 +11,7 @@ use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};
 
 use crate::bus::PrivateBus;
 
-const NAME: &str = "org.quire.Sync1";
+const NAME: &str = "org.bardo.Sync1";
 
 struct Rig {
     storage: Storage,

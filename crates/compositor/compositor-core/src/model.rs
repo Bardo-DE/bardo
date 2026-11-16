@@ -86,7 +86,7 @@ pub struct Model {
     /// The clients that came through the shell's own connection: the only ones whose lock
     /// takeover, exclusive keyboard layers and full-size zones are honoured.
     shell_clients: BTreeSet<ClientKey>,
-    /// The clients that hold a `quire_window_manager_v1` bound at version 2 or later: an app
+    /// The clients that hold a `bardo_window_manager_v1` bound at version 2 or later: an app
     /// asked to quit is sent `quit` through them instead of having its windows closed.
     quit_listeners: BTreeSet<ClientKey>,
     spaces: SpaceBook,
@@ -126,7 +126,7 @@ pub struct Model {
     night: night_light::NightDrive,
     /// Which programs may use the powers that need the person's consent (`model/privilege`).
     privilege: Privilege,
-    /// What the bar does in full screen (`quire_shell_v1.set_full_screen_bar`); the last request
+    /// What the bar does in full screen (`bardo_shell_v1.set_full_screen_bar`); the last request
     /// wins. Layout reads it for the rectangle a full-screen window covers.
     full_screen_bar: FullScreenBar,
     /// Whether the shell says the person wants reduced motion; the last request wins.

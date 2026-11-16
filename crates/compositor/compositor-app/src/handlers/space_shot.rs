@@ -1,4 +1,4 @@
-//! Space pictures (`quire_shell_v1.get_space_capture_source`): the session half of the
+//! Space pictures (`bardo_shell_v1.get_space_capture_source`): the session half of the
 //! ext-image-copy-capture objects that show one Space of an output as a small picture for the
 //! shell's Spaces bar. `handlers/image_capture.rs` hands the sessions whose source holds a
 //! `SpaceSourceId` here.

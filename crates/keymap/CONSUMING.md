@@ -10,7 +10,7 @@ that declares and handles actions. Neither reads modifiers or decides Command ve
 ```rust
 use chordkit::{detect_process, Platform};
 
-let platform: Platform = detect_process(); // CHORDKIT_PLATFORM overrides; tests use `detect(os, lookup)`
+let platform: Platform = detect_process(); // BARDO_KEYMAP_PLATFORM overrides; tests use `detect(os, lookup)`
 ```
 
 ### 2. Load a keymap from a source

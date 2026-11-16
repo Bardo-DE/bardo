@@ -27,7 +27,7 @@
 # --icons steps (the icon style on the dock, its own daemon and pins):
 # The dock holds foot, Files, Google Chrome and btop, every one on the neutral
 # plate with its own theme icon, tinted along with the plate under Muted and Monochrome. With
-# `icons.style` set in the scratch `quire/appearance.toml` to colour, then muted, then monochrome
+# `icons.style` set in the scratch `bardo/appearance.toml` to colour, then muted, then monochrome
 # (the running dock follows the file live), it checks that the Muted and Monochrome runs each
 # write re-tinted rasters into the scratch cache, one per pinned app, and captures the dock
 # surface each time: dev/out/dock-icons-{colour,muted,monochrome}.png. A last switch to
@@ -49,13 +49,13 @@ set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
 case "${1:-}" in
-  --icons) MODE=icons; OUT_DIR="$SILL_OUT_ROOT/accept-icons" ;;
-  "") MODE=dock; OUT_DIR="$SILL_OUT_ROOT/accept-dock" ;;
+  --icons) MODE=icons; OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-icons" ;;
+  "") MODE=dock; OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-dock" ;;
   *) echo "usage: dev/accept/dock.sh [--icons]" >&2; exit 2 ;;
 esac
-SHOTS="$SILL_SHOTS"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
-EMITTER="$SILL_OUT/examples/badge_emitter"
+EMITTER="$BARDO_SHELL_OUT/examples/badge_emitter"
 BAR_H="${BAR_H:-24}"
 RESERVE=68
 PILL_RADIUS="${PILL_RADIUS:-22}"
@@ -137,7 +137,7 @@ step_exclusive_zone() {
 step_sweep_and_idle() {
   local log="$OUT_DIR/sweep.log" f0 c0 f1 c1 f2 f3 frames callbacks idle
   read -r f0 c0 < <(counters_of "$DOCK")
-  in_env python3 - "$SILL_BIN" "$DOCK" "$OUT_W" "$PILL_Y" <<'EOF' >"$log" 2>&1
+  in_env python3 - "$BARDO_SHELL_BIN" "$DOCK" "$OUT_W" "$PILL_Y" <<'EOF' >"$log" 2>&1
 import subprocess, sys, time
 sill, dock, width, y = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
 start, span, hz = width // 2 - 160, 320, 60
@@ -251,7 +251,7 @@ step_radius() {
   # Step 5 left the menu open with the real pointer on the dock, which keeps it magnified (the
   # tiles then reach above the pill and the edge below is not the pill's): on casement a click
   # far from the dock closes the menu and takes the pointer off it.
-  [ "$COMPOSITOR" = casement ] && casementctl debug inject "move 10 10" "sleep 60" "press left" \
+  [ "$COMPOSITOR" = casement ] && bardo-compositorctl debug inject "move 10 10" "sleep 60" "press left" \
     "sleep 40" "release left" "sleep 200" >/dev/null 2>&1
   sill debug leave "$DOCK" >/dev/null 2>&1
   sleep 1
@@ -282,12 +282,12 @@ EOF
 style_monochrome_dark() {
   mkdir -p "$CONFIG/quire"
   printf '[appearance]\ntheme = "dark"\n\n[icons]\nstyle = "monochrome"\nmonochrome_tint = "space"\n' \
-    >"$CONFIG/quire/appearance.toml"
+    >"$CONFIG/bardo/appearance.toml"
 }
 
 style() {
   mkdir -p "$CONFIG/quire"
-  printf '[icons]\nstyle = "%s"\nmonochrome_tint = "space"\n' "$1" >"$CONFIG/quire/appearance.toml"
+  printf '[icons]\nstyle = "%s"\nmonochrome_tint = "space"\n' "$1" >"$CONFIG/bardo/appearance.toml"
 }
 
 # How many re-tinted rasters of style $1 the scratch cache holds.

@@ -1,11 +1,11 @@
-//! A stand-in for accountd on a private bus: it owns `org.quire.Accounts1` there and drives sill's
-//! accounts sheet (`org.quire.AccountsSheet1`) the way accountd does, so `dev/accept/accounts.sh`
+//! A stand-in for accountd on a private bus: it owns `org.bardo.Accounts1` there and drives sill's
+//! accounts sheet (`org.bardo.AccountsSheet1`) the way accountd does, so `dev/accept/accounts.sh`
 //! can play the consent question and the add-account steps without accountd.
 //!
 //! The address is an argument, never the session bus, so this cannot reach the person's accounts
 //! by accident. Commands, one per stdin line: `open <handle> <view.json>`, `update <handle>
 //! <view.json>`, `close <handle>`, and `forge-open <handle> <view.json>`, which sends the same
-//! `Open` from a second connection that does not own `org.quire.Accounts1` (it must be refused).
+//! `Open` from a second connection that does not own `org.bardo.Accounts1` (it must be refused).
 //! Output, one per stdout line: `ready`, `opened|updated|closed <handle>`, `refused <handle>
 //! <why>`, `forged <handle> refused|ACCEPTED`, and `input <handle> <json>` for each answer the
 //! sheet sends.
@@ -54,11 +54,11 @@ async fn next<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
 }
 
 async fn serve(address: String) {
-    let accountd = connect(&address, Some("org.quire.Accounts1")).await;
+    let accountd = connect(&address, Some("org.bardo.Accounts1")).await;
     let forger = connect(&address, None).await;
     let rule = MatchRule::builder()
         .msg_type(zbus::message::Type::Signal)
-        .interface("org.quire.AccountsSheet1")
+        .interface("org.bardo.AccountsSheet1")
         .and_then(|b| b.member("Input"))
         .map(|b| b.build())
         .unwrap_or_else(|e| panic!("{e}"));

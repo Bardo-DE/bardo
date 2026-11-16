@@ -1,5 +1,5 @@
 //! The key table: every `agent.*` key of design/22 section 3.27, its rule and where its value
-//! goes. One row per schema row (`dist/settings/docket.settings.toml`); the tests hold the two
+//! goes. One row per schema row (`dist/settings/actions.settings.toml`); the tests hold the two
 //! tables to each other, so a row without a reader or a reader without a row fails.
 
 use crate::AgentSettings;

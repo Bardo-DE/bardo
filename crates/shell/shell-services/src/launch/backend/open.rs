@@ -6,7 +6,7 @@
 //! - `File(path)` and `Url(url)`: `xdg-open <path|url>` in a transient `systemd-run --user
 //!   --scope` like an app launch, with `XDG_ACTIVATION_TOKEN` set to the request's token.
 //! - `Reveal(path)`: `org.freedesktop.FileManager1.ShowItems([file uri], startup id = token)`
-//!   to the desktop's own Files (`org.quire.Files`) when it is installed, else to whichever
+//!   to the desktop's own Files (`org.bardo.Files`) when it is installed, else to whichever
 //!   file manager holds `org.freedesktop.FileManager1`; a name with an owner or an activatable
 //!   service is asked (the call then starts it), so the file manager opens the folder with the
 //!   file selected; else `xdg-open` on [`reveal_folder`].
@@ -34,7 +34,7 @@ use crate::env::{Bus, Children, ConnectError, NameState, ProcessGroup, Start, na
 
 /// The desktop's own file manager, asked before any other: it serves `FileManager1` on its
 /// own name too, so another file manager holding the shared name does not take its place.
-const DESKTOP_FILES: &str = "org.quire.Files";
+const DESKTOP_FILES: &str = "org.bardo.Files";
 
 /// The name any file manager offers.
 const FILE_MANAGER: &str = "org.freedesktop.FileManager1";

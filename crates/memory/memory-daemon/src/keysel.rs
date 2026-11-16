@@ -1,6 +1,6 @@
 //! Which key store the daemon uses: the Secret Service, unless a test build is told otherwise.
 //!
-//! `MEMORYD_KEYS=file:<path>` selects a file-backed store, but only in a build with the
+//! `BARDO_MEMORYD_KEYS=file:<path>` selects a file-backed store, but only in a build with the
 //! `test-keys` feature (off by default, never in a release or dist build). Without the feature
 //! the variable is ignored, and the daemon says so on standard error when it is set: there is no
 //! way to downgrade a production daemon's keys by environment.
@@ -10,7 +10,7 @@ use memory_seal::{KeyError, KeyStore, Oo7Keys, SpaceKey};
 use std::path::PathBuf;
 
 /// The environment variable the switch reads.
-pub const KEYS_VAR: &str = "MEMORYD_KEYS";
+pub const KEYS_VAR: &str = "BARDO_MEMORYD_KEYS";
 
 /// Whether this build has the test key store.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -68,14 +68,14 @@ impl Selection {
 }
 
 /// The environment variable that turns the Landlock sandbox off, in a test build only.
-pub const SANDBOX_VAR: &str = "MEMORYD_SANDBOX";
+pub const SANDBOX_VAR: &str = "BARDO_MEMORYD_SANDBOX";
 
 /// Whether the daemon applies its Landlock sandbox.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Sandbox {
     /// Applied (always, in a normal build).
     On,
-    /// Not applied: a test build was told `MEMORYD_SANDBOX=off` (a jailed run that already
+    /// Not applied: a test build was told `BARDO_MEMORYD_SANDBOX=off` (a jailed run that already
     /// confines the process). The callers are identified through `/proc/<pid>/cgroup`, which
     /// works under the sandbox too, so the binary's own tests run with it on.
     Off,
@@ -103,7 +103,7 @@ pub enum AnyKeys {
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum KeysError {
     /// The variable is set to something that is not `file:<path>`.
-    #[error("MEMORYD_KEYS={0} is not file:<path>")]
+    #[error("BARDO_MEMORYD_KEYS={0} is not file:<path>")]
     Unreadable(String),
     /// A file key store was asked for in a build without the `test-keys` feature.
     #[error("a file key store needs the test-keys feature")]

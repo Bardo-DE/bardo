@@ -240,7 +240,7 @@ mod tests {
             id: GrantId::parse("g1").expect("id"),
             key: GrantKey {
                 app: account_core::AppId {
-                    name: account_core::AppName::parse("org.quire.Companion").expect("name"),
+                    name: account_core::AppName::parse("org.bardo.Companion").expect("name"),
                     isolation: account_core::Isolation::Unsandboxed,
                 },
                 account: account_fake::llm_account().id,

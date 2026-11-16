@@ -6,24 +6,24 @@
 #   install/system.sh PART [--dry-run] [--prefix DIR] [--destdir DIR] [--tree DIR]
 #   install/system.sh --remove PART [same flags]
 #
-#   callers    /etc/quire/desktop-callers.toml, from dist/: which program is the shell, the updater, the portal and so on.
+#   callers    /etc/bardo/desktop-callers.toml, from dist/: which program is the shell, the updater, the portal and so on.
 #              The update service and the screen-sharing service read it once, when they start, and refuse everybody
 #              without it, so this part comes before anything that installs or starts them. Always replaced (an
-#              administrator adds rows in /etc/quire/desktop-callers.d/, which is never touched).
+#              administrator adds rows in /etc/bardo/desktop-callers.d/, which is never touched).
 #   turnstile  the input service: its program (built by install/plain.sh or install.sh as you, from this tree), its
 #              socket and service in /usr/lib/systemd/system, the device rule that closes /dev/uinput to everybody
 #              but it, and the list that loads the kernel module. Then it reloads systemd and the device rules and
 #              starts the socket. No part of the desktop gives /dev/uinput to the person or to a group.
 #   keycap     the keyboard map: its program (built by install.sh), its service, the rule that lets the person at the
-#              keyboard restart it without a password, and /usr/lib/keycap/keycap.toml (dist/keycap.toml: Caps Lock
+#              keyboard restart it without a password, and /usr/lib/bardo/key-remap/key-remap.toml (dist/keycap.toml: Caps Lock
 #              switches the input method), always replaced. That is keycap's vendor file, laid under the administrator's
-#              /etc/keycap/keycap.toml, which this never reads, writes or removes. It does not run keycap's own
+#              /etc/bardo/key-remap/key-remap.toml, which this never reads, writes or removes. It does not run keycap's own
 #              installer, which would give the `input` group the device file and the service a drop-in to open it.
 #   palmrest   the touchpad daemon (Magic Mouse gestures), a system service like keycap: its program (built by install.sh),
 #              its service in /usr/lib/systemd/system, the rule that gives the mouse's raw node to the `input` group (and to
 #              no person) and the module options that stop the kernel's own wheel emulation. Its virtual devices come from
-#              the input service, so it has no access to /dev/uinput, and its socket (/run/palmrest/events.sock) serves
-#              only the person at the seat. Its settings are /etc/palmrest/gestures.toml, which this never touches.
+#              the input service, so it has no access to /dev/uinput, and its socket (/run/bardo/mouse-gestures/events.sock) serves
+#              only the person at the seat. Its settings are /etc/bardo/mouse-gestures/gestures.toml, which this never touches.
 #
 # Never runs sudo. A place you cannot write stops it with the command to run as root (through whichever of sudo, doas
 # or pkexec this machine has). Under --destdir it only copies files, as you. Safe to run again: a file already in
@@ -56,41 +56,41 @@ parse_flags "$@"
 target_dir=${CARGO_TARGET_DIR:-$tree/target}
 DIST="$(cd "$SRC/../dist" && pwd)"
 vendor_units=/usr/lib/systemd/system
-turnstile_bin=${TURNSTILE_BIN:-$target_dir/release/turnstile}
-keycap_bin=${KEYCAP_BIN:-$target_dir/release/keycap}
-palmrest_bin=${PALMREST_BIN:-$target_dir/release/palmrest}
+turnstile_bin=${BARDO_INPUT_BROKER_BIN:-$target_dir/release/turnstile}
+keycap_bin=${BARDO_KEY_REMAP_BIN:-$target_dir/release/keycap}
+palmrest_bin=${BARDO_MOUSE_GESTURES_BIN:-$target_dir/release/palmrest}
 
 # files: "MODE SOURCE DEST" per line of this part, DEST without the staging root. Programs come first.
 files() {
   case "$part" in
     callers)
-      echo "644 $DIST/desktop-callers.toml /etc/quire/desktop-callers.toml" ;;
+      echo "644 $DIST/desktop-callers.toml /etc/bardo/desktop-callers.toml" ;;
     turnstile)
       echo "755 $turnstile_bin $prefix/bin/turnstile"
-      echo "644 $tree/crates/input/input-broker/dist/turnstile.socket $vendor_units/turnstile.socket"
-      echo "644 $tree/crates/input/input-broker/dist/turnstile.service $vendor_units/turnstile.service"
-      echo "644 $tree/crates/input/input-broker/dist/72-turnstile.rules /etc/udev/rules.d/72-turnstile.rules"
-      echo "644 $tree/crates/input/input-broker/dist/turnstile-modules.conf /etc/modules-load.d/turnstile.conf" ;;
+      echo "644 $tree/crates/input/input-broker/dist/bardo-input-broker.socket $vendor_units/bardo-input-broker.socket"
+      echo "644 $tree/crates/input/input-broker/dist/bardo-input-broker.service $vendor_units/bardo-input-broker.service"
+      echo "644 $tree/crates/input/input-broker/dist/72-bardo-input-broker.rules /etc/udev/rules.d/72-bardo-input-broker.rules"
+      echo "644 $tree/crates/input/input-broker/dist/bardo-input-broker-modules.conf /etc/modules-load.d/turnstile.conf" ;;
     keycap)
       echo "755 $keycap_bin $prefix/bin/keycap"
-      echo "644 $tree/crates/input/key-remap/dist/keycap.service $vendor_units/keycap.service"
-      echo "644 $tree/crates/input/key-remap/dist/keycap.polkit.rules /etc/polkit-1/rules.d/keycap.polkit.rules"
-      echo "644 $DIST/keycap.toml /usr/lib/keycap/keycap.toml" ;;
+      echo "644 $tree/crates/input/key-remap/dist/bardo-key-remap.service $vendor_units/bardo-key-remap.service"
+      echo "644 $tree/crates/input/key-remap/dist/bardo-key-remap.polkit.rules /etc/polkit-1/rules.d/bardo-key-remap.polkit.rules"
+      echo "644 $DIST/keycap.toml /usr/lib/bardo/key-remap/key-remap.toml" ;;
     palmrest)
       # No module list: the input service's turnstile.conf loads uinput. No rule for /dev/uinput either.
       echo "755 $palmrest_bin $prefix/bin/palmrest"
-      echo "644 $tree/crates/input/mouse-gestures/dist/palmrest.service $vendor_units/palmrest.service"
-      echo "644 $tree/crates/input/mouse-gestures/dist/70-palmrest.rules /etc/udev/rules.d/70-palmrest.rules"
-      echo "644 $tree/crates/input/mouse-gestures/dist/99-palmrest.conf /etc/modprobe.d/99-palmrest.conf" ;;
+      echo "644 $tree/crates/input/mouse-gestures/dist/bardo-mouse-gestures.service $vendor_units/bardo-mouse-gestures.service"
+      echo "644 $tree/crates/input/mouse-gestures/dist/70-bardo-mouse-gestures.rules /etc/udev/rules.d/70-bardo-mouse-gestures.rules"
+      echo "644 $tree/crates/input/mouse-gestures/dist/99-bardo-mouse-gestures.conf /etc/modprobe.d/99-bardo-mouse-gestures.conf" ;;
   esac
 }
 
 # content SOURCE: what is installed from SOURCE: a service names the program where this install put it.
 content() {
   case "$1" in
-    */turnstile.service) sed -E "s|^ExecStart=[^ ]*|ExecStart=$prefix/bin/turnstile|" "$1" ;;
-    */keycap.service) sed -E "s|^ExecStart=[^ ]*|ExecStart=$prefix/bin/keycap|" "$1" ;;
-    */palmrest.service) sed -E "s|^ExecStart=[^ ]*|ExecStart=$prefix/bin/palmrest|" "$1" ;;
+    */bardo-input-broker.service) sed -E "s|^ExecStart=[^ ]*|ExecStart=$prefix/bin/turnstile|" "$1" ;;
+    */bardo-key-remap.service) sed -E "s|^ExecStart=[^ ]*|ExecStart=$prefix/bin/keycap|" "$1" ;;
+    */bardo-mouse-gestures.service) sed -E "s|^ExecStart=[^ ]*|ExecStart=$prefix/bin/palmrest|" "$1" ;;
     *) cat "$1" ;;
   esac
 }
@@ -140,25 +140,25 @@ settle() { # the units, the device rules and the kernel module take effect; $1 t
       run "load the kernel module for virtual input devices now (it loads at every start of the computer anyway)" modprobe uinput
       run "apply the device rules" udevadm control --reload-rules
       run "close /dev/uinput to everybody but the input service" udevadm trigger --subsystem-match=misc
-      run "turn the input service on (it starts when something asks for it)" systemctl enable --now turnstile.socket ;;
+      run "turn the input service on (it starts when something asks for it)" systemctl enable --now bardo-input-broker.socket ;;
     keycap)
       # `enable --now` leaves a running service as it is, so a new program or service file needs a restart.
-      if [ "$changed" = 1 ] && systemctl is-active --quiet keycap.service; then
-        run "a new keyboard map: restart it so it runs (it waits until no key is held)" systemctl restart keycap.service
+      if [ "$changed" = 1 ] && systemctl is-active --quiet bardo-key-remap.service; then
+        run "a new keyboard map: restart it so it runs (it waits until no key is held)" systemctl restart bardo-key-remap.service
       else
-        run "turn the keyboard map on" systemctl enable --now keycap.service
+        run "turn the keyboard map on" systemctl enable --now bardo-key-remap.service
       fi ;;
     palmrest)
       run "apply the device rule" udevadm control --reload-rules
       run "give the mouse's raw node to the touchpad service (the input group, no person)" udevadm trigger --subsystem-match=hidraw
-      # The module option in 99-palmrest.conf applies when the module loads; a mouse already connected needs it set now.
+      # The module option in 99-bardo-mouse-gestures.conf applies when the module loads; a mouse already connected needs it set now.
       if [ -e /sys/module/hid_magicmouse/parameters/emulate_scroll_wheel ]; then
         run "let the mouse's own wheel emulation go (palmrest scrolls)" sh -c 'echo 0 > /sys/module/hid_magicmouse/parameters/emulate_scroll_wheel'
       fi
-      if [ "$changed" = 1 ] && systemctl is-active --quiet palmrest.service; then
-        run "a new touchpad program: restart it so it runs" systemctl restart palmrest.service
+      if [ "$changed" = 1 ] && systemctl is-active --quiet bardo-mouse-gestures.service; then
+        run "a new touchpad program: restart it so it runs" systemctl restart bardo-mouse-gestures.service
       else
-        run "turn the touchpad service on" systemctl enable --now palmrest.service
+        run "turn the touchpad service on" systemctl enable --now bardo-mouse-gestures.service
       fi ;;
   esac
 }
@@ -176,11 +176,11 @@ install_part() {
   local source
   refuse_unheld_prefix
   case "$part" in
-    callers) step "the list of the desktop's own programs (/etc/quire/desktop-callers.toml)"
+    callers) step "the list of the desktop's own programs (/etc/bardo/desktop-callers.toml)"
       note "The update service, the screen-sharing service and the input service read it when they start, and refuse"
-      note "everybody without it. Rows an administrator adds go in /etc/quire/desktop-callers.d/."
+      note "everybody without it. Rows an administrator adds go in /etc/bardo/desktop-callers.d/."
       if [ -d "$destdir/etc/quire" ] && [ -n "$(find "$destdir/etc/quire" -maxdepth 0 -perm /022)" ]; then
-        die "$destdir/etc/quire can be written by someone other than root; the services refuse a list in such a folder. Fix it first: chmod go-w /etc/quire" 1
+        die "$destdir/etc/quire can be written by someone other than root; the services refuse a list in such a folder. Fix it first: chmod go-w /etc/bardo" 1
       fi ;;
     turnstile) step "the input service (virtual keyboards and pads for keycap and palmrest, and nobody else)" ;;
     keycap) step "the keyboard map (keycap)" ;;
@@ -199,39 +199,39 @@ install_part() {
   need_write "${dests[@]}"
   while read -r fmode source dest; do put "$fmode" "$source" "$dest"; done < <(files)
   if [ "$part" = keycap ]; then
-    note "Caps Lock switches the input method (/usr/lib/keycap/keycap.toml). /etc/keycap/keycap.toml is yours and is not touched: rules you put there win."
+    note "Caps Lock switches the input method (/usr/lib/bardo/key-remap/key-remap.toml). /etc/bardo/key-remap/key-remap.toml is yours and is not touched: rules you put there win."
     # An earlier, stand-alone install of keycap left things that undo the desktop's choices.
-    if [ -z "$destdir" ] && [ -e /etc/systemd/system/keycap.service ]; then
-      note "WARNING: /etc/systemd/system/keycap.service from an earlier install hides the one just placed; remove it, then run: systemctl daemon-reload"
+    if [ -z "$destdir" ] && [ -e /etc/systemd/system/bardo-key-remap.service ]; then
+      note "WARNING: /etc/systemd/system/bardo-key-remap.service from an earlier install hides the one just placed; remove it, then run: systemctl daemon-reload"
     fi
-    if [ -z "$destdir" ] && [ -e /etc/systemd/system/keycap.service.d/10-uinput.conf ]; then
-      note "WARNING: /etc/systemd/system/keycap.service.d/10-uinput.conf lets the keyboard map open /dev/uinput itself; remove it, the input service makes the devices now"
+    if [ -z "$destdir" ] && [ -e /etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf ]; then
+      note "WARNING: /etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf lets the keyboard map open /dev/uinput itself; remove it, the input service makes the devices now"
     fi
-    if [ -z "$destdir" ] && [ -e /etc/udev/rules.d/70-keycap.rules ] && grep -q uinput /etc/udev/rules.d/70-keycap.rules; then
-      note "WARNING: /etc/udev/rules.d/70-keycap.rules gives a group the device file; the input service's rule (72) overrides it, but remove it all the same"
+    if [ -z "$destdir" ] && [ -e /etc/udev/rules.d/70-bardo-key-remap.rules ] && grep -q uinput /etc/udev/rules.d/70-bardo-key-remap.rules; then
+      note "WARNING: /etc/udev/rules.d/70-bardo-key-remap.rules gives a group the device file; the input service's rule (72) overrides it, but remove it all the same"
     fi
   fi
   if [ "$part" = callers ]; then
     note "Services that were already running keep what they read at their start: log out and in (or restart them) to use the new list."
   fi
   if [ "$part" = palmrest ]; then
-    note "Its settings are /etc/palmrest/gestures.toml (not touched here). The touchpad service serves only the person at the seat."
-    if [ -z "$destdir" ] && [ -e /etc/systemd/system/palmrest.service ]; then
-      note "WARNING: /etc/systemd/system/palmrest.service from an earlier install hides the one just placed; remove it, then run: systemctl daemon-reload"
+    note "Its settings are /etc/bardo/mouse-gestures/gestures.toml (not touched here). The touchpad service serves only the person at the seat."
+    if [ -z "$destdir" ] && [ -e /etc/systemd/system/bardo-mouse-gestures.service ]; then
+      note "WARNING: /etc/systemd/system/bardo-mouse-gestures.service from an earlier install hides the one just placed; remove it, then run: systemctl daemon-reload"
     fi
     # An earlier install ran palmrest as a service of the person; two of them fight for the mouse.
     if [ -z "$destdir" ]; then
       for home in "${HOME:-/nonexistent}" $(getent passwd "${SUDO_USER:-}" 2>/dev/null | cut -d: -f6); do
-        if [ -f "$home/.config/systemd/user/palmrest.service" ]; then
-          note "WARNING: $home/.config/systemd/user/palmrest.service is an earlier install that ran palmrest as your own service; stop and remove it: systemctl --user disable --now palmrest.service && rm $home/.config/systemd/user/palmrest.service"
+        if [ -f "$home/.config/systemd/user/bardo-mouse-gestures.service" ]; then
+          note "WARNING: $home/.config/systemd/user/bardo-mouse-gestures.service is an earlier install that ran palmrest as your own service; stop and remove it: systemctl --user disable --now bardo-mouse-gestures.service && rm $home/.config/systemd/user/bardo-mouse-gestures.service"
         fi
       done
     fi
   fi
   case "$part" in
-    turnstile) settle turnstile.socket ;;
-    keycap) settle keycap.service ;;
-    palmrest) settle palmrest.service ;;
+    turnstile) settle bardo-input-broker.socket ;;
+    keycap) settle bardo-key-remap.service ;;
+    palmrest) settle bardo-mouse-gestures.service ;;
   esac
   step "done"
 }
@@ -246,9 +246,9 @@ remove_part() {
   [ "${#present[@]}" = 0 ] || need_write "${present[@]}"
   if live && [ "$(id -u)" = 0 ] && systemd_running; then
     case "$part" in
-      turnstile) run "stop the input service" systemctl disable --now turnstile.socket turnstile.service ;;
-      keycap) run "stop the keyboard map (the keyboards go back to the system)" systemctl disable --now keycap.service ;;
-      palmrest) run "stop the touchpad service (the mouse goes back to the kernel's own scrolling after a reconnect)" systemctl disable --now palmrest.service ;;
+      turnstile) run "stop the input service" systemctl disable --now bardo-input-broker.socket bardo-input-broker.service ;;
+      keycap) run "stop the keyboard map (the keyboards go back to the system)" systemctl disable --now bardo-key-remap.service ;;
+      palmrest) run "stop the touchpad service (the mouse goes back to the kernel's own scrolling after a reconnect)" systemctl disable --now bardo-mouse-gestures.service ;;
     esac
   fi
   while read -r fmode source dest; do

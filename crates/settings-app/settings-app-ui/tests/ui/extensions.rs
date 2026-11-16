@@ -98,11 +98,11 @@ fn switching_a_look_off_writes_the_file_and_drops_it_from_the_menu_until_it_is_b
     install(&sandbox);
     let mut harness = sandbox.harness(opening("extensions"));
     let switch = format!("{ROW} .ds-toggle");
-    assert_eq!(sandbox.read("quire/extensions.toml"), None);
+    assert_eq!(sandbox.read("bardo/extensions.toml"), None);
 
     click(&mut harness, &switch);
     let text = sandbox
-        .read("quire/extensions.toml")
+        .read("bardo/extensions.toml")
         .expect("the file was written");
     assert!(text.contains(PAPER), "{text}");
     assert_eq!(
@@ -124,7 +124,7 @@ fn switching_a_look_off_writes_the_file_and_drops_it_from_the_menu_until_it_is_b
     assert_eq!(page_of(&harness).as_deref(), Some("extensions"));
     click(&mut harness, &switch);
     let text = sandbox
-        .read("quire/extensions.toml")
+        .read("bardo/extensions.toml")
         .expect("the file was written");
     assert!(!text.contains(PAPER), "{text}");
     click(&mut harness, &sidebar_page("appearance"));
@@ -135,7 +135,7 @@ fn switching_a_look_off_writes_the_file_and_drops_it_from_the_menu_until_it_is_b
 fn a_stored_look_nothing_has_is_kept_and_shown_as_unavailable() {
     let sandbox = Sandbox::new("extensions-stale-look");
     let stored = "version = 1\n[appearance]\nlook = \"org.example.Gone\"\n";
-    sandbox.write("quire/appearance.toml", stored);
+    sandbox.write("bardo/appearance.toml", stored);
     let mut harness = sandbox.harness(opening("appearance"));
     assert_eq!(
         harness
@@ -151,7 +151,7 @@ fn a_stored_look_nothing_has_is_kept_and_shown_as_unavailable() {
     assert!(harness.html().contains("Not installed, or turned off"));
     click(&mut harness, LOOK_MENU);
     assert_eq!(
-        sandbox.read("quire/appearance.toml").as_deref(),
+        sandbox.read("bardo/appearance.toml").as_deref(),
         Some(stored),
         "looking wrote nothing"
     );

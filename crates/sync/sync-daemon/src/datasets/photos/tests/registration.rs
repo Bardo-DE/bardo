@@ -54,7 +54,7 @@ fn wiring(root: &Path) -> PhotosWiring {
 fn settings_caller() -> Caller {
     Caller {
         app: AppId {
-            name: AppName::parse("org.quire.Settings").expect("app"),
+            name: AppName::parse("org.bardo.Settings").expect("app"),
             isolation: Isolation::Flatpak,
         },
         role: CallerRole::Settings,

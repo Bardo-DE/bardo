@@ -1,7 +1,7 @@
 //! Who is calling cuad: the process behind the connection, never a name it owns. Anyone can own
 //! a well-known bus name (a program that starts while the shell restarts can take
-//! `org.quire.Shell`), so a role comes from the process: porter's callers table (this daemon's
-//! `cuad-callers.toml`, shipped as `dist/cuad-callers.toml`) names the unit or app scope behind
+//! `org.bardo.Shell`), so a role comes from the process: porter's callers table (this daemon's
+//! `computer-use-callers.toml`, shipped as `dist/computer-use-callers.toml`) names the unit or app scope behind
 //! the sender, and a [`Standing`] says what a caller must be. Only the system's file can give a
 //! fixed role; a scope is never more than a plain app.
 
@@ -12,17 +12,17 @@ use action_dbus::callers::{
 use computer_use_bus::CuaCaller;
 use std::path::PathBuf;
 
-/// The file name, under `/etc/quire` and the person's configuration directory.
-pub const FILE: &str = "cuad-callers.toml";
+/// The file name, under `/etc/bardo` and the person's configuration directory.
+pub const FILE: &str = "computer-use-callers.toml";
 
-const SHIPPED: &str = include_str!("../../dist/cuad-callers.toml");
+const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 
 /// The bus name the shell is addressed by. It only addresses: whoever owns it is asked who it
 /// is ([`SHELL`]) before it is told anything.
-pub const SHELL_BUS: &str = "org.quire.Shell";
+pub const SHELL_BUS: &str = "org.bardo.Shell";
 
-/// companiond, the planner: the `agent` role of the app `org.quire.Companion1`.
-pub const COMPANION: Standing = Standing::new("org.quire.Companion1", Role::Agent);
+/// companiond, the planner: the `agent` role of the app `org.bardo.Companion1`.
+pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", Role::Agent);
 
 /// The standing each caller class needs, in the order they are tried. The shell is docket's
 /// [`SHELL`] and the router docket's [`INTENTD`], so cuad and the daemons beside it agree on who
@@ -39,7 +39,7 @@ pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }
 
-/// The table of this machine: `/etc/quire/cuad-callers.toml` with the person's file over it.
+/// The table of this machine: `/etc/bardo/computer-use-callers.toml` with the person's file over it.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     #[cfg(feature = "fixture-callers")]
     if let Some(system) = env(SYSTEM_CALLERS_VAR) {
@@ -50,11 +50,11 @@ pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, Caller
 
 /// The test build's callers file in place of the system's (`fixture-callers` only).
 #[cfg(feature = "fixture-callers")]
-pub const SYSTEM_CALLERS_VAR: &str = "CUAD_TEST_SYSTEM_CALLERS";
+pub const SYSTEM_CALLERS_VAR: &str = "BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS";
 
 /// The test build's process tree in place of `/proc` and the unit manager (`fixture-callers` only).
 #[cfg(feature = "fixture-callers")]
-pub const PROC_ROOT_VAR: &str = "CUAD_TEST_PROC_ROOT";
+pub const PROC_ROOT_VAR: &str = "BARDO_COMPUTER_USE_TEST_PROC_ROOT";
 
 /// Who is calling over `connection`: the system's `/proc`, or in a test build the fixture tree
 /// the harness names.
@@ -123,27 +123,27 @@ mod tests {
         let cases = [
             (
                 "the router",
-                caller("org.quire.Intents", Role::Agent),
+                caller("org.bardo.Intents", Role::Agent),
                 CuaCaller::Router,
             ),
             (
                 "the planner",
-                caller("org.quire.Companion1", Role::Agent),
+                caller("org.bardo.Companion1", Role::Agent),
                 CuaCaller::Companion,
             ),
             (
                 "the shell",
-                caller("org.quire.Shell", Role::SheetHost),
+                caller("org.bardo.Shell", Role::SheetHost),
                 CuaCaller::Shell,
             ),
             (
                 "an app scope called like the shell",
-                caller("org.quire.Shell", Role::App),
+                caller("org.bardo.Shell", Role::App),
                 CuaCaller::Other,
             ),
             (
                 "the router's name with the shell's role",
-                caller("org.quire.Intents", Role::SheetHost),
+                caller("org.bardo.Intents", Role::SheetHost),
                 CuaCaller::Other,
             ),
             (

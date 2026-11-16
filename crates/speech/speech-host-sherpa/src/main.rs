@@ -1,4 +1,4 @@
-//! `speech-host --socket <path> --model-dir <dir> --threads <n> --chunk-ms <ms>`
+//! `bardo-speech-host --socket <path> --model-dir <dir> --threads <n> --chunk-ms <ms>`
 
 use std::process::ExitCode;
 

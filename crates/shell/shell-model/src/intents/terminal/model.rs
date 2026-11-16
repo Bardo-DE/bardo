@@ -36,7 +36,7 @@ pub struct Terminal {
     pub reach: ControlReach,
 }
 
-/// A grant in words: the action's name, then the app it is of (`thread.archive`, `org.quire.Mail`
+/// A grant in words: the action's name, then the app it is of (`thread.archive`, `org.bardo.Mail`
 /// is "Thread archive" in "Mail"). The name is the manifest's, never the terminal's text.
 pub fn grant_words(grant: &ActionRef) -> (String, String) {
     let app = grant.app.as_str();
@@ -58,7 +58,7 @@ fn capitalised(text: &str) -> String {
         .unwrap_or_default()
 }
 
-/// `app:action` (`org.quire.Shell:shell.dock.pin`), the way a person names a grant on the command
+/// `app:action` (`org.bardo.Shell:shell.dock.pin`), the way a person names a grant on the command
 /// line; the other way round is [`grant_name`].
 pub fn parse_grant(text: &str) -> Result<ActionRef, GrantError> {
     let (app, action) = text
@@ -73,7 +73,7 @@ pub fn parse_grant(text: &str) -> Result<ActionRef, GrantError> {
 /// Why a grant typed on the command line could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum GrantError {
-    #[error("{0:?} is not APP:ACTION (org.quire.Shell:shell.lock)")]
+    #[error("{0:?} is not APP:ACTION (org.bardo.Shell:shell.lock)")]
     Shape(String),
     #[error("{0}")]
     Name(String),

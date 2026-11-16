@@ -13,7 +13,7 @@ const WATCH_FOR: Duration = Duration::from_secs(5);
 const SLACK: Duration = Duration::from_millis(500);
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn ready_comes_quickly_and_the_watchdog_is_pinged_at_least_every_half_interval() {
     let scene = Scene::new("watchdog");
     let mut daemon = ok(Daemon::start(&scene.spec()), "starting the daemon");

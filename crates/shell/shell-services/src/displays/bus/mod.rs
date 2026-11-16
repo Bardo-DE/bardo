@@ -1,17 +1,17 @@
 //! sill serves each display's brightness on the session bus, so Settings can show a slider
-//! per display and follow the keys and the control centre: `org.quire.Displays1` at
-//! `/org/quire/Displays1`, a small interface over what the displays service already routes
+//! per display and follow the keys and the control centre: `org.bardo.Displays1` at
+//! `/org/bardo/Displays1`, a small interface over what the displays service already routes
 //! (logind for built-in panels, DDC/CI for monitors).
 //!
 //! - `Brightness() -> a(su)`: every output whose brightness can be read, with its percentage
 //!   (0 to 100); an output with nothing to read is not listed.
 //! - `SetBrightness(s output, u percent)`: sets that output's own brightness. Only Settings may
 //!   call it (the program the table of the desktop's own programs names as `settings`, owning
-//!   `org.quire.Settings`, [`crate::callers`]); anyone else is refused (`AccessDenied`). An
+//!   `org.bardo.Settings`, [`crate::callers`]); anyone else is refused (`AccessDenied`). An
 //!   output that is not listed, or a percentage above 100, is `InvalidArgs`.
 //! - `Changed(a(su))`: the same list, sent whenever it changes (a key, the control centre, a
 //!   monitor adjusted on itself while a view follows).
-//! - **The name.** `org.quire.Displays1`, claimed at start unless [`Env::claims`](crate::env) is
+//! - **The name.** `org.bardo.Displays1`, claimed at start unless [`Env::claims`](crate::env) is
 //!   `Passive` (a test's `start` never claims it). Reading is open to any program.
 
 mod object;
@@ -28,9 +28,9 @@ use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
 /// The well-known name the interface is served under.
-pub const BUS: &str = "org.quire.Displays1";
+pub const BUS: &str = "org.bardo.Displays1";
 /// Where the object is exported.
-pub const PATH: &str = "/org/quire/Displays1";
+pub const PATH: &str = "/org/bardo/Displays1";
 
 /// What the service reads and drives: the displays it lists and the displays service it tells.
 #[derive(Debug, Clone)]

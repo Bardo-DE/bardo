@@ -1,6 +1,6 @@
 //! What an `Inference1` method answers instead of a value: one of the bus's own errors under its
 //! real name, or, for a call that named its `places` and none of them can serve it,
-//! `org.quire.Inference1.Error.NoAllowedPlace.<Reason>`.
+//! `org.bardo.Inference1.Error.NoAllowedPlace.<Reason>`.
 //!
 //! zbus can return an error with a structured body, and this one does: the body of a
 //! no-allowed-place reply is two strings, the words for a person and the kind of place outside
@@ -29,10 +29,10 @@ pub enum InferError {
     NoPlace {
         /// The reason and what would have served.
         refusal: PlaceRefusal,
-        /// `org.quire.Inference1.Error.NoAllowedPlace.<Reason>`.
+        /// `org.bardo.Inference1.Error.NoAllowedPlace.<Reason>`.
         name: ErrorName<'static>,
     },
-    /// A computer could not be added or removed: `org.quire.Inference1.Error.Computer.<Name>`
+    /// A computer could not be added or removed: `org.bardo.Inference1.Error.Computer.<Name>`
     /// with the sentence Settings shows.
     Computer {
         /// The sentence.

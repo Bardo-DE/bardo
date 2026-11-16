@@ -1,4 +1,4 @@
-//! `porter-rig-servers` as a process: it starts, writes `rig.json`, answers its control
+//! `account-rig-servers` as a process: it starts, writes `rig.json`, answers its control
 //! endpoint and the fakes it started, plants the secrets it says, and ends cleanly on SIGTERM
 //! sent to its PID.
 
@@ -22,7 +22,7 @@ fn json(text: &str) -> Value {
 async fn the_rig_starts_lists_what_it_planted_serves_its_levers_and_ends_on_sigterm() {
     let dir = Scratch::new("rig-servers");
     let mut rig = Proc::spawn(
-        env!("CARGO_BIN_EXE_porter-rig-servers"),
+        env!("CARGO_BIN_EXE_account-rig-servers"),
         &[
             "--dir",
             dir.to_str().expect("utf-8"),
@@ -153,7 +153,7 @@ async fn a_rig_asked_for_nothing_starts_only_its_control_endpoint_and_a_lever_on
  {
     let dir = Scratch::new("rig-servers-bare");
     let mut rig = Proc::spawn(
-        env!("CARGO_BIN_EXE_porter-rig-servers"),
+        env!("CARGO_BIN_EXE_account-rig-servers"),
         &["--dir", dir.to_str().expect("utf-8")],
         &[],
     );
@@ -192,7 +192,7 @@ fn imap_line(stream: &mut TcpStream, send: Option<&str>) -> String {
 async fn the_rig_starts_a_fake_google_that_wants_the_planted_application_secret() {
     let dir = Scratch::new("rig-servers-google");
     let _rig = Proc::spawn(
-        env!("CARGO_BIN_EXE_porter-rig-servers"),
+        env!("CARGO_BIN_EXE_account-rig-servers"),
         &["--dir", dir.to_str().expect("utf-8"), "--google"],
         &[],
     );
@@ -236,7 +236,7 @@ async fn the_rig_starts_a_fake_google_that_wants_the_planted_application_secret(
 async fn the_rig_lists_login_attempts_without_secrets_and_issues_short_tokens() {
     let dir = Scratch::new("rig-servers-levers");
     let mut rig = Proc::spawn(
-        env!("CARGO_BIN_EXE_porter-rig-servers"),
+        env!("CARGO_BIN_EXE_account-rig-servers"),
         &[
             "--dir",
             dir.to_str().expect("utf-8"),

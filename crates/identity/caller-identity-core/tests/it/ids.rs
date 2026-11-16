@@ -13,29 +13,29 @@ fn path(text: &str) -> ExePath {
 #[test]
 fn a_pattern_matches_whole_segments_and_one_star_per_segment() {
     let cases = [
-        ("/usr/bin/sill", "/usr/bin/sill", true),
-        ("/usr/bin/sill", "/usr/bin/sill2", false),
+        ("/usr/bin/bardo-shell", "/usr/bin/bardo-shell", true),
+        ("/usr/bin/bardo-shell", "/usr/bin/sill2", false),
         (
-            "/opt/quire/releases/*/bin/sill",
+            "/opt/bardo/releases/*/bin/sill",
             "/opt/quire/releases/0.4.1/bin/sill",
             true,
         ),
         // A star never crosses a slash.
         (
-            "/opt/quire/releases/*/bin/sill",
+            "/opt/bardo/releases/*/bin/sill",
             "/opt/quire/releases/0.4/evil/bin/sill",
             false,
         ),
         (
-            "/opt/quire/releases/*/bin/sill",
+            "/opt/bardo/releases/*/bin/sill",
             "/opt/quire/releases/bin/sill",
             false,
         ),
         ("/opt/*/bin/sill", "/opt/x/bin/sill", true),
         ("/usr/bin/sill-*", "/usr/bin/sill-helper", true),
-        ("/usr/bin/sill-*", "/usr/bin/sill", false),
+        ("/usr/bin/sill-*", "/usr/bin/bardo-shell", false),
         ("/usr/bin/*-sill", "/usr/bin/a-sill", true),
-        ("/usr/bin/s*ll", "/usr/bin/sill", true),
+        ("/usr/bin/s*ll", "/usr/bin/bardo-shell", true),
         ("/usr/bin/s*ll", "/usr/bin/sl", false),
     ];
     for (pat, text, want) in cases {
@@ -77,12 +77,12 @@ fn image_paths_are_absolute_plain_and_never_deleted() {
     ] {
         assert!(ExePath::new(bad).is_err(), "{bad:?}");
     }
-    assert_eq!(path("/usr/bin/sill").file_name(), Some("sill"));
+    assert_eq!(path("/usr/bin/bardo-shell").file_name(), Some("sill"));
 }
 
 #[test]
 fn small_ids_check_their_alphabets() {
-    assert!(UnitName::new("sill.service").is_ok());
+    assert!(UnitName::new("bardo-shell.service").is_ok());
     assert!(UnitName::new("app-org.x.Y-123.scope").is_ok());
     assert!(UnitName::new("user@1000.service").is_ok());
     for bad in [
@@ -94,7 +94,7 @@ fn small_ids_check_their_alphabets() {
     ] {
         assert!(UnitName::new(bad).is_err(), "{bad:?}");
     }
-    assert!(AppKey::new("org.quire.Shell").is_ok());
+    assert!(AppKey::new("org.bardo.Shell").is_ok());
     for bad in ["", "a b", "a/b"] {
         assert!(AppKey::new(bad).is_err(), "{bad:?}");
     }

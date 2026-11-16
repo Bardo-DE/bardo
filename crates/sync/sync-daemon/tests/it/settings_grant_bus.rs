@@ -1,5 +1,5 @@
 //! Settings lets syncd sync an account, end to end on one private bus: syncd's settings module
-//! (`/org/quire/Sync1/settings`) over accountd (hosted in process), a Graph account that holds no
+//! (`/org/bardo/Sync1/settings`) over accountd (hosted in process), a Graph account that holds no
 //! grant, syncd's storage supervisor and a fake Graph drive. Switching "Keep this account's files
 //! on this computer" on asks accountd for the grant, whose consent sheet shows once, and the mirror
 //! starts;
@@ -157,7 +157,7 @@ async fn rig() -> Rig {
     let module = SyncSettings::new(Arc::new(own), Arc::new(known.clone()));
     serve_settings(&server, module).await.expect("settings");
     let name = server.unique_name().expect("name").to_string();
-    let settings_side = client(&bus, &known, "org.quire.Settings", CallerRole::Settings).await;
+    let settings_side = client(&bus, &known, "org.bardo.Settings", CallerRole::Settings).await;
     let settings =
         LiveClient::new(&settings_side, &name, SETTINGS_PATH, AnyOwner).expect("settings client");
     let stranger_side = client(&bus, &known, "org.example.Other", CallerRole::App).await;

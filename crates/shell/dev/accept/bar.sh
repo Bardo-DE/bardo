@@ -71,7 +71,7 @@
 # the headless KWin are stopped. Steps 0-6 must pass; the keyboard-back line never changes the
 # exit status.
 #
-# Only ONE headless KWin can exist at a time. SHELL_HOST_DEV may name a private copy of
+# Only ONE headless KWin can exist at a time. BARDO_LAYER_SHELL_HOST_DEV may name a private copy of
 # layer-shell-host's scripts/dev (with tools/ beside its scripts/): kwin-virtual.sh keeps one .kwin-env
 # per scripts/dev, so a copy runs beside another agent's headless KWin.
 #
@@ -83,12 +83,12 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-bar"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-bar"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 # The bar's height: `--shell-bar-h`, 24.
 BAR_H="${BAR_H:-24}"
-BAR_DEMO="$SILL_TARGET/release/examples/bar_demo"
+BAR_DEMO="$BARDO_SHELL_TARGET/release/examples/bar_demo"
 SINK=
 NAME=
 STATUS=0
@@ -210,7 +210,7 @@ step_idle() {
   sleep 5
   after=$(bar_counters) || return 1
   printf 'before:\n%s\nafter:\n%s\n' "$before" "$after" | tee "$OUT_DIR/idle.log" >&2
-  shot "$SILL_SHOTS/bar-$COMPOSITOR.png" >&2 || true
+  shot "$BARDO_SHELL_SHOTS/bar-$COMPOSITOR.png" >&2 || true
   [ "$before" = "$after" ]
 }
 
@@ -250,7 +250,7 @@ step_menus() {
     sleep 0.05
   done
   sleep 0.5
-  shot "$SILL_SHOTS/bar-$COMPOSITOR-menu.png" >&2 || true
+  shot "$BARDO_SHELL_SHOTS/bar-$COMPOSITOR-menu.png" >&2 || true
   echo "click the bar's middle at $(( width / 2 )),$y" >>"$log"
   surface_click "$bar" $(( width / 2 )) "$y" >>"$log" 2>&1 || return 1
   for _ in $(seq 40); do
@@ -324,12 +324,12 @@ run_daemon_steps() {
 # tree): $1 is `kwin` or `casement` (which compositor takes the screenshot and which steps run), $2
 # the screenshot's path. Exit 0 only when every check passed.
 run_bar_demo() {
-  in_env env CASEMENTCTL="$CASEMENT_TOOLS/bin/casementctl" ACCEPT_OUT="$OUT_DIR" ACCEPT_PNG="$2" ACCEPT_MODE="$1" BAR_DEMO="$BAR_DEMO" \
-    PROBE="$PROBE" ACCEPT_COMPOSITOR="$COMPOSITOR" python3 - <<'PY'
+  in_env env CASEMENTCTL="$BARDO_COMPOSITOR_TOOLS/bin/bardo-compositorctl" BARDO_ACCEPT_OUT="$OUT_DIR" BARDO_ACCEPT_PNG="$2" BARDO_ACCEPT_MODE="$1" BAR_DEMO="$BAR_DEMO" \
+    PROBE="$PROBE" BARDO_ACCEPT_COMPOSITOR="$COMPOSITOR" python3 - <<'PY'
 import json, os, queue, re, subprocess, sys, threading, time
 
-OUT, PNG, MODE = os.environ["ACCEPT_OUT"], os.environ["ACCEPT_PNG"], os.environ["ACCEPT_MODE"]
-CASEMENT = os.environ.get("ACCEPT_COMPOSITOR") == "casement"
+OUT, PNG, MODE = os.environ["BARDO_ACCEPT_OUT"], os.environ["BARDO_ACCEPT_PNG"], os.environ["BARDO_ACCEPT_MODE"]
+CASEMENT = os.environ.get("BARDO_ACCEPT_COMPOSITOR") == "casement"
 SKIPS = {}
 LOG = open(f"{OUT}/accept-{MODE}.log", "w")
 PROCS = []
@@ -427,24 +427,24 @@ def status_items(path):
 
 def bar_click(x, y):
     """A click on the bar at its local (x, y): the demo's own `click` command, or, on casement,
-    a real pointer press through casementctl (a popup's grab needs a real serial there)."""
+    a real pointer press through bardo-compositorctl (a popup's grab needs a real serial there)."""
     if CASEMENT:
         r = subprocess.run([os.environ["CASEMENTCTL"], "debug", "inject", f"move {x} {y}", "sleep 60",
                             "press left", "sleep 40", "release left", "sleep 200"],
                            capture_output=True, text=True, timeout=30)
-        log(f"casementctl click {x},{y}: exit {r.returncode} {r.stdout.strip()!r} {r.stderr.strip()!r}")
+        log(f"bardo-compositorctl click {x},{y}: exit {r.returncode} {r.stdout.strip()!r} {r.stderr.strip()!r}")
     else:
         bar.send(f"{name} click {x} {y}")
 
 def screenshot(path):
     if os.path.exists(path): os.remove(path)
     if CASEMENT:
-        # casementctl's `shot` needs ext-image-copy-capture (P1-C1): an expected skip, not a failure
+        # bardo-compositorctl's `shot` needs ext-image-copy-capture (P1-C1): an expected skip, not a failure
         # (the checks do not depend on the screenshot).
         r = subprocess.run([os.environ["CASEMENTCTL"], "shot", path], capture_output=True, text=True)
         if r.returncode != 0:
-            log("expected skip: screenshot:", r.stderr.strip() or "casementctl shot failed")
-            SKIPS["screenshot"] = "casementctl shot is not built yet (P1-C1)"
+            log("expected skip: screenshot:", r.stderr.strip() or "bardo-compositorctl shot failed")
+            SKIPS["screenshot"] = "bardo-compositorctl shot is not built yet (P1-C1)"
         return
     subprocess.run(["spectacle", "-b", "-n", "-f", "-o", path], check=True, timeout=20,
                    capture_output=True)
@@ -458,8 +458,8 @@ try:
         info = output_info()
         if CASEMENT:
             # A maximised toplevel to measure needs casement's window management (P1/P2): P0
-            # windows are floating and casement-probe toplevel has no --maximised.
-            SKIPS["exclusive_zone"] = "casement P0 windows are floating: no maximised configure until P1/P2 (casement-probe toplevel --maximised)"
+            # windows are floating and compositor-probe toplevel has no --maximised.
+            SKIPS["exclusive_zone"] = "casement P0 windows are floating: no maximised configure until P1/P2 (compositor-probe toplevel --maximised)"
             log("expected skip: exclusive_zone:", SKIPS["exclusive_zone"])
         else:
             base, v0 = probe_maximized(); time.sleep(0.3); base.quit()
@@ -534,15 +534,15 @@ step_demo_kwin() { run_bar_demo kwin "$SHOTS/bar.png"; }
 step_demo_nested() { run_bar_demo casement "$SHOTS/bar-casement-menu.png"; }
 
 # The demo and layer-shell-host's probe, built (a no-op when up to date). Under dev/accept.sh
-# (SILL_PREBUILT) they were built outside the jail: only checked here.
+# (BARDO_SHELL_PREBUILT) they were built outside the jail: only checked here.
 build_demo() {
   build || return 1
-  if [ -n "${SILL_PREBUILT:-}" ]; then
+  if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then
     [ -x "$BAR_DEMO" ] || { echo "$BAR_DEMO is missing: run dev/accept.sh --build" >&2; return 1; }
     return 0
   fi
-  # Always the release demo (BAR_DEMO), whatever SILL_PROFILE the daemon steps run on.
-  (cd "$SILL_REPO" && cargo build --release -p shell-bar --example bar_demo) >>"$OUT_DIR/build.log" 2>&1 || {
+  # Always the release demo (BAR_DEMO), whatever BARDO_SHELL_PROFILE the daemon steps run on.
+  (cd "$BARDO_SHELL_REPO" && cargo build --release -p shell-bar --example bar_demo) >>"$OUT_DIR/build.log" 2>&1 || {
     echo "build failed (see $OUT_DIR/build.log)" >&2; return 1; }
   (cd "$HOST_REPO" && cargo build --release -p layer-shell-host --features debug-inject \
     --example probe_toplevel) >>"$OUT_DIR/build.log" 2>&1 || {
@@ -582,7 +582,7 @@ click_at() { move_to "$1" "$2" && input "press left" "sleep 40" "release left" "
 
 # The key sink: a GTK 4 window on KWin's socket and bus that logs the keys it gets.
 start_sink() {
-  in_env GDK_BACKEND=wayland python3 "$SILL_REPO/dev/key-sink.py" >"$OUT_DIR/sink.log" 2>&1 &
+  in_env GDK_BACKEND=wayland python3 "$BARDO_SHELL_REPO/dev/key-sink.py" >"$OUT_DIR/sink.log" 2>&1 &
   SINK=$!
   for _ in $(seq 100); do grep -q ' ready$' "$OUT_DIR/sink.log" && return 0; sleep 0.1; done
   echo "the key sink never started" >&2
@@ -600,7 +600,7 @@ sink_keys() { grep -c ' key ' "$OUT_DIR/sink.log"; }
 
 # The sink's frame "x y w h" from KWin's scripting API.
 sink_frame() {
-  "$SHELL_HOST_DEV/kwin-windows.sh" 2>/dev/null | python3 -c '
+  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" 2>/dev/null | python3 -c '
 import json, sys
 for line in sys.stdin:
     w = json.loads(line)
@@ -611,7 +611,7 @@ for line in sys.stdin:
 # Starts the daemon with the settings the steps need and finds the bar, its popup and the center.
 start_real_daemon() {
   mkdir -p "$CONFIG/sill"
-  cat >"$CONFIG/sill/settings.toml" <<'EOF'
+  cat >"$CONFIG/shell/settings.toml" <<'EOF'
 [control_center]
 modules = ["focus", "appearance", "wifi", "bluetooth", "sound"]
 menu_bar_wifi = true
@@ -789,7 +789,7 @@ step_hover_switch() {
 await_dnd() {
   local now=
   for _ in $(seq 30); do
-    now=$(sed -n 's/^dnd *= *\(.*\)$/\1/p' "$CONFIG/sill/settings.toml")
+    now=$(sed -n 's/^dnd *= *\(.*\)$/\1/p' "$CONFIG/shell/settings.toml")
     [ "$now" = "$1" ] && break
     sleep 0.1
   done

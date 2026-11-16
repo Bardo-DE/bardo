@@ -66,7 +66,7 @@ async fn seeded() -> Arc<MemoryLog> {
     };
     let (ran, ()) = tokio::join!(server.run(), run);
     assert!(ran.is_ok());
-    opening_by(&log, "s-50", Some("org.quire.Shell")).await;
+    opening_by(&log, "s-50", Some("org.bardo.Shell")).await;
     opening_by(&log, "s-51", None).await;
     opening_by(&log, "s-52", Some(OTHER)).await;
     log

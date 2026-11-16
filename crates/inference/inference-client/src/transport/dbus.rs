@@ -35,7 +35,7 @@ impl DbusTransport {
     }
 
     /// The same, with inferd's calls (sessions, places, computers, guests and the guests watch)
-    /// sent to `owner`, the unique name the caller checked owns `org.quire.Inference1`.
+    /// sent to `owner`, the unique name the caller checked owns `org.bardo.Inference1`.
     pub fn inference_at(self, owner: UniqueName<'static>) -> Self {
         Self {
             inference: Destination::Owner(owner),

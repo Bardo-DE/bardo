@@ -48,11 +48,11 @@ doc is the authority on where each key actually lives, and supersedes those inli
 
 | File | Owner | Domains |
 | --- | --- | --- |
-| `$XDG_CONFIG_HOME/quire/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
-| `$XDG_CONFIG_HOME/sill/settings.toml` | `sill` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
-| `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (almanac), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/docket/settings.toml` (schema `dist/settings/docket.settings.toml`); inferd's schema is porter's `dist/inferd.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
+| `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
+| `$XDG_CONFIG_HOME/shell/settings.toml` | `sill` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
+| `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (almanac), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
-| `$XDG_CONFIG_HOME/palmrest/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `sill`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
+| `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `sill`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
 Rules, all three files:
 
@@ -96,7 +96,7 @@ still a key per section 1; **settled default, range proposed** = the doc's own p
 verbatim. **advanced** in the last column (used in section 5) means file-only, no Settings UI
 control in v1.
 
-### 3.1 `appearance` (quire/appearance.toml)
+### 3.1 `appearance` (bardo/appearance.toml)
 
 The table below is generated from the schema (`scripts/gen-doc-keys.sh`); the notes under it are
 hand-written. Where a note's default disagrees with the table, the table (the code) is right.
@@ -133,7 +133,7 @@ the material blocks, `Ds` writes none of them inline, and a look or the person's
 sets them. A stored value is an unknown key: it is reported and kept in the file, never read.
 
 **Removed 2026-10-29.** `appearance.typeface` (the Typeface row) is gone with the second typeface
-(30 section 3.4). Editorial is the look Extension `org.quire.look.Editorial`, chosen under
+(30 section 3.4). Editorial is the look Extension `org.bardo.look.Editorial`, chosen under
 `appearance.look` (Settings > Look). A stored `appearance.typeface` is an unknown key: it is
 reported once and kept in the file, never read.
 
@@ -148,7 +148,7 @@ vocabulary they use):
 variant, appearance's vocabulary) but is *read* by `sill`'s notifications surface; see section
 7 for the cross-file read this implies.
 
-### 3.2 `motion` (quire/appearance.toml — level selector only)
+### 3.2 `motion` (bardo/appearance.toml — level selector only)
 
 Per-`MotionLevel` durations, easings and scalars (`--t-*`, `--e-*`, `--overshoot`, `--squish`,
 `--lift`, `--tilt`, `--stagger`) are `ds` token-table data (PLAN "Design: `<ds>`" token model),
@@ -157,7 +157,7 @@ and `#12-open-decisions` mark "proposed" for *which curve* a level uses (e.g. Re
 `--e-spring` = `--e-out`, `05-MOTION.md#10-shell-motion`). Rule 1 in section 1 applies: only the
 level itself is user-tunable, and it is `appearance.motion_level` (3.1).
 
-### 3.3 `icons` (quire/appearance.toml)
+### 3.3 `icons` (bardo/appearance.toml)
 
 The app-icon *generation* pipeline (`08-ICONS.md#3-generation-pipeline`) is a build-time tool
 (`quire-icons`), not a runtime setting, and is out of scope. These are the runtime,
@@ -184,7 +184,7 @@ reads at 3:1 on the fill, the hue's deep ink otherwise) and `icons.dark_mode_var
 icon in both schemes) are no longer settings. The three constants with no reader in quire
 (0.90, Auto, same-as-light) belong to the program that plates third-party icons (sill).
 
-### 3.4 `bar` (sill/settings.toml)
+### 3.4 `bar` (shell/settings.toml)
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -192,7 +192,7 @@ icon in both schemes) are no longer settings. The three constants with no reader
 | `bar.battery_low_percent` | `Percent` | `20` | `5..=50`; at or under this charge, on battery, the fill turns `--battery-low` and the item nudges once per discharge | `26-DETAILS.md` §5.1.3 G10, G11; sill FINDINGS F822 | proposed (D1, 2026-09-27) |
 | `bar.autohide` | `BarAutohide::{Always,DesktopOnly,FullScreenOnly,Never}` | `FullScreenOnly` | TOML words `always`, `desktop_only`, `full_screen_only`, `never`; macOS's "Automatically hide and show the menu bar" (Always, On Desktop Only, In Full Screen Only, Never); Appearance › Bar | `28-CUSTOMIZATION.md` (menu bar auto-hide is a scalar key, not a placement); sill's bar auto-hide | settled (shell, 2026-10-22) |
 
-### 3.5 `dock` (sill/settings.toml)
+### 3.5 `dock` (shell/settings.toml)
 
 Pinned items live in `[[dock]]` rows of `~/.config/sill/layout.toml` (design/28 §5.6, built in sill 848a20a7; the old `dock.json` is read once and carried over), not in this file (
 `10-BEHAVIOUR-dock.md#10-6-configuration`).
@@ -213,7 +213,7 @@ Pinned items live in `[[dock]]` rows of `~/.config/sill/layout.toml` (design/28 
 | `dock.progress_ring_stroke_px` | `Px` | `3` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; quire's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
 | `dock.floor` | `DockFloor::{Off,On}` | `Off` |  | `FINDINGS.md` "macOS polish"; `04-COMPONENTS.md` | proposed (polish pass, 2026-09-25) |
 
-### 3.6 `launcher` (sill/settings.toml)
+### 3.6 `launcher` (shell/settings.toml)
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -222,10 +222,10 @@ Pinned items live in `[[dock]]` rows of `~/.config/sill/layout.toml` (design/28 
 | `launcher.web_search` | `WebSearch::{On,Off}` | `On` | "Search the web for …" as the last result | `20-SURFACES.md` §1.3; sill M9 (Q301) | settled (user, 2026-09-27) |
 | `launcher.currency` | `CurrencyRates::{Off,Ecb}` | `Off` | Ecb fetches the ECB daily reference rates at most once a day | `20-SURFACES.md` §1.3; sill M9 (Q301) | proposed (2026-09-26) |
 
-### 3.7 `scroll` (sill/settings.toml)
+### 3.7 `scroll` (shell/settings.toml)
 
 `scroll.speed`, `scroll.lock_*` and the gain constants are **not** duplicated here: they are
-palmrest's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `palmrest/gestures.toml`, which
+palmrest's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `mouse-gestures/gestures.toml`, which
 `layer-shell-host` reads read-only (`11-BEHAVIOUR-scroll.md#11-7-integration`).
 
 | Key | Type | Default | Range / Alt | Source | Status |
@@ -233,14 +233,14 @@ palmrest's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `palmre
 | `scroll.natural` | `NaturalScroll::{Natural,Traditional}` | `Natural` | | `11-BEHAVIOUR-scroll.md#11-6-configuration` (R16) | settled (preference) |
 | `scroll.momentum` | `Momentum::{On,Off}` | `On` | | `11-BEHAVIOUR-scroll.md#11-6-configuration` | proposed |
 
-### 3.8 `scrollbar` (sill/settings.toml)
+### 3.8 `scrollbar` (shell/settings.toml)
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | `scroll.scrollbars` | `ScrollbarVisibility::{WhenScrolling,Always}` | `WhenScrolling` | | `11-BEHAVIOUR-scroll.md#11-6-configuration` | proposed |
 | `scrollbar.track_click_mode` | `TrackClick::{PageTowardClick,JumpToClick}` | `PageTowardClick` | macOS default is "jump to next page" | `11-BEHAVIOUR-scroll.md#11-3-12-overlay-scrollbar-our-own-thumb` | proposed |
 
-### 3.9 `gestures` (palmrest/gestures.toml)
+### 3.9 `gestures` (mouse-gestures/gestures.toml)
 
 Retired 2026-10-27 except two rows: palmrest has only `scroll.speed` and the
 `gestures.gesture_action_map` rows (one per gesture). The other keys of
@@ -265,7 +265,7 @@ Retired 2026-10-27: Settings keeps only what macOS offers, so the `menus.*` keys
 constants at their old defaults or stylesheet tokens in sill; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
-### 3.12 `notifications` (sill/settings.toml)
+### 3.12 `notifications` (shell/settings.toml)
 
 `notifications.banner_material` is in 3.1 (it is `Appearance` vocabulary, read from
 `appearance.toml`); everything else lives here.
@@ -277,7 +277,7 @@ loads, the keys are ignored. The section number stays so later links hold.
 | `notifications.banner_entry_direction` | `BannerEntry::{FromRight,FromBelow}` | `FromRight` | | `05-MOTION.md#12-open-decisions` item 7 | RETIRING: no reader; a banner slides in from and out to the right (design/30 section 1.3) |
 | `notifications.swipe` | `NotificationSwipe::{KeepInCenter,Dismiss}` | `KeepInCenter` | macOS keeps a swiped banner in Notification Center (design/13 said dismiss); to be confirmed when M6 lane a reports | `20-SURFACES.md#1-6-notifications`; `13-BEHAVIOUR-menus-windows.md#13-3-6`; sill M6 freeze | proposed (M6 freeze, 2026-09-25) |
 
-### 3.13 `control_center` (sill/settings.toml)
+### 3.13 `control_center` (shell/settings.toml)
 
 Module list against the Claude Doc spec (rev 31): `13-BEHAVIOUR-menus-windows.md#13-9-open-decisions`
 item 4 — **could not find a single sourced default**; the plan-derived order below is used
@@ -299,7 +299,7 @@ Retired 2026-10-27: Settings keeps only what macOS offers, so the `spaces.*` key
 constants at their old defaults or stylesheet tokens in sill; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
-### 3.15 `display` (sill/settings.toml)
+### 3.15 `display` (shell/settings.toml)
 
 All Advanced (§5). The display service reads the EDID, classifies the panel's gamut, and drives DDC/CI. sill sets no scale: casement picks a display's first scale (`outputs.first_sight_scale`, 2026-10-19) and sill only shows it.
 
@@ -329,7 +329,7 @@ Retired 2026-10-27: Settings keeps only what macOS offers, so the `window.*` key
 constants at their old defaults or stylesheet tokens in sill; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
-### 3.19 `session` (sill/settings.toml)
+### 3.19 `session` (shell/settings.toml)
 
 The parts a sill session borrows until M11 draws its own (design/20 §1.9 lock screen, §1.10 polkit prompt; sill FINDINGS "M7"): which lock screen and which polkit agent `dist/sill-session` starts. Both are a name from a fixed vocabulary or a command line, so a user can point at a program this list does not know. Page Accounts, all Advanced (§5), except `session.lock_grace_s`: it answers sill's own idle service (F863, F908), not the locker or the polkit agent, so it moved to the new Power page (§5) alongside `idle.*` (Q445). Idle timeouts are not sill's: the desktop idle daemon keeps them in the desktop's own config.
 
@@ -345,7 +345,7 @@ layer, so the six `widgets.*` keys (`center`, `desktop`, `desktop_widgets`, `des
 `desktop_gap_px`, `world_clocks`) are gone; a file that still has them loads, the keys are ignored.
 The section number stays so links to 3.21 and later hold.
 
-### 3.21 `calendar` (sill/settings.toml)
+### 3.21 `calendar` (shell/settings.toml)
 
 The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; sill F401–F403): `.ics` files and vdir folders, watched; no CalDAV client of sill's own. Page Notifications, all Advanced.
 
@@ -355,7 +355,7 @@ The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; sil
 | `calendar.first_weekday` | `FirstWeekday::{Monday,Sunday}` | `Monday` | the month's first column (ISO 8601) | same; F403 | proposed (M10 freeze, 2026-09-26) |
 | `calendar.week_numbers` | `WeekNumbers::{Hide,Show}` | `Hide` | a column of ISO week numbers | same; F403 | proposed (M10 freeze, 2026-09-26) |
 
-### 3.22 `screenshot` (sill/settings.toml)
+### 3.22 `screenshot` (shell/settings.toml)
 
 The floating thumbnail after a screenshot and the tool that takes one (design/20 §1.13; sill F406, F408): the thumbnail holds `ToastHold` (5200 ms) and pauses under the pointer; dragging it out is a file drag once layer-shell-host has a drag source (G120). Page Keyboard and Shortcuts, all Advanced.
 
@@ -364,7 +364,7 @@ The floating thumbnail after a screenshot and the tool that takes one (design/20
 | `screenshot.thumbnail` | `ShotThumbnail::{Show,Hide}` | `Show` | the floating thumbnail after a screenshot (macOS's "Show Floating Thumbnail") | `20-SURFACES.md#1-13-screenshot-thumbnail-spec-integrated-experience-priority-pick`; F408 | proposed (M10 freeze, 2026-09-26) |
 | `screenshot.folders` | `Text` | `"auto"` | `auto` (Pictures and Pictures/Screenshots), `off`, or folders separated by `;`, watched for new screenshots | same; F406 | proposed (M10 freeze, 2026-09-26) |
 
-### 3.23 `hot_corners` (sill/settings.toml)
+### 3.23 `hot_corners` (shell/settings.toml)
 
 One invisible square per enabled corner (design/20 §1.16; design/13 §13.3.12 for the dwell, re-arm, modifier and action rules; sill F409). Page Dock; the four corner keys are drawn by one custom control (`corners`) and the timing and the hot spot's size (150 ms dwell, 500 ms re-arm, 2 px) are constants of the machine, not settings (2026-10-27).
 
@@ -375,7 +375,7 @@ One invisible square per enabled corner (design/20 §1.16; design/13 §13.3.12 f
 | `hot_corners.bottom_left` | as `top_left` | `[]` | as `top_left` | same | proposed (hot corners beyond the Mac, 2026-10-22) |
 | `hot_corners.bottom_right` | as `top_left` | `[]` | as `top_left` (macOS ships Quick Note here; sill has none until M12) | same | proposed (hot corners beyond the Mac, 2026-10-22) |
 
-### 3.24 `idle` (sill/settings.toml)
+### 3.24 `idle` (shell/settings.toml)
 
 sill's own idle service, replacing the desktop idle daemon in a sill session (the user's pick, 2026-09-27): dim with an overlay (never real brightness), screen off through output power, lock as the displays go off, suspend through logind; `org.freedesktop.ScreenSaver.Inhibit`, Wayland idle-inhibit and logind inhibitors are honoured (sill FINDINGS "sill idle (Q420 B)", F900-F913). Page Power (§5, Q445; before that landed, "Page Accounts for now").
 
@@ -387,7 +387,7 @@ sill's own idle service, replacing the desktop idle daemon in a sill session (th
 | `idle.suspend_battery_min` | `Mins` | `15` | `0..=480`, 0 never | sill FINDINGS "sill idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
 | `idle.lock` | `IdleLockAt::{ScreenOff,Never}` | `ScreenOff` |  | sill FINDINGS "sill idle (Q420 B)", F904 | proposed (Q441, 2026-09-27) |
 
-### 3.25 `keyboard` (sill/settings.toml)
+### 3.25 `keyboard` (shell/settings.toml)
 
 How sill treats the keyboard per app (keycap, the key-cap overlay: which keycap profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
 
@@ -397,7 +397,7 @@ How sill treats the keyboard per app (keycap, the key-cap overlay: which keycap 
 
 ### 3.26 `ai` (inferd, through its settings module)
 
-The model layer: where data may go, which model fills each tier, how the engines are supervised. Page Intelligence, section Models (`ai.local_only`, `ai.floor.*`, `ai.model.*`) and Advanced (`ai.engine.*`, `ai.cua.*`). The owning daemon's repo names its file (its schema ships as porter's `dist/inferd.settings.toml`); the Intelligence page reads that schema (section 9.2) and the live picker rows (section 9.4).
+The model layer: where data may go, which model fills each tier, how the engines are supervised. Page Intelligence, section Models (`ai.local_only`, `ai.floor.*`, `ai.model.*`) and Advanced (`ai.engine.*`, `ai.cua.*`). The owning daemon's repo names its file (its schema ships as porter's `dist/inference.settings.toml`); the Intelligence page reads that schema (section 9.2) and the live picker rows (section 9.4).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -429,7 +429,7 @@ The model layer: where data may go, which model fills each tier, how the engines
 
 ### 3.27 `agent` (docket)
 
-How far the companion may act on its own and what it may spend. Page Intelligence, section Privacy (`agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h`); the rest Advanced. Every value of the budget table is a key, never a constant (QUESTIONS S5); the person may lower a budget, and only the person may raise the false-negative targets of the evaluation gates, which are not keys. The keys live in `$XDG_CONFIG_HOME/docket/settings.toml`; the schema ships as docket's `dist/settings/docket.settings.toml` (hands-off for agents), and actions-mcp reads `agent.mcp.expose` from the same file (`actions-mcp --write-schema <dir>` writes its part).
+How far the companion may act on its own and what it may spend. Page Intelligence, section Privacy (`agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h`); the rest Advanced. Every value of the budget table is a key, never a constant (QUESTIONS S5); the person may lower a budget, and only the person may raise the false-negative targets of the evaluation gates, which are not keys. The keys live in `$XDG_CONFIG_HOME/actions/settings.toml`; the schema ships as docket's `dist/settings/actions.settings.toml` (hands-off for agents), and bardo-actions-mcp reads `agent.mcp.expose` from the same file (`bardo-actions-mcp --write-schema <dir>` writes its part).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -496,7 +496,7 @@ Computer use, off by default and on per app. Page Intelligence, section Computer
 | `cua.screens.keep_days` | `Count` | `7` | `1..=365` d | cua.md section 5 | proposed (companion freeze, 2026-10-02) |
 
 
-### 3.30 `companion` (sill/settings.toml)
+### 3.30 `companion` (shell/settings.toml)
 
 The summon and the confirmation. Page Intelligence, sections Companion and Confirmations. The undo window, the default run place and the touch pause moved to `agent.undo.keep_h`, `cua.default_mode` and `cua.autopause` (SPEC section 2). `companion.double_tap_ms` and `companion.confirm_arm_ms` are Advanced.
 
@@ -538,7 +538,7 @@ The file viewer's timings, steps, history and the limits of its decoders. Page V
 | `viewer.image.markdown_inline_mib` | `Count` | `8` | `1..=64` MiB; the largest local image a rendered Markdown file inlines | anyview-text `markdown/images.rs` `MAX_INLINE` | proposed (viewer join, 2026-10-03) |
 
 
-### 3.32 `region` (quire/appearance.toml)
+### 3.32 `region` (bardo/appearance.toml)
 
 The desktop-wide language and region preferences (owner decision 2026-10-20: one 12/24-hour
 preference for every clock, defaulting from the locale). The table below is generated from the
@@ -560,7 +560,7 @@ the key itself. The bar, the calendar and mail's snooze times read the same answ
 clock follows `region.hours` and, like the Mac's, never shows AM/PM (`14:05`, or `2:05`); there is
 no lock-clock key of its own.
 
-### 3.33 `wallpaper` (sill/settings.toml)
+### 3.33 `wallpaper` (shell/settings.toml)
 
 The desktop picture. Page Wallpaper (the `wallpaper` page of §9.3), where the `picture` control
 shows a grid of pictures with "Add Picture...".
@@ -793,7 +793,7 @@ struct the switcher's timing and cells are constants, not settings (2026-10-27: 
 ```rust
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
-pub struct AppearanceFile {          // quire/appearance.toml
+pub struct AppearanceFile {          // bardo/appearance.toml
     pub version: u16,                // = 1
     pub appearance: AppearanceSettings,
     pub icons: IconsSettings,
@@ -801,7 +801,7 @@ pub struct AppearanceFile {          // quire/appearance.toml
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
-pub struct ShellFile {               // sill/settings.toml
+pub struct ShellFile {               // shell/settings.toml
     pub version: u16,
     pub bar: BarSettings,
     pub dock: DockSettings,
@@ -820,7 +820,7 @@ pub struct ShellFile {               // sill/settings.toml
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
-pub struct GesturesFile {            // palmrest/gestures.toml
+pub struct GesturesFile {            // mouse-gestures/gestures.toml
     pub version: u16,
     pub gestures: GesturesSettings,
     pub palm_rejection: PalmRejectionSettings,
@@ -921,7 +921,7 @@ Every domain struct in section 4 gains `#[derive(SettingsSchema)]` (a proc-macro
 
 ```rust
 #[derive(Default, Serialize, Deserialize, SettingsSchema)]
-#[settings(file = "sill/settings.toml", domain = "dock", page = Page::Dock)]
+#[settings(file = "shell/settings.toml", domain = "dock", page = Page::Dock)]
 pub struct DockSettings {
     #[settings(label = "Magnification", help = "Icons grow as the pointer nears them.", section = "Magnification")]
     pub magnification: Magnification,                       // enum -> segmented control
@@ -1042,8 +1042,8 @@ The derive's build step writes `target/.../<app-id>.settings.toml` and the packa
 to `$XDG_DATA_DIRS/quire/settings/<app-id>.settings.toml`, next to the `.desktop` file, the way
 GSettings ships schemas. The file is TOML, one `[[key]]` table per `KeySpec`, plus `app`,
 `file` and `version`. Developers run `cargo run -p <app> -- --write-schema <dir>` for a local
-install. quire's own schema (`quire.settings.toml`: the `appearance` and `icons` domains of
-`quire/appearance.toml`) has no app binary, so it is written by the `ui-settings` example
+install. quire's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
+`bardo/appearance.toml`) has no app binary, so it is written by the `ui-settings` example
 `write_schema` (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`). A schema without a program (a stale file) is skipped with a warning.
 
 A settings file can hold tables the program owns that are not settings (inferd's `[engines]`,
@@ -1116,7 +1116,7 @@ as "edit in settings.toml".
 ### 9.4 Live modules (the one dynamic path)
 
 Runtime state that is not a file (Wi-Fi networks, Bluetooth devices, audio devices, accounts)
-is served by its shell service over D-Bus: `org.quire.SettingsModule1` with `Describe() ->
+is served by its shell service over D-Bus: `org.bardo.SettingsModule1` with `Describe() ->
 schema JSON` (the same `KeySpec` shape, with `kind = Live{action}`) plus `Get`/`Set`/`Changed`.
 The Settings app renders these modules in the same pages, with the same widgets; the only
 difference is that `Set` calls the service instead of writing a file. mailo, calendar and
@@ -1130,7 +1130,7 @@ rows use `kind = Live{action}` (a label plus weight `plain` or `destructive`), a
 `Alert{Critical}`). A toggle's value is a boolean on the wire. The serving daemon implements
 `ds_settings::live::LiveModule` and holds all state; it decides who may `Get` or `Set` in
 `permit` (accountd and inferd allow only the Settings role), and a refusal is
-`org.quire.SettingsModule1.Error.NotPermitted`. `serve` and `LiveClient::describe` both refuse a
+`org.bardo.SettingsModule1.Error.NotPermitted`. `serve` and `LiveClient::describe` both refuse a
 schema that marks an `AGENT_NEVER_SETTABLE` key agent-settable, the same check
 `Schema::from_toml` and the derive use.
 
@@ -1157,7 +1157,7 @@ a file schema has the same as an `[key.unavailable]` table; both are skipped whe
 schemas written before the field parse unchanged and readers that predate it ignore it. The
 Settings app greys such a choice, shows the reason under it ("Add an account to use") and does
 not offer it. The skeleton refuses `Set(key, word)` for a listed word with the named error
-`org.quire.SettingsModule1.Error.Unavailable` carrying the reason, before the module sees the
+`org.bardo.SettingsModule1.Error.Unavailable` carrying the reason, before the module sees the
 call; `KeySpec::check_available` is the same check for file validation. `Describe`, `Get`,
 `Set` and `Changed` keep their signatures: the freeze above is not touched.
 
@@ -1199,7 +1199,7 @@ reads one entry. `Describe`, `Get`, `Set` and `Changed` keep their signatures.
 - Schema `version` follows the file `version` (section 2); a key removed from a struct leaves
   the schema with it.
 - No program renders its own settings UI for keys the schema covers (mailo's appearance
-  picker becomes the appearance picker component bound to `quire/appearance.toml`); an app
+  picker becomes the appearance picker component bound to `bardo/appearance.toml`); an app
   may still embed the Settings app's rendering of its own schema in-app via the shared
   `SettingsPage` component (built: crate `ui-settings-page`, moved whole from mailo's
   settings_window/keys.rs). It is a crate of its own because it needs `ds` and `ui-settings`,
@@ -1269,7 +1269,7 @@ a program's own schema still decides which other keys it marks settable.
 agent that could raise its own budget or switch computer use on would be its own gatekeeper.
 
 The marks of sill's and detent's own keys live in their schemas; quire marks only what
-`quire/appearance.toml` owns (`appearance.theme`, `appearance.accent`, `appearance.look`,
+`bardo/appearance.toml` owns (`appearance.theme`, `appearance.accent`, `appearance.look`,
 `appearance.file_icons`, `appearance.custom_styles`).
 
 ### 9.8 Pages, controls, targets, patches and ranges (v0.3.36)
@@ -1317,7 +1317,7 @@ program's own sections move onto the same markers when its schema is passed with
 ## 7. Open decisions
 
 1. **Whether palmrest and sill share one file.** This doc keeps them separate
-   (`palmrest/gestures.toml` vs `sill/settings.toml`) because `palmrest` is a separate daemon
+   (`mouse-gestures/gestures.toml` vs `shell/settings.toml`) because `palmrest` is a separate daemon
    that must start and apply its own config before `sill` or any compositor exists
    (`12-BEHAVIOUR-gestures.md#12-3-12-daemon-architecture`), and because `12.6`'s own doc text
    already assumes a `palmrest/config.toml`. A merged file would need `palmrest` to depend on

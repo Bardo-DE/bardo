@@ -13,15 +13,15 @@ const BINARIES: [&str; 12] = [
     "intentd",
     "companiond",
     "readerd",
-    "actions-mcp",
-    "quire-do",
-    "docket-eval",
+    "bardo-actions-mcp",
+    "bardo-do",
+    "agent-eval",
     "memoryd",
     "inferd",
     "accountd",
-    "docket-agent",
-    "docket-net-forward",
-    "docket-net-enter",
+    "bardo-agent",
+    "bardo-agent-net-forward",
+    "bardo-agent-net-enter",
 ];
 
 /// The script's sources are the sibling checkouts; without them there is nothing to install from.
@@ -50,8 +50,8 @@ impl Jail {
         let dir = tempfile::tempdir().expect("scratch");
         let fakes = dir.path().join("fakes");
         std::fs::create_dir_all(&fakes).expect("fakes");
-        // docket-acp is installed by scripts/install.sh only, not by install-dev.sh.
-        for name in BINARIES.iter().copied().chain(["docket-acp"]) {
+        // bardo-agent-acp is installed by scripts/install.sh only, not by install-dev.sh.
+        for name in BINARIES.iter().copied().chain(["bardo-agent-acp"]) {
             std::fs::write(fakes.join(name), format!("#!/bin/sh\necho fake {name}\n"))
                 .expect("fake");
         }
@@ -169,7 +169,7 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
         "intentd",
         "companiond",
         "readerd",
-        "actions-mcp",
+        "bardo-actions-mcp",
         "inferd",
         "accountd",
         "memoryd",
@@ -185,26 +185,26 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
         "Memory1",
     ] {
         has(&format!(
-            ".local/share/dbus-1/services/org.quire.{name}.service"
+            ".local/share/dbus-1/services/org.bardo.{name}.service"
         ));
     }
     has(".local/share/quire/skills/desktop-basics/SKILL.md");
     has(".local/share/quire/permissions/default/grid.cedar");
-    has(".local/share/quire/settings/docket.settings.toml");
-    has(".local/share/quire/settings/almanac.settings.toml");
-    has(".local/share/quire/settings/inferd.settings.toml");
+    has(".local/share/quire/settings/actions.settings.toml");
+    has(".local/share/quire/settings/memory.settings.toml");
+    has(".local/share/quire/settings/inference.settings.toml");
     has(".local/share/porter/providers/openrouter.toml");
     has(".local/share/stoker/catalog/claude-haiku-4.5.toml");
-    for config in ["intentd", "companiond", "memory-callers", "actions-mcp"] {
+    for config in ["intentd", "companiond", "memory-callers", "bardo-actions-mcp"] {
         has(&format!(".config/quire/{config}.toml"));
     }
     has(".config/inferd/inferd.toml");
     // Offline unless asked: no drop-in that opens inferd's network (its sandbox drop-in, which
     // only narrows it, is checked below).
     assert!(
-        !tree.iter().any(|p| p.contains("inferd.service.d/")
-            && !p.ends_with("inferd.service.d/")
-            && !p.ends_with("inferd.service.d/sandbox.conf")),
+        !tree.iter().any(|p| p.contains("bardo-inferd.service.d/")
+            && !p.ends_with("bardo-inferd.service.d/")
+            && !p.ends_with("bardo-inferd.service.d/sandbox.conf")),
         "{tree:#?}"
     );
     // The mount-namespace protections ride along as drop-ins.
@@ -212,7 +212,7 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
         "intentd",
         "companiond",
         "readerd",
-        "actions-mcp",
+        "bardo-actions-mcp",
         "memoryd",
         "inferd",
     ] {
@@ -230,17 +230,17 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
     );
     assert!(
         out.contains("sudo install -D -m644 ")
-            && out.contains("/dist/callers.toml /etc/porter/callers.toml"),
+            && out.contains("/dist/callers.toml /etc/bardo/accountd-callers.toml"),
         "{out}"
     );
     assert!(
-        out.contains("/dist/inferd-callers.toml /etc/porter/inferd-callers.toml"),
+        out.contains("/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml"),
         "{out}"
     );
     // The agent daemons' callers files are the system's: printed for root, never put in the
     // person's configuration, where they could not give the shell its role.
     assert!(
-        out.contains("/dist/intentd-callers.toml /etc/quire/intentd-callers.toml"),
+        out.contains("/dist/actiond-callers.toml /etc/bardo/actiond-callers.toml"),
         "{out}"
     );
     assert!(
@@ -282,7 +282,7 @@ fn the_exec_lines_name_the_prefix_and_a_home_prefix_keeps_the_binary_reachable()
             "{unit}\n{text}"
         );
     }
-    let dbus = jail.read(".local/share/dbus-1/services/org.quire.Companion1.service");
+    let dbus = jail.read(".local/share/dbus-1/services/org.bardo.Companion1.service");
     assert!(dbus.contains(&format!("Exec={bin}/companiond\n")), "{dbus}");
     // With the binary under HOME, `ProtectHome=yes` would hide it from its own unit.
     for unit in ["companiond", "readerd"] {
@@ -335,7 +335,7 @@ fn a_dry_run_prints_every_action_and_writes_nothing() {
     for expect in [
         "install -m 755",
         "intentd",
-        "dbus-1/services/org.quire.Companion1.service",
+        "dbus-1/services/org.bardo.Companion1.service",
         "quire/skills/desktop-basics/SKILL.md",
         "porter/providers/openrouter.toml",
         "sudo install -D -m644",
@@ -425,14 +425,14 @@ fn cloud_is_opt_in_and_an_uninstall_removes_it() {
     jail.ok(&[]);
     let offline = jail.tree();
     // The packaged unit stays as shipped: this computer's own addresses only.
-    let unit = jail.read(".config/systemd/user/inferd.service");
+    let unit = jail.read(".config/systemd/user/bardo-inferd.service");
     assert!(unit.contains("IPAddressDeny=any"), "{unit}");
     assert!(unit.contains("IPAddressAllow=localhost"), "{unit}");
     let dry = jail.ok(&["--cloud", "--dry-run"]);
-    assert!(dry.contains("inferd.service.d/cloud.conf"), "{dry}");
+    assert!(dry.contains("bardo-inferd.service.d/cloud.conf"), "{dry}");
     assert_eq!(jail.tree(), offline, "a dry run writes nothing");
     jail.ok(&["--cloud"]);
-    let dropin = jail.read(".config/systemd/user/inferd.service.d/cloud.conf");
+    let dropin = jail.read(".config/systemd/user/bardo-inferd.service.d/cloud.conf");
     // porter's drop-in opens every address (the families are already open in the unit).
     assert!(dropin.contains("IPAddressAllow=any"), "{dropin}");
     jail.ok(&["--uninstall"]);
@@ -447,21 +447,21 @@ fn the_system_installer_puts_each_piece_under_the_prefix_and_the_protections_are
     let tree = jail.tree();
     let has = |rel: &str| assert!(tree.contains(rel), "missing {rel}\n{tree:#?}");
     has("root/opt/quire-test/libexec/quire/intentd");
-    has("root/opt/quire-test/bin/quire-do");
-    has("root/opt/quire-test/lib/systemd/user/intentd.service");
-    has("root/opt/quire-test/lib/systemd/user/intentd.service.d/sandbox.conf");
-    has("root/opt/quire-test/share/dbus-1/services/org.quire.Intents1.service");
-    has("root/opt/quire-test/share/dbus-1/interfaces/org.quire.Intents1.xml");
-    has("root/opt/quire-test/share/quire/settings/docket.settings.toml");
-    has("root/etc/xdg/quire/intentd.toml");
-    has("root/etc/quire/intentd-callers.toml");
-    let unit = jail.read("root/opt/quire-test/lib/systemd/user/intentd.service");
+    has("root/opt/quire-test/bin/bardo-do");
+    has("root/opt/quire-test/lib/systemd/user/bardo-actiond.service");
+    has("root/opt/quire-test/lib/systemd/user/bardo-actiond.service.d/sandbox.conf");
+    has("root/opt/quire-test/share/dbus-1/services/org.bardo.Intents1.service");
+    has("root/opt/quire-test/share/dbus-1/interfaces/org.bardo.Intents1.xml");
+    has("root/opt/quire-test/share/quire/settings/actions.settings.toml");
+    has("root/etc/xdg/quire/actiond.toml");
+    has("root/etc/quire/actiond-callers.toml");
+    let unit = jail.read("root/opt/quire-test/lib/systemd/user/bardo-actiond.service");
     assert!(
         unit.contains("\nExecStart=/opt/quire-test/libexec/quire/intentd\n"),
         "{unit}"
     );
     let activation =
-        jail.read("root/opt/quire-test/share/dbus-1/services/org.quire.Intents1.service");
+        jail.read("root/opt/quire-test/share/dbus-1/services/org.bardo.Intents1.service");
     assert!(
         activation.contains("Exec=/opt/quire-test/libexec/quire/intentd\n"),
         "{activation}"
@@ -477,7 +477,7 @@ fn the_system_installer_puts_each_piece_under_the_prefix_and_the_protections_are
     );
     assert!(
         bare.tree()
-            .contains("root/opt/quire-test/lib/systemd/user/intentd.service")
+            .contains("root/opt/quire-test/lib/systemd/user/bardo-actiond.service")
     );
 }
 
@@ -489,8 +489,8 @@ fn the_system_installer_dry_run_prints_every_action_and_writes_nothing() {
     let text = String::from_utf8_lossy(&out.stdout);
     for expect in [
         "install -m 755",
-        "intentd.service.d/sandbox.conf",
-        "/etc/quire/intentd-callers.toml",
+        "bardo-actiond.service.d/sandbox.conf",
+        "/etc/bardo/actiond-callers.toml",
         "dry run",
     ] {
         assert!(text.contains(expect), "{expect}\n{text}");

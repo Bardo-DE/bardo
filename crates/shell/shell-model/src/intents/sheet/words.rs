@@ -22,7 +22,7 @@ pub fn asker_words(actor: &Actor) -> &'static str {
     }
 }
 
-/// The app's name as people say it: the last element of its reverse-DNS name (`org.quire.Mail` is
+/// The app's name as people say it: the last element of its reverse-DNS name (`org.bardo.Mail` is
 /// "Mail"). The assistant's own app is called by the person's word for it.
 pub fn app_words(app: &AppName) -> String {
     let name = app.as_str();

@@ -33,11 +33,11 @@ fn a_dataset_name_is_an_account_segment_a_slash_and_a_slug() {
 
 #[test]
 fn who_sees_a_dataset_by_role_and_ownership() {
-    let access = owned_by("org.quire.Photos");
+    let access = owned_by("org.bardo.Photos");
     let cases = [
         (
             "the owner",
-            caller("org.quire.Photos", CallerRole::App),
+            caller("org.bardo.Photos", CallerRole::App),
             true,
         ),
         (
@@ -47,20 +47,20 @@ fn who_sees_a_dataset_by_role_and_ownership() {
         ),
         (
             "settings",
-            caller("org.quire.Settings", CallerRole::Settings),
+            caller("org.bardo.Settings", CallerRole::Settings),
             true,
         ),
         (
             "a porter daemon",
-            caller("org.quire.Inference", CallerRole::PorterDaemon),
+            caller("org.bardo.Inference", CallerRole::PorterDaemon),
             true,
         ),
         (
             "an agent",
-            caller("org.quire.Photos", CallerRole::Agent),
+            caller("org.bardo.Photos", CallerRole::Agent),
             false,
         ),
-        ("cua", caller("org.quire.Cua", CallerRole::Cua), false),
+        ("cua", caller("org.bardo.ComputerUse", CallerRole::Cua), false),
     ];
     for (who, caller, sees) in cases {
         assert_eq!(access.admits(&caller), sees, "{who}");
@@ -70,10 +70,10 @@ fn who_sees_a_dataset_by_role_and_ownership() {
 #[test]
 fn a_hub_lists_shows_pauses_and_forgets_only_what_a_caller_may_see() {
     let hub = Hub::default();
-    let mine = hub.register(name("a1/photos_originals"), owned_by("org.quire.Photos"));
-    let _theirs = hub.register(name("a2/pim"), owned_by("org.quire.Sill"));
-    let photos = caller("org.quire.Photos", CallerRole::App);
-    let settings = caller("org.quire.Settings", CallerRole::Settings);
+    let mine = hub.register(name("a1/photos_originals"), owned_by("org.bardo.Photos"));
+    let _theirs = hub.register(name("a2/pim"), owned_by("org.bardo.Shell"));
+    let photos = caller("org.bardo.Photos", CallerRole::App);
+    let settings = caller("org.bardo.Settings", CallerRole::Settings);
     assert_eq!(hub.names_for(&photos), ["a1/photos_originals"]);
     assert_eq!(hub.names_for(&settings), ["a1/photos_originals", "a2/pim"]);
 
@@ -115,7 +115,7 @@ fn a_hub_lists_shows_pauses_and_forgets_only_what_a_caller_may_see() {
 async fn a_handle_learns_of_a_pause_and_of_being_dropped() {
     let hub = Hub::default();
     let mut handle = hub.register(name("a1/pim"), Access::default());
-    let settings = caller("org.quire.Settings", CallerRole::Settings);
+    let settings = caller("org.bardo.Settings", CallerRole::Settings);
     assert!(hub.set_pausing(&settings, &name("a1/pim"), Pausing::Paused));
     assert!(handle.changed().await, "the switch changed");
     hub.forget_account(&AccountDir::parse("a1").expect("account"));
@@ -153,10 +153,10 @@ async fn events_reach_subscribers_and_nobody_listening_is_fine() {
 fn the_shell_hears_every_hold_and_nothing_else_of_a_dataset_it_does_not_own() {
     let hub = Hub::default();
     let handle = hub.register(name("a1/notes"), owned_by("org.example.Notes"));
-    let shell = caller("org.quire.Sill", CallerRole::SheetHost);
+    let shell = caller("org.bardo.Shell", CallerRole::SheetHost);
     let owner = caller("org.example.Notes", CallerRole::App);
     let stranger = caller("org.example.Other", CallerRole::App);
-    let agent = caller("org.quire.Agent", CallerRole::Agent);
+    let agent = caller("org.bardo.Agent", CallerRole::Agent);
     let hold = Event::Held {
         dataset: name("a1/notes"),
         held: Some(MassDelete {
@@ -292,7 +292,7 @@ async fn sync_now_wakes_the_driver_once_whenever_it_is_asked_and_a_paused_datase
     assert!(nothing_waits(&mut handle).await);
 
     // Paused: refused, and the driver is told of the pause only.
-    let settings = caller("org.quire.Settings", CallerRole::Settings);
+    let settings = caller("org.bardo.Settings", CallerRole::Settings);
     assert!(hub.set_pausing(&settings, &dataset, Pausing::Paused));
     assert_eq!(hub.sync_now(&dataset), Err(SyncNowError::Paused));
     assert!(matches!(handle.nudged().await, Nudge::Pause));
@@ -323,7 +323,7 @@ fn status_says_syncing_while_a_cycle_runs_whatever_the_driver_published() {
     let hub = Hub::default();
     let dataset = name("a1/pim");
     let handle = hub.register(dataset.clone(), Access::default());
-    let settings = caller("org.quire.Settings", CallerRole::Settings);
+    let settings = caller("org.bardo.Settings", CallerRole::Settings);
     let syncing = |hub: &Hub| hub.status_for(&settings, &dataset).map(|s| s.syncing);
     handle.publish(StatusSnapshot {
         syncing: true,

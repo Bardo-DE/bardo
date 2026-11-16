@@ -7,11 +7,11 @@ use companion_daemon::*;
 
 #[test]
 fn the_external_agents_pseudo_app_is_not_in_the_planners_tools_or_cards() {
-    let agent = manifest("org.quire.AcpAgent.toml");
+    let agent = manifest("org.bardo.AcpAgent.toml");
     assert_eq!(agent.manifest().visibility, Visibility::HostOnly);
     let others = [
         action_fake::mail_manifest().expect("mail"),
-        manifest("org.quire.Memory.toml"),
+        manifest("org.bardo.Memory.toml"),
     ];
     let with_agent: Vec<ValidManifest> = others.iter().cloned().chain([agent]).collect();
     let listed = Catalogue::from_manifests(&with_agent);

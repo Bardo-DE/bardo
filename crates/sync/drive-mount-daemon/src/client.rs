@@ -26,9 +26,9 @@ pub enum AskError {
 impl std::fmt::Display for AskError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            AskError::Absent => f.write_str("porter-mountd is not running"),
-            AskError::Refused(code) => write!(f, "porter-mountd refused: {code}"),
-            AskError::Broken(why) => write!(f, "porter-mountd did not answer: {why}"),
+            AskError::Absent => f.write_str("bardo-drive-mount is not running"),
+            AskError::Refused(code) => write!(f, "bardo-drive-mount refused: {code}"),
+            AskError::Broken(why) => write!(f, "bardo-drive-mount did not answer: {why}"),
         }
     }
 }

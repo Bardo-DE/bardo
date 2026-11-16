@@ -17,9 +17,9 @@ const KEY_SPACE: KeyCode = KeyCode(57);
 
 fn toggle_launcher() -> DbusCall {
     DbusCall {
-        service: "org.quire.Sill".to_owned(),
-        path: "/org/quire/Sill".to_owned(),
-        interface: "org.quire.Sill1".to_owned(),
+        service: "org.bardo.Shell".to_owned(),
+        path: "/org/bardo/Shell".to_owned(),
+        interface: "org.bardo.Shell1".to_owned(),
         method: "ToggleLauncher".to_owned(),
         args: Vec::new(),
     }

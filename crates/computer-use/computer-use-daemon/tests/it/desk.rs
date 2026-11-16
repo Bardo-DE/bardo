@@ -29,11 +29,11 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use zbus::Connection;
 
-pub(crate) const COMPANION: &str = "org.quire.Companion1";
-pub(crate) const CUAD: &str = "org.quire.Cua1";
+pub(crate) const COMPANION: &str = "org.bardo.Companion1";
+pub(crate) const CUAD: &str = "org.bardo.ComputerUse1";
 
 pub(crate) fn mail() -> AppName {
-    AppName::parse("org.quire.Mail").unwrap()
+    AppName::parse("org.bardo.Mail").unwrap()
 }
 
 pub(crate) fn work() -> SpaceId {

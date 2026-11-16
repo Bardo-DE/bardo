@@ -8,12 +8,12 @@ use action_core::{AuditRecord, CallEnd};
 use agent_skills::{Origin, Skill, parse};
 use serde_json::json;
 
-const LOAD: &str = "org_quire_Companion-companion_skill_load";
-const ARCHIVE: &str = "org_quire_Mail-mail_thread_archive";
+const LOAD: &str = "org_bardo_Companion-companion_skill_load";
+const ARCHIVE: &str = "org_bardo_Mail-mail_thread_archive";
 
 fn skill(id: &str, uses: &str, when: &str, body: &str) -> Skill {
     let toml = format!(
-        "vocab = 1\nid = \"{id}\"\nowner = \"org.quire.Companion\"\nversion = \"1.{}\"\n\
+        "vocab = 1\nid = \"{id}\"\nowner = \"org.bardo.Companion\"\nversion = \"1.{}\"\n\
          uses = [\"{uses}\"]\n{when}",
         id.len()
     );
@@ -21,8 +21,8 @@ fn skill(id: &str, uses: &str, when: &str, body: &str) -> Skill {
     parse(id, &toml, &md, Origin::Shipped).expect("a valid skill")
 }
 
-const LOAD_USE: &str = "org.quire.Companion:companion.skill.load";
-const ARCHIVE_USE: &str = "org.quire.Mail:mail.thread.archive";
+const LOAD_USE: &str = "org.bardo.Companion:companion.skill.load";
+const ARCHIVE_USE: &str = "org.bardo.Mail:mail.thread.archive";
 
 fn installed() -> Vec<Skill> {
     vec![
@@ -30,13 +30,13 @@ fn installed() -> Vec<Skill> {
         skill(
             "shell-tips",
             LOAD_USE,
-            "[when]\nfocused_app = [\"org.quire.Shell\"]\n",
+            "[when]\nfocused_app = [\"org.bardo.Shell\"]\n",
             "SHELL-BODY",
         ),
         skill(
             "mail-tips",
             ARCHIVE_USE,
-            "[when]\nfocused_app = [\"org.quire.Mail\"]\n",
+            "[when]\nfocused_app = [\"org.bardo.Mail\"]\n",
             "MAIL-BODY",
         ),
         skill("extra-one", LOAD_USE, "", "ONE-BODY"),
@@ -44,7 +44,7 @@ fn installed() -> Vec<Skill> {
         // Its action is not registered anywhere: hidden, in no catalogue, not loadable.
         skill(
             "ghost",
-            "org.quire.Mail:mail.no.such",
+            "org.bardo.Mail:mail.no.such",
             "[when]\nalways = true\n",
             "GHOST-BODY",
         ),
@@ -93,7 +93,7 @@ async fn the_catalogue_lists_offered_skills_and_the_contexts_match_is_expanded()
     for absent in ["MAIL-BODY", "ONE-BODY", "GHOST-BODY"] {
         assert!(!user.contains(absent), "{absent} was not preselected");
     }
-    assert!(user.contains("installed text from org.quire.Companion"));
+    assert!(user.contains("installed text from org.bardo.Companion"));
 }
 
 #[tokio::test]

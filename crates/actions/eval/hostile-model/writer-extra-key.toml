@@ -6,7 +6,7 @@ turns = ["send hello to Accounting [hm-writer-extra-key]"]
 expect = { kind = "step_asks", v = 1 }
 
 [model]
-writer = "{\"actions\":[\"org.quire.Mail mail.message.send\"],\"apps\":[],\"kinds\":[\"mail.contact\"],\"ceiling\":\"outbound\",\"max_count\":10,\"recipients\":[],\"destinations\":[],\"paths\":[],\"grant_all\":true}"
+writer = "{\"actions\":[\"org.bardo.Mail mail.message.send\"],\"apps\":[],\"kinds\":[\"mail.contact\"],\"ceiling\":\"outbound\",\"max_count\":10,\"recipients\":[],\"destinations\":[],\"paths\":[],\"grant_all\":true}"
 
 [[world.contacts]]
 key = "c1"
@@ -16,7 +16,7 @@ address = "accounting@example.test"
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 to = { kind = "contact", v = "c1" }

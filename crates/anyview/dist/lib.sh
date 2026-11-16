@@ -6,8 +6,8 @@
 
 DRY_RUN=no
 DESTDIR="${DESTDIR:-}"
-APP_ID=org.quire.Anyview
-BUS_NAME=org.quire.Anyview1
+APP_ID=org.bardo.Anyview
+BUS_NAME=org.bardo.Anyview1
 
 say() { printf '%s\n' "$*"; }
 warn() { printf 'warning: %s\n' "$*" >&2; }

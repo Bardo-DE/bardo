@@ -1,15 +1,15 @@
-//! The `org.quire.Memory1.Recall` object over a [`Serve`] handler.
+//! The `org.bardo.Memory1.Recall` object over a [`Serve`] handler.
 
 use super::{Serve, first, forward, text, two};
 use memory_dbus::{Iface, MemoryError};
 use std::sync::Arc;
 use zbus::message::Header;
 
-/// `org.quire.Memory1.Recall`.
+/// `org.bardo.Memory1.Recall`.
 #[derive(Debug)]
 pub struct RecallObject<S>(pub(super) Arc<S>);
 
-#[zbus::interface(name = "org.quire.Memory1.Recall")]
+#[zbus::interface(name = "org.bardo.Memory1.Recall")]
 impl<S: Serve> RecallObject<S> {
     async fn search(
         &self,

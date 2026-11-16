@@ -1,15 +1,15 @@
 //! sill's seat at intentd. One connection to the session bus owns three things, because intentd
 //! names a caller's role from the well-known names its connection owns:
 //!
-//! - `org.quire.Shell`, where sill is the **provider** of the shell's own actions
-//!   (`IntentProvider1`; `dist/intents/org.quire.Shell.toml` declares them). A `Perform` is handed
+//! - `org.bardo.Shell`, where sill is the **provider** of the shell's own actions
+//!   (`IntentProvider1`; `dist/intents/org.bardo.Shell.toml` declares them). A `Perform` is handed
 //!   to the daemon as a [`ShellCall`] and answered when the daemon has done it. This name also
 //!   gives the connection the `launcher`, `confirm` and `control` roles in intentd's shipped
 //!   configuration, so it is claimed first.
-//! - `org.quire.Confirm1`, the **sheet**: `Confirm(request) -> request object` and `Cancel(id)`.
+//! - `org.bardo.Confirm1`, the **sheet**: `Confirm(request) -> request object` and `Cancel(id)`.
 //!   The service publishes the queue (`Intents::sheets`) for the confirm surface to draw and sends
-//!   the answer as `org.quire.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`, to the asker
-//!   alone. Only intentd (the owner of `org.quire.Intents1`) may ask; an unanswered question
+//!   the answer as `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`, to the asker
+//!   alone. Only intentd (the owner of `org.bardo.Intents1`) may ask; an unanswered question
 //!   expires with its own clock and is never an allow.
 //! - the **control** client: the terminal's standing grants (`Control.TerminalGrants`,
 //!   `Control.RevokeTerminalGrant`) and `Control.Resume` for a terminal the breaker paused.

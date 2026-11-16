@@ -1,5 +1,5 @@
 //! Opening Settings at a place through its `org.freedesktop.Application` action `open-target`,
-//! whose one parameter is the target's text (`extension:org.quire.anyview.Heif`). It is the call
+//! whose one parameter is the target's text (`extension:org.bardo.anyview.Heif`). It is the call
 //! the launcher makes for a Settings result.
 
 use crate::env::{BusRoute, Env};
@@ -10,9 +10,9 @@ use ui_core::settings::SettingsTarget;
 use zbus::zvariant::Value;
 
 /// Settings' bus name, which is also its application id.
-const SETTINGS: &str = "org.quire.Settings";
+const SETTINGS: &str = "org.bardo.Settings";
 /// Its object path: the id's dots as slashes.
-const SETTINGS_PATH: &str = "/org/quire/Settings";
+const SETTINGS_PATH: &str = "/org/bardo/Settings";
 const APPLICATION: &str = "org.freedesktop.Application";
 /// Settings' action for a place, by the target's text.
 const OPEN_TARGET: &str = "open-target";

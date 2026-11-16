@@ -1,5 +1,5 @@
 //! `readerd-callers.toml`: the one caller readerd answers is intentd's unit. The shipped file is
-//! `dist/readerd-callers.toml`; the system's copy under `/etc/quire` and the person's over it are
+//! `dist/readerd-callers.toml`; the system's copy under `/etc/bardo` and the person's over it are
 //! laid over each other (`action_dbus::callers::read_table`), and only the system's can give a
 //! fixed role.
 
@@ -19,7 +19,7 @@ pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }
 
-/// The table of this machine: `/etc/quire/readerd-callers.toml` with the person's file over it.
+/// The table of this machine: `/etc/bardo/readerd-callers.toml` with the person's file over it.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     read_table(FILE, env)
 }

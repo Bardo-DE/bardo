@@ -20,7 +20,7 @@ pub enum TrackClick {
 /// The overlay scrollbar's geometry and timing.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "scrollbar", page = Page::MouseAndGestures)]
+#[settings(file = "shell/settings.toml", domain = "scrollbar", page = Page::MouseAndGestures)]
 pub struct ScrollbarSettings {
     #[settings(
         label = "Clicking the track",

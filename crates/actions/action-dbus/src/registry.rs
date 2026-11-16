@@ -1,13 +1,13 @@
-//! `org.quire.Intents1.Registry`: the installed manifests.
+//! `org.bardo.Intents1.Registry`: the installed manifests.
 
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Registry",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Registry",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Registry {
     /// Every installed app and its manifest (JSON).
@@ -22,7 +22,7 @@ pub trait Registry {
 #[derive(Debug, Default)]
 pub struct RegistrySkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Registry")]
+#[zbus::interface(name = "org.bardo.Intents1.Registry")]
 impl RegistrySkeleton {
     fn manifests(&self) -> fdo::Result<Vec<(String, String)>> {
         Err(crate::introspect::frozen())

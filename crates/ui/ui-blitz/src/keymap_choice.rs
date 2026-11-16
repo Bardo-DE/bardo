@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn a_given_source_takes_the_detected_platform_or_the_one_named() {
         let given: SharedSource = Arc::new(ConventionSource);
-        let env = |name: &str| (name == "CHORDKIT_PLATFORM").then(|| "windows".to_owned());
+        let env = |name: &str| (name == "BARDO_KEYMAP_PLATFORM").then(|| "windows".to_owned());
         let ours = Platform::Linux {
             desktop: Desktop::Ours,
         };

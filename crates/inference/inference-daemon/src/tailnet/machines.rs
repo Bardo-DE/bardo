@@ -1,5 +1,5 @@
 //! The person's other computers on their Tailscale network, as accountd lists them
-//! (`org.quire.Tailnet1.Machines`). accountd answers an empty list when Tailscale is not an
+//! (`org.bardo.Tailnet1.Machines`). accountd answers an empty list when Tailscale is not an
 //! account the person added, or is not working: so no computer is looked at, or connected to as a
 //! candidate, while Tailscale is not an account in the accounts.
 

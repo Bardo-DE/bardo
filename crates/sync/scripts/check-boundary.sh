@@ -21,16 +21,16 @@ cd "$(dirname "$0")/.."
 # definitions: zbus and tokio (through account-dbus), nothing that shows or fetches.
 EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
 NO_BUS="zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-PORTER_HIDDEN="account-dbus account-callers account-service account-service-core account-service-accounts account-secrets account-store account-sheets account-client account-client-dbus account-client-inproc"
+BARDO_ACCOUNT_HIDDEN="account-dbus account-callers account-service account-service-core account-service-accounts account-secrets account-store account-sheets account-client account-client-dbus account-client-inproc"
 RULES=(
   "quickxorhash: $EFFECTS"
   "windows-zones: $EFFECTS"
-  "sync-core: $EFFECTS $PORTER_HIDDEN"
-  "replica-webdav: $EFFECTS $PORTER_HIDDEN"
-  "replica-graph: $EFFECTS $PORTER_HIDDEN"
-  "replica-gdrive: $EFFECTS $PORTER_HIDDEN"
-  "drive-core: $NO_BUS $PORTER_HIDDEN"
-  "drive-fuse: $NO_BUS $PORTER_HIDDEN"
+  "sync-core: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
+  "replica-webdav: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
+  "replica-graph: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
+  "replica-gdrive: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
+  "drive-core: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
+  "drive-fuse: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
   "drive-mount-daemon: $EFFECTS fuser account-ids account-core account-fs account-http account-secrets account-service account-client sync-core drive-core drive-fuse"
   "sync-bus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
@@ -180,7 +180,7 @@ else
   echo "pure: syncd reads the environment only in from_env functions"
 fi
 
-# syncd's test-only caller knob (`SYNCD_PROC_ROOT`, feature `test-proc-root`) reads callers from a
+# syncd's test-only caller knob (`BARDO_SYNCD_PROC_ROOT`, feature `test-proc-root`) reads callers from a
 # directory: it may not be on in a default build, nor in syncd's whole normal dependency tree.
 if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -q "test-proc-root"; then
   echo "LEAK: syncd's default build enables test-proc-root"

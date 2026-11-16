@@ -72,10 +72,10 @@ pub struct Harness<S: Rig = FakeSeams> {
 /// those whatever the policy says.
 pub fn maximal_policy(space: SpaceId, task: TaskId) -> TaskPolicy {
     let apps = [
-        "org.quire.Mail",
-        "org.quire.Files",
-        "org.quire.Memory",
-        "org.quire.Companion",
+        "org.bardo.Mail",
+        "org.bardo.Files",
+        "org.bardo.Memory",
+        "org.bardo.Companion",
     ];
     TaskPolicy {
         task,

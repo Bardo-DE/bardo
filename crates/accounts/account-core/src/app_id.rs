@@ -3,7 +3,7 @@
 use crate::error::CoreError;
 use serde::{Deserialize, Serialize};
 
-/// A reverse-DNS application name (`org.quire.Photos`), as Flatpak and desktop files write it.
+/// A reverse-DNS application name (`org.bardo.Photos`), as Flatpak and desktop files write it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct AppName(String);
@@ -73,7 +73,7 @@ mod tests {
     use super::*;
 
     const CASES: &[(&str, &str, bool)] = &[
-        ("flatpak style", "org.quire.Photos", true),
+        ("flatpak style", "org.bardo.Photos", true),
         ("dash and underscore", "com.example.my_app-2", true),
         ("one element", "photos", false),
         ("empty element", "org..Photos", false),

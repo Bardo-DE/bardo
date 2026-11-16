@@ -1,7 +1,7 @@
 //! `RequestAgentKey`: the consent sheet for an agent program's key, as a Request object
 //! (`account_sheets::RequestObjects`, rooted at `ServiceRoot::Accounts`).
 //!
-//! The permit is held by the app `org.quire.Agent.<program>`, for the Llm kind (there is no
+//! The permit is held by the app `org.bardo.Agent.<program>`, for the Llm kind (there is no
 //! `kind` argument: it was always `llm`) and interactive use. `session` is empty, or a session
 //! this connection holds open, which lets the sheet offer "This session only". A session permit
 //! the sheet makes for a session that closed while it was open is removed, and the request ends

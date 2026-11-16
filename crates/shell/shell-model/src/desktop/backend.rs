@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 /// The arm of the desktop client the shell runs on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DesktopBackend {
-    /// The desktop's own compositor and its `quire_desktop_v1` protocol.
+    /// The desktop's own compositor and its `bardo_desktop_v1` protocol.
     Quire,
     /// Standard protocols: ext toplevel list, wlr toplevel management, ext workspace.
     Wlr,

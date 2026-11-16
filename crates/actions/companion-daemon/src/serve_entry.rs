@@ -1,4 +1,4 @@
-//! The entry points that claim `org.quire.Companion1`: on a connection the caller has (`serve_on`,
+//! The entry points that claim `org.bardo.Companion1`: on a connection the caller has (`serve_on`,
 //! `serve_on_rooted`), or on the session bus (`serve`). The objects they serve are `serve`'s.
 
 use crate::Companiond;
@@ -13,7 +13,7 @@ use companion_tasks::ServeFault;
 use futures_util::lock::Mutex;
 use std::sync::Arc;
 
-/// Claims `org.quire.Companion1` on `connection`, serves the root object and one answer object
+/// Claims `org.bardo.Companion1` on `connection`, serves the root object and one answer object
 /// per task, listens for `Message.Arrived` and keeps time. The callers are told apart by `who`
 /// (the shell is the process it names as the shell's unit; a terminal's child is read from the
 /// system's `/proc`). Returns once the name is ours; the connection keeps serving until it closes.
@@ -46,8 +46,8 @@ where
     serve_with_routines(connection, companion, who, proc_root, None).await
 }
 
-/// Claims `org.quire.Companion1` on the session bus and serves it until the connection closes,
-/// telling callers apart by `companiond-callers.toml` (the system's under `/etc/quire`, the
+/// Claims `org.bardo.Companion1` on the session bus and serves it until the connection closes,
+/// telling callers apart by `companiond-callers.toml` (the system's under `/etc/bardo`, the
 /// person's over it).
 pub async fn serve<P, I, K>(
     companion: Arc<Mutex<Companiond<P, I, K>>>,

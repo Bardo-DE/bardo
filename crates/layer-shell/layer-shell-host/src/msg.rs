@@ -72,7 +72,7 @@ pub enum WindowOp {
     /// `xdg_toplevel.set_fullscreen` on the compositor's choice of output, or
     /// `unset_fullscreen`.
     SetFullscreen(Fullscreen),
-    /// `quire_window_v1.request_placement` with the seat's latest input serial. Dropped (logged
+    /// `bardo_window_v1.request_placement` with the seat's latest input serial. Dropped (logged
     /// when there is no input yet) on a compositor without the protocol.
     RequestPlacement(WindowPlacement),
 }

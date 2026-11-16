@@ -3,7 +3,7 @@
 //! The identification is porter's (`account_callers::ProcCallers`: the bus names the pid, the pid's
 //! cgroup names the unit or the app scope), and so is the reading of the table files
 //! (`account_callers::load_callers`). What is memoryd's own is where they are —
-//! `/etc/quire/memory-callers.toml` with the user's `<config>/quire/memory-callers.toml` laid
+//! `/etc/bardo/memoryd-callers.toml` with the user's `<config>/quire/memoryd-callers.toml` laid
 //! over it — and [`caller_for`] that turns a porter role into one of almanac's callers. The router, the shell, cuad and the Settings app are the four fixed
 //! callers; every other identified process is an app.
 
@@ -11,11 +11,11 @@ use account_callers::CallerRole;
 use memory_service::Caller;
 
 /// The app that is intentd, the action router (its row has the `agent` role).
-pub const ROUTER_APP: &str = "org.quire.Intents";
+pub const ROUTER_APP: &str = "org.bardo.Intents";
 /// The app that is the shell, sill (its row has the `sheet_host` role).
-pub const SHELL_APP: &str = "org.quire.Shell";
+pub const SHELL_APP: &str = "org.bardo.Shell";
 /// The app that is the System Settings app, detent (its row has the `settings` role).
-pub const SETTINGS_APP: &str = "org.quire.Settings";
+pub const SETTINGS_APP: &str = "org.bardo.Settings";
 
 /// almanac's caller for the process porter identified: cuad is the `cua` role, the shell the
 /// `sheet_host` role of [`SHELL_APP`], the router the `agent` role of [`ROUTER_APP`], the Settings

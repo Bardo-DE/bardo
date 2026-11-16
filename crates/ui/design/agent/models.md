@@ -6,7 +6,7 @@ Status: PROPOSAL for the freeze. Sources read: BRIEF.md; COMPANION.md; cua-integ
 research-cua-models.md; research-ecosystem-agents.md and -infra.md; intents-research/models.md;
 design/31-ACCOUNTS.md (including §11, the frozen interfaces); the porter repo (account-core
 `capability/ai.rs`, `need/`, `ai_props.rs`, `wire/frame.rs`, all of inference-core, account-dbus
-`inference.rs` + `dbus/org.quire.Inference1.xml`, inferd, account-fake `FakeModel`,
+`inference.rs` + `dbus/org.bardo.Inference1.xml`, inferd, account-fake `FakeModel`,
 ARCHITECTURE.md, CONVENTIONS.md, FINDINGS.md, `scripts/check-boundary.sh`); quire CONVENTIONS.md
 and `docs/workspace-deps.toml`; design/22 §9.4; design/30 §3.4 and VoiceOrb; shell-launcher
 `Provider`. I also read the H Company local-inference page (2026-10-02). It serves Holo with
@@ -34,10 +34,10 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 - `computer-use-parse`: the text and tool-call dialects of local models (UI-TARS-1.5, Qwen computer_use, Holo). Strict, total, fuzzed.
 - `computer-use-session`: the model side of one CUA step: history, prompt assembly, parse with one repair, and mapping into window space.
 - The model picker's data model (tier map, picker rows, readiness, fit).
-- How all of this reaches apps and cuad through porter's inferd and `org.quire.Inference1`. These are additive extensions plus three marked changes to frozen porter types.
+- How all of this reaches apps and cuad through porter's inferd and `org.bardo.Inference1`. These are additive extensions plus three marked changes to frozen porter types.
 
 **Non-goals (owned elsewhere or later):**
-- The CUA step loop, the leases, capture, masking, injection and `org.quire.Cua1`. These belong to cuad and the compositor (area "cua"). Models hands cuad window-space actions and nothing else.
+- The CUA step loop, the leases, capture, masking, injection and `org.bardo.ComputerUse1`. These belong to cuad and the compositor (area "cua"). Models hands cuad window-space actions and nothing else.
 - The planner's plan and session, the router, taint, Cedar policy and consent drawing (areas "agent" and "security").
 - The intents registry, and turning `ActionDecl` into a JSON schema (area "intents"). Models only carries the `ToolDecl`s it is given.
 - Picker UI pixels (detent's Intelligence page) and the orb (area "launcher"/"presence"). Models gives them data and events.
@@ -408,7 +408,7 @@ By default nothing personal is recorded: images are stored as digests only, and 
 
 ### 3.6 `model-catalog` file format (freeze now)
 
-`catalog/<id>.toml`, installed at `/usr/share/stoker/catalog/` and `$XDG_DATA_HOME/stoker/catalog/` (user files win). It follows porter's rule: every field is written, nothing defaults, and a missing field refuses the file.
+`catalog/<id>.toml`, installed at `/usr/share/bardo/models/catalog/` and `$XDG_DATA_HOME/stoker/catalog/` (user files win). It follows porter's rule: every field is written, nothing defaults, and a missing field refuses the file.
 
 ```toml
 id = "holo-3.1-4b"
@@ -596,7 +596,7 @@ pub fn picker_rows(kind: AiKind, cards: &[PickerInput], map: &TierMap) -> Vec<Pi
 // A NonCommercial row is listed but never auto-chosen.
 ```
 
-**`org.quire.Inference1` (additive, freeze now).** Existing members and signatures are unchanged.
+**`org.bardo.Inference1` (additive, freeze now).** Existing members and signatures are unchanged.
 
 | Member | Signature | Notes |
 |---|---|---|
@@ -606,7 +606,7 @@ pub fn picker_rows(kind: AiKind, cards: &[PickerInput], map: &TierMap) -> Vec<Pi
 | `Usage`, `Rescan` | unchanged | |
 | signal `EnginesChanged()` | **new**, broadcast | engine state is not personal. Listeners re-read readiness through `Prepare` (callers) or the settings module (detent). |
 | property `Gpu s` | **new** | `idle`, `busy`, `loading` (31 §3.3 "`GpuBusy`") |
-| `org.quire.SettingsModule1` at `/org/quire/Inference1/settings` | 22 §9.4 shape | detent's Intelligence page: `Describe` gives `PickerRow`s per kind as the choices of `ai.model.<kind>.<tier>`; `Set` writes the `TierMap` |
+| `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | 22 §9.4 shape | detent's Intelligence page: `Describe` gives `PickerRow`s per kind as the choices of `ai.model.<kind>.<tier>`; `Set` writes the `TierMap` |
 
 **account-client (change).** `Transport::open(&self, need: &Need, class: DataClass, tier: Tier) -> impl Future<Output = Result<Self::Session, TransportError>> + Send`, with `type Session: InferSession`. `InferSession` has `send(ClientFrame)` and `next() -> InferEvent`. `Transport::infer` is removed. `Accounts::infer` and a new `Accounts::session` sit on top of it.
 
@@ -760,7 +760,7 @@ Verify with quire's gate.
 - Commit computer-use-action first, so that F2 can path-patch it.
 
 **F2 porter** (owns porter files and **design/31-ACCOUNTS.md** in quire, edited in step).
-- §2.3 and §3.8 changes; the vocabulary bump; `providers/local.toml`; regenerated `dbus/org.quire.Inference1.xml`.
+- §2.3 and §3.8 changes; the vocabulary bump; `providers/local.toml`; regenerated `dbus/org.bardo.Inference1.xml`.
 - ARCHITECTURE edges and `check-boundary.sh` rows (inference-core→computer-use-action; inferd→stoker crates); FINDINGS stubs (`Broker::infer` streaming, session server, Prepare).
 - inferd modules as skeletons.
 - Before computer-use-action lands in the pinned block, porter depends on it through a `[patch]` path to `../stoker` (quire CONSUMING.md §1 pattern).
@@ -835,7 +835,7 @@ In quire, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not 
 ### Critical Files for Implementation
 - /home/pohsuanlai/porter/crates/porter-infer/src/request.rs
 - /home/pohsuanlai/porter/crates/porter-infer/src/model.rs
-- /home/pohsuanlai/porter/crates/porter-dbus/src/inference.rs (with /home/pohsuanlai/porter/dbus/org.quire.Inference1.xml)
+- /home/pohsuanlai/porter/crates/porter-dbus/src/inference.rs (with /home/pohsuanlai/porter/dbus/org.bardo.Inference1.xml)
 - /home/pohsuanlai/porter/crates/porter-core/src/capability/ai.rs (with need/ai.rs, matching.rs)
 - /home/pohsuanlai/quire/design/31-ACCOUNTS.md and /home/pohsuanlai/quire/docs/workspace-deps.toml
 

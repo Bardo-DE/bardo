@@ -329,7 +329,7 @@ fn a_stored_minimise_rectangle_is_where_the_window_minimises_to() {
     use compositor_core::{Cause, MinimiseTarget, WindowId};
     use desktop_protocols::vocab::Toggle;
 
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let wlr = |request| {
         Op::Event(Event::WlrToplevel {
             window: WindowId(1),

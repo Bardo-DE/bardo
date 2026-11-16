@@ -14,7 +14,7 @@ use provenance::EntityKind;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-const COMPANION: &str = include_str!("../../../manifests/org.quire.Companion.toml");
+const COMPANION: &str = include_str!("../../../manifests/org.bardo.Companion.toml");
 
 fn companion() -> ValidManifest {
     toml::from_str(COMPANION).expect("the shipped manifest validates")
@@ -22,8 +22,8 @@ fn companion() -> ValidManifest {
 
 fn toml_for(id: &str, extra: &str) -> String {
     format!(
-        "vocab = 1\nid = \"{id}\"\nowner = \"org.quire.Companion\"\nversion = \"0.1.0\"\n\
-         uses = [\"org.quire.Companion:companion.skill.load\"]\n{extra}"
+        "vocab = 1\nid = \"{id}\"\nowner = \"org.bardo.Companion\"\nversion = \"0.1.0\"\n\
+         uses = [\"org.bardo.Companion:companion.skill.load\"]\n{extra}"
     )
 }
 
@@ -54,7 +54,7 @@ fn skill_toml_table() {
             Err("bad use"),
         ),
         (
-            ok.replace("org.quire.Companion:", "Bad App:"),
+            ok.replace("org.bardo.Companion:", "Bad App:"),
             Err("bad use"),
         ),
         (
@@ -279,7 +279,7 @@ fn an_own_skill_overrides_a_shipped_one_and_a_bad_directory_is_reported() {
     assert_eq!(
         shipped.label.sources,
         BTreeSet::from([provenance::Source::App(
-            AppName::parse("org.quire.Companion").expect("app")
+            AppName::parse("org.bardo.Companion").expect("app")
         )])
     );
     assert_eq!(shipped.label.integrity, provenance::Integrity::Trusted);
@@ -312,7 +312,7 @@ fn roots_read_the_xdg_variables() {
         none.shipped,
         vec![
             PathBuf::from("/usr/local/share/quire/skills"),
-            PathBuf::from("/usr/share/quire/skills")
+            PathBuf::from("/usr/share/bardo/skills")
         ]
     );
 }
@@ -357,9 +357,9 @@ fn kind(text: &str) -> EntityKind {
 fn preselection_follows_when_and_stops_at_two() {
     let app = |s: &str| AppName::parse(s).expect("app");
     let always = skill("basics", "[when]\nalways = true\n");
-    let by_app = skill("by-app", "[when]\nfocused_app = [\"org.quire.Mail\"]\n");
+    let by_app = skill("by-app", "[when]\nfocused_app = [\"org.bardo.Mail\"]\n");
     let by_kind = skill("by-kind", "[when]\nkinds = [\"mail.thread\"]\n");
-    let other = skill("other", "[when]\nfocused_app = [\"org.quire.Files\"]\n");
+    let other = skill("other", "[when]\nfocused_app = [\"org.bardo.Files\"]\n");
     let plain = skill("plain", "");
     let offered = [&always, &by_app, &by_kind, &other, &plain];
     let at = |focused: Option<&str>, kinds: &[&str]| Situation {
@@ -374,20 +374,20 @@ fn preselection_follows_when_and_stops_at_two() {
     };
     // Always first, then by id, at most two.
     assert_eq!(ids(at(None, &[])), ["basics"]);
-    assert_eq!(ids(at(Some("org.quire.Mail"), &[])), ["basics", "by-app"]);
-    assert_eq!(ids(at(Some("org.quire.Files"), &[])), ["basics", "other"]);
+    assert_eq!(ids(at(Some("org.bardo.Mail"), &[])), ["basics", "by-app"]);
+    assert_eq!(ids(at(Some("org.bardo.Files"), &[])), ["basics", "other"]);
     assert_eq!(
-        ids(at(Some("org.quire.Mail"), &["mail.thread"])),
+        ids(at(Some("org.bardo.Mail"), &["mail.thread"])),
         ["basics", "by-app"]
     );
     assert_eq!(
-        ids(at(Some("org.quire.Shell"), &["mail.thread"])),
+        ids(at(Some("org.bardo.Shell"), &["mail.thread"])),
         ["basics", "by-kind"]
     );
     let only = [&by_app, &by_kind, &plain];
     let got: Vec<String> = preselect(
         &only,
-        &at(Some("org.quire.Mail"), &["mail.thread"]),
+        &at(Some("org.bardo.Mail"), &["mail.thread"]),
         BODY_BUDGET_BYTES,
     )
     .into_iter()
@@ -419,7 +419,7 @@ fn a_task_loads_at_most_three_and_a_repeat_is_free() {
 #[test]
 fn loaded_skills_actions_go_first_and_nothing_else_changes() {
     let s = skill("s", "");
-    let items = ["x", "org.quire.Companion:companion.skill.load", "y"];
+    let items = ["x", "org.bardo.Companion:companion.skill.load", "y"];
     let action = |i: &&str| -> action_vocab::ActionRef {
         match i.split_once(':') {
             Some((app, name)) => action_vocab::ActionRef {
@@ -438,7 +438,7 @@ fn loaded_skills_actions_go_first_and_nothing_else_changes() {
     let names: Vec<&str> = out.iter().map(|c| c.1).collect();
     assert_eq!(
         names,
-        ["org.quire.Companion:companion.skill.load", "x", "y"]
+        ["org.bardo.Companion:companion.skill.load", "x", "y"]
     );
     assert_eq!(uses_first(cards.clone(), |c| &c.0, &[]), cards);
 }
@@ -471,7 +471,7 @@ fn sized(id: &str, when: &str, bytes: usize) -> agent_skills::Skill {
 
 #[test]
 fn preselection_stops_when_the_next_body_would_not_fit() {
-    let app = AppName::parse("org.quire.Shell").expect("app");
+    let app = AppName::parse("org.bardo.Shell").expect("app");
     let at = Situation {
         focused: Some(app),
         kinds: BTreeSet::new(),
@@ -479,12 +479,12 @@ fn preselection_stops_when_the_next_body_would_not_fit() {
     let first = sized("a-first", "[when]\nalways = true\n", 5000);
     let second = sized(
         "b-second",
-        "[when]\nfocused_app = [\"org.quire.Shell\"]\n",
+        "[when]\nfocused_app = [\"org.bardo.Shell\"]\n",
         8000,
     );
     let third = sized(
         "c-third",
-        "[when]\nfocused_app = [\"org.quire.Shell\"]\n",
+        "[when]\nfocused_app = [\"org.bardo.Shell\"]\n",
         100,
     );
     let offered = [&first, &second, &third];

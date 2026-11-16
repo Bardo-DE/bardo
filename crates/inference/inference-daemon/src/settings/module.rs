@@ -1,4 +1,4 @@
-//! `org.quire.SettingsModule1` at `/org/quire/Inference1/settings` (design/22 section 9.4): the
+//! `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` (design/22 section 9.4): the
 //! `ai.model.<slot>.<tier>` picker, whose choices are the models inferd knows now (and, per slot,
 //! the curated hosted models, company then model, each marked when no account reaches it). Only the
 //! `Settings` role may `Describe`, `Get` or `Set`. A `Set` validates the model, writes it to

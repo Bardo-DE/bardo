@@ -1,4 +1,4 @@
-//! Why the `cua-eval` program stops: a flag it cannot use, or a step of the run that failed. The
+//! Why the `computer-use-eval` program stops: a flag it cannot use, or a step of the run that failed. The
 //! program prints the error and exits with status 2.
 
 use computer_use_eval::flags::FlagError;

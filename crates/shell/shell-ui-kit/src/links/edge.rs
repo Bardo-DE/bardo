@@ -1,4 +1,4 @@
-//! The compositor's edge reveals (`quire_shell_v1.reveal_on_output`), from the daemon to the bar
+//! The compositor's edge reveals (`bardo_shell_v1.reveal_on_output`), from the daemon to the bar
 //! and dock surfaces: in full screen it shows an output's bar when the pointer rests at the top
 //! edge and its dock at the bottom, and hides them when it goes away. The compositor moves the
 //! surface itself; the surfaces only make their content drawn and hit-testable. The daemon also

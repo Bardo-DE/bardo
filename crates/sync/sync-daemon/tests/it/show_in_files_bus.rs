@@ -220,7 +220,7 @@ async fn build(
         .with_cache_limit(supervisor.cache_knob(), paths.settings.clone());
     serve_settings(&server, module).await.expect("settings");
     let name = server.unique_name().expect("name").to_string();
-    let settings_side = client(&bus, &known, "org.quire.Settings", CallerRole::Settings).await;
+    let settings_side = client(&bus, &known, "org.bardo.Settings", CallerRole::Settings).await;
     let settings =
         LiveClient::new(&settings_side, &name, SETTINGS_PATH, AnyOwner).expect("settings client");
 
@@ -682,7 +682,7 @@ async fn the_keep_row_is_told_of_when_the_drive_stops_fitting_and_again_when_it_
 #[tokio::test(flavor = "multi_thread")]
 async fn a_computer_that_cannot_show_the_folder_says_so_and_the_drive_still_lists() {
     let mut rig = rig_showing(agreeing(), |scratch| {
-        // No porter-mountd listens at its socket, so syncd mounts by itself, as when run by
+        // No bardo-drive-mount listens at its socket, so syncd mounts by itself, as when run by
         // hand, and this computer has no FUSE device.
         DriveMount::Fuse(Mounter {
             device: scratch.join("no-fuse-device"),

@@ -23,7 +23,7 @@ mod computers;
 
 const CLOUD: &str = "[aria-label=\"me@acme.example\"] .ds-toggle";
 const LAB: &str = "[aria-label=\"lab-server\"] .ds-toggle";
-const SETTINGS: &str = "docket/settings.toml";
+const SETTINGS: &str = "actions/settings.toml";
 
 fn intelligence() -> Opening {
     Opening {
@@ -63,7 +63,7 @@ fn world_with(name: &str, held: Vec<Held>, file: Option<&str>, agents: Option<&s
         sandbox.write(SETTINGS, text);
     }
     if let Some(text) = agents {
-        sandbox.write("docket/agents.toml", text);
+        sandbox.write("actions/agents.toml", text);
     }
     let mut harness = sandbox.harness(intelligence());
     settle(&mut harness, "the places", |h| {

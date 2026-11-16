@@ -15,7 +15,7 @@ pub enum EngineKind {
     Vllm,
     /// Strata, run from its own folder with the Python environment in it.
     Strata,
-    /// Our own STT engine process (`speech-host`, sherpa-onnx without TTS), on the CPU.
+    /// Our own STT engine process (`bardo-speech-host`, sherpa-onnx without TTS), on the CPU.
     SpeechHost,
     /// Kokoro-FastAPI in a uv environment: a separate process, so its GPL espeak-ng is never
     /// linked into ours.

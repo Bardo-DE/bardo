@@ -4,14 +4,14 @@
 //!
 //! ```text
 //! DIR/                           0700
-//!   accountd.keys                0600  the key file; only accountd opens it (ACCOUNTD_KEYS=file:...)
+//!   accountd.keys                0600  the key file; only accountd opens it (BARDO_ACCOUNTD_KEYS=file:...)
 //!   accountd.keys.lock                 the key file's advisory lock
 //!   state/porter/registry.json         the registry (accounts and key permits; no secrets)
 //!   data/porter/providers/             the provider files `accountd add` used
 //! ```
 //!
 //! This process never opens the key file: it only looks at its metadata. A world points accountd's
-//! `ACCOUNTD_KEYS` at it and copies the non-secret `state` and `data` trees into its scratch
+//! `BARDO_ACCOUNTD_KEYS` at it and copies the non-secret `state` and `data` trees into its scratch
 //! root, so a run never changes the home.
 
 use std::os::unix::fs::PermissionsExt;
@@ -110,7 +110,7 @@ impl KeysHome {
         Ok(Self(real))
     }
 
-    /// The value for `ACCOUNTD_KEYS`.
+    /// The value for `BARDO_ACCOUNTD_KEYS`.
     pub fn keys_setting(&self) -> String {
         format!("file:{}", self.0.join(KEYS_FILE).display())
     }

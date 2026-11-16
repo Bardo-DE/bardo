@@ -55,7 +55,7 @@ fn the_owner_must_hold_the_role_and_is_returned_by_its_unique_name() {
             peers.owner_of(NAME, &need).await.err(),
             Some(Refused::Unknown)
         );
-        let standing = introduced_service("org.quire.Shell", "shell", Proof::Full, Pin::AtConnect)
+        let standing = introduced_service("org.bardo.Shell", "shell", Proof::Full, Pin::AtConnect)
             .expect("valid");
         peers.introduce(&name_of(&owner), standing.clone());
         let got = peers

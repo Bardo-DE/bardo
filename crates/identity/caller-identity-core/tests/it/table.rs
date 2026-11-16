@@ -5,14 +5,14 @@ use caller_identity_core::{ExePath, RoleName, Table, TableError, UnitName};
 const GOLDEN: &str = r#"
 # A comment.
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
-exe  = ["/opt/quire/releases/*/bin/sill", "/usr/bin/sill"]
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
+exe  = ["/opt/bardo/releases/*/bin/sill", "/usr/bin/bardo-shell"]
 role = "shell"
 name = "The shell"
 
 [[peer]]
-app  = "org.quire.Updater"
+app  = "org.bardo.Updater"
 exe  = ["/usr/bin/slipway"]
 role = "updater_cli"
 "#;
@@ -32,8 +32,8 @@ fn the_golden_table_reads_into_typed_rows() {
     let table = Table::from_toml(GOLDEN).expect("the golden table reads");
     let rows = table.rows();
     assert_eq!(rows.len(), 2);
-    assert_eq!(rows[0].app.as_str(), "org.quire.Shell");
-    assert_eq!(rows[0].unit, UnitName::new("sill.service").ok());
+    assert_eq!(rows[0].app.as_str(), "org.bardo.Shell");
+    assert_eq!(rows[0].unit, UnitName::new("bardo-shell.service").ok());
     assert_eq!(rows[0].role, RoleName::from_static("shell"));
     assert_eq!(rows[0].name.as_deref(), Some("The shell"));
     assert_eq!(rows[0].exe.len(), 2);
@@ -45,7 +45,7 @@ fn the_golden_table_reads_into_typed_rows() {
     assert!(table.has_role(&RoleName::from_static("updater_cli")));
     assert!(
         table
-            .row_for_unit(&UnitName::new("sill.service").expect("a unit"))
+            .row_for_unit(&UnitName::new("bardo-shell.service").expect("a unit"))
             .is_some()
     );
     assert!(Table::from_toml("").expect("empty").rows().is_empty());

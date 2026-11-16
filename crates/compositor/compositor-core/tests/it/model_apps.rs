@@ -13,7 +13,7 @@ use support::driver::{Op, Run, last, map, plug, request, run, run_from};
 use support::proven;
 
 fn two_apps() -> Run {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     run(vec![
         plug("HEADLESS-1"),
         map(1, &web, TokenCheck::Valid),
@@ -24,7 +24,7 @@ fn two_apps() -> Run {
 
 #[test]
 fn hiding_the_active_app_activates_the_previous_one_and_unhiding_by_activation_restores() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let hidden = run_from(
         two_apps().model,
         vec![Op::Command(DesktopCommand::HideActive)],
@@ -48,7 +48,7 @@ fn hiding_the_active_app_activates_the_previous_one_and_unhiding_by_activation_r
 
 #[test]
 fn hiding_when_nothing_else_is_visible_leaves_nothing_active() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -60,7 +60,7 @@ fn hiding_when_nothing_else_is_visible_leaves_nothing_active() {
 
 #[test]
 fn hide_others_hides_every_app_but_the_active_one() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let run = run_from(
         two_apps().model,
         vec![Op::Command(DesktopCommand::HideOthers)],
@@ -116,7 +116,7 @@ fn activating_an_app_brings_its_windows_forward_and_keys_its_latest() {
 /// Mail has a window on the desktop, a full-screen window of its own on another Space, and
 /// the person is looking at the desktop in Web.
 fn app_on_another_space() -> Run {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -136,7 +136,7 @@ fn app_on_another_space() -> Run {
 
 #[test]
 fn activating_an_app_whose_windows_are_on_another_space_switches_to_it() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let before = app_on_another_space();
     assert_eq!(before.model.focus().active, Some(proven("org.example.Web")));
     let key = support::headless("HEADLESS-1").key;
@@ -160,7 +160,7 @@ fn activating_an_app_whose_windows_are_on_another_space_switches_to_it() {
 
 #[test]
 fn with_switching_off_the_app_is_active_and_keyless_and_the_space_stays() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let before = app_on_another_space();
     let key = support::headless("HEADLESS-1").key;
     let desktop = before

@@ -8,13 +8,13 @@ pub fn binaries() -> Binaries {
     // Every test starts here: a test that waits for ever ends the process after 20 minutes.
     action_testbus::hang_guard::arm();
     Binaries {
-        intentd: env!("CARGO_BIN_EXE_accept-intentd").into(),
+        intentd: env!("CARGO_BIN_EXE_accept-actiond").into(),
         companiond: env!("CARGO_BIN_EXE_accept-companiond").into(),
         readerd: env!("CARGO_BIN_EXE_accept-readerd").into(),
-        memoryd: env!("ACCEPT_MEMORYD").into(),
-        accountd: env!("ACCEPT_ACCOUNTD").into(),
-        inferd: env!("ACCEPT_INFERD").into(),
-        quire_do: env!("CARGO_BIN_EXE_accept-quire-do").into(),
+        memoryd: env!("BARDO_ACCEPT_MEMORYD").into(),
+        accountd: env!("BARDO_ACCEPT_ACCOUNTD").into(),
+        inferd: env!("BARDO_ACCEPT_INFERD").into(),
+        quire_do: env!("CARGO_BIN_EXE_accept-bardo-do").into(),
         action_mcp: env!("CARGO_BIN_EXE_accept-actions-mcp").into(),
         relay: env!("CARGO_BIN_EXE_accept-bus-relay").into(),
         engine_cache: None,

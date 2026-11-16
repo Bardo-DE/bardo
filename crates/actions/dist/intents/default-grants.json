@@ -5,7 +5,7 @@
       "caller": {
         "kind": "companion"
       },
-      "owner": "org.quire.Shell",
+      "owner": "org.bardo.Shell",
       "target": {
         "kind": "app"
       },
@@ -25,7 +25,7 @@
       "caller": {
         "kind": "companion"
       },
-      "owner": "org.quire.Shell",
+      "owner": "org.bardo.Shell",
       "target": {
         "kind": "app"
       },

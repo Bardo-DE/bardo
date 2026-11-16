@@ -1,5 +1,5 @@
 //! What the acceptance harness needs to run the agent host: its entry point with the seams only a
-//! harness chooses, and the pieces `docket-live` builds a host from in its own process. Behind the
+//! harness chooses, and the pieces `agent-live` builds a host from in its own process. Behind the
 //! `testing` feature; no packaged binary turns it on. The host itself is private to this crate.
 
 /// Hosting one agent session in the harness's process.
@@ -9,12 +9,12 @@ pub mod host {
     pub use crate::agent::wire::SandboxLimits;
 }
 
-/// `docket-agent --serve` as the harness's own process.
+/// `bardo-agent --serve` as the harness's own process.
 pub mod serve {
     pub use crate::agent::serve::{HarnessSeams, run_with};
 }
 
-/// `docket-acp` as the harness's own process.
+/// `bardo-agent-acp` as the harness's own process.
 pub mod acp {
     use crate::{Callers, LiveFault};
     use account_callers::ProcRoot;
@@ -22,13 +22,13 @@ pub mod acp {
 
     /// What only the acceptance harness's mains choose: the `/proc` callers are read from (a
     /// fixture tree has each unit's main process in `<root>/units`) and the system's callers file.
-    /// The packaged binary uses the system's `/proc` and `/etc/quire`, and no environment variable
+    /// The packaged binary uses the system's `/proc` and `/etc/bardo`, and no environment variable
     /// can change either.
     #[derive(Debug, Clone)]
     pub struct HarnessSeams {
         /// Where callers' processes are read: the system's `/proc`, or a fixture tree.
         pub proc_root: ProcRoot,
-        /// The system's callers file, else `/etc/quire/acp-callers.toml`.
+        /// The system's callers file, else `/etc/bardo/agent-acp-callers.toml`.
         pub system_callers: Option<PathBuf>,
     }
 

@@ -35,7 +35,7 @@ async fn bench(first: Option<&str>) -> Option<Bench> {
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
         &companiond,
-        "/org/quire/Companion1",
+        "/org/bardo/Companion1",
         StandInCompanion {
             session: Some("s-1".to_owned()),
             log: desk.log.clone(),
@@ -48,7 +48,7 @@ async fn bench(first: Option<&str>) -> Option<Bench> {
     let intentd = desk.peer(INTENTS_BUS).await;
     serve(
         &intentd,
-        "/org/quire/Intents1",
+        "/org/bardo/Intents1",
         StandInSession(desk.log.clone()),
     )
     .await;
@@ -84,7 +84,7 @@ impl Bench {
             .emit_signal(
                 None::<&str>,
                 answer_path(&task()).as_str(),
-                "org.quire.Companion1.Answer",
+                "org.bardo.Companion1.Answer",
                 "Updated",
                 &(json(wire),),
             )

@@ -6,10 +6,10 @@ use crate::missing::Package;
 
 /// The short id a flat manifest used, and the Extension id it is now.
 const SHIPPED: [(&str, &str); 4] = [
-    ("ffmpeg", "org.quire.anyview.Ffmpeg"),
-    ("heif", "org.quire.anyview.Heif"),
-    ("raw", "org.quire.anyview.Raw"),
-    ("mpv", "org.quire.anyview.Mpv"),
+    ("ffmpeg", "org.bardo.anyview.Ffmpeg"),
+    ("heif", "org.bardo.anyview.Heif"),
+    ("raw", "org.bardo.anyview.Raw"),
+    ("mpv", "org.bardo.anyview.Mpv"),
 ];
 
 /// The Extension id of the shipped plugin whose flat manifest was called `short`, or `None` for
@@ -47,25 +47,25 @@ mod tests {
                 Capability::Probe,
                 FormatKind::Video,
                 None,
-                "org.quire.anyview.Ffmpeg",
+                "org.bardo.anyview.Ffmpeg",
             ),
             (
                 Capability::Play,
                 FormatKind::Audio,
                 None,
-                "org.quire.anyview.Mpv",
+                "org.bardo.anyview.Mpv",
             ),
             (
                 Capability::Decode,
                 FormatKind::Raster,
                 Some(&heic),
-                "org.quire.anyview.Heif",
+                "org.bardo.anyview.Heif",
             ),
             (
                 Capability::Decode,
                 FormatKind::Raster,
                 Some(&raw),
-                "org.quire.anyview.Raw",
+                "org.bardo.anyview.Raw",
             ),
         ];
         for (capability, kind, mime, want) in cases {

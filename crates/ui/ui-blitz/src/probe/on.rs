@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// The variable that names the directory the files go to; unset, the probe is off.
-const DIR_VAR: &str = "QUIRE_DEBUG_PROBE";
+const DIR_VAR: &str = "BARDO_DEBUG_PROBE";
 
 /// Windows the process has given a probe so far.
 static WINDOWS: AtomicUsize = AtomicUsize::new(0);
@@ -20,7 +20,7 @@ pub(crate) struct Probe {
 }
 
 impl Default for Probe {
-    /// The probe of the next window: on when `QUIRE_DEBUG_PROBE` names a directory.
+    /// The probe of the next window: on when `BARDO_DEBUG_PROBE` names a directory.
     fn default() -> Probe {
         let file = std::env::var_os(DIR_VAR).map(|dir| {
             let n = WINDOWS.fetch_add(1, Ordering::Relaxed);

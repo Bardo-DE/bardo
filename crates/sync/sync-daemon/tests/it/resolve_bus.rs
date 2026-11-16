@@ -29,7 +29,7 @@ use sync_daemon::scheduler::{Network, Settings};
 use sync_daemon::service::{Access as Visible, DatasetName, Hub, serve};
 use tokio::sync::{Notify, watch};
 
-const DENIED: &str = "org.quire.Accounts1.Error.Denied";
+const DENIED: &str = "org.bardo.Accounts1.Error.Denied";
 const DATASET: &str = "a1/notes";
 const OWNER: &str = "org.example.Notes";
 
@@ -316,7 +316,7 @@ async fn only_the_owning_app_settles_and_a_dataset_it_may_not_see_looks_missing(
     let settings = client(
         &rig.bus,
         &rig.known,
-        "org.quire.Settings",
+        "org.bardo.Settings",
         CallerRole::Settings,
     )
     .await;

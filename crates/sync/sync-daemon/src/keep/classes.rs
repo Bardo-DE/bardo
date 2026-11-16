@@ -1,5 +1,5 @@
 //! What syncd may keep of an account, and the grant that says so. syncd is a daemon of its own as
-//! far as consent goes (`org.quire.Sync`): its mirrors run only for an account it holds a
+//! far as consent goes (`org.bardo.Sync`): its mirrors run only for an account it holds a
 //! `Storage` grant for, with usage `Background` and the class of the data (`Files` for the app
 //! folder, `Photos` for the Photos datasets). accountd asks the person for these grants in its
 //! consent sheet the first time a sync switch is turned on for an account, and keeps the answer.
@@ -55,7 +55,7 @@ impl SyncClass {
 /// syncd as an app of consent: a native daemon, as the caller table names it.
 pub fn sync_app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Sync").expect("a literal app name"),
+        name: AppName::parse("org.bardo.Sync").expect("a literal app name"),
         isolation: Isolation::Unsandboxed,
     }
 }

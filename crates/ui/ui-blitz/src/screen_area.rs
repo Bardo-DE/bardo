@@ -28,7 +28,7 @@ pub enum WorkBasis {
     WholeOutput,
     /// The output less a reserve the app knows of and gave (see [`ScreenArea::less`]).
     LessReserve,
-    /// The work area the shell reports on the bus (`org.quire.Outputs1`, the `Outputs` capability
+    /// The work area the shell reports on the bus (`org.bardo.Outputs1`, the `Outputs` capability
     /// of `ui-desktop`): the output less the bar's and dock's exclusive zones, exact (see
     /// [`ScreenArea::on_desktop`]).
     Desktop,

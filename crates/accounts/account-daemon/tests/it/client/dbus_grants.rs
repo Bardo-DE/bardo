@@ -152,7 +152,7 @@ async fn a_porter_daemon_lists_the_accounts_and_an_app_or_a_stranger_may_not() {
     daemon.callers.introduce_as(
         connection.unique_name().expect("unique name").as_str(),
         Caller {
-            app: named("org.quire.Sync"),
+            app: named("org.bardo.Sync"),
             role: CallerRole::PorterDaemon,
         },
     );
@@ -183,7 +183,7 @@ async fn extending_access_and_asking_whether_a_provider_does_are_calls_of_the_gr
     let connection = daemon.bus.connect().await;
     daemon.callers.introduce(
         connection.unique_name().expect("unique name").as_str(),
-        named("org.quire.Sync"),
+        named("org.bardo.Sync"),
     );
     let grants = Porter::over(Bus::over(connection)).grants();
     assert_eq!(

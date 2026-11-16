@@ -10,7 +10,7 @@ fn role(name: &str) -> RoleName {
 
 fn service(name: &str, proof: Proof, pin: Pin) -> Standing {
     Standing::Service {
-        app: AppKey::new("org.quire.X").expect("an app"),
+        app: AppKey::new("org.bardo.X").expect("an app"),
         role: role(name),
         proof,
         pin,

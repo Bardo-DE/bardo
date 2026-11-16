@@ -11,8 +11,8 @@ fn repo() -> PathBuf {
 }
 
 fn entry() -> String {
-    std::fs::read_to_string(repo().join("dist/org.quire.Anyview.desktop"))
-        .expect("dist/org.quire.Anyview.desktop is readable")
+    std::fs::read_to_string(repo().join("dist/org.bardo.Anyview.desktop"))
+        .expect("dist/org.bardo.Anyview.desktop is readable")
 }
 
 fn line<'a>(entry: &'a str, key: &str) -> &'a str {
@@ -80,16 +80,16 @@ fn the_desktop_entry_names_the_app_the_window_carries() {
     assert_eq!(line(&entry, "Name"), "Viewer");
     assert_eq!(line(&entry, "GenericName"), "File Viewer");
     assert_eq!(line(&entry, "Exec"), "anyview %U");
-    assert_eq!(line(&entry, "Icon"), "org.quire.Anyview");
-    assert_eq!(line(&entry, "StartupWMClass"), "org.quire.Anyview");
+    assert_eq!(line(&entry, "Icon"), "org.bardo.Anyview");
+    assert_eq!(line(&entry, "StartupWMClass"), "org.bardo.Anyview");
     // Neither bus name serves org.freedesktop.Application, so the desktop starts the viewer by Exec.
     assert!(!entry.lines().any(|l| l.starts_with("DBusActivatable=")));
     // The names sill reads: the single-instance name and docket's agent name, and the manifest's app.
     assert_eq!(
-        line(&entry, "X-Quire-BusNames"),
-        "org.quire.Anyview1;org.quire.Anyview;"
+        line(&entry, "X-Bardo-BusNames"),
+        "org.bardo.Anyview1;org.bardo.Anyview;"
     );
-    assert_eq!(line(&entry, "X-Quire-IntentsApp"), "org.quire.Anyview");
+    assert_eq!(line(&entry, "X-Bardo-IntentsApp"), "org.bardo.Anyview");
     // sill hands this to keycap, which keeps Command as Super for an app resolving keys by keymap.
     assert_eq!(line(&entry, "X-Keycap-Profile"), "keymap-aware");
 }

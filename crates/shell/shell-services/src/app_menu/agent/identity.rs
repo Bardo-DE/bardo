@@ -1,4 +1,4 @@
-//! Proving who owns a menu's bus name. Owning `org.quire.AppMenu.<id>` proves nothing: any
+//! Proving who owns a menu's bus name. Owning `org.bardo.AppMenu.<id>` proves nothing: any
 //! process may claim it. The system's account of the owner (peephole's standing for the unique
 //! name) names its app, and the name counts only when it is the menu name quire derives for that
 //! app.
@@ -117,7 +117,7 @@ mod tests {
     use super::{unknown, verified};
 
     fn name_of(app: &MenuApp) -> Option<MenuName> {
-        Some(MenuName(format!("org.quire.AppMenu.{}", app.0)))
+        Some(MenuName(format!("org.bardo.AppMenu.{}", app.0)))
     }
 
     /// A `/proc` with process 7 in `leaf`'s scope, and its Flatpak metadata when `info` is given.
@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn an_app_counts_only_under_its_own_menu_name() {
-        let claimed = MenuName("org.quire.AppMenu.dev.notes".to_owned());
+        let claimed = MenuName("org.bardo.AppMenu.dev.notes".to_owned());
         let notes = account_core::AppName::parse("dev.notes").unwrap_or_else(|e| panic!("{e}"));
         let cases = [
             ("its own name", "dev.notes", Identity::Verified(notes)),

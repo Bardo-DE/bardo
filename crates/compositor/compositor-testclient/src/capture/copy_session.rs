@@ -250,7 +250,7 @@ impl OutputCapture {
     /// `get_space_capture_source` (`width` by `height` pixels), and a session on it.
     pub fn open_space(
         &mut self,
-        shell: &desktop_protocols::client::quire_shell_v1::quire_shell_v1::QuireShellV1,
+        shell: &desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::BardoShellV1,
         connector: &str,
         space: &str,
         size: Size,

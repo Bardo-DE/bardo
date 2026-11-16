@@ -113,8 +113,8 @@ cargo install --locked --git https://github.com/Supreeeme/xwayland-satellite --t
 ```
 
 That puts `xwayland-satellite` in `~/.cargo/bin`, which the session's search path may not include. casement has a
-setting for the program's place, so point it there with one line in your own `~/.config/casement/settings.toml`
-(or `$XDG_CONFIG_HOME/casement/settings.toml`), under the heading `[xwayland]`, with your own home folder written out
+setting for the program's place, so point it there with one line in your own `~/.config/compositor/settings.toml`
+(or `$XDG_CONFIG_HOME/compositor/settings.toml`), under the heading `[xwayland]`, with your own home folder written out
 in full (casement does not expand `~`):
 
 ```
@@ -172,7 +172,7 @@ The installer puts the entry **sill (casement)** in `/usr/share/wayland-sessions
 
   ```
   if [ -z "${WAYLAND_DISPLAY:-}" ] && [ "${XDG_VTNR:-}" = 1 ]; then
-    exec desktop-session
+    exec bardo-session
   fi
   ```
 
@@ -217,17 +217,17 @@ them fails to start on Ubuntu with a "namespace" error, the same two fixes apply
 ## Updates
 
 Updates come from slipway, a program of its own. Its installer puts three programs in `/usr/libexec`
-(`slipway-apply`, `slipway-rollback`, `slipway-health`) and one polkit file, `org.quire.slipway.policy`, that names them,
+(`bardo-updater-apply`, `bardo-updater-rollback`, `bardo-updater-health`) and one polkit file, `org.bardo.updater.policy`, that names them,
 the same on Ubuntu, Fedora and Arch. A newer signed release installs without a password for the person at the keyboard;
 going back to an earlier version asks for the administrator's password. The session wants slipway's update service in every
 login, so the daily check asks before it installs anything.
 
 If an update does not start, the session puts the previous version back by itself after several restarts of the computer, and
-if the compositor cannot start at all the session ends and says so in `~/.local/state/desktop-session/guard.log`. To go back
+if the compositor cannot start at all the session ends and says so in `~/.local/state/bardo-session/guard.log`. To go back
 at once by hand, open a text console (Ctrl+Alt+F3) and run:
 
 ```
-pkexec /usr/libexec/slipway-rollback
+pkexec /usr/libexec/bardo/bardo-updater-rollback
 ```
 
 slipway never places or reloads an AppArmor profile, so the Ubuntu note below is unchanged by it. It needs polkit, which
@@ -247,10 +247,10 @@ cannot write a place (`/etc`, `/usr/share/wayland-sessions`) themselves.
 
 The same on Ubuntu, Fedora and Arch (all three run systemd and udev; no package is needed, so there are no apt, dnf or pacman lines).
 `/dev/uinput` is the file a program writes to make a keyboard or a mouse, and with it any program of yours could type into any window. The
-desktop closes it: the device rule `72-turnstile.rules` makes it root-only and takes off the tag (`uaccess`) that some distributions and
+desktop closes it: the device rule `72-bardo-input-broker.rules` makes it root-only and takes off the tag (`uaccess`) that some distributions and
 game packages add, and one small service (`turnstile`, started when something asks for it) makes the virtual devices for the keyboard map
 and the touchpad program, and for nobody else. Its socket accepts any local program; who gets a device is decided by which program is asking,
-from `/etc/quire/desktop-callers.toml`. Nothing in the desktop gives that file to a group, so a keyboard-map install left over from before
-(`/etc/udev/rules.d/70-keycap.rules`, `/etc/systemd/system/keycap.service.d/10-uinput.conf`) should be removed; `install/system.sh keycap`
-says so when it finds them. The same part places keycap's vendor file, `/usr/lib/keycap/keycap.toml` (Caps Lock switches the input method), on every family; `/etc/keycap/keycap.toml` stays the administrator's and nothing here writes it. On Fedora the files are labelled with `restorecon` when SELinux is on. On Ubuntu no AppArmor profile is placed.
+from `/etc/bardo/desktop-callers.toml`. Nothing in the desktop gives that file to a group, so a keyboard-map install left over from before
+(`/etc/udev/rules.d/70-bardo-key-remap.rules`, `/etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf`) should be removed; `install/system.sh keycap`
+says so when it finds them. The same part places keycap's vendor file, `/usr/lib/bardo/key-remap/key-remap.toml` (Caps Lock switches the input method), on every family; `/etc/bardo/key-remap/key-remap.toml` stays the administrator's and nothing here writes it. On Fedora the files are labelled with `restorecon` when SELinux is on. On Ubuntu no AppArmor profile is placed.
 Services that were running before the list of programs was installed read it only when they start: log out and in once.

@@ -202,13 +202,13 @@ mod tests {
             PathBuf::from("/usr/local/share/porter/providers")
         );
         assert_eq!(
-            xdg.shipped_where("porter/providers", only("/usr/share/porter/providers")),
-            PathBuf::from("/usr/share/porter/providers")
+            xdg.shipped_where("porter/providers", only("/usr/share/bardo/accounts/providers")),
+            PathBuf::from("/usr/share/bardo/accounts/providers")
         );
         // Nowhere: named under /usr/share, as before.
         assert_eq!(
             xdg.shipped_where("stoker/catalog", |_| false),
-            PathBuf::from("/usr/share/stoker/catalog")
+            PathBuf::from("/usr/share/bardo/models/catalog")
         );
     }
 }

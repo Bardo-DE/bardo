@@ -1,8 +1,8 @@
-//! `org.quire.Checkpoints`: `checkpoints.restore` puts a session's workspace back to one of its
+//! `org.bardo.Checkpoints`: `checkpoints.restore` puts a session's workspace back to one of its
 //! restore points. Saving the files as they are first, writing the point's files back and
 //! logging the restore are the router's business (`Router::checkpoints_perform`, which holds the
 //! store, the log and the clock); the provider reaches the router through a port that is attached
-//! once the router exists, as `org.quire.Companion` does, so the router that owns the provider is
+//! once the router exists, as `org.bardo.Companion` does, so the router that owns the provider is
 //! not owned by it.
 
 use action_core::{AppRefusal, FailText, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
@@ -88,7 +88,7 @@ fn not_ready() -> AppRefusal {
     AppRefusal::Failed(FailText("the router is not ready".to_owned()))
 }
 
-/// `org.quire.Checkpoints`.
+/// `org.bardo.Checkpoints`.
 #[derive(Debug)]
 pub struct CheckpointsProvider {
     manifest: ValidManifest,

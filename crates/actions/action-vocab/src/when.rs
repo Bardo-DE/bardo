@@ -1,5 +1,5 @@
 //! RFC 3339 dates and instants: `2026-10-03`, `2026-10-03T09:30:00+02:00`. Pure; the terminal
-//! (`quire-do`) and the quarantined reader (a `Date` or `DateTime` answer) both read them, and
+//! (`bardo-do`) and the quarantined reader (a `Date` or `DateTime` answer) both read them, and
 //! the edges that print a UTC time or day ask here too. The calendar is `chrono`'s; this file
 //! only fixes which texts are accepted.
 

@@ -10,7 +10,7 @@
 #             (default none; the environment variable DESTDIR also sets it)
 # --sysconfdir where the system settings go (default /etc when the prefix is /usr, else PREFIX/etc;
 #             the environment variable SYSCONFDIR also sets it)
-# --bin-dir   install the already built slipway-apply, slipway-rollback and slipway-health found in DIR
+# --bin-dir   install the already built bardo-updater-apply, bardo-updater-rollback and bardo-updater-health found in DIR
 #             instead of building them
 # --no-build  install from target/release (or $CARGO_TARGET_DIR/release) without building first
 # --build-only build the helpers as yourself, then stop and say how to place them as the administrator
@@ -33,12 +33,12 @@
 # --pubkey    the minisign public key releases are signed with, installed as the trust anchor
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
-#   PREFIX/libexec/slipway-apply                       the privileged helper that installs a release
-#   PREFIX/libexec/slipway-rollback                    the privileged helper that goes back (asks for a password)
-#   PREFIX/libexec/slipway-health                      the privileged half of the health check
-#   PREFIX/share/polkit-1/actions/org.quire.slipway.policy   lets the person at the keyboard run them
-#   PREFIX/lib/systemd/user/slipway.service            the daily check, part of the graphical session
-#   PREFIX/share/dbus-1/services/org.quire.Updates1.service
+#   PREFIX/libexec/bardo-updater-apply                       the privileged helper that installs a release
+#   PREFIX/libexec/bardo-updater-rollback                    the privileged helper that goes back (asks for a password)
+#   PREFIX/libexec/bardo-updater-health                      the privileged half of the health check
+#   PREFIX/share/polkit-1/actions/org.bardo.updater.policy   lets the person at the keyboard run them
+#   PREFIX/lib/systemd/user/bardo-updater.service            the daily check, part of the graphical session
+#   PREFIX/share/dbus-1/services/org.bardo.Updates1.service
 #                                                      starts that unit when the update service is called
 #   SYSCONFDIR/slipway/config.toml                     the system settings: root and key path, read by
 #                                                      the helper and by the daemon (never overwritten)
@@ -47,11 +47,11 @@
 # The system settings file is the one place the install root and the key path are written down: the
 # privileged helper reads only it and the daemon reads it first, so they cannot disagree. A file that
 # is already there is kept as it is (the person or an earlier install chose it); if it names another
-# root than --root, the script says so. Both programs look for it at /etc/slipway/config.toml, so
+# root than --root, the script says so. Both programs look for it at /etc/bardo/updater.toml, so
 # SYSCONFDIR should be /etc outside a DESTDIR trial.
 #
 # polkit reads actions from /usr/share/polkit-1/actions and the daemon looks for the helper at
-# /usr/libexec/slipway-apply and the key at /usr/share/slipway/release.pub, so PREFIX should be /usr.
+# /usr/libexec/bardo/bardo-updater-apply and the key at /usr/share/bardo/updater/release.pub, so PREFIX should be /usr.
 # A different prefix is for trying the install under a DESTDIR; the paths inside the policy are
 # rewritten to match.
 #
@@ -59,7 +59,7 @@
 # the policy how to label the install root, so system services may run programs from it:
 # `semanage fcontext` gives ROOT(/.*)? the type usr_t and ROOT(/.*)?/bin(/.*)? bin_t, then `restorecon`
 # applies it. Both programs must be installed and the script must run as root; otherwise it prints
-# what to run. Nothing is done where SELinux is off or the tools are missing. slipway-apply also runs
+# what to run. Nothing is done where SELinux is off or the tools are missing. bardo-updater-apply also runs
 # `restorecon` on every release it places, so later releases need nothing from this script.
 #
 # Every folder is made with `install -d -m755` and every file placed with `install -m MODE`, so a
@@ -257,7 +257,7 @@ if [ "$build_only" = yes ]; then
     echo "  sudo sh -c 'umask 022 && $0 --bin-dir $built${pubkey:+ --pubkey $pubkey}'"
     exit 0
 fi
-for helper in slipway-apply slipway-rollback slipway-health; do
+for helper in bardo-updater-apply bardo-updater-rollback bardo-updater-health; do
     if [ ! -x "$built/$helper" ]; then
         echo "install.sh: $built/$helper is not there; build first or point --bin-dir at it" >&2
         exit 1
@@ -280,17 +280,17 @@ for target in "$destdir$prefix/libexec" "$destdir$sysconfdir"; do
     fi
 done
 
-# The files in dist/ name /usr/libexec/slipway-apply and /opt/quire; different choices change those paths.
+# The files in dist/ name /usr/libexec/bardo/bardo-updater-apply and /opt/quire; different choices change those paths.
 libexec=$prefix/libexec
-put 755 "$built/slipway-apply" "$libexec/slipway-apply"
-put 755 "$built/slipway-rollback" "$libexec/slipway-rollback"
-put 755 "$built/slipway-health" "$libexec/slipway-health"
-put 644 "$dist/org.quire.slipway.policy" "$prefix/share/polkit-1/actions/org.quire.slipway.policy" \
-    /usr/libexec/slipway-apply "$libexec/slipway-apply" \
-    /usr/libexec/slipway-rollback "$libexec/slipway-rollback" \
-    /usr/libexec/slipway-health "$libexec/slipway-health"
-put 644 "$dist/slipway.service" "$prefix/lib/systemd/user/slipway.service" /opt/quire "$root"
-put 644 "$dist/org.quire.Updates1.service" "$prefix/share/dbus-1/services/org.quire.Updates1.service" \
+put 755 "$built/bardo-updater-apply" "$libexec/bardo-updater-apply"
+put 755 "$built/bardo-updater-rollback" "$libexec/bardo-updater-rollback"
+put 755 "$built/bardo-updater-health" "$libexec/bardo-updater-health"
+put 644 "$dist/org.bardo.updater.policy" "$prefix/share/polkit-1/actions/org.bardo.updater.policy" \
+    /usr/libexec/bardo/bardo-updater-apply "$libexec/bardo-updater-apply" \
+    /usr/libexec/bardo/bardo-updater-rollback "$libexec/bardo-updater-rollback" \
+    /usr/libexec/bardo/bardo-updater-health "$libexec/bardo-updater-health"
+put 644 "$dist/bardo-updater.service" "$prefix/lib/systemd/user/bardo-updater.service" /opt/quire "$root"
+put 644 "$dist/org.bardo.Updates1.service" "$prefix/share/dbus-1/services/org.bardo.Updates1.service" \
     /opt/quire "$root"
 if [ -n "$pubkey" ]; then
     put 644 "$pubkey" "$prefix/share/slipway/release.pub"
@@ -307,7 +307,7 @@ if [ -e "$settings" ]; then
 else
     make_dir "$(dirname "$settings")"
     {
-        echo "# slipway system settings: read by slipway-apply (as root) and by the update service."
+        echo "# slipway system settings: read by bardo-updater-apply (as root) and by the update service."
         echo "# The person's own file may only change settings_command and name."
         echo "root = \"$root\""
         echo "pubkey_path = \"$prefix/share/slipway/release.pub\""

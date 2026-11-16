@@ -1,4 +1,4 @@
-//! `casement-probe session`: one long-lived test client driven from stdin. Every event the
+//! `compositor-probe session`: one long-lived test client driven from stdin. Every event the
 //! compositor sends is printed as `< object#id.event(args)` (the client's transcript), and what
 //! the session itself did as `probe: ...` notes, so a script waits on lines instead of sleeping.
 //! The command language is in `command.rs`.

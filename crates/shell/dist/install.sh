@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install sill from the bardo tree: build `sill` in release, then put the binary, the PAM service,
-# the intents manifest (`org.quire.Shell`, for intentd and `quire-do`), the companion skills
+# the intents manifest (`org.bardo.Shell`, for intentd and `bardo-do`), the companion skills
 # (dist/skills) and the settings schema where a login reads them, and copy the keycap layer for
 # the sill session to ~/.config/keycap/keycap.toml when that file is missing (never over yours).
 # The login itself, "sill (casement)", is the desktop repo's session/ and install/. Run as
@@ -20,9 +20,9 @@
 #
 # Also installed, when no ddcutil rule exists on the machine (60-ddcutil*.rules): dist/udev and
 # dist/modules-load.d, so the i2c buses of external monitors open to the person at the seat (DDC/CI
-# brightness). Not installed here, on purpose: dist/sill.service (the desktop repo's installer puts it root-held beside
-# casement.service and its session starts it; a copy under ~/.config is not trusted by the account service),
-# anything of Plasma's or Toshy's, and keycap's machine file /etc/keycap/keycap.toml.
+# brightness). Not installed here, on purpose: dist/bardo-shell.service (the desktop repo's installer puts it root-held beside
+# bardo-compositor.service and its session starts it; a copy under ~/.config is not trusted by the account service),
+# anything of Plasma's or Toshy's, and keycap's machine file /etc/bardo/key-remap/key-remap.toml.
 # dist/uninstall.sh undoes it. docs/first-login.md is next.
 set -euo pipefail
 # shellcheck source=install-lib.sh
@@ -59,9 +59,9 @@ put 755 "$BUILT" "$BIN_DEST"
 
 step "5/8 the PAM service, the intents manifest, the skills and the settings schema"
 put 644 "$DIST/pam.d/sill" "$PAM_DEST"
-# intentd (docket) lists it, and `quire-do shell --list` shows it: sill serves it as `org.quire.Shell`.
-put 644 "$DIST/intents/org.quire.Shell.toml" "$INTENTS_DEST"
-# The skills the companion loads (docket-eval --check-skills validates them); they grant nothing.
+# intentd (docket) lists it, and `bardo-do shell --list` shows it: sill serves it as `org.bardo.Shell`.
+put 644 "$DIST/intents/org.bardo.Shell.toml" "$INTENTS_DEST"
+# The skills the companion loads (agent-eval --check-skills validates them); they grant nothing.
 while IFS= read -r file; do
   put 644 "$DIST/skills/$file" "$SKILLS_DEST/$file"
 done < <(skills)
@@ -73,7 +73,7 @@ if [ "$DRY" = 1 ]; then
   note "would write the settings schema with $BUILT --write-schema and install it at $SCHEMA_DEST"
 else
   "$BUILT" --write-schema "$schema_dir" >/dev/null
-  put 644 "$schema_dir/sill.settings.toml" "$SCHEMA_DEST"
+  put 644 "$schema_dir/shell.settings.toml" "$SCHEMA_DEST"
 fi
 
 step "6/8 external monitor brightness (DDC/CI): the i2c rule and module"
@@ -92,11 +92,11 @@ fi
 step "7/8 the keycap layer for the sill session (copied when missing; never overwritten)"
 if [ -n "$DESTDIR" ]; then
   note "skipped: a staging root has no person's home"
-elif [ -f "$KEYCAP_LAYER_DEST" ] && cmp -s "$KEYCAP_LAYER_SRC" "$KEYCAP_LAYER_DEST"; then
-  note "unchanged: $KEYCAP_LAYER_DEST"
-elif [ -e "$KEYCAP_LAYER_DEST" ]; then
-  note "kept (yours): $KEYCAP_LAYER_DEST"
-  note "YOUR KEYBOARD FILE IS OLDER THAN THIS ONE ($KEYCAP_LAYER_SRC). Install never changes your file."
+elif [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ] && cmp -s "$BARDO_KEY_REMAP_LAYER_SRC" "$BARDO_KEY_REMAP_LAYER_DEST"; then
+  note "unchanged: $BARDO_KEY_REMAP_LAYER_DEST"
+elif [ -e "$BARDO_KEY_REMAP_LAYER_DEST" ]; then
+  note "kept (yours): $BARDO_KEY_REMAP_LAYER_DEST"
+  note "YOUR KEYBOARD FILE IS OLDER THAN THIS ONE ($BARDO_KEY_REMAP_LAYER_SRC). Install never changes your file."
   lacking="$(keycap_rules_lacking)"
   if [ -n "$lacking" ]; then
     note "These rules are in the new file and not in yours (a missing one can send a shortcut to the wrong place, such as Cmd+Tab; the app switcher rules keep Super down while Cmd is held):"
@@ -104,10 +104,10 @@ elif [ -e "$KEYCAP_LAYER_DEST" ]; then
   else
     note "Your file has every rule of the new one; it differs only in comments or extra rules of yours."
   fi
-  note "To see every difference:  diff $KEYCAP_LAYER_DEST $KEYCAP_LAYER_SRC"
-  note "To use the new file (keeps yours as keycap.toml.bak):  cp $KEYCAP_LAYER_DEST $KEYCAP_LAYER_DEST.bak && cp $KEYCAP_LAYER_SRC $KEYCAP_LAYER_DEST"
+  note "To see every difference:  diff $BARDO_KEY_REMAP_LAYER_DEST $BARDO_KEY_REMAP_LAYER_SRC"
+  note "To use the new file (keeps yours as keycap.toml.bak):  cp $BARDO_KEY_REMAP_LAYER_DEST $BARDO_KEY_REMAP_LAYER_DEST.bak && cp $BARDO_KEY_REMAP_LAYER_SRC $BARDO_KEY_REMAP_LAYER_DEST"
 else
-  run install -D -m 644 "$KEYCAP_LAYER_SRC" "$KEYCAP_LAYER_DEST"
+  run install -D -m 644 "$BARDO_KEY_REMAP_LAYER_SRC" "$BARDO_KEY_REMAP_LAYER_DEST"
 fi
 
 step "8/8 SELinux labels and the user manager"

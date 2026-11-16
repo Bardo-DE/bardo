@@ -22,9 +22,9 @@ fn choice(model: &str, family: &str) -> Option<ModelChoice> {
 /// placeholder set can never allow anything; it only keeps the cascade built.
 pub fn placeholder_set() -> Option<ReviewerSet> {
     Some(ReviewerSet {
-        quick: choice("quire-quick", "quick")?,
-        deliberate: choice("quire-deliberate", "deliberate")?,
-        second: choice("quire-second", "second")?,
+        quick: choice("bardo-quick", "quick")?,
+        deliberate: choice("bardo-deliberate", "deliberate")?,
+        second: choice("bardo-second", "second")?,
     })
 }
 

@@ -1,4 +1,4 @@
-"""Drives a running or freshly spawned speech-host over its socket with WAV files (stdlib only).
+"""Drives a running or freshly spawned bardo-speech-host over its socket with WAV files (stdlib only).
 
 For each WAV and thread count: spawn the host, Hello, Begin, stream the audio paced at real
 time in --frame-ms frames (a held microphone), End, read events to Done. Then the same audio
@@ -86,7 +86,7 @@ def utterance(sock, pcm, frame_ms, paced, lang):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--host", required=True, help="path of the speech-host binary")
+    ap.add_argument("--host", required=True, help="path of the bardo-speech-host binary")
     ap.add_argument("--model-dir", required=True)
     ap.add_argument("--threads", default="4,6,8")
     ap.add_argument("--frame-ms", type=int, default=80)

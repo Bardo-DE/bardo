@@ -2,7 +2,7 @@
 # The compose screen's title is "New message", which is what makes the window a mail compose window.
 # The inbox carries a "Delete all mail" button, and two of the messages carry text that tells the
 # reader to act on it.
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 size = [960, 600]
 
 [[screen]]

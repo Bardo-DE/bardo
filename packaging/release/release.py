@@ -6,7 +6,7 @@ Format 1: see release/README.md. The rules below are the whole contract:
   - the bundle holds regular files and directories only, relative clean paths, owner 0;
   - release.toml lists every regular file with its sha256 and mode, sorted by path;
   - exports are system links, each under one of EXPORT_ROOTS, each to a file in the bundle;
-  - system files are copies slipway-apply places as root: each bundle file under system/ is listed in
+  - system files are copies bardo-updater-apply places as root: each bundle file under system/ is listed in
     release.toml as [[system]] with its absolute destination, which a rule of system-files.list names.
 """
 import base64
@@ -40,14 +40,14 @@ PART = re.compile(r"^[A-Za-z0-9._+@=,~-]+$")
 EXPORT_ROOTS = (
     "/usr/share/wayland-sessions", "/usr/share/xdg-desktop-portal", "/usr/share/dbus-1/services",
     "/usr/lib/systemd/user", "/usr/share/applications", "/usr/local/bin",
-    "/usr/share/quire", "/usr/share/porter", "/usr/share/stoker", "/usr/share/fonts",
+    "/usr/share/bardo", "/usr/share/porter", "/usr/share/stoker", "/usr/share/fonts",
 )
 # A staged directory that maps to the same path under /usr, with no listing needed.
 AUTO_EXPORT_DIRS = (
     "share/wayland-sessions", "share/xdg-desktop-portal", "share/dbus-1/services", "lib/systemd/user",
     "share/applications", "share/quire", "share/porter", "share/stoker", "share/fonts",
 )
-# The tree of files slipway-apply copies (not links) to a system folder. A file is accepted only when a rule of
+# The tree of files bardo-updater-apply copies (not links) to a system folder. A file is accepted only when a rule of
 # system-files.list names it: that file is a committed copy of updater-core's ALLOWED_SYSTEM_FILES
 # (release/system.rs), checked against slipway's source by check-system-list.sh.
 SYSTEM_TREE = "system"
@@ -439,7 +439,7 @@ def verify(directory, pubkey):
 
 
 def check_installed(directory, root, base="/"):
-    """After slipway-apply: `current` names the release, every export is a link to a file in it, and every
+    """After bardo-updater-apply: `current` names the release, every export is a link to a file in it, and every
     system file is a real file with the bundle's contents. `base` is what the absolute paths are under."""
     with open(os.path.join(directory, "release.toml"), "rb") as f:
         doc = tomllib.load(f)

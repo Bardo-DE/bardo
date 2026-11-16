@@ -1,5 +1,5 @@
 # The one line every dev script starts with: source "$(dirname "${BASH_SOURCE[0]}")/all.sh"
-# Sourcing it defines SILL_REPO, SHELL_HOST_DEV, SILL_BIN and the helpers of the other lib files.
+# Sourcing it defines BARDO_SHELL_REPO, BARDO_LAYER_SHELL_HOST_DEV, BARDO_SHELL_BIN and the helpers of the other lib files.
 LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 for lib in bus compositor daemon input pixels assert backdrop; do
   # shellcheck source=/dev/null

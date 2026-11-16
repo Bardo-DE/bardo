@@ -1,11 +1,11 @@
 //! Who is the caller: the one type for the fact, shared by the wire, the router and the stored
 //! turns. The role is a closed set the router branches on; it is configured per bus name in
-//! `intentd.toml` and never sent in a body.
+//! `actiond.toml` and never sent in a body.
 
 use account_core::AppName;
 use serde::{Deserialize, Serialize};
 
-/// The role a connection plays, configured per bus name in `intentd.toml`.
+/// The role a connection plays, configured per bus name in `actiond.toml`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CallerRole {
@@ -13,7 +13,7 @@ pub enum CallerRole {
     Launcher,
     /// A quire app recording a turn from its own prompt field.
     Field,
-    /// A code editor driving the companion over ACP (`docket-acp`): opens sessions, records its
+    /// A code editor driving the companion over ACP (`bardo-agent-acp`): opens sessions, records its
     /// person's turns and cancels. It answers no `Confirm1` sheet and halts nothing.
     Editor,
     /// companiond.
@@ -22,9 +22,9 @@ pub enum CallerRole {
     Reader,
     /// cuad.
     Cua,
-    /// actions-mcp.
+    /// bardo-actions-mcp.
     Mcp,
-    /// Any process running `quire-do`: connection-derived, like every role.
+    /// Any process running `bardo-do`: connection-derived, like every role.
     Cli,
     /// sill as the only `Confirm1` server the router trusts.
     Confirm,
@@ -34,7 +34,7 @@ pub enum CallerRole {
     Control,
     /// Any other app: its own actions, plus search, preview and suggest.
     App,
-    /// The host of an external coding agent (`docket-agent`): opens the session of the agent it
+    /// The host of an external coding agent (`bardo-agent`): opens the session of the agent it
     /// launched, records the person's turns, and makes the agent's calls (its file reads and
     /// writes, its commands, its permission requests) for it. It answers no `Confirm1` sheet
     /// unless the session says so, and halts nothing.
@@ -69,7 +69,7 @@ impl CallerRole {
 /// A caller records a turn as the launcher, a terminal, a field, an editor or an agent host; the
 /// constructors build only those, so the stored form below always reads back as the same caller.
 /// Its serialized form is the stored turn's `from`: `{"kind":"launcher"}`, `{"kind":"terminal"}`,
-/// `{"kind":"field","v":"org.quire.Mail"}`, and `editor` and `agent` the same way.
+/// `{"kind":"field","v":"org.bardo.Mail"}`, and `editor` and `agent` the same way.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(from = "CallerWire", into = "CallerWire")]
 pub struct Caller {
@@ -86,7 +86,7 @@ impl Caller {
         }
     }
 
-    /// A terminal (`quire-do ask`): the person at a keyboard, or whatever is typing in it.
+    /// A terminal (`bardo-do ask`): the person at a keyboard, or whatever is typing in it.
     pub fn terminal() -> Self {
         Self {
             role: CallerRole::Cli,

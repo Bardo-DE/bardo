@@ -5,7 +5,7 @@
 //! guess where that directory lands (sill searched its own variable, then the data dirs, then a
 //! sibling checkout). The order is settled here, once, and documented in CONSUMING.md:
 //!
-//! 1. `$QUIRE_ICON_ASSETS`, the apps directory itself (a packager's or a test's override);
+//! 1. `$BARDO_ICON_ASSETS`, the apps directory itself (a packager's or a test's override);
 //! 2. `$XDG_DATA_HOME/quire/icons/apps` (`$HOME/.local/share` when unset), where
 //!    `icons install` copies the set;
 //! 3. each `$XDG_DATA_DIRS` entry's `quire/icons/apps` (`/usr/local/share:/usr/share` when

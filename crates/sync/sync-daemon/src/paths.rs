@@ -15,7 +15,7 @@ pub struct Paths {
     pub journals: PathBuf,
     /// `$XDG_DATA_HOME/porter/vdir`: the PIM mirrors, one directory per account (W6e).
     pub mirrors: PathBuf,
-    /// The system caller table, `/etc/porter/callers.toml` (another file in a test build:
+    /// The system caller table, `/etc/bardo/accountd-callers.toml` (another file in a test build:
     /// [`account_callers::SystemCallers`]).
     pub callers_system: PathBuf,
     /// The user's caller table, `$XDG_CONFIG_HOME/porter/callers.toml`; its rows win.
@@ -156,11 +156,11 @@ pub const BUILD: Build = if cfg!(feature = "test-proc-root") {
     Build::Release
 };
 
-/// Whether this binary honours `SYNCD_PROC_ROOT`: only with the `test-proc-root` feature. A
+/// Whether this binary honours `BARDO_SYNCD_PROC_ROOT`: only with the `test-proc-root` feature. A
 /// release build ignores the variable.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
-/// How often the supervisors read grants again (`SYNCD_RESCAN_S`, whole seconds, at least 1),
+/// How often the supervisors read grants again (`BARDO_SYNCD_RESCAN_S`, whole seconds, at least 1),
 /// for a test build only, so a scenario need not wait the default ten minutes for a grant it
 /// just made. A release build ignores the variable; so does a value that is not a number of
 /// seconds. The default is `default`, and no build has a shorter one.

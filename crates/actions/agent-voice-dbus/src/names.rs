@@ -1,13 +1,13 @@
 //! Bus names and object paths.
 
 /// The bus name.
-pub const VOICE_BUS: &str = "org.quire.Voice1";
+pub const VOICE_BUS: &str = "org.bardo.Voice1";
 /// The root object.
-pub const VOICE_PATH: &str = "/org/quire/Voice1";
+pub const VOICE_PATH: &str = "/org/bardo/Voice1";
 /// Where utterance objects live, `<prefix>/<n>`.
-pub const UTTERANCE_PREFIX: &str = "/org/quire/Voice1/utterance";
+pub const UTTERANCE_PREFIX: &str = "/org/bardo/Voice1/utterance";
 /// Where speech objects live, `<prefix>/<n>`.
-pub const SPEECH_PREFIX: &str = "/org/quire/Voice1/speech";
+pub const SPEECH_PREFIX: &str = "/org/bardo/Voice1/speech";
 
 /// The object path of utterance `n`.
 pub fn utterance_path(n: u64) -> String {

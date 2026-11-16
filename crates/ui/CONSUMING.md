@@ -1269,12 +1269,12 @@ For a bar (FINDINGS "Bar gaps"):
   `ds` does not depend on the manifest that declares it). A shortcut outside any menu is a
   `ShortcutBinding { keys, command }`. A test walks the bar, your own menus and the table into
   `ds::components::menus::ui_manifest::{bar_rows, menu_rows, shortcut_rows}` and writes the file
-  `docket-eval --check-app` reads, beside the intents manifest:
+  `agent-eval --check-app` reads, beside the intents manifest:
 
   ```rust,ignore
   let rows = [bar_rows(&bar), menu_rows(&tray_items), shortcut_rows(&SHORTCUTS)].concat();
-  let text = UiManifest::new(IntentsApp("org.quire.Mail".into()), rows)?.to_toml()?;
-  std::fs::write("dist/intents/org.quire.Mail.ui.toml", text)?;
+  let text = UiManifest::new(IntentsApp("org.bardo.Mail".into()), rows)?.to_toml()?;
+  std::fs::write("dist/intents/org.bardo.Mail.ui.toml", text)?;
   ```
 
   A menu item in the bar and in a context menu is one row; a shortcut and a menu item for the same
@@ -1636,10 +1636,10 @@ list and run them (design/27 section 5.2 rule a). Off by default: feature `menus
 
 | What | Value |
 | --- | --- |
-| Bus name | `org.quire.AppMenu.<app_id>`, each dot-separated element made a legal bus-name element (`AppMenuAddress::for_app_id`); requested with `DoNotQueue`: when another process owns it, `start` fails with `MenuExportError::NameTaken` and exports nothing |
-| Object path | `/org/quire/AppMenu` |
+| Bus name | `org.bardo.AppMenu.<app_id>`, each dot-separated element made a legal bus-name element (`AppMenuAddress::for_app_id`); requested with `DoNotQueue`: when another process owns it, `start` fails with `MenuExportError::NameTaken` and exports nothing |
+| Object path | `/org/bardo/AppMenu` |
 | Interface | `com.canonical.dbusmenu` version 3: `GetLayout`, `GetGroupProperties`, `GetProperty`, `Event`, `EventGroup`, `AboutToShow(Group)`; signals `LayoutUpdated`, `ItemsPropertiesUpdated` |
-| Item properties | `type`, `label` (underscores doubled), `enabled`, `toggle-type`, `toggle-state`, `shortcut` (`[["Super","Z"]]`: Command is `Super`), `children-display`; plus `x-quire-command-id`, the `CommandId` the item runs |
+| Item properties | `type`, `label` (underscores doubled), `enabled`, `toggle-type`, `toggle-state`, `shortcut` (`[["Super","Z"]]`: Command is `Super`), `children-display`; plus `x-bardo-command-id`, the `CommandId` the item runs |
 | Ids | an `i32` hashed from the item's `CommandId` (a menu, submenu or rule from its place), so the same bar has the same ids in every run; the bar itself is 0 |
 | Event | `Event(id, "clicked", _, _)` from a caller the permit lets, on an enabled command item, calls your callback with its `CommandId`; a disabled or unknown item is an `InvalidArgs` error; a message with no sender or a caller the permit refuses is `AccessDenied` |
 | EventGroup | the same per event, at most 64 events a call (`InvalidArgs` beyond) and 8 calls a second per sender (`LimitsExceeded` beyond) |
@@ -1823,7 +1823,7 @@ An Extension that cannot be used is in `looks.problems()` with a line in plain w
 offer "Turn On…" (a link to the `extension:<id>` Settings target) instead of "missing". Another
 owner's words (anyview-plugin's six) are read from `found.candidates` through `bayonet::reparse`
 with that owner's own `Provides` type; `ds_extensions::bayonet` is the same bayonet, re-exported
-so the two agree. `ExtensionsFile` is `quire/extensions.toml`; its schema is
+so the two agree. `ExtensionsFile` is `bardo/extensions.toml`; its schema is
 `ds_extensions::extensions_schema()`.
 
 ### File icons
@@ -2115,7 +2115,7 @@ CSS references it directly, since no ds component paints the thumb itself.
 A person restyles your app with CSS, and the change shows as they save it (ARCHITECTURE.md
 section 10). Three sheets sit above your own in the cascade, lowest first: the **look** the person
 chose (`@layer look`, found by the look Extension machinery, not by `Ds`), the person's
-**desktop-wide** style, `~/.config/quire/style.css`, and their style **for your app**,
+**desktop-wide** style, `~/.config/bardo/style.css`, and their style **for your app**,
 `~/.config/<app>/style.css`. The last two are unlayered, desktop-wide first. quire owns the
 mechanism; you wire two things.
 
@@ -2392,7 +2392,7 @@ fn Editor() -> Element {
   modifier.
 - **Where the keymap comes from.** `Ds` loads it from the `KeySource` in the root context. A launch
   provides one: `AppConfig::with_keymap_source(Box<dyn KeymapSource + Send + Sync>)` (the platform
-  is detected, `CHORDKIT_PLATFORM` overrides) or `with_keymap(platform, source)`. Without either,
+  is detected, `BARDO_KEYMAP_PLATFORM` overrides) or `with_keymap(platform, source)`. Without either,
   `launch` uses the platform `chordkit::detect` finds and the desktop's own shortcut settings for
   it: `kdeglobals` on Plasma; on GNOME the dconf database through `dconf dump /`, read when the
   source is made and again on the watch's thread when the database changes (a failed `dconf` keeps

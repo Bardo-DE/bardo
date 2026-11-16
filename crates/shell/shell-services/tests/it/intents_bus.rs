@@ -1,4 +1,4 @@
-//! sill's seat at intentd on a private bus: a stand-in intentd owns `org.quire.Intents1`, asks the
+//! sill's seat at intentd on a private bus: a stand-in intentd owns `org.bardo.Intents1`, asks the
 //! sheet through docket's own client (`ConfirmProxy` and `action_client::requested`, the calls
 //! intentd's `SheetConfirmer` makes), serves `Control`, and calls the shell's `IntentProvider1`.
 //! Never the person's session bus; a test skips, saying so, without a `dbus-daemon`. The same chain
@@ -47,7 +47,7 @@ fn app(name: &str) -> AppName {
 
 fn grant(action: &str) -> ActionRef {
     ActionRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         name: ActionName::parse(action).unwrap_or_else(|e| panic!("{action}: {e}")),
     }
 }
@@ -57,7 +57,7 @@ pub(crate) fn request(id: &str, offer: ConfirmOffer, expires: u32) -> ConfirmReq
         id: ConfirmId::parse(id).unwrap_or_else(|e| panic!("{id}: {e}")),
         space: SpaceId::parse("desktop").unwrap_or_else(|e| panic!("{e}")),
         actor: Actor::Cli,
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         action: LabelText::parse("Archive a thread").unwrap_or_else(|e| panic!("{e}")),
         effect: Effect::UndoableWrite,
         count: Count(1),
@@ -83,7 +83,7 @@ struct Held {
 
 struct StandInControl(Arc<Mutex<Held>>);
 
-#[interface(name = "org.quire.Intents1.Control")]
+#[interface(name = "org.bardo.Intents1.Control")]
 impl StandInControl {
     async fn terminal_grants(&self) -> fdo::Result<String> {
         let held = self.0.lock().unwrap_or_else(|e| panic!("{e}"));
@@ -135,7 +135,7 @@ pub(crate) struct Desk {
     pub(crate) callers: Arc<Introduced>,
 }
 
-/// A fake proc root in which this process is `intentd.service`'s main process: every connection
+/// A fake proc root in which this process is `bardo-actiond.service`'s main process: every connection
 /// of the test is this one process, and the shell's provider answers only intentd.
 fn intentd_is_this_process() -> TempDir {
     let procs = TempDir::new("intents-procs");
@@ -147,9 +147,9 @@ fn intentd_is_this_process() -> TempDir {
     };
     write(
         procs.path().join(format!("{pid}/cgroup")),
-        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/intentd.service\n".to_owned(),
+        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-actiond.service\n".to_owned(),
     );
-    write(procs.path().join("units/intentd.service"), pid.to_string());
+    write(procs.path().join("units/bardo-actiond.service"), pid.to_string());
     procs
 }
 
@@ -215,7 +215,7 @@ async fn desk_on(
     callers.make(&intentd, who);
     intentd
         .object_server()
-        .at("/org/quire/Intents1", StandInControl(held.clone()))
+        .at("/org/bardo/Intents1", StandInControl(held.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     zbus_ready::serving(&intentd)
@@ -312,7 +312,7 @@ async fn a_seat_in_a_passive_environment_owns_no_name() {
     let dbus = fdo::DBusProxy::new(&desk.intentd)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    for name in [CONFIRM_BUS, "org.quire.Shell"] {
+    for name in [CONFIRM_BUS, "org.bardo.Shell"] {
         let owned = dbus
             .name_has_owner(name.try_into().unwrap_or_else(|e| panic!("{e}")))
             .await
@@ -569,7 +569,7 @@ async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal(
     .await;
     // The breaker pauses the terminal: intentd says so on the bus.
     let emitter =
-        SignalEmitter::new(&desk.intentd, "/org/quire/Intents1").unwrap_or_else(|e| panic!("{e}"));
+        SignalEmitter::new(&desk.intentd, "/org/bardo/Intents1").unwrap_or_else(|e| panic!("{e}"));
     StandInControl::breaker_tripped(&emitter, "s-1")
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -600,7 +600,7 @@ async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_name_somebody_else_owns_is_the_links_trouble() {
-    for taken in ["org.quire.Shell", CONFIRM_BUS] {
+    for taken in ["org.bardo.Shell", CONFIRM_BUS] {
         let Some(bus) = PrivateBus::start() else {
             return;
         };
@@ -684,7 +684,7 @@ fn invocation_with(action: &str, args: &[(&str, &str)]) -> String {
 
 async fn provider(connection: &Connection) -> action_dbus::IntentProviderProxy<'static> {
     action_dbus::IntentProviderProxy::builder(connection)
-        .destination("org.quire.Shell")
+        .destination("org.bardo.Shell")
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await
@@ -844,7 +844,7 @@ async fn the_window_list_is_the_compositors_windows_labelled_untrusted() {
         listed
             .label
             .sources
-            .contains(&provenance::Source::App(app("org.quire.Shell")))
+            .contains(&provenance::Source::App(app("org.bardo.Shell")))
     );
     let action_vocab::Value::Text(text) = listed.value else {
         panic!("text");

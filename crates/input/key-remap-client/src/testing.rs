@@ -32,7 +32,7 @@ impl FakeDaemon {
     /// A daemon whose `Hello` says `version`, holding `keymap`.
     pub(crate) fn start(version: u16, keymap: KeymapState) -> FakeDaemon {
         let dir = tempfile::tempdir().expect("scratch dir");
-        let socket = dir.path().join("keycap.sock");
+        let socket = dir.path().join("key-remap.sock");
         let listener =
             rustix::net::socket(AddressFamily::UNIX, SocketType::SEQPACKET, None).expect("socket");
         rustix::net::bind(&listener, &SocketAddrUnix::new(&socket).expect("path")).expect("bind");

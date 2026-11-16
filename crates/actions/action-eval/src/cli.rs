@@ -1,4 +1,4 @@
-//! The command line of `docket-eval`: one mode flag and what it needs. clap reads it; a command
+//! The command line of `agent-eval`: one mode flag and what it needs. clap reads it; a command
 //! line it refuses ends the program with exit 2.
 
 use clap::{ArgGroup, Parser};
@@ -32,7 +32,7 @@ pub(crate) enum Request {
 /// The command line as clap reads it.
 #[derive(Debug, Parser)]
 #[command(
-    name = "docket-eval",
+    name = "agent-eval",
     about = "The conformance checks and the attack suite",
     group = ArgGroup::new("mode")
         .required(true)

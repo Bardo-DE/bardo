@@ -118,7 +118,7 @@ impl World {
             &name,
             Caller {
                 app: AppId {
-                    name: AppName::parse("org.quire.Temor").expect("app name"),
+                    name: AppName::parse("org.bardo.Temor").expect("app name"),
                     isolation: Isolation::Unsandboxed,
                 },
                 role,

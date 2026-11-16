@@ -1,4 +1,4 @@
-//! `quire-do` goes through the same gate as everything else: a terminal cannot tell the person
+//! `bardo-do` goes through the same gate as everything else: a terminal cannot tell the person
 //! from an agent typing in it, so a read runs, every other act asks, a hidden action is refused,
 //! and the only way to skip the question is the person's own answer on the sheet.
 
@@ -11,7 +11,7 @@ use provenance::Effect;
 
 fn archive_ref() -> ActionRef {
     ActionRef {
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         name: provenance::ActionName::parse("mail.thread.archive").expect("action"),
     }
 }

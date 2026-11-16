@@ -1,4 +1,4 @@
-//! The stored settings followed while casement runs: when `casement/settings.toml` changes, the
+//! The stored settings followed while casement runs: when `compositor/settings.toml` changes, the
 //! pointer's settings reach the devices already present and the key repeat reaches the clients
 //! already bound, at once, as a change in System Settings does on the Mac. (The core loop does
 //! the reaching when the model is told, `core_loop::feed`.)

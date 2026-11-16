@@ -39,9 +39,9 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-lock"
-SHOTS="$SILL_SHOTS"
-LOCKER="$SILL_OUT/examples/session_locker"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-lock"
+SHOTS="$BARDO_SHELL_SHOTS"
+LOCKER="$BARDO_SHELL_OUT/examples/session_locker"
 NODEBUG_BIN="$OUT_DIR/sill-nodebug"
 mkdir -p "$OUT_DIR" "$SHOTS"
 
@@ -122,15 +122,15 @@ EOF
 # comes first: the debug build replaces target/debug/sill), then the debug daemon and the stand-in
 # locker.
 build_all() {
-  if [ -n "${SILL_PREBUILT:-}" ]; then
+  if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then
     # dev/accept.sh built the daemon, the stand-in locker and the no-debug daemon outside the jail.
-    NODEBUG_BIN="$SILL_OUT/sill-nodebug"
+    NODEBUG_BIN="$BARDO_SHELL_OUT/sill-nodebug"
     [ -x "$NODEBUG_BIN" ] || { echo "$NODEBUG_BIN is missing: run dev/accept.sh --build" >&2; return 1; }
     build "-p shell-testkit --example session_locker"
     return
   fi
-  (cd "$SILL_REPO" && cargo build "${SILL_CARGO_PROFILE[@]}" -p shell-app) >"$OUT_DIR/build.log" 2>&1 \
-    && cp "$SILL_OUT/sill" "$NODEBUG_BIN" \
+  (cd "$BARDO_SHELL_REPO" && cargo build "${BARDO_SHELL_CARGO_PROFILE[@]}" -p shell-app) >"$OUT_DIR/build.log" 2>&1 \
+    && cp "$BARDO_SHELL_OUT/sill" "$NODEBUG_BIN" \
     && build "-p shell-testkit --example session_locker" || return 1
 }
 
@@ -142,7 +142,7 @@ daemon_pid() { pgrep -P "$DAEMON" -x sill || echo "$DAEMON"; }
 start_lock_daemon() {
   local log="$1"
   mkdir -p "$CONFIG/sill"
-  : >"$CONFIG/sill/settings.toml"
+  : >"$CONFIG/shell/settings.toml"
   backdrop_seed "$CONFIG" || return 1
   [ "${2:-}" != wayland-debug ] || IN_ENV_EXTRA=(WAYLAND_DEBUG=client)
   launch_daemon
@@ -366,16 +366,16 @@ step_crash_relocks() {
 step_release_refuses_fake() {
   local log="$OUT_DIR/nodebug.log" answer
   stop_daemon || return 1
-  SILL_BIN="$NODEBUG_BIN"
-  : >"$CONFIG/sill/settings.toml"
+  BARDO_SHELL_BIN="$NODEBUG_BIN"
+  : >"$CONFIG/shell/settings.toml"
   require_private_system_bus "$BUS" || return 1
-  in_env "$SILL_BIN" run >"$log" 2>&1 &
+  in_env "$BARDO_SHELL_BIN" run >"$log" 2>&1 &
   DAEMON=$!
   wait_ping
   answer=$(sill debug auth accept 2>&1)
   echo "a build without debug answers 'sill debug auth accept': $answer" | tee -a "$log" >&2
   stop_daemon
-  SILL_BIN="$SILL_OUT/sill"
+  BARDO_SHELL_BIN="$BARDO_SHELL_OUT/sill"
   echo "$answer" | grep -q "without the debug feature"
 }
 

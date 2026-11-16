@@ -43,7 +43,7 @@ fn the_cli_role_word_is_pinned() {
 fn an_old_grant_request_reads_as_always_allow() {
     // A grant request written before limits has no level: it is an always-allow.
     let now = GrantAsk {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         space: space("work"),
         level: Level::Never,
         run: None,
@@ -59,7 +59,7 @@ fn a_dry_run_is_a_member_of_its_own() {
     let request = IntentsRequest::DryRun {
         call: CallRequest {
             action: ActionRef {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 name: action("mail.thread.archive"),
             },
             target: TargetValue::Nothing,
@@ -75,7 +75,7 @@ fn a_dry_run_is_a_member_of_its_own() {
         Member::ControlTerminalGrants
     );
     round(&IntentsReply::TerminalGrants(vec![ActionRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         name: action("mail.thread.archive"),
     }]));
 }

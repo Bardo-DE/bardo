@@ -1,6 +1,6 @@
 [package]
 name = "compositor-privacy"
-description = "casement's privacy files: the person's book (which program may use which power) and the administrator's floor, read and written safely, and the list of both that casementctl prints."
+description = "casement's privacy files: the person's book (which program may use which power) and the administrator's floor, read and written safely, and the list of both that bardo-compositorctl prints."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

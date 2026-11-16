@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.AcpAgent
+Exec=/usr/bin/bardo-agent --serve
+SystemdService=bardo-agent.service

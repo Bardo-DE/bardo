@@ -1,4 +1,4 @@
-//! One running app: the first launch owns `org.quire.Files`, a later one hands its request to it.
+//! One running app: the first launch owns `org.bardo.Files`, a later one hands its request to it.
 //!
 //! The first launch also offers `org.freedesktop.FileManager1`, unless another file manager already
 //! owns that name: the name is asked for without queueing and without replacing, so a person's
@@ -14,7 +14,7 @@ pub use crate::error::InstanceError;
 use crate::file_manager::{self, Show, Sink};
 
 /// The name the app owns while it runs.
-pub const APP_NAME: &str = "org.quire.Files";
+pub const APP_NAME: &str = "org.bardo.Files";
 
 /// The running app: holds the connection, and with it the names.
 #[derive(Debug, Clone)]

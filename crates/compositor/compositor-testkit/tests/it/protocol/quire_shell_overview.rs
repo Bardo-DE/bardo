@@ -1,4 +1,4 @@
-//! `quire_shell_v1` overview: the shell opens Mission Control, the windows spread to their
+//! `bardo_shell_v1` overview: the shell opens Mission Control, the windows spread to their
 //! slots, a click picks one (or the picture, leaving with nothing picked), Escape leaves, and
 //! the shell hears each state. Shell connections only.
 

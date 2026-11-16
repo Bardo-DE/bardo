@@ -1,7 +1,7 @@
 //! The coding-agent registry as values: a registry snapshot, the names and digests it uses, the
 //! layout of the directory docket keeps agents in, and the two small records kept there (what was
 //! installed, what the agent last offered). Nothing here reads a disk, the network or the
-//! environment; `docket-agents` installs and reads, and the Settings rows and the launcher read
+//! environment; `bardo-agents` installs and reads, and the Settings rows and the launcher read
 //! the records through these types.
 //!
 //! - `slug`, `hash`, `platform`: a name safe as a directory, a SHA-256, a registry platform key.

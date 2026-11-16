@@ -25,7 +25,7 @@ fn the_directories_follow_xdg_and_fall_back_under_home() {
     );
     assert_eq!(
         from_home.catalog.system,
-        PathBuf::from("/usr/share/stoker/catalog")
+        PathBuf::from("/usr/share/bardo/models/catalog")
     );
     assert_eq!(
         from_home.catalog.user,
@@ -195,7 +195,7 @@ fn the_speech_host_and_its_libraries_are_read_from_the_engines_table() {
     let config = InferdConfig::from_toml(
         r#"
 [engines]
-speech_host = "/usr/libexec/quire/speech-host"
+speech_host = "/usr/libexec/bardo/bardo-speech-host"
 speech_host_libs = "/opt/sherpa/lib"
 [engines.scripted]
 replay = "/tmp/c.jsonl"
@@ -204,7 +204,7 @@ replay = "/tmp/c.jsonl"
     .expect("config");
     assert_eq!(
         config.engines.speech_host,
-        Some(PathBuf::from("/usr/libexec/quire/speech-host"))
+        Some(PathBuf::from("/usr/libexec/bardo/bardo-speech-host"))
     );
     assert_eq!(
         config.engines.speech_host_libs,

@@ -101,10 +101,10 @@ fn roots() -> Vec<&'static Interface> {
         wlr::screencopy::v1::client::zwlr_screencopy_manager_v1::ZwlrScreencopyManagerV1,
         misc::zwp_input_method_v2::client::zwp_input_method_manager_v2::ZwpInputMethodManagerV2,
         misc::zwp_virtual_keyboard_v1::client::zwp_virtual_keyboard_manager_v1::ZwpVirtualKeyboardManagerV1,
-        quire::quire_window_v1::quire_window_v1::QuireWindowV1,
-        quire::quire_shell_v1::quire_shell_v1::QuireShellV1,
-        quire::quire_window_v1::quire_window_manager_v1::QuireWindowManagerV1,
-        quire::quire_desktop_v1::quire_desktop_manager_v1::QuireDesktopManagerV1,
+        quire::bardo_window_v1::bardo_window_v1::BardoWindowV1,
+        quire::bardo_shell_v1::bardo_shell_v1::BardoShellV1,
+        quire::bardo_window_v1::bardo_window_manager_v1::BardoWindowManagerV1,
+        quire::bardo_desktop_v1::bardo_desktop_manager_v1::BardoDesktopManagerV1,
     ]
 }
 
@@ -141,7 +141,7 @@ mod tests {
             "ext_session_lock_manager_v1",
             "zwp_input_method_manager_v2",
             "wp_cursor_shape_manager_v1",
-            "quire_window_manager_v1",
+            "bardo_window_manager_v1",
             "zwlr_screencopy_manager_v1",
             "ext_output_image_capture_source_manager_v1",
             "ext_image_copy_capture_manager_v1",

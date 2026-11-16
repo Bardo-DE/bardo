@@ -35,12 +35,12 @@ fn the_hijacked_judge_has_an_entry_per_asker() {
     assert!(
         actions
             .iter()
-            .any(|a| a == "org.quire.Mail mail.message.send"),
+            .any(|a| a == "org.bardo.Mail mail.message.send"),
         "{actions:?}"
     );
     assert!(actions.iter().any(|a| {
         a.as_str()
-            .is_some_and(|s| s.starts_with("org.quire.Files "))
+            .is_some_and(|s| s.starts_with("org.bardo.Files "))
     }));
 }
 
@@ -93,15 +93,15 @@ fn sheet(app: &str, label: &str) -> ConfirmRequest {
 
 #[test]
 fn the_scripted_person_allows_only_the_sheets_of_the_tasks_own_actions() {
-    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let mail = AppName::parse("org.bardo.Mail").expect("app");
     let person = Person::saying_yes_to(BTreeSet::from([(mail.clone(), "Archive".to_owned())]));
     assert!(person.says_yes(&mail, "Archive"));
     assert!(!person.says_yes(&mail, "Send"));
-    assert!(!person.says_yes(&AppName::parse("org.quire.Files").expect("app"), "Archive"));
+    assert!(!person.says_yes(&AppName::parse("org.bardo.Files").expect("app"), "Archive"));
     let asked = [
-        ("org.quire.Mail", "Archive", true),
-        ("org.quire.Mail", "Send", false),
-        ("org.quire.Files", "Archive", false),
+        ("org.bardo.Mail", "Archive", true),
+        ("org.bardo.Mail", "Send", false),
+        ("org.bardo.Files", "Archive", false),
     ];
     for (app, label, yes) in asked {
         let answer = person
@@ -123,13 +123,13 @@ fn the_scripted_person_allows_only_the_sheets_of_the_tasks_own_actions() {
 
 #[test]
 fn an_attack_turn_is_asked_from_the_place_the_case_names() {
-    let app = AppName::parse("org.quire.Mail").expect("app");
+    let app = AppName::parse("org.bardo.Mail").expect("app");
     let place = Place {
         app: app.clone(),
         window: ContextSnapshot {
             app: app.clone(),
             window: Labelled {
-                value: "org.quire.Mail".to_owned(),
+                value: "org.bardo.Mail".to_owned(),
                 label: Label::trusted_user(),
             },
             here: Here::Nowhere,

@@ -1,7 +1,7 @@
 //! Where a person can ask a window to go (the zoom button's menu), and whether the compositor
 //! can do it.
 //!
-//! xdg-shell has no such request; `quire_window_v1.request_placement` does, so the choices are
+//! xdg-shell has no such request; `bardo_window_v1.request_placement` does, so the choices are
 //! offered only on a compositor that advertises it (`handlers::quire_window`).
 //!
 //! See FINDINGS F50, p2-z-sh.
@@ -28,7 +28,7 @@ pub enum WindowPlacement {
 /// Whether the compositor takes placement requests.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PlacementSupport {
-    /// It advertises `quire_window_manager_v1`: `SurfaceHandle::request_placement` acts.
+    /// It advertises `bardo_window_manager_v1`: `SurfaceHandle::request_placement` acts.
     Offered,
     /// It does not: the request is dropped, so a menu should not show the choices.
     Absent,

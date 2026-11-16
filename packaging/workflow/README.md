@@ -96,8 +96,8 @@ explains each field and which ids were checked on which distribution.
 
 - It needs a build of sill with `sill launch <id> --print-timing` and a casement that writes the timing lines.
   With an older build the launch part says so and measures nothing.
-- Timing lines come from the user journal and from `$XDG_RUNTIME_DIR/desktop-session/casement.log`
-  (override with `DESKTOP_SESSION_STATE`); whichever has them is used.
+- Timing lines come from the user journal and from `$XDG_RUNTIME_DIR/bardo-session/casement.log`
+  (override with `BARDO_SESSION_STATE`); whichever has them is used.
 - Do not use the machine while a launch round runs: other windows opening at the same time can be mistaken
   for the app's window (the match is by window id and process number, so it is rare).
 - Exit codes of `run.sh`: 0 finished, 1 some measurement failed (lines marked FAILED), 2 usage, wrong

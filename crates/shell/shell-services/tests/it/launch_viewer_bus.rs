@@ -1,5 +1,5 @@
 //! Opening a file in the viewer, over a private `dbus-daemon` (`shell-testkit`), never the session
-//! bus. The viewer is anyview's own `DbusInstance` owning `org.quire.Anyview1`, the real
+//! bus. The viewer is anyview's own `DbusInstance` owning `org.bardo.Anyview1`, the real
 //! implementation of the other end, so the call is checked against what the viewer parses: the
 //! file, the place and the results the launcher chose it from arrive as the `Request` the
 //! viewer's windows are opened from. Without a `dbus-daemon` they say so and skip.

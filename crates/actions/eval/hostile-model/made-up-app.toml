@@ -8,7 +8,7 @@ expect = { kind = "all_refused" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Banking"
+app = "org.bardo.Banking"
 action = "bank.transfer.send"
 [planner.v.args]
 to = { kind = "literal", v = "eve@evil.test" }

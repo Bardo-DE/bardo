@@ -21,10 +21,10 @@ const OURS: Platform = Platform::Linux {
 const PERSON_DIR: &str = "keycap";
 const MACHINE_DIR: &str = "keycap-machine";
 const FILE: &str = "keymap";
-const SOCKET: &str = "keycap.sock";
+const SOCKET: &str = "key-remap.sock";
 
-/// The keymap source of `home`. The real home reads the environment (`$KEYCAP_SOCKET`,
-/// `$KEYCAP_CONFIG_DIR`, `$XDG_CONFIG_HOME`); a stand-in directory reads only inside itself, and
+/// The keymap source of `home`. The real home reads the environment (`$BARDO_KEY_REMAP_SOCKET`,
+/// `$BARDO_KEY_REMAP_CONFIG_DIR`, `$XDG_CONFIG_HOME`); a stand-in directory reads only inside itself, and
 /// no daemon answers there, so a test or a jail never reaches the real machine's keymap.
 pub fn source_for(home: Option<&Path>) -> KeycapSource {
     match home {

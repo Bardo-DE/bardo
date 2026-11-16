@@ -53,7 +53,7 @@ impl Bus {
     }
 
     /// The same, with every call to accountd sent to `owner`, the unique name the caller checked
-    /// owns `org.quire.Accounts1`: a program that takes the name afterwards gets nothing.
+    /// owns `org.bardo.Accounts1`: a program that takes the name afterwards gets nothing.
     #[must_use]
     pub fn accounts_at(self, owner: UniqueName<'static>) -> Self {
         Self {

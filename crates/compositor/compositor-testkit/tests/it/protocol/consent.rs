@@ -1,4 +1,4 @@
-//! Per-app consent at the wire (`compositor_wayland::consent`, `quire_shell_v1` version 5): the
+//! Per-app consent at the wire (`compositor_wayland::consent`, `bardo_shell_v1` version 5): the
 //! shell is asked once for a program and a power, the answer is kept for the program, a program
 //! the person refused is not shown the globals of that power, and the shell's side of the
 //! protocol is bound by its version. The helpers here (a scripted shell that hears the
@@ -17,7 +17,7 @@ use compositor_testclient::ime::virtual_keyboard::VirtualBoard;
 use compositor_testclient::quire::shell::ShellHandle;
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec, program_standing};
 use compositor_wayland::quire::shell_permission::ANSWER_NOT_BEFORE;
-use desktop_protocols::client::quire_shell_v1::quire_shell_v1::{self as wire, QuireShellV1};
+use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::{self as wire, BardoShellV1};
 use desktop_protocols::vocab::{Answer, Memory, Power, SubjectKind, TrialAnswer, WireCode};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Duration;
@@ -69,10 +69,10 @@ fn vocab<T: WireCode, W: Into<u32>>(wire: WEnum<W>) -> Option<T> {
     }
 }
 
-impl wayland_client::Dispatch<QuireShellV1, ShellEar> for ClientState {
+impl wayland_client::Dispatch<BardoShellV1, ShellEar> for ClientState {
     fn event(
         _: &mut Self,
-        _: &QuireShellV1,
+        _: &BardoShellV1,
         event: wire::Event,
         ear: &ShellEar,
         _: &Connection,
@@ -107,29 +107,29 @@ impl wayland_client::Dispatch<QuireShellV1, ShellEar> for ClientState {
     }
 }
 
-/// The shell's connection with `quire_shell_v1` bound at version 6, listening for questions.
+/// The shell's connection with `bardo_shell_v1` bound at version 6, listening for questions.
 pub(super) struct ScriptedShell {
     /// Its connection.
     pub(super) id: ClientId,
-    object: QuireShellV1,
+    object: BardoShellV1,
     ear: ShellEar,
 }
 
 impl ScriptedShell {
-    /// Connects the shell and binds `quire_shell_v1` at version 6; the compositor then knows
+    /// Connects the shell and binds `bardo_shell_v1` at version 6; the compositor then knows
     /// the shell can be asked.
     pub(super) fn start(fixture: &mut Fixture) -> ScriptedShell {
         ScriptedShell::start_at(fixture, 6)
     }
 
-    /// Connects the shell and binds `quire_shell_v1` at `version` (5 or 6).
+    /// Connects the shell and binds `bardo_shell_v1` at `version` (5 or 6).
     pub(super) fn start_at(fixture: &mut Fixture, version: u32) -> ScriptedShell {
         let id = fixture.connect(ConnectionRole::Shell);
         let ear = ShellEar::default();
         let object = fixture
             .client(id)
-            .bind::<QuireShellV1, _>(version..=version, ear.clone())
-            .expect("the shell is offered quire_shell_v1 at that version");
+            .bind::<BardoShellV1, _>(version..=version, ear.clone())
+            .expect("the shell is offered bardo_shell_v1 at that version");
         fixture.pump();
         ScriptedShell { id, object, ear }
     }
@@ -331,7 +331,7 @@ fn an_answer_that_comes_too_soon_cuts_the_shell_only() {
     fixture.advance(ANSWER_NOT_BEFORE - Duration::from_millis(1));
     shell.answer_at_once(&mut fixture, ask, Answer::Allow);
     let error = fixture.client(shell.id).protocol_error().expect("too soon");
-    assert_eq!(error.interface, "quire_shell_v1");
+    assert_eq!(error.interface, "bardo_shell_v1");
     assert_eq!(error.code, wire::Error::AnsweredTooSoon as u32);
     assert_eq!(kept(&fixture, ASKED_PROGRAM, Power::Keys), None);
     assert!(fixture.client(client).protocol_error().is_none());

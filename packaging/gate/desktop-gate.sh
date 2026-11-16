@@ -99,7 +99,7 @@ sill_accept() {
   local work="$ROOT/build/sill-accept" sill="$TREE/crates/shell" log rc=0 name why closes
   local -a failed=() skipped=()
   rm -rf "$work"; mkdir -p "$work"; log="$work/accept.log"
-  export CARGO_TARGET_DIR="$work/target" CASEMENT_TARGET="$work/casement-target" CASEMENT_TOOLS="$work/casement-tools"
+  export CARGO_TARGET_DIR="$work/target" BARDO_COMPOSITOR_TARGET="$work/casement-target" BARDO_COMPOSITOR_TOOLS="$work/casement-tools"
   "$sill/dev/accept.sh" --compositor casement --build --out "$work/run" >"$log" 2>&1 || rc=$?
   cat "$log"
   [ "$rc" != 3 ] && [ "$rc" != 4 ] || { echo "  sill acceptance could not run (exit $rc)"; return "$rc"; }

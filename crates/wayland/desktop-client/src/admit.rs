@@ -10,7 +10,7 @@ use crate::supports::{missing, requires_on};
 /// `Ok` when `command` can go on the wire of a client configured with `config` on a compositor
 /// that offers `offered`; otherwise why not.
 ///
-/// A missing protocol is [`CommandError::Unsupported`]. `quire_shell_v1` offered but not bound
+/// A missing protocol is [`CommandError::Unsupported`]. `bardo_shell_v1` offered but not bound
 /// (the caller did not say it holds the shell role) is [`CommandError::NotBound`]. The wire
 /// client and the fake both call it, so they agree.
 ///

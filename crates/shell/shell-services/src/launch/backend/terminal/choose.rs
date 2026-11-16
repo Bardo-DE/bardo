@@ -16,7 +16,7 @@ use super::entry::{self, Entry, TERMINAL_CATEGORY};
 use super::{Terminal, TerminalSearch};
 
 /// The desktop's own terminal, which is chosen when the person has chosen none.
-const OUR_TERMINAL: &str = "org.quire.Temor.desktop";
+const OUR_TERMINAL: &str = "org.bardo.Temor.desktop";
 
 /// The terminals found by name when no entry names one, in order of preference.
 const BY_NAME: [&str; 4] = ["temor", "ghostty", "wezterm", "foot"];

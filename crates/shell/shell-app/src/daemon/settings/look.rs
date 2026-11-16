@@ -69,7 +69,7 @@ pub struct ChosenLook {
 }
 
 /// The look `appearance` names, found among the Extensions `search` sees that `extensions`
-/// (`quire/extensions.toml`) has not turned off.
+/// (`bardo/extensions.toml`) has not turned off.
 pub fn chosen_look(extensions: &Store, appearance: &Store, search: &LookSearch) -> ChosenLook {
     let choice = appearance.load::<AppearanceFile>().value.appearance.look;
     let Some(id) = choice.chosen() else {

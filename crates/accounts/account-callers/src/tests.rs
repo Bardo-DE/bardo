@@ -18,12 +18,12 @@ fn table() -> CallerTable {
     CallerTable {
         callers: vec![
             row(
-                "org.quire.Inference",
-                Some("inferd.service"),
+                "org.bardo.Inference",
+                Some("bardo-inferd.service"),
                 CallerRole::PorterDaemon,
             ),
-            row("org.quire.Settings", None, CallerRole::Settings),
-            row("org.quire.Cua", Some("cuad.service"), CallerRole::Cua),
+            row("org.bardo.Settings", None, CallerRole::Settings),
+            row("org.bardo.ComputerUse", Some("bardo-computer-use.service"), CallerRole::Cua),
         ],
     }
 }
@@ -32,13 +32,13 @@ fn table() -> CallerTable {
 fn a_unit_resolves_to_its_app_and_role() {
     let cases = [
         (
-            "inferd.service",
-            Some(("org.quire.Inference", CallerRole::PorterDaemon)),
+            "bardo-inferd.service",
+            Some(("org.bardo.Inference", CallerRole::PorterDaemon)),
         ),
-        ("cuad.service", Some(("org.quire.Cua", CallerRole::Cua))),
+        ("bardo-computer-use.service", Some(("org.bardo.ComputerUse", CallerRole::Cua))),
         // A row without a unit names no unit.
         ("detent.service", None),
-        ("org.quire.Settings", None),
+        ("org.bardo.Settings", None),
     ];
     for (unit, want) in cases {
         let got = table()
@@ -48,7 +48,7 @@ fn a_unit_resolves_to_its_app_and_role() {
     }
     assert_eq!(
         table()
-            .resolve_unit("inferd.service")
+            .resolve_unit("bardo-inferd.service")
             .map(|c| c.app.isolation),
         Some(Isolation::Unsandboxed)
     );
@@ -57,7 +57,7 @@ fn a_unit_resolves_to_its_app_and_role() {
 #[test]
 fn an_apps_role_is_its_row_s_and_app_for_an_unlisted_app() {
     assert_eq!(
-        table().role_of(&name("org.quire.Settings")),
+        table().role_of(&name("org.bardo.Settings")),
         CallerRole::Settings
     );
     assert_eq!(table().role_of(&name("org.example.Any")), CallerRole::App);
@@ -65,7 +65,7 @@ fn an_apps_role_is_its_row_s_and_app_for_an_unlisted_app() {
 
 #[test]
 fn a_scope_named_after_a_units_app_gets_no_role_of_the_unit() {
-    for app in ["org.quire.Inference", "org.quire.Cua"] {
+    for app in ["org.bardo.Inference", "org.bardo.ComputerUse"] {
         assert_eq!(table().role_of(&name(app)), CallerRole::App, "{app}");
     }
 }
@@ -76,19 +76,19 @@ fn a_user_row_replaces_the_system_row_of_the_same_unit_or_app() {
         callers: vec![
             row(
                 "org.example.MyInferd",
-                Some("inferd.service"),
+                Some("bardo-inferd.service"),
                 CallerRole::App,
             ),
-            row("org.quire.Settings", None, CallerRole::App),
+            row("org.bardo.Settings", None, CallerRole::App),
         ],
     };
     let merged = CallerTable::layered(table(), user);
-    let unit = merged.resolve_unit("inferd.service").expect("named");
+    let unit = merged.resolve_unit("bardo-inferd.service").expect("named");
     assert_eq!(
         (unit.app.name.as_str(), unit.role),
         ("org.example.MyInferd", CallerRole::App)
     );
-    assert_eq!(merged.role_of(&name("org.quire.Settings")), CallerRole::App);
+    assert_eq!(merged.role_of(&name("org.bardo.Settings")), CallerRole::App);
     assert_eq!(merged.callers.len(), 3);
 }
 
@@ -105,7 +105,7 @@ fn a_table_round_trips_through_its_serde_form() {
 #[test]
 fn a_row_without_a_unit_deserializes() {
     let table: CallerTable =
-        serde_json::from_str(r#"{"caller":[{"app":"org.quire.Settings","role":"settings"}]}"#)
+        serde_json::from_str(r#"{"caller":[{"app":"org.bardo.Settings","role":"settings"}]}"#)
             .expect("table");
     assert_eq!(table.callers[0].unit, None);
 }
@@ -118,18 +118,18 @@ fn the_last_row_with_a_name_names_the_app_whatever_its_unit() {
     };
     let table = CallerTable {
         callers: vec![
-            named("org.quire.Sync", Some("syncd.service"), "Sync"),
-            row("org.quire.Settings", None, CallerRole::Settings),
-            named("org.quire.Sync", None, "Mine"),
-            row("org.quire.Sync", None, CallerRole::App),
+            named("org.bardo.Sync", Some("bardo-syncd.service"), "Sync"),
+            row("org.bardo.Settings", None, CallerRole::Settings),
+            named("org.bardo.Sync", None, "Mine"),
+            row("org.bardo.Sync", None, CallerRole::App),
         ],
     };
     assert_eq!(
-        table.title_of(&name("org.quire.Sync")),
+        table.title_of(&name("org.bardo.Sync")),
         Some(&AppTitle("Mine".to_owned()))
     );
-    assert_eq!(table.title_of(&name("org.quire.Settings")), None);
-    assert_eq!(table.title_of(&name("org.quire.Nobody")), None);
+    assert_eq!(table.title_of(&name("org.bardo.Settings")), None);
+    assert_eq!(table.title_of(&name("org.bardo.Nobody")), None);
 }
 
 #[test]
@@ -144,7 +144,7 @@ fn a_user_row_cannot_claim_a_fixed_role_for_a_new_app_or_a_unit() {
             row("org.example.Other", None, CallerRole::Settings),
             row(
                 "org.example.Fake",
-                Some("sill.service"),
+                Some("bardo-shell.service"),
                 CallerRole::SheetHost,
             ),
         ],
@@ -169,13 +169,13 @@ fn a_user_row_cannot_replace_a_fixed_system_row_with_another_fixed_role() {
     let user = CallerTable {
         callers: vec![row(
             "org.example.Mine",
-            Some("cuad.service"),
+            Some("bardo-computer-use.service"),
             CallerRole::PorterDaemon,
         )],
     };
     let merged = CallerTable::layered(table(), user);
     assert_eq!(
-        merged.resolve_unit("cuad.service").map(|c| c.role),
+        merged.resolve_unit("bardo-computer-use.service").map(|c| c.role),
         Some(CallerRole::Cua)
     );
 }
@@ -208,25 +208,25 @@ fn a_user_row_cannot_name_an_app_the_system_owns() {
     let system = || {
         let mut system = table();
         system.callers.push(row(
-            "org.quire.Intents",
-            Some("intentd.service"),
+            "org.bardo.Intents",
+            Some("bardo-actiond.service"),
             CallerRole::Agent,
         ));
         system
     };
-    // (case, the user's row, what intentd.service and helper.service resolve to after)
+    // (case, the user's row, what bardo-actiond.service and helper.service resolve to after)
     type Case<'a> = (
         &'a str,
         CallerRow,
         Option<(&'a str, CallerRole)>,
         Option<(&'a str, CallerRole)>,
     );
-    let intents = Some(("org.quire.Intents", CallerRole::Agent));
+    let intents = Some(("org.bardo.Intents", CallerRole::Agent));
     let cases: [Case; 4] = [
         (
             "another unit as the agent",
             row(
-                "org.quire.Intents",
+                "org.bardo.Intents",
                 Some("helper.service"),
                 CallerRole::Agent,
             ),
@@ -235,24 +235,24 @@ fn a_user_row_cannot_name_an_app_the_system_owns() {
         ),
         (
             "another unit as an app",
-            row("org.quire.Intents", Some("helper.service"), CallerRole::App),
+            row("org.bardo.Intents", Some("helper.service"), CallerRole::App),
             intents,
             None,
         ),
         (
             "a row without a unit",
-            row("org.quire.Intents", None, CallerRole::Agent),
+            row("org.bardo.Intents", None, CallerRole::Agent),
             intents,
             None,
         ),
         (
             "its own unit, lowered",
             row(
-                "org.quire.Intents",
-                Some("intentd.service"),
+                "org.bardo.Intents",
+                Some("bardo-actiond.service"),
                 CallerRole::App,
             ),
-            Some(("org.quire.Intents", CallerRole::App)),
+            Some(("org.bardo.Intents", CallerRole::App)),
             None,
         ),
     ];
@@ -269,10 +269,10 @@ fn a_user_row_cannot_name_an_app_the_system_owns() {
                 .map(|c| (c.app.name.to_string(), c.role))
         };
         let want = |w: Option<(&str, CallerRole)>| w.map(|(n, r)| (n.to_owned(), r));
-        assert_eq!(found("intentd.service"), want(intentd), "{case}");
+        assert_eq!(found("bardo-actiond.service"), want(intentd), "{case}");
         assert_eq!(found("helper.service"), want(helper), "{case}");
         assert_eq!(
-            merged.role_of(&name("org.quire.Intents")),
+            merged.role_of(&name("org.bardo.Intents")),
             CallerRole::App,
             "{case}"
         );

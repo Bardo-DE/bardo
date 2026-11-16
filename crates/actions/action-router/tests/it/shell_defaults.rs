@@ -1,6 +1,6 @@
 //! The shipped default consent (`dist/intents/default-grants.json`): the companion may use the
 //! shell's own window and menu state without a first-use question, and nothing else. The fake
-//! menu app stands in for the shell here, with its manifest renamed to `org.quire.Shell` and its
+//! menu app stands in for the shell here, with its manifest renamed to `org.bardo.Shell` and its
 //! data class to `app_own`, so `menu.item.activate` is `shell.menu.activate`'s twin.
 
 use crate::support::*;
@@ -28,7 +28,7 @@ fn router_of(
 ) -> Router<action_fake::FakeSeams> {
     let prefix = owner.rsplit('.').next().unwrap_or(owner).to_lowercase();
     let text = MENU_MANIFEST
-        .replace("org.quire.Menu", owner)
+        .replace("org.bardo.Menu", owner)
         .replace("\"menu.", &format!("\"{prefix}."))
         .replace("classes = [\"files\"]", &format!("classes = [\"{class}\"]"));
     let manifest = parse(&text).expect("manifest");
@@ -93,7 +93,7 @@ async fn asked(router: &Router<action_fake::FakeSeams>, request: CallRequest) ->
     asks(router) - before
 }
 
-const SHELL: &str = "org.quire.Shell";
+const SHELL: &str = "org.bardo.Shell";
 
 fn minimise(router: &Router<action_fake::FakeSeams>) -> CallRequest {
     router

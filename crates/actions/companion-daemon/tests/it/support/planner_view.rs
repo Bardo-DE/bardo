@@ -22,8 +22,8 @@ pub fn manifest(file: &str) -> ValidManifest {
 pub fn catalogue() -> Catalogue {
     Catalogue::from_manifests(&[
         action_fake::mail_manifest().expect("mail"),
-        manifest("org.quire.Memory.toml"),
-        manifest("org.quire.Companion.toml"),
+        manifest("org.bardo.Memory.toml"),
+        manifest("org.bardo.Companion.toml"),
     ])
 }
 
@@ -40,7 +40,7 @@ pub fn view(cards: Vec<ActionCard>) -> PlannerView {
             episodes: vec![],
             recalled: vec![],
             context: ContextView {
-                app: AppName::parse("org.quire.Shell").expect("app"),
+                app: AppName::parse("org.bardo.Shell").expect("app"),
                 window: Reveal::Plain(String::new()),
                 here: HereView::Nowhere,
                 selection: SelectionView::Nothing,

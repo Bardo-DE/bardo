@@ -3,19 +3,19 @@
 //! Owning a well-known name proves nothing on the session bus: any process may claim a name that
 //! nobody owns yet. Every check here asks the system who the caller is ([`caller_identity_dbus`]: the
 //! process behind the connection, held by a pidfd, its unit as the unit manager states it, judged
-//! against the root-owned table at `/etc/quire/desktop-callers.toml`) and compares that with the
+//! against the root-owned table at `/etc/bardo/desktop-callers.toml`) and compares that with the
 //! role the object answers:
 //!
 //! | object | who may call |
 //! |---|---|
-//! | `org.quire.Shell1` (the picker, `AskPermission`) | the portal backend (role `portal`) |
-//! | `org.quire.AccountsSheet1` | accountd, inferd or syncd (roles `accounts`, `inference`, `sync`) |
-//! | `org.quire.Confirm1` | intentd (role `router`) |
-//! | `org.quire.Displays1.SetBrightness` (reading is open) | Settings (role `settings`, owner of `org.quire.Settings`) |
-//! | `org.quire.Voice1.Utterance.Ended` (a signal to the shell), and the ask before `Begin` | voiced (role `voice`, owner of `org.quire.Voice1`) |
+//! | `org.bardo.Shell1` (the picker, `AskPermission`) | the portal backend (role `portal`) |
+//! | `org.bardo.AccountsSheet1` | accountd, inferd or syncd (roles `accounts`, `inference`, `sync`) |
+//! | `org.bardo.Confirm1` | intentd (role `router`) |
+//! | `org.bardo.Displays1.SetBrightness` (reading is open) | Settings (role `settings`, owner of `org.bardo.Settings`) |
+//! | `org.bardo.Voice1.Utterance.Ended` (a signal to the shell), and the ask before `Begin` | voiced (role `voice`, owner of `org.bardo.Voice1`) |
 //!
 //! and the caller must also be the owner of the well-known name of the service whose role it
-//! holds (`admit`): a sync service that is not the owner of `org.quire.Sync1` is a stranger.
+//! holds (`admit`): a sync service that is not the owner of `org.bardo.Sync1` is a stranger.
 //! A caller that passes is known by its unique name, which is the only place an answer is sent to.
 //! A refusal is `AccessDenied`, with words that do not say which check failed. A signal has no
 //! one to answer, so a refused signal's sender is said once and then skipped unchecked

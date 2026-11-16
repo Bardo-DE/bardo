@@ -5,7 +5,7 @@
 `/dev/uinput` lets a process create any input device. If the node is open to the logged-in user, any
 program of that user can create a keyboard and type into the focused window, into a password prompt
 or past the compositor's consent for virtual keyboards. turnstile is the only holder of the node
-(`root:root 0600`, see `dist/72-turnstile.rules`). Two programs need virtual devices, so it makes
+(`root:root 0600`, see `dist/72-bardo-input-broker.rules`). Two programs need virtual devices, so it makes
 those and no others.
 
 ## Crates and seams
@@ -69,8 +69,8 @@ socket unit (systemd) --accept--> Daemon --thread--> admit(conn)
 
 | Kind | Role in the table | Proof | User | Control group |
 |---|---|---|---|---|
-| palmrest touchpad, wheel, keys | `pad_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/palmrest.service` |
-| keycap keyboard, pointer | `keymap_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/keycap.service` |
+| palmrest touchpad, wheel, keys | `pad_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-mouse-gestures.service` |
+| keycap keyboard, pointer | `keymap_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-key-remap.service` |
 
 A caller is admitted only at peephole's `Full` proof (NEW-PI-4); the control group, or the group and
 the image, are refused and logged (`unproven` with the reason, then `refused ... its unit was not

@@ -40,7 +40,7 @@ fn the_timer_text_is_a_calendar_that_does_not_make_up_missed_times() {
     let service = &units[1].text;
     assert!(service.contains("Type=oneshot\n"), "{service}");
     assert!(
-        service.contains("ExecStart=/usr/bin/systemctl --user start companiond.service\n"),
+        service.contains("ExecStart=/usr/bin/systemctl --user start bardo-companiond.service\n"),
         "{service}"
     );
     // No cron string, and none of the person's words, in a unit.

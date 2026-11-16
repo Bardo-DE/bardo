@@ -6,7 +6,7 @@ use updater_core::{
     plan_system, vendor_copies,
 };
 
-const UDEV: &str = "/etc/udev/rules.d/70-keycap.rules";
+const UDEV: &str = "/etc/udev/rules.d/70-bardo-key-remap.rules";
 
 /// A release that places `dest`, with its contents in the bundle where they belong.
 fn doc_placing(dest: &str) -> Doc {
@@ -21,33 +21,33 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
     // (destination, accepted)
     let table: [(&str, bool); 65] = [
         // The files the desktop places today.
-        ("/etc/pam.d/sill", true),
-        ("/etc/udev/rules.d/60-sill-ddc.rules", true),
-        ("/etc/udev/rules.d/70-keycap.rules", true),
-        ("/etc/udev/rules.d/70-palmrest.rules", true),
-        ("/etc/modules-load.d/sill-ddc.conf", true),
+        ("/etc/pam.d/bardo-shell", true),
+        ("/etc/udev/rules.d/60-bardo-shell-ddc.rules", true),
+        ("/etc/udev/rules.d/70-bardo-key-remap.rules", true),
+        ("/etc/udev/rules.d/70-bardo-mouse-gestures.rules", true),
+        ("/etc/modules-load.d/bardo-shell-ddc.conf", true),
         ("/etc/modules-load.d/keycap.conf", true),
-        ("/usr/lib/keycap/keycap.toml", true),
-        ("/etc/modprobe.d/99-palmrest.conf", true),
-        ("/usr/lib/systemd/system/keycap.service", true),
-        ("/etc/polkit-1/rules.d/keycap.polkit.rules", true),
-        ("/usr/lib/systemd/system/turnstile.socket", true),
-        ("/usr/lib/systemd/system/turnstile.service", true),
-        ("/etc/udev/rules.d/72-turnstile.rules", true),
+        ("/usr/lib/bardo/key-remap/key-remap.toml", true),
+        ("/etc/modprobe.d/99-bardo-mouse-gestures.conf", true),
+        ("/usr/lib/systemd/system/bardo-key-remap.service", true),
+        ("/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules", true),
+        ("/usr/lib/systemd/system/bardo-input-broker.socket", true),
+        ("/usr/lib/systemd/system/bardo-input-broker.service", true),
+        ("/etc/udev/rules.d/72-bardo-input-broker.rules", true),
         ("/etc/modules-load.d/turnstile.conf", true),
         // The touchpad daemon as a system service, and the user units that must be plain files.
-        ("/usr/lib/systemd/system/palmrest.service", true),
-        ("/usr/lib/systemd/user/sill.service", true),
-        ("/usr/lib/systemd/user/org.quire.Settings.service", true),
+        ("/usr/lib/systemd/system/bardo-mouse-gestures.service", true),
+        ("/usr/lib/systemd/user/bardo-shell.service", true),
+        ("/usr/lib/systemd/user/org.bardo.Settings.service", true),
         (
-            "/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-quire.conf",
+            "/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf",
             true,
         ),
-        ("/etc/porter/callers.toml", true),
-        ("/etc/porter/inferd-callers.toml", true),
-        ("/etc/quire/intentd-callers.toml", true),
-        ("/etc/quire/memory-callers.toml", true),
-        ("/etc/xdg/quire/docket.settings.toml", true),
+        ("/etc/bardo/accountd-callers.toml", true),
+        ("/etc/bardo/inferd-callers.toml", true),
+        ("/etc/bardo/actiond-callers.toml", true),
+        ("/etc/bardo/memoryd-callers.toml", true),
+        ("/etc/xdg/bardo/actions.settings.toml", true),
         // A folder that is listed but a name nobody named: the point of a per-file list.
         ("/etc/pam.d/sudo", false),
         ("/etc/pam.d/system-auth", false),
@@ -58,39 +58,39 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/modprobe.d/blacklist.conf", false),
         ("/usr/lib/systemd/system/evil.service", false),
         ("/usr/lib/systemd/system/turnstile.timer", false),
-        ("/usr/lib/systemd/system/turnstile.service.d", false),
+        ("/usr/lib/systemd/system/bardo-input-broker.service.d", false),
         ("/etc/udev/rules.d/73-turnstile.rules", false),
         ("/usr/lib/systemd/system/palmrest.socket", false),
         ("/usr/lib/systemd/user/sill.target", false),
         ("/usr/lib/systemd/user/.service", false),
-        ("/usr/lib/systemd/user/sill.service.d/10-evil.conf", false),
+        ("/usr/lib/systemd/user/bardo-shell.service.d/10-evil.conf", false),
         (
             "/usr/lib/systemd/user/xdg-desktop-portal.service.d/20-evil.conf",
             false,
         ),
-        ("/usr/lib/systemd/user/other.service.d/10-quire.conf", false),
-        ("/usr/lib/systemd/user/sub/sill.service", false),
+        ("/usr/lib/systemd/user/other.service.d/10-bardo.conf", false),
+        ("/usr/lib/systemd/user/sub/bardo-shell.service", false),
         ("/etc/porter/other.toml", false),
-        ("/etc/quire/policy.toml", false),
-        ("/etc/quire/-callers.toml", false),
-        ("/etc/xdg/quire/evil.sh", false),
+        ("/etc/bardo/policy.toml", false),
+        ("/etc/bardo/-callers.toml", false),
+        ("/etc/xdg/bardo/evil.sh", false),
         // Not a listed folder.
         ("/etc/passwd", false),
         ("/etc/sudoers.d/quire", false),
-        ("/etc/systemd/system/keycap.service", false),
-        ("/etc/systemd/system/turnstile.socket", false),
-        ("/usr/lib/udev/rules.d/70-keycap.rules", false),
+        ("/etc/systemd/system/bardo-key-remap.service", false),
+        ("/etc/systemd/system/bardo-input-broker.socket", false),
+        ("/usr/lib/udev/rules.d/70-bardo-key-remap.rules", false),
         ("/usr/bin/keycap", false),
         // The administrator's keycap folder is never placed into; only the vendor folder is.
-        ("/etc/keycap/keycap.toml", false),
+        ("/etc/bardo/key-remap/key-remap.toml", false),
         ("/usr/lib/keycap/other.toml", false),
         // Security profiles are never placed by an update (owner, 2026-10-16).
         ("/etc/apparmor.d/bwrap", false),
         ("/etc/apparmor.d/usr.bin.bwrap", false),
         // Beside or below a listed folder.
-        ("/etc/udev/rules.d2/70-keycap.rules", false),
+        ("/etc/udev/rules.d2/70-bardo-key-remap.rules", false),
         ("/etc/pam.d/sub/sill", false),
-        ("/etc/xdg/quire/sub/x.toml", false),
+        ("/etc/xdg/bardo/sub/x.toml", false),
         // The folder itself, climbing, doubled slashes, hidden names, odd characters.
         ("/etc/pam.d", false),
         ("/etc/pam.d/", false),
@@ -149,25 +149,25 @@ fn the_allowed_system_files_are_listed_by_name() {
 #[test]
 fn a_vendor_copy_is_found_where_the_distribution_keeps_it() {
     let table: [(&str, &[&str]); 7] = [
-        ("/etc/pam.d/sill", &["/usr/lib/pam.d/sill"]),
+        ("/etc/pam.d/bardo-shell", &["/usr/lib/pam.d/bardo-shell"]),
         (
-            "/etc/udev/rules.d/70-keycap.rules",
-            &["/usr/lib/udev/rules.d/70-keycap.rules"],
+            "/etc/udev/rules.d/70-bardo-key-remap.rules",
+            &["/usr/lib/udev/rules.d/70-bardo-key-remap.rules"],
         ),
         (
             "/etc/modules-load.d/keycap.conf",
             &["/usr/lib/modules-load.d/keycap.conf"],
         ),
         (
-            "/etc/modprobe.d/99-palmrest.conf",
-            &["/usr/lib/modprobe.d/99-palmrest.conf"],
+            "/etc/modprobe.d/99-bardo-mouse-gestures.conf",
+            &["/usr/lib/modprobe.d/99-bardo-mouse-gestures.conf"],
         ),
         (
-            "/etc/polkit-1/rules.d/keycap.polkit.rules",
-            &["/usr/share/polkit-1/rules.d/keycap.polkit.rules"],
+            "/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules",
+            &["/usr/share/polkit-1/rules.d/bardo-key-remap.polkit.rules"],
         ),
-        ("/usr/lib/systemd/system/keycap.service", &[]),
-        ("/etc/quire/intentd-callers.toml", &[]),
+        ("/usr/lib/systemd/system/bardo-key-remap.service", &[]),
+        ("/etc/bardo/actiond-callers.toml", &[]),
     ];
     for (path, want) in table {
         assert_eq!(vendor_copies(path), want, "{path}");
@@ -193,11 +193,11 @@ fn a_system_listing_that_does_not_match_the_bundle_is_refused() {
         (
             "a path both linked and placed",
             |d| {
-                let unit = "/usr/lib/systemd/user/sill.service";
+                let unit = "/usr/lib/systemd/user/bardo-shell.service";
                 d.files.push(f(&format!("system{unit}"), "unit"));
                 d.system.push(unit.to_owned());
                 d.exports
-                    .push((unit.into(), "share/wayland-sessions/quire.desktop".into()));
+                    .push((unit.into(), "share/wayland-sessions/bardo.desktop".into()));
             },
             |e| matches!(e, ReleaseError::ExportedAndPlaced(_)),
         ),
@@ -265,7 +265,7 @@ fn plan(new: &[Placement], old: &[Placement], seen: &[(&str, SystemFound)]) -> V
 fn system_files_are_placed_kept_replaced_removed_or_left_alone() {
     let new_v2 = placement(UDEV, "v2");
     let old_v1 = placement(UDEV, "v1");
-    let gone = placement("/etc/pam.d/sill", "pam");
+    let gone = placement("/etc/pam.d/bardo-shell", "pam");
     let place = |p: &Placement| SystemAction::Place(p.clone());
     let conflict = |p: &str| SystemAction::Conflict { path: p.to_owned() };
 
@@ -318,10 +318,10 @@ fn system_files_are_placed_kept_replaced_removed_or_left_alone() {
             plan(
                 &[],
                 std::slice::from_ref(&gone),
-                &[("/etc/pam.d/sill", file("pam"))],
+                &[("/etc/pam.d/bardo-shell", file("pam"))],
             ),
             vec![SystemAction::Remove {
-                path: "/etc/pam.d/sill".into(),
+                path: "/etc/pam.d/bardo-shell".into(),
             }],
         ),
         (
@@ -329,7 +329,7 @@ fn system_files_are_placed_kept_replaced_removed_or_left_alone() {
             plan(
                 &[],
                 std::slice::from_ref(&gone),
-                &[("/etc/pam.d/sill", file("edited"))],
+                &[("/etc/pam.d/bardo-shell", file("edited"))],
             ),
             vec![],
         ),
@@ -349,7 +349,7 @@ fn system_files_are_placed_kept_replaced_removed_or_left_alone() {
         ),
         (
             "dropped but replaced by a link: leave alone",
-            plan(&[], &[gone], &[("/etc/pam.d/sill", SystemFound::Foreign)]),
+            plan(&[], &[gone], &[("/etc/pam.d/bardo-shell", SystemFound::Foreign)]),
             vec![],
         ),
     ];

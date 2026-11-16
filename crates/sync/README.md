@@ -10,8 +10,8 @@ half (sign-in, consent, the keyring), and ferry depends on it by git rev.
 
 | Service | Name on the session bus | What it does |
 | --- | --- | --- |
-| `syncd` | `org.quire.Sync1`, `org.quire.Storage1` | Keeps the copies in step for the apps that hold a grant; "Sync now" brings one up to date at once. Serves the drives shown in Files. |
-| `porter-mountd` | none (a socket) | A small user service started by its socket: it runs the system's `fusermount3` to show a drive at `~/Cloud/<name>` and hands syncd the open FUSE connection, because syncd's sandbox refuses the mount. |
+| `syncd` | `org.bardo.Sync1`, `org.bardo.Storage1` | Keeps the copies in step for the apps that hold a grant; "Sync now" brings one up to date at once. Serves the drives shown in Files. |
+| `bardo-drive-mount` | none (a socket) | A small user service started by its socket: it runs the system's `fusermount3` to show a drive at `~/Cloud/<name>` and hands syncd the open FUSE connection, because syncd's sandbox refuses the mount. |
 
 ## Crates
 

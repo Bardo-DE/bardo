@@ -143,7 +143,7 @@ const SHIPPED: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../extensions");
 
 #[test]
 fn the_shipped_editorial_look_installs_as_a_usable_look() {
-    const EDITORIAL: &str = "org.quire.look.Editorial";
+    const EDITORIAL: &str = "org.bardo.look.Editorial";
     let scratch = Scratch::new();
     let system = scratch.root("system");
     let folder = system.join("quire").join("extensions").join(EDITORIAL);

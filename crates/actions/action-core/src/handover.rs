@@ -1,10 +1,10 @@
 //! Handing the assistant's turn to an outside agent. When the person chose a coding agent as the
 //! assistant's model, companiond does not run its planner for their turn: it asks the agent host
-//! (`docket-agent`, the process that plays `org.quire.AcpAgent`) to give the turn to that agent,
+//! (`bardo-agent`, the process that plays `org.bardo.AcpAgent`) to give the turn to that agent,
 //! and shows what the agent said. These are the two bodies of that one call, `AgentHost1.HandOver`.
 //!
 //! The host, not companiond, opens the agent's session at the router and makes the agent's calls,
-//! so everything an agent does is ruled exactly as for `docket-agent` on a terminal.
+//! so everything an agent does is ruled exactly as for `bardo-agent` on a terminal.
 //!
 //! A turn can take longer than the bus lets one call wait, so the call is two: `HandOver` starts
 //! the turn and answers its id, and `Wait` is asked again until the turn has ended.

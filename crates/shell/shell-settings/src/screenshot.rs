@@ -9,7 +9,7 @@ use ui_settings::schema::Page;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "screenshot", page = Page::KeyboardAndShortcuts,
+    file = "shell/settings.toml", domain = "screenshot", page = Page::KeyboardAndShortcuts,
     footnote(section = "Screenshots", text = "Auto uses your Pictures folders."),
 )]
 pub struct ScreenshotSettings {

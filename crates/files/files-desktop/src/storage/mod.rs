@@ -1,4 +1,4 @@
-//! The cloud drives: `org.quire.Storage1`, porter's sync service, as files-core's vocabulary.
+//! The cloud drives: `org.bardo.Storage1`, porter's sync service, as files-core's vocabulary.
 //!
 //! [`Storage`] is the async side over a bus connection the caller passes in (the session bus, or
 //! a private one in a test): the drives, where items stand, and the three asks. [`DesktopClouds`]
@@ -21,7 +21,7 @@ use zbus::Connection;
 pub use error::StorageError;
 
 /// The service's name on the bus: syncd's.
-pub const SERVICE: &str = "org.quire.Sync1";
+pub const SERVICE: &str = "org.bardo.Sync1";
 
 /// The cloud service over a connection.
 #[derive(Clone)]

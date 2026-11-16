@@ -90,7 +90,7 @@ async fn a_candidate_lists_the_endpoints_of_the_kind_that_fit() {
         Scripted::AllowFirst(GrantScope::Always),
     ]);
     let service = fake_service(sheets).await;
-    let me = app("org.quire.Mail");
+    let me = app("org.bardo.Mail");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let sending = granted(choose(&service, &me, mail(), DataClass::Mail).await);
     let families = |candidate: &account_core::Candidate| -> Vec<Family> {
@@ -110,7 +110,7 @@ async fn a_candidate_lists_the_endpoints_of_the_kind_that_fit() {
 async fn a_relay_may_dial_only_an_endpoint_the_account_holds_for_the_grants_kind() {
     let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
     let service = fake_service(sheets).await;
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let open = |who: &AppId, grant: &GrantId, endpoint: &str| {
         let endpoint = url(endpoint);
@@ -145,7 +145,7 @@ async fn a_relay_may_dial_only_an_endpoint_the_account_holds_for_the_grants_kind
         );
     }
     assert_eq!(
-        open(&app("org.quire.Notes"), &storage.grant, own)
+        open(&app("org.bardo.Notes"), &storage.grant, own)
             .await
             .err(),
         Some(Refusal::UnknownGrant),
@@ -163,7 +163,7 @@ async fn a_relay_may_dial_only_an_endpoint_the_account_holds_for_the_grants_kind
 async fn a_relay_to_an_endpoint_the_account_holds_is_planned() {
     let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
     let service = fake_service(sheets).await;
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let plan = service
         .open_authenticated(&me, &storage.grant, &storage.endpoints[0].url)
@@ -177,7 +177,7 @@ async fn an_opened_relay_is_audited_with_its_grant_and_endpoint_and_a_refused_on
     let audit = RecordingAudit::default();
     let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
     let service = fake_service(sheets).await.with_audit(audit.clone());
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let opened = |entries: Vec<account_service_core::audit::AuditEntry>| {
         entries
@@ -221,7 +221,7 @@ async fn a_linked_relay_dials_only_an_origin_the_provider_file_declares_and_pres
         Scripted::AllowFirst(GrantScope::Always),
     ]);
     let service = fake_service(sheets).await.with_audit(audit.clone());
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let mailer = granted(choose(&service, &me, mail(), DataClass::Mail).await);
     let opened = |entries: Vec<account_service_core::audit::AuditEntry>| {
@@ -284,7 +284,7 @@ async fn a_linked_relay_dials_only_an_origin_the_provider_file_declares_and_pres
     assert_eq!(
         service
             .open_linked(
-                &app("org.quire.Notes"),
+                &app("org.bardo.Notes"),
                 &storage.grant,
                 &url("https://files.cdn.cloud.invalid")
             )
@@ -307,7 +307,7 @@ async fn an_authenticated_relay_reaches_an_origin_the_file_lists_with_the_creden
         Scripted::AllowFirst(GrantScope::Always),
     ]);
     let service = fake_service(sheets).await.with_audit(audit.clone());
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let mailer = granted(choose(&service, &me, mail(), DataClass::Mail).await);
 
@@ -368,7 +368,7 @@ async fn a_password_account_plans_its_password_and_an_oauth_account_a_minted_tok
         Scripted::AllowFirst(GrantScope::Always),
     ]);
     let service = fake_service(sheets).await;
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let plan = service
         .open_authenticated(&me, &storage.grant, &storage.endpoints[0].url)
@@ -409,7 +409,7 @@ async fn every_change_to_the_registry_is_saved_and_audited_without_a_value() {
         .await
         .with_store(store.clone())
         .with_audit(audit.clone());
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     assert_eq!(store.saves(), 1);
     assert_eq!(store.stored().expect("saved").grants.len(), 1);
@@ -483,7 +483,7 @@ async fn a_registry_that_cannot_be_saved_is_reported_unavailable() {
     store.refusing(true);
     let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
     let service = fake_service(sheets).await.with_store(store.clone());
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     assert_eq!(
         choose(&service, &me, files(), DataClass::Files).await,
         AccountsReply::Refused(Refusal::Unavailable)
@@ -496,7 +496,7 @@ async fn a_service_starts_from_what_the_store_holds() {
     let first = MemoryStore::default();
     let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
     let service = fake_service(sheets).await.with_store(first.clone());
-    let me = app("org.quire.Photos");
+    let me = app("org.bardo.Photos");
     let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
     let stored = first.stored().expect("saved");
     let registry = account_service_core::registry::Registry::from_persisted(stored.clone());

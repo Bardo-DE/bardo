@@ -35,7 +35,7 @@ impl FileUse {
         Self { path }
     }
 
-    /// `$XDG_CONFIG_HOME/sill/settings.toml`, or `~/.config/sill/settings.toml`.
+    /// `$XDG_CONFIG_HOME/shell/settings.toml`, or `~/.config/shell/settings.toml`.
     ///
     /// `env` answers a variable by name (a daemon's main passes `|k| std::env::var(k).ok()`).
     pub fn sill_default(env: impl Fn(&str) -> Option<String>) -> Self {
@@ -43,7 +43,7 @@ impl FileUse {
             .map(PathBuf::from)
             .or_else(|| env("HOME").map(|home| PathBuf::from(home).join(".config")))
             .unwrap_or_default();
-        Self::new(base.join("sill/settings.toml"))
+        Self::new(base.join("shell/settings.toml"))
     }
 }
 
@@ -101,13 +101,13 @@ mod tests {
     #[test]
     fn the_default_path_follows_the_injected_environment() {
         let table = [
-            (vec![("XDG_CONFIG_HOME", "/x")], "/x/sill/settings.toml"),
-            (vec![("HOME", "/h")], "/h/.config/sill/settings.toml"),
+            (vec![("XDG_CONFIG_HOME", "/x")], "/x/shell/settings.toml"),
+            (vec![("HOME", "/h")], "/h/.config/shell/settings.toml"),
             (
                 vec![("XDG_CONFIG_HOME", "/x"), ("HOME", "/h")],
-                "/x/sill/settings.toml",
+                "/x/shell/settings.toml",
             ),
-            (vec![], "sill/settings.toml"),
+            (vec![], "shell/settings.toml"),
         ];
         for (vars, want) in table {
             let env = |k: &str| {
@@ -121,7 +121,7 @@ mod tests {
 
     #[test]
     fn a_missing_file_needs_consent() {
-        let source = FileUse::new(PathBuf::from("/nonexistent/sill/settings.toml"));
+        let source = FileUse::new(PathBuf::from("/nonexistent/shell/settings.toml"));
         assert_eq!(source.now(), VoiceUse::NeedsConsent);
     }
 }

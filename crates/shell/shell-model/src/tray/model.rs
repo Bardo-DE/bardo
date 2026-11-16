@@ -85,7 +85,7 @@ pub enum TrayMenuKind {
         children: Vec<TrayMenuEntry>,
         /// `shortcut`, the key equivalent drawn at the row's end (an app's menu names one).
         shortcut: Option<Chord>,
-        /// `x-quire-command-id`: the command a quire app says the row runs. A claim by the app,
+        /// `x-bardo-command-id`: the command a quire app says the row runs. A claim by the app,
         /// never a fact about it (`app_menu::route_of` decides what it counts for).
         command: Option<MenuCommand>,
     },
@@ -97,7 +97,7 @@ pub enum TrayMenuKind {
 #[serde(transparent)]
 pub struct Chord(pub Vec<String>);
 
-/// The command id a quire app's menu row names (`x-quire-command-id`).
+/// The command id a quire app's menu row names (`x-bardo-command-id`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct MenuCommand(pub String);

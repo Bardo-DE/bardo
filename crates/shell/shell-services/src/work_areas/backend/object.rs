@@ -1,4 +1,4 @@
-//! `org.quire.Outputs1`, as the shell exports it: one read-only property over the published
+//! `org.bardo.Outputs1`, as the shell exports it: one read-only property over the published
 //! state.
 
 use shell_model::work_areas::WorkAreas;
@@ -11,7 +11,7 @@ pub(super) struct OutputsObject {
     pub state: watch::Receiver<WorkAreas>,
 }
 
-#[interface(name = "org.quire.Outputs1")]
+#[interface(name = "org.bardo.Outputs1")]
 impl OutputsObject {
     #[zbus(property)]
     fn work_areas(&self) -> Vec<WireArea> {

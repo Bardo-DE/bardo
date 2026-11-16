@@ -110,7 +110,7 @@ mod tests {
     #[test]
     fn only_the_sandbox_launcher_gives_a_contexts_clients_an_app() {
         let firefox = proven("org.mozilla.firefox", Isolation::Flatpak);
-        let flatpak = proven("org.quire.Flatpak", Isolation::Unsandboxed);
+        let flatpak = proven("org.bardo.Flatpak", Isolation::Unsandboxed);
         let other = proven("org.example.Tool", Isolation::Unsandboxed);
         let cases = [
             (

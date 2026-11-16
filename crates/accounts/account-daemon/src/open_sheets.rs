@@ -68,7 +68,7 @@ mod tests {
     #[test]
     fn an_app_has_one_open_sheet_of_each_kind_until_it_ends() {
         let open = OpenSheets::default();
-        let mail = app("org.quire.Mail");
+        let mail = app("org.bardo.Mail");
         let first = open.claim(&mail, SheetKind::AddAccount).expect("first");
         let again = open
             .claim(&mail, SheetKind::AddAccount)
@@ -82,7 +82,7 @@ mod tests {
             .claim(&mail, SheetKind::Reauthenticate)
             .expect("another kind");
         let _other = open
-            .claim(&app("org.quire.Photos"), SheetKind::AddAccount)
+            .claim(&app("org.bardo.Photos"), SheetKind::AddAccount)
             .expect("another app");
         drop(first);
         let _next = open

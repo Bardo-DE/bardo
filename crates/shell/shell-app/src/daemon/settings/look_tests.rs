@@ -62,7 +62,7 @@ impl Scratch {
             .unwrap_or_else(|e| panic!("{e}"));
     }
 
-    /// `id` turned off in the scratch `quire/extensions.toml`.
+    /// `id` turned off in the scratch `bardo/extensions.toml`.
     pub fn turn_off(&self, id: &str) {
         let file = ExtensionsFile {
             extensions: ExtensionsSettings::default().with(&ExtensionId(id.to_owned()), Power::Off),

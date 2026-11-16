@@ -7,7 +7,7 @@ use crate::request::IntentsRequest;
 /// `Member <= request pattern` rows, in the order the interface table lists the members.
 macro_rules! members {
     ($($(#[$doc:meta])* $name:ident <= $pat:pat,)*) => {
-        /// One member of `org.quire.Intents1`, as a word.
+        /// One member of `org.bardo.Intents1`, as a word.
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
         pub enum Member {
             $($(#[$doc])* $name,)*

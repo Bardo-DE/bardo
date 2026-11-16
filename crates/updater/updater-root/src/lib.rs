@@ -1,7 +1,7 @@
 //! The privileged side of slipway: verify a staged release again from scratch, switch to it
 //! atomically, go back, and keep the root-side health record.
 //!
-//! Three small programs (`slipway-apply`, `slipway-rollback`, `slipway-health`) run as root and are
+//! Three small programs (`bardo-updater-apply`, `bardo-updater-rollback`, `bardo-updater-health`) run as root and are
 //! built from this crate alone, so they link only `updater-core`, the archive readers and a few
 //! small helpers: no network client, no bus, no async runtime. `scripts/check-boundary.sh` keeps it
 //! that way. The unprivileged update service (`slipway`) depends on this crate for the file layout,

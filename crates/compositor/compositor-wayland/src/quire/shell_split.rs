@@ -1,4 +1,4 @@
-//! `quire_shell_v1`, the Split View part: the offer of the other half (`split_choose`,
+//! `bardo_shell_v1`, the Split View part: the offer of the other half (`split_choose`,
 //! `split_candidate`, `split_choice_end`) and the shell's answers (`split_pick`, `split_cancel`,
 //! `split_divide`). The model decides; this only carries.
 
@@ -6,7 +6,7 @@ use super::shell::QuireShellPart;
 use crate::foreign_toplevel_list::identifier_of;
 use compositor_core::shell::{ShellRequest, SplitChoices};
 use compositor_core::{Event, WindowId};
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1;
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1;
 use desktop_protocols::vocab::WireCode;
 use ui_core::vocab::Fraction;
 
@@ -17,7 +17,7 @@ const WHOLE: u32 = 1000;
 /// every bound shell object.
 pub fn send_choose(part: &QuireShellPart, choices: &SplitChoices) {
     let first = identifier_of(choices.first);
-    let Some(side) = choices.side.to_wire::<quire_shell_v1::SplitSide>() else {
+    let Some(side) = choices.side.to_wire::<bardo_shell_v1::SplitSide>() else {
         return;
     };
     for shell in &part.bound {

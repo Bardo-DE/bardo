@@ -1,5 +1,5 @@
 //! The `transom` binary: parse nothing, build the real seams, serve until killed. A build with the
-//! `debug` feature also reads `TRANSOM_DEV_CALLERS`, the person's own rows file.
+//! `debug` feature also reads `BARDO_PORTAL_DEV_CALLERS`, the person's own rows file.
 
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -65,9 +65,9 @@ fn caller_table() -> Table {
 
 /// The variable that names the person's own rows file, in a build with the `debug` feature.
 #[cfg(feature = "debug")]
-const DEV_CALLERS_VAR: &str = "TRANSOM_DEV_CALLERS";
+const DEV_CALLERS_VAR: &str = "BARDO_PORTAL_DEV_CALLERS";
 
-/// `shipped`, with the rows of the file `TRANSOM_DEV_CALLERS` names added after it: callers they
+/// `shipped`, with the rows of the file `BARDO_PORTAL_DEV_CALLERS` names added after it: callers they
 /// name are let in as the portal frontend or the shell, below every real proof. Unset or empty adds
 /// nothing. A file that cannot be taken stops the start (the reason says why), so a jail never runs
 /// with stand-ins that are quietly refused.
@@ -142,7 +142,7 @@ fn locales() -> Vec<String> {
     found
 }
 
-/// Where the desktop keeps its appearance: `$XDG_CONFIG_HOME/quire/appearance.toml`, or under
+/// Where the desktop keeps its appearance: `$XDG_CONFIG_HOME/bardo/appearance.toml`, or under
 /// `$HOME/.config`.
 fn appearance_file() -> PathBuf {
     let base = std::env::var_os("XDG_CONFIG_HOME")

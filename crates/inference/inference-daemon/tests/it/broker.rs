@@ -49,9 +49,9 @@ struct FakeBroker {
     script: Arc<Mutex<Script>>,
 }
 
-/// An error reply as accountd answers one: `org.quire.Accounts1.Error.<Refusal>`.
+/// An error reply as accountd answers one: `org.bardo.Accounts1.Error.<Refusal>`.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Accounts1.Error")]
+#[zbus(prefix = "org.bardo.Accounts1.Error")]
 enum Fault {
     #[zbus(error)]
     ZBus(zbus::Error),

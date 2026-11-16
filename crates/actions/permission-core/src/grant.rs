@@ -40,7 +40,7 @@ pub enum GrantCaller {
     Cua,
     /// This external MCP client.
     Mcp(provenance::ClientName),
-    /// A process running `quire-do`.
+    /// A process running `bardo-do`.
     Cli,
     /// This app on its own.
     App(AppName),

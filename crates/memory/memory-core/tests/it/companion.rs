@@ -24,7 +24,7 @@ fn message(kind: MessageKind, label: Label) -> Message {
         kind,
         parts: vec![
             Part::Text(MessageText::new("found 3 receipts")),
-            Part::Entity(thing("org.quire.Mail", "mail.thread", "t9")),
+            Part::Entity(thing("org.bardo.Mail", "mail.thread", "t9")),
             Part::Outcome(OutcomeRef::parse("out:41").expect("ref")),
             Part::Undo(UndoHandle::parse("u-3").expect("ref")),
             Part::Text(MessageText::new("done")),
@@ -49,13 +49,13 @@ fn skeleton() -> Skeleton {
         asked: vec![MessageText::new("archive the Lisbon receipts")],
         steps: vec![StepLine {
             action: ActionName::parse("mail.thread.archive").expect("action"),
-            targets: vec![thing("org.quire.Mail", "mail.thread", "t9")],
+            targets: vec![thing("org.bardo.Mail", "mail.thread", "t9")],
             effect: Effect::UndoableWrite,
             outcome: StepOutcome::Done,
             undo: Some(UndoHandle::parse("u-3").expect("undo")),
         }],
         touched: vec![(
-            view("org.quire.Mail", "mail.thread", "t9", "Lisbon receipts"),
+            view("org.bardo.Mail", "mail.thread", "t9", "Lisbon receipts"),
             ThingRole::Subject,
         )],
         results: vec![
@@ -65,7 +65,7 @@ fn skeleton() -> Skeleton {
             },
             ResultLine {
                 name: ResultName::parse("last").expect("name"),
-                value: ResultValue::Thing(thing("org.quire.Mail", "mail.thread", "t9")),
+                value: ResultValue::Thing(thing("org.bardo.Mail", "mail.thread", "t9")),
             },
             ResultLine {
                 name: ResultName::parse("report").expect("name"),
@@ -157,10 +157,10 @@ fn kind_tags_things_and_names() {
     assert_eq!(e.things().len(), 1);
     assert!(m.things().is_empty());
     // But a message that references an entity is forgotten with it.
-    let named = thing("org.quire.Mail", "mail.thread", "t9");
+    let named = thing("org.bardo.Mail", "mail.thread", "t9");
     assert_eq!(m.thing_refs(), vec![(named.clone(), ThingRole::Source)]);
     assert!(m.names(&named) && e.names(&named));
-    assert!(!m.names(&thing("org.quire.Mail", "mail.thread", "other")));
+    assert!(!m.names(&thing("org.bardo.Mail", "mail.thread", "other")));
 }
 
 #[test]

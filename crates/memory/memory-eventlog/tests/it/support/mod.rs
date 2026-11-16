@@ -35,7 +35,7 @@ pub fn label(integrity: Integrity) -> Label {
 pub fn view(key: &str) -> ThingView {
     ThingView {
         thing: ThingRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             kind: ThingKind::parse("mail.thread").expect("kind"),
             key: ThingKey::parse(key).expect("key"),
         },
@@ -62,7 +62,7 @@ pub fn record(key: &str, verb: Verb, actor: Actor) -> Record {
 
 pub fn user() -> Actor {
     Actor::User {
-        via: app("org.quire.Mail"),
+        via: app("org.bardo.Mail"),
     }
 }
 

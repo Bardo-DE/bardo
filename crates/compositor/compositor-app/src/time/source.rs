@@ -21,7 +21,7 @@ pub enum ClockSource {
     Monotonic(WallClock),
     /// A virtual clock the test kit advances.
     Virtual(SharedClock),
-    /// A virtual clock `casementctl debug clock` steps.
+    /// A virtual clock `bardo-compositorctl debug clock` steps.
     Stepped(SharedClock),
 }
 

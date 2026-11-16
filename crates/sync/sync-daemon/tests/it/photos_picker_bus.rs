@@ -1,4 +1,4 @@
-//! `org.quire.Photos1.Picker` on syncd's bus name, against the real accountd and the fake
+//! `org.bardo.Photos1.Picker` on syncd's bus name, against the real accountd and the fake
 //! Google: the Photos app starts a session, polls it, imports what the person picked and cancels
 //! another; nobody else may; a malformed word or an account with no Picker is refused with a
 //! typed error; and no token or Google URL crosses the bus.
@@ -21,8 +21,8 @@ use sync_bus::{
 use sync_daemon::datasets::storage::{FILES_APP, PHOTOS_APP};
 use zbus::export::futures_core::Stream;
 
-const DENIED: &str = "org.quire.Accounts1.Error.Denied";
-const UNAVAILABLE: &str = "org.quire.Accounts1.Error.Unavailable";
+const DENIED: &str = "org.bardo.Accounts1.Error.Denied";
+const UNAVAILABLE: &str = "org.bardo.Accounts1.Error.Unavailable";
 
 fn pick(rig: &Rig, session: &str) {
     assert!(rig.google.picker_pick(
@@ -170,7 +170,7 @@ async fn only_the_photos_app_may_call_and_every_bad_word_or_missing_picker_is_a_
     let settings = common::client(
         &rig.bus,
         &rig.known,
-        "org.quire.Settings",
+        "org.bardo.Settings",
         account_callers::CallerRole::Settings,
     )
     .await;

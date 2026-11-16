@@ -1,5 +1,5 @@
 //! accountd's calls over the bus: the two sheet methods it still has, `AddAccount` and
-//! `Reauthenticate`. A refusal comes back as the error `org.quire.Accounts1.Error.<Refusal>`.
+//! `Reauthenticate`. A refusal comes back as the error `org.bardo.Accounts1.Error.<Refusal>`.
 //!
 //! The sheet methods return a Request object whose `Response` signal carries the answer
 //! (`account_dbus::accounts::sheet::reply_of` reads it: code 0 the answer, 1 `Dismissed`, 2 the
@@ -165,7 +165,7 @@ impl Bus {
 }
 
 /// The interface whose `State` property a shell is told changed.
-const ACCOUNT_INTERFACE: &str = "org.quire.Accounts1.Account";
+const ACCOUNT_INTERFACE: &str = "org.bardo.Accounts1.Account";
 
 /// What a `PropertiesChanged` heard is, when it says an account's `State` changed: the account
 /// and the state it has now, read from its object. A signal about anything else is not a change;

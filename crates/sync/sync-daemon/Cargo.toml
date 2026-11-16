@@ -1,6 +1,6 @@
 [package]
 name = "sync-daemon"
-description = "ferry's sync daemon: org.quire.Sync1 over sync-core replicas. The library holds the SQLite journal, the engine over a Replica and a Dataset, the pure scheduler, the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client); the binary resolves its paths and serves. Datasets: the calendar, contacts and tasks mirror (CalDAV, CardDAV, Microsoft Graph and Google), the storage folder (WebDAV, OneDrive and Google Drive app folders), the whole drives shown in Files, and Photos for an account whose Photos row is on."
+description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The library holds the SQLite journal, the engine over a Replica and a Dataset, the pure scheduler, the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client); the binary resolves its paths and serves. Datasets: the calendar, contacts and tasks mirror (CalDAV, CardDAV, Microsoft Graph and Google), the storage folder (WebDAV, OneDrive and Google Drive app folders), the whole drives shown in Files, and Photos for an account whose Photos row is on."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -79,16 +79,16 @@ sync-fakes = {path = "../sync-fakes"}
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 
 [features]
-# Test builds only, never default and never in dist: `SYNCD_PROC_ROOT=<dir>` makes the binary
+# Test builds only, never default and never in dist: `BARDO_SYNCD_PROC_ROOT=<dir>` makes the binary
 # read caller identities from <dir> instead of /proc, because the jailed and acceptance tests run
-# processes outside service cgroups, and `PORTER_SYSTEM_CALLERS=<file>` makes it read that file as
+# processes outside service cgroups, and `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes it read that file as
 # the system caller table, because a jail cannot write /etc/porter. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
 test-proc-root = ["account-callers/test-proc-root"]
 # `MemoryDataset`, the in-memory local side the engine's tests (and daemon tests) drive.
 testing = []
-# Serves `org.quire.Photos1.Picker` beside Sync1 (sync-bus's feature of the same name declares
+# Serves `org.bardo.Photos1.Picker` beside Sync1 (sync-bus's feature of the same name declares
 # it). Off by default: no Photos app ships in v1.
 photos-picker = ["sync-bus/photos-picker"]
 

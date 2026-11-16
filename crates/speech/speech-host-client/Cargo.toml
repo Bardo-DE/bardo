@@ -1,6 +1,6 @@
 [package]
 name = "speech-host-client"
-description = "The client of the speech-host engine process: a SpeechToText over its Unix socket."
+description = "The client of the bardo-speech-host engine process: a SpeechToText over its Unix socket."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

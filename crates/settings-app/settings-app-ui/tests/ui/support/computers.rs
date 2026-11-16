@@ -1,4 +1,4 @@
-//! A fake inferd (`org.quire.Inference1`) for the Your computers group: the places, the Tailscale
+//! A fake inferd (`org.bardo.Inference1`) for the Your computers group: the places, the Tailscale
 //! candidates and the guests, on a private bus. Every call that changes something is written, in
 //! order, into one log; a change can be made to fail with one of inferd's named refusals.
 
@@ -67,7 +67,7 @@ fn models_of(models: &[(&str, &str)]) -> OwnedValue {
 
 /// An error with one of inferd's computer names.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Inference1.Error")]
+#[zbus(prefix = "org.bardo.Inference1.Error")]
 enum Refusal {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -104,7 +104,7 @@ impl Inference {
     }
 }
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl Inference {
     async fn places(&self) -> Vec<(String, Details)> {
         let state = self.state.lock().expect("state");

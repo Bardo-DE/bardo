@@ -18,19 +18,19 @@ fn value<'a>(file: &'a str, key: &str) -> Option<&'a str> {
 
 #[test]
 fn the_unit_and_the_activation_file_name_the_same_service() {
-    let unit = dist("syncd.service");
-    let activation = dist("dbus/org.quire.Sync1.service");
-    assert_eq!(value(&unit, "BusName"), Some("org.quire.Sync1"));
+    let unit = dist("bardo-syncd.service");
+    let activation = dist("dbus/org.bardo.Sync1.service");
+    assert_eq!(value(&unit, "BusName"), Some("org.bardo.Sync1"));
     assert_eq!(value(&unit, "Type"), Some("dbus"));
-    assert_eq!(value(&activation, "Name"), Some("org.quire.Sync1"));
-    assert_eq!(value(&activation, "SystemdService"), Some("syncd.service"));
+    assert_eq!(value(&activation, "Name"), Some("org.bardo.Sync1"));
+    assert_eq!(value(&activation, "SystemdService"), Some("bardo-syncd.service"));
     assert_eq!(value(&activation, "Exec"), value(&unit, "ExecStart"));
-    assert_eq!(value(&unit, "ExecStart"), Some("/usr/libexec/quire/syncd"));
+    assert_eq!(value(&unit, "ExecStart"), Some("/usr/libexec/bardo/bardo-syncd"));
 }
 
 #[test]
 fn the_unit_does_not_hide_the_processes_it_must_identify() {
-    let unit = dist("syncd.service");
+    let unit = dist("bardo-syncd.service");
     for hiding in ["ProtectProc", "PrivatePIDs", "ProcSubset"] {
         assert!(
             value(&unit, hiding).is_none(),
@@ -41,12 +41,12 @@ fn the_unit_does_not_hide_the_processes_it_must_identify() {
 
 #[test]
 fn the_unit_is_a_sandbox_that_writes_only_its_own_directories() {
-    let unit = dist("syncd.service");
+    let unit = dist("bardo-syncd.service");
     assert_eq!(value(&unit, "NoNewPrivileges"), Some("yes"));
     assert_eq!(value(&unit, "CapabilityBoundingSet"), Some(""));
     // The mount-namespace keys are in the drop-in, which the installer leaves out where the system
     // refuses a user service its own mount namespace.
-    let sandbox = dist("syncd.service.d/sandbox.conf");
+    let sandbox = dist("bardo-syncd.service.d/sandbox.conf");
     assert_eq!(value(&sandbox, "ProtectSystem"), Some("strict"));
     assert_eq!(value(&sandbox, "ProtectHome"), Some("read-only"));
     for moved in [
@@ -66,7 +66,7 @@ fn the_unit_is_a_sandbox_that_writes_only_its_own_directories() {
     );
     // The drives' cache and syncd's settings folder are writable too, and nothing else.
     assert_eq!(
-        value(&dist("syncd.service.d/sandbox.conf"), "ReadWritePaths"),
+        value(&dist("bardo-syncd.service.d/sandbox.conf"), "ReadWritePaths"),
         Some("%h/.local/share/porter %h/.cache/porter %h/.config/porter/syncd")
     );
     assert_eq!(
@@ -86,11 +86,11 @@ fn the_unit_is_a_sandbox_that_writes_only_its_own_directories() {
 
 #[test]
 fn showing_drives_in_files_left_the_sandbox_as_it_was() {
-    // porter-mountd mounts for syncd, so syncd's unit keeps every protection: no new privileges
+    // bardo-drive-mount mounts for syncd, so syncd's unit keeps every protection: no new privileges
     // (the setuid fusermount3 stays refused), no devices (the connection it serves is handed to
     // it), a read-only home and a mount namespace of its own.
-    let unit = dist("syncd.service");
-    let sandbox = dist("syncd.service.d/sandbox.conf");
+    let unit = dist("bardo-syncd.service");
+    let sandbox = dist("bardo-syncd.service.d/sandbox.conf");
     assert_eq!(value(&unit, "NoNewPrivileges"), Some("yes"));
     assert_eq!(value(&unit, "RestrictSUIDSGID"), Some("yes"));
     assert_eq!(value(&unit, "CapabilityBoundingSet"), Some(""));
@@ -116,7 +116,7 @@ fn every_path_syncd_writes_is_writable_under_the_unit() {
     use std::path::{Path, PathBuf};
     use sync_daemon::paths::{AccountDir, Paths};
 
-    let unit = dist("syncd.service");
+    let unit = dist("bardo-syncd.service");
     // The unit's specifiers as a person with HOME=/h has them.
     let expand = |text: &str| text.replace("%h", "/h");
     let states: Vec<PathBuf> = value(&unit, "StateDirectory")
@@ -124,7 +124,7 @@ fn every_path_syncd_writes_is_writable_under_the_unit() {
         .split_whitespace()
         .map(|dir| Path::new("/h/.local/state").join(dir))
         .collect();
-    let sandbox = dist("syncd.service.d/sandbox.conf");
+    let sandbox = dist("bardo-syncd.service.d/sandbox.conf");
     let writable: Vec<PathBuf> = value(&sandbox, "ReadWritePaths")
         .expect("ReadWritePaths")
         .split_whitespace()
@@ -181,7 +181,7 @@ fn the_test_proc_root_feature_is_not_a_default_feature() {
         .and_then(|d| d.as_array())
         .cloned()
         .unwrap_or_default();
-    // The test-only knob (`SYNCD_PROC_ROOT`) is a feature, and it is not default.
+    // The test-only knob (`BARDO_SYNCD_PROC_ROOT`) is a feature, and it is not default.
     assert!(features.contains_key("test-proc-root"));
     assert!(
         default.iter().all(|f| f.as_str() != Some("test-proc-root")),
@@ -192,9 +192,9 @@ fn the_test_proc_root_feature_is_not_a_default_feature() {
 #[test]
 fn syncd_is_one_app_id_in_every_test_and_doc() {
     // The name this crate once also went by; no source, test or doc may use it again. (The caller
-    // table that names syncd `org.quire.Sync` is porter's: accountd and syncd read it from
-    // /etc/porter/callers.toml.)
-    let stray = ["org.quire.", "Syncd"].concat();
+    // table that names syncd `org.bardo.Sync` is porter's: accountd and syncd read it from
+    // /etc/bardo/accountd-callers.toml.)
+    let stray = ["org.bardo.", "Syncd"].concat();
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let mut pending = vec![root.join("src"), root.join("tests"), root.join("../docs")];
     while let Some(path) = pending.pop() {

@@ -1,4 +1,4 @@
-//! The `org.quire.Memory1.Control` object over a [`Serve`] handler, with its signals and
+//! The `org.bardo.Memory1.Control` object over a [`Serve`] handler, with its signals and
 //! properties.
 
 use super::{Serve, first, forward, none, text};
@@ -11,11 +11,11 @@ use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::OwnedFd as BusFd;
 
-/// `org.quire.Memory1.Control`.
+/// `org.bardo.Memory1.Control`.
 #[derive(Debug)]
 pub struct ControlObject<S>(pub(super) Arc<S>);
 
-#[zbus::interface(name = "org.quire.Memory1.Control")]
+#[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl<S: Serve> ControlObject<S> {
     async fn spaces(&self, #[zbus(header)] h: Header<'_>) -> Result<String, MemoryError> {
         first(forward(&*self.0, &h, Iface::Control, "Spaces", vec![], None).await?)

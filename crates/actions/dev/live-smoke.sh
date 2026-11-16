@@ -16,7 +16,7 @@
 # before it starts. Prints PASS or FAIL per flow with the transcript's path. A FAIL line says
 # [safety] (must hold whatever the model does) or [capability] (the model did not get the job
 # done). The transcript holds every request each daemon sent a model and what it said (the model
-# tap, DOCKET_MODEL_TRACE), the answer's phases, the sheets and what the mail app did.
+# tap, BARDO_ACTIONS_MODEL_TRACE), the answer's phases, the sheets and what the mail app did.
 # --catalog DIR: the model catalogue copied into the scratch world (default: ../models/catalog, absolute;
 # inferd there reads $XDG_DATA_HOME/stoker/catalog, which is scratch). Copied, never linked.
 # Exit: 0 every flow passed, 1 one failed, 2 the run could not start.
@@ -43,9 +43,9 @@ esac
 
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-$(dirname "$root")/accept-target}
 cargo build -p action-accept -p action-live --bins
-bin=$CARGO_TARGET_DIR/debug/docket-live
+bin=$CARGO_TARGET_DIR/debug/agent-live
 
-scratch=${LIVE_SCRATCH:-$(mktemp -d "${TMPDIR:-/tmp}/docket-live.XXXXXX")}
+scratch=${LIVE_SCRATCH:-$(mktemp -d "${TMPDIR:-/tmp}/agent-live.XXXXXX")}
 mkdir -p "$scratch/home" "$scratch/tmp" "$scratch/run"
 chmod 700 "$scratch/run"
 # vLLM, Triton and Inductor compile caches, kept across worlds and runs (a cold compile is
@@ -54,7 +54,7 @@ engine_cache=${ENGINE_CACHE:-${TMPDIR:-/tmp}/docket-live-engine-cache}
 mkdir -p "$engine_cache"
 echo "live-smoke: scratch $scratch" >&2
 exec env -i PATH="$PATH" HOME="$scratch/home" TMPDIR="$scratch/tmp" XDG_RUNTIME_DIR="$scratch/run" \
-  DOCKET_LIVE_ENGINE_CACHE="$engine_cache" \
+  BARDO_ACTIONS_LIVE_ENGINE_CACHE="$engine_cache" \
   XDG_CONFIG_HOME="$scratch/home/.config" XDG_DATA_HOME="$scratch/home/.local/share" \
   XDG_STATE_HOME="$scratch/home/.local/state" XDG_CACHE_HOME="$scratch/home/.cache" \
   "$bin" smoke --out "$scratch/out" ${catalog:+--catalog "$catalog"} "${args[@]}"

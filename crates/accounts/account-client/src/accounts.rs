@@ -138,7 +138,7 @@ pub struct AccountRef {
 }
 
 impl AccountRef {
-    /// The account the object path `/org/quire/Accounts1/account/<segment>` names; `None` for any
+    /// The account the object path `/org/bardo/Accounts1/account/<segment>` names; `None` for any
     /// other path.
     pub fn of_object_path(path: &str) -> Option<Self> {
         let prefix = format!("{ACCOUNTS_PATH}/account/");
@@ -231,14 +231,14 @@ mod tests {
 
     #[test]
     fn an_account_is_the_last_segment_of_its_object_path_and_nothing_else_is_one() {
-        let path = "/org/quire/Accounts1/account/abc_1";
+        let path = "/org/bardo/Accounts1/account/abc_1";
         assert_eq!(
             AccountRef::of_object_path(path).map(|a| a.segment().to_owned()),
             Some("abc_1".to_owned())
         );
         for other in [
-            "/org/quire/Accounts1/account/",
-            "/org/quire/Accounts1/account/a/b",
+            "/org/bardo/Accounts1/account/",
+            "/org/bardo/Accounts1/account/a/b",
             "/other/abc",
         ] {
             assert_eq!(AccountRef::of_object_path(other), None, "{other}");

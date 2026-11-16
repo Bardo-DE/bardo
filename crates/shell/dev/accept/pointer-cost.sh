@@ -11,7 +11,7 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-pointer-cost"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-pointer-cost"
 mkdir -p "$OUT_DIR"
 SECS="${SECS:-10}"
 
@@ -32,7 +32,7 @@ start_private_bus || exit 1
 # and in the jail there is no display bus to probe. The private buses are still the only ones.
 if ! launch_daemon; then
   require_private_system_bus "$BUS" || exit 1
-  in_env "${LAUNCH_PREFIX[@]}" "$SILL_BIN" run >"$OUT_DIR/daemon.log" 2>&1 &
+  in_env "${LAUNCH_PREFIX[@]}" "$BARDO_SHELL_BIN" run >"$OUT_DIR/daemon.log" 2>&1 &
   DAEMON=$!
   wait_ping || exit 1
 fi

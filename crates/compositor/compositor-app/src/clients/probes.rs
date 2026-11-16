@@ -115,7 +115,7 @@ pub fn begin(state: &mut State, stream: UnixStream) {
         Running(Arc::clone(&looking.running)),
     );
     let started = std::thread::Builder::new()
-        .name("casement-probe".to_owned())
+        .name("compositor-probe".to_owned())
         .spawn(move || {
             let _running = running;
             let arrival = judge.arrival(&copy, &floor);

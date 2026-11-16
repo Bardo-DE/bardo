@@ -12,7 +12,7 @@ and can be rolled back. The behaviour follows macOS Software Update.
 | Crate | Purpose | I/O |
 | --- | --- | --- |
 | `updater-core` | `Release` (parse and validate `release.toml`), `BundlePath`, version `standing`, signature check (`Authenticator`, `PublicKey`), digests, `Audit` (the bundle against the release), the install `Plan`, `plan_exports`, `next_check` (the schedule), `ProgressGate`, `decide_boot` (the health rule) | none |
-| `updater-root` | everything that runs as root: the verified unpack and atomic switch (`apply`), the three programs' entry points (`helper`) and binaries `slipway-apply`, `slipway-rollback`, `slipway-health`, the install root's layout (`layout`), small file operations (`fsutil`), the trust anchor (`keys`), the report the helper prints (`report`) and the two system settings it reads (`settings`) | files, a child process (`restorecon`) |
+| `updater-root` | everything that runs as root: the verified unpack and atomic switch (`apply`), the three programs' entry points (`helper`) and binaries `bardo-updater-apply`, `bardo-updater-rollback`, `bardo-updater-health`, the install root's layout (`layout`), small file operations (`fsutil`), the trust anchor (`keys`), the report the helper prints (`report`) and the two system settings it reads (`settings`) | files, a child process (`restorecon`) |
 | `slipway` | downloading (`fetch`), the session service (`service`), the command line (`cli`), the daemon's files (`config`, `state`, `dirs`), the `pkexec` seam (`elevate`), and one binary: `slipway` | files, network, session bus, a child process |
 
 `updater-core` reaches no network, bus, runtime or archive crate. `updater-root` may read archives (`tar`,
@@ -38,7 +38,7 @@ crates/slipway/src/{lib, main, config, dirs, state, clock, elevate, problem, rep
                    fetch/{mod, feed, stage, cache, ureq_fetch}.rs
                    service/{mod, context, engine, object, notify, run, status}.rs
                    cli/{mod, args, client, wait, confirm, recover}.rs
-dist/   slipway.service  org.quire.slipway.policy  org.quire.Updates1.service
+dist/   bardo-updater.service  org.bardo.updater.policy  org.bardo.Updates1.service
 scripts/install.sh  scripts/check-boundary.sh
 .github/workflows/ci.yml  deny.toml
 ```
@@ -78,8 +78,8 @@ its contents at `system<path>` in the bundle, and nothing else under `system/`. 
 `0755` whatever the helper's umask. `release/release.py` in the desktop repository packs to exactly
 these rules; FINDINGS.md "Release pipeline" lists where the two differ.
 
-Trust anchor: a minisign public key, read from `/usr/share/slipway/release.pub` (the `pubkey_path`
-setting names another) with the `SLIPWAY_RELEASE_PUBKEY` build-time text as the fallback when the
+Trust anchor: a minisign public key, read from `/usr/share/bardo/updater/release.pub` (the `pubkey_path`
+setting names another) with the `BARDO_UPDATER_RELEASE_PUBKEY` build-time text as the fallback when the
 file does not exist. No key: nothing is installed and the person is told so. The key path is the
 `pubkey_path` of the system settings (section 5).
 
@@ -116,16 +116,16 @@ System files: some things work only as a real root-owned file in a system folder
 rule, a login service, the keyboard daemon's unit). The bundle carries them under `system/<absolute
 path>`, `release.toml` lists each destination in `[[system]]`, and `SyncSystem` copies the verified file
 from the new release's tree (atomic rename, the listed mode). The destination must be a path `ALLOWED_SYSTEM_FILES` names:
-a folder and either one exact name or any plain name with a given ending. Today that is `/etc/pam.d/sill`,
-`/etc/udev/rules.d/{60-sill-ddc,70-keycap,70-palmrest}.rules`, `/etc/modules-load.d/{sill-ddc,keycap}.conf`, `/usr/lib/keycap/keycap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/keycap` is the administrator's and is not on the list),
-`/etc/modprobe.d/99-palmrest.conf`, `/usr/lib/systemd/system/{keycap,turnstile,palmrest}.service`,
-`/usr/lib/systemd/system/turnstile.socket`, `/etc/udev/rules.d/72-turnstile.rules`,
-`/etc/modules-load.d/turnstile.conf`, `/etc/polkit-1/rules.d/keycap.polkit.rules`, `/etc/porter/{callers,inferd-callers}.toml`,
-`/etc/quire/*-callers.toml`, `/etc/xdg/quire/*.toml`, `/usr/lib/systemd/user/*.service` (the desktop's user units, which must be plain root-owned files: a link into the release reads as writable to the unit manager's judge) and `/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-quire.conf`; anything else makes the whole release refused. A path is a link (an export) or a file (a system file), never both. A link into the install root found where a release places a file is what an earlier release's export left, and is replaced by the file (the link itself, never what it points at); a link anywhere else is the person's, and is a conflict. The helper is
+a folder and either one exact name or any plain name with a given ending. Today that is `/etc/pam.d/bardo-shell`,
+`/etc/udev/rules.d/{60-sill-ddc,70-keycap,70-palmrest}.rules`, `/etc/modules-load.d/{sill-ddc,keycap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/keycap` is the administrator's and is not on the list),
+`/etc/modprobe.d/99-bardo-mouse-gestures.conf`, `/usr/lib/systemd/system/{keycap,turnstile,palmrest}.service`,
+`/usr/lib/systemd/system/bardo-input-broker.socket`, `/etc/udev/rules.d/72-bardo-input-broker.rules`,
+`/etc/modules-load.d/turnstile.conf`, `/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules`, `/etc/porter/{callers,inferd-callers}.toml`,
+`/etc/bardo/*-callers.toml`, `/etc/xdg/bardo/*.toml`, `/usr/lib/systemd/user/*.service` (the desktop's user units, which must be plain root-owned files: a link into the release reads as writable to the unit manager's judge) and `/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf`; anything else makes the whole release refused. A path is a link (an export) or a file (a system file), never both. A link into the install root found where a release places a file is what an earlier release's export left, and is replaced by the file (the link itself, never what it points at); a link anywhere else is the person's, and is a conflict. The helper is
 installed by hand and not by a release, so a new system file needs a new helper (this is the price of the list): a
-release that places the input service's files (`turnstile.*`, `72-turnstile.rules`) needs the helper that knows them,
+release that places the input service's files (`turnstile.*`, `72-bardo-input-broker.rules`) needs the helper that knows them,
 so re-run the installer (`scripts/install.sh`) from the new source before updating to it; an older helper refuses
-that release whole. The same holds for `/usr/lib/keycap/keycap.toml`. A destination folder that does not exist
+that release whole. The same holds for `/usr/lib/bardo/key-remap/key-remap.toml`. A destination folder that does not exist
 (`/usr/lib/keycap` on a fresh machine) is made by the write itself (`write_atomic_mode` creates the missing
 parents, `0755` under the helper's umask) and is left in place when the file is later removed; the test
 `a_system_file_is_placed_replaced_and_dropped_with_the_releases` runs in a sandbox with no such folders.
@@ -140,10 +140,10 @@ it does not name.
 Telling the system (`apply/settle.rs`): after the system files are placed or removed the helper makes them take
 effect, with programs found at fixed paths (never `PATH`). `commands` decides from the changed paths alone: a file in
 `/usr/lib/systemd/system` gets `systemctl daemon-reload`; a file in `/etc/udev/rules.d` gets `udevadm control
---reload-rules` and `udevadm trigger --subsystem-match=misc`; the file `turnstile.socket` being *placed* (not removed)
-also gets `systemctl enable --now turnstile.socket`, after the reload, and `keycap.service` being *placed* gets `systemctl enable
---now keycap.service` after that (the keyboard map asks the input service for its devices; `install/system.sh` of the desktop
-enables it too, so both routes end alike), then `palmrest.service` being *placed* gets `systemctl enable --now palmrest.service` (the touchpad daemon, same reason; `install/system.sh palmrest` enables it too). A missing program is skipped and a failing one
+--reload-rules` and `udevadm trigger --subsystem-match=misc`; the file `bardo-input-broker.socket` being *placed* (not removed)
+also gets `systemctl enable --now bardo-input-broker.socket`, after the reload, and `bardo-key-remap.service` being *placed* gets `systemctl enable
+--now bardo-key-remap.service` after that (the keyboard map asks the input service for its devices; `install/system.sh` of the desktop
+enables it too, so both routes end alike), then `bardo-mouse-gestures.service` being *placed* gets `systemctl enable --now bardo-mouse-gestures.service` (the touchpad daemon, same reason; `install/system.sh palmrest` enables it too). A missing program is skipped and a failing one
 is a warning in the report, as with the security labels: the files are in place either way. It is a second method on
 the `Relabel` seam (`settle`, a no-op by default), implemented by `Selinux` (the real helper's choice, which runs both with its one runner), so tests that use `NoRelabel`
 or a fake runner never run a real program.
@@ -157,9 +157,9 @@ one is a warning printed by the helper. The program runner is a trait (`RunProgr
 
 ```
 person's session                          root (pkexec; one polkit action per program)
-slipway run  --download, verify--> cache --> slipway-apply <staged dir>   org.quire.slipway.apply     no password
-slipway rollback (Settings)  ------------> slipway-rollback               org.quire.slipway.rollback  administrator's password
-slipway recover / confirm  --------------> slipway-health recover|confirmed  org.quire.slipway.health  no password
+slipway run  --download, verify--> cache --> bardo-updater-apply <staged dir>   org.bardo.updater.apply     no password
+slipway rollback (Settings)  ------------> bardo-updater-rollback               org.bardo.updater.rollback  administrator's password
+slipway recover / confirm  --------------> bardo-updater-health recover|confirmed  org.bardo.updater.health  no password
 ```
 
 The three programs are separate files because polkit matches an action to the program's path: the installing
@@ -169,9 +169,9 @@ the only programs that run as root, and are built from their own crate (`updater
 those rights links nothing it does not need: no network client, bus or async runtime. The health
 program is described in section 7.
 
-Settings come from two files. The system file `/etc/slipway/config.toml` (written once by
+Settings come from two files. The system file `/etc/bardo/updater.toml` (written once by
 `scripts/install.sh`, never overwritten by it) holds `root` and `pubkey_path` and may hold any other
-setting; `slipway-apply` reads only it (and only its `root` and `pubkey_path`, `slipway_root::settings`), and the daemon and the command line read it first, so they
+setting; `bardo-updater-apply` reads only it (and only its `root` and `pubkey_path`, `slipway_root::settings`), and the daemon and the command line read it first, so they
 cannot disagree about the root or the key. The person's own `$XDG_CONFIG_HOME/slipway/config.toml`
 may only set `settings_command` and `name` (what the notification's button runs and what the software
 is called); every other key in it is ignored.
@@ -185,7 +185,7 @@ resuming trusts nothing. The cache keeps only the version being fetched (`prune_
 
 The daemon never writes under the root. It downloads into `$XDG_CACHE_HOME/slipway/<version>/`,
 checks the signature of `release.toml` and then the bundle's size and digest, and only then asks
-`slipway-apply` to install the directory. The helper trusts nothing but the path, and not even that:
+`bardo-updater-apply` to install the directory. The helper trusts nothing but the path, and not even that:
 
 - Its first instruction sets umask 022; it then moves to `/`, switches off core dumps and lifts the
   limits the caller may have lowered (`pkexec` clears the environment, not these). Everything it
@@ -206,7 +206,7 @@ checks the signature of `release.toml` and then the bundle's size and digest, an
   checked again: the record against the signature with the key, a system file against the digest in
   the signed description, from a handle the helper opened itself.
 
-Its root and key come from `/etc/slipway/config.toml`, never from the caller. Exit codes: 0 done,
+Its root and key come from `/etc/bardo/updater.toml`, never from the caller. Exit codes: 0 done,
 1 failed, 2 usage, 3 refused (not newer / nothing to go back to), 4 did not verify, 5 busy, 6 no key.
 
 On success the helper prints a report on its standard output (`slipway_root::report::Report`): `current <version>`,
@@ -219,7 +219,7 @@ leaves the state at "installing" for ever.
 
 ## 6. The session service
 
-`slipway run` owns `org.quire.Updates1` at `/org/quire/Updates1` on the session bus.
+`slipway run` owns `org.bardo.Updates1` at `/org/bardo/Updates1` on the session bus.
 
 Properties (all emit `PropertiesChanged`): `State` (idle, checking, available, downloading, ready,
 installing, installed, failed), `Current`, `Available` ("" when none), `Notes`, `Size` (bytes),
@@ -231,13 +231,13 @@ with `Problem`, set and cleared together; `Problem::kind` in `problem.rs`; a pro
 know treats it as a plain failure).
 Methods: `Check()`, `Install(version: s)`, `Rollback()`. Who is calling is decided by peephole (`service/gate.rs`):
 the bus names the caller's process, peephole holds it by the descriptor the bus daemon gave, reads its image and its
-unit and judges it against the desktop's own table (`/etc/quire/desktop-callers.toml`, root-owned; loaded once at
+unit and judges it against the desktop's own table (`/etc/bardo/desktop-callers.toml`, root-owned; loaded once at
 start by `bootstrap.rs`, an empty table when it is missing or not trustworthy, which refuses every `Install` and
 `Rollback`). `Install` is answered for the roles `shell` (proved up to the unit manager), `settings` and
 `updater_cli` (the `slipway` program itself; both known by their root-owned image); `Rollback` for `shell` and
 `settings`, and the system then asks for the administrator's password; `Check` for any caller that can be
 identified at all. A refused `Rollback` or `Check` is `org.freedesktop.DBus.Error.AccessDenied` with a plain
-sentence; a refused `Install` is `org.quire.Updates1.Error.AccessDenied` with its own (all in `problem.rs`).
+sentence; a refused `Install` is `org.bardo.Updates1.Error.AccessDenied` with its own (all in `problem.rs`).
 The properties are served by the bus library to any caller on the person's session bus and are not gated: they hold
 the version numbers, the notes and a state word. The gate keeps a stray program from starting an update nobody clicked
 or from putting a password prompt in front of the person; it is not the boundary for a downgrade (the password is: a
@@ -247,9 +247,9 @@ The caller names the
 version it showed the person (a semver string of at most `MAX_VERSION_BYTES` = 64 bytes, `service/wanted.rs`); the
 service installs only when the version it would install is that one, so a release that arrived between showing
 and pressing is never installed unseen. A mismatch (or no update on offer) is refused with the error
-`org.quire.Updates1.Error.VersionChanged` before anything is downloaded or staged; text that is not a version
-is `org.quire.Updates1.Error.NotAVersion`; anything else that stops the start (work in progress) is
-`org.quire.Updates1.Error.Refused`. Each error carries a plain sentence as its message (`service/refusal.rs`).
+`org.bardo.Updates1.Error.VersionChanged` before anything is downloaded or staged; text that is not a version
+is `org.bardo.Updates1.Error.NotAVersion`; anything else that stops the start (work in progress) is
+`org.bardo.Updates1.Error.Refused`. Each error carries a plain sentence as its message (`service/refusal.rs`).
 The command line reads `Available` (checking first when it is empty) and passes that. Each returns at once, having already moved `State`
 (so a caller that polls `State` never sees the old value after the call returns), and refuses with
 a plain sentence when work is in progress; the work runs on a spawned task and the blocking parts
@@ -272,8 +272,8 @@ with `Available` empty until something newer is published.
 
 The notification's "Details" button is honoured only when the `ActionInvoked` signal was sent by the
 connection that owns `org.freedesktop.Notifications` (`service/notify.rs`), as for any client of that
-service. `dist/org.quire.Updates1.service` lets the session bus start the service on demand: it names
-`SystemdService=slipway.service`, so the bus starts the same user unit the session starts at login.
+service. `dist/org.bardo.Updates1.service` lets the session bus start the service on demand: it names
+`SystemdService=bardo-updater.service`, so the bus starts the same user unit the session starts at login.
 
 ## 7. Health and automatic rollback
 
@@ -281,11 +281,11 @@ An install leaves the marker `pending { version, stage = awaiting_first_login, s
 `session` is the login the install ran in. A login is the boot id (`/proc/sys/kernel/random/boot_id`,
 read through the `login::here` seam) and `XDG_SESSION_ID` when the session manager set one.
 
-**What the session must call** (the desktop's `desktop-session`, or the shell). Both work when the update
+**What the session must call** (the desktop's `bardo-session`, or the shell). Both work when the update
 service is not running and need no session bus:
 
 - `slipway recover`, once per session start, **before the compositor is started**. It asks the privileged
-  health helper (`slipway-health recover`, a separate polkit action that needs no password) to note that
+  health helper (`bardo-updater-health recover`, a separate polkit action that needs no password) to note that
   this boot started the current release without anyone having vouched for it, and to put the previous
   release back when that has happened in more than two *different* boots (`MAX_UNCONFIRMED_BOOTS`). Exit 0:
   nothing to do; exit 5: the previous version was put back, start the session again; exit 1: could not
@@ -300,7 +300,7 @@ program of the person can ask for. The record is in `<root>/.private/health.toml
 the boot id the helper reads itself, and a start in a boot already counted changes nothing; a release that
 was confirmed, or that was just put back, is never rolled back. The cost: a crash loop inside one boot
 (login screen, log in, crash, again) is not counted; it takes restarts of the computer. Going back by hand
-(section 6 `Rollback()`, or `slipway-rollback` run by an administrator) is for that case.
+(section 6 `Rollback()`, or `bardo-updater-rollback` run by an administrator) is for that case.
 
 At every start of the service `health::on_start` also applies `updater-core::decide_boot` with the login of
 this start:

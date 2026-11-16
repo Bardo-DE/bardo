@@ -1,4 +1,4 @@
-//! casementctl's subcommands.
+//! bardo-compositorctl's subcommands.
 
 mod bus;
 mod capture;
@@ -17,7 +17,7 @@ const COULD_NOT_RUN: u8 = 2;
 /// A subcommand.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
-    /// `debug VERB ARGS...`: a call on `org.quire.Casement.Debug1`, its arguments checked.
+    /// `debug VERB ARGS...`: a call on `org.bardo.Compositor.Debug1`, its arguments checked.
     Debug(plan::Call),
     /// `shot [TARGET] [--masked] OUT.png` (P1-C1).
     Shot {
@@ -60,7 +60,7 @@ pub enum ShotTarget {
 /// Why a command line was refused.
 #[derive(Debug, thiserror::Error)]
 pub enum CommandError {
-    /// Not a subcommand casementctl knows.
+    /// Not a subcommand bardo-compositorctl knows.
     #[error("unknown command: {0}")]
     Unknown(String),
     /// A malformed argument.
@@ -81,7 +81,7 @@ pub fn parse(args: &[String]) -> Result<Command, CommandError> {
                 .ok_or_else(|| CommandError::BadArgument("debug needs a verb".to_owned()))?;
             Ok(Command::Debug(plan::Call::parse(verb, rest)?))
         }
-        // The freeze plan writes output control without `debug` (`casementctl output list
+        // The freeze plan writes output control without `debug` (`bardo-compositorctl output list
         // --json`, `output set NAME --scale S`); the Debug1 table has it as a verb, so both
         // spellings are the same command.
         "output" => Ok(Command::Debug(plan::Call::parse("output", rest)?)),
@@ -126,7 +126,7 @@ fn exit_code(command: Command) -> u8 {
     }
     if let Some(breach) = jail::breach_here() {
         eprintln!(
-            "casementctl: refusing to run outside the jail ({breach}); see ~/desktop/harness/jail.sh"
+            "bardo-compositorctl: refusing to run outside the jail ({breach}); see ~/desktop/harness/jail.sh"
         );
         return COULD_NOT_RUN;
     }
@@ -154,7 +154,7 @@ fn exit_code(command: Command) -> u8 {
 }
 
 fn not_built(why: &str) -> u8 {
-    eprintln!("casementctl: {why}");
+    eprintln!("bardo-compositorctl: {why}");
     COULD_NOT_RUN
 }
 

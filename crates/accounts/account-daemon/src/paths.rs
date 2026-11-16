@@ -13,7 +13,7 @@ pub struct Paths {
     pub registry_dir: PathBuf,
     /// `$XDG_STATE_HOME/quire/accountd/audit.jsonl`.
     pub audit: PathBuf,
-    /// The system caller table, `/etc/porter/callers.toml` (another file in a test build:
+    /// The system caller table, `/etc/bardo/accountd-callers.toml` (another file in a test build:
     /// [`account_callers::SystemCallers`]).
     pub callers_system: PathBuf,
     /// The user's caller table, `$XDG_CONFIG_HOME/porter/callers.toml`; its rows win.
@@ -30,7 +30,7 @@ pub struct Paths {
     /// `/usr/local/share:/usr/share`).
     pub applications: Vec<PathBuf>,
     /// Tailscale's socket: `/var/run/tailscale/tailscaled.sock`, or the absolute path in
-    /// `ACCOUNTD_TAILSCALE_SOCKET` (a Tailscale kept elsewhere, and every test of the binary,
+    /// `BARDO_ACCOUNTD_TAILSCALE_SOCKET` (a Tailscale kept elsewhere, and every test of the binary,
     /// which names a scratch path so that none ever reaches the real Tailscale).
     pub tailscale_socket: PathBuf,
     /// The directories of `PATH`, where Tailscale's program is looked for besides the usual
@@ -39,7 +39,7 @@ pub struct Paths {
 }
 
 /// The variable that names Tailscale's socket.
-pub const TAILSCALE_SOCKET_VAR: &str = "ACCOUNTD_TAILSCALE_SOCKET";
+pub const TAILSCALE_SOCKET_VAR: &str = "BARDO_ACCOUNTD_TAILSCALE_SOCKET";
 
 impl Paths {
     /// The paths for the environment `var` reads, with `extra_providers` laid over the system's
@@ -178,7 +178,7 @@ mod tests {
         assert_eq!(
             paths.provider_dirs,
             vec![
-                PathBuf::from("/usr/share/porter/providers"),
+                PathBuf::from("/usr/share/bardo/accounts/providers"),
                 PathBuf::from("/home/ada/.local/share/porter/providers")
             ]
         );
@@ -268,7 +268,7 @@ mod tests {
     }
 }
 
-/// Whether this binary honours `ACCOUNTD_PROC_ROOT`: only with the `test-proc-root` feature (the
+/// Whether this binary honours `BARDO_ACCOUNTD_PROC_ROOT`: only with the `test-proc-root` feature (the
 /// jailed and acceptance tests run processes outside service cgroups). A release build ignores
 /// the variable.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");

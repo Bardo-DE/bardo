@@ -18,12 +18,12 @@ const THREAD: &str = "t1";
 pub(super) fn offer(dir: &tempfile::TempDir) -> ToolsOffer {
     ToolsOffer {
         run_dir: dir.path().to_path_buf(),
-        bridge: abs("/opt/docket/actions-mcp"),
+        bridge: abs("/opt/docket/bardo-actions-mcp"),
     }
 }
 
 pub(super) fn thread() -> Value {
-    json!({"app": "org.quire.Mail", "kind": "mail.thread", "key": THREAD})
+    json!({"app": "org.bardo.Mail", "kind": "mail.thread", "key": THREAD})
 }
 
 pub(super) async fn with_mail(
@@ -76,7 +76,7 @@ async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_lin
     assert_eq!(servers.as_array().map(Vec::len), Some(1));
     let server = offered(&rig);
     assert_eq!(server.name, "quire");
-    assert_eq!(server.command, "/opt/docket/actions-mcp");
+    assert_eq!(server.command, "/opt/docket/bardo-actions-mcp");
     assert_eq!(server.args.len(), 2);
     assert_eq!(server.args[0], "--host-socket");
     assert_eq!(server.token().len(), 64);
@@ -88,7 +88,7 @@ async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_lin
     let plans = rig.spawned.plans();
     let bind = plans[0].edge.as_ref().expect("an edge bind");
     assert_eq!(bind.socket.as_str(), server.socket());
-    assert_eq!(bind.bridge.as_str(), "/opt/docket/actions-mcp");
+    assert_eq!(bind.bridge.as_str(), "/opt/docket/bardo-actions-mcp");
 }
 
 #[tokio::test]
@@ -358,7 +358,7 @@ async fn an_edge_cannot_act_in_a_session_the_host_did_not_open_and_tokens_are_no
     let theirs = Offered {
         args: vec!["--host-socket".into(), other.bind().socket.as_str().into()],
         env: [(
-            "QUIRE_EDGE_TOKEN".to_owned(),
+            "BARDO_EDGE_TOKEN".to_owned(),
             other.token().reveal().to_owned(),
         )]
         .into(),

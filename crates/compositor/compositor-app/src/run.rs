@@ -40,7 +40,7 @@ pub struct RunConfig {
     /// The address of the bus login1 is heard on (a tty seat hears the machine go to sleep there);
     /// none for the system bus.
     pub sleep_bus: Option<String>,
-    /// Where `org.quire.Compositor1` is served.
+    /// Where `org.bardo.Compositor1` is served.
     pub compositor_bus: Endpoint,
     /// Where the service manager is told casement is ready (`$NOTIFY_SOCKET`).
     pub notify: Endpoint,
@@ -85,7 +85,7 @@ impl RunConfig {
     }
 
     /// The same run reading the administrator's privacy settings from `system_dir` instead of
-    /// `/etc/quire` (a jailed run or a test).
+    /// `/etc/bardo` (a jailed run or a test).
     #[must_use]
     pub fn with_system_dir(self, system_dir: SystemDir) -> RunConfig {
         RunConfig {
@@ -103,7 +103,7 @@ impl RunConfig {
         RunConfig { debug_bus, ..self }
     }
 
-    /// The same run serving `org.quire.Compositor1` on `compositor_bus`.
+    /// The same run serving `org.bardo.Compositor1` on `compositor_bus`.
     #[must_use]
     pub fn with_compositor_bus(self, compositor_bus: Endpoint) -> RunConfig {
         RunConfig {
@@ -217,7 +217,7 @@ fn announce_test_units(table: &compositor_ipc::dbus::PeerUnitTable) {
     }
 }
 
-/// Starts serving `org.quire.Compositor1` on the session bus, with the Privacy list for Settings
+/// Starts serving `org.bardo.Compositor1` on the session bus, with the Privacy list for Settings
 /// on the same connection, and checking the accessibility roots clients claim. A bus that cannot
 /// be reached, or a name another casement holds, is logged and the compositor runs without a
 /// hand-out: the shell then has no way to get its connection, and nothing else is lost.
@@ -248,7 +248,7 @@ fn attach_compositor(
             crate::a11y::attach(state, handle, address)?;
         }
         Err(error) => {
-            tracing::warn!(%error, "org.quire.Compositor1 is not served: no connection can be handed out");
+            tracing::warn!(%error, "org.bardo.Compositor1 is not served: no connection can be handed out");
         }
     }
     Ok(())

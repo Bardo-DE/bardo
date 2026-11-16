@@ -1,4 +1,4 @@
-//! `org.quire.Companion1.Answer`: one answer, at `/org/quire/Companion1/answer/<task>`.
+//! `org.bardo.Companion1.Answer`: one answer, at `/org/bardo/Companion1/answer/<task>`.
 
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -6,8 +6,8 @@ use zbus::zvariant::OwnedObjectPath;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Companion1.Answer",
-    default_service = "org.quire.Companion1"
+    interface = "org.bardo.Companion1.Answer",
+    default_service = "org.bardo.Companion1"
 )]
 pub trait CompanionAnswer {
     /// Takes a card action (`CardActionId` JSON); becomes a `Run.Perform`. Answers a Request.
@@ -41,7 +41,7 @@ pub trait CompanionAnswer {
 #[derive(Debug, Default)]
 pub struct CompanionAnswerSkeleton;
 
-#[zbus::interface(name = "org.quire.Companion1.Answer")]
+#[zbus::interface(name = "org.bardo.Companion1.Answer")]
 impl CompanionAnswerSkeleton {
     fn act(&self, action: String) -> fdo::Result<OwnedObjectPath> {
         let _ = (action,);

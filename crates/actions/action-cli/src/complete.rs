@@ -1,5 +1,5 @@
 //! What a shell completes next. The completion files in `dist/completions` call
-//! `quire-do __complete <words…>` and offer what it prints, so they stay in step with the
+//! `bardo-do __complete <words…>` and offer what it prints, so they stay in step with the
 //! installed manifests: apps, actions, parameter flags and the options of a choice.
 
 use crate::resolve::{Apps, short_name, slug, visible};

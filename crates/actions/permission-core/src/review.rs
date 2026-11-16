@@ -46,7 +46,7 @@ pub enum AskReason {
     Mass(Count),
     /// First use of this app, class and Space.
     FirstUse,
-    /// The call came from the terminal (`quire-do`): a terminal cannot tell the person from an
+    /// The call came from the terminal (`bardo-do`): a terminal cannot tell the person from an
     /// agent typing in it, so the person is asked unless they gave a standing grant.
     FromTerminal,
     /// The action asks every time.

@@ -1,11 +1,11 @@
 //! The display trial: a program changed the displays and the person decides whether to keep
-//! the new setup (`quire_shell_v1`'s `displays_trial`, `displays_trial_end` and
+//! the new setup (`bardo_shell_v1`'s `displays_trial`, `displays_trial_end` and
 //! `displays_trial_answer`).
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// What the person said about a changed display setup (`quire_shell_v1.trial_answer`).
+    /// What the person said about a changed display setup (`bardo_shell_v1.trial_answer`).
     TrialAnswer {
         /// Keep: the new setup stays.
         Keep = 0,

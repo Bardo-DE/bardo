@@ -50,10 +50,10 @@ fn a_pick_sets_a_binding_or_asks_for_more() {
 #[test]
 fn a_desktop_action_or_nothing_marks_its_line_and_any_other_binding_is_said_in_its_own_words() {
     let compose = HotDo::AppAction {
-        app: "org.quire.Mail".to_owned(),
+        app: "org.bardo.Mail".to_owned(),
         action: "compose".to_owned(),
     };
-    let open = HotDo::Open(HotItem::App("org.quire.Mail".to_owned()));
+    let open = HotDo::Open(HotItem::App("org.bardo.Mail".to_owned()));
     // (the binding, the line it marks, the binding said in its own words)
     let cases: Vec<(Option<HotDo>, Option<CornerChoice>, Option<HotDo>)> = vec![
         (None, Some(CornerChoice::Nothing), None),

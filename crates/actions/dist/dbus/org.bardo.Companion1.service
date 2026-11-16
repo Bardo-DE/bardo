@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Companion1
+Exec=/usr/libexec/bardo/bardo-companiond
+SystemdService=bardo-companiond.service

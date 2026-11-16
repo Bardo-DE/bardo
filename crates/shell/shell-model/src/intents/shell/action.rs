@@ -1,11 +1,11 @@
-//! The closed set of things the shell does when asked as `org.quire.Shell`.
+//! The closed set of things the shell does when asked as `org.bardo.Shell`.
 
 use shell_launcher::AppId;
 
 use crate::screenshots::ShotKind;
 use crate::windows::Step;
 
-/// One action of `org.quire.Shell`, its parameters parsed.
+/// One action of `org.bardo.Shell`, its parameters parsed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ShellAction {
     /// `shell.launcher.open`: show the launcher with `query` typed (empty: a fresh one).

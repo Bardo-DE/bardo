@@ -122,7 +122,7 @@ fn a_configured_output_replaces_its_configuration_and_lays_out_again() {
 
 #[test]
 fn full_screen_takes_a_space_at_the_end_of_the_row_and_leaving_ends_it() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let entered = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -157,7 +157,7 @@ fn full_screen_takes_a_space_at_the_end_of_the_row_and_leaving_ends_it() {
 
 #[test]
 fn a_full_screen_window_unmapping_ends_its_space_and_shows_the_desktop() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -172,7 +172,7 @@ fn a_full_screen_window_unmapping_ends_its_space_and_shows_the_desktop() {
 
 #[test]
 fn a_full_screen_space_that_is_not_shown_ending_leaves_the_shown_space_alone() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -187,7 +187,7 @@ fn a_full_screen_space_that_is_not_shown_ending_leaves_the_shown_space_alone() {
 
 #[test]
 fn a_window_that_maps_while_a_full_screen_space_is_shown_goes_to_the_desktop_and_follows() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -210,7 +210,7 @@ fn a_window_that_maps_while_a_full_screen_space_is_shown_goes_to_the_desktop_and
 /// Each window lives in the column of its Space in the row; the renderer lays the row out by it.
 #[test]
 fn each_window_has_the_column_of_its_space() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -229,7 +229,7 @@ fn each_window_has_the_column_of_its_space() {
 
 #[test]
 fn switching_walks_the_row_and_stops_at_its_ends() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -272,7 +272,7 @@ fn switching_walks_the_row_and_stops_at_its_ends() {
 
 #[test]
 fn switching_to_a_desktop_without_the_key_window_moves_the_key_to_what_is_there() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &web, TokenCheck::Valid),
@@ -286,7 +286,7 @@ fn switching_to_a_desktop_without_the_key_window_moves_the_key_to_what_is_there(
 
 #[test]
 fn unplugging_an_output_moves_its_spaces_and_windows_to_the_one_left() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let before = run(vec![
         plug("HEADLESS-1"),
         plug("HEADLESS-2"),
@@ -313,7 +313,7 @@ fn unplugging_an_output_moves_its_spaces_and_windows_to_the_one_left() {
 
 #[test]
 fn the_key_window_on_the_unplugged_output_gives_the_key_to_what_is_still_shown() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let on_second = request(
         2,
         ToplevelRequest::FullScreen {
@@ -343,7 +343,7 @@ fn the_key_window_on_the_unplugged_output_gives_the_key_to_what_is_still_shown()
 
 #[test]
 fn the_last_output_leaving_makes_every_window_wait_and_the_next_takes_them_in() {
-    let (mail, bar) = (proven("org.quire.Mail"), proven("org.quire.Bar"));
+    let (mail, bar) = (proven("org.bardo.Mail"), proven("org.bardo.Bar"));
     let shell = Op::Event(Event::ToplevelMapped(compositor_core::MappedToplevel {
         role: desktop_protocols::vocab::WindowRole::Shell,
         ..support::driver::mapped(3, &bar, TokenCheck::Missing)

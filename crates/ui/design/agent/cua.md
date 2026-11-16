@@ -17,7 +17,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 ## 1. Scope and non-goals
 
 **In scope**
-- **`cuad`**: the daemon that owns the step loop (observe → model step → policy check → act → settle). It also owns budgets, the CUA consent gate, masking policy, audit records, the per-window lease, and the `org.quire.Cua1` control plane.
+- **`cuad`**: the daemon that owns the step loop (observe → model step → policy check → act → settle). It also owns budgets, the CUA consent gate, masking policy, audit records, the per-window lease, and the `org.bardo.ComputerUse1` control plane.
 - **The run state machine**: pure, with every state, input, effect and transition (§4).
 - **Observations**: masked window frame, an optional a11y tree, typed context, the agent cursor and the outcomes of the previous step. Also the `computer-use-a11y-tree` model (snapshot, prune, render to text, diff, selectors).
 - **`computer-use-seat-input`**: the agent seat over reis/libei against the compositor's EIS server, plus pure action→input planning and keymap/text handling.
@@ -59,11 +59,11 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, q
 | `computer-use-seat-input` | `InputOp`, `plan(action) -> Vec<InputOp>`, chord/keymap mapping, `InputReceipt`; trait `AgentSeat`; feature `ei` = reis client backend | none by default; reis behind `ei` | core yes |
 | `maskcap` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus the quire masked source | none by default | core yes |
 | `computer-use-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the quire-agent protocol | none by default | core yes |
-| `quire-agent-protocol` | `protocols/quire-agent-v1.xml` plus wayland-scanner bindings; features `client` and `server` (the fork uses `server`) | none | yes |
+| `bardo-agent-protocol` | `protocols/bardo-agent-v1.xml` plus wayland-scanner bindings; features `client` and `server` (the fork uses `server`) | none | yes |
 | `computer-use-run` | pure core: ids, `CuaTask`, `CuaResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `CuaRecord` (event-log payloads), `Procedure` types, the `Cua1` wire bodies, `mode_support` | none | yes |
-| `computer-use-dbus` | `org.quire.Cua1` zbus proxies and skeletons, `dbus/org.quire.Cua1.xml`, codec, introspection test | zbus | Linux |
+| `computer-use-dbus` | `org.bardo.ComputerUse1` zbus proxies and skeletons, `dbus/org.bardo.ComputerUse1.xml`, codec, introspection test | zbus | Linux |
 | `computer-use-fake` | test-only: `FakeSeat`, `FakeEis` (an in-process reis EIS server on a socketpair), `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel` (over models' replay provider), `FakePdp`, `MemoryEvents`, `FixedClock`, `run_harness` | none | yes |
-| `cuad` | the daemon: env and settings, effect executor, zbus server, caller checks, backend selection; `dist/cuad.service` and the D-Bus activation file | everything | Linux |
+| `cuad` | the daemon: env and settings, effect executor, zbus server, caller checks, backend selection; `dist/bardo-computer-use.service` and the D-Bus activation file | everything | Linux |
 
 **Allowed edges** (checked by `scripts/check-boundary.sh`, copied from porter's script and adapted):
 
@@ -72,7 +72,7 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, q
 | `computer-use-a11y-tree` | `computer-use-action` (models), `prov` (actions) |
 | `computer-use-seat-input` | `computer-use-action` |
 | `maskcap` | `computer-use-action` |
-| `computer-use-desktop` | `computer-use-action`; `quire-agent-protocol` (feature `wayland`) |
+| `computer-use-desktop` | `computer-use-action`; `bardo-agent-protocol` (feature `wayland`) |
 | `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `maskcap`, `computer-use-desktop` (all default features), `prov`, `quire-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
 | `computer-use-dbus` | `computer-use-run` |
 | `computer-use-fake` | everything above with default features, plus `reis` (for `FakeEis`), plus models' `model-provider` (replay) |
@@ -82,7 +82,7 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, q
 
 ### Fork repo `~/casement` (GPL-3.0-only, branch `quire`, rebased on upstream release tags)
 
-All quire code goes in `src/quire/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `quire-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
+All quire code goes in `src/quire/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `bardo-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
 
 ### Adopted crates (from quire's pinned block unless marked "joins the block")
 
@@ -480,13 +480,13 @@ act  = { click = { node = [{ role = "link", name = "Billing" }] } }
 post = { node = [{ role = "heading", name = "Invoices" }] }
 ```
 
-### 3.8 D-Bus `org.quire.Cua1` (`computer-use-dbus`, served by `cuad`) — freeze now
+### 3.8 D-Bus `org.bardo.ComputerUse1` (`computer-use-dbus`, served by `cuad`) — freeze now
 
 Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is one protocol with two carriers, as in 31 §4.3. Caller identity comes from the connection (porter `AppId`) and is never sent.
 
 ```xml
 <node>
- <interface name="org.quire.Cua1.Manager">           <!-- /org/quire/Cua1 -->
+ <interface name="org.bardo.ComputerUse1.Manager">           <!-- /org/bardo/ComputerUse1 -->
   <method name="Start"><arg name="task" type="s" direction="in"/><arg name="run" type="o" direction="out"/></method>
   <method name="Runs"><arg type="ao" direction="out"/></method>
   <method name="StopAll"/>                              <!-- control-centre kill switch -->
@@ -495,7 +495,7 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
   <signal name="RunAdded"><arg type="o"/></signal>
   <signal name="RunRemoved"><arg type="o"/></signal>
  </interface>
- <interface name="org.quire.Cua1.Run">               <!-- /org/quire/Cua1/run/<id> -->
+ <interface name="org.bardo.ComputerUse1.Run">               <!-- /org/bardo/ComputerUse1/run/<id> -->
   <method name="Cancel"/><method name="Pause"/><method name="Resume"/>
   <method name="Answer"><arg name="question" type="t" direction="in"/><arg name="answer" type="s" direction="in"/></method>
   <method name="TakeOver"/><method name="HandBack"/>
@@ -517,7 +517,7 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
 ```
 
 **Error names**, mapped from `ControlRefusal`:
-- `org.quire.Cua1.Error.NotPermitted` — the caller is not on the allow-list.
+- `org.bardo.ComputerUse1.Error.NotPermitted` — the caller is not on the allow-list.
 - `.WrongState`
 - `.UnknownQuestion`
 - `.Disabled` — `cua.enabled` is off.
@@ -533,14 +533,14 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
 
 CUA consent and effect confirmations never come through `Answer`. They are drawn by the compositor (fork) or accounts-ui (stock), and their answer arrives as `RunInput::ConsentAnswered` from cuad's own prompter seam.
 
-### 3.9 Private Wayland protocol `quire-agent-v1` (`quire-agent-protocol`) — freeze the XML in the freeze wave; the server side is fork fill
+### 3.9 Private Wayland protocol `quire-agent-v1` (`bardo-agent-protocol`) — freeze the XML in the freeze wave; the server side is fork fill
 
-- **`quire_agent_manager_v1`** (global; offered only to clients cuad's systemd unit runs under, through the security-context and an app-id allow-list in the fork).
-  - `create_lease(id: new_id quire_agent_lease_v1, toplevel: object ext_foreign_toplevel_handle_v1, mode: uint)`.
-- **`quire_agent_lease_v1`**
+- **`bardo_agent_manager_v1`** (global; offered only to clients cuad's systemd unit runs under, through the security-context and an app-id allow-list in the fork).
+  - `create_lease(id: new_id bardo_agent_lease_v1, toplevel: object ext_foreign_toplevel_handle_v1, mode: uint)`.
+- **`bardo_agent_lease_v1`**
   - Events: `granted`, `revoked(reason: uint)`, `ei_socket(fd)` (an EIS sender context bound to this lease's agent seat; absolute region = window geometry, window-local), `physical_input`, `geometry(w, h, scale120)`.
   - Requests: `get_capture_source(new_id ext_image_capture_source_v1)` (window content with compositor masks; used with stock `ext_image_copy_capture_manager_v1`), `set_mask_hints(array of rects+reason)`, `set_glow(state: uint, x, y, w, h)`, `suspend(why: uint)`, `resume`, `destroy`.
-- **`quire_sensitive_v1`**: for clients (quire apps through layer-shell-host/blitz) to declare sensitive surface regions or a whole surface. Later.
+- **`bardo_sensitive_v1`**: for clients (quire apps through layer-shell-host/blitz) to declare sensitive surface regions or a whole surface. Later.
 
 ---
 
@@ -652,7 +652,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 - `lease_request_refuses_shell_trust` (pure validation)
 
 **`computer-use-dbus`**
-- `introspection_matches_xml`: fails until `dbus/org.quire.Cua1.xml` equals the skeleton's introspection, as in porter.
+- `introspection_matches_xml`: fails until `dbus/org.bardo.ComputerUse1.xml` equals the skeleton's introspection, as in porter.
 - `error_names_cover_control_refusal`.
 
 **`cuad`**
@@ -715,12 +715,12 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents`
 
 - **Agent `cua-freeze`** owns all of `~/cua`:
   - the workspace, CONVENTIONS, ARCHITECTURE (crate map, one-home table, traits, recipes), FINDINGS (every `todo!()`);
-  - `dbus/org.quire.Cua1.xml` and `protocols/quire-agent-v1.xml`;
+  - `dbus/org.bardo.ComputerUse1.xml` and `protocols/bardo-agent-v1.xml`;
   - every crate's types and traits, with `todo!()` bodies for behaviour;
   - all shape tests in §5 that need no behaviour: wire round-trips, slugs, introspection, fixtures load;
   - `scripts/check-boundary.sh`;
   - joining reis and atspi into quire's `docs/workspace-deps.toml` first (a quire edit, coordinated).
-- **Agent `fork-setup`** owns `~/casement`: fork at the upstream 1.8 tag, branch `quire`, an empty `src/quire/mod.rs` hooked in, `quire-agent-protocol` (server) advertising stub globals. It builds and runs nested.
+- **Agent `fork-setup`** owns `~/casement`: fork at the upstream 1.8 tag, branch `quire`, an empty `src/quire/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
 
 ### Fill waves (disjoint file ownership)
 
@@ -736,7 +736,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents`
   4. `crates/cua-desktop/src/wayland/**`
 - **Fill 3 (1 agent):** `crates/cuad/**`, `crates/cua-dbus/src/codec.rs`, `crates/cua-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
 - **Fill 4 (1 agent, `~/casement` `src/quire/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/casement/target/release/the compositor`).
-- **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `quire_sensitive_v1` client in layer-shell-host.
+- **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `bardo_sensitive_v1` client in layer-shell-host.
 
 ### Fork changes (the compositor) against stock
 
@@ -744,7 +744,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents`
 |---|---|---|
 | F1 | Agent seat: a smithay `Seat` per lease. Its EIS context comes from `lease.ei_socket`; focus is limited to the leased toplevel's surface tree (its popups and subsurfaces); its own cursor sprite. Upstreamable form: implement `ext-transient-seat-v1` and bind EI contexts to it; the lease filter stays ours | EI through `GetSenderSocket` lands on the user's seat: `SharedSeat`, InPlace = HandsOff |
 | F2 | `InputOrigin {Physical, Agent(lease), RemoteDesktop}` on every event. Consent surfaces, the session lock and shell layer surfaces accept Physical only; the agent seat cannot focus them | cuad stops emulating while its own consent prompt shows (`CuadSuspendsInput`); third-party prompts (polkit) overlapping the window remain a stated residual risk |
-| F3 | Masked capture source: masks from text-input password purpose, `quire_sensitive_v1`, cuad's `set_mask_hints`, and sensitive-window rules, all applied before the buffer leaves | stock toplevel source plus `apply_masks` inside cuad |
+| F3 | Masked capture source: masks from text-input password purpose, `bardo_sensitive_v1`, cuad's `set_mask_hints`, and sensitive-window rules, all applied before the buffer leaves | stock toplevel source plus `apply_masks` inside cuad |
 | F4 | Lease and glow: the compositor draws the glow and the agent cursor from lease state | the shell's orb only (`GlowDraw::ShellOnly`) |
 | F5 | Kill chord: a hardware chord handled in the compositor revokes every lease | control-centre `StopAll` only |
 | F6 | Settling from capture-session damage | already stock (ext-image-copy-capture frames wait for damage) |

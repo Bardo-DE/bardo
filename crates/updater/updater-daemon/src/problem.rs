@@ -91,7 +91,7 @@ impl Problem {
         }
     }
 
-    /// From the exit status of the privileged helper (see `slipway-apply --help`).
+    /// From the exit status of the privileged helper (see `bardo-updater-apply --help`).
     pub fn from_apply(failure: &ApplyFailure) -> Self {
         match failure.code {
             Some(126 | 127) => Self::NotAllowed,

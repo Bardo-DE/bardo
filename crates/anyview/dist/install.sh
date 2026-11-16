@@ -15,7 +15,7 @@
 #   --no-plugins   install the viewer alone.
 #
 # The plugins install with the viewer, each as a program under DIR/libexec/anyview and an Extension, a
-# folder with one manifest, under DIR/share/quire/extensions/org.quire.anyview.<Name> (Settings lists
+# folder with one manifest, under DIR/share/quire/extensions/org.bardo.anyview.<Name> (Settings lists
 # them under Extensions). Each one runs your own distribution's tool and links no codec, so a plugin
 # whose tool is not installed yet is still installed: it says so when it is used, and starts working once
 # you install the package (see the README's table).
@@ -316,7 +316,7 @@ else
   install_file 644 "$rendered" "$service"
 fi
 
-# The agent layer (docket): the viewer's second bus name, org.quire.Anyview, is the one docket's router
+# The agent layer (docket): the viewer's second bus name, org.bardo.Anyview, is the one docket's router
 # calls, so it gets its own activation file (the viewer owns both names; whichever is called first starts
 # it), and the intents manifest and the skill are installed where docket looks for them
 # ($XDG_DATA_DIRS/quire/intents and /quire/skills).
@@ -344,13 +344,13 @@ done
 if [[ "$WITH_FFMPEG" == yes ]]; then
   say "2b. the FFmpeg plugin"
   install_file 755 "$FFMPEG_BIN" "$PREFIX/libexec/anyview/anyview-ffmpeg"
-  manifest="$PREFIX/share/quire/extensions/org.quire.anyview.Ffmpeg/extension.toml"
+  manifest="$PREFIX/share/quire/extensions/org.bardo.anyview.Ffmpeg/extension.toml"
   if [[ "$DRY_RUN" == yes ]]; then
     say "  install $manifest"
-    say "      (path = $PREFIX/libexec/anyview/anyview-ffmpeg, from dist/extensions/org.quire.anyview.Ffmpeg.toml.in)"
+    say "      (path = $PREFIX/libexec/anyview/anyview-ffmpeg, from dist/extensions/org.bardo.anyview.Ffmpeg.toml.in)"
   else
     rendered_plugin="$SCRATCH/ffmpeg-manifest"
-    sed "s|@PREFIX@|$PREFIX|g" "$HERE/dist/extensions/org.quire.anyview.Ffmpeg.toml.in" >"$rendered_plugin"
+    sed "s|@PREFIX@|$PREFIX|g" "$HERE/dist/extensions/org.bardo.anyview.Ffmpeg.toml.in" >"$rendered_plugin"
     install_file 644 "$rendered_plugin" "$manifest"
   fi
   command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1 \
@@ -359,11 +359,11 @@ fi
 
 # The picture plugins, like the FFmpeg one: a program under libexec and a manifest. Each finds its
 # own tools when it runs; a warning says when they are not there yet.
-# install_picture_plugin ID NAME LABEL BIN TOOLS...: the Extension is org.quire.anyview.NAME; TOOLS are
+# install_picture_plugin ID NAME LABEL BIN TOOLS...: the Extension is org.bardo.anyview.NAME; TOOLS are
 # alternatives, one of which should exist.
 install_picture_plugin() {
   local id="$1" name="$2" label="$3" bin="$4"; shift 4
-  local extension="org.quire.anyview.$name"
+  local extension="org.bardo.anyview.$name"
   say "2d. the $label plugin"
   install_file 755 "$bin" "$PREFIX/libexec/anyview/anyview-$id"
   local manifest="$PREFIX/share/quire/extensions/$extension/extension.toml"
@@ -387,13 +387,13 @@ install_picture_plugin() {
 if [[ "$WITH_MPV" == yes ]]; then
   say "2c. the mpv plugin"
   install_file 755 "$MPV_CPLUGIN" "$PREFIX/libexec/anyview/mpv-wgpu-cplugin.so"
-  manifest="$PREFIX/share/quire/extensions/org.quire.anyview.Mpv/extension.toml"
+  manifest="$PREFIX/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml"
   if [[ "$DRY_RUN" == yes ]]; then
     say "  install $manifest"
-    say "      (mpv = $MPV_PATH, cplugin = $PREFIX/libexec/anyview/mpv-wgpu-cplugin.so, from dist/extensions/org.quire.anyview.Mpv.toml.in)"
+    say "      (mpv = $MPV_PATH, cplugin = $PREFIX/libexec/anyview/mpv-wgpu-cplugin.so, from dist/extensions/org.bardo.anyview.Mpv.toml.in)"
   else
     rendered_mpv="$SCRATCH/mpv-manifest"
-    sed -e "s|@PREFIX@|$PREFIX|g" -e "s|@MPV@|$MPV_PATH|g" "$HERE/dist/extensions/org.quire.anyview.Mpv.toml.in" >"$rendered_mpv"
+    sed -e "s|@PREFIX@|$PREFIX|g" -e "s|@MPV@|$MPV_PATH|g" "$HERE/dist/extensions/org.bardo.anyview.Mpv.toml.in" >"$rendered_mpv"
     install_file 644 "$rendered_mpv" "$manifest"
   fi
 fi

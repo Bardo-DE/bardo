@@ -26,7 +26,7 @@
 //! [[planner]]                           # the steps a planner makes, in order
 //! kind = "call"                         # or "send"
 //! [planner.v]
-//! app = "org.quire.Mail"
+//! app = "org.bardo.Mail"
 //! action = "mail.message.send"
 //! targets = [{ kind = "mail.thread", key = "t1" }]
 //! [planner.v.args]
@@ -270,7 +270,7 @@ pub enum Driver {
     /// The companion's planner, in its own session (the default).
     #[default]
     Companion,
-    /// A process running `quire-do`: role `cli`, `Origin::Cli`, no session of its own named,
+    /// A process running `bardo-do`: role `cli`, `Origin::Cli`, no session of its own named,
     /// every argument typed in a terminal (untrusted from `Source::Cli`, whatever `ArgFrom`
     /// says about where the words once came from).
     Cli,

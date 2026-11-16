@@ -4,7 +4,7 @@
 //!
 //! `Effect::Resolve` is the answer to a use: it updates the ledger, then each protocol of the
 //! power replays what it held, gives its own denial or ends the use. `Effect::AskPermission`
-//! and `Effect::WithdrawAsk` are the questions to the person, carried by `quire_shell_v1`
+//! and `Effect::WithdrawAsk` are the questions to the person, carried by `bardo_shell_v1`
 //! (`permission_ask`, `permission_withdraw`); the answer comes back as
 //! `Event::PermissionAnswered`.
 

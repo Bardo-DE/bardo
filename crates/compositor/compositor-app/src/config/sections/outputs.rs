@@ -21,7 +21,7 @@ pub enum FirstSight {
 /// `outputs.*`: what a display gets the first time it is seen.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "outputs", page = Page::Appearance)]
+#[settings(file = "compositor/settings.toml", domain = "outputs", page = Page::Appearance)]
 pub struct OutputsSection {
     /// `outputs.first_sight_scale`.
     #[settings(

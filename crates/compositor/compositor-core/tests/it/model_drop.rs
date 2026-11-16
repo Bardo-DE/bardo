@@ -43,7 +43,7 @@ fn sorted(mut ids: Vec<WindowId>) -> Vec<u64> {
 /// Windows 1, 2 and 3 on HEADLESS-1, which has a second Space; window 2 sits on the second.
 fn three_windows_on_two_spaces() -> (Model, SpaceId, SpaceId) {
     let key = headless("HEADLESS-1").key;
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let made = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Missing),
@@ -93,7 +93,7 @@ fn a_window_dropped_on_a_new_space_gets_a_space_of_its_own() {
     let key = headless("HEADLESS-1").key;
     let made = run(vec![
         plug("HEADLESS-1"),
-        map(1, &proven("org.quire.Mail"), TokenCheck::Missing),
+        map(1, &proven("org.bardo.Mail"), TokenCheck::Missing),
     ]);
     let before = row(&made.model, &key);
     assert_eq!(before.len(), 1);
@@ -122,7 +122,7 @@ fn a_drop_on_a_new_space_of_an_output_that_is_gone_changes_nothing() {
     let gone = headless("HEADLESS-9").key;
     let made = run(vec![
         plug("HEADLESS-1"),
-        map(1, &proven("org.quire.Mail"), TokenCheck::Missing),
+        map(1, &proven("org.bardo.Mail"), TokenCheck::Missing),
     ]);
     let after = run_from(
         made.model.clone(),
@@ -142,7 +142,7 @@ fn a_window_dropped_on_another_outputs_space_keeps_its_place_about_the_corner() 
     let made = run(vec![
         plug("HEADLESS-1"),
         plug("HEADLESS-2"),
-        map(1, &proven("org.quire.Mail"), TokenCheck::Missing),
+        map(1, &proven("org.bardo.Mail"), TokenCheck::Missing),
         ask(1, WindowAsk::Place(PlaceTarget::Centre)),
     ]);
     let model = made.model;

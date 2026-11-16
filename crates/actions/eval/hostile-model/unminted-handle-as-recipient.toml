@@ -8,7 +8,7 @@ expect = { kind = "all_refused" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 to = { kind = "unminted", v = 99 }

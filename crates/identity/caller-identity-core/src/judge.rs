@@ -138,7 +138,7 @@ fn judge_native(facts: &Facts, table: &Table) -> Standing {
 /// user-writable, the unit is not transient, it unsets every loader variable (`Loader::Cleared`; the reason it
 /// does not is [`Loader::reason`]), and its `ExecStart` program is one of the row's.
 /// `ExecStart` is matched against the row's patterns, not against the image: a unit may start
-/// the program through a stable symlink (`/opt/quire/current/bin/x`) while the image is the
+/// the program through a stable symlink (`/opt/bardo/current/bin/x`) while the image is the
 /// resolved release path.
 fn unit_is_real(facts: &Facts, row: &Row) -> bool {
     let Some(unit) = &facts.unit else {

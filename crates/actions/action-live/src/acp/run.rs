@@ -24,16 +24,16 @@ use std::time::Duration;
 pub fn agent_cassette() -> String {
     let policy = json!({
         "actions": [
-            "org.quire.Mail mail.thread.search",
-            "org.quire.Mail mail.thread.current",
-            "org.quire.Mail mail.thread.read",
-            "org.quire.Mail mail.contact.search",
-            "org.quire.Mail mail.message.forward",
-            "org.quire.Mail mail.message.send"
+            "org.bardo.Mail mail.thread.search",
+            "org.bardo.Mail mail.thread.current",
+            "org.bardo.Mail mail.thread.read",
+            "org.bardo.Mail mail.contact.search",
+            "org.bardo.Mail mail.message.forward",
+            "org.bardo.Mail mail.message.send"
         ],
         "apps": [
-            {"app": "org.quire.Mail", "up_to": "outbound"},
-            {"app": "org.quire.AcpAgent", "up_to": "read"}
+            {"app": "org.bardo.Mail", "up_to": "outbound"},
+            {"app": "org.bardo.AcpAgent", "up_to": "read"}
         ],
         "kinds": ["mail.thread", "mail.contact"],
         "ceiling": "outbound",
@@ -45,7 +45,7 @@ pub fn agent_cassette() -> String {
     let allow = json!({"verdict": "allow", "code": "within_request", "reason": "scripted"});
     let header = json!({
         "vocab": 1,
-        "engine": {"kind": "replay", "build": "docket-live"},
+        "engine": {"kind": "replay", "build": "agent-live"},
         "model": "scripted",
         "recorded": 0,
         "context": {"loaded": 32768, "trained": 32768},

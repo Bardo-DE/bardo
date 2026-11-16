@@ -113,7 +113,7 @@ fn requests_move_a_window_between_its_states() {
         ),
     ];
     for (name, requests, want) in cases {
-        let mail = proven("org.quire.Mail");
+        let mail = proven("org.bardo.Mail");
         let mut ops = vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)];
         ops.extend(requests.into_iter().map(|r| request(1, r)));
         let run = run(ops);
@@ -123,7 +123,7 @@ fn requests_move_a_window_between_its_states() {
 
 #[test]
 fn a_full_screen_window_is_not_tiled_and_a_fill_waits_for_full_screen_to_end() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -155,7 +155,7 @@ fn a_full_screen_window_is_not_tiled_and_a_fill_waits_for_full_screen_to_end() {
 
 #[test]
 fn a_move_or_resize_starts_a_grab_and_frees_a_tiled_window() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let tiled = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -200,7 +200,7 @@ fn a_move_or_resize_starts_a_grab_and_frees_a_tiled_window() {
 
 #[test]
 fn a_move_request_from_a_full_screen_window_starts_nothing() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -223,7 +223,7 @@ fn a_move_request_from_a_full_screen_window_starts_nothing() {
 
 #[test]
 fn minimising_the_key_window_moves_the_key_and_activation_brings_it_back() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let key = support::headless("HEADLESS-1").key;
     let minimised = run(vec![
         plug("HEADLESS-1"),
@@ -258,7 +258,7 @@ fn minimising_the_key_window_moves_the_key_and_activation_brings_it_back() {
 
 #[test]
 fn an_activation_without_a_valid_token_asks_for_attention_and_is_noted() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     for token in [TokenCheck::Stale, TokenCheck::Missing] {
         let run = run(vec![
             plug("HEADLESS-1"),
@@ -287,7 +287,7 @@ fn an_activation_without_a_valid_token_asks_for_attention_and_is_noted() {
 
 /// Window 1 is key; window 2 mapped without a token and is not.
 fn key_and_background() -> Vec<Op> {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),

@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Inference1
+Exec=/usr/libexec/bardo/bardo-inferd
+SystemdService=bardo-inferd.service

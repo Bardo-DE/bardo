@@ -1,7 +1,7 @@
 //! `org_kde_kwin_appmenu_manager` / `org_kde_kwin_appmenu`: a Qt client tells the compositor
 //! the D-Bus service and object path of its `com.canonical.dbusmenu` (P3-MN). casement never
 //! reads the menu; it records the address on the window (`WindowHintChange::Menu`) and the
-//! shell hears it through `quire_desktop_app_v1.menu_source`.
+//! shell hears it through `bardo_desktop_app_v1.menu_source`.
 //!
 //! This file is the meaning of the requests as pure functions. The global itself needs the
 //! protocol's generated server code, which no crate in the workspace carries yet: the

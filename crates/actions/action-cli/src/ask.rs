@@ -1,9 +1,9 @@
-//! `quire-do ask "<text>"`: the person at a terminal talks to the companion, the way sill's
+//! `bardo-do ask "<text>"`: the person at a terminal talks to the companion, the way sill's
 //! launcher does. Open a conversation, record the turn with intentd (`Session.Turn`, which a
 //! terminal may make: it is recorded as `Caller::terminal()`), hand it to companiond, and
 //! follow the answer object until it settles.
 //!
-//! `quire-do` is not `Confirm1`: when the answer needs the person for a confirmation it prints
+//! `bardo-do` is not `Confirm1`: when the answer needs the person for a confirmation it prints
 //! what is waiting and ends with its own exit code, and the confirmation stays on the sheet in the
 //! shell. Nothing here ever answers one.
 
@@ -168,7 +168,7 @@ async fn run<T: Transport, C: CompanionTransport>(
     Ok((settled(&mut answer).await?, opened.session))
 }
 
-/// The whole of `quire-do ask`: talk to the companion, print the answer, and say how it ended.
+/// The whole of `bardo-do ask`: talk to the companion, print the answer, and say how it ended.
 /// A conversation that finished is closed; one that waits for a confirmation is left open, for
 /// the sheet.
 pub async fn ask<T: Transport, C: CompanionTransport>(

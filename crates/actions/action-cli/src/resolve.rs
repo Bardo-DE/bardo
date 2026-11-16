@@ -37,7 +37,7 @@ impl Apps {
         match named.as_slice() {
             [one] => Ok(one),
             [] => Err(Failure::usage(format!(
-                "no installed app is called {word:?} (see: quire-do apps)"
+                "no installed app is called {word:?} (see: bardo-do apps)"
             ))),
             _ => Err(Failure::usage(format!(
                 "{word:?} names several apps: use the full name"
@@ -58,7 +58,7 @@ impl Apps {
             .find(|a| Some(&a.name) == name.as_ref())
             .ok_or_else(|| {
                 Failure::usage(format!(
-                    "{} has no action {word:?} (see: quire-do {} --list)",
+                    "{} has no action {word:?} (see: bardo-do {} --list)",
                     slug(&app.app),
                     slug(&app.app)
                 ))
@@ -83,7 +83,7 @@ impl Apps {
     }
 }
 
-/// An app's slug: what `quire-do` calls it.
+/// An app's slug: what `bardo-do` calls it.
 pub fn slug(app: &AppName) -> String {
     action_prefix(app)
 }

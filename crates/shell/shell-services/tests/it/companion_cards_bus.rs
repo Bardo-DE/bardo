@@ -26,7 +26,7 @@ use shell_model::companion::{Busy, Companion, CompanionCommand, Opener, answer_l
 use zbus::Connection;
 
 fn mail() -> AppName {
-    app("org.quire.Mail")
+    app("org.bardo.Mail")
 }
 
 fn send_action() -> ActionRef {
@@ -96,7 +96,7 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
         &companiond,
-        "/org/quire/Companion1",
+        "/org/bardo/Companion1",
         StandInCompanion {
             session: None,
             log: desk.log.clone(),
@@ -109,7 +109,7 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
     let intentd = desk.peer(INTENTS_BUS).await;
     serve(
         &intentd,
-        "/org/quire/Intents1",
+        "/org/bardo/Intents1",
         StandInSession(desk.log.clone()),
     )
     .await;
@@ -140,7 +140,7 @@ impl Bench {
             .emit_signal(
                 None::<&str>,
                 answer_path(&task()).as_str(),
-                "org.quire.Companion1.Answer",
+                "org.bardo.Companion1.Answer",
                 "Updated",
                 &(json(next),),
             )
@@ -395,7 +395,7 @@ async fn a_handle_in_an_answer_is_shown_through_session_display_once() {
 
 const MAIL_MANIFEST: &str = r#"
 vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 
 [[entities]]
 kind = "mail.thread"
@@ -446,13 +446,13 @@ async fn the_apps_that_declare_an_open_action_are_known_and_a_perform_is_the_lau
         intentd
             .object_server()
             .at(
-                "/org/quire/Intents1",
+                "/org/bardo/Intents1",
                 StandInRegistry(vec![mail_manifest()]),
             )
             .await,
         intentd
             .object_server()
-            .at("/org/quire/Intents1", StandInRun(desk.log.clone()))
+            .at("/org/bardo/Intents1", StandInRun(desk.log.clone()))
             .await,
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
@@ -510,7 +510,7 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
         &companiond,
-        "/org/quire/Companion1",
+        "/org/bardo/Companion1",
         StandInCompanion {
             session: None,
             log: desk.log.clone(),
@@ -524,11 +524,11 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
     for object in [
         intentd
             .object_server()
-            .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
+            .at("/org/bardo/Intents1", StandInSession(desk.log.clone()))
             .await,
         intentd
             .object_server()
-            .at("/org/quire/Intents1", StandInMessage(desk.log.clone()))
+            .at("/org/bardo/Intents1", StandInMessage(desk.log.clone()))
             .await,
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));

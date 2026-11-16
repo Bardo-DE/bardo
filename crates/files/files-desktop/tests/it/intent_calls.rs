@@ -171,7 +171,7 @@ async fn changes_reach_the_window_as_typed_asks_and_come_with_a_token_that_undoe
     );
 
     let actor = serde_json::to_string(&Actor::User {
-        via: AppName::parse("org.quire.Shell").unwrap(),
+        via: AppName::parse("org.bardo.Shell").unwrap(),
     })
     .unwrap();
     let quoted = format!("\"{}\"", token.as_str());

@@ -45,7 +45,7 @@ pub fn peers_on(connection: Connection, table: Table) -> Peers {
 
 /// What lets a caller in as `role`: the role proved `Full` (its image and its unit, as the unit
 /// manager states it). In a build with the `debug` feature the role at `Proof::Dev` is accepted as
-/// well, which only a stand-in named in the person's own rows file (`TRANSOM_DEV_CALLERS`) has at
+/// well, which only a stand-in named in the person's own rows file (`BARDO_PORTAL_DEV_CALLERS`) has at
 /// that standing; that also lets in the real program at any proof, which a debug build wants. A
 /// release build lists only the first.
 pub(crate) fn need(role: RoleName) -> Vec<Requirement> {

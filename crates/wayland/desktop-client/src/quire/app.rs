@@ -1,4 +1,4 @@
-//! Apps: `quire_desktop_app_v1`.
+//! Apps: `bardo_desktop_app_v1`.
 
 use super::lifecycle::{Entity, Lifecycle, announced};
 use crate::keys::AppKey;
@@ -6,7 +6,7 @@ use crate::names::{AppId, AppSubject};
 use crate::toplevel::Announcement;
 use desktop_protocols::vocab::{AppLifeKind, AppVisibility, Attention, MenuSourceKind, ProofKind};
 
-/// Where to read an app's global menu (`quire_desktop_app_v1.menu_source`).
+/// Where to read an app's global menu (`bardo_desktop_app_v1.menu_source`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MenuSource {
     /// Which menu protocol.

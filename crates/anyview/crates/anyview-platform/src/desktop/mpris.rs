@@ -15,7 +15,7 @@ use zbus::{interface, object_server::SignalEmitter};
 /// The bus name the player owns.
 pub const MPRIS_NAME: &str = "org.mpris.MediaPlayer2.anyview";
 const OBJECT_PATH: &str = "/org/mpris/MediaPlayer2";
-const TRACK_PATH: &str = "/org/quire/Anyview1/Track";
+const TRACK_PATH: &str = "/org/bardo/Anyview1/Track";
 /// MPRIS says "no track" with this object path.
 const NO_TRACK: &str = "/org/mpris/MediaPlayer2/TrackList/NoTrack";
 
@@ -221,7 +221,7 @@ impl Root {
     #[zbus(property)]
     fn desktop_entry(&self) -> String {
         // The desktop file's id, which shells use to find the player's icon and name.
-        "org.quire.Anyview".to_owned()
+        "org.bardo.Anyview".to_owned()
     }
 
     #[zbus(property)]

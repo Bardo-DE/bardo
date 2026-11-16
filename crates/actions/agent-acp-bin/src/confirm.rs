@@ -1,4 +1,4 @@
-//! `org.quire.Confirm1` served by the docket-acp process, under its own bus name. intentd hands a
+//! `org.bardo.Confirm1` served by the bardo-agent-acp process, under its own bus name. intentd hands a
 //! sheet for a call in an editor's session here instead of to sill (`ConfirmRequest::editor`,
 //! trusted only while this name plays the `editor` role); the sheet waits on the [`EditorDesk`],
 //! the server shows it to the editor as an ACP permission request, and the editor's choice comes
@@ -6,7 +6,7 @@
 //!
 //! Only intentd may ask or withdraw: a call from any other process is refused, so another
 //! process cannot put sheets on the editor or take them down. Intentd is the process
-//! `acp-callers.toml` names as the router (the `agent` role of the app `org.quire.Intents`, by its
+//! `agent-acp-callers.toml` names as the router (the `agent` role of the app `org.bardo.Intents`, by its
 //! unit's main process), never whoever owns a well-known name.
 
 use action_core::{ConfirmId, ConfirmRequest, Confirmer};
@@ -46,7 +46,7 @@ async fn from_intentd(header: &Header<'_>, callers: &Identity) -> fdo::Result<()
     Ok(())
 }
 
-#[zbus::interface(name = "org.quire.Confirm1")]
+#[zbus::interface(name = "org.bardo.Confirm1")]
 impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
     async fn confirm(
         &self,
@@ -76,7 +76,7 @@ impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
                     .emit_signal(
                         Some(caller),
                         path,
-                        "org.quire.Intents1.Request",
+                        "org.bardo.Intents1.Request",
                         "Response",
                         &(0_u32, reply),
                     )

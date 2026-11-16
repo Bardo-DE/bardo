@@ -227,10 +227,10 @@ fn the_fixture_is_whole_frames_with_one_reference_row_each() {
 
 /// Runs the real model over the synthetic fixture and compares with the onnxruntime reference.
 #[test]
-#[ignore = "needs silero_vad.onnx v6.2.1 (not in the repository): STOKER_SILERO_ONNX=<path>, run with --ignored"]
+#[ignore = "needs silero_vad.onnx v6.2.1 (not in the repository): BARDO_ENGINE_SILERO_ONNX=<path>, run with --ignored"]
 fn matches_the_onnxruntime_reference_within_a_thousandth() {
     let path =
-        std::env::var("STOKER_SILERO_ONNX").expect("set STOKER_SILERO_ONNX to silero_vad.onnx");
+        std::env::var("BARDO_ENGINE_SILERO_ONNX").expect("set BARDO_ENGINE_SILERO_ONNX to silero_vad.onnx");
     let library = std::env::var("ORT_DYLIB_PATH").ok();
     let config = SileroConfig {
         model: SileroModelPath(PathBuf::from(path)),

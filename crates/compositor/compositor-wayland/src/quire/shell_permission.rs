@@ -1,4 +1,4 @@
-//! `quire_shell_v1` version 5: the compositor asks the person, through the shell, whether a
+//! `bardo_shell_v1` version 5: the compositor asks the person, through the shell, whether a
 //! program may use a power (`permission_ask`), takes a question back (`permission_withdraw`)
 //! and hears the answer (`permission_answer`). The model decides what to ask and when
 //! (`compositor_core::privilege`); this only carries the words.
@@ -14,12 +14,12 @@ use super::shell::QuireShellPart;
 use compositor_core::Event;
 use compositor_core::privilege::{AskSubject, UnixSeconds};
 use compositor_core::time::Mono;
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1::{self, QuireShellV1};
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::{self, BardoShellV1};
 use desktop_protocols::vocab::{Answer, AskId, Memory, Power, WireCode};
 use smithay::reexports::wayland_server::{Resource, WEnum};
 use std::time::Duration;
 
-/// The first version of `quire_shell_v1` that carries the question.
+/// The first version of `bardo_shell_v1` that carries the question.
 pub const SINCE: u32 = 5;
 
 /// The most questions the part remembers having sent: the model keeps four open at once
@@ -53,14 +53,14 @@ pub struct SentAsk {
 }
 
 /// Sends `sent` to `shell`, when the object is new enough to carry it.
-fn send(shell: &QuireShellV1, sent: &SentAsk) {
+fn send(shell: &BardoShellV1, sent: &SentAsk) {
     if shell.version() < SINCE {
         return;
     }
     let wire = (
-        quire_shell_v1::Power::try_from(sent.power.code()),
-        quire_shell_v1::SubjectKind::try_from(sent.subject.kind.code()),
-        quire_shell_v1::Memory::try_from(sent.memory.code()),
+        bardo_shell_v1::Power::try_from(sent.power.code()),
+        bardo_shell_v1::SubjectKind::try_from(sent.subject.kind.code()),
+        bardo_shell_v1::Memory::try_from(sent.memory.code()),
     );
     if let (Ok(power), Ok(kind), Ok(memory)) = wire {
         shell.permission_ask(
@@ -115,7 +115,7 @@ pub fn apply_withdraw(part: &mut QuireShellPart, ask: AskId) {
 pub fn on_answer(
     part: &mut QuireShellPart,
     ask: u32,
-    answer: WEnum<quire_shell_v1::Answer>,
+    answer: WEnum<bardo_shell_v1::Answer>,
     now: Mono,
     wall: UnixSeconds,
 ) -> Result<Vec<Event>, AnsweredTooSoon> {
@@ -139,7 +139,7 @@ pub fn on_answer(
 /// A shell object bound: it is shown the questions still open, and when it is the first that
 /// can carry them the model hears the shell can be asked (it then sends the question the
 /// shell lost, if one was waiting).
-pub fn on_bind(part: &QuireShellPart, shell: &QuireShellV1) -> Vec<Event> {
+pub fn on_bind(part: &QuireShellPart, shell: &BardoShellV1) -> Vec<Event> {
     if shell.version() < SINCE {
         return Vec::new();
     }

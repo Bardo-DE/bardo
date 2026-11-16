@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Try `quire-do` by hand against a real intentd, on a private bus that is not your session's:
+# Try `bardo-do` by hand against a real intentd, on a private bus that is not your session's:
 # a scratch dbus-daemon, a scratch HOME and XDG directories, intentd, a fake mail app
-# (org.quire.Mail) and a fake sill sheet that asks on THIS terminal. Nothing of your real
+# (org.bardo.Mail) and a fake sill sheet that asks on THIS terminal. Nothing of your real
 # session bus or ~/.config is named.
 #
 #   scripts/try-quire-do.sh          # starts it all; prints what to run in a second terminal
 #
 # In the second terminal (the script prints the exact `source` line):
-#   quire-do apps
-#   quire-do mail --list
-#   quire-do mail thread.read t2                 # a read: runs, no sheet
-#   quire-do mail thread.archive t2 --dry-run    # the preview, no sheet
-#   quire-do mail thread.archive t2              # a write: the sheet appears HERE; answer y, t or n
-#   quire-do undo --last
-#   quire-do memory forget memory.fact:f1        # hidden: exit 3, no sheet
+#   bardo-do apps
+#   bardo-do mail --list
+#   bardo-do mail thread.read t2                 # a read: runs, no sheet
+#   bardo-do mail thread.archive t2 --dry-run    # the preview, no sheet
+#   bardo-do mail thread.archive t2              # a write: the sheet appears HERE; answer y, t or n
+#   bardo-do undo --last
+#   bardo-do memory forget memory.fact:f1        # hidden: exit 3, no sheet
 # Ctrl-C here stops everything.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -30,8 +30,8 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$world/data/quire/intents" "$world/config" "$world/bin"
-cp action-fake/fixtures/manifests/org.quire.Mail.intents.toml "$world/data/quire/intents/org.quire.Mail.toml"
-cp manifests/org.quire.Memory.toml "$world/data/quire/intents/org.quire.Memory.toml"
+cp action-fake/fixtures/manifests/org.bardo.Mail.intents.toml "$world/data/quire/intents/org.bardo.Mail.toml"
+cp manifests/org.bardo.Memory.toml "$world/data/quire/intents/org.bardo.Memory.toml"
 cat > "$world/bus.conf" <<CONF
 <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
@@ -59,7 +59,7 @@ scratch=(env -i HOME="$world" PATH="$PATH" XDG_RUNTIME_DIR="$world" XDG_DATA_HOM
 
 "${scratch[@]}" "$bin/intentd" &
 pids+=($!)
-ln -s "$bin/quire-do" "$world/bin/quire-do"
+ln -s "$bin/bardo-do" "$world/bin/bardo-do"
 cat > "$world/env" <<ENV
 export DBUS_SESSION_BUS_ADDRESS='$bus'
 export PATH='$world/bin':\$PATH

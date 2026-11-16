@@ -1,4 +1,4 @@
-//! The service behind `org.quire.Reader1`.
+//! The service behind `org.bardo.Reader1`.
 
 use crate::host::ReaderHost;
 use action_client::{Intents, Transport as IntentsTransport};

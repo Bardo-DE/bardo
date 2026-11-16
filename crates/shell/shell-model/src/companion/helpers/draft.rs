@@ -144,7 +144,7 @@ const LIMIT_PHRASES: [(&str, Ceiling); 3] = [
     ),
 ];
 
-/// The apps and the one limit that card lines such as `org.quire.Notes: look at things` say. A
+/// The apps and the one limit that card lines such as `org.bardo.Notes: look at things` say. A
 /// line of any other form, or lines that disagree about the limit, are [`Reach::Unreadable`].
 pub fn reach_of_lines(lines: &[String]) -> Reach {
     let mut apps = BTreeSet::new();

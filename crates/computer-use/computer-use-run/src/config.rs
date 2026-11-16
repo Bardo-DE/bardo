@@ -55,7 +55,7 @@ pub const TREE_MAX_NODES: NodeBudget = NodeBudget(400);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CuaConfig {
     /// `cua.enabled`: off until the person turns it on, and then still needs the per-app
-    /// consent. Off, `Cua1.Start` answers `Disabled` and the `org.quire.Cua` action is hidden.
+    /// consent. Off, `Cua1.Start` answers `Disabled` and the `org.bardo.ComputerUse` action is hidden.
     pub enabled: bool,
     /// `cua.default_mode`.
     pub default_mode: DefaultMode,

@@ -191,7 +191,7 @@ async fn heard(inputs: &mut zbus::MessageStream) -> SheetInput {
 async fn inputs_of(connection: &Connection) -> zbus::MessageStream {
     let rule = zbus::MatchRule::builder()
         .msg_type(zbus::message::Type::Signal)
-        .interface("org.quire.AccountsSheet1")
+        .interface("org.bardo.AccountsSheet1")
         .and_then(|b| b.member("Input"))
         .map(|b| b.build())
         .unwrap_or_else(|e| panic!("{e}"));
@@ -207,7 +207,7 @@ async fn accountd_opens_updates_and_closes_and_hears_what_the_person_does() {
         return;
     };
     let mut shell = shell(&bus);
-    let accountd = serviced(&bus, &shell, "org.quire.Accounts1", Role::Accounts).await;
+    let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
     let mut inputs = inputs_of(&accountd).await;
     let sheet = host(&accountd).await;
@@ -299,7 +299,7 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
         return;
     };
     let mut shell = shell(&bus);
-    let accountd = serviced(&bus, &shell, "org.quire.Accounts1", Role::Accounts).await;
+    let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
     let mut inputs = inputs_of(&accountd).await;
     let sheet = host(&accountd).await;
@@ -352,7 +352,7 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
         return;
     };
     let mut shell = shell(&bus);
-    let accountd = serviced(&bus, &shell, "org.quire.Accounts1", Role::Accounts).await;
+    let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
     let forger = connect(&bus, None).await;
     let forged = host(&forger).await;
@@ -408,7 +408,7 @@ async fn what_the_person_typed_reaches_accountd_and_nobody_else() {
         return;
     };
     let mut shell = shell(&bus);
-    let accountd = serviced(&bus, &shell, "org.quire.Accounts1", Role::Accounts).await;
+    let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
     let bystander = connect(&bus, None).await;
     let mut overheard = inputs_of(&bystander).await;
@@ -438,7 +438,7 @@ async fn a_bad_call_is_refused_and_accountd_leaving_takes_the_sheets_down() {
         return;
     };
     let mut shell = shell(&bus);
-    let accountd = serviced(&bus, &shell, "org.quire.Accounts1", Role::Accounts).await;
+    let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
     let sheet = host(&accountd).await;
     assert!(sheet.open("bad handle", "", &providers()).await.is_err());
@@ -482,13 +482,13 @@ async fn a_passive_environment_claims_nothing_and_a_taken_name_is_never_fought_o
     let dbus = zbus::fdo::DBusProxy::new(&stranger)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    let name = zbus::names::BusName::try_from("org.quire.AccountsSheet1")
+    let name = zbus::names::BusName::try_from("org.bardo.AccountsSheet1")
         .unwrap_or_else(|e| panic!("{e}"));
     assert!(
         !dbus.name_has_owner(name.clone()).await.unwrap_or(true),
         "a passive environment claimed the name"
     );
-    let _holder = connect(&bus, Some("org.quire.AccountsSheet1")).await;
+    let _holder = connect(&bus, Some("org.bardo.AccountsSheet1")).await;
     let mut shell = shell(&bus);
     assert!(
         wait_for(&mut shell.sheet.state, |s: &AccountsSheets| matches!(
@@ -510,9 +510,9 @@ async fn each_account_service_is_served_and_its_sheets_go_when_it_leaves() {
     let mut shell = shell(&bus);
     serving(&mut shell).await;
     let owners = [
-        ("org.quire.Accounts1", "accounts-0", Role::Accounts),
-        ("org.quire.Inference1", "inference-0", Role::Inference),
-        ("org.quire.Sync1", "sync-0", Role::Sync),
+        ("org.bardo.Accounts1", "accounts-0", Role::Accounts),
+        ("org.bardo.Inference1", "inference-0", Role::Inference),
+        ("org.bardo.Sync1", "sync-0", Role::Sync),
     ];
     let mut held = Vec::new();
     for (name, handle, role) in owners {

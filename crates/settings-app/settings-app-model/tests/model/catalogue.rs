@@ -121,13 +121,13 @@ fn every_key_of_every_schema_is_on_exactly_one_page() {
     assert_eq!(
         files,
         [
-            "almanac/settings.toml",
-            "cua/settings.toml",
-            "docket/settings.toml",
+            "memory/settings.toml",
+            "computer-use/settings.toml",
+            "actions/settings.toml",
             "inferd/inferd.toml",
-            "palmrest/gestures.toml",
-            "quire/appearance.toml",
-            "sill/settings.toml"
+            "mouse-gestures/gestures.toml",
+            "bardo/appearance.toml",
+            "shell/settings.toml"
         ]
     );
 }

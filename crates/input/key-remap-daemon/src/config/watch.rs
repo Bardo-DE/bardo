@@ -87,9 +87,9 @@ mod tests {
     #[test]
     fn only_the_named_file_matters() {
         const CASES: &[(&str, bool)] = &[
-            ("/etc/keycap/keycap.toml", true),
+            ("/etc/bardo/key-remap/key-remap.toml", true),
             ("/etc/keycap/other.toml", false),
-            ("/etc/keycap/keycap.toml.swp", false),
+            ("/etc/bardo/key-remap/key-remap.toml.swp", false),
             ("/etc/keycap/.keycap.toml.tmp", false),
             ("/etc/keycap/keymap", false),
         ];

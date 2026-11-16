@@ -5,7 +5,7 @@
 // a person's own rule that should hold in one mode only.
 //
 // Cedar is default-deny and forbid overrides permit. Three queries run per call (see
-// quire.cedarschema): `perform` not permitted is Deny, `perform_unasked` not permitted is Ask,
+// bardo.cedarschema): `perform` not permitted is Deny, `perform_unasked` not permitted is Ask,
 // `perform_unjudged` not permitted is AllowJudged, all permitted is AllowFinal. A row that
 // "asks" is the absence of a permit; "check" permits `perform_unasked` only, so a reviewer
 // judges the call; "runs" permits both.
@@ -28,7 +28,7 @@
 //   Any other cell                           (a row that asks)          ask
 //
 // The assistant's own bookkeeping (the Companion and Memory apps) never asks for a first use.
-// First use asks only for a change, never for a read. The terminal (`quire-do`, principal kind
+// First use asks only for a change, never for a read. The terminal (`bardo-do`, principal kind
 // "cli") has its own rows: a read is final; an undoable, outbound or destructive act asks and
 // never goes to a reviewer ("no auto-approval for a terminal"), unless the person gave a standing
 // grant for that action from the terminal, in which case it is final; a destructive act always
@@ -291,13 +291,13 @@ when {
 }
 unless {
   (context.run == "allowed" && context.rows.screen == "once") ||
-  ((resource in Quire::App::"org.quire.Companion" ||
-    resource in Quire::App::"org.quire.Memory") &&
+  ((resource in Quire::App::"org.bardo.Companion" ||
+    resource in Quire::App::"org.bardo.Memory") &&
    (resource.effect == "undoable_write"))
 };
 
 // An external MCP client may read; anything else asks. An external coding agent's host is not an
-// MCP client: its calls (the `org.quire.AcpAgent` pseudo-app, which only that role may call) are
+// MCP client: its calls (the `org.bardo.AcpAgent` pseudo-app, which only that role may call) are
 // ruled by the grid above and by taint, so a standing grant of the program can stand in for the
 // ask where the named rules allow.
 @id("mcp-asks")
@@ -308,4 +308,4 @@ forbid (
   resource
 )
 when { principal.kind == "mcp" && resource.effect != "read" }
-unless { resource in Quire::App::"org.quire.AcpAgent" };
+unless { resource in Quire::App::"org.bardo.AcpAgent" };

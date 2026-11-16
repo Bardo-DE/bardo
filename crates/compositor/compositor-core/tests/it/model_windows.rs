@@ -25,7 +25,7 @@ fn size(w: u32, h: u32) -> LogicalSize {
 
 #[test]
 fn a_mapped_window_lands_unplaced_on_the_shown_desktop_at_the_top() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -53,7 +53,7 @@ fn a_mapped_window_lands_unplaced_on_the_shown_desktop_at_the_top() {
 
 #[test]
 fn a_window_mapped_before_any_output_waits_and_the_first_output_takes_it() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let waiting = run(vec![map(1, &mail, TokenCheck::Valid)]);
     let window = &waiting.model.windows()[&WindowId(1)];
     assert_eq!(
@@ -83,7 +83,7 @@ fn a_window_mapped_before_any_output_waits_and_the_first_output_takes_it() {
 
 #[test]
 fn a_window_of_the_active_app_takes_the_key_without_a_token() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -100,7 +100,7 @@ fn a_window_of_the_active_app_takes_the_key_without_a_token() {
 
 #[test]
 fn a_shell_window_sits_on_every_space_of_the_primary_output() {
-    let bar = proven("org.quire.Bar");
+    let bar = proven("org.bardo.Bar");
     let shell = Op::Event(Event::ToplevelMapped(compositor_core::MappedToplevel {
         role: desktop_protocols::vocab::WindowRole::Shell,
         ..support::driver::mapped(1, &bar, TokenCheck::Missing)
@@ -113,7 +113,7 @@ fn a_shell_window_sits_on_every_space_of_the_primary_output() {
 
 #[test]
 fn a_modal_sheet_takes_the_key_and_gives_it_back() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let opened = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -135,7 +135,7 @@ fn a_modal_sheet_takes_the_key_and_gives_it_back() {
 
 #[test]
 fn a_sheet_on_another_apps_window_is_not_a_sheet() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -158,7 +158,7 @@ fn unmapping_an_unknown_window_is_noted_and_changes_nothing() {
 
 #[test]
 fn the_last_window_unmapping_leaves_its_app_windowless_and_active() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -175,7 +175,7 @@ fn the_last_window_unmapping_leaves_its_app_windowless_and_active() {
 
 #[test]
 fn a_client_going_unmaps_its_windows_and_takes_its_app() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &web, TokenCheck::Valid),
@@ -197,7 +197,7 @@ fn a_client_going_unmaps_its_windows_and_takes_its_app() {
 
 #[test]
 fn a_client_that_serves_two_windows_unmaps_both() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let both = Op::Event(Event::ToplevelMapped(compositor_core::MappedToplevel {
         client: ClientKey(1),
         ..support::driver::mapped(2, &mail, TokenCheck::Missing)
@@ -221,7 +221,7 @@ fn a_client_that_serves_two_windows_unmaps_both() {
 #[test]
 fn a_client_that_carried_several_apps_leaves_none_of_them_behind() {
     let (mail, web, notes) = (
-        proven("org.quire.Mail"),
+        proven("org.bardo.Mail"),
         proven("org.example.Web"),
         proven("org.example.Notes"),
     );
@@ -257,7 +257,7 @@ fn a_client_that_carried_several_apps_leaves_none_of_them_behind() {
 
 #[test]
 fn committed_sizes_update_unplaced_and_floating_windows_only() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let committed = |w, h| {
         Op::Event(Event::ToplevelCommitted {
             window: WindowId(1),
@@ -312,7 +312,7 @@ fn a_hint_or_meta_change_on_an_unknown_window_is_noted() {
 
 #[test]
 fn a_press_on_a_window_behind_its_sheet_rings_the_bell_and_goes_nowhere() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let behind = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),

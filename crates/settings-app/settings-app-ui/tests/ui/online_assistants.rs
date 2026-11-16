@@ -1,4 +1,4 @@
-//! The coding assistants' Add sheet over the list on offer: a fake `docket-agents` in a scratch
+//! The coding assistants' Add sheet over the list on offer: a fake `bardo-agents` in a scratch
 //! folder stands in for the program that reaches the network, so nothing leaves the test and the
 //! real folder is never touched.
 
@@ -64,10 +64,10 @@ fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
 /// A world whose program does `list` and `install` as the two scripts say.
 fn world(name: &str, list: &str, install: &str) -> Sandbox {
     let sandbox = Sandbox::new(name);
-    sandbox.write("docket/agents.toml", AGENTS);
+    sandbox.write("actions/agents.toml", AGENTS);
     let body = FAKE.replace("{LIST}", list).replace("{INSTALL}", install);
-    sandbox.write_data("bin/docket-agents", &body);
-    let program: PathBuf = sandbox.data_home().0.join("bin/docket-agents");
+    sandbox.write_data("bin/bardo-agents", &body);
+    let program: PathBuf = sandbox.data_home().0.join("bin/bardo-agents");
     std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o755)).expect("mode");
     sandbox.with_agents_program(program)
 }
@@ -103,14 +103,14 @@ fn the_list_on_offer_is_shown_and_an_assistant_not_installed_is_downloaded_then_
         assert!(text.contains(want), "{want} in {text}");
     }
     assert!(!text.contains("Claude Code"), "already added: {text}");
-    for developer in ["registry", "slug", "docket-agents", "CLI tool"] {
+    for developer in ["registry", "slug", "bardo-agents", "CLI tool"] {
         assert!(!text.contains(developer), "{developer} in {text}");
     }
-    assert_eq!(sandbox.read("docket/agents.toml").as_deref(), Some(AGENTS));
+    assert_eq!(sandbox.read("actions/agents.toml").as_deref(), Some(AGENTS));
 
     click(&mut harness, &format!("{SHEET} [aria-label=\"Add\"]"));
     settle(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
-    let written = sandbox.read("docket/agents.toml").expect("the file");
+    let written = sandbox.read("actions/agents.toml").expect("the file");
     for want in [
         "program = \"codex\"",
         "label = \"Codex\"",
@@ -146,7 +146,7 @@ fn a_download_that_fails_keeps_the_sheet_open_with_the_sentence() {
         sheet_text(h).contains(CHECKSUM)
     });
     assert_eq!(harness.count(SHEET), 1, "the sheet stays");
-    assert_eq!(sandbox.read("docket/agents.toml").as_deref(), Some(AGENTS));
+    assert_eq!(sandbox.read("actions/agents.toml").as_deref(), Some(AGENTS));
 }
 
 #[test]
@@ -171,6 +171,6 @@ fn a_list_that_cannot_be_fetched_says_why_and_still_offers_the_installed_ones() 
 
     click(&mut harness, &format!("{SHEET} [aria-label=\"Add\"]"));
     settle(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
-    let written = sandbox.read("docket/agents.toml").expect("the file");
+    let written = sandbox.read("actions/agents.toml").expect("the file");
     assert!(written.contains("program = \"gemini\""), "{written}");
 }

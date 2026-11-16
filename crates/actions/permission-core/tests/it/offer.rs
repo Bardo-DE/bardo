@@ -306,7 +306,7 @@ fn agent() -> GrantCaller {
 fn mail_read(name: &str) -> CallFacts {
     CallFacts {
         action: ActionRef {
-            app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+            app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
             name: provenance::ActionName::parse(name).expect("action"),
         },
         args: ArgFacts::Unscoped,

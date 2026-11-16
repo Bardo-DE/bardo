@@ -1,5 +1,5 @@
 //! The daemon: the session bus, an inferd link and the router's `Intents1` as the reader (its
-//! unit is `readerd.service`, which intentd's callers file names as the reader), and the one
+//! unit is `bardo-readerd.service`, which intentd's callers file names as the reader), and the one
 //! `ReaderHost` of the process.
 
 use crate::callers;
@@ -15,7 +15,7 @@ use futures_util::StreamExt;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-/// Serves `org.quire.Reader1` on `connection` over the inferd and intentd it reaches through it,
+/// Serves `org.bardo.Reader1` on `connection` over the inferd and intentd it reaches through it,
 /// answering the process `who` names as intentd. Returns once the name is ours; the connection
 /// keeps serving until it closes.
 pub async fn start(
@@ -30,12 +30,12 @@ pub async fn start(
 
 /// What only the acceptance harness's mains choose: the `/proc` callers are read from and the
 /// system's callers file. The shipped `main` passes the default (the system's `/proc`, the file
-/// under `/etc/quire`) and no environment variable can change either.
+/// under `/etc/bardo`) and no environment variable can change either.
 #[derive(Debug, Clone)]
 pub struct HarnessSeams {
     /// Where callers' processes are read: the system's `/proc`, or a fixture tree.
     pub proc_root: ProcRoot,
-    /// The system's callers file, else `/etc/quire/readerd-callers.toml`.
+    /// The system's callers file, else `/etc/bardo/readerd-callers.toml`.
     pub system_callers: Option<PathBuf>,
 }
 

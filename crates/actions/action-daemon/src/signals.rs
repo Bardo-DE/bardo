@@ -1,4 +1,4 @@
-//! The signals of `org.quire.Intents1` that say something changed inside the router: a manifest,
+//! The signals of `org.bardo.Intents1` that say something changed inside the router: a manifest,
 //! the undo journal, a session the breaker paused, a conversation whose mode changed, a message
 //! that arrived. The router is pure
 //! and answers requests; it does not push. Each signal is therefore the difference between two
@@ -151,27 +151,27 @@ pub fn changes(before: &Marks, after: &Marks) -> Vec<Changed> {
 pub async fn emit(connection: &BusConnection, change: &Changed) -> zbus::Result<()> {
     let (interface, member, body) = match change {
         Changed::Manifest(app) => (
-            "org.quire.Intents1.Registry",
+            "org.bardo.Intents1.Registry",
             "ManifestChanged",
             serde_json::Value::String(app.to_string()),
         ),
         Changed::Journal(rows) => (
-            "org.quire.Intents1.Control",
+            "org.bardo.Intents1.Control",
             "JournalChanged",
             serde_json::Value::from(*rows),
         ),
         Changed::Breaker(session) => (
-            "org.quire.Intents1.Control",
+            "org.bardo.Intents1.Control",
             "BreakerTripped",
             serde_json::Value::String(session.to_string()),
         ),
         Changed::Mode(..) => (
-            "org.quire.Intents1.Session",
+            "org.bardo.Intents1.Session",
             "ModeChanged",
             serde_json::Value::Null,
         ),
         Changed::Arrived(agent) => (
-            "org.quire.Intents1.Message",
+            "org.bardo.Intents1.Message",
             "Arrived",
             serde_json::Value::String(serde_json::to_string(agent).unwrap_or_default()),
         ),
@@ -182,7 +182,7 @@ pub async fn emit(connection: &BusConnection, change: &Changed) -> zbus::Result<
             .emit_signal(
                 none,
                 INTENTS_PATH,
-                "org.quire.Intents1.Session",
+                "org.bardo.Intents1.Session",
                 "ModeChanged",
                 &(session.to_string(), mode.word()),
             )

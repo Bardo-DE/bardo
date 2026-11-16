@@ -1,4 +1,4 @@
-//! `org.quire.Cua`: cuad as an intent provider, with one action, `cua.run.start`.
+//! `org.bardo.ComputerUse`: cuad as an intent provider, with one action, `cua.run.start`.
 
 use account_core::AppName;
 use action_core::{
@@ -16,8 +16,8 @@ use provenance::{
 };
 use tokio::sync::{mpsc, oneshot};
 
-/// The shipped manifest (`manifests/org.quire.Cua.toml`).
-const MANIFEST: &str = include_str!("../../manifests/org.quire.Cua.toml");
+/// The shipped manifest (`manifests/org.bardo.ComputerUse.toml`).
+const MANIFEST: &str = include_str!("../../manifests/org.bardo.ComputerUse.toml");
 
 /// Why the provider could not be built.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
@@ -244,7 +244,7 @@ fn records_of(json: &str) -> Vec<CuaRecord> {
 /// An open app as a choice for the `app` parameter: its id, which is also what to pass back.
 fn app_option(app: AppName) -> Option<EntityRef> {
     let id = EntityId {
-        app: AppName::parse("org.quire.Cua").ok()?,
+        app: AppName::parse("org.bardo.ComputerUse").ok()?,
         kind: EntityKind::parse("desktop.app").ok()?,
         key: EntityKey::parse(app.as_str()).ok()?,
     };
@@ -356,7 +356,7 @@ mod tests {
         for enabled in [false, true] {
             let valid = manifest_for(enabled).expect("a valid manifest");
             let manifest = valid.manifest();
-            assert_eq!(manifest.app.as_str(), "org.quire.Cua");
+            assert_eq!(manifest.app.as_str(), "org.bardo.ComputerUse");
             assert_eq!(manifest.actions.len(), 1);
             assert_eq!(
                 manifest.entities.len(),

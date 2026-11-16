@@ -5,16 +5,16 @@
 # kills a hung daemon, that a crash loop ends in `failed`, and that `reset-failed` recovers it.
 #
 # It installs files under /usr/local and /etc and creates an input device, so it refuses to run
-# anywhere but CI unless KEYCAP_CI_ALLOW_INSTALL=1 is set. Build first:
+# anywhere but CI unless BARDO_KEY_REMAP_CI_ALLOW_INSTALL=1 is set. Build first:
 #   cargo build --release -p key-remap-daemon --bins --examples
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TARGET="${KEYCAP_TARGET_DIR:-$HERE/target/release}"
+TARGET="${BARDO_KEY_REMAP_TARGET_DIR:-$HERE/target/release}"
 UNIT=keycap
 FAKE_NAME=keycap-ci-keyboard
-SOCKET=/run/keycap/keycap.sock
-DROPIN_DIR=/etc/systemd/system/keycap.service.d
+SOCKET=/run/bardo/key-remap/key-remap.sock
+DROPIN_DIR=/etc/systemd/system/bardo-key-remap.service.d
 FAKE_LOG="$(mktemp)"
 
 step() { printf '\n==== %s ====\n' "$*"; }
@@ -70,8 +70,8 @@ on_exit() {
 trap on_exit EXIT
 
 step "preconditions"
-if [ "${CI:-}" != true ] && [ "${KEYCAP_CI_ALLOW_INSTALL:-}" != 1 ]; then
-  fail "this installs a unit and creates an input device; run it in CI or set KEYCAP_CI_ALLOW_INSTALL=1"
+if [ "${CI:-}" != true ] && [ "${BARDO_KEY_REMAP_CI_ALLOW_INSTALL:-}" != 1 ]; then
+  fail "this installs a unit and creates an input device; run it in CI or set BARDO_KEY_REMAP_CI_ALLOW_INSTALL=1"
 fi
 [ "$(ps -p 1 -o comm=)" = systemd ] || fail "PID 1 is not systemd"
 systemctl --version | head -n 1
@@ -84,13 +84,13 @@ sudo modprobe uinput
 ls -l /dev/uinput
 
 step "install the binary, the unit, the udev rule and the polkit rule, as install.sh prints"
-sudo install -Dm755 "$TARGET/keycap" /usr/local/bin/keycap
-sudo install -Dm644 "$HERE/dist/keycap.service" /etc/systemd/system/keycap.service
-sudo install -Dm644 "$HERE/dist/keycap.uinput.conf" /etc/systemd/system/keycap.service.d/10-uinput.conf
-sudo install -Dm644 "$HERE/dist/70-keycap.rules" /etc/udev/rules.d/70-keycap.rules
-sudo install -Dm644 "$HERE/dist/keycap.polkit.rules" /etc/polkit-1/rules.d/keycap.polkit.rules
+sudo install -Dm755 "$TARGET/keycap" /usr/local/bin/bardo-key-remap
+sudo install -Dm644 "$HERE/dist/bardo-key-remap.service" /etc/systemd/system/bardo-key-remap.service
+sudo install -Dm644 "$HERE/dist/bardo-key-remap.uinput.conf" /etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf
+sudo install -Dm644 "$HERE/dist/70-bardo-key-remap.rules" /etc/udev/rules.d/70-bardo-key-remap.rules
+sudo install -Dm644 "$HERE/dist/bardo-key-remap.polkit.rules" /etc/polkit-1/rules.d/bardo-key-remap.polkit.rules
 sudo install -d "$DROPIN_DIR"
-printf '[Service]\nEnvironment=KEYCAP_GRAB_VIRTUAL=%s\n' "$FAKE_NAME" |
+printf '[Service]\nEnvironment=BARDO_KEY_REMAP_GRAB_VIRTUAL=%s\n' "$FAKE_NAME" |
   sudo tee "$DROPIN_DIR/ci.conf" >/dev/null
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=misc
@@ -99,7 +99,7 @@ sudo systemctl daemon-reload
 echo "/dev/uinput is $(stat -c '%U:%G %a' /dev/uinput); the rule asks for root:input 660"
 
 step "plug in the fake keyboard (as root, like a device a person plugs in)"
-sudo env KEYCAP_FAKE_NAME="$FAKE_NAME" nohup "$TARGET/examples/fake_keyboard" hold 900 \
+sudo env BARDO_KEY_REMAP_FAKE_NAME="$FAKE_NAME" nohup "$TARGET/examples/fake_keyboard" hold 900 \
   >"$FAKE_LOG" 2>&1 </dev/null &
 wait_for "the fake keyboard to be created" 15 fake_ready
 cat "$FAKE_LOG"

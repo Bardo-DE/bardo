@@ -9,7 +9,7 @@ use ui_settings::schema::Page;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "notifications", page = Page::Notifications,
+    file = "shell/settings.toml", domain = "notifications", page = Page::Notifications,
     footnote(section = "Alerts", text = "Do Not Disturb silences banners and sounds, except critical ones."),
 )]
 pub struct NotificationsSettings {

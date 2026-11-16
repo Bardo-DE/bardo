@@ -143,7 +143,7 @@ fn a_dropped_rule_is_reported_under_its_profile_with_its_chord_in_plain_words() 
     );
     for w in &warnings {
         assert!(
-            w.problem.contains("/etc/keycap/keycap.toml"),
+            w.problem.contains("/etc/bardo/key-remap/key-remap.toml"),
             "says where: {w:?}"
         );
     }

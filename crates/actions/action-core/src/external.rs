@@ -14,7 +14,7 @@ pub enum SheetSurface {
     #[default]
     Desktop,
     /// The host that launched the agent, which shows the sheet itself. Only a development
-    /// fallback (`docket-agent --tty`): the router sends it nothing unless the host asked.
+    /// fallback (`bardo-agent --tty`): the router sends it nothing unless the host asked.
     Host,
 }
 

@@ -120,7 +120,7 @@ fn plan_state_machine_table() {
 fn plan() -> Plan {
     Plan {
         space: space("work"),
-        scope: ForgetScope::Thing(thing("org.quire.Mail", "7f3a")),
+        scope: ForgetScope::Thing(thing("org.bardo.Mail", "7f3a")),
         events: vec![Seq(3), Seq(1)],
         facts: vec![FactId::mint(1, [1; 10]), FactId::mint(2, [2; 10])],
         pending: vec![FactId::mint(3, [3; 10])],

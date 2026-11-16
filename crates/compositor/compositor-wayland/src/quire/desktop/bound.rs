@@ -8,8 +8,8 @@ use account_core::SpaceId;
 use compositor_core::WindowId;
 use compositor_core::app::AppKey;
 use compositor_core::desktop::DesktopRef;
-use desktop_protocols::server::quire_desktop_v1::quire_desktop_manager_v1::ActorKind;
-use desktop_protocols::server::quire_desktop_v1::quire_desktop_window_v1::QuireDesktopWindowV1;
+use desktop_protocols::server::bardo_desktop_v1::bardo_desktop_manager_v1::ActorKind;
+use desktop_protocols::server::bardo_desktop_v1::bardo_desktop_window_v1::BardoDesktopWindowV1;
 use smithay::reexports::wayland_server::Resource;
 use std::collections::BTreeMap;
 
@@ -26,7 +26,7 @@ pub struct Told {
 #[derive(Debug)]
 pub struct Asked {
     window: WindowId,
-    object: QuireDesktopWindowV1,
+    object: BardoDesktopWindowV1,
     told: Option<WindowFacts>,
 }
 
@@ -80,7 +80,7 @@ impl Outcome {
 
 impl Bound {
     /// A manager just bound: it has no objects and has been told nothing.
-    pub(super) fn new(manager: super::QuireDesktopManagerV1, manages: bool) -> Bound {
+    pub(super) fn new(manager: super::BardoDesktopManagerV1, manages: bool) -> Bound {
         Bound {
             manager,
             manages,
@@ -270,7 +270,7 @@ impl Bound {
         makers: &Makers,
         view: &DesktopView<'_>,
         id: WindowId,
-        object: QuireDesktopWindowV1,
+        object: BardoDesktopWindowV1,
     ) -> Outcome {
         let Some(now) = WindowFacts::of(view, id) else {
             object.closed();

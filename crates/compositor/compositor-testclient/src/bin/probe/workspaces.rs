@@ -1,4 +1,4 @@
-//! `casement-probe workspaces`: binds `ext_workspace_manager_v1`, waits (bounded) for the first
+//! `compositor-probe workspaces`: binds `ext_workspace_manager_v1`, waits (bounded) for the first
 //! `done`, and prints one JSON line per workspace in announce order:
 //! `{"id": "..."|null, "name": "...", "group": 0|null, "active": true|false}`.
 

@@ -91,7 +91,7 @@ fn keys_in_section(doc: &str, heading: &str, next_heading: &str) -> Vec<String> 
 fn both_domains_resolve_to_quire_appearance_toml() {
     for schema in schemas() {
         assert_eq!(schema.app.0, "quire");
-        assert_eq!(schema.file.0, "quire/appearance.toml");
+        assert_eq!(schema.file.0, "bardo/appearance.toml");
         assert_eq!(schema.version, 1);
         for key in &schema.key {
             assert_eq!(key.page, Page::Appearance, "{}", key.path.0);

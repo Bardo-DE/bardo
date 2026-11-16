@@ -1,7 +1,7 @@
 //! The helpers and their routines, as a seam: list, read a card, make, change, pause, resume and
 //! remove a helper, give it a job, sign in to the app it runs, and the same for its routines.
 //! [`HelpersTransport`] is what a face of the helpers is written against; [`DbusHelpers`] is
-//! `org.quire.Companion1.Helpers2` on the session bus. Only the shell may use it; the daemon
+//! `org.bardo.Companion1.Helpers2` on the session bus. Only the shell may use it; the daemon
 //! refuses anyone else.
 
 use crate::bus::{fault_of, json};

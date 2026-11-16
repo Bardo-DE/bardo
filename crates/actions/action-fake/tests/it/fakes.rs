@@ -40,7 +40,7 @@ fn mail() -> FakeMail {
 }
 
 fn invocation(action: &str, keys: &[&str]) -> Invocation {
-    let app = AppName::parse("org.quire.Mail").expect("app");
+    let app = AppName::parse("org.bardo.Mail").expect("app");
     Invocation {
         call: CallId(1),
         action: ActionName::parse(action).expect("action"),
@@ -55,7 +55,7 @@ fn invocation(action: &str, keys: &[&str]) -> Invocation {
         ),
         args: Args::new(),
         actor: Actor::User {
-            via: AppName::parse("org.quire.Shell").expect("app"),
+            via: AppName::parse("org.bardo.Shell").expect("app"),
         },
         origin: Origin::Launcher,
         space: space(),
@@ -106,7 +106,7 @@ async fn archive_then_undo_round_trips_through_the_apps_own_store() {
     app.undo(
         token.clone(),
         Actor::User {
-            via: AppName::parse("org.quire.Shell").expect("app"),
+            via: AppName::parse("org.bardo.Shell").expect("app"),
         },
     )
     .await
@@ -117,7 +117,7 @@ async fn archive_then_undo_round_trips_through_the_apps_own_store() {
         .undo(
             token,
             Actor::User {
-                via: AppName::parse("org.quire.Shell").expect("app"),
+                via: AppName::parse("org.bardo.Shell").expect("app"),
             },
         )
         .await;
@@ -158,7 +158,7 @@ async fn search_finds_subjects_and_suggest_finds_contacts() {
     assert!(app.search("zzz").await.is_empty());
     let ask = SuggestAsk {
         action: ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: ActionName::parse("mail.message.send").expect("a"),
         },
         param: ParamName::parse("to").expect("p"),
@@ -171,7 +171,7 @@ async fn search_finds_subjects_and_suggest_finds_contacts() {
 async fn files_move_and_undo() {
     let manifest = files_manifest().expect("files");
     let files = FakeFiles::new(manifest, space()).with_file("f1", "/home/p/a.pdf", "x");
-    let app = AppName::parse("org.quire.Files").expect("app");
+    let app = AppName::parse("org.bardo.Files").expect("app");
     let mut inv = invocation("files.file.move", &["f1"]);
     inv.target = TargetValue::Entities(vec![provenance::EntityId {
         app,
@@ -203,7 +203,7 @@ fn review_request() -> action_review::ReviewRequest {
         strictness: Strictness::Default,
         turns: vec![],
         proposed: action_review::ProposedAction {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             action: ActionName::parse("mail.thread.archive").expect("a"),
             label: LabelText::parse("Archive").expect("l"),
             effect: provenance::Effect::UndoableWrite,
@@ -284,7 +284,7 @@ async fn the_scripted_confirmer_pops_in_order_and_records_requests() {
         id: ConfirmId::parse(id).expect("id"),
         space: space(),
         actor: Actor::Unknown,
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         action: LabelText::parse("Send").expect("l"),
         effect: provenance::Effect::Outbound,
         count: account_ids::Count(1),
@@ -364,7 +364,7 @@ async fn a_client_reaches_the_router_in_process_behind_its_feature() {
     let router = std::sync::Arc::new(router);
     let launcher = CallerId {
         app: account_core::AppId {
-            name: AppName::parse("org.quire.Shell").expect("app"),
+            name: AppName::parse("org.bardo.Shell").expect("app"),
             isolation: account_core::Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Launcher]),
@@ -374,11 +374,11 @@ async fn a_client_reaches_the_router_in_process_behind_its_feature() {
         .perform(
             CallRequest {
                 action: ActionRef {
-                    app: AppName::parse("org.quire.Mail").expect("app"),
+                    app: AppName::parse("org.bardo.Mail").expect("app"),
                     name: ActionName::parse("mail.thread.archive").expect("action"),
                 },
                 target: TargetValue::Entities(vec![provenance::EntityId {
-                    app: AppName::parse("org.quire.Mail").expect("app"),
+                    app: AppName::parse("org.bardo.Mail").expect("app"),
                     kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
                     key: provenance::EntityKey::parse("t1").expect("key"),
                 }]),
@@ -412,7 +412,7 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
     let router = std::sync::Arc::new(router);
     let cuad = CallerId {
         app: account_core::AppId {
-            name: AppName::parse("org.quire.Cuad").expect("app"),
+            name: AppName::parse("org.bardo.ComputerUse").expect("app"),
             isolation: account_core::Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Cua]),
@@ -435,7 +435,7 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
     let ask = CuaAsk {
         run,
         step: 1,
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         trust: WindowTrust::Quire,
         mode: RunMode::InPlace,
         space: space(),
@@ -480,7 +480,7 @@ async fn the_virtual_clock_completes_a_timer_only_when_advanced_to_it() {
 fn send_to(key: &str) -> Invocation {
     let mut inv = invocation("mail.message.send", &[]);
     let to = provenance::EntityId {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         kind: provenance::EntityKind::parse("mail.contact").expect("kind"),
         key: provenance::EntityKey::parse(key).expect("key"),
     };
@@ -496,7 +496,7 @@ fn send_to(key: &str) -> Invocation {
 
 fn user() -> Actor {
     Actor::User {
-        via: AppName::parse("org.quire.Shell").expect("app"),
+        via: AppName::parse("org.bardo.Shell").expect("app"),
     }
 }
 
@@ -554,7 +554,7 @@ fn clearing_the_grants_drops_the_standing_ones_too() {
         GrantCaller::Cli,
         StandingScope::Outbound {
             action: ActionRef {
-                app: AppName::parse("org.quire.Mail").expect("app"),
+                app: AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse("mail.message.send").expect("action"),
             },
             to: Recipient::address("accounting@example.test").expect("address"),
@@ -570,7 +570,7 @@ fn clearing_the_grants_drops_the_standing_ones_too() {
 fn clearing_the_link_forgets_what_a_case_left_in_it() {
     let router = fake_router(AgentConfig::default()).expect("router");
     let link = &router.seams.link;
-    let app = AppName::parse("org.quire.Mail").expect("app");
+    let app = AppName::parse("org.bardo.Mail").expect("app");
     link.answering
         .lock()
         .expect("lock")

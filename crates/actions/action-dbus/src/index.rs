@@ -1,12 +1,12 @@
-//! `org.quire.Intents1.Index`: the shadow index apps push titles into (the owning app only).
+//! `org.bardo.Intents1.Index`: the shadow index apps push titles into (the owning app only).
 
 use zbus::fdo;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Index",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Index",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Index {
     /// Pushes a batch (`IndexBatch` JSON).
@@ -20,7 +20,7 @@ pub trait Index {
 #[derive(Debug, Default)]
 pub struct IndexSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Index")]
+#[zbus::interface(name = "org.bardo.Intents1.Index")]
 impl IndexSkeleton {
     fn push(&self, batch: String) -> fdo::Result<()> {
         let _ = (batch,);

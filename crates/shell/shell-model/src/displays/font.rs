@@ -56,7 +56,7 @@ pub fn snippet(rendering: FontRendering) -> String {
         r#"<?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
 {HEADER}
-     Set display.font_rendering = "off" in ~/.config/sill/settings.toml and sill removes this
+     Set display.font_rendering = "off" in ~/.config/shell/settings.toml and sill removes this
      file; a file of your own in conf.d that sets antialias, hinting, hintstyle or rgba makes
      sill stand aside. -->
 <fontconfig>

@@ -1,4 +1,4 @@
-//! The frozen skeleton of `org.quire.Memory1.Recall`: its signatures, the source of the introspection.
+//! The frozen skeleton of `org.bardo.Memory1.Recall`: its signatures, the source of the introspection.
 
 use zbus::fdo;
 
@@ -6,7 +6,7 @@ use zbus::fdo;
 #[derive(Debug, Default)]
 pub(crate) struct RecallSkeleton;
 
-#[zbus::interface(name = "org.quire.Memory1.Recall")]
+#[zbus::interface(name = "org.bardo.Memory1.Recall")]
 impl RecallSkeleton {
     fn search(&self, space: String, query: String) -> fdo::Result<String> {
         let _ = (space, query);

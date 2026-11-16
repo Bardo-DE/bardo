@@ -20,7 +20,7 @@ const USAGE: &str = "usage:
   keycap                       run the daemon
   keycap --print-config        print the built-in defaults.toml
   keycap --check-uinput        can this user create virtual devices? (needs
-                               KEYCAP_ALLOW_UINPUT_PROBE=1; opens and closes only)
+                               BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE=1; opens and closes only)
   keycap status                what the running daemon is doing (exit 0 only when a keyboard
                                is grabbed)
   keycap resume                grab the keyboards again after the escape chord

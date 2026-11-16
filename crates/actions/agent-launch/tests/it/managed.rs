@@ -27,7 +27,7 @@ async fn the_preset_hands_back_the_settings_as_session_meta_with_exactly_the_des
         "disableClaudeAiConnectors": true,
         "syncClaudeAiSkills": false,
         "syncClaudeAiPlugins": false,
-        "permissions": {"allow": ["mcp__quire"]},
+        "permissions": {"allow": ["mcp__bardo"]},
     });
     let meta = spawned.meta.clone().expect("meta");
     assert_eq!(

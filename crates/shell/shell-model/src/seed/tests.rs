@@ -34,26 +34,26 @@ fn the_desktops_own_apps_come_in_the_macs_order() {
         (
             "everything installed",
             installed(&[
-                ("org.quire.Settings", NO_CATEGORIES, SHOWN),
+                ("org.bardo.Settings", NO_CATEGORIES, SHOWN),
                 ("foot", TERMINAL, SHOWN),
-                ("org.quire.Anyview", NO_CATEGORIES, SHOWN),
-                ("org.quire.Mail", NO_CATEGORIES, SHOWN),
+                ("org.bardo.Anyview", NO_CATEGORIES, SHOWN),
+                ("org.bardo.Mail", NO_CATEGORIES, SHOWN),
                 ("org.mozilla.firefox", NO_CATEGORIES, SHOWN),
             ]),
             &[
-                "org.quire.Mail",
-                "org.quire.Anyview",
+                "org.bardo.Mail",
+                "org.bardo.Anyview",
                 "foot",
-                "org.quire.Settings",
+                "org.bardo.Settings",
             ],
         ),
         (
             "a missing app leaves a gap, not a hole",
             installed(&[
-                ("org.quire.Settings", NO_CATEGORIES, SHOWN),
-                ("org.quire.Mail", NO_CATEGORIES, SHOWN),
+                ("org.bardo.Settings", NO_CATEGORIES, SHOWN),
+                ("org.bardo.Mail", NO_CATEGORIES, SHOWN),
             ]),
-            &["org.quire.Mail", "org.quire.Settings"],
+            &["org.bardo.Mail", "org.bardo.Settings"],
         ),
         (
             "the first terminal by id",
@@ -63,11 +63,11 @@ fn the_desktops_own_apps_come_in_the_macs_order() {
         (
             "a hidden entry is not pinned",
             installed(&[
-                ("org.quire.Mail", NO_CATEGORIES, Listing::Hidden),
+                ("org.bardo.Mail", NO_CATEGORIES, Listing::Hidden),
                 ("foot", TERMINAL, Listing::Hidden),
-                ("org.quire.Settings", NO_CATEGORIES, SHOWN),
+                ("org.bardo.Settings", NO_CATEGORIES, SHOWN),
             ]),
-            &["org.quire.Settings"],
+            &["org.bardo.Settings"],
         ),
         (
             "other apps are not the desktop's",
@@ -84,13 +84,13 @@ fn the_desktops_own_apps_come_in_the_macs_order() {
 #[test]
 fn the_dock_is_seeded_once_and_only_when_something_is_installed() {
     let some = installed(&[
-        ("org.quire.Mail", NO_CATEGORIES, SHOWN),
-        ("org.quire.Settings", NO_CATEGORIES, SHOWN),
+        ("org.bardo.Mail", NO_CATEGORIES, SHOWN),
+        ("org.bardo.Settings", NO_CATEGORIES, SHOWN),
     ]);
     let seeded = DockPins {
         pinned: vec![
-            AppId("org.quire.Mail".to_owned()),
-            AppId("org.quire.Settings".to_owned()),
+            AppId("org.bardo.Mail".to_owned()),
+            AppId("org.bardo.Settings".to_owned()),
         ],
     };
     let cases = [
@@ -111,9 +111,9 @@ fn the_dock_is_seeded_once_and_only_when_something_is_installed() {
 #[test]
 fn the_launchers_recent_row_is_seeded_with_the_first_app_on_top() {
     let index = installed(&[
-        ("org.quire.Mail", NO_CATEGORIES, SHOWN),
-        ("org.quire.Anyview", NO_CATEGORIES, SHOWN),
-        ("org.quire.Settings", NO_CATEGORIES, SHOWN),
+        ("org.bardo.Mail", NO_CATEGORIES, SHOWN),
+        ("org.bardo.Anyview", NO_CATEGORIES, SHOWN),
+        ("org.bardo.Settings", NO_CATEGORIES, SHOWN),
     ]);
     assert_eq!(first_frecency(Store::Present, &index, NOW), None);
     assert_eq!(
@@ -122,7 +122,7 @@ fn the_launchers_recent_row_is_seeded_with_the_first_app_on_top() {
     );
     let seeded = first_frecency(Store::Missing, &index, NOW).expect("a fresh account is seeded"); // test-only
     let key = |id: &str| ItemKey::of(ProviderKind::Apps, &ItemId(id.to_owned()));
-    let scores: Vec<u16> = ["org.quire.Mail", "org.quire.Anyview", "org.quire.Settings"]
+    let scores: Vec<u16> = ["org.bardo.Mail", "org.bardo.Anyview", "org.bardo.Settings"]
         .into_iter()
         .map(|id| seeded.score(&key(id), NOW).0)
         .collect();

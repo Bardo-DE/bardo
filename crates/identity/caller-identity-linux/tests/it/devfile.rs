@@ -5,8 +5,8 @@ use caller_identity_linux::{FixtureProc, LoadError, TABLE_FILE_CAP, TableFiles};
 use std::path::Path;
 
 const FILE: &str = "/home/p/scratch/dev-callers.toml";
-const ROWS: &str = "[[peer]]\napp = \"org.quire.Accounts\"\nexe = [\"/home/p/proj/target/debug/standin\"]\nrole = \"accounts\"\n";
-const SHIPPED: &str = "[[peer]]\napp = \"org.quire.Shell\"\nunit = \"sill.service\"\nexe = [\"/usr/bin/sill\"]\nrole = \"shell\"\n";
+const ROWS: &str = "[[peer]]\napp = \"org.bardo.Accounts\"\nexe = [\"/home/p/proj/target/debug/standin\"]\nrole = \"accounts\"\n";
+const SHIPPED: &str = "[[peer]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/usr/bin/bardo-shell\"]\nrole = \"shell\"\n";
 const PERSON: Uid = Uid::new(1000);
 
 fn own() -> FileTrust {

@@ -1,4 +1,4 @@
-//! A sheet host written by hand: the `org.quire.AccountsSheet1` interface on the private bus,
+//! A sheet host written by hand: the `org.bardo.AccountsSheet1` interface on the private bus,
 //! recording what accountd opened, updated and closed, and answering from a script.
 
 use account_sheet::SheetInput;
@@ -77,7 +77,7 @@ pub async fn send_input(connection: &Connection, handle: &str, input: &SheetInpu
     let json = serde_json::to_string(input).expect("json");
     emitter
         .emit(
-            "org.quire.AccountsSheet1",
+            "org.bardo.AccountsSheet1",
             "Input",
             &(handle, json.as_str()),
         )
@@ -85,7 +85,7 @@ pub async fn send_input(connection: &Connection, handle: &str, input: &SheetInpu
         .expect("emit");
 }
 
-#[zbus::interface(name = "org.quire.AccountsSheet1")]
+#[zbus::interface(name = "org.bardo.AccountsSheet1")]
 impl SheetHost {
     async fn open(
         &self,

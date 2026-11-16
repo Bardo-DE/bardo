@@ -107,7 +107,7 @@ mod tests {
             ("org.freedesktop.DBus.Error.NameHasNoOwner", "gone"),
             ("org.freedesktop.DBus.Error.AccessDenied", "denied"),
             ("org.freedesktop.DBus.Error.NotSupported", "other"),
-            ("org.quire.Inference1.Error.Whatever", "other"),
+            ("org.bardo.Inference1.Error.Whatever", "other"),
         ];
         for (name, expected) in cases {
             let got = match by_name(name, String::new()) {

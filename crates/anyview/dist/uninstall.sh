@@ -164,16 +164,16 @@ else
   # held them when nothing else is in them.
   remove_file "$PREFIX/share/quire/helpers/anyview.toml"
   remove_file "$PREFIX/libexec/anyview/anyview-ffmpeg"
-  remove_file "$PREFIX/share/quire/extensions/org.quire.anyview.Ffmpeg/extension.toml"
+  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Ffmpeg/extension.toml"
   remove_file "$PREFIX/libexec/anyview/anyview-heif"
-  remove_file "$PREFIX/share/quire/extensions/org.quire.anyview.Heif/extension.toml"
+  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Heif/extension.toml"
   remove_file "$PREFIX/libexec/anyview/anyview-raw"
-  remove_file "$PREFIX/share/quire/extensions/org.quire.anyview.Raw/extension.toml"
+  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Raw/extension.toml"
   remove_file "$PREFIX/libexec/anyview/mpv-wgpu-cplugin.so"
-  remove_file "$PREFIX/share/quire/extensions/org.quire.anyview.Mpv/extension.toml"
+  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml"
   remove_legacy_manifests
   if [[ "$DRY_RUN" == no ]]; then
-    for folder in libexec/anyview libexec share/quire/extensions/org.quire.anyview.Ffmpeg share/quire/extensions/org.quire.anyview.Heif share/quire/extensions/org.quire.anyview.Raw share/quire/extensions/org.quire.anyview.Mpv share/quire/extensions share/anyview/plugins share/anyview share/doc/anyview share/quire/helpers share/quire/intents share/quire/skills/files-viewer share/quire/skills share/quire; do
+    for folder in libexec/anyview libexec share/quire/extensions/org.bardo.anyview.Ffmpeg share/quire/extensions/org.bardo.anyview.Heif share/quire/extensions/org.bardo.anyview.Raw share/quire/extensions/org.bardo.anyview.Mpv share/quire/extensions share/anyview/plugins share/anyview share/doc/anyview share/quire/helpers share/quire/intents share/quire/skills/files-viewer share/quire/skills share/quire; do
       [[ -d "$(dest "$PREFIX/$folder")" ]] && remove_dir "$(dest "$PREFIX/$folder")"
     done
   fi

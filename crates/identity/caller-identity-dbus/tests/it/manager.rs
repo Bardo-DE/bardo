@@ -5,7 +5,7 @@ use zbus::zvariant::OwnedObjectPath;
 
 const UNIT_PATH: &str = "/org/freedesktop/systemd1/unit/sill_2eservice";
 
-/// What the stand-in says of `sill.service`.
+/// What the stand-in says of `bardo-shell.service`.
 #[derive(Debug, Clone)]
 pub struct FakeUnit {
     pub fragment: String,
@@ -25,7 +25,7 @@ struct Manager;
 impl Manager {
     fn get_unit(&self, name: &str) -> fdo::Result<OwnedObjectPath> {
         match name {
-            "sill.service" => {
+            "bardo-shell.service" => {
                 OwnedObjectPath::try_from(UNIT_PATH).map_err(|e| fdo::Error::Failed(e.to_string()))
             }
             other => Err(fdo::Error::Failed(format!("no such unit {other}"))),
@@ -39,7 +39,7 @@ struct UnitProps(FakeUnit);
 impl UnitProps {
     #[zbus(property)]
     fn id(&self) -> String {
-        "sill.service".to_owned()
+        "bardo-shell.service".to_owned()
     }
 
     #[zbus(property)]

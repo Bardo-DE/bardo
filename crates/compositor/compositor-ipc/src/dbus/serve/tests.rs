@@ -77,7 +77,7 @@ async fn client(address: &str) -> zbus::Proxy<'static> {
         &connection,
         Debug1::BUS_NAME,
         OBJECT_PATH,
-        "org.quire.Casement.Debug1",
+        "org.bardo.Compositor.Debug1",
     )
     .await
     .expect("proxy")

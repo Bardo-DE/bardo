@@ -126,7 +126,7 @@ fn the_file_is_toml_with_one_key_table_per_row() {
     let text = schema.to_toml();
     let table: toml::Table = text.parse().unwrap();
     assert_eq!(table["app"].as_str(), Some("palmrest"));
-    assert_eq!(table["file"].as_str(), Some("palmrest/gestures.toml"));
+    assert_eq!(table["file"].as_str(), Some("mouse-gestures/gestures.toml"));
     assert_eq!(
         table["key"].as_array().map(Vec::len),
         Some(schema.key.len())

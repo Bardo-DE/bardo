@@ -113,7 +113,7 @@ fn restore_call(session: &SessionId, point: i64, plan: &str) -> Invocation {
         target: TargetValue::Nothing,
         args,
         actor: Actor::User {
-            via: app("org.quire.Shell"),
+            via: app("org.bardo.Shell"),
         },
         origin: Origin::Launcher,
         space: space("work"),
@@ -359,7 +359,7 @@ async fn an_agent_cannot_list_plan_or_restore_and_a_surface_sees_only_its_own_se
     say(&router, &session, "first").await;
     for agent in [
         caller("org.zed.Zed", CallerRole::Mcp),
-        caller("org.quire.AcpAgent", CallerRole::AcpAgent),
+        caller("org.bardo.AcpAgent", CallerRole::AcpAgent),
     ] {
         for request in [
             IntentsRequest::CheckpointList {
@@ -546,12 +546,12 @@ async fn only_the_opener_of_a_session_ends_its_turn_and_an_agent_cannot() {
 
 /// The terminal app that watches the agents in its panes.
 fn terminal() -> CallerId {
-    caller("org.quire.Temor", CallerRole::Cli)
+    caller("org.bardo.Temor", CallerRole::Cli)
 }
 
 /// Another terminal, which did not open the watch session.
 fn stranger() -> CallerId {
-    caller("org.quire.Do", CallerRole::Cli)
+    caller("org.bardo.Do", CallerRole::Cli)
 }
 
 async fn watch_in(router: &Router<FakeSeams>, who: &CallerId, rewind: Rewind) -> SessionId {
@@ -767,7 +767,7 @@ async fn an_agent_cannot_watch_mark_or_close_a_watch_session() {
     };
     for agent in [
         caller("org.zed.Zed", CallerRole::Mcp),
-        caller("org.quire.AcpAgent", CallerRole::AcpAgent),
+        caller("org.bardo.AcpAgent", CallerRole::AcpAgent),
     ] {
         for request in [
             watch.clone(),
@@ -838,7 +838,7 @@ async fn a_conversation_goes_to_the_terminal_and_back_as_one_session() {
         .await,
         IntentsReply::Refused(WireRefusal::Malformed)
     );
-    let other_host = caller("org.quire.Other", CallerRole::AcpAgent);
+    let other_host = caller("org.bardo.Other", CallerRole::AcpAgent);
     assert_eq!(
         ask(&router, &other_host, to_terminal.clone()).await,
         not_allowed()

@@ -89,7 +89,7 @@
 //!
 //! # On and off
 //!
-//! [`ExtensionsFile`] is `quire/extensions.toml`, a schema'd settings file whose `extensions.off`
+//! [`ExtensionsFile`] is `bardo/extensions.toml`, a schema'd settings file whose `extensions.off`
 //! lists the ids turned off ([`extensions_schema`] is its schema). On is the default.
 
 mod capability;

@@ -113,7 +113,7 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
         ("PATH", set("PATH"), "entry"),
         ("HOME", set("HOME"), "entry"),
         ("BASH_ENV", set("BASH_ENV"), "entry"),
-        ("DOCKET_X", set("DOCKET_X"), "entry"),
+        ("BARDO_ACTIONS_X", set("BARDO_ACTIONS_X"), "entry"),
         ("a key set in the clear", key_set, "entry"),
         ("unknown field", login("surprise = 1"), "syntax"),
         ("not toml", "not toml [".to_owned(), "syntax"),

@@ -1,4 +1,4 @@
-//! The bodies of `org.quire.Companion1` read from damaged text: no panic, and anything that does
+//! The bodies of `org.bardo.Companion1` read from damaged text: no panic, and anything that does
 //! read is stable (written and read again it is the same value).
 
 use action_core::{ContextKeep, Keep, Reveal};

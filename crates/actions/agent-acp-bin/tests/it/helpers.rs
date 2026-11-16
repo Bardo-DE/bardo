@@ -256,7 +256,7 @@ fn spoken(text: &str) -> UserTurn {
         id: TurnId(1),
         text: text.to_owned(),
         at: provenance::UnixSeconds(0),
-        from: Caller::editor(account_core::AppName::parse("org.quire.Acp").expect("app")),
+        from: Caller::editor(account_core::AppName::parse("org.bardo.Acp").expect("app")),
         via: TurnVia::Typed,
         mode: None,
     }

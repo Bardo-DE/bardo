@@ -2,7 +2,7 @@
 //! or a grant), and what a daemon that shows one needs lives here, so each is thin wiring over
 //! it:
 //!
-//! - [`BusSheets`] draws a sheet in the sheet host (sill) over `org.quire.AccountsSheet1`, as
+//! - [`BusSheets`] draws a sheet in the sheet host (sill) over `org.bardo.AccountsSheet1`, as
 //!   account-service's `Sheets` seam, and checks that the host is who it says (its caller role is
 //!   `SheetHost`). [`BusLink`] is one open sheet.
 //! - [`AppNames`] says what a person calls an app: the caller table's name, then its desktop

@@ -21,7 +21,7 @@ use support::driver::{Op, Run, assert_same_world, last, map, plug, press, reques
 use support::{claimed, proven};
 
 fn two_apps() -> Run {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     run(vec![
         plug("HEADLESS-1"),
         map(1, &web, TokenCheck::Valid),
@@ -105,7 +105,7 @@ fn a_press_activating_a_window_raises_it_and_moves_the_keyboard() {
 
 #[test]
 fn a_press_behind_a_sheet_rings_the_bell() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -119,7 +119,7 @@ fn a_press_behind_a_sheet_rings_the_bell() {
 
 #[test]
 fn a_press_on_a_window_nobody_can_see_is_ignored() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let hidden = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -227,7 +227,7 @@ fn commands_with_nothing_to_act_on_do_nothing() {
 
 #[test]
 fn an_unanswered_ping_marks_the_app_not_responding_and_a_pong_clears_it() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]);
     let ping = compositor_core::time::TimerKey::Ping(compositor_core::ClientKey(1));
     let stuck = run_from(base.model, vec![Op::Event(Event::TimerFired(ping.clone()))]);
@@ -336,7 +336,7 @@ fn ping_of(run: &Run) -> Vec<Effect> {
 
 #[test]
 fn input_pings_the_key_window_once_per_gap_and_times_the_answer() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]);
     let first = run_from(base.model, vec![typing()]);
     let client = ClientKey(1);
@@ -365,7 +365,7 @@ fn input_pings_the_key_window_once_per_gap_and_times_the_answer() {
 
 #[test]
 fn a_client_that_misses_the_deadline_is_not_responding_until_it_answers() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]);
     let client = ClientKey(1);
     let missed = run_from(
@@ -397,7 +397,7 @@ fn a_client_that_misses_the_deadline_is_not_responding_until_it_answers() {
 
 #[test]
 fn quitting_shows_the_app_as_quitting_until_the_grace_ends_with_it_still_here() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let quit = run_from(
         two_apps().model,
         vec![Op::Command(DesktopCommand::QuitActive)],
@@ -453,7 +453,7 @@ fn quits_and_closes(run: &Run) -> (Vec<ClientKey>, Vec<WindowId>) {
 
 #[test]
 fn an_app_whose_clients_listen_is_sent_quit_and_no_window_is_closed() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let quit = run_from(
         two_apps().model,
         vec![
@@ -520,7 +520,7 @@ fn a_client_that_does_not_listen_keeps_the_window_by_window_close() {
 
 #[test]
 fn an_app_with_no_window_is_asked_to_quit_when_its_client_listens() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let windowless = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -540,7 +540,7 @@ fn an_app_with_no_window_is_asked_to_quit_when_its_client_listens() {
 
 #[test]
 fn a_listener_that_is_not_connected_is_not_remembered() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]);
     let late = run_from(base.model, vec![listening(9, Toggle::On)]);
     let quit = run_from(late.model, vec![quit_asked(&mail)]);
@@ -556,7 +556,7 @@ fn force_quit(app: &AppKey) -> Op {
 
 #[test]
 fn force_quit_stops_only_that_apps_connections_term_then_kill() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let stopped = run_from(two_apps().model, vec![force_quit(&mail)]);
     let term = Effect::Terminate(Termination {
         app: mail.clone(),
@@ -599,7 +599,7 @@ fn force_quit_stops_only_that_apps_connections_term_then_kill() {
 
 #[test]
 fn a_connection_that_carries_two_apps_is_never_force_quit() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let shared = Op::Event(Event::ToplevelMapped(compositor_core::MappedToplevel {
         client: ClientKey(1),
         ..support::driver::mapped(2, &web, TokenCheck::Valid)
@@ -711,7 +711,7 @@ fn the_kill_after_the_grace_names_the_same_x11_windows_and_a_wayland_app_keeps_i
 
 #[test]
 fn the_force_quit_panel_lists_the_apps_and_who_answers() {
-    let (mail, web) = (proven("org.quire.Mail"), proven("org.example.Web"));
+    let (mail, web) = (proven("org.bardo.Mail"), proven("org.example.Web"));
     let stuck = run_from(
         two_apps().model,
         vec![Op::Event(Event::TimerFired(TimerKey::Ping(ClientKey(2))))],

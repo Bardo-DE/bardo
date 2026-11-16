@@ -61,15 +61,15 @@ out="$(install --dry-run 2>&1)"
 check "dry run leaves no staging tree" test ! -e "$stage"
 check "dry run says it is a dry run" grep -q "dry run: nothing is changed" <<<"$out"
 check "dry run names the binary" grep -q "$prefix/bin/anyview" <<<"$out"
-check "dry run names the entry" grep -q "$prefix/share/applications/org.quire.Anyview.desktop" <<<"$out"
+check "dry run names the entry" grep -q "$prefix/share/applications/org.bardo.Anyview.desktop" <<<"$out"
 check "dry run names the notices" grep -q "$prefix/share/doc/anyview/THIRD-PARTY-NOTICES.md" <<<"$out"
 check "dry run names the helpers file" grep -q "$prefix/share/quire/helpers/anyview.toml" <<<"$out"
-check "dry run names the metainfo" grep -q "$prefix/share/metainfo/org.quire.Anyview.metainfo.xml" <<<"$out"
-check "dry run names the service" grep -q "$prefix/share/dbus-1/services/org.quire.Anyview1.service" <<<"$out"
-check "dry run names the agent service" grep -q "$prefix/share/dbus-1/services/org.quire.Anyview.service" <<<"$out"
-check "dry run names the intents manifest" grep -q "$prefix/share/quire/intents/org.quire.Anyview.toml" <<<"$out"
+check "dry run names the metainfo" grep -q "$prefix/share/metainfo/org.bardo.Anyview.metainfo.xml" <<<"$out"
+check "dry run names the service" grep -q "$prefix/share/dbus-1/services/org.bardo.Anyview1.service" <<<"$out"
+check "dry run names the agent service" grep -q "$prefix/share/dbus-1/services/org.bardo.Anyview.service" <<<"$out"
+check "dry run names the intents manifest" grep -q "$prefix/share/quire/intents/org.bardo.Anyview.toml" <<<"$out"
 check "dry run names the skill" grep -q "$prefix/share/quire/skills/files-viewer/SKILL.md" <<<"$out"
-check "dry run names both icons" grep -q "256x256/apps/org.quire.Anyview.png" <<<"$out"
+check "dry run names both icons" grep -q "256x256/apps/org.bardo.Anyview.png" <<<"$out"
 check "dry run ignores a file that is not a size" bash -c '! grep -q README <<<"$0"' "$out"
 check "dry run without --set-default names no xdg-mime" bash -c '! grep -q xdg-mime <<<"$0"' "$out"
 
@@ -79,7 +79,7 @@ for type in image/png image/svg+xml text/plain text/markdown application/pdf; do
   check "--set-default says $type" grep -q "$type" <<<"$out"
 done
 for type in video/mp4 audio/flac text/html text/csv application/json; do
-  check "--set-default leaves $type" bash -c '! grep -q "xdg-mime default org.quire.Anyview.desktop $0" <<<"$1"' "$type" "$out"
+  check "--set-default leaves $type" bash -c '! grep -q "xdg-mime default org.bardo.Anyview.desktop $0" <<<"$1"' "$type" "$out"
 done
 check "dry run wrote nothing in HOME or XDG" bash -c "empty() { [ -z \"\$(find \"\$1\" -mindepth 1)\" ]; }; empty $HOME && empty $XDG_CONFIG_HOME && empty $XDG_DATA_HOME"
 check "dry run called no tool" test ! -s "$calls"
@@ -87,33 +87,33 @@ check "dry run called no tool" test ! -s "$calls"
 # 3. The real run, staged.
 install >"$scratch/install.out" 2>&1
 check "the binary is installed and executable" test -x "$installed/bin/anyview"
-entry="$installed/share/applications/org.quire.Anyview.desktop"
+entry="$installed/share/applications/org.bardo.Anyview.desktop"
 check "the entry starts the installed binary" bash -c "grep -qx 'Exec=$prefix/bin/anyview %U' '$entry' && grep -qx 'TryExec=$prefix/bin/anyview' '$entry'"
-service="$installed/share/dbus-1/services/org.quire.Anyview1.service"
-check "the metainfo is installed" cmp -s "$repo/dist/org.quire.Anyview.metainfo.xml" "$installed/share/metainfo/org.quire.Anyview.metainfo.xml"
+service="$installed/share/dbus-1/services/org.bardo.Anyview1.service"
+check "the metainfo is installed" cmp -s "$repo/dist/org.bardo.Anyview.metainfo.xml" "$installed/share/metainfo/org.bardo.Anyview.metainfo.xml"
 check "the notices are installed under doc" cmp -s "$repo/THIRD-PARTY-NOTICES.md" "$installed/share/doc/anyview/THIRD-PARTY-NOTICES.md"
 check "the helpers file is installed where quire looks for it" cmp -s "$repo/dist/helpers/anyview.toml" "$installed/share/quire/helpers/anyview.toml"
 check "the receipt lists the helpers file" grep -qx "file $prefix/share/quire/helpers/anyview.toml" "$installed/share/anyview/install-receipt"
-check "the service names the bus" grep -qx "Name=org.quire.Anyview1" "$service"
+check "the service names the bus" grep -qx "Name=org.bardo.Anyview1" "$service"
 check "the service runs the installed binary, without DESTDIR" grep -qx "Exec=$prefix/bin/anyview" "$service"
-agent_service="$installed/share/dbus-1/services/org.quire.Anyview.service"
-check "the agent service names the bus docket calls" grep -qx "Name=org.quire.Anyview" "$agent_service"
+agent_service="$installed/share/dbus-1/services/org.bardo.Anyview.service"
+check "the agent service names the bus docket calls" grep -qx "Name=org.bardo.Anyview" "$agent_service"
 check "the agent service runs the installed binary, without DESTDIR" grep -qx "Exec=$prefix/bin/anyview" "$agent_service"
-check "the intents manifest is installed where docket looks for it" cmp -s "$repo/dist/intents/org.quire.Anyview.toml" "$installed/share/quire/intents/org.quire.Anyview.toml"
+check "the intents manifest is installed where docket looks for it" cmp -s "$repo/dist/intents/org.bardo.Anyview.toml" "$installed/share/quire/intents/org.bardo.Anyview.toml"
 check "the skill is installed where docket looks for it" bash -c "cmp -s '$repo/dist/skills/files-viewer/SKILL.md' '$installed/share/quire/skills/files-viewer/SKILL.md' && cmp -s '$repo/dist/skills/files-viewer/skill.toml' '$installed/share/quire/skills/files-viewer/skill.toml'"
-check "the 16 icon is in place" cmp -s "$icons/16.png" "$installed/share/icons/hicolor/16x16/apps/org.quire.Anyview.png"
-check "the 256 icon is in place" cmp -s "$icons/256.png" "$installed/share/icons/hicolor/256x256/apps/org.quire.Anyview.png"
+check "the 16 icon is in place" cmp -s "$icons/16.png" "$installed/share/icons/hicolor/16x16/apps/org.bardo.Anyview.png"
+check "the 256 icon is in place" cmp -s "$icons/256.png" "$installed/share/icons/hicolor/256x256/apps/org.bardo.Anyview.png"
 want="$(printf '%s\n' ./opt ./opt/av ./opt/av/bin ./opt/av/bin/anyview ./opt/av/share ./opt/av/share/anyview ./opt/av/share/anyview/install-receipt ./opt/av/share/applications \
-  ./opt/av/share/applications/org.quire.Anyview.desktop ./opt/av/share/doc ./opt/av/share/doc/anyview \
+  ./opt/av/share/applications/org.bardo.Anyview.desktop ./opt/av/share/doc ./opt/av/share/doc/anyview \
   ./opt/av/share/doc/anyview/LICENSE-APACHE ./opt/av/share/doc/anyview/LICENSE-MIT \
   ./opt/av/share/doc/anyview/THIRD-PARTY-NOTICES.md ./opt/av/share/metainfo \
-  ./opt/av/share/metainfo/org.quire.Anyview.metainfo.xml ./opt/av/share/dbus-1 ./opt/av/share/dbus-1/services \
-  ./opt/av/share/dbus-1/services/org.quire.Anyview.service ./opt/av/share/dbus-1/services/org.quire.Anyview1.service ./opt/av/share/icons ./opt/av/share/icons/hicolor \
+  ./opt/av/share/metainfo/org.bardo.Anyview.metainfo.xml ./opt/av/share/dbus-1 ./opt/av/share/dbus-1/services \
+  ./opt/av/share/dbus-1/services/org.bardo.Anyview.service ./opt/av/share/dbus-1/services/org.bardo.Anyview1.service ./opt/av/share/icons ./opt/av/share/icons/hicolor \
   ./opt/av/share/icons/hicolor/16x16 ./opt/av/share/icons/hicolor/16x16/apps \
-  ./opt/av/share/icons/hicolor/16x16/apps/org.quire.Anyview.png ./opt/av/share/icons/hicolor/256x256 \
-  ./opt/av/share/icons/hicolor/256x256/apps ./opt/av/share/icons/hicolor/256x256/apps/org.quire.Anyview.png \
+  ./opt/av/share/icons/hicolor/16x16/apps/org.bardo.Anyview.png ./opt/av/share/icons/hicolor/256x256 \
+  ./opt/av/share/icons/hicolor/256x256/apps ./opt/av/share/icons/hicolor/256x256/apps/org.bardo.Anyview.png \
   ./opt/av/share/quire ./opt/av/share/quire/helpers ./opt/av/share/quire/helpers/anyview.toml \
-  ./opt/av/share/quire/intents ./opt/av/share/quire/intents/org.quire.Anyview.toml ./opt/av/share/quire/skills \
+  ./opt/av/share/quire/intents ./opt/av/share/quire/intents/org.bardo.Anyview.toml ./opt/av/share/quire/skills \
   ./opt/av/share/quire/skills/files-viewer ./opt/av/share/quire/skills/files-viewer/SKILL.md ./opt/av/share/quire/skills/files-viewer/skill.toml | LC_ALL=C sort)"
 check "the staged tree is exactly the files" test "$(tree_of "$stage")" = "$want"
 check "staging registered nothing" test ! -s "$calls"
@@ -186,8 +186,8 @@ SHIM
 chmod +x "$shims/cargo"
 export CARGO_TARGET_DIR="$scratch/target"
 
-# A plugin is an Extension: share/quire/extensions/org.quire.anyview.<Name>/extension.toml.
-extension_of() { printf 'org.quire.anyview.%s%s' "$(printf %s "${1:0:1}" | tr a-z A-Z)" "${1:1}"; }
+# A plugin is an Extension: share/quire/extensions/org.bardo.anyview.<Name>/extension.toml.
+extension_of() { printf 'org.bardo.anyview.%s%s' "$(printf %s "${1:0:1}" | tr a-z A-Z)" "${1:1}"; }
 manifest_of() { printf '%s/share/quire/extensions/%s/extension.toml' "$installed" "$(extension_of "$1")"; }
 mpv_manifest="$(manifest_of mpv)"
 mkdir -p "$scratch/pathbin"
@@ -226,7 +226,7 @@ for id in ffmpeg heif raw; do
 done
 check "default dry run builds the three plugins in one cargo run" grep -q "cargo build --release -p anyview-ffmpeg -p anyview-heif -p anyview-raw" <<<"$out"
 check "default dry run says what it would fetch" grep -q "git fetch --depth 1 https://example.invalid/mpv-wgpu.git $pin" <<<"$out"
-check "default dry run names the mpv manifest" grep -q "$prefix/share/quire/extensions/org.quire.anyview.Mpv/extension.toml" <<<"$out"
+check "default dry run names the mpv manifest" grep -q "$prefix/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml" <<<"$out"
 check "the default dry run installs nothing, fetches nothing, builds nothing" bash -c "[ -z \"\$(find '$stage' -mindepth 1 2>/dev/null)\" ] && [ ! -s '$cargo_log' ] && [ -z \"\$(find '$XDG_CACHE_HOME' -mindepth 1)\" ]"
 
 # 6b. The real default install, with the mpv-wgpu source fetched from the local stand-in.
@@ -254,7 +254,7 @@ check "the mpv manifest names the mpv found on the search path" grep -qx "mpv = 
 check "the mpv manifest names the installed C plugin, without DESTDIR" grep -qx "cplugin = \"$prefix/libexec/anyview/mpv-wgpu-cplugin.so\"" "$mpv_manifest"
 check "the mpv manifest provides playback" grep -q 'capability = "play"' "$mpv_manifest"
 check "no placeholder is left in the mpv manifest" bash -c "! grep -q '@' $mpv_manifest"
-check "the receipt lists the C plugin and the mpv manifest" bash -c "grep -qx 'file $prefix/libexec/anyview/mpv-wgpu-cplugin.so' $installed/share/anyview/install-receipt && grep -qx 'file $prefix/share/quire/extensions/org.quire.anyview.Mpv/extension.toml' $installed/share/anyview/install-receipt"
+check "the receipt lists the C plugin and the mpv manifest" bash -c "grep -qx 'file $prefix/libexec/anyview/mpv-wgpu-cplugin.so' $installed/share/anyview/install-receipt && grep -qx 'file $prefix/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml' $installed/share/anyview/install-receipt"
 check "staging the plugins registered nothing" test ! -s "$calls"
 check "HOME and XDG config stay empty" bash -c "[ -z \"\$(find $HOME $XDG_CONFIG_HOME $XDG_DATA_HOME -mindepth 1)\" ]"
 # A second run reuses the checkout (no second fetch) and leaves the files alone.
@@ -273,7 +273,7 @@ with_mpv fetching_install --without-plugin heif --without-plugin mpv >"$scratch/
 check "--without-plugin keeps the others" test -x "$installed/libexec/anyview/anyview-ffmpeg" -a -x "$installed/libexec/anyview/anyview-raw"
 check "--without-plugin heif leaves heif out" test ! -e "$installed/libexec/anyview/anyview-heif" -a ! -e "$(manifest_of heif)"
 check "--without-plugin mpv leaves mpv out and fetches nothing" bash -c "[ ! -e $mpv_manifest ] && [ ! -e '$XDG_CACHE_HOME/anyview' ]"
-check "the receipt covers the plugins that were installed" grep -qx "file $prefix/share/quire/extensions/org.quire.anyview.Raw/extension.toml" "$installed/share/anyview/install-receipt"
+check "the receipt covers the plugins that were installed" grep -qx "file $prefix/share/quire/extensions/org.bardo.anyview.Raw/extension.toml" "$installed/share/anyview/install-receipt"
 check "the receipt names no plugin that was left out" bash -c "! grep -q 'heif\|mpv' $installed/share/anyview/install-receipt"
 uninstall >/dev/null 2>&1
 check "uninstall after --without-plugin leaves the staging tree empty" empty "$stage"

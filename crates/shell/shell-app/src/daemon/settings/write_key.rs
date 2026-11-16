@@ -1,4 +1,4 @@
-//! The one way the daemon changes `sill/settings.toml`: set the key it means to change, in place,
+//! The one way the daemon changes `shell/settings.toml`: set the key it means to change, in place,
 //! through quire's `SettingsWriter`, and leave every other byte of the file as it was.
 //!
 //! The file has more than one writer (Settings writes its keys the same way; a person edits it by

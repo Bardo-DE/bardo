@@ -27,7 +27,7 @@ pub enum LandlockLevel {
 }
 
 /// The first words of the line the exec stage writes to its standard error.
-const REPORT: &str = "bulkhead-enter: landlock=";
+const REPORT: &str = "bardo-sandbox-enter: landlock=";
 
 impl LandlockLevel {
     /// The word for the level.
@@ -40,7 +40,7 @@ impl LandlockLevel {
     }
 
     /// The one fixed-format line the exec stage writes to standard error before it starts the
-    /// agent: `bulkhead-enter: landlock=<word>`.
+    /// agent: `bardo-sandbox-enter: landlock=<word>`.
     pub fn report_line(self) -> String {
         format!("{REPORT}{}", self.word())
     }

@@ -29,7 +29,7 @@ pub(crate) fn request(id_text: &str, offer: ConfirmOffer, expires: u32) -> Confi
         id: id(id_text),
         space: SpaceId::parse("work").unwrap_or_else(|e| panic!("{e}")),
         actor: Actor::Cli,
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         action: LabelText::parse("Archive a thread").unwrap_or_else(|e| panic!("{e}")),
         effect: Effect::UndoableWrite,
         count: Count(1),
@@ -110,7 +110,7 @@ fn allowing_from_the_terminal_asks_for_the_grants_to_be_read_again() {
 #[test]
 fn the_terminal_moves_by_its_own_events() {
     let grant = action_vocab::ActionRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         name: provenance::ActionName::parse("mail.thread.archive")
             .unwrap_or_else(|e| panic!("{e}")),
     };

@@ -1,4 +1,4 @@
-//! `org.quire.Companion1`: the companion, served by companiond: one identity over many tasks.
+//! `org.bardo.Companion1`: the companion, served by companiond: one identity over many tasks.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -7,9 +7,9 @@ use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Companion1",
-    default_service = "org.quire.Companion1",
-    default_path = "/org/quire/Companion1"
+    interface = "org.bardo.Companion1",
+    default_service = "org.bardo.Companion1",
+    default_path = "/org/bardo/Companion1"
 )]
 pub trait Companion {
     /// On summon: warms the planner model so the first turn skips a cold start.
@@ -50,7 +50,7 @@ pub trait Companion {
 #[derive(Debug, Default)]
 pub struct CompanionSkeleton;
 
-#[zbus::interface(name = "org.quire.Companion1")]
+#[zbus::interface(name = "org.bardo.Companion1")]
 impl CompanionSkeleton {
     fn prepare(&self, options: Details) -> fdo::Result<()> {
         let _ = (options,);

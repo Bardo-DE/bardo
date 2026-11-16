@@ -12,10 +12,10 @@ pub enum StyleOwner {
 }
 
 impl StyleOwner {
-    /// The file as the person finds it under their settings folder: `quire/style.css`.
+    /// The file as the person finds it under their settings folder: `bardo/style.css`.
     pub fn file_name(&self) -> String {
         match self {
-            StyleOwner::Desktop => "quire/style.css".to_owned(),
+            StyleOwner::Desktop => "bardo/style.css".to_owned(),
             StyleOwner::App(folder) => format!("{folder}/style.css"),
         }
     }
@@ -160,8 +160,8 @@ mod tests {
         assert_eq!(
             notes.rows(),
             [
-                row("Heavy blur may slow the desktop", "quire/style.css", 4),
-                row("This animation never stops", "quire/style.css", 12),
+                row("Heavy blur may slow the desktop", "bardo/style.css", 4),
+                row("This animation never stops", "bardo/style.css", 12),
                 row("Could not be read", "files/style.css", 2),
             ]
         );

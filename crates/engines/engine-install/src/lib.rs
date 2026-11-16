@@ -13,7 +13,7 @@
 //!   everyone through `pkexec` and the helper, [`install_for_everyone`]) and where each stands.
 //! - [`helper`] is the privileged side: the only arguments it accepts (an engine and a backend
 //!   by name, never an address, path or version), the report lines it prints and the work it
-//!   does as root. The `engine-helper` program is a thin shell around it.
+//!   does as root. The `bardo-engine-helper` program is a thin shell around it.
 //!
 //! Nothing here chooses what to install or asks anyone: that is the caller's. The caller also
 //! says where the helper is: a [`HelperProgram`] names `pkexec` and the helper by path.

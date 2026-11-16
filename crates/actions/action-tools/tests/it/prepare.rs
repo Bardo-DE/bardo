@@ -21,7 +21,7 @@ fn client() -> ClientName {
 }
 
 fn memory() -> [ValidManifest; 1] {
-    [manifest("org.quire.Memory.toml")]
+    [manifest("org.bardo.Memory.toml")]
 }
 
 #[test]

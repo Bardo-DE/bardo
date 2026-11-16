@@ -1,7 +1,7 @@
-//! cuad on a private bus: `org.quire.Cua1` for the shell, the planner and strangers, and the
-//! `org.quire.Cua` provider for the router. Every connection of a test is one process, so each
+//! cuad on a private bus: `org.bardo.ComputerUse1` for the shell, the planner and strangers, and the
+//! `org.bardo.ComputerUse` provider for the router. Every connection of a test is one process, so each
 //! caller is introduced as the app and role its process would have in cuad's callers table
-//! (`Who`); a bus name decides nothing, and a program that owns `org.quire.Shell` is only the
+//! (`Who`); a bus name decides nothing, and a program that owns `org.bardo.Shell` is only the
 //! shell if its process is.
 
 use crate::support::bus::PrivateBus;
@@ -35,16 +35,16 @@ enum Who {
     Planner,
     Shell,
     Stranger,
-    /// A program that took `org.quire.Shell` while the shell restarted: an app, not the shell.
+    /// A program that took `org.bardo.Shell` while the shell restarted: an app, not the shell.
     Squatter,
 }
 
 impl Who {
     fn standing(self) -> (&'static str, Role) {
         match self {
-            Who::Router => ("org.quire.Intents", Role::Agent),
-            Who::Planner => ("org.quire.Companion1", Role::Agent),
-            Who::Shell => ("org.quire.Shell", Role::SheetHost),
+            Who::Router => ("org.bardo.Intents", Role::Agent),
+            Who::Planner => ("org.bardo.Companion1", Role::Agent),
+            Who::Shell => ("org.bardo.Shell", Role::SheetHost),
             Who::Stranger => ("org.example.Stranger", Role::App),
             Who::Squatter => ("org.example.Squatter", Role::App),
         }
@@ -155,7 +155,7 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
 
     // The shell listens before the run exists: the first id is known, and a signal sent before
     // anyone listens is gone.
-    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/quire/Cua1/run/r_1").unwrap();
+    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
     let run_s = run_proxy(&shell, &path).await;
     let mut asked = run_s.receive_ask_user().await.unwrap();
     let mut finished = run_s.receive_finished().await.unwrap();
@@ -198,14 +198,14 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
     let stranger = named(&fx, Who::Stranger).await;
     let run_x = run_proxy(&stranger, &path).await;
     let refused = run_x.answer(1, "x").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.NotPermitted");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
     let run_p = run_proxy(&planner, &path).await;
     let refused = run_p.answer(1, "x").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.NotPermitted");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
     let refused = run_s.answer(9, "x").await.unwrap_err();
     assert_eq!(
         refusal_name(&refused),
-        "org.quire.Cua1.Error.UnknownQuestion"
+        "org.bardo.ComputerUse1.Error.UnknownQuestion"
     );
     run_s.answer(1, "the work one").await.unwrap();
 
@@ -281,12 +281,12 @@ async fn start_and_stop_are_refused_to_the_wrong_callers_with_their_error_names(
             .unwrap_err();
         assert_eq!(
             refusal_name(&refused),
-            "org.quire.Cua1.Error.NotPermitted",
+            "org.bardo.ComputerUse1.Error.NotPermitted",
             "{name} may not start"
         );
     }
     let refused = manager(&stranger).await.stop_all().await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.NotPermitted");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
 
     // A body that is not this vocabulary's is a bad task.
     let refused = manager(&planner)
@@ -294,9 +294,9 @@ async fn start_and_stop_are_refused_to_the_wrong_callers_with_their_error_names(
         .start("{\"vocab\":7,\"body\":{}}")
         .await
         .unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.BadTask");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.BadTask");
     let refused = manager(&planner).await.start("not json").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.BadTask");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.BadTask");
     assert_eq!(fx.supervisor.started(), 0);
 
     // The shell's kill switch ends what runs.
@@ -354,9 +354,9 @@ async fn perform(
         std::collections::HashMap::new();
     let reply = caller
         .call_method(
-            Some("org.quire.Cua"),
-            "/org/quire/IntentProvider1",
-            Some("org.quire.IntentProvider1"),
+            Some("org.bardo.ComputerUse"),
+            "/org/bardo/IntentProvider1",
+            Some("org.bardo.IntentProvider1"),
             "Perform",
             &(serde_json::to_string(invocation).unwrap(), options),
         )
@@ -370,7 +370,7 @@ async fn the_router_starts_a_run_through_the_provider_and_gets_its_id() {
     let fx = fixture(vec![reply(ask())]).await;
     let router = named(&fx, Who::Router).await;
     let window = action_vocab::Value::Entity(provenance::EntityId {
-        app: account_core::AppName::parse("org.quire.Cua").unwrap(),
+        app: account_core::AppName::parse("org.bardo.ComputerUse").unwrap(),
         kind: provenance::EntityKind::parse("desktop.window").unwrap(),
         key: provenance::EntityKey::parse("w1").unwrap(),
     });
@@ -436,7 +436,7 @@ async fn the_router_starts_a_run_through_the_provider_and_gets_its_id() {
         &invocation(
             &[("goal", goal)],
             provenance::Actor::User {
-                via: account_core::AppName::parse("org.quire.Shell").unwrap(),
+                via: account_core::AppName::parse("org.bardo.Shell").unwrap(),
             },
         ),
     )
@@ -469,7 +469,7 @@ async fn what_the_model_proposes_and_the_screen_asks_reaches_the_shell_and_no_on
     let planner = named(&fx, Who::Planner).await;
     let shell = named(&fx, Who::Shell).await;
     let stranger = named(&fx, Who::Stranger).await;
-    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/quire/Cua1/run/r_1").unwrap();
+    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
     let mut shell_asked = run_proxy(&shell, &path)
         .await
         .receive_ask_user()
@@ -516,7 +516,7 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
     let fx = fixture(vec![reply(ask()), reply(finish())]).await;
     let planner = named(&fx, Who::Planner).await;
     let squatter = named(&fx, Who::Squatter).await;
-    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/quire/Cua1/run/r_1").unwrap();
+    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
     let spy = run_proxy(&squatter, &path).await;
     let mut spy_asked = spy.receive_ask_user().await.unwrap();
     let mut spy_proposed = spy.receive_action_proposed().await.unwrap();
@@ -529,7 +529,7 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
         .start(&start_body(task()))
         .await
         .unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.NotPermitted");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
     assert_eq!(fx.supervisor.started(), 0);
 
     manager(&planner)
@@ -565,7 +565,7 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
         "the thoughts are the shell's"
     );
     let refused = spy.answer(1, "yes").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.quire.Cua1.Error.NotPermitted");
+    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
     fx.supervisor
         .stop_all(computer_use_bus::CuaCaller::Shell)
         .await
@@ -588,7 +588,7 @@ async fn two_windows(focus: Option<&str>) -> Fixture {
         };
         window
     };
-    let mut shell = open("launcher", "org.quire.Shell", "Launcher");
+    let mut shell = open("launcher", "org.bardo.Shell", "Launcher");
     shell.trust = computer_use_action::WindowTrust::Shell;
     shell.state = std::collections::BTreeSet::from([ToplevelState::Activated]);
     let windows = vec![
@@ -632,7 +632,7 @@ async fn suggest_apps(fx: &Fixture, typed: &str, param: &str) -> Vec<String> {
     let router = named(fx, Who::Router).await;
     let ask = action_core::SuggestAsk {
         action: action_vocab::ActionRef {
-            app: account_core::AppName::parse("org.quire.Cua").unwrap(),
+            app: account_core::AppName::parse("org.bardo.ComputerUse").unwrap(),
             name: provenance::ActionName::parse("cua.run.start").unwrap(),
         },
         param: action_vocab::ParamName::parse(param).unwrap(),
@@ -640,9 +640,9 @@ async fn suggest_apps(fx: &Fixture, typed: &str, param: &str) -> Vec<String> {
     };
     let reply = router
         .call_method(
-            Some("org.quire.Cua"),
-            "/org/quire/IntentProvider1",
-            Some("org.quire.IntentProvider1"),
+            Some("org.bardo.ComputerUse"),
+            "/org/bardo/IntentProvider1",
+            Some("org.bardo.IntentProvider1"),
             "Suggest",
             &(serde_json::to_string(&ask).unwrap(),),
         )
@@ -674,7 +674,7 @@ async fn the_app_parameter_reads_as_text_or_an_entity() {
     let forms = [
         action_vocab::Value::Text(draw.to_owned()),
         action_vocab::Value::Entity(provenance::EntityId {
-            app: account_core::AppName::parse("org.quire.Cua").unwrap(),
+            app: account_core::AppName::parse("org.bardo.ComputerUse").unwrap(),
             kind: provenance::EntityKind::parse("desktop.app").unwrap(),
             key: provenance::EntityKey::parse(draw).unwrap(),
         }),
@@ -693,7 +693,7 @@ async fn the_app_parameter_reads_as_text_or_an_entity() {
 async fn an_app_that_is_not_open_is_refused_with_the_open_apps_by_id_and_never_a_title() {
     let fx = two_windows(None).await;
     let Err(action_core::AppRefusal::NeedsParam { param, options }) =
-        start_with(&fx, Some("org.quire.Desktop")).await
+        start_with(&fx, Some("org.bardo.Desktop")).await
     else {
         panic!("a refusal with choices");
     };

@@ -1,6 +1,6 @@
 [package]
 name = "action-live"
-description = "Operator tools over the acceptance world: docket-live runs the eval corpora and the acceptance flows against a real model or a cassette on a private bus, and docket-bringup starts the agent services on a demo shell's bus. Not shipped; action-accept holds the world they run in."
+description = "Operator tools over the acceptance world: agent-live runs the eval corpora and the acceptance flows against a real model or a cassette on a private bus, and agent-bringup starts the agent services on a demo shell's bus. Not shipped; action-accept holds the world they run in."
 publish = false
 version = "0.1.0"
 edition = "2024"
@@ -9,14 +9,14 @@ rust-version = "1.92"
 repository = "https://github.com/Bardo-DE/docket"
 
 [[bin]]
-name = "docket-live"
-path = "src/bin/docket-live.rs"
+name = "agent-live"
+path = "src/bin/agent-live.rs"
 
 [[bin]]
-name = "docket-bringup"
-path = "src/bin/docket-bringup.rs"
+name = "agent-bringup"
+path = "src/bin/agent-bringup.rs"
 
-# The daemons the world starts are action-accept's binaries (`accept-intentd` and the rest), found
+# The daemons the world starts are action-accept's binaries (`accept-actiond` and the rest), found
 # beside the running program (`Binaries::beside`): build them first with `cargo build -p action-accept --bins`.
 [dependencies]
 account-match = {path = "../../accounts/account-match"}

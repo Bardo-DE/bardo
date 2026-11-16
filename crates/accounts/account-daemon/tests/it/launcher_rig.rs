@@ -71,7 +71,7 @@ pub fn account(id: &str, auth: AuthKind) -> Account {
 
 pub fn agent_app(program: &str) -> AppId {
     AppId {
-        name: AppName::parse(&format!("org.quire.Agent.{program}")).expect("name"),
+        name: AppName::parse(&format!("org.bardo.Agent.{program}")).expect("name"),
         isolation: Isolation::Unsandboxed,
     }
 }

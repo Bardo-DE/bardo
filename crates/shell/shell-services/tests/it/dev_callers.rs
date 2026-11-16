@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 use shell_services::callers::DesktopCallers;
 use shell_testkit::TempDir;
 
-const ROWS: &str = "[[peer]]\napp = \"org.quire.Accounts\"\nrole = \"accounts\"\nexe = [\"/opt/checkout/standin\"]\n";
+const ROWS: &str = "[[peer]]\napp = \"org.bardo.Accounts\"\nrole = \"accounts\"\nexe = [\"/opt/checkout/standin\"]\n";
 
 fn write(dir: &Path, name: &str, text: &str, mode: u32) -> PathBuf {
     let path = dir.join(name);
@@ -53,7 +53,7 @@ fn only_the_persons_own_plain_unshared_file_that_parses_adds_rows() {
             write(
                 dir.path(),
                 "noexe.toml",
-                "[[peer]]\napp = \"org.quire.Accounts\"\nrole = \"accounts\"\n",
+                "[[peer]]\napp = \"org.bardo.Accounts\"\nrole = \"accounts\"\n",
                 0o600,
             ),
             false,

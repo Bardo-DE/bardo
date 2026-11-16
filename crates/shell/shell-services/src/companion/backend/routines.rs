@@ -1,4 +1,4 @@
-//! The routines on `org.quire.Companion1.Helpers2`: the list, making one from what the person
+//! The routines on `org.bardo.Companion1.Helpers2`: the list, making one from what the person
 //! confirmed (the ones helpers suggest are in `proposals`), pausing, resuming and removing. The companion tells `Changed` after each, and the
 //! screen reads the list again then, so the calls with no body say nothing back.
 

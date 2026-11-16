@@ -1,4 +1,4 @@
-//! `quire-do sessions`: list, load and fork through `Session.Stored`, over the fake router as the
+//! `bardo-do sessions`: list, load and fork through `Session.Stored`, over the fake router as the
 //! cli role. The router lists and pages only the sessions a terminal may bring back (the ones
 //! its own app opened), so another app's session is not listed, not loadable and not forkable.
 
@@ -82,8 +82,8 @@ async fn nothing_to_list_is_said_plainly() {
 #[tokio::test]
 async fn the_list_holds_the_terminals_own_sessions_and_not_another_apps() {
     let desk = Desk::new();
-    let mine = session_of(&desk, "org.quire.Do", "tidy the downloads").await;
-    let theirs = session_of(&desk, "org.quire.Shell", "something else").await;
+    let mine = session_of(&desk, "org.bardo.Do", "tidy the downloads").await;
+    let theirs = session_of(&desk, "org.bardo.Shell", "something else").await;
 
     let tty = desk.tty(&["sessions"]).await;
     assert_eq!(tty.exit, Exit::Done, "{tty:?}");
@@ -108,7 +108,7 @@ async fn the_list_holds_the_terminals_own_sessions_and_not_another_apps() {
 #[tokio::test]
 async fn load_prints_the_turns_and_json_is_the_export() {
     let desk = Desk::new();
-    let mine = session_of(&desk, "org.quire.Do", "tidy the downloads").await;
+    let mine = session_of(&desk, "org.bardo.Do", "tidy the downloads").await;
 
     let tty = desk.tty(&["sessions", "load", mine.as_str()]).await;
     assert_eq!(tty.exit, Exit::Done, "{tty:?}");
@@ -122,7 +122,7 @@ async fn load_prints_the_turns_and_json_is_the_export() {
 #[tokio::test]
 async fn a_fork_keeps_the_log_up_to_a_row_and_is_the_terminals_too() {
     let desk = Desk::new();
-    let mine = session_of(&desk, "org.quire.Do", "tidy the downloads").await;
+    let mine = session_of(&desk, "org.bardo.Do", "tidy the downloads").await;
 
     let forked = desk.quire(&["sessions", "fork", mine.as_str()]).await;
     assert_eq!(forked.exit, Exit::Done, "{forked:?}");

@@ -45,7 +45,7 @@ mod tests {
     use ui_components::style::tokens::type_scale::Family;
 
     /// The Editorial look Extension's sheet: its stacks lead with faces quire ships.
-    const EDITORIAL: &str = include_str!("../../extensions/org.quire.look.Editorial/look.css");
+    const EDITORIAL: &str = include_str!("../../extensions/org.bardo.look.Editorial/look.css");
 
     /// Every family name a `font-family` stack leads with, the standard stacks' and the Editorial
     /// look's: Inter, Inter Display, Bricolage Grotesque, Karla, Space Mono, Noto Serif.

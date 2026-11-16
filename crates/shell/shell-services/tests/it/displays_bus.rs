@@ -1,4 +1,4 @@
-//! `org.quire.Displays1` on a private bus: the levels are listed to anyone, only Settings sets
+//! `org.bardo.Displays1` on a private bus: the levels are listed to anyone, only Settings sets
 //! one (a stranger is refused and nothing reaches the displays service), a change of the
 //! displays is announced. The displays are a made-up state; no logind, no DDC, no real bus. A
 //! test skips, saying so, without a `dbus-daemon`.
@@ -28,7 +28,7 @@ use crate::callers_support::{Introduced, Role, Who};
 
 const SETTLE: Duration = Duration::from_secs(5);
 const QUIET: Duration = Duration::from_millis(500);
-const INTERFACE: &str = "org.quire.Displays1";
+const INTERFACE: &str = "org.bardo.Displays1";
 
 struct Shell {
     service: Handle<DisplaysBusService>,
@@ -116,7 +116,7 @@ async fn standing_in(bus: &PrivateBus, shell: &Shell, name: &str, who: Who) -> C
 
 async fn settings_of(bus: &PrivateBus, shell: &Shell) -> Connection {
     let who = Who::Service(Role::Settings);
-    standing_in(bus, shell, "org.quire.Settings", who).await
+    standing_in(bus, shell, "org.bardo.Settings", who).await
 }
 
 async fn levels(connection: &Connection) -> Vec<(String, u32)> {

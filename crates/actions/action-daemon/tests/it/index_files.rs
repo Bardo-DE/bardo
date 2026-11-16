@@ -45,9 +45,9 @@ fn found(router: &Router<FakeSeams>, text: &str) -> Vec<String> {
 async fn what_an_app_pushed_is_found_again_by_a_fresh_router() {
     let data = tempfile::tempdir().expect("scratch");
     let store = IndexStore::under(data.path());
-    let mail = app("org.quire.Mail");
+    let mail = app("org.bardo.Mail");
     let router = router();
-    let owner = caller("org.quire.Mail", &[CallerRole::App]);
+    let owner = caller("org.bardo.Mail", &[CallerRole::App]);
     for request in [
         IntentsRequest::IndexReset { epoch: 1 },
         IntentsRequest::IndexPush(IndexBatch {
@@ -60,7 +60,7 @@ async fn what_an_app_pushed_is_found_again_by_a_fresh_router() {
     }
     store.save(&router, &mail);
 
-    let file = data.path().join("quire/intents/index/org.quire.Mail.json");
+    let file = data.path().join("quire/intents/index/org.bardo.Mail.json");
     let mode = std::fs::metadata(&file)
         .expect("the file")
         .permissions()
@@ -81,10 +81,10 @@ fn a_file_of_an_app_that_is_not_installed_is_removed_and_a_broken_one_is_left() 
         .write(&app("com.gone.App"), vec![entry("g1", "Gone")])
         .expect("written");
     let dir = data.path().join("quire/intents/index");
-    std::fs::write(dir.join("org.quire.Mail.json"), "not json").expect("write");
+    std::fs::write(dir.join("org.bardo.Mail.json"), "not json").expect("write");
     store.restore(&router());
     assert!(!dir.join("com.gone.App.json").exists());
-    assert!(dir.join("org.quire.Mail.json").exists());
+    assert!(dir.join("org.bardo.Mail.json").exists());
 }
 
 fn ship(data: &std::path::Path, name: &str, text: &str) {
@@ -102,10 +102,10 @@ fn shipped_files_are_read_for_installed_apps_and_an_earlier_directory_wins() {
             "[[entries]]\nkind = \"mail.thread\"\nkey = \"p1\"\ntitle = \"{title}\"\nkeywords = [\"wireless\"]\n"
         )
     };
-    ship(mine.path(), "org.quire.Mail.toml", &page("Mine"));
-    ship(system.path(), "org.quire.Mail.toml", &page("System"));
+    ship(mine.path(), "org.bardo.Mail.toml", &page("Mine"));
+    ship(system.path(), "org.bardo.Mail.toml", &page("System"));
     ship(system.path(), "com.gone.App.toml", &page("Gone"));
-    ship(system.path(), "org.quire.Files.toml", "this is not toml");
+    ship(system.path(), "org.bardo.Files.toml", "this is not toml");
     let router = router();
     ship_search_files(
         &router,

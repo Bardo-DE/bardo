@@ -9,7 +9,7 @@ use zbus::Connection;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 /// Where the agent is served.
-pub const AGENT_PATH: &str = "/org/quire/settings/bluetooth/agent";
+pub const AGENT_PATH: &str = "/org/bardo/settings/bluetooth/agent";
 
 fn rejected() -> AgentError {
     AgentError::Rejected("The person said no.".to_owned())

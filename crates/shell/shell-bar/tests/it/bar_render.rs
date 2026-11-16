@@ -186,7 +186,7 @@ fn the_focused_apps_served_menus_are_titles_after_its_name_and_an_app_without_on
         served: [(
             foot,
             ServedMenu {
-                name: MenuName("org.quire.AppMenu.foot".to_owned()),
+                name: MenuName("org.bardo.AppMenu.foot".to_owned()),
                 menus: vec![
                     app_menu(11, "Foot", "About Foot"),
                     app_menu(20, "Edit", "Undo"),

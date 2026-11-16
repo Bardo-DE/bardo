@@ -1,4 +1,4 @@
-//! `org.quire.Compositor1` on the session bus: casement's door for the agent tier.
+//! `org.bardo.Compositor1` on the session bus: casement's door for the agent tier.
 
 use std::os::fd::OwnedFd;
 use zbus::zvariant;
@@ -6,9 +6,9 @@ use zbus::zvariant;
 /// The calls cuad makes. The role is the compositor's to check: a connection that is not
 /// allowed the agent role gets an access-denied error, which surfaces as the call failing.
 #[zbus::proxy(
-    interface = "org.quire.Compositor1",
-    default_service = "org.quire.Compositor1",
-    default_path = "/org/quire/Compositor1"
+    interface = "org.bardo.Compositor1",
+    default_service = "org.bardo.Compositor1",
+    default_path = "/org/bardo/Compositor1"
 )]
 pub(super) trait Compositor1 {
     /// A Wayland connection with `role`: the client end of the socket.
@@ -35,11 +35,11 @@ pub struct Door {
 }
 
 impl Door {
-    /// The door when `org.quire.Compositor1` has an owner on `connection`; `None` when no
+    /// The door when `org.bardo.Compositor1` has an owner on `connection`; `None` when no
     /// compositor of ours is running (or the bus cannot say).
     pub async fn find(connection: &zbus::Connection) -> Option<Door> {
         let bus = zbus::fdo::DBusProxy::new(connection).await.ok()?;
-        let name = zbus::names::BusName::try_from("org.quire.Compositor1").ok()?;
+        let name = zbus::names::BusName::try_from("org.bardo.Compositor1").ok()?;
         if !bus.name_has_owner(name).await.ok()? {
             return None;
         }

@@ -1,5 +1,5 @@
 //! The Extensions installed on this computer: what the Look menu offers, what the Extensions
-//! page lists, and the switch that turns one off in `quire/extensions.toml`. The folder scan, the
+//! page lists, and the switch that turns one off in `bardo/extensions.toml`. The folder scan, the
 //! checks and the on and off state are quire's (`ui-extensions`); this reads them for the window
 //! and writes the one file.
 
@@ -22,7 +22,7 @@ use ui_extensions::{
 use ui_settings::schema::{FilePath, KeyPath};
 
 /// The file that lists the Extensions turned off, under the config home.
-const FILE: &str = "quire/extensions.toml";
+const FILE: &str = "bardo/extensions.toml";
 
 /// The key of that file that holds the list.
 const OFF_KEY: &str = "extensions.off";

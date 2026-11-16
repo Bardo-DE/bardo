@@ -29,16 +29,16 @@ fn images_of(table: &Table, name: &str) -> Option<Vec<String>> {
 #[test]
 fn a_daemon_unit_without_a_program_is_taken_to_be_installed_as_a_daemon() {
     let table = table_of(vec![row(
-        "org.quire.Inference",
-        Some("inferd.service"),
+        "org.bardo.Inference",
+        Some("bardo-inferd.service"),
         CallerRole::PorterDaemon,
         &[],
     )]);
-    let found = table.row_for_unit(&unit("inferd.service")).expect("a row");
-    assert_eq!(found.app.as_str(), "org.quire.Inference");
+    let found = table.row_for_unit(&unit("bardo-inferd.service")).expect("a row");
+    assert_eq!(found.app.as_str(), "org.bardo.Inference");
     assert_eq!(found.role.as_str(), "porter_daemon");
     assert_eq!(
-        images_of(&table, "inferd.service"),
+        images_of(&table, "bardo-inferd.service"),
         Some(installed(Install::Libexec, "inferd"))
     );
 }
@@ -46,16 +46,16 @@ fn a_daemon_unit_without_a_program_is_taken_to_be_installed_as_a_daemon() {
 #[test]
 fn a_rows_own_programs_replace_the_convention() {
     let table = table_of(vec![row(
-        "org.quire.Shell",
-        Some("sill.service"),
+        "org.bardo.Shell",
+        Some("bardo-shell.service"),
         CallerRole::SheetHost,
-        &["/usr/bin/sill", "/opt/quire/releases/*/bin/sill"],
+        &["/usr/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"],
     )]);
     assert_eq!(
-        images_of(&table, "sill.service"),
+        images_of(&table, "bardo-shell.service"),
         Some(vec![
-            "/usr/bin/sill".to_owned(),
-            "/opt/quire/releases/*/bin/sill".to_owned()
+            "/usr/bin/bardo-shell".to_owned(),
+            "/opt/bardo/releases/*/bin/sill".to_owned()
         ])
     );
 }
@@ -64,52 +64,52 @@ fn a_rows_own_programs_replace_the_convention() {
 fn a_row_peephole_could_not_judge_is_left_out_and_the_others_stand() {
     let table = table_of(vec![
         // An app by name: no unit.
-        row("org.quire.Settings", None, CallerRole::Settings, &[]),
+        row("org.bardo.Settings", None, CallerRole::Settings, &[]),
         // A unit that is not a daemon's name, and no program: nothing proves it.
         row(
-            "org.quire.Temor",
-            Some("org.quire.Temor.service"),
+            "org.bardo.Temor",
+            Some("org.bardo.Temor.service"),
             CallerRole::Terminal,
             &[],
         ),
         // A program path peephole refuses (two stars in a segment).
         row(
-            "org.quire.Bad",
+            "org.bardo.Bad",
             Some("bad.service"),
             CallerRole::Agent,
             &["/opt/*/*x*/bad"],
         ),
         row(
-            "org.quire.Intents",
-            Some("intentd.service"),
+            "org.bardo.Intents",
+            Some("bardo-actiond.service"),
             CallerRole::Agent,
             &[],
         ),
     ]);
     assert!(
         table
-            .row_for_unit(&unit("org.quire.Temor.service"))
+            .row_for_unit(&unit("org.bardo.Temor.service"))
             .is_none()
     );
     assert!(table.row_for_unit(&unit("bad.service")).is_none());
-    assert!(table.row_for_unit(&unit("intentd.service")).is_some());
+    assert!(table.row_for_unit(&unit("bardo-actiond.service")).is_some());
 }
 
 #[test]
 fn the_first_row_for_a_unit_wins() {
     let table = table_of(vec![
-        row("org.quire.Cua", Some("cuad.service"), CallerRole::Cua, &[]),
+        row("org.bardo.ComputerUse", Some("bardo-computer-use.service"), CallerRole::Cua, &[]),
         row(
             "org.example.Mine",
-            Some("cuad.service"),
+            Some("bardo-computer-use.service"),
             CallerRole::App,
             &[],
         ),
     ]);
-    let found = table.row_for_unit(&unit("cuad.service")).expect("a row");
+    let found = table.row_for_unit(&unit("bardo-computer-use.service")).expect("a row");
     assert_eq!(
         (found.app.as_str(), found.role.as_str()),
-        ("org.quire.Cua", "cua")
+        ("org.bardo.ComputerUse", "cua")
     );
 }
 

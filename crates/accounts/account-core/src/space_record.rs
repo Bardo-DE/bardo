@@ -1,5 +1,5 @@
 //! A desktop-wide Space as accountd's registry of them keeps it (`spaces.json`,
-//! `org.quire.Spaces1`): its id, the name the person typed, and a look porter does not read.
+//! `org.bardo.Spaces1`): its id, the name the person typed, and a look porter does not read.
 
 use crate::error::CoreError;
 use crate::space::DesktopSpace;

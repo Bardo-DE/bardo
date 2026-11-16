@@ -41,7 +41,7 @@ pub enum NotifyWhen {
 )]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "companion", page = Page::Intelligence,
+    file = "shell/settings.toml", domain = "companion", page = Page::Intelligence,
     footnote(section = "Opening", text = "Press the command key twice to ask, or hold it to talk."),
 )]
 pub struct CompanionSettings {

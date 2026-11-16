@@ -1,17 +1,17 @@
 # What the accounts-* scenarios share: porter's real accountd, ferry's syncd, steward's inferd, porter's test rig
-# (porter-rig-servers: the fakes, porter-rig-secrets: a fake Secret Service, porter-rig-client: an app), ferry's test rig
-# (ferry-rig-servers: the OAuth issuer and the Graph fake, ferry-rig-client: an app talking to syncd) and steward-rig-client (an app opening an inferd session) on the
+# (account-rig-servers: the fakes, account-rig-secrets: a fake Secret Service, account-rig-client: an app), ferry's test rig
+# (sync-rig-servers: the OAuth issuer and the Graph fake, sync-rig-client: an app talking to syncd) and inference-rig-client (an app opening an inferd session) on the
 # private bus casement's dev/up.sh made, with sill drawing the sheets. Sourced after harness/lib/all.sh,
 # harness/lib/scenario.sh and sill's dev/lib/all.sh (it uses their in_env, sill, surface_named, capture ...).
 #
 # Identity. The daemons (inferd is steward's, from build/steward-target) are test-proc-root builds: they name the process behind a bus connection from
-# $PROC/<pid>/cgroup (ACCOUNTD_PROC_ROOT, SYNCD_PROC_ROOT, INFERD_PROC_ROOT; syncd is ferry's, from build/ferry-target), because nothing in the jail runs
+# $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; syncd is ferry's, from build/ferry-target), because nothing in the jail runs
 # in a systemd scope; the role of each is the system caller table, porter's dist copy at $ACC_SYSTEM_CALLERS
-# (PORTER_SYSTEM_CALLERS: the jail cannot write /etc/porter/callers.toml, and a person's own file gives no fixed role);
-# inferd's is $INFERD_SYSTEM_CALLERS (PORTER_INFERD_CALLERS, in place of /etc/porter/inferd-callers.toml: porter
+# (BARDO_ACCOUNTD_SYSTEM_CALLERS: the jail cannot write /etc/bardo/accountd-callers.toml, and a person's own file gives no fixed role);
+# inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: porter
 # reads no [callers] from inferd.toml since CALLER-INFERD; steward's dist/inferd-callers.toml is its shipped copy).
-# `acc_identity UNIT PID` writes a unit's cgroup (sill.service, syncd.service, inferd.service) and, for a service
-# unit, its main pid ($PROC/units/<unit>); `acc_app APP PID` names detent the Settings unit (org.quire.Settings.service)
+# `acc_identity UNIT PID` writes a unit's cgroup (bardo-shell.service, bardo-syncd.service, bardo-inferd.service) and, for a service
+# unit, its main pid ($PROC/units/<unit>); `acc_app APP PID` names detent the Settings unit (org.bardo.Settings.service)
 # and any other app a Flatpak (its scope and $PROC/<pid>/root/.flatpak-info).
 #
 # Every process is stopped by its PID (acc_stop_all); nothing is found by name.
@@ -25,31 +25,31 @@ ACC_BG=()
 
 # acc_need: the artefacts exist (exit 3 with the fix otherwise).
 acc_need() {
-  scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" \
+  scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
     "$SCEN_BUILD/sill-probe-target/debug/sill" "$ARIG/accountd" "$AFER/syncd" "$ASTW/inferd" \
-    "$ARIG/porter-rig-servers" "$ARIG/porter-rig-client" "$ARIG/porter-rig-secrets" "$ASTW/steward-rig-client" \
-    "$AFER/ferry-rig-servers" "$AFER/ferry-rig-client" \
+    "$ARIG/account-rig-servers" "$ARIG/account-rig-client" "$ARIG/account-rig-secrets" "$ASTW/inference-rig-client" \
+    "$AFER/sync-rig-servers" "$AFER/sync-rig-client" \
     "$SCEN_SIB/accounts/providers/microsoft.toml" "$SCEN_SIB/accounts/dist/callers.toml" "$@"
 }
 
-# acc_env: the variables every accounts scenario sets before sourcing sill's lib (CASEMENT_REPO and CASEMENT_DIR
+# acc_env: the variables every accounts scenario sets before sourcing sill's lib (BARDO_COMPOSITOR_REPO and BARDO_COMPOSITOR_DIR
 # become the stand-in checkout floor_shim makes).
 acc_env() {
-  export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
-  export CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" CASEMENT_TOOLS="$SCEN_TOOLS"
-  # The rig's programs take no power; casementctl's `shot` (acc_shot) takes the screen and the window list, so those are the
+  export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+  export CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+  # The rig's programs take no power; bardo-compositorctl's `shot` (acc_shot) takes the screen and the window list, so those are the
   # floor's only rows and nothing waits on a question (an unanswered ask stops the capture after ~29 s, and its dialog
   # covers the page). The caller list names sill (at its pin) as the shell, detent as Settings and the porter daemons by
   # their roles, for casement and for sill (floor_sill_callers before launch_daemon).
-  FLOOR_SILL_TARGET="$SCEN_BUILD/sill-probe-target" floor_shim accounts sill detent accountd inferd syncd casement casementctl || return 1
+  FLOOR_SILL_TARGET="$SCEN_BUILD/sill-probe-target" floor_shim accounts sill detent accountd inferd syncd casement bardo-compositorctl || return 1
 }
 
 # Where the scenario keeps things; set by acc_dirs after scratch_new.
-RIG_DIR= PROC= PROV= BIN_DIR= ACC_SYSTEM_CALLERS= INFERD_SYSTEM_CALLERS=
+RIG_DIR= PROC= PROV= BIN_DIR= ACC_SYSTEM_CALLERS= BARDO_INFERD_SYSTEM_CALLERS=
 acc_dirs() {
   RIG_DIR="$OUT_DIR/rig"; PROC="$RIG_DIR/proc"; PROV="$RIG_DIR/providers"; BIN_DIR="$RIG_DIR/bin"
   ACC_SYSTEM_CALLERS="$RIG_DIR/system-callers.toml"
-  INFERD_SYSTEM_CALLERS="$RIG_DIR/inferd-callers.toml"
+  BARDO_INFERD_SYSTEM_CALLERS="$RIG_DIR/inferd-callers.toml"
   mkdir -p "$RIG_DIR" "$PROC" "$PROV" "$BIN_DIR" "$CONFIG/porter" "$CONFIG/quire" "$STATE/porter"
 }
 
@@ -93,9 +93,9 @@ bus_has_owner() {
 }
 
 # --- identity ------------------------------------------------------------------------------------------------
-# The Settings app is known by its unit: detent running as org.quire.Settings.service and being that unit's
+# The Settings app is known by its unit: detent running as org.bardo.Settings.service and being that unit's
 # main process (accountd asks systemd; with a fixture proc root it reads $PROC/units/<unit>).
-SETTINGS_UNIT=org.quire.Settings.service
+SETTINGS_UNIT=org.bardo.Settings.service
 
 acc_identity() { # LEAF PID: a unit's cgroup; a service unit also gets its main pid ($PROC/units/<unit>)
   mkdir -p "$PROC/$2"
@@ -113,29 +113,29 @@ acc_flatpak() {
 }
 acc_app() { # APP-ID PID: Settings is its service unit, any other app a Flatpak
   case "$1" in
-    org.quire.Settings) acc_identity "$SETTINGS_UNIT" "$2" ;;
+    org.bardo.Settings) acc_identity "$SETTINGS_UNIT" "$2" ;;
     *) acc_flatpak "$1" "$2" ;;
   esac
 }
 
 # --- the fakes -----------------------------------------------------------------------------------------------
-# rig_start FLAGS...: porter-rig-servers --dir $RIG_DIR/servers FLAGS; waits for rig.json.
+# rig_start FLAGS...: account-rig-servers --dir $RIG_DIR/servers FLAGS; waits for rig.json.
 RIG_PID=
-FERRY_RIG_PID=
+BARDO_SYNC_RIG_PID=
 rig_start() {
   mkdir -p "$RIG_DIR/servers"
-  acc_bg "$OUT_DIR/rig-servers.log" "$ARIG/porter-rig-servers" --dir "$RIG_DIR/servers" "$@"
+  acc_bg "$OUT_DIR/rig-servers.log" "$ARIG/account-rig-servers" --dir "$RIG_DIR/servers" "$@"
   RIG_PID=$ACC_LAST
-  acc_wait 20 test -s "$RIG_DIR/servers/rig.json" || { echo "porter-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/rig-servers.log" >&2; return 1; }
+  acc_wait 20 test -s "$RIG_DIR/servers/rig.json" || { echo "account-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/rig-servers.log" >&2; return 1; }
 }
-# ferry_rig_start [FLAGS...]: ferry-rig-servers --dir $RIG_DIR/ferry FLAGS (--token-lifetime-s N); it always starts the OAuth
-# issuer and the Graph fake, and writes its own rig.json. It runs beside porter-rig-servers (rig_start) when a scenario
+# ferry_rig_start [FLAGS...]: sync-rig-servers --dir $RIG_DIR/ferry FLAGS (--token-lifetime-s N); it always starts the OAuth
+# issuer and the Graph fake, and writes its own rig.json. It runs beside account-rig-servers (rig_start) when a scenario
 # needs both; frigj and frigctl read and drive this one.
 ferry_rig_start() {
   mkdir -p "$RIG_DIR/ferry"
-  acc_bg "$OUT_DIR/ferry-rig-servers.log" "$AFER/ferry-rig-servers" --dir "$RIG_DIR/ferry" "$@"
-  FERRY_RIG_PID=$ACC_LAST
-  acc_wait 20 test -s "$RIG_DIR/ferry/rig.json" || { echo "ferry-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/ferry-rig-servers.log" >&2; return 1; }
+  acc_bg "$OUT_DIR/sync-rig-servers.log" "$AFER/sync-rig-servers" --dir "$RIG_DIR/ferry" "$@"
+  BARDO_SYNC_RIG_PID=$ACC_LAST
+  acc_wait 20 test -s "$RIG_DIR/ferry/rig.json" || { echo "sync-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/sync-rig-servers.log" >&2; return 1; }
 }
 # rigj PATH: a value of rig.json (a dotted path, `imap.port`), or the planted secrets with `secrets`. It reads porter's rig
 # (RIG_JSON_DIR, default $RIG_DIR/servers); frigj reads ferry's (oauth.*, graph.url, secrets).
@@ -156,13 +156,13 @@ rigctl() {
 frigctl() { RIG_JSON_DIR="$RIG_DIR/ferry" rigctl "$@"; }
 
 secrets_start() {
-  acc_bg "$OUT_DIR/secrets.log" "$ARIG/porter-rig-secrets"
+  acc_bg "$OUT_DIR/secrets.log" "$ARIG/account-rig-secrets"
   SECRETS_PID=$ACC_LAST
   acc_wait 20 bus_has_owner org.freedesktop.secrets || { echo "the fake Secret Service never took its name" >&2; cat "$OUT_DIR/secrets.log" >&2; return 1; }
 }
 
 # --- configuration -------------------------------------------------------------------------------------------
-# acc_config: the system caller table (porter's own, read through PORTER_SYSTEM_CALLERS), the shipped provider
+# acc_config: the system caller table (porter's own, read through BARDO_ACCOUNTD_SYSTEM_CALLERS), the shipped provider
 # files, and the person's clients file (acc_clients_for_issuer writes the shipped one).
 acc_config() {
   cp "$SCEN_SIB/accounts/dist/callers.toml" "$ACC_SYSTEM_CALLERS"
@@ -174,7 +174,7 @@ acc_config() {
 # from the person's own (sec-4).
 acc_clients_for_issuer() {
   mkdir -p /usr/share/porter
-  cat >/usr/share/porter/clients.toml <<EOF
+  cat >/usr/share/bardo/accounts/clients.toml <<EOF
 [[client]]
 issuer = "microsoft"
 channel = "stable"
@@ -204,12 +204,12 @@ acc_providers_only() {
 # --- the daemons ---------------------------------------------------------------------------------------------
 # Since porter's step 5c accountd holds every account: the identities, the AI keys with their permits and switches (its
 # Keys interface), and the local runtimes inferd's probe reports to it (Broker.ReportLocal, a call only the `ai_broker`
-# role may make: inferd.service in dist/callers.toml). inferd (org.quire.Inference1) holds no key; it serves the models
+# role may make: bardo-inferd.service in dist/callers.toml). inferd (org.bardo.Inference1) holds no key; it serves the models
 # and the spend rows (`accounts.<id>.spend.*`) of the accounts accountd lists. syncd (ferry's) has no accounts of
-# its own: it uses accountd's through account-client over org.quire.Grants1. A page that reads a daemon never starts it (detent's live/io.rs answers NotRunning), so a scenario
+# its own: it uses accountd's through account-client over org.bardo.Grants1. A page that reads a daemon never starts it (detent's live/io.rs answers NotRunning), so a scenario
 # starts every daemon its page reads before opening the page.
 # Each daemon reads its caller table at startup only: acc_config installs callers.toml before accountd and syncd start,
-# inferd_write_config writes inferd's own system table ($INFERD_SYSTEM_CALLERS) before inferd starts.
+# inferd_write_config writes inferd's own system table ($BARDO_INFERD_SYSTEM_CALLERS) before inferd starts.
 
 # acc_ca_env: SSL_CERT_FILE=<the rig's CA> when the rig made one, else nothing (one word per line, for `env`).
 acc_ca_env() { [ ! -f "$RIG_DIR/servers/ca.pem" ] || echo "SSL_CERT_FILE=$RIG_DIR/servers/ca.pem"; }
@@ -220,58 +220,58 @@ acc_ca_env() { [ ! -f "$RIG_DIR/servers/ca.pem" ] || echo "SSL_CERT_FILE=$RIG_DI
 # cannot shadow it) and $XDG_DATA_HOME/porter/providers, and a person's layer may not point a shipped provider at
 # another server.
 acc_ship_providers() {
-  mkdir -p /usr/share/porter/providers
-  cp "$PROV"/*.toml /usr/share/porter/providers/
+  mkdir -p /usr/share/bardo/accounts/providers
+  cp "$PROV"/*.toml /usr/share/bardo/accounts/providers/
 }
 
 # accountd_start: the real accountd on the private bus, over the fake Secret Service, trusting the rig's CA.
-ACCOUNTD_PID=
+BARDO_ACCOUNTD_PID=
 accountd_start() {
   local ca; ca=$(acc_ca_env)
-  acc_bg "$OUT_DIR/accountd.log" env ACCOUNTD_PROC_ROOT="$PROC" PORTER_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" ${ca:+"$ca"} "$ARIG/accountd" --providers "$PROV"
-  ACCOUNTD_PID=$ACC_LAST
-  acc_wait 20 bus_has_owner org.quire.Accounts1 || { echo "accountd never took org.quire.Accounts1:" >&2; cat "$OUT_DIR/accountd.log" >&2; return 1; }
-  acc_identity accountd.service "$ACCOUNTD_PID"
+  acc_bg "$OUT_DIR/accountd.log" env BARDO_ACCOUNTD_PROC_ROOT="$PROC" BARDO_ACCOUNTD_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" ${ca:+"$ca"} "$ARIG/accountd" --providers "$PROV"
+  BARDO_ACCOUNTD_PID=$ACC_LAST
+  acc_wait 20 bus_has_owner org.bardo.Accounts1 || { echo "accountd never took org.bardo.Accounts1:" >&2; cat "$OUT_DIR/accountd.log" >&2; return 1; }
+  acc_identity bardo-accountd.service "$BARDO_ACCOUNTD_PID"
 }
-accountd_stop() { [ -z "$ACCOUNTD_PID" ] || acc_kill "$ACCOUNTD_PID"; ACCOUNTD_PID=; }
+accountd_stop() { [ -z "$BARDO_ACCOUNTD_PID" ] || acc_kill "$BARDO_ACCOUNTD_PID"; BARDO_ACCOUNTD_PID=; }
 
-SYNCD_PID=
+BARDO_SYNCD_PID=
 syncd_start() {
   local ca; ca=$(acc_ca_env)
   acc_ship_providers
-  acc_bg "$OUT_DIR/syncd.log" env SYNCD_PROC_ROOT="$PROC" PORTER_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" SYNCD_RESCAN_S="${SYNCD_RESCAN_S:-2}" ${ca:+"$ca"} "$AFER/syncd"
-  SYNCD_PID=$ACC_LAST
-  acc_identity syncd.service "$SYNCD_PID"
-  acc_wait 20 bus_has_owner org.quire.Sync1 || { echo "syncd never took org.quire.Sync1:" >&2; cat "$OUT_DIR/syncd.log" >&2; return 1; }
+  acc_bg "$OUT_DIR/syncd.log" env BARDO_SYNCD_PROC_ROOT="$PROC" BARDO_ACCOUNTD_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" BARDO_SYNCD_RESCAN_S="${BARDO_SYNCD_RESCAN_S:-2}" ${ca:+"$ca"} "$AFER/syncd"
+  BARDO_SYNCD_PID=$ACC_LAST
+  acc_identity bardo-syncd.service "$BARDO_SYNCD_PID"
+  acc_wait 20 bus_has_owner org.bardo.Sync1 || { echo "syncd never took org.bardo.Sync1:" >&2; cat "$OUT_DIR/syncd.log" >&2; return 1; }
 }
-syncd_stop() { [ -z "$SYNCD_PID" ] || acc_kill "$SYNCD_PID"; SYNCD_PID=; }
+syncd_stop() { [ -z "$BARDO_SYNCD_PID" ] || acc_kill "$BARDO_SYNCD_PID"; BARDO_SYNCD_PID=; }
 
 # inferd_write_config: $CONFIG/inferd/inferd.toml is what is on stdin (tables of the scenario: [probe], [ai] ...), and
-# $INFERD_SYSTEM_CALLERS is inferd's caller table, in the shape of porter's dist/inferd-callers.toml: inferd serves its
-# settings module (the spend rows) to the unit org.quire.Settings.service and its places to the shell (sill.service); an
+# $BARDO_INFERD_SYSTEM_CALLERS is inferd's caller table, in the shape of porter's dist/inferd-callers.toml: inferd serves its
+# settings module (the spend rows) to the unit org.bardo.Settings.service and its places to the shell (bardo-shell.service); an
 # app in a Flatpak or app scope needs no row. The file is inferd's own folder's, where Settings looks for it. Call it
 # before inferd_start.
 inferd_write_config() {
   mkdir -p "$CONFIG/inferd"
   cat >"$CONFIG/inferd/inferd.toml"
-  printf 'settings = ["%s"]\nshell = ["sill.service"]\n' "$SETTINGS_UNIT" >"$INFERD_SYSTEM_CALLERS"
+  printf 'settings = ["%s"]\nshell = ["bardo-shell.service"]\n' "$SETTINGS_UNIT" >"$BARDO_INFERD_SYSTEM_CALLERS"
 }
 
-INFERD_PID=
-inferd_start() { # needs $CONFIG/inferd/inferd.toml and $INFERD_SYSTEM_CALLERS (inferd_write_config)
+BARDO_INFERD_PID=
+inferd_start() { # needs $CONFIG/inferd/inferd.toml and $BARDO_INFERD_SYSTEM_CALLERS (inferd_write_config)
   # The model catalog of this tree's stoker, where inferd reads it ($XDG_DATA_HOME/stoker/catalog): without
   # it no hosted model is known, so a turn on an AI key is refused before the key is ever read.
   mkdir -p "$DATA/stoker/catalog"
   cp "$SCEN_SIB"/models/catalog/*.toml "$DATA/stoker/catalog/"
   local ca; ca=$(acc_ca_env)
   acc_ship_providers
-  acc_bg "$OUT_DIR/inferd.log" env INFERD_PROC_ROOT="$PROC" PORTER_INFERD_CALLERS="$INFERD_SYSTEM_CALLERS" ${ca:+"$ca"} "$ASTW/inferd"
-  INFERD_PID=$ACC_LAST
-  acc_identity inferd.service "$INFERD_PID"
-  acc_wait 20 bus_has_owner org.quire.Inference1 || { echo "inferd never took org.quire.Inference1:" >&2; cat "$OUT_DIR/inferd.log" >&2; return 1; }
+  acc_bg "$OUT_DIR/inferd.log" env BARDO_INFERD_PROC_ROOT="$PROC" BARDO_INFERD_CALLERS="$BARDO_INFERD_SYSTEM_CALLERS" ${ca:+"$ca"} "$ASTW/inferd"
+  BARDO_INFERD_PID=$ACC_LAST
+  acc_identity bardo-inferd.service "$BARDO_INFERD_PID"
+  acc_wait 20 bus_has_owner org.bardo.Inference1 || { echo "inferd never took org.bardo.Inference1:" >&2; cat "$OUT_DIR/inferd.log" >&2; return 1; }
 }
 
-# sill_start: sill (the sheet host) on the same bus; its pid is named sill.service (and is that unit's main pid), the sheet host's unit.
+# sill_start: sill (the sheet host) on the same bus; its pid is named bardo-shell.service (and is that unit's main pid), the sheet host's unit.
 sill_start() {
   cat >"$BIN_DIR/xdg-open" <<EOF
 #!/usr/bin/env bash
@@ -281,14 +281,14 @@ echo "\$1" >>"$RIG_DIR/opened.log"
 curl -sL --max-time 10 -o "$RIG_DIR/browser-last.html" "\$1" >>"$RIG_DIR/browser.log" 2>&1
 EOF
   chmod +x "$BIN_DIR/xdg-open"
-  mkdir -p "$CONFIG/sill"; : >"$CONFIG/sill/settings.toml"
+  mkdir -p "$CONFIG/sill"; : >"$CONFIG/shell/settings.toml"
   backdrop_seed "$CONFIG" || return 1
   # sill is built with ui-blitz's debug-probe (scenario-build.sh): every window of it lists its controls in $SPROBE.
   SPROBE="$SCRATCH/sill-probe"; mkdir -p "$SPROBE"
-  IN_ENV_EXTRA=("PATH=$BIN_DIR:$PATH" "QUIRE_DEBUG_PROBE=$SPROBE")
+  IN_ENV_EXTRA=("PATH=$BIN_DIR:$PATH" "BARDO_DEBUG_PROBE=$SPROBE")
   # sill names itself to accountd within its first moments (its accounts service asks NeedingReauth as it connects, and a
   # refused first ask is not repeated), so its identity is written by the shell that execs it, before it exists.
-  LAUNCH_PREFIX=(bash -c 'mkdir -p "$0/$$" "$0/units"; echo "0::/user.slice/user-1000.slice/user@1000.service/app.slice/sill.service" >"$0/$$/cgroup"; echo "$$" >"$0/units/sill.service"; exec "$@"' "$PROC")
+  LAUNCH_PREFIX=(bash -c 'mkdir -p "$0/$$" "$0/units"; echo "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service" >"$0/$$/cgroup"; echo "$$" >"$0/units/bardo-shell.service"; exec "$@"' "$PROC")
   floor_sill_callers
   launch_daemon || return 1
   NAME=$(output_name) || return 1
@@ -296,30 +296,30 @@ EOF
 }
 
 # --- an app --------------------------------------------------------------------------------------------------
-# rigc APP-ID ARGS...: porter-rig-client as that app (its identity is written before it connects).
+# rigc APP-ID ARGS...: account-rig-client as that app (its identity is written before it connects).
 rigc() {
   local app=$1; shift
-  in_env "$ARIG/porter-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
+  in_env "$ARIG/account-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
 }
-# frigc APP-ID ARGS...: ferry-rig-client as that app (datasets, status, sync-resolve, watch-conflicts; same identity fixture).
+# frigc APP-ID ARGS...: sync-rig-client as that app (datasets, status, sync-resolve, watch-conflicts; same identity fixture).
 frigc() {
   local app=$1; shift
-  in_env "$AFER/ferry-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
+  in_env "$AFER/sync-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
 }
 # frigc_bg LOG APP-ID ARGS...: the same in the background; sets ACC_LAST to its pid.
 frigc_bg() {
   local log=$1 app=$2; shift 2
-  acc_bg "$log" "$AFER/ferry-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
+  acc_bg "$log" "$AFER/sync-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
 }
 # rigc_bg LOG APP-ID ARGS...: the same in the background; sets ACC_LAST to its pid.
 rigc_bg() {
   local log=$1 app=$2; shift 2
-  acc_bg "$log" "$ARIG/porter-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
+  acc_bg "$log" "$ARIG/account-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
 }
-# rigo APP-ID NEED ARGS...: steward-rig-client as that app, opening an inferd session (the same identity fixture).
+# rigo APP-ID NEED ARGS...: inference-rig-client as that app, opening an inferd session (the same identity fixture).
 rigo() {
   local app=$1; shift
-  in_env "$ASTW/steward-rig-client" --app-id "$app" --proc-root "$PROC" open "$@"
+  in_env "$ASTW/inference-rig-client" --app-id "$app" --proc-root "$PROC" open "$@"
 }
 
 # --- the sheet, as sill draws it -----------------------------------------------------------------------------
@@ -376,7 +376,7 @@ as_app() {
   # shellcheck disable=SC2016  # the script is for the inner bash, which expands it
   in_env bash -c '
     app=$1; proc=$2; unit=$3; shift 3
-    if [ "$app" = org.quire.Settings ]; then
+    if [ "$app" = org.bardo.Settings ]; then
       prev=$(cat "$proc/units/$unit" 2>/dev/null) || prev=
       bash -c '"'"'
         proc=$1; unit=$2; shift 2
@@ -395,17 +395,17 @@ as_app() {
     exec "$@"' _ "$app" "$PROC" "$SETTINGS_UNIT" "$@"
 }
 
-# settings_describe_at BUS PATH / settings_get_at BUS PATH KEY: a daemon's settings module (org.quire.SettingsModule1), read
+# settings_describe_at BUS PATH / settings_get_at BUS PATH KEY: a daemon's settings module (org.bardo.SettingsModule1), read
 # as the Settings app. Three daemons serve one: accountd (every account: identities, AI keys with their permits and
-# switches, local runtimes; /org/quire/Accounts1/settings), inferd (only the spend rows, `accounts.<id>.spend.*`, of the
-# accounts accountd lists; /org/quire/Inference1/settings) and syncd (ferry's: what it keeps of accountd's accounts, /org/quire/Sync1/settings).
+# switches, local runtimes; /org/bardo/Accounts1/settings), inferd (only the spend rows, `accounts.<id>.spend.*`, of the
+# accounts accountd lists; /org/bardo/Inference1/settings) and syncd (ferry's: what it keeps of accountd's accounts, /org/bardo/Sync1/settings).
 settings_describe_at() {
-  as_app org.quire.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
-    org.quire.SettingsModule1 Describe | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["data"][0])'
+  as_app org.bardo.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
+    org.bardo.SettingsModule1 Describe | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["data"][0])'
 }
 settings_get_at() {
-  as_app org.quire.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
-    org.quire.SettingsModule1 Get s "$3" | python3 -I -c '
+  as_app org.bardo.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
+    org.bardo.SettingsModule1 Get s "$3" | python3 -I -c '
 import json, sys
 d = json.load(sys.stdin)["data"][0]
 while isinstance(d, dict) and "data" in d: d = d["data"]
@@ -413,21 +413,21 @@ print(d)'
 }
 # settings_press_at BUS PATH KEY: presses an action row (Set with a false value), as the Settings app.
 settings_press_at() {
-  as_app org.quire.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
-    org.quire.SettingsModule1 Set sv "$3" b false >/dev/null
+  as_app org.bardo.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
+    org.bardo.SettingsModule1 Set sv "$3" b false >/dev/null
 }
-ACC_SET=/org/quire/Accounts1/settings
-SYNC_SET=/org/quire/Sync1/settings
-settings_describe() { settings_describe_at org.quire.Accounts1 $ACC_SET; }
-settings_get() { settings_get_at org.quire.Accounts1 $ACC_SET "$1"; }
+ACC_SET=/org/bardo/Accounts1/settings
+SYNC_SET=/org/bardo/Sync1/settings
+settings_describe() { settings_describe_at org.bardo.Accounts1 $ACC_SET; }
+settings_get() { settings_get_at org.bardo.Accounts1 $ACC_SET "$1"; }
 # The AI accounts (keys, permits, switches, local runtimes) are rows of accountd's module beside the identities'.
 ai_describe() { settings_describe; }
 ai_get() { settings_get "$1"; }
-sync_describe() { settings_describe_at org.quire.Sync1 $SYNC_SET; }
-sync_get() { settings_get_at org.quire.Sync1 $SYNC_SET "$1"; }
-sync_press() { settings_press_at org.quire.Sync1 $SYNC_SET "$1"; }
+sync_describe() { settings_describe_at org.bardo.Sync1 $SYNC_SET; }
+sync_get() { settings_get_at org.bardo.Sync1 $SYNC_SET "$1"; }
+sync_press() { settings_press_at org.bardo.Sync1 $SYNC_SET "$1"; }
 # acc_press KEY: an action row of accountd's module (Internet Accounts owns Sign in again: accounts.<id>.reauth).
-acc_press() { settings_press_at org.quire.Accounts1 $ACC_SET "$1"; }
+acc_press() { settings_press_at org.bardo.Accounts1 $ACC_SET "$1"; }
 
 # ai_has_account ID / has_key MODULE ID: the module lists an `accounts.<id>.` row.
 has_row_of() { # DESCRIBE-FN ID
@@ -436,7 +436,7 @@ has_row_of() { # DESCRIBE-FN ID
 ai_has_account() { has_row_of ai_describe "$1"; }
 sync_has_account() { has_row_of sync_describe "$1"; }
 # app_title APP: what the person reads for the app: the `name` of its row in the system caller table ("Assistant" for
-# org.quire.Companion), else its id.
+# org.bardo.Companion), else its id.
 app_title() {
   python3 -I -c '
 import sys, tomllib
@@ -445,7 +445,7 @@ with open(sys.argv[1], "rb") as f:
 print(next((r["name"] for r in rows if r.get("app") == sys.argv[2] and r.get("name")), sys.argv[2]))' "$ACC_SYSTEM_CALLERS" "$1"
 }
 # ai_grant_path APP: the path of APP's permit row on the AI keys (`accounts.<id>.grant.<grant>`), or nothing. The row's label
-# starts with the app's title ("Assistant can use Language model", "org.quire.Always can use Language model").
+# starts with the app's title ("Assistant can use Language model", "org.bardo.Always can use Language model").
 ai_grant_path() {
   local title; title=$(app_title "$1")
   ai_describe 2>/dev/null | python3 -I -c '
@@ -499,7 +499,7 @@ v = { access = "read_write", send = "present", delta = "poll", transport = "imap
 EOT
 }
 
-# acc_add_start APP-ID [PROVIDER]: AddAccount as that app (porter-rig-client add-account), in the background; its answer
+# acc_add_start APP-ID [PROVIDER]: AddAccount as that app (account-rig-client add-account), in the background; its answer
 # lands in $OUT_DIR/add.log as one line: {"result":"added","account":..} or {"result":"refused",..}.
 acc_add_start() {
   : >"$OUT_DIR/add.log"
@@ -537,7 +537,7 @@ scan_end() {
   done < <(rigj secrets 2>/dev/null; [ ! -f "$RIG_DIR/ferry/rig.json" ] || frigj secrets 2>/dev/null)
   local f
   for f in "$OUT_DIR"/*.log; do
-    case "$(basename "$f")" in keys.log|input.log|rig-servers.log|ferry-rig-servers.log) ;; *) files+=(--file "$f") ;; esac
+    case "$(basename "$f")" in keys.log|input.log|rig-servers.log|sync-rig-servers.log) ;; *) files+=(--file "$f") ;; esac
   done
   python3 -I "$HARNESS_LIB/secret-scan.py" --bus "$OUT_DIR/bus.jsonl" "${args[@]}" \
     --pattern 'fake-refresh-[0-9]+' --pattern 'fake-code-[0-9]+' --access-pattern 'fake-access-[0-9]+' \
@@ -547,7 +547,7 @@ scan_end() {
 # sheet_add_fake_mail [SHOT-PREFIX]: the whole add flow of the fake mail account through the sheet as an app asks
 # for it (the steps accounts-generic-mail checks one by one); the account is `fake-mail-ada-rig.test`.
 sheet_add_fake_mail() {
-  acc_add_start org.quire.Mail
+  acc_add_start org.bardo.Mail
   sheet_await || return 1; sheet_settled; sleep 1
   sheet_type Fake; sleep 0.5; sheet_key Enter; sleep 1
   sheet_type "$(rigj imap.user)"; sheet_key Tab; sheet_type "$(rigj imap.password)"; sleep 0.5
@@ -564,7 +564,7 @@ sheet_add_fake_mail() {
 # acc_provider_microsoft_on_rig. Sets ACCOUNT to the account's id.
 sheet_add_microsoft() {
   : >"$RIG_DIR/opened.log"
-  acc_add_start org.quire.Mail
+  acc_add_start org.bardo.Mail
   sheet_await || return 1; sheet_settled; sleep 1
   sheet_type Micro; sleep 0.5; sheet_key Enter
   acc_wait 20 test -s "$RIG_DIR/opened.log" || { echo "sill never opened the browser: $(cat "$OUT_DIR/add.log")" >&2; return 1; }
@@ -580,7 +580,7 @@ sheet_add_microsoft() {
 # checks it with its models list). Needs the rig started with --llm-api, acc_provider_openai_on_rig, accountd and sill.
 # Sets ACCOUNT to the new account.
 sheet_add_openai() {
-  acc_add_start org.quire.Companion
+  acc_add_start org.bardo.Companion
   sheet_await || return 1; sheet_settled; sleep 1
   sheet_type OpenAI; sleep 0.5; sheet_key Enter; sleep 1
   sheet_type "$(rigj llm_api.api_key)"; sleep 0.5
@@ -610,7 +610,7 @@ sheet_enter_until() {
 # the account, syncd asks (ConsentOffer.account is the account) and accountd draws its consent sheet for that one account (no
 # chooser, no sign-in); one already held is not asked again. The answer is sync_consent_keys.
 sync_files_turn_on() {
-  { as_app org.quire.Settings busctl --address="$BUS" --json=short call org.quire.Sync1 $SYNC_SET org.quire.SettingsModule1 Set sv \
+  { as_app org.bardo.Settings busctl --address="$BUS" --json=short call org.bardo.Sync1 $SYNC_SET org.bardo.SettingsModule1 Set sv \
       "accounts.$1.sync.files" s on >"$OUT_DIR/switch-on.log" 2>&1; } &
   ACC_PIDS+=("$!")
 }
@@ -643,12 +643,12 @@ acc_permit_scope() {
   [ -n "$gid" ] || { echo none; return; }
   settings_get "accounts.$1.grant.$gid.scope"
 }
-SYNC_APP=org.quire.Sync
+SYNC_APP=org.bardo.Sync
 
 # sheet_stray_escape: a sheet nobody expected is closed (so one failed check does not leave its sheet to take the next step's keys).
 sheet_stray_escape() { sheet_shown && { sheet_key Escape; sheet_gone 8; }; }
 
-# ai_request_start APP LOG: the app asks accountd for a permit to use the person's AI keys (porter-rig-client ai-keys request),
+# ai_request_start APP LOG: the app asks accountd for a permit to use the person's AI keys (account-rig-client ai-keys request),
 # in the background; its one result line lands in LOG: {"result":"granted","permit":..} or {"result":"refused","refusal":..}.
 ai_request_start() { rigc_bg "$OUT_DIR/$2.log" "$1" ai-keys request --class "${3:-files}"; }
 
@@ -665,7 +665,7 @@ sheet_grant() {
 # identity_of_account ID: the Identities1 id of an accountd account, as `identities list` prints it (the account's id when
 # the list names none).
 identity_of_account() {
-  rigc "${2:-org.quire.Mail}" identities list 2>/dev/null | python3 -I -c '
+  rigc "${2:-org.bardo.Mail}" identities list 2>/dev/null | python3 -I -c '
 import json, sys
 want = sys.argv[1]
 for line in sys.stdin:
@@ -677,9 +677,9 @@ for line in sys.stdin:
 print(want)' "$1"
 }
 
-# detent_start: detent (the Settings app, built at its pin) on casement, on the private bus, named org.quire.Settings
-# (the role `settings` of the caller table). Its window is captured with `casementctl shot --output` (acc_shot).
-DETENT_PID= PROBE_DIR=
+# detent_start: detent (the Settings app, built at its pin) on casement, on the private bus, named org.bardo.Settings
+# (the role `settings` of the caller table). Its window is captured with `bardo-compositorctl shot --output` (acc_shot).
+BARDO_SETTINGS_PID= PROBE_DIR=
 detent_start() {
   local data="$SCRATCH/detent-data"
   # The programs' schemas, as detent's own tests seed them (its pages are made of schemas: without them the sidebar
@@ -691,19 +691,19 @@ detent_start() {
   # Not through `nested` (a function: the background job would be its subshell, not detent, and the identity written
   # below must be for the process that holds the bus connection).
   PROBE_DIR="$SCRATCH/probe"; mkdir -p "$PROBE_DIR"
-  env QUIRE_DEBUG_PROBE="$PROBE_DIR" WAYLAND_DISPLAY="$WL" XDG_RUNTIME_DIR="$(dirname "$WL")" HOME="$HOME_DIR" XDG_CONFIG_HOME="$CONFIG" XDG_DATA_HOME="$data" XDG_DATA_DIRS="$data" XDG_STATE_HOME="$STATE" \
+  env BARDO_DEBUG_PROBE="$PROBE_DIR" WAYLAND_DISPLAY="$WL" XDG_RUNTIME_DIR="$(dirname "$WL")" HOME="$HOME_DIR" XDG_CONFIG_HOME="$CONFIG" XDG_DATA_HOME="$data" XDG_DATA_DIRS="$data" XDG_STATE_HOME="$STATE" \
     XDG_CACHE_HOME="$CACHE" DBUS_SESSION_BUS_ADDRESS="$BUS" "$SCEN_BUILD/detent-target/debug/detent" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$OUT_DIR/detent.log" 2>&1 &
-  DETENT_PID=$!
-  ACC_PIDS+=("$DETENT_PID")
-  acc_app org.quire.Settings "$DETENT_PID"
+  BARDO_SETTINGS_PID=$!
+  ACC_PIDS+=("$BARDO_SETTINGS_PID")
+  acc_app org.bardo.Settings "$BARDO_SETTINGS_PID"
 }
 
-# acc_shot NAME: the whole output, as the compositor composes it (casementctl shot --output).
-acc_shot() { casementctl shot --output HEADLESS-1 "$OUT_DIR/$1.png" >>"$OUT_DIR/shot.log" 2>&1; }
+# acc_shot NAME: the whole output, as the compositor composes it (bardo-compositorctl shot --output).
+acc_shot() { bardo-compositorctl shot --output HEADLESS-1 "$OUT_DIR/$1.png" >>"$OUT_DIR/shot.log" 2>&1; }
 
-# detent_frame: "X Y W H" of detent's window in the output (casementctl debug windows, the first window).
+# detent_frame: "X Y W H" of detent's window in the output (bardo-compositorctl debug windows, the first window).
 detent_frame() {
-  casementctl debug windows | python3 -I -c '
+  bardo-compositorctl debug windows | python3 -I -c '
 import json, sys
 w = json.load(sys.stdin)
 print(*[int(v) for v in w[0]["frame"]])'
@@ -711,10 +711,10 @@ print(*[int(v) for v in w[0]["frame"]])'
 # casement_tap X Y: a left click at (X, Y) in the output (the pointer is moved first and given a moment: the app's hover
 # state must catch up before a press counts).
 casement_tap() {
-  casementctl debug inject "move $1 $2" >/dev/null || return 1
-  casementctl debug wait settled --timeout 10000 >/dev/null 2>&1
+  bardo-compositorctl debug inject "move $1 $2" >/dev/null || return 1
+  bardo-compositorctl debug wait settled --timeout 10000 >/dev/null 2>&1
   sleep 0.3
-  casementctl debug inject "press left" "release left" >/dev/null || return 1
+  bardo-compositorctl debug inject "press left" "release left" >/dev/null || return 1
   sleep 0.7
 }
 
@@ -729,7 +729,7 @@ detent_click() {
 }
 
 # --- detent's controls by role and name ----------------------------------------------------------------------------
-# detent runs with QUIRE_DEBUG_PROBE (detent_start), built with ui-blitz's `debug-probe` feature (scenario-build.sh):
+# detent runs with BARDO_DEBUG_PROBE (detent_start), built with ui-blitz's `debug-probe` feature (scenario-build.sh):
 # its window lists every control by ARIA role and accessible name with its box (quire's ui-blitz probe). A scenario
 # presses "button Manage", never a place. The roles are the ones the markup has: button, switch, option (a sidebar row),
 # checkbox, textbox ...; the name is the aria-label, else the visible text.
@@ -737,13 +737,13 @@ detent_click() {
 # detent_centre ROLE NAME [NTH]: "X Y", the control's centre in detent's window; exit 1 when there is none (detent not
 # started yet: none). NTH counts from 1 in document order; -1 is the last (an alert's button, after the page's of the same
 # name).
-detent_centre() { [ -n "$DETENT_PID" ] || return 1; python3 -I "$ACC_LIB/probe-find.py" "$PROBE_DIR" "$DETENT_PID" "$1" "$2" ${3:+--nth "$3"}; }
+detent_centre() { [ -n "$BARDO_SETTINGS_PID" ] || return 1; python3 -I "$ACC_LIB/probe-find.py" "$PROBE_DIR" "$BARDO_SETTINGS_PID" "$1" "$2" ${3:+--nth "$3"}; }
 
 # detent_state ROLE NAME [NTH]: the control's state words (checked, pressed, selected, expanded, disabled, or -).
-detent_state() { [ -n "$DETENT_PID" ] || return 1; python3 -I "$ACC_LIB/probe-find.py" "$PROBE_DIR" "$DETENT_PID" "$1" "$2" ${3:+--nth "$3"} --state; }
+detent_state() { [ -n "$BARDO_SETTINGS_PID" ] || return 1; python3 -I "$ACC_LIB/probe-find.py" "$PROBE_DIR" "$BARDO_SETTINGS_PID" "$1" "$2" ${3:+--nth "$3"} --state; }
 
 # detent_listing: what detent shows now, one control per line (role x y w h state name).
-detent_listing() { [ -z "$DETENT_PID" ] || cat "$PROBE_DIR/$DETENT_PID-0.tsv" 2>/dev/null; }
+detent_listing() { [ -z "$BARDO_SETTINGS_PID" ] || cat "$PROBE_DIR/$DETENT_PID-0.tsv" 2>/dev/null; }
 
 # detent_press ROLE NAME [NTH]: waits for the control, waits until it stands still (two reads 0.3 s apart agree: a page
 # change slides), scrolls it into the window when the probe lists it below the window's bottom edge (the sidebar is
@@ -763,7 +763,7 @@ detent_press() {
   # while it scrolls, so the position is read again.
   for i in $(seq 20); do
     [ "$cy" -lt $((h - 16)) ] && break
-    casementctl debug inject "move $((x + cx)) $((y + h / 2))" "axis vertical 15" >/dev/null || return 1
+    bardo-compositorctl debug inject "move $((x + cx)) $((y + h / 2))" "axis vertical 15" >/dev/null || return 1
     sleep 0.5
     c1=$(detent_centre "$role" "$name" $nth) || { echo "detent lost $role \"$name\" while scrolling to it" >&2; return 1; }
     read -r cx cy <<<"$c1"

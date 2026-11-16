@@ -7,7 +7,7 @@ use action_vocab::action_prefix;
 /// One action of an installed app that a corner can run as it is.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HotActionChoice {
-    /// The app's name (`org.quire.Mail`).
+    /// The app's name (`org.bardo.Mail`).
     pub app: String,
     // SCHEMA: `intent` in a binding is the short name (`compose`), not `mail.compose`.
     /// The action without the app's prefix (`compose`), as the command line takes it.
@@ -34,7 +34,7 @@ pub struct HotKnown {
     pub actions: Vec<HotActionChoice>,
 }
 
-/// The last element of an app's name ("Mail" for `org.quire.Mail`).
+/// The last element of an app's name ("Mail" for `org.bardo.Mail`).
 fn last_element(app: &str) -> &str {
     app.rsplit('.')
         .next()

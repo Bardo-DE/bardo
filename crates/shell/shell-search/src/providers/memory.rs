@@ -223,7 +223,7 @@ mod tests {
             label: provenance::Label::trusted_user(),
             things: vec![ThingView {
                 thing: provenance::EntityId {
-                    app: provenance::AppName::parse("org.quire.Mail")
+                    app: provenance::AppName::parse("org.bardo.Mail")
                         .unwrap_or_else(|e| panic!("{e}")),
                     kind: provenance::EntityKind::parse("mail.thread")
                         .unwrap_or_else(|e| panic!("{e}")),

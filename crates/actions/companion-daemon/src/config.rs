@@ -16,7 +16,7 @@ const SHIPPED: &str = include_str!("../../dist/companiond.toml");
 pub struct ConfigError(String);
 
 fn shell() -> AppName {
-    AppName::parse("org.quire.Shell").expect("`org.quire.Shell` is a valid app name")
+    AppName::parse("org.bardo.Shell").expect("`org.bardo.Shell` is a valid app name")
 }
 
 fn spaces() -> Vec<SpaceId> {
@@ -77,7 +77,7 @@ impl CompaniondConfig {
             Some(text) => Self::parse(&text),
             None => Self::shipped(),
         }?;
-        // The person's settings (`docket/settings.toml`) over the file's proposed values, read
+        // The person's settings (`actions/settings.toml`) over the file's proposed values, read
         // once at start: a bad value falls back to the file's and is logged.
         let loaded = Locator::from_env(env).read(AgentSettings::over(config.agent));
         for line in loaded.lines("companiond") {

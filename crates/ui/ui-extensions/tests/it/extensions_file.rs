@@ -15,7 +15,7 @@ fn the_schema_is_one_rows_key_on_the_extensions_page_that_an_agent_cannot_set() 
     let schema = extensions_schema();
 
     assert_eq!(schema.app.0, "quire");
-    assert_eq!(schema.file.0, "quire/extensions.toml");
+    assert_eq!(schema.file.0, "bardo/extensions.toml");
     assert_eq!(schema.key.len(), 1);
     let key = &schema.key[0];
     assert_eq!(key.path.0, "extensions.off");
@@ -71,7 +71,7 @@ fn the_file_round_trips_and_names_the_ids_a_scan_takes() {
     let path = store.path::<ExtensionsFile>().expect("a path");
     let text = std::fs::read_to_string(&path).expect("the file is there");
     assert!(text.contains("[[extensions.off]]"), "{text}");
-    assert!(path.ends_with("quire/extensions.toml"), "{path:?}");
+    assert!(path.ends_with("bardo/extensions.toml"), "{path:?}");
 
     let loaded = store.load::<ExtensionsFile>();
     assert!(loaded.invalid.is_empty() && loaded.unknown.is_empty());

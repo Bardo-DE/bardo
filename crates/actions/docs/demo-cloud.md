@@ -14,7 +14,7 @@ cd ~/docket
 dist/install-dev.sh --cloud    # cargo build --release --locked in three repos, then installs under ~/.local
 ```
 
-`--cloud` opens inferd's network (a drop-in, `inferd.service.d/cloud.conf`). It is opt-in because local
+`--cloud` opens inferd's network (a drop-in, `bardo-inferd.service.d/cloud.conf`). It is opt-in because local
 engines share inferd's sandbox, so an on-device-only setup keeps no network; without the flag inferd stays
 offline and a hosted model cannot connect.
 
@@ -22,11 +22,11 @@ offline and a hosted model cannot connect.
 does not run it; run that yourself:
 
 ```sh
-sudo install -D -m644 ~/porter/dist/callers.toml /etc/porter/callers.toml
-sudo install -D -m644 ~/porter/dist/inferd-callers.toml /etc/porter/inferd-callers.toml
+sudo install -D -m644 ~/porter/dist/callers.toml /etc/bardo/accountd-callers.toml
+sudo install -D -m644 ~/porter/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml
 ```
 
-(the caller tables. accountd's names the Settings app, the shell and inferd.service (the AI broker); rows in
+(the caller tables. accountd's names the Settings app, the shell and bardo-inferd.service (the AI broker); rows in
 `~/.config/porter/callers.toml` win over it. inferd reads who is calling from its own file alone, which only root
 can write; a `[callers]` table in `inferd.toml` is ignored.) The daemons read the tables only when they start, so
 the next step restarts them.
@@ -35,7 +35,7 @@ the next step restarts them.
 
 ```sh
 systemctl --user daemon-reload
-systemctl --user restart accountd inferd   # they read /etc/porter/callers.toml only at startup
+systemctl --user restart accountd inferd   # they read /etc/bardo/accountd-callers.toml only at startup
 ```
 
 ## 3. Add the key
@@ -47,18 +47,18 @@ accounts only when it starts, so it must be stopped while you add a key (the com
 running accountd).
 
 ```sh
-systemctl --user stop accountd.service
-accountd add openrouter --allow org.quire.Companion --allow org.quire.Intents
+systemctl --user stop bardo-accountd.service
+accountd add openrouter --allow org.bardo.Companion --allow org.bardo.Intents
 # paste the key; echo is off
-systemctl --user start accountd.service
+systemctl --user start bardo-accountd.service
 ```
 
 `accountd` is in `~/.local/bin` (or the `--prefix` you gave the installer). Add `--class <class>` (repeatable)
 to narrow a permit to some kinds of data; without it, every class is allowed, and `ai.floor` in step 4 still
 decides which may leave the computer.
 
-`org.quire.Companion` is the planner. `org.quire.Intents` is intentd's policy writer and reviewers, which
-also ask inferd; without it a write cannot get a task policy (reads still work). Add `--allow org.quire.Reader`
+`org.bardo.Companion` is the planner. `org.bardo.Intents` is intentd's policy writer and reviewers, which
+also ask inferd; without it a write cannot get a task policy (reads still work). Add `--allow org.bardo.Reader`
 if you will have it read mail.
 
 ## 4. Let prompts leave the computer
@@ -94,15 +94,15 @@ grants and floors allow.
 ## 6. Start the rest and ask
 
 ```sh
-systemctl --user start memoryd.service intentd.service readerd.service companiond.service
-quire-do ask "Hello. What can you do on this desktop?"
-quire-do ask "What do you remember about me?"
+systemctl --user start bardo-memoryd.service bardo-actiond.service bardo-readerd.service bardo-companiond.service
+bardo-do ask "Hello. What can you do on this desktop?"
+bardo-do ask "What do you remember about me?"
 ```
 
 Mail, calendar and files are not installed here: the companion's actions are memory and its own (starting a task,
 loading a skill), plus mail if you install mailo (`~/mailo/dist/install.sh`). Reads run; anything that changes
-something asks, and **`quire-do` cannot answer a confirmation** (only sill's sheet can). Try
-`quire-do ask "Remember that I like green tea"`: it prints the plan and "Waiting for your confirmation", exits 8,
+something asks, and **`bardo-do` cannot answer a confirmation** (only sill's sheet can). Try
+`bardo-do ask "Remember that I like green tea"`: it prints the plan and "Waiting for your confirmation", exits 8,
 and nothing is saved. That is the gate working, not a failure.
 
 `--json` prints the whole answer object; `--space <id>` picks the Space (default `desktop`).
@@ -121,7 +121,7 @@ To undo:
 ```sh
 systemctl --user stop companiond readerd intentd memoryd inferd accountd
 cd ~/docket && dist/install-dev.sh --uninstall   # removes exactly what the install put down; keeps an edited config
-sudo rm /etc/porter/callers.toml /etc/porter/inferd-callers.toml
+sudo rm /etc/bardo/accountd-callers.toml /etc/bardo/inferd-callers.toml
 systemctl --user daemon-reload
 ```
 

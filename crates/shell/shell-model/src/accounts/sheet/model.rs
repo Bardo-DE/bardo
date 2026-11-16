@@ -36,7 +36,7 @@ impl SheetHandle {
     }
 }
 
-/// Whether the shell serves `org.quire.AccountsSheet1`.
+/// Whether the shell serves `org.bardo.AccountsSheet1`.
 pub type SheetLink = ServeLink;
 
 /// What the person has done on a sheet that is not yet sent: every value the sheet shows that the

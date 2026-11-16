@@ -1,6 +1,6 @@
 [package]
 name = "action-dbus"
-description = "org.quire.Intents1, IntentProvider1, Confirm1, Companion1 and Reader1 as zbus proxies and skeletons, their introspection, bus names and the error mapping."
+description = "org.bardo.Intents1, IntentProvider1, Confirm1, Companion1 and Reader1 as zbus proxies and skeletons, their introspection, bus names and the error mapping."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

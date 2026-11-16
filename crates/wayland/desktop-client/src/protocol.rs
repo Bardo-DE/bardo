@@ -18,14 +18,14 @@ pub enum Protocol {
     ExtImageCopyCapture,
     /// `ext_output_image_capture_source_manager_v1`: an output as a capture source.
     ExtOutputImageCaptureSource,
-    /// `quire_desktop_manager_v1`: apps, windows and Spaces (the Quire arm).
+    /// `bardo_desktop_manager_v1`: apps, windows and Spaces (the Quire arm).
     QuireDesktop,
-    /// `quire_window_manager_v1`: an app's own say about its toplevels, and (version 2) the
+    /// `bardo_window_manager_v1`: an app's own say about its toplevels, and (version 2) the
     /// person's request that the app quit (`quit`). Recorded in the offer; this crate does not
     /// bind it (apps bind it for their own windows and listen for `quit` on the generated
-    /// `client::quire_window_v1` binding).
+    /// `client::bardo_window_v1` binding).
     QuireWindow,
-    /// `quire_shell_v1`: the shell's roles and system events, on Shell connections only.
+    /// `bardo_shell_v1`: the shell's roles and system events, on Shell connections only.
     QuireShell,
 }
 
@@ -52,9 +52,9 @@ impl Protocol {
             Self::WlrOutputManagement => "zwlr_output_manager_v1",
             Self::ExtImageCopyCapture => "ext_image_copy_capture_manager_v1",
             Self::ExtOutputImageCaptureSource => "ext_output_image_capture_source_manager_v1",
-            Self::QuireDesktop => "quire_desktop_manager_v1",
-            Self::QuireWindow => "quire_window_manager_v1",
-            Self::QuireShell => "quire_shell_v1",
+            Self::QuireDesktop => "bardo_desktop_manager_v1",
+            Self::QuireWindow => "bardo_window_manager_v1",
+            Self::QuireShell => "bardo_shell_v1",
         }
     }
 

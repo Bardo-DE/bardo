@@ -14,7 +14,7 @@ use std::path::PathBuf;
 fn ears(scratch: &Scratch) -> LocalModel {
     let entry = parse_entry_text(&entries::speech_in()).expect("entry");
     let config = EngineConfig {
-        speech_host: Some(PathBuf::from("/nonexistent/speech-host")),
+        speech_host: Some(PathBuf::from("/nonexistent/bardo-speech-host")),
         hf_cache: scratch.path().join("hf"),
         ..EngineConfig::default()
     };

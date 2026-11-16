@@ -12,7 +12,7 @@
 //! `ai.floor.<class>` still decides which classes may leave this computer.
 //!
 //! **The daemon.** accountd reads its registry when it starts and writes it itself; two writers
-//! would lose an update. So the command takes the bus name `org.quire.Accounts1` for as long as
+//! would lose an update. So the command takes the bus name `org.bardo.Accounts1` for as long as
 //! it runs, which is also the lock: a running daemon already owns the name and the command stops
 //! with `AddError::DaemonRunning` (stop the unit, run the command, start the unit), and a daemon
 //! that starts meanwhile cannot take the name, so it never reads half a registry. When there is
@@ -77,7 +77,7 @@ pub struct AddArgs {
 
 impl AddArgs {
     /// The arguments as typed: a provider id, `--allow` apps as `name` or `name:isolation`
-    /// (`org.quire.Companion`, `org.example.App:flatpak`; unsandboxed when none is given), and
+    /// (`org.bardo.Companion`, `org.example.App:flatpak`; unsandboxed when none is given), and
     /// `--class` slugs.
     pub fn parse(provider: &str, allow: &[String], classes: &[String]) -> Result<Self, AddError> {
         let bad = |what: &str, text: &str| AddError::Argument(format!("{what} `{text}`"));
@@ -134,7 +134,7 @@ pub struct AddReport {
 pub enum AddError {
     /// An argument is not what it says.
     Argument(String),
-    /// accountd owns `org.quire.Accounts1`.
+    /// accountd owns `org.bardo.Accounts1`.
     DaemonRunning,
     /// No provider file of that id is served.
     UnknownProvider(ProviderId),
@@ -156,9 +156,9 @@ impl std::fmt::Display for AddError {
         match self {
             AddError::Argument(what) => write!(f, "not understood: {what}"),
             AddError::DaemonRunning => f.write_str(
-                "accountd is running and owns org.quire.Accounts1. It reads its accounts only \
+                "accountd is running and owns org.bardo.Accounts1. It reads its accounts only \
                  when it starts, so stop it, run this again and start it: \
-                 systemctl --user stop accountd.service",
+                 systemctl --user stop bardo-accountd.service",
             ),
             AddError::UnknownProvider(id) => write!(
                 f,
@@ -191,13 +191,13 @@ impl From<crate::StartError> for AddError {
 /// The caller `accountd add` is: the person at a terminal, not an app.
 fn person() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Accounts.Add")
-            .unwrap_or_else(|_| unreachable!("org.quire.Accounts.Add is a well-formed app name")),
+        name: AppName::parse("org.bardo.Accounts.Add")
+            .unwrap_or_else(|_| unreachable!("org.bardo.Accounts.Add is a well-formed app name")),
         isolation: Isolation::Unsandboxed,
     }
 }
 
-/// Takes `org.quire.Accounts1` on `connection` so no daemon runs beside the command. A name that
+/// Takes `org.bardo.Accounts1` on `connection` so no daemon runs beside the command. A name that
 /// is owned, or that another claimant is waiting on, is a daemon.
 pub async fn take_the_name(connection: &zbus::Connection) -> Result<(), AddError> {
     let reply = connection

@@ -68,7 +68,7 @@ pub struct WaylandStates<D: SeatHandler + 'static> {
     pub xdg_foreign: xdg_foreign::XdgForeignPart,
     /// `xdg_system_bell_v1`.
     pub system_bell: system_bell::SystemBellPart,
-    /// `quire_window_manager_v1` (C50).
+    /// `bardo_window_manager_v1` (C50).
     pub quire_window: quire_window::QuireWindowPart,
     /// `zwlr_layer_shell_v1`.
     pub layer_shell: layer_shell::LayerShellPart,
@@ -132,11 +132,11 @@ pub struct WaylandStates<D: SeatHandler + 'static> {
     pub capture_source: capture_source::ToplevelCapturePart,
     /// `zwlr_screencopy_manager_v1`: the older output capture (`grim`).
     pub screencopy: crate::screencopy::ScreencopyPart,
-    /// `quire_desktop_manager_v1` (declared at P2-Z, advertised by P2-Q1; shell and agent
+    /// `bardo_desktop_manager_v1` (declared at P2-Z, advertised by P2-Q1; shell and agent
     /// connections only).
     #[cfg(feature = "quire")]
     pub quire_desktop: quire::desktop::QuireDesktopPart,
-    /// `quire_shell_v1` (declared at P2-Z, advertised by P2-Q2; shell connections only).
+    /// `bardo_shell_v1` (declared at P2-Z, advertised by P2-Q2; shell connections only).
     #[cfg(feature = "quire")]
     pub quire_shell: quire::shell::QuireShellPart,
 }

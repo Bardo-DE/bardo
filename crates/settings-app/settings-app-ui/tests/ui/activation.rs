@@ -12,7 +12,7 @@ use sync_bus::SYNC_BUS;
 use ui_harness::Harness;
 
 /// A daemon no page reads: starting it would be a start for a page nobody opened.
-const MEMORY_BUS: &str = "org.quire.Memory1";
+const MEMORY_BUS: &str = "org.bardo.Memory1";
 
 const ALL: [&str; 4] = [ACCOUNTS_BUS, INFERENCE_BUS, SYNC_BUS, MEMORY_BUS];
 

@@ -32,9 +32,9 @@ impl HostOs {
 }
 
 /// The variable that names the platform outright, for machines the guesses get wrong.
-pub const OVERRIDE_VAR: &str = "CHORDKIT_PLATFORM";
+pub const OVERRIDE_VAR: &str = "BARDO_KEYMAP_PLATFORM";
 
-/// The platform for `os`, reading variables through `var`. `CHORDKIT_PLATFORM` (a platform slug)
+/// The platform for `os`, reading variables through `var`. `BARDO_KEYMAP_PLATFORM` (a platform slug)
 /// wins; otherwise Linux desktops come from `XDG_CURRENT_DESKTOP` (a colon-separated list),
 /// then `DESKTOP_SESSION`, then `KDE_FULL_SESSION`.
 pub fn detect(os: HostOs, var: impl Fn(&str) -> Option<String>) -> Platform {
@@ -143,7 +143,7 @@ mod tests {
                 "override wins",
                 HostOs::Linux,
                 &[
-                    ("CHORDKIT_PLATFORM", "windows"),
+                    ("BARDO_KEYMAP_PLATFORM", "windows"),
                     ("XDG_CURRENT_DESKTOP", "KDE"),
                 ],
                 Platform::Windows,
@@ -152,7 +152,7 @@ mod tests {
                 "bad override ignored",
                 HostOs::Linux,
                 &[
-                    ("CHORDKIT_PLATFORM", "amiga"),
+                    ("BARDO_KEYMAP_PLATFORM", "amiga"),
                     ("XDG_CURRENT_DESKTOP", "KDE"),
                 ],
                 linux(Desktop::Kde),

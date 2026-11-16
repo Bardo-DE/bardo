@@ -1,6 +1,6 @@
-//! A scripted `org.quire.Confirm1` server: sill's role in the acceptance run. It owns the two
-//! names sill owns (`org.quire.Confirm1` and `org.quire.Shell`), so intentd derives the
-//! `confirm` role for it from `intentd.toml` exactly as it would for sill. Every request it is
+//! A scripted `org.bardo.Confirm1` server: sill's role in the acceptance run. It owns the two
+//! names sill owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so intentd derives the
+//! `confirm` role for it from `actiond.toml` exactly as it would for sill. Every request it is
 //! shown is kept for the test and handed out on a channel; the verdict comes from a queue the
 //! test fills (the sheet's answer: Allow with a receipt, or the person saying no).
 
@@ -99,7 +99,7 @@ impl Sheet {
                 .emit_signal(
                     Some(held.caller),
                     held.path,
-                    "org.quire.Intents1.Request",
+                    "org.bardo.Intents1.Request",
                     "Response",
                     &(0_u32, held.reply),
                 )
@@ -147,7 +147,7 @@ fn answer_of(verdict: SheetChoice, request: &ConfirmRequest) -> ConfirmAnswer {
     }
 }
 
-#[zbus::interface(name = "org.quire.Confirm1")]
+#[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmObject {
     async fn confirm(
         &self,
@@ -195,7 +195,7 @@ impl ConfirmObject {
                     .emit_signal(
                         Some(caller),
                         path,
-                        "org.quire.Intents1.Request",
+                        "org.bardo.Intents1.Request",
                         "Response",
                         &(0_u32, reply),
                     )
@@ -232,6 +232,6 @@ pub async fn serve(
         .await?;
     zbus_ready::serving(connection).await?;
     connection.request_name(CONFIRM_BUS).await?;
-    connection.request_name("org.quire.Shell").await?;
+    connection.request_name("org.bardo.Shell").await?;
     Ok((sheet, requests))
 }

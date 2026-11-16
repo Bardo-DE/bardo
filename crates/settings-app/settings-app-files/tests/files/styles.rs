@@ -22,7 +22,7 @@ fn sheet(owner: StyleOwner, css: &str) -> StyleSheet {
 fn the_desktop_sheet_comes_first_then_each_app_with_one_in_name_order() {
     let scratch = Scratch::under(env!("CARGO_TARGET_TMPDIR"), "style-sheets");
     write(&scratch, "sill/style.css", "b");
-    write(&scratch, "quire/style.css", "a");
+    write(&scratch, "bardo/style.css", "a");
     write(&scratch, "files/style.css", "c");
     write(&scratch, "mailo/settings.toml", "not a sheet");
     write(&scratch, "loose.css", "not in a folder");
@@ -45,7 +45,7 @@ fn a_missing_folder_or_a_sheet_that_cannot_be_read_leaves_the_file_out() {
     fs::create_dir_all(scratch.join("sill/style.css")).expect("mkdir");
     write(&scratch, "files/style.css", "ok");
     fs::create_dir_all(scratch.join("quire")).expect("mkdir");
-    fs::write(scratch.join("quire/style.css"), b"\xff\xfe").expect("write");
+    fs::write(scratch.join("bardo/style.css"), b"\xff\xfe").expect("write");
     let found = read_style_sheets(&ConfigHome(scratch.path().to_owned()));
     assert_eq!(found, [sheet(StyleOwner::App("files".to_owned()), "ok")]);
 }

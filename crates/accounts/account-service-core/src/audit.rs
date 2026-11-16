@@ -147,7 +147,7 @@ pub enum AuditEvent {
     Removed,
     /// `Peer.ResolveKey` released an account's API key (on a sealed memfd, to a porter daemon).
     /// The entry's `app` is the app the grant is for, which for an agent route is
-    /// `org.quire.Agent.<program>`; `audience` repeats its name as the service the key was
+    /// `org.bardo.Agent.<program>`; `audience` repeats its name as the service the key was
     /// resolved for. Never the key.
     KeyResolved {
         /// The grant the key was released under.
@@ -178,7 +178,7 @@ pub enum AuditEvent {
         program: AgentProgram,
     },
     /// `Tokens.IssueProcessCredential` (P2, lane p2-handoff): an API key was handed to a process
-    /// the launcher spawns for `audience` (`org.quire.Agent.<program>`), on a sealed memfd. The entry's
+    /// the launcher spawns for `audience` (`org.bardo.Agent.<program>`), on a sealed memfd. The entry's
     /// `app` is the app the grant is for and `account` the account. Never the credential.
     ProcessCredentialIssued {
         /// Who it was handed to.
@@ -254,7 +254,7 @@ mod tests {
         let entry = AuditEntry {
             at: UnixSeconds(1_790_000_000),
             app: Some(AppId {
-                name: AppName::parse("org.quire.Mail").expect("name"),
+                name: AppName::parse("org.bardo.Mail").expect("name"),
                 isolation: Isolation::Flatpak,
             }),
             account: Some(AccountId::parse("cloud").expect("id")),
@@ -267,7 +267,7 @@ mod tests {
         assert_eq!(
             json,
             concat!(
-                r#"{"at":1790000000,"app":{"name":"org.quire.Mail","isolation":"flatpak"},"#,
+                r#"{"at":1790000000,"app":{"name":"org.bardo.Mail","isolation":"flatpak"},"#,
                 r#""account":"cloud","event":{"kind":"granted","v":{"grant":"g1","kind":"mail"}}}"#
             )
         );
@@ -322,7 +322,7 @@ mod tests {
             AuditEvent::Removed,
             AuditEvent::KeyResolved {
                 grant: GrantId::parse("g1").expect("id"),
-                audience: Audience("org.quire.Agent.claude-code".into()),
+                audience: Audience("org.bardo.Agent.claude-code".into()),
             },
             AuditEvent::AgentStateSet {
                 state: AccountState::NeedsLogin,
@@ -336,14 +336,14 @@ mod tests {
                 program: AgentProgram::parse("claude-code").expect("program"),
             },
             AuditEvent::ProcessCredentialIssued {
-                audience: Audience("org.quire.Agent.codex".into()),
+                audience: Audience("org.bardo.Agent.codex".into()),
             },
             AuditEvent::ProcessCredentialRevoked {
-                audience: Audience("org.quire.Agent.codex".into()),
+                audience: Audience("org.bardo.Agent.codex".into()),
                 reason: CredentialEnd::ProcessExited,
             },
             AuditEvent::ProcessCredentialRevoked {
-                audience: Audience("org.quire.Agent.codex".into()),
+                audience: Audience("org.bardo.Agent.codex".into()),
                 reason: CredentialEnd::SessionClosed,
             },
             AuditEvent::SessionGrantEnded {
@@ -515,14 +515,14 @@ mod tests {
     fn an_issued_credential_line_from_before_the_handoff_field_went_still_reads() {
         for word in ["memfd", "tmpfs_file"] {
             let line = format!(
-                r#"{{"at":1,"app":null,"account":null,"event":{{"kind":"process_credential_issued","v":{{"audience":"org.quire.Agent.codex","handoff":"{word}"}}}}}}"#
+                r#"{{"at":1,"app":null,"account":null,"event":{{"kind":"process_credential_issued","v":{{"audience":"org.bardo.Agent.codex","handoff":"{word}"}}}}}}"#
             );
             let entries = AuditEntry::read_all(&line);
             assert_eq!(entries.len(), 1, "{word}");
             assert_eq!(
                 entries[0].event,
                 AuditEvent::ProcessCredentialIssued {
-                    audience: Audience("org.quire.Agent.codex".into()),
+                    audience: Audience("org.bardo.Agent.codex".into()),
                 },
                 "{word}"
             );

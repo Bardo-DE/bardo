@@ -20,14 +20,14 @@ out="scripts/dev/out/accept-demo/$comp"
 mkdir -p "$out"
 build() { cargo build --release -p layer-shell-host --features debug-inject --examples >&2; }
 # `kwin-virtual[@scale]`: a nested headless KWin (virtual output, OpenGL compositing, own D-Bus
-# session) at scale $ACCEPT_SCALE (default 1.5). Used when the live session is locked, and for
+# session) at scale $BARDO_ACCEPT_SCALE (default 1.5). Used when the live session is locked, and for
 # item f at exactly 1.5 without touching the user's display.
 # `kwin-virtual@1.7` picks the nested output scale from the name.
-if [[ "$comp" == kwin-virtual@* ]]; then export ACCEPT_SCALE="${comp#kwin-virtual@}"; fi
-if [[ "$comp" == kwin-virtual* && -z "${ACCEPT_NESTED:-}" ]]; then
+if [[ "$comp" == kwin-virtual@* ]]; then export BARDO_ACCEPT_SCALE="${comp#kwin-virtual@}"; fi
+if [[ "$comp" == kwin-virtual* && -z "${BARDO_ACCEPT_NESTED:-}" ]]; then
   build
   rc=0
-  ACCEPT_NESTED=1 dbus-run-session -- "$self" "${orig[@]}" </dev/null || rc=$?
+  BARDO_ACCEPT_NESTED=1 dbus-run-session -- "$self" "${orig[@]}" </dev/null || rc=$?
   # D-Bus activation starts daemons (portals, fcitx5, ksecretd) on the nested bus under
   # systemd --user, some of them while KWin shuts down; they outlive dbus-run-session and
   # hold our stdout open unless killed here.
@@ -46,7 +46,7 @@ nested_cleanup() {
   kill "$kpid" 2>/dev/null || true
   wait "$kpid" 2>/dev/null || true
 }
-if [[ -n "${ACCEPT_NESTED:-}" ]]; then
+if [[ -n "${BARDO_ACCEPT_NESTED:-}" ]]; then
   sock="wayland-accept-$$"
   echo "$DBUS_SESSION_BUS_ADDRESS" >"$out/.nested-bus-$item"
   kwin_wayland --virtual --no-lockscreen --no-global-shortcuts --width 1920 --height 1080 \
@@ -57,19 +57,19 @@ if [[ -n "${ACCEPT_NESTED:-}" ]]; then
   sleep 1.5
   export WAYLAND_DISPLAY="$sock"
   vout=$(kscreen-doctor -o 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | awk '/^Output/{print $3; exit}')
-  kscreen-doctor "output.$vout.scale.${ACCEPT_SCALE:-1.5}" >/dev/null 2>&1
+  kscreen-doctor "output.$vout.scale.${BARDO_ACCEPT_SCALE:-1.5}" >/dev/null 2>&1
   sleep 1
 else
   build
 fi
-export ACCEPT_BIN="target/release/examples"
-export ACCEPT_OUT="$out" ACCEPT_ITEM="$item"
+export BARDO_ACCEPT_BIN="target/release/examples"
+export BARDO_ACCEPT_OUT="$out" BARDO_ACCEPT_ITEM="$item"
 python3 - <<'PY'
 import json, os, queue, re, subprocess, sys, threading, time
 from PIL import Image
 import numpy as np
 
-OUT, ITEM, BIN = os.environ["ACCEPT_OUT"], os.environ["ACCEPT_ITEM"], os.environ["ACCEPT_BIN"]
+OUT, ITEM, BIN = os.environ["BARDO_ACCEPT_OUT"], os.environ["BARDO_ACCEPT_ITEM"], os.environ["BARDO_ACCEPT_BIN"]
 LOG = open(f"{OUT}/{ITEM}.log", "w")
 PROCS = []
 

@@ -1,6 +1,6 @@
 [package]
 name = "compositor-ctl"
-description = "casementctl: drive a jailed casement over its private bus (debug inject, wait, clock, output, windows, scene, fault), take screenshots (P1) and print hardware reports (P5)."
+description = "bardo-compositorctl: drive a jailed casement over its private bus (debug inject, wait, clock, output, windows, scene, fault), take screenshots (P1) and print hardware reports (P5)."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -12,7 +12,7 @@ publish = false
 path = "src/lib.rs"
 
 [[bin]]
-name = "casementctl"
+name = "bardo-compositorctl"
 path = "src/main.rs"
 
 [dependencies]

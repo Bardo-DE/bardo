@@ -181,7 +181,7 @@ async fn a_local_route_names_its_model_and_an_other_id_is_an_error() {
     .expect_err("no model");
     assert_eq!(
         error_name(&refused),
-        "org.quire.Inference1.Error.NoSuchRoute"
+        "org.bardo.Inference1.Error.NoSuchRoute"
     );
 }
 
@@ -254,7 +254,7 @@ async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_sett
         .expect_err("floor");
     assert_eq!(
         error_name(&refused),
-        "org.quire.Inference1.Error.FloorRefused"
+        "org.bardo.Inference1.Error.FloorRefused"
     );
     assert!(lab.chats().is_empty(), "nothing was sent");
     let mut settings = (*world.served.settings()).clone();

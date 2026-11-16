@@ -1,4 +1,4 @@
-//! An editor drives the companion over ACP: `docket-acp` as a process on the private bus beside
+//! An editor drives the companion over ACP: `bardo-agent-acp` as a process on the private bus beside
 //! the real intentd, memoryd, inferd (replaying a cassette) and the mail provider, spoken to by a
 //! scripted editor over stdin and stdout.
 

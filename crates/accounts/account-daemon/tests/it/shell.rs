@@ -17,12 +17,12 @@ async fn the_shell_is_told_of_a_refusal_and_a_recovery_and_reads_the_account() {
     let rig = Rig::start_with(options, SheetHost::quiet()).await;
     let mail = mail_account();
     let shell = rig
-        .client_as(caller("org.quire.Shell", CallerRole::SheetHost))
+        .client_as(caller("org.bardo.Shell", CallerRole::SheetHost))
         .await;
     let manager = ManagerProxy::new(&shell).await.expect("proxy");
     assert!(manager.needing_reauth().await.expect("list").is_empty());
     // An app that has called accountd does not hear.
-    let other = rig.client("org.quire.Mail").await;
+    let other = rig.client("org.bardo.Mail").await;
     account_dbus::accounts::IdentitiesProxy::new(&other)
         .await
         .expect("proxy")

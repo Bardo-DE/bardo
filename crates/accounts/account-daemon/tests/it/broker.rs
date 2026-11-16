@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Broker`: what inferd asks of the daemon that keeps the AI keys. Only the
+//! `org.bardo.Accounts1.Broker`: what inferd asks of the daemon that keeps the AI keys. Only the
 //! AI broker asks; a key leaves on a sealed memfd, once, and the audit says so without the key.
 
 use crate::launcher_register::error_name;
@@ -30,7 +30,7 @@ fn app_arg() -> (String, String) {
 
 async fn broker(rig: &Rig) -> (zbus::Connection, BrokerProxy<'static>) {
     let connection = rig
-        .client_as("org.quire.Inference", CallerRole::AiBroker)
+        .client_as("org.bardo.Inference", CallerRole::AiBroker)
         .await;
     let proxy = BrokerProxy::new(&connection).await.expect("proxy");
     (connection, proxy)
@@ -133,7 +133,7 @@ async fn a_permit_that_does_not_open_a_key_is_refused_and_a_once_permit_is_spent
     )
     .await;
     let (_connection, broker) = broker(&rig).await;
-    let refused = |name: &str| format!("org.quire.Accounts1.Error.{name}");
+    let refused = |name: &str| format!("org.bardo.Accounts1.Error.{name}");
     assert_eq!(
         error_name(broker.read_key("g-none").await.expect_err("nobody's")),
         refused("UnknownGrant")

@@ -11,7 +11,7 @@ use zbus::message::Header;
 
 pub(crate) struct CheckpointBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Checkpoint")]
+#[zbus::interface(name = "org.bardo.Intents1.Checkpoint")]
 impl CheckpointBus {
     async fn list(
         &self,

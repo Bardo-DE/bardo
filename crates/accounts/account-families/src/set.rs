@@ -66,7 +66,7 @@ pub enum SkipReason {
 /// Whose a provider directory is, which decides what its files may change.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Layer {
-    /// The system's (`/usr/share/porter/providers`): what this install ships.
+    /// The system's (`/usr/share/bardo/accounts/providers`): what this install ships.
     Shipped,
     /// The person's own (`$XDG_DATA_HOME/porter/providers`), which any program of theirs can
     /// write: it may add providers and reword a shipped one, but a file for a shipped provider

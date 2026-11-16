@@ -32,18 +32,18 @@ action-core, prov) take default features; Wayland clients take `client`; casemen
 
 | File | Interfaces | Advertised on | Server | Clients |
 | --- | --- | --- | --- | --- |
-| `protocols/quire-desktop-v1.xml` | `quire_desktop_manager_v1` (version 2), `quire_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `quire_desktop_window_v1`, `quire_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | casement | sill (full), cuad (read-only) |
-| `protocols/quire-shell-v1.xml` | `quire_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | casement | sill through layer-shell-host |
-| `protocols/quire-window-v1.xml` | `quire_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `quire_window_v1` | every connection | casement | layer-shell-host, ui-blitz, any app |
-| `protocols/quire-sensitive-v1.xml` | `quire_sensitive_manager_v1`, `quire_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
-| `protocols/quire-agent-v1.xml` | `quire_agent_manager_v1`, `quire_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
-| `protocols/quire-trusted-surface-v1.xml` | `quire_trusted_manager_v1`, `quire_trusted_surface_v1` | Shell connections, once served | not served yet | sill |
+| `protocols/bardo-desktop-v1.xml` | `bardo_desktop_manager_v1` (version 2), `bardo_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `bardo_desktop_window_v1`, `bardo_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | casement | sill (full), cuad (read-only) |
+| `protocols/bardo-shell-v1.xml` | `bardo_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | casement | sill through layer-shell-host |
+| `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | casement | layer-shell-host, ui-blitz, any app |
+| `protocols/bardo-sensitive-v1.xml` | `bardo_sensitive_manager_v1`, `bardo_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
+| `protocols/bardo-agent-v1.xml` | `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
+| `protocols/bardo-trusted-surface-v1.xml` | `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | Shell connections, once served | not served yet | sill |
 
 A protocol whose Server cell says "not served yet" has no server in casement: it is not
 advertised, a client finds no global, and nothing may rely on what its XML promises (PORTAL-14).
 Its XML says so in its first description (`Not served yet:`), and `tests/it/xml_introspection.rs`
 fails when the table and the XML disagree, or a file has no row. When a server lands, the same
-change turns the cell to `casement` and deletes the sentence. The masking `quire_sensitive_v1`
+change turns the cell to `casement` and deletes the sentence. The masking `bardo_sensitive_v1`
 promises applies to every capture casement makes, the portal's and the shell's included, from the
 day its server lands.
 
@@ -51,20 +51,20 @@ Objects never cross connections, so the shell and trusted-surface protocols name
 their ext-foreign-toplevel identifier string and apps by their app key string.
 
 An enum lives in one XML file, on the interface that owns the concept, and other protocols name
-it as `interface.enum` (`quire_window_v1.emphasis` in the desktop window's `emphasis` event).
+it as `interface.enum` (`bardo_window_v1.emphasis` in the desktop window's `emphasis` event).
 wayland-scanner turns that into the owning module's type, so one concept has one generated type.
 
 | Owner | Enums |
 | --- | --- |
-| `quire_window_v1` | `window_role`, `tile_zone`, `place_target`, `placement_mark`, `emphasis`, `frame_mode`, `edited` |
-| `quire_sensitive_surface_v1` | `sensitivity_level` |
-| `quire_agent_manager_v1`, `quire_agent_lease_v1` | `lease_mode`; `revoke_reason`, `suspend_reason`, `glow_state`, `mask_reason` |
-| `quire_desktop_manager_v1` | `actor_kind` |
-| `quire_desktop_app_v1` | `proof_kind`, `app_life_kind`, `app_visibility`, `menu_source_kind`, `attention` |
-| `quire_desktop_window_v1` | `modality`, `window_state_kind`, `place_kind`, `responsiveness`, `lease_state`, `toggle`, `assign` |
-| `quire_desktop_space_v1` | `space_kind`, `space_activity` |
-| `quire_shell_v1` | `shell_role`, `mac_mods` (bitfield), `key_gesture`, `overview_mode`, `overview_state`, `corner`, `screen_edge`, `shown`, `window_entry`, `split_side`, `drag_outcome`, `power`, `subject_kind`, `memory`, `answer`, `trial_answer` |
-| `quire_trusted_manager_v1`, `quire_trusted_surface_v1` | `trusted_kind`, `trusted_anchor`; `withdrawn` |
+| `bardo_window_v1` | `window_role`, `tile_zone`, `place_target`, `placement_mark`, `emphasis`, `frame_mode`, `edited` |
+| `bardo_sensitive_surface_v1` | `sensitivity_level` |
+| `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | `lease_mode`; `revoke_reason`, `suspend_reason`, `glow_state`, `mask_reason` |
+| `bardo_desktop_manager_v1` | `actor_kind` |
+| `bardo_desktop_app_v1` | `proof_kind`, `app_life_kind`, `app_visibility`, `menu_source_kind`, `attention` |
+| `bardo_desktop_window_v1` | `modality`, `window_state_kind`, `place_kind`, `responsiveness`, `lease_state`, `toggle`, `assign` |
+| `bardo_desktop_space_v1` | `space_kind`, `space_activity` |
+| `bardo_shell_v1` | `shell_role`, `mac_mods` (bitfield), `key_gesture`, `overview_mode`, `overview_state`, `corner`, `screen_edge`, `shown`, `window_entry`, `split_side`, `drag_outcome`, `power`, `subject_kind`, `memory`, `answer`, `trial_answer` |
+| `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | `trusted_kind`, `trusted_anchor`; `withdrawn` |
 
 The window, sensitive, agent and trusted-surface protocols name no other protocol of ours; the
 desktop protocol names window, sensitive and agent enums; the shell protocol names the desktop's
@@ -133,7 +133,7 @@ reads the same as the protocol.
 
 | File | Proves |
 | --- | --- |
-| `tests/it/xml_introspection.rs` | every file parses and is named after itself; every file has a row in section 2 that says `casement` or `not served yet`, and its XML says `Not served yet:` exactly when the row does; every interface is `quire_*_v1` at version 1 (the shell's global at 5 and the window manager at 2, their newer messages last and saying `since=`); every request and event with its arguments, in opcode order, as frozen; error enums; codes dense from 0 (bitfields: single bits); every vocab enum has its XML enum's names and codes and every XML enum has a vocab type; cross-references resolve; the licence notice; `quire-agent-v1.xml`'s pinned bytes; with both features, the generated interfaces' names, versions and messages |
+| `tests/it/xml_introspection.rs` | every file parses and is named after itself; every file has a row in section 2 that says `casement` or `not served yet`, and its XML says `Not served yet:` exactly when the row does; every interface is `quire_*_v1` at version 1 (the shell's global at 5 and the window manager at 2, their newer messages last and saying `since=`); every request and event with its arguments, in opcode order, as frozen; error enums; codes dense from 0 (bitfields: single bits); every vocab enum has its XML enum's names and codes and every XML enum has a vocab type; cross-references resolve; the licence notice; `bardo-agent-v1.xml`'s pinned bytes; with both features, the generated interfaces' names, versions and messages |
 | `tests/it/vocab_codes.rs` | (features `client,server`) every vocab enum accepts exactly the codes the generated enum accepts, with the same variant names, on both sides; `HeldMods` bits and `Transform` against `wl_output` |
 | `tests/it/round_trip.rs` | every vocab value round-trips through serde and its code; pinned JSON for stored forms |
 
@@ -159,13 +159,13 @@ holds the frozen interface as tables (every message with its arguments, every er
   wayland-scanner's generated code.
 - **Protocol evolution:** until the user declares the protocols released, a v1 XML changes in
   place, with the server and every client updated in the same change (one `~/desktop` manifest
-  bump); no `since=` until then, except where a global has already grown: `quire_shell_v1` (version 6),
-  `quire_window_manager_v1` (version 2: the `quit` event, sent only to a client that bound
-  version 2, so a version 1 client keeps working) and `quire_desktop_manager_v1` with
-  `quire_desktop_app_v1` (version 2: the `subject` event, sent only to a client that bound the
+  bump); no `since=` until then, except where a global has already grown: `bardo_shell_v1` (version 6),
+  `bardo_window_manager_v1` (version 2: the `quit` event, sent only to a client that bound
+  version 2, so a version 1 client keeps working) and `bardo_desktop_manager_v1` with
+  `bardo_desktop_app_v1` (version 2: the `subject` event, sent only to a client that bound the
   manager at version 2; the app objects take the manager's version, which is why the manager
   grows with the app).
-- **`quire-agent-v1.xml` came from cua byte for byte**; `tests/it/xml_introspection.rs` pins its
+- **`bardo-agent-v1.xml` came from cua byte for byte**; `tests/it/xml_introspection.rs` pins its
   bytes. A change to it updates the pin in the same commit.
 - **Clean room:** the XML is written from our own design notes; every interface here is ours
   (`check-boundary.sh` row 5).
@@ -175,7 +175,7 @@ holds the frozen interface as tables (every message with its arguments, every er
 
 The workspace has three members: `desktop-protocols` (the repo root), `desktop-client` and `shell-verbs` (section 9). The
 second is the one typed Wayland desktop client (amendment A3 of the P1 library plan): the
-standard wlroots-style protocols plus the Quire arm (`quire_desktop_v1`, `quire_shell_v1`,
+standard wlroots-style protocols plus the Quire arm (`bardo_desktop_v1`, `bardo_shell_v1`,
 filled at P2-Z-dc). It is a separate package so a consumer that wants only toplevels and
 outputs on a stock compositor does not take the private bindings: its core takes
 `desktop-protocols` with default features (the pure vocab, serde and thiserror only), and its
@@ -203,15 +203,15 @@ Core, one concept per file:
 | The Quire arm: apps, windows, Spaces, the shell's notes, the window-to-handle `Linker`, the projection onto toplevel flags | `quire/` (`app.rs`, `window.rs`, `space.rs`, `shell.rs`, `link.rs`, `project.rs`, `targets.rs`, `reduce.rs`, `set.rs`) |
 
 **Choosing the arm.** `backend_for(&ProtocolSet)` reads the offered globals only (never a
-name or the environment): Quire when `quire_desktop_manager_v1` and the ext list are both
+name or the environment): Quire when `bardo_desktop_manager_v1` and the ext list are both
 offered, else wlr, else the ext list alone. On the Quire arm the plain window commands
-(`Activate`, `Close`, `Minimise`, ...) go to `quire_desktop_window_v1`, the wlr manager is not
+(`Activate`, `Close`, `Minimise`, ...) go to `bardo_desktop_window_v1`, the wlr manager is not
 bound, and a window is the ext handle (title, app id, identifier) plus the Quire window
 (everything else) under one `ToplevelKey`: `Linker` matches the manager's window object to the
 ext handle by identifier, whichever arrives first, and resends the manager's `active` once its
 key window links, so a window that is focused before its handle arrives still becomes key. The reducer projects the Quire state onto
 `Toplevel.flags` (filled is maximised, the key window is activated), `parent` and `outputs`, so
-a consumer that reads only toplevels is unchanged. `quire_shell_v1` is bound only when the
+a consumer that reads only toplevels is unchanged. `bardo_shell_v1` is bound only when the
 caller says it holds the shell role (`DesktopConfig::holding_shell()`); `admit` returns
 `CommandError::NotBound` for a shell command otherwise. A shell connection comes either from
 the environment or handed over (`client::WaylandRoute::{Environment, Handed(OwnedFd)}`, the
@@ -231,10 +231,10 @@ passes the `Connection`); a proxy never enters the state, a key does
 `supports`); every growing public type is `non_exhaustive` with a constructor.
 
 Consumers: sill maps `DesktopState` into its `DesktopView` (app grouping, most-recently-used
-order and Spaces are sill's); cua's toplevel client moves onto it later; `casementctl shot`
+order and Spaces are sill's); cua's toplevel client moves onto it later; `bardo-compositorctl shot`
 and the testclient use `DesktopCommand::CaptureOutput` and `Frame::to_rgba8`.
 
-## 9. Consent: `quire_shell_v1` version 5
+## 9. Consent: `bardo_shell_v1` version 5
 
 casement asks the shell, over this global, whether a program may use one of seven `Power`s; the
 shell puts the question to the person and answers. The design (who is trusted, the book, the
@@ -266,7 +266,7 @@ no state: the shell keeps its queue by id, because an answered ask is not echoed
 `DesktopCommand::AnswerPermission { ask, answer }` (45 command kinds; the shell is bound at
 `1..=5`; the command is refused with `NotBound` on a compositor that serves less than version 5).
 
-## 10. Display trial: `quire_shell_v1` version 6
+## 10. Display trial: `bardo_shell_v1` version 6
 
 When a program other than the shell changes the displays, casement applies the change, asks the
 person whether to keep it, and goes back to the previous setup if the person does not say so in

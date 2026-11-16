@@ -1,13 +1,13 @@
-//! `org.quire.Confirm1`: the sheet that asks the person, served by sill (a sheet in phase A, the trusted surface in phase B).
+//! `org.bardo.Confirm1`: the sheet that asks the person, served by sill (a sheet in phase A, the trusted surface in phase B).
 
 use zbus::fdo;
 use zbus::zvariant::OwnedObjectPath;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Confirm1",
-    default_service = "org.quire.Confirm1",
-    default_path = "/org/quire/Confirm1"
+    interface = "org.bardo.Confirm1",
+    default_service = "org.bardo.Confirm1",
+    default_path = "/org/bardo/Confirm1"
 )]
 pub trait Confirm {
     /// Shows a confirmation (`ConfirmRequest` JSON). Answers a Request whose `Response` carries the `ConfirmAnswer`.
@@ -21,7 +21,7 @@ pub trait Confirm {
 #[derive(Debug, Default)]
 pub struct ConfirmSkeleton;
 
-#[zbus::interface(name = "org.quire.Confirm1")]
+#[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmSkeleton {
     fn confirm(&self, request: String) -> fdo::Result<OwnedObjectPath> {
         let _ = (request,);

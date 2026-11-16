@@ -1,6 +1,6 @@
 //! An external coding agent's calls through its host: the host opens the agent's session, records
 //! the person's turns, and makes each call the agent asks of it as a router call of the
-//! `org.quire.AcpAgent` pseudo-app. The gate is the one every agent meets: the policy point, the
+//! `org.bardo.AcpAgent` pseudo-app. The gate is the one every agent meets: the policy point, the
 //! reviewers, taint, the breaker, the budgets and the audit; a standing grant belongs to the
 //! program and is held in docket's store.
 
@@ -24,7 +24,7 @@ use sandbox::AbsPath;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 
-pub(crate) const HOST: &str = "org.quire.AcpAgent";
+pub(crate) const HOST: &str = "org.bardo.AcpAgent";
 pub(crate) const CLAUDE: &str = "claude-code";
 
 pub(crate) fn host() -> CallerId {
@@ -321,8 +321,8 @@ async fn only_the_host_of_the_session_may_make_the_agents_calls() {
     for (who, why) in [
         (companion(), "the companion"),
         (launcher(), "the launcher"),
-        (caller("org.quire.Mail", CallerRole::App), "an app"),
-        (caller("org.quire.Do", CallerRole::Cli), "a terminal"),
+        (caller("org.bardo.Mail", CallerRole::App), "an app"),
+        (caller("org.bardo.Do", CallerRole::Cli), "a terminal"),
     ] {
         let reply = ask(
             &w.router,

@@ -81,7 +81,7 @@ pub fn on_limits(part: &mut XdgShellPart, surface: &ToplevelSurface) -> Vec<Even
 }
 
 /// The role `window`'s toplevel has from the protocols that name one (xdg-dialog), without any
-/// `quire_window_v1.set_role`.
+/// `bardo_window_v1.set_role`.
 pub fn base_role(part: &XdgShellPart, window: WindowId) -> WindowRole {
     part.toplevels
         .get(&window)

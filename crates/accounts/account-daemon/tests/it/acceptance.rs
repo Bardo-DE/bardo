@@ -36,7 +36,7 @@ async fn acceptance_3_no_secret_is_in_any_message_on_the_bus() {
     let mut tap = Tap::start(&rig.bus).await;
 
     // Everything an app and the shell can ask, for the accounts that hold secrets.
-    let app = rig.client("org.quire.Photos").await;
+    let app = rig.client("org.bardo.Photos").await;
     let identities = IdentitiesProxy::new(&app).await.expect("proxy");
     identities.list().await.expect("list");
     let shell = rig
@@ -77,7 +77,7 @@ async fn acceptance_3_no_secret_is_in_any_message_on_the_bus() {
 async fn acceptance_8_removal_leaves_nothing_and_the_reader_is_told() {
     let rig = Rig::start().await;
     let connection = rig
-        .client_as(caller("org.quire.Settings", CallerRole::Settings))
+        .client_as(caller("org.bardo.Settings", CallerRole::Settings))
         .await;
     // Reading an account puts the connection among those that are told.
     let account = account_proxy(&connection).await;
@@ -93,7 +93,7 @@ async fn acceptance_8_removal_leaves_nothing_and_the_reader_is_told() {
     };
     let settings = LiveClient::new(
         &connection,
-        "org.quire.Accounts1",
+        "org.bardo.Accounts1",
         &account_daemon::settings_path(),
         AnyOwner,
     )

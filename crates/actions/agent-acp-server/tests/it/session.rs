@@ -34,7 +34,7 @@ fn one_turn() -> Vec<Vec<Vec<agent_session::BackendEvent>>> {
 
 fn golden(name: &str, got: &str) {
     let path = format!("{}/tests/golden/{name}", env!("CARGO_MANIFEST_DIR"));
-    if std::env::var("DOCKET_ACP_BLESS").is_ok() {
+    if std::env::var("BARDO_AGENT_ACP_BLESS").is_ok() {
         std::fs::write(&path, got).expect("bless");
     }
     let want = std::fs::read_to_string(&path).expect("golden file");
@@ -47,7 +47,7 @@ fn golden(name: &str, got: &str) {
     assert_eq!(
         messages(got),
         messages(&want),
-        "{name} changed; DOCKET_ACP_BLESS=1 rewrites it"
+        "{name} changed; BARDO_AGENT_ACP_BLESS=1 rewrites it"
     );
 }
 

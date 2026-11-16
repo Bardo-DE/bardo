@@ -1,4 +1,4 @@
-//! `org.quire.Grants1` at `/org/quire/Grants1`: who may use which account, and the relays a grant
+//! `org.bardo.Grants1` at `/org/bardo/Grants1`: who may use which account, and the relays a grant
 //! opens, over the service's grants domain.
 //!
 //! - An app and the porter daemons use it, for their own grants: the caller is the connection's,

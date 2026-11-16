@@ -9,7 +9,7 @@ repository = "https://github.com/Bardo-DE/docket"
 publish = false
 
 [[bin]]
-name = "docket-eval"
+name = "agent-eval"
 path = "src/main.rs"
 
 [dependencies]

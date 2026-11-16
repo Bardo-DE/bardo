@@ -32,12 +32,12 @@ use std::sync::mpsc::{self, Receiver};
 use std::time::Duration;
 
 /// The socket's file name inside the runtime directory.
-const SOCKET_NAME: &str = "keycap.sock";
+const SOCKET_NAME: &str = "key-remap.sock";
 
 /// How often the seat file is read when no client says anything.
 const SEAT_RECHECK: Duration = Duration::from_secs(1);
 
-/// `<runtime_dir>/keycap.sock`.
+/// `<runtime_dir>/key-remap.sock`.
 pub(crate) fn socket_path(runtime_dir: &Path) -> PathBuf {
     runtime_dir.join(SOCKET_NAME)
 }

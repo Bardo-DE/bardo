@@ -13,7 +13,7 @@ below and fails on any edge it does not allow, or on a crate it does not list.
 | 0, library | `files-trash` | The freedesktop.org Trash behind a trait: move to it, list it, put back, delete now, empty, the per-volume `.Trash-$uid` folders. A fake keeps a Trash in a scratch folder. |
 | 0, library | `files-ops` | Copy, move, trash and rename as a queue: progress, cancel, conflict questions (keep both, replace, skip, stop), an undo journal. Each job is submitted with a caller's tag (`Worker<T>`) that comes back with every `OpEvent` of it; `OpEvent`, `Finish` and `Outcome` are `files-core`'s, so the model matches what the queue sends and no layer re-wraps it. Plain threads and channels; links are copied as links. |
 | 1, logic | `files-model` | Pure state machines, `step(state, input, now) -> (state, effects)`: the browser (history, selection, rename, Go to Folder, type-to-select, sort and view per folder, disks), tabs (`tabs/`), the queue as shown (work and questions), Quick Look, Get Info and the preview pane. No I/O. |
-| 2, desktop | `files-desktop` | The only crate that names a bus, docket or porter: `org.freedesktop.FileManager1`, the app's intents (`IntentProvider1`), UDisks2 on the system bus, the cloud drives (`org.quire.Storage1`, porter's, behind `files_fs::Clouds`), opening an online document's address through the portal, launching apps with an activation token, one instance. |
+| 2, desktop | `files-desktop` | The only crate that names a bus, docket or porter: `org.freedesktop.FileManager1`, the app's intents (`IntentProvider1`), UDisks2 on the system bus, the cloud drives (`org.bardo.Storage1`, porter's, behind `files_fs::Clouds`), opening an online document's address through the portal, launching apps with an activation token, one instance. |
 | 3, UI | `files-ui` | The window, drawn only with quire's components, and the seams it is given (`Opener`, `Apps`, `Volumes`, `Requests`). `settings/` is the program's own settings file and its schema. `edge/` carries out the model's effects against the layer 0 traits and those seams, one module per family (`read`, `ops`, `prefs`, `volumes`, `look`, `thumbs`, `file_icons`: the Extensions folders read into quire's icon resolver), and runs anyview's peek worker for Quick Look and the preview pane (its `Card` is drawn inside quire's `Peek` and `PreviewPane`) and the threads that make the icon view's thumbnails. The sidebar's sections are `places`. `icons` asks the resolver for an entry and maps its answer to quire's `FileIconChoice`. |
 | 4, binary | `files` | `main`: arguments, the runtime, `ds_blitz::launch`, and the glue between layers 2 and 3: `files-desktop`'s launcher, disks and intents adapted to `files-ui`'s seams, the XDG folders, the session bus. Each file is one adapter. |
 
@@ -89,7 +89,7 @@ The binary adapts `Disks` to `Volumes` and runs it on the bus runtime.
 
 ## 7. Asks from outside: intents
 
-`dist/intents/org.quire.Files.toml` declares the app's actions (`files.open`, `files.trash`,
+`dist/intents/org.bardo.Files.toml` declares the app's actions (`files.open`, `files.trash`,
 `files.new_folder`, `files.copy`, `files.move`, `files.empty_trash`, `files.selection`,
 `files.current_folder`); docket generates the command line from it, and `files-desktop::intents`
 serves `IntentProvider1` on the name the app already owns. The window is behind `Window`: the binary
@@ -151,7 +151,7 @@ from the renderer's own page cache and is shown as it is.
 ## 10. Cloud drives
 
 A cloud drive is a storage account the person turned on for Files; porter serves it as a folder
-and as `org.quire.Storage1`. `files-core` holds the vocabulary (`CloudDrive`: id, provider, account
+and as `org.bardo.Storage1`. `files-core` holds the vocabulary (`CloudDrive`: id, provider, account
 label, folder, `DriveState`, words, `Usage`; `CloudItem`: `CloudState`, whether it is kept, `CloudKind`,
 `Share`, words, `OnlineUrl`, the `other` version of a conflict). The folder is only ever the one the
 service gave. The seam is `files_fs::Clouds` (blocking calls, `CloudNews` through a guarded

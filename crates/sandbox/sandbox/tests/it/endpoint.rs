@@ -73,7 +73,7 @@ fn the_agent_reaches_the_endpoint_through_the_forwarder_and_the_bridge() {
         conn.write_all(b"pong\n").expect("write");
     });
     let net = AgentNet::Endpoint(EndpointBind::new(
-        abs(Path::new(env!("CARGO_BIN_EXE_bulkhead-forward"))),
+        abs(Path::new(env!("CARGO_BIN_EXE_bardo-sandbox-forward"))),
         abs(&socket),
         port,
     ));

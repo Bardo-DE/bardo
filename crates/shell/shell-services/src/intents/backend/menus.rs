@@ -14,7 +14,7 @@ use crate::app_menu::{Activated, MenuAgent, MenuFault};
 
 /// The app a listing is attributed to when the window's `app_id` is no reverse-DNS name (`foot`):
 /// the shell, as the one that read it. The label stays untrusted.
-const SHELL_APP: &str = "org.quire.Shell";
+const SHELL_APP: &str = "org.bardo.Shell";
 
 /// What `ask` is, for the router's `Classify`. Only an activation has a class.
 pub async fn classify<T: Transport>(

@@ -199,9 +199,9 @@ fn requests() -> Vec<(Request, &'static str)> {
         ),
         (
             Request::Intents(IntentsAsk::Revoke(
-                parse_grant("org.quire.Shell:shell.dock.pin").expect("a grant"), // test-only
+                parse_grant("org.bardo.Shell:shell.dock.pin").expect("a grant"), // test-only
             )),
-            r#"{"kind":"intents","v":{"kind":"revoke","v":{"app":"org.quire.Shell","name":"shell.dock.pin"}}}"#,
+            r#"{"kind":"intents","v":{"kind":"revoke","v":{"app":"org.bardo.Shell","name":"shell.dock.pin"}}}"#,
         ),
         (
             Request::Intents(IntentsAsk::Resume),
@@ -511,11 +511,11 @@ fn responses() -> Vec<(Response, &'static str)> {
                 link: LinkStatus::Serving,
                 showing: Some("c-1".to_owned()),
                 waiting: 2,
-                grants: vec!["org.quire.Shell:shell.dock.pin".to_owned()],
+                grants: vec!["org.bardo.Shell:shell.dock.pin".to_owned()],
                 breaker: Breaker::Tripped,
                 reach: ControlReach::Reached,
             })),
-            r#"{"kind":"status","v":{"kind":"intents","v":{"link":"serving","showing":"c-1","waiting":2,"grants":["org.quire.Shell:shell.dock.pin"],"breaker":"tripped","reach":"reached"}}}"#,
+            r#"{"kind":"status","v":{"kind":"intents","v":{"link":"serving","showing":"c-1","waiting":2,"grants":["org.bardo.Shell:shell.dock.pin"],"breaker":"tripped","reach":"reached"}}}"#,
         ),
         (
             Response::Status(StatusReport::Keycap(KeycapState::Failed)),

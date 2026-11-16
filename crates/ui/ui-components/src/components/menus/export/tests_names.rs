@@ -50,15 +50,15 @@ fn a_chord_round_trips_for_every_key() {
 #[test]
 fn an_app_id_makes_a_bus_name() {
     let cases: &[(&str, Result<&str, AddressError>)] = &[
-        ("dev.mailo.Mailo", Ok("org.quire.AppMenu.dev.mailo.Mailo")),
-        ("org.quire.Detent", Ok("org.quire.AppMenu.org.quire.Detent")),
-        ("Alacritty", Ok("org.quire.AppMenu.Alacritty")),
+        ("dev.mailo.Mailo", Ok("org.bardo.AppMenu.dev.mailo.Mailo")),
+        ("org.bardo.Settings", Ok("org.bardo.AppMenu.org.bardo.Settings")),
+        ("Alacritty", Ok("org.bardo.AppMenu.Alacritty")),
         (
             "com.1password.app",
-            Ok("org.quire.AppMenu.com._1password.app"),
+            Ok("org.bardo.AppMenu.com._1password.app"),
         ),
-        ("my app.x", Ok("org.quire.AppMenu.my_app.x")),
-        ("a..b", Ok("org.quire.AppMenu.a._.b")),
+        ("my app.x", Ok("org.bardo.AppMenu.my_app.x")),
+        ("a..b", Ok("org.bardo.AppMenu.a._.b")),
         ("", Err(AddressError::Empty)),
     ];
     for (id, want) in cases {
@@ -72,7 +72,7 @@ fn an_app_id_makes_a_bus_name() {
     );
     assert_eq!(
         AppMenuAddress::for_app_id("x").map(|address| address.path),
-        Ok("/org/quire/AppMenu".to_owned())
+        Ok("/org/bardo/AppMenu".to_owned())
     );
 }
 

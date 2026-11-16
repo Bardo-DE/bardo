@@ -1,4 +1,4 @@
-//! The requests of `quire_shell_v1`, as the model takes them. The switcher, overview and show
+//! The requests of `bardo_shell_v1`, as the model takes them. The switcher, overview and show
 //! desktop requests join at P3-Z with their machines.
 
 use crate::geometry::LogicalRect;

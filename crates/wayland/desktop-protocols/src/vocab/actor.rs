@@ -1,10 +1,10 @@
 //! The actor kind on the wire: the projection of provenance's `Actor` that
-//! `quire_desktop_v1` stamps on state changes.
+//! `bardo_desktop_v1` stamps on state changes.
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// Who caused a change (`quire_desktop_manager_v1.actor_kind`).
+    /// Who caused a change (`bardo_desktop_manager_v1.actor_kind`).
     ActorKind {
         /// The person.
         User = 0,

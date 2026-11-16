@@ -15,8 +15,8 @@ use ui_settings::schema::{KeyKind, KeyPath};
 use crate::bus::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};
 
-const PATH: &str = "/org/quire/Owner1/settings";
-const NAME: &str = "org.quire.Owner1";
+const PATH: &str = "/org/bardo/Owner1/settings";
+const NAME: &str = "org.bardo.Owner1";
 
 fn key(path: &str) -> KeyPath {
     KeyPath(path.to_owned())
@@ -235,7 +235,7 @@ async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
     cases.push(("at the rows cap", texts(KEYS_MAX)));
     for (n, (case, key)) in cases.into_iter().enumerate() {
         let daemon = bus.connect().await;
-        let name = format!("org.quire.Caps{n}");
+        let name = format!("org.bardo.Caps{n}");
         let module = Accounts::with_schema(None, LiveSchema { version: 1, key });
         serve(&daemon, PATH, module).await.expect("serves");
         zbus_ready::serving(&daemon)

@@ -129,7 +129,7 @@ impl Offered {
     /// The token in the bridge's environment.
     pub fn token(&self) -> String {
         self.env
-            .get("QUIRE_EDGE_TOKEN")
+            .get("BARDO_EDGE_TOKEN")
             .cloned()
             .unwrap_or_default()
     }

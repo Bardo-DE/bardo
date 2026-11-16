@@ -247,7 +247,7 @@ fn fact(text: &str, by: Actor, label: Label) -> FactView {
 async fn the_profile_is_what_the_person_said_themselves_at_the_desktop_scope() {
     let mut router = router();
     let person = Actor::User {
-        via: app("org.quire.Shell"),
+        via: app("org.bardo.Shell"),
     };
     router.seams.memory = FakeMemory::answering(vec![MemoryReply::Facts(vec![
         fact("I prefer mornings", person.clone(), trusted()),

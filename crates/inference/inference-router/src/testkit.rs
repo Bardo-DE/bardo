@@ -69,7 +69,7 @@ pub fn pinned_stoker_catalog() -> PathBuf {
     );
     let dir = std::env::temp_dir().join(format!(
         "porter-stoker-catalog-{}",
-        env!("PORTER_STOKER_CATALOG_REV")
+        env!("BARDO_ENGINE_CATALOG_REV")
     ));
     if dir.is_dir() {
         return dir;

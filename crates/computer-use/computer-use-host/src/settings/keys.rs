@@ -1,5 +1,5 @@
 //! The key table: every scalar `cua.*` key of design/22 section 3.29 that cuad reads, its rule and
-//! where its value goes. One row per schema row (`dist/settings/cua.settings.toml`) except
+//! where its value goes. One row per schema row (`dist/settings/computer-use.settings.toml`) except
 //! `cua.apps`, which is a list and is read in `apps.rs`/`read.rs`; the tests hold the schema and
 //! this table to each other.
 

@@ -1,11 +1,11 @@
-//! The named D-Bus errors of `org.quire.SettingsModule1`.
+//! The named D-Bus errors of `org.bardo.SettingsModule1`.
 
 use zbus::DBusError;
 
 /// What a live module call can fail with. Each variant is a named D-Bus error under
-/// `org.quire.SettingsModule1.Error.` so a client matches on the name, not on text.
+/// `org.bardo.SettingsModule1.Error.` so a client matches on the name, not on text.
 #[derive(Debug, DBusError)]
-#[zbus(prefix = "org.quire.SettingsModule1.Error")]
+#[zbus(prefix = "org.bardo.SettingsModule1.Error")]
 pub enum LiveError {
     #[zbus(error)]
     ZBus(zbus::Error),

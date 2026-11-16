@@ -7,7 +7,7 @@ use std::time::Duration;
 const WITHIN: Duration = Duration::from_secs(3);
 
 #[test]
-#[ignore = "creates input devices; run in CI with KEYCAP_DEVICE_TESTS=1"]
+#[ignore = "creates input devices; run in CI with BARDO_KEY_REMAP_DEVICE_TESTS=1"]
 fn caps_lock_written_to_the_virtual_keyboard_lights_the_physical_one() {
     let r = Rig::start("led-forwarding");
     // Whatever the kernel's console handler and the daemon wrote at the grab is not the answer.

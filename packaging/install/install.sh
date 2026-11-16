@@ -7,10 +7,10 @@
 #   install/install.sh              do it
 #   (flags: see install/lib.sh)
 #
-# Also installed, root-held, in <sysconfdir>/systemd/user (/etc/systemd/user): casement.service and sill.service, from the
+# Also installed, root-held, in <sysconfdir>/systemd/user (/etc/systemd/user): bardo-compositor.service and bardo-shell.service, from the
 # casement and sill crates of this tree (--tree), so the account service can trust the compositor and the
 # shell as fixed roles (it accepts units only from root-held places, never ~/.config).
-# And, in the same place, xdg-desktop-portal.service.d/10-quire.conf: a drop-in for the portal frontend's own unit that unsets the
+# And, in the same place, xdg-desktop-portal.service.d/10-bardo.conf: a drop-in for the portal frontend's own unit that unsets the
 # loader variables, so the portal backend (transom) can prove the frontend is the real one (NEW-PI-1).
 # Not installed here: the casement, sill and transom (the portal backend) programs themselves (cargo xtask install, then cargo xtask install transom, and
 # packages), other sessions (left untouched), and
@@ -37,7 +37,7 @@ for pair in compositor:casement shell:sill; do
     note "WARNING: ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name.service hides the installed unit and is not trusted by the account service; remove it"
   fi
 done
-[ -x "$prefix/libexec/transom" ] || [ -x /usr/libexec/transom ] || note "WARNING: transom is not installed (the repo's scripts/install.sh, or the top-level ./install.sh --only transom); screen sharing and screenshots need it"
+[ -x "$prefix/libexec/transom" ] || [ -x /usr/libexec/bardo/bardo-portal ] || note "WARNING: transom is not installed (the repo's scripts/install.sh, or the top-level ./install.sh --only transom); screen sharing and screenshots need it"
 portal_found=0
 for portal in /usr/libexec/xdg-desktop-portal /usr/lib/xdg-desktop-portal /usr/lib/*/xdg-desktop-portal; do
   [ ! -x "$portal" ] || portal_found=1
@@ -68,5 +68,5 @@ fi
 
 step "done"
 note "Pick \"sill (casement)\" at the login screen. First-login checks (not testable without a login):"
-note "  the guard's real tty path, sill and transom against the real casement, the target, casement.service and sill.service"
+note "  the guard's real tty path, sill and transom against the real casement, the target, bardo-compositor.service and bardo-shell.service"
 note "  the activation environment, a screen share through transom (a browser, OBS), logout through sill's power menu."

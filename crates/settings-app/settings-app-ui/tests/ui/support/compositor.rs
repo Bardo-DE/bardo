@@ -1,4 +1,4 @@
-//! A fake compositor: the live settings module at `/org/quire/Compositor1/privacy`, hosted in
+//! A fake compositor: the live settings module at `/org/bardo/Compositor1/privacy`, hosted in
 //! memory by `FakeModules`, listing the Privacy rows the way the real one does
 //! (`privacy.<power>.<id>` with `.forget` beside a person's answer, a read-out for an
 //! administrator's) and writing down what it was asked.

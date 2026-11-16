@@ -10,7 +10,7 @@ const MAGNIFICATION: &str = "dock.magnification";
 const TILE_SIZE: &str = "dock.tile_size_px";
 const HANDS_OFF: &str = "dock.autohide";
 const SOURCES: &str = "calendar.sources";
-const SILL: &str = "sill/settings.toml";
+const SILL: &str = "shell/settings.toml";
 
 async fn world(test: &str) -> World {
     World::start(test, &[MAGNIFICATION, TILE_SIZE]).await

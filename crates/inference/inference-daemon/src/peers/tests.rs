@@ -4,12 +4,12 @@ use account_core::Isolation;
 fn table() -> CallerTable {
     CallerTable::from_toml_text(
         r#"
-cua = ["cuad.service"]
-agent_launcher = ["docket-acp.service"]
+cua = ["bardo-computer-use.service"]
+agent_launcher = ["bardo-agent-acp.service"]
 [apps]
-"org.quire.Memory" = ["memoryd.service"]
-"org.quire.Mail" = ["mailo.service", "mailo-dev.service"]
-"org.quire.Sneaky" = ["cuad.service", "docket-acp.service"]
+"org.bardo.Memory" = ["bardo-memoryd.service"]
+"org.bardo.Mail" = ["mailo.service", "mailo-dev.service"]
+"org.bardo.Sneaky" = ["bardo-computer-use.service", "bardo-agent-acp.service"]
 "#,
     )
     .expect("table")
@@ -22,33 +22,33 @@ fn named(caller: &Caller) -> (&str, Role, Isolation) {
 #[test]
 fn a_unit_is_the_caller_the_table_names_for_it() {
     let table = table();
-    let memory = table.resolve("memoryd.service").expect("memoryd");
+    let memory = table.resolve("bardo-memoryd.service").expect("memoryd");
     assert_eq!(
         named(&memory),
-        ("org.quire.Memory", Role::App, Isolation::Unsandboxed)
+        ("org.bardo.Memory", Role::App, Isolation::Unsandboxed)
     );
     for exe in ["mailo.service", "mailo-dev.service"] {
         let mail = table.resolve(exe).expect("mailo");
-        assert_eq!(mail.app.name.as_str(), "org.quire.Mail");
+        assert_eq!(mail.app.name.as_str(), "org.bardo.Mail");
     }
 }
 
 #[test]
 fn cuad_is_the_one_computer_use_caller_and_an_app_entry_cannot_claim_its_unit() {
-    let cuad = table().resolve("cuad.service").expect("cuad");
+    let cuad = table().resolve("bardo-computer-use.service").expect("cuad");
     assert_eq!(
         named(&cuad),
-        ("org.quire.Cua", Role::Cua, Isolation::Unsandboxed)
+        ("org.bardo.ComputerUse", Role::Cua, Isolation::Unsandboxed)
     );
 }
 
 #[test]
 fn the_agent_launcher_is_the_unit_the_table_names_and_an_app_entry_cannot_claim_it() {
-    let launcher = table().resolve("docket-acp.service").expect("the launcher");
+    let launcher = table().resolve("bardo-agent-acp.service").expect("the launcher");
     assert_eq!(
         named(&launcher),
         (
-            "org.quire.AgentLauncher",
+            "org.bardo.AgentLauncher",
             Role::AgentLauncher,
             Isolation::Unsandboxed
         )
@@ -65,7 +65,7 @@ fn the_agent_launcher_is_the_unit_the_table_names_and_an_app_entry_cannot_claim_
 #[test]
 fn a_program_the_table_does_not_name_is_nobody() {
     let table = table();
-    for exe in ["bash.service", "memoryd.service.d", ""] {
+    for exe in ["bash.service", "bardo-memoryd.service.d", ""] {
         assert_eq!(table.resolve(exe), None, "{exe:?}");
     }
     assert_eq!(CallerTable::default().resolve("mailo.service"), None);
@@ -92,13 +92,13 @@ fn a_refused_table_says_which_way_it_was_refused_and_keeps_the_parser_error() {
 fn placed_table() -> CallerTable {
     CallerTable::from_toml_text(
         r#"
-cua = ["cuad.service"]
-shell = ["sill.service"]
-places = ["companiond.service", "readerd.service"]
+cua = ["bardo-computer-use.service"]
+shell = ["bardo-shell.service"]
+places = ["bardo-companiond.service", "bardo-readerd.service"]
 [apps]
-"org.quire.Companion" = ["companiond.service"]
-"org.quire.Reader" = ["readerd.service"]
-"org.quire.Memory" = ["memoryd.service"]
+"org.bardo.Companion" = ["bardo-companiond.service"]
+"org.bardo.Reader" = ["bardo-readerd.service"]
+"org.bardo.Memory" = ["bardo-memoryd.service"]
 "#,
     )
     .expect("table")
@@ -108,34 +108,34 @@ places = ["companiond.service", "readerd.service"]
 fn the_places_rows_make_placers_the_shell_row_makes_the_shell_and_the_rest_stay_apps() {
     let table = placed_table();
     let role = |unit: &str| table.resolve(unit).map(|c| c.role);
-    assert_eq!(role("companiond.service"), Some(Role::Placer));
-    assert_eq!(role("readerd.service"), Some(Role::Placer));
-    assert_eq!(role("memoryd.service"), Some(Role::App));
-    assert_eq!(role("sill.service"), Some(Role::Shell));
-    assert_eq!(role("intentd.service"), None);
+    assert_eq!(role("bardo-companiond.service"), Some(Role::Placer));
+    assert_eq!(role("bardo-readerd.service"), Some(Role::Placer));
+    assert_eq!(role("bardo-memoryd.service"), Some(Role::App));
+    assert_eq!(role("bardo-shell.service"), Some(Role::Shell));
+    assert_eq!(role("bardo-actiond.service"), None);
 }
 
 #[test]
 fn settings_the_shell_the_companion_and_cuad_list_places_and_only_placers_choose_them() {
-    let table = placed_table().with_settings(["org.quire.Settings.service".to_owned()].into());
+    let table = placed_table().with_settings(["org.bardo.Settings.service".to_owned()].into());
     let who = |unit: &str| table.resolve(unit).expect(unit);
     let list = |unit: &str| who(unit).may_list_places();
     let choose = |unit: &str| who(unit).may_choose_places();
-    assert!(list("org.quire.Settings.service"));
-    assert!(list("sill.service"));
-    assert!(list("companiond.service"));
+    assert!(list("org.bardo.Settings.service"));
+    assert!(list("bardo-shell.service"));
+    assert!(list("bardo-companiond.service"));
     assert!(
-        list("cuad.service"),
+        list("bardo-computer-use.service"),
         "cuad reads whether a ready model can see"
     );
-    assert!(!who("cuad.service").may_list_engines());
-    assert!(!list("readerd.service"));
-    assert!(!list("memoryd.service"));
-    assert!(choose("companiond.service") && choose("readerd.service"));
+    assert!(!who("bardo-computer-use.service").may_list_engines());
+    assert!(!list("bardo-readerd.service"));
+    assert!(!list("bardo-memoryd.service"));
+    assert!(choose("bardo-companiond.service") && choose("bardo-readerd.service"));
     for unit in [
-        "memoryd.service",
-        "sill.service",
-        "org.quire.Settings.service",
+        "bardo-memoryd.service",
+        "bardo-shell.service",
+        "org.bardo.Settings.service",
     ] {
         assert!(!choose(unit), "{unit}");
     }
@@ -144,7 +144,7 @@ fn settings_the_shell_the_companion_and_cuad_list_places_and_only_placers_choose
 #[test]
 fn a_places_unit_that_is_no_app_and_a_shell_entry_that_is_no_service_are_refused() {
     assert!(matches!(
-        CallerTable::from_toml_text("places = [\"x.service\"]\n[apps]\n\"org.quire.A\" = [\"y.service\"]\n"),
+        CallerTable::from_toml_text("places = [\"x.service\"]\n[apps]\n\"org.bardo.A\" = [\"y.service\"]\n"),
         Err(TableError::PlacesNotAnApp(unit)) if unit == "x.service"
     ));
     assert!(matches!(
@@ -182,9 +182,9 @@ fn the_table_is_rows_of_the_shared_table_with_cuad_first() {
     );
     assert_eq!(rows.callers.len(), 7);
     // The first row for cuad's unit is cuad's, not the sneaky app's.
-    let cuad = rows.resolve_unit("cuad.service").expect("cuad");
+    let cuad = rows.resolve_unit("bardo-computer-use.service").expect("cuad");
     assert_eq!(cuad.role, account_callers::CallerRole::Cua);
-    let launcher = rows.resolve_unit("docket-acp.service").expect("launcher");
+    let launcher = rows.resolve_unit("bardo-agent-acp.service").expect("launcher");
     assert_eq!(launcher.role, account_callers::CallerRole::AgentLauncher);
 }
 
@@ -193,9 +193,9 @@ fn the_table_is_rows_of_the_shared_table_with_cuad_first() {
 /// an app entry cannot claim the unit; a malformed entry is refused.
 #[test]
 fn settings_is_a_unit_and_an_app_name_stands_for_its_service() {
-    for entry in ["org.quire.Settings.service", "org.quire.Settings"] {
+    for entry in ["org.bardo.Settings.service", "org.bardo.Settings"] {
         let table = CallerTable::from_toml_text(&format!(
-            "settings = [\"{entry}\"]\n[apps]\n\"org.example.Sneaky\" = [\"org.quire.Settings.service\"]\n"
+            "settings = [\"{entry}\"]\n[apps]\n\"org.example.Sneaky\" = [\"org.bardo.Settings.service\"]\n"
         ))
         .expect("table");
         let rows = table.rows();
@@ -208,17 +208,17 @@ fn settings_is_a_unit_and_an_app_name_stands_for_its_service() {
         assert_eq!(
             settings,
             [(
-                Some("org.quire.Settings.service".to_owned()),
-                "org.quire.Settings".to_owned()
+                Some("org.bardo.Settings.service".to_owned()),
+                "org.bardo.Settings".to_owned()
             )],
             "{entry}"
         );
         let caller = table
-            .resolve("org.quire.Settings.service")
+            .resolve("org.bardo.Settings.service")
             .expect("the unit");
         assert_eq!(
             named(&caller),
-            ("org.quire.Settings", Role::Settings, Isolation::Unsandboxed),
+            ("org.bardo.Settings", Role::Settings, Isolation::Unsandboxed),
             "{entry}"
         );
     }
@@ -243,12 +243,12 @@ fn only_the_settings_units_main_process_is_settings() {
         std::fs::create_dir_all(&dir).expect("proc dir");
         std::fs::write(dir.join("cgroup"), format!("0::{slice}/{unit}\n")).expect("cgroup");
     };
-    process(20, "org.quire.Settings.service");
-    process(21, "org.quire.Settings.service");
-    process(22, "app-org.quire.Settings-7.scope");
+    process(20, "org.bardo.Settings.service");
+    process(21, "org.bardo.Settings.service");
+    process(22, "app-org.bardo.Settings-7.scope");
     std::fs::create_dir_all(root.join("units")).expect("units");
-    std::fs::write(root.join("units/org.quire.Settings.service"), "20\n").expect("main pid");
-    let rows = CallerTable::from_toml_text("settings = [\"org.quire.Settings.service\"]\n")
+    std::fs::write(root.join("units/org.bardo.Settings.service"), "20\n").expect("main pid");
+    let rows = CallerTable::from_toml_text("settings = [\"org.bardo.Settings.service\"]\n")
         .expect("table")
         .rows();
     let role = |pid| {
@@ -267,12 +267,12 @@ fn only_the_settings_units_main_process_is_settings() {
 fn an_entry_may_name_the_programs_that_run_in_its_unit() {
     let table = CallerTable::from_toml_text(
         r#"
-agent_launcher = [{ unit = "docket-acp.scope", exe = ["/usr/bin/docket-acp"] }]
-places = ["companiond.service"]
+agent_launcher = [{ unit = "bardo-agent-acp.scope", exe = ["/usr/bin/bardo-agent-acp"] }]
+places = ["bardo-companiond.service"]
 [apps]
-"org.quire.Companion" = [
-    "companiond.service",
-    { unit = "docket-acp-turn.scope", exe = ["/usr/bin/docket-acp", "/opt/quire/releases/*/bin/docket-acp"] },
+"org.bardo.Companion" = [
+    "bardo-companiond.service",
+    { unit = "docket-acp-turn.scope", exe = ["/usr/bin/bardo-agent-acp", "/opt/bardo/releases/*/bin/bardo-agent-acp"] },
 ]
 "#,
     )
@@ -284,10 +284,10 @@ places = ["companiond.service"]
             .map(|row| (row.role, row.exe.clone()))
     };
     assert_eq!(
-        row("docket-acp.scope"),
+        row("bardo-agent-acp.scope"),
         Some((
             CallerRole::AgentLauncher,
-            vec!["/usr/bin/docket-acp".to_owned()]
+            vec!["/usr/bin/bardo-agent-acp".to_owned()]
         ))
     );
     assert_eq!(
@@ -295,14 +295,14 @@ places = ["companiond.service"]
         Some((
             CallerRole::App,
             vec![
-                "/usr/bin/docket-acp".to_owned(),
-                "/opt/quire/releases/*/bin/docket-acp".to_owned()
+                "/usr/bin/bardo-agent-acp".to_owned(),
+                "/opt/bardo/releases/*/bin/bardo-agent-acp".to_owned()
             ]
         ))
     );
     // A bare name is as before: its program is the one the shared table gives the unit's name.
     assert_eq!(
-        row("companiond.service"),
+        row("bardo-companiond.service"),
         Some((CallerRole::Agent, Vec::new()))
     );
 }

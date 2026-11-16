@@ -63,16 +63,16 @@ The spec's section 2 holds the whole table; the ones quire's part touches:
 
 | Daemon | Repo | Serves | Calls |
 | --- | --- | --- | --- |
-| inferd | porter | `org.quire.Inference1`: availability, open and prepare a model session, usage; engines over Unix sockets in transient units | engines |
-| intentd | docket | `org.quire.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
-| companiond | docket | `org.quire.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
-| readerd | docket | `org.quire.Reader1`: the quarantined reader, a separate process | intentd, inferd |
-| memoryd | almanac | `org.quire.Memory1`: record, recall, control | inferd |
-| cuad | cua | `org.quire.Cua1`, and a provider as `org.quire.Cua` | intentd's gate, inferd, memory, the compositor |
-| sill's daemon | sill | `org.quire.Confirm1` and a provider as `org.quire.Shell` | all of the above as a client |
+| inferd | porter | `org.bardo.Inference1`: availability, open and prepare a model session, usage; engines over Unix sockets in transient units | engines |
+| intentd | docket | `org.bardo.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
+| companiond | docket | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
+| readerd | docket | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
+| memoryd | almanac | `org.bardo.Memory1`: record, recall, control | inferd |
+| cuad | cua | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | intentd's gate, inferd, memory, the compositor |
+| sill's daemon | sill | `org.bardo.Confirm1` and a provider as `org.bardo.Shell` | all of the above as a client |
 
 Caller identity is always derived from the connection, never sent. Every interface we own is
-`org.quire.<Name>1`, at `/org/quire/<Name>1`.
+`org.bardo.<Name>1`, at `/org/bardo/<Name>1`.
 
 ## 6. The rules that shape every flow
 

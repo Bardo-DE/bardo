@@ -1,4 +1,4 @@
-//! `org.quire.Tailnet1` at `/org/quire/Tailnet1`, on accountd's connection: the person's own
+//! `org.bardo.Tailnet1` at `/org/bardo/Tailnet1`, on accountd's connection: the person's own
 //! computers on their Tailscale network (`tailnet` follows Tailscale).
 //!
 //! - `Machines` is answered to the shell (`SheetHost`), Settings and the terminal (`Terminal`,

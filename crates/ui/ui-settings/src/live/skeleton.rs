@@ -1,4 +1,4 @@
-//! The serving side: exports a [`LiveModule`] as `org.quire.SettingsModule1` on a connection.
+//! The serving side: exports a [`LiveModule`] as `org.bardo.SettingsModule1` on a connection.
 
 use std::collections::HashMap;
 
@@ -12,7 +12,7 @@ use super::value::{from_wire, to_wire};
 use super::{Access, Caller, INTERFACE, LiveError, LiveModule, SenderName, Verdict};
 use crate::schema::KeyPath;
 
-/// The object `org.quire.SettingsModule1` is exported from: the module and nothing else (the
+/// The object `org.bardo.SettingsModule1` is exported from: the module and nothing else (the
 /// daemon keeps its state behind the module).
 struct Skeleton<M> {
     module: M,
@@ -72,7 +72,7 @@ impl<M: LiveModule> Skeleton<M> {
     }
 }
 
-#[interface(name = "org.quire.SettingsModule1")]
+#[interface(name = "org.bardo.SettingsModule1")]
 impl<M: LiveModule> Skeleton<M> {
     /// The module's schema as JSON (`LiveSchema`), refused if it breaks the never-settable rule.
     #[zbus(out_args("schema"))]
@@ -183,7 +183,7 @@ impl Served {
     }
 }
 
-/// Exports `module` as `org.quire.SettingsModule1` at `path` on `connection`.
+/// Exports `module` as `org.bardo.SettingsModule1` at `path` on `connection`.
 ///
 /// The module's schema is checked first ([`LiveSchema::check`](super::LiveSchema::check)): a
 /// module that marks a never-settable key agent-settable is not exported. The caller still

@@ -1,13 +1,13 @@
 //! The screen-sharing picker as the shell holds it: what an app asked to share (`Ask`), what
 //! there is to share (`Candidates`), the choices that follow from both (`plan`), what the
 //! person has picked (`Picks`) and the answer that goes back (`reply`). The transom portal
-//! backend asks on `org.quire.Shell1.PickCaptureSource`; `shell-services` serves it and
+//! backend asks on `org.bardo.Shell1.PickCaptureSource`; `shell-services` serves it and
 //! `shell-overlays` draws the sheet. Everything here is pure and table-tested.
 //!
 //! One request is open at a time, of any kind (sources, a colour or a permission question): a
 //! second while one is open is refused ([`admits`]). The colour request (`color`) is answered with a cancel until a surface
 //! draws the eyedropper (`eyedrop`: the picture it points into, the pixel under the pointer, the
-//! magnifier). The permission question (`permission`: `org.quire.Shell1.AskPermission`, the portal's
+//! magnifier). The permission question (`permission`: `org.bardo.Shell1.AskPermission`, the portal's
 //! yes-or-no question about an app) is answered by a button of its sheet. The compositor asks the
 //! same way when a program wants a power (`consent`, with every word in `consent_words`): its
 //! questions and the portal's share one line, one sheet at a time, the rest waiting in order.

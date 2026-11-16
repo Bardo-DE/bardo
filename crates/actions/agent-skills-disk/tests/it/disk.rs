@@ -10,8 +10,8 @@ fn write(root: &std::path::Path, id: &str, toml: &str, md: &str) {
     std::fs::write(dir.join("SKILL.md"), md).expect("md");
 }
 
-const TOML: &str = "vocab = 1\nid = \"a\"\nowner = \"org.quire.Companion\"\nversion = \"0.1.0\"\n\
-                    uses = [\"org.quire.Companion:companion.skill.load\"]\n";
+const TOML: &str = "vocab = 1\nid = \"a\"\nowner = \"org.bardo.Companion\"\nversion = \"0.1.0\"\n\
+                    uses = [\"org.bardo.Companion:companion.skill.load\"]\n";
 const MD: &str = "---\nname: a\ndescription: on disk\n---\nBody\n";
 
 #[test]

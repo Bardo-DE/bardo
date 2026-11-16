@@ -21,7 +21,7 @@ fn paths() -> EnginePaths {
         programs: [
             program(EngineKind::Vllm, "/opt/vllm/bin/python"),
             program(EngineKind::LlamaServer, "/opt/llama/bin/llama-server"),
-            program(EngineKind::SpeechHost, "/opt/stoker/bin/speech-host"),
+            program(EngineKind::SpeechHost, "/opt/stoker/bin/bardo-speech-host"),
             program(EngineKind::KokoroFastApi, "/opt/kokoro/bin/python"),
             program(EngineKind::Strata, "/opt/strata/.venv/bin/python"),
         ]
@@ -196,7 +196,7 @@ fn each_engine_gets_its_program_and_its_pinned_argv() {
             profile: nemotron.engines[0].clone(),
             entry: nemotron,
             socket: "speech-in",
-            program: "/opt/stoker/bin/speech-host",
+            program: "/opt/stoker/bin/bardo-speech-host",
             args: strings(&[
                 "--model-dir",
                 "/data/hf/hub/models--csukuangfj2--sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11/snapshots/ab43d895f5985b1bbab8b6eac8607fcdc05343f3",

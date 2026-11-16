@@ -1,9 +1,9 @@
-//! Trusted-surface vocabulary: `quire_trusted_surface_v1`'s enums.
+//! Trusted-surface vocabulary: `bardo_trusted_surface_v1`'s enums.
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// What a trusted surface asks of the person (`quire_trusted_manager_v1.trusted_kind`).
+    /// What a trusted surface asks of the person (`bardo_trusted_manager_v1.trusted_kind`).
     TrustedKind {
         /// A question the person answers.
         Confirm = 0,
@@ -13,7 +13,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Where a trusted surface appears (`quire_trusted_manager_v1.trusted_anchor`).
+    /// Where a trusted surface appears (`bardo_trusted_manager_v1.trusted_anchor`).
     TrustedAnchor {
         /// Attached to a window, as a sheet.
         Window = 0,
@@ -23,7 +23,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Why the compositor took a trusted surface down (`quire_trusted_surface_v1.withdrawn`).
+    /// Why the compositor took a trusted surface down (`bardo_trusted_surface_v1.withdrawn`).
     Withdrawn {
         /// The session locked.
         Lock = 0,

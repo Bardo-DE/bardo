@@ -8,7 +8,7 @@
 //! - Who: a connection the caller table knows as the agent launcher that holds a live
 //!   `RegisterLauncher` registration for the program (`NotRegistered` otherwise). Nobody else:
 //!   not an app, not an agent (`AccessDenied`).
-//! - What: a permit that is an `Allow` for the Llm kind of the app `org.quire.Agent.<program>`
+//! - What: a permit that is an `Allow` for the Llm kind of the app `org.bardo.Agent.<program>`
 //!   (`UnknownGrant` / `AudienceNotGranted`), on an account that holds an API key (`ApiKey`,
 //!   `OAuthMintsKey`; `NotAKeyAccount`), not turned off for Llm and not waiting to be signed in
 //!   again. A permit is a grant of the hosted service.
@@ -48,7 +48,7 @@ use zbus::message::Header;
 use zbus::zvariant::OwnedFd;
 
 /// The reverse-DNS prefix of the app a program's permits are held under.
-pub(crate) const AGENT_APP_PREFIX: &str = "org.quire.Agent.";
+pub(crate) const AGENT_APP_PREFIX: &str = "org.bardo.Agent.";
 
 /// Whether the account signs in with a key it holds, one `api_key` can read.
 fn holds_a_key(auth: AuthKind) -> bool {

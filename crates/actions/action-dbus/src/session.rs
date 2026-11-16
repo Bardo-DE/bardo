@@ -1,4 +1,4 @@
-//! `org.quire.Intents1.Session`: sessions: one per task. The role decides who may call what.
+//! `org.bardo.Intents1.Session`: sessions: one per task. The role decides who may call what.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -7,9 +7,9 @@ use zbus::zvariant::OwnedObjectPath;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Session",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Session",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Session {
     /// Opens a session (`SessionOpen` JSON; answers `SessionOpened` JSON).
@@ -71,7 +71,7 @@ pub trait Session {
 #[derive(Debug, Default)]
 pub struct SessionSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Session")]
+#[zbus::interface(name = "org.bardo.Intents1.Session")]
 impl SessionSkeleton {
     fn open(&self, open: String) -> fdo::Result<String> {
         let _ = (open,);

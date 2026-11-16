@@ -1,0 +1,342 @@
+# The built-in `org.bardo.Companion` provider, served by intentd: how the companion starts a
+# worker task and talks to another agent. Starting a task is a read: the child task runs in its
+# own session under a task policy never wider than its parent's, and every call it makes is
+# gated on its own. A message grants nothing (see action-core's `message` module).
+vocab = 1
+app = "org.bardo.Companion"
+
+[[entities]]
+kind = "companion.task"
+label = "Task"
+plural = "Tasks"
+icon = "task"
+class = "app_own"
+index = false
+titles = { kind = "app_authored" }
+props = []
+
+[[actions]]
+name = "companion.task.start"
+label = "Start a task"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "offered"
+latency = "quick"
+result = { kind = "entities", v = "companion.task" }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "goal"
+label = "What to do"
+ty = { kind = "text", v = { max = 2000, multiline = true } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "kind"
+label = "Kind of task"
+ty = { kind = "choice", v = [
+  { id = "research", label = "Research" },
+  { id = "watch", label = "Watch" },
+  { id = "background", label = "Background" },
+] }
+need = { kind = "defaulted", v = { kind = "choice", v = "research" } }
+sink = "inert"
+
+[[actions]]
+name = "companion.task.message"
+label = "Message a task"
+on = { kind = "one", v = "companion.task" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "offered"
+latency = "instant"
+result = { kind = "nothing" }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "text"
+label = "Message"
+ty = { kind = "text", v = { max = 2000, multiline = true } }
+need = { kind = "required" }
+sink = "body"
+
+# Loads an installed skill: its body comes back as trusted text for the rest of the task. A skill
+# only teaches; it adds no grant and removes no check. At most three per task.
+[[actions]]
+name = "companion.skill.load"
+label = "Load a skill"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "offered"
+latency = "instant"
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 8192, multiline = true } }, trust = { kind = "app_authored" } } }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "id"
+label = "Skill"
+ty = { kind = "text", v = { max = 48, multiline = false } }
+need = { kind = "required" }
+sink = "inert"
+
+# Makes the person's word stricter: from now on the assistant's calls in this scope ask first, or
+# are refused. It can only tighten (the two levels below are the only ones the router reads, there
+# is no way to allow anything), so it needs no question. Removing what it adds is the person's act
+# alone, in Settings or from the sheet's Undo; the assistant has no action for it.
+[[actions]]
+name = "companion.limit.add"
+label = "Ask first, or never"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "offered"
+latency = "instant"
+result = { kind = "nothing" }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "level"
+label = "Ask first, or never"
+ty = { kind = "choice", v = [
+  { id = "ask", label = "Ask me first" },
+  { id = "never", label = "Never" },
+] }
+need = { kind = "required" }
+sink = "inert"
+
+[[actions.params]]
+name = "app"
+label = "Which app (leave out for every app)"
+ty = { kind = "text", v = { max = 128, multiline = false } }
+need = { kind = "optional" }
+sink = "inert"
+
+[[actions.params]]
+name = "action"
+label = "Which action of that app"
+ty = { kind = "text", v = { max = 128, multiline = false } }
+need = { kind = "optional" }
+sink = "inert"
+
+[[actions.params]]
+name = "reach"
+label = "What it covers"
+ty = { kind = "choice", v = [
+  { id = "changes", label = "Anything that changes things" },
+  { id = "removals", label = "Removing things only" },
+  { id = "anything", label = "Everything, even looking" },
+] }
+need = { kind = "defaulted", v = { kind = "choice", v = "changes" } }
+sink = "inert"
+
+[[actions.params]]
+name = "space"
+label = "Where"
+ty = { kind = "choice", v = [
+  { id = "here", label = "In this Space" },
+  { id = "everywhere", label = "In every Space" },
+] }
+need = { kind = "defaulted", v = { kind = "choice", v = "here" } }
+sink = "inert"
+
+[[actions.params]]
+name = "said"
+label = "The person's own words"
+ty = { kind = "text", v = { max = 160, multiline = false } }
+need = { kind = "optional" }
+sink = "inert"
+
+# Gives a job to a helper the person keeps, by the name they gave it. The goal is an instruction
+# to that helper, so the router refuses it unless the planner wrote it having read nothing
+# untrusted (a goal it derived from content it read is data, which a helper never obeys). The job
+# runs under a policy cut from this task's and from what the helper may reach. A helper in another
+# Space is not reachable. `after` names a helper whose latest answer the job is handed as data.
+[[actions]]
+name = "companion.helper.post_job"
+label = "Give a job to a helper"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "offered"
+latency = "instant"
+result = { kind = "nothing" }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "helper"
+label = "Which helper"
+ty = { kind = "text", v = { max = 40, multiline = false } }
+need = { kind = "required" }
+sink = "inert"
+
+[[actions.params]]
+name = "goal"
+label = "What it is to do"
+ty = { kind = "text", v = { max = 1000, multiline = true } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "after"
+label = "Hand it the answer of this helper's last job"
+ty = { kind = "text", v = { max = 40, multiline = false } }
+need = { kind = "optional" }
+sink = "inert"
+
+# Proposes a new helper. A helper is a standing grant of attention, so this always asks the person
+# on a sheet that shows the card; nothing exists until they say yes, and a standing "allow" never
+# stands in for it. The name and the role become the helper's, so they are refused unless the
+# planner wrote them having read nothing untrusted. The helper has no model until the person
+# chooses one.
+[[actions]]
+name = "companion.helper.propose"
+label = "Add a helper"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "ask_always"
+latency = "instant"
+result = { kind = "nothing" }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "name"
+label = "Name"
+ty = { kind = "text", v = { max = 40, multiline = false } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "role"
+label = "What it is for"
+ty = { kind = "text", v = { max = 600, multiline = true } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "apps"
+label = "The apps it may use (separated by commas)"
+ty = { kind = "text", v = { max = 200, multiline = false } }
+need = { kind = "required" }
+sink = "inert"
+
+[[actions.params]]
+name = "ceiling"
+label = "How far it may go in them"
+ty = { kind = "choice", v = [
+  { id = "look", label = "Look at things" },
+  { id = "change", label = "Look at things and change them" },
+  { id = "send", label = "Also send things out" },
+] }
+need = { kind = "defaulted", v = { kind = "choice", v = "look" } }
+sink = "inert"
+
+# Proposes a routine: something a helper does by itself at a time. Nothing is made and nothing
+# runs: the person accepts or declines on a sheet in the Helpers window, which shows the goal,
+# the time and the helper. A planner that read untrusted text may still propose, because the
+# person confirms; the sentence of why, the goal and the time are shown as data, never obeyed.
+# A helper's own planner proposes for its own card only, whatever `helper` says.
+[[actions]]
+name = "companion.routine.propose"
+label = "Suggest a routine"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "offered"
+latency = "instant"
+result = { kind = "nothing" }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "helper"
+label = "Which helper"
+ty = { kind = "text", v = { max = 40, multiline = false } }
+need = { kind = "optional" }
+sink = "inert"
+
+[[actions.params]]
+name = "goal"
+label = "What it is to do"
+ty = { kind = "text", v = { max = 1000, multiline = true } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "when"
+label = "When (daily 08:00, weekdays 08:00, every 2 hours)"
+ty = { kind = "text", v = { max = 40, multiline = false } }
+need = { kind = "required" }
+sink = "inert"
+
+[[actions.params]]
+name = "why"
+label = "Why, in one sentence"
+ty = { kind = "text", v = { max = 200, multiline = false } }
+need = { kind = "required" }
+sink = "body"
+
+# Shows the person what the assistant understood, as text they can change, and gets back that
+# text as their own words. Page-derived text is allowed in `brief`: the person reads it before
+# anything uses it. Nothing runs before they confirm, and a confirmed brief may only become jobs
+# for helpers inside this task. The sheet is asked every time and a standing "allow" never stands
+# in for it. The router answers this action itself, because only it sees what the person
+# confirmed; it keeps those words in the session as the person's own, and a helper never inherits
+# them.
+[[actions]]
+name = "companion.brief.confirm"
+label = "Check what the helpers will work from"
+on = { kind = "nothing" }
+effect = "read"
+classes = ["app_own"]
+undo = false
+reach = "ask_always"
+latency = "instant"
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 4000, multiline = true } }, trust = { kind = "app_authored" } } }
+keys = { kind = "none" }
+lasting = "no"
+dry_run = "none"
+
+[[actions.params]]
+name = "title"
+label = "What it is for"
+ty = { kind = "text", v = { max = 80, multiline = false } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "brief"
+label = "The brief"
+ty = { kind = "text", v = { max = 4000, multiline = true } }
+need = { kind = "required" }
+sink = "body"
+
+[[actions.params]]
+name = "parts"
+label = "Pieces of work (one per line)"
+ty = { kind = "text", v = { max = 1000, multiline = true } }
+need = { kind = "optional" }
+sink = "inert"

@@ -225,7 +225,7 @@ fn unplugging_an_output_takes_its_layers_with_it() {
 
 #[test]
 fn an_exclusive_layer_takes_the_keyboard_on_the_same_step_and_gives_it_back() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let launcher = LayerSpec {
         level: LayerLevel::Overlay,
         keyboard: KeyboardInteractivity::Exclusive,
@@ -473,7 +473,7 @@ fn panel(level: LayerLevel, keyboard: KeyboardInteractivity) -> LayerSpec {
 /// exclusive layer or the lock holds it; it gives it back to the key window when it unmaps.
 #[test]
 fn an_on_demand_panel_takes_the_keyboard_on_mapping_and_gives_it_back() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let on_demand = |level| panel(level, KeyboardInteractivity::OnDemand);
     let exclusive = panel(LayerLevel::Overlay, KeyboardInteractivity::Exclusive);
     let window = || KeyboardTarget::Window(WindowId(1));
@@ -599,7 +599,7 @@ fn client(spec: LayerSpec) -> LayerSpec {
 /// the shell's exclusive layer outranks even a pressed one.
 #[test]
 fn another_clients_layer_takes_the_keyboard_only_when_pressed() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let window = KeyboardTarget::Window(WindowId(1));
     let layer = |n| KeyboardTarget::Layer(LayerKey(n));
     let asks = [

@@ -8,18 +8,18 @@ use std::path::Path;
 
 const SYSTEM: &str = r#"
 [[caller]]
-app = "org.quire.Intents"
-unit = "intentd.service"
+app = "org.bardo.Intents"
+unit = "bardo-actiond.service"
 role = "agent"
 
 [[caller]]
-app = "org.quire.Shell"
-unit = "sill.service"
+app = "org.bardo.Shell"
+unit = "bardo-shell.service"
 role = "sheet_host"
 
 # A scope never carries a fixed role: this row is the shell's name as a plain app.
 [[caller]]
-app = "org.quire.Shell"
+app = "org.bardo.Shell"
 unit = "sill-shell.scope"
 role = "sheet_host"
 "#;
@@ -45,11 +45,11 @@ fn holds(root: &Path, pid: u32, table: &CallerTable, standing: Standing) -> bool
 fn a_standing_is_held_by_the_unit_and_by_nothing_that_only_claims_it() {
     let root = tempfile::tempdir().expect("scratch");
     let root = root.path();
-    put(root, 1, "intentd.service", true);
-    put(root, 2, "sill.service", true);
+    put(root, 1, "bardo-actiond.service", true);
+    put(root, 2, "bardo-shell.service", true);
     put(root, 3, "sill-shell.scope", false);
-    put(root, 4, "intentd.service", false);
-    put(root, 5, "app-org.quire.Intents-1.scope", false);
+    put(root, 4, "bardo-actiond.service", false);
+    put(root, 5, "app-org.bardo.Intents-1.scope", false);
     put(root, 6, "curl.service", true);
     put(root, 7, "vte-spawn-1.scope", false);
     let table = table_from_toml(SYSTEM).expect("table");
@@ -85,14 +85,14 @@ fn the_users_file_cannot_give_a_fixed_role_and_can_lower_one() {
     std::fs::write(&system, SYSTEM).expect("system");
     std::fs::write(
         &user,
-        "[[caller]]\napp = \"org.quire.Shell\"\nunit = \"other.service\"\nrole = \"sheet_host\"\n\n\
-         [[caller]]\napp = \"org.example.Mine\"\nunit = \"intentd.service\"\nrole = \"app\"\n",
+        "[[caller]]\napp = \"org.bardo.Shell\"\nunit = \"other.service\"\nrole = \"sheet_host\"\n\n\
+         [[caller]]\napp = \"org.example.Mine\"\nunit = \"bardo-actiond.service\"\nrole = \"app\"\n",
     )
     .expect("user");
     let table = load_callers(&system, &user).expect("layered");
     let root = tempfile::tempdir().expect("scratch");
     put(root.path(), 1, "other.service", true);
-    put(root.path(), 2, "intentd.service", true);
+    put(root.path(), 2, "bardo-actiond.service", true);
     assert!(
         !holds(root.path(), 1, &table, SHELL),
         "the user's sheet_host row is left out"

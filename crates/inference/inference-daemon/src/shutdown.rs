@@ -4,7 +4,7 @@
 //! grandchild such as vLLM's `EngineCore` is left holding GPU memory, and exits 0.
 //!
 //! The whole of it is bounded by [`BOUND`], 15 s, under `TimeoutStopSec=20` in
-//! `dist/inferd.service`: past it every group is killed at once and the exit is an error. A second
+//! `dist/bardo-inferd.service`: past it every group is killed at once and the exit is an error. A second
 //! signal while shutting down does the same without waiting.
 
 use crate::hosts::HostCloser;

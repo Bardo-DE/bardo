@@ -21,7 +21,7 @@ use std::collections::BTreeSet;
 fn control() -> CallerId {
     CallerId {
         app: AppId {
-            name: AppName::parse("org.quire.Shell").expect("app"),
+            name: AppName::parse("org.bardo.Shell").expect("app"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Control]),
@@ -163,7 +163,7 @@ async fn the_sheet_goes_to_the_desktops_confirmer_and_its_answer_comes_back() {
     assert!(rig.agent.reply("w1").is_err());
     let sheets = rig.sheets();
     assert_eq!(sheets.len(), 2);
-    assert_eq!(sheets[0].app.as_str(), "org.quire.AcpAgent");
+    assert_eq!(sheets[0].app.as_str(), "org.bardo.AcpAgent");
     assert_eq!(sheets[0].action.as_str(), "Write a file");
     assert_eq!(
         sheets[0].editor, None,

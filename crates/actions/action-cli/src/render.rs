@@ -118,7 +118,7 @@ pub fn outcome(outcome: &Outcome, undo: Option<UndoId>) -> String {
         out.push(format!("held text, for later commands: {}", list.join(" ")));
     }
     if let Some(id) = undo {
-        out.push(format!("undo: quire-do undo {}", id.0));
+        out.push(format!("undo: bardo-do undo {}", id.0));
     }
     out.join("\n")
 }

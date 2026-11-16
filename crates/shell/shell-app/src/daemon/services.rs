@@ -39,10 +39,10 @@ pub(crate) fn follow_settings(
         services.notifications.control.clone(),
     );
     // The lock and the polkit agent are sill's own; the seat at intentd (the confirmation sheet,
-    // the terminal's grants, `org.quire.Shell`), the accounts sheet and the outputs' and
+    // the terminal's grants, `org.bardo.Shell`), the accounts sheet and the outputs' and
     // workspaces' names claim themselves at start (`Env::claims`).
     let _ = services.locker.control.send(LockerCommand::Configure);
-    // The screen-sharing picker answers on `org.quire.Shell1`, on the same connection.
+    // The screen-sharing picker answers on `org.bardo.Shell1`, on the same connection.
     let _ = services.capture.control.send(CaptureCommand::Serve);
     let _ = services
         .polkit_agent

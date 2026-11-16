@@ -1,4 +1,4 @@
-//! `org.quire.Intents1.Error.<Variant>`: the bus form of a request refused before it became a
+//! `org.bardo.Intents1.Error.<Variant>`: the bus form of a request refused before it became a
 //! call. A refused *call* (denied, over budget, unconfirmed) is an answer, not an error: it
 //! travels in the `Response` body as a `CallRefusal`.
 
@@ -6,7 +6,7 @@ use action_wire::WireRefusal;
 
 /// The errors the router's members return.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Intents1.Error")]
+#[zbus(prefix = "org.bardo.Intents1.Error")]
 pub enum IntentsError {
     /// zbus's own failures.
     #[zbus(error)]
@@ -86,10 +86,10 @@ mod tests {
         assert_eq!(
             names,
             [
-                "org.quire.Intents1.Error.NotAllowed",
-                "org.quire.Intents1.Error.NoSuchSession",
-                "org.quire.Intents1.Error.Malformed",
-                "org.quire.Intents1.Error.Locked"
+                "org.bardo.Intents1.Error.NotAllowed",
+                "org.bardo.Intents1.Error.NoSuchSession",
+                "org.bardo.Intents1.Error.Malformed",
+                "org.bardo.Intents1.Error.Locked"
             ]
         );
     }

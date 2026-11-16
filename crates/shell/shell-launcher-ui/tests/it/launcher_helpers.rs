@@ -219,7 +219,7 @@ fn a_refused_card_shows_the_sentence_it_came_with() {
 /// with it, and one job waits for the sign-in.
 fn app_card(login: &str) -> HelpersMsg {
     let card = format!(
-        r#"{{"line":{RESEARCH},"role":"Reads the news each morning","model":{{"kind":"unset"}},"reach":["org.quire.Notes: look at things"],"steps":12,"jobs":[{{"id":2,"goal":"Summarise my mail","state":"needs_sign_in","note":null}}],"kind":{{"agent_app":"claude-code"}},"login":"{login}","sign_in":[{{"id":"login","name":"Claude account"}}]}}"#
+        r#"{{"line":{RESEARCH},"role":"Reads the news each morning","model":{{"kind":"unset"}},"reach":["org.bardo.Notes: look at things"],"steps":12,"jobs":[{{"id":2,"goal":"Summarise my mail","state":"needs_sign_in","note":null}}],"kind":{{"agent_app":"claude-code"}},"login":"{login}","sign_in":[{{"id":"login","name":"Claude account"}}]}}"#
     );
     HelpersMsg::CardRead(Box::new(
         serde_json::from_str(&card).unwrap_or_else(|e| panic!("{e}")),

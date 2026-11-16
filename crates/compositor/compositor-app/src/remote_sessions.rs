@@ -1,4 +1,4 @@
-//! The remote EIS connections that are open (`org.quire.Compositor1.ConnectEis` and
+//! The remote EIS connections that are open (`org.bardo.Compositor1.ConnectEis` and
 //! `LeaseWindow`), numbered one slot each (CASW-19) and findable by portal session or lease, so
 //! `EndEis` and `EndLease` can stop the input and close the compositor's end of each socket
 //! (PORTAL-05).

@@ -1,10 +1,10 @@
 vocab = 1
 id = "files-viewer"
-owner = "org.quire.Anyview"
+owner = "org.bardo.Anyview"
 version = "0.1.0"
-uses = ["org.quire.Anyview:anyview.file.open"]
+uses = ["org.bardo.Anyview:anyview.file.open"]
 
 [when]
-focused_app = ["org.quire.Anyview"]
+focused_app = ["org.bardo.Anyview"]
 kinds = []
 always = false

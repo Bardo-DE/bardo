@@ -105,11 +105,11 @@ async fn a_dry_run_goes_through_the_same_gate_and_asks_nobody() {
     // A hidden action is refused, not previewed.
     let hidden = dry(CallRequest {
         action: ActionRef {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             name: provenance::ActionName::parse("memory.forget").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),

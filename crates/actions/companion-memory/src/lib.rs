@@ -6,7 +6,7 @@
 //! - [`AlmanacMemory`]: the router's `MemoryLink` over an almanac `Memory`.
 //! - [`AlmanacSessionLog`]: a session's durable log (`agent-session`'s `SessionLog`) over almanac's
 //!   `RecordDurable` and `Entries`.
-//! - [`MemoryProvider`]: `org.quire.Memory`, the actions the planner reaches memory through, as an
+//! - [`MemoryProvider`]: `org.bardo.Memory`, the actions the planner reaches memory through, as an
 //!   `IntentProvider` over an almanac `Memory`.
 //! - [`AuditState`]: draining the queue into memory, Space by Space, with retry accounting.
 

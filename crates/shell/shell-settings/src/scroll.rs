@@ -1,7 +1,7 @@
 //! `scroll.*` (design/22 §3.7 and `scroll.scrollbars` from §3.8; design/11 §11.6). The physics
 //! run in layer-shell-host with constants (`shell_app::scroll`). Natural scrolling is on the Mouse & Gestures
 //! page; the rest are Advanced (§5). `scroll.speed`, `scroll.lock_*` and the gains are
-//! palmrest's (`palmrest/gestures.toml`, §3.9), not here.
+//! palmrest's (`mouse-gestures/gestures.toml`, §3.9), not here.
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
@@ -33,7 +33,7 @@ pub enum ScrollbarVisibility {
 /// Scrolling's feel.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "scroll", page = Page::MouseAndGestures)]
+#[settings(file = "shell/settings.toml", domain = "scroll", page = Page::MouseAndGestures)]
 pub struct ScrollSettings {
     #[settings(
         label = "Natural scrolling",

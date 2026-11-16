@@ -1,6 +1,6 @@
 //! The companion's rows: "Ask the assistant" for what is typed, the answers it has made, and the
 //! journal's recent activity. Nothing shows while the service has no seat at the companion (no
-//! `org.quire.Companion1` to ask), so a desktop without the companion has no such row.
+//! `org.bardo.Companion1` to ask), so a desktop without the companion has no such row.
 //!
 //! The Ask row is in every search; answers and activity show only when the filter is the
 //! companion's own (`Scope::Only`), which is what the panel's companion mode asks.
@@ -308,7 +308,7 @@ mod tests {
             effect: Effect::Outbound,
             call: CallRequest {
                 action: ActionRef {
-                    app: AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}")),
+                    app: AppName::parse("org.bardo.Mail").unwrap_or_else(|e| panic!("{e}")),
                     name: ActionName::parse("mail.message.send").unwrap_or_else(|e| panic!("{e}")),
                 },
                 target: TargetValue::Nothing,
@@ -351,7 +351,7 @@ mod tests {
             at: UnixSeconds(1),
             actor: Actor::Cli,
             action: ActionRef {
-                app: AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}")),
+                app: AppName::parse("org.bardo.Mail").unwrap_or_else(|e| panic!("{e}")),
                 name: ActionName::parse("mail.thread.archive").unwrap_or_else(|e| panic!("{e}")),
             },
             said: LabelText::parse("Archived 3 threads").unwrap_or_else(|e| panic!("{e}")),
@@ -453,7 +453,7 @@ mod tests {
     #[test]
     fn an_answer_with_a_press_going_offers_no_button_and_a_refused_press_offers_them_again() {
         let step = ActionRef {
-            app: AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}")),
+            app: AppName::parse("org.bardo.Mail").unwrap_or_else(|e| panic!("{e}")),
             name: ActionName::parse("mail.message.send").unwrap_or_else(|e| panic!("{e}")),
         };
         let with_busy = |busy: Busy| {

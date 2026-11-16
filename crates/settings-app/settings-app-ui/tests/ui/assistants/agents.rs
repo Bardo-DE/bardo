@@ -5,7 +5,7 @@ use super::*;
 #[test]
 fn an_outside_assistant_is_listed_by_its_plain_name_and_its_model_is_chosen_in_its_entry() {
     let sandbox = Sandbox::new("coding-assistants");
-    sandbox.write("docket/agents.toml", AGENTS);
+    sandbox.write("actions/agents.toml", AGENTS);
     sandbox.write_data("docket/agents/state/claude-code/offered.toml", OFFERED);
     let mut harness = sandbox.harness(intelligence());
     let group = "[data-assistants=\"coding\"]";
@@ -22,7 +22,7 @@ fn an_outside_assistant_is_listed_by_its_plain_name_and_its_model_is_chosen_in_i
     for protocol in ["ACP", "MCP", "protocol"] {
         assert!(!text.contains(protocol), "{protocol} in {text}");
     }
-    assert_eq!(sandbox.read("docket/agents.toml").as_deref(), Some(AGENTS));
+    assert_eq!(sandbox.read("actions/agents.toml").as_deref(), Some(AGENTS));
 
     let button = format!("{group} .ds-popup .ds-button");
     scroll_into_view(&mut harness, &button);
@@ -31,7 +31,7 @@ fn an_outside_assistant_is_listed_by_its_plain_name_and_its_model_is_chosen_in_i
     let at = harness.centre(item).expect("the menu is open");
     harness.send(Input::pointer_move(at));
     click(&mut harness, item);
-    let written = sandbox.read("docket/agents.toml").expect("the file");
+    let written = sandbox.read("actions/agents.toml").expect("the file");
     assert_eq!(
         written,
         format!("{AGENTS}model = \"opus\"\n"),
@@ -47,7 +47,7 @@ const SHEET: &str = "[data-system=\"add-coding-assistant\"]";
 #[test]
 fn an_installed_assistant_is_added_from_a_sheet_that_says_it_uses_the_internet() {
     let sandbox = Sandbox::new("coding-assistants-add");
-    sandbox.write("docket/agents.toml", AGENTS);
+    sandbox.write("actions/agents.toml", AGENTS);
     sandbox.write_data(
         "docket/agents/installed/gemini/1.0.0/installed.toml",
         INSTALLED,
@@ -68,11 +68,11 @@ fn an_installed_assistant_is_added_from_a_sheet_that_says_it_uses_the_internet()
     for developer in ["ACP", "registry", "agents.toml", "npm"] {
         assert!(!text.contains(developer), "{developer} in {text}");
     }
-    assert_eq!(sandbox.read("docket/agents.toml").as_deref(), Some(AGENTS));
+    assert_eq!(sandbox.read("actions/agents.toml").as_deref(), Some(AGENTS));
 
     click(&mut harness, &format!("{SHEET} [aria-label=\"Add\"]"));
     settle(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
-    let written = sandbox.read("docket/agents.toml").expect("the file");
+    let written = sandbox.read("actions/agents.toml").expect("the file");
     for want in [
         "program = \"gemini\"",
         "label = \"Gemini\"",
@@ -87,7 +87,7 @@ fn an_installed_assistant_is_added_from_a_sheet_that_says_it_uses_the_internet()
 #[test]
 fn an_added_assistant_is_removed_after_a_question_and_a_cancelled_one_stays() {
     let sandbox = Sandbox::new("coding-assistants-remove");
-    sandbox.write("docket/agents.toml", AGENTS);
+    sandbox.write("actions/agents.toml", AGENTS);
     let mut harness = sandbox.harness(intelligence());
     settle(&mut harness, "the group", |h| h.count(CODING_GROUP) == 1);
     let remove = format!("{CODING_GROUP} [aria-label=\"Remove Claude Code\"]");
@@ -109,7 +109,7 @@ fn an_added_assistant_is_removed_after_a_question_and_a_cancelled_one_stays() {
         h.count(".ds-alert") == 0
     });
     assert_eq!(
-        sandbox.read("docket/agents.toml").as_deref(),
+        sandbox.read("actions/agents.toml").as_deref(),
         Some(AGENTS),
         "cancel changes nothing"
     );
@@ -122,7 +122,7 @@ fn an_added_assistant_is_removed_after_a_question_and_a_cancelled_one_stays() {
     );
     settle(&mut harness, "the file", |_| {
         !sandbox
-            .read("docket/agents.toml")
+            .read("actions/agents.toml")
             .unwrap_or_default()
             .contains("claude-code")
     });

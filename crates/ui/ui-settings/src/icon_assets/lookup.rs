@@ -16,7 +16,7 @@ const DEV_ASSETS: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../assets/icons/a
 /// Which step of the lookup a directory came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AssetsOrigin {
-    /// `$QUIRE_ICON_ASSETS`.
+    /// `$BARDO_ICON_ASSETS`.
     Override,
     /// `$XDG_DATA_HOME/quire/icons/apps`.
     DataHome,
@@ -48,7 +48,7 @@ pub enum Presence {
 /// The variables the lookup reads, captured once so the order is a pure function of them.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct AssetsEnv {
-    /// `$QUIRE_ICON_ASSETS`.
+    /// `$BARDO_ICON_ASSETS`.
     pub quire_icon_assets: Option<OsString>,
     /// `$XDG_DATA_HOME`.
     pub xdg_data_home: Option<OsString>,
@@ -62,7 +62,7 @@ impl AssetsEnv {
     /// This process's environment.
     pub fn current() -> AssetsEnv {
         AssetsEnv {
-            quire_icon_assets: std::env::var_os("QUIRE_ICON_ASSETS"),
+            quire_icon_assets: std::env::var_os("BARDO_ICON_ASSETS"),
             xdg_data_home: std::env::var_os("XDG_DATA_HOME"),
             home: std::env::var_os("HOME"),
             xdg_data_dirs: std::env::var_os("XDG_DATA_DIRS"),
@@ -206,7 +206,7 @@ mod tests {
                 vec![
                     (DataHome, "/home/ada/.local/share/quire/icons/apps"),
                     (DataDir, "/usr/local/share/quire/icons/apps"),
-                    (DataDir, "/usr/share/quire/icons/apps"),
+                    (DataDir, "/usr/share/bardo/icons/apps"),
                 ],
             ),
             (

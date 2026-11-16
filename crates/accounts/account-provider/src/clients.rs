@@ -1,6 +1,6 @@
 //! The OAuth client registry's file format (porter PLAN §2.6): which client id this build
 //! presents to each issuer, per build channel. The ids shipped with the desktop live in
-//! `/usr/share/porter/clients.toml`, a person's own in `$XDG_CONFIG_HOME/porter/clients.toml`
+//! `/usr/share/bardo/accounts/clients.toml`, a person's own in `$XDG_CONFIG_HOME/porter/clients.toml`
 //! (written only by Settings). The registry itself, which layers the two and renews with them,
 //! is `account-oauth`; a client id is never part of an account.
 //!

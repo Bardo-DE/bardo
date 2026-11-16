@@ -1,4 +1,4 @@
-//! `$XDG_CONFIG_HOME/quire/intentd.toml`: which bus names play which role, the reviewer models
+//! `$XDG_CONFIG_HOME/quire/actiond.toml`: which bus names play which role, the reviewer models
 //! and the proposed values. The serde form is the file; every key is written.
 
 use account_core::AppName;
@@ -8,13 +8,13 @@ use action_vocab::CallerRole;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
-const SHIPPED: &str = include_str!("../../dist/intentd.toml");
+const SHIPPED: &str = include_str!("../../dist/actiond.toml");
 
 /// Why the file is not a configuration.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ConfigError {
     /// The text is not TOML in the expected shape.
-    #[error("intentd.toml: {0}")]
+    #[error("actiond.toml: {0}")]
     Toml(String),
     /// The second opinion is the deliberate model's family.
     #[error("the second opinion must come from another model family")]
@@ -48,7 +48,7 @@ impl IntentdConfig {
         Ok(config)
     }
 
-    /// The configuration the package ships (`dist/intentd.toml`): the role names of the quire
+    /// The configuration the package ships (`dist/actiond.toml`): the role names of the quire
     /// desktop, no reviewer set, the proposed values. What a machine with no file of its own
     /// runs with.
     pub fn shipped() -> Result<Self, ConfigError> {

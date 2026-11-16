@@ -65,7 +65,7 @@ fn a_plugged_output_shows_a_fresh_desktop() {
 
 #[test]
 fn a_window_mapped_with_a_valid_token_takes_the_keyboard() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]);
     assert!(run.model.windows().contains_key(&WindowId(1)));
     assert_eq!(run.model.focus().key, Some(WindowId(1)));
@@ -81,7 +81,7 @@ fn a_window_mapped_with_a_valid_token_takes_the_keyboard() {
 
 #[test]
 fn a_window_without_a_token_does_not_steal_focus() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let web = proven("org.example.Web");
     let run = run(vec![
         plug("HEADLESS-1"),
@@ -99,7 +99,7 @@ fn a_window_without_a_token_does_not_steal_focus() {
 
 #[test]
 fn unmapping_the_key_window_moves_the_keyboard() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let run = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),

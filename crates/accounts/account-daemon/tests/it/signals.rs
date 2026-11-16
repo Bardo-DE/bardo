@@ -29,8 +29,8 @@ async fn joined(rig: &Rig, who: account_callers::Caller) -> zbus::Connection {
 async fn removing_an_account_tells_the_shell_and_settings_and_no_app() {
     let rig = Rig::start().await;
     let shell = joined(&rig, caller("org.example.SheetHost", CallerRole::SheetHost)).await;
-    let settings_conn = joined(&rig, caller("org.quire.Settings", CallerRole::Settings)).await;
-    let app = joined(&rig, caller("org.quire.Mail", CallerRole::App)).await;
+    let settings_conn = joined(&rig, caller("org.bardo.Settings", CallerRole::Settings)).await;
+    let app = joined(&rig, caller("org.bardo.Mail", CallerRole::App)).await;
     let mut shell_hears = listen(&shell).await;
     let mut settings_hears = listen(&settings_conn).await;
     let mut app_hears = listen(&app).await;

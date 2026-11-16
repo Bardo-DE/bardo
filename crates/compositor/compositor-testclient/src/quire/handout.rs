@@ -1,12 +1,12 @@
-//! The connection `org.quire.Compositor1.Connect("shell")` hands out, asked of casement on the
-//! session bus. The probe's `shell-connect` and `casement-shell-exec` both take theirs here.
+//! The connection `org.bardo.Compositor1.Connect("shell")` hands out, asked of casement on the
+//! session bus. The probe's `shell-connect` and `compositor-shell-exec` both take theirs here.
 
 use std::os::fd::OwnedFd;
 use std::time::Duration;
 
-const BUS_NAME: &str = "org.quire.Compositor1";
-const OBJECT_PATH: &str = "/org/quire/Compositor1";
-const INTERFACE: &str = "org.quire.Compositor1";
+const BUS_NAME: &str = "org.bardo.Compositor1";
+const OBJECT_PATH: &str = "/org/bardo/Compositor1";
+const INTERFACE: &str = "org.bardo.Compositor1";
 /// How long the bus call may take.
 const CALL_PATIENCE: Duration = Duration::from_secs(10);
 

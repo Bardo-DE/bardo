@@ -42,7 +42,7 @@ pub struct Window {
     pub title: WindowTitle,
     /// The `xdg_toplevel.app_id` it declared.
     pub claimed_id: ClaimedId,
-    /// What its client asked of the compositor (`quire_window_v1`).
+    /// What its client asked of the compositor (`bardo_window_v1`).
     pub hints: WindowHints,
 }
 

@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 # Scenario `minimise-target-round-trip` (plan §4.14, FD-05, P2): the shell's minimise target round trip, in the jail.
 #
-# casement starts headless (1920x1080) with CASEMENT_DEBUG_PEER_UNITS="casement-probe=sill.service" (a test-only,
-# debug-inject-build override: no systemd in the jail), so a `casement-probe` session can take the shell
-# connection through org.quire.Compositor1.Connect("shell") and act as the dock's owner. Two probe sessions:
+# casement starts headless (1920x1080) with BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service" (a test-only,
+# debug-inject-build override: no systemd in the jail), so a `compositor-probe` session can take the shell
+# connection through org.bardo.Compositor1.Connect("shell") and act as the dock's owner. Two probe sessions:
 #   W  a plain client that maps two toplevels (a and b) and minimises them (xdg_toplevel.set_minimized)
 #   S  the shell: shell-connect, a bottom-anchored layer surface given the dock role, then the targets
-# Steps, each waiting on a probe note or a casementctl predicate, never on a fixed sleep:
+# Steps, each waiting on a probe note or a bardo-compositorctl predicate, never on a fixed sleep:
 #   boot      casement up with the unit override
-#   windows   a and b map; their identifiers (w<id>) are read from `casementctl debug windows`
+#   windows   a and b map; their identifiers (w<id>) are read from `bardo-compositorctl debug windows`
 #   dock      S connects as the shell and its layer surface takes the dock role (no error note)
 #   set       a minimise target for a: `debug windows` shows minimise_target inside the dock's rectangle at the size given
 #   minimise  a minimised: its minimise_destination is exactly that target rectangle
 #   clear     the target for b is set, then cleared (minimise_target null); b minimised: its destination is not the
 #             old rectangle (the default, as with no dock)
 #
-# Needs casement 8383659f or later (this tree has it), plus two things the casement-probe/debug bus must offer
+# Needs casement 8383659f or later (this tree has it), plus two things the compositor-probe/debug bus must offer
 # (see the lane report): the probe session verb `minimise NAME` (xdg_toplevel.set_minimized on that toplevel) and
 # two fields on every `debug windows` row: "minimised" (bool) and "minimise_destination" ([x,y,w,h] global of the
 # last minimise, or null).
@@ -27,10 +27,10 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$HERE/../harness/lib/all.sh"
 source "$HERE/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/casement-probe" \
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/compositor-probe" \
   "$SCEN_TOOLS/bin/fake-logind"
 
-export CASEMENT_TOOLS="$SCEN_TOOLS" CASEMENT_REPO="$SCEN_SIB/compositor"
+export BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS" BARDO_COMPOSITOR_REPO="$SCEN_SIB/compositor"
 floor_make minimise-target-round-trip   # the probes take no power: an empty floor, so nothing waits on a question
 # shellcheck source=/dev/null
 source "$SCEN_SIB/compositor/dev/lib/compositor.sh"
@@ -39,7 +39,7 @@ source "$SCEN_SIB/compositor/dev/lib/probe.sh"
 # shellcheck source=/dev/null
 source "$SCEN_SIB/compositor/dev/lib/wait.sh"
 OUT_DIR=$(scenario_out minimise-target-round-trip)
-CTL="$SCEN_TOOLS/bin/casementctl"
+CTL="$SCEN_TOOLS/bin/bardo-compositorctl"
 APP_A=org.example.minimise.a
 APP_B=org.example.minimise.b
 ID_A= ID_B=
@@ -81,7 +81,7 @@ shell_ok() { ! probe_log "$1" | grep '^probe: {' | tail -1 | grep -q '"error"'; 
 turn() { probe_sync "$1"; }
 
 step_boot() {
-  export CASEMENT_DEBUG_PEER_UNITS="casement-probe=sill.service"
+  export BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service"
   start_compositor --system-dir "$FLOOR_DIR" || return 1
 }
 
@@ -98,7 +98,7 @@ step_windows() {
 step_dock() {
   probe_start S || return 1
   probe_do S shell-connect || return 1
-  shell_ok S || { echo "shell-connect was refused (is CASEMENT_DEBUG_PEER_UNITS honoured by this casement build?):" >&2; probe_log S >&2; return 1; }
+  shell_ok S || { echo "shell-connect was refused (is BARDO_COMPOSITOR_DEBUG_PEER_UNITS honoured by this casement build?):" >&2; probe_log S >&2; return 1; }
   probe_do S layer d level=top "size=${DOCK_W}x${DOCK_H}" anchor=bottom || return 1
   probe_do S shell-role dock d || return 1
   shell_ok S || { echo "the dock role was refused:" >&2; probe_log S >&2; return 1; }

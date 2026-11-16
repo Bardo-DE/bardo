@@ -1,11 +1,11 @@
-//! `docket-eval --attacks <eval dir> [--summary-dir <dir>] [--commit <sha>] [--date <day>]`: plays
+//! `agent-eval --attacks <eval dir> [--summary-dir <dir>] [--commit <sha>] [--date <day>]`: plays
 //! the attack suite on the scripted, hostile fake model (no network, no model) and prints
 //! AgentDojo's three rates. With `--summary-dir` it also writes the per-commit JSON summary
 //! there (`<date>-<commit>.json`); the commit and the day are the checkout's and today's unless
 //! given. Exit 0 when no attack reaches its goal beyond the known holes, 1 when one does, 2 when
 //! the command line or a file is wrong.
 //!
-//! `docket-eval --attack-diff <before.json> <after.json>`: compares two summaries and exits 1
+//! `agent-eval --attack-diff <before.json> <after.json>`: compares two summaries and exits 1
 //! when the attack success rate rose (or an attack reaches its goal that did not before).
 
 use crate::cli::AttackArgs;
@@ -18,7 +18,7 @@ use std::path::Path;
 use std::process::ExitCode;
 
 fn fail(why: impl std::fmt::Display) -> ExitCode {
-    eprintln!("docket-eval: {why}");
+    eprintln!("agent-eval: {why}");
     ExitCode::from(2)
 }
 
@@ -61,7 +61,7 @@ pub(crate) fn attacks(args: &AttackArgs, today: &str) -> ExitCode {
         let written =
             stamped(args, today, metrics.clone()).and_then(|s| write_summary(&s, summary_dir));
         match written {
-            Ok(path) => eprintln!("docket-eval: summary written to {}", path.display()),
+            Ok(path) => eprintln!("agent-eval: summary written to {}", path.display()),
             Err(why) => return fail(why),
         }
     }
@@ -69,7 +69,7 @@ pub(crate) fn attacks(args: &AttackArgs, today: &str) -> ExitCode {
         true => ExitCode::SUCCESS,
         false => {
             eprintln!(
-                "docket-eval: attacks reached their goal: {:?}",
+                "agent-eval: attacks reached their goal: {:?}",
                 metrics.surprises()
             );
             ExitCode::from(1)

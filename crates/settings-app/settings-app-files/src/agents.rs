@@ -1,4 +1,4 @@
-//! The outside agents docket may start (`docket/agents.toml`), read with what each last offered,
+//! The outside agents docket may start (`actions/agents.toml`), read with what each last offered,
 //! and the person's choice of model or way of signing in written back into the entry.
 
 use crate::error::FilesError;
@@ -13,12 +13,12 @@ use agent_registry::dirs::AgentsDir;
 use settings_app_model::FoundAgent;
 
 /// The agents file, under the configuration directory.
-const AGENTS_FILE: &str = "docket/agents.toml";
+const AGENTS_FILE: &str = "actions/agents.toml";
 
 /// Where docket keeps what it installed and what each agent offered, under the data directory.
 pub(crate) const AGENTS_DIR: &str = "docket/agents";
 
-/// The agents `docket/agents.toml` lists, none when there is no file.
+/// The agents `actions/agents.toml` lists, none when there is no file.
 pub fn load_agents(config: &ConfigHome, data: &DataHome) -> Agents {
     // A file that cannot be read lists no agents; docket's own writer refuses to write over it.
     let text = text_of(&config.0.join(AGENTS_FILE))

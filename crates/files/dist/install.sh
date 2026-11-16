@@ -7,12 +7,12 @@
 #   dist/install.sh --dry-run    print every step, change nothing (not even a build)
 #   dist/install.sh              do it
 #
-# Installs to /usr/local (FILES_PREFIX redirects it). Not touched: your files, the Trash,
+# Installs to /usr/local (BARDO_FILES_PREFIX redirects it). Not touched: your files, the Trash,
 # ~/.config, any other session's files. dist/uninstall.sh undoes it. Next: log in again, or run
-# `xdg-mime default org.quire.Files.desktop inode/directory` to open folders in Files.
+# `xdg-mime default org.bardo.Files.desktop inode/directory` to open folders in Files.
 #
-# FILES_BIN names the binary to install instead of the release build. FILES_PREFIX is where the
-# files will live (the service files name it); FILES_DESTDIR is a staging root put in front of
+# BARDO_FILES_BIN names the binary to install instead of the release build. BARDO_FILES_PREFIX is where the
+# files will live (the service files name it); BARDO_FILES_DESTDIR is a staging root put in front of
 # every path written (a release bundle or a scratch directory; it never needs sudo).
 set -euo pipefail
 # shellcheck source=install-lib.sh
@@ -25,7 +25,7 @@ parse_flags "$@"
 
 step "1/4 checks"
 refuse_root
-command -v cargo >/dev/null || [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${FILES_BIN:-}" ] || { echo "cargo not found" >&2; exit 1; }
+command -v cargo >/dev/null || [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${BARDO_FILES_BIN:-}" ] || { echo "cargo not found" >&2; exit 1; }
 if [ -e "$HOME/.cargo/bin/files" ]; then
   note "WARNING: $HOME/.cargo/bin/files would come first on a login shell's PATH and shadow $BIN_INSTALLED;"
   note "         remove it (rm $HOME/.cargo/bin/files) or a shell runs the old build"
@@ -33,7 +33,7 @@ fi
 need_sudo
 
 step "2/4 build files (release, from $TREE)"
-if [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${FILES_BIN:-}" ]; then
+if [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${BARDO_FILES_BIN:-}" ]; then
   note "no build: using $BUILT"
 else
   # With this system's own linker, never the tree's clang/mold: run from / and name the manifest.
@@ -58,12 +58,12 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 desktop_text >"$TMP/desktop"
 put 644 "$TMP/desktop" "$DESKTOP_DEST"
-service_text "$APPDIST/org.quire.Files.service" >"$TMP/files.service"
+service_text "$APPDIST/org.bardo.Files.service" >"$TMP/files.service"
 put 644 "$TMP/files.service" "$SERVICE_DEST"
-service_text "$APPDIST/org.quire.Files.FileManager1.service" >"$TMP/fm.service"
+service_text "$APPDIST/org.bardo.Files.FileManager1.service" >"$TMP/fm.service"
 put 644 "$TMP/fm.service" "$FM_SERVICE_DEST"
 # What the desktop's intent router reads.
-put 644 "$DIST/intents/org.quire.Files.toml" "$INTENTS_DEST"
+put 644 "$DIST/intents/org.bardo.Files.toml" "$INTENTS_DEST"
 # What the Settings app draws Files' page from: the binary writes it from its own settings.
 if [ "$DRY" = 1 ]; then
   note "would run: $BUILT --write-schema and install files.settings.toml"
@@ -81,5 +81,5 @@ if command -v restorecon >/dev/null && [ -n "$SUDO" ]; then
 fi
 
 step "done"
-note "Open Files from the launcher. To open folders in it: xdg-mime default org.quire.Files.desktop inode/directory"
+note "Open Files from the launcher. To open folders in it: xdg-mime default org.bardo.Files.desktop inode/directory"
 note "Another file manager that owns the file-manager service name (GNOME's, from /usr/share) keeps it until it is removed."

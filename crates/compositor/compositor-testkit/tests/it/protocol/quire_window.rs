@@ -58,7 +58,7 @@ fn a_second_get_window_is_already_constructed() {
         .client(id)
         .protocol_error()
         .expect("a protocol error");
-    assert_eq!(error.interface, "quire_window_manager_v1");
+    assert_eq!(error.interface, "bardo_window_manager_v1");
     assert_eq!(error.code, ManagerError::AlreadyConstructed as u32);
 }
 
@@ -84,7 +84,7 @@ fn roles_are_checked() {
         .client(id)
         .protocol_error()
         .expect("a protocol error");
-    assert_eq!(error.interface, "quire_window_v1");
+    assert_eq!(error.interface, "bardo_window_v1");
     assert_eq!(error.code, WindowError::BadRole as u32);
 }
 
@@ -220,7 +220,7 @@ fn the_creation_transcript_matches_its_golden() {
     let top = base.toplevel(fixture.client(id));
     let _ext = manager.window(fixture.client(id), &top);
     fixture.pump();
-    let text = lines_of(&mut fixture, id, &["quire_window_v1#"]);
+    let text = lines_of(&mut fixture, id, &["bardo_window_v1#"]);
     check_golden(&golden("quire_window-create.txt"), &text).expect("the creation flow");
 }
 

@@ -1,5 +1,5 @@
 //! An `Invocation` of one of the shell's actions, read into a [`ShellAction`], and the answer an
-//! action gives. The names and the choice ids are the manifest's (`dist/intents/org.quire.Shell.toml`);
+//! action gives. The names and the choice ids are the manifest's (`dist/intents/org.bardo.Shell.toml`);
 //! a test holds the two together.
 
 use action_core::{

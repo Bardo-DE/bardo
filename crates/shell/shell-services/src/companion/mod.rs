@@ -1,10 +1,10 @@
 //! sill's seat at the companion: the double tap and the summon that decide where the prompt
-//! opens, the questions the launcher asks (`org.quire.Companion1`), the answers that come back,
-//! the things apps index (`org.quire.Intents1.Search`), the undo journal, the computer-use runs
-//! (`org.quire.Cua1`) and the memory timeline (`org.quire.Memory1`).
+//! opens, the questions the launcher asks (`org.bardo.Companion1`), the answers that come back,
+//! the things apps index (`org.bardo.Intents1.Search`), the undo journal, the computer-use runs
+//! (`org.bardo.ComputerUse1`) and the memory timeline (`org.bardo.Memory1`).
 //!
 //! Everything said to intentd and the companion goes out on the connection the intents service
-//! holds as `org.quire.Shell` (`seat`): intentd names a caller's role from the names its
+//! holds as `org.bardo.Shell` (`seat`): intentd names a caller's role from the names its
 //! connection owns, so a turn or a search from any other connection would not be the launcher's.
 //! Without the seat the machines still run (a summon opens the launcher) and every lookup is
 //! `Failed`.

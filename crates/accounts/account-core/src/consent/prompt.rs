@@ -29,7 +29,7 @@ pub struct ConsentAsk {
     /// must not (an answer with a session scope is then treated as dismissed).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub session: Option<SessionToken>,
-    /// What a person calls `app` ("Claude Code" for `org.quire.Agent.claude-code`), as accountd
+    /// What a person calls `app` ("Claude Code" for `org.bardo.Agent.claude-code`), as accountd
     /// resolves it. Absent when accountd has no name for it: the host then names the app as it
     /// can from the id. Filled by accountd on the way to the sheet host, never by the service.
     #[serde(default, skip_serializing_if = "Option::is_none")]

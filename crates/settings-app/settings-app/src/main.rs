@@ -143,7 +143,7 @@ fn first_run() -> ExitCode {
         "Welcome",
         WindowSize::new(FIRST_RUN_WIDTH, FIRST_RUN_HEIGHT),
     )
-    .with_app_id(AppId("org.quire.Settings".to_owned()))
+    .with_app_id(AppId("org.bardo.Settings".to_owned()))
     .with_decorations(Decorations::Client)
     .with_context(env);
     ended(launch(FirstRunApp, config))
@@ -184,7 +184,7 @@ fn settings(opening: Opening) -> ExitCode {
     // The folders the Wallpaper page draws pictures from; the window reads no other `file:` URL.
     let roots = FileRoots::new(env.client.wallpaper().roots());
     let config = AppConfig::new("Settings", window_size(wanted.as_ref()))
-        .with_app_id(AppId("org.quire.Settings".to_owned()))
+        .with_app_id(AppId("org.bardo.Settings".to_owned()))
         .with_decorations(Decorations::Client)
         .with_file_roots(roots)
         .with_context(env);

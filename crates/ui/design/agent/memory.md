@@ -16,7 +16,7 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 - Per-Space keys and encryption at rest; XDG storage layout.
 - Retention and "do not remember" rules, keyed by thing type, app, path or Space; pausing memory.
 - File-change capture through inotify now and fanotify later. The watcher's observations are joined with the reasons apps supply ("why").
-- **`memoryd`**, the daemon that owns all of the above, serving the D-Bus name **`org.quire.Memory1`**. It covers record, recall, forget, timeline and export, plus pending facts, consolidation, rules, pause and verify.
+- **`memoryd`**, the daemon that owns all of the above, serving the D-Bus name **`org.bardo.Memory1`**. It covers record, recall, forget, timeline and export, plus pending facts, consolidation, rules, pause and verify.
 - The data the user control UI needs: timeline pages, "what it knows about X", forget preview and execution, export, pending facts, the consolidation diff, rules and status. **Drawing that UI is the "ux" area.**
 
 **Non-goals (owned elsewhere)**
@@ -33,7 +33,7 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 
 ### 2.1 Placement
 
-A **new repo `~/almanac`** (github.com/Bardo-DE/almanac). It is shaped like porter: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like porter's `accountd`, `inferd` and `syncd`. The bus name is `org.quire.Memory1`.
+A **new repo `~/almanac`** (github.com/Bardo-DE/almanac). It is shaped like porter: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like porter's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
 
 Why a separate repo: memory is not accounts. The three owned crates (`eventlog`, `memfiles`, `recall`) are meant to be reusable. memoryd also has its own confinement unit.
 
@@ -54,7 +54,7 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
 | `recall-sqlite-vec` [later, Q6] | `SqliteVec: VectorIndex` | recall | sqlite-vec 0.1.10-alpha.4 |
 | `memory-service` | memoryd's core over seams: admission, forget planner, fact pipeline, consolidation machine, retention sweep, timeline assembly, export writer, Space lifecycle; traits `Consolidator` and `Clock` | core, seal, eventlog, memfiles, recall | tar |
 | `memory-watch` | `FileWatch` trait, `InotifyWatch` (notify 8.2), `FanotifyWatch` [later], the pure `join` of observed changes and app-supplied reasons | memory-core | notify, nix [later] |
-| `memory-dbus` | `org.quire.Memory1` proxies and skeletons, introspection, the codec (stub) | memory-core | zbus |
+| `memory-dbus` | `org.bardo.Memory1` proxies and skeletons, introspection, the codec (stub) | memory-core | zbus |
 | `memory-client` | App-facing `Memory` API with a `Transport` trait: `InProcess`, `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`) | core, service; dbus (feature) | — |
 | `memory-fake` | Test harness: `fake_service`, `FixedClock`, `ScriptedConsolidator`, fixtures, golden files | core, seal, eventlog, memfiles, recall, service | — |
 | `memoryd` | The daemon. Wiring, the system clock, `InferdEmbedder` and `InferdConsolidator` (through account-client), the systemd unit | all of the above + account-client | tokio, zbus, oo7 |
@@ -260,7 +260,7 @@ title: Sam Lee
 ## 2026-10-01
 
 - Prefers meetings after 10:00.
-  <!-- fact: 01j9zk3m0q8h2v6x4c1b7n5t2a; at: 2026-10-01T09:12:44Z; by: user/org.quire.Mail; trust: user; from: thing org.quire.Mail mail.thread 7f3a -->
+  <!-- fact: 01j9zk3m0q8h2v6x4c1b7n5t2a; at: 2026-10-01T09:12:44Z; by: user/org.bardo.Mail; trust: user; from: thing org.bardo.Mail mail.thread 7f3a -->
 - Works on the Q4 roadmap with Ana.
   <!-- fact: 01j9zm...; at: 2026-10-01T11:02:10Z; by: companion; trust: inferred; from: ev work 3c1f..:430; supersedes: 01j9zk... -->
 ```
@@ -489,18 +489,18 @@ pub enum ForgetScope { Event(EventRef), Thing(ThingRef), Fact(FactId), Range(Uni
 
 **Recall hits carry labels:** `RecallHit { doc, text, at, label: prov::Label, links, why }`. The planner applies taint from `label`. The quarantined reader gets no recall at all.
 
-### 3.10 D-Bus `org.quire.Memory1` [freeze now]
+### 3.10 D-Bus `org.bardo.Memory1` [freeze now]
 
-memoryd runs on the session bus and is activatable. Object: `/org/quire/Memory1`. Complex bodies are the serde JSON of the §3.9 types in an `s` argument (one protocol, two carriers: the same as the intents v1 proposal and porter's wire enums).
+memoryd runs on the session bus and is activatable. Object: `/org/bardo/Memory1`. Complex bodies are the serde JSON of the §3.9 types in an `s` argument (one protocol, two carriers: the same as the intents v1 proposal and porter's wire enums).
 
 ```
-interface org.quire.Memory1.Record
+interface org.bardo.Memory1.Record
   Record(s space, s record)                 -> (s event_ref)
   RecordBatch(s space, s records)           -> (s first_ref, u count)
   ExplainFile(s why)                        -> ()
   Mark(s mark)                              -> ()
 
-interface org.quire.Memory1.Recall
+interface org.bardo.Memory1.Recall
   Search(s space, s query)                  -> (s hits)
   Facts(s space, s query)                   -> (s facts)
   Related(s space, s thing)                 -> (s events)
@@ -508,7 +508,7 @@ interface org.quire.Memory1.Recall
   Primer(s space)                           -> (s markdown)
   Propose(s space, s draft)                 -> (s fact_id, s state)
 
-interface org.quire.Memory1.Control
+interface org.bardo.Memory1.Control
   Spaces()                                  -> (s spaces)
   Status(s space)                           -> (s status)
   Timeline(s space, s query)                -> (s page)
@@ -534,7 +534,7 @@ interface org.quire.Memory1.Control
   signal StatusChanged(s space, s status)
   property Version u  (= 1)
 ```
-Errors: `org.quire.Memory1.Error.{NotAllowed,SpaceLocked,SpaceUnknown,PlanStale,PlanExpired,Invalid,Busy}` map 1:1 to `Refusal`.
+Errors: `org.bardo.Memory1.Error.{NotAllowed,SpaceLocked,SpaceUnknown,PlanStale,PlanExpired,Invalid,Busy}` map 1:1 to `Refusal`.
 
 ### 3.11 Control UI data shapes (for the ux area) [freeze now]
 

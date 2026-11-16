@@ -1,4 +1,4 @@
-//! `org.quire.Storage1` at `/org/quire/Storage1` on syncd's connection: the drives shown in
+//! `org.bardo.Storage1` at `/org/bardo/Storage1` on syncd's connection: the drives shown in
 //! Files and their items, served from each drive's files on demand ([`DriveSet`]).
 //!
 //! - The caller is the connection's, found by account-dbus's `Callers` as for `Sync1`. The shell
@@ -442,7 +442,7 @@ impl<C: Callers> StorageServer for StorageObject<C> {
     }
 }
 
-/// Serves `org.quire.Storage1` at [`STORAGE_PATH`] on `connection` over `drives`, with
+/// Serves `org.bardo.Storage1` at [`STORAGE_PATH`] on `connection` over `drives`, with
 /// `callers` saying who calls and `apps` the apps that may see the person's files. Call it
 /// before [`super::serve`], which claims the name once every object is there.
 pub async fn serve_storage<C: Callers>(
@@ -579,7 +579,7 @@ mod tests {
         let set = DriveSet::default();
         set.insert(Arc::new(LiveDrive::new(
             "one".into(),
-            "/org/quire/Accounts1/account/one".into(),
+            "/org/bardo/Accounts1/account/one".into(),
             "ada@example.test".into(),
             "OneDrive",
             dir.join("Cloud"),

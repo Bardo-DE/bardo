@@ -1,4 +1,4 @@
-//! The shot grammar: what `casementctl shot` asks Debug1 to capture (a named output goes over
+//! The shot grammar: what `bardo-compositorctl shot` asks Debug1 to capture (a named output goes over
 //! ext-image-copy-capture instead). The compositor writes the output's last presented frame, a
 //! region of it, or one window drawn alone, as a PNG to a path the caller names, inside the jail.
 //!

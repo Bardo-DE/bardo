@@ -1,4 +1,4 @@
-//! `ferry-rig-servers` as a process: it starts, writes `rig.json`, answers its control endpoint
+//! `sync-rig-servers` as a process: it starts, writes `rig.json`, answers its control endpoint
 //! and the fakes it started, plants the secrets it says, and ends cleanly on SIGTERM sent to its
 //! PID.
 
@@ -30,9 +30,9 @@ async fn graph_get(url: &str, target: &str, bearer: &str) -> (u16, String) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_rig_starts_lists_what_it_planted_serves_its_levers_and_ends_on_sigterm() {
-    let dir = Scratch::new("ferry-rig-servers");
+    let dir = Scratch::new("sync-rig-servers");
     let mut rig = Proc::spawn(
-        env!("CARGO_BIN_EXE_ferry-rig-servers"),
+        env!("CARGO_BIN_EXE_sync-rig-servers"),
         &[
             "--dir",
             dir.to_str().expect("utf-8"),
@@ -154,7 +154,7 @@ async fn the_rig_starts_lists_what_it_planted_serves_its_levers_and_ends_on_sigt
 async fn post_stop_ends_the_rig_cleanly() {
     let dir = Scratch::new("ferry-rig-servers-stop");
     let mut rig = Proc::spawn(
-        env!("CARGO_BIN_EXE_ferry-rig-servers"),
+        env!("CARGO_BIN_EXE_sync-rig-servers"),
         &["--dir", dir.to_str().expect("utf-8")],
         &[],
     );

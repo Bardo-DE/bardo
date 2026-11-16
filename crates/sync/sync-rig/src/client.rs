@@ -1,4 +1,4 @@
-//! What `ferry-rig-client` does: one command as an app, over the session bus, answered as JSON
+//! What `sync-rig-client` does: one command as an app, over the session bus, answered as JSON
 //! lines. Each command emits one or more objects with a `result` or an `event` key; a failure
 //! is `{"result":"error", ...}` and the process exits 1.
 //!
@@ -17,7 +17,7 @@ fn failure(why: impl std::fmt::Display) -> Value {
     json!({ "result": "error", "error": why.to_string() })
 }
 
-/// The commands: the command line of `ferry-rig-client`.
+/// The commands: the command line of `sync-rig-client`.
 #[derive(Debug, Clone, Subcommand)]
 pub enum Command {
     /// Settles a stored sync conflict.

@@ -1,6 +1,6 @@
 //! One turn of the person's words on a hosted external agent, in a running world.
 //!
-//! The host is the one `docket-agent` runs (`agent_acp_bin::harness::host`), with no accountd
+//! The host is the one `bardo-agent` runs (`agent_acp_bin::harness::host`), with no accountd
 //! behind it (`LoginOnly`): the agent's sandbox is bubblewrap, its calls are router calls over the
 //! world's private bus, the sheets go to the world's scripted person (intentd's confirmer), and
 //! the per-session tool edge is offered with the bridge program of `Binaries::action_mcp`.
@@ -95,7 +95,7 @@ fn prepare_state(spec: &AcpSpec, home: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-/// Hosts `spec` in `world` the way `docket-agent` does and opens its session; the scratch
+/// Hosts `spec` in `world` the way `bardo-agent` does and opens its session; the scratch
 /// directories exist first. The reason, when it does not open, is said plainly.
 async fn open(
     world: &World,
@@ -116,10 +116,10 @@ async fn open(
     let file = AgentsFile::parse_in(&entry, dir.as_ref())
         .map_err(|why| PlayFault::Entry(why.to_string()))?;
     let program = ProgramName::parse(&spec.program).map_err(|_| PlayFault::ProgramName)?;
-    // The agent host is its own process to the daemons (docket-agent's scope), as it is on a
+    // The agent host is its own process to the daemons (bardo-agent's scope), as it is on a
     // desktop; the harness process stays the shell.
     let bus = world
-        .connect_as(&binaries.relay, Cgroup::Scope("docket-agent"))
+        .connect_as(&binaries.relay, Cgroup::Scope("bardo-agent"))
         .await;
     let wiring = Wiring {
         // The pseudo-app's provider answers the process of intentd's unit, as the world's fake

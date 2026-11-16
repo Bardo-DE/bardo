@@ -19,13 +19,13 @@ use service_locator::guard::{SeatUser, ShellCheck, Vouch};
 /// process.
 pub(super) const SHELL_TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
 exe  = [
-  "/opt/quire/releases/*/bin/sill",
-  "/opt/quire/current/bin/sill",
-  "/usr/local/bin/sill",
-  "/usr/bin/sill",
+  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/current/bin/bardo-shell",
+  "/usr/local/bin/bardo-shell",
+  "/usr/bin/bardo-shell",
 ]
 role = "shell"
 "#;
@@ -42,7 +42,7 @@ pub enum Steering {
 }
 
 impl Steering {
-    /// The choice `PALMREST_STEERING` names: only `seat-user` changes the default.
+    /// The choice `BARDO_MOUSE_GESTURES_STEERING` names: only `seat-user` changes the default.
     pub fn from_env_value(v: Option<&str>) -> Self {
         match v {
             Some("seat-user") => Steering::SeatUser,
@@ -106,7 +106,7 @@ mod tests {
         let cases: &[(&str, String, Claim)] = &[
             (
                 "the shell",
-                format!("{MANAGER_1000}/session.slice/sill.service"),
+                format!("{MANAGER_1000}/session.slice/bardo-shell.service"),
                 shell,
             ),
             (
@@ -127,12 +127,12 @@ mod tests {
 
     #[test]
     fn a_readable_image_must_be_the_shells_and_root_owned() {
-        let cgroup = format!("{MANAGER_1000}/session.slice/sill.service");
+        let cgroup = format!("{MANAGER_1000}/session.slice/bardo-shell.service");
         let shell = Claim::Shell { user: 1000 };
         let cases: &[(&str, FixtureImage<'_>, Claim)] = &[
             (
                 "the installed shell",
-                FixtureImage::Present("/usr/bin/sill", FileTrust::RootOnly),
+                FixtureImage::Present("/usr/bin/bardo-shell", FileTrust::RootOnly),
                 shell,
             ),
             (
@@ -142,7 +142,7 @@ mod tests {
             ),
             (
                 "the shell's path, but writable",
-                FixtureImage::Present("/usr/bin/sill", FileTrust::Writable(Writer::Group)),
+                FixtureImage::Present("/usr/bin/bardo-shell", FileTrust::Writable(Writer::Group)),
                 Claim::Other,
             ),
         ];

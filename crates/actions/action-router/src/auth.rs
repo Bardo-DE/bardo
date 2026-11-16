@@ -30,7 +30,7 @@ fn roles(member: Member) -> &'static [CallerRole] {
         // anything else).
         Member::SessionClose => &[Launcher, Field, Editor, Companion, Cua, Cli, AcpAgent],
         // Only the person's own surfaces record a turn: a model cannot say what the person said.
-        // A terminal is one of them for `quire-do ask` (the person at a keyboard, the same user),
+        // A terminal is one of them for `bardo-do ask` (the person at a keyboard, the same user),
         // and its turns are recorded as `Caller::terminal()`, never as the launcher's.
         Member::SessionTurn => &[Launcher, Field, Editor, Cli, AcpAgent],
         // The host that recorded a turn says when it ended: exactly the roles of `Session.Turn`,

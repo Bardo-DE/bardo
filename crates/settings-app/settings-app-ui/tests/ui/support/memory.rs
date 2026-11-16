@@ -1,4 +1,4 @@
-//! A fake memory (`org.quire.Memory1.Control`) that answers the loose-settings calls from the
+//! A fake memory (`org.bardo.Memory1.Control`) that answers the loose-settings calls from the
 //! settings file in the scratch config home, the way the real one reads it, and writes down what
 //! it was asked to confirm, and carries the `Confinement` word it is given. It knows two keys and the shipped value of each; a value is loose when
 //! it is a different word, or a number below the shipped one.
@@ -26,7 +26,7 @@ struct State {
 
 /// An error with one of memory's names.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Memory1.Error")]
+#[zbus(prefix = "org.bardo.Memory1.Error")]
 enum Refusal {
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -64,7 +64,7 @@ impl Control {
     }
 }
 
-#[zbus::interface(name = "org.quire.Memory1.Control")]
+#[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl Control {
     #[zbus(property)]
     async fn confinement(&self) -> String {
@@ -131,7 +131,7 @@ pub async fn serve(bus: &PrivateBus, file: PathBuf, confinement: &'static str) -
     connection
         .object_server()
         .at(
-            "/org/quire/Memory1",
+            "/org/bardo/Memory1",
             Control {
                 file,
                 confinement,
@@ -144,7 +144,7 @@ pub async fn serve(bus: &PrivateBus, file: PathBuf, confinement: &'static str) -
         .await
         .expect("the object server answers");
     connection
-        .request_name("org.quire.Memory1")
+        .request_name("org.bardo.Memory1")
         .await
         .expect("memory's name");
     Fake {

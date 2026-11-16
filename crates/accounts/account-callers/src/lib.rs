@@ -121,17 +121,17 @@ pub enum CallerRole {
     /// an app's behalf.
     PorterDaemon,
     /// inferd, the AI broker: the one daemon that sends a key to an AI company, so the one that
-    /// may ask accountd (`org.quire.Accounts1.Broker`) what each app's permits say and for the
-    /// key behind a permit. It also reads the person's computers from `org.quire.Tailnet1`, as
+    /// may ask accountd (`org.bardo.Accounts1.Broker`) what each app's permits say and for the
+    /// key behind a permit. It also reads the person's computers from `org.bardo.Tailnet1`, as
     /// the porter daemons do. Given by the unit that is inferd, never by an app scope's name.
     AiBroker,
-    /// intentd, companiond, readerd, cuad, quire-do, actions-mcp: refused accountd's `Keys`
+    /// intentd, companiond, readerd, cuad, bardo-do, bardo-actions-mcp: refused accountd's `Keys`
     /// (`RequestKey`) and `AddAccount` and `Reauthenticate`; they keep inferd's own inference
     /// calls.
     Agent,
     /// cuad, for inferd: the only role that may open a computer-use session.
     Cua,
-    /// The agent launcher (docket-acp), which runs external coding agents: may call accountd's
+    /// The agent launcher (bardo-agent-acp), which runs external coding agents: may call accountd's
     /// `Launcher` interface (`RegisterLauncher`, `BeginSession`, `EndSession`, `RequestAgentKey`,
     /// `ReportAgentLogin`, `ReportAgentLogout`, `IssueProcessCredential` and
     /// `RevokeProcessCredential`: an API key for a process it spawns, only for a program it
@@ -139,12 +139,12 @@ pub enum CallerRole {
     /// the shipped tables have no row for it, so a machine lists the launcher by its own row, in
     /// accountd's table and in inferd's.
     AgentLauncher,
-    /// The terminal (temor): may read the person's computers from `org.quire.Tailnet1`
+    /// The terminal (temor): may read the person's computers from `org.bardo.Tailnet1`
     /// (`Machines`) and nothing else of accountd. Given by the unit that is the terminal, as the
     /// systemd manager says its main process is, never by an app scope's name.
     Terminal,
     /// The compositor (casement): mints a desktop-wide Space id for each workspace and
-    /// registers it with `org.quire.Spaces1` (`Register`); it may `List` the Spaces and nothing
+    /// registers it with `org.bardo.Spaces1` (`Register`); it may `List` the Spaces and nothing
     /// else of accountd. Given by the compositor's unit, never by an app scope's name.
     Compositor,
 }
@@ -168,7 +168,7 @@ pub struct Caller {
     pub role: CallerRole,
 }
 
-/// What a person reads for an app: "Sync", not `org.quire.Sync`.
+/// What a person reads for an app: "Sync", not `org.bardo.Sync`.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct AppTitle(pub String);
@@ -178,7 +178,7 @@ pub struct AppTitle(pub String);
 pub struct CallerRow {
     /// The app: what an app scope or Flatpak scope names, or what the unit is known as.
     pub app: AppName,
-    /// The systemd service unit (`inferd.service`) that is this app, for daemons that run in
+    /// The systemd service unit (`bardo-inferd.service`) that is this app, for daemons that run in
     /// their own unit. Without one the row only gives the app its role.
     #[serde(default)]
     pub unit: Option<String>,

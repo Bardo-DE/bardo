@@ -470,7 +470,7 @@ async fn untrusted_handles_with_no_taint_before_them_restore_tainted_and_are_rep
     let opening = Opening {
         task: TaskId::parse("t-9").expect("task"),
         space: space("work"),
-        opener: Some(app("org.quire.Companiond")),
+        opener: Some(app("org.bardo.Companion")),
         agent: Some(AgentRef::Companion),
         backend: BackendKind::Native,
         parent: None,

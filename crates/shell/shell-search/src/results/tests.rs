@@ -370,18 +370,18 @@ fn a_fresh_history_starts_from_the_desktops_apps_once() {
         history.read(|f| f.entries.keys().map(|key| key.0.clone()).collect())
     };
     search.start_history(&installed(&[
-        "org.quire.Mail",
+        "org.bardo.Mail",
         "firefox",
-        "org.quire.Settings",
+        "org.bardo.Settings",
     ]));
     assert_eq!(
         keys(&history),
-        ["apps:org.quire.Mail", "apps:org.quire.Settings"]
+        ["apps:org.bardo.Mail", "apps:org.bardo.Settings"]
     );
-    search.start_history(&installed(&["org.quire.Anyview"]));
+    search.start_history(&installed(&["org.bardo.Anyview"]));
     assert_eq!(
         keys(&history),
-        ["apps:org.quire.Mail", "apps:org.quire.Settings"],
+        ["apps:org.bardo.Mail", "apps:org.bardo.Settings"],
         "once counted, a history is never started again"
     );
 }
@@ -399,15 +399,15 @@ fn uses_under_an_old_app_id_follow_the_renamed_app() {
     let claiming = |ids: &[&str]| {
         let mut index = installed(ids);
         for app in &mut index.apps {
-            if app.id.0 == "org.quire.Mail" {
+            if app.id.0 == "org.bardo.Mail" {
                 app.renamed_from = vec![shell_launcher::AppId("mailo".to_owned())];
             }
         }
         index
     };
-    let index = claiming(&["org.quire.Mail", "foot"]);
-    let own = installed(&["mailo", "org.quire.Mail"]);
-    let claims = claiming(&["mailo", "org.quire.Mail"]);
+    let index = claiming(&["org.bardo.Mail", "foot"]);
+    let own = installed(&["mailo", "org.bardo.Mail"]);
+    let claims = claiming(&["mailo", "org.bardo.Mail"]);
     let old = || Frecency {
         entries: [(key("mailo"), at(3)), (key("bar"), at(1))].into(),
     };
@@ -415,7 +415,7 @@ fn uses_under_an_old_app_id_follow_the_renamed_app() {
         (
             "the old id is moved",
             index,
-            vec!["apps:bar", "apps:org.quire.Mail"],
+            vec!["apps:bar", "apps:org.bardo.Mail"],
         ),
         ("an installed id stays", own, vec!["apps:bar", "apps:mailo"]),
         (

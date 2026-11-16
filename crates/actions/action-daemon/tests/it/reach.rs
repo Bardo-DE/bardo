@@ -1,4 +1,4 @@
-//! A provider's live reach (`org.quire.IntentReach1`) on a private bus: the installed manifest of
+//! A provider's live reach (`org.bardo.IntentReach1`) on a private bus: the installed manifest of
 //! the stand-in "mail" keeps `mail.thread.open` hidden; the provider turns it on and off, and the
 //! menu a planner is given (every action that is not hidden) follows, with a `ManifestChanged`
 //! each time. A provider can only switch what its manifest declares, and one that serves nothing
@@ -17,7 +17,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 const OPEN: &str = "mail.thread.open";
-const MAIL: &str = "org.quire.Mail";
+const MAIL: &str = "org.bardo.Mail";
 
 struct Rig {
     _dir: tempfile::TempDir,
@@ -38,7 +38,7 @@ async fn rig() -> Rig {
     let data: PathBuf = dir.path().join("data");
     let intents = data.join("quire").join("intents");
     std::fs::create_dir_all(&intents).expect("intents dir");
-    std::fs::write(intents.join("org.quire.Mail.toml"), MAIL_MANIFEST).expect("manifest");
+    std::fs::write(intents.join("org.bardo.Mail.toml"), MAIL_MANIFEST).expect("manifest");
     let bus = PrivateBus::start(dir.path());
     let daemon = bus.connect().await;
     let router = Arc::new(fake_router(AgentConfig::default()).expect("router"));

@@ -34,7 +34,7 @@ impl DesktopCallers {
         DesktopCallers { table }
     }
 
-    /// Callers judged against the table the desktop ships (`/etc/quire/desktop-callers.toml` and
+    /// Callers judged against the table the desktop ships (`/etc/bardo/desktop-callers.toml` and
     /// the files beside it). When it cannot be loaded (missing, or writable by someone other than
     /// root) the table is empty: nobody is a service, and every call is refused.
     pub fn from_system() -> DesktopCallers {

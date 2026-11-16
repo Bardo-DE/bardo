@@ -1,0 +1,74 @@
+# Who may call intentd (org.bardo.Intents1), and as what. A caller is the systemd unit behind the bus
+# connection (the bus names its process, /proc/<pid>/cgroup names the unit or app scope, and a
+# service's role goes only to the unit's main process, as the systemd manager says). The roles of
+# actiond.toml belong to the app a caller is; a role that stands for more than an app needs the
+# role below too, and only THIS file (installed as /etc/bardo/actiond-callers.toml) can give a fixed
+# one (sheet_host, cua, compositor); the user's ~/.config/quire/actiond-callers.toml is laid over it
+# and its fixed rows are ignored. An app scope (app-<id>-<n>.scope) or Flatpak app is an app without a
+# row here; a process in neither (a terminal's child apart, which is the cli role), is refused.
+#
+#   role "sheet_host" + app org.bardo.Shell      -> sill: launcher, confirm and control
+#   role "cua"        + app org.bardo.ComputerUse1       -> cuad
+#   role "agent"      + the daemons' apps        -> companiond, readerd, bardo-actions-mcp, bardo-agent-acp, bardo-agent
+#   role "app"        + an app's own service -> org.bardo.Mail.service (mailo intents)
+#
+# A scope never carries a fixed role, so the shell is bardo-shell.service and nothing else. bardo-agent-acp and
+# bardo-agent are started by an editor, not by systemd: their rows are scopes they are started in
+# (`systemd-run --user --scope --unit=bardo-agent-acp`), which is an agent and no more.
+# A scope has no main process, so each row names the program it runs (`exe`): our own bardo-agent-acp
+# and bardo-agent hosts, never the agent programs bardo-agent starts (node, npx, ...), which
+# reach the desktop only through these hosts and bardo-actions-mcp.
+
+[[caller]]
+app = "org.bardo.Shell"
+unit = "bardo-shell.service"
+role = "sheet_host"
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
+
+[[caller]]
+app = "org.bardo.ComputerUse1"
+unit = "bardo-computer-use.service"
+role = "cua"
+
+[[caller]]
+app = "org.bardo.Companion1"
+unit = "bardo-companiond.service"
+role = "agent"
+
+[[caller]]
+app = "org.bardo.Reader1"
+unit = "bardo-readerd.service"
+role = "agent"
+
+[[caller]]
+app = "org.bardo.ActionsMcp"
+unit = "bardo-actions-mcp.service"
+role = "agent"
+
+[[caller]]
+app = "org.bardo.Acp"
+unit = "bardo-agent-acp.scope"
+role = "agent"
+exe = ["/usr/bin/bardo-agent-acp", "/usr/local/bin/bardo-agent-acp", "/opt/bardo/releases/*/bin/bardo-agent-acp"]
+
+[[caller]]
+app = "org.bardo.AcpAgent"
+unit = "bardo-agent.scope"
+role = "agent"
+exe = ["/usr/bin/bardo-agent", "/usr/local/bin/bardo-agent", "/opt/bardo/releases/*/bin/bardo-agent"]
+
+# The same host as a service the bus starts for the assistant (`bardo-agent --serve`): a unit with a
+# main process, so no program path is listed. It is the one program that opens an outside agent's
+# session; companiond only hands it a turn (agent-acp-callers.toml).
+[[caller]]
+app = "org.bardo.AcpAgent"
+unit = "bardo-agent.service"
+role = "agent"
+
+# An app's own service the bus starts (D-Bus `SystemdService=`): Mail's `mailo intents`, which
+# answers the router and pushes Mail's things to the launcher's index. A plain app and no more; its
+# window is the same app through its app scope (`app-…-org.bardo.Mail-<n>.scope`) and needs no row.
+[[caller]]
+app = "org.bardo.Mail"
+unit = "org.bardo.Mail.service"
+role = "app"

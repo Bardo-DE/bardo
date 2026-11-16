@@ -37,7 +37,7 @@ pub struct NodeProps {
     /// `toggle-state` as sent: 0 off, 1 on, anything else indeterminate.
     pub toggle_state: i32,
     pub shortcut: Option<Chord>,
-    /// `x-quire-command-id`.
+    /// `x-bardo-command-id`.
     pub command: Option<MenuCommand>,
     pub icon_name: Option<String>,
 }

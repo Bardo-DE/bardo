@@ -1,4 +1,4 @@
-//! A fake `org.quire.Inference1` for the client's bus tests. `Open` answers with one end of a
+//! A fake `org.bardo.Inference1` for the client's bus tests. `Open` answers with one end of a
 //! socketpair and serves the other end: it decodes `ClientFrame`s (collecting the memfds that
 //! ride on them), plays them into a scripted `FakeInferSession` and writes its events back as
 //! frames. How it misbehaves is a `Behaviour`, so the client's error paths run too.
@@ -113,7 +113,7 @@ impl FakeInferd {
     }
 }
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl FakeInferd {
     async fn prepare(
         &self,

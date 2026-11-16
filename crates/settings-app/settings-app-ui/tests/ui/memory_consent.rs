@@ -63,9 +63,9 @@ fn confining(name: &str, file: Option<&str>, word: &'static str) -> World {
         .expect("a runtime for the fake");
     let bus = PrivateBus::start(name);
     let sandbox = Sandbox::new(name).on_bus(&bus.address);
-    let path = sandbox.config_home().0.join("almanac/settings.toml");
+    let path = sandbox.config_home().0.join("memory/settings.toml");
     if let Some(text) = file {
-        sandbox.write("almanac/settings.toml", text);
+        sandbox.write("memory/settings.toml", text);
     }
     let fake = rt.block_on(serve(&bus, path, word));
     let mut harness = sandbox.harness(intelligence());
@@ -119,7 +119,7 @@ fn saving_a_looser_value_is_the_confirmation_and_memory_is_told_that_pair_alone(
         !w.fake.confirms().is_empty()
     });
     assert_eq!(w.fake.confirms(), ["memory.files.at_rest=plain"]);
-    let file = w.sandbox.read("almanac/settings.toml").expect("the file");
+    let file = w.sandbox.read("memory/settings.toml").expect("the file");
     assert!(file.contains("at_rest = \"plain\""), "{file}");
     // The first read was the page's, the second looked at the save, the third came after the
     // confirmation.
@@ -141,6 +141,6 @@ fn a_looser_value_typed_into_the_file_waits_with_its_note_until_confirm_is_press
     click(&mut w.harness, CONFIRM);
     settle(&mut w.harness, "the note to go", |h| h.count(NOTE) == 0);
     assert_eq!(w.fake.confirms(), ["memory.files.at_rest=plain"]);
-    let file = w.sandbox.read("almanac/settings.toml").expect("the file");
+    let file = w.sandbox.read("memory/settings.toml").expect("the file");
     assert_eq!(file, TYPED_BY_HAND, "confirming does not touch the file");
 }

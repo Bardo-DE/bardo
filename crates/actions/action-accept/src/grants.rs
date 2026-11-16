@@ -13,7 +13,7 @@ pub fn standing_json(space: &str, app: App) -> String {
     // An editor's session asks under the editor's own name (the app behind its connection), and
     // opens in the desktop Space: the same consent, given to it.
     let editor =
-        GrantCaller::Editor(provenance::ClientName::parse("org.quire.Acp").expect("client"));
+        GrantCaller::Editor(provenance::ClientName::parse("org.bardo.Acp").expect("client"));
     let holders = [
         (GrantCaller::Companion, space),
         (editor.clone(), space),

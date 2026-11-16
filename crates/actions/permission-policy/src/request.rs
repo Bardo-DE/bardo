@@ -106,7 +106,7 @@ impl From<&permission_core::Coverage> for CoverageState {
 
 /// Whether the person gave a standing grant for this action from the terminal ("allow from the
 /// terminal: this action, until logout"). The router reads it from the terminal session's task
-/// policy; only a `quire-do` call has one.
+/// policy; only a `bardo-do` call has one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TerminalGrant {

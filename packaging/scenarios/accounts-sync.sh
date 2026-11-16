@@ -2,7 +2,7 @@
 # Scenario `accounts-sync` (design 31 §6, porter 5fdeafa Sync1.Resolve): syncd mirrors a OneDrive app folder from the
 # rig's fake Graph, a two-sided edit makes a Conflict signal with its number, and the owning app settles it with
 # Sync1.Resolve keep_remote: the next cycle takes the remote. syncd (ferry's) has no accounts of
-# its own: it uses the accountd account the person signed in with, through account-client over org.quire.Grants1, and keeps
+# its own: it uses the accountd account the person signed in with, through account-client over org.bardo.Grants1, and keeps
 # only its own sync switches and mirrors. Real accountd and syncd (syncd runs Storage over Graph), ferry's rig (issuer and
 # Graph), sill as sheet host, detent for the Sync row. No network.
 #
@@ -12,11 +12,11 @@
 #             its files switch off and no Add Account button (syncd signs nobody in); the account's own switch "Keep this
 #             account's files on this computer" is turned on in the real window: accountd's consent sheet shows once, for that
 #             one account, no chooser (capture 2-consent, Tab to Always Allow, Return); `accounts.<id>.sync.files` is "on" in syncd's
-#             settings module (capture 6-sync-on) and accountd lists the permit (org.quire.Sync, scope always) under the account;
+#             settings module (capture 6-sync-on) and accountd lists the permit (org.bardo.Sync, scope always) under the account;
 #             setting the switch on again asks nothing; the switch is then turned off (the permit is deleted) and on again, which
 #             asks again, once, and is answered the same way
-#   mirror    syncd reads grants again every 2 s (SYNCD_RESCAN_S=2; the default is 600 s); the dataset
-#             `<account segment>/storage_app_folder` is listed to its owner (org.quire.Files); a file the rig puts on the drive
+#   mirror    syncd reads grants again every 2 s (BARDO_SYNCD_RESCAN_S=2; the default is 600 s); the dataset
+#             `<account segment>/storage_app_folder` is listed to its owner (org.bardo.Files); a file the rig puts on the drive
 #             (the remote edit lever /graph/put) shows in $XDG_DATA_HOME/porter/storage/<account>/
 #   conflict  the owner's watch joins syncd, then both sides edit the file within a moment; the next cycle (the poll is
 #             60 s: a local change is found at the next one) finds the two edits: the watch sees a Conflict signal
@@ -37,7 +37,7 @@ acc_env
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out accounts-sync)
-OWNER=org.quire.Files
+OWNER=org.bardo.Files
 SYNC_FILES_LABEL="Keep this account's files on this computer"
 
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }
@@ -99,7 +99,7 @@ step_grant() {
   sheet_gone || { echo "the consent sheet did not go after the answer" >&2; return 1; }
   acc_wait 30 sync_on || { acc_shot 5-sync-not-on; echo "allowing syncd did not switch the files on: accounts.$SYNC_ACCOUNT.sync.files is '$(sync_files)'" >&2; return 1; }
   acc_shot 6-sync-on
-  # The permit is accountd's: syncd's `sync.files` reads it (an allowing grant of org.quire.Sync for this account), and accountd's
+  # The permit is accountd's: syncd's `sync.files` reads it (an allowing grant of org.bardo.Sync for this account), and accountd's
   # own settings module lists it under the account. Always Allow, not Allow Once: a once permit is spent by syncd's first relay.
   [ "$(acc_permit_scope "$SYNC_ACCOUNT" $SYNC_APP)" = always ] || { echo "accountd's permit for $SYNC_APP on $SYNC_ACCOUNT is '$(acc_permit_scope "$SYNC_ACCOUNT" $SYNC_APP)', not always" >&2; return 1; }
   # Turning the switch on while the permit is held asks nothing (Keep::set_sync finds the grant): the answer is kept.
@@ -156,7 +156,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_row step_grant step_mirror step_conflict step_resolve step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd syncd detent rig-servers ferry-rig-servers secrets add watch resolve; do
+  for f in accountd syncd detent rig-servers sync-rig-servers secrets add watch resolve; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

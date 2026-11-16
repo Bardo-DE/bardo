@@ -79,7 +79,7 @@ pub struct SweepReport {
     pub headers: Count,
 }
 
-/// Why memoryd said no. Each maps 1:1 to an `org.quire.Memory1.Error.<Variant>`.
+/// Why memoryd said no. Each maps 1:1 to an `org.bardo.Memory1.Error.<Variant>`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 #[non_exhaustive]

@@ -17,25 +17,25 @@ fn value<'a>(file: &'a str, key: &str) -> Option<&'a str> {
 
 #[test]
 fn the_unit_and_the_activation_file_name_the_same_service() {
-    let unit = dist("accountd.service");
-    let activation = dist("dbus/org.quire.Accounts1.service");
-    assert_eq!(value(&unit, "BusName"), Some("org.quire.Accounts1"));
+    let unit = dist("bardo-accountd.service");
+    let activation = dist("dbus/org.bardo.Accounts1.service");
+    assert_eq!(value(&unit, "BusName"), Some("org.bardo.Accounts1"));
     assert_eq!(value(&unit, "Type"), Some("dbus"));
-    assert_eq!(value(&activation, "Name"), Some("org.quire.Accounts1"));
+    assert_eq!(value(&activation, "Name"), Some("org.bardo.Accounts1"));
     assert_eq!(
         value(&activation, "SystemdService"),
-        Some("accountd.service")
+        Some("bardo-accountd.service")
     );
     assert_eq!(value(&activation, "Exec"), value(&unit, "ExecStart"));
     assert_eq!(
         value(&unit, "ExecStart"),
-        Some("/usr/libexec/quire/accountd")
+        Some("/usr/libexec/bardo/bardo-accountd")
     );
 }
 
 #[test]
 fn the_unit_does_not_restart_over_a_registry_the_daemon_refused() {
-    let unit = dist("accountd.service");
+    let unit = dist("bardo-accountd.service");
     assert_eq!(value(&unit, "Restart"), Some("on-failure"));
     assert_eq!(
         value(&unit, "RestartPreventExitStatus"),
@@ -45,7 +45,7 @@ fn the_unit_does_not_restart_over_a_registry_the_daemon_refused() {
 
 #[test]
 fn the_unit_does_not_hide_the_processes_it_must_identify() {
-    let unit = dist("accountd.service");
+    let unit = dist("bardo-accountd.service");
     for hiding in ["ProtectProc", "PrivatePIDs", "ProcSubset"] {
         assert!(
             value(&unit, hiding).is_none(),
@@ -56,7 +56,7 @@ fn the_unit_does_not_hide_the_processes_it_must_identify() {
 
 #[test]
 fn the_unit_is_a_sandbox_with_the_network_it_needs_and_no_more() {
-    let unit = dist("accountd.service");
+    let unit = dist("bardo-accountd.service");
     assert_eq!(value(&unit, "NoNewPrivileges"), Some("yes"));
     assert_eq!(value(&unit, "CapabilityBoundingSet"), Some(""));
     assert_eq!(
@@ -65,7 +65,7 @@ fn the_unit_is_a_sandbox_with_the_network_it_needs_and_no_more() {
     );
     // The mount-namespace half of the sandbox is the drop-in, which the installer leaves out
     // where the system refuses a user service its own mount namespace.
-    let sandbox = dist("accountd.service.d/sandbox.conf");
+    let sandbox = dist("bardo-accountd.service.d/sandbox.conf");
     assert_eq!(value(&sandbox, "ProtectSystem"), Some("strict"));
     assert_eq!(value(&sandbox, "PrivateTmp"), Some("yes"));
     for moved in [
@@ -83,7 +83,7 @@ fn the_unit_is_a_sandbox_with_the_network_it_needs_and_no_more() {
 /// on a sealed memfd). None of the limits is loosened: the same directives, the same values.
 #[test]
 fn holding_the_ai_keys_loosens_no_limit_and_adds_no_path() {
-    let unit = dist("accountd.service");
+    let unit = dist("bardo-accountd.service");
     assert_eq!(value(&unit, "RuntimeDirectory"), None, "no place for a key");
     assert_eq!(value(&unit, "ReadWritePaths"), None);
     assert_eq!(
@@ -109,7 +109,7 @@ fn holding_the_ai_keys_loosens_no_limit_and_adds_no_path() {
         None,
         "providers need the network, as before"
     );
-    let sandbox = dist("accountd.service.d/sandbox.conf");
+    let sandbox = dist("bardo-accountd.service.d/sandbox.conf");
     assert_eq!(value(&sandbox, "ProtectHome"), Some("read-only"));
     assert_eq!(value(&sandbox, "ReadWritePaths"), None);
 }
@@ -136,13 +136,13 @@ fn the_sample_caller_table_gives_settings_the_sheet_host_and_both_daemons_their_
     use account_core::AppName;
     let table = account_callers::table_from_toml(&dist("callers.toml")).expect("the sample reads");
     let app = |name: &str| AppName::parse(name).expect("name");
-    // Settings is its unit (sec-3 a): an app scope named `org.quire.Settings` is only an app.
-    assert_eq!(table.role_of(&app("org.quire.Settings")), CallerRole::App);
+    // Settings is its unit (sec-3 a): an app scope named `org.bardo.Settings` is only an app.
+    assert_eq!(table.role_of(&app("org.bardo.Settings")), CallerRole::App);
     for (unit, role) in [
-        ("org.quire.Settings.service", CallerRole::Settings),
-        ("sill.service", CallerRole::SheetHost),
-        ("inferd.service", CallerRole::AiBroker),
-        ("syncd.service", CallerRole::PorterDaemon),
+        ("org.bardo.Settings.service", CallerRole::Settings),
+        ("bardo-shell.service", CallerRole::SheetHost),
+        ("bardo-inferd.service", CallerRole::AiBroker),
+        ("bardo-syncd.service", CallerRole::PorterDaemon),
     ] {
         assert_eq!(
             table.resolve_unit(unit).map(|caller| caller.role),
@@ -152,21 +152,21 @@ fn the_sample_caller_table_gives_settings_the_sheet_host_and_both_daemons_their_
     }
     // Every caller a person may see in an account's Apps group has a name to read.
     for (id, title) in [
-        ("org.quire.Settings", "Settings"),
-        ("org.quire.Shell", "Shell"),
-        ("org.quire.Inference", "Intelligence"),
-        ("org.quire.Sync", "Sync"),
-        ("org.quire.Companion", "Assistant"),
+        ("org.bardo.Settings", "Settings"),
+        ("org.bardo.Shell", "Shell"),
+        ("org.bardo.Inference", "Intelligence"),
+        ("org.bardo.Sync", "Sync"),
+        ("org.bardo.Companion", "Assistant"),
     ] {
         assert_eq!(table.title_of(&app(id)).map(|t| t.0.as_str()), Some(title));
     }
     // A unit row grants nothing to an app scope named after its app.
-    assert_eq!(table.role_of(&app("org.quire.Inference")), CallerRole::App);
+    assert_eq!(table.role_of(&app("org.bardo.Inference")), CallerRole::App);
 }
 
 #[test]
 fn what_the_unit_writes_is_created_before_the_sandbox_starts() {
-    let unit = dist("accountd.service");
+    let unit = dist("bardo-accountd.service");
     // A missing ReadWritePaths entry fails the unit; systemd's own directories cannot be missing.
     assert_eq!(
         value(&unit, "StateDirectory"),
@@ -174,7 +174,7 @@ fn what_the_unit_writes_is_created_before_the_sandbox_starts() {
     );
     assert_eq!(value(&unit, "ConfigurationDirectory"), Some("porter"));
     assert_eq!(value(&unit, "ReadWritePaths"), None);
-    let sandbox = dist("accountd.service.d/sandbox.conf");
+    let sandbox = dist("bardo-accountd.service.d/sandbox.conf");
     assert_eq!(value(&sandbox, "ReadWritePaths"), None);
     assert_eq!(value(&sandbox, "ProtectHome"), Some("read-only"));
 }
@@ -223,12 +223,12 @@ fn the_test_keys_feature_is_declared_and_is_not_a_default_feature_of_accountd_or
 #[test]
 fn nothing_that_ships_names_the_file_key_store() {
     for name in [
-        "accountd.service",
+        "bardo-accountd.service",
         "callers.toml",
-        "dbus/org.quire.Accounts1.service",
+        "dbus/org.bardo.Accounts1.service",
     ] {
         let file = dist(name);
-        for knob in ["ACCOUNTD_KEYS", "test-keys"] {
+        for knob in ["BARDO_ACCOUNTD_KEYS", "test-keys"] {
             assert!(!file.contains(knob), "{name} names {knob}");
         }
     }

@@ -21,7 +21,7 @@ fn request(id: &str, expires: u32) -> ConfirmRequest {
         id: ConfirmId::parse(id).expect("id"),
         space: SpaceId::parse("work").expect("space"),
         actor: Actor::Cli,
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         action: LabelText::parse("Archive a thread").expect("label"),
         effect: Effect::UndoableWrite,
         count: Count(1),
@@ -97,13 +97,13 @@ async fn desk() -> Desk {
 async fn the_trusted_sill_is_asked_and_its_answer_is_the_answer() {
     let desk = desk().await;
     let connection = desk.bus.connect().await;
-    // The shipped configuration gives sill the name org.quire.Shell and the confirm role.
-    let sill = FakeSill::start(&connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+    // The shipped configuration gives sill the name org.bardo.Shell and the confirm role.
+    let sill = FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &desk.who,
         &connection,
         &desk.config,
-        &["org.quire.Confirm1", "org.quire.Shell"],
+        &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
     sill.answer(vec![
         Answer::With(yes()),
@@ -141,13 +141,13 @@ async fn the_trusted_sill_is_asked_and_its_answer_is_the_answer() {
 async fn a_name_nobody_trusted_is_never_asked_and_never_allows() {
     let desk = desk().await;
     let connection = desk.bus.connect().await;
-    // Owns org.quire.Confirm1 but plays no role in the configuration.
-    let impostor = FakeSill::start(&connection, &["org.quire.Confirm1"]).await;
+    // Owns org.bardo.Confirm1 but plays no role in the configuration.
+    let impostor = FakeSill::start(&connection, &["org.bardo.Confirm1"]).await;
     introduce(
         &desk.who,
         &connection,
         &desk.config,
-        &["org.quire.Confirm1"],
+        &["org.bardo.Confirm1"],
     );
     impostor.answer(vec![Answer::With(yes())]);
     assert_eq!(
@@ -175,12 +175,12 @@ async fn no_sill_is_a_dismissal() {
 async fn a_sheet_nobody_answers_expires_and_a_sill_that_vanishes_dismisses() {
     let desk = desk().await;
     let connection = desk.bus.connect().await;
-    let sill = FakeSill::start(&connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+    let sill = FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &desk.who,
         &connection,
         &desk.config,
-        &["org.quire.Confirm1", "org.quire.Shell"],
+        &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
     sill.answer(vec![Answer::Never, Answer::Never]);
     // Its own expiry (0 s) plus the grace: expired, not allowed.
@@ -202,7 +202,7 @@ async fn a_sheet_nobody_answers_expires_and_a_sill_that_vanishes_dismisses() {
     assert_eq!(ended, ConfirmAnswer::Ended(ConfirmEnd::Dismissed));
 }
 
-/// A sheet for a session whose host asked to show it itself (`docket-agent --tty`).
+/// A sheet for a session whose host asked to show it itself (`bardo-agent --tty`).
 fn hosted(id: &str) -> ConfirmRequest {
     ConfirmRequest {
         editor: Some(EditorRoute {
@@ -240,12 +240,12 @@ async fn gated_desk(agents: bool) -> Desk {
 async fn a_sheet_the_agent_host_asked_for_goes_to_its_confirm1_and_not_to_sill() {
     let desk = gated_desk(true).await;
     let (apart, other) = (desk.bus.connect().await, desk.bus.connect().await);
-    let sill = FakeSill::start(&apart, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+    let sill = FakeSill::start(&apart, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &desk.who,
         &apart,
         &desk.config,
-        &["org.quire.Confirm1", "org.quire.Shell"],
+        &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
     let host = FakeSill::start(&other, &[ACP_AGENT_APP]).await;
     introduce(&desk.who, &other, &desk.config, &[ACP_AGENT_APP]);
@@ -260,12 +260,12 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
     // The setting is off: the name is nobody, whoever owns it.
     let off = gated_desk(false).await;
     let (apart, other) = (off.bus.connect().await, off.bus.connect().await);
-    let sill = FakeSill::start(&apart, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+    let sill = FakeSill::start(&apart, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &off.who,
         &apart,
         &off.config,
-        &["org.quire.Confirm1", "org.quire.Shell"],
+        &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
     let host = FakeSill::start(&other, &[ACP_AGENT_APP]).await;
     introduce(&off.who, &other, &off.config, &[ACP_AGENT_APP]);
@@ -278,12 +278,12 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
     // The setting is on and nobody owns the name.
     let on = gated_desk(true).await;
     let connection = on.bus.connect().await;
-    let sill_on = FakeSill::start(&connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+    let sill_on = FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &on.who,
         &connection,
         &on.config,
-        &["org.quire.Confirm1", "org.quire.Shell"],
+        &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
     assert_eq!(
         on.sheet.confirm(hosted("c-2")).await,
@@ -294,7 +294,7 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_process_that_is_not_the_shells_unit_is_never_asked() {
-    // Each owns org.quire.Confirm1 and the shell's name and answers yes. A scope that claims the
+    // Each owns org.bardo.Confirm1 and the shell's name and answers yes. A scope that claims the
     // shell is a plain app (porter gives a scope row no fixed role), an agent is not the sheet
     // host, and a process nothing identifies is nobody: none is asked, none allows.
     for (what, standing) in [
@@ -305,9 +305,9 @@ async fn a_process_that_is_not_the_shells_unit_is_never_asked() {
         let desk = desk().await;
         let connection = desk.bus.connect().await;
         let claimant =
-            FakeSill::start(&connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+            FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
         if let Some(role) = standing {
-            desk.who.introduce_app(&connection, "org.quire.Shell", role);
+            desk.who.introduce_app(&connection, "org.bardo.Shell", role);
         }
         claimant.answer(vec![Answer::With(yes())]);
         assert_eq!(

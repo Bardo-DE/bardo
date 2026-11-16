@@ -1,11 +1,11 @@
-//! The caller's side of `org.quire.Portal1`, the members only the Settings app may call.
+//! The caller's side of `org.bardo.Portal1`, the members only the Settings app may call.
 
 use crate::bus::Pinned;
 
-/// What the portal remembers (`org.quire.Portal1`): it lists apps and dates, never a token. It is
+/// What the portal remembers (`org.bardo.Portal1`): it lists apps and dates, never a token. It is
 /// always called at the owner that was confirmed, so it names no service of its own.
 #[zbus::proxy(
-    interface = "org.quire.Portal1",
+    interface = "org.bardo.Portal1",
     default_path = "/org/freedesktop/portal/desktop"
 )]
 pub trait Portal {

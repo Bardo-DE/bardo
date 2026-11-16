@@ -25,7 +25,7 @@ pub enum XwaylandUse {
     Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
 )]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "xwayland", page = Page::Apps)]
+#[settings(file = "compositor/settings.toml", domain = "xwayland", page = Page::Apps)]
 pub struct XwaylandSection {
     /// `xwayland.mode`.
     #[settings(

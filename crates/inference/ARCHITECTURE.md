@@ -1,6 +1,6 @@
 # Architecture
 
-steward is the desktop's AI broker: `inferd` serves `org.quire.Inference1` on the session bus, routes
+steward is the desktop's AI broker: `inferd` serves `org.bardo.Inference1` on the session bus, routes
 each session to a model on this computer, on another of the person's computers, or one they hold an
 account for, and runs the turns. This repository was cut from porter at `e9e7cdcd` (CHANGELOG.md).
 The design is quire's `design/31-ACCOUNTS.md` and the agent layering in `agent-layers/steward.md`;
@@ -26,8 +26,8 @@ at the one `rev` in the root `Cargo.toml` (`[workspace.dependencies]`). Stoker's
 | `inference-router` | `account-core`, `inference-tailnet`, `account-tailscale`, `account-match`, `account-capability`, `account-ids`, `inference-core`, `computer-use-action`, and stoker's `engine-spec` (`Engine`: the words, flags and environment each engine kind has; `EnginePaths`; `check_entry` after the catalogue parser), `engine-probe` (`pointed`: the Python of a Strata folder), `engine-supervisor`, `model-catalog`, `model-http` (types only: no `client`, no `tls`), `model-openai-compat`, `model-provider`, `speech-provider`, `model-vision-prep`; rustix (the owner check of a key file). Reaches no zbus, no runtime and never `inferd` (checked by check-boundary.sh) |
 | `inference-turns` | `account-core`, `account-match`, `account-capability`, `account-ids`, `inference-core`, `inference-bridge`, `inference-router`, and stoker's `computer-use-action`, `computer-use-parse`, `computer-use-session`, `computer-use-vendors`, `engine-supervisor`, `model-extract`, `model-http` (feature `client`, the client to a local engine), `model-openai-compat`, `model-provider`, `model-vision-prep` (feature `pixels`); tokio. Reaches no zbus and never `inferd` (checked by check-boundary.sh) |
 | `inference-tailnet` | `account-ids`, `account-tailscale`; with feature `persist`, `account-fs` and toml (`Guests::open`); with feature `io`: hyper, hyper-util, http-body-util and tokio for the sockets |
-| `inference-dbus` | `org.quire.Inference1` and `org.quire.Inference1.Agents` written once under `#[bus_interface]`: the `Inference` and `Agents` proxies, the `InferenceServer`/`AgentsServer` traits inferd implements and the objects that serve them, the introspection `Document`s (checked against `dbus/*.xml` by `tests/it/introspection.rs`), the bus vocabulary (option, key and error-name constants; `INFERENCE_BUS` and `INFERENCE_PATH` are `porter_wire::names`', re-exported here) and the row codecs (`NeedArg`, `LocalEngine`, `RunningModel`). The shared helpers (`Details`, `Call`, `Document`, `Unserved`, the vardict codec) are account-dbus's; `#[bus_interface]` is account-dbus-macros's. Cut from `porter_dbus::inference` | the bus (zbus types only; no connection of its own) |
-| `inference-rig` | Test tooling, never installed and never in dist: `steward-rig-client --app-id <id> [--proc-root <dir>] open <need> [--class C] [--tier T] [--usage U] [--prompt TEXT]` opens an inferd session as an app and, with a prompt, runs one chat turn, printing JSON lines. Moved from `porter-rig-client open` when inferd left porter; the identity fixture stays account-rig's | the scenario's session bus |
+| `inference-dbus` | `org.bardo.Inference1` and `org.bardo.Inference1.Agents` written once under `#[bus_interface]`: the `Inference` and `Agents` proxies, the `InferenceServer`/`AgentsServer` traits inferd implements and the objects that serve them, the introspection `Document`s (checked against `dbus/*.xml` by `tests/it/introspection.rs`), the bus vocabulary (option, key and error-name constants; `INFERENCE_BUS` and `INFERENCE_PATH` are `porter_wire::names`', re-exported here) and the row codecs (`NeedArg`, `LocalEngine`, `RunningModel`). The shared helpers (`Details`, `Call`, `Document`, `Unserved`, the vardict codec) are account-dbus's; `#[bus_interface]` is account-dbus-macros's. Cut from `porter_dbus::inference` | the bus (zbus types only; no connection of its own) |
+| `inference-rig` | Test tooling, never installed and never in dist: `inference-rig-client --app-id <id> [--proc-root <dir>] open <need> [--class C] [--tier T] [--usage U] [--prompt TEXT]` opens an inferd session as an app and, with a prompt, runs one chat turn, printing JSON lines. Moved from `account-rig-client open` when inferd left porter; the identity fixture stays account-rig's | the scenario's session bus |
 | `inference-probe` | the port probe of local-engine discovery: which runtime (Ollama, llama.cpp, LM Studio, another OpenAI-compatible server) answers on a loopback port and what models it offers, over the `Http` seam. Cut from `porter_discover::probe_ports` | none (the `Http` seam) |
 
 Allowed direct edges (checked by `scripts/check-boundary.sh`; dev-dependencies are outside it) are the `EDGES` table in that script: one row per crate, the crates of ours, porter, stoker and quire it names directly, and nothing else.
@@ -108,8 +108,8 @@ checks only the word's shape; which agents exist is docket's (`agents.toml`), ch
 instruction to hand the turn to the agent, not a failure. The module groups a held agent word under
 "Coding Agents" (`settings::module::CODING_AGENTS`). No wire changed.
 
-`org.quire.Inference1` at `/org/quire/Inference1`, claimed by `inferd` on the session bus
-(`dist/dbus/org.quire.Inference1.service` activates `dist/inferd.service`; `dist/inferd.toml` is the
+`org.bardo.Inference1` at `/org/bardo/Inference1`, claimed by `inferd` on the session bus
+(`dist/dbus/org.bardo.Inference1.service` activates `dist/bardo-inferd.service`; `dist/inferd.toml` is the
 annotated sample configuration). One `Open` is:
 
 1. **Who.** `peers`: the bus names the sender's pid, `/proc/<pid>/exe` names the program, the
@@ -158,7 +158,7 @@ manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns 
 - Table translation. A `[[caller]]` row with a `unit` and at least one program becomes a `[[peer]]` row of
   the same app, unit and role (porter's own role spelling), its `exe` being the row's `exe` or, for a
   daemon unit named `<name>.service` (lower case, digits, dashes), `libexec/quire/<name>` under `/usr`,
-  `/usr/local` and `/opt/quire/releases/*` (`images::installed`). Any other unit lists its `exe` in the row
+  `/usr/local` and `/opt/bardo/releases/*` (`images::installed`). Any other unit lists its `exe` in the row
   (`dist/callers.toml` does for detent and sill, in `bin`), and without one is nobody. Rows without a unit
   are not translated. One row for the unit manager (`systemd`, role `manager`, `Exe`) is added, and the
   manager's answers are believed only while its owner holds it. A user row can name `exe` but only gets
@@ -177,7 +177,7 @@ is not a place to download and install from: it is never given more.
   and a backend (or nothing: `Manifest::choose` picks the backend from the cards found); the address,
   hash, size and seal come from the row. The privileged helper accepts those two words and nothing
   else, refuses any other argument before touching anything, and runs only through `pkexec` under the
-  polkit action `org.quire.engines.install`. The helper (`engine-helper`, from stoker's `engine-install`)
+  polkit action `org.bardo.engines.install`. The helper (`bardo-engine-helper`, from stoker's `engine-install`)
   and that action are stoker's: stoker's `scripts/install.sh` installs both; steward ships neither.
 - For everyone: the distro's package when the manifest has one for this release and its manager is
   here (and the pinned download if the package fails), else the pinned build, unpacked as root into

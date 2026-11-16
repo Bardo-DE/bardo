@@ -1,4 +1,4 @@
-//! `quire_window_manager_v1` (P0-H2, C50).
+//! `bardo_window_manager_v1` (P0-H2, C50).
 
 use crate::core_loop;
 use crate::state::State;

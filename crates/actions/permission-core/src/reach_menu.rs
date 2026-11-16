@@ -9,7 +9,7 @@ use action_vocab::ActionRef;
 use provenance::AgentRef;
 
 /// The built-in provider whose actions the companion carries out itself.
-pub const COMPANION_APP: &str = "org.quire.Companion";
+pub const COMPANION_APP: &str = "org.bardo.Companion";
 
 /// Starts a task: a worker that does a goal of its own.
 pub const TASK_START: &str = "companion.task.start";

@@ -7,11 +7,11 @@ use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 
-/// The nested compositor's socket: `$SILL_NESTED_SOCKET`, else `$XDG_RUNTIME_DIR/wayland-1`.
+/// The nested compositor's socket: `$BARDO_SHELL_NESTED_SOCKET`, else `$XDG_RUNTIME_DIR/wayland-1`.
 /// Panics (the test is ignored unless asked for) when it is not absolute, is the session's
 /// `wayland-0`, or does not answer a connection.
 pub fn nested_socket() -> PathBuf {
-    let socket = std::env::var_os("SILL_NESTED_SOCKET")
+    let socket = std::env::var_os("BARDO_SHELL_NESTED_SOCKET")
         .map(PathBuf::from)
         .unwrap_or_else(|| {
             let runtime = std::env::var_os("XDG_RUNTIME_DIR").expect("XDG_RUNTIME_DIR is set");

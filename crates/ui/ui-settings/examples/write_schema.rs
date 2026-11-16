@@ -1,5 +1,5 @@
 //! `cargo run -p ui-settings --example write_schema -- --write-schema <dir>`: writes
-//! `quire.settings.toml`, the schema of `quire/appearance.toml`, the way `sill --write-schema`
+//! `bardo.settings.toml`, the schema of `bardo/appearance.toml`, the way `sill --write-schema`
 //! writes sill's (design/22-SETTINGS.md section 9.2). quire has no app binary, so this example
 //! is its `--write-schema`.
 

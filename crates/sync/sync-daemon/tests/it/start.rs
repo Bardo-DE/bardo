@@ -1,4 +1,4 @@
-//! syncd's start on the bus: once `org.quire.Sync1` is owned, a call is answered. zbus starts a
+//! syncd's start on the bus: once `org.bardo.Sync1` is owned, a call is answered. zbus starts a
 //! connection's object server on a task of its own at its first use, and a call that arrives
 //! before that task listens is dropped without an answer; a syncd that claimed its name first
 //! lost the first call after a start (rel-13: inferd and accountd had the same window).

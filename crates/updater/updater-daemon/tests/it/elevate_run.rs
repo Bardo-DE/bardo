@@ -22,7 +22,7 @@ fn helper(dir: &Path, script: &str, patience: Duration) -> Pkexec {
 fn what_the_helper_says_when_it_succeeds_reaches_the_service() {
     let dir = tempfile::tempdir().expect("tempdir");
     let script = "echo 'current 0.2.0'\n\
-                  echo 'left-alone /etc/quire/intentd-callers.toml'\n\
+                  echo 'left-alone /etc/bardo/actiond-callers.toml'\n\
                   echo 'warning the security labels could not be set'\n\
                   echo 'chatter on the error output' >&2\n\
                   exit 0\n";
@@ -32,7 +32,7 @@ fn what_the_helper_says_when_it_succeeds_reaches_the_service() {
     assert_eq!(report.version, Some(semver::Version::new(0, 2, 0)));
     assert_eq!(
         report.conflicts,
-        vec!["/etc/quire/intentd-callers.toml".to_owned()]
+        vec!["/etc/bardo/actiond-callers.toml".to_owned()]
     );
     assert_eq!(
         report.warnings,
@@ -87,8 +87,8 @@ fn a_report_round_trips_and_a_message_cannot_add_lines() {
     let report = Report {
         version: Some(semver::Version::new(1, 2, 3)),
         conflicts: vec![
-            "/etc/quire/a-callers.toml".into(),
-            "/usr/local/bin/sill".into(),
+            "/etc/bardo/a-callers.toml".into(),
+            "/usr/local/bin/bardo-shell".into(),
         ],
         warnings: vec!["a\ninjected line\ncurrent 9.9.9".into()],
     };

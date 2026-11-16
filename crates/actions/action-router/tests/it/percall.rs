@@ -15,7 +15,7 @@ use permission_core::{ActionGrantKey, GrantCaller, GrantTarget, Strictness};
 use provenance::{ActionName, AgentRef, Effect};
 
 fn menu() -> account_core::AppName {
-    app("org.quire.Menu")
+    app("org.bardo.Menu")
 }
 
 fn act(name: &str, item: &str) -> CallRequest {

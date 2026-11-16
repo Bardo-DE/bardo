@@ -18,10 +18,10 @@ nothing does.
 
 | Service | Name on the session bus | What it does |
 | --- | --- | --- |
-| `accountd` | `org.quire.Accounts1` | Holds the accounts, the consent you gave each app and the audit trail. Signs you in, keeps the passwords and keys in your keyring, and gives apps a short-lived pass or a connection already signed in, never the secret itself. |
+| `accountd` | `org.bardo.Accounts1` | Holds the accounts, the consent you gave each app and the audit trail. Signs you in, keeps the passwords and keys in your keyring, and gives apps a short-lived pass or a connection already signed in, never the secret itself. |
 
 The windows you see (the sign-in sheet, the Settings pages) belong to the desktop, not to porter.
-Porter supplies what they show. The AI service (`org.quire.Inference1`) is not porter's: it lives in the steward repository, which depends on porter. Neither is the sync daemon (`org.quire.Sync1`), which keeps copies of calendars, contacts, tasks, files and photos in step with the service: it lives in the ferry repository, which depends on porter.
+Porter supplies what they show. The AI service (`org.bardo.Inference1`) is not porter's: it lives in the steward repository, which depends on porter. Neither is the sync daemon (`org.bardo.Sync1`), which keeps copies of calendars, contacts, tasks, files and photos in step with the service: it lives in the ferry repository, which depends on porter.
 
 ## Install
 
@@ -52,7 +52,7 @@ Installed by the script (under the prefix, `/usr` by default):
 | What lets the session bus start it | `share/dbus-1/services/` |
 | The providers porter knows (one file each) | `share/porter/providers/` |
 | The sign-in client ids for Microsoft and others, when some ship | `share/porter/clients.toml` |
-| The table that says which app is Settings, which draws the sheets, which are the services (ferry's `syncd` among them) | `/etc/porter/callers.toml` |
+| The table that says which app is Settings, which draws the sheets, which are the services (ferry's `syncd` among them) | `/etc/bardo/accountd-callers.toml` |
 
 Yours, made as you use porter:
 

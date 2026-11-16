@@ -5,7 +5,7 @@ use memory_core::*;
 use memory_service::Caller;
 use memory_service::allowed;
 
-const MAIL: &str = "org.quire.Mail";
+const MAIL: &str = "org.bardo.Mail";
 
 fn callers() -> [(&'static str, Caller); 4] {
     [
@@ -36,12 +36,12 @@ fn recording_follows_the_caller_class() {
         ),
         (
             "another app's thing",
-            MemoryRequest::Record(record(thing_body("org.quire.Files", "k"), user(MAIL))),
+            MemoryRequest::Record(record(thing_body("org.bardo.Files", "k"), user(MAIL))),
             [false, true, false, false],
         ),
         (
             "acting as another app",
-            MemoryRequest::Record(record(thing_body(MAIL, "k"), user("org.quire.Files"))),
+            MemoryRequest::Record(record(thing_body(MAIL, "k"), user("org.bardo.Files"))),
             [false, true, false, false],
         ),
         (
@@ -106,7 +106,7 @@ fn recording_follows_the_caller_class() {
             "a batch with one foreign thing",
             MemoryRequest::RecordBatch(vec![
                 record(thing_body(MAIL, "a"), user(MAIL)),
-                record(thing_body("org.quire.Files", "b"), user(MAIL)),
+                record(thing_body("org.bardo.Files", "b"), user(MAIL)),
             ]),
             [false, true, false, false],
         ),
@@ -157,20 +157,20 @@ fn explaining_files_and_marking_things() {
     };
     let mail = caller_app(MAIL);
     assert!(yes(allowed(&mail, &claim(MAIL, user(MAIL)))));
-    assert!(!yes(allowed(&mail, &claim("org.quire.Files", user(MAIL)))));
+    assert!(!yes(allowed(&mail, &claim("org.bardo.Files", user(MAIL)))));
     assert!(!yes(allowed(&mail, &claim(MAIL, planner()))));
     assert!(yes(allowed(
         &Caller::Router,
-        &claim("org.quire.Files", planner())
+        &claim("org.bardo.Files", planner())
     )));
     assert!(yes(allowed(&Caller::ShellUi, &claim(MAIL, user(MAIL)))));
     assert!(!yes(allowed(&Caller::Cuad, &claim(MAIL, user(MAIL)))));
     assert!(!yes(allowed(&Caller::Settings, &claim(MAIL, user(MAIL)))));
     assert!(yes(allowed(&mail, &mark(MAIL))));
-    assert!(!yes(allowed(&mail, &mark("org.quire.Files"))));
+    assert!(!yes(allowed(&mail, &mark("org.bardo.Files"))));
     assert!(!yes(allowed(&Caller::Cuad, &mark(MAIL))));
     assert!(!yes(allowed(&Caller::Settings, &mark(MAIL))));
-    assert!(yes(allowed(&Caller::ShellUi, &mark("org.quire.Files"))));
+    assert!(yes(allowed(&Caller::ShellUi, &mark("org.bardo.Files"))));
 }
 
 #[test]
@@ -429,7 +429,7 @@ fn messages_and_episodes_are_recorded_by_the_router_and_a_run_reports_for_itself
             "the user's turn to a subagent",
             MemoryRequest::Record(record(
                 message_from(AgentRef::User),
-                user("org.quire.Shell"),
+                user("org.bardo.Shell"),
             )),
             [false, true, false, false],
         ),
@@ -466,8 +466,8 @@ fn record_in(space_id: &str) -> Record {
 #[test]
 fn an_app_reaches_only_the_spaces_open_to_it() {
     let app_caller = caller_app(MAIL);
-    let own = "app:org.quire.Mail:0";
-    let other = "app:org.quire.Files:0";
+    let own = "app:org.bardo.Mail:0";
+    let other = "app:org.bardo.Files:0";
     let cases = [
         ("its own App Space", own, Ok(())),
         ("a desktop-wide Space", "work", Ok(())),
@@ -485,7 +485,7 @@ fn an_app_reaches_only_the_spaces_open_to_it() {
 #[test]
 fn another_apps_space_is_refused_for_every_request_that_names_one() {
     let app_caller = caller_app(MAIL);
-    let other = space("app:org.quire.Files:0");
+    let other = space("app:org.bardo.Files:0");
     let mark = MarkRequest {
         space: other.clone(),
         thing: thing(MAIL, "k"),
@@ -496,7 +496,7 @@ fn another_apps_space_is_refused_for_every_request_that_names_one() {
         Err(Refusal::OutsideSpace)
     );
     // The router, cuad and the shell are not apps: the Space rule is the app's alone.
-    let request = MemoryRequest::Record(record_in("app:org.quire.Files:0"));
+    let request = MemoryRequest::Record(record_in("app:org.bardo.Files:0"));
     assert_eq!(allowed(&Caller::Router, &request), Ok(()));
     assert_eq!(
         allowed(&Caller::ShellUi, &MemoryRequest::Status(other)),

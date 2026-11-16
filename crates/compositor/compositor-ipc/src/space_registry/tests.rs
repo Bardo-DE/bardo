@@ -1,4 +1,4 @@
-//! `ZbusSpaceRegistry` over a private dbus-daemon with a stand-in `org.quire.Spaces1`: the
+//! `ZbusSpaceRegistry` over a private dbus-daemon with a stand-in `org.bardo.Spaces1`: the
 //! calls arrive with the id, the name and the default look, and a refusal comes back as
 //! [`RegisterFault::Refused`] once and ends the asking. No real bus, no real account service.
 
@@ -10,14 +10,14 @@ use zbus::fdo;
 /// What the stand-in heard: (id, name, look) per call.
 type Heard = Arc<Mutex<Vec<(String, String, String)>>>;
 
-/// The stand-in `org.quire.Spaces1`: records each `Register`, and answers `AccessDenied` when it
+/// The stand-in `org.bardo.Spaces1`: records each `Register`, and answers `AccessDenied` when it
 /// was built to refuse.
 struct StandIn {
     heard: Heard,
     refuse: bool,
 }
 
-#[zbus::interface(name = "org.quire.Spaces1")]
+#[zbus::interface(name = "org.bardo.Spaces1")]
 impl StandIn {
     fn register(&self, id: String, name: String, look: String) -> fdo::Result<()> {
         self.heard
@@ -52,8 +52,8 @@ fn serve(address: &str, refuse: bool) -> Served {
     let connection = runtime
         .block_on(async {
             zbus::connection::Builder::address(address)?
-                .name("org.quire.Accounts1")?
-                .serve_at("/org/quire/Spaces1", object)?
+                .name("org.bardo.Accounts1")?
+                .serve_at("/org/bardo/Spaces1", object)?
                 .build()
                 .await
         })

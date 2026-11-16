@@ -28,8 +28,8 @@ fn fact(n: u8, links: Vec<Link>) -> FactNode {
 #[test]
 fn the_closure_follows_things_events_and_fact_links() {
     let log = log_of(&[
-        record(thing_body("org.quire.Mail", "a"), user("org.quire.Mail")),
-        record(thing_body("org.quire.Mail", "b"), user("org.quire.Mail")),
+        record(thing_body("org.bardo.Mail", "a"), user("org.bardo.Mail")),
+        record(thing_body("org.bardo.Mail", "b"), user("org.bardo.Mail")),
         record(area_body(AreaTag::Cua), planner()),
     ]);
     let event = |seq| {
@@ -42,7 +42,7 @@ fn the_closure_follows_things_events_and_fact_links() {
     let direct = fact(1, vec![event(1)]);
     let derived = fact(2, vec![Link::Fact(direct.id.clone())]);
     let unrelated = fact(3, vec![event(2)]);
-    let mut pending = fact(4, vec![Link::Thing(thing("org.quire.Mail", "a"))]);
+    let mut pending = fact(4, vec![Link::Thing(thing("org.bardo.Mail", "a"))]);
     pending.state = FactState::Pending;
     let graph = FactGraph {
         nodes: vec![direct.clone(), derived.clone(), unrelated, pending.clone()],
@@ -50,7 +50,7 @@ fn the_closure_follows_things_events_and_fact_links() {
     };
     let plan = plan_forget(
         &space("work"),
-        &ForgetScope::Thing(thing("org.quire.Mail", "a")),
+        &ForgetScope::Thing(thing("org.bardo.Mail", "a")),
         &log,
         &graph,
     );
@@ -67,7 +67,7 @@ fn the_closure_follows_things_events_and_fact_links() {
     assert_eq!(all.facts.len() + all.pending.len(), 4);
     let same = plan_forget(
         &space("work"),
-        &ForgetScope::Thing(thing("org.quire.Mail", "a")),
+        &ForgetScope::Thing(thing("org.bardo.Mail", "a")),
         &log,
         &graph,
     );
@@ -79,9 +79,9 @@ fn a_terminal_is_no_app_so_forgetting_an_app_reaches_its_events_only_by_their_th
     // seq 1: the terminal on a Notes thing; seq 2: the terminal on a Mail thing; seq 3: Mail's
     // own user action on a Notes thing.
     let log = log_of(&[
-        record(thing_body("org.quire.Notes", "n"), Actor::Cli),
-        record(thing_body("org.quire.Mail", "a"), Actor::Cli),
-        record(thing_body("org.quire.Notes", "n"), user("org.quire.Mail")),
+        record(thing_body("org.bardo.Notes", "n"), Actor::Cli),
+        record(thing_body("org.bardo.Mail", "a"), Actor::Cli),
+        record(thing_body("org.bardo.Notes", "n"), user("org.bardo.Mail")),
     ]);
     let graph = FactGraph {
         nodes: vec![],
@@ -89,11 +89,11 @@ fn a_terminal_is_no_app_so_forgetting_an_app_reaches_its_events_only_by_their_th
     };
     let events = |scope: ForgetScope| plan_forget(&space("work"), &scope, &log, &graph).events;
     assert_eq!(
-        events(ForgetScope::App(app("org.quire.Mail"))),
+        events(ForgetScope::App(app("org.bardo.Mail"))),
         vec![Seq(2), Seq(3)]
     );
     assert_eq!(
-        events(ForgetScope::App(app("org.quire.Notes"))),
+        events(ForgetScope::App(app("org.bardo.Notes"))),
         vec![Seq(1), Seq(3)],
         "Notes' things, whoever touched them"
     );

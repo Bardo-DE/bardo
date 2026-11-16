@@ -25,7 +25,7 @@ impl LookStyle {
 pub enum Slot {
     /// The chosen look.
     Look,
-    /// The person's desktop-wide `~/.config/quire/style.css`.
+    /// The person's desktop-wide `~/.config/bardo/style.css`.
     Desktop,
     /// The person's `~/.config/<app>/style.css`.
     App,
@@ -93,7 +93,7 @@ impl Fingerprint {
 pub struct Styles {
     /// The chosen look's text.
     pub look: LookStyle,
-    /// `~/.config/quire/style.css`.
+    /// `~/.config/bardo/style.css`.
     pub desktop: UserStyle,
     /// `~/.config/<app>/style.css`.
     pub app: UserStyle,

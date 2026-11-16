@@ -28,7 +28,7 @@ pub struct AppearanceSource {
 }
 
 impl AppearanceSource {
-    /// The person's own: `$XDG_CONFIG_HOME/quire/appearance.toml` and the desktop's settings
+    /// The person's own: `$XDG_CONFIG_HOME/bardo/appearance.toml` and the desktop's settings
     /// portal.
     pub fn desktop() -> AppearanceSource {
         AppearanceSource {

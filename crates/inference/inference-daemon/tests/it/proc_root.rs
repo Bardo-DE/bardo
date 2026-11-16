@@ -1,4 +1,4 @@
-//! The real `inferd` binary on a private bus, naming its caller through `INFERD_PROC_ROOT`: a
+//! The real `inferd` binary on a private bus, naming its caller through `BARDO_INFERD_PROC_ROOT`: a
 //! fake `/proc` with `<dir>/<pid>/cgroup` for this test process. Only a `test-proc-root` build
 //! honours the variable; any other build ignores it and says so.
 
@@ -16,19 +16,19 @@ use std::process::{Child, Command, Stdio};
 /// (a real Ollama may be on one).
 const CONFIG: &str = "[probe]\nollama = []\nllama_cpp = []\nlm_studio = []\n";
 /// The caller table naming companiond's unit, in the system file's shape.
-const CALLERS: &str = "[apps]\n\"org.quire.Companion\" = [\"companiond.service\"]\n";
+const CALLERS: &str = "[apps]\n\"org.bardo.Companion\" = [\"bardo-companiond.service\"]\n";
 
 /// Where the test writes the caller table.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Table {
-    /// The system's file, named by `PORTER_INFERD_CALLERS`.
+    /// The system's file, named by `BARDO_INFERD_CALLERS`.
     System,
     /// A `[callers]` table in the person's `inferd.toml`, which is ignored; the system file the
     /// variable names does not exist.
     InTheConfig,
 }
 const CGROUP: &str =
-    "0::/user.slice/user-1000.slice/user@1000.service/app.slice/companiond.service\n";
+    "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-companiond.service\n";
 
 struct Daemon {
     child: Child,
@@ -42,7 +42,7 @@ impl Daemon {
         std::fs::read_to_string(&self.log).unwrap_or_default()
     }
 
-    /// Waits until the daemon owns `org.quire.Inference1`; a daemon that exits first, or one that
+    /// Waits until the daemon owns `org.bardo.Inference1`; a daemon that exits first, or one that
     /// does not own it within the deadline, fails the test with what it said.
     async fn owns_its_name(&mut self, dbus: &zbus::fdo::DBusProxy<'_>) {
         let name = zbus::names::BusName::try_from(INFERENCE_BUS).expect("bus name");
@@ -97,10 +97,10 @@ fn start(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> Daemon {
         .env("XDG_DATA_HOME", scratch.join("data"))
         .env("XDG_STATE_HOME", scratch.join("state"))
         .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
-        .env("INFERD_PROC_ROOT", proc_root)
-        .env("PORTER_INFERD_CALLERS", &system)
+        .env("BARDO_INFERD_PROC_ROOT", proc_root)
+        .env("BARDO_INFERD_CALLERS", &system)
         // A Tailscale nobody serves: this computer's real one is never asked.
-        .env("INFERD_TAILSCALE_SOCKET", scratch.join("no-tailscale.sock"))
+        .env("BARDO_INFERD_TAILSCALE_SOCKET", scratch.join("no-tailscale.sock"))
         .arg("--config")
         .arg(&config)
         .stdin(Stdio::null())
@@ -151,7 +151,7 @@ fn fake_proc(root: &Path, pid: u32, cgroup: Option<&str>) {
 /// The fixture's word that `pid` is the main process of companiond's unit.
 fn main_of_companiond(root: &Path, pid: u32) {
     std::fs::create_dir_all(root.join("units")).expect("units");
-    std::fs::write(root.join("units/companiond.service"), pid.to_string()).expect("main pid");
+    std::fs::write(root.join("units/bardo-companiond.service"), pid.to_string()).expect("main pid");
 }
 
 #[tokio::test(flavor = "multi_thread")]

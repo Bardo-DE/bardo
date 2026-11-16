@@ -19,7 +19,7 @@ pub enum FirstWeekday {
 /// The calendar widgets.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "calendar", page = Page::Notifications)]
+#[settings(file = "shell/settings.toml", domain = "calendar", page = Page::Notifications)]
 pub struct CalendarSettings {
     /// `auto`, `off`, or `;`-separated `.ics` files and directories (parsed by
     /// `shell_model::events::parse_sources`).

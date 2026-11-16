@@ -1,5 +1,5 @@
 //! A request to read the administrator's privacy settings again: `SIGHUP`, which
-//! `casementctl privacy reload` sends. Without a handler it would end the process.
+//! `bardo-compositorctl privacy reload` sends. Without a handler it would end the process.
 //!
 //! The same shape as [`crate::stop`]: a thread with a small runtime waits for the signal and
 //! sends one message into the event loop, which does the work.

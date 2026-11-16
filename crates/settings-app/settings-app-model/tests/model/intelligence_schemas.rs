@@ -63,9 +63,9 @@ fn the_three_programs_are_found_in_their_own_data_directories() {
     assert_eq!(
         files,
         [
-            "docket/settings.toml",
-            "almanac/settings.toml",
-            "cua/settings.toml"
+            "actions/settings.toml",
+            "memory/settings.toml",
+            "computer-use/settings.toml"
         ]
     );
 }
@@ -134,12 +134,12 @@ fn every_row_is_on_the_intelligence_page_in_the_section_it_names() {
 fn a_key_is_held_by_its_programs_file() {
     let catalogue = catalogue("schemas-files");
     for (path, file) in [
-        ("agent.mcp.expose", "docket/settings.toml"),
-        ("agent.budget.spend_microusd", "docket/settings.toml"),
-        ("memory.consolidation.when", "almanac/settings.toml"),
-        ("memory.retention.session_days", "almanac/settings.toml"),
-        ("cua.apps", "cua/settings.toml"),
-        ("cua.budget.spend_microusd", "cua/settings.toml"),
+        ("agent.mcp.expose", "actions/settings.toml"),
+        ("agent.budget.spend_microusd", "actions/settings.toml"),
+        ("memory.consolidation.when", "memory/settings.toml"),
+        ("memory.retention.session_days", "memory/settings.toml"),
+        ("cua.apps", "computer-use/settings.toml"),
+        ("cua.budget.spend_microusd", "computer-use/settings.toml"),
     ] {
         let entry = catalogue
             .entry(&ui_settings::schema::KeyPath(path.to_owned()))

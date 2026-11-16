@@ -13,12 +13,12 @@ fn the_open_form_makes_a_binding_only_when_it_holds_something_to_open() {
         ("no app picked", form(HotOpenKind::App, "", "", ""), None),
         (
             "an app",
-            form(HotOpenKind::App, "org.quire.Files", "", ""),
-            Some(HotItem::App("org.quire.Files".to_owned())),
+            form(HotOpenKind::App, "org.bardo.Files", "", ""),
+            Some(HotItem::App("org.bardo.Files".to_owned())),
         ),
         (
             "a file uses the path, not the app",
-            form(HotOpenKind::File, "org.quire.Files", "/a/b.txt", ""),
+            form(HotOpenKind::File, "org.bardo.Files", "/a/b.txt", ""),
             Some(HotItem::Path("/a/b.txt".to_owned())),
         ),
         (

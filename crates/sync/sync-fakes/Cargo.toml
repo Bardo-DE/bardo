@@ -1,6 +1,6 @@
 [package]
 name = "sync-fakes"
-description = "Test tooling, never installed and never in dist: fakes of what syncd serves. `storage` is a fake org.quire.Storage1, two drives of real files whose states move, and the binary in src/bin serves it on the session bus for building Files before syncd serves the real one. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: fakes of what syncd serves. `storage` is a fake org.bardo.Storage1, two drives of real files whose states move, and the binary in src/bin serves it on the session bus for building Files before syncd serves the real one. Nothing shipped depends on it."
 
 # The binary is found by its file in src/bin; its name and flags are the shell session's, unchanged.
 version = "0.1.0"

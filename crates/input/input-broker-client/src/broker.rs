@@ -14,7 +14,7 @@ use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
 /// Where the service's socket unit puts its socket.
-pub const DEFAULT_SOCKET: &str = "/run/turnstile/input.sock";
+pub const DEFAULT_SOCKET: &str = "/run/bardo/input-broker/input.sock";
 
 /// How long a `Create` may wait for its answer: the service makes a device in well under a
 /// millisecond, so a second means it is stuck.

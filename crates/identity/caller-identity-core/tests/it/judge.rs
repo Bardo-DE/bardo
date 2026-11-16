@@ -10,8 +10,8 @@ const SILL_IMAGE: &str = "/opt/quire/releases/1.2.3/bin/sill";
 
 fn service(role: &str, proof: Proof, pin: Pin) -> Standing {
     let app = match role {
-        "shell" => "org.quire.Shell",
-        _ => "org.quire.Updater",
+        "shell" => "org.bardo.Shell",
+        _ => "org.bardo.Updater",
     };
     Standing::Service {
         app: AppKey::new(app).expect("an app"),
@@ -150,7 +150,7 @@ fn an_image_someone_can_write_is_never_remembered() {
             judge(&f, &table()),
             unverified(Some("sill"), WhyNot::ImageWritable)
         );
-        let f = facts(in_sill_unit(), read("/usr/bin/sill", trust));
+        let f = facts(in_sill_unit(), read("/usr/bin/bardo-shell", trust));
         assert_eq!(
             judge(&f, &table()),
             unverified(Some("sill"), WhyNot::ImageWritable)
@@ -222,7 +222,7 @@ fn a_hidden_image_is_a_service_only_at_the_cgroup() {
 
 #[test]
 fn a_service_unit_name_alone_is_not_enough() {
-    // A transient unit or a moved cgroup spelling sill.service, around some other program.
+    // A transient unit or a moved cgroup spelling bardo-shell.service, around some other program.
     let f = facts(in_sill_unit(), root_only("/usr/bin/python3"));
     assert_eq!(
         judge(&f, &table()),
@@ -235,22 +235,22 @@ fn a_service_unit_name_alone_is_not_enough() {
 
 #[test]
 fn the_real_image_outside_its_unit_is_a_program_not_the_service() {
-    // `systemd-run --user --scope -u app-org.quire.Shell-1 /usr/bin/sill`
+    // `systemd-run --user --scope -u app-org.bardo.Shell-1 /usr/bin/bardo-shell`
     let f = facts(
-        "/user.slice/app.slice/app-org.quire.Shell-1.scope",
-        root_only("/usr/bin/sill"),
+        "/user.slice/app.slice/app-org.bardo.Shell-1.scope",
+        root_only("/usr/bin/bardo-shell"),
     );
     assert_eq!(
         judge(&f, &table()),
         Standing::Program {
-            exe: crate::common::exe_path("/usr/bin/sill"),
-            scope_app: AppKey::new("org.quire.Shell").ok(),
+            exe: crate::common::exe_path("/usr/bin/bardo-shell"),
+            scope_app: AppKey::new("org.bardo.Shell").ok(),
         }
     );
     // From a terminal.
     let f = facts(
         "/user.slice/app.slice/vte-spawn-1.scope",
-        root_only("/usr/bin/sill"),
+        root_only("/usr/bin/bardo-shell"),
     );
     assert!(matches!(
         judge(&f, &table()),
@@ -336,7 +336,7 @@ fn a_flatpak_app_is_sandboxed_only_when_its_scope_agrees() {
 #[test]
 fn a_sandboxed_peer_never_holds_a_service_role() {
     // A Flatpak app whose metadata claims to be the shell, inside the shell's unit.
-    let standing = flatpak(in_sill_unit(), "org.quire.Shell");
+    let standing = flatpak(in_sill_unit(), "org.bardo.Shell");
     assert!(!matches!(standing, Standing::Service { .. }));
 }
 
@@ -370,13 +370,13 @@ fn a_snap_is_known_by_its_kernel_label() {
 #[test]
 fn a_writable_image_carries_its_scope_as_a_claim_and_nothing_else_does() {
     let scope =
-        "/user.slice/user-1000.slice/user@1000.service/app.slice/app-org.quire.Mail-4242.scope";
+        "/user.slice/user-1000.slice/user@1000.service/app.slice/app-org.bardo.Mail-4242.scope";
     let f = facts(scope, user_writable("/home/p/src/mailo/target/debug/mailo"));
     assert_eq!(
         judge(&f, &table()),
         Standing::Unverified {
             exe_name: Some("mailo".to_owned()),
-            scope_app: Some(AppKey::new("org.quire.Mail").expect("an app")),
+            scope_app: Some(AppKey::new("org.bardo.Mail").expect("an app")),
             why: WhyNot::ImageWritable,
         }
     );

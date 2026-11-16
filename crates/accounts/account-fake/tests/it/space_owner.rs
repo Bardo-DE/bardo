@@ -83,7 +83,7 @@ async fn service() -> Svc {
         .await
         .expect("filed");
     let grants = vec![
-        grant("theirs", only("app:org.quire.Photos:3")),
+        grant("theirs", only("app:org.bardo.Photos:3")),
         grant("own", only("app:org.example.Mail:1")),
         grant("linked", only("work")),
         grant("outside", only("desktop")),

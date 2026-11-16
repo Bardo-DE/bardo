@@ -1,4 +1,4 @@
-//! The terminal (`quire-do`, role `cli`): a read runs, everything else asks and never goes to a
+//! The terminal (`bardo-do`, role `cli`): a read runs, everything else asks and never goes to a
 //! reviewer, a hidden action is refused, arguments are untrusted from `Source::Cli`, and the one
 //! way to skip the ask is the person's own "allow from the terminal until logout" on the sheet.
 
@@ -197,11 +197,11 @@ async fn a_hidden_action_is_refused_without_asking() {
     let router = router();
     let forget = CallRequest {
         action: ActionRef {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             name: provenance::ActionName::parse("memory.forget").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),
@@ -294,11 +294,11 @@ async fn a_standing_grant_never_covers_a_destructive_act_or_one_that_asks_every_
     );
     let duplicate = CallRequest {
         action: ActionRef {
-            app: app("org.quire.Files"),
+            app: app("org.bardo.Files"),
             name: provenance::ActionName::parse("files.file.duplicate").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: app("org.quire.Files"),
+            app: app("org.bardo.Files"),
             kind: provenance::EntityKind::parse("files.file").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),
@@ -349,11 +349,11 @@ async fn only_the_terminal_may_hold_the_grant() {
 fn forget(key: &str) -> CallRequest {
     CallRequest {
         action: ActionRef {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             name: provenance::ActionName::parse("memory.forget").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: app("org.quire.Memory"),
+            app: app("org.bardo.Memory"),
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse(key).expect("key"),
         }]),

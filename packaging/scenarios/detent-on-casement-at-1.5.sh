@@ -12,7 +12,7 @@
 #            is on the corner; a press the client did not take is released and repeated): the frame grows,
 #            the client gets a configure of the new size, the viewport destination follows and new wl_shm
 #            buffers of round-half-up(size x 1.5) are attached
-#   crisp    `casementctl shot --output`: the capture is the output's 2880x1620 physical pixels and the
+#   crisp    `bardo-compositorctl shot --output`: the capture is the output's 2880x1620 physical pixels and the
 #            window's sidebar edge (a known element: a 240-logical-pixel sidebar, white against the
 #            content grey, with its 1-logical-pixel rule) is on physical column 360 exactly, with no
 #            smeared pixels around it, on every row of the sidebar. A tier-P byte golden is not used:
@@ -25,24 +25,24 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 DETENT="$SCEN_BUILD/detent-target/debug/detent"
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
 
-export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
-floor_shim detent-1.5 casementctl detent casement   # casementctl shot watches the screen; detent is the Settings app (both run from build/)
+export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+floor_shim detent-1.5 bardo-compositorctl detent casement   # bardo-compositorctl shot watches the screen; detent is the Settings app (both run from build/)
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out detent-1.5)
-DETENT_PID=
+BARDO_SETTINGS_PID=
 
 cleanup() {
-  [ -z "$DETENT_PID" ] || kill "$DETENT_PID" 2>/dev/null
+  [ -z "$BARDO_SETTINGS_PID" ] || kill "$BARDO_SETTINGS_PID" 2>/dev/null
   stop_compositor
   scratch_drop
 }
 trap cleanup EXIT
 
-windows() { casementctl debug windows; }
+windows() { bardo-compositorctl debug windows; }
 window_size() { windows | python3 -c 'import json,sys; w=json.load(sys.stdin); print("%dx%d" % tuple(w[0]["frame"][2:])) if w else sys.exit(1)'; }
 # wait_size WxH: up to 10 s for the first window's frame to be WxH.
 wait_size() {
@@ -60,7 +60,7 @@ wait_log() {
 step_boot() {
   start_compositor 2880x1620 || return 1
   set_scale 1.5 || return 1
-  casementctl debug inject "device plug keyboard" "device plug pointer" >/dev/null || return 1
+  bardo-compositorctl debug inject "device plug keyboard" "device plug pointer" >/dev/null || return 1
   [ "$(output_scale)" = 1.5 ] || { echo "the output's scale is $(output_scale)" >&2; return 1; }
 }
 
@@ -70,8 +70,8 @@ step_map() {
   LOG="$OUT_DIR/detent.log"
   nested env HOME="$SCRATCH/home" XDG_CONFIG_HOME="$SCRATCH/home/.config" XDG_DATA_HOME="$SCRATCH/data" \
     XDG_DATA_DIRS="$SCRATCH/data" WAYLAND_DEBUG=1 "$DETENT" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$LOG" 2>&1 &
-  DETENT_PID=$!
-  wait_size 900x640 || { kill -0 "$DETENT_PID" 2>/dev/null || tail -20 "$LOG" >&2; return 1; }
+  BARDO_SETTINGS_PID=$!
+  wait_size 900x640 || { kill -0 "$BARDO_SETTINGS_PID" 2>/dev/null || tail -20 "$LOG" >&2; return 1; }
   wait_log '-> wl_shm_pool#[0-9]+\.create_buffer\(.*, 1350, 960, ' || return 1
   grep -qE 'wp_fractional_scale_v1#[0-9]+\.preferred_scale\(180\)' "$LOG" || { echo "no preferred_scale(180)" >&2; return 1; }
   grep -qE 'wp_viewport#[0-9]+\.set_destination\(900, 640\)' "$LOG" || { echo "no viewport destination 900x640" >&2; return 1; }
@@ -86,17 +86,17 @@ step_resize() {
   # The first press only focuses the window (detent's edge zones take the first mouse); the next, once the
   # window is active and the hover has reached the corner zone, makes the client ask for the resize. A
   # press that lands before the client's hover state catches up is released and tried again (up to 8).
-  casementctl debug inject "move 1000 500" "move 1405 855" "press left" "release left" >/dev/null || return 1
+  bardo-compositorctl debug inject "move 1000 500" "move 1405 855" "press left" "release left" >/dev/null || return 1
   for _ in $(seq 100); do window_active && break; sleep 0.1; done
   window_active || { echo "the window never took focus" >&2; return 1; }
   local attempt
   for attempt in $(seq 8); do
-    casementctl debug inject "move 1000 500" "move 1405 855" >/dev/null || return 1
-    casementctl debug wait settled --timeout 10000 >/dev/null
+    bardo-compositorctl debug inject "move 1000 500" "move 1405 855" >/dev/null || return 1
+    bardo-compositorctl debug wait settled --timeout 10000 >/dev/null
     sleep 0.5
-    casementctl debug inject "press left" >/dev/null || return 1
+    bardo-compositorctl debug inject "press left" >/dev/null || return 1
     for _ in $(seq 20); do resize_requested && break 2; sleep 0.1; done
-    casementctl debug inject "release left" >/dev/null
+    bardo-compositorctl debug inject "release left" >/dev/null
   done
   resize_requested || { echo "detent never asked for a resize in 8 presses on its corner" >&2; return 1; }
   # The compositor starts its grab when it handles the request, a little after the client sent it, and a
@@ -104,12 +104,12 @@ step_resize() {
   local x=1405 y=855 size=
   for _ in $(seq 40); do
     x=$((x + 15)); y=$((y + 8))
-    casementctl debug inject "move $x $y" >/dev/null || return 1
+    bardo-compositorctl debug inject "move $x $y" >/dev/null || return 1
     sleep 0.2
     size=$(window_size)
     [ "$size" = 900x640 ] || break
   done
-  casementctl debug inject "release left" >/dev/null || return 1
+  bardo-compositorctl debug inject "release left" >/dev/null || return 1
   [ "$size" != 900x640 ] || { echo "the window never grew past 900x640 while dragging" >&2; return 1; }
   sleep 1
   size=$(window_size)
@@ -124,9 +124,9 @@ step_resize() {
 
 step_crisp() {
   local png="$OUT_DIR/output.png"
-  casementctl debug wait settled --timeout 10000 >/dev/null
+  bardo-compositorctl debug wait settled --timeout 10000 >/dev/null
   sleep 1
-  casementctl shot --output HEADLESS-1 "$png" >"$OUT_DIR/shot.log" 2>&1 || { cat "$OUT_DIR/shot.log" >&2; return 1; }
+  bardo-compositorctl shot --output HEADLESS-1 "$png" >"$OUT_DIR/shot.log" 2>&1 || { cat "$OUT_DIR/shot.log" >&2; return 1; }
   python3 -I - "$png" "$OUT_DIR/final-size" <<'PY'
 import sys
 from PIL import Image
@@ -157,6 +157,6 @@ PY
 run_steps step_boot step_map step_resize step_crisp
 if [ "$STATUS" != 0 ]; then
   echo "--- detent.log (tail)" >&2; tail -15 "$OUT_DIR/detent.log" >&2
-  [ -z "${CASEMENT_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$CASEMENT_ENV")/casement.log" >&2; }
+  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" >&2; }
 fi
 exit "$STATUS"

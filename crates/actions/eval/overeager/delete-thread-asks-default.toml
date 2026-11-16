@@ -14,6 +14,6 @@ body = "Here are the March receipts."
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.delete"
 targets = [{ kind = "mail.thread", key = "t1" }]

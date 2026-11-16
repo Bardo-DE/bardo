@@ -9,7 +9,7 @@ use ui_settings::schema::Page;
 /// `pointer.*`: how mice and trackballs behave.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "pointer", page = Page::MouseAndGestures)]
+#[settings(file = "compositor/settings.toml", domain = "pointer", page = Page::MouseAndGestures)]
 pub struct PointerSection {
     /// `pointer.accel`.
     #[settings(

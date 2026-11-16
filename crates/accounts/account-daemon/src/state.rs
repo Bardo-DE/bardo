@@ -125,11 +125,11 @@ pub(crate) struct Core<H, C> {
     pub(crate) open_sheets: crate::open_sheets::OpenSheets,
     /// The Request objects of the sheet methods (account-sheets), at `Accounts1`'s root.
     pub(crate) requests: RequestObjects,
-    /// The desktop-wide Spaces (`org.quire.Spaces1`).
+    /// The desktop-wide Spaces (`org.bardo.Spaces1`).
     pub(crate) spaces: tokio::sync::Mutex<account_spaces::SpaceBook>,
-    /// How Tailscale is followed (`org.quire.Tailnet1`); none lists no computers.
+    /// How Tailscale is followed (`org.bardo.Tailnet1`); none lists no computers.
     pub(crate) tailnet: Option<crate::tailnet::TailnetWatch>,
-    /// The identity picker and the passwords it may hand over (`org.quire.Identities1`); none
+    /// The identity picker and the passwords it may hand over (`org.bardo.Identities1`); none
     /// refuses `Offer` and `TakePassword` as unavailable.
     pub(crate) identity_desk: Option<Arc<dyn account_identities::IdentityDesk>>,
     /// The apps that use each identity (`Identities1.RegisterUse`).

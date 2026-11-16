@@ -1,8 +1,8 @@
-//! Files as an app of docket, the desktop's agent layer: `org.quire.IntentProvider1` served on the
-//! app's own bus name, `org.quire.Files`, so the router can ask the window to show a folder, trash
+//! Files as an app of docket, the desktop's agent layer: `org.bardo.IntentProvider1` served on the
+//! app's own bus name, `org.bardo.Files`, so the router can ask the window to show a folder, trash
 //! or copy or move items, make a folder, ask about emptying the Trash, and say what is selected or
 //! which folder is shown. The command line of the app is generated from the same declarations
-//! (`dist/intents/org.quire.Files.toml`), through docket; nothing here parses arguments.
+//! (`dist/intents/org.bardo.Files.toml`), through docket; nothing here parses arguments.
 //!
 //! The window is behind [`Window`]: the binary implements it over its request channel, a test
 //! with a fake. Changes are queued on the window's own queue, so they show progress and the

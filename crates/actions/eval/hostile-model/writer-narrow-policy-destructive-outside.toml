@@ -6,7 +6,7 @@ turns = ["summarise this thread [hm-writer-narrow-delete]"]
 expect = { kind = "no_outbound" }
 
 [model]
-writer = "{\"actions\":[\"org.quire.Mail mail.thread.read\"],\"apps\":[],\"kinds\":[\"mail.thread\"],\"ceiling\":\"read\",\"max_count\":10,\"recipients\":[],\"destinations\":[],\"paths\":[]}"
+writer = "{\"actions\":[\"org.bardo.Mail mail.thread.read\"],\"apps\":[],\"kinds\":[\"mail.thread\"],\"ceiling\":\"read\",\"max_count\":10,\"recipients\":[],\"destinations\":[],\"paths\":[]}"
 
 [[world.mail]]
 key = "t1"
@@ -17,6 +17,6 @@ body = "Here are the March receipts."
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.delete"
 targets = [{ kind = "mail.thread", key = "t1" }]

@@ -1,6 +1,6 @@
-//! `org.quire.Cua1` served: the Manager at `/org/quire/Cua1` and one Run per live run. The member
+//! `org.bardo.ComputerUse1` served: the Manager at `/org/bardo/ComputerUse1` and one Run per live run. The member
 //! list, its signatures and its signals are those of `computer-use-dbus`'s skeletons (a test holds the
-//! introspection of these objects to `dbus/org.quire.Cua1.xml`).
+//! introspection of these objects to `dbus/org.bardo.ComputerUse1.xml`).
 //!
 //! Bodies are JSON in an `s` argument, in the `CuaEnvelope` where a body is sent. Who is calling
 //! is derived from the process behind the message's sender (`callers`), never from a bus name it
@@ -40,13 +40,13 @@ fn object_path(run: &RunId) -> OwnedObjectPath {
     OwnedObjectPath::try_from(run_path(run)).expect("a run path is an object path")
 }
 
-/// `org.quire.Cua1.Manager`.
+/// `org.bardo.ComputerUse1.Manager`.
 pub(crate) struct ManagerObject<S: Seams, K: Callers> {
     pub supervisor: Arc<Supervisor<S>>,
     pub who: Arc<K>,
 }
 
-#[zbus::interface(name = "org.quire.Cua1.Manager")]
+#[zbus::interface(name = "org.bardo.ComputerUse1.Manager")]
 impl<S: Seams, K: Callers> ManagerObject<S, K> {
     #[zbus(out_args("run"))]
     async fn start(
@@ -135,7 +135,7 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
     async fn run_removed(emitter: &SignalEmitter<'_>, run: OwnedObjectPath) -> zbus::Result<()>;
 }
 
-/// `org.quire.Cua1.Run`.
+/// `org.bardo.ComputerUse1.Run`.
 pub(crate) struct RunObject<S: Seams, K: Callers> {
     pub supervisor: Arc<Supervisor<S>>,
     pub id: RunId,
@@ -155,7 +155,7 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
     }
 }
 
-#[zbus::interface(name = "org.quire.Cua1.Run")]
+#[zbus::interface(name = "org.bardo.ComputerUse1.Run")]
 impl<S: Seams, K: Callers> RunObject<S, K> {
     async fn cancel(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
         self.control(CuaMember::Cancel, &header).await
@@ -300,7 +300,7 @@ mod tests {
         }
         .introspect_to_writer(&mut served, 1);
         served.push_str("</node>\n");
-        let declared = include_str!("../../dbus/org.quire.Cua1.xml");
+        let declared = include_str!("../../dbus/org.bardo.ComputerUse1.xml");
         assert_eq!(served, declared);
     }
 }

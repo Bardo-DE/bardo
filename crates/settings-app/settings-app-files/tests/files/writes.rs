@@ -126,7 +126,7 @@ fn the_places_are_refused_over_a_file_that_cannot_be_read() {
     let scratch =
         settings_app_testkit::Scratch::under(env!("CARGO_TARGET_TMPDIR"), "writes-places");
     let home = ConfigHome(scratch.path().to_path_buf());
-    let file = scratch.join("docket/settings.toml");
+    let file = scratch.join("actions/settings.toml");
     std::fs::create_dir_all(file.parent().expect("parent")).expect("mkdir");
     let bytes = b"# caf\xe9\nnote = \"kept\"\n";
     std::fs::write(&file, bytes).expect("seed");
@@ -146,7 +146,7 @@ fn the_places_land_together_beside_the_keys_they_do_not_own() {
     let scratch =
         settings_app_testkit::Scratch::under(env!("CARGO_TARGET_TMPDIR"), "writes-places-ok");
     let home = ConfigHome(scratch.path().to_path_buf());
-    let file = scratch.join("docket/settings.toml");
+    let file = scratch.join("actions/settings.toml");
     std::fs::create_dir_all(file.parent().expect("parent")).expect("mkdir");
     std::fs::write(&file, "note = \"kept\"\n").expect("seed");
     save_places(&home, &places()).expect("saved");

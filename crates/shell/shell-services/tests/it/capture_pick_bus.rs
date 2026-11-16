@@ -29,12 +29,12 @@ use zbus::connection::Builder;
 use crate::callers_support::{Introduced, Role, Who};
 
 const SETTLE: Duration = Duration::from_secs(5);
-const PORTAL: &str = "org.freedesktop.impl.portal.desktop.quire";
+const PORTAL: &str = "org.freedesktop.impl.portal.desktop.bardo";
 
 #[zbus::proxy(
-    interface = "org.quire.Shell1",
-    default_service = "org.quire.Shell",
-    default_path = "/org/quire/Shell1",
+    interface = "org.bardo.Shell1",
+    default_service = "org.bardo.Shell",
+    default_path = "/org/bardo/Shell1",
     gen_blocking = false
 )]
 pub(crate) trait Shell1 {
@@ -209,7 +209,7 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
     };
     let transom = connect(bus, Some(PORTAL)).await;
     callers.make(&transom, who);
-    let shell = connect(bus, Some("org.quire.Shell")).await;
+    let shell = connect(bus, Some("org.bardo.Shell")).await;
     let (publisher, view) = seat();
     publisher.publish(shell);
     let (_displays_tx, displays) = watch::channel(Displays::default());

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Acceptance script 'chooser': the source chooser handshake: a fake shell answers org.quire.Shell1.PickCaptureSource.
+# Acceptance script 'chooser': the source chooser handshake: a fake shell answers org.bardo.Shell1.PickCaptureSource.
 # Prints PASS, SKIP or FAIL per step. Calls require_jail first.
 #
 # Owner: P2-T2 (chooser client).
 #   exit 0 all steps passed, 1 a step failed, 2 not runnable (outside the jail, or not filled yet),
 #   3 a tool is missing.
 #
-# Needs TRANSOM_BIN and TRANSOM_COMPOSITOR_ENV (a headless compositor with an output named in
-# $TRANSOM_OUTPUT, default HEADLESS-1).
+# Needs BARDO_PORTAL_BIN and BARDO_PORTAL_COMPOSITOR_ENV (a headless compositor with an output named in
+# $BARDO_PORTAL_OUTPUT, default HEADLESS-1).
 set -euo pipefail
 root=$(cd "$(dirname "$0")/../../../portal" && pwd)
 # shellcheck source=dev/lib/jail.sh
@@ -18,9 +18,9 @@ source "$root/dev/lib/chain.sh"
 # shellcheck source=dev/lib/cast_check.sh
 source "$root/dev/lib/cast_check.sh"
 need_compositor chooser
-output=${TRANSOM_OUTPUT:-HEADLESS-1}
+output=${BARDO_PORTAL_OUTPUT:-HEADLESS-1}
 
-env_file=$("$root/dev/up.sh" --env "$TRANSOM_COMPOSITOR_ENV")
+env_file=$("$root/dev/up.sh" --env "$BARDO_PORTAL_COMPOSITOR_ENV")
 # shellcheck source=/dev/null
 source "$env_file"
 trap 'stop_cast; stop_fake_shell; "$root/dev/down.sh" "$env_file" >/dev/null' EXIT

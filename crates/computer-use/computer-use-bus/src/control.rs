@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Why a control call is refused. Each maps 1:1 to an error name
-/// `org.quire.Cua1.Error.<Variant>`.
+/// `org.bardo.ComputerUse1.Error.<Variant>`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ControlRefusal {

@@ -3,7 +3,7 @@
 //! panics the loop.
 //!
 //! A batch's `Relayout`s collapse into one arrangement, made after the rest of the batch; the
-//! desktop's notes (`quire_desktop_v1`) follow it, since they carry the arrangement's rectangles.
+//! desktop's notes (`bardo_desktop_v1`) follow it, since they carry the arrangement's rectangles.
 //! Some effects have no wire function to call yet and are logged: `Route` (the press's
 //! delivery is the seat's and was decided before the effect), `Disconnect` (a client key names
 //! no connection until the client table exists), `Bell` and `Attention` (P3).
@@ -162,7 +162,7 @@ fn apply(state: &mut State, effect: Effect) {
         } => crate::handlers::consent::ask(state, ask, power, &subject, memory),
         Effect::WithdrawAsk { ask } => crate::handlers::consent::withdraw(state, ask),
         // A display change a program made waits for the person to keep it
-        // (`handlers/quire_shell.rs`, `quire_shell_v1` version 6).
+        // (`handlers/quire_shell.rs`, `bardo_shell_v1` version 6).
         Effect::AskKeepDisplays { trial, within } => {
             crate::handlers::quire_shell::trial_ask(state, trial, within)
         }

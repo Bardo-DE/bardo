@@ -36,13 +36,13 @@ pub use running::{
     running_from_dbus, running_to_dbus,
 };
 
-/// `org.quire.Inference1`.
+/// `org.bardo.Inference1`.
 pub const INFERENCE: Document = Document {
-    file_name: "org.quire.Inference1.xml",
+    file_name: "org.bardo.Inference1.xml",
     interfaces: &[InferenceServed::<Unserved>::introspect],
 };
-/// `org.quire.Inference1.Agents`, on inferd's bus name.
+/// `org.bardo.Inference1.Agents`, on inferd's bus name.
 pub const AGENTS: Document = Document {
-    file_name: "org.quire.Inference1.Agents.xml",
+    file_name: "org.bardo.Inference1.Agents.xml",
     interfaces: &[AgentsServed::<Unserved>::introspect],
 };

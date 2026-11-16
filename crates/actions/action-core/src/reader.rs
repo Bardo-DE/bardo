@@ -72,7 +72,7 @@ impl ReaderTask {
 }
 
 /// The app whose steps the companion takes itself (the reader's answer is one).
-pub const READER_STEP_APP: &str = "org.quire.Companion";
+pub const READER_STEP_APP: &str = "org.bardo.Companion";
 
 /// The stem of the reader's step names.
 const READER_STEP: &str = "companion.read";

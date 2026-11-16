@@ -1,5 +1,5 @@
-//! `org.quire.Accounts1.Launcher` at `/org/quire/Accounts1` on accountd's name: what the agent
-//! launcher (docket-acp) asks of the daemon that holds the AI keys. Callable only by a connection
+//! `org.bardo.Accounts1.Launcher` at `/org/bardo/Accounts1` on accountd's name: what the agent
+//! launcher (bardo-agent-acp) asks of the daemon that holds the AI keys. Callable only by a connection
 //! whose caller role is `AgentLauncher` (a unit's row in the caller table); accountd refuses
 //! every other sender `AccessDenied`.
 //!
@@ -16,7 +16,7 @@
 //! sealed memfd, under a permit; `ProcessCredentialRevoked` tells the launcher
 //! that accountd ended it.
 //!
-//! Errors are `org.quire.Accounts1.Error.<Name>`: the refusals of [`crate::accounts::refusal_error_name`] and the
+//! Errors are `org.bardo.Accounts1.Error.<Name>`: the refusals of [`crate::accounts::refusal_error_name`] and the
 //! launcher's own, [`LauncherFault`](crate::accounts::LauncherFault).
 
 use crate::Details;
@@ -26,9 +26,9 @@ use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 /// The interface, written once. `#[bus_interface]` makes [`LauncherProxy`] for its callers from this
 /// trait, [`LauncherServer`] for the daemon to implement and [`LauncherServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Accounts1.Launcher",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Accounts1"
+    interface = "org.bardo.Accounts1.Launcher",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Accounts1"
 )]
 pub trait Launcher {
     /// Registers the connection as the launcher of these agent programs (`AgentProgram` ids). The
@@ -46,7 +46,7 @@ pub trait Launcher {
     /// credentials under them end (`session_closed`). A session that is not open, or is another
     /// connection's, is `UnknownSession`.
     fn end_session(&self, session: &str) -> zbus::Result<()>;
-    /// Opens the consent sheet for an agent program's key: the app is `org.quire.Agent.<program>`.
+    /// Opens the consent sheet for an agent program's key: the app is `org.bardo.Agent.<program>`.
     /// `session` is empty, or an open session of this connection, in which case the sheet also
     /// offers "This session only". Returns a Request object, answered with the chosen key and
     /// the permit for it: the results of a `Choose` response, whose `grant` is the permit's id.
@@ -67,7 +67,7 @@ pub trait Launcher {
     /// What the launcher reports of an `AgentLogoutRequested`; `ready` means signed out.
     fn report_agent_logout(&self, request: &str, outcome: &str, reason: &str) -> zbus::Result<()>;
     /// An API key for a process the launcher spawns: for a program the caller's connection has
-    /// registered, under `permit` (a key permit for `org.quire.Agent.<program>`). The reply is
+    /// registered, under `permit` (a key permit for `org.bardo.Agent.<program>`). The reply is
     /// the credential's id and its handle, a file descriptor (`h`, a sealed memfd) holding the key
     /// text, read position at the start. That is the one way a key is handed over, since a file
     /// would be a place a key could be left. The key is in neither the body nor any signal.

@@ -86,7 +86,7 @@ fn line(app_daily: u32) -> SpendLine {
 #[test]
 fn a_reply_counts_against_the_app_and_the_account_for_the_day_and_the_month() {
     let ledger = Ledger::in_memory();
-    let (companion, reader) = (app("org.quire.Companion"), app("org.quire.Reader"));
+    let (companion, reader) = (app("org.bardo.Companion"), app("org.bardo.Reader"));
     ledger.record(
         &companion,
         &account("openrouter"),
@@ -135,7 +135,7 @@ fn a_reply_counts_against_the_app_and_the_account_for_the_day_and_the_month() {
 #[test]
 fn a_new_day_starts_the_day_over_and_the_month_goes_on() {
     let ledger = Ledger::in_memory();
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     ledger.record(&who, &account("openrouter"), charged(1, 1, 500), LEAP_NOON);
     let next_day = UnixSeconds(LEAP_NOON.0 + 86_400);
     let scope = SpendScope::App(who.clone());
@@ -154,7 +154,7 @@ fn a_new_day_starts_the_day_over_and_the_month_goes_on() {
 
 #[test]
 fn the_caps_say_within_warn_or_stop_and_no_cap_says_within() {
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     let through = account("openrouter");
     // 10 cents a day is 100 thousandths of a dollar; the warning line is at 80 per cent.
     let cases = [
@@ -186,7 +186,7 @@ fn the_caps_say_within_warn_or_stop_and_no_cap_says_within() {
 #[test]
 fn only_reported_charges_meet_a_cap_and_the_turn_that_passes_it_is_the_last() {
     let ledger = Ledger::in_memory();
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     let through = account("openai");
     for _ in 0..1_000 {
         ledger.record(&who, &through, used(500, 500), LEAP_NOON);
@@ -214,7 +214,7 @@ fn only_reported_charges_meet_a_cap_and_the_turn_that_passes_it_is_the_last() {
 
 #[test]
 fn the_strictest_cap_of_the_four_decides() {
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     let through = account("openrouter");
     let ledger = Ledger::in_memory();
     ledger.record(&who, &through, charged(0, 0, 150), LEAP_NOON);
@@ -236,7 +236,7 @@ fn the_strictest_cap_of_the_four_decides() {
         SpendVerdict::Stop,
         "the app's daily cap is passed though the account's monthly one is not"
     );
-    let other = app("org.quire.Reader");
+    let other = app("org.bardo.Reader");
     assert_eq!(
         ledger.verdict(line, &other, &through, LEAP_NOON),
         SpendVerdict::Within,
@@ -248,7 +248,7 @@ fn the_strictest_cap_of_the_four_decides() {
 fn a_ledger_opened_on_a_file_keeps_what_it_was_told_across_a_restart() {
     let dir = Scratch::new("inferd-spend");
     let file = dir.join("state").join("spend.json");
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     {
         let ledger = Ledger::open_at(file.clone(), LEAP_NOON);
         ledger.record(
@@ -291,7 +291,7 @@ fn a_file_that_does_not_read_is_set_aside_and_the_caps_stop_until_the_period_end
     let dir = scratch("bad");
     let file = dir.join("spend.json");
     std::fs::write(&file, "not json").expect("write");
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     let through = account("openrouter");
     let ledger = Ledger::open_at(file.clone(), LEAP_NOON);
     // The unreadable file is kept, under a name that says when.
@@ -331,7 +331,7 @@ fn a_file_that_does_not_read_is_set_aside_and_the_caps_stop_until_the_period_end
 fn a_monthly_cap_stays_stopped_to_the_end_of_the_month_and_a_missing_file_is_just_new() {
     let dir = scratch("monthly");
     let file = dir.join("spend.json");
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     let through = account("openrouter");
     // No file yet: a new ledger, nothing set aside, caps work as usual.
     let fresh = Ledger::open_at(file.clone(), LEAP_NOON);
@@ -380,7 +380,7 @@ fn a_monthly_cap_stays_stopped_to_the_end_of_the_month_and_a_missing_file_is_jus
 #[test]
 fn usage_names_what_the_app_used_and_each_cap_that_is_set() {
     let ledger = Ledger::in_memory();
-    let who = app("org.quire.Companion");
+    let who = app("org.bardo.Companion");
     ledger.record(&who, &account("openrouter"), charged(40, 9, 321), LEAP_NOON);
     ledger.record(&who, &account("openai"), used(1, 1), LEAP_NOON);
     let rows = ledger.usage_of(line(10), &who, LEAP_NOON);

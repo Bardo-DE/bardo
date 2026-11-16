@@ -5,10 +5,10 @@ use super::model::{AccountKey, AccountsPane};
 use account_core::AccountId;
 use account_ids::object_segment;
 
-/// The object path every account lives under (`org.quire.Accounts1`'s `account/<segment>`).
+/// The object path every account lives under (`org.bardo.Accounts1`'s `account/<segment>`).
 /// accountd's `account_dbus::accounts::account_path` is the writer of this; settings-app-model may not depend
 /// on account-dbus, so the prefix is repeated here and nowhere else.
-const ACCOUNT_PREFIX: &str = "/org/quire/Accounts1/account/";
+const ACCOUNT_PREFIX: &str = "/org/bardo/Accounts1/account/";
 
 /// The last part of an account's object path: its id with every character that is not a letter
 /// or digit turned into `_`.
@@ -65,7 +65,7 @@ mod tests {
     #[test]
     fn an_account_path_is_its_detail() {
         assert_eq!(
-            AccountTarget::of_path("/org/quire/Accounts1/account/work_example"),
+            AccountTarget::of_path("/org/bardo/Accounts1/account/work_example"),
             detail("work_example")
         );
     }
@@ -74,9 +74,9 @@ mod tests {
     fn anything_else_is_the_list() {
         for path in [
             "",
-            "/org/quire/Accounts1/account/",
-            "/org/quire/Accounts1/account/a/b",
-            "/org/quire/Accounts1/settings",
+            "/org/bardo/Accounts1/account/",
+            "/org/bardo/Accounts1/account/a/b",
+            "/org/bardo/Accounts1/settings",
             "/elsewhere/account/home",
             "work.example",
         ] {

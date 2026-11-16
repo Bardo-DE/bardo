@@ -35,7 +35,7 @@ const VIEW: Viewport = Viewport {
     height: 200,
     scale_percent: 100,
 };
-const APP_ID: &str = "org.quire.HarnessNotes";
+const APP_ID: &str = "org.bardo.HarnessNotes";
 const DBUSMENU: &str = "com.canonical.dbusmenu";
 
 /// The harness app's command type: the bar's standard items and one of its own.

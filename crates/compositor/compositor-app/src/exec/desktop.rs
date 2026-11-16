@@ -1,4 +1,4 @@
-//! `Effect::Desktop` (P2-Q1): tells `quire_desktop_v1` clients what changed.
+//! `Effect::Desktop` (P2-Q1): tells `bardo_desktop_v1` clients what changed.
 
 use super::log;
 use crate::state::State;

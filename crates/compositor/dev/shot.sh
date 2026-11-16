@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Takes a screenshot of a running jailed casement, through `casementctl shot`
+# Takes a screenshot of a running jailed casement, through `bardo-compositorctl shot`
 # (ext-image-copy-capture):
 #
 #   dev/shot.sh [--output NAME | --window ID | --region X,Y,W,H] [--masked] OUT.png

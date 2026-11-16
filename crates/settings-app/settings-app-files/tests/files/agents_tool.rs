@@ -35,7 +35,7 @@ esac
 fn fake(scratch: &Scratch, body: &str) -> PathBuf {
     let bin = scratch.join("bin");
     std::fs::create_dir_all(&bin).expect("mkdir");
-    let program = bin.join("docket-agents");
+    let program = bin.join("bardo-agents");
     std::fs::write(&program, body).expect("script");
     std::fs::set_permissions(&program, std::fs::Permissions::from_mode(0o755)).expect("mode");
     program
@@ -101,7 +101,7 @@ fn a_program_that_fails_gives_its_sentence_and_one_that_is_missing_gives_none() 
     let tool = AgentsTool::new(broken, &data);
     assert_eq!(tool.list().expect_err("fails"), "No route to the host.");
 
-    let missing = AgentsTool::new(scratch.join("nowhere/docket-agents"), &data);
+    let missing = AgentsTool::new(scratch.join("nowhere/bardo-agents"), &data);
     assert_eq!(missing.list().expect_err("not found"), "");
     assert_eq!(missing.install("a", "1", || ()).expect_err("not found"), "");
 }
@@ -116,17 +116,17 @@ fn the_program_is_found_beside_the_running_one_first_then_on_path() {
     let other = scratch.join("other");
     for dir in [&prefix, &other] {
         std::fs::create_dir_all(dir).expect("mkdir");
-        std::fs::write(dir.join("docket-agents"), "").expect("file");
+        std::fs::write(dir.join("bardo-agents"), "").expect("file");
     }
     let running = prefix.join("detent");
     let path = other.to_str().expect("utf8");
     assert_eq!(
         find_agents_program(Some(&running), path),
-        Some(prefix.join("docket-agents"))
+        Some(prefix.join("bardo-agents"))
     );
     assert_eq!(
         find_agents_program(None, path),
-        Some(other.join("docket-agents"))
+        Some(other.join("bardo-agents"))
     );
     assert_eq!(find_agents_program(None, ""), None);
 }

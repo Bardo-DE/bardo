@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-eval-cloud"
-description = "The computer-use eval against a hosted model: a stoker Provider that asks porter's inferd for a chat turn over the bus (the API key stays in accountd and inferd), and the cua-eval-cloud binary that plays the task set on it under a spend and step budget."
+description = "The computer-use eval against a hosted model: a stoker Provider that asks porter's inferd for a chat turn over the bus (the API key stays in accountd and inferd), and the computer-use-eval-cloud binary that plays the task set on it under a spend and step budget."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -13,7 +13,7 @@ name = "computer_use_eval_cloud"
 path = "src/lib.rs"
 
 [[bin]]
-name = "cua-eval-cloud"
+name = "computer-use-eval-cloud"
 path = "src/main.rs"
 
 [dependencies]

@@ -1,5 +1,5 @@
-//! The agent apps that are helpers, over the session bus: `org.quire.AgentHost1`'s `AppsBegin`
-//! and `AppsWait`, served by `docket-agent --serve` under the name `org.quire.AcpAgent`. The host
+//! The agent apps that are helpers, over the session bus: `org.bardo.AgentHost1`'s `AppsBegin`
+//! and `AppsWait`, served by `bardo-agent --serve` under the name `org.bardo.AcpAgent`. The host
 //! keeps one agent process per helper and opens each one's session at the router as its own
 //! role; companiond opens none and gains no way to. This carries the board's calls there and
 //! waits for the reply, which the host gives within a minute or says to ask again (a job

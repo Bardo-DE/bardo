@@ -1,11 +1,11 @@
-//! The modifier keys the person holds, as pressed (`quire_shell_v1.mac_mods`, a bitfield; the XML name is the wire name and stays).
+//! The modifier keys the person holds, as pressed (`bardo_shell_v1.mac_mods`, a bitfield; the XML name is the wire name and stays).
 
 use serde::{Deserialize, Serialize};
 
 /// A set of modifier keys, as pressed and before any per-app remapping: Command is the
 /// Command key whatever the focused app sees.
 ///
-/// The bits are `quire_shell_v1.mac_mods`'s values.
+/// The bits are `bardo_shell_v1.mac_mods`'s values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct HeldMods(pub u32);
 

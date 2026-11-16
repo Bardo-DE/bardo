@@ -1,5 +1,5 @@
 //! Shared by the live-harness tests: where the daemon binaries are. The daemons are
-//! `action-accept`'s (`accept-intentd` and the rest), built into the same target directory as this
+//! `action-accept`'s (`accept-actiond` and the rest), built into the same target directory as this
 //! test: `cargo build -p action-accept --bins` builds them (a workspace test run does).
 #![allow(dead_code)]
 
@@ -24,7 +24,7 @@ pub fn accept_bin(name: &str) -> PathBuf {
 pub fn binaries() -> Binaries {
     // Every test starts here: a test that waits for ever ends the process after 20 minutes.
     action_testbus::hang_guard::arm();
-    Binaries::beside(&accept_bin("docket-live"), &|_: &str| None)
+    Binaries::beside(&accept_bin("agent-live"), &|_: &str| None)
 }
 
 /// Flow (a), the person allows: search, contact search, forward, the closing words.

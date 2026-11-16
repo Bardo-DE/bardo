@@ -85,12 +85,12 @@ fn begin_target_and_speak_round_trip() {
     assert!(round(&begin).contains(r#""trigger":"dictation_menu""#));
     round(&VoiceTarget::Shell);
     let app = VoiceTarget::App {
-        app: AppName::parse("org.quire.Mail").expect("a"),
+        app: AppName::parse("org.bardo.Mail").expect("a"),
         serial: 7,
     };
     assert_eq!(
         round(&app),
-        r#"{"kind":"app","v":{"app":"org.quire.Mail","serial":7}}"#
+        r#"{"kind":"app","v":{"app":"org.bardo.Mail","serial":7}}"#
     );
     let speak = SpeakWire {
         utterance: Some(UtteranceId::parse("u-3").expect("u")),
@@ -119,7 +119,7 @@ fn voice_refusal_maps_errors_1to1() {
     let mut names = std::collections::BTreeSet::new();
     for r in VoiceRefusal::ALL {
         let name = r.error_name();
-        assert!(name.starts_with("org.quire.Voice1.Error."), "{name}");
+        assert!(name.starts_with("org.bardo.Voice1.Error."), "{name}");
         assert_eq!(VoiceRefusal::from_error_name(&name), Some(r));
         assert!(names.insert(name), "duplicate name for {r:?}");
         // The slug is the variant in snake_case.
@@ -127,7 +127,7 @@ fn voice_refusal_maps_errors_1to1() {
     }
     assert_eq!(names.len(), 6);
     assert_eq!(
-        VoiceRefusal::from_error_name("org.quire.Voice1.Error.Nope"),
+        VoiceRefusal::from_error_name("org.bardo.Voice1.Error.Nope"),
         None
     );
     // ALL is exhaustive: this match fails to compile when a variant is added.

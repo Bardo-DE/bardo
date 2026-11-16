@@ -1,4 +1,4 @@
-//! Requests from the shell (`quire_shell_v1`; P2-Z): which layer surface is the bar and the
+//! Requests from the shell (`bardo_shell_v1`; P2-Z): which layer surface is the bar and the
 //! dock, and where windows minimise to.
 
 use super::Model;

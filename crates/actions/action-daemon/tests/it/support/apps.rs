@@ -1,6 +1,6 @@
 //! The other processes on the private bus: a mail app (action-fake's `FakeMail` behind
 //! `action_provider::serve_on`, so the app side of `IntentProvider1` is the real one) and sill's
-//! `Confirm1` with scripted answers. Shared by intentd's tests and `quire-do`'s end-to-end test.
+//! `Confirm1` with scripted answers. Shared by intentd's tests and `bardo-do`'s end-to-end test.
 #![allow(dead_code)]
 
 use account_core::AppName;
@@ -150,7 +150,7 @@ pub fn answering_intentd(
         action_dbus::callers::intentd_only(),
         dir.join("proc"),
     ));
-    who.introduce_app(intentd, "org.quire.Intents", Role::Agent);
+    who.introduce_app(intentd, "org.bardo.Intents", Role::Agent);
     who
 }
 
@@ -218,7 +218,7 @@ pub struct FakeSill {
 
 struct ConfirmServer(FakeSill);
 
-#[zbus::interface(name = "org.quire.Confirm1")]
+#[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmServer {
     async fn confirm(
         &self,
@@ -247,7 +247,7 @@ impl ConfirmServer {
             }
             None => scripted,
         };
-        let path = format!("/org/quire/Confirm1/request/{number}");
+        let path = format!("/org/bardo/Confirm1/request/{number}");
         if let (Answer::With(answer), Some(to)) = (answer, header.sender()) {
             let to = to.to_owned();
             let at = path.clone();
@@ -259,7 +259,7 @@ impl ConfirmServer {
                     .emit_signal(
                         Some(to.as_str()),
                         at.as_str(),
-                        "org.quire.Intents1.Request",
+                        "org.bardo.Intents1.Request",
                         "Response",
                         &(0u32, body),
                     )
@@ -276,7 +276,7 @@ impl ConfirmServer {
 }
 
 impl FakeSill {
-    /// Serves `Confirm1` on `connection` and claims `names` (`org.quire.Confirm1` and the name
+    /// Serves `Confirm1` on `connection` and claims `names` (`org.bardo.Confirm1` and the name
     /// the configuration gives sill's roles).
     pub async fn start(connection: &BusConnection, names: &[&str]) -> FakeSill {
         Self::serve(connection, names, None).await
@@ -298,7 +298,7 @@ impl FakeSill {
         };
         connection
             .object_server()
-            .at("/org/quire/Confirm1", ConfirmServer(sill.clone()))
+            .at("/org/bardo/Confirm1", ConfirmServer(sill.clone()))
             .await
             .expect("export Confirm1");
         zbus_ready::serving(connection)

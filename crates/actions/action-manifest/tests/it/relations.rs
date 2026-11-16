@@ -29,7 +29,7 @@ fn contact_kind() -> EntityDecl {
 fn with_relations(relations: Vec<RelationDecl>, actions: Vec<ActionDecl>) -> Manifest {
     let mut thread = thread_kind(false);
     thread.relations = relations;
-    let mut m = manifest("org.quire.Mail", actions);
+    let mut m = manifest("org.bardo.Mail", actions);
     m.entities = vec![thread, contact_kind()];
     m
 }

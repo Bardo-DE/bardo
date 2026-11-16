@@ -1,4 +1,4 @@
-//! A mail app and sill's sheet, for trying `quire-do` by hand on a private bus
+//! A mail app and sill's sheet, for trying `bardo-do` by hand on a private bus
 //! (`scripts/try-quire-do.sh` runs it). The mail app is action-fake's `FakeMail` behind the real
 //! `action_provider::serve_on`; the sheet is `Confirm1` asking on this terminal. Nothing here is
 //! the person's real session: it serves whatever bus `DBUS_SESSION_BUS_ADDRESS` names.
@@ -64,11 +64,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sill_connection = zbus::Connection::session().await?;
     let _sill = FakeSill::start_asking(
         &sill_connection,
-        &["org.quire.Confirm1", "org.quire.Shell"],
+        &["org.bardo.Confirm1", "org.bardo.Shell"],
         ask,
     )
     .await;
-    println!("mail (org.quire.Mail) and the sheet (org.quire.Confirm1, org.quire.Shell) are up.");
+    println!("mail (org.bardo.Mail) and the sheet (org.bardo.Confirm1, org.bardo.Shell) are up.");
     println!("threads: t1 \"Invoice\", t2 \"Digest\". Ctrl-C to stop.");
     let _ = &mail;
     std::future::pending::<()>().await;

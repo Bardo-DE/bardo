@@ -47,7 +47,7 @@ Daemon modules:
 |---|---|
 | `command/status.rs` | `keycap status` and `keycap resume`: a plain socket client (`Hello` read, `Resume` sent), `render` and `is_remapping` pure and table-tested |
 | `daemon/uinput.rs` | the one "keycap keyboard" virtual device, a descriptor from a `Source`, destroyed on `Drop`; `direct_keyboard` makes it on `/dev/uinput` itself; passes the pointer events of plain combo devices through and carries the lock LEDs back; the `Emitter` and `PointerSink` traits and their recording fakes. Everything below device creation (writes, `led_fd`, `leds`) is the same whichever source made the descriptor |
-| `daemon/source.rs` | where a virtual device comes from: `Source::Service` asks the root device service (`input-broker-client`'s `Broker`, socket `/run/turnstile/input.sock`, `KEYCAP_DEVICE_SERVICE`) for a `KeycapKeyboard` or `KeycapPointer` and receives the finished device's descriptor; `Source::Direct` (the default when the socket is absent, and the standalone install) opens `/dev/uinput`. A service that stops answering falls back to `Direct` with a log line; a refusal does not. `recreate` drops the old descriptor and asks again. The test source is `input-broker-client`'s `FakeSource` |
+| `daemon/source.rs` | where a virtual device comes from: `Source::Service` asks the root device service (`input-broker-client`'s `Broker`, socket `/run/bardo/input-broker/input.sock`, `BARDO_KEY_REMAP_DEVICE_SERVICE`) for a `KeycapKeyboard` or `KeycapPointer` and receives the finished device's descriptor; `Source::Direct` (the default when the socket is absent, and the standalone install) opens `/dev/uinput`. A service that stops answering falls back to `Direct` with a log line; a refusal does not. `recreate` drops the old descriptor and asks again. The test source is `input-broker-client`'s `FakeSource` |
 | `daemon/twin.rs` | the "<name> (keycap pointer)" virtual device of a combo device whose pointer the keyboard cannot carry (absolute axes): its descriptor from a `Source` (the service is asked with the original's name as the label and adds the suffix), destroyed on `Drop`; `direct_pointer` registers it on `/dev/uinput` from a `PointerCaps` |
 | `daemon/pointer.rs` | pure: `PointerCaps`, the pointer half of a device as a value (axes with their `absinfo`, relative axes, buttons, input properties, the original's name as `label` and the twin's name), built from the kernel's masks; `needs_twin` |
 | `daemon/buttons.rs` | pure: the mouse buttons each combo device holds, released on unplug, overflow and pause; the keyboard's record and each twin's are separate values |
@@ -67,7 +67,7 @@ Daemon modules:
 | `daemon/settings.rs` | the config layers in force (built-in, vendor, system, user, in that order) and their resolution; `Layers::offered` reads the user layer as the socket delivers it and cuts it down (`ConfigLayer::confined`) |
 | `daemon/service.rs` | `run(env)`: the virtual keyboard, socket thread, watchers, then the reader |
 | `daemon/sdnotify.rs` | `READY=1`, `WATCHDOG=1` and `STATUS=` to `$NOTIFY_SOCKET` |
-| `daemon/env.rs` | `Env::from_lookup`: environment, every directory and file the daemon touches (config, vendor config, runtime, seat file, `/sys/class/input`, `/dev/input`, the device service's socket), the `KEYCAP_GRAB_VIRTUAL` allowance and the `KEYCAP_STEERING` choice (both for tests; only the unit's environment sets them) |
+| `daemon/env.rs` | `Env::from_lookup`: environment, every directory and file the daemon touches (config, vendor config, runtime, seat file, `/sys/class/input`, `/dev/input`, the device service's socket), the `BARDO_KEY_REMAP_GRAB_VIRTUAL` allowance and the `BARDO_KEY_REMAP_STEERING` choice (both for tests; only the unit's environment sets them) |
 | `daemon/clock.rs` | the one `CLOCK_MONOTONIC` read |
 
 `lib.rs` holds declarations and root re-exports only.
@@ -75,7 +75,7 @@ Daemon modules:
 Outside `crates/`: `install.sh`, `uninstall.sh` and `scripts/lib.sh` (every change goes through
 `step`, so `--dry-run` prints and `--destdir` stages under `--prefix`; idempotent by `cmp`), `dist/` (the unit, the
 udev and polkit rules, the `uinput` modules-load file, `keycap.plasma.toml`, and `dist/plasma/`: the KWin script and the
-`keycap-focus` D-Bus-to-socket helper with its unit and tests), `docs/switch-from-toshy.md`.
+`bardo-key-remap-focus` D-Bus-to-socket helper with its unit and tests), `docs/switch-from-toshy.md`.
 
 ### Who steers, and where devices come from
 
@@ -83,12 +83,12 @@ Two outside parties decide what keycap trusts, and both are in the unit's reach 
 
 - **Devices.** The desktop's `turnstile` service owns `/dev/uinput` (root only) and hands keycap finished
   devices; the unit has no `DeviceAllow=/dev/uinput`. The standalone install has no such service and gets the
-  one line back as the drop-in `keycap.service.d/10-uinput.conf` (`dist/keycap.uinput.conf`, placed by
+  one line back as the drop-in `bardo-key-remap.service.d/10-uinput.conf` (`dist/bardo-key-remap.uinput.conf`, placed by
   `install.sh`) next to the udev rule that lets the `input` group write the node. `SupplementaryGroups=input`
-  stays: it is for reading the keyboards. The unit is ordered `After=` and `Wants=` `turnstile.socket`; both are
+  stays: it is for reading the keyboards. The unit is ordered `After=` and `Wants=` `bardo-input-broker.socket`; both are
   ignored where that unit does not exist.
 - **Steering.** The socket is 0666, so a connection is told apart three ways: `Steering` (the shell: the kernel
-  puts its process in `sill.service` or `keycap-focus.service` under `user@<active uid>.service`, held by pidfd
+  puts its process in `bardo-shell.service` or `bardo-key-remap-focus.service` under `user@<active uid>.service`, held by pidfd
   and still alive; judged by peephole at `Proof::Cgroup` or better, any pin), `Plain` (any other process of
   the active uid: it hears status, watches the keymap and registers actions and may `Resume`; any other request ends its
   connection) and `Observer` (another user). Only `Steering` is obeyed for `Focus` and `UserConfig`.
@@ -164,7 +164,7 @@ that stay enums:** `RemapInput`, `RemapOut`, `RuleAction`, `Edge`, `Layout`, `To
    and out of it with a modifier held.
 3. The desktop must send `Focus { profile: NAME }`; keycap needs no change for that. This is
    how a profile for one app is made (`ghostty` inherits `terminal`; `keymap-aware` is for apps that read the keymap themselves and gets Super unchanged): the desktop maps its app id
-   to the name (on Plasma, `OWN_PROFILES` in `dist/plasma/keycap-focus`, with a case in
+   to the name (on Plasma, `OWN_PROFILES` in `dist/plasma/bardo-key-remap-focus`, with a case in
    `test_keycap_focus.py`).
 4. The README mapping table gains a row.
 
@@ -230,10 +230,10 @@ The `key-remap-devtest` modules:
 - **Tests never create an input device, with one gated exception.** The device tests in
   `crates/keycap/tests/devices` and the `key-remap-devtest` crate they use create fake keyboards on
   `/dev/uinput` and grab them. Each such test is `#[ignore = "creates input devices; run in CI
-  with KEYCAP_DEVICE_TESTS=1"]` and asserts that variable, so a plain `cargo test` never touches
+  with BARDO_KEY_REMAP_DEVICE_TESTS=1"]` and asserts that variable, so a plain `cargo test` never touches
   a device. They run as root, one at a time, in the `devices` CI job (docs/development.md, "Tests"). The
   daemon they run is the real binary, made to grab a virtual device by
-  `KEYCAP_GRAB_VIRTUAL=<exact name>`; that switch is read in `command::run` like every other
+  `BARDO_KEY_REMAP_GRAB_VIRTUAL=<exact name>`; that switch is read in `command::run` like every other
   variable and widens discovery by one named device (docs/development.md, "Safety rules").
 - **Gate** (no boundary script):
 
@@ -284,22 +284,22 @@ pub struct Profiles { default: Profile, named: BTreeMap<ProfileName, Profile> }
 
 Inheritance is resolved at load: a `Profile` is always flat, and `Profiles::resolve(&name)`
 returns `default` for an unknown name (the daemon logs `profile "<name>" is not defined; using default` once per name until the config changes). `defaults.toml` is compiled
-in with `include_str!`; the vendor file `/usr/lib/keycap/keycap.toml`, the machine file
-`/etc/keycap/keycap.toml` and the seat owner's `UserConfig` have the same shape and override, in that order,
+in with `include_str!`; the vendor file `/usr/lib/bardo/key-remap/key-remap.toml`, the machine file
+`/etc/bardo/key-remap/key-remap.toml` and the seat owner's `UserConfig` have the same shape and override, in that order,
 per profile, per modmap field and per trigger, except that the user layer is cut down as the section
 "Who steers" says (the vendor and machine files have no such limits).
 
-**The vendor file and the machine file.** A desktop ships its defaults in `/usr/lib/keycap/keycap.toml`, laid over
-the built-in mapping and under `/etc/keycap/keycap.toml`, which stays the administrator's (systemd's `/usr/lib` and
+**The vendor file and the machine file.** A desktop ships its defaults in `/usr/lib/bardo/key-remap/key-remap.toml`, laid over
+the built-in mapping and under `/etc/bardo/key-remap/key-remap.toml`, which stays the administrator's (systemd's `/usr/lib` and
 `/etc` split). The vendor file has the machine file's trust, so it may hold a rule on a key pressed alone (the
 desktop's Caps Lock rule), and its `[user_layer] sequences` counts when the machine file sets none. Both are
 trusted, so both are read by one function, `config::trusted::read_layer`, and only when root-only: `peephole`'s
 check, the file and every folder above it root's and not writable by group or others, and a link never passes.
 The file is also read through a 64 KiB cap. A file that fails is no layer and one plain-words warning in the log
 (`installed defaults: ...` or `machine settings: ...`); a missing file or folder is no layer and no warning.
-The vendor folder (`$KEYCAP_VENDOR_DIR`, else `/usr/lib/keycap`) is watched as the config folder is, and a
+The vendor folder (`$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/keycap`) is watched as the config folder is, and a
 missing folder is not watched, so a vendor file installed after the daemon started is read at its next start.
-A test that points `$KEYCAP_CONFIG_DIR` at a scratch folder has no machine layer from a file in it.
+A test that points `$BARDO_KEY_REMAP_CONFIG_DIR` at a scratch folder has no machine layer from a file in it.
 
 ```toml
 [profile.default]

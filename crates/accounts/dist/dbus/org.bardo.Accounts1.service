@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Accounts1
+Exec=/usr/libexec/bardo/bardo-accountd
+SystemdService=bardo-accountd.service

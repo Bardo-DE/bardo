@@ -1,7 +1,7 @@
 // The core policy set: the safety invariants that hold in every mode and that no later layer
 // (preset, person, assistant, administrator) may lift. It is compiled in. Cedar is default-deny
 // and forbid overrides permit, so a rule here cannot be undone by a permit written anywhere else.
-// Three queries run per call (see quire.cedarschema); the grid that says how far each cell gets
+// Three queries run per call (see bardo.cedarschema); the grid that says how far each cell gets
 // is the preset's (`presets/default/grid.cedar`, keyed on `context.rows`).
 
 // ---- Forbids that refuse (Deny) ----------------------------------------------------------
@@ -28,7 +28,7 @@ when { principal.kind == "mcp" && context.target_space == "other" };
 forbid (principal, action, resource)
 when {
   (principal.kind == "mcp" || principal.kind == "acp") &&
-  resource in Quire::App::"org.quire.Checkpoints"
+  resource in Quire::App::"org.bardo.Checkpoints"
 };
 
 // The facts below are gathered by the router (the kill switch, the session's ledger, the

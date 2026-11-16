@@ -71,7 +71,7 @@ fn no_model_pins_its_json() {
 
 #[test]
 fn bodies_round_trip() {
-    let app = AppName::parse("org.quire.Mail").expect("app");
+    let app = AppName::parse("org.bardo.Mail").expect("app");
     let action = ActionRef {
         app: app.clone(),
         name: provenance::ActionName::parse("mail.thread.archive").expect("action"),
@@ -191,7 +191,7 @@ fn asks_and_the_front_pointer_round_trip() {
             window: Keep::Kept,
         },
         parent_window: WindowKey::parse("w-9").expect("w"),
-        app: Some(AppName::parse("org.quire.Mail").expect("app")),
+        app: Some(AppName::parse("org.bardo.Mail").expect("app")),
     };
     assert_eq!(
         round(&ask),
@@ -199,7 +199,7 @@ fn asks_and_the_front_pointer_round_trip() {
             r#"{"session":"s-1","turn":{"id":4,"text":"archive the newsletters","at":5,"#,
             r#""from":{"kind":"launcher"},"via":"typed"},"#,
             r#""keep":{"query":"kept","results":"dropped","selection":"dropped","window":"kept"},"#,
-            r#""parent_window":"w-9","app":"org.quire.Mail"}"#
+            r#""parent_window":"w-9","app":"org.bardo.Mail"}"#
         )
     );
     let front = FrontTask {

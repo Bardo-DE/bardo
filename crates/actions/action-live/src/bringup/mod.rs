@@ -1,4 +1,4 @@
-//! `docket-bringup`: the agent services (accountd, inferd, memoryd, intentd, companiond) on a bus that
+//! `agent-bringup`: the agent services (accountd, inferd, memoryd, intentd, companiond) on a bus that
 //! already exists, for a demo shell whose companion pane should really answer. It reuses the
 //! acceptance world's pieces: the same daemons, `env_clear` plus the scratch environment, the
 //! same fake proc root and configuration files. Unlike a world, the daemons outlive this
@@ -49,7 +49,7 @@ pub enum BringupError {
     #[error("the bus: {0}")]
     Bus(String),
     /// Services of this root are still running.
-    #[error("{0} (pid {1}) of this root is still running: run `docket-bringup down --root` first")]
+    #[error("{0} (pid {1}) of this root is still running: run `agent-bringup down --root` first")]
     AlreadyUp(String, u32),
     /// A daemon binary is missing.
     #[error("{0} does not exist: build the daemons first (cargo build -p action-accept --bins)")]
@@ -80,11 +80,11 @@ pub fn add_command(root: &Path, accountd: &Path) -> String {
     let env: Vec<String> = env_of(root)
         .into_iter()
         .map(|(name, value)| format!("{name}={value}"))
-        .chain([format!("ACCOUNTD_KEYS={keys}")])
+        .chain([format!("BARDO_ACCOUNTD_KEYS={keys}")])
         .map(|pair| quote(&pair))
         .collect();
     format!(
-        "env -i {} {} add openrouter --allow org.quire.Companion --allow org.quire.Intents",
+        "env -i {} {} add openrouter --allow org.bardo.Companion --allow org.bardo.Intents",
         env.join(" "),
         quote(&accountd.display().to_string())
     )
@@ -96,7 +96,7 @@ fn say_up(args: &cli::UpArgs, binaries: &Binaries, started: &[up::Started]) {
         .for_each(|s| println!("{} {} ok", s.name, s.pid));
     if args.keys_home.is_none() {
         println!(
-            "Cloud models need a key in this root; skip this if you already added one. To add it, stop the services (docket-bringup down --root {}), then type the key at accountd's own prompt:\n  {}\nthen run up again.",
+            "Cloud models need a key in this root; skip this if you already added one. To add it, stop the services (agent-bringup down --root {}), then type the key at accountd's own prompt:\n  {}\nthen run up again.",
             args.root.display(),
             add_command(&args.root, &binaries.accountd)
         );
@@ -152,14 +152,14 @@ pub fn run_cli(args: &[String], exe: &Path, env: &impl Fn(&str) -> Option<String
             return ExitCode::from(2);
         }
         Err(why) => {
-            eprintln!("docket-bringup: {why}");
+            eprintln!("agent-bringup: {why}");
             return ExitCode::from(2);
         }
     };
     match run_command(command, exe, env) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
-            eprintln!("docket-bringup: {why}");
+            eprintln!("agent-bringup: {why}");
             ExitCode::FAILURE
         }
     }

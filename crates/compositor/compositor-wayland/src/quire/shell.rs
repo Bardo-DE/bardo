@@ -1,4 +1,4 @@
-//! `quire_shell_v1`: the shell's surface roles (which layer surface is the bar, the dock, the
+//! `bardo_shell_v1`: the shell's surface roles (which layer surface is the bar, the dock, the
 //! switcher), the minimise targets the dock gives its tiles, and the events only the
 //! compositor sees (the real modifier keys, edge reveals). Shell connections
 //! only. Frozen at P2-Z; filled by P2-Q2.
@@ -23,7 +23,7 @@ use compositor_core::privilege::UnixSeconds;
 use compositor_core::shell::{ShellNote, ShellRequest};
 use compositor_core::time::Mono;
 use compositor_core::{Event, LayerKey, OutputKey, WindowId};
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1::{self, QuireShellV1};
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::{self, BardoShellV1};
 use desktop_protocols::vocab::{HeldMods, ShellRole, WindowEntry, WireCode};
 use smithay::reexports::wayland_server::backend::{ClientId, GlobalId};
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
@@ -60,13 +60,13 @@ pub struct AskedRole {
     pub output: Option<OutputKey>,
 }
 
-/// `quire_shell_v1` and the objects bound on it.
+/// `bardo_shell_v1` and the objects bound on it.
 #[derive(Debug)]
 pub struct QuireShellPart {
     /// The global.
     pub global: GlobalId,
-    /// Every bound `quire_shell_v1`.
-    pub bound: Vec<QuireShellV1>,
+    /// Every bound `bardo_shell_v1`.
+    pub bound: Vec<BardoShellV1>,
     /// The surface holding a role, by layer (a layer holds one role at a time; a bar and a dock
     /// are held once per output, every other role once).
     pub roles: BTreeMap<LayerKey, RoleHolder>,
@@ -89,9 +89,9 @@ impl QuireShellPart {
     /// The part; creates the global (version 1) behind the I7 filter.
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> QuireShellPart
     where
-        D: GlobalDispatch<QuireShellV1, ShellGlobal> + 'static,
+        D: GlobalDispatch<BardoShellV1, ShellGlobal> + 'static,
     {
-        let global = display.create_global::<D, QuireShellV1, _>(
+        let global = display.create_global::<D, BardoShellV1, _>(
             VERSION,
             ShellGlobal {
                 filter: role_filter,
@@ -161,16 +161,16 @@ pub enum TargetRefusal {
     UnknownToplevel,
 }
 
-impl<D> GlobalDispatch2<QuireShellV1, D> for ShellGlobal
+impl<D> GlobalDispatch2<BardoShellV1, D> for ShellGlobal
 where
-    D: QuireShellHandler + Dispatch<QuireShellV1, ShellData> + 'static,
+    D: QuireShellHandler + Dispatch<BardoShellV1, ShellData> + 'static,
 {
     fn bind(
         &self,
         state: &mut D,
         _handle: &DisplayHandle,
         _client: &Client,
-        resource: New<QuireShellV1>,
+        resource: New<BardoShellV1>,
         data_init: &mut DataInit<'_, D>,
     ) {
         let shell = data_init.init(resource, ShellData);
@@ -186,7 +186,7 @@ where
     }
 }
 
-impl<D> Dispatch2<QuireShellV1, D> for ShellData
+impl<D> Dispatch2<BardoShellV1, D> for ShellData
 where
     D: QuireShellHandler,
 {
@@ -194,13 +194,13 @@ where
         &self,
         state: &mut D,
         client: &Client,
-        resource: &QuireShellV1,
-        request: quire_shell_v1::Request,
+        resource: &BardoShellV1,
+        request: bardo_shell_v1::Request,
         _dhandle: &DisplayHandle,
         data_init: &mut DataInit<'_, D>,
     ) {
         match request {
-            quire_shell_v1::Request::SetRole { surface, role } => {
+            bardo_shell_v1::Request::SetRole { surface, role } => {
                 let Some(role) = code_of(role).and_then(|code| ShellRole::from_code(code).ok())
                 else {
                     return;
@@ -210,16 +210,16 @@ where
                 match on_set_role(state.quire_shell_part(), layer, output, &surface, role) {
                     Ok(events) => state.feed(events),
                     Err(RoleRefusal::NotALayer) => resource.post_error(
-                        quire_shell_v1::Error::BadSurface,
+                        bardo_shell_v1::Error::BadSurface,
                         "the surface is not a layer surface of this client",
                     ),
                     Err(RoleRefusal::Taken) => resource.post_error(
-                        quire_shell_v1::Error::RoleTaken,
+                        bardo_shell_v1::Error::RoleTaken,
                         "another surface already has that role",
                     ),
                 }
             }
-            quire_shell_v1::Request::SetMinimiseTarget {
+            bardo_shell_v1::Request::SetMinimiseTarget {
                 dock,
                 toplevel,
                 x,
@@ -235,53 +235,53 @@ where
                     Err(refusal) => refuse_target(resource, refusal),
                 }
             }
-            quire_shell_v1::Request::ClearMinimiseTarget { toplevel } => {
+            bardo_shell_v1::Request::ClearMinimiseTarget { toplevel } => {
                 match on_clear_minimise_target(state.quire_shell_part(), &toplevel) {
                     Ok(events) => state.feed(events),
                     Err(refusal) => refuse_target(resource, refusal),
                 }
             }
-            quire_shell_v1::Request::WindowMenuPick { toplevel, entry } => {
+            bardo_shell_v1::Request::WindowMenuPick { toplevel, entry } => {
                 let window = window_of_identifier(&toplevel).filter(|id| state.window_known(*id));
                 let entry = code_of(entry).and_then(|code| WindowEntry::from_code(code).ok());
                 state.feed(on_window_menu_pick(window, entry));
             }
-            quire_shell_v1::Request::SplitPick { toplevel } => {
+            bardo_shell_v1::Request::SplitPick { toplevel } => {
                 let window = window_of_identifier(&toplevel).filter(|id| state.window_known(*id));
                 state.feed(shell_split::on_split_pick(window));
             }
-            quire_shell_v1::Request::SplitCancel => {
+            bardo_shell_v1::Request::SplitCancel => {
                 state.feed(shell_split::on_split_cancel());
             }
-            quire_shell_v1::Request::SplitDivide { toplevel, share } => {
+            bardo_shell_v1::Request::SplitDivide { toplevel, share } => {
                 let window = window_of_identifier(&toplevel).filter(|id| state.window_known(*id));
                 state.feed(shell_split::on_split_divide(window, share));
             }
-            quire_shell_v1::Request::Overview { mode, toggle } => {
+            bardo_shell_v1::Request::Overview { mode, toggle } => {
                 state.feed(shell_overview::on_overview(code_of(mode), code_of(toggle)));
             }
-            quire_shell_v1::Request::PermissionAnswer { ask, answer } => {
+            bardo_shell_v1::Request::PermissionAnswer { ask, answer } => {
                 let now = state.quire_shell_now();
                 let wall = state.quire_shell_wall();
                 match shell_permission::on_answer(state.quire_shell_part(), ask, answer, now, wall)
                 {
                     Ok(events) => state.feed(events),
                     Err(fault) => resource
-                        .post_error(quire_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
+                        .post_error(bardo_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
                 }
             }
-            quire_shell_v1::Request::DisplaysTrialAnswer { trial, answer } => {
+            bardo_shell_v1::Request::DisplaysTrialAnswer { trial, answer } => {
                 let now = state.quire_shell_now();
                 match shell_trial::on_answer(state.quire_shell_part(), trial, answer, now) {
                     Ok(events) => state.feed(events),
                     Err(fault) => resource
-                        .post_error(quire_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
+                        .post_error(bardo_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
                 }
             }
-            quire_shell_v1::Request::SetFullScreenBar { mode } => {
+            bardo_shell_v1::Request::SetFullScreenBar { mode } => {
                 state.feed(shell_screen::on_set_full_screen_bar(code_of(mode)));
             }
-            quire_shell_v1::Request::SetMotion { motion } => {
+            bardo_shell_v1::Request::SetMotion { motion } => {
                 state.feed(shell_screen::on_set_motion(code_of(motion)));
             }
             // The switcher and show-desktop requests arrive with P3-Z; the version 2 requests
@@ -290,7 +290,7 @@ where
         }
     }
 
-    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &QuireShellV1) {
+    fn destroyed(&self, state: &mut D, _client: ClientId, resource: &BardoShellV1) {
         on_shell_gone(state.quire_shell_part(), resource);
         let events = shell_permission::on_unbind(state.quire_shell_part(), resource.version());
         state.feed(events);
@@ -298,14 +298,14 @@ where
 }
 
 /// The protocol error a refused minimise target is.
-fn refuse_target(resource: &QuireShellV1, refusal: TargetRefusal) {
+fn refuse_target(resource: &BardoShellV1, refusal: TargetRefusal) {
     match refusal {
         TargetRefusal::NotALayer => resource.post_error(
-            quire_shell_v1::Error::BadSurface,
+            bardo_shell_v1::Error::BadSurface,
             "the dock is not a layer surface of this client",
         ),
         TargetRefusal::UnknownToplevel => resource.post_error(
-            quire_shell_v1::Error::UnknownToplevel,
+            bardo_shell_v1::Error::UnknownToplevel,
             "no toplevel has that identifier",
         ),
     }
@@ -400,7 +400,7 @@ pub fn on_window_menu_pick(window: Option<WindowId>, entry: Option<WindowEntry>)
 
 /// A bound object went away: the roles it left are not forgotten (the surfaces stay until
 /// they unmap), only the object is.
-pub fn on_shell_gone(part: &mut QuireShellPart, shell: &QuireShellV1) {
+pub fn on_shell_gone(part: &mut QuireShellPart, shell: &BardoShellV1) {
     part.bound.retain(|bound| bound != shell);
     shell_space::forget_targets(part);
 }
@@ -455,7 +455,7 @@ pub fn apply_note(part: &mut QuireShellPart, note: &ShellNote) -> Result<(), Way
 /// `modifiers(surface, mods)` to the surface of every held role, on every bound object of the
 /// same client, whether or not the surface has keyboard focus.
 fn send_modifiers(part: &QuireShellPart, mods: HeldMods) {
-    let wire = quire_shell_v1::MacMods::from_bits_truncate(mods.0);
+    let wire = bardo_shell_v1::MacMods::from_bits_truncate(mods.0);
     for shell in &part.bound {
         for holder in part.roles.values() {
             if holder.surface.client() == shell.client() {

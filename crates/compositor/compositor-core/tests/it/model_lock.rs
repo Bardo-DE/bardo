@@ -148,7 +148,7 @@ fn the_wait_ends_with_the_first_surface_and_a_stale_timer_changes_nothing() {
 
 #[test]
 fn the_lock_runs_from_request_to_unlock() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![
         plug("HEADLESS-1"),
         plug("HEADLESS-2"),
@@ -336,7 +336,7 @@ fn a_restored_lock_covers_until_the_shell_locks_and_unlocks() {
 /// asks change it when the session is open, so the lock is what stops them.
 #[test]
 fn nothing_asked_of_the_desktop_gets_through_a_lock() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let one = key("HEADLESS-1");
     let open = run(vec![
         plug("HEADLESS-1"),
@@ -434,7 +434,7 @@ fn the_keyboard_goes_to_the_lock_surface_of_the_output_in_use() {
 /// titles) and when it ends (they hear them back), for every window.
 #[test]
 fn locking_and_unlocking_list_every_window_again() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let open = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),
@@ -705,7 +705,7 @@ fn an_output_plugged_or_unplugged_while_locked_is_covered_or_forgotten() {
 
 #[test]
 fn while_locked_no_window_or_layer_hears_the_keyboard() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let launcher = LayerSpec {
         level: LayerLevel::Overlay,
         keyboard: KeyboardInteractivity::Exclusive,
@@ -736,7 +736,7 @@ fn while_locked_no_window_or_layer_hears_the_keyboard() {
 
 #[test]
 fn presses_and_commands_do_nothing_while_locked() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let base = run(vec![
         plug("HEADLESS-1"),
         map(1, &mail, TokenCheck::Valid),

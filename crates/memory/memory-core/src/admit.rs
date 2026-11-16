@@ -11,7 +11,7 @@ use crate::space::SpaceState;
 use provenance::{Actor, ActorKind, SystemPart};
 
 /// Whether the record is part of the audit trail: the companion's, a computer-use run's, a
-/// terminal's (`quire-do` cannot tell the person from an agent typing in it, so what it does is
+/// terminal's (`bardo-do` cannot tell the person from an agent typing in it, so what it does is
 /// audited like an agent's), the router's, every other area's payloads, and every message and
 /// episode (so a pause keeps headers only). Such records are never dropped for policy reasons
 /// (pause, `Never` rules, marks); at worst they keep their header.

@@ -143,7 +143,7 @@ mod tests {
                 .iter()
                 .enumerate()
                 .map(|(n, text)| FloorText {
-                    path: PathBuf::from(format!("/etc/quire/{n}.toml")),
+                    path: PathBuf::from(format!("/etc/bardo/{n}.toml")),
                     text: Ok(text.clone()),
                 })
                 .collect()

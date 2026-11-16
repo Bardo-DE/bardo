@@ -28,7 +28,7 @@ fn section<'a>(file: &'a str, name: &str) -> Vec<(&'a str, &'a str)> {
 
 #[test]
 fn the_service_has_only_settings_that_keep_fusermount3_working() {
-    let unit = dist("porter-mountd.service");
+    let unit = dist("bardo-drive-mount.service");
     let keys: Vec<&str> = section(&unit, "Service").iter().map(|(k, _)| *k).collect();
     assert_eq!(
         keys,
@@ -92,7 +92,7 @@ fn the_service_has_only_settings_that_keep_fusermount3_working() {
             .find(|(k, _)| *k == key)
             .map(|(_, v)| v)
     };
-    assert_eq!(value("ExecStart"), Some("/usr/libexec/quire/porter-mountd"));
+    assert_eq!(value("ExecStart"), Some("/usr/libexec/bardo/bardo-drive-mount"));
     assert_eq!(value("IPAddressDeny"), Some("any"));
     assert_eq!(value("KeyringMode"), Some("private"));
     assert_eq!(value("UMask"), Some("0077"));
@@ -100,20 +100,20 @@ fn the_service_has_only_settings_that_keep_fusermount3_working() {
         section(&unit, "Unit")
             .into_iter()
             .find(|(k, _)| *k == "Requires"),
-        Some(("Requires", "porter-mountd.socket"))
+        Some(("Requires", "bardo-drive-mount.socket"))
     );
 }
 
 #[test]
 fn the_socket_is_where_syncd_looks_for_it_and_only_the_person_reaches_it() {
-    let socket = dist("porter-mountd.socket");
+    let socket = dist("bardo-drive-mount.socket");
     let keys = section(&socket, "Socket");
     // %t is the runtime directory, as `wire::socket_in` takes it.
     assert_eq!(
         wire::socket_in(Path::new("%t")),
-        Path::new("%t/porter/mountd.sock")
+        Path::new("%t/bardo/drive-mount.sock")
     );
-    assert!(keys.contains(&("ListenStream", "%t/porter/mountd.sock")));
+    assert!(keys.contains(&("ListenStream", "%t/bardo/drive-mount.sock")));
     assert!(keys.contains(&("SocketMode", "0600")));
     assert!(keys.contains(&("DirectoryMode", "0700")));
     assert_eq!(

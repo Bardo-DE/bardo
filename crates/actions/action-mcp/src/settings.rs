@@ -1,6 +1,6 @@
 //! The setting `agent.mcp.expose` (quire design/22 section 3.27) read from docket's own settings
-//! file, `$XDG_CONFIG_HOME/docket/settings.toml`, as `[agent.mcp] expose = true`. The schema the
-//! Settings app draws the row from is `dist/settings/docket.settings.toml`.
+//! file, `$XDG_CONFIG_HOME/actions/settings.toml`, as `[agent.mcp] expose = true`. The schema the
+//! Settings app draws the row from is `dist/settings/actions.settings.toml`.
 //!
 //! The reading is `action-settings`' (lenient as design/22 section 2 asks): a missing file, a
 //! missing key or a value that is not `true` is off, never an error. A switch

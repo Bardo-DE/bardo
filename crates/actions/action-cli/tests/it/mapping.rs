@@ -10,7 +10,7 @@ use provenance::{EntityId, EntityKey, EntityKind, UnixSeconds};
 
 const DEMO: &str = r#"
 vocab = 1
-app = "org.quire.Demo"
+app = "org.bardo.Demo"
 
 [[entities]]
 kind = "demo.item"
@@ -130,7 +130,7 @@ sink = "destination"
 
 const OTHER: &str = r#"
 vocab = 1
-app = "org.quire.Other"
+app = "org.bardo.Other"
 actions = []
 
 [[entities]]
@@ -178,7 +178,7 @@ fn map(pairs: &[(&str, &str)], stdin: Stdin) -> Result<action_vocab::Args, Strin
 
 fn item(key: &str) -> EntityId {
     EntityId {
-        app: account_core::AppName::parse("org.quire.Demo").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Demo").expect("app"),
         kind: EntityKind::parse("demo.item").expect("kind"),
         key: EntityKey::parse(key).expect("key"),
     }
@@ -264,7 +264,7 @@ fn each_declared_type_maps_from_its_words() {
             "friend",
             "other.thing:z",
             Value::Entity(EntityId {
-                app: account_core::AppName::parse("org.quire.Other").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Other").expect("app"),
                 kind: EntityKind::parse("other.thing").expect("kind"),
                 key: EntityKey::parse("z").expect("key"),
             }),

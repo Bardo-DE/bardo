@@ -134,8 +134,8 @@ async fn a_path_is_kept_only_whole_and_never_the_root() {
 #[tokio::test]
 async fn a_count_and_a_ceiling_are_bounded_and_unknown_actions_drop() {
     let reply = with(json!({
-        "actions": ["org.quire.Banking bank.transfer.send", "org.quire.Mail mail.thread.nuke", "org.quire.Mail mail.thread.read"],
-        "apps": [{ "app": "org.quire.Banking", "up_to": "destructive" }],
+        "actions": ["org.bardo.Banking bank.transfer.send", "org.bardo.Mail mail.thread.nuke", "org.bardo.Mail mail.thread.read"],
+        "apps": [{ "app": "org.bardo.Banking", "up_to": "destructive" }],
         "ceiling": "destructive",
         "max_count": 4_294_967_295_u32,
     }));

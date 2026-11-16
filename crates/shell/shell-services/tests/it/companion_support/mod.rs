@@ -314,7 +314,7 @@ pub fn hit(key: &str) -> Hit {
     Hit {
         entity: EntityRef {
             id: EntityId {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 kind: EntityKind::parse("mail.thread").unwrap_or_else(|e| panic!("{e}")),
                 key: EntityKey::parse(key).unwrap_or_else(|e| panic!("{e}")),
             },
@@ -331,7 +331,7 @@ pub fn entry(id: u64, said: &str, state: UndoState) -> UndoEntry {
         at: UnixSeconds(1_790_000_000),
         actor: Actor::Cli,
         action: action_vocab::ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: ActionName::parse("mail.thread.archive").unwrap_or_else(|e| panic!("{e}")),
         },
         said: action_vocab::LabelText::parse(said).unwrap_or_else(|e| panic!("{e}")),
@@ -343,7 +343,7 @@ pub fn entry(id: u64, said: &str, state: UndoState) -> UndoEntry {
 }
 
 pub fn run_path(id: &str) -> OwnedObjectPath {
-    OwnedObjectPath::try_from(format!("/org/quire/Cua1/run/{id}")).unwrap_or_else(|e| panic!("{e}"))
+    OwnedObjectPath::try_from(format!("/org/bardo/ComputerUse1/run/{id}")).unwrap_or_else(|e| panic!("{e}"))
 }
 
 pub fn timeline_entry(seq: u64) -> TimelineEntry {
@@ -360,7 +360,7 @@ pub fn timeline_entry(seq: u64) -> TimelineEntry {
         label: Label::trusted_user(),
         things: vec![ThingView {
             thing: EntityId {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 kind: EntityKind::parse("mail.thread").unwrap_or_else(|e| panic!("{e}")),
                 key: EntityKey::parse("q4").unwrap_or_else(|e| panic!("{e}")),
             },

@@ -22,7 +22,7 @@ const POOL_TABLE: &str = "ai.auto.pool";
 /// that serves a language need, and the picker reads only that an account exists.
 fn picker_app() -> Option<AppId> {
     Some(AppId {
-        name: AppName::parse("org.quire.Settings").ok()?,
+        name: AppName::parse("org.bardo.Settings").ok()?,
         isolation: Isolation::Unsandboxed,
     })
 }

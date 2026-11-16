@@ -1,4 +1,4 @@
-// Sends the focused window's resource class to the keycap-focus service on the session bus.
+// Sends the focused window's resource class to the bardo-key-remap-focus service on the session bus.
 // The service decides the profile; this script only reports.
 function notifyActiveWindow(window) {
     // null while the task switcher or a shell surface has focus: keep the last profile.

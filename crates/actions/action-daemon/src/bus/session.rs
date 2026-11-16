@@ -17,7 +17,7 @@ fn session_of(text: &str) -> Result<SessionId, IntentsError> {
     parsed(text, SessionId::parse)
 }
 
-#[zbus::interface(name = "org.quire.Intents1.Session")]
+#[zbus::interface(name = "org.bardo.Intents1.Session")]
 impl SessionBus {
     async fn open(
         &self,

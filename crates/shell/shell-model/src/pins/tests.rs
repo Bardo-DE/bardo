@@ -114,7 +114,7 @@ fn events_reduce_to_the_expected_pins() {
 #[test]
 fn pins_under_an_old_id_become_the_renamed_app() {
     use crate::apps::{AppIndex, AppsEvent, step as index_step, test_app};
-    let mut mail = test_app("org.quire.Mail", "Mail");
+    let mut mail = test_app("org.bardo.Mail", "Mail");
     mail.renamed_from = vec![id("mailo")];
     let mut clock = test_app("clock", "Clock");
     clock.renamed_from = vec![id("old-clock")];
@@ -128,17 +128,17 @@ fn pins_under_an_old_id_become_the_renamed_app() {
         (
             "an old id is replaced in place",
             pins(&["a", "mailo", "b"]),
-            pins(&["a", "org.quire.Mail", "b"]),
+            pins(&["a", "org.bardo.Mail", "b"]),
         ),
         (
             "old and new collapse to the first one's place",
-            pins(&["mailo", "a", "org.quire.Mail"]),
-            pins(&["org.quire.Mail", "a"]),
+            pins(&["mailo", "a", "org.bardo.Mail"]),
+            pins(&["org.bardo.Mail", "a"]),
         ),
         (
             "new then old collapse to the first one's place",
-            pins(&["org.quire.Mail", "a", "mailo"]),
-            pins(&["org.quire.Mail", "a"]),
+            pins(&["org.bardo.Mail", "a", "mailo"]),
+            pins(&["org.bardo.Mail", "a"]),
         ),
         (
             "two olds of one app collapse",

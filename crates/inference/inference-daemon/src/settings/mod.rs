@@ -1,5 +1,5 @@
 //! The settings inferd serves and reads (design/22 section 5, the Intelligence page): the rows of
-//! `dist/inferd.settings.toml` and the `ai.model.<slot>.<tier>` picker, a live module.
+//! `dist/inference.settings.toml` and the `ai.model.<slot>.<tier>` picker, a live module.
 //!
 //! * [`Settings`] is what routing runs under: the policy (`ai.local_only`, `ai.floor.<class>`), the
 //!   tier map (`ai.model.<slot>.<tier>`), Automatic (`ai.auto.*`) and the spend line
@@ -12,7 +12,7 @@
 //! * [`ConfigFile`] reads and edits the file, and [`Reload`] puts what it says in force again: the
 //!   daemon polls the file's mtime, `Rescan` reloads at once, and a `Set` of the module applies
 //!   what it wrote.
-//! * [`InferdSettings`] is `org.quire.SettingsModule1` at `INFERENCE_SETTINGS_PATH`.
+//! * [`InferdSettings`] is `org.bardo.SettingsModule1` at `INFERENCE_SETTINGS_PATH`.
 
 mod file;
 mod keys;

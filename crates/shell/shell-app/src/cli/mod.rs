@@ -64,7 +64,7 @@ pub const USAGE: u8 = 64;
 #[derive(Debug, Parser)]
 #[command(name = "sill", version, about)]
 pub struct Cli {
-    /// Write `sill.settings.toml` (the settings schema, design/22 §9.2) into DIR and exit.
+    /// Write `shell.settings.toml` (the settings schema, design/22 §9.2) into DIR and exit.
     #[arg(long, value_name = "DIR")]
     pub write_schema: Option<PathBuf>,
     /// Write `sill.toml`, the style parts a stylesheet may rely on, into DIR and exit.

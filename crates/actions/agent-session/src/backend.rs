@@ -225,7 +225,7 @@ pub enum HostFault {
 }
 
 /// The registry of sessions: it writes the log, owns the backends, and answers the edges (the
-/// companion, `quire-do`, the ACP server). Every method that changes a session appends its
+/// companion, `bardo-do`, the ACP server). Every method that changes a session appends its
 /// entry first and answers after the ack.
 pub trait SessionHost: Send {
     /// Opens a session and returns its id.

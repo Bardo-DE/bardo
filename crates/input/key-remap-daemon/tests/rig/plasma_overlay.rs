@@ -97,7 +97,7 @@ fn command_h_hides_in_a_terminal_too() {
 }
 
 /// The shipped Plasma file with the personal blocks of `docs/personal-config.md` over it: what
-/// `/etc/keycap/keycap.toml` holds on the machine this was written for.
+/// `/etc/bardo/key-remap/key-remap.toml` holds on the machine this was written for.
 #[test]
 fn the_plasma_file_with_the_personal_blocks_does_what_a_mac_user_expects() {
     let docs = include_str!("../../../key-remap/docs/personal-config.md");

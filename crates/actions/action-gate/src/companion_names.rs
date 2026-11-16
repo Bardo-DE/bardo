@@ -33,7 +33,7 @@ pub fn is_helper_action(action: &ActionRef) -> bool {
 }
 
 fn name() -> AppName {
-    AppName::parse(COMPANION_APP).expect("`org.quire.Companion` is a valid app name")
+    AppName::parse(COMPANION_APP).expect("`org.bardo.Companion` is a valid app name")
 }
 
 /// The thing of kind `companion.task` that stands for `task`.

@@ -1,4 +1,4 @@
-//! `org.quire.Displays1`, as the shell exports it. Reading is open; setting checks the caller
+//! `org.bardo.Displays1`, as the shell exports it. Reading is open; setting checks the caller
 //! is Settings, then hands the change to the displays service.
 
 use std::sync::Arc;
@@ -17,7 +17,7 @@ use crate::callers::{Claim, Peers, admit};
 use crate::control::Control;
 
 /// Settings' name: only its owner, holding the `settings` role, may set a brightness.
-const SETTINGS_BUS: &str = "org.quire.Settings";
+const SETTINGS_BUS: &str = "org.bardo.Settings";
 
 /// The displays object.
 pub(super) struct DisplaysObject {
@@ -27,7 +27,7 @@ pub(super) struct DisplaysObject {
     pub peers: Arc<Peers>,
 }
 
-#[interface(name = "org.quire.Displays1")]
+#[interface(name = "org.bardo.Displays1")]
 impl DisplaysObject {
     /// The outputs whose brightness can be read, with their percentage.
     fn brightness(&self) -> Vec<(String, u32)> {

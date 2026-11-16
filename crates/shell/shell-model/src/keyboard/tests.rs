@@ -128,7 +128,7 @@ fn each_source_answers_alone() {
         (
             "temor resolves Command itself",
             &own,
-            "org.quire.Temor",
+            "org.bardo.Temor",
             Some("keymap-aware"),
         ),
         ("another terminal has none", &own, "foot", None),
@@ -387,7 +387,7 @@ fn the_shell_holding_the_keyboard_is_keymap_aware_over_any_window() {
         (
             "over temor it stays keymap-aware, held or not",
             None,
-            "org.quire.temor",
+            "org.bardo.temor",
             "keymap-aware",
         ),
     ];

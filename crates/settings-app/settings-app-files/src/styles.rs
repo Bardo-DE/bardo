@@ -1,4 +1,4 @@
-//! The style files the person wrote: the desktop-wide `quire/style.css` and each app's own
+//! The style files the person wrote: the desktop-wide `bardo/style.css` and each app's own
 //! `<app>/style.css` under the settings folder. Only the text is read here; what it says about the
 //! styles is quire's lint.
 

@@ -20,9 +20,9 @@ const SETTLE: Duration = Duration::from_secs(5);
 type Wire = (u32, String, (i32, i32, u32, u32), (i32, i32, u32, u32), u32);
 
 #[proxy(
-    interface = "org.quire.Outputs1",
-    default_service = "org.quire.Outputs1",
-    default_path = "/org/quire/Outputs1"
+    interface = "org.bardo.Outputs1",
+    default_service = "org.bardo.Outputs1",
+    default_path = "/org/bardo/Outputs1"
 )]
 trait Outputs {
     #[zbus(property)]
@@ -137,7 +137,7 @@ async fn a_taken_name_is_reported() {
         return;
     };
     let _owner = Builder::address(bus.address.as_str())
-        .and_then(|b| b.name("org.quire.Outputs1"))
+        .and_then(|b| b.name("org.bardo.Outputs1"))
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await

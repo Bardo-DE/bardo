@@ -13,33 +13,33 @@ they run the drive in memory and mount nothing.
 - The `fuse3` package (`fusermount3` on `PATH`, and `/dev/fuse`). ferry does not link libfuse:
   it runs `fusermount3` as a process of its own. Without it the drive still lists, and Files says
   "Files can't show this drive on this computer."
-- ferry installed with `scripts/install.sh`, which puts in `porter-mountd` with its socket
+- ferry installed with `scripts/install.sh`, which puts in `bardo-drive-mount` with its socket
   enabled for every user. syncd's unit cannot mount: `NoNewPrivileges=yes` refuses the setuid
   `fusermount3`, `PrivateDevices=yes` hides `/dev/fuse`, and its mount namespace of its own would
-  hide the mount from the session. So syncd asks porter-mountd, a small user service outside that
+  hide the mount from the session. So syncd asks bardo-drive-mount, a small user service outside that
   sandbox, which makes `~/Cloud/<name>`, runs `fusermount3` and hands syncd the open connection;
-  syncd serves the files over it from inside its sandbox. porter-mountd's own unit goes without
+  syncd serves the files over it from inside its sandbox. bardo-drive-mount's own unit goes without
   the settings that would break `fusermount3` (its header says which, and why).
 
 ## How the two fit
 
-1. syncd connects to `$XDG_RUNTIME_DIR/porter/mountd.sock`; systemd, listening there for
-   `porter-mountd.socket`, starts `porter-mountd.service`.
+1. syncd connects to `$XDG_RUNTIME_DIR/bardo/drive-mount.sock`; systemd, listening there for
+   `bardo-drive-mount.socket`, starts `bardo-drive-mount.service`.
 2. syncd asks to show "OneDrive" (a folder name, never a path), read-write (`rw`; `ro` for a
-   drive shown read-only). porter-mountd checks the caller is the person, the name is one plain
+   drive shown read-only). bardo-drive-mount checks the caller is the person, the name is one plain
    name and the folder is empty or new, clears a stale `fuse.porter` mount there, runs
    `fusermount3` (always with `nosuid,nodev,noatime`) and sends back the `/dev/fuse` fd.
-3. syncd serves the drive over that fd. Turning the drive off asks porter-mountd to unmount it
+3. syncd serves the drive over that fd. Turning the drive off asks bardo-drive-mount to unmount it
    (`fusermount3 -u -z`, then the connection is ended), so syncd stops serving at once, even
    while a terminal sits in the folder.
-4. With no porter-mountd listening (syncd started by hand, outside its unit), syncd mounts by
+4. With no bardo-drive-mount listening (syncd started by hand, outside its unit), syncd mounts by
    itself through `fusermount3`.
 
 ## The check
 
 1. Install (`scripts/install.sh`, then log in again or `systemctl --user daemon-reload` and
-   `systemctl --user start porter-mountd.socket`). `systemctl --user status porter-mountd.socket`
-   says it is listening; `systemctl --user status syncd.service` says syncd runs in its unit.
+   `systemctl --user start bardo-drive-mount.socket`). `systemctl --user status bardo-drive-mount.socket`
+   says it is listening; `systemctl --user status bardo-syncd.service` says syncd runs in its unit.
 2. In Settings, turn on "Show in Files" for an account with a few files, a folder of photos and,
    for Google, a Doc and a Sheet.
 3. `ls ~/Cloud/` lists the drive's folder; `ls -la ~/Cloud/OneDrive` (or `Google Drive`) lists
@@ -90,15 +90,15 @@ they run the drive in memory and mount nothing.
 15. Turn "Show in Files" off: `~/Cloud/OneDrive` is no longer a mount (`mount | grep Cloud` says
     nothing). Do it again with a terminal sitting in the folder (`cd ~/Cloud/OneDrive`): it goes
     at once, syncd keeps answering, and the terminal's folder reads as gone. Turn it on and stop
-    syncd (`systemctl --user stop syncd.service`): the mount goes with it. Kill it with
-    `systemctl --user kill -s KILL syncd.service` and let it start again: the stale mount is
+    syncd (`systemctl --user stop bardo-syncd.service`): the mount goes with it. Kill it with
+    `systemctl --user kill -s KILL bardo-syncd.service` and let it start again: the stale mount is
     cleared (`fusermount3 -u -z`) and the folder comes back.
 16. A folder that is not porter's is left alone: stop syncd, put a file in an empty
     `~/Cloud/OneDrive` and start it: the drive says "The drive's folder in Cloud already has other
     files in it. Move them, then try again." and the file is still there.
-17. syncd's sandbox is whole: `systemctl --user show syncd.service -p NoNewPrivileges -p
+17. syncd's sandbox is whole: `systemctl --user show bardo-syncd.service -p NoNewPrivileges -p
     PrivateDevices -p ProtectHome` says `yes`, `yes`, `read-only`. `journalctl --user -u
-    porter-mountd` says why each refusal was made.
+    bardo-drive-mount` says why each refusal was made.
 
 ## What stays here
 
@@ -127,5 +127,5 @@ keeps it.
   set by Settings (a `porter/syncd.toml` from before is read until the first save, and left).
   Beside it, `[storage] paused` and `[storage] keep_all` list the drives (by account folder name)
   paused and kept downloaded whole.
-- The helper: `/usr/libexec/quire/porter-mountd`, its units `porter-mountd.service` and
-  `porter-mountd.socket`, its socket `$XDG_RUNTIME_DIR/porter/mountd.sock`.
+- The helper: `/usr/libexec/bardo/bardo-drive-mount`, its units `bardo-drive-mount.service` and
+  `bardo-drive-mount.socket`, its socket `$XDG_RUNTIME_DIR/bardo/drive-mount.sock`.

@@ -84,7 +84,7 @@ mod tests {
 
     fn action(name: &str) -> ActionRef {
         ActionRef {
-            app: provenance::AppName::parse("org.quire.Shell").expect("app"),
+            app: provenance::AppName::parse("org.bardo.Shell").expect("app"),
             name: provenance::ActionName::parse(name).expect("name"),
         }
     }

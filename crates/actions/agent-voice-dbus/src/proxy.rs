@@ -1,14 +1,14 @@
-//! `org.quire.Voice1` and its two object interfaces, as proxies for callers (voice.md section 3.5).
+//! `org.bardo.Voice1` and its two object interfaces, as proxies for callers (voice.md section 3.5).
 //! Bodies are JSON in `s` (`agent-voice-wire` types in an `Envelope`); the event stream is an fd of
 //! `VoiceEvent` frames. Caller identity comes from the connection, never an argument.
 
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 
-/// The caller's side of `org.quire.Voice1`.
+/// The caller's side of `org.bardo.Voice1`.
 #[zbus::proxy(
-    interface = "org.quire.Voice1",
-    default_service = "org.quire.Voice1",
-    default_path = "/org/quire/Voice1"
+    interface = "org.bardo.Voice1",
+    default_service = "org.bardo.Voice1",
+    default_path = "/org/bardo/Voice1"
 )]
 pub trait Voice {
     /// Opens the mic now (shell only): `VoiceBegin` in, the utterance object and an event fd out.
@@ -26,10 +26,10 @@ pub trait Voice {
     fn status_changed(&self, status: &str) -> zbus::Result<()>;
 }
 
-/// The caller's side of one utterance object (`/org/quire/Voice1/utterance/<n>`).
+/// The caller's side of one utterance object (`/org/bardo/Voice1/utterance/<n>`).
 #[zbus::proxy(
-    interface = "org.quire.Voice1.Utterance",
-    default_service = "org.quire.Voice1"
+    interface = "org.bardo.Voice1.Utterance",
+    default_service = "org.bardo.Voice1"
 )]
 pub trait Utterance {
     /// Names the one app that may attach (`VoiceTarget`); the Begin caller only.
@@ -47,10 +47,10 @@ pub trait Utterance {
     fn ended(&self, end: &str) -> zbus::Result<()>;
 }
 
-/// The caller's side of one speech object (`/org/quire/Voice1/speech/<n>`).
+/// The caller's side of one speech object (`/org/bardo/Voice1/speech/<n>`).
 #[zbus::proxy(
-    interface = "org.quire.Voice1.Speech",
-    default_service = "org.quire.Voice1"
+    interface = "org.bardo.Voice1.Speech",
+    default_service = "org.bardo.Voice1"
 )]
 pub trait Speech {
     /// Stops this speech (the requester or the shell).

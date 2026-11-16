@@ -1,4 +1,4 @@
-//! `quire-do`: every app we ship is drivable from a command line generated from its intents
+//! `bardo-do`: every app we ship is drivable from a command line generated from its intents
 //! manifest. This crate is a thin client over `action-client` with caller role `cli`: it lists
 //! the installed manifests, maps `--param value` words onto the manifest's declared types, and
 //! asks intentd to perform, dry-run, search, read context or undo. It never talks to an app, never
@@ -89,7 +89,7 @@ impl Report {
             },
             Style::Human => Self {
                 stdout: String::new(),
-                stderr: format!("quire-do: {}\n", failure.what),
+                stderr: format!("bardo-do: {}\n", failure.what),
                 exit: failure.exit,
             },
         }
@@ -141,7 +141,7 @@ async fn command<T: Transport>(
     };
     match &parsed.command {
         Command::Help => Ok(plain(help::text())),
-        Command::Version => Ok(plain(format!("quire-do {}", env!("CARGO_PKG_VERSION")))),
+        Command::Version => Ok(plain(format!("bardo-do {}", env!("CARGO_PKG_VERSION")))),
         Command::Undo(which) => exec::undo(intents, *which).await,
         Command::Ask { .. } => Err(Failure::new(
             Exit::Unavailable,

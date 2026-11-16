@@ -1,4 +1,4 @@
-//! memoryd's inferd link over a private session bus: with a fake `org.quire.Inference1` serving
+//! memoryd's inferd link over a private session bus: with a fake `org.bardo.Inference1` serving
 //! (documents of each data class embedded in their own session, a consolidation drafted), and
 //! with none (the degraded path: lexical-only recall, consolidation off). Nothing here reaches
 //! the real session bus, the real inferd or the real Secret Service.

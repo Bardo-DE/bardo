@@ -50,7 +50,7 @@ pub struct MenuAgent<T: Transport> {
 
 impl MenuAgent<DbusTransport> {
     /// The agent speaking to intentd on `connection`, which is the one that owns
-    /// `org.quire.Shell`: intentd names the caller's role from the names it owns. `proc_root` is
+    /// `org.bardo.Shell`: intentd names the caller's role from the names it owns. `proc_root` is
     /// where a process's cgroup is read to prove who owns a menu's name, and `peers` says whether
     /// the owner is the app the window belongs to.
     pub fn over(

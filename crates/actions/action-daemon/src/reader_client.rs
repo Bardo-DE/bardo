@@ -1,11 +1,11 @@
-//! The quarantined reader, over `org.quire.Reader1`.
+//! The quarantined reader, over `org.bardo.Reader1`.
 
 use action_core::{Reader, ReaderAsk, ReaderError};
 use action_dbus::{BusConnection, Details, ReaderProxy};
 use action_vocab::Value;
 use provenance::{Quarantined, SessionId};
 
-/// The quarantined reader, over `org.quire.Reader1`.
+/// The quarantined reader, over `org.bardo.Reader1`.
 #[derive(Debug, Clone)]
 pub struct ReaderClient {
     connection: BusConnection,

@@ -1,0 +1,29 @@
+# bardo-agent's systemd user unit: the host of outside coding agents when the assistant hands
+# them a turn (org.bardo.AgentHost1). The bus starts it when companiond first calls
+# (dist/dbus/org.bardo.AcpAgent.service); it holds the chosen agent's session open between turns
+# and ends after a quiet while, and the next call starts it again. It is the same program as
+# `bardo-agent` on a terminal, and plays the same role (org.bardo.AcpAgent): it alone opens the
+# agent's session at intentd and makes the agent's calls there, each ruled like any agent's.
+# Off unless agent.acp.agents = "on" in the settings; the programs come from agents.toml.
+#
+# Fewer sandbox lines than the other units, on purpose (owner 2026-10-17): the limits of this unit
+# pass to the agents it starts, which reach their own service over the network and run a JIT, and
+# the host starts each agent under bubblewrap, which needs namespace syscalls. It keeps every line
+# that breaks none of that, here and in bardo-agent.service.d/sandbox.conf; the agent itself is
+# confined by its bubblewrap sandbox.
+[Unit]
+Description=Quire host of coding agents (org.bardo.AcpAgent)
+After=bardo-actiond.service
+Wants=bardo-actiond.service
+
+[Service]
+Type=dbus
+BusName=org.bardo.AcpAgent
+ExecStart=/usr/bin/bardo-agent --serve
+# No loader variables from the session reach the daemon: porter gives its fixed caller role only
+# to a unit that unsets them (applied after the manager environment and Environment=).
+UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
+NoNewPrivileges=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes

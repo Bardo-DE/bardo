@@ -384,7 +384,7 @@ async fn an_id_sill_did_not_post_for_the_account_does_nothing() {
 
     // Another notification's id, an id nothing holds, and the notice's own id with another
     // account's key.
-    let other = AccountKey::new("/org/quire/Accounts1/account/other");
+    let other = AccountKey::new("/org/bardo/Accounts1/account/other");
     voice.invoke(NotificationId(id.0 + 100), &sign_in_key(&key()));
     voice.invoke(NotificationId(id.0 + 1), &sign_in_key(&key()));
     voice.invoke(id, &sign_in_key(&other));

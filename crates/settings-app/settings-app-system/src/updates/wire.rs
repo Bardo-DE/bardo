@@ -18,7 +18,7 @@ fn field<'a, T: TryFrom<&'a OwnedValue>>(
         .ok_or(Absence::Failed)
 }
 
-/// The properties of `org.quire.Updates1` in `all`.
+/// The properties of `org.bardo.Updates1` in `all`.
 pub fn wire_of(all: &HashMap<String, OwnedValue>) -> Result<UpdateWire, Absence> {
     let text = |name: &str| field::<&str>(all, name).map(str::to_owned);
     Ok(UpdateWire {

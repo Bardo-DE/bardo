@@ -31,11 +31,11 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-polkit"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-polkit"
+SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
-AUTHORITY_BIN="$SILL_OUT/examples/polkit_authority"
-HELPER_BIN="$SILL_OUT/polkit_helper"
+AUTHORITY_BIN="$BARDO_SHELL_OUT/examples/polkit_authority"
+HELPER_BIN="$BARDO_SHELL_OUT/polkit_helper"
 AGENT_PATH=/org/sill/PolicyKit1/AuthenticationAgent
 SESSION_ID=accept-polkit
 ACTION=org.sill.test.run
@@ -77,7 +77,7 @@ await_line() {
 
 start_polkit_daemon() {
   backdrop_seed "$CONFIG" || return 1
-  : >"$CONFIG/sill/settings.toml"
+  : >"$CONFIG/shell/settings.toml"
   launch_daemon --polkit-bus "$BUS" --polkit-helper "$HELPER_BIN" --polkit-session "$SESSION_ID" \
     || return 1
   NAME=$(output_name) || return 1

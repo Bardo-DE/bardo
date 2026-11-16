@@ -149,9 +149,9 @@ fn every_command_line_sends_its_request() {
         ),
         (&["intents", "status"], status(StatusRequest::Intents)),
         (
-            &["intents", "revoke", "org.quire.Shell:shell.dock.pin"],
+            &["intents", "revoke", "org.bardo.Shell:shell.dock.pin"],
             Some(Request::Intents(IntentsAsk::Revoke(
-                parse_grant("org.quire.Shell:shell.dock.pin").expect("a grant"), // test-only
+                parse_grant("org.bardo.Shell:shell.dock.pin").expect("a grant"), // test-only
             ))),
         ),
         (

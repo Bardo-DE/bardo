@@ -2,7 +2,7 @@
 //!
 //! Input goes to the compositor over EIS (`ConnectToEIS`), where it arrives tagged as remote so
 //! it can never pass for the person's own keystrokes. The compositor half is casement's
-//! `compositor-agent/src/eis.rs`; the socket comes from `org.quire.Compositor1.ConnectEis`
+//! `compositor-agent/src/eis.rs`; the socket comes from `org.bardo.Compositor1.ConnectEis`
 //! ([`CasementEis`]). The `Notify*` methods are accepted and dropped: the only way in is the
 //! EIS socket, which the person's consent opens.
 //!

@@ -1,4 +1,4 @@
-//! The registry of desktop-wide Spaces (lane spaces): what `org.quire.Spaces1` serves, kept in
+//! The registry of desktop-wide Spaces (lane spaces): what `org.bardo.Spaces1` serves, kept in
 //! `spaces.json` beside `registry.json` with the same atomic save and `.bak` ([`AtomicFile`]).
 //! [`SpaceBook`] is the book: how Spaces are made, registered, renamed, restyled and removed; the
 //! daemon only hosts it.

@@ -1,13 +1,13 @@
 //! The probe CLI against its usage rules (the one test that needs no compositor).
 
-/// casement-probe's exit code for the arguments `args`, run with nothing from this environment
+/// compositor-probe's exit code for the arguments `args`, run with nothing from this environment
 /// (no compositor to connect to: a usage error must be found before it tries).
 fn probe_exit(args: &[&str]) -> Option<i32> {
-    std::process::Command::new(env!("CARGO_BIN_EXE_casement-probe"))
+    std::process::Command::new(env!("CARGO_BIN_EXE_compositor-probe"))
         .env_clear()
         .args(args)
         .output()
-        .expect("casement-probe runs")
+        .expect("compositor-probe runs")
         .status
         .code()
 }

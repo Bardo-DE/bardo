@@ -26,13 +26,13 @@ use std::sync::Arc;
 /// What only the acceptance harness's mains choose: the `/proc` callers are read from (a tree
 /// other than `/proc` is a fixture, whose units' main processes are in `<root>/units`), the
 /// system's callers file, and whether the inferd watch writes to a file. The shipped `main` passes
-/// the default (the system's `/proc`, `/etc/quire`, no watch) and no environment variable can
+/// the default (the system's `/proc`, `/etc/bardo`, no watch) and no environment variable can
 /// change any.
 #[derive(Debug, Clone)]
 pub struct HarnessSeams {
     /// Where callers' cgroups are read.
     pub proc_root: ProcRoot,
-    /// The system's callers file, when the harness's main chose another than `/etc/quire`'s: the
+    /// The system's callers file, when the harness's main chose another than `/etc/bardo`'s: the
     /// harness is its own system, and a fixed role (the shell's) comes from no other file.
     pub system_callers: Option<PathBuf>,
     /// What is kept of the exchanges with inferd.
@@ -54,7 +54,7 @@ pub type Daemon = Companiond<PlannerModel<InferLink>, DbusTransport>;
 
 /// Builds the companion over `connection`, takes up what a restart finds in the eventlog (a
 /// router or memoryd that is not there yet leaves it with nothing to resume, never a failure) and
-/// serves `org.quire.Companion1`. Returns once the name is ours; the connection keeps serving
+/// serves `org.bardo.Companion1`. Returns once the name is ours; the connection keeps serving
 /// until it closes.
 pub async fn start(
     connection: &BusConnection,
@@ -220,7 +220,7 @@ pub async fn run_with(
         None => crate::callers::read(env),
     }
     .map_err(|e| ServeFault::Config(e.to_string()))?;
-    // The agent apps that are helpers run in the host the bus starts (`docket-agent --serve`); the
+    // The agent apps that are helpers run in the host the bus starts (`bardo-agent --serve`); the
     // tests that start a daemon of their own pass a scripted host or none (`start_with_agents`).
     let agents: Arc<dyn AgentApps> = Arc::new(AppsLink::new(connection.clone()));
     let _running = start_with_agents(

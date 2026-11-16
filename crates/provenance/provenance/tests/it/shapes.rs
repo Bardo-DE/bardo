@@ -32,7 +32,7 @@ fn every_actor() -> Vec<Actor> {
     let session = SessionId::parse("s-1").expect("session id");
     vec![
         Actor::User {
-            via: app("org.quire.Shell"),
+            via: app("org.bardo.Shell"),
         },
         Actor::Companion {
             session: session.clone(),
@@ -68,7 +68,7 @@ fn every_actor() -> Vec<Actor> {
         },
         Actor::Cli,
         Actor::App {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
         },
         Actor::ThirdParty {
             app: app("org.mozilla.firefox"),
@@ -227,11 +227,11 @@ fn label() -> Label {
         sources: [
             Source::Mail,
             Source::Screen {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
             },
             Source::Model(ModelRole::Reader),
             Source::Mcp(ClientName::parse("cli").expect("client")),
-            Source::App(app("org.quire.Calendar")),
+            Source::App(app("org.bardo.Calendar")),
             Source::User,
         ]
         .into(),
@@ -314,13 +314,13 @@ fn quarantined_opens_only_with_the_reader_key() {
 #[test]
 fn entities_and_witnesses_round_trip() {
     let entity = EntityId {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: EntityKind::parse("mail.thread").expect("kind"),
         key: EntityKey::parse("INBOX/42").expect("key"),
     };
     assert_eq!(
         round_trip(&entity),
-        r#"{"app":"org.quire.Mail","kind":"mail.thread","key":"INBOX/42"}"#
+        r#"{"app":"org.bardo.Mail","kind":"mail.thread","key":"INBOX/42"}"#
     );
     round_trip(&ActionName::parse("mail.thread.archive").expect("action"));
     for input in [

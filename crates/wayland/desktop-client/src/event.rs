@@ -11,7 +11,7 @@ use desktop_protocols::vocab::ActorKind;
 
 /// One thing the compositor said, in the core's words.
 ///
-/// The last five are the Quire arm (`quire_desktop_v1` and `quire_shell_v1`); `Window` is a
+/// The last five are the Quire arm (`bardo_desktop_v1` and `bardo_shell_v1`); `Window` is a
 /// Quire window, keyed by its ext handle's key, where `Toplevel` is the ext or wlr handle.
 ///
 /// ```
@@ -53,7 +53,7 @@ pub enum DesktopEvent {
     Window(WindowEvent),
     /// A Quire Space event.
     Space(SpaceEvent),
-    /// The active app and key window changed (`quire_desktop_manager_v1.active`).
+    /// The active app and key window changed (`bardo_desktop_manager_v1.active`).
     Active {
         /// The active app; `None` when no app is active.
         app: Option<AppKey>,
@@ -62,6 +62,6 @@ pub enum DesktopEvent {
         /// Who caused it.
         actor: ActorKind,
     },
-    /// A note from `quire_shell_v1`.
+    /// A note from `bardo_shell_v1`.
     Shell(ShellEvent),
 }

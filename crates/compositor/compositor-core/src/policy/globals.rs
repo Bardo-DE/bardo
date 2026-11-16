@@ -11,7 +11,7 @@ use account_core::SandboxFacts;
 pub enum ConnectionRole {
     /// The public socket.
     Public,
-    /// A connection handed to the shell (sill, layer-shell-host) through `org.quire.Compositor1`.
+    /// A connection handed to the shell (sill, layer-shell-host) through `org.bardo.Compositor1`.
     Shell,
     /// A connection handed to the agent tier (cuad).
     Agent,
@@ -70,7 +70,7 @@ pub enum GlobalKind {
     XdgForeign,
     /// `xdg_system_bell_v1`.
     SystemBell,
-    /// `quire_window_manager_v1` (C50).
+    /// `bardo_window_manager_v1` (C50).
     QuireWindow,
     /// `zwlr_layer_shell_v1`.
     LayerShell,
@@ -132,10 +132,10 @@ pub enum GlobalKind {
     /// `ext_foreign_toplevel_image_capture_source_manager_v1` (P2-Q3: window capture; a public
     /// client sees it, a sandbox does not).
     ToplevelCapture,
-    /// `quire_desktop_manager_v1`: the desktop model of apps, windows and Spaces (P2-Z; the
+    /// `bardo_desktop_manager_v1`: the desktop model of apps, windows and Spaces (P2-Z; the
     /// shell manages through it, an agent reads it).
     QuireDesktop,
-    /// `quire_shell_v1`: the shell's surface roles and system events (P2-Z; the shell only).
+    /// `bardo_shell_v1`: the shell's surface roles and system events (P2-Z; the shell only).
     QuireShell,
 }
 
@@ -324,8 +324,8 @@ const _: () = {
 /// managers, the toplevel list, the input-method and virtual-keyboard managers, the
 /// security-context manager, layer shell, the session lock, output and window management,
 /// workspaces, capture and the desktop and shell protocols. The shell connection sees
-/// everything. The agent connection sees everything but `quire_shell_v1`; the public socket
-/// sees neither `quire_desktop_manager_v1` nor `quire_shell_v1` (P2-Z).
+/// everything. The agent connection sees everything but `bardo_shell_v1`; the public socket
+/// sees neither `bardo_desktop_manager_v1` nor `bardo_shell_v1` (P2-Z).
 ///
 /// The table `GLOBALS` has one row per global: a new global fails to compile until it has a
 /// row that decides whether a sandbox sees it, its tier and its power (I7).

@@ -10,10 +10,10 @@ use memory_core::WaitingSetting;
 use settings_app_model::{Confinement, SettingPair, Trouble, Work};
 
 /// The bus name memory answers a refusal with when the caller may not do this.
-const NOT_ALLOWED: &str = "org.quire.Memory1.Error.NotAllowed";
+const NOT_ALLOWED: &str = "org.bardo.Memory1.Error.NotAllowed";
 
 /// The bus name memory answers with when a pair is not one it takes.
-const INVALID: &str = "org.quire.Memory1.Error.Invalid";
+const INVALID: &str = "org.bardo.Memory1.Error.Invalid";
 
 fn failure_of(error: &zbus::Error) -> MemoryFailure {
     if let zbus::Error::MethodError(name, _, _) = error {

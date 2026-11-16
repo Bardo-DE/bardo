@@ -9,14 +9,14 @@ use caller_identity_linux::{
 
 const PID: u32 = 4242;
 const SILL_CGROUP: &str =
-    "0::/user.slice/user-1000.slice/user@1000.service/app.slice/sill.service\n";
+    "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service\n";
 const IMAGE: &str = "/opt/quire/releases/1/bin/sill";
 
 const TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Shell"
-unit = "sill.service"
-exe  = ["/opt/quire/releases/*/bin/sill"]
+app  = "org.bardo.Shell"
+unit = "bardo-shell.service"
+exe  = ["/opt/bardo/releases/*/bin/sill"]
 role = "shell"
 "#;
 
@@ -56,7 +56,7 @@ fn a_root_owned_image_in_a_unit_reads_as_such() {
         FixtureImage::Present(IMAGE, FileTrust::RootOnly),
     ));
     let facts = probe(tree).expect("the probe reads");
-    assert_eq!(facts.cgroup.leaf(), "sill.service");
+    assert_eq!(facts.cgroup.leaf(), "bardo-shell.service");
     assert_eq!(facts.pid, pid());
     assert_eq!(facts.uid, Uid::new(1000));
     assert_eq!(facts.pin, Pin::AtConnect);

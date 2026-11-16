@@ -1,15 +1,15 @@
-# Who may call voiced (org.quire.Voice1), and as what. A caller is the systemd unit behind the bus
+# Who may call voiced (org.bardo.Voice1), and as what. A caller is the systemd unit behind the bus
 # connection (the bus names its process, /proc/<pid>/cgroup names the unit or app scope, and a
-# service's role goes only to the unit's main process). Install as /etc/quire/voiced-callers.toml;
+# service's role goes only to the unit's main process). Install as /etc/bardo/voiced-callers.toml;
 # the user's ~/.config/quire/voiced-callers.toml is laid over it, and its fixed-role rows are ignored.
 #
 #   role "sheet_host" + an app voiced.toml lists as `shell` -> sill: begins utterances and speech
 #
 # An app that an utterance is routed to attaches as the app its scope names; it has no row. A scope
-# never carries a fixed role, so the shell is sill.service and nothing else.
+# never carries a fixed role, so the shell is bardo-shell.service and nothing else.
 
 [[caller]]
-app = "org.quire.Shell"
-unit = "sill.service"
+app = "org.bardo.Shell"
+unit = "bardo-shell.service"
 role = "sheet_host"
-exe = ["/usr/bin/sill", "/usr/local/bin/sill", "/opt/quire/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]

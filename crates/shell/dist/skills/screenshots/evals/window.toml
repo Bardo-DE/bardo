@@ -1,4 +1,4 @@
 prompt = "Take a screenshot of this window"
 [[expect.calls]]
-action = "org.quire.Shell:shell.screenshot"
+action = "org.bardo.Shell:shell.screenshot"
 args = { kind = "window" }

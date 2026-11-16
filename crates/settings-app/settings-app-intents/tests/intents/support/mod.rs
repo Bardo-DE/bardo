@@ -1,5 +1,5 @@
 //! Settings served on a private bus, called the way intentd calls an app: from the connection
-//! that owns `org.quire.Intents1`, through `IntentProvider1`.
+//! that owns `org.bardo.Intents1`, through `IntentProvider1`.
 #![allow(dead_code)]
 
 mod bus;
@@ -21,7 +21,7 @@ use std::sync::{Arc, Mutex};
 pub use bus::PrivateBus;
 
 pub const TMP: &str = env!("CARGO_TARGET_TMPDIR");
-const APP: &str = "org.quire.Settings";
+const APP: &str = "org.bardo.Settings";
 
 /// A window that writes down what it is told: the notices that reached its inbox.
 pub struct WrittenDown(Mutex<Heard>);
@@ -81,7 +81,7 @@ fn from_the_terminal<T>(value: T) -> Labelled<T> {
     )
 }
 
-/// A call as `quire-do` makes it.
+/// A call as `bardo-do` makes it.
 pub fn invocation(action: &str, args: &[(&str, Value)]) -> Invocation {
     let args: Args = args
         .iter()

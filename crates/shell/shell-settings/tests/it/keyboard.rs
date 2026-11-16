@@ -179,7 +179,7 @@ fn overrides_round_trip_through_the_settings_file() {
         ..ShellFile::default()
     };
     store(&dir).save(&file).unwrap_or_else(|e| panic!("{e}"));
-    let text = std::fs::read_to_string(dir.path().join("sill/settings.toml"))
+    let text = std::fs::read_to_string(dir.path().join("shell/settings.toml"))
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(text.matches("[[keyboard.overrides]]").count(), 2, "{text}");
     assert!(!text.contains("rejected"), "{text}");

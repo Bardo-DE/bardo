@@ -1,20 +1,20 @@
-//! `docket-agent --serve`: the host as a service, which companiond asks to give the person's turn
-//! to the coding agent they chose as the assistant's model (`org.quire.AgentHost1.HandOver`).
+//! `bardo-agent --serve`: the host as a service, which companiond asks to give the person's turn
+//! to the coding agent they chose as the assistant's model (`org.bardo.AgentHost1.HandOver`).
 //!
-//! This process, not companiond, is the agent's host: it plays `org.quire.AcpAgent`, so it alone
+//! This process, not companiond, is the agent's host: it plays `org.bardo.AcpAgent`, so it alone
 //! opens the agent's session at the router (the router lets only that role do so), records the
 //! person's turn there, and makes every call the agent asks of it as a router call, ruled and
-//! asked about exactly as for `docket-agent` on a terminal. Companiond opens no session of an
+//! asked about exactly as for `bardo-agent` on a terminal. Companiond opens no session of an
 //! outside agent and gains no way to; the only thing it can ask here is a turn.
 //!
-//! It is started by the bus when companiond first calls (`org.quire.AcpAgent` is activatable),
+//! It is started by the bus when companiond first calls (`org.bardo.AcpAgent` is activatable),
 //! serves the pseudo-app once for every use, holds the assistant's agent session open between
 //! turns so the conversation goes on, runs the helpers' agents beside it, and ends after a quiet
 //! while. Handing a turn to another agent closes the first one's session and opens the next in the
 //! same process. The assistant's turns and every helper's jobs run at the same time; only calls
 //! on one session wait for each other.
 //!
-//! Only companiond may call: the callers table (`acp-callers.toml`) names its unit.
+//! Only companiond may call: the callers table (`agent-acp-callers.toml`) names its unit.
 
 mod object;
 mod watchdog;
@@ -282,15 +282,15 @@ impl Active {
     }
 }
 
-/// What only the acceptance harness chooses, as docket-acp's `HarnessSeams` does: the `/proc` the
+/// What only the acceptance harness chooses, as bardo-agent-acp's `HarnessSeams` does: the `/proc` the
 /// callers are read from (a fixture tree), the system's callers file, and how the agents'
 /// sandboxes are bounded. The packaged program passes the defaults ([`run`]): the system's `/proc`
-/// and `/etc/quire`, and a scope of the user manager.
+/// and `/etc/bardo`, and a scope of the user manager.
 #[derive(Debug)]
 pub struct HarnessSeams {
     /// Where callers' processes are read: the system's `/proc`, or a fixture tree.
     pub proc_root: ProcRoot,
-    /// The system's callers file, else `/etc/quire/acp-callers.toml`.
+    /// The system's callers file, else `/etc/bardo/agent-acp-callers.toml`.
     pub system_callers: Option<PathBuf>,
     /// How an agent's sandbox is bounded.
     pub limits: SandboxLimits,

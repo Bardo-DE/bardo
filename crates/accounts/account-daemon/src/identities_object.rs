@@ -1,4 +1,4 @@
-//! `org.quire.Identities1` at `/org/quire/Identities1`: the identities signed in on this machine
+//! `org.bardo.Identities1` at `/org/bardo/Identities1`: the identities signed in on this machine
 //! (the registry's accounts of a sign-in kind: OAuth, a password, an app password), on accountd's
 //! connection. Local runtimes, Tailscale, AI keys and agent logins are not identities, and
 //! `registry.json` is read as it is.

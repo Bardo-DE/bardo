@@ -28,7 +28,7 @@ use desktop_protocols::vocab::{ShellRole as ModelRole, WindowEntry as ModelEntry
 use account_core::SandboxFacts;
 use std::time::Duration;
 
-const INTERFACE: &str = "quire_shell_v1";
+const INTERFACE: &str = "bardo_shell_v1";
 
 /// Whether the client `id` is offered `interface`.
 fn sees(fixture: &mut Fixture, id: ClientId, interface: &str) -> bool {
@@ -39,7 +39,7 @@ fn sees(fixture: &mut Fixture, id: ClientId, interface: &str) -> bool {
         .with_list(|list| list.iter().any(|global| global.interface == interface))
 }
 
-/// Only the shell's connection is offered `quire_shell_v1` (I7): not the agent tier, not the
+/// Only the shell's connection is offered `bardo_shell_v1` (I7): not the agent tier, not the
 /// public socket, not a sandbox.
 #[test]
 fn only_the_shell_sees_quire_shell() {
@@ -86,7 +86,7 @@ fn map_layer(fixture: &mut Fixture, id: ClientId, ask: &LayerAsk) -> LayerSurfac
     layer
 }
 
-/// A shell connection with `quire_shell_v1` bound.
+/// A shell connection with `bardo_shell_v1` bound.
 pub(super) fn shell_client(fixture: &mut Fixture) -> (ClientId, ShellHandle) {
     let id = fixture.connect(ConnectionRole::Shell);
     let shell = ShellHandle::bind(fixture.client(id), 1);
@@ -95,8 +95,8 @@ pub(super) fn shell_client(fixture: &mut Fixture) -> (ClientId, ShellHandle) {
 }
 
 /// A program is given the connection its role may have (`Connect`, with the caller as the bus
-/// thread proved it): the shell gets `quire_shell_v1`, the agent tier and the portal do not
-/// (nor does the portal see `quire_desktop_manager_v1`, which is the shell's and the agent's),
+/// thread proved it): the shell gets `bardo_shell_v1`, the agent tier and the portal do not
+/// (nor does the portal see `bardo_desktop_manager_v1`, which is the shell's and the agent's),
 /// and anything else is refused with the reason the D-Bus caller is told (NEW-FA-2).
 #[test]
 fn the_proven_role_decides_which_connection_a_program_is_handed() {
@@ -114,7 +114,7 @@ fn the_proven_role_decides_which_connection_a_program_is_handed() {
     assert!(!sees(&mut fixture, agent, INTERFACE), "the agent tier");
     assert!(!sees(&mut fixture, portal, INTERFACE), "the portal");
     assert!(
-        !sees(&mut fixture, portal, "quire_desktop_manager_v1"),
+        !sees(&mut fixture, portal, "bardo_desktop_manager_v1"),
         "the portal is not shown the desktop model"
     );
     assert!(
@@ -203,7 +203,7 @@ fn a_role_is_given_to_one_layer_surface() {
     shell.set_role(second.surface(), ShellRole::Dock);
     fixture.pump();
     let error = fixture.client(id).protocol_error().expect("role_taken");
-    assert_eq!(error.interface, "quire_shell_v1");
+    assert_eq!(error.interface, "bardo_shell_v1");
     assert_eq!(error.code, ShellError::RoleTaken as u32);
 
     // A surface that is no layer surface is bad_surface.

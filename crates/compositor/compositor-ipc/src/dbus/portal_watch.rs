@@ -127,7 +127,7 @@ mod tests {
     fn the_agent_tier_cannot_fill_the_portals_table() {
         let watch = PortalWatch::default();
         let agent = Proven::new(
-            AppKey::new("org.quire.Cua").expect("an app"),
+            AppKey::new("org.bardo.ComputerUse").expect("an app"),
             roles::AGENT_TIER,
         );
         for n in 0..MAX_WATCHED {
@@ -140,7 +140,7 @@ mod tests {
 
     fn portal() -> Proven {
         Proven::new(
-            AppKey::new("org.quire.Portal").expect("an app"),
+            AppKey::new("org.bardo.Portal").expect("an app"),
             roles::PORTAL,
         )
     }

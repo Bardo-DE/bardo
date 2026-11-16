@@ -54,7 +54,7 @@ impl<A: Accounts + 'static, P: Procs> std::fmt::Debug for AgentSpawn<A, P> {
 impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
     /// A spawner for the programs in `file`, (the caller has checked that `agent.acp.agents` is on). Per-session socket directories
     /// go under `run_dir` (a directory only the user can enter, such as `$XDG_RUNTIME_DIR`);
-    /// `forwarder` is the `docket-net-forward` program; `registry` is shared with the
+    /// `forwarder` is the `bardo-agent-net-forward` program; `registry` is shared with the
     /// supervisor.
     pub fn new(
         file: Arc<AgentsFile>,
@@ -77,7 +77,7 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         }
     }
 
-    /// Starts every agent through the exec stage at `enter` (`docket-net-enter`), which limits
+    /// Starts every agent through the exec stage at `enter` (`bardo-agent-net-enter`), which limits
     /// what the agent may do with the files and the network it is given. Without it the agent
     /// is held by the sandbox alone, and its confinement says so.
     #[must_use]

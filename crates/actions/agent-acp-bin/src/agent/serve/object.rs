@@ -1,4 +1,4 @@
-//! The object companiond calls: `org.quire.AgentHost1`, open to that one caller.
+//! The object companiond calls: `org.bardo.AgentHost1`, open to that one caller.
 
 use super::Service;
 use action_core::HandOver;
@@ -14,7 +14,7 @@ pub(super) struct Object {
     pub(super) callers: Arc<Identity>,
 }
 
-#[zbus::interface(name = "org.quire.AgentHost1")]
+#[zbus::interface(name = "org.bardo.AgentHost1")]
 impl Object {
     async fn hand_over(
         &self,

@@ -147,9 +147,9 @@ mod tests {
                 CornerEffect::Cannot("putting the displays to sleep is not available yet".into()),
             ),
             (
-                item(OpenItem::App("org.quire.Files".into())),
+                item(OpenItem::App("org.bardo.Files".into())),
                 CornerEffect::Activate(Activation::Launch {
-                    app: AppId("org.quire.Files".into()),
+                    app: AppId("org.bardo.Files".into()),
                     action: DesktopAction::Default,
                 }),
             ),
@@ -188,7 +188,7 @@ mod tests {
     fn an_app_action_is_an_intent_and_a_bad_name_cannot_be_done() {
         let good = corner_effect(
             &CornerDo::AppAction {
-                app: "org.quire.Mail".into(),
+                app: "org.bardo.Mail".into(),
                 intent: "mail.compose".into(),
             },
             None,

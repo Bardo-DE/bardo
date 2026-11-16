@@ -49,7 +49,7 @@ impl OwnProfiles {
             ProfileName::parse("ghostty").unwrap_or_else(|_| ProfileName::default_profile());
         Self(vec![
             ("ghostty".to_owned(), ghostty),
-            ("org.quire.temor".to_owned(), keymap_aware_profile()),
+            ("org.bardo.temor".to_owned(), keymap_aware_profile()),
         ])
     }
 }

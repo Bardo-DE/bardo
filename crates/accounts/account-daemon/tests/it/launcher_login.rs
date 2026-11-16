@@ -96,7 +96,7 @@ async fn a_login_goes_to_the_registrant_alone_and_ready_sets_the_account_ok() {
                 .await
                 .expect_err("not its request")
         ),
-        "org.quire.Accounts1.Error.UnknownRequest"
+        "org.bardo.Accounts1.Error.UnknownRequest"
     );
     launcher
         .proxy

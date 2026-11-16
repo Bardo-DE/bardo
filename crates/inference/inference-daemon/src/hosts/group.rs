@@ -15,7 +15,7 @@
 //! - inferd is killed (`SIGKILL`, the OOM killer): nothing of inferd runs. The kernel kills the
 //!   direct child (`PR_SET_PDEATHSIG`, [`die_with_parent`]), which reaches no grandchild; those
 //!   are left to the cgroup of the unit inferd runs in (`KillMode=control-group` in
-//!   `dist/inferd.service`). Outside a unit (tests, harnesses) a grandchild of a killed inferd
+//!   `dist/bardo-inferd.service`). Outside a unit (tests, harnesses) a grandchild of a killed inferd
 //!   lives on.
 
 use rustix::process::{Pid, Signal, kill_process_group, test_kill_process_group};

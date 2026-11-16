@@ -145,8 +145,8 @@ while [ $# -gt 0 ]; do
 done
 [ "$MODE" != real ] || [ "${#ONLY[@]}" = 0 ] || usage
 
-OUT_ROOT="$SILL_OUT_ROOT/accept-launcher"
-SHOTS="$SILL_SHOTS"
+OUT_ROOT="$BARDO_SHELL_OUT_ROOT/accept-launcher"
+SHOTS="$BARDO_SHELL_SHOTS"
 OUT_DIR="$OUT_ROOT"
 
 # ---------------------------------------------------------------- shared helpers
@@ -291,7 +291,7 @@ EOF
 }
 
 # The stub file manager (examples/file_manager_stub.rs) on the private bus.
-STUB_FM="$SILL_OUT/examples/file_manager_stub"
+STUB_FM="$BARDO_SHELL_OUT/examples/file_manager_stub"
 FM=
 start_fm() {
   "$STUB_FM" "$BUS" >"$OUT_DIR/file-manager.log" 2>&1 &
@@ -406,7 +406,7 @@ group_toggle() {
 
 # ---------------------------------------------------------------- group ui
 
-DEMO="$SILL_OUT/examples/launcher_demo"
+DEMO="$BARDO_SHELL_OUT/examples/launcher_demo"
 
 # How many pixels differ between the PNGs $1 and $2.
 differing_pixels() {
@@ -851,7 +851,7 @@ group_palette() {
   : >"$OUT_DIR/keys.log"
   seed_documents "$HOME_DIR" 3000 pdfs
   mkdir -p "$CONFIG/sill"
-  printf '[launcher]\nweb_search = true\n' >"$CONFIG/sill/settings.toml"
+  printf '[launcher]\nweb_search = true\n' >"$CONFIG/shell/settings.toml"
   start_private_bus || { group_end; return 1; }
   launch_daemon || { group_end; return 1; }
   NAME=$(output_name) || { group_end; return 1; }
@@ -871,12 +871,12 @@ group_palette() {
 
 # ---------------------------------------------------------------- group files
 
-FILES_PROBE="$SILL_OUT/examples/files_probe"
+BARDO_FILES_PROBE="$BARDO_SHELL_OUT/examples/files_probe"
 TOKEN=sill-accept-files-token
 STEP_FAILED=0
 STEP_PENDING=0
 
-files_probe() { in_env "$FILES_PROBE" --home "$HOME_DIR" "$@"; }
+files_probe() { in_env "$BARDO_FILES_PROBE" --home "$HOME_DIR" "$@"; }
 
 pass() { echo "step $1: PASS - $2"; }
 fail() { echo "step $1: FAIL - $2"; STEP_FAILED=1; }
@@ -917,7 +917,7 @@ EOF
       echo "$type=sill-stub-opener.desktop"
     done
   } >"$CONFIG/mimeapps.list"
-  : >"$CONFIG/sill/settings.toml"
+  : >"$CONFIG/shell/settings.toml"
 }
 
 # A private bus (dev/private-bus.conf plus one scratch service folder, empty until step 3 puts the
@@ -927,7 +927,7 @@ start_bus_with_services() {
   local out
   mkdir -p "$SCRATCH/services"
   sed "s|</busconfig>|  <servicedir>$SCRATCH/services</servicedir>\n</busconfig>|" \
-    "$SILL_REPO/dev/private-bus.conf" >"$SCRATCH/bus.conf"
+    "$BARDO_SHELL_REPO/dev/private-bus.conf" >"$SCRATCH/bus.conf"
   out=$(dbus-daemon --config-file="$SCRATCH/bus.conf" --fork \
     --print-address=1 --print-pid=1) || return 1
   BUS=$(sed -n 1p <<<"$out")
@@ -1004,7 +1004,7 @@ files_open() {
     pending 2 "no user systemd manager here: the scope path was not run"
     return
   fi
-  in_env env XDG_RUNTIME_DIR="$real_runtime" "$FILES_PROBE" --home "$HOME_DIR" --backend fd \
+  in_env env XDG_RUNTIME_DIR="$real_runtime" "$BARDO_FILES_PROBE" --home "$HOME_DIR" --backend fd \
     --query m9-rep --choose primary >>"$OUT_DIR/step2.txt" 2>&1
   if grep -qxF "$want" "$OPENED" && grep -q 'app-sill-open' "$SCRATCH/scopes.log"; then
     pass 2 "Enter opened it inside a transient scope ($(head -1 "$SCRATCH/scopes.log"))"
@@ -1068,11 +1068,11 @@ files_tracker() {
     pending 4 "no localsearch here: Tracker's sandbox test was not run"
     return
   fi
-  if [ -n "${SILL_PREBUILT:-}" ]; then
+  if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then
     pending 4 "expected skip: cargo does not run in the jail (A7); the Tracker sandbox test is not run under dev/accept.sh"
     return
   fi
-  (cd "$SILL_REPO" && cargo test -p shell-search --test it files_tracker_live -- --ignored \
+  (cd "$BARDO_SHELL_REPO" && cargo test -p shell-search --test it files_tracker_live -- --ignored \
     --nocapture) >"$OUT_DIR/step4-tracker.txt" 2>&1
   if grep -q 'test result: ok. 1 passed' "$OUT_DIR/step4-tracker.txt"; then
     pass 4 "Tracker found m9-report.pdf and 'm9 dir' in localsearch's sandbox"
@@ -1462,7 +1462,7 @@ main_real() {
     | grep -o "'[a-z_]*data_control_manager_v1'" | tr '\n' ' ')" >&2
   mkdir -p "$CONFIG/sill"
   printf '[launcher]\nweb_search = true\nclipboard_history = "memory"\n' \
-    >"$CONFIG/sill/settings.toml"
+    >"$CONFIG/shell/settings.toml"
   launch_daemon || exit 1
   NAME=$(output_name) || exit 1
   sleep 1.5

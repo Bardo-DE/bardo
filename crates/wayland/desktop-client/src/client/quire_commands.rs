@@ -5,11 +5,11 @@ use wayland_client::protocol::wl_output::WlOutput;
 use wayland_client::protocol::wl_seat::WlSeat;
 use wayland_client::protocol::wl_surface::WlSurface;
 
-use desktop_protocols::client::quire_desktop_v1::{
-    quire_desktop_app_v1::QuireDesktopAppV1, quire_desktop_manager_v1::QuireDesktopManagerV1,
-    quire_desktop_space_v1::QuireDesktopSpaceV1, quire_desktop_window_v1::QuireDesktopWindowV1,
+use desktop_protocols::client::bardo_desktop_v1::{
+    bardo_desktop_app_v1::BardoDesktopAppV1, bardo_desktop_manager_v1::BardoDesktopManagerV1,
+    bardo_desktop_space_v1::BardoDesktopSpaceV1, bardo_desktop_window_v1::BardoDesktopWindowV1,
 };
-use desktop_protocols::client::quire_shell_v1::quire_shell_v1::QuireShellV1;
+use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::BardoShellV1;
 use desktop_protocols::vocab::{PlaceTarget, Toggle, WireCode};
 
 use super::wire::Wire;
@@ -34,28 +34,28 @@ fn generated<V: WireCode, G: TryFrom<u32>>(value: V) -> Result<G, CommandError> 
     G::try_from(value.code()).map_err(|_| CommandError::Code(value.code()))
 }
 
-fn window(wire: &Wire, key: ToplevelKey) -> Result<&QuireDesktopWindowV1, CommandError> {
+fn window(wire: &Wire, key: ToplevelKey) -> Result<&BardoDesktopWindowV1, CommandError> {
     wire.linker
         .object_of(key)
         .and_then(|object| wire.handles.windows.get(&object))
         .ok_or(CommandError::UnknownToplevel(key))
 }
 
-fn app(wire: &Wire, key: AppKey) -> Result<&QuireDesktopAppV1, CommandError> {
+fn app(wire: &Wire, key: AppKey) -> Result<&BardoDesktopAppV1, CommandError> {
     wire.handles
         .apps
         .get(&key)
         .ok_or(CommandError::UnknownApp(key))
 }
 
-fn space(wire: &Wire, key: SpaceKey) -> Result<&QuireDesktopSpaceV1, CommandError> {
+fn space(wire: &Wire, key: SpaceKey) -> Result<&BardoDesktopSpaceV1, CommandError> {
     wire.handles
         .spaces
         .get(&key)
         .ok_or(CommandError::UnknownSpace(key))
 }
 
-fn manager(wire: &Wire, route: CommandRoute) -> Result<&QuireDesktopManagerV1, CommandError> {
+fn manager(wire: &Wire, route: CommandRoute) -> Result<&BardoDesktopManagerV1, CommandError> {
     wire.handles
         .quire_manager
         .as_ref()
@@ -65,7 +65,7 @@ fn manager(wire: &Wire, route: CommandRoute) -> Result<&QuireDesktopManagerV1, C
         })
 }
 
-fn shell(wire: &Wire, route: CommandRoute) -> Result<&QuireShellV1, CommandError> {
+fn shell(wire: &Wire, route: CommandRoute) -> Result<&BardoShellV1, CommandError> {
     wire.handles
         .quire_shell
         .as_ref()
@@ -108,7 +108,7 @@ fn identifier(wire: &Wire, key: ToplevelKey) -> Result<String, CommandError> {
 }
 
 /// Sends a command that [`carries`] says is the Quire arm's. A key with no object is
-/// `CommandError::Unknown…`; the shell commands need `quire_shell_v1` bound.
+/// `CommandError::Unknown…`; the shell commands need `bardo_shell_v1` bound.
 ///
 /// Activation passes serial 0: the Quire arm's client is the shell, which the compositor trusts
 /// to activate without an input serial (FINDINGS).

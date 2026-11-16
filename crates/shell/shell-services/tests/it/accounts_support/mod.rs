@@ -10,8 +10,8 @@ use shell_testkit::PrivateBus;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 
-pub const ACCOUNT: &str = "/org/quire/Accounts1/account/work";
-const MANAGER: &str = "/org/quire/Accounts1";
+pub const ACCOUNT: &str = "/org/bardo/Accounts1/account/work";
+const MANAGER: &str = "/org/bardo/Accounts1";
 
 /// What the stand-in was asked.
 #[derive(Debug, Default)]
@@ -29,7 +29,7 @@ struct Manager {
     refusals: AtomicUsize,
 }
 
-#[zbus::interface(name = "org.quire.Accounts1.Manager")]
+#[zbus::interface(name = "org.bardo.Accounts1.Manager")]
 impl Manager {
     fn needing_reauth(&self) -> zbus::fdo::Result<Vec<(OwnedObjectPath, String)>> {
         let refused = self
@@ -52,7 +52,7 @@ struct Account {
     record: Shared,
 }
 
-#[zbus::interface(name = "org.quire.Accounts1.Account")]
+#[zbus::interface(name = "org.bardo.Accounts1.Account")]
 impl Account {
     #[zbus(property)]
     fn id(&self) -> String {
@@ -92,7 +92,7 @@ impl Account {
             .push(parent_window);
         self.state = "ok".to_owned();
         let _ = self.state_changed(&emitter).await;
-        OwnedObjectPath::try_from("/org/quire/Accounts1/request/1")
+        OwnedObjectPath::try_from("/org/bardo/Accounts1/request/1")
             .unwrap_or_else(|e| panic!("{e}"))
     }
 }
@@ -112,7 +112,7 @@ fn manager(refusals: usize, listed: Vec<(&str, &str)>) -> Manager {
     }
 }
 
-/// The stand-in on `bus`, holding `org.quire.Accounts1`.
+/// The stand-in on `bus`, holding `org.bardo.Accounts1`.
 pub struct FakeAccountd {
     pub connection: zbus::Connection,
     pub record: Shared,
@@ -149,7 +149,7 @@ impl FakeAccountd {
         }
         .unwrap_or_else(|e| panic!("{e}"));
         let connection = builder
-            .name("org.quire.Accounts1")
+            .name("org.bardo.Accounts1")
             .unwrap_or_else(|e| panic!("{e}"))
             .build()
             .await

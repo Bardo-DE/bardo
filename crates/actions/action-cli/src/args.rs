@@ -190,7 +190,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
     match words.as_slice() {
         _ if scan.has("help") => Ok(Command::Help),
         [] if scan.has("last") => Ok(Command::Undo(UndoWhich::Last)),
-        [] => Err(Failure::usage("no command given (try: quire-do --help)")),
+        [] => Err(Failure::usage("no command given (try: bardo-do --help)")),
         ["apps"] => no_flags("apps").map(|()| Command::Apps),
         ["apps", ..] => Err(Failure::usage("apps takes no arguments")),
         ["skills"] => no_flags("skills").map(|()| Command::Skills),
@@ -199,7 +199,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
             app: (*app).to_owned(),
             action: (*action).to_owned(),
         }),
-        ["describe", ..] => Err(Failure::usage("usage: quire-do describe <app> <action>")),
+        ["describe", ..] => Err(Failure::usage("usage: bardo-do describe <app> <action>")),
         ["ask", text @ ..] if !text.is_empty() => no_flags("ask").and_then(|()| {
             Ok(Command::Ask {
                 text: text.join(" "),
@@ -210,7 +210,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 },
             })
         }),
-        ["ask"] => Err(Failure::usage("usage: quire-do ask <text>")),
+        ["ask"] => Err(Failure::usage("usage: bardo-do ask <text>")),
         ["sessions"] => no_flags("sessions").map(|()| Command::Sessions(SessionsCmd::List)),
         ["sessions", "load", id] => no_flags("sessions load")
             .and_then(|()| session_word(id))
@@ -224,7 +224,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 ),
                 _ => {
                     return Err(Failure::usage(
-                        "usage: quire-do sessions fork <id> [--at <row>]",
+                        "usage: bardo-do sessions fork <id> [--at <row>]",
                     ));
                 }
             };
@@ -234,14 +234,14 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
             }))
         }
         ["sessions", ..] => Err(Failure::usage(
-            "usage: quire-do sessions | sessions load <id> | sessions fork <id> [--at <row>]",
+            "usage: bardo-do sessions | sessions load <id> | sessions fork <id> [--at <row>]",
         )),
         ["undo"] if scan.has("last") => Ok(Command::Undo(UndoWhich::Last)),
         ["undo", id] => id
             .parse::<u64>()
             .map(|n| Command::Undo(UndoWhich::Entry(n)))
             .map_err(|_| Failure::usage(format!("{id:?} is not an undo id"))),
-        ["undo", ..] => Err(Failure::usage("usage: quire-do undo <undo-id> | --last")),
+        ["undo", ..] => Err(Failure::usage("usage: bardo-do undo <undo-id> | --last")),
         [app] if scan.has("list") => Ok(Command::List {
             app: (*app).to_owned(),
         }),
@@ -249,12 +249,12 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
             app: (*app).to_owned(),
             text: text.join(" "),
         }),
-        [_, "search"] => Err(Failure::usage("usage: quire-do <app> search <text>")),
+        [_, "search"] => Err(Failure::usage("usage: bardo-do <app> search <text>")),
         [app, "context"] => no_flags("context").map(|()| Command::Context {
             app: (*app).to_owned(),
         }),
         [_] => Err(Failure::usage(
-            "usage: quire-do <app> <action> …, or quire-do <app> --list",
+            "usage: bardo-do <app> <action> …, or bardo-do <app> --list",
         )),
         [app, action, targets @ ..] => Ok(Command::Call(CallArgs {
             app: (*app).to_owned(),

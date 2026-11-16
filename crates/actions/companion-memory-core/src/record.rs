@@ -132,11 +132,11 @@ fn actor_of(agent: &AgentRef) -> Actor {
 }
 
 fn shell() -> AppName {
-    AppName::parse("org.quire.Shell").expect("`org.quire.Shell` is a valid app name")
+    AppName::parse("org.bardo.Shell").expect("`org.bardo.Shell` is a valid app name")
 }
 
 fn router_app() -> AppName {
-    AppName::parse("org.quire.Intents1").expect("`org.quire.Intents1` is a valid app name")
+    AppName::parse("org.bardo.Intents1").expect("`org.bardo.Intents1` is a valid app name")
 }
 
 fn router() -> Actor {

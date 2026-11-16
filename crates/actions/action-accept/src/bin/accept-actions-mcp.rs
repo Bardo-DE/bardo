@@ -1,4 +1,4 @@
-//! The bridge an external agent starts, as its own process: the packaged `actions-mcp` main, under
+//! The bridge an external agent starts, as its own process: the packaged `bardo-actions-mcp` main, under
 //! a name of the acceptance harness. The harness binds it into the agent's sandbox.
 
 use std::process::ExitCode;
@@ -7,7 +7,7 @@ fn main() -> ExitCode {
     let args = match action_mcp::Args::parse(std::env::args().skip(1)) {
         Ok(args) => args,
         Err(why) => {
-            eprintln!("actions-mcp: {why}");
+            eprintln!("bardo-actions-mcp: {why}");
             return ExitCode::from(2);
         }
     };
@@ -17,7 +17,7 @@ fn main() -> ExitCode {
     {
         Ok(runtime) => runtime,
         Err(why) => {
-            eprintln!("actions-mcp: no runtime: {why}");
+            eprintln!("bardo-actions-mcp: no runtime: {why}");
             return ExitCode::FAILURE;
         }
     };
@@ -25,7 +25,7 @@ fn main() -> ExitCode {
     match runtime.block_on(action_mcp::run(args, &env)) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
-            eprintln!("actions-mcp: {why}");
+            eprintln!("bardo-actions-mcp: {why}");
             ExitCode::FAILURE
         }
     }

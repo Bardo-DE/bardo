@@ -220,11 +220,11 @@ mod tests {
     fn known() -> HotKnown {
         HotKnown {
             apps: vec![HotApp {
-                id: "org.quire.Mail".to_owned(),
+                id: "org.bardo.Mail".to_owned(),
                 name: "Mail".to_owned(),
             }],
             actions: vec![HotActionChoice {
-                app: "org.quire.Mail".to_owned(),
+                app: "org.bardo.Mail".to_owned(),
                 action: "compose".to_owned(),
                 label: "Compose".to_owned(),
             }],
@@ -240,20 +240,20 @@ mod tests {
         let cases = [
             (
                 HotDo::AppAction {
-                    app: "org.quire.Mail".to_owned(),
+                    app: "org.bardo.Mail".to_owned(),
                     action: "compose".to_owned(),
                 },
                 "Mail \u{203a} Compose",
             ),
             (
                 HotDo::AppAction {
-                    app: "org.quire.Notes".to_owned(),
+                    app: "org.bardo.Notes".to_owned(),
                     action: "new".to_owned(),
                 },
                 "Notes \u{203a} new",
             ),
             (
-                HotDo::Open(HotItem::App("org.quire.Mail".to_owned())),
+                HotDo::Open(HotItem::App("org.bardo.Mail".to_owned())),
                 "Open Mail",
             ),
             (

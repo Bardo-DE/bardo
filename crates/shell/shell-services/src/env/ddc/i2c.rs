@@ -4,7 +4,7 @@
 //!
 //! Access is a udev matter: a ddcutil package that ships a `uaccess` rule for `/dev/i2c-*` on
 //! display adapters (Fedora's does) grants the seat's user access, and `dist/install.sh` puts
-//! `dist/udev/60-sill-ddc.rules` in place, with the `i2c-dev` module load, where no ddcutil rule
+//! `dist/udev/60-bardo-shell-ddc.rules` in place, with the `i2c-dev` module load, where no ddcutil rule
 //! exists. Without access every probe comes back empty and brightness keys
 //! fall through to nothing, quietly.
 

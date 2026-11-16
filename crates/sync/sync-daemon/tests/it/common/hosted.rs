@@ -1,5 +1,5 @@
 //! accountd, hosted in the test process over fakes and reached as syncd reaches it: through
-//! account-client's in-process transport, as syncd (`org.quire.Sync`). What the real accountd is
+//! account-client's in-process transport, as syncd (`org.bardo.Sync`). What the real accountd is
 //! on a bus, this is in memory: the registry, the secrets and the audit are memory, the sheet
 //! host is a person who allows the first account of every consent ask (Always) and whose
 //! conversations (a sign-in) are scripted, and the relays reach the fake servers. No bus for
@@ -57,7 +57,7 @@ pub type Service =
 
 pub type Link = HostedLink<Service, PorterRelays>;
 
-/// The hosted service and the handles syncd uses, as syncd (`org.quire.Sync`).
+/// The hosted service and the handles syncd uses, as syncd (`org.bardo.Sync`).
 pub struct Hosted {
     pub service: Arc<Service>,
     pub porter: Porter<Link>,

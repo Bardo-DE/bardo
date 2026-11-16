@@ -34,7 +34,7 @@ fn reach_policy_for_card() -> TaskPolicy {
         space: space("work"),
         from: vec![TurnId(1)],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::UndoableWrite,
         )]),
         kinds: BTreeSet::from([kind("mail.thread")]),
@@ -182,11 +182,11 @@ fn a_goal_is_words_that_fit_and_its_debug_shows_no_words() {
 
 #[test]
 fn a_reach_is_the_named_apps_up_to_the_chosen_ceiling_and_nothing_else() {
-    let mail = manifest("org.quire.Mail", vec![]);
-    let files = manifest("org.quire.Files", vec![]);
+    let mail = manifest("org.bardo.Mail", vec![]);
+    let files = manifest("org.bardo.Files", vec![]);
     let installed = [&mail, &files];
     let policy = reach_policy(
-        &[app("org.quire.Mail")],
+        &[app("org.bardo.Mail")],
         Ceiling::Change,
         &space("work"),
         &installed,
@@ -196,7 +196,7 @@ fn a_reach_is_the_named_apps_up_to_the_chosen_ceiling_and_nothing_else() {
     assert_eq!(
         policy.actions,
         BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::UndoableWrite
         )])
     );
@@ -205,7 +205,7 @@ fn a_reach_is_the_named_apps_up_to_the_chosen_ceiling_and_nothing_else() {
     );
     assert_eq!(
         reach_lines(&policy),
-        ["org.quire.Mail: look at things and change them (changes can be undone)"]
+        ["org.bardo.Mail: look at things and change them (changes can be undone)"]
     );
 
     let ceilings = [
@@ -222,12 +222,12 @@ fn a_reach_is_the_named_apps_up_to_the_chosen_ceiling_and_nothing_else() {
     );
     assert_eq!(
         reach_policy(
-            &[app("org.quire.Mail"), app("org.quire.Chat")],
+            &[app("org.bardo.Mail"), app("org.bardo.Chat")],
             Ceiling::Look,
             &space("work"),
             &installed
         ),
-        Err(ReachFault::NoSuchApp("org.quire.Chat".to_owned()))
+        Err(ReachFault::NoSuchApp("org.bardo.Chat".to_owned()))
     );
 }
 

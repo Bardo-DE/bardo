@@ -20,7 +20,7 @@ use std::sync::Arc;
 use super::bus::PrivateBus;
 
 /// The name that plays every role, for a test that calls every member.
-pub const EVERYTHING: &str = "org.quire.Everything";
+pub const EVERYTHING: &str = "org.bardo.Everything";
 
 pub fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app name")
@@ -76,7 +76,7 @@ impl World {
         Self::serving_gated(router, config, leaf, AcpGate::shut()).await
     }
 
-    /// As `serving_in`, with `org.quire.Acp` a name only while `acp` shows the setting on.
+    /// As `serving_in`, with `org.bardo.Acp` a name only while `acp` shows the setting on.
     pub async fn serving_gated(
         router: Router<FakeSeams>,
         config: IntentdConfig,

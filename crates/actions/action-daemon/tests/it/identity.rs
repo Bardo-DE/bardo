@@ -17,11 +17,11 @@ fn token() -> ActivationToken {
 fn read_t2() -> CallRequest {
     CallRequest {
         action: action_vocab::ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: ActionName::parse("mail.thread.read").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
             key: provenance::EntityKey::parse("t2").expect("key"),
         }]),
@@ -51,8 +51,8 @@ fn performed(world: &World) -> Vec<Option<ActivationToken>> {
 async fn the_launchers_token_crosses_the_bus_to_the_app_and_the_cli_loses_it() {
     let world = World::serving_in(mail_router(), shipped(), "vte-spawn-1.scope").await;
 
-    // sill owns org.quire.Shell: the launcher. The token goes through D-Bus options.
-    let (sill, _keep_sill) = world.client(&["org.quire.Shell"]).await;
+    // sill owns org.bardo.Shell: the launcher. The token goes through D-Bus options.
+    let (sill, _keep_sill) = world.client(&["org.bardo.Shell"]).await;
     let sill = Intents::over(sill);
     let done = sill
         .perform_activated(read_t2(), None, None, Some(token()))
@@ -87,7 +87,7 @@ async fn an_unnamed_connection_is_the_cli_only_in_a_terminal_scope() {
         ("tmux-spawn-9.scope", Is::Cli),
         ("session-2.scope", Is::Cli),
         ("app-org.example.Thing-5.scope", Is::PlainApp),
-        ("intentd.service", Is::Nobody),
+        ("bardo-actiond.service", Is::Nobody),
         ("run-r1.scope", Is::Nobody),
     ] {
         let world = World::serving_in(mail_router(), shipped(), leaf).await;

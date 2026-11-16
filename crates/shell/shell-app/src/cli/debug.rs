@@ -107,7 +107,7 @@ pub enum DebugAction {
     /// lock).
     IdleWake,
     /// Switch the conversation SESSION to MODE (`auto` or `manual`) as the shell does, for a run
-    /// the companion's box does not hold (one asked through `quire-do`). The router's
+    /// the companion's box does not hold (one asked through `bardo-do`). The router's
     /// `ModeChanged` signal says it took; a refusal is in the daemon's log.
     Mode {
         /// The conversation's id, as `SessionOpened` names it.

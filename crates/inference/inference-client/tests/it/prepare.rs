@@ -126,7 +126,7 @@ async fn a_prepare_that_inferd_refuses_is_denied_with_the_slug_and_no_daemon_is_
 
 fn app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Voice").expect("name"),
+        name: AppName::parse("org.bardo.Voice").expect("name"),
         isolation: Isolation::Unsandboxed,
     }
 }

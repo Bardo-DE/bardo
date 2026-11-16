@@ -149,7 +149,7 @@ impl Live {
                 .emit_signal(
                     Some(opener.name.as_str()),
                     SHEET_PATH,
-                    "org.quire.AccountsSheet1",
+                    "org.bardo.AccountsSheet1",
                     "Input",
                     &(handle.as_str(), json.as_str()),
                 )

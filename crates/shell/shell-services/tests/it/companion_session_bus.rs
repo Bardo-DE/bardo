@@ -65,7 +65,7 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
         &companiond,
-        "/org/quire/Companion1",
+        "/org/bardo/Companion1",
         StandInCompanion {
             session: session.map(str::to_owned),
             log: desk.log.clone(),
@@ -79,11 +79,11 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
     let served = intentd.object_server();
     match router {
         Router::Labelled => served
-            .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
+            .at("/org/bardo/Intents1", StandInSession(desk.log.clone()))
             .await
             .unwrap_or_else(|e| panic!("{e}")),
         Router::Older => served
-            .at("/org/quire/Intents1", StandInOlderSession(desk.log.clone()))
+            .at("/org/bardo/Intents1", StandInOlderSession(desk.log.clone()))
             .await
             .unwrap_or_else(|e| panic!("{e}")),
     };
@@ -138,8 +138,8 @@ impl Bench {
             self.companiond
                 .emit_signal(
                     None::<&str>,
-                    "/org/quire/Companion1",
-                    "org.quire.Companion1",
+                    "/org/bardo/Companion1",
+                    "org.bardo.Companion1",
                     "AnswerAdded",
                     &(ObjectPath::try_from(answer_path(&task()).as_str())
                         .unwrap_or_else(|e| panic!("{e}")),),
@@ -226,7 +226,7 @@ async fn a_handle_refused_after_close_reads_plainly_and_is_not_asked_again() {
         .emit_signal(
             None::<&str>,
             answer_path(&task()).as_str(),
-            "org.quire.Companion1.Answer",
+            "org.bardo.Companion1.Answer",
             "Updated",
             &(json(&with_handle()),),
         )

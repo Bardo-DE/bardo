@@ -47,11 +47,11 @@ impl Doc {
             bundle_size: "123".into(),
             files: vec![
                 f("bin/casement", "casement"),
-                f("share/wayland-sessions/quire.desktop", "[Desktop Entry]"),
+                f("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
             ],
             exports: vec![(
-                "/usr/share/wayland-sessions/quire.desktop".into(),
-                "share/wayland-sessions/quire.desktop".into(),
+                "/usr/share/wayland-sessions/bardo.desktop".into(),
+                "share/wayland-sessions/bardo.desktop".into(),
             )],
             system: Vec::new(),
         }

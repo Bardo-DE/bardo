@@ -1,4 +1,4 @@
-//! The two actions of `org.quire.Companion`, which intentd hosts as a built-in provider: starting
+//! The two actions of `org.bardo.Companion`, which intentd hosts as a built-in provider: starting
 //! a worker task and messaging one. They live here because both are the router's own business:
 //! a worker is a child session under the spawner's task policy (never wider), and a message goes
 //! through the same stamping, labelling and delivery as `.Message.Send`.
@@ -36,7 +36,7 @@ fn failed(why: &str) -> AppRefusal {
 }
 
 fn name() -> AppName {
-    AppName::parse(COMPANION_APP).expect("`org.quire.Companion` is a valid app name")
+    AppName::parse(COMPANION_APP).expect("`org.bardo.Companion` is a valid app name")
 }
 
 /// The caller the router speaks as when the provider sends on a session's behalf: the
@@ -103,7 +103,7 @@ fn refused_send(why: IntentsReply) -> AppRefusal {
 
 impl<S: Seams> Router<S> {
     /// Performs `companion.task.start` or `companion.task.message` for the hosted
-    /// `org.quire.Companion` provider. Anything else is unsupported.
+    /// `org.bardo.Companion` provider. Anything else is unsupported.
     pub fn companion_perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         match inv.action.as_str() {
             "companion.task.start" => self.task_start(&inv),

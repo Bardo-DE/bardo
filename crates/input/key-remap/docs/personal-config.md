@@ -1,9 +1,9 @@
 # Personal configuration
 
-Your own choices go in a TOML file. keycap reads two places you edit, the later overriding the earlier. A third, `/usr/lib/keycap/keycap.toml`, is
+Your own choices go in a TOML file. keycap reads two places you edit, the later overriding the earlier. A third, `/usr/lib/bardo/key-remap/key-remap.toml`, is
 what a desktop ships and lies under both; leave it alone and override it here.
 
-1. `/etc/keycap/keycap.toml`: machine-wide, applies at the login screen too, reloaded when
+1. `/etc/bardo/key-remap/key-remap.toml`: machine-wide, applies at the login screen too, reloaded when
    saved. **Every session on the machine shares it**, whichever desktop it runs. keycap uses it
    only when root owns it and nobody else can change it, or any folder above it: make it with
    `sudo` and mode `644`. A file anyone else could write is ignored, and the log says so (the
@@ -19,7 +19,7 @@ what a desktop ships and lies under both; leave it alone and override it here.
 When a desktop forwards `~/.config/keycap/keycap.toml`, keycap keeps from it only rules that need a
 modifier held (Command, Option, Control or Shift) and write one stroke, and at most 256 of them; the rest
 are reported and left out. A rule on a key pressed alone, a rule whose `then` is a list of strokes or
-`[]`, and a long list all belong in `/etc/keycap/keycap.toml`, which is not cut down. An administrator who
+`[]`, and a long list all belong in `/etc/bardo/key-remap/key-remap.toml`, which is not cut down. An administrator who
 wants lists in your file too sets this in the machine file:
 
 ```toml
@@ -102,8 +102,8 @@ swapped, the layout is wrong.
 
 As on macOS: Caps Lock switches input source (fcitx5's trigger is Ctrl+Space), Shift+Caps Lock is
 the real Caps Lock. A desktop that ships keycap's defaults (sill does) already has the first rule below in
-`/usr/lib/keycap/keycap.toml`. To change it, or on a machine without that desktop, put this in the
-machine file, `/etc/keycap/keycap.toml`: a desktop that forwards
+`/usr/lib/bardo/key-remap/key-remap.toml`. To change it, or on a machine without that desktop, put this in the
+machine file, `/etc/bardo/key-remap/key-remap.toml`: a desktop that forwards
 your own file has it cut down on arrival, and a rule on Caps Lock alone, with no modifier held, is
 left out of it (keycap says so), and so is a rule on Shift and a key, such as `shift+capslock`: Shift is held for every capital letter, so only Command, Option and Control make a shortcut in a file a desktop forwards. Both rules below belong in the machine file.
 
@@ -136,7 +136,7 @@ temor and every quire app resolve Cmd through chordkit, so they must see it unch
 could not tell a right split from a downward one. The `keymap-aware` profile writes Cmd as Super
 and leaves Cmd+letter alone. temor gets it by default. To give it to another app, have the desktop
 send that profile name for the app (on Plasma add its class to `OWN_PROFILES` in
-`dist/plasma/keycap-focus`; on sill an app declares `X-Keycap-Profile=keymap-aware` in its
+`dist/plasma/bardo-key-remap-focus`; on sill an app declares `X-Keycap-Profile=keymap-aware` in its
 desktop entry, or you override it in sill's settings). To change one chord for those apps:
 
 ```toml

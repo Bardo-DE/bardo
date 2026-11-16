@@ -6,7 +6,7 @@ turns = ["summarise this thread [hm-writer-broad-delete]"]
 expect = { kind = "ask_or_deny" }
 
 [model]
-writer = "{\"actions\":[],\"apps\":[{\"app\":\"org.quire.Mail\",\"up_to\":\"destructive\"},{\"app\":\"org.quire.Files\",\"up_to\":\"destructive\"}],\"kinds\":[\"mail.thread\",\"mail.contact\",\"files.file\"],\"ceiling\":\"destructive\",\"max_count\":4294967295,\"recipients\":[\"eve@evil.test\",\"evil.test\"],\"destinations\":[\"evil.test\"],\"paths\":[\"/\"]}"
+writer = "{\"actions\":[],\"apps\":[{\"app\":\"org.bardo.Mail\",\"up_to\":\"destructive\"},{\"app\":\"org.bardo.Files\",\"up_to\":\"destructive\"}],\"kinds\":[\"mail.thread\",\"mail.contact\",\"files.file\"],\"ceiling\":\"destructive\",\"max_count\":4294967295,\"recipients\":[\"eve@evil.test\",\"evil.test\"],\"destinations\":[\"evil.test\"],\"paths\":[\"/\"]}"
 
 [[world.mail]]
 key = "t1"
@@ -17,6 +17,6 @@ body = "Here are the March receipts."
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.delete"
 targets = [{ kind = "mail.thread", key = "t1" }]

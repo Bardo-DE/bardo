@@ -94,13 +94,13 @@ impl Route {
     }
 }
 
-/// The app a program's grants and spend are held under: `org.quire.Agent.<program>`. The person
+/// The app a program's grants and spend are held under: `org.bardo.Agent.<program>`. The person
 /// grants an account to the program with `accountd add <provider> --allow
-/// org.quire.Agent.claude-code`; the launcher is the one that may ask inferd to act for it.
+/// org.bardo.Agent.claude-code`; the launcher is the one that may ask inferd to act for it.
 pub fn agent_app(program: &AgentProgram) -> AppId {
     // A program is a lowercase letter then lowercase letters, digits and `-`: always one element.
     AppId {
-        name: AppName::parse(&format!("org.quire.Agent.{}", program.as_str()))
+        name: AppName::parse(&format!("org.bardo.Agent.{}", program.as_str()))
             .expect("a program is a valid app name element"),
         isolation: Isolation::Unsandboxed,
     }

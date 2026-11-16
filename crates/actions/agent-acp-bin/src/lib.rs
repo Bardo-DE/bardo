@@ -1,18 +1,18 @@
 //! The library behind docket's two agent-facing programs, so the acceptance harness can run them
 //! under its own name.
 //!
-//! - [`serve`], [`LiveFault`], [`BUS_NAME`]: `docket-acp`, the ACP server edge on stdio. It hosts
+//! - [`serve`], [`LiveFault`], [`BUS_NAME`]: `bardo-agent-acp`, the ACP server edge on stdio. It hosts
 //!   its own companion over the session bus and serves the editor's connection.
-//! - [`entry::docket_agent`]: `docket-agent`, the host that runs one configured coding agent as a
+//! - [`entry::docket_agent`]: `bardo-agent`, the host that runs one configured coding agent as a
 //!   docket session under the launcher's sandbox. The host itself (`agent`) is private.
 //! - [`confirm`]: the confirm object the editor's sheets reach the person through.
 //!
-//! The docket-acp process's live host: what the binary builds so a served connection has a session host. docket-acp
+//! The bardo-agent-acp process's live host: what the binary builds so a served connection has a session host. bardo-agent-acp
 //! reaches docket the way companiond does, over the session bus: the router as `Intents1`
 //! (`DbusTransport`), the model through inferd, stored sessions read through the router. It hosts its own
 //! `Companion` (`agent_native::NativeHost`), so the editor's reject is heard before a call runs.
 //!
-//! The router tells who this is by its bus name, `org.quire.Acp`, and `intentd.toml` lists that
+//! The router tells who this is by its bus name, `org.bardo.Acp`, and `actiond.toml` lists that
 //! name under both `editor` (opens sessions and records the editor's turns) and `companion`
 //! (the planner's calls in them). Without those lines the router refuses everything this does.
 
@@ -43,10 +43,10 @@ use std::sync::Arc;
 use tokio::io::{BufReader, stdin, stdout};
 
 /// The bus name the router knows this process by.
-pub const BUS_NAME: &str = "org.quire.Acp";
+pub const BUS_NAME: &str = "org.bardo.Acp";
 
 /// The shell's name, for the companion's `shell` (no launcher is involved in an editor session).
-const SHELL: &str = "org.quire.Shell";
+const SHELL: &str = "org.bardo.Shell";
 
 type Log = Arc<RouterLog<DbusTransport>>;
 
@@ -63,7 +63,7 @@ pub enum LiveFault {
     /// The editor's app name is not one.
     #[error("not an app name: {0}")]
     App(String),
-    /// `acp-callers.toml` exists and cannot be used.
+    /// `agent-acp-callers.toml` exists and cannot be used.
     #[error("{0}")]
     Callers(String),
 }

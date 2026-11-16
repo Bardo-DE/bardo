@@ -13,7 +13,7 @@ use shell_model::intents::shell::{WindowAnswer, WindowAsk, WindowFault, plan};
 use crate::app_menu::MenuLinks;
 
 /// The app a listing is attributed to: the shell, as the one that read the compositor.
-const SHELL_APP: &str = "org.quire.Shell";
+const SHELL_APP: &str = "org.bardo.Shell";
 
 pub(super) fn perform(
     links: &MenuLinks,

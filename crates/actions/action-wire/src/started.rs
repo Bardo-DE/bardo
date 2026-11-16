@@ -1,5 +1,5 @@
 //! Where a conversation was started from, when it is not the opener's own app: the terminal a
-//! `quire-do ask` came from. companiond opens that conversation, so the router's record of the
+//! `bardo-do ask` came from. companiond opens that conversation, so the router's record of the
 //! opener names companiond; this says which terminal the person was typing in.
 
 use crate::caller::is_terminal_scope;
@@ -56,7 +56,7 @@ impl From<TerminalScope> for String {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum StartedFrom {
-    /// A terminal: `quire-do ask`, opened through the companion.
+    /// A terminal: `bardo-do ask`, opened through the companion.
     Terminal(TerminalScope),
 }
 
@@ -70,8 +70,8 @@ mod tests {
             ("/user.slice/app.slice/vte-spawn-1.scope", true),
             ("tmux-spawn-2.scope", true),
             ("/x/session-3.scope", true),
-            ("/x/app-org.quire.Mail-1.scope", false),
-            ("/x/companiond.service", false),
+            ("/x/app-org.bardo.Mail-1.scope", false),
+            ("/x/bardo-companiond.service", false),
             ("", false),
         ];
         for (path, ok) in table {

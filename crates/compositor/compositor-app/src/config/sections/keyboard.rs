@@ -10,7 +10,7 @@ use ui_settings::{Count, Ms};
 /// for it (and its `XKB_DEFAULT_*` environment): nothing here assumes a layout.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "keyboard", page = Page::KeyboardAndShortcuts)]
+#[settings(file = "compositor/settings.toml", domain = "keyboard", page = Page::KeyboardAndShortcuts)]
 pub struct KeyboardSection {
     /// `keyboard.xkb_rules`.
     #[settings(

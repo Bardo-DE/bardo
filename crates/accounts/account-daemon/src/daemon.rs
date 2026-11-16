@@ -1,5 +1,5 @@
 //! accountd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
-//! loads the caller tables, the provider files and the registry and serves `org.quire.Accounts1`,
+//! loads the caller tables, the provider files and the registry and serves `org.bardo.Accounts1`,
 //! and [`Daemon::run`] keeps it serving until told to stop. The binary is this and nothing more:
 //! it reads its arguments, asks [`Config::from_env`] for the environment's answers and calls these.
 //!
@@ -39,10 +39,10 @@ use zbus::Connection;
 
 /// The variable that names a directory to read callers from in place of `/proc` (a test build
 /// only).
-pub const PROC_ROOT_VAR: &str = "ACCOUNTD_PROC_ROOT";
+pub const PROC_ROOT_VAR: &str = "BARDO_ACCOUNTD_PROC_ROOT";
 
 /// The variable that names the key file in a `test-keys` build (`file:<absolute path>`).
-pub const KEYS_VAR: &str = "ACCOUNTD_KEYS";
+pub const KEYS_VAR: &str = "BARDO_ACCOUNTD_KEYS";
 
 /// accountd's keyring namespace: the `service` its items are filed under.
 pub const NAMESPACE: &str = "porter.accountd";
@@ -93,7 +93,7 @@ impl Config {
     /// The configuration the process's environment gives, with `provider_dirs` (the command
     /// line's `--providers`) laid over the system's and the person's provider directories. The
     /// one place accountd reads the environment: `HOME` and the XDG directories,
-    /// `ACCOUNTD_TAILSCALE_SOCKET`, `ACCOUNTD_KEYS` and `ACCOUNTD_PROC_ROOT`.
+    /// `BARDO_ACCOUNTD_TAILSCALE_SOCKET`, `BARDO_ACCOUNTD_KEYS` and `BARDO_ACCOUNTD_PROC_ROOT`.
     ///
     /// # Errors
     /// There is no home to keep state in, or the secret store the environment asks for is refused.
@@ -188,7 +188,7 @@ pub enum StartError {
     Callers(#[from] CallerFileError),
     /// The registry file was refused. The words name both files and say nothing
     /// was changed. The daemon stops with [`account_daemon::EXIT_REGISTRY_REFUSED`](crate::EXIT_REGISTRY_REFUSED),
-    /// the status `accountd.service` does not restart on.
+    /// the status `bardo-accountd.service` does not restart on.
     #[error("{}", account_daemon_support::registry_words(.0.file(), .0.backup(), .0.cause(), "accounts service"))]
     RegistryRefused(account_store::RegistryRefusal),
     /// The bus cannot be reached.
@@ -209,7 +209,7 @@ impl StartError {
     }
 }
 
-/// accountd, serving `org.quire.Accounts1`.
+/// accountd, serving `org.bardo.Accounts1`.
 #[derive(Debug)]
 pub struct Daemon {
     connection: Connection,

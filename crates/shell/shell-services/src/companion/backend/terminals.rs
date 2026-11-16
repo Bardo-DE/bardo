@@ -1,4 +1,4 @@
-//! The sessions the person started in a terminal, on `org.quire.Companion1.Terminals`: the list,
+//! The sessions the person started in a terminal, on `org.bardo.Companion1.Terminals`: the list,
 //! Bring Back, and the `Changed` signal that tells the panel to read the list again. Every body
 //! is JSON of `companion-wire`'s terminal types; a refusal is the companion's own sentence and
 //! the panel shows it as it is. This is the only file that names those calls.

@@ -1,4 +1,4 @@
-//! `quire_window_v1` on a window that exists: the app tells the compositor that it should draw the
+//! `bardo_window_v1` on a window that exists: the app tells the compositor that it should draw the
 //! window's shadow and clip its corners, at the radius the app's own window edge has
 //! (`set_frame(compositor_shadow, radius)`). The object is made on the app's own connection
 //! (`crate::wayland_surface`) for the window's `xdg_toplevel`, which winit reports, and it is
@@ -7,8 +7,8 @@
 //! is `FrameError::Unsupported`, and the window is drawn as it always was.
 
 use crate::wayland_surface::{AdoptError, Adopted};
-use proto::client::quire_window_manager_v1::QuireWindowManagerV1;
-use proto::client::quire_window_v1::{FrameMode, QuireWindowV1};
+use proto::client::bardo_window_manager_v1::BardoWindowManagerV1;
+use proto::client::bardo_window_v1::{FrameMode, BardoWindowV1};
 use std::ffi::c_void;
 use std::ptr::NonNull;
 use ui_components::style::tokens::shape::Radius;
@@ -27,8 +27,8 @@ pub(crate) enum FrameError {
     /// The registry could not be read.
     #[error("reading the registry: {0}")]
     Registry(#[from] GlobalError),
-    /// The compositor offers no `quire_window_manager_v1`.
-    #[error("the compositor offers no quire_window_manager_v1: {0}")]
+    /// The compositor offers no `bardo_window_manager_v1`.
+    #[error("the compositor offers no bardo_window_manager_v1: {0}")]
     Unsupported(#[from] BindError),
     /// The connection failed while the request went out.
     #[error("sending the request: {0}")]
@@ -42,9 +42,9 @@ pub(crate) fn window_radius() -> u32 {
     u32::from(Radius::Window.px())
 }
 
-/// One window's `quire_window_v1`, alive until this is dropped.
+/// One window's `bardo_window_v1`, alive until this is dropped.
 pub(crate) struct QuireWindow {
-    object: QuireWindowV1,
+    object: BardoWindowV1,
     /// The queue the object's events arrive on; nothing reads them, so they are dropped unread
     /// whenever a request goes out.
     queue: EventQueue<Quiet>,
@@ -62,7 +62,7 @@ impl std::fmt::Debug for QuireWindow {
     }
 }
 
-/// Make the window's `quire_window_v1` from `toplevel`, its `xdg_toplevel` as winit reports it.
+/// Make the window's `bardo_window_v1` from `toplevel`, its `xdg_toplevel` as winit reports it.
 pub(crate) fn attach(
     adopted: &Adopted<'_>,
     toplevel: NonNull<c_void>,
@@ -70,7 +70,7 @@ pub(crate) fn attach(
     let toplevel = adopted.toplevel(toplevel)?;
     let connection = adopted.connection().clone();
     let (globals, queue) = registry_queue_init::<Quiet>(&connection)?;
-    let manager: QuireWindowManagerV1 = globals.bind(&queue.handle(), 1..=1, ())?;
+    let manager: BardoWindowManagerV1 = globals.bind(&queue.handle(), 1..=1, ())?;
     let object = manager.get_window(&toplevel, &queue.handle(), ());
     // Objects already created stay valid, and no `quit` is heard at version 1.
     manager.destroy();
@@ -120,11 +120,11 @@ impl Dispatch<WlRegistry, GlobalListContents> for Quiet {
     }
 }
 
-impl Dispatch<QuireWindowManagerV1, ()> for Quiet {
+impl Dispatch<BardoWindowManagerV1, ()> for Quiet {
     fn event(
         _: &mut Self,
-        _: &QuireWindowManagerV1,
-        _: <QuireWindowManagerV1 as Proxy>::Event,
+        _: &BardoWindowManagerV1,
+        _: <BardoWindowManagerV1 as Proxy>::Event,
         _: &(),
         _: &Connection,
         _: &QueueHandle<Self>,
@@ -132,11 +132,11 @@ impl Dispatch<QuireWindowManagerV1, ()> for Quiet {
     }
 }
 
-impl Dispatch<QuireWindowV1, ()> for Quiet {
+impl Dispatch<BardoWindowV1, ()> for Quiet {
     fn event(
         _: &mut Self,
-        _: &QuireWindowV1,
-        _: <QuireWindowV1 as Proxy>::Event,
+        _: &BardoWindowV1,
+        _: <BardoWindowV1 as Proxy>::Event,
         _: &(),
         _: &Connection,
         _: &QueueHandle<Self>,

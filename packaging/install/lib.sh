@@ -7,15 +7,15 @@
 #   --destdir DIR      a staging root put in front of every path (default $DESTDIR, else none)
 #   --sysconfdir DIR   where the user target and the casement and sill units go, in DIR/systemd/user (default $SYSCONFDIR, else /etc)
 #   --sessions-dir DIR the display manager's wayland-sessions directory (default /usr/share/wayland-sessions)
-#   --tree DIR         the bardo tree (default $BARDO_TREE, else the parent of packaging/): crates/compositor/dist/casement.service and
-#                      crates/shell/dist/sill.service are the units installed
+#   --tree DIR         the bardo tree (default $BARDO_TREE, else the parent of packaging/): crates/compositor/dist/bardo-compositor.service and
+#                      crates/shell/dist/bardo-shell.service are the units installed
 #
 # Never runs sudo and never writes to $HOME: a destination you cannot write is printed with the
 # command to run as root (through sudo, doas or pkexec, whichever this machine has), and the script stops there.
-# casement.service and sill.service are installed here, root-held, in DIR/systemd/user (/etc/systemd/user by default): the
+# bardo-compositor.service and bardo-shell.service are installed here, root-held, in DIR/systemd/user (/etc/systemd/user by default): the
 # account service trusts the compositor and the shell as fixed roles only when their unit files, and any drop-in, sit in
 # /etc/systemd/user, /usr/lib/systemd/user or /usr/local/lib/systemd/user, so never under ~/.config. Each is rendered with
-# the prefix's bin folder in ExecStart. casement's own installer also puts casement.service under its prefix; the copy in
+# the prefix's bin folder in ExecStart. casement's own installer also puts bardo-compositor.service under its prefix; the copy in
 # DIR/systemd/user wins over it and is the same file.
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/../session" && pwd)"
@@ -64,14 +64,14 @@ unit_source() { echo "$tree/crates/$1/dist/$2.service"; }
 # files: "MODE SOURCE DEST" per line, DEST without the destdir. The desktop entry's SOURCE is
 # rendered (Exec filled in) by render_entry; the others are copied as they are.
 files() {
-  echo "755 $SRC/desktop-session $prefix/bin/desktop-session"
-  echo "644 $SRC/quire-portals.conf $prefix/share/xdg-desktop-portal/quire-portals.conf"
-  echo "644 $SRC/desktop-session.target $sysconfdir/systemd/user/desktop-session.target"
+  echo "755 $SRC/bardo-session $prefix/bin/bardo-session"
+  echo "644 $SRC/bardo-portals.conf $prefix/share/xdg-desktop-portal/bardo-portals.conf"
+  echo "644 $SRC/bardo-session.target $sysconfdir/systemd/user/bardo-session.target"
   # Root-held, so the portal frontend's unit proves Full to the portal backend: it throws away the loader variables.
-  echo "644 $SRC/xdg-desktop-portal.service.d/10-quire.conf $sysconfdir/systemd/user/xdg-desktop-portal.service.d/10-quire.conf"
-  echo "644 $(unit_source compositor casement) $sysconfdir/systemd/user/casement.service"
-  echo "644 $(unit_source shell sill) $sysconfdir/systemd/user/sill.service"
-  echo "644 $SRC/sill-casement.desktop $sessions_dir/sill-casement.desktop"
+  echo "644 $SRC/xdg-desktop-portal.service.d/10-bardo.conf $sysconfdir/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf"
+  echo "644 $(unit_source compositor casement) $sysconfdir/systemd/user/bardo-compositor.service"
+  echo "644 $(unit_source shell sill) $sysconfdir/systemd/user/bardo-shell.service"
+  echo "644 $SRC/bardo.desktop $sessions_dir/bardo.desktop"
   # quire's look Extensions (Editorial), picked under Settings > Look; every quire app finds them in <data dir>/quire/extensions.
   local f
   for f in "$tree"/crates/ui/extensions/*/*; do
@@ -83,8 +83,8 @@ files() {
 # the rest of the ExecStart line, such as the session's arguments, stays).
 content() {
   case "$1" in
-    */sill-casement.desktop) sed "s|@BINDIR@|$prefix/bin|" "$1" ;;
-    */casement.service|*/sill.service) sed -E "s|^ExecStart=[^ ]*/([^/ ]+)|ExecStart=$prefix/bin/\\1|" "$1" ;;
+    */bardo.desktop) sed "s|@BINDIR@|$prefix/bin|" "$1" ;;
+    */bardo-compositor.service|*/bardo-shell.service) sed -E "s|^ExecStart=[^ ]*/([^/ ]+)|ExecStart=$prefix/bin/\\1|" "$1" ;;
     *) cat "$1" ;;
   esac
 }

@@ -14,19 +14,19 @@ use zbus::object_server::Interface;
 /// One of the buses declared here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Bus {
-    /// `org.quire.Intents1` (intentd).
+    /// `org.bardo.Intents1` (intentd).
     Intents,
-    /// `org.quire.IntentProvider1` (every provider).
+    /// `org.bardo.IntentProvider1` (every provider).
     IntentProvider,
-    /// `org.quire.IntentReach1` (a provider whose actions' reach changes while it runs).
+    /// `org.bardo.IntentReach1` (a provider whose actions' reach changes while it runs).
     IntentReach,
-    /// `org.quire.Confirm1` (sill).
+    /// `org.bardo.Confirm1` (sill).
     Confirm,
-    /// `org.quire.Companion1` (companiond).
+    /// `org.bardo.Companion1` (companiond).
     Companion,
-    /// `org.quire.Reader1` (readerd).
+    /// `org.bardo.Reader1` (readerd).
     Reader,
-    /// `org.quire.AgentHost1` (docket-agent).
+    /// `org.bardo.AgentHost1` (bardo-agent).
     AgentHost,
 }
 
@@ -45,13 +45,13 @@ impl Bus {
     /// The file under `dbus/` holding its introspection.
     pub fn file_name(self) -> &'static str {
         match self {
-            Bus::Intents => "org.quire.Intents1.xml",
-            Bus::IntentProvider => "org.quire.IntentProvider1.xml",
-            Bus::IntentReach => "org.quire.IntentReach1.xml",
-            Bus::Confirm => "org.quire.Confirm1.xml",
-            Bus::Companion => "org.quire.Companion1.xml",
-            Bus::Reader => "org.quire.Reader1.xml",
-            Bus::AgentHost => "org.quire.AgentHost1.xml",
+            Bus::Intents => "org.bardo.Intents1.xml",
+            Bus::IntentProvider => "org.bardo.IntentProvider1.xml",
+            Bus::IntentReach => "org.bardo.IntentReach1.xml",
+            Bus::Confirm => "org.bardo.Confirm1.xml",
+            Bus::Companion => "org.bardo.Companion1.xml",
+            Bus::Reader => "org.bardo.Reader1.xml",
+            Bus::AgentHost => "org.bardo.AgentHost1.xml",
         }
     }
 }

@@ -1,7 +1,7 @@
 //! Live checks of the auth service. Nothing here calls PAM with anyone's real password: the service
 //! runs a `FakeAuthenticator` as its `Env`'s authenticator, and `PamHelper` runs against the
 //! stand-in helper (`src/bin/auth_helper.rs`). The one PAM test runs only when
-//! `SILL_PAM_TEST_USER` and `SILL_PAM_TEST_SECRET` name a throwaway account, and says it skipped
+//! `BARDO_SHELL_PAM_TEST_USER` and `BARDO_SHELL_PAM_TEST_SECRET` name a throwaway account, and says it skipped
 //! otherwise; that test is `#[ignore]`d and run with
 //! `cargo test -p shell-services --test it auth_live -- --ignored --nocapture`.
 
@@ -190,10 +190,10 @@ fn the_pam_helper_against_the_stand_in() {
 #[ignore = "live: PAM with a throwaway account"]
 fn pam_with_a_throwaway_account() {
     let (Ok(user), Ok(secret)) = (
-        std::env::var("SILL_PAM_TEST_USER"),
-        std::env::var("SILL_PAM_TEST_SECRET"),
+        std::env::var("BARDO_SHELL_PAM_TEST_USER"),
+        std::env::var("BARDO_SHELL_PAM_TEST_SECRET"),
     ) else {
-        println!("skipped: SILL_PAM_TEST_USER and SILL_PAM_TEST_SECRET name no throwaway account");
+        println!("skipped: BARDO_SHELL_PAM_TEST_USER and BARDO_SHELL_PAM_TEST_SECRET name no throwaway account");
         return;
     };
     let service = pam::service(Path::exists);

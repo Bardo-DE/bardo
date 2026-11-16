@@ -1,5 +1,5 @@
 //! What the model tells the protocol layer about the desktop: which object changed, so
-//! `quire_desktop_v1` clients are sent it again (the `Effect::Desktop` of this crate).
+//! `bardo_desktop_v1` clients are sent it again (the `Effect::Desktop` of this crate).
 
 use crate::app::AppKey;
 use crate::ids::WindowId;
@@ -19,7 +19,7 @@ pub enum DesktopNote {
     Removed(DesktopRef),
 }
 
-/// An object `quire_desktop_v1` clients have.
+/// An object `bardo_desktop_v1` clients have.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DesktopRef {
     /// An app.

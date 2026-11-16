@@ -1,4 +1,4 @@
-//! The `quire-do` binary: collects what the process holds and hands it to `action_cli::program`.
+//! The `bardo-do` binary: collects what the process holds and hands it to `action_cli::program`.
 
 use action_cli::program::{self, Process};
 use action_cli::{Exit, SessionBus, Stdin, Stdout};
@@ -39,7 +39,7 @@ fn main() -> ExitCode {
     let done = runtime.block_on(async {
         tokio::spawn(program::execute(process, SessionBus))
             .await
-            .unwrap_or_else(|_| program::broken("quire-do stopped on an internal error"))
+            .unwrap_or_else(|_| program::broken("bardo-do stopped on an internal error"))
     });
     let _ = std::io::stdout().write_all(done.stdout.as_bytes());
     let _ = std::io::stderr().write_all(done.stderr.as_bytes());

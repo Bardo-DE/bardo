@@ -86,7 +86,7 @@ fn an_untrusted_planner_alone_breaks_the_trusted_cells() {
 fn first_use_of(app: &str, effect: Effect) -> permission_policy::PolicyRequest {
     with(effect, |r| {
         r.context.grant = permission_policy::GrantState::None;
-        if app != "org.quire.Mail" {
+        if app != "org.bardo.Mail" {
             r.resource.app = AppName::parse(app).expect("app");
         }
     })
@@ -101,37 +101,37 @@ fn auto_asks_for_a_first_use_only_for_a_change() {
     let rows = [
         (
             "a read of mail",
-            "org.quire.Mail",
+            "org.bardo.Mail",
             Effect::Read,
             Final,
             Final,
         ),
         (
             "a task start",
-            "org.quire.Companion",
+            "org.bardo.Companion",
             Effect::Read,
             Final,
             Final,
         ),
-        ("a recall", "org.quire.Memory", Effect::Read, Final, Final),
+        ("a recall", "org.bardo.Memory", Effect::Read, Final, Final),
         (
             "staging a memory",
-            "org.quire.Memory",
+            "org.bardo.Memory",
             Effect::UndoableWrite,
             Final,
             Ask,
         ),
         (
             "a change in mail",
-            "org.quire.Mail",
+            "org.bardo.Mail",
             Effect::UndoableWrite,
             Ask,
             Ask,
         ),
-        ("a send", "org.quire.Mail", Effect::Outbound, Ask, Ask),
+        ("a send", "org.bardo.Mail", Effect::Outbound, Ask, Ask),
         (
             "deleting a memory",
-            "org.quire.Memory",
+            "org.bardo.Memory",
             Effect::Destructive,
             Ask,
             Ask,

@@ -1,6 +1,6 @@
 [package]
 name = "action-client"
-description = "The caller side of org.quire.Intents1 (Intents over a Transport: D-Bus behind the dbus feature, or the router in process behind in_process)."
+description = "The caller side of org.bardo.Intents1 (Intents over a Transport: D-Bus behind the dbus feature, or the router in process behind in_process)."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

@@ -134,7 +134,7 @@ mod tests {
             row("org.mozilla.firefox", "Shop - Cart", Ordinary),
             row("org.mozilla.firefox", "Sign in", Ordinary),
             row("org.gnome.Terminal", "bash", Ordinary),
-            row("org.quire.Mail", "New message", Ordinary),
+            row("org.bardo.Mail", "New message", Ordinary),
             row("org.keepassxc.KeePassXC", "Vault", Credentials),
             row("org.example.Vault", "Vault - Master password", Credentials),
             row("org.example.Unlock", "Unlock your keyring", Credentials),
@@ -144,7 +144,7 @@ mod tests {
             row("org.example.Bank", "Account", Payment),
             row("org.mozilla.firefox", "Shop - Checkout", Payment),
             row("org.mozilla.firefox", "Bank transfer", Payment),
-            row("org.quire.Shell", "Panel", Ordinary),
+            row("org.bardo.Shell", "Panel", Ordinary),
             Row {
                 nodes: vec![node(Role::PasswordText, "", true)],
                 ..row("org.mozilla.firefox", "Account", Credentials)

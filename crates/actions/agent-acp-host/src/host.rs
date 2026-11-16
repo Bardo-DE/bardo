@@ -5,7 +5,7 @@
 //!
 //! **Sheets.** The router asks the person through its confirmer, like any call: sill's sheet, by
 //! default, and the host sees nothing of it. In the development fallback (`true`,
-//! `docket-agent --tty`) the host tells the router that it shows this session's sheets itself,
+//! `bardo-agent --tty`) the host tells the router that it shows this session's sheets itself,
 //! and each one comes out of `next_event` as `BackendEvent::Confirm` and goes back through
 //! `answer_sheet`, as an editor's do. Without the flag the host asks for no such route and holds
 //! no desk, so a sheet can only go to the desktop.

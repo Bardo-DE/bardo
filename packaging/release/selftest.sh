@@ -25,12 +25,12 @@ check() { echo "FAIL release selftest: $*" >&2; fail=1; }
 top="$tmp/stage/opt/quire/current"
 mkdir -p "$top/bin" "$top/share/wayland-sessions" "$top/lib/systemd/user" "$top/share/quire" "$top/share/fonts/quire" "$top/system/etc/udev/rules.d" "$top/system/etc/modules-load.d" "$top/system/etc/xdg/quire"
 printf '#!/bin/sh\necho hi\n' >"$top/bin/tool"; chmod 755 "$top/bin/tool"
-printf '[Desktop Entry]\nName=Quire\n' >"$top/share/wayland-sessions/quire.desktop"
-printf '[Service]\nExecStart=/opt/quire/current/bin/tool\n' >"$top/lib/systemd/user/tool.service"
+printf '[Desktop Entry]\nName=Quire\n' >"$top/share/wayland-sessions/bardo.desktop"
+printf '[Service]\nExecStart=/opt/bardo/current/bin/tool\n' >"$top/lib/systemd/user/tool.service"
 printf 'data\n' >"$top/share/quire/data.txt"; chmod 600 "$top/share/quire/data.txt"
-printf 'ACTION=="add"\n' >"$top/system/etc/udev/rules.d/70-keycap.rules"
+printf 'ACTION=="add"\n' >"$top/system/etc/udev/rules.d/70-bardo-key-remap.rules"
 printf 'font\n' >"$top/share/fonts/quire/Noto-COLRv1.ttf"
-printf 'i2c-dev\n' >"$top/system/etc/modules-load.d/sill-ddc.conf"
+printf 'i2c-dev\n' >"$top/system/etc/modules-load.d/bardo-shell-ddc.conf"
 printf 'x = 1\n' >"$top/system/etc/xdg/quire/fake.toml"
 printf 'A fake release.\n' >"$tmp/notes.txt"
 printf '[[export]]\nlink = "/usr/local/bin/tool"\ntarget = "bin/tool"\n' >"$tmp/exports.toml"
@@ -44,13 +44,13 @@ pack "$tmp/a" >/dev/null || check "pack failed"
 "$HERE/verify.sh" "$tmp/a" --pubkey "$tmp/key.pub" >/dev/null || check "a good release does not verify"
 pack "$tmp/b" >/dev/null || check "second pack failed"
 cmp -s "$tmp/a/bundle.tar.zst" "$tmp/b/bundle.tar.zst" || check "the bundle is not deterministic"
-grep -q 'link = "/usr/share/wayland-sessions/quire.desktop"' "$tmp/a/release.toml" || check "the session entry is not exported"
+grep -q 'link = "/usr/share/wayland-sessions/bardo.desktop"' "$tmp/a/release.toml" || check "the session entry is not exported"
 grep -q 'link = "/usr/lib/systemd/user/tool.service"' "$tmp/a/release.toml" || check "the unit is not exported"
-grep -q 'link = "/usr/share/quire/data.txt"' "$tmp/a/release.toml" || check "share/quire is not exported"
-grep -q 'link = "/usr/share/fonts/quire/Noto-COLRv1.ttf"' "$tmp/a/release.toml" || check "the emoji font is not exported"
-grep -q 'path = "/etc/modules-load.d/sill-ddc.conf"' "$tmp/a/release.toml" || check "the modules-load file is not listed as a system file"
-grep -q 'path = "/etc/xdg/quire/fake.toml"' "$tmp/a/release.toml" || check "a system file in /etc/xdg/quire is not accepted and listed"
-grep -q 'path = "/etc/udev/rules.d/70-keycap.rules"' "$tmp/a/release.toml" || check "the system file is not listed"
+grep -q 'link = "/usr/share/bardo/data.txt"' "$tmp/a/release.toml" || check "share/quire is not exported"
+grep -q 'link = "/usr/share/fonts/bardo/Noto-COLRv1.ttf"' "$tmp/a/release.toml" || check "the emoji font is not exported"
+grep -q 'path = "/etc/modules-load.d/bardo-shell-ddc.conf"' "$tmp/a/release.toml" || check "the modules-load file is not listed as a system file"
+grep -q 'path = "/etc/xdg/bardo/fake.toml"' "$tmp/a/release.toml" || check "a system file in /etc/xdg/bardo is not accepted and listed"
+grep -q 'path = "/etc/udev/rules.d/70-bardo-key-remap.rules"' "$tmp/a/release.toml" || check "the system file is not listed"
 grep -q 'target = "system/' "$tmp/a/release.toml" && check "a system file was exported as a link"
 grep -q 'path = "share/quire/data.txt"' "$tmp/a/release.toml" && grep -q 'mode = 0o644' "$tmp/a/release.toml" || check "modes are not normalised"
 "$HERE/verify.sh" "$tmp/a" --pubkey "$tmp/a/../key.sec" >/dev/null 2>&1 && check "verify accepted a wrong public key"
@@ -115,19 +115,19 @@ policy() { # ACTIVE-FOR-ROLLBACK
   { echo '<policyconfig>'
     for p in apply rollback health; do
       active=yes; [ "$p" != rollback ] || active=$1
-      printf '<action id="org.quire.slipway.%s"><defaults><allow_any>no</allow_any><allow_inactive>no</allow_inactive><allow_active>%s</allow_active></defaults><annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/slipway-%s</annotate></action>\n' "$p" "$active" "$p"
+      printf '<action id="org.bardo.updater.%s"><defaults><allow_any>no</allow_any><allow_inactive>no</allow_inactive><allow_active>%s</allow_active></defaults><annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/slipway-%s</annotate></action>\n' "$p" "$active" "$p"
     done
-    echo '</policyconfig>'; } >"$h/usr/share/polkit-1/actions/org.quire.slipway.policy"
+    echo '</policyconfig>'; } >"$h/usr/share/polkit-1/actions/org.bardo.updater.policy"
 }
 policy auth_admin_keep
 "$HERE/check-helpers.sh" --root "$h" >/dev/null 2>&1 || check "a complete slipway install is not accepted"
 policy yes
 "$HERE/check-helpers.sh" --root "$h" >/dev/null 2>&1 && check "a rollback that needs no password was accepted"
 policy auth_admin_keep
-rm "$h/usr/libexec/slipway-health"
-"$HERE/check-helpers.sh" --root "$h" >/dev/null 2>&1 && check "a missing slipway-health was accepted"
-printf '#!/bin/sh\n' >"$h/usr/libexec/slipway-health"; chmod 775 "$h/usr/libexec/slipway-health"
-"$HERE/check-helpers.sh" --root "$h" >/dev/null 2>&1 && check "a group-writable slipway-health was accepted"
+rm "$h/usr/libexec/bardo-updater-health"
+"$HERE/check-helpers.sh" --root "$h" >/dev/null 2>&1 && check "a missing bardo-updater-health was accepted"
+printf '#!/bin/sh\n' >"$h/usr/libexec/bardo-updater-health"; chmod 775 "$h/usr/libexec/bardo-updater-health"
+"$HERE/check-helpers.sh" --root "$h" >/dev/null 2>&1 && check "a group-writable bardo-updater-health was accepted"
 
 # Each build job supplies only its own paths (stage-owners.list): a tar with a path outside its job's lines, a path two jobs
 # both supply, a link, a path outside the stage or a job nobody knows is refused; a tar of the right shape passes.
@@ -143,14 +143,14 @@ mk_tar() { # JOB PATH...: stage-JOB.tar of those files, each below stage/opt/qui
   mkdir -p "$so/out/stage-$job"; tar -C "$d" -cf "$so/out/stage-$job/stage-$job.tar" stage components.d
 }
 owners() { python3 -I "$HERE/stage-owners.py" check "$HERE/stage-owners.list" "$@"; }
-mk_tar turnstile components.d/turnstile.txt bin/turnstile system/usr/lib/systemd/system/turnstile.service system/etc/udev/rules.d/72-turnstile.rules
-mk_tar keycap components.d/keycap.txt bin/keycap system/usr/lib/systemd/system/keycap.service
-mk_tar palmrest components.d/palmrest.txt bin/palmrest system/usr/lib/systemd/system/palmrest.service system/etc/udev/rules.d/70-palmrest.rules
-mk_tar small bin/slipway bin/detent system/etc/quire/desktop-callers.toml components.d/desktop.txt system/usr/lib/systemd/user/transom.service
+mk_tar turnstile components.d/turnstile.txt bin/turnstile system/usr/lib/systemd/system/bardo-input-broker.service system/etc/udev/rules.d/72-bardo-input-broker.rules
+mk_tar keycap components.d/keycap.txt bin/keycap system/usr/lib/systemd/system/bardo-key-remap.service
+mk_tar palmrest components.d/palmrest.txt bin/palmrest system/usr/lib/systemd/system/bardo-mouse-gestures.service system/etc/udev/rules.d/70-bardo-mouse-gestures.rules
+mk_tar small bin/slipway bin/detent system/etc/quire/desktop-callers.toml components.d/desktop.txt system/usr/lib/systemd/user/bardo-portal.service
 mk_tar mailo bin/mailo share/quire/skills/mail/SKILL.md
 owners "$so"/out/stage-turnstile "$so"/out/stage-keycap "$so"/out/stage-palmrest "$so"/out/stage-small "$so"/out/stage-mailo >/dev/null 2>&1 || check "the stage tars of the right shape were refused"
-for bad in bin/turnstile bin/keycap bin/palmrest system/usr/lib/systemd/system/turnstile.service system/usr/lib/systemd/system/keycap.service \
-  system/usr/lib/systemd/system/palmrest.service system/etc/udev/rules.d/72-turnstile.rules system/etc/udev/rules.d/70-palmrest.rules \
+for bad in bin/turnstile bin/keycap bin/palmrest system/usr/lib/systemd/system/bardo-input-broker.service system/usr/lib/systemd/system/bardo-key-remap.service \
+  system/usr/lib/systemd/system/bardo-mouse-gestures.service system/etc/udev/rules.d/72-bardo-input-broker.rules system/etc/udev/rules.d/70-bardo-mouse-gestures.rules \
   system/etc/quire/desktop-callers.toml system/etc/polkit-1/rules.d/00-all.rules bin/anything; do
   for job in mailo anyview casement sill porter steward ferry agents small; do
     [ "$job" = small ] && case "$bad" in system/etc/quire/desktop-callers.toml) continue ;; esac
@@ -159,14 +159,14 @@ for bad in bin/turnstile bin/keycap bin/palmrest system/usr/lib/systemd/system/t
   done
 done
 # the three system programs do not reach one another's files, and a user unit the table names is a system file of the job that builds it
-for pair in turnstile:bin/keycap turnstile:bin/palmrest keycap:bin/turnstile keycap:system/usr/lib/systemd/system/palmrest.service \
-  palmrest:bin/turnstile palmrest:system/usr/lib/systemd/system/keycap.service palmrest:lib/systemd/user/palmrest.service \
-  mailo:system/usr/lib/systemd/user/sill.service sill:lib/systemd/user/sill.service casement:system/usr/lib/systemd/user/sill.service; do
+for pair in turnstile:bin/keycap turnstile:bin/palmrest keycap:bin/turnstile keycap:system/usr/lib/systemd/system/bardo-mouse-gestures.service \
+  palmrest:bin/turnstile palmrest:system/usr/lib/systemd/system/bardo-key-remap.service palmrest:lib/systemd/user/bardo-mouse-gestures.service \
+  mailo:system/usr/lib/systemd/user/bardo-shell.service sill:lib/systemd/user/bardo-shell.service casement:system/usr/lib/systemd/user/bardo-shell.service; do
   mk_tar "${pair%%:*}" "${pair#*:}"
   owners "$so/out/stage-${pair%%:*}" >/dev/null 2>&1 && check "job ${pair%%:*} was allowed to supply ${pair#*:}"
 done
-mk_tar sill share/quire/intents/org.quire.Shell.toml
-mk_tar anyview share/quire/intents/org.quire.Shell.toml
+mk_tar sill share/quire/intents/org.bardo.Shell.toml
+mk_tar anyview share/quire/intents/org.bardo.Shell.toml
 owners "$so/out/stage-sill" >/dev/null 2>&1 || check "sill alone was refused the path it owns"
 owners "$so/out/stage-sill" "$so/out/stage-anyview" >/dev/null 2>&1 && check "a path supplied by two jobs was accepted"
 mk_tar mailo bin/mailo; ln -s mailo "$so/mailo/stage/opt/quire/current/bin/link"; tar -C "$so/mailo" -cf "$so/out/stage-mailo/stage-mailo.tar" stage components.d

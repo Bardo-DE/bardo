@@ -1,5 +1,5 @@
 //! What the host does once the router has allowed an agent's call: read the file, write it,
-//! start the command. The router's `Perform` for the `org.quire.AcpAgent` pseudo-app comes here
+//! start the command. The router's `Perform` for the `org.bardo.AcpAgent` pseudo-app comes here
 //! (in a test through `HostedApp`, in the process through its `IntentProvider1`), so nothing in
 //! this file runs unless the gate said yes.
 //!

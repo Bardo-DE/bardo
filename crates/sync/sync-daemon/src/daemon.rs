@@ -1,6 +1,6 @@
 //! syncd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
 //! loads the caller tables, starts the supervisors that keep the mirrors and serves
-//! `org.quire.Sync1`, and [`Daemon::run`] keeps it going until told to stop. The binary reads
+//! `org.bardo.Sync1`, and [`Daemon::run`] keeps it going until told to stop. The binary reads
 //! its arguments, asks [`Config::from_env`] for the environment's answers and calls these.
 //!
 //! syncd reaches accounts only through account-client: over the bus, accountd's `Grants1`, in the
@@ -59,10 +59,10 @@ fn fresh_nonce() -> String {
 
 /// The variable that names a directory to read callers from in place of `/proc` (a test build
 /// only).
-pub const PROC_ROOT_VAR: &str = "SYNCD_PROC_ROOT";
+pub const PROC_ROOT_VAR: &str = "BARDO_SYNCD_PROC_ROOT";
 
 /// The variable that shortens how often grants are read again (a test build only).
-pub const RESCAN_VAR: &str = "SYNCD_RESCAN_S";
+pub const RESCAN_VAR: &str = "BARDO_SYNCD_RESCAN_S";
 
 /// Everything syncd needs to start, as typed values.
 #[derive(Debug, Clone)]
@@ -108,7 +108,7 @@ impl Config {
     }
 
     /// The configuration the process's environment gives. The one place syncd reads the
-    /// environment: `HOME` and the XDG directories, `SYNCD_PROC_ROOT` and `SYNCD_RESCAN_S` (a
+    /// environment: `HOME` and the XDG directories, `BARDO_SYNCD_PROC_ROOT` and `BARDO_SYNCD_RESCAN_S` (a
     /// test build only).
     ///
     /// # Errors
@@ -127,7 +127,7 @@ impl Config {
             std::env::var_os(name)
         })
         .into_honoured();
-        // `SYNCD_RESCAN_S` shortens how often grants are read again, in a test build only.
+        // `BARDO_SYNCD_RESCAN_S` shortens how often grants are read again, in a test build only.
         let rescan_var = std::env::var(RESCAN_VAR).ok();
         let pim = PimConfig::default();
         let pim = PimConfig {
@@ -136,7 +136,7 @@ impl Config {
         // Storage: the app folder mirror for a Files grant, the whole drive for a grant of all of
         // it ("Show in Files"), and Photos for a Photos grant (the account's Photos row).
         let storage = StorageConfig::default();
-        // Each drive shown in Files is a folder at `~/Cloud/<Drive>`, mounted by porter-mountd
+        // Each drive shown in Files is a folder at `~/Cloud/<Drive>`, mounted by bardo-drive-mount
         // (the unit's sandbox may not run the setuid `fusermount3`, nor make a mount anyone else
         // sees), or by syncd itself through `fusermount3` when no helper listens (syncd run by
         // hand); its cache keeps what `syncd.toml` says.
@@ -176,16 +176,16 @@ pub enum StartError {
     /// The settings module cannot be served.
     #[error("cannot serve the settings module: {0}")]
     Settings(#[source] zbus::Error),
-    /// `org.quire.Photos1.Picker` cannot be served.
+    /// `org.bardo.Photos1.Picker` cannot be served.
     #[cfg(feature = "photos-picker")]
-    #[error("cannot serve org.quire.Photos1.Picker: {0}")]
+    #[error("cannot serve org.bardo.Photos1.Picker: {0}")]
     Picker(#[source] zbus::Error),
     /// The bus objects or the name could not be served.
     #[error("cannot serve {bus}: {0}", bus = sync_bus::SYNC_BUS)]
     Serve(#[source] zbus::Error),
 }
 
-/// syncd, serving `org.quire.Sync1` with its supervisors running.
+/// syncd, serving `org.bardo.Sync1` with its supervisors running.
 #[derive(Debug)]
 pub struct Daemon {
     connection: Connection,
@@ -195,8 +195,8 @@ pub struct Daemon {
 
 impl Daemon {
     /// Loads the caller tables, connects to the bus, reaches accountd over that connection,
-    /// starts the supervisors, serves the settings module and serves `org.quire.Sync1` (and, with
-    /// the `photos-picker` feature, `org.quire.Photos1.Picker`). When this returns the name is
+    /// starts the supervisors, serves the settings module and serves `org.bardo.Sync1` (and, with
+    /// the `photos-picker` feature, `org.bardo.Photos1.Picker`). When this returns the name is
     /// owned and calls are answered. `network` is what the supervisors read the network from.
     ///
     /// # Errors
@@ -290,13 +290,13 @@ impl Daemon {
         )
         .await
         .map_err(StartError::Settings)?;
-        // `org.quire.Photos1.Picker`, only in a build with the `photos-picker` feature; each
+        // `org.bardo.Photos1.Picker`, only in a build with the `photos-picker` feature; each
         // account answers through it while its Google Photos run.
         #[cfg(feature = "photos-picker")]
         service::serve_picker(&connection, pickers, photos_owners, Arc::clone(&callers))
             .await
             .map_err(StartError::Picker)?;
-        // `org.quire.Storage1`: the drives shown in Files.
+        // `org.bardo.Storage1`: the drives shown in Files.
         service::serve_storage(&connection, drives, Arc::clone(&callers), files_apps)
             .await
             .map_err(StartError::Serve)?;

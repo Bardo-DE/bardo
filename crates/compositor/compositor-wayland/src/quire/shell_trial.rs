@@ -1,4 +1,4 @@
-//! `quire_shell_v1` version 6: the display trial. A program changed the displays; the compositor
+//! `bardo_shell_v1` version 6: the display trial. A program changed the displays; the compositor
 //! applied the change and asks the person, through the shell, whether to keep it
 //! (`displays_trial`), takes the question down (`displays_trial_end`) and hears the answer
 //! (`displays_trial_answer`). The model decides when to ask and what an answer does
@@ -15,12 +15,12 @@ use super::shell::QuireShellPart;
 use super::shell_permission::{ANSWER_NOT_BEFORE, AnsweredTooSoon};
 use compositor_core::Event;
 use compositor_core::time::Mono;
-use desktop_protocols::server::quire_shell_v1::quire_shell_v1::{self, QuireShellV1};
+use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::{self, BardoShellV1};
 use desktop_protocols::vocab::{TrialAnswer, TrialId, WireCode};
 use smithay::reexports::wayland_server::{Resource, WEnum};
 use std::time::Duration;
 
-/// The first version of `quire_shell_v1` that carries the trial.
+/// The first version of `bardo_shell_v1` that carries the trial.
 pub const SINCE: u32 = 6;
 
 /// The trial the shell was asked about and has not seen answered or ended.
@@ -42,7 +42,7 @@ fn whole_seconds(left: Duration) -> u32 {
 }
 
 /// Sends `displays_trial` to `shell` when the object is new enough to carry it.
-fn send(shell: &QuireShellV1, trial: TrialId, left: Duration) {
+fn send(shell: &BardoShellV1, trial: TrialId, left: Duration) {
     if shell.version() >= SINCE {
         shell.displays_trial(trial.get(), whole_seconds(left));
     }
@@ -84,7 +84,7 @@ pub fn apply_end(part: &mut QuireShellPart, trial: TrialId) {
 pub fn on_answer(
     part: &QuireShellPart,
     trial: u32,
-    answer: WEnum<quire_shell_v1::TrialAnswer>,
+    answer: WEnum<bardo_shell_v1::TrialAnswer>,
     now: Mono,
 ) -> Result<Vec<Event>, AnsweredTooSoon> {
     let Some(open) = part.trial.filter(|open| open.id.get() == trial) else {
@@ -103,7 +103,7 @@ pub fn on_answer(
 }
 
 /// A shell object bound: when a trial is open it is asked at once with the time left.
-pub fn on_bind(part: &QuireShellPart, shell: &QuireShellV1, now: Mono) {
+pub fn on_bind(part: &QuireShellPart, shell: &BardoShellV1, now: Mono) {
     if let Some(open) = part.trial {
         let left = open.ends.since(now);
         if !left.is_zero() {

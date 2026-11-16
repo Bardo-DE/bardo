@@ -1,4 +1,4 @@
-//! The helpers on `org.quire.Companion1.Helpers2`: the calls the helpers screen asks for (the
+//! The helpers on `org.bardo.Companion1.Helpers2`: the calls the helpers screen asks for (the
 //! helpers, signing in to the apps they run, their routines), and the `Changed` signal that tells
 //! it to read the list again. Every body is JSON of `companion-wire`'s helper types; a refusal is
 //! the companion's own sentence and the model shows it as it is.

@@ -1,4 +1,4 @@
-//! `org.freedesktop.Application` at `/org/quire/Settings`: the Desktop Entry spec's D-Bus
+//! `org.freedesktop.Application` at `/org/bardo/Settings`: the Desktop Entry spec's D-Bus
 //! activation, so the launcher starts Settings (as its user unit), raises it, or opens it at an
 //! account. A second `detent` hands over through the same `Activate`.
 
@@ -16,9 +16,9 @@ use zbus::zvariant::{OwnedValue, Value};
 
 /// The interface served.
 pub const APPLICATION_INTERFACE: &str = "org.freedesktop.Application";
-/// Where it is served: the bus name `org.quire.Settings` as a path, per the spec.
-pub const APPLICATION_PATH: &str = "/org/quire/Settings";
-pub(crate) const APP_NAME: &str = "org.quire.Settings";
+/// Where it is served: the bus name `org.bardo.Settings` as a path, per the spec.
+pub const APPLICATION_PATH: &str = "/org/bardo/Settings";
+pub(crate) const APP_NAME: &str = "org.bardo.Settings";
 
 /// The action that shows the Accounts page at an account.
 const OPEN_ACCOUNT: &str = "open-account";
@@ -164,7 +164,7 @@ pub enum HandOverFault {
     /// The program that owns the name is not Settings, so nothing was sent to it: not the page,
     /// and not the activation token.
     #[error(
-        "the program that owns org.quire.Settings is not Settings ({0}), so nothing was sent to it"
+        "the program that owns org.bardo.Settings is not Settings ({0}), so nothing was sent to it"
     )]
     NotSettings(Refused),
     /// The bus or the running Settings did not answer as it should.
@@ -175,7 +175,7 @@ pub enum HandOverFault {
 /// Asks the running Settings to show itself: what a second `detent` does instead of opening a
 /// second window. `token` is the xdg-activation token this process was started with, if any;
 /// `page` is the page the second `detent` was asked to open, if any. The owner of
-/// `org.quire.Settings` must hold the Settings role first, judged by `peers`, and is then called
+/// `org.bardo.Settings` must hold the Settings role first, judged by `peers`, and is then called
 /// by its own unique name, so a program that takes the name meanwhile hears nothing.
 pub async fn hand_over(
     connection: &zbus::Connection,

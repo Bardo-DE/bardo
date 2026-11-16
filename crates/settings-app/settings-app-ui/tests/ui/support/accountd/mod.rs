@@ -51,7 +51,7 @@ impl ModuleAt for ModuleId {
         match self {
             ModuleId::Accountd => ACCOUNTS_SETTINGS_PATH,
             ModuleId::Inferd => INFERENCE_SETTINGS_PATH,
-            ModuleId::Syncd => "/org/quire/Sync1/settings",
+            ModuleId::Syncd => "/org/bardo/Sync1/settings",
         }
     }
 }

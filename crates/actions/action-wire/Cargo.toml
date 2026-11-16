@@ -1,6 +1,6 @@
 [package]
 name = "action-wire"
-description = "The wire of docket's `org.quire.Intents1`: every request and reply and the bodies they carry, who is calling and the member a request is, where a conversation was started from, the opening of a session and the ledger of a task, and summoning the companion. Sits above action-core and action-gate-wire."
+description = "The wire of docket's `org.bardo.Intents1`: every request and reply and the bodies they carry, who is calling and the member a request is, where a conversation was started from, the opening of a session and the ledger of a task, and summoning the companion. Sits above action-core and action-gate-wire."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

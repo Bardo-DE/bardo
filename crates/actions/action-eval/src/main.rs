@@ -1,5 +1,5 @@
-//! `docket-eval --check-app <dir>`: the conformance check of cli.md section 6 over one app's
-//! repository; `docket-eval --check-skills <dir>… [--manifests <dir>]…`: every skill under the
+//! `agent-eval --check-app <dir>`: the conformance check of cli.md section 6 over one app's
+//! repository; `agent-eval --check-skills <dir>… [--manifests <dir>]…`: every skill under the
 //! directories validates and uses only registered actions, found in the manifests under the
 //! directories (as `--check-app` finds them, plus `dist/intents/*.toml` of each, and the
 //! `intents` directory beside a `skills` directory) or in a `--manifests` directory. Exit 0 when it conforms, 1 when it does not, 2 when the
@@ -45,13 +45,13 @@ fn finish(what: &str, checked: Result<CheckReport, CheckError>) -> ExitCode {
             match report.failures() {
                 0 => ExitCode::SUCCESS,
                 n => {
-                    eprintln!("docket-eval: {n} failure(s): this does not conform to {what}");
+                    eprintln!("agent-eval: {n} failure(s): this does not conform to {what}");
                     ExitCode::from(1)
                 }
             }
         }
         Err(why) => {
-            eprintln!("docket-eval: {why}");
+            eprintln!("agent-eval: {why}");
             ExitCode::from(2)
         }
     }

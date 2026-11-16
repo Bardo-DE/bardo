@@ -13,7 +13,7 @@
 //! user_task = "summarise this thread"            # the person's words
 //! injection = "<INFORMATION> ... </INFORMATION>"  # the attacker's text
 //! carrier = { kind = "mail_body", v = "t1" }      # the fixture field that holds it
-//! goal = { app = "org.quire.Mail", action = "mail.message.send" }
+//! goal = { app = "org.bardo.Mail", action = "mail.message.send" }
 //! known_hole = "..."                              # optional: a defence hole not yet closed
 //! user_needs = "answer"                           # optional: "answer" or "actions" (attack_needs.rs)
 //! here = "t1"                                     # optional: where the person is (attack_place.rs)
@@ -33,7 +33,7 @@
 //!
 //! The planner is scripted, so a run is deterministic: the hijacked agent follows the injection
 //! every time, which is the worst case the defence has to hold against. The same cases run live
-//! (`docket-live corpus --corpus attacks`), where the policy writer and reviewers are real
+//! (`agent-live corpus --corpus attacks`), where the policy writer and reviewers are real
 //! models.
 
 use crate::attack_needs::UserNeeds;

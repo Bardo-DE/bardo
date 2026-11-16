@@ -304,7 +304,7 @@ mod view_tests {
         let mut asked = request("c-1", ConfirmOffer::OnceOnly, 120);
         let thing = EntityRef {
             id: provenance::EntityId {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 kind: provenance::EntityKind::parse("mail.thread")
                     .unwrap_or_else(|e| panic!("{e}")),
                 key: provenance::EntityKey::parse("t1").unwrap_or_else(|e| panic!("{e}")),
@@ -320,9 +320,9 @@ mod view_tests {
             asker_words(&provenance::Actor::Unknown),
             "Something on this computer"
         );
-        let name: AppName = app("org.quire.Mail");
+        let name: AppName = app("org.bardo.Mail");
         assert_eq!(app_words(&name), "Mail");
-        assert_eq!(app_words(&app("org.quire.Companion")), "Assistant");
+        assert_eq!(app_words(&app("org.bardo.Companion")), "Assistant");
         assert!(!why_words(&permission_core::AskReason::Mass(account_ids::Count(3))).is_empty());
         let said = |why: &str| permission_core::AskReason::Said {
             rule: permission_core::PolicyId("ask-after-untrusted".to_owned()),

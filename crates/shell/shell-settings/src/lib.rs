@@ -1,8 +1,8 @@
-//! `$XDG_CONFIG_HOME/sill/settings.toml`: the shell's settings domains (design/22-SETTINGS.md
+//! `$XDG_CONFIG_HOME/shell/settings.toml`: the shell's settings domains (design/22-SETTINGS.md
 //! §3.4-3.8 and §3.11-3.14: bar, dock, launcher, scroll, scrollbar, menus, sound,
 //! notifications, control center, spaces; `display`, `power_menu` and `session`; and
 //! `calendar`, `screenshot` and `hot_corners`; §3.24-3.25: `idle` and `keyboard`; §3.30: `companion`; `voice` and `wallpaper`, which design/22 does not list yet), and their schema (§9,
-//! `#[derive(SettingsSchema)]` with `file = "sill/settings.toml"`), all fields of a [`ShellFile`].
+//! `#[derive(SettingsSchema)]` with `file = "shell/settings.toml"`), all fields of a [`ShellFile`].
 //!
 //! Pure data: no I/O, no runtime, no dioxus. `ShellFile` is a `ui_settings::SettingsDoc`, and
 //! reading, saving, watching and publishing it belong to the daemon (`shell_app::daemon::settings`).

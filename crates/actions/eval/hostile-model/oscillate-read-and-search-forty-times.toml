@@ -14,14 +14,14 @@ body = "Here are the March receipts."
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -29,14 +29,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -44,14 +44,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -59,14 +59,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -74,14 +74,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -89,14 +89,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -104,14 +104,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -119,14 +119,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -134,14 +134,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -149,14 +149,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -164,14 +164,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -179,14 +179,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -194,14 +194,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -209,14 +209,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -224,14 +224,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -239,14 +239,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -254,14 +254,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -269,14 +269,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -284,14 +284,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }
@@ -299,14 +299,14 @@ query = { kind = "literal", v = "receipts" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.read"
 times = 1
 targets = [{ kind = "mail.thread", key = "t1" }]
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.thread.search"
 [planner.v.args]
 query = { kind = "literal", v = "receipts" }

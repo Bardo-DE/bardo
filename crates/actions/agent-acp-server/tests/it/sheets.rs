@@ -33,7 +33,7 @@ fn sheet_with(id: &str, always: AlwaysOffer) -> ConfirmRequest {
         id: ConfirmId::parse(id).expect("id"),
         space: SpaceId::desktop(),
         actor: Actor::Unknown,
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         action: LabelText::parse("Archive messages").expect("label"),
         effect: Effect::UndoableWrite,
         count: Count(1),

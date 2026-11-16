@@ -159,9 +159,9 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     /// the `Conflict` signal carried (its `number` key); `how` is `keep_local` (upload the local
     /// content over the replica's version) or `keep_remote` (take the replica's version and drop
     /// the local change), and the next cycle does it. Only the dataset's owning app may call it.
-    /// Errors: `InvalidArgs` for any other `how`; `org.quire.Accounts1.Error.NoFittingAccount`
-    /// when the caller sees no such dataset; `org.quire.Accounts1.Error.Denied` when it sees the
-    /// dataset but does not own it; `org.quire.Sync1.Error.NoSuchConflict` when the conflict is
+    /// Errors: `InvalidArgs` for any other `how`; `org.bardo.Accounts1.Error.NoFittingAccount`
+    /// when the caller sees no such dataset; `org.bardo.Accounts1.Error.Denied` when it sees the
+    /// dataset but does not own it; `org.bardo.Sync1.Error.NoSuchConflict` when the conflict is
     /// unknown or already settled.
     async fn resolve(
         &self,
@@ -193,8 +193,8 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     /// Anyone who may pause the dataset may call it (its owning app, Settings, the porter
     /// daemons). Keeping is not calling it: the dataset stays held and nothing is removed,
     /// every cycle asking the replica for its listing again. Errors:
-    /// `org.quire.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
-    /// `org.quire.Sync1.Error.NothingHeld` when nothing is held (never, or already confirmed).
+    /// `org.bardo.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
+    /// `org.bardo.Sync1.Error.NothingHeld` when nothing is held (never, or already confirmed).
     async fn confirm_discard(
         &self,
         Call { header, .. }: Call<'_>,
@@ -218,8 +218,8 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     /// tell how it went); a dataset waiting for the network (offline, or metered when the
     /// setting says to wait) starts when the network allows. Anyone who may pause the dataset
     /// may call it (its owning app, Settings, the porter daemons). Errors:
-    /// `org.quire.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
-    /// `org.quire.Sync1.Error.Paused` when the person paused it (`Resume` first).
+    /// `org.bardo.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
+    /// `org.bardo.Sync1.Error.Paused` when the person paused it (`Resume` first).
     async fn sync_now(
         &self,
         Call { header, .. }: Call<'_>,
@@ -255,8 +255,8 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     }
 }
 
-/// Serves `org.quire.Sync1` on `connection` over `hub`, with `callers` saying who calls, and
-/// claims `org.quire.Sync1` once the connection takes calls ([`zbus_ready::serving`]). Any
+/// Serves `org.bardo.Sync1` on `connection` over `hub`, with `callers` saying who calls, and
+/// claims `org.bardo.Sync1` once the connection takes calls ([`zbus_ready::serving`]). Any
 /// other object on `connection` (the Photos picker) is registered before this is called.
 pub async fn serve<C: Callers>(connection: &Connection, hub: Hub, callers: C) -> zbus::Result<()> {
     let core = Arc::new(Core {

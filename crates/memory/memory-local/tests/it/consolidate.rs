@@ -22,7 +22,7 @@ fn supersede(old: FactId) -> Hunk {
             text: FactText::parse("Ana is the CFO of Acme.").expect("text"),
             recorded: NOW,
             by: Actor::User {
-                via: AppName::parse("org.quire.Shell").expect("app"),
+                via: AppName::parse("org.bardo.Shell").expect("app"),
             },
             label: trusted_label(),
             links: vec![Link::Fact(old.clone())],

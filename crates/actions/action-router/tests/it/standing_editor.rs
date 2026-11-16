@@ -208,7 +208,7 @@ async fn a_sibling_path_is_asked_again() {
     say_as(&router, &who, &opened.session, "move my file").await;
     let mut policy = wide_policy(&opened.task, "work");
     policy.actions = [ActionMatch::AppUpTo(
-        app("org.quire.Files"),
+        app("org.bardo.Files"),
         Effect::Destructive,
     )]
     .into();

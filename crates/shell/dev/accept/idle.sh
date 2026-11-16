@@ -7,12 +7,12 @@
 # - one private dbus-daemon (dev/private-bus.conf) is the daemon's system bus;
 #   examples/logind_standin.rs owns org.freedesktop.login1 there and only RECORDS Suspend,
 #   SetIdleHint and Inhibit (it sends PrepareForSleep and Lock on command). The session bus is
-#   casement's own private one (dev/up.sh), where org.quire.Compositor1 hands the daemon the
+#   casement's own private one (dev/up.sh), where org.bardo.Compositor1 hands the daemon the
 #   shell's connection: idle's watches are the shell's, under no app minimum (casement holds an
 #   app's to 5 s);
 # - the daemon gets its own XDG_RUNTIME_DIR, XDG_CONFIG_HOME, XDG_STATE_HOME and XDG_CACHE_HOME,
 #   the nested socket as an absolute WAYLAND_DISPLAY (the script refuses wayland-0), and
-#   XDG_CURRENT_DESKTOP=quire so it resolves a sill session (Host::SillSession) and owns idle;
+#   XDG_CURRENT_DESKTOP=bardo so it resolves a sill session (Host::SillSession) and owns idle;
 # - short idle times come from `sill run --idle-times`, which only a debug build takes;
 # - no password is typed: an asked lock is opened with `sill debug auth accept` (debug build);
 # - no input is typed anywhere: a wake is `sill debug idle-wake` (debug build), a made-up
@@ -61,13 +61,13 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-idle"
-SHOTS="$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-idle"
+SHOTS="$BARDO_SHELL_SHOTS"
 DIM_SURFACE=
 mkdir -p "$OUT_DIR" "$SHOTS"
-LOCKER="$SILL_OUT/examples/session_locker"
-LOGIND_BIN="$SILL_OUT/examples/logind_standin"
-CLIENT_BIN="$SILL_OUT/examples/screensaver_client"
+LOCKER="$BARDO_SHELL_OUT/examples/session_locker"
+LOGIND_BIN="$BARDO_SHELL_OUT/examples/logind_standin"
+CLIENT_BIN="$BARDO_SHELL_OUT/examples/screensaver_client"
 
 start_compositor || exit 1
 case "$(basename "$WL")" in
@@ -78,10 +78,10 @@ mkdir -p "$CONFIG/sill"
 LOGIND=
 TIMES="6,0"
 DAEMON_LOG="$OUT_DIR/daemon.log"
-# The daemon resolves a sill session (Host::SillSession) and owns idle only as the sill session's desktop (quire, as desktop-session sets it).
-SESSION_ENV=(XDG_CURRENT_DESKTOP=quire)
-# The session bus: casement's (set by start_compositor), so the daemon reaches org.quire.Compositor1.
-session_bus() { echo "${CASEMENT_BUS:-$BUS}"; }
+# The daemon resolves a sill session (Host::SillSession) and owns idle only as the sill session's desktop (quire, as bardo-session sets it).
+SESSION_ENV=(XDG_CURRENT_DESKTOP=bardo)
+# The session bus: casement's (set by start_compositor), so the daemon reaches org.bardo.Compositor1.
+session_bus() { echo "${BARDO_COMPOSITOR_BUS:-$BUS}"; }
 IN_ENV_EXTRA=("${SESSION_ENV[@]}")
 
 nested_locker() { WAYLAND_DISPLAY="$WL" "$LOCKER" "$@"; }
@@ -184,7 +184,7 @@ start_logind() {
 # environment for its launch only.
 start_idle_daemon() {
   backdrop_seed "$CONFIG" || return 1
-  printf '[session]\nlock_grace_s = 5\n' >"$CONFIG/sill/settings.toml"
+  printf '[session]\nlock_grace_s = 5\n' >"$CONFIG/shell/settings.toml"
   IN_ENV_EXTRA=("${SESSION_ENV[@]}" DBUS_SESSION_BUS_ADDRESS="$(session_bus)" "$@")
   launch_daemon --idle-times "$TIMES"
   local launched=$?

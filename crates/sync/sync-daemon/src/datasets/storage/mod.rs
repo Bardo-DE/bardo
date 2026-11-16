@@ -11,7 +11,7 @@
 //!   for a Google one; and the whole drive's listing
 //!   ([`crate::datasets::drive`]) of an account the person turned on "Show in Files" for.
 //!
-//! A person needs: a Microsoft or Google account in accountd, and a grant for `org.quire.Sync`
+//! A person needs: a Microsoft or Google account in accountd, and a grant for `org.bardo.Sync`
 //! made in Settings (class Files for the app folder, class Photos for Photos: the account's
 //! Photos row is the only thing that turns Photos on).
 

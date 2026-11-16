@@ -42,7 +42,7 @@ fn call_in<'a>(
 
 #[test]
 fn the_strongest_covering_limit_wins_and_the_floor_wins_a_tie() {
-    let files = app("org.quire.Files");
+    let files = app("org.bardo.Files");
     let delete = name("files.file.delete");
     let work = space("work");
     let home = space("home");
@@ -210,7 +210,7 @@ fn a_file_with_no_level_still_reads_as_always_allow() {
 fn what_the_assistant_adds_is_theirs_to_remove_by_id_only() {
     let made = Tighten {
         level: LimitLevel::Never,
-        scope: LimitScope::App(app("org.quire.Files")),
+        scope: LimitScope::App(app("org.bardo.Files")),
         space: SpaceScope::Only(space("work")),
         from: Effect::UndoableWrite,
         said: Some(Said::parse("don't touch my Work folder").expect("words")),
@@ -243,7 +243,7 @@ fn the_floor_clamps_strictness_and_locks_entries() {
         strictness: Some(Strictness::Default),
         locked: vec![FloorEntry {
             level: LimitLevel::Never,
-            app: Some(app("org.quire.Files")),
+            app: Some(app("org.bardo.Files")),
             action: Some(name("files.file.delete")),
             from: Effect::Destructive,
         }],
@@ -293,7 +293,7 @@ fn a_limit_is_a_rule_in_a_file_that_is_added_replaced_and_removed_by_id() {
     let made = Tighten {
         level: LimitLevel::AlwaysAsk,
         scope: LimitScope::Action(ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: name("mail.thread.archive"),
         }),
         space: SpaceScope::Only(space("work")),

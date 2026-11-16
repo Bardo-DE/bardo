@@ -8,7 +8,7 @@ use ui_settings::schema::Page;
 /// `gpu.*`: which GPU renders.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "casement/settings.toml", domain = "gpu", page = Page::Appearance)]
+#[settings(file = "compositor/settings.toml", domain = "gpu", page = Page::Appearance)]
 pub struct GpuSection {
     /// `gpu.render`: `auto`, or the PCI address of the GPU that renders.
     #[settings(

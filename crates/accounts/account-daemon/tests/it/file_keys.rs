@@ -1,4 +1,4 @@
-//! `ACCOUNTD_KEYS=file:<absolute path>` on the real binary and a private bus, with no Secret
+//! `BARDO_ACCOUNTD_KEYS=file:<absolute path>` on the real binary and a private bus, with no Secret
 //! Service anywhere: a `test-keys` build refuses a value or a file it cannot use before it
 //! serves, and a shipped build ignores the variable and says so. Nothing here touches the real
 //! Secret Service or keyring; the environment is cleared.
@@ -51,7 +51,7 @@ fn spawn(bus: &PrivateBus, home: &Path, keys: Option<&str>) -> Daemon {
             home.join("no-tailscale.sock"),
         );
     if let Some(keys) = keys {
-        command.env("ACCOUNTD_KEYS", keys);
+        command.env("BARDO_ACCOUNTD_KEYS", keys);
     }
     command
         .stdout(Stdio::null())

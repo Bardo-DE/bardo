@@ -79,8 +79,8 @@ fn the_choice_reads_interface_names_from_the_registry() {
     let offered = ProtocolSet::from_interfaces([
         "wl_compositor",
         "ext_foreign_toplevel_list_v1",
-        "quire_desktop_manager_v1",
-        "quire_shell_v1",
+        "bardo_desktop_manager_v1",
+        "bardo_shell_v1",
     ]);
     assert_eq!(backend_for(&offered), Some(DesktopBackend::Quire));
     assert!(offered.contains(Protocol::QuireShell));

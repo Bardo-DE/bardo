@@ -1,14 +1,14 @@
 //! The names Files owns on the bus and the actions it declares. The declarations themselves are
-//! the file `dist/intents/org.quire.Files.toml`, embedded here so the file the installer ships and
+//! the file `dist/intents/org.bardo.Files.toml`, embedded here so the file the installer ships and
 //! the one the window answers for are one file.
 //!
 //! Action names start with `files`, the app name's last element, which the agent layer requires.
 
 /// The name the agent layer calls (the manifest's app); also the name the running app owns.
-pub const APP_BUS_NAME: &str = "org.quire.Files";
+pub const APP_BUS_NAME: &str = "org.bardo.Files";
 
 /// The shipped actions file.
-pub const MANIFEST: &str = include_str!("../../../dist/intents/org.quire.Files.toml");
+pub const MANIFEST: &str = include_str!("../../../dist/intents/org.bardo.Files.toml");
 
 /// Show a file or folder.
 pub const OPEN: &str = "files.open";

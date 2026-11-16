@@ -3,7 +3,7 @@
 //! `xdg-desktop-portal` asks it before it takes a screenshot or picks a colour for an app that
 //! has not been allowed yet, and refuses to offer those portals when no backend answers it. The
 //! question is the person's: the dialog is a surface of the desktop shell, not of this process.
-//! [`ShellAsker`] calls `org.quire.Shell1.AskPermission` and [`Answer`] says what came back;
+//! [`ShellAsker`] calls `org.bardo.Shell1.AskPermission` and [`Answer`] says what came back;
 //! [`FakeAsker`] answers from a script, for tests.
 
 use std::sync::{Mutex, PoisonError};

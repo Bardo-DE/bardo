@@ -6,8 +6,8 @@
 #   exit 0 all steps passed, 1 a step failed, 2 not runnable (outside the jail, or not filled yet),
 #   3 a tool is missing.
 #
-# Needs TRANSOM_BIN, TRANSOM_COMPOSITOR_ENV (a headless compositor at scale 1.5),
-# TRANSOM_TEST_WINDOW (the identifier of an open window) and TRANSOM_TEST_WINDOW_SIZE (its
+# Needs BARDO_PORTAL_BIN, BARDO_PORTAL_COMPOSITOR_ENV (a headless compositor at scale 1.5),
+# BARDO_PORTAL_TEST_WINDOW (the identifier of an open window) and BARDO_PORTAL_TEST_WINDOW_SIZE (its
 # logical size, WxH). A consumer: gst-launch-1.0 with pipewiresrc.
 set -euo pipefail
 root=$(cd "$(dirname "$0")/../../../portal" && pwd)
@@ -19,22 +19,22 @@ source "$root/dev/lib/chain.sh"
 # shellcheck source=dev/lib/cast_check.sh
 source "$root/dev/lib/cast_check.sh"
 need_compositor screencast-window
-if [ -z "${TRANSOM_TEST_WINDOW:-}" ] || [ -z "${TRANSOM_TEST_WINDOW_SIZE:-}" ]; then
-  echo "SKIP screencast-window: set TRANSOM_TEST_WINDOW and TRANSOM_TEST_WINDOW_SIZE"
+if [ -z "${BARDO_PORTAL_TEST_WINDOW:-}" ] || [ -z "${BARDO_PORTAL_TEST_WINDOW_SIZE:-}" ]; then
+  echo "SKIP screencast-window: set BARDO_PORTAL_TEST_WINDOW and BARDO_PORTAL_TEST_WINDOW_SIZE"
   exit 2
 fi
-scale=${TRANSOM_SCALE:-1.5}
-lw=${TRANSOM_TEST_WINDOW_SIZE%x*}; lh=${TRANSOM_TEST_WINDOW_SIZE#*x}
+scale=${BARDO_PORTAL_SCALE:-1.5}
+lw=${BARDO_PORTAL_TEST_WINDOW_SIZE%x*}; lh=${BARDO_PORTAL_TEST_WINDOW_SIZE#*x}
 want_w=$(awk -v n="$lw" -v s="$scale" 'BEGIN { printf "%d", n * s + 0.5 }')
 want_h=$(awk -v n="$lh" -v s="$scale" 'BEGIN { printf "%d", n * s + 0.5 }')
 
-env_file=$("$root/dev/up.sh" --env "$TRANSOM_COMPOSITOR_ENV")
+env_file=$("$root/dev/up.sh" --env "$BARDO_PORTAL_COMPOSITOR_ENV")
 # shellcheck source=/dev/null
 source "$env_file"
 trap 'stop_cast; stop_fake_shell; "$root/dev/down.sh" "$env_file" >/dev/null' EXIT
 status=0
 
-start_fake_shell "window:$TRANSOM_TEST_WINDOW"
+start_fake_shell "window:$BARDO_PORTAL_TEST_WINDOW"
 run_cast 2 0
 if [ "$(cast_field response)" = 0 ] && [ -n "$(cast_field node)" ]; then
   step PASS "1 Start for a window returned a node"

@@ -24,7 +24,7 @@ tile_size_px = 200
 ";
 
 fn file_in(dir: &TempDir) -> std::path::PathBuf {
-    dir.path().join("sill/settings.toml")
+    dir.path().join("shell/settings.toml")
 }
 
 fn store_in(dir: &TempDir) -> Store {

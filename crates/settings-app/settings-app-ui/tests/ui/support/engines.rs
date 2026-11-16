@@ -1,4 +1,4 @@
-//! A fake inferd (`org.quire.Inference1`) that answers `LocalEngines`, and a fake user service
+//! A fake inferd (`org.bardo.Inference1`) that answers `LocalEngines`, and a fake user service
 //! manager (`org.freedesktop.systemd1.Manager`) that writes down each `RestartUnit` and, as a
 //! restart does, lets inferd find llama.cpp from then on. Both are on the test's private bus.
 
@@ -45,7 +45,7 @@ fn row(id: &str, name: &str, found: bool) -> (String, Details) {
 
 struct Inference(Arc<State>);
 
-#[zbus::interface(name = "org.quire.Inference1")]
+#[zbus::interface(name = "org.bardo.Inference1")]
 impl Inference {
     async fn local_engines(&self) -> Vec<(String, Details)> {
         vec![

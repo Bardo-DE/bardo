@@ -1,10 +1,10 @@
-//! The glow, revoke, suspend and mode tables equal the generated `quire_agent_v1` enums.
+//! The glow, revoke, suspend and mode tables equal the generated `bardo_agent_v1` enums.
 
 use computer_use_desktop::{GlowState, RevokeReason, RunMode, Suspend, WireCode, mode_code};
-use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::{
+use desktop_protocols::client::bardo_agent_v1::bardo_agent_lease_v1::{
     GlowState as ProtocolGlow, RevokeReason as ProtocolRevoke, SuspendReason as ProtocolSuspend,
 };
-use desktop_protocols::client::quire_agent_v1::quire_agent_manager_v1::LeaseMode;
+use desktop_protocols::client::bardo_agent_v1::bardo_agent_manager_v1::LeaseMode;
 
 #[test]
 fn the_wire_tables_equal_the_protocol_enums() {

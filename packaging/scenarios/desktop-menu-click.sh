@@ -4,7 +4,7 @@
 # A deliberate press-drag-release onto the item still picks it (the menu is not just broken).
 #
 # The jail, a headless casement and the sill daemon on one private bus come up as in
-# sill-boots-on-casement. Nothing owns org.quire.Settings on the private bus, so a pick of
+# sill-boots-on-casement. Nothing owns org.bardo.Settings on the private bus, so a pick of
 # "Change Wallpaper…" shows as sill's log line "opening Settings".
 #   boot      casement up, the daemon answers `ping`, the wallpaper has drawn
 #   jitter    right press, a 2 px drift down-right, release: no Settings
@@ -17,11 +17,11 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" \
+scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
   "$SCEN_BUILD/sill-target/debug/sill"
 
-export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
+export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 floor_shim desktop-menu-click sill
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
@@ -48,7 +48,7 @@ frames_drawn() { local n; n=$(frames_of "$1"); [ "${n:-0}" -ge 1 ] && echo "$n";
 X=400 Y=300
 
 asked() { grep -c "opening Settings" "$OUT_DIR/daemon.log" 2>/dev/null || true; }
-inject() { casementctl debug inject "$@" >>"$OUT_DIR/inject.log" 2>&1; }
+inject() { bardo-compositorctl debug inject "$@" >>"$OUT_DIR/inject.log" 2>&1; }
 # Close whatever menu is open with a plain click far from it, then let it fade.
 dismiss() { inject "move 60 600" "sleep 60" "press left" "sleep 40" "release left" "sleep 600"; }
 

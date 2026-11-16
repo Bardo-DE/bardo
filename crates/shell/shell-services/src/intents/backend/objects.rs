@@ -1,4 +1,4 @@
-//! The objects sill exports for intentd: `org.quire.Confirm1` and one `org.quire.Intents1.Request`
+//! The objects sill exports for intentd: `org.bardo.Confirm1` and one `org.bardo.Intents1.Request`
 //! per question. They do nothing but check who is calling and hand the call to the service's
 //! loop; the loop decides.
 
@@ -19,9 +19,9 @@ use zbus::zvariant::OwnedObjectPath;
 use crate::callers::{Claim, Peers, admit};
 
 /// Where `Confirm` answers a question and where its `Response` goes.
-pub(super) const REQUEST_PATH: &str = "/org/quire/Confirm1/request";
+pub(super) const REQUEST_PATH: &str = "/org/bardo/Confirm1/request";
 /// The interface a request object and its `Response` signal belong to.
-pub(super) const REQUEST_INTERFACE: &str = "org.quire.Intents1.Request";
+pub(super) const REQUEST_INTERFACE: &str = "org.bardo.Intents1.Request";
 
 /// Who asked a question: the process that called `Confirm`, and the object its answer goes to.
 #[derive(Debug, Clone)]
@@ -45,7 +45,7 @@ pub(super) enum Call {
     Closed(Serial),
 }
 
-/// `org.quire.Confirm1`.
+/// `org.bardo.Confirm1`.
 pub(super) struct ConfirmObject {
     pub calls: UnboundedSender<Call>,
     pub serials: Arc<AtomicU64>,
@@ -76,7 +76,7 @@ impl ConfirmObject {
     }
 }
 
-#[zbus::interface(name = "org.quire.Confirm1")]
+#[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmObject {
     async fn confirm(
         &self,
@@ -119,7 +119,7 @@ impl ConfirmObject {
     }
 }
 
-#[zbus::interface(name = "org.quire.Intents1.Request")]
+#[zbus::interface(name = "org.bardo.Intents1.Request")]
 impl RequestObject {
     async fn close(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
         match header.sender() {

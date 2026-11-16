@@ -1,5 +1,5 @@
 //! A window's frame effects, asked of the compositor: once the window exists, on a Wayland
-//! compositor that offers `quire_window_v1`, the compositor is told to draw the shadow and clip
+//! compositor that offers `bardo_window_v1`, the compositor is told to draw the shadow and clip
 //! the corners at the radius of the window's own drawn edge (`crate::quire_window`). Anywhere else
 //! (X11, GNOME, KDE, macOS, a build without `quire-desktop`) nothing is asked and nothing is shown.
 

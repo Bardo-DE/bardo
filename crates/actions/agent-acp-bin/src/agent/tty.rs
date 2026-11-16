@@ -1,4 +1,4 @@
-//! The development fallback (`docket-agent --tty`): what the host prints of a turn, and the
+//! The development fallback (`bardo-agent --tty`): what the host prints of a turn, and the
 //! router's sheet put to the person on this terminal. Without the flag none of this is wired:
 //! the sheet is the desktop's, through the router's confirmer, and the host sees nothing of it.
 //! What the agent says of itself is printed as the agent's words; the sheet is the router's own

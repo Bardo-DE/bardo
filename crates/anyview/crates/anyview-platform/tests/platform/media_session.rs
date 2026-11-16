@@ -78,7 +78,7 @@ async fn the_player_registers_and_shows_what_was_published() {
     let identity: String = get(&client, ROOT, "Identity").await.try_into().unwrap();
     assert_eq!(identity, "Viewer");
     let entry: String = get(&client, ROOT, "DesktopEntry").await.try_into().unwrap();
-    assert_eq!(entry, "org.quire.Anyview");
+    assert_eq!(entry, "org.bardo.Anyview");
     let before: String = get(&client, PLAYER, "PlaybackStatus")
         .await
         .try_into()
@@ -114,7 +114,7 @@ async fn the_player_registers_and_shows_what_was_published() {
         .unwrap();
     assert_eq!(artists, vec!["Band".to_owned()]);
     let track: ObjectPath<'_> = (&*metadata["mpris:trackid"]).try_into().unwrap();
-    assert_eq!(track.as_str(), "/org/quire/Anyview1/Track/3");
+    assert_eq!(track.as_str(), "/org/bardo/Anyview1/Track/3");
 }
 
 #[tokio::test]
@@ -187,7 +187,7 @@ async fn controls_from_the_desktop_arrive_as_typed_inputs() {
         )
         .await
         .unwrap();
-    let track = ObjectPath::try_from("/org/quire/Anyview1/Track/3").unwrap();
+    let track = ObjectPath::try_from("/org/bardo/Anyview1/Track/3").unwrap();
     client
         .call_method(
             Some(MPRIS_NAME),
@@ -199,7 +199,7 @@ async fn controls_from_the_desktop_arrive_as_typed_inputs() {
         .await
         .unwrap();
     // A position for a track that is not playing is ignored.
-    let other = ObjectPath::try_from("/org/quire/Anyview1/Track/9").unwrap();
+    let other = ObjectPath::try_from("/org/bardo/Anyview1/Track/9").unwrap();
     client
         .call_method(
             Some(MPRIS_NAME),

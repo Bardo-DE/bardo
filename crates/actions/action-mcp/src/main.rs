@@ -1,4 +1,4 @@
-//! actions-mcp: the MCP edge as a process. Stdio by default (a client starts it), `--socket PATH`
+//! bardo-actions-mcp: the MCP edge as a process. Stdio by default (a client starts it), `--socket PATH`
 //! for a long-lived socket. Exits 2 for a bad command line, 1 for any other stop.
 
 use std::process::ExitCode;
@@ -7,7 +7,7 @@ fn main() -> ExitCode {
     let args = match action_mcp::Args::parse(std::env::args().skip(1)) {
         Ok(args) => args,
         Err(why) => {
-            eprintln!("actions-mcp: {why}");
+            eprintln!("bardo-actions-mcp: {why}");
             return ExitCode::from(2);
         }
     };
@@ -17,7 +17,7 @@ fn main() -> ExitCode {
     {
         Ok(runtime) => runtime,
         Err(why) => {
-            eprintln!("actions-mcp: no runtime: {why}");
+            eprintln!("bardo-actions-mcp: no runtime: {why}");
             return ExitCode::FAILURE;
         }
     };
@@ -25,7 +25,7 @@ fn main() -> ExitCode {
     match runtime.block_on(action_mcp::run(args, &env)) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
-            eprintln!("actions-mcp: {why}");
+            eprintln!("bardo-actions-mcp: {why}");
             ExitCode::FAILURE
         }
     }

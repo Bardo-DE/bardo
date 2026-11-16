@@ -13,14 +13,14 @@ use provenance::{ConfirmId, Effect, SpaceScope, UnixSeconds};
 use std::path::PathBuf;
 
 fn fixture() -> String {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/intentd.toml");
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/actiond.toml");
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
 }
 
 #[test]
 fn the_fixture_parses_and_one_name_may_play_several_roles() {
     let config = IntentdConfig::parse(&fixture()).expect("a configuration");
-    let sill = AppName::parse("org.quire.Sill").expect("app");
+    let sill = AppName::parse("org.bardo.Shell").expect("app");
     let roles = config.roles_of(&sill);
     assert_eq!(
         roles.into_iter().collect::<Vec<_>>(),
@@ -30,18 +30,18 @@ fn the_fixture_parses_and_one_name_may_play_several_roles() {
             CallerRole::Control
         ]
     );
-    let quire_do = AppName::parse("org.quire.Do").expect("app");
+    let quire_do = AppName::parse("org.bardo.Do").expect("app");
     assert_eq!(
         config.roles_of(&quire_do).into_iter().collect::<Vec<_>>(),
         [CallerRole::Cli],
-        "any process running quire-do plays the cli role"
+        "any process running bardo-do plays the cli role"
     );
-    let temor = AppName::parse("org.quire.Temor").expect("app");
+    let temor = AppName::parse("org.bardo.Temor").expect("app");
     assert_eq!(
         config.roles_of(&temor).into_iter().collect::<Vec<_>>(),
         [CallerRole::Cli]
     );
-    let plain = AppName::parse("org.quire.Mail").expect("app");
+    let plain = AppName::parse("org.bardo.Mail").expect("app");
     assert!(
         config.roles_of(&plain).is_empty(),
         "an unlisted name is a plain app"
@@ -69,10 +69,10 @@ fn the_built_in_manifests_validate_and_carry_their_prefixes() {
     assert_eq!(
         apps,
         [
-            "org.quire.Memory",
-            "org.quire.Companion",
-            "org.quire.AcpAgent",
-            "org.quire.Checkpoints"
+            "org.bardo.Memory",
+            "org.bardo.Companion",
+            "org.bardo.AcpAgent",
+            "org.bardo.Checkpoints"
         ]
     );
     let companion = &manifests[1];
@@ -185,7 +185,7 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
     }
     assert!(
         units.len() >= 5,
-        "intentd, companiond, readerd, voiced and actions-mcp"
+        "intentd, companiond, readerd, voiced and bardo-actions-mcp"
     );
     for path in &units {
         let text = std::fs::read_to_string(path).expect("unit");
@@ -195,7 +195,7 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
         // breaks none of that, and the agent is confined by the sandbox the host starts it in.
         let host = path
             .file_name()
-            .is_some_and(|n| n == "docket-agent.service");
+            .is_some_and(|n| n == "bardo-agent.service");
         let lines: &[&str] = match host {
             true => &[
                 "NoNewPrivileges=yes",
@@ -252,27 +252,27 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
 #[test]
 fn intentds_unit_ends_with_the_graphical_session_and_makes_the_directory_it_may_write() {
     let dist = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dist");
-    let text = std::fs::read_to_string(dist.join("intentd.service")).expect("unit");
+    let text = std::fs::read_to_string(dist.join("bardo-actiond.service")).expect("unit");
     let has = |line: &str| text.lines().any(|l| l == line);
     assert!(
         has("PartOf=graphical-session.target"),
         "grants end with the login"
     );
-    assert!(has("Type=dbus") && has("BusName=org.quire.Intents1"));
+    assert!(has("Type=dbus") && has("BusName=org.bardo.Intents1"));
     // A read-write path that does not exist stops a sandboxed unit, so it is made first, outside
     // the sandbox.
     assert!(has(
         "ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/quire/intents"
     ));
     let dropin =
-        std::fs::read_to_string(dist.join("intentd.service.d/sandbox.conf")).expect("drop-in");
+        std::fs::read_to_string(dist.join("bardo-actiond.service.d/sandbox.conf")).expect("drop-in");
     assert!(
         dropin
             .lines()
             .any(|l| l == "ReadWritePaths=%h/.local/share/quire/intents")
     );
-    let activation = std::fs::read_to_string(dist.join("dbus/org.quire.Intents1.service"))
+    let activation = std::fs::read_to_string(dist.join("dbus/org.bardo.Intents1.service"))
         .expect("activation file");
-    assert!(activation.contains("Name=org.quire.Intents1"));
-    assert!(activation.contains("SystemdService=intentd.service"));
+    assert!(activation.contains("Name=org.bardo.Intents1"));
+    assert!(activation.contains("SystemdService=bardo-actiond.service"));
 }

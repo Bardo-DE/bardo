@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.ComputerUse1
+Exec=/usr/libexec/bardo/bardo-computer-use
+SystemdService=bardo-computer-use.service

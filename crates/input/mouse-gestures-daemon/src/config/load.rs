@@ -1,5 +1,5 @@
-//! Where the file lives and how it is read: `/etc/palmrest/gestures.toml` for the system service
-//! (its `ConfigurationDirectory=`), else `$XDG_CONFIG_HOME/palmrest/gestures.toml` for a tool run
+//! Where the file lives and how it is read: `/etc/bardo/mouse-gestures/gestures.toml` for the system service
+//! (its `ConfigurationDirectory=`), else `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` for a tool run
 //! by a person (22-SETTINGS §2).
 
 use super::file::{Config, parse};

@@ -21,7 +21,7 @@ use crate::link::BusLink;
 use crate::peers::need;
 
 /// The well-known name the shell answers on.
-pub const SHELL_NAME: &str = "org.quire.Shell";
+pub const SHELL_NAME: &str = "org.bardo.Shell";
 
 /// The shell, confirmed for one question: a client addressed to its unique name, and the watch
 /// that fires when the name changes hands.

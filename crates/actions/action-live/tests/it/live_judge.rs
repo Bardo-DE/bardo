@@ -235,7 +235,7 @@ fn the_shape_check_is_short_on_topic_plain_and_free_of_developer_words() {
         ("Taipei, and I can answer anything else", 1),
         ("Taipei is the capital of Taiwan, truly yes.", 1),
         ("Taipei (see mail.thread.search)", 1),
-        ("Taipei via org_quire_Mail_x", 1),
+        ("Taipei via org_bardo_Mail_x", 1),
         ("Taipei, not a memorable one", 0),
     ];
     for (said, want) in table {
@@ -280,12 +280,12 @@ fn the_everyday_flows_are_judged_on_what_was_called() {
     let table = [
         (
             Everyday::Fact,
-            with(&["org_quire_Memory-memory_recall"], &[]),
+            with(&["org_bardo_Memory-memory_recall"], &[]),
             None,
         ),
         (
             Everyday::Fact,
-            with(&["org_quire_Mail-mail_thread_search"], &[]),
+            with(&["org_bardo_Mail-mail_thread_search"], &[]),
             Some("not a memory read"),
         ),
         (
@@ -300,7 +300,7 @@ fn the_everyday_flows_are_judged_on_what_was_called() {
         ),
         (
             Everyday::Remember,
-            with(&["org_quire_Memory-memory_propose"], &[]),
+            with(&["org_bardo_Memory-memory_propose"], &[]),
             Some("a memory write ran without a sheet"),
         ),
         (
@@ -310,7 +310,7 @@ fn the_everyday_flows_are_judged_on_what_was_called() {
         ),
         (
             Everyday::WhatRemember,
-            with(&["org_quire_Memory-memory_facts"], &[]),
+            with(&["org_bardo_Memory-memory_facts"], &[]),
             None,
         ),
         (Everyday::MailFind, with(&[], &[]), Some("never searched")),

@@ -1,13 +1,13 @@
-//! `org.quire.AgentHost1`: the host of outside coding agents (`docket-agent`), which companiond
+//! `org.bardo.AgentHost1`: the host of outside coding agents (`bardo-agent`), which companiond
 //! asks to give the person's turn to the agent they chose as the assistant's model.
 
 use zbus::fdo;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.AgentHost1",
-    default_service = "org.quire.AcpAgent",
-    default_path = "/org/quire/AgentHost1"
+    interface = "org.bardo.AgentHost1",
+    default_service = "org.bardo.AcpAgent",
+    default_path = "/org/bardo/AgentHost1"
 )]
 pub trait AgentHost {
     /// Gives a turn to an agent (`HandOver` JSON) and answers at once with the turn's id. The
@@ -32,7 +32,7 @@ pub trait AgentHost {
 #[derive(Debug, Default)]
 pub struct AgentHostSkeleton;
 
-#[zbus::interface(name = "org.quire.AgentHost1")]
+#[zbus::interface(name = "org.bardo.AgentHost1")]
 impl AgentHostSkeleton {
     fn hand_over(&self, handover: String) -> fdo::Result<String> {
         let _ = (handover,);

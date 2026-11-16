@@ -312,7 +312,7 @@ def data_of(m):
 
 
 def confirm_traffic(path):
-    """[(request, answer or None)] in bus order for org.quire.Confirm1.Confirm calls.
+    """[(request, answer or None)] in bus order for org.bardo.Confirm1.Confirm calls.
 
     A call is paired with its answer through the object path the call returns: the Response signal on that path is the
     sheet's answer. (The router's own Response signals, to its callers, have other paths and are not mixed in.)
@@ -325,12 +325,12 @@ def confirm_traffic(path):
             continue
         kind, interface, member = m.get("type"), str(m.get("interface", "")), m.get("member")
         try:
-            if kind == "method_call" and interface == "org.quire.Confirm1" and member == "Confirm":
+            if kind == "method_call" and interface == "org.bardo.Confirm1" and member == "Confirm":
                 calls[m.get("cookie")] = json.loads(data[0])
                 order.append(m.get("cookie"))
             elif kind == "method_return" and m.get("reply_cookie") in calls and isinstance(data[0], str):
                 paths[m["reply_cookie"]] = data[0]
-            elif kind == "signal" and interface.startswith("org.quire.Intents1") and member == "Response":
+            elif kind == "signal" and interface.startswith("org.bardo.Intents1") and member == "Response":
                 answers[m.get("path")] = json.loads(data[-1])
         except (ValueError, TypeError):
             continue
@@ -395,7 +395,7 @@ def task_phases(path):
     phases, last = {}, None
     for m in bus_messages(path):
         interface = str(m.get("interface", ""))
-        if not (interface.startswith("org.quire.Companion1") or interface.startswith("org.quire.Confirm1")):
+        if not (interface.startswith("org.bardo.Companion1") or interface.startswith("org.bardo.Confirm1")):
             continue
         last = m.get("timestamp-realtime", 0) / 1e6
         data = data_of(m)
@@ -427,7 +427,7 @@ def screen_waits(path):
     screen-run message, or None). A screen run's question goes to the person, not through the assistant's answer."""
     state, asked, last = {}, {}, None
     for m in bus_messages(path):
-        if not str(m.get("interface", "")).startswith("org.quire.Cua1.Run"):
+        if not str(m.get("interface", "")).startswith("org.bardo.ComputerUse1.Run"):
             continue
         last = m.get("timestamp-realtime", 0) / 1e6
         run, data = m.get("path"), data_of(m)

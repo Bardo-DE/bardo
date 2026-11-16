@@ -3,7 +3,7 @@
 //! stoker's, [`SpeechRunner::transcribe`], and [`Ears`], the `Transcriber` a pipeline's `Hear`
 //! stage runs on.
 //!
-//! The host is a process of its own (`speech-host`, supervised as a CPU engine); one connection
+//! The host is a process of its own (`bardo-speech-host`, supervised as a CPU engine); one connection
 //! carries one utterance. Cancelling a turn drops the future, which tells the host `Cancel` and
 //! closes the socket, so audio is never kept: frames live in the buffer of the running call.
 
@@ -42,7 +42,7 @@ const DEFAULT_CHUNK: AudioMs = AudioMs(560);
 /// The engines a speech-to-text turn can run on.
 #[derive(Debug, Clone)]
 pub enum SttBackend {
-    /// `speech-host` on its Unix socket.
+    /// `bardo-speech-host` on its Unix socket.
     SpeechHost(SpeechHostClient),
 }
 

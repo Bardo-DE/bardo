@@ -1,4 +1,4 @@
-//! `org.quire.Storage1` at `/org/quire/Storage1`, on syncd's connection (`org.quire.Sync1`): each
+//! `org.bardo.Storage1` at `/org/bardo/Storage1`, on syncd's connection (`org.bardo.Sync1`): each
 //! storage account's drive as a folder every app reaches at a real path, for Files and the shell.
 //! A drive's files show before they are downloaded and download when opened; a person keeps a
 //! file or folder downloaded, or removes a download to free space.
@@ -23,7 +23,7 @@ use account_ids::word::{from_word, word};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// A drive row's account: its object path under `/org/quire/Accounts1/account/` (`o`).
+/// A drive row's account: its object path under `/org/bardo/Accounts1/account/` (`o`).
 pub const DRIVE_KEY_ACCOUNT: &str = "account";
 /// A drive row's account label, the person's words for it (`s`).
 pub const DRIVE_KEY_LABEL: &str = "label";
@@ -175,9 +175,9 @@ pub type Saved = HashMap<String, String>;
 /// The interface, written once. `#[bus_interface]` makes [`StorageProxy`] for its callers from this
 /// trait, [`StorageServer`] for the daemon to implement and [`StorageServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Storage1",
-    default_service = "org.quire.Sync1",
-    default_path = "/org/quire/Storage1"
+    interface = "org.bardo.Storage1",
+    default_service = "org.bardo.Sync1",
+    default_path = "/org/bardo/Storage1"
 )]
 pub trait Storage {
     /// The drives the caller may see, one row each: the drive's id (stable while the account is

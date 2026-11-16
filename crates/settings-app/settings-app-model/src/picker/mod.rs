@@ -1,5 +1,5 @@
-//! inferd's model picker, the live module `org.quire.SettingsModule1` at
-//! `/org/quire/Inference1/settings` (design/22 section 9.4), as pure state.
+//! inferd's model picker, the live module `org.bardo.SettingsModule1` at
+//! `/org/bardo/Inference1/settings` (design/22 section 9.4), as pure state.
 
 mod choice;
 mod local;

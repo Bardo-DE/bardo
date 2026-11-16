@@ -272,7 +272,7 @@ impl HelperHost {
     /// or there is no sandbox (each told apart). A call that only ends something has nothing to end.
     pub fn unavailable(ask: &AppsAsk, fault: AgentFault) -> AppsReply {
         // The person is told one sentence; the cause is kept here, where it would be dropped.
-        eprintln!("docket-agent: the helpers' agents cannot be hosted: {fault}");
+        eprintln!("bardo-agent: the helpers' agents cannot be hosted: {fault}");
         Self::failed(ask, Self::told(&fault))
     }
 

@@ -1,8 +1,8 @@
-//! `org.quire.Checkpoints`, the built-in provider's one action: `checkpoints.restore`, which
+//! `org.bardo.Checkpoints`, the built-in provider's one action: `checkpoints.restore`, which
 //! puts a session's workspace back to one of its restore points.
 //!
 //! The router serves it (the store, the log and the clock are its own): intentd's provider only
-//! reaches it through a port, as it does for `org.quire.Companion`. The action is destructive,
+//! reaches it through a port, as it does for `org.bardo.Companion`. The action is destructive,
 //! asks every time (`ask_always`), and its sheet is hold-to-confirm and once-only. The plan the
 //! person saw is bound to the call by its digest: a folder that changed since is refused, and
 //! the person looks again. Before anything is written the current files are saved as a new point
@@ -25,7 +25,7 @@ use agent_session::{Claimant, may_restore};
 use provenance::{Actor, AgentRole, SessionId};
 
 /// The name the built-in provider answers to.
-pub const CHECKPOINTS_APP: &str = "org.quire.Checkpoints";
+pub const CHECKPOINTS_APP: &str = "org.bardo.Checkpoints";
 
 /// The one action it declares.
 pub const CHECKPOINTS_RESTORE: &str = "checkpoints.restore";

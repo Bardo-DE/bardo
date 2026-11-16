@@ -1,4 +1,4 @@
-//! `org.quire.Intents1.Gate`: the computer-use gate, for cuad.
+//! `org.bardo.Intents1.Gate`: the computer-use gate, for cuad.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -6,9 +6,9 @@ use zbus::zvariant::OwnedObjectPath;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Intents1.Gate",
-    default_service = "org.quire.Intents1",
-    default_path = "/org/quire/Intents1"
+    interface = "org.bardo.Intents1.Gate",
+    default_service = "org.bardo.Intents1",
+    default_path = "/org/bardo/Intents1"
 )]
 pub trait Gate {
     /// Asks for the per-app consent (`GrantAsk` JSON: the app, the Space, the caller's own level
@@ -23,7 +23,7 @@ pub trait Gate {
 #[derive(Debug, Default)]
 pub struct GateSkeleton;
 
-#[zbus::interface(name = "org.quire.Intents1.Gate")]
+#[zbus::interface(name = "org.bardo.Intents1.Gate")]
 impl GateSkeleton {
     fn grant(&self, ask: String) -> fdo::Result<OwnedObjectPath> {
         let _ = ask;

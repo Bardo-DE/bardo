@@ -1,6 +1,6 @@
 [package]
 name = "companion-wire"
-description = "The bodies of org.quire.Companion1: asks, answers and their cards, plans, forms and refusals, the session records the companion stores, and the front pointer."
+description = "The bodies of org.bardo.Companion1: asks, answers and their cards, plans, forms and refusals, the session records the companion stores, and the front pointer."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

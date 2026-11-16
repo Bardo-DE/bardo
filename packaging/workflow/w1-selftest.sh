@@ -35,7 +35,7 @@ for p in "-p compositor-app -p compositor-ctl" "--bin fake-logind" "-p shell-app
   has "print-build: $p" "$out" "$p"
 done
 has "print-build: casement is a plain build" "$out" "a plain build"
-lacks "print-build: casement has no test feature" "$(grep 'casementctl' <<<"$out")" "debug-inject"
+lacks "print-build: casement has no test feature" "$(grep 'bardo-compositorctl' <<<"$out")" "debug-inject"
 out=$(env -u W1_PLANNER_URL -u W1_SCREEN_URL WAYLAND_DISPLAY=wayland-0 "${W1[@]}" 2>&1); code "no model: refused, exit 2" 2 $?
 has "no model: names the assistant model" "$out" "W1_PLANNER_URL"
 has "no model: names the screen model" "$out" "W1_SCREEN_URL"

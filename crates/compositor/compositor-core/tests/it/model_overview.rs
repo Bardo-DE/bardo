@@ -29,7 +29,7 @@ fn two_windows() -> Run {
     run(vec![
         plug("HEADLESS-1"),
         map(1, &proven("org.example.Web"), TokenCheck::Valid),
-        map(2, &proven("org.quire.Mail"), TokenCheck::Valid),
+        map(2, &proven("org.bardo.Mail"), TokenCheck::Valid),
     ])
 }
 
@@ -180,7 +180,7 @@ fn desktop_and_full_screen() -> Run {
     let mut ops = vec![
         plug("HEADLESS-1"),
         map(1, &proven("org.example.Web"), TokenCheck::Valid),
-        map(2, &proven("org.quire.Mail"), TokenCheck::Valid),
+        map(2, &proven("org.bardo.Mail"), TokenCheck::Valid),
         request(
             2,
             ToplevelRequest::FullScreen {

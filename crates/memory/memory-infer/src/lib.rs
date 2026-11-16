@@ -1,4 +1,4 @@
-//! The two models almanac needs from inferd (`org.quire.Inference1`, via account-client):
+//! The two models almanac needs from inferd (`org.bardo.Inference1`, via account-client):
 //! embeddings for recall ([`InferdEmbedder`]) and drafts for consolidation
 //! ([`InferdConsolidator`]). Each is written against account-client's `Transport` and
 //! `InferSession`, so a test drives it with a scripted session and an app that is not the memory

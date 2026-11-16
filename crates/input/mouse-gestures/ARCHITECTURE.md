@@ -147,7 +147,7 @@ environment (`daemon::Env`); it is a plain struct until a fake exists.
 5. If the host must see it: a `ToHost` variant in `mouse-gestures-proto` (the protocol changes:
    bump `PROTOCOL_VERSION`, update the round-trip test and layer-shell-host in the same change).
 6. Tests: a table test of the recogniser beside it; a scenario in `tests/support/scenarios.rs`
-   (a synthesised stroke), its fixture written by `PALMREST_REGEN_FIXTURES=1 cargo test --test
+   (a synthesised stroke), its fixture written by `BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1 cargo test --test
    fixtures_current`, and a replay assertion in `tests/palmrest/gestures_replay.rs`; the same recording
    replayed through `EvdevMultitouch` in `tests/evdev_parity.rs`.
 
@@ -221,13 +221,13 @@ node for writing, or reads a real config directory or a running daemon.
 
 ## 7. Repo rules
 
-- **palmrest is a system service** (a dynamic user, `dist/palmrest.service`; owner decision 2026-10-17, as
-  keycap): its socket is `/run/palmrest/events.sock`, mode 0666, and `daemon::socket` serves only the person
-  at the seat. A connection is a `Peer`: the `Shell` (the process in `sill.service` under that person's own
+- **palmrest is a system service** (a dynamic user, `dist/bardo-mouse-gestures.service`; owner decision 2026-10-17, as
+  keycap): its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and `daemon::socket` serves only the person
+  at the seat. A connection is a `Peer`: the `Shell` (the process in `bardo-shell.service` under that person's own
   manager, held by pidfd and judged by peephole), another program of the person (`Plain`: subscribes, may
   say `Locked`, never `Unlocked`, and its `PointerOver` is ignored) or a stranger (closed at once). The
   session counts as unlocked only while the shell says so; a user switch closes the old user's
-  connections. Its settings are `/etc/palmrest/gestures.toml`; nothing in the daemon reads a home folder.
+  connections. Its settings are `/etc/bardo/mouse-gestures/gestures.toml`; nothing in the daemon reads a home folder.
 - **A panic ends the process** (`panic = "abort"` in release) and a socket thread that cannot poll exits it, so
   systemd restarts the unit; a daemon with a dead socket thread never keeps running.
 - **Everything a subscriber can make the socket thread store or read is capped** (`socket/limits.rs`):

@@ -151,7 +151,7 @@ impl Live {
         };
         self.rt.spawn(async move {
             if let Err(error) = systemd::restart(&bus).await {
-                eprintln!("sill: keycap: restarting keycap.service: {error}");
+                eprintln!("sill: keycap: restarting bardo-key-remap.service: {error}");
             }
         });
         self.check_at = Some(Instant::now() + AFTER_RETRY);

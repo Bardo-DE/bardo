@@ -10,34 +10,34 @@ pub const OPTION_WATCH: &str = "watch";
 /// honours it from the launcher role only and passes it unchanged to the app's `Perform`.
 pub const OPTION_ACTIVATION: &str = "activation";
 /// intentd's bus name.
-pub const INTENTS_BUS: &str = "org.quire.Intents1";
-/// intentd's root object (every `org.quire.Intents1.*` interface).
-pub const INTENTS_PATH: &str = "/org/quire/Intents1";
-/// The object every provider serves `org.quire.IntentProvider1` at, on its own bus name.
-pub const PROVIDER_PATH: &str = "/org/quire/IntentProvider1";
+pub const INTENTS_BUS: &str = "org.bardo.Intents1";
+/// intentd's root object (every `org.bardo.Intents1.*` interface).
+pub const INTENTS_PATH: &str = "/org/bardo/Intents1";
+/// The object every provider serves `org.bardo.IntentProvider1` at, on its own bus name.
+pub const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";
 /// sill's `Confirm1` bus name.
-pub const CONFIRM_BUS: &str = "org.quire.Confirm1";
+pub const CONFIRM_BUS: &str = "org.bardo.Confirm1";
 /// sill's `Confirm1` object.
-pub const CONFIRM_PATH: &str = "/org/quire/Confirm1";
+pub const CONFIRM_PATH: &str = "/org/bardo/Confirm1";
 /// companiond's bus name.
-pub const COMPANION_BUS: &str = "org.quire.Companion1";
+pub const COMPANION_BUS: &str = "org.bardo.Companion1";
 /// companiond's root object.
-pub const COMPANION_PATH: &str = "/org/quire/Companion1";
+pub const COMPANION_PATH: &str = "/org/bardo/Companion1";
 /// The agent host's bus name: the name of the pseudo-app its agents' calls are made in.
-pub const AGENT_HOST_BUS: &str = "org.quire.AcpAgent";
+pub const AGENT_HOST_BUS: &str = "org.bardo.AcpAgent";
 /// The agent host's object.
-pub const AGENT_HOST_PATH: &str = "/org/quire/AgentHost1";
+pub const AGENT_HOST_PATH: &str = "/org/bardo/AgentHost1";
 /// readerd's bus name.
-pub const READER_BUS: &str = "org.quire.Reader1";
+pub const READER_BUS: &str = "org.bardo.Reader1";
 /// readerd's object.
-pub const READER_PATH: &str = "/org/quire/Reader1";
+pub const READER_PATH: &str = "/org/bardo/Reader1";
 
-/// The object path of one request in flight (`/org/quire/Intents1/request/<n>`).
+/// The object path of one request in flight (`/org/bardo/Intents1/request/<n>`).
 pub fn request_path(call: CallId) -> String {
     format!("{INTENTS_PATH}/request/{}", call.0)
 }
 
-/// The object path of one answer (`/org/quire/Companion1/answer/<task>`). A task id is a slug
+/// The object path of one answer (`/org/bardo/Companion1/answer/<task>`). A task id is a slug
 /// with `.` and `-`, which an object path does not allow, so they become `_`.
 pub fn answer_path(task: &TaskId) -> String {
     let segment: String = task
@@ -74,10 +74,10 @@ mod tests {
     #[test]
     fn paths_are_valid_object_paths() {
         let request = request_path(CallId(17));
-        assert_eq!(request, "/org/quire/Intents1/request/17");
+        assert_eq!(request, "/org/bardo/Intents1/request/17");
         assert!(zbus::zvariant::ObjectPath::try_from(request.as_str()).is_ok());
         let answer = answer_path(&TaskId::parse("t-3.a").expect("task"));
-        assert_eq!(answer, "/org/quire/Companion1/answer/t_3_a");
+        assert_eq!(answer, "/org/bardo/Companion1/answer/t_3_a");
         assert!(zbus::zvariant::ObjectPath::try_from(answer.as_str()).is_ok());
     }
 }

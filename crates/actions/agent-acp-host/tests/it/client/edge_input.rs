@@ -162,12 +162,12 @@ async fn helper_menu(
 #[tokio::test]
 async fn a_helpers_agent_is_offered_its_cards_actions_and_not_another_apps() {
     let (rig, dir) = with_mail(Vec::new(), Vec::new()).await;
-    let (names, _) = helper_menu(&rig, &dir, "org.quire.Mail").await;
+    let (names, _) = helper_menu(&rig, &dir, "org.bardo.Mail").await;
     assert!(
         names.iter().any(|n| n == "mail__mail_thread_read"),
         "{names:?}"
     );
-    let (names, called) = helper_menu(&rig, &dir, "org.quire.Notes").await;
+    let (names, called) = helper_menu(&rig, &dir, "org.bardo.Notes").await;
     assert!(!names.iter().any(|n| n.starts_with("mail__")), "{names:?}");
     assert!(called.to_string().contains("unknown_tool"), "{called}");
     assert_eq!(reached(&rig), 0);

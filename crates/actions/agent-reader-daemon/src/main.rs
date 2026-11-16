@@ -1,4 +1,4 @@
-//! readerd: the quarantined reader, serving `org.quire.Reader1` on the session bus until the bus
+//! readerd: the quarantined reader, serving `org.bardo.Reader1` on the session bus until the bus
 //! closes.
 
 use std::process::ExitCode;

@@ -1,7 +1,7 @@
-# shot TARGET OUT.png: captures an output, a window or a region through `casementctl shot`
+# shot TARGET OUT.png: captures an output, a window or a region through `bardo-compositorctl shot`
 # (an ext-image-copy-capture client, P1-C1). TARGET is `output`, `output:NAME`, `window:ID` or
 # `region:X,Y,W,H`; a TARGET starting `masked:` (`masked:output`) masks sensitive regions. Until
-# the compositor has the capture protocols casementctl exits 2 (could not run), and so does this.
+# the compositor has the capture protocols bardo-compositorctl exits 2 (could not run), and so does this.
 #
 # Owner: P0-T-dev. Sourceable.
 
@@ -13,7 +13,7 @@ shot() {
   [ $# -eq 2 ] || { echo "usage: shot TARGET OUT.png   (output[:NAME] | window:ID | region:X,Y,W,H)" >&2; return 64; }
   _session || return 1
   local ctl target=$1 out=$2 flags=()
-  ctl=$(casement_tool casementctl) || return 3
+  ctl=$(casement_tool bardo-compositorctl) || return 3
   case "$target" in masked:*) flags+=(--masked); target=${target#masked:} ;; esac
   case "$target" in
     output) ;;

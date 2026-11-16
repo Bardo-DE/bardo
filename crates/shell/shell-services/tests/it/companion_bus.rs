@@ -58,7 +58,7 @@ async fn two_taps_with_no_serving_app_open_the_launcher_in_companion_mode() {
 async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
     let mut desk = desk_or_return!();
     desk.seated().await;
-    let mail = desk.peer("org.quire.Mail").await;
+    let mail = desk.peer("org.bardo.Mail").await;
     serve(
         &mail,
         PROVIDER_PATH,
@@ -71,7 +71,7 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
     let companion = desk.peer(COMPANION_BUS).await;
     serve(
         &companion,
-        "/org/quire/Companion1",
+        "/org/bardo/Companion1",
         StandInCompanion {
             session: None,
             log: desk.log.clone(),
@@ -90,7 +90,7 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
         ..fast()
     }));
     desk.send(CompanionCommand::Summon(focus(
-        Some("org.quire.Mail"),
+        Some("org.bardo.Mail"),
         None,
     )));
     let serial = desk
@@ -119,7 +119,7 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
 async fn summon_falls_back_to_launcher_after_app_wait() {
     let mut desk = desk_or_return!();
     desk.seated().await;
-    let mail = desk.peer("org.quire.Mail").await;
+    let mail = desk.peer("org.bardo.Mail").await;
     serve(
         &mail,
         PROVIDER_PATH,
@@ -131,7 +131,7 @@ async fn summon_falls_back_to_launcher_after_app_wait() {
     .await;
     desk.send(CompanionCommand::Params(fast()));
     desk.send(CompanionCommand::Summon(focus(
-        Some("org.quire.Mail"),
+        Some("org.bardo.Mail"),
         None,
     )));
     assert_eq!(
@@ -150,7 +150,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
     let intentd = desk.peer(INTENTS_BUS).await;
     serve(
         &intentd,
-        "/org/quire/Intents1",
+        "/org/bardo/Intents1",
         StandInSession(desk.log.clone()),
     )
     .await;
@@ -158,7 +158,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
         &companiond,
-        "/org/quire/Companion1",
+        "/org/bardo/Companion1",
         StandInCompanion {
             session: None,
             log: desk.log.clone(),
@@ -178,7 +178,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
             window: Keep::Kept,
         },
         window: Some(WindowKey(4)),
-        app: Some(app("org.quire.Mail")),
+        app: Some(app("org.bardo.Mail")),
         space: SpaceId::parse("work").unwrap_or_else(|e| panic!("{e}")),
         via: action_core::TurnVia::Typed,
     }));
@@ -190,7 +190,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
     assert_eq!(wire_ask.turn.text, "forward the receipts");
     assert_eq!(wire_ask.keep.window, Keep::Kept);
     assert_eq!(wire_ask.parent_window.as_str(), "w4");
-    assert_eq!(wire_ask.app, Some(app("org.quire.Mail")));
+    assert_eq!(wire_ask.app, Some(app("org.bardo.Mail")));
     let turn = desk.log_starting("turn ").await;
     assert!(
         turn.contains("s-1") && turn.contains("forward the receipts"),
@@ -212,8 +212,8 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
     companiond
         .emit_signal(
             None::<&str>,
-            "/org/quire/Companion1",
-            "org.quire.Companion1",
+            "/org/bardo/Companion1",
+            "org.bardo.Companion1",
             "AnswerAdded",
             &(ObjectPath::try_from(path.as_str()).unwrap_or_else(|e| panic!("{e}")),),
         )
@@ -225,7 +225,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
         .emit_signal(
             None::<&str>,
             path.as_str(),
-            "org.quire.Companion1.Answer",
+            "org.bardo.Companion1.Answer",
             "Updated",
             &(json(&done),),
         )
@@ -250,7 +250,7 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
         log: desk.log.clone(),
         hits: Arc::new(Mutex::new(vec![hit("a")])),
     };
-    serve(&intentd, "/org/quire/Intents1", search).await;
+    serve(&intentd, "/org/bardo/Intents1", search).await;
     let rows = Arc::new(Mutex::new(vec![entry(
         1,
         "Archived 3 threads",
@@ -258,7 +258,7 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
     )]));
     intentd
         .object_server()
-        .at("/org/quire/Intents1", StandInControl(rows))
+        .at("/org/bardo/Intents1", StandInControl(rows))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     desk.seated().await;
@@ -281,8 +281,8 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
     intentd
         .emit_signal(
             shell.as_deref(),
-            "/org/quire/Intents1",
-            "org.quire.Intents1.Search",
+            "/org/bardo/Intents1",
+            "org.bardo.Intents1.Search",
             "Hits",
             &(9u64, json(&vec![hit("a"), hit("b")])),
         )
@@ -325,12 +325,12 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
     let intentd = desk.peer(INTENTS_BUS).await;
     intentd
         .object_server()
-        .at("/org/quire/Intents1", StandInControl(rows.clone()))
+        .at("/org/bardo/Intents1", StandInControl(rows.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     serve(
         &intentd,
-        "/org/quire/Intents1",
+        "/org/bardo/Intents1",
         StandInRun(desk.log.clone()),
     )
     .await;
@@ -346,8 +346,8 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
     intentd
         .emit_signal(
             None::<&str>,
-            "/org/quire/Intents1",
-            "org.quire.Intents1.Control",
+            "/org/bardo/Intents1",
+            "org.bardo.Intents1.Control",
             "JournalChanged",
             &(2u64,),
         )
@@ -371,11 +371,11 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     let mut desk = desk_or_return!();
-    let cuad = desk.peer("org.quire.Cua1").await;
+    let cuad = desk.peer("org.bardo.ComputerUse1").await;
     let sight = Arc::new(Mutex::new("No model here can see the screen.".to_owned()));
     serve(
         &cuad,
-        "/org/quire/Cua1",
+        "/org/bardo/ComputerUse1",
         StandInManager {
             runs: vec![run_path("r_1")],
             sight: sight.clone(),
@@ -404,7 +404,7 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     cuad.emit_signal(
         None::<&str>,
         run_path("r_1"),
-        "org.quire.Cua1.Run",
+        "org.bardo.ComputerUse1.Run",
         "StateChanged",
         &("paused",),
     )
@@ -421,8 +421,8 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     // The run's object goes away: so do its facts.
     cuad.emit_signal(
         None::<&str>,
-        "/org/quire/Cua1",
-        "org.quire.Cua1.Manager",
+        "/org/bardo/ComputerUse1",
+        "org.bardo.ComputerUse1.Manager",
         "RunRemoved",
         &(run_path("r_1"),),
     )
@@ -435,7 +435,7 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     sight.lock().unwrap_or_else(|e| panic!("{e}")).clear();
     let manager = cuad
         .object_server()
-        .interface::<_, StandInManager>("/org/quire/Cua1")
+        .interface::<_, StandInManager>("/org/bardo/ComputerUse1")
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     manager
@@ -451,12 +451,12 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_at() {
     let mut desk = desk_or_return!();
-    let cuad = desk.peer("org.quire.Cua1").await;
+    let cuad = desk.peer("org.bardo.ComputerUse1").await;
     // A path that says nothing about the run's id: the object's `Id` is the only name.
     let path = run_path("object_nine");
     cuad.object_server()
         .at(
-            "/org/quire/Cua1",
+            "/org/bardo/ComputerUse1",
             StandInManager {
                 runs: vec![path.clone()],
                 ..StandInManager::default()
@@ -480,8 +480,8 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
     assert_eq!(known, run, "the run is the one its Id property names");
     cuad.emit_signal(
         None::<&str>,
-        "/org/quire/Cua1",
-        "org.quire.Cua1.Manager",
+        "/org/bardo/ComputerUse1",
+        "org.bardo.ComputerUse1.Manager",
         "RunRemoved",
         &(path,),
     )
@@ -493,10 +493,10 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
     let mut desk = desk_or_return!();
-    let cuad = desk.peer("org.quire.Cua1").await;
+    let cuad = desk.peer("org.bardo.ComputerUse1").await;
     serve(
         &cuad,
-        "/org/quire/Cua1",
+        "/org/bardo/ComputerUse1",
         StandInManager {
             runs: vec![run_path("r_1"), run_path("r_2")],
             ..StandInManager::default()
@@ -527,10 +527,10 @@ async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_timeline_is_read_for_the_generation_that_asked() {
     let mut desk = desk_or_return!();
-    let memoryd = desk.peer("org.quire.Memory1").await;
+    let memoryd = desk.peer("org.bardo.Memory1").await;
     serve(
         &memoryd,
-        "/org/quire/Memory1",
+        "/org/bardo/Memory1",
         StandInMemory(vec![timeline_entry(1), timeline_entry(2)]),
     )
     .await;
@@ -572,11 +572,11 @@ fn waiting_fact(last: char) -> FactView {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn keeping_sends_the_shells_receipt_and_not_keeping_sends_a_discard() {
     let mut desk = desk_or_return!();
-    let memoryd = desk.peer("org.quire.Memory1").await;
+    let memoryd = desk.peer("org.bardo.Memory1").await;
     let (kept, dropped) = (waiting_fact('1'), waiting_fact('2'));
     serve(
         &memoryd,
-        "/org/quire/Memory1",
+        "/org/bardo/Memory1",
         StandInWaiting {
             facts: vec![kept.clone(), dropped.clone()],
             log: desk.log.clone(),

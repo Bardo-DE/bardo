@@ -1,4 +1,4 @@
-//! Every request of `org.quire.Intents1`.
+//! Every request of `org.bardo.Intents1`.
 
 use crate::bodies::{
     GrantAsk, JournalFilter, NoteAsk, ReadAsk, RecallAsk, SessionModeAsk, StoredAsk, WidenAsk,
@@ -15,7 +15,7 @@ use companion_model::{RunsIn, WatchedAgent};
 use provenance::{EntityId, SessionId, SpaceScope};
 use serde::{Deserialize, Serialize};
 
-/// Every request of `org.quire.Intents1`.
+/// Every request of `org.bardo.Intents1`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum IntentsRequest {

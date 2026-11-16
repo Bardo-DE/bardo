@@ -1,4 +1,4 @@
-//! The hosted `org.quire.Companion` actions: a worker is a child session under the spawner's
+//! The hosted `org.bardo.Companion` actions: a worker is a child session under the spawner's
 //! task policy, its goal is a handle, and a message to it is delivered as input.
 
 use crate::support::*;

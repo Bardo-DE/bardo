@@ -86,7 +86,7 @@ fn helper_over(
     }
     let companion = CallerId {
         app: account_core::AppId {
-            name: crate::support::app("org.quire.Companiond"),
+            name: crate::support::app("org.bardo.Companion"),
             isolation: account_core::Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Companion]),

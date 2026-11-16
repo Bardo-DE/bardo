@@ -68,7 +68,7 @@ fn a_row_for_a_set_of_keys_is_added_once_and_removed_with_its_binding() {
 /// An app with five actions of which two need nothing more.
 const MAIL: &str = r#"
 vocab = 1
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 entities = []
 
 [[actions]]
@@ -146,7 +146,7 @@ fn the_app_action_list_offers_only_what_needs_nothing_more_and_a_pick_stores_it(
     assert_eq!(
         stored(&sandbox, "bottom_right"),
         Some(value(
-            "v = [{ action = \"app_action\", app = \"org.quire.Mail\", intent = \"compose\" }]"
+            "v = [{ action = \"app_action\", app = \"org.bardo.Mail\", intent = \"compose\" }]"
         ))
     );
     assert_eq!(

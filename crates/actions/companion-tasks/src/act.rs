@@ -166,7 +166,7 @@ mod tests {
         rt.acts.begin(
             CallId(0),
             ActionRef {
-                app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                 name: provenance::ActionName::parse("mail.message.send").expect("name"),
             },
             LabelText::parse("Send").expect("label"),
@@ -196,7 +196,7 @@ mod tests {
         let end = rt.record_call(
             &action_vocab::CallRequest {
                 action: action_vocab::ActionRef {
-                    app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                    app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                     name: provenance::ActionName::parse("mail.message.send").expect("name"),
                 },
                 target: action_vocab::TargetValue::Nothing,

@@ -8,7 +8,7 @@ use permission_core::{PolicyId, Ruling};
 use std::str::FromStr;
 
 /// The schema, as shipped.
-pub const SCHEMA: &str = include_str!("../../policy/quire.cedarschema");
+pub const SCHEMA: &str = include_str!("../../policy/bardo.cedarschema");
 /// The core policies, as shipped: the safety invariants of every preset.
 pub const CORE_POLICIES: &str = include_str!("../../policy/core.cedar");
 /// The preset, as shipped: one grid for both modes, keyed on `context.rows`. Also what stands in

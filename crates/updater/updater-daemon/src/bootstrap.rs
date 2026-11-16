@@ -16,7 +16,7 @@ use updater_core::Authenticator;
 
 const MACHINE_ID: &str = "/etc/machine-id";
 
-/// The desktop's table of its own programs from `/etc/quire`. A table that is missing or that cannot
+/// The desktop's table of its own programs from `/etc/bardo`. A table that is missing or that cannot
 /// be trusted (not root-only, not a table) is an empty one: no caller then counts as the shell, Settings
 /// or the `slipway` program, and the service says why in its log.
 fn desktop_table() -> Table {

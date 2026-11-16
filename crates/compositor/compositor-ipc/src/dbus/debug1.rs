@@ -1,6 +1,6 @@
-//! `org.quire.Casement.Debug1` at `/org/quire/Casement/Debug1` (feature `debug-inject`, the
+//! `org.bardo.Compositor.Debug1` at `/org/bardo/Compositor/Debug1` (feature `debug-inject`, the
 //! jail's private bus only): injection, waits, the stepped clock, virtual outputs, model and
-//! scene dumps and fault injection for `casementctl debug`.
+//! scene dumps and fault injection for `bardo-compositorctl debug`.
 
 use crate::inject::{InjectLine, parse_inject};
 use crate::shot::{ShotArea, parse_shot};
@@ -11,7 +11,7 @@ use std::time::Duration;
 use zbus::fdo;
 
 /// The object's path.
-pub const OBJECT_PATH: &str = "/org/quire/Casement/Debug1";
+pub const OBJECT_PATH: &str = "/org/bardo/Compositor/Debug1";
 
 /// The object: a channel into the event loop, where every call is carried out.
 #[derive(Debug)]
@@ -20,8 +20,8 @@ pub struct Debug1 {
 }
 
 impl Debug1 {
-    /// The well-known name the server owns on the private bus (`casementctl` calls it).
-    pub const BUS_NAME: &'static str = "org.quire.Casement.Debug1";
+    /// The well-known name the server owns on the private bus (`bardo-compositorctl` calls it).
+    pub const BUS_NAME: &'static str = "org.bardo.Compositor.Debug1";
 
     /// The object over `calls`.
     pub fn new(calls: calloop::channel::Sender<DebugCall>) -> Debug1 {
@@ -78,7 +78,7 @@ pub struct DebugCall {
     pub reply: tokio::sync::oneshot::Sender<DebugReply>,
 }
 
-/// What `casementctl debug` asked.
+/// What `bardo-compositorctl debug` asked.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DebugRequest {
     /// `Inject(lines)`.
@@ -116,7 +116,7 @@ pub enum DebugReply {
     Refused(String),
 }
 
-#[zbus::interface(name = "org.quire.Casement.Debug1")]
+#[zbus::interface(name = "org.bardo.Compositor.Debug1")]
 impl Debug1 {
     /// `Inject(lines: as) -> as`: `ok <line>` per line, in order. Every line parses before any
     /// is carried out, so a typo on line 7 injects nothing.

@@ -530,7 +530,7 @@ async fn only_a_helper_action_recorded_as_done_can_be_amended_by_the_desk() {
     // Another action is not the desk's to amend, even with a step standing.
     ledger_done(&router, &s.task, "mail.thread.archive");
     let other = ActionRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         name: provenance::ActionName::parse("mail.thread.archive").expect("action"),
     };
     assert_eq!(

@@ -1,4 +1,4 @@
-//! The requests of `quire_desktop_manager_v1`, as the model takes them. A shell makes them for
+//! The requests of `bardo_desktop_manager_v1`, as the model takes them. A shell makes them for
 //! the person at the keyboard; an agent connection is refused them at the wire
 //! (`not_permitted`), so every request that reaches the model is the person's.
 
@@ -39,7 +39,7 @@ pub enum DesktopRequest {
     },
 }
 
-/// A request on `quire_desktop_app_v1`.
+/// A request on `bardo_desktop_app_v1`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AppAsk {
     /// Bring the app forward and raise its windows.
@@ -59,7 +59,7 @@ pub enum AppAsk {
     Reopen,
 }
 
-/// A request on `quire_desktop_window_v1`.
+/// A request on `bardo_desktop_window_v1`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum WindowAsk {
     /// Make the window key.
@@ -82,7 +82,7 @@ pub enum WindowAsk {
     Assign(Assign),
 }
 
-/// A request on `quire_desktop_space_v1`.
+/// A request on `bardo_desktop_space_v1`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SpaceAsk {
     /// Switch to the Space.

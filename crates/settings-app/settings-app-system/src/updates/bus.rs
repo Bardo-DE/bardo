@@ -1,4 +1,4 @@
-//! The update service on the person's bus: `org.quire.Updates1`. It is only ever looked for, never
+//! The update service on the person's bus: `org.bardo.Updates1`. It is only ever looked for, never
 //! started: opening Settings must not wake a service the person's session did not start.
 
 use super::wire::wire_of;
@@ -17,9 +17,9 @@ use zbus::proxy::CacheProperties;
 use zbus::zvariant::OwnedValue;
 
 /// The name the service owns, and its object.
-const BUS_NAME: &str = "org.quire.Updates1";
-const PATH: &str = "/org/quire/Updates1";
-const INTERFACE: &str = "org.quire.Updates1";
+const BUS_NAME: &str = "org.bardo.Updates1";
+const PATH: &str = "/org/bardo/Updates1";
+const INTERFACE: &str = "org.bardo.Updates1";
 
 /// The error names the service answers a refusal with; each one's message is the plain sentence.
 /// The first is the general failure (`Check`, and `Rollback`'s checks); the others are
@@ -27,13 +27,13 @@ const INTERFACE: &str = "org.quire.Updates1";
 /// as work in progress.
 const SENTENCE_ERRORS: [&str; 3] = [
     "org.freedesktop.DBus.Error.Failed",
-    "org.quire.Updates1.Error.NotAVersion",
-    "org.quire.Updates1.Error.Refused",
+    "org.bardo.Updates1.Error.NotAVersion",
+    "org.bardo.Updates1.Error.Refused",
 ];
 
 /// The error name of `Install(version)` when what the service offers is not the version named,
 /// or it offers nothing.
-const VERSION_CHANGED: &str = "org.quire.Updates1.Error.VersionChanged";
+const VERSION_CHANGED: &str = "org.bardo.Updates1.Error.VersionChanged";
 
 /// What the person reads when a request failed and the service gave no sentence.
 const COULD_NOT: &str = "The request could not be made. Try again in a moment.";
@@ -41,9 +41,9 @@ const COULD_NOT: &str = "The request could not be made. Try again in a moment.";
 /// The service's side as this window calls it. The properties are read together, through
 /// `GetAll` (`wire.rs`), so the proxy has only the requests.
 #[zbus::proxy(
-    interface = "org.quire.Updates1",
-    default_service = "org.quire.Updates1",
-    default_path = "/org/quire/Updates1"
+    interface = "org.bardo.Updates1",
+    default_service = "org.bardo.Updates1",
+    default_path = "/org/bardo/Updates1"
 )]
 trait Updates {
     /// Looks for a newer version; returns at once.

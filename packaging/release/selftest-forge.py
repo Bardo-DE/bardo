@@ -37,7 +37,7 @@ elif case == "export-dir":
     exports.append(("/usr/local/bin/dir", "share"))
 elif case == "system-good":
     files["system/etc/pam.d/sill"] = (b"auth required pam_unix.so\n", 0o644)
-    system.append("/etc/pam.d/sill")
+    system.append("/etc/pam.d/bardo-shell")
 elif case == "system-xdg-other":
     files["system/etc/xdg/other.toml"] = (b"x = 1\n", 0o644)
     system.append("/etc/xdg/other.toml")
@@ -53,7 +53,7 @@ elif case == "system-nested":
 elif case == "system-unlisted":
     files["system/etc/pam.d/sill"] = (b"x\n", 0o644)
 elif case == "system-nosource":
-    system.append("/etc/pam.d/sill")
+    system.append("/etc/pam.d/bardo-shell")
 elif case == "reserved":
     files[".slipway/release.toml"] = (b"x", 0o644)
 elif case == "mode-writable":

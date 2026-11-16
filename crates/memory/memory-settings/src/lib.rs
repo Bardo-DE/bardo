@@ -1,6 +1,6 @@
 //! The person's memory settings (design/22 section 3.28): the `memory.*` keys the Settings app
-//! writes to `$XDG_CONFIG_HOME/almanac/settings.toml`, the schema it draws them from
-//! (`schema/almanac.settings.toml`, [`SCHEMA`]) and the lenient reader (a bad value falls back,
+//! writes to `$XDG_CONFIG_HOME/memory/settings.toml`, the schema it draws them from
+//! (`schema/memory.settings.toml`, [`SCHEMA`]) and the lenient reader (a bad value falls back,
 //! per key, and is reported). Everything here is a pure function of text: finding and reading the
 //! files is `memory-host`, the live watch is memoryd's.
 //!
@@ -25,10 +25,10 @@ pub use loosen::loosenings;
 pub use read::{Fallback, Loaded, Why, read};
 
 /// The schema almanac ships for its settings (design/22 section 9.2).
-pub const SCHEMA: &str = include_str!("../schema/almanac.settings.toml");
+pub const SCHEMA: &str = include_str!("../schema/memory.settings.toml");
 
 /// The file the settings live in, under the configuration directory.
-pub const SETTINGS_FILE: &str = "almanac/settings.toml";
+pub const SETTINGS_FILE: &str = "memory/settings.toml";
 
 /// `memory.consolidation.when`: when memory tidies itself.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -28,7 +28,7 @@ fn fact(n: u8, text: &str) -> Fact {
         text: FactText::parse(text).expect("text"),
         recorded: NOW,
         by: Actor::User {
-            via: AppName::parse("org.quire.Shell").expect("app"),
+            via: AppName::parse("org.bardo.Shell").expect("app"),
         },
         label: trusted_label(),
         links: vec![],

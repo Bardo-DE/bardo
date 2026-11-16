@@ -1,4 +1,4 @@
-//! `org.quire.SettingsModule1` on accountd: only the Settings role, the rows of PLAN §2.5 (the
+//! `org.bardo.SettingsModule1` on accountd: only the Settings role, the rows of PLAN §2.5 (the
 //! identities and Tailscale, the apps using each identity, the client ids), and what each `Set`
 //! does to the registry. The service switches, grant rows and sync switches are gone with the
 //! grants: inferd's and syncd's modules list those.
@@ -20,8 +20,8 @@ async fn only_the_settings_role_may_read_or_set_anything() {
     let rig = Rig::start().await;
     for who in [
         caller("org.example.App", CallerRole::App),
-        caller("org.quire.Companion", CallerRole::Agent),
-        caller("org.quire.Inference", CallerRole::PorterDaemon),
+        caller("org.bardo.Companion", CallerRole::Agent),
+        caller("org.bardo.Inference", CallerRole::PorterDaemon),
     ] {
         let client = settings_as(&rig, who).await;
         assert!(matches!(
@@ -45,7 +45,7 @@ async fn only_the_settings_role_may_read_or_set_anything() {
     let stranger = rig.stranger().await;
     let client = ui_settings::live::LiveClient::new(
         &stranger,
-        "org.quire.Accounts1",
+        "org.bardo.Accounts1",
         &account_daemon::settings_path(),
         AnyOwner,
     )
@@ -88,7 +88,7 @@ async fn describe_lists_every_account_with_its_actions_and_an_ai_account_its_swi
 #[tokio::test(flavor = "multi_thread")]
 async fn the_apps_using_an_identity_are_listed_under_it_as_read_only_rows() {
     let rig = Rig::start().await;
-    let photos = rig.client("org.quire.Photos").await;
+    let photos = rig.client("org.bardo.Photos").await;
     IdentitiesProxy::new(&photos)
         .await
         .expect("proxy")
@@ -99,7 +99,7 @@ async fn the_apps_using_an_identity_are_listed_under_it_as_read_only_rows() {
     let row = key("accounts.fake-storage.used_by.0");
     assert_eq!(
         settings.get(&row).await.expect("row"),
-        toml::Value::String("org.quire.Photos".into())
+        toml::Value::String("org.bardo.Photos".into())
     );
     assert!(
         settings

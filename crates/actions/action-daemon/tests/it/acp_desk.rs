@@ -1,7 +1,7 @@
 //! The bus half of an editor's sheets, without the rest of the world: intentd's `SheetConfirmer`
-//! asks the `Confirm1` the docket-acp process serves (`ConfirmObject` over an `EditorDesk`), the
+//! asks the `Confirm1` the bardo-agent-acp process serves (`ConfirmObject` over an `EditorDesk`), the
 //! host's side of the desk hands the sheet out and answers it, and what comes back is the
-//! router's answer. The roles are the shipped `intentd.toml`'s, read through the ACP gate. (The packaged `docket-acp`
+//! router's answer. The roles are the shipped `actiond.toml`'s, read through the ACP gate. (The packaged `bardo-agent-acp`
 //! process is run by `action-accept`; this is the half that needs intentd's own types.)
 
 use crate::support::apps::FakeSill;
@@ -22,7 +22,7 @@ use agent_session::{SheetChoice, SheetDesk};
 use provenance::{Actor, ClientName, Effect, SessionId, SpaceId};
 use std::sync::Arc;
 
-const ACP: &str = "org.quire.Acp";
+const ACP: &str = "org.bardo.Acp";
 
 /// Everything on a private bus: "intentd" (owns `Intents1`, asks), the acp process (owns its name
 /// and serves `Confirm1` over `desk`), and a scripted sill that would answer if it were asked.
@@ -55,7 +55,7 @@ impl Fixture {
             agent_acp_bin::callers::shipped(),
             proc.clone(),
         ));
-        acp_who.introduce_app(&intentd, "org.quire.Intents", Role::Agent);
+        acp_who.introduce_app(&intentd, "org.bardo.Intents", Role::Agent);
         let desk = EditorDesk::new();
         acp.object_server()
             .at(
@@ -75,7 +75,7 @@ impl Fixture {
         let sill_connection = bus.connect().await;
         // A sill that would answer if it were asked.
         let sill =
-            FakeSill::start(&sill_connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
+            FakeSill::start(&sill_connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
         let config = Arc::new(IntentdConfig::shipped().expect("shipped"));
         // intentd trusts the sheet host and the editor's process by the callers table.
         let who = Arc::new(Identity::on_fixture(
@@ -83,7 +83,7 @@ impl Fixture {
             action_daemon::callers::shipped(),
             proc.clone(),
         ));
-        who.introduce_app(&sill_connection, "org.quire.Shell", Role::SheetHost);
+        who.introduce_app(&sill_connection, "org.bardo.Shell", Role::SheetHost);
         who.introduce_app(&acp, ACP, Role::Agent);
         let confirmer = SheetConfirmer::trusting(intentd.clone(), config, who)
             .gated(gate, &ProcRoot::Honoured(proc));
@@ -141,7 +141,7 @@ fn request(id: &str, offer: ConfirmOffer) -> ConfirmRequest {
         id: ConfirmId::parse(id).expect("id"),
         space: SpaceId::desktop(),
         actor: Actor::Unknown,
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         action: LabelText::parse("Send a message").expect("label"),
         effect: Effect::Outbound,
         count: Count(1),

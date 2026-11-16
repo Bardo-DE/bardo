@@ -1,5 +1,5 @@
-//! A command-line flag that cannot be used: the error both eval programs (`cua-eval` and
-//! `cua-eval-cloud`) report for their flags.
+//! A command-line flag that cannot be used: the error both eval programs (`computer-use-eval` and
+//! `computer-use-eval-cloud`) report for their flags.
 
 /// A command-line flag that cannot be used.
 #[derive(Debug, thiserror::Error)]

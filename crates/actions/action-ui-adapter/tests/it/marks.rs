@@ -17,7 +17,7 @@ use ui_intents::{
 };
 
 fn app() -> AppName {
-    AppName::parse("org.quire.Mail").expect("app")
+    AppName::parse("org.bardo.Mail").expect("app")
 }
 fn space() -> SpaceId {
     SpaceId::parse("work").expect("space")

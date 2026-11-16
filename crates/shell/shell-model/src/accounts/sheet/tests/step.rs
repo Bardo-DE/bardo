@@ -61,7 +61,7 @@ fn consent() -> SheetView {
     };
     SheetView::Consent(ConsentAsk::new(
         AppId {
-            name: AppName::parse("org.quire.Photos").unwrap_or_else(|e| panic!("{e}")),
+            name: AppName::parse("org.bardo.Photos").unwrap_or_else(|e| panic!("{e}")),
             isolation: Isolation::Flatpak,
         },
         CapabilityKind::Storage,

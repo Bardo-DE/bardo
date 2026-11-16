@@ -1,5 +1,5 @@
 //! `NativeHost`: the registry of native sessions over one companion. It answers the edges (the ACP
-//! server, `quire-do`, a launcher) through `SessionHost`. The router writes the log of a native
+//! server, `bardo-do`, a launcher) through `SessionHost`. The router writes the log of a native
 //! session as it goes (opening, turns, calls, steps, taint, close), so the host appends nothing
 //! to a session that runs; it reads the log to resume, export and fork, and appends only the
 //! first entries of a fork, which the router then restores by name like any stored session.

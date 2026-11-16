@@ -13,9 +13,9 @@ use crate::role::OutMod;
 pub enum ConfigSource {
     /// `defaults.toml`, compiled in.
     Builtin,
-    /// `/usr/lib/keycap/keycap.toml`: what the desktop ships, under the machine file.
+    /// `/usr/lib/bardo/key-remap/key-remap.toml`: what the desktop ships, under the machine file.
     Vendor,
-    /// `/etc/keycap/keycap.toml`.
+    /// `/etc/bardo/key-remap/key-remap.toml`.
     System,
     /// The seat owner's settings, sent over the socket.
     User,

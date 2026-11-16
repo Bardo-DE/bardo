@@ -123,7 +123,7 @@ pub struct PlannerReply {
 ///         episodes: vec![],
 ///         recalled: vec![],
 ///         context: ContextView {
-///             app: AppName::parse("org.quire.Shell")?,
+///             app: AppName::parse("org.bardo.Shell")?,
 ///             window: Reveal::Plain(String::new()),
 ///             here: HereView::Nowhere,
 ///             selection: SelectionView::Nothing,

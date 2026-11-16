@@ -1,7 +1,7 @@
 //! inferd as an external coding agent's model endpoint (agent-session ask P4).
 //!
 //! The agent launcher (`CallerRole::AgentLauncher`, and only it) opens an endpoint over the bus
-//! (`org.quire.Inference1.Agents.OpenEndpoint`): for one agent program, over one route (an
+//! (`org.bardo.Inference1.Agents.OpenEndpoint`): for one agent program, over one route (an
 //! API-key account, or a model on this computer), for data of one class. inferd binds a
 //! per-session listener on `127.0.0.1`, on an ephemeral port, and answers with where it is and a
 //! fresh random token the agent sends as its API key. The listener speaks Anthropic Messages and

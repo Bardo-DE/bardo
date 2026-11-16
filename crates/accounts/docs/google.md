@@ -123,7 +123,7 @@ testing = true
 | `testing` | `true` while the consent screen is in Testing (always, unless Google verified it). Porter then knows a sign-in lasts 7 days and says why when it ends |
 | `byo` | `true` to also use Gmail through IMAP and SMTP. Omit it unless you want mail: it asks for the restricted scope |
 
-Your file wins over `/usr/share/porter/clients.toml`. The file is read when the account service
+Your file wins over `/usr/share/bardo/accounts/clients.toml`. The file is read when the account service
 starts, so restart it (log out and in, or restart `accountd`) after editing. Settings > Accounts >
 Advanced writes only the client id for the issuers it lists, so it will not touch this row;
 edit it by hand.

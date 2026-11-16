@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use updater_core::{BundlePath, Export, ExportAction, Found, plan_exports};
 
 const ROOT: &str = "/opt/quire";
-const LINK: &str = "/usr/share/wayland-sessions/quire.desktop";
+const LINK: &str = "/usr/share/wayland-sessions/bardo.desktop";
 
 fn export(link: &str, target: &str) -> Export {
     Export {

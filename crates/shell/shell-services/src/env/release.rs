@@ -5,7 +5,7 @@
 use std::path::{Path, PathBuf};
 
 /// The environment variable the desktop session sets to say how it started the compositor.
-pub const SESSION_MODE_VAR: &str = "QUIRE_SESSION_MODE";
+pub const SESSION_MODE_VAR: &str = "BARDO_SESSION_MODE";
 
 /// How the session started: with its usual compositor, or with the safe one it falls back to
 /// when the usual one keeps exiting.

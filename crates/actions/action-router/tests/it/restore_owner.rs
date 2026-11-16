@@ -54,7 +54,7 @@ async fn turn(router: &World, who: &CallerId, session: &SessionId) -> IntentsRep
 #[tokio::test]
 async fn only_the_opener_restores_a_session_by_naming_it() {
     let log = Arc::new(MemoryLog::new());
-    let (a, b) = (field("org.quire.A"), field("org.quire.B"));
+    let (a, b) = (field("org.bardo.A"), field("org.bardo.B"));
     let router = world(&log);
     let reply = ask(
         &router,

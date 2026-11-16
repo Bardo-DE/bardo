@@ -48,7 +48,7 @@ use zbus::zvariant::OwnedValue;
 
 const PASSWORD: &str = "S3CRET-NEXTCLOUD-APP-PASSWORD";
 const GRANT: &str = "sync-grant";
-const PHOTOS: &str = "org.quire.Photos";
+const PHOTOS: &str = "org.bardo.Photos";
 
 fn quick() -> Settings {
     Settings::quick()

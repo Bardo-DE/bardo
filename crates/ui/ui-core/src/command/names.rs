@@ -14,7 +14,7 @@ pub struct ActionName(pub String);
 #[serde(transparent)]
 pub struct CommandId(pub String);
 
-/// The app the intents manifest is filed under (`org.quire.Mail`), which names the conformance
+/// The app the intents manifest is filed under (`org.bardo.Mail`), which names the conformance
 /// file too.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]

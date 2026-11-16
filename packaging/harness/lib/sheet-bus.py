@@ -26,7 +26,7 @@ for line in lines:
         m = json.loads(line)
     except ValueError:
         continue
-    if m.get("interface") != "org.quire.AccountsSheet1" or m.get("type") not in ("method_call", "signal"):
+    if m.get("interface") != "org.bardo.AccountsSheet1" or m.get("type") not in ("method_call", "signal"):
         continue
     member = m.get("member")
     data = m.get("payload", {}).get("data", [])

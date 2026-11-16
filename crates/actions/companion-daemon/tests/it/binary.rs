@@ -1,4 +1,4 @@
-//! The real `companiond` binary on a private bus: it claims `org.quire.Companion1`, answers
+//! The real `companiond` binary on a private bus: it claims `org.bardo.Companion1`, answers
 //! `Roster()` and `Front()` with nothing running, takes the name of the shell from its
 //! configuration, and speaks for the person to no one else. With no router on the bus it still
 //! serves: a restart that finds nothing resumes nothing. Nothing of the real session is named: the
@@ -48,12 +48,12 @@ async fn has_owner(connection: &zbus::Connection, name: &str) -> bool {
 
 async fn until_served(connection: &zbus::Connection) {
     for _ in 0..200 {
-        if has_owner(connection, "org.quire.Companion1").await {
+        if has_owner(connection, "org.bardo.Companion1").await {
             return;
         }
         tokio::time::sleep(Duration::from_millis(50)).await;
     }
-    panic!("companiond never claimed org.quire.Companion1");
+    panic!("companiond never claimed org.bardo.Companion1");
 }
 
 fn turn() -> String {
@@ -83,7 +83,7 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     std::fs::create_dir_all(&config).expect("dirs");
     std::fs::write(
         config.join("companiond.toml"),
-        "shell = \"org.quire.Desk\"\n",
+        "shell = \"org.bardo.Desk\"\n",
     )
     .expect("config");
     let bus = PrivateBus::start(dir.path());
@@ -107,7 +107,7 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     );
     let shipped_shell = bus.connect().await;
     shipped_shell
-        .request_name("org.quire.Shell")
+        .request_name("org.bardo.Shell")
         .await
         .expect("name");
     assert!(
@@ -121,9 +121,9 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     );
     // Owning the configured shell's name does not make a process the shell either: the shell is
     // the process in the unit the system's callers file names, which this binary reads from
-    // `/etc/quire` and no test may move (in process: `serve.rs`, `terminal.rs`, `speaker.rs`).
+    // `/etc/bardo` and no test may move (in process: `serve.rs`, `terminal.rs`, `speaker.rs`).
     let desk = bus.connect().await;
-    desk.request_name("org.quire.Desk").await.expect("name");
+    desk.request_name("org.bardo.Desk").await.expect("name");
     assert!(
         CompanionProxy::new(&desk)
             .await
@@ -144,13 +144,13 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
         !status.success(),
         "a second companiond is not served: {status:?}"
     );
-    assert!(has_owner(&me, "org.quire.Companion1").await);
+    assert!(has_owner(&me, "org.bardo.Companion1").await);
 
     // Stopping it frees the name.
     daemon.0.kill().expect("kill");
     daemon.0.wait().expect("wait");
     for _ in 0..100 {
-        if !has_owner(&me, "org.quire.Companion1").await {
+        if !has_owner(&me, "org.bardo.Companion1").await {
             return;
         }
         tokio::time::sleep(Duration::from_millis(50)).await;
@@ -166,5 +166,5 @@ fn the_shipped_configuration_is_the_defaults_and_a_bad_file_is_refused() {
         CompaniondConfig::default()
     );
     assert!(CompaniondConfig::parse("shell = 4").is_err());
-    assert!(CompaniondConfig::parse("shel = \"org.quire.Desk\"").is_err());
+    assert!(CompaniondConfig::parse("shel = \"org.bardo.Desk\"").is_err());
 }

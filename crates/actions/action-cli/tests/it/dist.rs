@@ -1,6 +1,6 @@
 //! The completion files under `dist/completions` are thin: each hands what is typed to
-//! `quire-do __complete` and offers what comes back. A shell that is installed checks the
-//! syntax; bash also runs the function against a stand-in `quire-do`.
+//! `bardo-do __complete` and offers what comes back. A shell that is installed checks the
+//! syntax; bash also runs the function against a stand-in `bardo-do`.
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -21,23 +21,23 @@ fn has(shell: &str) -> bool {
 
 #[test]
 fn the_three_files_ask_quire_do_what_to_offer() {
-    for name in ["quire-do.bash", "_quire-do", "quire-do.fish"] {
+    for name in ["bardo-do.bash", "_quire-do", "bardo-do.fish"] {
         let text = read(name);
-        assert!(text.contains("quire-do __complete"), "{name}");
+        assert!(text.contains("bardo-do __complete"), "{name}");
         assert!(
             !text.contains("--yes"),
             "{name}: nothing here offers a way around the gate"
         );
     }
-    assert!(read("_quire-do").starts_with("#compdef quire-do"));
+    assert!(read("_quire-do").starts_with("#compdef bardo-do"));
 }
 
 #[test]
 fn installed_shells_accept_the_syntax() {
     for (shell, file, flag) in [
-        ("bash", "quire-do.bash", "-n"),
+        ("bash", "bardo-do.bash", "-n"),
         ("zsh", "_quire-do", "-n"),
-        ("fish", "quire-do.fish", "--no-execute"),
+        ("fish", "bardo-do.fish", "--no-execute"),
     ] {
         if !has(shell) {
             println!("{shell} is not installed here; its file is not syntax-checked");
@@ -63,14 +63,14 @@ fn bash_hands_the_typed_words_to_quire_do() {
     }
     let script = format!(
         r#"
-quire-do() {{ printf '%s\n' "$@"; }}
+bardo-do() {{ printf '%s\n' "$@"; }}
 source {}
-COMP_WORDS=(quire-do mail thread.archive --)
+COMP_WORDS=(bardo-do mail thread.archive --)
 COMP_CWORD=3
 _quire_do
 printf '%s|' "${{COMPREPLY[@]}}"
 "#,
-        dist("quire-do.bash").display()
+        dist("bardo-do.bash").display()
     );
     let out = Command::new("bash")
         .arg("-c")

@@ -21,8 +21,8 @@ use agent_inapp::{Ending, InAppAgent, InAppKit, InAppParts, TransportReader};
 use provenance::{ActionName, Actor, EntityId, EntityKey, EntityKind, Labelled};
 use serde_json::{Value as Json, json};
 
-const READ: &str = "org_quire_Mail-mail_thread_read";
-const SEARCH_CALL: &str = "org_quire_Mail-mail_thread_search";
+const READ: &str = "org_bardo_Mail-mail_thread_read";
+const SEARCH_CALL: &str = "org_bardo_Mail-mail_thread_search";
 
 /// The fixture mail app with one more action, `mail.thread.search`, which answers every thread
 /// as a thing (the fixture manifest has none): the way a planner comes to hold a thread.
@@ -79,7 +79,7 @@ impl IntentProvider for Searching {
         if inv.action.as_str() != "mail.thread.search" {
             return self.mail.perform(inv).await;
         }
-        let app = AppName::parse("org.quire.Mail").expect("app");
+        let app = AppName::parse("org.bardo.Mail").expect("app");
         let read = Invocation {
             action: ActionName::parse("mail.thread.read").expect("action"),
             target: TargetValue::Entities(vec![id(&app, "t1")]),

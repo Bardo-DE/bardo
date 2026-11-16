@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Broker` at `/org/quire/Accounts1`, on accountd's name: what the AI
+//! `org.bardo.Accounts1.Broker` at `/org/bardo/Accounts1`, on accountd's name: what the AI
 //! broker (inferd) asks of the daemon that keeps the AI keys. inferd is the one that sends a key
 //! to an AI company, so it asks accountd which accounts an app holds a permit on, and for the key
 //! behind a permit. Callable only by a connection whose caller role is `AiBroker`; accountd
@@ -34,9 +34,9 @@ pub type RowArg = (String, Details);
 /// The interface, written once. `#[bus_interface]` makes [`BrokerProxy`] for its callers from this
 /// trait, [`BrokerServer`] for the daemon to implement and [`BrokerServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Accounts1.Broker",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Accounts1"
+    interface = "org.bardo.Accounts1.Broker",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Accounts1"
 )]
 pub trait Broker {
     /// What the permits say for `app` (its reverse-DNS name and its isolation slug) on each

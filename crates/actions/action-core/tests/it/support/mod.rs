@@ -34,7 +34,7 @@ pub fn words(text: &str) -> LabelText {
 }
 pub fn entity(kind_name: &str, key: &str) -> EntityId {
     EntityId {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         kind: kind(kind_name),
         key: EntityKey::parse(key).expect("key"),
     }

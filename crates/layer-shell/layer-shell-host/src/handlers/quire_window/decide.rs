@@ -5,7 +5,7 @@ use desktop_protocols::vocab::PlaceTarget;
 
 use crate::window_placement::WindowPlacement;
 
-/// What `quire_window_v1.request_placement` is sent with.
+/// What `bardo_window_v1.request_placement` is sent with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct PlacementRequest {
     pub(super) target: PlaceTarget,

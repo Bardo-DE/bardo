@@ -2,7 +2,7 @@
 //! `GetLayout`, the property rows of `GetGroupProperties`, and an `Event` mapped back to the
 //! command it runs. Still plain data: ui-blitz turns these into D-Bus values.
 //!
-//! One property is ours: `x-quire-command-id`, the [`CommandId`] a command item runs, so an
+//! One property is ours: `x-bardo-command-id`, the [`CommandId`] a command item runs, so an
 //! agent can list the menu and run an item by the id the app's manifest names it by. Clients
 //! ignore properties they do not know.
 
@@ -60,7 +60,7 @@ pub enum Prop {
     Shortcut(Chord),
     /// `children-display` = `submenu`: the item opens a submenu.
     ChildrenSubmenu,
-    /// `x-quire-command-id`.
+    /// `x-bardo-command-id`.
     CommandId(CommandId),
 }
 
@@ -75,7 +75,7 @@ impl Prop {
             Prop::ToggleState(_) => "toggle-state",
             Prop::Shortcut(_) => "shortcut",
             Prop::ChildrenSubmenu => "children-display",
-            Prop::CommandId(_) => "x-quire-command-id",
+            Prop::CommandId(_) => "x-bardo-command-id",
         }
     }
 }

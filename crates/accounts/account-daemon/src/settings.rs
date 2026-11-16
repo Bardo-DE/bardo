@@ -1,4 +1,4 @@
-//! `org.quire.SettingsModule1` at `/org/quire/Accounts1/settings` (design/22 §9.4, PLAN §2.5),
+//! `org.bardo.SettingsModule1` at `/org/bardo/Accounts1/settings` (design/22 §9.4, PLAN §2.5),
 //! served through quire's `ui_settings::live`. Only the `Settings` role may `Get`, `Describe`,
 //! `Snapshot` or `Set`: the keys name accounts, and a `Set` removes them. The keys are in
 //! `account-settings`; this file hosts them and applies what is written.
@@ -57,7 +57,7 @@ fn channel() -> ClientChannel {
 /// The app Settings-driven sign-ins are run as.
 fn settings_app() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Settings").expect("a literal app name"),
+        name: AppName::parse("org.bardo.Settings").expect("a literal app name"),
         isolation: Isolation::Unsandboxed,
     }
 }

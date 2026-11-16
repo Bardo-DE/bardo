@@ -1,5 +1,5 @@
 //! What was installed and how it was checked, kept beside the files. This is the record as a value
-//! and as text; reading and writing the file is `docket-agents`.
+//! and as text; reading and writing the file is `bardo-agents`.
 
 use crate::hash::Sha256Hex;
 use crate::slug::Slug;

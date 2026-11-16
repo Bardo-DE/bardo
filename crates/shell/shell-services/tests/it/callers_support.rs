@@ -29,7 +29,7 @@ pub(crate) enum Role {
     Sync,
     /// The intent router.
     Router,
-    /// Settings: `org.quire.Displays1` lets it set a brightness; no other object answers it.
+    /// Settings: `org.bardo.Displays1` lets it set a brightness; no other object answers it.
     Settings,
 }
 
@@ -40,12 +40,12 @@ impl Role {
 
     fn standing_at(self, proof: Proof) -> Standing {
         let (app, role) = match self {
-            Role::Portal => ("org.quire.Portal", "portal"),
-            Role::Accounts => ("org.quire.Accounts", "accounts"),
-            Role::Inference => ("org.quire.Inference", "inference"),
-            Role::Sync => ("org.quire.Sync", "sync"),
-            Role::Router => ("org.quire.Intents", "router"),
-            Role::Settings => ("org.quire.Settings", "settings"),
+            Role::Portal => ("org.bardo.Portal", "portal"),
+            Role::Accounts => ("org.bardo.Accounts", "accounts"),
+            Role::Inference => ("org.bardo.Inference", "inference"),
+            Role::Sync => ("org.bardo.Sync", "sync"),
+            Role::Router => ("org.bardo.Intents", "router"),
+            Role::Settings => ("org.bardo.Settings", "settings"),
         };
         introduced_service(app, role, proof, Pin::AtConnect)
             .unwrap_or_else(|| panic!("a valid standing")) // test-only

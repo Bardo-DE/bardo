@@ -46,7 +46,7 @@ pub enum Capability {
     Share,
     /// PackageKit answers, so a missing helper can be installed on the spot.
     Helpers,
-    /// The shell's per-output work area and scale (`org.quire.Outputs1`), so a window can be
+    /// The shell's per-output work area and scale (`org.bardo.Outputs1`), so a window can be
     /// sized and placed against the usable screen. The portable fallback is the window system's
     /// own output size ([`crate::Outputs`] is empty).
     Outputs,
@@ -72,16 +72,16 @@ impl Capability {
     pub const fn service(self) -> Option<Service> {
         match self {
             // design/33-AGENT.md section 5 (intentd, docket repo).
-            Capability::Intents => Some(session("org.quire.Intents1")),
+            Capability::Intents => Some(session("org.bardo.Intents1")),
             // accountd, porter repo (porter/crates/accountd/src/lib.rs:2); also named by
             // ui-settings' live client docs.
-            Capability::Accounts => Some(session("org.quire.Accounts1")),
+            Capability::Accounts => Some(session("org.bardo.Accounts1")),
             // memoryd, design/33-AGENT.md section 5 (almanac repo).
-            Capability::Memory => Some(session("org.quire.Memory1")),
+            Capability::Memory => Some(session("org.bardo.Memory1")),
             // companiond, design/33-AGENT.md section 5 (docket repo).
-            Capability::Companion => Some(session("org.quire.Companion1")),
+            Capability::Companion => Some(session("org.bardo.Companion1")),
             // sill's `work_areas` service (sill/crates/sill-services/src/work_areas).
-            Capability::Outputs => Some(session("org.quire.Outputs1")),
+            Capability::Outputs => Some(session("org.bardo.Outputs1")),
             Capability::Helpers => Some(Service {
                 bus: Bus::System,
                 name: "org.freedesktop.PackageKit",
@@ -91,7 +91,7 @@ impl Capability {
             Capability::Appearance => None,
             // TODO: blur is a Wayland protocol (ext-background-effect-v1), not a bus service.
             Capability::Materials => None,
-            // TODO: anyview serves `org.quire.Anyview1.Peek`, but the shell's peek endpoint has
+            // TODO: anyview serves `org.bardo.Anyview1.Peek`, but the shell's peek endpoint has
             // no name in sill or layer-shell-host yet.
             Capability::Peek => None,
             // TODO: no share sheet service is specified in any repo yet.

@@ -1,4 +1,4 @@
-//! The hand-out of privileged connections (C20, I7): `org.quire.Compositor1.Connect(role)`
+//! The hand-out of privileged connections (C20, I7): `org.bardo.Compositor1.Connect(role)`
 //! answers with a connected socket whose client is inserted with that role, after checking
 //! the role the caller proved. The only place a `Shell`, `Agent` or `Portal` connection is made
 //! (B14).

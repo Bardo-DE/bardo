@@ -28,8 +28,8 @@ pub enum Access {
 
 /// One live module: its schema, its values, and who may change them.
 ///
-/// accountd serves one at `/org/quire/Accounts1/settings`, inferd one at
-/// `/org/quire/Inference1/settings`; both `Refuse` every `Write` unless the caller holds the
+/// accountd serves one at `/org/bardo/Accounts1/settings`, inferd one at
+/// `/org/bardo/Inference1/settings`; both `Refuse` every `Write` unless the caller holds the
 /// Settings role.
 pub trait LiveModule: Send + Sync + 'static {
     /// The caller-role hook, asked before every `Describe`, `Get` and `Snapshot` (`Access::Read`) and

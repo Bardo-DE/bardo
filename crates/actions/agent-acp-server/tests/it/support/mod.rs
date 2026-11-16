@@ -46,7 +46,7 @@ pub fn app(name: &str) -> AppName {
 
 pub fn action(name: &str) -> ActionRef {
     ActionRef {
-        app: app("org.quire.Mail"),
+        app: app("org.bardo.Mail"),
         name: ActionName::parse(name).expect("action"),
     }
 }

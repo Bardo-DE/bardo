@@ -1,10 +1,10 @@
-//! `org.quire.Cua1.Run` at `/org/quire/Cua1/run/<id>`: one run's controls, state and signals.
+//! `org.bardo.ComputerUse1.Run` at `/org/bardo/ComputerUse1/run/<id>`: one run's controls, state and signals.
 
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 /// The caller's side. The service is cuad's name, set per proxy with the run's path.
-#[zbus::proxy(interface = "org.quire.Cua1.Run", default_service = "org.quire.Cua1")]
+#[zbus::proxy(interface = "org.bardo.ComputerUse1.Run", default_service = "org.bardo.ComputerUse1")]
 pub trait Run {
     /// Stops the run.
     fn cancel(&self) -> zbus::Result<()>;
@@ -25,7 +25,7 @@ pub trait Run {
     fn hand_back(&self) -> zbus::Result<()>;
 
     /// The run's id, the `provenance::RunId` slug (`r-3`). The object path spells it with `-` and `.`
-    /// as `_` (`/org/quire/Cua1/run/r_3`), which cannot be reversed, so read this instead of
+    /// as `_` (`/org/bardo/ComputerUse1/run/r_3`), which cannot be reversed, so read this instead of
     /// parsing the path.
     #[zbus(property)]
     fn id(&self) -> zbus::Result<String>;
@@ -88,7 +88,7 @@ pub trait Run {
 #[derive(Debug, Default)]
 pub struct RunSkeleton;
 
-#[zbus::interface(name = "org.quire.Cua1.Run")]
+#[zbus::interface(name = "org.bardo.ComputerUse1.Run")]
 impl RunSkeleton {
     fn cancel(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())

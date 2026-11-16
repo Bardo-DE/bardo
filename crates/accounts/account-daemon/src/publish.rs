@@ -146,7 +146,7 @@ impl<H: Host, C: Callers> Core<H, C> {
                     .set_destination(BusName::try_from(name.to_owned())?);
                 Properties::properties_changed(
                     &emitter,
-                    InterfaceName::try_from("org.quire.Accounts1.Account")?,
+                    InterfaceName::try_from("org.bardo.Accounts1.Account")?,
                     HashMap::new(),
                     Cow::Borrowed(&["State"]),
                 )

@@ -7,7 +7,7 @@
 //! - `tool_label`: what every argument from such an agent is worth (`Untrusted`).
 //! - `outcome_json`, `ToolRefusal`, `ToolFault`: what comes back, coarse on purpose.
 //!
-//! `actions-mcp` serves these over MCP for the clients that connect to it; `docket-acp` serves the
+//! `bardo-actions-mcp` serves these over MCP for the clients that connect to it; `bardo-agent-acp` serves the
 //! same over the per-session edge of an external ACP agent. Each keeps only its transport.
 
 mod fault;

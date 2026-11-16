@@ -1,5 +1,5 @@
 app = "palmrest"
-file = "palmrest/gestures.toml"
+file = "mouse-gestures/gestures.toml"
 version = 1
 
 [[key]]

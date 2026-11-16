@@ -24,7 +24,7 @@ fn state(phase: LoopPhase, pending: &[u64]) -> LoopState {
 fn request() -> CallRequest {
     CallRequest {
         action: ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: ActionName::parse("mail.message.archive").expect("action"),
         },
         target: TargetValue::Nothing,

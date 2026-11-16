@@ -51,10 +51,10 @@ done
 [ "$removed_rule" = 0 ] || [ -n "$DESTDIR" ] || as_root udevadm control --reload-rules
 if [ "${FLAG_forget_seeds:-0}" = 1 ]; then
   step "2b the keycap layer, if it still matches"
-  if [ -f "$KEYCAP_LAYER_DEST" ] && cmp -s "$KEYCAP_LAYER_DEST" "$KEYCAP_LAYER_SRC"; then
-    run rm -f "$KEYCAP_LAYER_DEST"
-  elif [ -f "$KEYCAP_LAYER_DEST" ]; then
-    note "kept (you changed it): $KEYCAP_LAYER_DEST"
+  if [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ] && cmp -s "$BARDO_KEY_REMAP_LAYER_DEST" "$BARDO_KEY_REMAP_LAYER_SRC"; then
+    run rm -f "$BARDO_KEY_REMAP_LAYER_DEST"
+  elif [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ]; then
+    note "kept (you changed it): $BARDO_KEY_REMAP_LAYER_DEST"
   fi
 fi
 while IFS= read -r file; do

@@ -1,4 +1,4 @@
-//! The identities domain: what accountd keeps for `org.quire.Identities1` beyond the registry:
+//! The identities domain: what accountd keeps for `org.bardo.Identities1` beyond the registry:
 //!
 //! - [`UseBook`]: the apps that said they signed in with an identity (`RegisterUse`), kept in
 //!   `identity-uses.json` beside `registry.json` with the same atomic save and `.bak`

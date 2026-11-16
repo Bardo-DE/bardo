@@ -10,7 +10,7 @@ use std::sync::Arc;
 
 /// The app every test client is, unless it says otherwise.
 pub fn photos() -> AppId {
-    named("org.quire.Photos")
+    named("org.bardo.Photos")
 }
 
 /// A Flatpak app of this name.

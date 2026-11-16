@@ -94,9 +94,9 @@ mod tests {
 
     #[test]
     fn table() {
-        let a = app("org.quire.A");
-        let b = app("org.quire.B");
-        let shell = app("org.quire.Shell");
+        let a = app("org.bardo.A");
+        let b = app("org.bardo.B");
+        let shell = app("org.bardo.Shell");
         let cases: [(CallerRole, &AppName, Option<&AppName>, bool, &str); 17] = [
             (
                 CallerRole::Editor,
@@ -214,7 +214,7 @@ mod tests {
 
     #[test]
     fn legacy_companion_restores() {
-        let c = app("org.quire.Companiond");
+        let c = app("org.bardo.Companion");
         let claim = Claimant {
             role: CallerRole::Companion,
             app: &c,
@@ -240,7 +240,7 @@ mod tests {
 
     #[test]
     fn a_terminal_also_sees_what_a_terminal_started_and_nobody_else_does() {
-        let (companion, a) = (app("org.quire.Companiond"), app("org.quire.A"));
+        let (companion, a) = (app("org.bardo.Companion"), app("org.bardo.A"));
         let from = action_wire::TerminalScope::from_cgroup("vte-spawn-1.scope").expect("scope");
         let started = opening(&companion, Some(StartedFrom::Terminal(from)));
         let plain = opening(&companion, None);

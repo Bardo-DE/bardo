@@ -566,7 +566,7 @@ mod tests {
     fn served_state() -> BarState {
         let cmd_z = Chord(vec!["Super".to_owned(), "Z".to_owned()]);
         let served = ServedMenu {
-            name: MenuName("org.quire.AppMenu.foot".to_owned()),
+            name: MenuName("org.bardo.AppMenu.foot".to_owned()),
             menus: vec![
                 menu(
                     11,

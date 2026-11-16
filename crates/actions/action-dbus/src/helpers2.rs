@@ -1,4 +1,4 @@
-//! `org.quire.Companion1.Helpers2`: everything `Helpers` has, and the app helpers' sign-in and the
+//! `org.bardo.Companion1.Helpers2`: everything `Helpers` has, and the app helpers' sign-in and the
 //! routines, and speaking in a helper's conversation. It is served beside `Helpers`, which stays
 //! as it was; a caller that knows this one uses it alone. Only the shell speaks for the person
 //! here, except that our own editor bridge may read the helpers and speak in a helper's
@@ -10,9 +10,9 @@ use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Companion1.Helpers2",
-    default_service = "org.quire.Companion1",
-    default_path = "/org/quire/Companion1"
+    interface = "org.bardo.Companion1.Helpers2",
+    default_service = "org.bardo.Companion1",
+    default_path = "/org/bardo/Companion1"
 )]
 pub trait CompanionHelpers2 {
     /// The helpers (`HelpersView` JSON): one line each, and what they told the person after the
@@ -107,7 +107,7 @@ pub trait CompanionHelpers2 {
 #[derive(Debug, Default)]
 pub struct CompanionHelpers2Skeleton;
 
-#[zbus::interface(name = "org.quire.Companion1.Helpers2")]
+#[zbus::interface(name = "org.bardo.Companion1.Helpers2")]
 impl CompanionHelpers2Skeleton {
     fn list(&self, after: u64) -> fdo::Result<String> {
         let _ = (after,);

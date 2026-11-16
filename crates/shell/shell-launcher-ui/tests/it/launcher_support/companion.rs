@@ -20,7 +20,7 @@ pub fn card(id: &str) -> CardWire {
         effect: Effect::Outbound,
         call: CallRequest {
             action: ActionRef {
-                app: AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}")),
+                app: AppName::parse("org.bardo.Mail").unwrap_or_else(|e| panic!("{e}")),
                 name: ActionName::parse("mail.message.send").unwrap_or_else(|e| panic!("{e}")),
             },
             target: TargetValue::Nothing,
@@ -136,7 +136,7 @@ pub fn helpers(more: Vec<HelpersMsg>) -> Companion {
         r#"{{"helpers":[{RESEARCH},{INBOX}],"told":[{{"n":1,"helper":"h-1","text":"Found the digest."}}]}}"#
     );
     let card = format!(
-        r#"{{"line":{RESEARCH},"role":"Reads the news each morning","model":{{"kind":"unset"}},"reach":["org.quire.Notes: look at things"],"steps":12,"jobs":[{{"id":1,"goal":"Find the weekly digest","state":"done","note":null}}]}}"#
+        r#"{{"line":{RESEARCH},"role":"Reads the news each morning","model":{{"kind":"unset"}},"reach":["org.bardo.Notes: look at things"],"steps":12,"jobs":[{{"id":1,"goal":"Find the weekly digest","state":"done","note":null}}]}}"#
     );
     let first = vec![
         HelpersMsg::Listed(

@@ -1,6 +1,6 @@
 //! What a run trace keeps of one model exchange: the words of the request as the caller sent
 //! them, how inferd routed it, the answer, and how long it took. Plain data: the tap in
-//! `action-dbus` writes it, `docket-eval` renders it and turns it into a cassette. It holds
+//! `action-dbus` writes it, `agent-eval` renders it and turns it into a cassette. It holds
 //! prompts, so it is written only where a live run asks for it (never by default, never to a
 //! shared place).
 

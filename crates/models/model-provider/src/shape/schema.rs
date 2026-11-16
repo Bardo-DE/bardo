@@ -38,7 +38,7 @@ impl Shape {
             Shape::Date => json!({"type": "string", "format": "date"}),
             Shape::DateTime => json!({"type": "string", "format": "date-time"}),
             Shape::Record(fields) => {
-                // Declaration order, as `required` below: what `quire-do describe` shows.
+                // Declaration order, as `required` below: what `bardo-do describe` shows.
                 let properties: Map<String, Value> = fields
                     .iter()
                     .map(|f| (f.name.as_str().to_owned(), f.shape.schema_value()))

@@ -74,7 +74,7 @@ mod tests {
         StepLine {
             call: CallId(n),
             action: ActionRef {
-                app: AppName::parse("org.quire.Shell").expect("app"),
+                app: AppName::parse("org.bardo.Shell").expect("app"),
                 name: ActionName::parse("demo.item.archive").expect("action"),
             },
             effect: Effect::UndoableWrite,
@@ -91,7 +91,7 @@ mod tests {
     #[tokio::test]
     async fn a_task_over_its_budget_is_summarised_once_and_keeps_every_step() {
         let router = Arc::new(fake_router(AgentConfig::default()).expect("router"));
-        let shell = AppName::parse("org.quire.Shell").expect("app");
+        let shell = AppName::parse("org.bardo.Shell").expect("app");
         let caller = CallerId {
             app: AppId {
                 name: shell.clone(),
@@ -152,7 +152,7 @@ mod tests {
     }
 
     fn shell() -> AppName {
-        AppName::parse("org.quire.Shell").expect("app")
+        AppName::parse("org.bardo.Shell").expect("app")
     }
 
     fn opening() -> Opening {

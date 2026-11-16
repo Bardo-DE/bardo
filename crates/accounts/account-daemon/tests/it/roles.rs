@@ -60,17 +60,17 @@ async fn each_role_is_refused_what_is_not_its_own() {
     // `None` is an unknown sender.
     let rows = [
         (
-            Some(("org.quire.Companion", CallerRole::Agent)),
+            Some(("org.bardo.Companion", CallerRole::Agent)),
             Call::Add,
             denied.as_str(),
         ),
         (
-            Some(("org.quire.Companion", CallerRole::Agent)),
+            Some(("org.bardo.Companion", CallerRole::Agent)),
             Call::Reauthenticate,
             denied.as_str(),
         ),
         (
-            Some(("org.quire.Docket", CallerRole::AgentLauncher)),
+            Some(("org.bardo.Actions", CallerRole::AgentLauncher)),
             Call::Add,
             ACCESS_DENIED,
         ),
@@ -83,12 +83,12 @@ async fn each_role_is_refused_what_is_not_its_own() {
             denied.as_str(),
         ),
         (
-            Some(("org.quire.Settings", CallerRole::Settings)),
+            Some(("org.bardo.Settings", CallerRole::Settings)),
             Call::NeedingReauth,
             denied.as_str(),
         ),
         (
-            Some(("org.quire.Companion", CallerRole::Agent)),
+            Some(("org.bardo.Companion", CallerRole::Agent)),
             Call::NeedingReauth,
             denied.as_str(),
         ),

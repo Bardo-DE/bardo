@@ -1,11 +1,11 @@
 //! The packaged `memoryd` binary, started the way the acceptance run starts it: on a private bus,
 //! with `env_clear`, scratch HOME and XDG directories and no Secret Service.
 //!
-//! The Landlock sandbox is ON: callers are identified through a fake `/proc` (`MEMORYD_PROC_ROOT`, feature `test-proc-root`)
-//! that puts this test process in `intentd.service`.
+//! The Landlock sandbox is ON: callers are identified through a fake `/proc` (`BARDO_MEMORYD_PROC_ROOT`, feature `test-proc-root`)
+//! that puts this test process in `bardo-actiond.service`.
 //!
-//! With the `test-keys` feature `MEMORYD_KEYS=file:<path>` gives it file keys, it claims
-//! `org.quire.Memory1` and takes a `Record` into `desktop` (a Space nobody registered). Without
+//! With the `test-keys` feature `BARDO_MEMORYD_KEYS=file:<path>` gives it file keys, it claims
+//! `org.bardo.Memory1` and takes a `Record` into `desktop` (a Space nobody registered). Without
 //! the feature the same variable is ignored, and the daemon says so.
 //!
 //! The same start-up is also run as a library call, `memory_daemon::start`, over an injected environment
@@ -29,28 +29,28 @@ impl Drop for Daemon {
 }
 
 /// Scratch HOME and XDG roots, a callers file with the router's unit row, and a fake `/proc` in
-/// which this test process runs in `intentd.service` as its main process.
+/// which this test process runs in `bardo-actiond.service` as its main process.
 fn scratch_home(root: &Path) {
     let config = root.join("config").join("quire");
     std::fs::create_dir_all(&config).expect("config dir");
     std::fs::create_dir_all(root.join("run")).expect("runtime dir");
     std::fs::write(
-        config.join("memory-callers.toml"),
-        "[[caller]]\napp = \"org.quire.Intents\"\nunit = \"intentd.service\"\nrole = \"agent\"\n",
+        config.join("memoryd-callers.toml"),
+        "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n",
     )
     .expect("callers file");
     let me = root.join("proc").join(std::process::id().to_string());
     std::fs::create_dir_all(&me).expect("fake proc");
     std::fs::write(
         me.join("cgroup"),
-        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/intentd.service\n",
+        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-actiond.service\n",
     )
     .expect("cgroup");
     // ...as that unit's main process, which is all a service row names.
     let units = root.join("proc").join("units");
     std::fs::create_dir_all(&units).expect("units dir");
     std::fs::write(
-        units.join("intentd.service"),
+        units.join("bardo-actiond.service"),
         std::process::id().to_string(),
     )
     .expect("main pid");
@@ -67,8 +67,8 @@ fn daemon_env(root: &Path, bus: &PrivateBus, keys: &str) -> Vec<(&'static str, S
         ("XDG_CONFIG_HOME", at("config")),
         ("XDG_RUNTIME_DIR", at("run")),
         ("DBUS_SESSION_BUS_ADDRESS", bus.address.clone()),
-        ("MEMORYD_KEYS", keys.to_owned()),
-        ("MEMORYD_PROC_ROOT", at("proc")),
+        ("BARDO_MEMORYD_KEYS", keys.to_owned()),
+        ("BARDO_MEMORYD_PROC_ROOT", at("proc")),
     ]
 }
 
@@ -130,7 +130,7 @@ async fn record_into_desktop<G>(
     };
     tokio::time::timeout(Duration::from_secs(60), claimed)
         .await
-        .expect("the daemon claims org.quire.Memory1");
+        .expect("the daemon claims org.bardo.Memory1");
     let memory = Memory::over(DbusTransport::new(client));
     let record = Record {
         space: SpaceId::desktop(),

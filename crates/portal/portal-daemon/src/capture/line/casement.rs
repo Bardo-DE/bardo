@@ -1,4 +1,4 @@
-//! The real line: `org.quire.Compositor1.Connect("portal")` over the session bus.
+//! The real line: `org.bardo.Compositor1.Connect("portal")` over the session bus.
 
 use std::os::fd::OwnedFd;
 use std::sync::mpsc;

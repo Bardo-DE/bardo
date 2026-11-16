@@ -75,7 +75,7 @@ pub struct SessionOpen {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cwd: Option<action_vocab::Workspace>,
     /// The terminal a conversation came from, said by the companion when it opens one for
-    /// `quire-do ask`; the router keeps it only from the companion role.
+    /// `bardo-do ask`; the router keeps it only from the companion role.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub started_from: Option<crate::started::StartedFrom>,
     /// The external agent program the session is for, said by the host that launched it; the

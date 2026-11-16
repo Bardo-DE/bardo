@@ -1,5 +1,5 @@
 //! The person's settings, live (design/22 section 2): a `notify` watch on the directory that holds
-//! `docket/settings.toml` (not on the file: the Settings app's atomic writer and every editor
+//! `actions/settings.toml` (not on the file: the Settings app's atomic writer and every editor
 //! replace the inode by rename), a 30 ms debounce, then the whole file is read again through the
 //! lenient reader. The router is handed the result; the next call decides by it.
 

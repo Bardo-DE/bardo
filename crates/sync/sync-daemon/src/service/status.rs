@@ -212,7 +212,7 @@ mod tests {
         assert_eq!(u64::try_from(&held["held"]).ok(), Some(40));
         assert_eq!(
             text(&held, KEY_ACCOUNT).as_deref(),
-            Some("/org/quire/Accounts1/account/a1")
+            Some("/org/bardo/Accounts1/account/a1")
         );
         assert!(held_details(&dataset, None).is_empty());
     }

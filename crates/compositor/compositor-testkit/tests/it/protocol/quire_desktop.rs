@@ -20,7 +20,7 @@ use compositor_testclient::quire::window::WindowManager;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, program_standing};
 
-const INTERFACE: &str = "quire_desktop_manager_v1";
+const INTERFACE: &str = "bardo_desktop_manager_v1";
 const APP: &str = "org.example.Mail";
 
 /// Whether the client `id` is offered `interface`.
@@ -426,7 +426,7 @@ fn the_shells_requests_reach_the_model() {
     assert!(fixture.client(shell).protocol_error().is_none());
 }
 
-/// An app whose client bound `quire_window_manager_v1` at version 2 is sent `quit` and no window
+/// An app whose client bound `bardo_window_manager_v1` at version 2 is sent `quit` and no window
 /// is closed; one bound at version 1 keeps having its windows closed one by one.
 #[test]
 fn quit_goes_to_a_client_that_bound_version_2_and_closes_nothing() {
@@ -526,7 +526,7 @@ fn a_menu_address_reaches_the_shell_as_the_apps_menu_source() {
     );
 }
 
-// ---- `quire_desktop_app_v1.subject` (version 2): the program behind an app, as the compositor
+// ---- `bardo_desktop_app_v1.subject` (version 2): the program behind an app, as the compositor
 // ---- established it (QUIRE-12).
 
 /// A started desktop where a public client taken to be `standing` has mapped one window of `APP`
@@ -547,7 +547,7 @@ fn app_events(fixture: &mut Fixture, id: ClientId) -> Vec<String> {
         .transcript()
         .0
         .iter()
-        .filter(|line| line.object.starts_with("quire_desktop_app_v1#"))
+        .filter(|line| line.object.starts_with("bardo_desktop_app_v1#"))
         .map(|line| line.event.clone())
         .collect()
 }

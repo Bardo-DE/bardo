@@ -24,7 +24,7 @@ pub(crate) const UINPUT: &str = "/dev/uinput";
 /// `BUS_VIRTUAL`.
 pub(super) const BUS_VIRTUAL: u16 = 0x06;
 /// The environment variable that must be `1` before `--check-uinput` opens anything.
-pub(crate) const PROBE_PERMIT: &str = "KEYCAP_ALLOW_UINPUT_PROBE";
+pub(crate) const PROBE_PERMIT: &str = "BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE";
 
 /// The name the virtual keyboard registers under; discovery never grabs a device with it.
 pub(crate) const NAME: &str = "keycap keyboard";

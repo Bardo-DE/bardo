@@ -27,7 +27,7 @@ pub type Random = Arc<dyn Fn() -> Option<([u8; 32], [u8; 16])> + Send + Sync>;
 /// so a client id set in Settings is used by the next sign-in without a restart.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ClientFiles {
-    /// The shipped file (`/usr/share/porter/clients.toml`).
+    /// The shipped file (`/usr/share/bardo/accounts/clients.toml`).
     pub shipped: PathBuf,
     /// The person's own (`$XDG_CONFIG_HOME/porter/clients.toml`).
     pub own: PathBuf,

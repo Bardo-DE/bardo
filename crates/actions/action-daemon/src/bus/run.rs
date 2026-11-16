@@ -19,7 +19,7 @@ fn activation_of(options: &Details) -> Option<ActivationToken> {
     ActivationToken::parse(text)
 }
 
-#[zbus::interface(name = "org.quire.Intents1.Run")]
+#[zbus::interface(name = "org.bardo.Intents1.Run")]
 impl RunBus {
     async fn perform(
         &self,
@@ -122,7 +122,7 @@ impl RunBus {
 
 pub(crate) struct GateBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Gate")]
+#[zbus::interface(name = "org.bardo.Intents1.Gate")]
 impl GateBus {
     async fn grant(
         &self,

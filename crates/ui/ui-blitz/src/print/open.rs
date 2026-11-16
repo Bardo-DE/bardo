@@ -9,7 +9,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 /// The folder under the person's runtime directory (private to them, cleared at logout) that
 /// holds the PDFs handed to a viewer.
-const STAGING: &str = "quire-print";
+const STAGING: &str = "bardo-print";
 
 /// How long a staged PDF is kept. The viewer may still be reading it after `xdg-open` returns,
 /// so the file cannot be removed at once; one day is far past any print, and the next print
@@ -39,7 +39,7 @@ pub(super) fn open(pdf: &[u8], title: &str) -> Result<PrintOutcome, PrintError> 
     }
 }
 
-/// `$XDG_RUNTIME_DIR/quire-print` when the runtime directory is an absolute directory, else the
+/// `$XDG_RUNTIME_DIR/bardo-print` when the runtime directory is an absolute directory, else the
 /// system temporary directory.
 fn staging_dir() -> PathBuf {
     match std::env::var_os("XDG_RUNTIME_DIR")

@@ -34,19 +34,19 @@ where
 /// One table for both sides: `$side` is `client` or `server`, `$wayland` its wayland crate.
 macro_rules! check_side {
     ($side:ident, $wayland:ident) => {{
-        use $side::quire_agent_v1::{
-            quire_agent_lease_v1 as lease, quire_agent_manager_v1 as agent,
+        use $side::bardo_agent_v1::{
+            bardo_agent_lease_v1 as lease, bardo_agent_manager_v1 as agent,
         };
-        use $side::quire_desktop_v1::{
-            quire_desktop_app_v1 as app, quire_desktop_manager_v1 as desktop,
-            quire_desktop_space_v1 as space, quire_desktop_window_v1 as window,
+        use $side::bardo_desktop_v1::{
+            bardo_desktop_app_v1 as app, bardo_desktop_manager_v1 as desktop,
+            bardo_desktop_space_v1 as space, bardo_desktop_window_v1 as window,
         };
-        use $side::quire_sensitive_v1::quire_sensitive_surface_v1 as sensitive;
-        use $side::quire_shell_v1::quire_shell_v1 as shell;
-        use $side::quire_trusted_surface_v1::{
-            quire_trusted_manager_v1 as trusted, quire_trusted_surface_v1 as trusted_surface,
+        use $side::bardo_sensitive_v1::bardo_sensitive_surface_v1 as sensitive;
+        use $side::bardo_shell_v1::bardo_shell_v1 as shell;
+        use $side::bardo_trusted_surface_v1::{
+            bardo_trusted_manager_v1 as trusted, bardo_trusted_surface_v1 as trusted_surface,
         };
-        use $side::quire_window_v1::quire_window_v1 as quire_window;
+        use $side::bardo_window_v1::bardo_window_v1 as quire_window;
         use $wayland::protocol::wl_output;
 
         same_codes::<vocab::ActorKind, desktop::ActorKind>();
@@ -140,13 +140,13 @@ fn server_enums_have_the_vocab_codes_and_names() {
 
 #[test]
 fn cross_protocol_enum_arguments_use_the_owning_protocols_type() {
-    use client::quire_desktop_v1::quire_desktop_window_v1::Event;
+    use client::bardo_desktop_v1::bardo_desktop_window_v1::Event;
     use wayland_client::WEnum;
     // The desktop window's lease glow is the agent lease's GlowState, not a copy of it.
-    let glow: WEnum<client::quire_agent_v1::quire_agent_lease_v1::GlowState> =
-        WEnum::Value(client::quire_agent_v1::quire_agent_lease_v1::GlowState::Acting);
+    let glow: WEnum<client::bardo_agent_v1::bardo_agent_lease_v1::GlowState> =
+        WEnum::Value(client::bardo_agent_v1::bardo_agent_lease_v1::GlowState::Acting);
     let event = Event::Lease {
-        state: WEnum::Value(client::quire_desktop_v1::quire_desktop_window_v1::LeaseState::Granted),
+        state: WEnum::Value(client::bardo_desktop_v1::bardo_desktop_window_v1::LeaseState::Granted),
         glow,
     };
     let Event::Lease { glow, .. } = event else {

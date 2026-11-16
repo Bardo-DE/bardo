@@ -1,6 +1,6 @@
 [package]
 name = "action-provider"
-description = "The app side of org.quire.Intents1: the IntentProvider, ContextSource and SummonTarget traits an app implements, and (behind the dbus feature) serve and serve_on, which answer org.quire.IntentProvider1 on the app's own bus name. The caller side is action-client."
+description = "The app side of org.bardo.Intents1: the IntentProvider, ContextSource and SummonTarget traits an app implements, and (behind the dbus feature) serve and serve_on, which answer org.bardo.IntentProvider1 on the app's own bus name. The caller side is action-client."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

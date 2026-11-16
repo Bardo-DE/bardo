@@ -173,7 +173,7 @@ mod tests {
 
     fn service(role: &str, proof: Proof) -> Standing {
         Standing::Service {
-            app: AppKey::new("org.quire.Portal").expect("an app"),
+            app: AppKey::new("org.bardo.Portal").expect("an app"),
             role: RoleName::new(role).expect("a role"),
             proof,
             pin: peer::Pin::Reopened,
@@ -274,8 +274,8 @@ mod tests {
     /// with is `trusted_powers`' to say (the screen and the windows, nothing more).
     #[test]
     fn the_portal_is_trusted_only_when_proven_full_and_otherwise_asked_like_a_program() {
-        let transom = exe("/usr/libexec/transom");
-        let path = ProgramPath::parse("/usr/libexec/transom").expect("a path");
+        let transom = exe("/usr/libexec/bardo/bardo-portal");
+        let path = ProgramPath::parse("/usr/libexec/bardo/bardo-portal").expect("a path");
         let portal = ServiceRole::parse("portal").expect("a role");
         let cases = [
             (
@@ -332,7 +332,7 @@ mod tests {
     #[test]
     fn only_the_launcher_row_makes_contexts_that_carry_an_app() {
         let launcher = |proof: Proof| Standing::Service {
-            app: AppKey::new("org.quire.Flatpak").expect("an app"),
+            app: AppKey::new("org.bardo.Flatpak").expect("an app"),
             role: roles::SANDBOX_LAUNCHER,
             proof,
             pin: peer::Pin::Reopened,
@@ -383,7 +383,7 @@ mod tests {
     fn the_launcher_is_a_proven_program_with_no_extra_power() {
         let flatpak = exe("/usr/bin/flatpak");
         let standing = Standing::Service {
-            app: AppKey::new("org.quire.Flatpak").expect("an app"),
+            app: AppKey::new("org.bardo.Flatpak").expect("an app"),
             role: roles::SANDBOX_LAUNCHER,
             proof: Proof::Exe,
             pin: peer::Pin::Reopened,

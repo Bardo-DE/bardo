@@ -56,7 +56,7 @@ fn the_router_checks_the_stamped_sender_against_the_actor() {
         role: AgentRole::Planner,
     };
     let person = Actor::User {
-        via: app("org.quire.Shell"),
+        via: app("org.bardo.Shell"),
     };
     let from_companion = message(
         address(AgentRef::Companion, "work"),

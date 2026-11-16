@@ -16,7 +16,7 @@ async fn ready_in(router: &action_router::Router<action_fake::FakeSeams>, in_spa
 #[tokio::test]
 async fn a_call_over_another_apps_own_space_is_refused_even_with_every_grant() {
     let router = router();
-    ready_in(&router, "app:org.quire.Mail:1").await;
+    ready_in(&router, "app:org.bardo.Mail:1").await;
     let outcome = perform(&router, call("mail.thread.read", &["t1"], vec![])).await;
     assert_eq!(outcome, Err(CallRefusal::Denied(DenyCode::NotAllowed)));
     assert!(
@@ -27,7 +27,7 @@ async fn a_call_over_another_apps_own_space_is_refused_even_with_every_grant() {
 
 #[tokio::test]
 async fn the_owner_shared_and_outside_spaces_go_on_as_before() {
-    for in_space in ["app:org.quire.Companiond:1", "work", "desktop"] {
+    for in_space in ["app:org.bardo.Companion:1", "work", "desktop"] {
         let router = router();
         ready_in(&router, in_space).await;
         let outcome = perform(&router, call("mail.thread.read", &["t1"], vec![])).await;

@@ -458,7 +458,7 @@ async fn two_calendars_the_contacts_and_two_task_lists_mirror_into_the_vdir() {
     );
 
     // Sync1 names them <account>/<dataset>.
-    let settings = caller_of("org.quire.Settings", CallerRole::Settings);
+    let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     let names = rig.hub.names_for(&settings);
     assert_eq!(names.len(), 5, "{names:?}");
     for prefix in [
@@ -587,7 +587,7 @@ async fn remote_changes_removals_new_items_and_renames_arrive_at_the_next_poll()
             && rig.collection("Errands", PimKind::Tasks).is_none()
     })
     .await;
-    let settings = caller_of("org.quire.Settings", CallerRole::Settings);
+    let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     assert_eq!(rig.hub.names_for(&settings).len(), 4);
 }
 
@@ -754,6 +754,6 @@ async fn a_tasks_grant_without_a_calendar_grant_mirrors_only_tasks() {
     assert!(rig.hits_under("/calendar/v3/").is_empty());
     assert!(rig.hits_under("/v1/people/").is_empty());
     assert!(!rig.hits_under("/tasks/v1/").is_empty());
-    let settings = caller_of("org.quire.Settings", CallerRole::Settings);
+    let settings = caller_of("org.bardo.Settings", CallerRole::Settings);
     assert_eq!(rig.hub.names_for(&settings).len(), 2);
 }

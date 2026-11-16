@@ -57,7 +57,7 @@ impl Manager {
     fn get_unit(&self, name: String) -> Result<OwnedObjectPath, SystemdError> {
         let mut held = lock(&self.0);
         held.calls.push(format!("GetUnit({name})"));
-        if held.loaded && name == "keycap.service" {
+        if held.loaded && name == "bardo-key-remap.service" {
             Ok(OwnedObjectPath::try_from(UNIT_PATH).map_err(|e| SystemdError::ZBus(e.into()))?)
         } else {
             Err(SystemdError::NoSuchUnit(format!("Unit {name} not loaded.")))
@@ -126,7 +126,7 @@ struct Rig {
 fn rig(system: BusRoute) -> Rig {
     let scratch = TempDir::new("keycap-systemd");
     let env = Env {
-        keycap_socket: Some(scratch.path().join("keycap.sock")),
+        keycap_socket: Some(scratch.path().join("key-remap.sock")),
         buses: Buses::new(system, BusRoute::Absent),
         keycap_unit_wait: UnitWait {
             grace: Duration::from_millis(100),
@@ -201,7 +201,7 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
     };
     let scratch = TempDir::new("keycap-grace");
     let env = Env {
-        keycap_socket: Some(scratch.path().join("keycap.sock")),
+        keycap_socket: Some(scratch.path().join("key-remap.sock")),
         buses: Buses::new(BusRoute::Address(bus.address.clone()), BusRoute::Absent),
         keycap_unit_wait: UnitWait {
             grace: Duration::from_secs(60),
@@ -242,7 +242,7 @@ async fn a_unit_the_manager_has_not_loaded_is_not_installed_and_silent() {
     let calls = lock(&shared).calls.clone();
     assert_eq!(
         calls,
-        ["GetUnit(keycap.service)"],
+        ["GetUnit(bardo-key-remap.service)"],
         "a machine with no keycap is asked once, then left alone"
     );
 }
@@ -301,8 +301,8 @@ async fn retry_resets_the_failure_then_restarts_the_unit() {
     assert_eq!(
         writes(),
         [
-            "ResetFailedUnit(keycap.service)",
-            "RestartUnit(keycap.service, replace)"
+            "ResetFailedUnit(bardo-key-remap.service)",
+            "RestartUnit(bardo-key-remap.service, replace)"
         ]
     );
 }

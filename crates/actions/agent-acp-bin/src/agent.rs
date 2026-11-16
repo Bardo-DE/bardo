@@ -1,4 +1,4 @@
-//! `docket-agent <program> [--cwd DIR] [--tty]`: runs one configured coding agent (Claude Code
+//! `bardo-agent <program> [--cwd DIR] [--tty]`: runs one configured coding agent (Claude Code
 //! through its ACP adapter, say) as a docket session, with a prompt on the terminal. The host of
 //! the agent: it launches the process under the launcher's sandbox, opens the agent's session at
 //! the router, records the person's prompts there (the task policy derives from them), and makes
@@ -11,9 +11,9 @@
 //! sheets and puts them to you on the terminal, `y` once, `a` always (when offered), anything
 //! else no. Standing grants live in docket's store, listed and revoked in Settings, not here.
 //!
-//! The router tells this process by its bus name, `org.quire.AcpAgent`, which `intentd.toml`
+//! The router tells this process by its bus name, `org.bardo.AcpAgent`, which `actiond.toml`
 //! lists under `acp_agent` (it opens the agent's session, records its turns and makes its calls).
-//! `docket-agent --serve` is the same host as a service for the assistant (see [`serve`]).
+//! `bardo-agent --serve` is the same host as a service for the assistant (see [`serve`]).
 //! Exit codes: 2 for a bad command line, a setting that is off or a configuration that is wrong;
 //! 1 for anything else.
 

@@ -18,29 +18,29 @@ cargo build --release
 ## Install
 
 `dist/install.sh` builds files in release and puts everything below under `/usr/local` (or
-`FILES_PREFIX`), writing the installed path into the `Exec=` lines. It asks for root only when the
+`BARDO_FILES_PREFIX`), writing the installed path into the `Exec=` lines. It asks for root only when the
 place is not yours; `--dry-run` prints every step and changes nothing, and `dist/uninstall.sh`
-takes it all out again. `FILES_BIN` installs a binary you built instead; `FILES_DESTDIR` stages
+takes it all out again. `BARDO_FILES_BIN` installs a binary you built instead; `BARDO_FILES_DESTDIR` stages
 into a scratch root.
 
 To do it by hand, `cargo build --release` makes `target/release/files`. Put these where the desktop looks (the
 prefix is `/usr` for a package, `~/.local` for one person; the `Exec=` lines of the two service
-files name `/usr/bin/files`, so change them for another prefix):
+files name `/usr/bin/bardo-files`, so change them for another prefix):
 
 | File | Goes to |
 | --- | --- |
 | `target/release/files` | `<prefix>/bin/files` |
-| `crates/files/dist/org.quire.Files.desktop` | `<prefix>/share/applications/` |
-| `crates/files/dist/org.quire.Files.FileManager1.service` | `<prefix>/share/dbus-1/services/` |
-| `crates/files/dist/org.quire.Files.service` | `<prefix>/share/dbus-1/services/` |
-| `dist/intents/org.quire.Files.toml` | `<prefix>/share/quire/intents/` |
+| `crates/files/dist/org.bardo.Files.desktop` | `<prefix>/share/applications/` |
+| `crates/files/dist/org.bardo.Files.FileManager1.service` | `<prefix>/share/dbus-1/services/` |
+| `crates/files/dist/org.bardo.Files.service` | `<prefix>/share/dbus-1/services/` |
+| `dist/intents/org.bardo.Files.toml` | `<prefix>/share/quire/intents/` |
 | `files --write-schema DIR` writes `files.settings.toml` | `<prefix>/share/quire/settings/` |
 
 Files is one running app. A second `files FOLDER` hands the folder to the first and exits. While it
 runs, it answers `org.freedesktop.FileManager1` (`ShowFolders`, `ShowItems`, `ShowItemProperties`),
 unless another file manager already owns that name; a program that calls it while Files is closed
 starts it through the service file. To make it the default for folders:
-`xdg-mime default org.quire.Files.desktop inode/directory`.
+`xdg-mime default org.bardo.Files.desktop inode/directory`.
 
 ## Settings
 

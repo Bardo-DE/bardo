@@ -1,5 +1,5 @@
 //! An app a test runs itself behind a bus name: the router's `Perform`, `DryRun` and `Undo` for it
-//! reach this trait. What `FakeLink` does for `org.quire.Companion`, generalised to a provider
+//! reach this trait. What `FakeLink` does for `org.bardo.Companion`, generalised to a provider
 //! that is async and carries its own state (the external agents' host).
 
 use action_core::{AppRefusal, Invocation, Outcome, Preview, UndoFault};

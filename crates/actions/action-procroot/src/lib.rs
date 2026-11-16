@@ -43,7 +43,7 @@ mod tests {
             ("tmux-spawn-9.scope", true),
             ("session-3.scope", true),
             ("app-org.kde.konsole-123.scope", false),
-            ("intentd.service", false),
+            ("bardo-actiond.service", false),
             ("vte-spawn-1b2c.service", false),
             ("session-3.slice", false),
             ("run-r4242.scope", false),

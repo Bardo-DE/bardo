@@ -23,7 +23,7 @@ async fn a_recovering_account_is_told_as_a_state_like_a_refused_one() {
     let rig = Rig::start_with(options, SheetHost::quiet()).await;
     let mail = mail_account();
     let shell = rig
-        .client_as(caller("org.quire.Shell", CallerRole::SheetHost))
+        .client_as(caller("org.bardo.Shell", CallerRole::SheetHost))
         .await;
     let accounts = Porter::over(Bus::over(shell)).accounts();
     let mut changes = accounts.watch().await.expect("watch");

@@ -1,12 +1,12 @@
-//! The introspection XML of `org.quire.Voice1`, from the skeletons: the checked-in
-//! `dbus/org.quire.Voice1.xml` must equal it.
+//! The introspection XML of `org.bardo.Voice1`, from the skeletons: the checked-in
+//! `dbus/org.bardo.Voice1.xml` must equal it.
 
 use crate::bus::{SpeechSkeleton, UtteranceSkeleton, VoiceSkeleton};
 use zbus::fdo;
 use zbus::object_server::Interface;
 
 /// The file under `dbus/`.
-pub const VOICE1_FILE: &str = "org.quire.Voice1.xml";
+pub const VOICE1_FILE: &str = "org.bardo.Voice1.xml";
 
 /// The introspection document: every interface in one `<node>`.
 pub fn introspection() -> String {

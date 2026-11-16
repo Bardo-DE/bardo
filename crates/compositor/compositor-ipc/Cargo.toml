@@ -1,6 +1,6 @@
 [package]
 name = "compositor-ipc"
-description = "casement's D-Bus servers: org.quire.Compositor1 (P2) and, under feature debug-inject, org.quire.Casement.Debug1 with its inject and wait grammars."
+description = "casement's D-Bus servers: org.bardo.Compositor1 (P2) and, under feature debug-inject, org.bardo.Compositor.Debug1 with its inject and wait grammars."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ ui-core = {path = "../../ui/ui-core", default-features = false}
 account-core = {path = "../../accounts/account-core"}
 # `SpacesProxy::register`: the compositor registers the Spaces it mints with accountd.
 account-dbus = {path = "../../accounts/account-dbus"}
-# `live`: `org.quire.SettingsModule1`, the way Settings reads and changes the Privacy list.
+# `live`: `org.bardo.SettingsModule1`, the way Settings reads and changes the Privacy list.
 ui-settings = {path = "../../ui/ui-settings", default-features = false, features = ["live", "quire-desktop"]}
 ui-style = {path = "../../ui/ui-style", default-features = false}
 calloop = {version = "0.14"}
@@ -44,7 +44,7 @@ caller-identity-dbus = {default-features = false, features = ["desktop", "fake",
 [features]
 # `test_bus::PrivateBus`: a private dbus-daemon for other crates' tests.
 testing = []
-# org.quire.Casement.Debug1 on the private bus (B10): never in a release build.
+# org.bardo.Compositor.Debug1 on the private bus (B10): never in a release build.
 debug-inject = ["dep:compositor-backend", "compositor-backend/debug-inject"]
 # Developer rows (peephole's `dev-rows`): a program named in a file the person owns is a desktop
 # service at `Proof::Dev`, and `dbus::require` lets exactly that proof in. Only casement's

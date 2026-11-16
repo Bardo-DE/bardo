@@ -1,4 +1,4 @@
-//! `org.quire.Cua1.Manager` at `/org/quire/Cua1`: starting runs and the kill switch.
+//! `org.bardo.ComputerUse1.Manager` at `/org/bardo/ComputerUse1`: starting runs and the kill switch.
 
 use std::collections::HashMap;
 use zbus::fdo;
@@ -7,9 +7,9 @@ use zbus::zvariant::OwnedObjectPath;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Cua1.Manager",
-    default_service = "org.quire.Cua1",
-    default_path = "/org/quire/Cua1"
+    interface = "org.bardo.ComputerUse1.Manager",
+    default_service = "org.bardo.ComputerUse1",
+    default_path = "/org/bardo/ComputerUse1"
 )]
 pub trait Manager {
     /// Starts a run (`CuaEnvelope<CuaTask>` JSON); answers its object. The router and the planner
@@ -48,7 +48,7 @@ pub trait Manager {
 #[derive(Debug, Default)]
 pub struct ManagerSkeleton;
 
-#[zbus::interface(name = "org.quire.Cua1.Manager")]
+#[zbus::interface(name = "org.bardo.ComputerUse1.Manager")]
 impl ManagerSkeleton {
     #[zbus(out_args("run"))]
     fn start(&self, task: String) -> fdo::Result<OwnedObjectPath> {

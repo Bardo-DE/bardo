@@ -53,7 +53,7 @@ pub struct FakeLink {
     pub window: Mutex<Option<ContextSnapshot>>,
     /// Every invocation the router sent to `Perform`, in order.
     pub performed: Mutex<Vec<action_core::ActivatedInvocation>>,
-    /// The built-in `org.quire.Companion` provider, once a test has attached the router that
+    /// The built-in `org.bardo.Companion` provider, once a test has attached the router that
     /// hosts it (`host_companion`); until then the app is unavailable.
     companion: Hosted,
     /// Apps a test answers itself (`host`).
@@ -72,7 +72,7 @@ impl std::fmt::Debug for Hosted {
     }
 }
 
-/// Attaches `router` as the host of the built-in `org.quire.Companion` provider, as intentd does:
+/// Attaches `router` as the host of the built-in `org.bardo.Companion` provider, as intentd does:
 /// the app answers through the router's own `companion_perform`. The router is held weakly.
 pub fn host_companion(router: &std::sync::Arc<action_router::Router<FakeSeams>>) {
     let weak = std::sync::Arc::downgrade(router);

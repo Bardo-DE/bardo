@@ -1,4 +1,4 @@
-//! The Terminal module: what the terminal (`quire-do`) may do without asking, and the way back
+//! The Terminal module: what the terminal (`bardo-do`) may do without asking, and the way back
 //! when intentd's breaker paused it. Each action the person allowed from the confirmation sheet
 //! ("Allow from the terminal: this action, until logout") is a row with its Revoke; a terminal
 //! the breaker paused after too many refusals in a row shows why and a "Resume the terminal"
@@ -169,7 +169,7 @@ mod tests {
 
     #[test]
     fn grants_are_rows_and_a_pause_is_said_even_with_none() {
-        let mail = grant("org.quire.Mail", "mail.thread.archive");
+        let mail = grant("org.bardo.Mail", "mail.thread.archive");
         let with = Terminal {
             grants: vec![mail.clone()],
             ..Terminal::default()

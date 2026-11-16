@@ -35,7 +35,7 @@ pub struct RejectedRow {
     Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
 )]
 #[serde(from = "KeyboardWire")]
-#[settings(file = "sill/settings.toml", domain = "keyboard", page = Page::KeyboardAndShortcuts)]
+#[settings(file = "shell/settings.toml", domain = "keyboard", page = Page::KeyboardAndShortcuts)]
 pub struct KeyboardSettings {
     #[settings(
         label = "Per-app profiles",

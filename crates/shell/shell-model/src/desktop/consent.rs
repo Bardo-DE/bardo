@@ -1,5 +1,5 @@
 //! A question from the compositor: a program wants a power and the person decides
-//! (`quire_shell_v1` version 5, `permission_ask`). Pure data: the text of the program is made safe
+//! (`bardo_shell_v1` version 5, `permission_ask`). Pure data: the text of the program is made safe
 //! to hold and draw once, here, because it comes from another process's file name.
 
 use desktop_protocols::vocab::{AskId as ConsentId, Memory, Power, SubjectKind};

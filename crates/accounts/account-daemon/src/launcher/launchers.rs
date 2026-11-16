@@ -38,7 +38,7 @@ use zbus::names::BusName;
 use zbus::object_server::SignalEmitter;
 
 /// The interface the signals are on.
-pub(crate) const LAUNCHER_INTERFACE: &str = "org.quire.Accounts1.Launcher";
+pub(crate) const LAUNCHER_INTERFACE: &str = "org.bardo.Accounts1.Launcher";
 
 /// How long a request waits for the launcher: ten minutes, since a person may be finishing a
 /// login in a browser.

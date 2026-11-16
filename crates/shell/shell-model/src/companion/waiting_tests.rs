@@ -48,7 +48,7 @@ fn view(last: char, text: &str, by: Actor, sources: Vec<SourceView>) -> FactView
 fn from_notes() -> SourceView {
     SourceView::Present(ThingView {
         thing: EntityId {
-            app: AppName::parse("org.quire.Notes").unwrap_or_else(|e| panic!("{e}")),
+            app: AppName::parse("org.bardo.Notes").unwrap_or_else(|e| panic!("{e}")),
             kind: EntityKind::parse("notes.note").unwrap_or_else(|e| panic!("{e}")),
             key: EntityKey::parse("n1").unwrap_or_else(|e| panic!("{e}")),
         },

@@ -1,5 +1,5 @@
-//! The lines spoken between the bridge process an external ACP agent starts (`actions-mcp
-//! --host-socket`) and the host that started the agent (`docket-acp`'s per-session edge).
+//! The lines spoken between the bridge process an external ACP agent starts (`bardo-actions-mcp
+//! --host-socket`) and the host that started the agent (`bardo-agent-acp`'s per-session edge).
 //!
 //! A request names a token the host minted for one session and an operation, nothing else: there
 //! is no field for a session, a program or an app, so nothing the agent writes can name one. The
@@ -12,9 +12,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
 
 /// The environment variable that names the socket in the MCP server entry the host offers.
-pub const EDGE_SOCKET_ENV: &str = "QUIRE_EDGE_SOCKET";
+pub const EDGE_SOCKET_ENV: &str = "BARDO_EDGE_SOCKET";
 /// The environment variable that carries the token in the MCP server entry the host offers.
-pub const EDGE_TOKEN_ENV: &str = "QUIRE_EDGE_TOKEN";
+pub const EDGE_TOKEN_ENV: &str = "BARDO_EDGE_TOKEN";
 /// The longest line either side reads (a tool call's arguments or a listing).
 pub const EDGE_LINE_MAX: usize = 4 * 1024 * 1024;
 

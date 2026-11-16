@@ -1,13 +1,13 @@
-//! The lease behind a masked capture: asked of `quire_agent_manager_v1`, answered by `granted`
+//! The lease behind a masked capture: asked of `bardo_agent_manager_v1`, answered by `granted`
 //! or `revoked`, and the source it gives for the standard copy-capture manager.
 
 use super::state::CapState;
 use crate::key::ObjectKey as Key;
 use computer_use_capture::{CaptureError, MaskRegion};
-use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::{
-    self, QuireAgentLeaseV1, RevokeReason,
+use desktop_protocols::client::bardo_agent_v1::bardo_agent_lease_v1::{
+    self, BardoAgentLeaseV1, RevokeReason,
 };
-use desktop_protocols::client::quire_agent_v1::quire_agent_manager_v1::LeaseMode;
+use desktop_protocols::client::bardo_agent_v1::bardo_agent_manager_v1::LeaseMode;
 use wayland_client::{Connection, Dispatch, QueueHandle, WEnum};
 use wayland_protocols::ext::image_copy_capture::v1::client::ext_image_copy_capture_manager_v1::Options;
 
@@ -44,7 +44,7 @@ impl Ended {
 /// One lease's record.
 #[derive(Debug)]
 pub(crate) struct LeaseRec {
-    proxy: QuireAgentLeaseV1,
+    proxy: BardoAgentLeaseV1,
     pub standing: Standing,
 }
 
@@ -128,16 +128,16 @@ impl CapState {
     }
 }
 
-impl Dispatch<QuireAgentLeaseV1, ()> for CapState {
+impl Dispatch<BardoAgentLeaseV1, ()> for CapState {
     fn event(
         state: &mut Self,
-        lease: &QuireAgentLeaseV1,
-        event: quire_agent_lease_v1::Event,
+        lease: &BardoAgentLeaseV1,
+        event: bardo_agent_lease_v1::Event,
         _: &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        use quire_agent_lease_v1::Event;
+        use bardo_agent_lease_v1::Event;
         let Some(rec) = state.leases.get_mut(&Key::of(lease)) else {
             return;
         };

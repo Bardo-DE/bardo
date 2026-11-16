@@ -253,7 +253,7 @@ async fn a_held_discard_is_signalled_stays_until_confirmed_and_then_the_files_go
     let settings = client(
         &rig.bus,
         &rig.known,
-        "org.quire.Settings",
+        "org.bardo.Settings",
         CallerRole::Settings,
     )
     .await;
@@ -325,7 +325,7 @@ async fn a_server_that_lists_its_items_again_ends_the_hold_without_anyone_confir
     assert_eq!(error_name(&err), SYNC_ERROR_NOTHING_HELD);
 }
 
-const SHELL: &str = "org.quire.Sill";
+const SHELL: &str = "org.bardo.Shell";
 
 /// Whether `stream` stays silent for a while (the daemon's signals to one connection arrive in
 /// order, so a quarter of a second after the ones that did arrive is ample on a private bus).
@@ -367,7 +367,7 @@ async fn the_shell_hears_a_hold_and_its_end_but_no_data_of_a_dataset_it_does_not
         (Some(3), Some(3))
     );
     let account = String::try_from(started["account"].try_clone().expect("clone")).expect("s");
-    assert_eq!(account, "/org/quire/Accounts1/account/a1");
+    assert_eq!(account, "/org/bardo/Accounts1/account/a1");
 
     // It may not read, steer or confirm what it does not own.
     let err = sync.status(DATASET).await.expect_err("not its dataset");
@@ -387,7 +387,7 @@ async fn the_shell_hears_a_hold_and_its_end_but_no_data_of_a_dataset_it_does_not
     let settings = client(
         &rig.bus,
         &rig.known,
-        "org.quire.Settings",
+        "org.bardo.Settings",
         CallerRole::Settings,
     )
     .await;
@@ -439,7 +439,7 @@ async fn a_shell_that_joins_after_the_hold_started_is_told_at_once() {
     );
     assert_eq!(
         String::try_from(told["account"].try_clone().expect("clone")).ok(),
-        Some("/org/quire/Accounts1/account/a1".to_owned())
+        Some("/org/bardo/Accounts1/account/a1".to_owned())
     );
     // A stranger that joins is told of nothing.
     let stranger = client(&rig.bus, &rig.known, "org.example.Other", CallerRole::App).await;

@@ -16,7 +16,7 @@ pub use ui_style::icon::retint::IconStyle;
 /// `appearance.*`: what every surface resolves its look from.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "quire/appearance.toml", domain = "appearance", page = Page::Appearance)]
+#[settings(file = "bardo/appearance.toml", domain = "appearance", page = Page::Appearance)]
 pub struct AppearanceSettings {
     /// `appearance.theme`: System, Light or Dark.
     #[settings(
@@ -121,7 +121,7 @@ impl AppearanceSettings {
 /// `ChromaLimit::PROPOSED`, and a Monochrome icon takes its hue from the Space (design/08).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "quire/appearance.toml", domain = "icons", page = Page::Appearance)]
+#[settings(file = "bardo/appearance.toml", domain = "icons", page = Page::Appearance)]
 pub struct IconsSettings {
     /// `icons.style` (proposed Colour).
     #[settings(
@@ -141,7 +141,7 @@ impl Default for IconsSettings {
     }
 }
 
-/// `quire/appearance.toml`, whole.
+/// `bardo/appearance.toml`, whole.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct AppearanceFile {

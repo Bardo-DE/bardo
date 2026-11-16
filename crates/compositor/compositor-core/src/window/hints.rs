@@ -1,10 +1,10 @@
-//! What a client asked of the compositor about its window (`quire_window_v1`, C50).
+//! What a client asked of the compositor about its window (`bardo_window_v1`, C50).
 
 use crate::app::MenuSource;
 use crate::geometry::LogicalRect;
 use desktop_protocols::vocab::{Edited, FrameMode};
 
-/// A window's `quire_window_v1` state.
+/// A window's `bardo_window_v1` state.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WindowHints {
     /// Where a first click on the inactive window also reaches the app (03 A5).

@@ -55,7 +55,7 @@ fn a_custom_gesture_action_is_read_only_and_survives_a_save() {
     let sandbox = Sandbox::new("custom-action");
     let before =
         format!("# mine\n[gestures.gesture_action_map]\n{CUSTOM_ACTION}\n[feel]\nfuture_key = 3\n");
-    sandbox.write("palmrest/gestures.toml", &before);
+    sandbox.write("mouse-gestures/gestures.toml", &before);
     let mut harness = sandbox.harness(opening("mouse_and_gestures"));
     let row = harness
         .text_of(".key-file-only")
@@ -65,7 +65,7 @@ fn a_custom_gesture_action_is_read_only_and_survives_a_save() {
 
     // Scroll speed is palmrest's own key: a press on its slider writes into the same file.
     click(&mut harness, ".ds-slider[*|aria-label=\"Scroll speed\"]");
-    let after = sandbox.read("palmrest/gestures.toml").expect("written");
+    let after = sandbox.read("mouse-gestures/gestures.toml").expect("written");
     let table: toml::Table = after.parse().expect("valid toml");
     let speed = table["scroll"]["speed"].as_integer().expect("an integer");
     assert!(
@@ -98,12 +98,12 @@ fn saving_never_removes_a_key_from_sill_or_quire_files() {
     let sandbox = Sandbox::new("keep-unknown");
     let sill = "[dock]\npuppy = true\nposition = \"sideways\"\n[mystery]\nx = 1\n";
     let quire = "version = 1\n[appearance]\nold_key = 1\n";
-    sandbox.write("sill/settings.toml", sill);
-    sandbox.write("quire/appearance.toml", quire);
+    sandbox.write("shell/settings.toml", sill);
+    sandbox.write("bardo/appearance.toml", quire);
 
     let mut harness = sandbox.harness(opening("dock"));
     click(&mut harness, ".ds-toggle");
-    let text = sandbox.read("sill/settings.toml").expect("written");
+    let text = sandbox.read("shell/settings.toml").expect("written");
     assert!(
         text.contains("puppy = true") && text.contains("[mystery]\nx = 1"),
         "{text}"
@@ -115,7 +115,7 @@ fn saving_never_removes_a_key_from_sill_or_quire_files() {
 
     let mut harness = sandbox.harness(opening("appearance"));
     click(&mut harness, &theme_choice(3));
-    let text = sandbox.read("quire/appearance.toml").expect("written");
+    let text = sandbox.read("bardo/appearance.toml").expect("written");
     assert!(text.starts_with("version = 1\n"), "{text}");
     assert!(text.contains("old_key = 1"), "{text}");
 }

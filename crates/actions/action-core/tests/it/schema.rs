@@ -147,7 +147,7 @@ fn value_schemas_render_as_shapes() {
     let Shape::Choice(options) = of.as_ref() else {
         panic!("choices")
     };
-    assert_eq!(options[0].0, "org.quire.Mail/mail.thread/a");
+    assert_eq!(options[0].0, "org.bardo.Mail/mail.thread/a");
 }
 
 #[test]
@@ -164,15 +164,15 @@ fn the_readers_step_is_named_by_its_task_and_read_back_from_the_name() {
         with: Vec::new(),
     };
     for task in ReaderTask::ALL {
-        let line = step("org.quire.Companion", &task.step_name());
+        let line = step("org.bardo.Companion", &task.step_name());
         assert_eq!(line.reader_task(), Some(task));
     }
     assert_eq!(
-        step("org.quire.Companion", "companion.read.guess").reader_task(),
+        step("org.bardo.Companion", "companion.read.guess").reader_task(),
         None
     );
     assert_eq!(
-        step("org.quire.Mail", "companion.read.summarise").reader_task(),
+        step("org.bardo.Mail", "companion.read.summarise").reader_task(),
         None,
         "only the companion's own app has a reader step"
     );

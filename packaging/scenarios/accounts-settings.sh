@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # Scenario `accounts-settings` (design 31 §7.1, PLAN §2.5): detent's Accounts pane against the live daemons. Each control
 # is clicked in the real window on casement (the window is placed by the compositor; clicks are relative to its frame,
-# `casementctl debug windows`), and the daemon's own state is what is checked afterwards, never detent's.
+# `bardo-compositorctl debug windows`), and the daemon's own state is what is checked afterwards, never detent's.
 # Since porter's step 5c the pane reads accountd's module for every account (the identities: sign in again, remove, the
 # apps using one; the AI keys: the Language model switch, the apps' permits with their Revoke, remove), inferd's for the
 # spend rows beside them, and ferry's syncd (not run here). The switch and the Revoke this scenario clicked on a mail account are
 # the AI key's now.
 # Real accountd, inferd, sill (the compositor's shell, and the sheet host), detent at its pin, the rig's fake servers.
 #
-#   boot      casement, recorded bus, fakes, Secret Service, accountd, inferd, sill, detent (named org.quire.Settings, role
+#   boot      casement, recorded bus, fakes, Secret Service, accountd, inferd, sill, detent (named org.bardo.Settings, role
 #             `settings`, with the programs' schema fixtures; every daemon the pane reads runs first: detent never starts
-#             one); a fake mail identity added through accountd's sheet, an app (org.quire.Mail) says it uses it, an OpenAI
-#             key added through the same sheet, an app (org.quire.Companion) granted the key
+#             one); a fake mail identity added through accountd's sheet, an app (org.bardo.Mail) says it uses it, an OpenAI
+#             key added through the same sheet, an app (org.bardo.Companion) granted the key
 #   open      Accounts in the sidebar, the AI key chosen in the list (capture of the list and of the account)
 #   service   the Language model switch is turned off: accountd's `service.llm` row says so and the app that held the permit
 #             is refused the key (ai-keys request: refused); turned on again, the key is back
@@ -43,7 +43,7 @@ MAIL_LABEL=
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }
 trap cleanup EXIT
 
-app_has_no_permit() { [ -z "$(ai_grant_path org.quire.Companion)" ]; }
+app_has_no_permit() { [ -z "$(ai_grant_path org.bardo.Companion)" ]; }
 service_llm() { ai_get "accounts.$AI.service.llm"; }
 detent_mapped() { [ -n "$(detent_frame 2>/dev/null)" ]; }
 no_ai() { ! ai_has_account "$AI"; }
@@ -80,12 +80,12 @@ step_boot() {
   sill_start || return 1
   sheet_add_fake_mail || return 1
   IDENT=$ACCOUNT
-  rigc org.quire.Mail identities register-use "$(identity_of_account "$IDENT")" >"$OUT_DIR/use.log" 2>&1 \
+  rigc org.bardo.Mail identities register-use "$(identity_of_account "$IDENT")" >"$OUT_DIR/use.log" 2>&1 \
     || { echo "register-use refused: $(cat "$OUT_DIR/use.log")" >&2; return 1; }
   sheet_add_openai || return 1
   AI=$ACCOUNT
   AI_LABEL=$(ai_get "accounts.$AI.label"); MAIL_LABEL=$(rigj imap.user)
-  sheet_grant org.quire.Companion grant || return 1
+  sheet_grant org.bardo.Companion grant || return 1
   detent_start
   acc_wait 30 detent_mapped || { echo "detent never mapped" >&2; tail -5 "$OUT_DIR/detent.log" >&2; return 1; }
   sleep 4
@@ -103,21 +103,21 @@ step_service() {
   press_llm_switch; sleep 1; acc_shot 3-llm-off
   after=$(service_llm)
   [ "$before" != "$after" ] || { echo "the Language model switch changed nothing in accountd (service.llm is still $before)" >&2; return 1; }
-  ai_request_start org.quire.Companion off; acc_wait 20 grep -q '"result"' "$OUT_DIR/off.log"
+  ai_request_start org.bardo.Companion off; acc_wait 20 grep -q '"result"' "$OUT_DIR/off.log"
   grep -q '"result":"refused"' "$OUT_DIR/off.log" || { echo "with the switch off the app is still offered the key: $(cat "$OUT_DIR/off.log")" >&2; return 1; }
   press_llm_switch; sleep 1
   [ "$(service_llm)" = "$before" ] || { echo "turned on again, service.llm is $(service_llm), not $before" >&2; return 1; }
   # The app holds a permit (Always), so with the switch on again RequestKey answers it at once, no sheet.
-  ai_request_start org.quire.Companion on; acc_wait 20 grep -q '"result"' "$OUT_DIR/on.log"
+  ai_request_start org.bardo.Companion on; acc_wait 20 grep -q '"result"' "$OUT_DIR/on.log"
   grep -q '"result":"granted"' "$OUT_DIR/on.log" || { echo "with the switch on again the app is not given its permit: $(cat "$OUT_DIR/on.log")" >&2; return 1; }
   sheet_hidden || { echo "a sheet was drawn for an app that holds a permit" >&2; sheet_stray_escape; return 1; }
 }
 
 step_revoke() {
-  [ -n "$(ai_grant_path org.quire.Companion)" ] || { echo "the app holds no permit to revoke (accountd lists none titled $(app_title org.quire.Companion))" >&2; return 1; }
+  [ -n "$(ai_grant_path org.bardo.Companion)" ] || { echo "the app holds no permit to revoke (accountd lists none titled $(app_title org.bardo.Companion))" >&2; return 1; }
   press_revoke; sleep 1; acc_shot 4-revoked
   acc_wait 10 app_has_no_permit \
-    || { echo "the app still has its permit: $(ai_grant_path org.quire.Companion)" >&2; return 1; }
+    || { echo "the app still has its permit: $(ai_grant_path org.bardo.Companion)" >&2; return 1; }
 }
 
 step_keep() {

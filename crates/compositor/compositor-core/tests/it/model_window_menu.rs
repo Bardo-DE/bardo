@@ -18,7 +18,7 @@ fn pick(entry: WindowEntry) -> Op {
 }
 
 fn mapped() -> compositor_core::Model {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     run(vec![plug("HEADLESS-1"), map(1, &mail, TokenCheck::Valid)]).model
 }
 

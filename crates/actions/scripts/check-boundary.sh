@@ -86,7 +86,7 @@ LAYERS=(
   "action-eval:A"
   "action-testbus:A"
   "action-accept:A"
-  # operator tools over the acceptance world (docket-live, docket-bringup)
+  # operator tools over the acceptance world (agent-live, agent-bringup)
   "action-live:A"
   "action-mcp:A"
   "action-cli:A"
@@ -310,7 +310,7 @@ cd "$(dirname "$0")/.."
 # agent-loop, agent-voice-wire, agent-voice-loop, agent-voice-audio) never reach a bus, a runtime, an HTTP client, an audio or
 # display or accessibility stack, a database, a file watcher, an embedding runtime or the MCP SDK.
 # Only permission-policy reaches cedar-policy, and the crates above it (action-router, the fakes and
-# the daemons that run the router; action-client only behind its `in_process` feature). Only actions-mcp reaches rmcp. action-core
+# the daemons that run the router; action-client only behind its `in_process` feature). Only bardo-actions-mcp reaches rmcp. action-core
 # and the pure crates beside it never reach toml: manifest TOML is parsed in action-router.
 EFFECTS="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
 NO_CEDAR="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
@@ -367,7 +367,7 @@ RULES=(
   # The git store runs git as a process through tokio: no bus, HTTP, desktop stack, database,
   # Cedar, MCP SDK or toml.
   "action-checkpoint-git: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
-  # Our own ACP rules, pure: no runtime, bus, HTTP, Cedar or toml; the connections are docket-acp's and agent-acp-host's.
+  # Our own ACP rules, pure: no runtime, bus, HTTP, Cedar or toml; the connections are bardo-agent-acp's and agent-acp-host's.
   "agent-acp-core: $EFFECTS toml"
   # The ACP server edge: the lib is portable; no bus, HTTP, Cedar or MCP SDK. The protocol's types
   # and the JSON-RPC connection come from agent-client-protocol.
@@ -384,7 +384,7 @@ RULES=(
   "action-host: $EFFECTS toml"
   # The /proc reads (terminal scope, own uid) under an injected root: files only, no bus, runtime, network or Cedar.
   "action-procroot: $EFFECTS toml"
-  # The docket-acp process (and `docket-agent`, the host of an external coding agent): the router
+  # The bardo-agent-acp process (and `bardo-agent`, the host of an external coding agent): the router
   # and the companion hosted in it, over the bus (zbus, tokio) and nothing else of the desktop. It
   # is wiring over clients: it reaches neither the in-app agent nor the router.
   "agent-acp-bin: agent-inapp action-router reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
@@ -420,7 +420,7 @@ RULES=(
   "action-eval-core: $EFFECTS"
   # Test only: a private bus for the daemons' tests; nothing of the router, Cedar or the effects.
   "action-testbus: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
-  # quire-do is a thin client: it reaches the bus only through action-client (LAYERS
+  # bardo-do is a thin client: it reaches the bus only through action-client (LAYERS
   # keeps it a C or A crate that cannot reach the router), never the router, the policy point, the reviewer's
   # cascade or Cedar: a terminal has no way around intentd's gate.
   "companion-client: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
@@ -429,7 +429,7 @@ RULES=(
   # The edge reaches rmcp, tokio and, as a bus client of intentd (action-client `dbus`), zbus; nothing else of the effects.
   "action-mcp: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify"
   # The settings reader is pure but for reading the file: no bus, no runtime, no watcher (intentd
-  # owns the directory watch), so actions-mcp, which may not link one, can share the reader.
+  # owns the directory watch), so bardo-actions-mcp, which may not link one, can share the reader.
   "action-settings: $EFFECTS"
   # The daemons reach the bus and a runtime; none reaches HTTP, an embedding runtime or the MCP
   # SDK. memory-client hosts the service only behind its `in_process` feature, so none reaches SQLite.
@@ -438,7 +438,7 @@ RULES=(
   "agent-reader-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   # Test only: the acceptance run links the docket daemons to run them as processes (memoryd and inferd are built by build.rs, not linked); no HTTP,
   # audio, embedding runtime or MCP SDK.
-  # (The acceptance run starts the actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)
+  # (The acceptance run starts the bardo-actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)
   "action-accept: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
   # Test only: the operator tools run the acceptance world; the same bans as action-accept.
   "action-live: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
@@ -478,7 +478,7 @@ layers_check . || fail=1
 
 # docket sits below cua and sill in the repo order (stoker, porter, almanac, docket, cua, sill):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
-THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture quire-agent-protocol"
+THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture bardo-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
 theirs_found=0
 for name in $THEIRS; do
@@ -498,11 +498,11 @@ if [ "$theirs_found" -eq 0 ]; then
 fi
 
 # No shipped crate carries a test-only switch. The proc root of the callers and the model tap are
-# arguments (`HarnessSeams`) that only the action-accept mains pass (docket-live, which runs the same world, names them too); no daemon source reads
-# `*_PROC_ROOT` or `DOCKET_MODEL_TRACE`. porter reads a fixture tree only with account-callers's
+# arguments (`HarnessSeams`) that only the action-accept mains pass (agent-live, which runs the same world, names them too); no daemon source reads
+# `*_PROC_ROOT` or `BARDO_ACTIONS_MODEL_TRACE`. porter reads a fixture tree only with account-callers's
 # `test-proc-root`, which action-dbus's `fixture-callers` forwards (that one line is the only
-# mention allowed); action-accept, docket-live and tests' dev-dependencies turn it on.
-leaks=$(grep -rnE 'PROC_ROOT|DOCKET_MODEL_TRACE|test-proc-root|test-model-trace' */ \
+# mention allowed); action-accept, agent-live and tests' dev-dependencies turn it on.
+leaks=$(grep -rnE 'PROC_ROOT|BARDO_ACTIONS_MODEL_TRACE|test-proc-root|test-model-trace' */ \
   --include='*.rs' --include=Cargo.toml --exclude-dir=action-accept --exclude-dir=action-live --exclude-dir=tests \
   | grep -vE '^action-dbus/Cargo.toml:[0-9]+:fixture-callers = \["account-callers/test-proc-root"\]$' || true)
 if [ -n "$leaks" ]; then
@@ -514,7 +514,7 @@ else
 fi
 
 # action-trace writes prompts to disk and is test and acceptance support: only the harness
-# (action-accept and docket-live) lists it as a dependency, so no shipped crate has code that could write one.
+# (action-accept and agent-live) lists it as a dependency, so no shipped crate has code that could write one.
 trace_users=$(grep -lE '^action-trace[[:space:]]*=' */Cargo.toml \
   | grep -vE '^(action-accept|action-live|action-trace)/Cargo.toml$' || true)
 if [ -n "$trace_users" ]; then

@@ -19,9 +19,9 @@ const SEQUENCE: usize = 24;
 /// version is a core protocol error (`wl_display.invalid_object`), which oracle 2 documents.
 const MERGE_CASES: u32 = 24;
 
-/// How many sequences each seed's test runs: `CASEMENT_FUZZ_CASES` when set, else by tier.
+/// How many sequences each seed's test runs: `BARDO_COMPOSITOR_FUZZ_CASES` when set, else by tier.
 fn cases() -> u32 {
-    let fixed = std::env::var("CASEMENT_FUZZ_CASES")
+    let fixed = std::env::var("BARDO_COMPOSITOR_FUZZ_CASES")
         .ok()
         .and_then(|v| v.parse().ok());
     let phase = std::env::var("GATE_TIER").is_ok_and(|tier| tier == "phase");

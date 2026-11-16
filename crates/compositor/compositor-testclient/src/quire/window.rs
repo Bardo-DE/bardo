@@ -1,17 +1,17 @@
-//! `quire_window_v1` (C50, P0-H2): hints in, emphasis and placement out.
+//! `bardo_window_v1` (C50, P0-H2): hints in, emphasis and placement out.
 
 use crate::conn::TestClient;
 use crate::surface::toplevel::Shared;
 use crate::surface::toplevel::{Host, Toplevel};
-use desktop_protocols::client::quire_window_v1::quire_window_manager_v1::{
-    self, QuireWindowManagerV1,
+use desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::{
+    self, BardoWindowManagerV1,
 };
-use desktop_protocols::client::quire_window_v1::quire_window_v1::{self, QuireWindowV1};
+use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{self, BardoWindowV1};
 use wayland_client::protocol::wl_region::WlRegion;
 use wayland_client::{Connection, Dispatch, QueueHandle, WEnum};
 
-pub use desktop_protocols::client::quire_window_v1::quire_window_manager_v1::Error as ManagerError;
-pub use desktop_protocols::client::quire_window_v1::quire_window_v1::{
+pub use desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::Error as ManagerError;
+pub use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{
     Edited, Emphasis, Error as WindowError, FrameMode, PlaceTarget, PlacementMark, WindowRole,
 };
 
@@ -30,11 +30,11 @@ pub type WindowLog = Shared<WindowEvents>;
 /// How many `quit` events a manager was sent.
 pub type QuitLog = Shared<u32>;
 
-/// A bound `quire_window_manager_v1`.
+/// A bound `bardo_window_manager_v1`.
 #[derive(Debug)]
 pub struct WindowManager {
     /// The global.
-    pub manager: QuireWindowManagerV1,
+    pub manager: BardoWindowManagerV1,
     /// The `quit` events it was sent (version 2).
     pub quits: QuitLog,
 }
@@ -46,7 +46,7 @@ impl WindowManager {
         WindowManager {
             manager: client
                 .bind(version..=version, quits.clone())
-                .expect("the compositor advertises quire_window_manager_v1"),
+                .expect("the compositor advertises bardo_window_manager_v1"),
             quits,
         }
     }
@@ -70,7 +70,7 @@ impl WindowManager {
 #[derive(Debug)]
 pub struct Window {
     /// The object.
-    pub object: QuireWindowV1,
+    pub object: BardoWindowV1,
     /// What it was told.
     pub log: WindowLog,
 }
@@ -118,37 +118,37 @@ impl Window {
     }
 }
 
-impl Dispatch<QuireWindowManagerV1, QuitLog> for Host {
+impl Dispatch<BardoWindowManagerV1, QuitLog> for Host {
     fn event(
         _: &mut Self,
-        _: &QuireWindowManagerV1,
-        event: quire_window_manager_v1::Event,
+        _: &BardoWindowManagerV1,
+        event: bardo_window_manager_v1::Event,
         quits: &QuitLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        if matches!(event, quire_window_manager_v1::Event::Quit) {
+        if matches!(event, bardo_window_manager_v1::Event::Quit) {
             quits.with(|count| *count += 1);
         }
     }
 }
 
-impl Dispatch<QuireWindowV1, WindowLog> for Host {
+impl Dispatch<BardoWindowV1, WindowLog> for Host {
     fn event(
         _: &mut Self,
-        _: &QuireWindowV1,
-        event: quire_window_v1::Event,
+        _: &BardoWindowV1,
+        event: bardo_window_v1::Event,
         log: &WindowLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         match event {
-            quire_window_v1::Event::Emphasis {
+            bardo_window_v1::Event::Emphasis {
                 emphasis: WEnum::Value(emphasis),
             } => {
                 log.with(|seen| seen.emphasis.push(emphasis));
             }
-            quire_window_v1::Event::Placement {
+            bardo_window_v1::Event::Placement {
                 mark: WEnum::Value(mark),
             } => {
                 log.with(|seen| seen.placement.push(mark));

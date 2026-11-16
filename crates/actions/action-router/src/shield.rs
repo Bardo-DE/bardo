@@ -84,7 +84,7 @@ mod tests {
         let mut record = SessionRecord::new(
             TaskId::parse("t-1").expect("task"),
             Actor::Cli,
-            account_core::AppName::parse("org.quire.Mail").expect("app"),
+            account_core::AppName::parse("org.bardo.Mail").expect("app"),
             space.clone(),
             UnixSeconds(0),
         );

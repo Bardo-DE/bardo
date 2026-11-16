@@ -191,7 +191,7 @@ mod tests {
             places: Default::default(),
             note: None,
         };
-        let file = ConfigFile::parse(&FilePath("quire/appearance.toml".to_owned()));
+        let file = ConfigFile::parse(&FilePath("bardo/appearance.toml".to_owned()));
         KeyEntry::new(spec, file.expect("a plain file"))
     }
 

@@ -78,9 +78,9 @@ impl<T: EisHandout + ?Sized> EisHandout for Arc<T> {
 /// `"portal"` for its captures (`capture::CasementLine`): the connection is trusted for the screen
 /// and the windows, so the compositor does not put its own question over the portal's.
 #[zbus::proxy(
-    interface = "org.quire.Compositor1",
-    default_service = "org.quire.Compositor1",
-    default_path = "/org/quire/Compositor1",
+    interface = "org.bardo.Compositor1",
+    default_service = "org.bardo.Compositor1",
+    default_path = "/org/bardo/Compositor1",
     gen_blocking = false
 )]
 pub trait Compositor1 {
@@ -97,7 +97,7 @@ pub trait Compositor1 {
     fn end_all_eis(&self) -> zbus::Result<()>;
 }
 
-/// The real hand-out: `org.quire.Compositor1.ConnectEis` over the session bus, asked from the
+/// The real hand-out: `org.bardo.Compositor1.ConnectEis` over the session bus, asked from the
 /// connection that owns the portal's name (the compositor tells its caller by that connection).
 #[derive(Debug)]
 pub struct CasementEis {

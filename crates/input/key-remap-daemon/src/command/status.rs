@@ -7,7 +7,7 @@ use std::path::Path;
 use std::time::Duration;
 
 /// The socket's file name inside the runtime directory.
-const SOCKET: &str = "keycap.sock";
+const SOCKET: &str = "key-remap.sock";
 /// How long a reply may take; the daemon answers a connect at once.
 const REPLY_WAIT: Duration = Duration::from_secs(2);
 

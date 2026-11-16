@@ -23,9 +23,9 @@ fn voice1_introspection_matches_xml() {
 fn every_member_is_declared_and_no_more() {
     let xml = introspection();
     let members = [
-        "<interface name=\"org.quire.Voice1\">",
-        "<interface name=\"org.quire.Voice1.Utterance\">",
-        "<interface name=\"org.quire.Voice1.Speech\">",
+        "<interface name=\"org.bardo.Voice1\">",
+        "<interface name=\"org.bardo.Voice1.Utterance\">",
+        "<interface name=\"org.bardo.Voice1.Speech\">",
         "<method name=\"Begin\">",
         "<method name=\"Speak\">",
         "<method name=\"Hush\">",

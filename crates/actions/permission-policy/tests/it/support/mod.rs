@@ -19,7 +19,7 @@ pub const CLEAN: SessionSaw = SessionSaw {
 /// A call that is trusted, inside the task policy, under Auto: the starting point
 /// every row edits.
 pub fn base(effect: Effect) -> PolicyRequest {
-    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let mail = AppName::parse("org.bardo.Mail").expect("app");
     PolicyRequest {
         principal: PrincipalFacts {
             kind: ActorKind::Companion,

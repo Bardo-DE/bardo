@@ -384,21 +384,21 @@ fn only_a_real_version_of_sane_length_can_be_named_for_an_install() {
 fn a_refused_install_has_a_name_of_its_own_and_a_plain_sentence() {
     use zbus::DBusError;
     let table = [
-        (Problem::NotAVersion, "org.quire.Updates1.Error.NotAVersion"),
+        (Problem::NotAVersion, "org.bardo.Updates1.Error.NotAVersion"),
         (
             Problem::VersionChanged,
-            "org.quire.Updates1.Error.VersionChanged",
+            "org.bardo.Updates1.Error.VersionChanged",
         ),
         (
             Problem::InstallNotFromHere,
-            "org.quire.Updates1.Error.AccessDenied",
+            "org.bardo.Updates1.Error.AccessDenied",
         ),
         (
             Problem::CallerUnknown,
-            "org.quire.Updates1.Error.AccessDenied",
+            "org.bardo.Updates1.Error.AccessDenied",
         ),
-        (Problem::Busy, "org.quire.Updates1.Error.Refused"),
-        (Problem::Offline, "org.quire.Updates1.Error.Refused"),
+        (Problem::Busy, "org.bardo.Updates1.Error.Refused"),
+        (Problem::Offline, "org.bardo.Updates1.Error.Refused"),
     ];
     for (problem, name) in table {
         let error = InstallError::from(problem);

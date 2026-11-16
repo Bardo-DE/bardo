@@ -11,7 +11,7 @@ pub const SERVER_NAME: &str = "quire";
 pub const SOCKET_FLAG: &str = "--host-socket";
 
 /// What the host is given to offer: a directory only the user can enter for the sockets (such as
-/// `$XDG_RUNTIME_DIR`), and the bridge program (`actions-mcp`).
+/// `$XDG_RUNTIME_DIR`), and the bridge program (`bardo-actions-mcp`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ToolsOffer {
     /// Where each session's socket directory is made.

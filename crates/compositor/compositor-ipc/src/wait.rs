@@ -1,4 +1,4 @@
-//! The wait grammar: what `casementctl debug wait` waits for (on session time).
+//! The wait grammar: what `bardo-compositorctl debug wait` waits for (on session time).
 //!
 //! ```text
 //! mapped APP_ID | focused APP_ID | gone APP_ID | frames N [OUTPUT] | settled
@@ -66,8 +66,8 @@ mod tests {
         let rows = [
             ("mapped foot", WaitPredicate::Mapped("foot".to_owned())),
             (
-                "focused org.quire.Mail",
-                WaitPredicate::Focused("org.quire.Mail".to_owned()),
+                "focused org.bardo.Mail",
+                WaitPredicate::Focused("org.bardo.Mail".to_owned()),
             ),
             ("gone foot", WaitPredicate::Gone("foot".to_owned())),
             ("frames 3", WaitPredicate::Frames { n: 3, output: None }),

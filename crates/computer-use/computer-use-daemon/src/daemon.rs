@@ -36,10 +36,10 @@ pub enum Fatal {
 /// What the command line asks for.
 #[derive(Debug, PartialEq, Eq)]
 enum Command {
-    /// `--write-schema DIR`: write `cua.settings.toml` there for a local install (design/22
+    /// `--write-schema DIR`: write `computer-use.settings.toml` there for a local install (design/22
     /// section 9.2) and stop.
     WriteSchema(PathBuf),
-    /// Serve, with the configuration file named by `--config` or `$CUAD_CONFIG`, if any.
+    /// Serve, with the configuration file named by `--config` or `$BARDO_COMPUTER_USE_CONFIG`, if any.
     Serve(Option<PathBuf>),
 }
 
@@ -53,13 +53,13 @@ fn command(args: &[String], env: &impl Fn(&str) -> Option<String>) -> Command {
         return Command::WriteSchema(PathBuf::from(dir));
     }
     let named = after(args, "--config").cloned();
-    Command::Serve(named.or_else(|| env("CUAD_CONFIG")).map(PathBuf::from))
+    Command::Serve(named.or_else(|| env("BARDO_COMPUTER_USE_CONFIG")).map(PathBuf::from))
 }
 
 fn write_schema(dir: &Path) -> Result<(), Fatal> {
     let io = |e: std::io::Error| Fatal::Config(format!("{}: {e}", dir.display()));
     std::fs::create_dir_all(dir).map_err(io)?;
-    std::fs::write(dir.join("cua.settings.toml"), crate::SCHEMA).map_err(io)
+    std::fs::write(dir.join("computer-use.settings.toml"), crate::SCHEMA).map_err(io)
 }
 
 fn load_config(path: Option<&Path>) -> Result<CuadConfig, Fatal> {
@@ -74,7 +74,7 @@ fn load_config(path: Option<&Path>) -> Result<CuadConfig, Fatal> {
 }
 
 /// Where an administrator's replacement for the shipped screen rules goes.
-const SYSTEM_DIR: &str = "/etc/quire";
+const SYSTEM_DIR: &str = "/etc/bardo";
 
 /// The screen rules: the administrator's `screen-rules.toml` when there is one, else the file the
 /// program ships.
@@ -91,8 +91,8 @@ fn load_rules() -> Result<Rules, Fatal> {
 
 /// Runs the daemon for the command line `args` (without the program name), reading the
 /// environment through `env`. It connects to the session bus, tries the compositor (no
-/// compositor is not a failure: the backend reads `none`), serves `org.quire.Cua1` and
-/// `org.quire.Cua`, and returns when the bus goes away or it is sent SIGTERM.
+/// compositor is not a failure: the backend reads `none`), serves `org.bardo.ComputerUse1` and
+/// `org.bardo.ComputerUse`, and returns when the bus goes away or it is sent SIGTERM.
 pub async fn run(
     args: &[String],
     env: impl Fn(&str) -> Option<String> + Copy,
@@ -120,7 +120,7 @@ pub async fn run(
     let links = Links::over(&connection, config.tier);
     let parts = SystemSeams::parts(&config, links, reached, SystemClock::start(), rules);
     let supervisor = Arc::new(Supervisor::with_hints(parts, config, hints));
-    // The person's settings (`cua/settings.toml`) over the configuration's values, now and
+    // The person's settings (`computer-use/settings.toml`) over the configuration's values, now and
     // whenever the file changes. Until the file lists an app, none is on.
     let base = CuaSettings {
         config: supervisor.settings(),
@@ -135,7 +135,7 @@ pub async fn run(
     let announcing = connection.clone();
     tokio::spawn(async move { follow_settings(&announcing, &following, &mut watched).await });
     // Who is calling is the process behind the connection, named by the callers table: the
-    // system's `cuad-callers.toml` with the person's laid over it.
+    // system's `computer-use-callers.toml` with the person's laid over it.
     let table = read_callers(&env).map_err(|e| Fatal::Config(e.to_string()))?;
     let who = caller_identity(connection.clone(), table, &env);
     // SIGTERM is caught before the names are taken: whoever sees the name may stop the daemon.
@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn the_command_line_wins_over_the_environment() {
-        let env = |key: &str| (key == "CUAD_CONFIG").then(|| "/env.toml".to_owned());
+        let env = |key: &str| (key == "BARDO_COMPUTER_USE_CONFIG").then(|| "/env.toml".to_owned());
         assert_eq!(
             command(&args(&["--config", "/arg.toml"]), &env),
             Command::Serve(Some(PathBuf::from("/arg.toml")))

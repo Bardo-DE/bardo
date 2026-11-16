@@ -32,7 +32,7 @@ fn pick(window: u64) -> Op {
 
 /// An output with window 1 (the one that splits) and then windows 2, 3, ... of the same app.
 fn desktop(windows: u64) -> Vec<Op> {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let first = map(1, &mail, TokenCheck::Valid);
     let others = (2..=windows).map(|n| map(n, &mail, TokenCheck::Missing));
     [plug("HEADLESS-1"), first]
@@ -340,7 +340,7 @@ fn the_key_command_tiles_the_key_window_like_the_menu_entry() {
 
 #[test]
 fn only_windows_of_the_desktop_the_first_came_from_can_be_picked() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let mut ops = desktop(2);
     ops.extend([
         Op::Event(Event::Desktop(DesktopRequest::CreateSpace {
@@ -366,7 +366,7 @@ fn only_windows_of_the_desktop_the_first_came_from_can_be_picked() {
 /// there and nowhere else; a window on the other output is not offered.
 #[test]
 fn only_windows_of_the_output_the_first_is_on_can_be_picked() {
-    let mail = proven("org.quire.Mail");
+    let mail = proven("org.bardo.Mail");
     let made = run(vec![
         plug("HEADLESS-1"),
         plug("HEADLESS-2"),

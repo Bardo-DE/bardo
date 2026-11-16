@@ -1,4 +1,4 @@
-//! `org.quire.Voice1.Error.<Variant>`: the bus form of a refused call. The six refusals are
+//! `org.bardo.Voice1.Error.<Variant>`: the bus form of a refused call. The six refusals are
 //! `VoiceRefusal`'s, one to one; `Malformed` is a body that does not parse and `Gone` is a daemon
 //! that is shutting down.
 
@@ -7,7 +7,7 @@ use zbus::fdo;
 
 /// The errors the members return.
 #[derive(Debug, zbus::DBusError)]
-#[zbus(prefix = "org.quire.Voice1.Error")]
+#[zbus(prefix = "org.bardo.Voice1.Error")]
 pub enum VoiceError {
     /// zbus's own failures.
     #[zbus(error)]

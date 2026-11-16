@@ -10,7 +10,7 @@ publish = false
 
 [[bin]]
 # The helper keeps the name its unit, its socket and syncd's words call it by.
-name = "porter-mountd"
+name = "bardo-drive-mount"
 path = "src/main.rs"
 
 [dependencies]

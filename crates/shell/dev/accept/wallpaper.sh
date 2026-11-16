@@ -20,8 +20,8 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-wallpaper"
-mkdir -p "$OUT_DIR" "$SILL_SHOTS"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-wallpaper"
+mkdir -p "$OUT_DIR" "$BARDO_SHELL_SHOTS"
 
 start_compositor || exit 1
 scratch_new
@@ -138,10 +138,10 @@ step_idle() {
   sleep 5
   after=$(wallpaper_counters) || return 1
   printf 'before:\n%s\nafter:\n%s\n' "$before" "$after" | tee "$OUT_DIR/idle.log" >&2
-  shot "$SILL_SHOTS/wallpaper-casement.png" >&2 || true
+  shot "$BARDO_SHELL_SHOTS/wallpaper-casement.png" >&2 || true
   [ "$before" = "$after" ]
 }
 
 run_steps step_ping step_surfaces_exist step_centre_pixel step_idle
-echo "output dir: $OUT_DIR; screenshot: $SILL_SHOTS/wallpaper-casement.png" >&2
+echo "output dir: $OUT_DIR; screenshot: $BARDO_SHELL_SHOTS/wallpaper-casement.png" >&2
 exit "$STATUS"

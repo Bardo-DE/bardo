@@ -69,7 +69,7 @@ impl RootHeld for NotRoots {
 #[test]
 fn what_a_peer_proves_about_the_app_id_it_is_called_by() {
     let (_dir, names) = names_with("org.mozilla.firefox", FIREFOX);
-    let service = introduced_service("org.quire.Shell", "shell", Proof::Full, Pin::AtConnect)
+    let service = introduced_service("org.bardo.Shell", "shell", Proof::Full, Pin::AtConnect)
         .expect("a service standing");
     let gone = Standing::Unverified {
         exe_name: None,

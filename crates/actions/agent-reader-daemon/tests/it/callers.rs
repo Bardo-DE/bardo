@@ -73,7 +73,7 @@ fn denied(error: &zbus::Error) -> bool {
 async fn only_the_main_process_of_intentds_unit_is_answered() {
     // intentd's unit is answered: the ask is read, and with no model and no session to read from
     // there is no value, never an AccessDenied.
-    let answer = asked_in(Some(("intentd.service", Main::Yes)))
+    let answer = asked_in(Some(("bardo-actiond.service", Main::Yes)))
         .await
         .expect("an answer");
     let answer: Result<Value, ReaderError> = serde_json::from_str(&answer).expect("json");
@@ -81,11 +81,11 @@ async fn only_the_main_process_of_intentds_unit_is_answered() {
     for (what, leaf) in [
         (
             "a process of intentd's unit that is not its main process",
-            Some(("intentd.service", Main::No)),
+            Some(("bardo-actiond.service", Main::No)),
         ),
         (
             "an app scope called like intentd",
-            Some(("app-org.quire.Intents-1.scope", Main::No)),
+            Some(("app-org.bardo.Intents-1.scope", Main::No)),
         ),
         (
             "a scope that claims intentd's name",
@@ -93,7 +93,7 @@ async fn only_the_main_process_of_intentds_unit_is_answered() {
         ),
         (
             "a unit the table does not name",
-            Some(("companiond.service", Main::Yes)),
+            Some(("bardo-companiond.service", Main::Yes)),
         ),
         ("a terminal's child", Some(("vte-spawn-1.scope", Main::No))),
         ("a process with no cgroup", None),

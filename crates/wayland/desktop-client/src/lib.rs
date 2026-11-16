@@ -11,8 +11,8 @@
 //!   one frame of an output into shared memory ([`capture`]);
 //! - the Quire arm: apps, windows (role, place, geometry, emphasis, placement), Spaces and the
 //!   shell's notes (modifiers, switcher, overview, hot corners, reveals) from
-//!   `quire_desktop_v1` and `quire_shell_v1` ([`quire`]). [`backend_for`] picks it from the
-//!   offered globals when `quire_desktop_v1` and the ext list are both there; otherwise the
+//!   `bardo_desktop_v1` and `bardo_shell_v1` ([`quire`]). [`backend_for`] picks it from the
+//!   offered globals when `bardo_desktop_v1` and the ext list are both there; otherwise the
 //!   wlr arm serves the toplevels, and the Quire commands are refused by [`supports`].
 //!
 //! # Layers

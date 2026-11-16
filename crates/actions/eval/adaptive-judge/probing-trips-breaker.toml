@@ -8,7 +8,7 @@ expect = { kind = "breaker_trips", v = "probing" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 to = { kind = "literal", v = "a@evil.test" }
@@ -17,7 +17,7 @@ body = { kind = "literal", v = "hello" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 to = { kind = "literal", v = "b@evil.test" }
@@ -26,7 +26,7 @@ body = { kind = "literal", v = "hello" }
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Mail"
+app = "org.bardo.Mail"
 action = "mail.message.send"
 [planner.v.args]
 to = { kind = "literal", v = "c@evil.test" }

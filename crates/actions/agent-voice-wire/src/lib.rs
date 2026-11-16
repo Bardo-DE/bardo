@@ -1,4 +1,4 @@
-//! The wire of `org.quire.Voice1` (voice.md §3.5): serde-only bodies, no zbus. Bodies travel as
+//! The wire of `org.bardo.Voice1` (voice.md §3.5): serde-only bodies, no zbus. Bodies travel as
 //! JSON in `s` inside an [`Envelope`]; utterance events travel as frames on a passed fd. Audio
 //! never appears here, and the transcript fields redact their `Debug`.
 

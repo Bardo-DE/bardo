@@ -256,7 +256,7 @@ impl Model {
         }
     }
 
-    /// A `quire_window_v1` hint changed.
+    /// A `bardo_window_v1` hint changed.
     pub(super) fn hint(self, id: WindowId, hint: WindowHintChange) -> Moved {
         if !self.windows.contains_key(&id) {
             return Moved::of(self).with(Effect::Note(CoreNote::UnknownWindow(id)));

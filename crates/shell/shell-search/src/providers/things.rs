@@ -158,7 +158,7 @@ mod tests {
         Hit {
             entity: action_vocab::EntityRef {
                 id: provenance::EntityId {
-                    app: AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}")),
+                    app: AppName::parse("org.bardo.Mail").unwrap_or_else(|e| panic!("{e}")),
                     kind: EntityKind::parse("mail.thread").unwrap_or_else(|e| panic!("{e}")),
                     key: EntityKey::parse(key).unwrap_or_else(|e| panic!("{e}")),
                 },
@@ -261,7 +261,7 @@ mod tests {
         match provider.activate(&row, &Choice::Primary) {
             Activation::Intent(call) => {
                 assert_eq!(call.action.name.as_str(), "mail.thread.open");
-                assert_eq!(call.action.app.as_str(), "org.quire.Mail");
+                assert_eq!(call.action.app.as_str(), "org.bardo.Mail");
                 assert_eq!(call.origin, Origin::Launcher);
                 assert!(
                     matches!(call.target, TargetValue::Entities(ref things) if things.len() == 1)

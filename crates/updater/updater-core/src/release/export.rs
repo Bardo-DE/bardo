@@ -19,7 +19,7 @@ pub const ALLOWED_LINK_DIRS: [&str; 10] = [
     "/usr/share/applications",
     "/usr/local/bin",
     // Data the desktop's own programs read from the standard data folders.
-    "/usr/share/quire",
+    "/usr/share/bardo",
     "/usr/share/porter",
     "/usr/share/stoker",
     "/usr/share/fonts",

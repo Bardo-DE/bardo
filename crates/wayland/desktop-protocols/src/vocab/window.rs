@@ -1,10 +1,10 @@
-//! Window vocabulary: `quire_window_v1`'s enums and the window enums of
-//! `quire_desktop_window_v1`.
+//! Window vocabulary: `bardo_window_v1`'s enums and the window enums of
+//! `bardo_desktop_window_v1`.
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// What kind of window this is (`quire_window_v1.window_role`).
+    /// What kind of window this is (`bardo_window_v1.window_role`).
     WindowRole {
         /// An ordinary document or app window.
         Document = 0,
@@ -20,7 +20,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// How a window blocks others (`quire_desktop_window_v1.modality`).
+    /// How a window blocks others (`bardo_desktop_window_v1.modality`).
     Modality {
         /// Blocks nothing.
         None = 0,
@@ -32,7 +32,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// A window's state without its data (`quire_desktop_window_v1.window_state_kind`).
+    /// A window's state without its data (`bardo_desktop_window_v1.window_state_kind`).
     WindowStateKind {
         /// Placed by hand.
         Floating = 0,
@@ -48,7 +48,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// The region a tiled window fills (`quire_window_v1.tile_zone`).
+    /// The region a tiled window fills (`bardo_window_v1.tile_zone`).
     TileZone {
         /// The left half.
         Left = 0,
@@ -70,7 +70,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Where a window is asked to go (`quire_window_v1.place_target`): a tile zone (same codes
+    /// Where a window is asked to go (`bardo_window_v1.place_target`): a tile zone (same codes
     /// as [`TileZone`]), or fill, centre or restore.
     PlaceTarget {
         /// The left half.
@@ -100,7 +100,7 @@ wire_enum! {
 
 wire_enum! {
     /// A window's current placement, as its zoom control shows it
-    /// (`quire_window_v1.placement_mark`).
+    /// (`bardo_window_v1.placement_mark`).
     PlacementMark {
         /// Placed by hand, not tiled.
         Free = 0,
@@ -175,7 +175,7 @@ impl From<TileZone> for PlacementMark {
 }
 
 wire_enum! {
-    /// How much a window stands out (`quire_window_v1.emphasis`).
+    /// How much a window stands out (`bardo_window_v1.emphasis`).
     Emphasis {
         /// Takes keyboard input.
         Key = 0,
@@ -187,7 +187,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Whether a window's client answers pings (`quire_desktop_window_v1.responsiveness`).
+    /// Whether a window's client answers pings (`bardo_desktop_window_v1.responsiveness`).
     Responsiveness {
         /// Answering pings.
         Responding = 0,
@@ -197,7 +197,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Who draws a window's shadow and corner clip (`quire_window_v1.frame_mode`).
+    /// Who draws a window's shadow and corner clip (`bardo_window_v1.frame_mode`).
     FrameMode {
         /// The client draws its own.
         Client = 0,
@@ -207,7 +207,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Whether a window's document has unsaved changes (`quire_window_v1.edited`).
+    /// Whether a window's document has unsaved changes (`bardo_window_v1.edited`).
     Edited {
         /// No unsaved changes.
         Saved = 0,
@@ -217,7 +217,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Turn something on or off (`quire_desktop_window_v1.toggle`).
+    /// Turn something on or off (`bardo_desktop_window_v1.toggle`).
     Toggle {
         /// Off.
         Off = 0,
@@ -227,7 +227,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Which Spaces a window is assigned to (`quire_desktop_window_v1.assign`).
+    /// Which Spaces a window is assigned to (`bardo_desktop_window_v1.assign`).
     Assign {
         /// Every Space.
         AllSpaces = 0,
@@ -239,7 +239,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Which Spaces show a window (`quire_desktop_window_v1.place_kind`).
+    /// Which Spaces show a window (`bardo_desktop_window_v1.place_kind`).
     PlaceKind {
         /// One Space.
         OnSpace = 0,

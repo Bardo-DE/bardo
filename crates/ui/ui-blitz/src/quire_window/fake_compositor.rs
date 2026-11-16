@@ -1,10 +1,10 @@
 //! A compositor in a thread, over a socket pair: `wl_compositor` and `xdg_wm_base` for a client to
-//! make a toplevel with, and, unless left out, `quire_window_manager_v1`, which records what its
+//! make a toplevel with, and, unless left out, `bardo_window_manager_v1`, which records what its
 //! windows are sent.
 
 use super::proto::server::{
-    quire_window_manager_v1::{self, QuireWindowManagerV1},
-    quire_window_v1::{self, FrameMode, QuireWindowV1},
+    bardo_window_manager_v1::{self, BardoWindowManagerV1},
+    bardo_window_v1::{self, FrameMode, BardoWindowV1},
 };
 use std::os::unix::net::UnixStream;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -54,7 +54,7 @@ pub(super) struct Log {
 /// What the compositor offers.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Offer {
-    /// `wl_compositor`, `xdg_wm_base` and `quire_window_manager_v1`.
+    /// `wl_compositor`, `xdg_wm_base` and `bardo_window_manager_v1`.
     Quire,
     /// `wl_compositor` and `xdg_wm_base` alone, as GNOME and KDE are.
     NoQuire,
@@ -106,7 +106,7 @@ fn serve(offer: Offer, stream: UnixStream, seen: Arc<Mutex<Log>>, stop: Arc<Atom
     handle.create_global::<State, WlCompositor, ()>(1, ());
     handle.create_global::<State, XdgWmBase, ()>(1, ());
     if offer == Offer::Quire {
-        handle.create_global::<State, QuireWindowManagerV1, ()>(1, ());
+        handle.create_global::<State, BardoWindowManagerV1, ()>(1, ());
     }
     handle
         .insert_client(stream, Arc::new(Gone))
@@ -154,7 +154,7 @@ macro_rules! plain_global {
     )*};
 }
 
-plain_global!(WlCompositor, XdgWmBase, QuireWindowManagerV1);
+plain_global!(WlCompositor, XdgWmBase, BardoWindowManagerV1);
 
 impl Dispatch<WlCompositor, ()> for State {
     fn request(
@@ -230,35 +230,35 @@ impl Dispatch<XdgToplevel, ()> for State {
     }
 }
 
-impl Dispatch<QuireWindowManagerV1, ()> for State {
+impl Dispatch<BardoWindowManagerV1, ()> for State {
     fn request(
         state: &mut Self,
         _: &Client,
-        _: &QuireWindowManagerV1,
-        request: quire_window_manager_v1::Request,
+        _: &BardoWindowManagerV1,
+        request: bardo_window_manager_v1::Request,
         _: &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
-        if let quire_window_manager_v1::Request::GetWindow { id, .. } = request {
+        if let bardo_window_manager_v1::Request::GetWindow { id, .. } = request {
             state.log().windows += 1;
             init.init(id, ());
         }
     }
 }
 
-impl Dispatch<QuireWindowV1, ()> for State {
+impl Dispatch<BardoWindowV1, ()> for State {
     fn request(
         state: &mut Self,
         _: &Client,
-        _: &QuireWindowV1,
-        request: quire_window_v1::Request,
+        _: &BardoWindowV1,
+        request: bardo_window_v1::Request,
         _: &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {
         match request {
-            quire_window_v1::Request::SetFrame {
+            bardo_window_v1::Request::SetFrame {
                 mode,
                 corner_radius,
             } => {
@@ -272,7 +272,7 @@ impl Dispatch<QuireWindowV1, ()> for State {
                     corner_radius,
                 });
             }
-            quire_window_v1::Request::Destroy => state.log().destroyed += 1,
+            bardo_window_v1::Request::Destroy => state.log().destroyed += 1,
             _ => {}
         }
     }

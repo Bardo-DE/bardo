@@ -1,5 +1,5 @@
 //! The installed Extensions over a scratch data home and config home: what the Look menu offers,
-//! what the page lists, the switch that writes `quire/extensions.toml`, and a stored look that is
+//! what the page lists, the switch that writes `bardo/extensions.toml`, and a stored look that is
 //! no longer installed.
 
 use crate::round_trip::{key, word};
@@ -88,7 +88,7 @@ fn a_look_is_offered_after_standard_and_a_torn_one_is_listed_apart_with_its_reas
 fn turning_one_off_writes_the_file_keeps_its_other_lines_and_turning_it_on_removes_the_row() {
     let (scratch, home) = world("extensions-power");
     install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
-    let file = scratch.join("config/quire/extensions.toml");
+    let file = scratch.join("config/bardo/extensions.toml");
     std::fs::create_dir_all(file.parent().expect("a file has a parent")).expect("mkdir");
     std::fs::write(&file, "# mine\nversion = 1\n").expect("write");
 
@@ -124,7 +124,7 @@ fn turning_one_off_writes_the_file_keeps_its_other_lines_and_turning_it_on_remov
 fn a_file_that_cannot_be_understood_turns_nothing_off_and_is_not_written_over() {
     let (scratch, home) = world("extensions-garbled");
     install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
-    let file = scratch.join("config/quire/extensions.toml");
+    let file = scratch.join("config/bardo/extensions.toml");
     std::fs::create_dir_all(file.parent().expect("a file has a parent")).expect("mkdir");
     std::fs::write(&file, "[extensions\noff = ").expect("write");
     assert_eq!(shape(&home.read()).0, ["standard", PAPER]);
@@ -138,7 +138,7 @@ fn a_file_that_cannot_be_understood_turns_nothing_off_and_is_not_written_over() 
 #[test]
 fn a_stored_look_nothing_installed_has_is_kept_on_load() {
     let scratch = Scratch::under(TMP, "extensions-stale-look");
-    let file = ConfigFile::parse(&FilePath("quire/appearance.toml".to_owned())).expect("file");
+    let file = ConfigFile::parse(&FilePath("bardo/appearance.toml".to_owned())).expect("file");
     let spec = FileSpec {
         file,
         foreign: Default::default(),
@@ -152,7 +152,7 @@ fn a_stored_look_nothing_installed_has_is_kept_on_load() {
     };
     std::fs::create_dir_all(scratch.join("config/quire")).expect("mkdir");
     std::fs::write(
-        scratch.join("config/quire/appearance.toml"),
+        scratch.join("config/bardo/appearance.toml"),
         "[appearance]\nlook = \"org.example.Gone\"\n",
     )
     .expect("write");

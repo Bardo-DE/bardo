@@ -45,7 +45,7 @@ fn label(text: &str) -> LabelText {
 fn person(name: &str, address: &str) -> EntityRef {
     EntityRef {
         id: EntityId {
-            app: app("org.quire.Contacts"),
+            app: app("org.bardo.Contacts"),
             kind: EntityKind::parse("contacts.person").unwrap_or_else(|e| panic!("{e}")),
             key: EntityKey::parse("p-1").unwrap_or_else(|e| panic!("{e}")),
         },
@@ -61,7 +61,7 @@ fn card(id: &str, effect: provenance::Effect) -> CardWire {
         effect,
         call: action_vocab::CallRequest {
             action: ActionRef {
-                app: app("org.quire.Mail"),
+                app: app("org.bardo.Mail"),
                 name: provenance::ActionName::parse("mail.message.send")
                     .unwrap_or_else(|e| panic!("{e}")),
             },
@@ -100,7 +100,7 @@ fn step(id: u32, state: StepWireState, effect: provenance::Effect) -> PlanStepWi
     PlanStepWire {
         id: StepId(id),
         action: ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: provenance::ActionName::parse("mail.message.forward")
                 .unwrap_or_else(|e| panic!("{e}")),
         },
@@ -213,7 +213,7 @@ fn answer_view_variants_total() {
             "form",
             AnswerBody::Form(FormWire {
                 action: ActionRef {
-                    app: app("org.quire.Mail"),
+                    app: app("org.bardo.Mail"),
                     name: provenance::ActionName::parse("mail.draft.create")
                         .unwrap_or_else(|e| panic!("{e}")),
                 },
@@ -436,7 +436,7 @@ fn refusal_words_total() {
             param: ParamName::parse("to").unwrap_or_else(|e| panic!("{e}")),
             why: ArgFault::Missing,
         },
-        CallRefusal::AppUnavailable(app("org.quire.Mail")),
+        CallRefusal::AppUnavailable(app("org.bardo.Mail")),
         CallRefusal::Timeout,
     ];
     for refusal in refusals {
@@ -477,7 +477,7 @@ fn a_form_field_carries_its_need_its_input_and_its_value() {
     );
     let form = FormWire {
         action: ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: provenance::ActionName::parse("mail.draft.create")
                 .unwrap_or_else(|e| panic!("{e}")),
         },

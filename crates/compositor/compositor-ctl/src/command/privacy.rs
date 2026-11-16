@@ -1,4 +1,4 @@
-//! `casementctl privacy list | reload`: which program may use which power, and the administrator's
+//! `bardo-compositorctl privacy list | reload`: which program may use which power, and the administrator's
 //! settings read again.
 //!
 //! `list` reads the two files the way casement does (the person's book, the administrator's
@@ -13,7 +13,7 @@ use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
 /// The well-known name casement holds on the session bus.
-const COMPOSITOR: &str = "org.quire.Compositor1";
+const COMPOSITOR: &str = "org.bardo.Compositor1";
 /// What a casement process calls itself (`/proc/<pid>/comm`).
 const COMM: &str = "casement";
 
@@ -31,7 +31,7 @@ pub enum Privacy {
 pub struct Places {
     /// `--state-home DIR`: casement's state folder, as casement's own flag of that name.
     pub state_home: Option<PathBuf>,
-    /// `--system-dir DIR`: the administrator's folder instead of `/etc/quire`.
+    /// `--system-dir DIR`: the administrator's folder instead of `/etc/bardo`.
     pub system_dir: Option<PathBuf>,
 }
 
@@ -95,7 +95,7 @@ fn state_dir(places: &Places) -> Option<PathBuf> {
 
 fn list_to_stdout(places: &Places) -> u8 {
     let Some(dir) = state_dir(places) else {
-        eprintln!("casementctl: cannot tell where your privacy answers are kept (no HOME)");
+        eprintln!("bardo-compositorctl: cannot tell where your privacy answers are kept (no HOME)");
         return 1;
     };
     let system = places
@@ -104,13 +104,13 @@ fn list_to_stdout(places: &Places) -> u8 {
         .map_or(SystemDir::Etc, SystemDir::At);
     let mut store = FilePrivacyStore::new(PrivacyFiles {
         book: book_in(&dir),
-        // A floor anywhere but `/etc/quire` is the person's own test setup: whoever runs this owns it.
+        // A floor anywhere but `/etc/bardo` is the person's own test setup: whoever runs this owns it.
         floor: system.floor(Owner::User(rustix::process::getuid().as_raw())),
     });
     let listing = list(&mut store);
     print!("{}", listing.render());
     for note in listing.notes() {
-        eprintln!("casementctl: {note}");
+        eprintln!("bardo-compositorctl: {note}");
     }
     0
 }
@@ -122,7 +122,7 @@ fn reload() -> u8 {
     {
         Ok(runtime) => runtime,
         Err(error) => {
-            eprintln!("casementctl: {error}");
+            eprintln!("bardo-compositorctl: {error}");
             return 1;
         }
     };
@@ -132,7 +132,7 @@ fn reload() -> u8 {
             0
         }
         Err(why) => {
-            eprintln!("casementctl: {why}");
+            eprintln!("bardo-compositorctl: {why}");
             1
         }
     }

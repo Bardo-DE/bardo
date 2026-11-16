@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# By-hand check of speech-host with the Nemotron model: transcribes WAVs through the real host
+# By-hand check of bardo-speech-host with the Nemotron model: transcribes WAVs through the real host
 # over its Unix socket and prints first-partial latency, release-to-final and real-time factor
 # per thread count. CPU only; no microphone, speaker or network.
 #
@@ -19,4 +19,4 @@ threads=4,6,8
 if [ "${1:-}" = --threads ]; then threads=$2; shift 2; fi
 if [ $# -eq 0 ]; then set -- "$model/test_wavs/en.wav" "$model/test_wavs/zh.wav"; fi
 exec uv run --no-project python -I "$here/dev/speech-host-try.py" \
-  --host "$target/release/speech-host" --model-dir "$model" --threads "$threads" "$@"
+  --host "$target/release/bardo-speech-host" --model-dir "$model" --threads "$threads" "$@"

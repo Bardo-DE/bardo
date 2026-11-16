@@ -1,7 +1,7 @@
-//! The acceptance run's mail provider: `org.quire.IntentProvider1` for `org.quire.Mail`, served
+//! The acceptance run's mail provider: `org.bardo.IntentProvider1` for `org.bardo.Mail`, served
 //! on its own connection with `action_provider::serve_on` (the wire every app uses). It is a
 //! stand-in for mailo's real provider and depends on none of mailo's code; the manifest it
-//! answers for is `dev/accept/fixtures/org.quire.Mail.toml`, which is what mailo's must match.
+//! answers for is `dev/accept/fixtures/org.bardo.Mail.toml`, which is what mailo's must match.
 //!
 //! A forward or a send is held for an undo window, as mailo holds a send: `Perform` answers
 //! `Undoable::Yes(token)` and the message is `Held`; `Undo(token)` cancels it. Nothing here

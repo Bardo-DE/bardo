@@ -53,15 +53,15 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
     // The shell's login service.
     rule("/etc/pam.d", NameRule::Exact("sill")),
     // Brightness over the monitor's own bus.
-    rule("/etc/udev/rules.d", NameRule::Exact("60-sill-ddc.rules")),
-    rule("/etc/modules-load.d", NameRule::Exact("sill-ddc.conf")),
+    rule("/etc/udev/rules.d", NameRule::Exact("60-bardo-shell-ddc.rules")),
+    rule("/etc/modules-load.d", NameRule::Exact("bardo-shell-ddc.conf")),
     // The keyboard daemon: its unit (in the vendor folder, /etc stays the administrator's), its device
     // rule, the rule that lets the person restart it and the modules it needs.
-    rule("/usr/lib/systemd/system", NameRule::Exact("keycap.service")),
-    rule("/etc/udev/rules.d", NameRule::Exact("70-keycap.rules")),
+    rule("/usr/lib/systemd/system", NameRule::Exact("bardo-key-remap.service")),
+    rule("/etc/udev/rules.d", NameRule::Exact("70-bardo-key-remap.rules")),
     rule(
         "/etc/polkit-1/rules.d",
-        NameRule::Exact("keycap.polkit.rules"),
+        NameRule::Exact("bardo-key-remap.polkit.rules"),
     ),
     rule("/etc/modules-load.d", NameRule::Exact("keycap.conf")),
     // The desktop's vendor defaults for the keyboard daemon (the Caps Lock rule), read under the
@@ -71,21 +71,21 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
     // rule that takes the device node away from the person's session, and the module it needs.
     rule(
         "/usr/lib/systemd/system",
-        NameRule::Exact("turnstile.socket"),
+        NameRule::Exact("bardo-input-broker.socket"),
     ),
     rule(
         "/usr/lib/systemd/system",
-        NameRule::Exact("turnstile.service"),
+        NameRule::Exact("bardo-input-broker.service"),
     ),
-    rule("/etc/udev/rules.d", NameRule::Exact("72-turnstile.rules")),
+    rule("/etc/udev/rules.d", NameRule::Exact("72-bardo-input-broker.rules")),
     rule("/etc/modules-load.d", NameRule::Exact("turnstile.conf")),
     // The touchpad daemon (a system service, as the keyboard daemon is): its device rule, its module
     // options and its unit in the vendor folder.
-    rule("/etc/udev/rules.d", NameRule::Exact("70-palmrest.rules")),
-    rule("/etc/modprobe.d", NameRule::Exact("99-palmrest.conf")),
+    rule("/etc/udev/rules.d", NameRule::Exact("70-bardo-mouse-gestures.rules")),
+    rule("/etc/modprobe.d", NameRule::Exact("99-bardo-mouse-gestures.conf")),
     rule(
         "/usr/lib/systemd/system",
-        NameRule::Exact("palmrest.service"),
+        NameRule::Exact("bardo-mouse-gestures.service"),
     ),
     // The desktop's own user units, and the portal frontend's drop-in, as plain files owned by root:
     // a link into the release (what an export is) reads as a file anyone could change to the unit
@@ -94,14 +94,14 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
     rule("/usr/lib/systemd/user", NameRule::Ending(".service")),
     rule(
         "/usr/lib/systemd/user/xdg-desktop-portal.service.d",
-        NameRule::Exact("10-quire.conf"),
+        NameRule::Exact("10-bardo.conf"),
     ),
     // Who may call each daemon: the machine's caller tables.
     rule("/etc/porter", NameRule::Exact("callers.toml")),
     rule("/etc/porter", NameRule::Exact("inferd-callers.toml")),
-    rule("/etc/quire", NameRule::Ending("-callers.toml")),
+    rule("/etc/bardo", NameRule::Ending("-callers.toml")),
     // The desktop's system-wide default settings (the XDG config folder, read below the person's own).
-    rule("/etc/xdg/quire", NameRule::Ending(".toml")),
+    rule("/etc/xdg/bardo", NameRule::Ending(".toml")),
 ];
 
 /// A file the release places on the system: `path` is its absolute destination, one of

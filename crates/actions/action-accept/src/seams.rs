@@ -10,42 +10,42 @@ use action_trace::Tap;
 use std::path::PathBuf;
 
 /// The variable that names the file the model tap appends to (prompts go to disk).
-pub const TRACE_VAR: &str = "DOCKET_MODEL_TRACE";
+pub const TRACE_VAR: &str = "BARDO_ACTIONS_MODEL_TRACE";
 
 /// The variable that moves the `/proc` intentd reads its callers from.
-pub const INTENTD_PROC_ROOT_VAR: &str = "INTENTD_PROC_ROOT";
+pub const INTENTD_PROC_ROOT_VAR: &str = "BARDO_ACTIOND_PROC_ROOT";
 
 /// The variable that moves the `/proc` companiond reads its callers from.
-pub const COMPANIOND_PROC_ROOT_VAR: &str = "COMPANIOND_PROC_ROOT";
+pub const COMPANIOND_PROC_ROOT_VAR: &str = "BARDO_COMPANIOND_PROC_ROOT";
 
-/// The variable that names the system's callers file intentd reads (`intentd-callers.toml`): the
+/// The variable that names the system's callers file intentd reads (`actiond-callers.toml`): the
 /// harness is its own system, and a fixed role (the shell's) comes from no file of the person's.
-pub const INTENTD_SYSTEM_CALLERS_VAR: &str = "INTENTD_SYSTEM_CALLERS";
+pub const INTENTD_SYSTEM_CALLERS_VAR: &str = "BARDO_ACTIOND_SYSTEM_CALLERS";
 
 /// The variable that names the system's callers file companiond reads.
-pub const COMPANIOND_SYSTEM_CALLERS_VAR: &str = "COMPANIOND_SYSTEM_CALLERS";
+pub const COMPANIOND_SYSTEM_CALLERS_VAR: &str = "BARDO_COMPANIOND_SYSTEM_CALLERS";
 
 /// The variable that moves the `/proc` readerd reads its callers from.
-pub const READERD_PROC_ROOT_VAR: &str = "READERD_PROC_ROOT";
+pub const READERD_PROC_ROOT_VAR: &str = "BARDO_READERD_PROC_ROOT";
 
 /// The variable that names the system's callers file readerd reads.
-pub const READERD_SYSTEM_CALLERS_VAR: &str = "READERD_SYSTEM_CALLERS";
+pub const READERD_SYSTEM_CALLERS_VAR: &str = "BARDO_READERD_SYSTEM_CALLERS";
 
-/// The variable that moves the `/proc` docket-acp reads its callers from.
-pub const ACP_PROC_ROOT_VAR: &str = "DOCKET_ACP_PROC_ROOT";
+/// The variable that moves the `/proc` bardo-agent-acp reads its callers from.
+pub const ACP_PROC_ROOT_VAR: &str = "BARDO_AGENT_ACP_PROC_ROOT";
 
-/// The variable that names the system's callers file docket-acp reads.
-pub const ACP_SYSTEM_CALLERS_VAR: &str = "DOCKET_ACP_SYSTEM_CALLERS";
+/// The variable that names the system's callers file bardo-agent-acp reads.
+pub const ACP_SYSTEM_CALLERS_VAR: &str = "BARDO_AGENT_ACP_SYSTEM_CALLERS";
 
 /// The variable that names the agent host's fixture `/proc`.
-pub const AGENT_PROC_ROOT_VAR: &str = "DOCKET_AGENT_PROC_ROOT";
+pub const AGENT_PROC_ROOT_VAR: &str = "BARDO_AGENT_PROC_ROOT";
 
 /// The variable that names the agent host's system callers file.
-pub const AGENT_SYSTEM_CALLERS_VAR: &str = "DOCKET_AGENT_SYSTEM_CALLERS";
+pub const AGENT_SYSTEM_CALLERS_VAR: &str = "BARDO_AGENT_SYSTEM_CALLERS";
 
 /// The variable that, set, bounds the agents' sandboxes per process: a world with no systemd user
 /// manager (the jail) has no scope to put them in.
-pub const AGENT_PER_PROCESS_LIMITS_VAR: &str = "DOCKET_AGENT_RLIMIT";
+pub const AGENT_PER_PROCESS_LIMITS_VAR: &str = "BARDO_AGENT_RLIMIT";
 
 /// A non-empty value of `name`.
 fn set(env: &impl Fn(&str) -> Option<String>, name: &str) -> Option<String> {

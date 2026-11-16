@@ -1,5 +1,5 @@
 //! `voiced-callers.toml`: the one process that begins utterances is the shell's unit. The shipped
-//! file is `dist/voiced-callers.toml`; the system's copy under `/etc/quire` and the person's
+//! file is `dist/voiced-callers.toml`; the system's copy under `/etc/bardo` and the person's
 //! under their configuration directory are laid over each other
 //! (`action_dbus::callers::read_table`), and only the system's can give a fixed role.
 
@@ -16,7 +16,7 @@ pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }
 
-/// The table of this machine: `/etc/quire/voiced-callers.toml` with the person's file over it.
+/// The table of this machine: `/etc/bardo/voiced-callers.toml` with the person's file over it.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     read_table(FILE, env)
 }

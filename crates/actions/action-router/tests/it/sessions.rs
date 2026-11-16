@@ -222,12 +222,12 @@ async fn a_prompt_field_caps_the_policy_to_its_app_and_reads_elsewhere() {
     let both = TaskPolicy {
         actions: BTreeSet::from([
             ActionMatch::AppUpTo(mail_app(), Effect::Destructive),
-            ActionMatch::AppUpTo(app("org.quire.Files"), Effect::Destructive),
+            ActionMatch::AppUpTo(app("org.bardo.Files"), Effect::Destructive),
         ]),
         ..wide_policy(&s.task, "work")
     };
     router.seams.writer = ScriptedWriter::returning(Ok(both));
-    let field = caller("org.quire.Mail", CallerRole::Field);
+    let field = caller("org.bardo.Mail", CallerRole::Field);
     // The field's app opens the session, so its turn is recorded from it.
     let reply = ask(
         &router,
@@ -268,7 +268,7 @@ async fn a_prompt_field_caps_the_policy_to_its_app_and_reads_elsewhere() {
         IntentsReply::TurnRecorded(_)
     ));
     let policy = policy_of(&router, &opened.session).await.expect("policy");
-    let files = ActionMatch::AppUpTo(app("org.quire.Files"), Effect::Read);
+    let files = ActionMatch::AppUpTo(app("org.bardo.Files"), Effect::Read);
     assert!(
         policy
             .actions
@@ -362,7 +362,7 @@ async fn only_the_reader_may_resolve_a_handle_and_the_screen_may_display_it() {
         IntentsReply::Refused(WireRefusal::NotAllowed),
         "a planner cannot read what it holds"
     );
-    let reader = caller("org.quire.Readerd", CallerRole::Reader);
+    let reader = caller("org.bardo.Reader", CallerRole::Reader);
     assert_eq!(
         ask(&router, &reader, resolve).await,
         IntentsReply::Resolved(Resolved {
@@ -595,8 +595,8 @@ async fn a_thing_given_to_a_read_is_held_but_not_text_and_a_stranger_is_not_held
 #[tokio::test]
 async fn closing_and_turns_belong_to_the_session_the_surface_opened() {
     let router = router();
-    let field = caller("org.quire.Mail", CallerRole::Field);
-    let other = caller("org.quire.Files", CallerRole::Field);
+    let field = caller("org.bardo.Mail", CallerRole::Field);
+    let other = caller("org.bardo.Files", CallerRole::Field);
     let IntentsReply::SessionOpened(opened) = ask(
         &router,
         &field,

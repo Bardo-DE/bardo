@@ -1,4 +1,4 @@
-//! `org.quire.Sync1` on a private bus: who may call, what a name that has no dataset answers,
+//! `org.bardo.Sync1` on a private bus: who may call, what a name that has no dataset answers,
 //! `Status` with its quota, the pause switch, the unicast signals, and the introspection the
 //! frozen XML pins. One test runs a real engine over `MemoryReplica` and reads it over the bus.
 
@@ -111,8 +111,8 @@ async fn a_caller_sees_what_it_owns_settings_sees_all_and_status_carries_quota_a
     let rig = rig().await;
     let photos = rig
         .hub
-        .register(name("a1/photos_originals"), owned_by("org.quire.Photos"));
-    let _pim = rig.hub.register(name("a1/pim"), owned_by("org.quire.Sill"));
+        .register(name("a1/photos_originals"), owned_by("org.bardo.Photos"));
+    let _pim = rig.hub.register(name("a1/pim"), owned_by("org.bardo.Shell"));
     photos.publish(StatusSnapshot {
         anchor_age: Some(12),
         pending: 3,
@@ -123,11 +123,11 @@ async fn a_caller_sees_what_it_owns_settings_sees_all_and_status_carries_quota_a
         }),
         ..StatusSnapshot::default()
     });
-    let app = client(&rig.bus, &rig.known, "org.quire.Photos", CallerRole::App).await;
+    let app = client(&rig.bus, &rig.known, "org.bardo.Photos", CallerRole::App).await;
     let settings = client(
         &rig.bus,
         &rig.known,
-        "org.quire.Settings",
+        "org.bardo.Settings",
         CallerRole::Settings,
     )
     .await;
@@ -238,10 +238,10 @@ async fn progress_and_conflict_go_only_to_callers_who_may_see_the_dataset() {
     let rig = rig().await;
     let photos = rig
         .hub
-        .register(name("a1/photos_originals"), owned_by("org.quire.Photos"));
-    let pim = rig.hub.register(name("a1/pim"), owned_by("org.quire.Sill"));
-    let app = client(&rig.bus, &rig.known, "org.quire.Photos", CallerRole::App).await;
-    let sill = client(&rig.bus, &rig.known, "org.quire.Sill", CallerRole::App).await;
+        .register(name("a1/photos_originals"), owned_by("org.bardo.Photos"));
+    let pim = rig.hub.register(name("a1/pim"), owned_by("org.bardo.Shell"));
+    let app = client(&rig.bus, &rig.known, "org.bardo.Photos", CallerRole::App).await;
+    let sill = client(&rig.bus, &rig.known, "org.bardo.Shell", CallerRole::App).await;
     let (app_proxy, sill_proxy) = (proxy(&app).await, proxy(&sill).await);
     let mut app_progress = app_proxy.receive_progress().await.expect("stream");
     let mut sill_progress = sill_proxy.receive_progress().await.expect("stream");
@@ -350,12 +350,12 @@ async fn a_running_engine_syncs_to_its_replica_and_the_bus_shows_it_until_it_is_
     );
     let handle = rig
         .hub
-        .register(name("a1/photos_originals"), owned_by("org.quire.Photos"));
+        .register(name("a1/photos_originals"), owned_by("org.bardo.Photos"));
     let (_net, network) = watch::channel(Network::Unmetered);
     let driver = Driver::new(engine, handle, quick(), network, Arc::new(Notify::new()), 7);
     let running = tokio::spawn(driver.run());
 
-    let app = client(&rig.bus, &rig.known, "org.quire.Photos", CallerRole::App).await;
+    let app = client(&rig.bus, &rig.known, "org.bardo.Photos", CallerRole::App).await;
     let sync = proxy(&app).await;
     dataset.put("IMG_1.HEIC", b"abc");
     sync.sync_now("a1/photos_originals")

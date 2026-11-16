@@ -88,7 +88,7 @@ impl Fixture {
     }
 
     fn drop_in(&self) -> PathBuf {
-        self.user_dir().join("inferd.service.d/tailnet.conf")
+        self.user_dir().join("bardo-inferd.service.d/tailnet.conf")
     }
 
     fn lending(&self, fail: Fail) -> (TailnetLending<FakeUnits>, FakeUnits) {
@@ -106,7 +106,7 @@ fn mode(path: &Path) -> u32 {
     fs::metadata(path).expect("meta").permissions().mode() & 0o777
 }
 
-const RELOAD_RESTART: [&str; 2] = ["reload", "restart inferd.service"];
+const RELOAD_RESTART: [&str; 2] = ["reload", "restart bardo-inferd.service"];
 
 #[tokio::test]
 async fn enable_writes_the_shipped_bytes_readable_by_all_then_reloads_and_restarts_in_that_order() {
@@ -182,9 +182,9 @@ async fn disable_takes_the_drop_in_and_its_empty_folder_away_then_reloads_and_re
         units.calls(),
         [
             "reload",
-            "restart inferd.service",
+            "restart bardo-inferd.service",
             "reload",
-            "restart inferd.service"
+            "restart bardo-inferd.service"
         ]
     );
 }
@@ -200,9 +200,9 @@ async fn disable_with_nothing_installed_is_fine_and_does_it_again() {
         units.calls(),
         [
             "reload",
-            "restart inferd.service",
+            "restart bardo-inferd.service",
             "reload",
-            "restart inferd.service"
+            "restart bardo-inferd.service"
         ]
     );
 }
@@ -249,7 +249,7 @@ async fn a_failure_names_its_step_and_a_second_try_does_it_all_again() {
     struct Row {
         what: &'static str,
         fail: Fail,
-        /// `inferd.service.d` is a file, so the drop-in cannot go in it.
+        /// `bardo-inferd.service.d` is a file, so the drop-in cannot go in it.
         blocked: bool,
         /// The shipped file is already installed.
         installed: bool,
@@ -305,7 +305,7 @@ async fn a_failure_names_its_step_and_a_second_try_does_it_all_again() {
         let s = Fixture::new();
         if row.blocked {
             fs::create_dir_all(s.user_dir()).expect("dir");
-            fs::write(s.user_dir().join("inferd.service.d"), "in the way").expect("block");
+            fs::write(s.user_dir().join("bardo-inferd.service.d"), "in the way").expect("block");
         }
         if row.installed {
             s.put(SHIPPED);
@@ -391,7 +391,7 @@ fn the_environment_names_the_persons_folder_and_where_the_shipped_file_is() {
                 let found = found.unwrap_or_else(|| panic!("{vars:?}"));
                 assert_eq!(
                     found.drop_in(),
-                    PathBuf::from(folder).join("inferd.service.d/tailnet.conf"),
+                    PathBuf::from(folder).join("bardo-inferd.service.d/tailnet.conf"),
                     "{vars:?}"
                 );
                 if let Some(shipped) = shipped {
@@ -496,7 +496,7 @@ mod session_bus {
         let (result, calls, _) = run().await;
         let error = result.expect_err("failed job");
         assert!(matches!(error, LendingError::RestartFailed(_)), "{error:?}");
-        assert_eq!(calls, ["Reload", "RestartUnit inferd.service replace"]);
+        assert_eq!(calls, ["Reload", "RestartUnit bardo-inferd.service replace"]);
     }
 
     #[tokio::test]

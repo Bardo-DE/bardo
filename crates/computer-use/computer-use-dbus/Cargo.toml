@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-dbus"
-description = "org.quire.Cua1 (Manager and Run) as zbus proxies and skeletons, its introspection, bus names, object paths and the error mapping."
+description = "org.bardo.ComputerUse1 (Manager and Run) as zbus proxies and skeletons, its introspection, bus names, object paths and the error mapping."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

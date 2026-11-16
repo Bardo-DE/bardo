@@ -117,7 +117,7 @@ impl<'a, S: Rig> Player<'a, S> {
                 .map(|t| (t.clone(), None)),
             ArgFrom::Contact(key) => {
                 let contact = self.case.world.contacts.iter().find(|c| &c.key == key)?;
-                let label = AppName::parse("org.quire.Mail")
+                let label = AppName::parse("org.bardo.Mail")
                     .ok()
                     .map(|app| trusted_by(&app));
                 Some((contact.address.clone(), label))

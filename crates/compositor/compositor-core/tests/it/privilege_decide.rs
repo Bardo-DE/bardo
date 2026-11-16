@@ -168,7 +168,7 @@ proptest! {
         book_rule in any_opinion(),
         fallback in any_fallback(),
     ) {
-        let subject = program("/usr/libexec/transom");
+        let subject = program("/usr/libexec/bardo/bardo-portal");
         let (floor, book) = records(&subject, power, floor_rule, book_rule, fallback);
         let got = decide_trusted(&floor, &book, Some(&subject), power);
         let refused = floor_rule == Some(Verdict::Deny) || book_rule == Some(Verdict::Deny);

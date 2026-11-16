@@ -1,4 +1,4 @@
-//! Following a daemon's live settings module (`org.quire.SettingsModule1`) as a pane does: look
+//! Following a daemon's live settings module (`org.bardo.SettingsModule1`) as a pane does: look
 //! for it when the pane appears, read its rows, and read again each time it comes back or says a
 //! row changed. Looking never starts it (`Client::start` does that, once per page visit). Where
 //! the module is looked for is `settings-app-system`'s `ModulesLink`; this is what a pane does with

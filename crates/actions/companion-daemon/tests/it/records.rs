@@ -13,7 +13,7 @@ use memory_core::MemoryReply;
 use provenance::{SpaceId, UnixSeconds};
 use serde_json::json;
 
-const START: &str = "org_quire_Companion-companion_task_start";
+const START: &str = "org_bardo_Companion-companion_task_start";
 
 /// The sessions the router stores, as a restarted companion reads them.
 async fn stored(w: &World) -> Vec<agent_loop::ReplayEvent> {

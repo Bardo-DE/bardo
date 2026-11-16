@@ -2,7 +2,7 @@
 # Scenario `accounts-oauth-browser` (design 31 §7.1): a Microsoft-shaped account is added through the browser
 # sign-in against the ferry rig's fake OAuth issuer, the identity is stored, and Graph (the rig's fake drive, which takes only
 # the access tokens the issuer minted) is reached by syncd (ferry's), which has no accounts of its own: it uses accountd's
-# account through account-client over org.quire.Grants1, after one consent sheet for that account.
+# account through account-client over org.bardo.Grants1, after one consent sheet for that account.
 #
 # The browser is the scenario's own `xdg-open` first on sill's PATH (harness/lib/accounts.sh sill_start): sill opens
 # the page the sheet shows (BrowserWait), the opener records the address and follows it with curl, redirects
@@ -19,7 +19,7 @@
 #   graph     the files switch of the account in syncd's rows is turned on (accounts.<id>.sync.files, as Settings sets it): accountd's
 #             consent sheet shows once, for that one account (capture, Always Allow; no chooser, no second sign-in), and syncd reaches
 #             Graph with the issuer's access token (GET /v1.0/me/drive...: the ferry rig's hits lever lists a request with a
-#             bearer); accountd lists syncd's permit (org.quire.Sync, always) under the account
+#             bearer); accountd lists syncd's permit (org.bardo.Sync, always) under the account
 #   scan      the secret scan
 #
 # budget: 240
@@ -52,7 +52,7 @@ step_boot() {
 }
 
 step_sign_in() {
-  acc_add_start org.quire.Mail
+  acc_add_start org.bardo.Mail
   sheet_await || return 1; sleep 1
   sheet_settled; sheet_type Micro; sleep 0.5; sheet_key Enter
   acc_wait 20 test -s "$RIG_DIR/opened.log" || { echo "sill never opened the browser: $(cat "$OUT_DIR/add.log")" >&2; return 1; }
@@ -99,7 +99,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_sign_in step_stored step_graph step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd syncd daemon rig-servers ferry-rig-servers secrets add; do
+  for f in accountd syncd daemon rig-servers sync-rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
   [ -f "$RIG_DIR/browser.log" ] && { echo "--- browser.log" >&2; tail -10 "$RIG_DIR/browser.log" >&2; }

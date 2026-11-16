@@ -1,4 +1,4 @@
-//! `org.quire.Companion1.Terminals`: the conversations with an agent app that a terminal started,
+//! `org.bardo.Companion1.Terminals`: the conversations with an agent app that a terminal started,
 //! which the person can bring into docket. Only the shell reads or acts on it. Every body is JSON
 //! of `companion-wire`'s handoff types, and every sentence in them is plain words.
 
@@ -7,9 +7,9 @@ use zbus::object_server::SignalEmitter;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Companion1.Terminals",
-    default_service = "org.quire.Companion1",
-    default_path = "/org/quire/Companion1"
+    interface = "org.bardo.Companion1.Terminals",
+    default_service = "org.bardo.Companion1",
+    default_path = "/org/bardo/Companion1"
 )]
 pub trait CompanionTerminals {
     /// The terminals' conversations that can be brought in (`TerminalSession` JSON list).
@@ -34,7 +34,7 @@ pub trait CompanionTerminals {
 #[derive(Debug, Default)]
 pub struct CompanionTerminalsSkeleton;
 
-#[zbus::interface(name = "org.quire.Companion1.Terminals")]
+#[zbus::interface(name = "org.bardo.Companion1.Terminals")]
 impl CompanionTerminalsSkeleton {
     fn sessions(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())

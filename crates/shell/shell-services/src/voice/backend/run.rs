@@ -33,7 +33,7 @@ use crate::voice::{VoiceLinks, VoiceService};
 
 /// The error voiced answers a `Cancel` whose cause it will not take (superseded, too long, empty,
 /// bad JSON): the microphone stays open.
-const MALFORMED: &str = "org.quire.Voice1.Error.Malformed";
+const MALFORMED: &str = "org.bardo.Voice1.Error.Malformed";
 
 /// Which utterance a frame belongs to: a stale reader's frames are not the new hold's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

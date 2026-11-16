@@ -23,7 +23,7 @@ use std::sync::Arc;
 fn reader() -> CallerId {
     CallerId {
         app: AppId {
-            name: AppName::parse("org.quire.Reader1").expect("app"),
+            name: AppName::parse("org.bardo.Reader1").expect("app"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Reader]),
@@ -70,7 +70,7 @@ async fn world() -> (Arc<Router<action_fake::FakeSeams>>, SessionId, Vec<Handle>
     let router = Arc::new(fake_router(AgentConfig::default()).expect("router"));
     let companion = CallerId {
         app: AppId {
-            name: AppName::parse("org.quire.Companiond").expect("app"),
+            name: AppName::parse("org.bardo.Companion").expect("app"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Companion]),
@@ -180,7 +180,7 @@ async fn only_the_reader_role_can_resolve_so_any_other_caller_reads_nothing() {
     let (router, session, handles) = world().await;
     let not_the_reader = CallerId {
         app: AppId {
-            name: AppName::parse("org.quire.Mail").expect("app"),
+            name: AppName::parse("org.bardo.Mail").expect("app"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Companion]),

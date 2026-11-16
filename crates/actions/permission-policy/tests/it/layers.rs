@@ -235,7 +235,7 @@ fn generated(level: LimitLevel, scope: LimitScope, space: SpaceScope, by: LimitM
 
 fn mail_send() -> LimitScope {
     LimitScope::Action(ActionRef {
-        app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+        app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         name: ActionName::parse("mail.message.send").expect("action"),
     })
 }

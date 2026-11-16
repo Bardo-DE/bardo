@@ -29,7 +29,7 @@ use provenance::{DataClass, Effect, EntityKind, SessionId, SpaceId, TaskId, Unix
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-pub const ARCHIVE: &str = "org_quire_Mail-mail_thread_archive";
+pub const ARCHIVE: &str = "org_bardo_Mail-mail_thread_archive";
 
 pub type Host = NativeHost<
     PlannerModel<ScriptedInfer>,
@@ -48,7 +48,7 @@ pub fn work() -> SpaceId {
 }
 
 pub fn thread(key: &str) -> serde_json::Value {
-    serde_json::json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": key })
+    serde_json::json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
 fn policy_for(task: &str) -> TaskPolicy {
@@ -57,7 +57,7 @@ fn policy_for(task: &str) -> TaskPolicy {
         space: work(),
         from: vec![],
         actions: BTreeSet::from([ActionMatch::AppUpTo(
-            app("org.quire.Mail"),
+            app("org.bardo.Mail"),
             Effect::Destructive,
         )]),
         kinds: BTreeSet::from([EntityKind::parse("mail.thread").expect("kind")]),
@@ -102,14 +102,14 @@ fn router(log: &Arc<MemoryLog>, task: &str, consent: bool) -> Arc<Router<FakeSea
     };
     for (n, class) in classes.iter().copied().enumerate() {
         let owner = if class == DataClass::AppOwn {
-            "org.quire.Companion"
+            "org.bardo.Companion"
         } else {
-            "org.quire.Mail"
+            "org.bardo.Mail"
         };
         // An editor's session asks under the editor's own name, so it holds consent in it.
         let callers = [
             GrantCaller::Companion,
-            GrantCaller::Editor(provenance::ClientName::parse("org.quire.Acp").expect("client")),
+            GrantCaller::Editor(provenance::ClientName::parse("org.bardo.Acp").expect("client")),
         ];
         for (usage, caller) in [
             account_core::consent::Usage::Interactive,
@@ -149,7 +149,7 @@ pub type Comp = Companion<PlannerModel<ScriptedInfer>, InProcess<FakeSeams>, Fix
 pub fn companion(router: &Arc<Router<FakeSeams>>, infer: &ScriptedInfer) -> Comp {
     let caller = CallerId {
         app: AppId {
-            name: app("org.quire.Acp"),
+            name: app("org.bardo.Acp"),
             isolation: Isolation::Unsandboxed,
         },
         roles: BTreeSet::from([CallerRole::Editor, CallerRole::Companion]),
@@ -159,7 +159,7 @@ pub fn companion(router: &Arc<Router<FakeSeams>>, infer: &ScriptedInfer) -> Comp
         PlannerModel::new(infer.clone()),
         AgentConfig::default(),
         FixedClock::at(UnixSeconds(1_000)),
-        app("org.quire.Shell"),
+        app("org.bardo.Shell"),
     )
 }
 

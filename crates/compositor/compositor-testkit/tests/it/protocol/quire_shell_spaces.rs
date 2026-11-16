@@ -1,4 +1,4 @@
-//! `quire_shell_v1` version 2, the Spaces bar's three asks: which outputs Mission Control is up
+//! `bardo_shell_v1` version 2, the Spaces bar's three asks: which outputs Mission Control is up
 //! on (`overview_output`), a picture of a Space (`get_space_capture_source`), and dropping a
 //! dragged window on a Space (`space_target`, `drop_target`). Shell connections only. Version 3
 //! (the pictures of Spaces that are not shown, the new-Space tile, a drag to another output)

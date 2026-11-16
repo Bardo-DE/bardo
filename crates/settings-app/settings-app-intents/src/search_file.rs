@@ -1,4 +1,4 @@
-//! The entries Settings ships for the launcher's search: `quire/search/org.quire.Settings.toml`,
+//! The entries Settings ships for the launcher's search: `quire/search/org.bardo.Settings.toml`,
 //! generated from the catalogue so the file and the pages and keys cannot drift. The launcher
 //! answers from intentd's index and never calls the app (search-index/DESIGN.md), so what is
 //! not in this file cannot be found while Settings is closed.

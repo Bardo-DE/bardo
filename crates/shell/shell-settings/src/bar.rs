@@ -29,7 +29,7 @@ pub enum MenuBarHiding {
 /// The top bar's geometry.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "bar", page = Page::Appearance)]
+#[settings(file = "shell/settings.toml", domain = "bar", page = Page::Appearance)]
 pub struct BarSettings {
     /// `bar.autohide`.
     #[settings(

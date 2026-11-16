@@ -14,23 +14,23 @@ use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
 use std::os::fd::OwnedFd;
 use std::path::PathBuf;
 
-const MAIN: &str = "/etc/quire/desktop-callers.toml";
-const DIR: &str = "/etc/quire/desktop-callers.d";
+const MAIN: &str = "/etc/bardo/desktop-callers.toml";
+const DIR: &str = "/etc/bardo/desktop-callers.d";
 const TABLE: &str = r#"
 [[peer]]
-app  = "org.quire.Palmrest"
-unit = "palmrest.service"
-exe  = ["/usr/local/bin/palmrest"]
+app  = "org.bardo.MouseGestures"
+unit = "bardo-mouse-gestures.service"
+exe  = ["/usr/local/bin/bardo-mouse-gestures"]
 role = "pad_daemon"
 
 [[peer]]
-app  = "org.quire.Keycap"
-unit = "keycap.service"
-exe  = ["/usr/local/bin/keycap"]
+app  = "org.bardo.KeyRemap"
+unit = "bardo-key-remap.service"
+exe  = ["/usr/local/bin/bardo-key-remap"]
 role = "keymap_daemon"
 "#;
-const KEYCAP_CGROUP: &str = "0::/system.slice/keycap.service\n";
-const KEYCAP_UNIT_FILE: &str = "/usr/lib/systemd/system/keycap.service";
+const KEYCAP_CGROUP: &str = "0::/system.slice/bardo-key-remap.service\n";
+const KEYCAP_UNIT_FILE: &str = "/usr/lib/systemd/system/bardo-key-remap.service";
 
 /// The unit's `UnsetEnvironment=` value: every loader variable.
 fn unset() -> String {
@@ -39,7 +39,7 @@ fn unset() -> String {
 
 fn keycap_unit() -> String {
     format!(
-        "[Unit]\nDescription=keycap\n[Service]\nExecStart=/usr/local/bin/keycap\nUnsetEnvironment={}\n",
+        "[Unit]\nDescription=keycap\n[Service]\nExecStart=/usr/local/bin/bardo-key-remap\nUnsetEnvironment={}\n",
         unset()
     )
 }
@@ -118,14 +118,14 @@ fn role(text: &str) -> RoleName {
 fn keycap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_listed_at_unit_strength()
 {
     let conn = socket();
-    let image = FixtureImage::Present("/usr/local/bin/keycap", FileTrust::RootOnly);
+    let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", FileTrust::RootOnly);
     let caller = authority(keycap_world(), KEYCAP_CGROUP, image)
         .identify(&conn)
         .expect("identified");
-    assert_eq!(caller.cgroup.as_str(), "/system.slice/keycap.service");
+    assert_eq!(caller.cgroup.as_str(), "/system.slice/bardo-key-remap.service");
     assert_eq!(
         caller.image.map(|image| image.to_text()).as_deref(),
-        Some("/usr/local/bin/keycap")
+        Some("/usr/local/bin/bardo-key-remap")
     );
     assert_eq!(
         caller.uid,
@@ -146,7 +146,7 @@ fn keycap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_listed
 fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check_out() {
     let root = FileTrust::RootOnly;
     let mine = FileTrust::Writable(Writer::Owner(Uid::new(1000)));
-    let drop_in = "/usr/lib/systemd/system/keycap.service.d/10-local.conf";
+    let drop_in = "/usr/lib/systemd/system/bardo-key-remap.service.d/10-local.conf";
     let one_short = LOADER_VARIABLES[1..].join(" ");
     let table: Vec<(&str, FixtureProc, Proof)> = vec![
         ("the real unit", keycap_world(), Proof::Full),
@@ -176,7 +176,7 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
             keycap_world().file(
                 KEYCAP_UNIT_FILE,
                 format!(
-                    "[Service]\nExecStart=/usr/local/bin/keycap\nUnsetEnvironment={one_short}\n"
+                    "[Service]\nExecStart=/usr/local/bin/bardo-key-remap\nUnsetEnvironment={one_short}\n"
                 ),
                 root,
             ),
@@ -210,7 +210,7 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
         ),
         (
             "a run-time unit of that name",
-            keycap_world().file("/run/systemd/transient/keycap.service", "", root),
+            keycap_world().file("/run/systemd/transient/bardo-key-remap.service", "", root),
             Proof::Exe,
         ),
         (
@@ -225,7 +225,7 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
         ),
     ];
     for (name, tree, want) in table {
-        let image = FixtureImage::Present("/usr/local/bin/keycap", root);
+        let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", root);
         let caller = authority(tree, KEYCAP_CGROUP, image)
             .identify(&socket())
             .expect("identified");
@@ -241,16 +241,16 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
 /// behind it, is refused; the real system unit is served.
 #[test]
 fn palmrest_is_served_only_as_its_proven_system_unit() {
-    let cgroup = "0::/system.slice/palmrest.service\n";
-    let image = || FixtureImage::Present("/usr/local/bin/palmrest", FileTrust::RootOnly);
+    let cgroup = "0::/system.slice/bardo-mouse-gestures.service\n";
+    let image = || FixtureImage::Present("/usr/local/bin/bardo-mouse-gestures", FileTrust::RootOnly);
     let unit = format!(
-        "[Service]\nExecStart=/usr/local/bin/palmrest\nUnsetEnvironment={}\n",
+        "[Service]\nExecStart=/usr/local/bin/bardo-mouse-gestures\nUnsetEnvironment={}\n",
         unset()
     );
     let with_unit = || {
         proc_files(
             tree().file(
-                "/usr/lib/systemd/system/palmrest.service",
+                "/usr/lib/systemd/system/bardo-mouse-gestures.service",
                 unit.clone(),
                 FileTrust::RootOnly,
             ),
@@ -285,7 +285,7 @@ fn palmrest_is_served_only_as_its_proven_system_unit() {
 #[test]
 fn a_hidden_image_is_only_the_cgroup_strength_and_the_policy_refuses_it() {
     let conn = socket();
-    let cgroup = "0::/system.slice/palmrest.service\n";
+    let cgroup = "0::/system.slice/bardo-mouse-gestures.service\n";
     let caller = authority(tree(), cgroup, FixtureImage::Hidden)
         .identify(&conn)
         .expect("identified");
@@ -310,7 +310,7 @@ fn a_hidden_image_is_only_the_cgroup_strength_and_the_policy_refuses_it() {
 #[test]
 fn a_user_writable_image_a_stranger_and_a_wrong_row_are_all_unlisted() {
     let writable = FixtureImage::Present(
-        "/usr/local/bin/keycap",
+        "/usr/local/bin/bardo-key-remap",
         FileTrust::Writable(Writer::Owner(Uid::new(1000))),
     );
     let stranger = FixtureImage::Present("/usr/bin/vim", FileTrust::RootOnly);
@@ -330,7 +330,7 @@ fn a_user_writable_image_a_stranger_and_a_wrong_row_are_all_unlisted() {
 #[test]
 fn without_a_table_nobody_is_identified() {
     let tree = FixtureProc::new();
-    let image = FixtureImage::Present("/usr/local/bin/keycap", FileTrust::RootOnly);
+    let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", FileTrust::RootOnly);
     let err = authority(tree, KEYCAP_CGROUP, image)
         .identify(&socket())
         .expect_err("no table");
@@ -346,7 +346,7 @@ fn a_table_a_user_can_write_is_not_believed() {
             FileTrust::Writable(Writer::Owner(Uid::new(1000))),
         )
         .dir(DIR, FileTrust::RootOnly);
-    let image = FixtureImage::Present("/usr/local/bin/keycap", FileTrust::RootOnly);
+    let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", FileTrust::RootOnly);
     let err = authority(tree, KEYCAP_CGROUP, image)
         .identify(&socket())
         .expect_err("untrusted table");

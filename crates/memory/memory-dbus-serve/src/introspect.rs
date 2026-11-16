@@ -1,12 +1,12 @@
-//! The introspection XML of `org.quire.Memory1`, from the frozen skeletons: the checked-in
-//! `dbus/org.quire.Memory1.xml` must equal it.
+//! The introspection XML of `org.bardo.Memory1`, from the frozen skeletons: the checked-in
+//! `dbus/org.bardo.Memory1.xml` must equal it.
 
 use crate::skeleton::{ControlSkeleton, RecallSkeleton, RecordSkeleton};
 use zbus::fdo;
 use zbus::object_server::Interface;
 
 /// The file under `dbus/` holding the introspection.
-pub const INTROSPECTION_FILE: &str = "org.quire.Memory1.xml";
+pub const INTROSPECTION_FILE: &str = "org.bardo.Memory1.xml";
 
 /// The introspection document: every interface memoryd serves, in one `<node>`.
 pub fn introspection() -> String {

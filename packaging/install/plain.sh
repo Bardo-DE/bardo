@@ -40,13 +40,13 @@ install_part() {
     almanac) "$c/memory/scripts/install.sh" --prefix "$p" --no-build ;;
     docket) "$c/actions/scripts/install.sh" --prefix "$p" --no-build ;;
     cua) "$c/computer-use/scripts/install.sh" --prefix "$p" --no-build ;;
-    detent) sudo env PREFIX="$p" DETENT_BIN="$target/release/detent" "$c/settings-app/scripts/install.sh" ;;
+    detent) sudo env PREFIX="$p" BARDO_SETTINGS_BIN="$target/release/detent" "$c/settings-app/scripts/install.sh" ;;
     casement) sudo env CARGO_TARGET_DIR="$target" "$c/compositor/scripts/install.sh" --prefix "$p" --locked --no-build ;;
     sill) "$c/shell/dist/install.sh" --no-build ;;
     transom) sudo env CARGO_TARGET_DIR="$target" "$c/portal/scripts/install.sh" --prefix "$p" --no-build ;;
     turnstile | keycap | palmrest) sudo env CARGO_TARGET_DIR="$target" "$d/install/system.sh" "$1" --prefix "$p" --tree "$tree" ;;
     # Its installer builds as you and asks for sudo itself only when the prefix is not yours.
-    files) FILES_PREFIX=$p "$c/files/dist/install.sh" --no-build ;;
+    files) BARDO_FILES_PREFIX=$p "$c/files/dist/install.sh" --no-build ;;
     session) sudo "$d/install/install.sh" --prefix "$p" --sysconfdir /etc --tree "$tree" ;;
   esac
 }
@@ -93,7 +93,7 @@ for part in "${parts[@]}"; do quietly "$part" install_part "$part"; done
 # background services' old programs. Reload it, restart the services that are running (the session's
 # own casement, sill and transom wait for the next login; Settings and the apps for their next start)
 # and start the sockets the install linked in sockets.target.wants.
-daemons=(accountd inferd syncd memoryd intentd companiond readerd cuad actions-mcp docket-agent)
+daemons=(accountd inferd syncd memoryd intentd companiond readerd cuad bardo-actions-mcp bardo-agent)
 reload_user() {
   systemctl --user daemon-reload &&
     systemctl --user try-restart "${daemons[@]/%/.service}" &&

@@ -1,9 +1,9 @@
-//! App vocabulary: `quire_desktop_app_v1`'s enums.
+//! App vocabulary: `bardo_desktop_app_v1`'s enums.
 
 use super::code::wire_enum;
 
 wire_enum! {
-    /// Where an app is in its life (`quire_desktop_app_v1.app_life_kind`).
+    /// Where an app is in its life (`bardo_desktop_app_v1.app_life_kind`).
     AppLifeKind {
         /// Started, no window yet.
         Launching = 0,
@@ -19,7 +19,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Whether an app's windows are hidden (`quire_desktop_app_v1.app_visibility`).
+    /// Whether an app's windows are hidden (`bardo_desktop_app_v1.app_visibility`).
     AppVisibility {
         /// Its windows are shown.
         Shown = 0,
@@ -29,7 +29,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// How much an app asks for the person (`quire_desktop_app_v1.attention`).
+    /// How much an app asks for the person (`bardo_desktop_app_v1.attention`).
     Attention {
         /// Nothing.
         None = 0,
@@ -41,7 +41,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// How the compositor knows who an app is (`quire_desktop_app_v1.proof_kind`).
+    /// How the compositor knows who an app is (`bardo_desktop_app_v1.proof_kind`).
     ProofKind {
         /// The app's systemd scope, made by our launcher.
         Scope = 0,
@@ -53,7 +53,7 @@ wire_enum! {
 }
 
 wire_enum! {
-    /// Where an app's global menu comes from (`quire_desktop_app_v1.menu_source_kind`).
+    /// Where an app's global menu comes from (`bardo_desktop_app_v1.menu_source_kind`).
     MenuSourceKind {
         /// No global menu.
         None = 0,

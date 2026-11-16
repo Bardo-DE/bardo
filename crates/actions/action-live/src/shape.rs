@@ -59,7 +59,7 @@ fn has_phrase(words: &[&str], phrase: &[&str]) -> bool {
 }
 
 /// The first word of `said` that is an identifier rather than language: a name with an
-/// underscore (`org_quire_Memory-memory_recall`) or with two dots or more (`mail.thread.search`).
+/// underscore (`org_bardo_Memory-memory_recall`) or with two dots or more (`mail.thread.search`).
 pub fn developer_word(said: &str) -> Option<&str> {
     said.split_whitespace()
         .map(|t| t.trim_matches(|c: char| !c.is_alphanumeric()))

@@ -26,7 +26,7 @@ fn introspection_matches_xml() {
 fn every_member_of_the_spec_is_declared() {
     let xml = introspection();
     let want = [
-        "interface name=\"org.quire.Cua1.Manager\"",
+        "interface name=\"org.bardo.ComputerUse1.Manager\"",
         "<method name=\"Start\">",
         "<method name=\"Runs\">",
         "<method name=\"StopAll\">",
@@ -35,7 +35,7 @@ fn every_member_of_the_spec_is_declared() {
         "<property name=\"SightNote\" type=\"s\" access=\"read\"/>",
         "<signal name=\"RunAdded\">",
         "<signal name=\"RunRemoved\">",
-        "interface name=\"org.quire.Cua1.Run\"",
+        "interface name=\"org.bardo.ComputerUse1.Run\"",
         "<method name=\"Cancel\">",
         "<method name=\"Pause\">",
         "<method name=\"Resume\">",

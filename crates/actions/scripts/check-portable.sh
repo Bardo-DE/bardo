@@ -8,7 +8,7 @@
 # team's suite, the fakes, the model-backed reviewer and policy writer (`agent-models`), the
 # quarantined reader (`agent-reader`), the memory seam (`companion-memory`), and `agent-inapp`,
 # which hosts them in one app. The desktop extras
-# (action-dbus, intentd, companiond, readerd, voiced, quire-do, actions-mcp, the acceptance
+# (action-dbus, intentd, companiond, readerd, voiced, bardo-do, bardo-actions-mcp, the acceptance
 # crate and everything that names a bus) are not on this list on purpose.
 #
 # Cross targets are checked when rustup already has them installed; this script never installs

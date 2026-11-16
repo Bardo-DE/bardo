@@ -44,7 +44,7 @@
 //! ```
 //!
 //! An agent from the agent registry names the registry instead of a command; docket installed it
-//! (`docket-agents`) and gives it a home of its own, where it signs in:
+//! (`bardo-agents`) and gives it a home of its own, where it signs in:
 //!
 //! ```toml
 //! [[agent]]

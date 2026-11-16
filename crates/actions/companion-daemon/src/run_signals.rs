@@ -19,13 +19,13 @@ use zbus::names::BusName;
 use zbus::{MatchRule, MessageStream};
 
 /// The run daemon's bus name.
-const CUA_BUS: &str = "org.quire.Cua1";
+const CUA_BUS: &str = "org.bardo.ComputerUse1";
 
 fn rule() -> Option<MatchRule<'static>> {
     Some(
         MatchRule::builder()
             .msg_type(Type::Signal)
-            .interface("org.quire.Cua1.Run")
+            .interface("org.bardo.ComputerUse1.Run")
             .ok()?
             .member("Finished")
             .ok()?

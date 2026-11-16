@@ -1,21 +1,21 @@
-//! `org.quire.Photos1.Picker` on syncd's bus name and object (`org.quire.Sync1` at
-//! `/org/quire/Sync1`): the Google Photos Picker as the Photos app calls it. A session is made
+//! `org.bardo.Photos1.Picker` on syncd's bus name and object (`org.bardo.Sync1` at
+//! `/org/bardo/Sync1`): the Google Photos Picker as the Photos app calls it. A session is made
 //! (`Start`), the person picks in the browser at `picker_uri`, the app polls (`Poll`) until
 //! `picked`, then `Import` fetches what was picked into the account's `picked/<session>`
 //! folder and answers the files' paths; `Cancel` ends a session. The interface exists only
 //! in a build with the `photos-picker` feature, and an account answers while syncd runs its
-//! Google Photos (the account's Photos row in Settings); only the Photos app (`org.quire.Photos`)
+//! Google Photos (the account's Photos row in Settings); only the Photos app (`org.bardo.Photos`)
 //! may call it. No token, no URL of Google's bytes, and no picked file's content ever crosses it.
 
 use account_dbus_macros::bus_interface;
 
 /// The prefix of the errors this interface names itself (a refusal of accountd's vocabulary
-/// keeps its `org.quire.Accounts1.Error.` name).
-pub const PICKER_ERROR_PREFIX: &str = "org.quire.Photos1.Error.";
-/// `Import` before the person has finished picking (`org.quire.Photos1.Error.NotYet`).
-pub const PICKER_ERROR_NOT_YET: &str = "org.quire.Photos1.Error.NotYet";
-/// `Poll` or `Import` for a session Google no longer has (`org.quire.Photos1.Error.NoSuchSession`).
-pub const PICKER_ERROR_NO_SUCH_SESSION: &str = "org.quire.Photos1.Error.NoSuchSession";
+/// keeps its `org.bardo.Accounts1.Error.` name).
+pub const PICKER_ERROR_PREFIX: &str = "org.bardo.Photos1.Error.";
+/// `Import` before the person has finished picking (`org.bardo.Photos1.Error.NotYet`).
+pub const PICKER_ERROR_NOT_YET: &str = "org.bardo.Photos1.Error.NotYet";
+/// `Poll` or `Import` for a session Google no longer has (`org.bardo.Photos1.Error.NoSuchSession`).
+pub const PICKER_ERROR_NO_SUCH_SESSION: &str = "org.bardo.Photos1.Error.NoSuchSession";
 /// `Poll`'s answer while the person is still picking.
 pub const PICKER_WAITING: &str = "waiting";
 /// `Poll`'s answer once the person has finished.
@@ -24,9 +24,9 @@ pub const PICKER_PICKED: &str = "picked";
 /// The interface, written once. `#[bus_interface]` makes [`PhotosPickerProxy`] for its callers from this
 /// trait, [`PhotosPickerServer`] for the daemon to implement and [`PhotosPickerServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Photos1.Picker",
-    default_service = "org.quire.Sync1",
-    default_path = "/org/quire/Sync1"
+    interface = "org.bardo.Photos1.Picker",
+    default_service = "org.bardo.Sync1",
+    default_path = "/org/bardo/Sync1"
 )]
 pub trait PhotosPicker {
     /// Starts a session for `account` (the account directory name, as in a dataset name
@@ -36,7 +36,7 @@ pub trait PhotosPicker {
     /// `waiting` or `picked`.
     fn poll(&self, account: &str, session: &str) -> zbus::Result<String>;
     /// Fetches what was picked into `picked/<session>` of the account's photos folder and
-    /// deletes the session at Google; the paths of the files. `org.quire.Photos1.Error.NotYet`
+    /// deletes the session at Google; the paths of the files. `org.bardo.Photos1.Error.NotYet`
     /// before the person has finished.
     fn import(&self, account: &str, session: &str) -> zbus::Result<Vec<String>>;
     /// Ends a session without importing.

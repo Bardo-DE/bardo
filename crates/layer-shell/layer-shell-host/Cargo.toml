@@ -20,7 +20,7 @@ calloop-wayland-source = {version = "0.4"}
 raw-window-handle = {version = "0.6"}
 keyboard-types = {version = "0.7"}
 cursor-icon = {version = "1"}
-# `quire_window_v1`'s client bindings and the wire vocab (`handlers::quire_window`).
+# `bardo_window_v1`'s client bindings and the wire vocab (`handlers::quire_window`).
 desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
 # Documents and rendering
 blitz-embed = {features = ["adapter", "settings"], path = "../../blitz-embed/blitz-embed"}

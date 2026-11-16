@@ -170,7 +170,7 @@ fn choice(text: &str) -> Value {
 async fn the_assistant_can_tighten_but_never_loosen() {
     let router = router();
     let opened = ready(&router).await;
-    assert_eq!(COMPANION_APP, "org.quire.Companion");
+    assert_eq!(COMPANION_APP, "org.bardo.Companion");
     // "allow" is not a level the action reads.
     let loosened = tighten(&router, &opened.session, &[("level", choice("allow"))]);
     assert!(loosened.is_err(), "{loosened:?}");
@@ -182,7 +182,7 @@ async fn the_assistant_can_tighten_but_never_loosen() {
         &opened.session,
         &[
             ("level", choice("never")),
-            ("app", Value::Text("org.quire.Mail".into())),
+            ("app", Value::Text("org.bardo.Mail".into())),
             ("said", Value::Text("something nobody said".into())),
         ],
     )
@@ -230,7 +230,7 @@ async fn an_ask_first_rule_makes_the_next_call_ask_and_removing_it_by_id_restore
         &opened.session,
         &[
             ("level", choice("ask")),
-            ("app", Value::Text("org.quire.Mail".into())),
+            ("app", Value::Text("org.bardo.Mail".into())),
         ],
     )
     .expect("tightened");

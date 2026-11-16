@@ -1,4 +1,4 @@
-//! A fake screen-sharing portal: `org.quire.Portal1` at the portal path on the portal's name on a
+//! A fake screen-sharing portal: `org.bardo.Portal1` at the portal path on the portal's name on a
 //! private bus, holding the apps a test sets. It writes down every removal, and can be made to
 //! refuse the next removal or allowance.
 
@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 use zbus::fdo;
 
 /// The portal's name on the bus, which the owner check knows the role of.
-pub const NAME: &str = "org.freedesktop.impl.portal.desktop.quire";
+pub const NAME: &str = "org.freedesktop.impl.portal.desktop.bardo";
 const PATH: &str = "/org/freedesktop/portal/desktop";
 
 /// An app the portal remembers.
@@ -33,7 +33,7 @@ struct Portal {
     refuse: Arc<AtomicBool>,
 }
 
-#[zbus::interface(name = "org.quire.Portal1")]
+#[zbus::interface(name = "org.bardo.Portal1")]
 impl Portal {
     async fn list_grants(&self) -> Vec<Row> {
         self.rows.lock().expect("rows").clone()

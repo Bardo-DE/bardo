@@ -250,7 +250,7 @@ mod tests {
     fn a_schema_file_indexes_each_key_with_its_pages_label() {
         let text = r#"
 app = "sill"
-file = "sill/settings.toml"
+file = "shell/settings.toml"
 version = 1
 
 [[key]]

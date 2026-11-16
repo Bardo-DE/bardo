@@ -15,7 +15,7 @@
             "sources": [
               {
                 "kind": "app",
-                "v": "org.quire.Mail"
+                "v": "org.bardo.Mail"
               }
             ]
           }
@@ -32,7 +32,7 @@
           "sources": [
             {
               "kind": "app",
-              "v": "org.quire.Mail"
+              "v": "org.bardo.Mail"
             }
           ]
         }
@@ -48,7 +48,7 @@
           "sources": [
             {
               "kind": "app",
-              "v": "org.quire.Mail"
+              "v": "org.bardo.Mail"
             }
           ]
         }

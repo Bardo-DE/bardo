@@ -9,7 +9,7 @@
 //! window closes only that one, and the app ends when the last is gone. Each close prints that
 //! the VirtualDom was dropped.
 //!
-//! `QUIRE_AUTOPILOT=1` drives it without a person: it prints the host contexts each window's
+//! `BARDO_AUTOPILOT=1` drives it without a person: it prints the host contexts each window's
 //! document sees, opens a message window, focuses it, closes it by its handle, opens one that
 //! closes itself through its frame's close (`ui_components::prelude::WindowHost`), opens a third and then closes the
 //! first window with that one still open, which stays up until it closes itself, and then the
@@ -42,7 +42,7 @@ fn main() -> Result<(), ui_blitz::LaunchError> {
 }
 
 fn autopilot() -> bool {
-    std::env::var("QUIRE_AUTOPILOT").is_ok_and(|value| value == "1")
+    std::env::var("BARDO_AUTOPILOT").is_ok_and(|value| value == "1")
 }
 
 /// Which host seams this window's document was given.

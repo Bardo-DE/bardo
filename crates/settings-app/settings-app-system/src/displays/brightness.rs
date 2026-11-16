@@ -1,4 +1,4 @@
-//! The brightness sliders' side of the shell's bus: `org.quire.Displays1`, which lists the
+//! The brightness sliders' side of the shell's bus: `org.bardo.Displays1`, which lists the
 //! displays whose brightness sill can read and sets one. The owner of the name must hold the
 //! shell's role before it is read or told anything (`live::pinned`), and a call goes to the owner
 //! that was confirmed. Nothing is started: a shell that is not there has no sliders.
@@ -12,10 +12,10 @@ use zbus::Message;
 
 const COULD_NOT_SET: &str = "The brightness can\u{2019}t be changed right now.";
 
-/// The shell's brightness list (`org.quire.Displays1`).
+/// The shell's brightness list (`org.bardo.Displays1`).
 #[zbus::proxy(
-    interface = "org.quire.Displays1",
-    default_path = "/org/quire/Displays1"
+    interface = "org.bardo.Displays1",
+    default_path = "/org/bardo/Displays1"
 )]
 trait Displays1 {
     /// Each display whose brightness can be read: its connector and its percentage.
@@ -75,5 +75,5 @@ fn is_levels(message: &Message) -> bool {
     message
         .header()
         .interface()
-        .is_some_and(|interface| interface.as_str() == "org.quire.Displays1")
+        .is_some_and(|interface| interface.as_str() == "org.bardo.Displays1")
 }

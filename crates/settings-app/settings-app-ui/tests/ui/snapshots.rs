@@ -1,4 +1,4 @@
-//! Pictures of every page, light and dark, built from the real schemas. They are written to `$DETENT_SHOTS` (else the target directory's `tmp/shots`).
+//! Pictures of every page, light and dark, built from the real schemas. They are written to `$BARDO_SETTINGS_SHOTS` (else the target directory's `tmp/shots`).
 
 use crate::support::{Sandbox, TMP, VIEW};
 use settings_app_model::PageSlug;
@@ -11,7 +11,7 @@ use ui_components::prelude::Scheme;
 use ui_harness::snapshot_with;
 
 fn shots_dir() -> PathBuf {
-    std::env::var_os("DETENT_SHOTS")
+    std::env::var_os("BARDO_SETTINGS_SHOTS")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(TMP).join("shots"))
 }

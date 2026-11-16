@@ -28,7 +28,7 @@ pub enum ControlCenterModule {
 /// The control center popover.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
-#[settings(file = "sill/settings.toml", domain = "control_center", page = Page::Appearance)]
+#[settings(file = "shell/settings.toml", domain = "control_center", page = Page::Appearance)]
 pub struct ControlCenterSettings {
     #[settings(
         label = "Modules",

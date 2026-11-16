@@ -13,7 +13,7 @@ name = "action_mcp"
 path = "src/lib.rs"
 
 [[bin]]
-name = "actions-mcp"
+name = "bardo-actions-mcp"
 path = "src/main.rs"
 
 [dependencies]

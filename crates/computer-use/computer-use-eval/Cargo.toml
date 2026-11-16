@@ -9,7 +9,7 @@ repository = "https://github.com/Bardo-DE/cua"
 publish = false
 
 [[bin]]
-name = "cua-eval"
+name = "computer-use-eval"
 path = "src/main.rs"
 
 [dependencies]

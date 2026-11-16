@@ -36,15 +36,15 @@ type Proves = Option<(&'static str, Isolation)>;
 const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     (
         "a scope without a launcher tag",
-        "app-org.quire.Mail-12.scope",
+        "app-org.bardo.Mail-12.scope",
         Sandbox::Native,
-        Some(("org.quire.Mail", Isolation::Unsandboxed)),
+        Some(("org.bardo.Mail", Isolation::Unsandboxed)),
     ),
     (
         "sill's launcher scope",
-        "app-sill-org.quire.Mail-12.scope",
+        "app-sill-org.bardo.Mail-12.scope",
         Sandbox::Native,
-        Some(("org.quire.Mail", Isolation::Unsandboxed)),
+        Some(("org.bardo.Mail", Isolation::Unsandboxed)),
     ),
     (
         "another launcher's tag",
@@ -60,9 +60,9 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "a hexadecimal nonce",
-        "app-org.quire.Mail-a3f09c.scope",
+        "app-org.bardo.Mail-a3f09c.scope",
         Sandbox::Native,
-        Some(("org.quire.Mail", Isolation::Unsandboxed)),
+        Some(("org.bardo.Mail", Isolation::Unsandboxed)),
     ),
     (
         "a scope whose name is not reverse-DNS (C39)",
@@ -144,8 +144,8 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "another engine's security context, even in a launcher's scope",
-        "app-org.quire.Mail-12.scope",
-        Sandbox::Engine("org.example.jail", "org.quire.Mail"),
+        "app-org.bardo.Mail-12.scope",
+        Sandbox::Engine("org.example.jail", "org.bardo.Mail"),
         None,
     ),
     (
@@ -156,13 +156,13 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "an XDG service unit, not a scope",
-        "app-org.quire.Mail@3.service",
+        "app-org.bardo.Mail@3.service",
         Sandbox::Native,
         None,
     ),
     (
         "a child cgroup below the scope",
-        "app-org.quire.Mail-12.scope/worker",
+        "app-org.bardo.Mail-12.scope/worker",
         Sandbox::Native,
         None,
     ),
@@ -174,19 +174,19 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "a launcher tag that is not one word",
-        "app-org.foo-org.quire.Mail-12.scope",
+        "app-org.foo-org.bardo.Mail-12.scope",
         Sandbox::Native,
         None,
     ),
     (
         "a broken escape",
-        r"app-org.quire.M\xzzail-1.scope",
+        r"app-org.bardo.M\xzzail-1.scope",
         Sandbox::Native,
         None,
     ),
     (
         "no nonce",
-        "app-org.quire.Mail-.scope",
+        "app-org.bardo.Mail-.scope",
         Sandbox::Native,
         None,
     ),
@@ -233,8 +233,8 @@ fn processes_outside_any_app_scope_are_unproven() {
 const PROC_FILES: &[(&str, &str, Option<&str>)] = &[
     (
         "unified only",
-        "0::/user.slice/app-org.quire.Mail-12.scope\n",
-        Some("/user.slice/app-org.quire.Mail-12.scope"),
+        "0::/user.slice/app-org.bardo.Mail-12.scope\n",
+        Some("/user.slice/app-org.bardo.Mail-12.scope"),
     ),
     (
         "hybrid",
@@ -257,7 +257,7 @@ fn the_unified_line_of_proc_cgroup_is_the_path() {
 /// (case, text, whether it is a claimed id).
 const CLAIMS: &[(&str, &str, bool)] = &[
     ("a bare word", "foot", true),
-    ("reverse-DNS", "org.quire.Mail", true),
+    ("reverse-DNS", "org.bardo.Mail", true),
     ("spaces and punctuation", "Steam Big Picture (beta)", true),
     ("non-ASCII", "café", true),
     ("empty", "", false),
@@ -290,13 +290,13 @@ fn claimed_ids_round_trip() {
 #[test]
 fn identities_and_sandbox_facts_pin_their_json() {
     let mail = PeerIdentity::Proven(AppId {
-        name: AppName::parse("org.quire.Mail").expect("name"),
+        name: AppName::parse("org.bardo.Mail").expect("name"),
         isolation: Isolation::Unsandboxed,
     });
     let identities = [
         (
             mail,
-            r#"{"kind":"proven","v":{"name":"org.quire.Mail","isolation":"unsandboxed"}}"#,
+            r#"{"kind":"proven","v":{"name":"org.bardo.Mail","isolation":"unsandboxed"}}"#,
         ),
         (PeerIdentity::Unproven, r#"{"kind":"unproven"}"#),
     ];

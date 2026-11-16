@@ -87,7 +87,7 @@ pub use views::{
     FlagNote, ForgetPlanView, Hunk, Lands, RunState, SkipReason, SkippedHunk, SourceView, TidyHunk,
 };
 
-/// The wire version of `org.quire.Memory1` (its `Version` property).
+/// The wire version of `org.bardo.Memory1` (its `Version` property).
 pub const MEMORY_WIRE_VERSION: u32 = 1;
 
 /// The other crates of this repo reach porter and `prov` through memory-core, so the allowed

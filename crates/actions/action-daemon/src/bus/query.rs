@@ -11,7 +11,7 @@ use zbus::object_server::SignalEmitter;
 
 pub(crate) struct RegistryBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Registry")]
+#[zbus::interface(name = "org.bardo.Intents1.Registry")]
 impl RegistryBus {
     async fn manifests(
         &self,
@@ -38,7 +38,7 @@ impl RegistryBus {
 
 pub(crate) struct IndexBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Index")]
+#[zbus::interface(name = "org.bardo.Intents1.Index")]
 impl IndexBus {
     async fn push(
         &self,
@@ -63,7 +63,7 @@ impl IndexBus {
 
 pub(crate) struct SearchBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Search")]
+#[zbus::interface(name = "org.bardo.Intents1.Search")]
 impl SearchBus {
     async fn query(
         &self,
@@ -102,7 +102,7 @@ impl SearchBus {
 
 pub(crate) struct ContextBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Context")]
+#[zbus::interface(name = "org.bardo.Intents1.Context")]
 impl ContextBus {
     async fn current(
         &self,
@@ -127,7 +127,7 @@ impl ContextBus {
 
 pub(crate) struct MessageBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Message")]
+#[zbus::interface(name = "org.bardo.Intents1.Message")]
 impl MessageBus {
     async fn send(
         &self,

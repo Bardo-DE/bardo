@@ -143,7 +143,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
     answers.cancel().await.expect("a terminal may cancel");
     let stranger = bus.connect().await;
     stranger
-        .request_name("org.quire.Mail")
+        .request_name("org.bardo.Mail")
         .await
         .expect("a name of its own");
     let theirs = CompanionAnswerProxy::builder(&stranger)
@@ -187,7 +187,7 @@ async fn a_process_that_is_not_a_terminal_or_owns_a_name_speaks_for_nobody() {
     // A terminal's child that owns an application name is that application, not the person.
     place(&proc_root, "vte-spawn-1.scope");
     client
-        .request_name("org.quire.Mail")
+        .request_name("org.bardo.Mail")
         .await
         .expect("a name of its own");
     assert!(denied(proxy.open(&open_json()).await), "owns a name");
@@ -253,7 +253,7 @@ async fn a_conversation_a_terminal_opens_records_the_terminal_and_the_shells_doe
         size: 5,
     };
     let StoredView::Rows { rows, .. } =
-        stored(&router, "org.quire.Shell", CallerRole::Launcher, rows).await
+        stored(&router, "org.bardo.Shell", CallerRole::Launcher, rows).await
     else {
         panic!("rows")
     };
@@ -263,7 +263,7 @@ async fn a_conversation_a_terminal_opens_records_the_terminal_and_the_shells_doe
         rows[0].json
     );
     assert!(!rows[0].json.contains("tmux-spawn-1"), "{}", rows[0].json);
-    let list = || stored(&router, "org.quire.Do", CallerRole::Cli, StoredAsk::List);
+    let list = || stored(&router, "org.bardo.Do", CallerRole::Cli, StoredAsk::List);
     assert_eq!(
         list().await,
         StoredView::Sessions(vec![opened.session.clone()])
@@ -305,7 +305,7 @@ async fn a_process_the_table_names_as_less_than_the_shell_speaks_for_nobody() {
         )
         .await
         .expect("serving");
-        identity.introduce_app(&client, "org.quire.Shell", standing);
+        identity.introduce_app(&client, "org.bardo.Shell", standing);
         let proxy = CompanionProxy::new(&client).await.expect("proxy");
         assert!(denied(proxy.open(&open_json()).await), "{what}");
     }

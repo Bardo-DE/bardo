@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct IdleNotifierId(pub u64);
 
-/// One trusted surface (`quire_trusted_surface_v1`).
+/// One trusted surface (`bardo_trusted_surface_v1`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TrustedKey(pub u64);
 

@@ -26,8 +26,8 @@ pub fn keep_nothing() -> ContextKeep {
     }
 }
 
-/// sill's calls into intentd and companiond: the connection owns `org.quire.Shell`, which
-/// `intentd.toml` gives the launcher, confirm and control roles and `companiond.toml` the
+/// sill's calls into intentd and companiond: the connection owns `org.bardo.Shell`, which
+/// `actiond.toml` gives the launcher, confirm and control roles and `companiond.toml` the
 /// right to speak for the person.
 #[derive(Debug)]
 pub struct Launcher {

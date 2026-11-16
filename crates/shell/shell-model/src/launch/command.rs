@@ -86,11 +86,11 @@ pub enum LaunchCommand {
     ForceQuit(AppId),
     /// Open a file, reveal it, or open an address with the default handler (the launcher's rows).
     Open(OpenRequest),
-    /// Open the quire Settings app at a place, by bus activation of `org.quire.Settings`.
+    /// Open the quire Settings app at a place, by bus activation of `org.bardo.Settings`.
     OpenSettings(SettingsOpen),
 }
 
 /// The bus name Settings runs under: the only name porter trusts for the Settings role, so it is
-/// always started by activation (as `org.quire.Settings.service`; its desktop entry is
+/// always started by activation (as `org.bardo.Settings.service`; its desktop entry is
 /// `DBusActivatable`), never as an app scope.
-pub const SETTINGS_BUS_NAME: &str = "org.quire.Settings";
+pub const SETTINGS_BUS_NAME: &str = "org.bardo.Settings";

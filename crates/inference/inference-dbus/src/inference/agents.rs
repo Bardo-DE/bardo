@@ -1,11 +1,11 @@
-//! `org.quire.Inference1.Agents` at `/org/quire/Inference1`: inferd as an external coding agent's
+//! `org.bardo.Inference1.Agents` at `/org/bardo/Inference1`: inferd as an external coding agent's
 //! model endpoint (agent-session ask P4). Only a connection whose caller role is `AgentLauncher`
 //! may call it; every other role is refused `AccessDenied`. A call opens a per-session loopback
 //! HTTP listener that serves Anthropic Messages and OpenAI Chat Completions, and returns where it
 //! is and the secret the agent sends as its "API key". The session ends at `CloseEndpoint`, or
 //! when the launcher's bus connection goes away.
 //!
-//! A separate interface from `org.quire.Inference1` (whose seven members are frozen), on the same
+//! A separate interface from `org.bardo.Inference1` (whose seven members are frozen), on the same
 //! bus name and object.
 
 use account_dbus::Details;
@@ -31,14 +31,14 @@ pub const MODELS_LISTED: &str = "listed";
 pub const MODELS_ANY: &str = "any";
 
 /// The prefix of the errors this interface names itself.
-pub const AGENT_ERROR_PREFIX: &str = "org.quire.Inference1.Error.";
+pub const AGENT_ERROR_PREFIX: &str = "org.bardo.Inference1.Error.";
 
 /// The interface, written once. `#[bus_interface]` makes [`AgentsProxy`] for its callers from this
 /// trait, [`AgentsServer`] for the daemon to implement and [`AgentsServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Inference1.Agents",
-    default_service = "org.quire.Inference1",
-    default_path = "/org/quire/Inference1"
+    interface = "org.bardo.Inference1.Agents",
+    default_service = "org.bardo.Inference1",
+    default_path = "/org/bardo/Inference1"
 )]
 pub trait Agents {
     /// Opens an endpoint for the agent `program` (its `AgentProgram` id) over `route`, for data of

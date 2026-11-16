@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Fetches and builds every artefact the jailed scripts need, OUTSIDE the jail (A7: nothing inside
 # the jail calls cargo or the network), into dev/out/tools (no root):
-#   bin/casement bin/casementctl bin/casement-probe bin/casement-shell-exec bin/fake-logind
+#   bin/casement bin/bardo-compositorctl bin/compositor-probe bin/compositor-shell-exec bin/fake-logind
 #                the compositor (headless backend, `debug-inject`), its control tool, the test
 #                client's probe and shell launcher, and the fake logind, built with plain cargo
 #                (CARGO_TARGET_DIR is honoured, else ./target; --release builds the release profile)
@@ -12,13 +12,13 @@
 #                cargo install --git https://github.com/Supreeeme/xwayland-satellite at the pinned
 #                rev (it is not on crates.io, SP6). Run with `-glamor none` (A10: `off` panics it)
 #   wlcs/        wlcs and its shim, through dev/wlcs/build.sh (the P0-T-wlcs lane's script), into
-                $CASEMENT_TOOLS too: wlcs/wlcs and libwlcs_casement.so
+                $BARDO_COMPOSITOR_TOOLS too: wlcs/wlcs and libwlcs_casement.so
 #   bin/cargo-fuzz   only with --fuzz
 #
 #   dev/bootstrap.sh [--build-only | --tools-only | --foot-only] [--release] [--fuzz] [--force]
 #
 # --build-only builds just the four casement binaries (what dev/accept.sh --build runs);
-# --tools-only the rest; --foot-only just foot (no cargo, no network beyond dnf). Anything already present is kept unless --force. $CASEMENT_TOOLS moves
+# --tools-only the rest; --foot-only just foot (no cargo, no network beyond dnf). Anything already present is kept unless --force. $BARDO_COMPOSITOR_TOOLS moves
 # the tools directory. Refuses inside the jail (exit 2). Exit 3: a host tool is missing.
 #
 # Owner: P0-T-dev.
@@ -53,7 +53,7 @@ if [ -z "$(jail_violations)" ]; then
   exit 2
 fi
 
-tools="${CASEMENT_TOOLS:-$root/dev/out/tools}"
+tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}"
 mkdir -p "$tools/bin"
 target="${CARGO_TARGET_DIR:-$root/../../target}"
 have() { [ "$force" = no ] && [ -e "$1" ]; }
@@ -67,12 +67,12 @@ build_casement() {
   cargo build "${flag[@]}" --bins -p compositor-app -p compositor-ctl -p compositor-testclient -p compositor-testkit \
     --features casement/debug-inject
   local bin
-  for bin in casement casementctl casement-probe casement-shell-exec fake-logind writeback-compare; do
+  for bin in casement bardo-compositorctl compositor-probe compositor-shell-exec fake-logind writeback-compare; do
     # A copy, not a link: a later `cargo clean` must not leave the jail a dangling tool.
     cp -f "$target/$profile/$bin" "$tools/bin/$bin.new"
     mv -f "$tools/bin/$bin.new" "$tools/bin/$bin"
   done
-  echo "bootstrap: casement, casementctl, casement-probe, casement-shell-exec, fake-logind, writeback-compare -> $tools/bin ($profile)"
+  echo "bootstrap: casement, bardo-compositorctl, compositor-probe, compositor-shell-exec, fake-logind, writeback-compare -> $tools/bin ($profile)"
 }
 
 fetch_foot() {
@@ -118,7 +118,7 @@ build_wlcs() {
   if [ ! -x "$root/dev/wlcs/build.sh" ]; then echo "bootstrap: dev/wlcs/build.sh is missing: wlcs skipped" >&2; return 0; fi
   # The wlcs lane's own script; a frozen stub exits 2, which is a warning here, not a failure.
   local rc=0
-  CASEMENT_TOOLS="$tools" "$root/dev/wlcs/build.sh" || rc=$?
+  BARDO_COMPOSITOR_TOOLS="$tools" "$root/dev/wlcs/build.sh" || rc=$?
   [ "$rc" = 0 ] || echo "bootstrap: dev/wlcs/build.sh exited $rc: wlcs is not built" >&2
 }
 

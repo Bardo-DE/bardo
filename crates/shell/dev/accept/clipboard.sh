@@ -25,7 +25,7 @@
 set -uo pipefail
 # shellcheck source=dev/lib/all.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
-OUT_DIR="$SILL_OUT_ROOT/accept-clipboard"
+OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-clipboard"
 mkdir -p "$OUT_DIR"
 
 start_compositor || exit 1
@@ -71,7 +71,7 @@ wait_status() {
 
 write_settings() {
   mkdir -p "$CONFIG/sill"
-  cat >"$CONFIG/sill/settings.toml" <<TOML
+  cat >"$CONFIG/shell/settings.toml" <<TOML
 [launcher]
 clipboard_history = "$1"
 TOML
@@ -103,7 +103,7 @@ step_copy() {
 # 3.
 step_secret() {
   local secret out="$OUT_DIR/secret.log"
-  "$SILL_OUT/examples/secret_source" "$WL" 20 >"$out" 2>&1 &
+  "$BARDO_SHELL_OUT/examples/secret_source" "$WL" 20 >"$out" 2>&1 &
   secret=$!
   for _ in $(seq 50); do grep -q ready "$out" && break; sleep 0.1; done
   grep -q ready "$out" || { echo "secret_source never set its selection" >&2; kill "$secret"; return 1; }

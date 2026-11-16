@@ -1,4 +1,4 @@
-//! `use_settings` and `use_section`: `sill/settings.toml`, live.
+//! `use_settings` and `use_section`: `shell/settings.toml`, live.
 
 use dioxus::prelude::{ReadSignal, ReadableExt, use_context, use_memo};
 use layer_shell_host::use_watch;

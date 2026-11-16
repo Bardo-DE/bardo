@@ -1,5 +1,5 @@
 //! sill's own idle, live: the service on the nested compositor (`wayland-1`, or
-//! `SILL_NESTED_WAYLAND`; pinged by connecting, never stopped; never `wayland-0`) with
+//! `BARDO_SHELL_NESTED_WAYLAND`; pinged by connecting, never stopped; never `wayland-0`) with
 //! `org.freedesktop.ScreenSaver` on a private bus and no logind at all (`BusRoute::Absent`), so
 //! nothing can suspend or hint. Run it with
 //! `cargo test -p shell-services --test it idle_bus -- --ignored --nocapture`.
@@ -24,7 +24,7 @@ use tokio::sync::watch;
 
 /// The nested compositor's socket, or `None` (the test then says so and passes).
 fn nested() -> Option<PathBuf> {
-    let path = match std::env::var_os("SILL_NESTED_WAYLAND") {
+    let path = match std::env::var_os("BARDO_SHELL_NESTED_WAYLAND") {
         Some(path) => PathBuf::from(path),
         None => PathBuf::from(std::env::var_os("XDG_RUNTIME_DIR")?).join("wayland-1"),
     };

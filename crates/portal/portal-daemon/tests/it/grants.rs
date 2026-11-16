@@ -15,7 +15,7 @@ use zbus::Connection;
 use crate::bus::PrivateBus;
 use crate::guard::{as_frontend, call, introduce, is_refused};
 
-const GRANTS: &str = "org.quire.Portal1";
+const GRANTS: &str = "org.bardo.Portal1";
 const APP: &str = "org.example.Meet";
 
 type Listed = Vec<(String, String, u32, u64)>;
@@ -27,7 +27,7 @@ fn now() -> u64 {
 }
 
 fn as_settings_at(portal: &Portal, who: &Connection, proof: Proof) {
-    let standing = introduced_service("org.quire.Settings", "settings", proof, Pin::AtConnect);
+    let standing = introduced_service("org.bardo.Settings", "settings", proof, Pin::AtConnect);
     introduce(&portal.peers, who, standing);
 }
 

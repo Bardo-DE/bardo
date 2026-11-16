@@ -137,7 +137,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     /// to end.
     pub async fn run(&mut self, transport: impl ConnectTo<Agent> + 'static) -> Result<(), Error> {
         let (tx, rx) = mpsc::unbounded();
-        let builder = Agent.builder().name("docket-acp");
+        let builder = Agent.builder().name("bardo-agent-acp");
         let builder = forward!(builder, tx, InitializeRequest, Initialize);
         let builder = forward!(builder, tx, NewSessionRequest, New);
         let builder = forward!(builder, tx, LoadSessionRequest, Load);

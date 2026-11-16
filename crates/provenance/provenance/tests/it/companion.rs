@@ -68,7 +68,7 @@ fn text(t: &str) -> Part {
 
 fn entity() -> EntityId {
     EntityId {
-        app: AppName::parse("org.quire.Mail").expect("app"),
+        app: AppName::parse("org.bardo.Mail").expect("app"),
         kind: EntityKind::parse("mail.thread").expect("kind"),
         key: EntityKey::parse("t/9").expect("key"),
     }
@@ -207,7 +207,7 @@ fn the_roster_reference_follows_the_actor() {
     let cases = [
         (
             Actor::User {
-                via: AppName::parse("org.quire.Shell").expect("app"),
+                via: AppName::parse("org.bardo.Shell").expect("app"),
             },
             Some(AgentRef::User),
         ),

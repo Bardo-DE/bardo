@@ -1,5 +1,5 @@
 //! The workspaces and the look each one has, published to the workspace-looks service for
-//! `org.quire.Workspaces1`, so an app that keeps its Spaces from the desktop paints the active
+//! `org.bardo.Workspaces1`, so an app that keeps its Spaces from the desktop paints the active
 //! workspace's look. The look is the one every shell surface draws (`shell_ui_kit::look`), as
 //! quire's compact JSON.
 

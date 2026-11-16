@@ -27,7 +27,7 @@ async fn adding(
     zbus::zvariant::OwnedObjectPath,
     String,
 ) {
-    let client = rig.client("org.quire.Photos").await;
+    let client = rig.client("org.bardo.Photos").await;
     let sheet = Sheet::subscribe(&client).await.expect("subscribe");
     let path = ManagerProxy::new(&client)
         .await
@@ -85,7 +85,7 @@ async fn a_forged_input_is_ignored_whoever_sends_it_and_whatever_handle_it_names
     .expect("emitter");
     emitter
         .emit(
-            "org.quire.AccountsSheet1",
+            "org.bardo.AccountsSheet1",
             "Input",
             &(handle.as_str(), "{not json"),
         )
@@ -114,7 +114,7 @@ async fn a_process_that_only_claimed_the_name_is_not_the_host() {
     // The owner of the name is not in the SheetHost role.
     rig.callers
         .introduce_as(&host_name, caller("org.example.Squatter", CallerRole::App));
-    let client = rig.client("org.quire.Photos").await;
+    let client = rig.client("org.bardo.Photos").await;
     let mut sheet = Sheet::subscribe(&client).await.expect("subscribe");
     let path = ManagerProxy::new(&client)
         .await
@@ -141,7 +141,7 @@ async fn no_host_on_the_bus_is_no_sheet() {
         .release_name(account_wire::names::SHEET_BUS)
         .await
         .expect("release");
-    let client = rig.client("org.quire.Photos").await;
+    let client = rig.client("org.bardo.Photos").await;
     let mut sheet = Sheet::subscribe(&client).await.expect("subscribe");
     let path = ManagerProxy::new(&client)
         .await
@@ -268,7 +268,7 @@ async fn a_second_sheet_of_a_kind_while_one_is_open_is_refused_until_it_ends() {
         error_name(&again),
         "org.freedesktop.DBus.Error.LimitsExceeded"
     );
-    let other_connection = rig.client("org.quire.Photos").await;
+    let other_connection = rig.client("org.bardo.Photos").await;
     let again = ask(other_connection).await.expect_err("the same app");
     assert_eq!(
         error_name(&again),
@@ -276,7 +276,7 @@ async fn a_second_sheet_of_a_kind_while_one_is_open_is_refused_until_it_ends() {
     );
     assert_eq!(rig.host_log.calls().opened.len(), 1, "no second sheet");
     // Another app is not held up.
-    ask(rig.client("org.quire.Mail").await)
+    ask(rig.client("org.bardo.Mail").await)
         .await
         .expect("another app's sheet");
 

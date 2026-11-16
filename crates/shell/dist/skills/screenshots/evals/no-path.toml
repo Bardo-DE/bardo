@@ -1,6 +1,6 @@
 prompt = "Take a screenshot and tell me the file name"
 [[expect.calls]]
-action = "org.quire.Shell:shell.screenshot"
+action = "org.bardo.Shell:shell.screenshot"
 args = { kind = "screen" }
 [expect]
 says = "the returned path when there is one; otherwise the Pictures folder and Screenshot_ date pattern, never an invented path"

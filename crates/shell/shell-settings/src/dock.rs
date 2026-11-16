@@ -11,7 +11,7 @@ use ui_settings::schema::Page;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "dock", page = Page::Dock,
+    file = "shell/settings.toml", domain = "dock", page = Page::Dock,
     footnote(section = "Hiding", text = "The Dock shows again when the pointer reaches the edge."),
 )]
 pub struct DockSettings {

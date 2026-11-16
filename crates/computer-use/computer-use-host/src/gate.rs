@@ -221,7 +221,7 @@ mod tests {
 
     fn grant_ask() -> GrantAsk {
         GrantAsk {
-            app: account_core::AppName::parse("org.quire.Mail").unwrap(),
+            app: account_core::AppName::parse("org.bardo.Mail").unwrap(),
             space: SpaceId::parse("work").unwrap(),
             level: permission_core::Level::AlwaysAllow,
             run: None,
@@ -232,7 +232,7 @@ mod tests {
         CuaAsk {
             run: RunId::parse("r-1").unwrap(),
             step: 1,
-            app: account_core::AppName::parse("org.quire.Mail").unwrap(),
+            app: account_core::AppName::parse("org.bardo.Mail").unwrap(),
             trust: WindowTrust::Quire,
             mode: RunMode::InPlace,
             space: SpaceId::parse("work").unwrap(),

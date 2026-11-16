@@ -90,7 +90,7 @@ mod tests {
     fn caller(role: Role) -> Caller {
         Caller {
             app: AppId {
-                name: AppName::parse("org.quire.Companion").expect("app"),
+                name: AppName::parse("org.bardo.Companion").expect("app"),
                 isolation: Isolation::Unsandboxed,
             },
             role,

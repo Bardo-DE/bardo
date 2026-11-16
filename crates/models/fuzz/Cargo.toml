@@ -1,6 +1,6 @@
 # Fuzz targets for the decoders of model, engine and socket bytes. Not a workspace member and
 # nightly only: run by hand with `dev/fuzz.sh`, never by CI or the stable gate (the proptest
-# suites `hostile` in model-http, model-openai-compat, speech-host and speech-host-client are
+# suites `hostile` in model-http, model-openai-compat, bardo-speech-host and speech-host-client are
 # what the gate runs). Its `[workspace]` table keeps cargo from reading it as part of stoker's.
 [package]
 name = "stoker-fuzz"

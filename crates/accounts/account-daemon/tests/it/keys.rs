@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Keys`: an app asks for the use of the person's AI keys, and is answered
+//! `org.bardo.Accounts1.Keys`: an app asks for the use of the person's AI keys, and is answered
 //! with the permit it holds or the person's answer to the consent sheet. Nobody else asks.
 
 use crate::launcher_register::error_name;

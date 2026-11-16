@@ -34,8 +34,8 @@ fn app_keys_and_spaces() {
         r#"{"kind":"claimed","v":"foot"}"#,
     );
     pinned(
-        &proven("org.quire.Mail"),
-        r#"{"kind":"proven","v":{"name":"org.quire.Mail","isolation":"unsandboxed"}}"#,
+        &proven("org.bardo.Mail"),
+        r#"{"kind":"proven","v":{"name":"org.bardo.Mail","isolation":"unsandboxed"}}"#,
     );
     let output = headless("HEADLESS-1").key;
     let space = Space {
@@ -82,13 +82,13 @@ fn origins() {
 fn binding_actions() {
     pinned(
         &BindingAction::Call(DbusCall {
-            service: "org.quire.Shell".to_owned(),
-            path: "/org/quire/Shell".to_owned(),
-            interface: "org.quire.Shell1".to_owned(),
+            service: "org.bardo.Shell".to_owned(),
+            path: "/org/bardo/Shell".to_owned(),
+            interface: "org.bardo.Shell1".to_owned(),
             method: "ToggleLauncher".to_owned(),
             args: Vec::new(),
         }),
-        r#"{"kind":"call","v":{"service":"org.quire.Shell","path":"/org/quire/Shell","interface":"org.quire.Shell1","method":"ToggleLauncher","args":[]}}"#,
+        r#"{"kind":"call","v":{"service":"org.bardo.Shell","path":"/org/bardo/Shell","interface":"org.bardo.Shell1","method":"ToggleLauncher","args":[]}}"#,
     );
     pinned(
         &BindingAction::Spawn(Argv(vec!["foot".to_owned()])),

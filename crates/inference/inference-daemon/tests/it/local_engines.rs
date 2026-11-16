@@ -29,7 +29,7 @@ use std::sync::Arc;
 fn who(role: Role) -> Caller {
     Caller {
         app: AppId {
-            name: AppName::parse("org.quire.Client").expect("app name"),
+            name: AppName::parse("org.bardo.Client").expect("app name"),
             isolation: Isolation::Unsandboxed,
         },
         role,

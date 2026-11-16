@@ -1,7 +1,7 @@
 //! Who may make which call on the companion: the caller policy, as values. How a caller is
 //! identified (the callers table, the cgroup behind a bus connection) is companiond's.
 //!
-//! The shell may do everything. A terminal (`quire-do ask`) may only open, ask and close, stop its
+//! The shell may do everything. A terminal (`bardo-do ask`) may only open, ask and close, stop its
 //! own answer and read answers: it is the person at a keyboard, or whatever is typing in one, and
 //! that is why it gets no more than the conversation. The editor bridge may read the helpers and
 //! speak in a helper's conversation, and nothing else.

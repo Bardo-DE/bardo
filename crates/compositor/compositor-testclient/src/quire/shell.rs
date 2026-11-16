@@ -1,15 +1,15 @@
-//! `quire_shell_v1` as a client (P2-Q2): roles, minimise targets and the events the compositor
+//! `bardo_shell_v1` as a client (P2-Q2): roles, minimise targets and the events the compositor
 //! sends the shell.
 
 use crate::conn::TestClient;
 use crate::surface::toplevel::{Host, Shared};
-use desktop_protocols::client::quire_shell_v1::quire_shell_v1::{self, QuireShellV1};
+use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::{self, BardoShellV1};
 use wayland_client::protocol::wl_output::{self, WlOutput};
 use wayland_client::protocol::wl_surface::WlSurface;
 use wayland_client::{Connection, Dispatch, QueueHandle, WEnum};
 
-pub use desktop_protocols::client::quire_desktop_v1::quire_desktop_window_v1::Toggle;
-pub use desktop_protocols::client::quire_shell_v1::quire_shell_v1::{
+pub use desktop_protocols::client::bardo_desktop_v1::bardo_desktop_window_v1::Toggle;
+pub use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::{
     DragOutcome, Error as ShellError, FullScreenBar, MacMods, Motion, OverviewMode, OverviewState,
     ScreenEdge, ShellRole, Shown, SplitSide, WindowEntry,
 };
@@ -91,11 +91,11 @@ pub struct WindowMenuSeen {
 /// A shell object's log.
 pub type ShellLog = Shared<ShellEvents>;
 
-/// A bound `quire_shell_v1`.
+/// A bound `bardo_shell_v1`.
 #[derive(Debug)]
 pub struct ShellHandle {
     /// The global.
-    pub object: QuireShellV1,
+    pub object: BardoShellV1,
     /// What it was told.
     pub log: ShellLog,
 }
@@ -106,7 +106,7 @@ impl ShellHandle {
         let log = ShellLog::default();
         let object = client
             .bind(version..=version, log.clone())
-            .expect("the compositor advertises quire_shell_v1 to this client");
+            .expect("the compositor advertises bardo_shell_v1 to this client");
         ShellHandle { object, log }
     }
 
@@ -281,24 +281,24 @@ impl ShellHandle {
     }
 }
 
-impl Dispatch<QuireShellV1, ShellLog> for Host {
+impl Dispatch<BardoShellV1, ShellLog> for Host {
     fn event(
         _: &mut Self,
-        _: &QuireShellV1,
-        event: quire_shell_v1::Event,
+        _: &BardoShellV1,
+        event: bardo_shell_v1::Event,
         log: &ShellLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         match event {
-            quire_shell_v1::Event::Modifiers { surface, mods } => {
+            bardo_shell_v1::Event::Modifiers { surface, mods } => {
                 let bits = match mods {
                     WEnum::Value(mods) => mods.bits(),
                     WEnum::Unknown(raw) => raw,
                 };
                 log.with(|seen| seen.modifiers.push((surface, bits)));
             }
-            quire_shell_v1::Event::WindowMenu {
+            bardo_shell_v1::Event::WindowMenu {
                 toplevel,
                 x,
                 y,
@@ -310,7 +310,7 @@ impl Dispatch<QuireShellV1, ShellLog> for Host {
                     enabled,
                 });
             }),
-            quire_shell_v1::Event::SplitChoose { first, side } => log.with(|seen| {
+            bardo_shell_v1::Event::SplitChoose { first, side } => log.with(|seen| {
                 seen.split_choices.push(SplitChoiceSeen {
                     first,
                     side: match side {
@@ -320,15 +320,15 @@ impl Dispatch<QuireShellV1, ShellLog> for Host {
                     candidates: Vec::new(),
                 });
             }),
-            quire_shell_v1::Event::SplitCandidate { toplevel } => log.with(|seen| {
+            bardo_shell_v1::Event::SplitCandidate { toplevel } => log.with(|seen| {
                 if let Some(choice) = seen.split_choices.last_mut() {
                     choice.candidates.push(toplevel);
                 }
             }),
-            quire_shell_v1::Event::SplitChoiceEnd { first } => {
+            bardo_shell_v1::Event::SplitChoiceEnd { first } => {
                 log.with(|seen| seen.split_ends.push(first));
             }
-            quire_shell_v1::Event::OverviewState {
+            bardo_shell_v1::Event::OverviewState {
                 state, progress, ..
             } => log.with(|seen| {
                 let state = match state {
@@ -337,27 +337,27 @@ impl Dispatch<QuireShellV1, ShellLog> for Host {
                 };
                 seen.overview_states.push((state, progress));
             }),
-            quire_shell_v1::Event::OverviewOutput { output, shown } => log.with(|seen| {
+            bardo_shell_v1::Event::OverviewOutput { output, shown } => log.with(|seen| {
                 let shown = match shown {
                     WEnum::Value(shown) => Some(shown),
                     WEnum::Unknown(_) => None,
                 };
                 seen.overview_outputs.push((output, shown));
             }),
-            quire_shell_v1::Event::DropTarget { output, space_id } => {
+            bardo_shell_v1::Event::DropTarget { output, space_id } => {
                 log.with(|seen| seen.drop_targets.push((output, space_id)));
             }
-            quire_shell_v1::Event::DropTargetNew { output, over } => log.with(|seen| {
+            bardo_shell_v1::Event::DropTargetNew { output, over } => log.with(|seen| {
                 let over = match over {
                     WEnum::Value(over) => Some(over),
                     WEnum::Unknown(_) => None,
                 };
                 seen.drop_targets_new.push((output, over));
             }),
-            quire_shell_v1::Event::WindowDragBegin { output, toplevel } => {
+            bardo_shell_v1::Event::WindowDragBegin { output, toplevel } => {
                 log.with(|seen| seen.drag_begins.push((output, toplevel)));
             }
-            quire_shell_v1::Event::WindowDragEnd {
+            bardo_shell_v1::Event::WindowDragEnd {
                 output,
                 toplevel,
                 outcome,
@@ -368,7 +368,7 @@ impl Dispatch<QuireShellV1, ShellLog> for Host {
                 };
                 seen.drag_ends.push((output, toplevel, outcome));
             }),
-            quire_shell_v1::Event::Reveal { edge, shown } => log.with(|seen| {
+            bardo_shell_v1::Event::Reveal { edge, shown } => log.with(|seen| {
                 let edge = match edge {
                     WEnum::Value(edge) => Some(edge),
                     WEnum::Unknown(_) => None,
@@ -379,7 +379,7 @@ impl Dispatch<QuireShellV1, ShellLog> for Host {
                 };
                 seen.reveals.push((edge, shown));
             }),
-            quire_shell_v1::Event::RevealOnOutput {
+            bardo_shell_v1::Event::RevealOnOutput {
                 output,
                 edge,
                 shown,

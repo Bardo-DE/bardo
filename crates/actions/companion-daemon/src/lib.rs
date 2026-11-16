@@ -12,7 +12,7 @@
 //! - `RecentSource`, `recover`, `replay_of`: restart, from what the eventlog holds (messages,
 //!   episodes, runs); `stored_events`, `events_of`: the sessions, from `Session.Stored`.
 //! - `completion_effects`: how a finished worker or run reaches the front task.
-//! - `serve`, `serve_on`: `org.quire.Companion1`.
+//! - `serve`, `serve_on`: `org.bardo.Companion1`.
 //! - The helpers' hub and the routines are `companion-helpers`'; `daemon` builds them over the bus and
 //!   `helpers_bus` serves them.
 //! - `HostLink`: a turn handed to the coding agent the person chose, through the agent host.

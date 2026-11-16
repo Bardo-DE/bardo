@@ -24,7 +24,7 @@ use crate::bus::PrivateBus;
 
 const SETTLE: Duration = Duration::from_secs(5);
 
-/// The stand-in for the shell's side of `org.quire.Shell1`.
+/// The stand-in for the shell's side of `org.bardo.Shell1`.
 struct StandIn;
 
 /// The shell's own rule: only the owner of the portal's name may ask.
@@ -42,7 +42,7 @@ async fn from_portal(connection: &Connection, header: &Header<'_>) -> fdo::Resul
     }
 }
 
-#[zbus::interface(name = "org.quire.Shell1")]
+#[zbus::interface(name = "org.bardo.Shell1")]
 impl StandIn {
     #[allow(clippy::too_many_arguments)] // the shell's own signature
     async fn pick_capture_source(
@@ -94,8 +94,8 @@ impl StandIn {
 
 async fn shell_on(bus: &PrivateBus) -> Connection {
     bus.builder()
-        .name("org.quire.Shell")
-        .and_then(|b| b.serve_at("/org/quire/Shell1", StandIn))
+        .name("org.bardo.Shell")
+        .and_then(|b| b.serve_at("/org/bardo/Shell1", StandIn))
         .unwrap_or_else(|e| panic!("the stand-in shell: {e}"))
         .build()
         .await

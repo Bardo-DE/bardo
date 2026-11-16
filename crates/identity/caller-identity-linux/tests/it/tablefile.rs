@@ -4,11 +4,11 @@ use caller_identity_core::{FileTrust, Uid, Writer};
 use caller_identity_linux::{FixtureProc, LoadError, TableFiles};
 use std::path::PathBuf;
 
-const MAIN: &str = "/etc/quire/desktop-callers.toml";
-const DIR: &str = "/etc/quire/desktop-callers.d";
+const MAIN: &str = "/etc/bardo/desktop-callers.toml";
+const DIR: &str = "/etc/bardo/desktop-callers.d";
 
-const SHELL: &str = "[[peer]]\napp = \"org.quire.Shell\"\nunit = \"sill.service\"\nexe = [\"/usr/bin/sill\"]\nrole = \"shell\"\n";
-const EVIL_SHELL: &str = "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"sill.service\"\nexe = [\"/tmp/sill\"]\nrole = \"shell\"\n";
+const SHELL: &str = "[[peer]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/usr/bin/bardo-shell\"]\nrole = \"shell\"\n";
+const EVIL_SHELL: &str = "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/tmp/sill\"]\nrole = \"shell\"\n";
 const EXTRA: &str =
     "[[peer]]\napp = \"org.local.Tool\"\nexe = [\"/usr/local/bin/tool\"]\nrole = \"tool\"\n";
 
@@ -44,14 +44,14 @@ fn the_main_file_and_the_drop_ins_are_merged_in_name_order_and_the_main_units_wi
         );
     assert_eq!(
         apps(&tree).expect("loads"),
-        ["org.quire.Shell", "org.local.Tool"]
+        ["org.bardo.Shell", "org.local.Tool"]
     );
 }
 
 #[test]
 fn a_missing_drop_in_directory_is_fine_and_a_missing_main_file_is_not() {
     let tree = FixtureProc::new().file(MAIN, SHELL, FileTrust::RootOnly);
-    assert_eq!(apps(&tree).expect("loads"), ["org.quire.Shell"]);
+    assert_eq!(apps(&tree).expect("loads"), ["org.bardo.Shell"]);
     assert!(matches!(
         apps(&FixtureProc::new()),
         Err(LoadError::Unreadable { .. })
@@ -86,7 +86,7 @@ fn a_directory_above_the_file_that_anyone_can_write_refuses_it_too() {
         .file(MAIN, SHELL, FileTrust::RootOnly);
     assert!(matches!(apps(&tree), Err(LoadError::NotRootOnly { .. })));
     let tree = FixtureProc::new()
-        .dir("/etc/quire", FileTrust::Writable(Writer::Group))
+        .dir("/etc/bardo", FileTrust::Writable(Writer::Group))
         .file(MAIN, SHELL, FileTrust::RootOnly);
     assert!(matches!(apps(&tree), Err(LoadError::NotRootOnly { .. })));
 }

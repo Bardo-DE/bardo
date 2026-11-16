@@ -1,4 +1,4 @@
-//! Spaces: `quire_desktop_space_v1`.
+//! Spaces: `bardo_desktop_space_v1`.
 
 use super::lifecycle::{Entity, Lifecycle, announced};
 use crate::keys::SpaceKey;

@@ -25,7 +25,7 @@ type Row = (StandardAction, Does);
 /// The standard actions the compositor binds. The Space numbers are not rows (nine actions
 /// with one meaning each): see [`shell_action`].
 const ROWS: &[Row] = &[
-    // sill draws the panel from the desktop manager's app list (quire_shell_v1 has no event for
+    // sill draws the panel from the desktop manager's app list (bardo_shell_v1 has no event for
     // the panel yet).
     (
         StandardAction::ForceQuit,

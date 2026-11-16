@@ -320,7 +320,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// The answer of `companion.task.start` as the planner reads it: the new task as a handle of
     /// kind `companion.task`, in the app's own trusted words, without the session it runs in.
     pub(crate) fn outcome_text(&self, started: Outcome) -> Outcome {
-        let label = AppName::parse("org.quire.Companion")
+        let label = AppName::parse("org.bardo.Companion")
             .map(app_label)
             .unwrap_or_else(|_| agent_planner::planner_label());
         let value = started_of(&started).map(|s| Value::Handle(s.handle));

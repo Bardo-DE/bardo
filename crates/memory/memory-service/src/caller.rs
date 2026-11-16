@@ -9,7 +9,7 @@ use memory_core::AppId;
 /// transport (`memory-client`'s `InProcess`).
 ///
 /// The companion has no class of its own: it reads and proposes through the action router
-/// (`org.quire.Memory` is a built-in provider of intentd), which calls as `Router` acting for
+/// (`org.bardo.Memory` is a built-in provider of intentd), which calls as `Router` acting for
 /// `Actor::Companion` with the Space taken from the invocation.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Caller {

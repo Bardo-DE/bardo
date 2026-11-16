@@ -128,7 +128,7 @@ async fn a_pause_made_while_a_cycle_waits_for_its_turn_lets_no_cycle_through() {
 
     let person = Caller {
         app: AppId {
-            name: AppName::parse("org.quire.Settings").expect("name"),
+            name: AppName::parse("org.bardo.Settings").expect("name"),
             isolation: Isolation::Flatpak,
         },
         role: CallerRole::Settings,

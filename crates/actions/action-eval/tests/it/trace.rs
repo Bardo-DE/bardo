@@ -123,14 +123,14 @@ fn a_cassette_entry_says_what_the_request_looked_like_and_what_the_model_said() 
     let calls = ExchangeAnswer::Replied {
         text: String::new(),
         calls: vec![ExchangeCall {
-            name: "org_quire_Mail-mail_thread_search".to_owned(),
+            name: "org_bardo_Mail-mail_thread_search".to_owned(),
             args: "{\"query\":\"Lisbon\"}".to_owned(),
         }],
         stop: "tool_use".to_owned(),
     };
     let text = cassette_from(
         &[
-            exchange(1, &["org_quire_Mail-mail_thread_search"], "Plan.", calls),
+            exchange(1, &["org_bardo_Mail-mail_thread_search"], "Plan.", calls),
             exchange(
                 2,
                 &[],

@@ -11,8 +11,8 @@ use settings_app_callers::{BusPeers, desktop_peers};
 use std::sync::Arc;
 use ui_peer::{Deadline, within};
 
-/// Exports `provider` at `/org/quire/IntentProvider1` on `connection` and claims the bus name
-/// `org.quire.Settings`. Returns once the name is ours; the connection keeps serving.
+/// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the bus name
+/// `org.bardo.Settings`. Returns once the name is ours; the connection keeps serving.
 pub async fn serve(
     connection: &BusConnection,
     provider: SettingsProvider,
@@ -46,11 +46,11 @@ pub enum ServeFault {
     #[error("cannot connect to the session bus: {0}")]
     Connect(String),
     /// Another Settings already owns the name: the caller should hand over to it.
-    #[error("org.quire.Settings is already running")]
+    #[error("org.bardo.Settings is already running")]
     Running,
     /// The bus is there and the provider could not take its place on it (the name is taken, or
     /// the object could not be exported).
-    #[error("cannot serve org.quire.Settings: {0}")]
+    #[error("cannot serve org.bardo.Settings: {0}")]
     Serve(String),
 }
 
@@ -88,7 +88,7 @@ async fn serve_unbounded(provider: SettingsProvider) -> Result<BusConnection, Se
     Ok(connection)
 }
 
-/// Whether another connection already owns `org.quire.Settings`.
+/// Whether another connection already owns `org.bardo.Settings`.
 async fn name_taken(connection: &BusConnection) -> bool {
     let Ok(proxy) = zbus::fdo::DBusProxy::new(connection).await else {
         return false;

@@ -21,7 +21,7 @@ use crate::sandbox::{Argv, EnvVar};
 /// Where the forwarder and its socket appear inside the sandbox.
 pub const INSIDE_FORWARDER: &str = "/run/bulkhead/forward";
 /// The socket's path inside the sandbox.
-pub const INSIDE_SOCKET: &str = "/run/bulkhead/ep.sock";
+pub const INSIDE_SOCKET: &str = "/run/bardo/sandbox/ep.sock";
 
 /// How an extra path is bound.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -121,7 +121,7 @@ impl AgentRun {
         }
     }
 
-    /// The same run, started through the exec stage at `enter` (the `bulkhead-enter` program),
+    /// The same run, started through the exec stage at `enter` (the `bardo-sandbox-enter` program),
     /// which applies Landlock inside the sandbox and reports the level it reached.
     #[must_use]
     pub fn with_landlock(mut self, enter: AbsPath) -> Self {

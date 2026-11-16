@@ -2,7 +2,7 @@
 //! their boxes, written to a file after each frame, so a scenario outside the process presses a
 //! control by what it is called and never by where it was last drawn.
 //!
-//! Off unless the feature is built in and `QUIRE_DEBUG_PROBE=<directory>` is set in the app's
+//! Off unless the feature is built in and `BARDO_DEBUG_PROBE=<directory>` is set in the app's
 //! environment. Then each window writes `<directory>/<pid>-<n>.tsv` (n counts the process's
 //! windows from 0) whenever what it shows changes, one control per line, tab separated:
 //!

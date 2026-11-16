@@ -8,7 +8,7 @@ use zbus::object_server::SignalEmitter;
 
 pub(crate) struct ControlBus(pub(crate) Gateway);
 
-#[zbus::interface(name = "org.quire.Intents1.Control")]
+#[zbus::interface(name = "org.bardo.Intents1.Control")]
 impl ControlBus {
     async fn halt(
         &self,

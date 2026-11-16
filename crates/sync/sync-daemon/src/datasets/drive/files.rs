@@ -1,6 +1,6 @@
 //! The drives shown in Files: each one's files on demand (`drive_core::Drive` over its
 //! journal), its folder in `~/Cloud`, and where it stands, shared between the storage supervisor
-//! that runs them and `org.quire.Storage1` that serves them.
+//! that runs them and `org.bardo.Storage1` that serves them.
 //!
 //! A drive paused stays paused after a restart, and one kept downloaded whole stays kept (syncd's
 //! settings keep both). An account being
@@ -103,7 +103,7 @@ enum Shown {
 pub struct LiveDrive {
     /// Its id on the bus: the account's directory name, stable while the account is in syncd.
     pub id: String,
-    /// The account's object path under `/org/quire/Accounts1/account/`.
+    /// The account's object path under `/org/bardo/Accounts1/account/`.
     pub account: String,
     /// The account's label.
     pub label: String,
@@ -221,7 +221,7 @@ impl LiveDrive {
     }
 
     /// Notes that its folder could not be shown on this computer, and the words Files shows
-    /// (drive-core's `NO_FILES_HERE`, or porter-mountd's when it refused).
+    /// (drive-core's `NO_FILES_HERE`, or bardo-drive-mount's when it refused).
     pub fn set_unshown(&self, words: &str) {
         held(&self.standing).unshown = Some(words.to_owned());
     }
@@ -533,7 +533,7 @@ mod tests {
         drive.open_file(&a).expect("open");
         let live = LiveDrive::new(
             "one".into(),
-            "/org/quire/Accounts1/account/one".into(),
+            "/org/bardo/Accounts1/account/one".into(),
             "ada@example.test".into(),
             "OneDrive",
             dir.join("Cloud"),
@@ -570,7 +570,7 @@ mod tests {
         .expect("drive");
         let live = Arc::new(LiveDrive::new(
             "one".into(),
-            "/org/quire/Accounts1/account/one".into(),
+            "/org/bardo/Accounts1/account/one".into(),
             "ada@example.test".into(),
             "OneDrive",
             dir.join("Cloud").join("OneDrive"),
@@ -617,7 +617,7 @@ mod tests {
         let folder = dir.join("Cloud").join("OneDrive");
         let live = Arc::new(LiveDrive::new(
             "one".into(),
-            "/org/quire/Accounts1/account/one".into(),
+            "/org/bardo/Accounts1/account/one".into(),
             "ada@example.test".into(),
             "OneDrive",
             folder.clone(),
@@ -719,7 +719,7 @@ mod tests {
         let folder = dir.join("Cloud").join("OneDrive");
         let live = Arc::new(LiveDrive::new(
             "one".into(),
-            "/org/quire/Accounts1/account/one".into(),
+            "/org/bardo/Accounts1/account/one".into(),
             "ada@example.test".into(),
             "OneDrive",
             folder,

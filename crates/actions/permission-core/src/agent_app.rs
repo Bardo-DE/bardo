@@ -1,10 +1,10 @@
-//! The pseudo-app an external coding agent's calls are made in: `org.quire.AcpAgent`. The host
-//! that launched the agent (`docket-agent`) makes every call the agent asks of it (a file read or
+//! The pseudo-app an external coding agent's calls are made in: `org.bardo.AcpAgent`. The host
+//! that launched the agent (`bardo-agent`) makes every call the agent asks of it (a file read or
 //! write, a command, a permission request) as an ordinary router call of one of these actions,
 //! and answers as the router rules; it performs a call only after the router has allowed it.
 //!
 //! The names live here because the host, the router and the manifest all use them. The actions'
-//! declarations are `manifests/org.quire.AcpAgent.toml`.
+//! declarations are `manifests/org.bardo.AcpAgent.toml`.
 
 use crate::standing_match::{ArgFacts, CallFacts};
 use account_core::AppName;
@@ -12,7 +12,7 @@ use action_vocab::ActionRef;
 use provenance::{ActionName, Effect};
 
 /// The pseudo-app and the bus name of the host that serves its actions.
-pub const ACP_AGENT_APP: &str = "org.quire.AcpAgent";
+pub const ACP_AGENT_APP: &str = "org.bardo.AcpAgent";
 
 /// `fs/read_text_file`.
 pub const FILES_READ: &str = "acpagent.files.read";

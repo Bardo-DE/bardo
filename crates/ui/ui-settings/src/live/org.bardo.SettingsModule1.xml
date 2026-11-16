@@ -1,0 +1,36 @@
+<interface name="org.bardo.SettingsModule1">
+  <!--
+   The module's schema as JSON (`LiveSchema`), refused if it breaks the never-settable rule.
+   -->
+  <method name="Describe">
+    <arg name="schema" type="s" direction="out"/>
+  </method>
+  <!--
+   A key's current value.
+   -->
+  <method name="Get">
+    <arg name="key" type="s" direction="in"/>
+    <arg name="value" type="v" direction="out"/>
+  </method>
+  <!--
+   The schema (as `Describe`) and every key's value (as `Get`), read once.
+   -->
+  <method name="Snapshot">
+    <arg name="schema" type="s" direction="out"/>
+    <arg name="values" type="a{sv}" direction="out"/>
+  </method>
+  <!--
+   Sets a key (or runs an action key), then sends `Changed` to the peers that may read.
+   -->
+  <method name="Set">
+    <arg name="key" type="s" direction="in"/>
+    <arg name="value" type="v" direction="in"/>
+  </method>
+  <!--
+   A key's new value, sent to the peers that may read (never broadcast).
+   -->
+  <signal name="Changed">
+    <arg name="key" type="s"/>
+    <arg name="value" type="v"/>
+  </signal>
+</interface>

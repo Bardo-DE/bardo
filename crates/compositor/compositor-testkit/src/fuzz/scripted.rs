@@ -129,7 +129,7 @@ impl Seat {
                 let leaks = fault == Fault::LeaksPrivileged
                     && !matches!(self.role, ConnectionRole::Shell | ConnectionRole::Agent);
                 if leaks {
-                    reply.extend(global(self.registry, 99, "quire_shell_v1", 1));
+                    reply.extend(global(self.registry, 99, "bardo_shell_v1", 1));
                 }
             }
             (1, 0) if fault != Fault::Deaf => {

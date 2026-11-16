@@ -1,4 +1,4 @@
-//! `quire_window_v1`: what the app says about its toplevel beyond xdg-shell. Today one thing:
+//! `bardo_window_v1`: what the app says about its toplevel beyond xdg-shell. Today one thing:
 //! the placement a person picked from the zoom button's menu (`request_placement`), which no
 //! other compositor offers (FINDINGS F50). The rest of the protocol (first-mouse regions,
 //! frame, emphasis, placement mark) is P3.
@@ -17,11 +17,11 @@ mod quit;
 
 use std::collections::HashMap;
 
-use desktop_protocols::client::quire_window_v1::quire_window_manager_v1::{
-    self, QuireWindowManagerV1,
+use desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::{
+    self, BardoWindowManagerV1,
 };
-use desktop_protocols::client::quire_window_v1::quire_window_v1::{
-    self, PlaceTarget as WirePlaceTarget, QuireWindowV1,
+use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{
+    self, PlaceTarget as WirePlaceTarget, BardoWindowV1,
 };
 use desktop_protocols::vocab::WireCode;
 use wayland_client::globals::{BindError, GlobalList};
@@ -37,18 +37,18 @@ use crate::window_placement::{PlacementSupport, WindowPlacement};
 /// that asked for a placement.
 #[derive(Debug)]
 pub(crate) struct QuireWindows {
-    manager: QuireWindowManagerV1,
-    windows: HashMap<SurfaceId, QuireWindowV1>,
+    manager: BardoWindowManagerV1,
+    windows: HashMap<SurfaceId, BardoWindowV1>,
 }
 
 impl QuireWindows {
-    /// Bind `quire_window_manager_v1`; an error when the compositor does not advertise it.
+    /// Bind `bardo_window_manager_v1`; an error when the compositor does not advertise it.
     pub(crate) fn bind<D>(
         globals: &GlobalList,
         qh: &QueueHandle<D>,
     ) -> Result<QuireWindows, BindError>
     where
-        D: Dispatch<QuireWindowManagerV1, ()> + 'static,
+        D: Dispatch<BardoWindowManagerV1, ()> + 'static,
     {
         let manager = globals.bind(qh, 1..=2, ())?;
         Ok(QuireWindows {
@@ -65,7 +65,7 @@ impl QuireWindows {
         toplevel: &XdgToplevel,
         request: decide::PlacementRequest,
     ) where
-        D: Dispatch<QuireWindowV1, ()> + 'static,
+        D: Dispatch<BardoWindowV1, ()> + 'static,
     {
         let Ok(target) = WirePlaceTarget::try_from(request.target.code()) else {
             return;
@@ -125,11 +125,11 @@ impl HostState {
     }
 }
 
-impl Dispatch<QuireWindowManagerV1, (), HostState> for QuireWindows {
+impl Dispatch<BardoWindowManagerV1, (), HostState> for QuireWindows {
     fn event(
         state: &mut HostState,
-        _manager: &QuireWindowManagerV1,
-        event: quire_window_manager_v1::Event,
+        _manager: &BardoWindowManagerV1,
+        event: bardo_window_manager_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<HostState>,
@@ -138,14 +138,14 @@ impl Dispatch<QuireWindowManagerV1, (), HostState> for QuireWindows {
     }
 }
 
-impl<D> Dispatch<QuireWindowV1, (), D> for QuireWindows
+impl<D> Dispatch<BardoWindowV1, (), D> for QuireWindows
 where
-    D: Dispatch<QuireWindowV1, ()> + 'static,
+    D: Dispatch<BardoWindowV1, ()> + 'static,
 {
     fn event(
         _state: &mut D,
-        _window: &QuireWindowV1,
-        event: quire_window_v1::Event,
+        _window: &BardoWindowV1,
+        event: bardo_window_v1::Event,
         _data: &(),
         _conn: &Connection,
         _qh: &QueueHandle<D>,

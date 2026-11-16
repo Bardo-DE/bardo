@@ -1,6 +1,6 @@
-//! The command line of `docket-agent`: `docket-agent PROGRAM [--cwd DIR] [--space NAME] [--tty]`,
-//! or `docket-agent PROGRAM --refresh`: start the agent briefly, write down what it offers, and
-//! stop it without a turn. `docket-agent --serve` is the service the bus starts for the
+//! The command line of `bardo-agent`: `bardo-agent PROGRAM [--cwd DIR] [--space NAME] [--tty]`,
+//! or `bardo-agent PROGRAM --refresh`: start the agent briefly, write down what it offers, and
+//! stop it without a turn. `bardo-agent --serve` is the service the bus starts for the
 //! assistant: no program, no terminal.
 
 use clap::error::ErrorKind;
@@ -47,7 +47,7 @@ pub enum Request {
 /// The command line as clap reads it.
 #[derive(Debug, Parser)]
 #[command(
-    name = "docket-agent",
+    name = "bardo-agent",
     about = "Hosts a coding agent over ACP",
     no_binary_name = true
 )]

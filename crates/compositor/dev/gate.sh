@@ -12,7 +12,7 @@ mkdir -p "dev/out/$run"
 step() { dev/lib/step.sh "$run" "$@"; }       # times, writes summary.json, applies budgets.toml
 # §6.2 wrote `jail` as a shell function, which step.sh (its own process) cannot call; the same
 # command line as an array.
-jail=("${CASEMENT_JAIL:-../../packaging/harness/jail.sh}" --fabricate-gpus 2 --bind "$PWD/../.." --bind "$CARGO_TARGET_DIR" --)
+jail=("${BARDO_COMPOSITOR_JAIL:-../../packaging/harness/jail.sh}" --fabricate-gpus 2 --bind "$PWD/../.." --bind "$CARGO_TARGET_DIR" --)
 step preflight  dev/preflight.sh
 step fmt        cargo fmt --all --check
 step boundary   ./scripts/check-boundary.sh

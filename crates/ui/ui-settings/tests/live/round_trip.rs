@@ -9,8 +9,8 @@ use zbus::export::futures_core::Stream;
 use crate::bus::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};
 
-const PATH: &str = "/org/quire/Test1/settings";
-const NAME: &str = "org.quire.Test1";
+const PATH: &str = "/org/bardo/Test1/settings";
+const NAME: &str = "org.bardo.Test1";
 
 /// The next item of `stream`, without a stream-combinator dependency.
 async fn next<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
@@ -174,7 +174,7 @@ async fn set_from_a_caller_without_the_role_is_refused_by_name() {
         zbus::Error::MethodError(name, _, _) => {
             assert_eq!(
                 name.as_str(),
-                "org.quire.SettingsModule1.Error.NotPermitted"
+                "org.bardo.SettingsModule1.Error.NotPermitted"
             );
         }
         other => panic!("{other:?}"),

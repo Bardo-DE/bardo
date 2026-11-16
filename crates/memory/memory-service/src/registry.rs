@@ -1,4 +1,4 @@
-//! The seam to porter's registry of desktop-wide Spaces (`org.quire.Spaces1`, which any
+//! The seam to porter's registry of desktop-wide Spaces (`org.bardo.Spaces1`, which any
 //! identified caller may list): an app reaches a desktop-wide Space only if the registry lists
 //! it, so an app cannot provision a Space nobody made.
 

@@ -87,7 +87,7 @@
 # In layer-shell-host an enter moves the document's pointer and an unmap withdraws it, so a "move onto"
 # is one motion and the steps run in their natural order. `repro` keeps both as regression checks.
 # The wallpaper is a fine checkerboard (`seed_checks`) so blur shows as grey. KWIN_SCALE=2 runs
-# the output at 3840 x 2160 and scale 2, the user's KDE setup. ACCEPT_STEPS="step_a step_b" runs
+# the output at 3840 x 2160 and scale 2, the user's KDE setup. BARDO_ACCEPT_STEPS="step_a step_b" runs
 # just those steps.
 #
 # Exit 0 only when every step passed; 1 on a failure.
@@ -118,11 +118,11 @@ case "${1:-}" in
   *) echo "$USAGE" >&2; exit 2 ;;
 esac
 case "$MODE" in
-  banners) OUT_DIR="$SILL_OUT_ROOT/accept-notifications" ;;
-  bus) OUT_DIR="$SILL_OUT_ROOT/accept-notifications-bus" ;;
-  real) OUT_DIR="$SILL_OUT_ROOT/accept-notifications-real-input" ;;
+  banners) OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-notifications" ;;
+  bus) OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-notifications-bus" ;;
+  real) OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-notifications-real-input" ;;
 esac
-SHOTS="$SILL_SHOTS"
+SHOTS="$BARDO_SHELL_SHOTS"
 SIZE=1920x1080
 WIDTH=${SIZE%x*}
 HEIGHT=${SIZE#*x}
@@ -146,7 +146,7 @@ REST_X=$(( WIDTH / 3 ))
 REST_Y=$(( HEIGHT / 2 ))
 DBUS_NAME=org.freedesktop.Notifications
 OBJECT=/org/freedesktop/Notifications
-HOLDER_BIN="$SILL_OUT/examples/notifications_holder"
+HOLDER_BIN="$BARDO_SHELL_OUT/examples/notifications_holder"
 HOLDER=
 MONITOR=
 KWIN_UP=no
@@ -221,7 +221,7 @@ run_recovering() {
 # --- the banners (default mode) ---
 
 dnd_setting() {
-  printf '[notifications]\ndnd = %s\n' "$1" >"$CONFIG/sill/settings.toml"
+  printf '[notifications]\ndnd = %s\n' "$1" >"$CONFIG/shell/settings.toml"
 }
 
 # The height of the capture $1's drawn part (rows with any opaque pixel), 0 for none.
@@ -474,7 +474,7 @@ step_other_holder() {
   HOLDER=$!
   for _ in $(seq 50); do [ "$(bus_holder_pid)" = "$HOLDER" ] && break; sleep 0.1; done
   [ "$(bus_holder_pid)" = "$HOLDER" ] || { echo "the holder never took the name" >&2; return 1; }
-  : >"$CONFIG/sill/settings.toml"
+  : >"$CONFIG/shell/settings.toml"
   launch_daemon || return 1
   await_status mode own && await_status holder other && await_status pid "$HOLDER" || return 1
   sleep 1
@@ -557,7 +557,7 @@ EOF
 
 
 column_origin() {
-  "$SHELL_HOST_DEV/kwin-windows.sh" --class sill 2>/dev/null | python3 -c '
+  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" --class sill 2>/dev/null | python3 -c '
 import json, sys
 for line in sys.stdin:
     w = json.loads(line)
@@ -1055,7 +1055,7 @@ EOF
 
 # The top of the sill window as large as capture $1 (logical px), from KWin's window list.
 surface_top() {
-  "$SHELL_HOST_DEV/kwin-windows.sh" --class sill 2>/dev/null | python3 -c '
+  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" --class sill 2>/dev/null | python3 -c '
 import json, sys
 from PIL import Image
 img = Image.open(sys.argv[1]); k = img.width / int(sys.argv[2])
@@ -1245,7 +1245,7 @@ setup_bus() {
   build "-p shell-testkit --example notifications_holder" || return 1
   start_private_bus || return 1
   echo "private bus $BUS (pid $BUS_PID)" >&2
-  : >"$CONFIG/sill/settings.toml"
+  : >"$CONFIG/shell/settings.toml"
   launch_daemon
 }
 
@@ -1262,7 +1262,7 @@ setup_real() {
   KWIN_UP=yes
   [ "$SCALE" = 1 ] || set_scale "$SCALE" || return 1
   printf '[control_center]\nmenu_bar_sound = false\nmenu_bar_battery = false\n' \
-    >"$CONFIG/sill/settings.toml"
+    >"$CONFIG/shell/settings.toml"
   seed_checks || { echo "no checks wallpaper" >&2; return 1; }
   launch_daemon || return 1
   NAME=$(output_name) || return 1
@@ -1277,7 +1277,7 @@ setup_real() {
   rest; rest
 }
 
-# The real-input steps to run: all of them, or the subset $ONLY names; ACCEPT_STEPS overrides.
+# The real-input steps to run: all of them, or the subset $ONLY names; BARDO_ACCEPT_STEPS overrides.
 real_steps() {
   local steps="step_real_holder step_real_hover step_real_click_default step_real_close_button
   step_real_swipe step_real_spring_back step_real_ghost_click step_real_ghost_swipe
@@ -1290,7 +1290,7 @@ real_steps() {
     exit) steps="step_real_holder step_real_center_clear_exit step_real_idle" ;;
     repro) steps="step_real_holder repro_enter_one_motion repro_hover_after_unmap repro_card_under_resting_pointer" ;;
   esac
-  echo "${ACCEPT_STEPS:-$steps}"
+  echo "${BARDO_ACCEPT_STEPS:-$steps}"
 }
 
 main() {

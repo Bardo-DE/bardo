@@ -178,7 +178,7 @@ pub fn request() -> ReviewRequest {
             mode: None,
         }],
         proposed: ProposedAction {
-            app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+            app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
             action: ActionName::parse("mail.thread.archive").expect("action"),
             label: LabelText::parse("Archive").expect("label"),
             effect: Effect::UndoableWrite,

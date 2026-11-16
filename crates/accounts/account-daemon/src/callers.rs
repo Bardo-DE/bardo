@@ -67,7 +67,7 @@ mod tests {
         callers.introduce_as(
             ":1.2",
             Caller {
-                app: app("org.quire.Settings"),
+                app: app("org.bardo.Settings"),
                 role: CallerRole::Settings,
             },
         );

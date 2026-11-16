@@ -1,4 +1,4 @@
-//! `org.quire.Shell1`, as the shell exports it on the seat. The object checks who is calling and
+//! `org.bardo.Shell1`, as the shell exports it on the seat. The object checks who is calling and
 //! hands the call to the loop, which decides, and waits for the loop's answer.
 
 use std::sync::Arc;
@@ -16,9 +16,9 @@ use crate::callers::{Claim, Peers, admit};
 
 /// The portal backend's name: transom owns it, and only its owner, holding the portal role, may
 /// ask the person.
-pub(super) const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.quire";
+pub(super) const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.bardo";
 /// Where the object is exported.
-pub(super) const PATH: &str = "/org/quire/Shell1";
+pub(super) const PATH: &str = "/org/bardo/Shell1";
 
 /// The longest app label taken, in characters.
 const MAX_LABEL: usize = 128;
@@ -77,7 +77,7 @@ impl PickerObject {
     }
 }
 
-#[interface(name = "org.quire.Shell1")]
+#[interface(name = "org.bardo.Shell1")]
 impl PickerObject {
     async fn pick_capture_source(
         &self,

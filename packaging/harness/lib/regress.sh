@@ -1,7 +1,7 @@
 # What the accounts-regress-* scenarios share (on top of harness/lib/accounts.sh): checks that fail the step, the sheet's
 # traffic read from the recorded bus, and measurements of a capture. Sourced after accounts.sh.
 #
-# How a sheet is observed. sill draws it through layer-shell-host, which never runs ui-blitz's debug probe (QUIRE_DEBUG_PROBE
+# How a sheet is observed. sill draws it through layer-shell-host, which never runs ui-blitz's debug probe (BARDO_DEBUG_PROBE
 # writes nothing for any sill surface: only a window of a quire app does), so there is no list of its controls. What is
 # read instead: what accountd tells it (Open/Update, the SheetView) and what the person's keys made it send back (Input),
 # both in the bus record (sheet-bus.py); and the capture of its surface (pixels.py): where the card is, whether two
@@ -32,7 +32,7 @@ bus_saw() { bus_since "$1" | grep -qF -- "$2"; }
 last_pick() { bus_since "$1" | sed -n 's/.* input {"kind":"pick","v":"\([^"]*\)"}$/\1/p' | tail -n 1; }
 
 # open_sheet: the add-account sheet as an app asks for it, drawn and still.
-open_sheet() { acc_add_start org.quire.Mail; sheet_await || return 1; sheet_settled; sleep 0.5; }
+open_sheet() { acc_add_start org.bardo.Mail; sheet_await || return 1; sheet_settled; sleep 0.5; }
 # close_sheet: Escape until the sheet is gone, and the asking app ended.
 close_sheet() {
   local i
@@ -61,7 +61,7 @@ regress_boot() {
   start_compositor || return 1
   scratch_new; acc_dirs
   build || return 1
-  [ -z "${REGRESS_THEME:-}" ] || printf '[appearance]\ntheme = "%s"\n' "$REGRESS_THEME" >"$CONFIG/quire/appearance.toml"
+  [ -z "${REGRESS_THEME:-}" ] || printf '[appearance]\ntheme = "%s"\n' "$REGRESS_THEME" >"$CONFIG/bardo/appearance.toml"
   scan_begin
   rig_start --imap --smtp --tls implicit --llm-api || return 1
   ferry_rig_start || return 1
@@ -83,4 +83,4 @@ print(" ".join(ids))'
 # detent_mapped: detent's window is up.
 detent_mapped() { [ -n "$(detent_frame 2>/dev/null)" ]; }
 # dkey NAME: a real key press into the focused window (detent) through casement's inject.
-dkey() { casementctl debug inject "key $1 down" "sleep 30" "key $1 up" "sleep 150" >/dev/null; sleep 0.25; }
+dkey() { bardo-compositorctl debug inject "key $1 down" "sleep 30" "key $1 up" "sleep 150" >/dev/null; sleep 0.25; }

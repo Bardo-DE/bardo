@@ -28,7 +28,7 @@ async fn connect_as(proxy: &zbus::Proxy<'_>, role: &str) -> String {
 #[tokio::test]
 async fn connect_is_decided_by_who_the_caller_proves_to_be() {
     let served = Served::start(WHOLE_TEST, true, None);
-    let program = || introduced_program("/usr/bin/sill").expect("a standing");
+    let program = || introduced_program("/usr/bin/bardo-shell").expect("a standing");
     // (case, how the caller stands, the role named, what comes back)
     let cases = [
         (

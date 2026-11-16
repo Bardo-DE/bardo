@@ -1,4 +1,4 @@
-//! Why an apply failed, and the exit code `slipway-apply` gives for it.
+//! Why an apply failed, and the exit code `bardo-updater-apply` gives for it.
 
 use super::staged::StagedError;
 use std::io;

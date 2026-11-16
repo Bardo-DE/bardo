@@ -1,5 +1,5 @@
 //! What the AI broker (inferd) asks of the daemon that keeps the AI keys
-//! (`org.quire.Accounts1.Broker`): which accounts an app holds a permit on, and the key behind a
+//! (`org.bardo.Accounts1.Broker`): which accounts an app holds a permit on, and the key behind a
 //! permit. inferd is the one daemon that sends a key to an AI company, so the calls are its alone:
 //! any other caller is refused. A key arrives on a sealed memfd, once, and is read into a
 //! [`SecretText`], which shows nothing of itself.

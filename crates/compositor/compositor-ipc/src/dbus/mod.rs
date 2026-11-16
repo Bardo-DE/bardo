@@ -1,4 +1,4 @@
-//! The D-Bus objects: `compositor1` (`org.quire.Compositor1`, P2-Z; its callers are proven in
+//! The D-Bus objects: `compositor1` (`org.bardo.Compositor1`, P2-Z; its callers are proven in
 //! `callers` and counted in `intake`) and, under feature `debug-inject`, `debug1`.
 
 mod callers;

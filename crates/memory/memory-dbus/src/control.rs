@@ -1,13 +1,13 @@
-//! `org.quire.Memory1.Control`: the person's controls (the shell UI only), the signals, and
+//! `org.bardo.Memory1.Control`: the person's controls (the shell UI only), the signals, and
 //! the wire `Version`.
 
 use std::collections::HashMap;
 
 /// The caller's side.
 #[zbus::proxy(
-    interface = "org.quire.Memory1.Control",
-    default_service = "org.quire.Memory1",
-    default_path = "/org/quire/Memory1"
+    interface = "org.bardo.Memory1.Control",
+    default_service = "org.bardo.Memory1",
+    default_path = "/org/bardo/Memory1"
 )]
 pub trait Control {
     /// The Spaces (`Vec<SpaceSummary>` JSON).

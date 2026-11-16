@@ -3,25 +3,25 @@
 use caller_identity_dbus::caller_identity_core::{Proof, RoleName, roles};
 
 /// accountd: the accounts and their live settings module.
-pub const ACCOUNTS_BUS: &str = "org.quire.Accounts1";
+pub const ACCOUNTS_BUS: &str = "org.bardo.Accounts1";
 /// syncd: the datasets and the deletions it holds for the person's word.
-pub const SYNC_BUS: &str = "org.quire.Sync1";
+pub const SYNC_BUS: &str = "org.bardo.Sync1";
 /// inferd: the model picker, the person's computers, the month's spend of AI accounts.
-pub const INFERENCE_BUS: &str = "org.quire.Inference1";
+pub const INFERENCE_BUS: &str = "org.bardo.Inference1";
 /// slipway: the software-update service.
-pub const UPDATES_BUS: &str = "org.quire.Updates1";
+pub const UPDATES_BUS: &str = "org.bardo.Updates1";
 /// memoryd: the controls Settings reaches.
-pub const MEMORY_BUS: &str = "org.quire.Memory1";
+pub const MEMORY_BUS: &str = "org.bardo.Memory1";
 /// The compositor: the Privacy list of which program may use which power, served as a live
 /// settings module.
-pub const COMPOSITOR_BUS: &str = "org.quire.Compositor1";
+pub const COMPOSITOR_BUS: &str = "org.bardo.Compositor1";
 /// The screen-sharing portal (transom): the apps it lets share the screen without asking again,
 /// and the call that takes one back. The name is the portal backend's own; the interface Settings
-/// calls on it is `org.quire.Portal1`.
-pub const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.quire";
+/// calls on it is `org.bardo.Portal1`.
+pub const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.bardo";
 
 /// The shell (sill): each display's brightness, which Settings lists and sets.
-pub const DISPLAYS_BUS: &str = "org.quire.Displays1";
+pub const DISPLAYS_BUS: &str = "org.bardo.Displays1";
 
 /// The proof a service's owner must show. All eight run as units, so the unit manager confirms the
 /// unit: a process that merely sits in the right cgroup, or runs the right image from a unit the
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn a_name_that_is_not_a_service_has_no_role() {
-        assert_eq!(required_role("org.quire.Settings"), None);
+        assert_eq!(required_role("org.bardo.Settings"), None);
         assert_eq!(required_role("org.example.Accounts1"), None);
         assert_eq!(required_role(""), None);
     }

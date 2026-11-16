@@ -1,4 +1,4 @@
-//! The whole `quire-do` program over what the process hands it: the command line, standard input
+//! The whole `bardo-do` program over what the process hands it: the command line, standard input
 //! and output, the environment, the clock and the buses. Nothing here reads a global; `main` (and
 //! the acceptance harness's copy of it) collects those and passes them in.
 
@@ -35,7 +35,7 @@ pub struct Process {
 fn unavailable(what: &impl std::fmt::Display) -> Report {
     Report {
         stdout: String::new(),
-        stderr: format!("quire-do: {what}\n"),
+        stderr: format!("bardo-do: {what}\n"),
         exit: Exit::Unavailable,
     }
 }
@@ -47,7 +47,7 @@ fn seconds(now: SystemTime) -> UnixSeconds {
     )
 }
 
-/// `quire-do ask`: intentd records the turn, companiond is asked.
+/// `bardo-do ask`: intentd records the turn, companiond is asked.
 async fn ask(
     buses: &SessionBus,
     text: &str,
@@ -102,7 +102,7 @@ pub async fn execute(process: Process, buses: SessionBus) -> Report {
             let failure = exit::of_client(&why.into());
             Report {
                 stdout: String::new(),
-                stderr: format!("quire-do: {}\n", failure.what),
+                stderr: format!("bardo-do: {}\n", failure.what),
                 exit: failure.exit,
             }
         }
@@ -114,7 +114,7 @@ pub async fn execute(process: Process, buses: SessionBus) -> Report {
 pub fn broken(why: &str) -> Report {
     Report {
         stdout: String::new(),
-        stderr: format!("quire-do: unavailable: {why}\n"),
+        stderr: format!("bardo-do: unavailable: {why}\n"),
         exit: Exit::Unavailable,
     }
 }

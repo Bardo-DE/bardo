@@ -16,7 +16,7 @@
 //!   that downloads first, a truncate and a rename run on the Tokio runtime and reply from
 //!   there, so the file system keeps answering meanwhile. A read offline fails with `ENETDOWN`,
 //!   any other failed fetch with `EIO`.
-//! - [`Mounter`]: mounts through porter-mountd when it listens (syncd's unit may not run the
+//! - [`Mounter`]: mounts through bardo-drive-mount when it listens (syncd's unit may not run the
 //!   setuid `fusermount3`; the helper does and hands back the open connection, which fuser's
 //!   `Session::from_fd` serves), and else through the system's `fusermount3`, run as a separate
 //!   process (fuser with no default features links no libfuse). A stale drive's folder at the
@@ -28,7 +28,7 @@
 mod fs;
 mod mount;
 
-/// porter-mountd's client and wire format, for a caller that names its socket.
+/// bardo-drive-mount's client and wire format, for a caller that names its socket.
 pub use drive_mount_daemon as mountd;
 
 pub use fs::{Attr, DirEntry, DriveFs, Now, Space, errno_of, write_errno};

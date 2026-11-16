@@ -1,8 +1,8 @@
-//! The daemon's half of the bus: the three interfaces of `org.quire.Memory1` as zbus objects over
+//! The daemon's half of the bus: the three interfaces of `org.bardo.Memory1` as zbus objects over
 //! one [`Serve`] handler. Every method builds the [`Call`] of its member from its raw arguments
 //! and hands it, with the sender's unique name, to the handler; the handler answers with the
 //! member's outputs (`decode_request` and `encode_reply` are the two ends of that table). Their
-//! introspection is the checked-in `dbus/org.quire.Memory1.xml`, the same as the frozen
+//! introspection is the checked-in `dbus/org.bardo.Memory1.xml`, the same as the frozen
 //! skeletons' (`tests/it/served.rs`).
 
 mod control;

@@ -7,7 +7,7 @@ const KEY: &str = "sk-ant-api03-S3CRET-HANDOFF-KEY";
 
 fn audience() -> AppId {
     AppId {
-        name: AppName::parse("org.quire.Agent.claude-code").expect("name"),
+        name: AppName::parse("org.bardo.Agent.claude-code").expect("name"),
         isolation: Isolation::Unsandboxed,
     }
 }

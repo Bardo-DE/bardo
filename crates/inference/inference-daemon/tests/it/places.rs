@@ -87,7 +87,7 @@ fn models(row: &PlaceRow) -> Vec<&str> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn settings_lists_this_computer_a_named_computer_and_the_cloud_accounts() {
-    let (world, _lab) = world("list", Role::Settings, "org.quire.Settings").await;
+    let (world, _lab) = world("list", Role::Settings, "org.bardo.Settings").await;
     let rows = world.accounts.places().await.expect("places");
     assert_eq!(
         ids(&rows),
@@ -139,7 +139,7 @@ async fn settings_lists_this_computer_a_named_computer_and_the_cloud_accounts() 
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_computer_that_does_not_answer_is_listed_but_not_ready() {
-    let (world, lab) = world("down", Role::Settings, "org.quire.Settings").await;
+    let (world, lab) = world("down", Role::Settings, "org.bardo.Settings").await;
     drop(lab);
     let rows = world.accounts.places().await.expect("places");
     let down = row(&rows, "computer:lab");
@@ -149,17 +149,17 @@ async fn a_computer_that_does_not_answer_is_listed_but_not_ready() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
-    let (world, _lab) = world("callers", Role::Settings, "org.quire.Settings").await;
+    let (world, _lab) = world("callers", Role::Settings, "org.bardo.Settings").await;
     let me = world.client.unique_name().expect("unique name").to_string();
     let cases = [
-        (Role::Settings, "org.quire.Settings", true),
-        (Role::Shell, "org.quire.Shell", true),
-        (Role::Placer, "org.quire.Companion", true),
-        (Role::Placer, "org.quire.Reader", false),
-        (Role::Placer, "org.quire.Intents", false),
-        (Role::App, "org.quire.Memory", false),
-        (Role::Cua, "org.quire.Cua", true),
-        (Role::AgentLauncher, "org.quire.AgentLauncher", false),
+        (Role::Settings, "org.bardo.Settings", true),
+        (Role::Shell, "org.bardo.Shell", true),
+        (Role::Placer, "org.bardo.Companion", true),
+        (Role::Placer, "org.bardo.Reader", false),
+        (Role::Placer, "org.bardo.Intents", false),
+        (Role::App, "org.bardo.Memory", false),
+        (Role::Cua, "org.bardo.ComputerUse", true),
+        (Role::AgentLauncher, "org.bardo.AgentLauncher", false),
     ];
     for (role, name, allowed) in cases {
         world.peers.introduce(
@@ -188,7 +188,7 @@ async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shell_may_list_the_places_and_ask_for_no_model() {
-    let (world, _lab) = world("shell", Role::Shell, "org.quire.Shell").await;
+    let (world, _lab) = world("shell", Role::Shell, "org.bardo.Shell").await;
     assert!(world.accounts.places().await.is_ok());
     let need = account_match::Need::Llm(account_match::LlmNeed::new(
         [account_capability::LlmFeature::Chat].into(),
@@ -228,7 +228,7 @@ async fn the_shell_may_list_the_places_and_ask_for_no_model() {
 async fn an_account_that_appears_makes_inferd_say_engines_changed() {
     use account_dbus::BusStream;
     use inference_dbus::inference::InferenceProxy;
-    let (world, _lab) = world("news", Role::Settings, "org.quire.Settings").await;
+    let (world, _lab) = world("news", Role::Settings, "org.bardo.Settings").await;
     let proxy = InferenceProxy::new(&world.client).await.expect("proxy");
     let mut changed = proxy.receive_engines_changed().await.expect("stream");
     let keys = world.accountd.as_ref().expect("the key store");
@@ -264,7 +264,7 @@ mod routing {
     use inference_core::{OpenOptions, PlaceId, Policy};
     use inference_dbus::inference::InferenceProxy;
 
-    const COMPANION: &str = "org.quire.Companion";
+    const COMPANION: &str = "org.bardo.Companion";
 
     fn llm() -> Need {
         Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
@@ -319,7 +319,7 @@ mod routing {
                 accounts: vec![FakeAccount {
                     id: "openrouter",
                     standing: Standing::Granted {
-                        to: vec![COMPANION, "org.quire.Memory"],
+                        to: vec![COMPANION, "org.bardo.Memory"],
                         grant: "grant-openrouter",
                         key: Some("sk-or-test-key"),
                     },
@@ -337,13 +337,13 @@ mod routing {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn callers_that_may_not_choose_places_are_refused_not_ignored() {
-        let (world, _lab) = placed_world("refused", Role::Settings, "org.quire.Settings").await;
+        let (world, _lab) = placed_world("refused", Role::Settings, "org.bardo.Settings").await;
         let me = world.client.unique_name().expect("unique name").to_string();
         let options = OpenOptions::default().with_places(vec![place("this-computer")]);
         for (role, name) in [
-            (Role::Settings, "org.quire.Settings"),
-            (Role::App, "org.quire.Memory"),
-            (Role::Cua, "org.quire.Cua"),
+            (Role::Settings, "org.bardo.Settings"),
+            (Role::App, "org.bardo.Memory"),
+            (Role::Cua, "org.bardo.ComputerUse"),
         ] {
             world.peers.introduce(
                 &me,
@@ -483,7 +483,7 @@ mod refusals {
     use account_match::Need;
     use inference_dbus::inference::{InferenceProxy, PLACE_ERROR_PREFIX, place_refusal_of};
 
-    const COMPANION: &str = "org.quire.Companion";
+    const COMPANION: &str = "org.bardo.Companion";
 
     fn llm() -> Need {
         Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
@@ -516,7 +516,7 @@ mod refusals {
         );
         assert_eq!(
             name.as_str(),
-            "org.quire.Inference1.Error.NoAllowedPlace.NotReady"
+            "org.bardo.Inference1.Error.NoAllowedPlace.NotReady"
         );
         let words = text.as_deref().expect("words");
         assert_eq!(
@@ -564,7 +564,7 @@ mod computers {
     use std::path::Path;
 
     const KEY: &str = "sk-lab-S3CRET-0123456789";
-    const COMPANION: &str = "org.quire.Companion";
+    const COMPANION: &str = "org.bardo.Companion";
 
     fn text(value: &str) -> OwnedValue {
         OwnedValue::try_from(Value::from(value.to_owned())).expect("value")
@@ -604,7 +604,7 @@ mod computers {
                 floors: Vec::new(),
             },
             role: Role::Settings,
-            app: Some(app("org.quire.Settings")),
+            app: Some(app("org.bardo.Settings")),
             ..Plan::default()
         };
         (World::start(plan).await, lab)
@@ -941,7 +941,7 @@ mod computers {
     #[tokio::test(flavor = "multi_thread")]
     async fn a_computer_written_by_hand_is_listed_but_cannot_be_removed_or_added_again() {
         let (world, _lab) =
-            placed_world_with("hand", Role::Settings, "org.quire.Settings", false).await;
+            placed_world_with("hand", Role::Settings, "org.bardo.Settings", false).await;
         let proxy = proxy(&world).await;
         let rows = world.accounts.places().await.expect("places");
         assert!(rows.iter().any(|row| row.id.as_str() == "computer:lab"));
@@ -983,9 +983,9 @@ mod computers {
         let denied = "org.freedesktop.DBus.Error.AccessDenied";
         for (role, who) in [
             (Role::Placer, COMPANION),
-            (Role::Shell, "org.quire.Shell"),
-            (Role::App, "org.quire.Memory"),
-            (Role::AgentLauncher, "org.quire.AgentLauncher"),
+            (Role::Shell, "org.bardo.Shell"),
+            (Role::App, "org.bardo.Memory"),
+            (Role::AgentLauncher, "org.bardo.AgentLauncher"),
         ] {
             as_caller(&world, role, who);
             let add = proxy
@@ -999,7 +999,7 @@ mod computers {
             let remove = proxy.remove_computer("studio-pc").await.expect_err(who);
             assert_eq!(name_and_words(&remove).0, denied, "{who} remove");
         }
-        as_caller(&world, Role::Settings, "org.quire.Settings");
+        as_caller(&world, Role::Settings, "org.bardo.Settings");
         let rows = world.accounts.places().await.expect("places");
         assert!(rows.iter().all(|row| row.kind != PlaceKind::OwnComputer));
     }

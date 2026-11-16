@@ -33,7 +33,7 @@ impl Isolation {
     /// One line for the log.
     pub fn line(&self) -> String {
         format!(
-            "cua-eval-cloud: isolation: {} environment variables, {} with a credential-looking name, {} key file(s) open: {}",
+            "computer-use-eval-cloud: isolation: {} environment variables, {} with a credential-looking name, {} key file(s) open: {}",
             self.env_count,
             self.secret_names.len(),
             self.key_files_open.len(),
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn names_that_look_like_credentials_are_found() {
-        assert!(looks_secret("ACCOUNTD_KEYS"));
+        assert!(looks_secret("BARDO_ACCOUNTD_KEYS"));
         assert!(looks_secret("openrouter_api_key"));
         assert!(!looks_secret("XDG_RUNTIME_DIR"));
     }

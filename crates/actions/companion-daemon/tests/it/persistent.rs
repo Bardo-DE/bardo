@@ -15,12 +15,12 @@ use memory_core::{
 use provenance::{Actor, Integrity, Label, Source, UnixSeconds};
 use serde_json::json;
 
-const READ: &str = "org_quire_Mail-mail_thread_read";
+const READ: &str = "org_bardo_Mail-mail_thread_read";
 
 fn read_t1() -> crate::support::infer::Say {
     call(
         READ,
-        json!({ "target": { "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" } }),
+        json!({ "target": { "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" } }),
     )
 }
 
@@ -35,7 +35,7 @@ async fn a_task_reads_mail_sees_only_a_handle_and_leaves_a_trusted_episode() {
     );
 
     let path = w.say(&opened.session, "what is the invoice about").await;
-    assert!(path.starts_with("/org/quire/Companion1/answer/"), "{path}");
+    assert!(path.starts_with("/org/bardo/Companion1/answer/"), "{path}");
 
     // Two planner turns: the call, then the answer.
     assert_eq!(w.infer.asked().len(), 2);
@@ -146,7 +146,7 @@ fn user_fact(text: &str) -> memory_core::FactView {
             text: memory_core::FactText::parse(text).expect("fact"),
             recorded: UnixSeconds(1),
             by: Actor::User {
-                via: account_core::AppName::parse("org.quire.Shell").expect("app"),
+                via: account_core::AppName::parse("org.bardo.Shell").expect("app"),
             },
             label: Label::trusted_user(),
             links: vec![],
@@ -189,7 +189,7 @@ async fn the_working_set_is_rebuilt_from_memory_every_turn_within_its_budget() {
             occurred: UnixSeconds(10),
             kind: KindTag::parse("companion.episode").expect("kind"),
             actor: Actor::User {
-                via: account_core::AppName::parse("org.quire.Shell").expect("app"),
+                via: account_core::AppName::parse("org.bardo.Shell").expect("app"),
             },
             things: vec![],
         },
@@ -337,7 +337,7 @@ async fn a_finished_task_takes_no_follow_up_and_an_unknown_session_is_refused() 
 
 fn draft_from(handle: u64) -> crate::support::infer::Say {
     call(
-        "org_quire_Mail-mail_draft_create",
+        "org_bardo_Mail-mail_draft_create",
         json!({ "body": { "handle": handle } }),
     )
 }
@@ -350,7 +350,7 @@ async fn a_masked_step_still_says_which_handle_came_from_which_call() {
         read_t1(),
         call(
             READ,
-            json!({ "target": { "app": "org.quire.Mail", "kind": "mail.thread", "key": "t2" } }),
+            json!({ "target": { "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t2" } }),
         ),
         draft_from(1),
         draft_from(2),

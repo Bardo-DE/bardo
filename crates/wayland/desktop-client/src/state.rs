@@ -25,7 +25,7 @@ pub struct DesktopState {
     /// Captures in flight or waiting.
     pub captures: Captures,
     /// The Quire arm: apps, windows, Spaces and the shell's state. Empty unless the compositor
-    /// offers `quire_desktop_v1`.
+    /// offers `bardo_desktop_v1`.
     pub quire: Quire,
 }
 

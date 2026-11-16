@@ -1,4 +1,4 @@
-//! design/22-SETTINGS.md §6 tests 1 and 2 for `sill/settings.toml`: every domain round-trips,
+//! design/22-SETTINGS.md §6 tests 1 and 2 for `shell/settings.toml`: every domain round-trips,
 //! and a bad value costs only its own key.
 
 use crate::common;

@@ -131,7 +131,7 @@ pub(crate) mod fixtures {
         ] })
     }
 
-    /// An action of `org.quire.Mail` on `on`, with these parameters (name, schema).
+    /// An action of `org.bardo.Mail` on `on`, with these parameters (name, schema).
     pub(crate) fn card(
         name: &str,
         on: TargetKind,
@@ -143,7 +143,7 @@ pub(crate) mod fixtures {
             .collect();
         ActionCard {
             action: ActionRef {
-                app: account_core::AppName::parse("org.quire.Mail").expect("app"),
+                app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
                 name: ActionName::parse(name).expect("name"),
             },
             label: LabelText::parse("An action").expect("label"),

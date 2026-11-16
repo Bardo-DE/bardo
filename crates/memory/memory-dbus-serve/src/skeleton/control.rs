@@ -1,4 +1,4 @@
-//! The frozen skeleton of `org.quire.Memory1.Control`: its signatures, signals and properties, the source of the introspection.
+//! The frozen skeleton of `org.bardo.Memory1.Control`: its signatures, signals and properties, the source of the introspection.
 
 use crate::serve::CONFINEMENT_OFF;
 use std::collections::HashMap;
@@ -10,7 +10,7 @@ use zbus::zvariant::OwnedFd;
 #[derive(Debug, Default)]
 pub(crate) struct ControlSkeleton;
 
-#[zbus::interface(name = "org.quire.Memory1.Control")]
+#[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl ControlSkeleton {
     fn spaces(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())

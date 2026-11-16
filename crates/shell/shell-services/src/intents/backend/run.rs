@@ -4,7 +4,7 @@
 //! the state says `Serving` (or why not). From there every thing that happens is an
 //! [`IntentsEvent`] fed to the pure `step`: a `Confirm` call (given its asker, remembered by
 //! serial), a `Cancel`, the person's answer (stamped with the wall clock), a question's expiry (a sleep of its own), intentd arriving or
-//! leaving (the owner of `org.quire.Intents1`: arriving reads the grants, leaving drops the
+//! leaving (the owner of `org.bardo.Intents1`: arriving reads the grants, leaving drops the
 //! questions nobody waits for), and the control's signals. What `step` asks of the outside is
 //! carried out here: the `Response` signal to the asker alone, the sleeps, the reads.
 

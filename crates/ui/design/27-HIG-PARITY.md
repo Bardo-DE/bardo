@@ -524,13 +524,13 @@ The `ds::commands::MenuModel` named above is `MenuBarModel` (design/30 section 2
 
 **Discovery today (the compositor offers no `org_kde_kwin_appmenu`).** An app serves its menu under a
 well-known name derived from its Wayland `app_id` and nothing else: bus name
-`org.quire.AppMenu.<app_id>` (each dot-separated element made legal: other characters become `_`, one
-starting with a digit gets a `_` first), object `/org/quire/AppMenu`, interface
+`org.bardo.AppMenu.<app_id>` (each dot-separated element made legal: other characters become `_`, one
+starting with a digit gets a `_` first), object `/org/bardo/AppMenu`, interface
 `com.canonical.dbusmenu`. sill reads the focused toplevel's `app_id` (ext-foreign-toplevel or
 toplevel), calls `AppMenuAddress::for_app_id` (the same function the app used, in `ds`) and
 asks the bus (`NameHasOwner`, or `NameOwnerChanged` to follow it); if the name has an owner it fetches
 `GetLayout(0, -1, [])`, else the focused app has no menu (rule c). Why this and not a registration with
-`org.quire.Shell`: it needs no running shell at app start, nothing is lost when sill restarts (the bus
+`org.bardo.Shell`: it needs no running shell at app start, nothing is lost when sill restarts (the bus
 owns the name and clears it when the app exits, which also tells sill the menu is gone), an agent
 discovers every menu with one `ListNames` filtered by `AppMenuAddress::SERVICE_PREFIX`, and the same
 address is what `org_kde_kwin_appmenu.set_address` takes later. Limits: one menu per app, not per

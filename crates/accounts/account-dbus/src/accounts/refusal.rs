@@ -1,11 +1,11 @@
-//! accountd's refusals as D-Bus error names: `org.quire.Accounts1.Error.<Slug in Pascal case>`
+//! accountd's refusals as D-Bus error names: `org.bardo.Accounts1.Error.<Slug in Pascal case>`
 //! (`NoFittingAccount`, `AudienceNotGranted`), so an app that gets the error knows what to do.
 
 use super::ServiceRoot;
 use account_wire::Refusal;
 
 /// The prefix of every accountd refusal's error name ([`ServiceRoot::error_prefix`] and a dot).
-pub const REFUSAL_ERROR_PREFIX: &str = "org.quire.Accounts1.Error.";
+pub const REFUSAL_ERROR_PREFIX: &str = "org.bardo.Accounts1.Error.";
 
 /// Every refusal, so the name table is total by construction.
 const ALL: [Refusal; 10] = [
@@ -62,7 +62,7 @@ fn pascal(slug: &str) -> String {
         .collect()
 }
 
-/// The refusal a daemon's error reply stands for (`org.quire.Accounts1.Error.*`), if it is one.
+/// The refusal a daemon's error reply stands for (`org.bardo.Accounts1.Error.*`), if it is one.
 pub fn refusal_of(error: &zbus::Error) -> Option<account_wire::Refusal> {
     let name = match error {
         zbus::Error::MethodError(name, _, _) => name.as_str().to_owned(),
@@ -89,10 +89,10 @@ mod tests {
         }
         assert_eq!(
             refusal_error_name(Refusal::AudienceNotGranted),
-            "org.quire.Accounts1.Error.AudienceNotGranted"
+            "org.bardo.Accounts1.Error.AudienceNotGranted"
         );
         assert_eq!(
-            refusal_from_error_name("org.quire.Accounts1.Error.Nope"),
+            refusal_from_error_name("org.bardo.Accounts1.Error.Nope"),
             None
         );
         assert_eq!(refusal_from_error_name("org.other.Denied"), None);
@@ -104,7 +104,7 @@ mod tests {
         }
         assert_eq!(
             refusal_error_name_in(ServiceRoot::Accounts, &Refusal::NoLauncher),
-            "org.quire.Accounts1.Error.NoLauncher"
+            "org.bardo.Accounts1.Error.NoLauncher"
         );
     }
 

@@ -55,7 +55,7 @@ fn opening() -> SessionEntry {
     SessionEntry::Opened(Opening {
         task: TaskId::parse("t-1").expect("task"),
         space: work(),
-        opener: Some(AppName::parse("org.quire.Companiond").expect("app")),
+        opener: Some(AppName::parse("org.bardo.Companion").expect("app")),
         agent: Some(AgentRef::Companion),
         backend: BackendKind::Native,
         parent: None,
@@ -244,7 +244,7 @@ fn router_on(service: &Arc<Service>) -> Router {
         space: work(),
         from: vec![],
         actions: std::collections::BTreeSet::from([ActionMatch::AppUpTo(
-            AppName::parse("org.quire.Mail").expect("app"),
+            AppName::parse("org.bardo.Mail").expect("app"),
             provenance::Effect::Destructive,
         )]),
         kinds: std::collections::BTreeSet::new(),
@@ -277,7 +277,7 @@ fn router_on(service: &Arc<Service>) -> Router {
 fn companion() -> CallerId {
     CallerId {
         app: account_core::AppId {
-            name: AppName::parse("org.quire.Companiond").expect("app"),
+            name: AppName::parse("org.bardo.Companion").expect("app"),
             isolation: account_core::Isolation::Unsandboxed,
         },
         roles: std::collections::BTreeSet::from([CallerRole::Companion]),
@@ -287,7 +287,7 @@ fn companion() -> CallerId {
 fn launcher() -> CallerId {
     CallerId {
         app: account_core::AppId {
-            name: AppName::parse("org.quire.Shell").expect("app"),
+            name: AppName::parse("org.bardo.Shell").expect("app"),
             isolation: account_core::Isolation::Unsandboxed,
         },
         roles: std::collections::BTreeSet::from([CallerRole::Launcher]),
@@ -307,7 +307,7 @@ fn standing_consent<R, W, K, L>(seams: &action_fake::FakeSeams<R, W, K, L>) {
                 id: account_core::GrantId::parse(&format!("g-{n}")).expect("grant"),
                 key: ActionGrantKey {
                     caller: GrantCaller::Companion,
-                    owner: AppName::parse("org.quire.Mail").expect("app"),
+                    owner: AppName::parse("org.bardo.Mail").expect("app"),
                     target: GrantTarget::App,
                     class,
                     usage,
@@ -328,11 +328,11 @@ async fn reads<S: action_router::Seams>(
 ) -> IntentsReply {
     let call = CallRequest {
         action: ActionRef {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             name: provenance::ActionName::parse("mail.thread.read").expect("action"),
         },
         target: TargetValue::Entities(vec![provenance::EntityId {
-            app: AppName::parse("org.quire.Mail").expect("app"),
+            app: AppName::parse("org.bardo.Mail").expect("app"),
             kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
             key: provenance::EntityKey::parse(thread).expect("key"),
         }]),

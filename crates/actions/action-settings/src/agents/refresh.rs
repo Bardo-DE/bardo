@@ -7,7 +7,7 @@
 use super::model::AgentRow;
 
 /// The program that does the refresh, found beside the other docket programs.
-pub const REFRESH_PROGRAM: &str = "docket-agent";
+pub const REFRESH_PROGRAM: &str = "bardo-agent";
 
 /// A request to refresh one agent.
 #[derive(Debug, Clone, PartialEq, Eq)]

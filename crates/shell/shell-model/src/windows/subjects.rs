@@ -1,5 +1,5 @@
 //! The program behind each app id on screen, as the compositor established it
-//! (`quire_desktop_app_v1.subject`): the image path of a native process, the app id of a
+//! (`bardo_desktop_app_v1.subject`): the image path of a native process, the app id of a
 //! sandboxed one. Unlike the app id a window declares, it is a fact, so the app-menu check can
 //! compare it with the standing of the process that owns a menu's bus name (QUIRE-12).
 

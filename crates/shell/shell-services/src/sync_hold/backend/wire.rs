@@ -79,7 +79,7 @@ mod tests {
         held.insert("held".to_owned(), value(40_u64));
         held.insert(
             "account".to_owned(),
-            value("/org/quire/Accounts1/account/work"),
+            value("/org/bardo/Accounts1/account/work"),
         );
         assert_eq!(
             heard("work/files", &held),
@@ -87,7 +87,7 @@ mod tests {
                 dataset: Dataset::new("work/files"),
                 discard: 30,
                 held: 40,
-                account: AccountKey::new("/org/quire/Accounts1/account/work"),
+                account: AccountKey::new("/org/bardo/Accounts1/account/work"),
             })
         );
         assert_eq!(

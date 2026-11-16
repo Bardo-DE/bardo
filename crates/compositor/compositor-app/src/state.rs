@@ -171,7 +171,7 @@ pub struct AgentState {
 pub struct IpcState {
     /// The handles.
     pub handles: compositor_ipc::IpcHandles,
-    /// The Privacy list Settings reads, when `org.quire.Compositor1` is served: the model's
+    /// The Privacy list Settings reads, when `org.bardo.Compositor1` is served: the model's
     /// answers are published to it (`privacy::publish`).
     pub board: Option<compositor_ipc::privacy::PrivacyBoard>,
 }

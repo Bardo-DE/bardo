@@ -1,5 +1,5 @@
-//! The account service's Accounts pane, the live module `org.quire.SettingsModule1` at
-//! `/org/quire/Accounts1/settings` (PLAN section 2.5), as pure state: the rows read as accounts,
+//! The account service's Accounts pane, the live module `org.bardo.SettingsModule1` at
+//! `/org/bardo/Accounts1/settings` (PLAN section 2.5), as pure state: the rows read as accounts,
 //! and the transition a person's choices make.
 
 mod add_account;

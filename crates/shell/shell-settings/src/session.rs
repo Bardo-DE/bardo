@@ -10,7 +10,7 @@ use ui_settings::schema::Page;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(
-    file = "sill/settings.toml", domain = "session", page = Page::Accounts,
+    file = "shell/settings.toml", domain = "session", page = Page::Accounts,
     footnote(section = "Lock screen", text = "Locking yourself, closing the lid and sleep always ask for the password."),
 )]
 pub struct SessionSettings {

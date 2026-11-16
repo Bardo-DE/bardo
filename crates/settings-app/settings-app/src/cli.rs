@@ -25,7 +25,7 @@ pub struct Cli {
     #[arg(long, conflicts_with_all = ["page", "search", "first_run", "write_search_entries"])]
     service: bool,
     /// Write the launcher's search entries for Settings' pages and keys to this file
-    /// (`quire/search/org.quire.Settings.toml`) and exit; the installer runs it.
+    /// (`quire/search/org.bardo.Settings.toml`) and exit; the installer runs it.
     #[arg(long, value_name = "FILE")]
     write_search_entries: Option<PathBuf>,
     /// With `--write-search-entries`: read schemas from this `quire/settings` folder instead of

@@ -12,7 +12,7 @@ use sandbox::{AbsPath, PathFault};
 fn files_call(paths: &[&str]) -> CallRequest {
     CallRequest {
         action: ActionRef {
-            app: app("org.quire.Mail"),
+            app: app("org.bardo.Mail"),
             name: action("mail.thread.archive"),
         },
         target: TargetValue::Files(paths.iter().map(|p| file(p)).collect()),

@@ -52,7 +52,7 @@ fn filled() -> Persisted {
             id: GrantId::parse("g1").expect("id"),
             key: GrantKey {
                 app: AppId {
-                    name: AppName::parse("org.quire.Photos").expect("name"),
+                    name: AppName::parse("org.bardo.Photos").expect("name"),
                     isolation: Isolation::Flatpak,
                 },
                 account: AccountId::parse("cloud").expect("id"),
@@ -173,8 +173,8 @@ const AT_SEVEN: &str = r#"{
   "vocab": 7,
   "accounts": [],
   "grants": [
-    {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000},
-    {"id": "g-always", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "cloud", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "deny", "scope": "always", "at": 1790000001}
+    {"id": "g-once", "key": {"app": {"name": "org.bardo.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000},
+    {"id": "g-always", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "cloud", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "deny", "scope": "always", "at": 1790000001}
   ],
   "toggles": []
 }"#;
@@ -206,7 +206,7 @@ const AT_THREE: &str = r#"{
     {"id": "mail", "provider": "generic-imap", "label": "ada@example.org", "state": "ok", "auth": "password", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": [{"family": "imap", "url": "imaps://imap.example.org:993", "tls": "implicit", "login": "ada"}]}
   ],
   "grants": [
-    {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
+    {"id": "g-once", "key": {"app": {"name": "org.bardo.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
   ],
   "toggles": [{"account": "cloud", "kind": "notes", "toggle": false}]
 }"#;
@@ -218,7 +218,7 @@ const AT_FOUR: &str = r#"{
     {"id": "mail", "provider": "generic-imap", "label": "ada@example.org", "state": "ok", "auth": "password", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": [{"family": "imap", "url": "imaps://imap.example.org:993", "tls": "implicit", "login": "ada"}, {"family": "sieve", "url": "sieve://imap.example.org:4190", "tls": "start_tls", "login": "ada"}]}
   ],
   "grants": [
-    {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
+    {"id": "g-once", "key": {"app": {"name": "org.bardo.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
   ],
   "toggles": [{"account": "cloud", "kind": "notes", "toggle": false}]
 }"#;
@@ -230,7 +230,7 @@ const AT_FIVE: &str = r#"{
     {"id": "claude-code", "provider": "claude-code", "label": "Claude Code", "state": "needs_login", "auth": "agent_login", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
+    {"id": "g-once", "key": {"app": {"name": "org.bardo.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
   ],
   "toggles": [{"account": "cloud", "kind": "notes", "toggle": false}]
 }"#;
@@ -241,8 +241,8 @@ const AT_SIX: &str = r#"{
     {"id": "cloud", "provider": "nextcloud", "label": "ada@example.org", "state": "ok", "auth": "login_flow_v2", "capabilities": [{"subject": {"kind": "account"}, "offer": {"kind": "absent", "v": {"kind": "notes", "reason": "not_on_server"}}, "provenance": "probed"}], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": [{"family": "webdav", "url": "https://cloud.example.org/remote.php/dav/", "tls": "implicit", "login": "ada"}]}
   ],
   "grants": [
-    {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000},
-    {"id": "g-tasks", "key": {"app": {"name": "org.quire.Tasks", "isolation": "flatpak"}, "account": "cloud", "kind": "tasks", "class": "tasks", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "always", "at": 1790000002}
+    {"id": "g-once", "key": {"app": {"name": "org.bardo.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000},
+    {"id": "g-tasks", "key": {"app": {"name": "org.bardo.Tasks", "isolation": "flatpak"}, "account": "cloud", "kind": "tasks", "class": "tasks", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "always", "at": 1790000002}
   ],
   "toggles": []
 }"#;
@@ -253,7 +253,7 @@ const AT_SEVEN_RICH: &str = r#"{
     {"id": "google-ada", "provider": "google", "label": "ada@example.org", "state": "needs_reauth", "auth": "oauth_pkce", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "seven_days", "consent": "user", "limits": [], "signed_in": 1700000000}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-always", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "google-ada", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "deny", "scope": "always", "at": 1790000001}
+    {"id": "g-always", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "google-ada", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "deny", "scope": "always", "at": 1790000001}
   ],
   "toggles": []
 }"#;
@@ -264,7 +264,7 @@ const AT_EIGHT: &str = r#"{
     {"id": "claude-code", "provider": "claude-code", "label": "Claude Code", "state": "ok", "auth": "agent_login", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-session", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
+    {"id": "g-session", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
   ],
   "toggles": []
 }"#;
@@ -275,7 +275,7 @@ const AT_NINE: &str = r#"{
     {"id": "claude-code", "provider": "claude-code", "label": "Claude Code", "state": "ok", "auth": "agent_login", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-session", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
+    {"id": "g-session", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
   ],
   "toggles": []
 }"#;
@@ -286,7 +286,7 @@ const AT_TEN: &str = r#"{
     {"id": "claude-code", "provider": "claude-code", "label": "Claude Code", "state": "ok", "auth": "agent_login", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-session", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
+    {"id": "g-session", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
   ],
   "toggles": []
 }"#;
@@ -299,7 +299,7 @@ const AT_ELEVEN: &str = r#"{
     {"id": "claude-code", "provider": "claude-code", "label": "Claude Code", "state": "ok", "auth": "agent_login", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-session", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
+    {"id": "g-session", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
   ],
   "toggles": []
 }"#;
@@ -313,7 +313,7 @@ const AT_TWELVE: &str = r#"{
     {"id": "tailscale", "provider": "tailscale", "label": "ada@example.org on example.org", "state": "needs_login", "auth": "own_program", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-session", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
+    {"id": "g-session", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
   ],
   "toggles": []
 }"#;
@@ -327,7 +327,7 @@ const AT_THIRTEEN: &str = r#"{
     {"id": "tailscale", "provider": "tailscale", "label": "ada@example.org on example.org", "state": "needs_login", "auth": "own_program", "capabilities": [], "restriction": {"verification": {"kind": "not_needed"}, "token_lifetime": "standard", "consent": "user", "limits": []}, "endpoints": []}
   ],
   "grants": [
-    {"id": "g-session", "key": {"app": {"name": "org.quire.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
+    {"id": "g-session", "key": {"app": {"name": "org.bardo.Agent.claude-code", "isolation": "unsandboxed"}, "account": "claude-code", "kind": "llm", "class": "prompt", "usage": "background", "space": {"kind": "any"}}, "decision": "allow", "scope": {"session": "sess-1"}, "at": 1790000003}
   ],
   "toggles": []
 }"#;

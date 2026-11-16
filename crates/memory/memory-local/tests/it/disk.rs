@@ -21,7 +21,7 @@ async fn record_propose_and_search_through_the_in_process_client() {
     let app = client(
         &service,
         Caller::App(AppId {
-            name: AppName::parse("org.quire.Mail").expect("app"),
+            name: AppName::parse("org.bardo.Mail").expect("app"),
             isolation: Isolation::InProcess,
         }),
     );

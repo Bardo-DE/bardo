@@ -22,7 +22,7 @@ fn a_first_install_unpacks_switches_and_links() {
         0o755
     );
     assert_eq!(
-        std::fs::metadata(current.join("share/wayland-sessions/quire.desktop"))
+        std::fs::metadata(current.join("share/wayland-sessions/bardo.desktop"))
             .expect("meta")
             .permissions()
             .mode()
@@ -44,14 +44,14 @@ fn a_first_install_unpacks_switches_and_links() {
     }
     assert!(sandbox.layout.record(&v("0.1.0")).is_file());
     // The export reads through the link into the current release.
-    let link = sandbox.link("/usr/share/wayland-sessions/quire.desktop");
+    let link = sandbox.link("/usr/share/wayland-sessions/bardo.desktop");
     assert_eq!(read(&link), "[Desktop Entry]");
     assert_eq!(
         std::fs::read_link(&link).expect("link"),
         sandbox
             .layout
             .root
-            .join("current/share/wayland-sessions/quire.desktop")
+            .join("current/share/wayland-sessions/bardo.desktop")
     );
     assert_eq!(sandbox.releases(), vec!["0.1.0"]);
 }

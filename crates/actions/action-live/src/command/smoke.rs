@@ -1,4 +1,4 @@
-//! `docket-live smoke`.
+//! `agent-live smoke`.
 
 use super::{CommandFault, say_agent, say_reach};
 use crate::Engine;
@@ -137,7 +137,7 @@ async fn smoke_agent(
         failed |= !r.failures.is_empty();
         if r.failures.iter().any(|f| f.kind == Kind::Setup) {
             eprintln!(
-                "docket-live: the agent did not come up; the remaining flows are not started"
+                "agent-live: the agent did not come up; the remaining flows are not started"
             );
             break;
         }
@@ -223,7 +223,7 @@ pub(super) async fn smoke(args: SmokeArgs, binaries: &Binaries) -> Result<ExitCo
         }
         failed |= !failures.is_empty();
         if failures.iter().any(|f| f.kind == Kind::Setup) {
-            eprintln!("docket-live: a model did not come up; the remaining flows are not started");
+            eprintln!("agent-live: a model did not come up; the remaining flows are not started");
             break;
         }
     }

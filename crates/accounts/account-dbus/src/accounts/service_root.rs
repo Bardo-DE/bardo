@@ -1,6 +1,6 @@
 //! The services that show a sheet to the person and answer with a Request object, and what
 //! differs between them: the bus name, the root of the Request objects' paths and the prefix of
-//! the errors. The Request interface itself (`org.quire.Accounts1.Request`: `Close`, the signal
+//! the errors. The Request interface itself (`org.bardo.Accounts1.Request`: `Close`, the signal
 //! `Response`) is one shape for all of them. accountd is the one now: a daemon that wants a sheet
 //! asks accountd for it, and the sync daemon (ferry's) is such a daemon.
 
@@ -9,7 +9,7 @@ use account_wire::names::ACCOUNTS_BUS;
 /// A daemon that serves Request objects, and so a sheet a caller waits for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ServiceRoot {
-    /// accountd (`org.quire.Accounts1`): the sheets for identities, for AI keys and for an
+    /// accountd (`org.bardo.Accounts1`): the sheets for identities, for AI keys and for an
     /// agent's key.
     Accounts,
 }
@@ -28,15 +28,15 @@ impl ServiceRoot {
     /// The parent of the service's Request objects' paths (`<root>/<sender>/<token>`).
     pub fn request_root(self) -> &'static str {
         match self {
-            ServiceRoot::Accounts => "/org/quire/Accounts1/request",
+            ServiceRoot::Accounts => "/org/bardo/Accounts1/request",
         }
     }
 
     /// The prefix of the service's error names, without the dot that follows it
-    /// (`org.quire.Accounts1.Error`).
+    /// (`org.bardo.Accounts1.Error`).
     pub fn error_prefix(self) -> &'static str {
         match self {
-            ServiceRoot::Accounts => "org.quire.Accounts1.Error",
+            ServiceRoot::Accounts => "org.bardo.Accounts1.Error",
         }
     }
 }

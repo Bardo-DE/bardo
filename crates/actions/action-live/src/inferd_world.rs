@@ -1,7 +1,7 @@
 //! The smallest world a corpus run needs: a private bus, the packaged accountd (inferd asks it for
 //! the AI keys) and inferd, and this
-//! process placed in the fake proc root as `intentd.service` so inferd serves it as
-//! `org.quire.Intents` (the policy writer and the reviewers). Everything is scratch: HOME, every
+//! process placed in the fake proc root as `bardo-actiond.service` so inferd serves it as
+//! `org.bardo.Intents` (the policy writer and the reviewers). Everything is scratch: HOME, every
 //! XDG directory, the bus. The model is a cassette or the owner's own `inferd.toml`.
 //!
 //! The corpus cases play the router in this process (a hijacked planner mints handles in router
@@ -77,8 +77,8 @@ impl InferdWorld {
             until_owned(&client, owns).await;
             daemon
         };
-        let accountd = start("accountd", &binaries.accountd, "org.quire.Accounts1").await;
-        let inferd = start("inferd", &binaries.inferd, "org.quire.Inference1").await;
+        let accountd = start("accountd", &binaries.accountd, "org.bardo.Accounts1").await;
+        let inferd = start("inferd", &binaries.inferd, "org.bardo.Inference1").await;
         Self {
             inferd,
             _accountd: accountd,

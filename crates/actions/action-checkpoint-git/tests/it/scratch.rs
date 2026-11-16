@@ -23,8 +23,8 @@ impl Scratch {
     pub fn new() -> Option<Scratch> {
         if !git_exists() {
             assert!(
-                std::env::var_os("DOCKET_REQUIRE_TOOLS").is_none(),
-                "git is required (DOCKET_REQUIRE_TOOLS is set)"
+                std::env::var_os("BARDO_ACTIONS_REQUIRE_TOOLS").is_none(),
+                "git is required (BARDO_ACTIONS_REQUIRE_TOOLS is set)"
             );
             return None;
         }

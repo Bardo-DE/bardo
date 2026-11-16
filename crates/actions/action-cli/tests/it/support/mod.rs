@@ -1,4 +1,4 @@
-//! A desk: `quire-do` over the fake router in this process, as the cli role, with a scratch
+//! A desk: `bardo-do` over the fake router in this process, as the cli role, with a scratch
 //! world of two mail threads and one contact. The real bus and the real session are never
 //! touched.
 #![allow(dead_code)]
@@ -46,7 +46,7 @@ pub fn from_terminal() -> ConfirmAnswer {
     ConfirmAnswer::AllowedFromTerminal { receipt: receipt() }
 }
 
-/// `quire-do` and the router behind it.
+/// `bardo-do` and the router behind it.
 pub struct Desk {
     pub router: Arc<Router<FakeSeams>>,
     intents: Intents<InProcess<FakeSeams>>,
@@ -81,7 +81,7 @@ impl Desk {
         let router = Arc::new(router);
         let intents = Intents::over(InProcess::new(
             router.clone(),
-            caller("org.quire.Do", CallerRole::Cli),
+            caller("org.bardo.Do", CallerRole::Cli),
         ));
         Self { router, intents }
     }
@@ -126,7 +126,7 @@ impl Desk {
 
     /// The mail app pushes the titles of its threads to the router's index, as a real one does.
     pub async fn index_mail(&self) {
-        let mail = caller("org.quire.Mail", CallerRole::App);
+        let mail = caller("org.bardo.Mail", CallerRole::App);
         let reset = self
             .router
             .handle(&mail, IntentsRequest::IndexReset { epoch: 1 })
@@ -160,7 +160,7 @@ impl Desk {
         let reply = self
             .router
             .handle(
-                &caller("org.quire.Shell", CallerRole::Control),
+                &caller("org.bardo.Shell", CallerRole::Control),
                 IntentsRequest::ControlHalt {
                     scope: SpaceScope::Any,
                     cause: action_core::HaltCause::ControlCentre,

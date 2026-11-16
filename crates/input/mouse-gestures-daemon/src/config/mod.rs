@@ -1,4 +1,4 @@
-//! `palmrest/gestures.toml`: the settings a person chooses, their defaults, and live reload.
+//! `mouse-gestures/gestures.toml`: the settings a person chooses, their defaults, and live reload.
 
 pub mod file;
 pub mod layer;

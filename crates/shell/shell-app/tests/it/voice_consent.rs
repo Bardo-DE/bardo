@@ -50,7 +50,7 @@ async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml
     desk.send(VoiceCommand::Params(VoiceBridge.of(&rx.borrow())));
     desk.state(|v| (v.params.consent == consent).then_some(()))
         .await;
-    std::fs::read_to_string(dir.path().join("sill/settings.toml"))
+    std::fs::read_to_string(dir.path().join("shell/settings.toml"))
         .unwrap_or_else(|e| panic!("{e}"))
         .parse()
         .unwrap_or_else(|e| panic!("{e}"))
@@ -59,7 +59,7 @@ async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
     let dir = TempDir::new("voice-consent-allow");
-    let file = dir.path().join("sill/settings.toml");
+    let file = dir.path().join("shell/settings.toml");
     let mut desk = desk_or_return!(BeginAnswer::FromSettings(file));
     assert_eq!(begins(&desk), 0);
     let table = answered(&mut desk, ConsentAnswer::Allow, &dir).await;
@@ -87,7 +87,7 @@ async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn not_now_writes_declined_and_the_next_hold_never_calls_begin() {
     let dir = TempDir::new("voice-consent-not-now");
-    let file = dir.path().join("sill/settings.toml");
+    let file = dir.path().join("shell/settings.toml");
     let mut desk = desk_or_return!(BeginAnswer::FromSettings(file));
     let table = answered(&mut desk, ConsentAnswer::NotNow, &dir).await;
     assert_eq!(table["voice"]["consent"].as_str(), Some("declined"));

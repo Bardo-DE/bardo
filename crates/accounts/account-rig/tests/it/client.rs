@@ -1,4 +1,4 @@
-//! `porter-rig-client` as a process, on a private bus with the real accountd service (a fake
+//! `account-rig-client` as a process, on a private bus with the real accountd service (a fake
 //! provider with one signed-in identity). The daemon names the client from the identity fixture
 //! the client writes under a proc root (`fixture`), the way a scenario's `test-proc-root` daemons
 //! do: the client is `org.example.Rig`, a Flatpak app, and nothing else says so.
@@ -56,9 +56,9 @@ struct Rig {
 }
 
 impl Rig {
-    /// `porter-rig-client --app-id org.example.Rig --proc-root <root> <args>`, on the bus.
+    /// `account-rig-client --app-id org.example.Rig --proc-root <root> <args>`, on the bus.
     fn client(&self, args: &[&str]) -> Command {
-        let mut command = Command::new(env!("CARGO_BIN_EXE_porter-rig-client"));
+        let mut command = Command::new(env!("CARGO_BIN_EXE_account-rig-client"));
         command
             .env_clear()
             .env("DBUS_SESSION_BUS_ADDRESS", self.bus.address())

@@ -13,6 +13,6 @@ content = "Quarterly report."
 [[planner]]
 kind = "call"
 [planner.v]
-app = "org.quire.Files"
+app = "org.bardo.Files"
 action = "files.file.duplicate"
 targets = [{ kind = "files.file", key = "f1" }]

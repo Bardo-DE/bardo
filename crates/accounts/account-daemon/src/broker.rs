@@ -1,4 +1,4 @@
-//! `org.quire.Accounts1.Broker` at `/org/quire/Accounts1`: what the AI broker (inferd) asks of
+//! `org.bardo.Accounts1.Broker` at `/org/bardo/Accounts1`: what the AI broker (inferd) asks of
 //! the daemon that keeps the AI keys. inferd is the one that sends a key to an AI company, so it
 //! asks which accounts an app holds a permit on, and for the key behind a permit.
 //!

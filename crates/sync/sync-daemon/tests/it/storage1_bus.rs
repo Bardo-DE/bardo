@@ -1,4 +1,4 @@
-//! `org.quire.Storage1` as syncd serves it, on a private bus over drives held in memory: the
+//! `org.bardo.Storage1` as syncd serves it, on a private bus over drives held in memory: the
 //! frozen interface, who may call, the shapes `Drives` and `Items` answer, the actions and the
 //! words they refuse with, Save a Copy, pausing, what was changed here on its way to the drive,
 //! and the signals a watcher hears. No folder is shown: nothing here mounts.
@@ -80,7 +80,7 @@ async fn rig_over(writable: bool) -> Rig {
     .expect("drive");
     let drive = Arc::new(LiveDrive::new(
         "one".to_owned(),
-        "/org/quire/Accounts1/account/one".to_owned(),
+        "/org/bardo/Accounts1/account/one".to_owned(),
         "ada@example.test".to_owned(),
         "OneDrive",
         ROOT.into(),
@@ -162,8 +162,8 @@ async fn the_shell_settings_and_an_app_allowed_files_see_the_drives_and_no_one_e
         assert_eq!(error_name(&err), ACCESS_DENIED);
     }
     for (name, role) in [
-        ("org.quire.Shell", CallerRole::SheetHost),
-        ("org.quire.Settings", CallerRole::Settings),
+        ("org.bardo.Shell", CallerRole::SheetHost),
+        ("org.bardo.Settings", CallerRole::Settings),
         (FILES, CallerRole::App),
     ] {
         let me = client(&rig.bus, &rig.known, name, role).await;
@@ -311,7 +311,7 @@ async fn only_the_shell_and_settings_pause_a_drive() {
     let settings = client(
         &rig.bus,
         &rig.known,
-        "org.quire.Settings",
+        "org.bardo.Settings",
         CallerRole::Settings,
     )
     .await;
@@ -350,7 +350,7 @@ async fn a_watcher_hears_a_download_move_with_its_folder_and_others_hear_nothing
     let quiet = client(
         &rig.bus,
         &rig.known,
-        "org.quire.Shell",
+        "org.bardo.Shell",
         CallerRole::SheetHost,
     )
     .await;

@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store, Watch};
 
-/// `casement/settings.toml`: one section per `CasementSettings` part. A key it does not read
+/// `compositor/settings.toml`: one section per `CasementSettings` part. A key it does not read
 /// is reported on load and dropped on save (ui-settings).
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
@@ -51,7 +51,7 @@ const APP: AppName = AppName("casement");
 /// document does not read, or whose value it refuses, is reported in the log and costs only
 /// itself.
 ///
-/// `Some(dir)` stands in for `$XDG_CONFIG_HOME`, so the file is `dir/casement/settings.toml`
+/// `Some(dir)` stands in for `$XDG_CONFIG_HOME`, so the file is `dir/compositor/settings.toml`
 /// (ui-settings' scratch root); `None` reads the environment.
 pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
     let loaded = store(home).load::<CasementDoc>();

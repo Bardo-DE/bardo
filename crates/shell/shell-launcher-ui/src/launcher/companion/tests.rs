@@ -208,7 +208,7 @@ fn toplevels() -> Toplevels {
         windows: vec![Toplevel {
             identifier: String::new(),
             key: WindowKey(4),
-            app_id: "org.quire.Mail".to_owned(),
+            app_id: "org.bardo.Mail".to_owned(),
             title: "Inbox".to_owned(),
             active: true,
             minimized: false,
@@ -239,7 +239,7 @@ fn a_prompt_from_a_panel_summoned_over_a_window_keeps_the_window_chip_only() {
         "the ask is made in the Space it was given"
     );
     assert_eq!(ask.window, Some(WindowKey(4)));
-    assert_eq!(ask.app.as_ref().map(|a| a.as_str()), Some("org.quire.Mail"));
+    assert_eq!(ask.app.as_ref().map(|a| a.as_str()), Some("org.bardo.Mail"));
     assert_eq!(ask.keep.window, Keep::Kept);
     assert_eq!(
         (ask.keep.query, ask.keep.results, ask.keep.selection),

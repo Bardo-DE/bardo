@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Settings
+Exec=/usr/bin/bardo-settings --service
+SystemdService=org.bardo.Settings.service

@@ -1,9 +1,9 @@
-//! Serving `org.quire.Companion1`: the root object (`Prepare`, `Open`, `Ask`, `Close`, `Roster`,
-//! `Front`) and one answer object per task (`/org/quire/Companion1/answer/<task>`). The roster,
+//! Serving `org.bardo.Companion1`: the root object (`Prepare`, `Open`, `Ask`, `Close`, `Roster`,
+//! `Front`) and one answer object per task (`/org/bardo/Companion1/answer/<task>`). The roster,
 //! the front task and the answers are read from what the loop last wrote (`Shared`), never from
 //! the companion itself, so `Roster()` answers while a planner turn waits on a confirmation.
 //! Members carry no doc comments: zbus copies them into the introspection, which is held to
-//! `dbus/org.quire.Companion1.xml`.
+//! `dbus/org.bardo.Companion1.xml`.
 
 use crate::Companiond;
 use crate::Shared;
@@ -66,7 +66,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock> Root<P, I, K> {
     }
 }
 
-#[zbus::interface(name = "org.quire.Companion1")]
+#[zbus::interface(name = "org.bardo.Companion1")]
 impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static> Root<P, I, K> {
     async fn prepare(&self, options: Details) -> fdo::Result<()> {
         let _ = options;
@@ -195,7 +195,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock> AnswerObject<P, I, K> {
     }
 }
 
-#[zbus::interface(name = "org.quire.Companion1.Answer")]
+#[zbus::interface(name = "org.bardo.Companion1.Answer")]
 impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static>
     AnswerObject<P, I, K>
 {
@@ -295,7 +295,7 @@ async fn forward<P, I, K>(
                         .emit_signal(
                             None::<&str>,
                             COMPANION_PATH,
-                            "org.quire.Companion1",
+                            "org.bardo.Companion1",
                             "AnswerAdded",
                             &(object,),
                         )
@@ -312,7 +312,7 @@ async fn forward<P, I, K>(
                         .emit_signal(
                             None::<&str>,
                             path.as_str(),
-                            "org.quire.Companion1.Answer",
+                            "org.bardo.Companion1.Answer",
                             "Updated",
                             &(view,),
                         )
@@ -329,7 +329,7 @@ async fn forward<P, I, K>(
                         .emit_signal(
                             None::<&str>,
                             COMPANION_PATH,
-                            "org.quire.Companion1",
+                            "org.bardo.Companion1",
                             "AnswerRemoved",
                             &(object,),
                         )
@@ -341,7 +341,7 @@ async fn forward<P, I, K>(
                     .emit_signal(
                         None::<&str>,
                         COMPANION_PATH,
-                        "org.quire.Companion1",
+                        "org.bardo.Companion1",
                         "RosterChanged",
                         &(),
                     )
@@ -349,9 +349,9 @@ async fn forward<P, I, K>(
             }
             Change::HelpersChanged => {
                 for interface in [
-                    "org.quire.Companion1.Helpers",
-                    "org.quire.Companion1.Helpers2",
-                    "org.quire.Companion1.Terminals",
+                    "org.bardo.Companion1.Helpers",
+                    "org.bardo.Companion1.Helpers2",
+                    "org.bardo.Companion1.Terminals",
                 ] {
                     let _ = connection
                         .emit_signal(None::<&str>, COMPANION_PATH, interface, "Changed", &())

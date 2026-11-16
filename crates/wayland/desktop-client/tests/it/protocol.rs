@@ -302,7 +302,7 @@ fn on_the_quire_arm_the_window_commands_go_to_quire_not_wlr() {
     let wlr_too = quire.clone().with(Protocol::WlrForeignToplevelManagement);
     for command in toplevel_commands() {
         if command.route() == CommandRoute::MinimiseTarget {
-            // The minimise target is the shell's: quire_shell_v1.
+            // The minimise target is the shell's: bardo_shell_v1.
             assert_eq!(missing(&quire, &command), Some(Protocol::QuireShell));
             assert!(supports(
                 &quire.clone().with(Protocol::QuireShell),

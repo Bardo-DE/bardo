@@ -1,4 +1,4 @@
-//! The routines on `org.quire.Companion1.Helpers`: what the shell lists and reads, and the form it
+//! The routines on `org.bardo.Companion1.Helpers`: what the shell lists and reads, and the form it
 //! sends. Every sentence in it is plain words: a routine is something a helper does by itself
 //! when a time comes, something happens, or another job is done.
 

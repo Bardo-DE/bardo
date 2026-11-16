@@ -16,7 +16,7 @@ fn name(text: &str) -> SpaceName {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_lists_creates_and_hears_of_new_spaces() {
     let daemon = Daemon::start([]).await;
-    let watcher = Bus::over(daemon.client_as(named("org.quire.Mail")).await).spaces();
+    let watcher = Bus::over(daemon.client_as(named("org.bardo.Mail")).await).spaces();
     let mut changes = watcher.watch().await.expect("watch");
     assert!(watcher.list().await.expect("list").is_empty());
 

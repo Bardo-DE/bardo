@@ -1,4 +1,4 @@
-//! `org.quire.Grants1` at `/org/quire/Grants1`, on accountd's connection: who may use which
+//! `org.bardo.Grants1` at `/org/bardo/Grants1`, on accountd's connection: who may use which
 //! account, and the relays a grant opens. An app finds the accounts it holds a grant for, asks the
 //! person for one (the chooser and consent sheet), and opens a byte stream to one of the account's
 //! servers that accountd has already signed in: the stream is a descriptor (`h`, a Unix stream
@@ -15,7 +15,7 @@
 //! `Grants` and `Accounts` answer JSON text of the rows (a list of `Grant`, a list of the
 //! accounts), because a grant or an account has no flat shape worth a second codec.
 //!
-//! Errors are `org.quire.Accounts1.Error.<Refusal>` (`UnknownGrant`, `NeedsConsent`,
+//! Errors are `org.bardo.Accounts1.Error.<Refusal>` (`UnknownGrant`, `NeedsConsent`,
 //! `EndpointNotGranted`, ...), `InvalidArgs` for a text that is none of the above, and
 //! `LimitsExceeded` while the caller has a sheet of this kind open.
 
@@ -43,9 +43,9 @@ pub const ACCOUNT_OPTION: &str = "account";
 /// The interface, written once. `#[bus_interface]` makes [`GrantsProxy`] for its callers from this
 /// trait, [`GrantsServer`] for the daemon to implement and [`GrantsServed`] to register.
 #[bus_interface(
-    interface = "org.quire.Grants1",
-    default_service = "org.quire.Accounts1",
-    default_path = "/org/quire/Grants1"
+    interface = "org.bardo.Grants1",
+    default_service = "org.bardo.Accounts1",
+    default_path = "/org/bardo/Grants1"
 )]
 pub trait Grants {
     /// The accounts that fit `need` for the caller and that the caller holds a grant for, best
@@ -57,7 +57,7 @@ pub trait Grants {
     /// The grants the caller holds, as the JSON text of a list of `Grant`.
     fn grants(&self) -> zbus::Result<String>;
     /// Shows the chooser and consent sheet for `need`; returns a Request object
-    /// (`org.quire.Accounts1.Request`) whose `Response` carries the candidate the person
+    /// (`org.bardo.Accounts1.Request`) whose `Response` carries the candidate the person
     /// granted. The sheet is drawn each time: what the caller already holds is `Candidates`',
     /// and its answer to a sheet is kept, so a caller asks again only for another account.
     /// `options` may name the one account to ask about under [`ACCOUNT_OPTION`]: the sheet then

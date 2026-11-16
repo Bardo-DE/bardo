@@ -17,7 +17,7 @@ use crate::deadline::{MENU_CALL, call};
 use crate::error::ServiceError;
 
 /// Where an app serves its menu (`AppMenuAddress::PATH`).
-pub(crate) const MENU_PATH: &str = "/org/quire/AppMenu";
+pub(crate) const MENU_PATH: &str = "/org/bardo/AppMenu";
 
 /// The interface it serves.
 pub(crate) const MENU_INTERFACE: &str = "com.canonical.dbusmenu";
@@ -157,7 +157,7 @@ pub(crate) fn props_of(props: &HashMap<String, OwnedValue>) -> NodeProps {
         shortcut: get::<Vec<Vec<String>>>(props, "shortcut")
             .and_then(|chords| chords.into_iter().next())
             .map(Chord),
-        command: get::<String>(props, "x-quire-command-id").map(MenuCommand),
+        command: get::<String>(props, "x-bardo-command-id").map(MenuCommand),
         icon_name: get(props, "icon-name"),
     }
 }
@@ -249,7 +249,7 @@ mod tests {
         let Some(bus) = PrivateBus::start() else {
             return;
         };
-        let name = "org.quire.AppMenu.hung";
+        let name = "org.bardo.AppMenu.hung";
         let _app = connect(&bus)
             .name(name)
             .and_then(|builder| builder.serve_at(MENU_PATH, HungMenu))

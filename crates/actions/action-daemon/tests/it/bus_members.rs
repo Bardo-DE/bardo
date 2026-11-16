@@ -1,11 +1,11 @@
-//! Every member of `org.quire.Intents1` over a real bus: intentd's `serve_on` on one end, the
+//! Every member of `org.bardo.Intents1` over a real bus: intentd's `serve_on` on one end, the
 //! client's `DbusTransport` on the other, and a second router, in process, given the same
 //! requests as the same caller. Whatever the transport, the reply must be the router's own, so
 //! the codec of each member (the JSON of its arguments, the Request objects of the members that
 //! wait, the bus errors of a request refused before it was a call) is held to the router
 //! instead of to a second opinion of what it should say.
 //!
-//! Also: the introspection of what intentd serves is `dbus/org.quire.Intents1.xml`, and the
+//! Also: the introspection of what intentd serves is `dbus/org.bardo.Intents1.xml`, and the
 //! caller's identity is derived from the connection, never sent.
 
 use crate::support::world::*;
@@ -38,7 +38,7 @@ fn space(name: &str) -> SpaceId {
 }
 
 fn mail() -> account_core::AppName {
-    app("org.quire.Mail")
+    app("org.bardo.Mail")
 }
 
 fn thread(key: &str) -> EntityId {
@@ -152,8 +152,8 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
         caller: caller(EVERYTHING, &all_roles),
         covered: BTreeSet::new(),
     };
-    let (mail_transport, _mail_keep) = world.client(&["org.quire.Mail"]).await;
-    let local_mail = caller("org.quire.Mail", &[]);
+    let (mail_transport, _mail_keep) = world.client(&["org.bardo.Mail"]).await;
+    let local_mail = caller("org.bardo.Mail", &[]);
 
     // The registry: the installed manifests.
     let IntentsReply::Manifests(manifests) = pair.both(IntentsRequest::Manifests).await else {
@@ -563,7 +563,7 @@ fn sample_policy(task: &provenance::TaskId) -> TaskPolicy {
 async fn a_caller_with_no_role_is_a_plain_app_and_an_unnamed_one_is_nobody() {
     let world = World::serving(mail_router(), everything_config()).await;
     // A plain app may read the registry, and nothing the launcher alone may do.
-    let (plain, _keep) = world.client(&["org.quire.Mail"]).await;
+    let (plain, _keep) = world.client(&["org.bardo.Mail"]).await;
     let manifests = plain
         .call(IntentsRequest::Manifests)
         .await
@@ -580,7 +580,7 @@ async fn a_caller_with_no_role_is_a_plain_app_and_an_unnamed_one_is_nobody() {
     assert_eq!(
         world
             .router
-            .handle(&caller("org.quire.Mail", &[]), IntentsRequest::ControlState)
+            .handle(&caller("org.bardo.Mail", &[]), IntentsRequest::ControlState)
             .await,
         IntentsReply::Refused(WireRefusal::NotAllowed)
     );
@@ -597,7 +597,7 @@ async fn a_caller_with_no_role_is_a_plain_app_and_an_unnamed_one_is_nobody() {
 async fn a_name_the_configuration_does_not_list_gets_no_roles_even_if_it_says_it_is_sill() {
     // The role comes from the name the connection owns, never from anything in a body.
     let world = World::serving(mail_router(), everything_config()).await;
-    let (impostor, _keep) = world.client(&["org.quire.Shell"]).await;
+    let (impostor, _keep) = world.client(&["org.bardo.Shell"]).await;
     let reply = impostor
         .call(IntentsRequest::ControlHalt {
             scope: SpaceScope::Any,
@@ -622,7 +622,7 @@ async fn the_interfaces_intentd_serves_are_the_declared_ones() {
         .await
         .expect("proxy");
     let served = proxy.introspect().await.expect("introspection");
-    // The bus adds the standard interfaces; what is ours is every `org.quire.Intents1.*`
+    // The bus adds the standard interfaces; what is ours is every `org.bardo.Intents1.*`
     // interface but `Request`, which lives at the request objects.
     let declared = introspection(Bus::Intents);
     for interface in [
@@ -637,7 +637,7 @@ async fn the_interfaces_intentd_serves_are_the_declared_ones() {
         "Gate",
         "Control",
     ] {
-        let name = format!("org.quire.Intents1.{interface}");
+        let name = format!("org.bardo.Intents1.{interface}");
         let theirs = block(&declared, &name);
         let ours = block(&served, &name);
         assert_eq!(ours, theirs, "{name} is served as declared");

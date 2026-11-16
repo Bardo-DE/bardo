@@ -5,9 +5,9 @@
 //! someone owns, or a uid alone is a role; a caller nothing identifies is refused.
 //!
 //! The roles come from the daemon's own file, `<daemon>-callers.toml`: the system's under
-//! `/etc/quire` and the person's under their configuration directory, laid over it
+//! `/etc/bardo` and the person's under their configuration directory, laid over it
 //! ([`read_table`]). Only the system's file can give a fixed role (`sheet_host`, `cua`, ...), and
-//! a scope row is never more than a plain app, so the shell is `sill.service` and nothing else.
+//! a scope row is never more than a plain app, so the shell is `bardo-shell.service` and nothing else.
 //!
 //! A test (or a host that knows its own clients) names the callers of its private bus with
 //! [`Identity::introduce_app`], because every connection of a test is one process; the rest are
@@ -23,7 +23,7 @@ use std::path::{Path, PathBuf};
 use zbus::fdo;
 
 /// Where the system's callers files are installed.
-pub const SYSTEM_DIR: &str = "/etc/quire";
+pub const SYSTEM_DIR: &str = "/etc/bardo";
 
 /// The person's configuration directory: `$XDG_CONFIG_HOME`, else `$HOME/.config`.
 pub fn config_home(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
@@ -38,7 +38,7 @@ pub fn config_home(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
         })
 }
 
-/// The daemon's table: `/etc/quire/<file>` with `<config>/quire/<file>` laid over it. A file that
+/// The daemon's table: `/etc/bardo/<file>` with `<config>/quire/<file>` laid over it. A file that
 /// is missing is an empty table (nobody is identified); a file that does not parse is an error.
 pub fn read_table(
     file: &str,
@@ -50,7 +50,7 @@ pub fn read_table(
     )
 }
 
-/// As [`read_table`], with the system's file at `system` instead of under `/etc/quire`: the
+/// As [`read_table`], with the system's file at `system` instead of under `/etc/bardo`: the
 /// acceptance harness is its own system, and a fixed role comes from no other file.
 pub fn read_table_at(
     system: &Path,
@@ -83,19 +83,19 @@ impl Standing {
     }
 }
 
-/// intentd, the router: the `agent` role of the app `org.quire.Intents`.
-pub const INTENTD: Standing = Standing::new("org.quire.Intents", Role::Agent);
-/// companiond, the assistant: the `agent` role of the app `org.quire.Companion1`. It is the only
+/// intentd, the router: the `agent` role of the app `org.bardo.Intents`.
+pub const INTENTD: Standing = Standing::new("org.bardo.Intents", Role::Agent);
+/// companiond, the assistant: the `agent` role of the app `org.bardo.Companion1`. It is the only
 /// caller of the agent host's `HandOver`.
-pub const COMPANIOND: Standing = Standing::new("org.quire.Companion1", Role::Agent);
-/// sill, the shell and the sheet host: the `sheet_host` role of the app `org.quire.Shell`.
-pub const SHELL: Standing = Standing::new("org.quire.Shell", Role::SheetHost);
+pub const COMPANIOND: Standing = Standing::new("org.bardo.Companion1", Role::Agent);
+/// sill, the shell and the sheet host: the `sheet_host` role of the app `org.bardo.Shell`.
+pub const SHELL: Standing = Standing::new("org.bardo.Shell", Role::SheetHost);
 
 /// The table of a process that answers intentd alone and reads no file: one row, intentd's unit.
-/// An app serving `IntentProvider1` has no `/etc/quire` file of its own to keep, and the router is
+/// An app serving `IntentProvider1` has no `/etc/bardo` file of its own to keep, and the router is
 /// the same on every machine.
 pub const INTENTD_ONLY: &str =
-    "[[caller]]\napp = \"org.quire.Intents\"\nunit = \"intentd.service\"\nrole = \"agent\"\n";
+    "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n";
 
 /// The table of [`INTENTD_ONLY`]: one row, intentd's unit.
 pub fn intentd_only() -> CallerTable {

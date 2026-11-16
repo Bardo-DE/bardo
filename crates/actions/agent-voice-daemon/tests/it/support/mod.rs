@@ -33,9 +33,9 @@ use zbus::zvariant::OwnedFd;
 
 use action_wire::VoiceIntent;
 
-pub const SHELL: &str = "org.quire.Shell";
-pub const SECOND_SHELL: &str = "org.quire.Shell2";
-pub const MAILO: &str = "org.quire.Mailo";
+pub const SHELL: &str = "org.bardo.Shell";
+pub const SECOND_SHELL: &str = "org.bardo.Shell2";
+pub const MAILO: &str = "org.bardo.Mailo";
 
 pub fn served() -> ServedBy {
     ServedBy {
@@ -396,7 +396,7 @@ fn signal_rule(interface: &'static str, member: &'static str) -> zbus::MatchRule
 /// Every `Utterance.Ended` this connection is sent, subscribed before anything can emit it.
 pub async fn ended_stream(connection: &zbus::Connection) -> zbus::MessageStream {
     zbus::MessageStream::for_match_rule(
-        signal_rule("org.quire.Voice1.Utterance", "Ended"),
+        signal_rule("org.bardo.Voice1.Utterance", "Ended"),
         connection,
         None,
     )
@@ -407,7 +407,7 @@ pub async fn ended_stream(connection: &zbus::Connection) -> zbus::MessageStream 
 /// Every `Speech.Finished` this connection is sent.
 pub async fn finished_stream(connection: &zbus::Connection) -> zbus::MessageStream {
     zbus::MessageStream::for_match_rule(
-        signal_rule("org.quire.Voice1.Speech", "Finished"),
+        signal_rule("org.bardo.Voice1.Speech", "Finished"),
         connection,
         None,
     )
@@ -418,7 +418,7 @@ pub async fn finished_stream(connection: &zbus::Connection) -> zbus::MessageStre
 /// Every `Voice1.StatusChanged` (a broadcast).
 pub async fn status_stream(connection: &zbus::Connection) -> zbus::MessageStream {
     zbus::MessageStream::for_match_rule(
-        signal_rule("org.quire.Voice1", "StatusChanged"),
+        signal_rule("org.bardo.Voice1", "StatusChanged"),
         connection,
         None,
     )

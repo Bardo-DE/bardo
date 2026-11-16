@@ -23,14 +23,14 @@ use provenance::{SpaceId, UnixSeconds};
 use std::sync::Arc;
 
 /// The fixture manifest of the fake mail app.
-pub const MAIL_MANIFEST: &str = include_str!("../fixtures/manifests/org.quire.Mail.intents.toml");
+pub const MAIL_MANIFEST: &str = include_str!("../fixtures/manifests/org.bardo.Mail.intents.toml");
 /// The fixture manifest of the fake files app.
-pub const FILES_MANIFEST: &str = include_str!("../fixtures/manifests/org.quire.Files.intents.toml");
+pub const FILES_MANIFEST: &str = include_str!("../fixtures/manifests/org.bardo.Files.intents.toml");
 /// The fixture manifest of the fake menu app (`menu.item.activate` classifies per call).
-pub const MENU_MANIFEST: &str = include_str!("../fixtures/manifests/org.quire.Menu.intents.toml");
-const MEMORY_MANIFEST: &str = include_str!("../../manifests/org.quire.Memory.toml");
-const COMPANION_MANIFEST: &str = include_str!("../../manifests/org.quire.Companion.toml");
-const ACP_AGENT_MANIFEST: &str = include_str!("../../manifests/org.quire.AcpAgent.toml");
+pub const MENU_MANIFEST: &str = include_str!("../fixtures/manifests/org.bardo.Menu.intents.toml");
+const MEMORY_MANIFEST: &str = include_str!("../../manifests/org.bardo.Memory.toml");
+const COMPANION_MANIFEST: &str = include_str!("../../manifests/org.bardo.Companion.toml");
+const ACP_AGENT_MANIFEST: &str = include_str!("../../manifests/org.bardo.AcpAgent.toml");
 
 /// Why a fake router could not be built.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

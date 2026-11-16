@@ -14,7 +14,7 @@ fn every_preset() -> [(&'static str, InMode); 2] {
     [("auto", pdp()), ("manual", manual())]
 }
 
-/// A call from `quire-do`: arguments are untrusted (the person or an agent typed them), no
+/// A call from `bardo-do`: arguments are untrusted (the person or an agent typed them), no
 /// class grants exist for a terminal, and the call is outside any derived task policy.
 fn cli(effect: Effect, edit: impl FnOnce(&mut PolicyRequest)) -> PolicyRequest {
     with(effect, |r| {

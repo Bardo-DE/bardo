@@ -83,25 +83,25 @@ fn no_word_a_person_reads_is_a_developer_word() {
 fn the_report_line_is_read_strictly() {
     let rows: [(&[u8], Option<LandlockLevel>); 12] = [
         (
-            b"bulkhead-enter: landlock=full\n",
+            b"bardo-sandbox-enter: landlock=full\n",
             Some(LandlockLevel::Full),
         ),
         (
-            b"bulkhead-enter: landlock=files-only\n",
+            b"bardo-sandbox-enter: landlock=files-only\n",
             Some(LandlockLevel::FilesOnly),
         ),
         (
-            b"bulkhead-enter: landlock=none\n",
+            b"bardo-sandbox-enter: landlock=none\n",
             Some(LandlockLevel::None),
         ),
-        (b"bulkhead-enter: landlock=full", Some(LandlockLevel::Full)),
+        (b"bardo-sandbox-enter: landlock=full", Some(LandlockLevel::Full)),
         (
-            b"bulkhead-enter: landlock=full\r\n",
+            b"bardo-sandbox-enter: landlock=full\r\n",
             Some(LandlockLevel::Full),
         ),
-        (b"bulkhead-enter: landlock=maybe\n", None),
-        (b"bulkhead-enter: landlock=full extra\n", None),
-        (b" bulkhead-enter: landlock=full\n", None),
+        (b"bardo-sandbox-enter: landlock=maybe\n", None),
+        (b"bardo-sandbox-enter: landlock=full extra\n", None),
+        (b" bardo-sandbox-enter: landlock=full\n", None),
         (b"the agent says hello\n", None),
         (b"\xff\xfe\n", None),
         (b"", None),

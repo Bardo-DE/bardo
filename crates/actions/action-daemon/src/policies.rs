@@ -7,7 +7,7 @@
 //!   before the two modes shared a grid is not read; it is named as unused.
 //! - person: `$XDG_CONFIG_HOME/quire/permissions/*.cedar`.
 //! - assistant: `$XDG_CONFIG_HOME/quire/permissions/assistant/*.cedar` (forbids only).
-//! - administrator: `/etc/quire/permissions/*.cedar` (forbids only, never skipped).
+//! - administrator: `/etc/bardo/permissions/*.cedar` (forbids only, never skipped).
 //!
 //! Files are read in name order. A file that cannot be read is handed to the loader as an
 //! unreadable source, so its layer decides what that means. One policy set is built, from the
@@ -26,7 +26,7 @@ const PRESET_FOLDER: &str = "default";
 const OLD_FOLDERS: [&str; 2] = ["auto", "manual"];
 
 /// Where the administrator's policy files are on a real machine.
-pub const ADMIN_DIR: &str = "/etc/quire/permissions";
+pub const ADMIN_DIR: &str = "/etc/bardo/permissions";
 
 /// Where the rules of a preset in force came from, in words for the person.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

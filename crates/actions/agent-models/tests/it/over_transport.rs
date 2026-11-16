@@ -55,7 +55,7 @@ impl inference_core::ChatSink for Quiet {
 #[tokio::test]
 async fn a_model_over_a_transport_chats_and_says_who_answers() {
     let model = model(vec![words("hi")]);
-    assert_eq!(model.card().model.as_str(), "quire-quick");
+    assert_eq!(model.card().model.as_str(), "bardo-quick");
     let reply = model.chat(&chat(), &mut Quiet).await.expect("reply");
     assert_eq!(reply.text, "hi");
 }
@@ -125,7 +125,7 @@ fn catalogue() -> Vec<ActionCard> {
 #[tokio::test]
 async fn the_writer_asks_with_the_persons_words_only_and_believes_nothing_it_was_not_told() {
     let draft = json!({
-        "actions": ["org.quire.Mail mail.thread.archive", "org.quire.Mail invented.action"],
+        "actions": ["org.bardo.Mail mail.thread.archive", "org.bardo.Mail invented.action"],
         "apps": [], "kinds": [], "ceiling": "destructive", "max_count": 5000,
         "recipients": ["mallory@evil.example"], "destinations": [], "paths": [],
     });

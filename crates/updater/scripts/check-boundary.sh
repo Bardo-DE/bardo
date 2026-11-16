@@ -1,7 +1,7 @@
 #!/bin/sh
 # The edges of the dependency graph:
 #   updater-core stays pure: no network, D-Bus, async runtime or archive I/O.
-#   updater-root is what runs as root (slipway-apply, slipway-rollback, slipway-health). It may read
+#   updater-root is what runs as root (bardo-updater-apply, bardo-updater-rollback, bardo-updater-health). It may read
 #   archives, but its whole tree (normal and build dependencies) holds no network client, TLS, bus,
 #   async runtime, logging framework or user-level code, and its direct dependencies are exactly the
 #   short list below. A new direct dependency of the root programs is a decision, so it is made here.
