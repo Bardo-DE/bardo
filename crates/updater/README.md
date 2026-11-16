@@ -1,4 +1,4 @@
-# slipway
+# bardo-updater
 
 Keeps a desktop installed from signed, prebuilt release bundles up to date.
 
@@ -10,7 +10,7 @@ Keeps a desktop installed from signed, prebuilt release bundles up to date.
   symlink switched with one atomic rename. The previous release stays, so a rollback is the same switch
   back. A release that does not reach a healthy session is rolled back on the next login, and is not
   offered again until a newer one is published.
-- `slipway` (user): the daily check, download and verify, the session service and the command line.
+- `bardo-updater` (user): the daily check, download and verify, the session service and the command line.
   `bardo-updater-apply` (privileged, started through polkit): re-verifies and switches; it trusts nothing the
   user side hands it except a path. It, `bardo-updater-rollback` and `bardo-updater-health` are built from the small
   crate `updater-root`, which does not link the network client, the bus or the async runtime.
@@ -19,9 +19,9 @@ Install the system pieces (helper, polkit action, user unit, bus activation file
 settings `/etc/bardo/updater.toml` holding the root and the key path) in two steps: build the three
 privileged programs as yourself with `scripts/install.sh --build-only`, then install them as
 root with
-`sudo sh -c 'umask 022 && scripts/install.sh --bin-dir target/release --root /opt/quire --pubkey release.pub'`.
+`sudo sh -c 'umask 022 && scripts/install.sh --bin-dir target/release --root /opt/bardo --pubkey release.pub'`.
 The script never builds as root, and builds with the computer's own linker (no clang or mold needed). `--help` lists the options, and an existing settings file is never
-overwritten. Your own `~/.config/slipway/config.toml` may only set
+overwritten. Your own `~/.config/bardo-updater/config.toml` may only set
 `settings_command` and `name`.
 
 The helper is installed by hand and only it decides which system files a release may place, so re-run

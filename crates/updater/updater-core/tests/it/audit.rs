@@ -17,7 +17,7 @@ fn a_complete_honest_bundle_passes() {
     audit.admit_dir("bin/").expect("bin");
     assert_eq!(
         audit
-            .admit_file("./bin/casement", &digest("casement"))
+            .admit_file("./bin/bardo-compositor", &digest("casement"))
             .expect("file")
             .mode,
         0o644
@@ -49,14 +49,14 @@ fn every_way_a_bundle_can_lie_is_caught() {
         ),
         (
             "changed file",
-            |a| a.admit_file("bin/casement", &digest("evil")).map(drop),
+            |a| a.admit_file("bin/bardo-compositor", &digest("evil")).map(drop),
             |e| matches!(e, AuditError::DigestMismatch(_)),
         ),
         (
             "file twice",
             |a| {
-                a.admit_file("bin/casement", &digest("casement"))?;
-                a.admit_file("bin/casement", &digest("casement")).map(drop)
+                a.admit_file("bin/bardo-compositor", &digest("casement"))?;
+                a.admit_file("bin/bardo-compositor", &digest("casement")).map(drop)
             },
             |e| matches!(e, AuditError::Duplicate(_)),
         ),
@@ -78,7 +78,7 @@ fn every_way_a_bundle_can_lie_is_caught() {
         (
             "reserved folder",
             |a| {
-                a.admit_file(".slipway/release.toml", &digest("x"))
+                a.admit_file(".bardo-updater/release.toml", &digest("x"))
                     .map(drop)
             },
             |e| matches!(e, AuditError::BadPath(_)),
@@ -90,7 +90,7 @@ fn every_way_a_bundle_can_lie_is_caught() {
         ),
         (
             "folder where a file is listed",
-            |a| a.admit_dir("bin/casement"),
+            |a| a.admit_dir("bin/bardo-compositor"),
             |e| matches!(e, AuditError::Mixed(_)),
         ),
         (
@@ -122,7 +122,7 @@ fn every_way_a_bundle_can_lie_is_caught() {
         (
             "missing file",
             |a| {
-                a.admit_file("bin/casement", &digest("casement"))?;
+                a.admit_file("bin/bardo-compositor", &digest("casement"))?;
                 a.admit_dir("share")?;
                 Ok(())
             },
@@ -144,7 +144,7 @@ fn a_missing_file_is_named() {
     let release = release();
     let mut audit = Audit::new(&release);
     audit
-        .admit_file("bin/casement", &digest("casement"))
+        .admit_file("bin/bardo-compositor", &digest("casement"))
         .expect("file");
     assert_eq!(
         audit.finish(),

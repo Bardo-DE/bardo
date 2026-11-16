@@ -56,7 +56,7 @@ fn a_rolled_back_version_is_not_offered_again_until_a_newer_one_appears() {
 #[test]
 fn bundle_paths_table() {
     let ok = [
-        "bin/casement",
+        "bin/bardo-compositor",
         "a",
         "share/x y/z.desktop",
         "lib/libfoo.so.1",
@@ -76,7 +76,7 @@ fn bundle_paths_table() {
         ("a/", |e| matches!(e, PathError::Climbing(_))),
         ("a\\b", |e| matches!(e, PathError::BadCharacter(_))),
         ("a\nb", |e| matches!(e, PathError::BadCharacter(_))),
-        (".slipway/x", |e| matches!(e, PathError::Reserved(_))),
+        (".bardo-updater/x", |e| matches!(e, PathError::Reserved(_))),
         (long.as_str(), |e| matches!(e, PathError::TooLong)),
     ];
     for (path, expect) in bad {

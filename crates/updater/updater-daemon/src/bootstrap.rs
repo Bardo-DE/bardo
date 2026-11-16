@@ -1,4 +1,4 @@
-//! Assembling the real collaborators for `slipway run`.
+//! Assembling the real collaborators for `bardo-updater run`.
 
 use crate::clock::jitter_seed;
 use crate::config::Config;
@@ -18,7 +18,7 @@ const MACHINE_ID: &str = "/etc/machine-id";
 
 /// The desktop's table of its own programs from `/etc/bardo`. A table that is missing or that cannot
 /// be trusted (not root-only, not a table) is an empty one: no caller then counts as the shell, Settings
-/// or the `slipway` program, and the service says why in its log.
+/// or the `bardo-updater` program, and the service says why in its log.
 fn desktop_table() -> Table {
     TableFiles::desktop()
         .load(&RealProc::system())

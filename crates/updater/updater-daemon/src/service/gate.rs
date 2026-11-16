@@ -6,13 +6,13 @@
 //!
 //! | Method | Answered for |
 //! |---|---|
-//! | `Install` | the shell, Settings, and the `slipway` program itself |
+//! | `Install` | the shell, Settings, and the `bardo-updater` program itself |
 //! | `Rollback` | the shell and Settings (the system then asks for the administrator's password) |
 //! | `Check` | any caller that can be told apart from any other |
 //!
-//! The shell must be proved as far as the unit manager can (`Proof::Full`). Settings and the `slipway`
+//! The shell must be proved as far as the unit manager can (`Proof::Full`). Settings and the `bardo-updater`
 //! program are known by their root-owned image (`Proof::Exe`): Settings is also started by a launcher,
-//! outside any unit of ours, and the `slipway` program is run from a terminal, so neither has a unit to
+//! outside any unit of ours, and the `bardo-updater` program is run from a terminal, so neither has a unit to
 //! prove. This is a guard against stray programs, not the boundary for a downgrade: that is the
 //! administrator's password.
 

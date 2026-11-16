@@ -26,7 +26,7 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/udev/rules.d/70-bardo-key-remap.rules", true),
         ("/etc/udev/rules.d/70-bardo-mouse-gestures.rules", true),
         ("/etc/modules-load.d/bardo-shell-ddc.conf", true),
-        ("/etc/modules-load.d/keycap.conf", true),
+        ("/etc/modules-load.d/bardo-key-remap.conf", true),
         ("/usr/lib/bardo/key-remap/key-remap.toml", true),
         ("/etc/modprobe.d/99-bardo-mouse-gestures.conf", true),
         ("/usr/lib/systemd/system/bardo-key-remap.service", true),
@@ -34,7 +34,7 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/usr/lib/systemd/system/bardo-input-broker.socket", true),
         ("/usr/lib/systemd/system/bardo-input-broker.service", true),
         ("/etc/udev/rules.d/72-bardo-input-broker.rules", true),
-        ("/etc/modules-load.d/turnstile.conf", true),
+        ("/etc/modules-load.d/bardo-input-broker.conf", true),
         // The touchpad daemon as a system service, and the user units that must be plain files.
         ("/usr/lib/systemd/system/bardo-mouse-gestures.service", true),
         ("/usr/lib/systemd/user/bardo-shell.service", true),
@@ -52,16 +52,16 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/pam.d/sudo", false),
         ("/etc/pam.d/system-auth", false),
         ("/etc/polkit-1/rules.d/00-all.rules", false),
-        ("/etc/polkit-1/rules.d/49-keycap.rules", false),
+        ("/etc/polkit-1/rules.d/49-bardo-key-remap.rules", false),
         ("/etc/udev/rules.d/99-evil.rules", false),
         ("/etc/modules-load.d/evil.conf", false),
         ("/etc/modprobe.d/blacklist.conf", false),
         ("/usr/lib/systemd/system/evil.service", false),
-        ("/usr/lib/systemd/system/turnstile.timer", false),
+        ("/usr/lib/systemd/system/bardo-input-broker.timer", false),
         ("/usr/lib/systemd/system/bardo-input-broker.service.d", false),
-        ("/etc/udev/rules.d/73-turnstile.rules", false),
-        ("/usr/lib/systemd/system/palmrest.socket", false),
-        ("/usr/lib/systemd/user/sill.target", false),
+        ("/etc/udev/rules.d/73-bardo-input-broker.rules", false),
+        ("/usr/lib/systemd/system/bardo-mouse-gestures.socket", false),
+        ("/usr/lib/systemd/user/bardo-shell.target", false),
         ("/usr/lib/systemd/user/.service", false),
         ("/usr/lib/systemd/user/bardo-shell.service.d/10-evil.conf", false),
         (
@@ -80,25 +80,25 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/systemd/system/bardo-key-remap.service", false),
         ("/etc/systemd/system/bardo-input-broker.socket", false),
         ("/usr/lib/udev/rules.d/70-bardo-key-remap.rules", false),
-        ("/usr/bin/keycap", false),
+        ("/usr/bin/bardo-key-remap", false),
         // The administrator's keycap folder is never placed into; only the vendor folder is.
         ("/etc/bardo/key-remap/key-remap.toml", false),
-        ("/usr/lib/keycap/other.toml", false),
+        ("/usr/lib/bardo/key-remap/other.toml", false),
         // Security profiles are never placed by an update (owner, 2026-10-16).
         ("/etc/apparmor.d/bwrap", false),
         ("/etc/apparmor.d/usr.bin.bwrap", false),
         // Beside or below a listed folder.
         ("/etc/udev/rules.d2/70-bardo-key-remap.rules", false),
-        ("/etc/pam.d/sub/sill", false),
+        ("/etc/pam.d/sub/bardo-shell", false),
         ("/etc/xdg/bardo/sub/x.toml", false),
         // The folder itself, climbing, doubled slashes, hidden names, odd characters.
         ("/etc/pam.d", false),
         ("/etc/pam.d/", false),
         ("/etc/pam.d/../shadow", false),
-        ("/etc/pam.d//sill", false),
-        ("/etc/pam.d/.sill", false),
-        ("/etc/pam.d/si ll", false),
-        ("etc/pam.d/sill", false),
+        ("/etc/pam.d//bardo-shell", false),
+        ("/etc/pam.d/.bardo-shell", false),
+        ("/etc/pam.d/bardo shell", false),
+        ("etc/pam.d/bardo-shell", false),
     ];
     for (dest, accepted) in table {
         assert_eq!(is_allowed_system_path(dest), accepted, "{dest}");
@@ -155,8 +155,8 @@ fn a_vendor_copy_is_found_where_the_distribution_keeps_it() {
             &["/usr/lib/udev/rules.d/70-bardo-key-remap.rules"],
         ),
         (
-            "/etc/modules-load.d/keycap.conf",
-            &["/usr/lib/modules-load.d/keycap.conf"],
+            "/etc/modules-load.d/bardo-key-remap.conf",
+            &["/usr/lib/modules-load.d/bardo-key-remap.conf"],
         ),
         (
             "/etc/modprobe.d/99-bardo-mouse-gestures.conf",

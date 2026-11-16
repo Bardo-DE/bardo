@@ -19,7 +19,7 @@
   start in several different boots. A program of the person cannot make that happen on demand.
 -->
 <policyconfig>
-  <vendor>Quire</vendor>
+  <vendor>Bardo</vendor>
   <vendor_url>https://github.com/Bardo-DE/slipway</vendor_url>
   <action id="org.bardo.updater.apply">
     <description>Install a software update</description>

@@ -5,13 +5,13 @@ use updater_root::apply::{ApplyError, ExitCode, rollback};
 fn rollback_swaps_back_and_forth_and_moves_the_links() {
     let sandbox = Sandbox::new();
     let mut first = Recipe::new("0.1.0");
-    first.listed[0] = ("bin/casement", "casement one");
+    first.listed[0] = ("bin/bardo-compositor", "casement one");
     sandbox.install(&build(&first)).expect("install");
     let mut second = Recipe::new("0.2.0");
-    second.listed[0] = ("bin/casement", "casement two");
+    second.listed[0] = ("bin/bardo-compositor", "casement two");
     sandbox.install(&build(&second)).expect("install");
     assert_eq!(
-        read(&sandbox.layout.current().join("bin/casement")),
+        read(&sandbox.layout.current().join("bin/bardo-compositor")),
         "casement two"
     );
 
@@ -20,7 +20,7 @@ fn rollback_swaps_back_and_forth_and_moves_the_links() {
     assert_eq!(sandbox.current(), Some(v("0.1.0")));
     assert_eq!(sandbox.previous(), Some(v("0.2.0")));
     assert_eq!(
-        read(&sandbox.layout.current().join("bin/casement")),
+        read(&sandbox.layout.current().join("bin/bardo-compositor")),
         "casement one"
     );
     assert_eq!(
@@ -31,7 +31,7 @@ fn rollback_swaps_back_and_forth_and_moves_the_links() {
     let forward = rollback(&sandbox.layout, &Accept).expect("rollback again");
     assert_eq!(forward.version, v("0.2.0"));
     assert_eq!(
-        read(&sandbox.layout.current().join("bin/casement")),
+        read(&sandbox.layout.current().join("bin/bardo-compositor")),
         "casement two"
     );
 }
@@ -53,7 +53,7 @@ fn rollback_with_nothing_before_is_refused() {
 fn rollback_moves_the_exports_of_the_release_it_returns_to() {
     let sandbox = Sandbox::new();
     let mut first = Recipe::new("0.1.0");
-    first.exports = vec![("/usr/local/bin/casement", "bin/casement")];
+    first.exports = vec![("/usr/local/bin/bardo-compositor", "bin/bardo-compositor")];
     sandbox.install(&build(&first)).expect("install");
     let mut second = Recipe::new("0.2.0");
     second.exports = vec![(
@@ -66,10 +66,10 @@ fn rollback_moves_the_exports_of_the_release_it_returns_to() {
             .link("/usr/share/wayland-sessions/bardo.desktop")
             .exists()
     );
-    assert!(std::fs::symlink_metadata(sandbox.link("/usr/local/bin/casement")).is_err());
+    assert!(std::fs::symlink_metadata(sandbox.link("/usr/local/bin/bardo-compositor")).is_err());
 
     rollback(&sandbox.layout, &Accept).expect("rollback");
-    assert!(sandbox.link("/usr/local/bin/casement").exists());
+    assert!(sandbox.link("/usr/local/bin/bardo-compositor").exists());
     assert!(
         std::fs::symlink_metadata(sandbox.link("/usr/share/wayland-sessions/bardo.desktop"))
             .is_err()

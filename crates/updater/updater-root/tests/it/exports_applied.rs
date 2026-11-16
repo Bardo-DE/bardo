@@ -13,22 +13,22 @@ fn links_follow_the_release_added_kept_and_dropped() {
     let mut first = Recipe::new("0.1.0");
     first.exports = vec![
         (SESSION, "share/wayland-sessions/bardo.desktop"),
-        ("/usr/local/bin/casement", "bin/casement"),
+        ("/usr/local/bin/bardo-compositor", "bin/bardo-compositor"),
     ];
     sandbox.install(&build(&first)).expect("install");
     assert!(is_link(&sandbox.link(SESSION)));
-    assert!(is_link(&sandbox.link("/usr/local/bin/casement")));
+    assert!(is_link(&sandbox.link("/usr/local/bin/bardo-compositor")));
 
     let mut second = Recipe::new("0.2.0");
     second.exports = vec![
         (SESSION, "share/wayland-sessions/bardo.desktop"),
-        ("/usr/local/bin/other", "bin/casement"),
+        ("/usr/local/bin/other", "bin/bardo-compositor"),
     ];
     sandbox.install(&build(&second)).expect("install");
     assert!(is_link(&sandbox.link(SESSION)));
     assert!(is_link(&sandbox.link("/usr/local/bin/other")));
     assert!(
-        !is_link(&sandbox.link("/usr/local/bin/casement")),
+        !is_link(&sandbox.link("/usr/local/bin/bardo-compositor")),
         "a link the new release no longer lists is removed"
     );
 }

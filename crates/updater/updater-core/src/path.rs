@@ -6,7 +6,7 @@ use std::path::Path;
 
 /// The directory the updater keeps its own records in, inside each release. A bundle never
 /// writes there.
-pub const RESERVED_DIR: &str = ".slipway";
+pub const RESERVED_DIR: &str = ".bardo-updater";
 
 const MAX_PATH_BYTES: usize = 1024;
 const MAX_COMPONENT_BYTES: usize = 255;

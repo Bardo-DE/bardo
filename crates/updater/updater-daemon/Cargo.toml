@@ -9,12 +9,13 @@ repository = "https://github.com/Bardo-DE/slipway"
 publish = false
 
 [[bin]]
-name = "slipway"
+name = "bardo-updater"
 path = "src/main.rs"
 
 [dependencies]
 updater-core = {path = "../updater-core"}
 updater-root = {path = "../updater-root"}
+old-folders = {path = "../../platform/old-folders"}
 thiserror = {version = "2"}
 serde = {version = "1", features = ["derive"]}
 toml = {version = "0.9"}

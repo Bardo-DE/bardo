@@ -12,15 +12,15 @@ repository = "https://github.com/Bardo-DE/slipway"
 publish = false
 [[bin]]
 name = "bardo-updater-apply"
-path = "src/bin/slipway_apply.rs"
+path = "src/bin/bardo_updater_apply.rs"
 
 [[bin]]
 name = "bardo-updater-rollback"
-path = "src/bin/slipway_rollback.rs"
+path = "src/bin/bardo_updater_rollback.rs"
 
 [[bin]]
 name = "bardo-updater-health"
-path = "src/bin/slipway_health.rs"
+path = "src/bin/bardo_updater_health.rs"
 
 [dependencies]
 updater-core = {path = "../updater-core"}

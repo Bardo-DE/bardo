@@ -8,7 +8,7 @@
 use std::path::{Path, PathBuf};
 
 /// The default install root.
-pub const DEFAULT_ROOT: &str = "/opt/quire";
+pub const DEFAULT_ROOT: &str = "/opt/bardo";
 /// Where the trusted public key is installed.
 pub const DEFAULT_PUBKEY_PATH: &str = "/usr/share/bardo/updater/release.pub";
 /// The system-wide settings file the privileged programs read (never the person's own file).

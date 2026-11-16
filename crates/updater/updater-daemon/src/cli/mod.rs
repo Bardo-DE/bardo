@@ -1,4 +1,4 @@
-//! The command line: `slipway check|status|install|rollback|confirm|recover`. The first four talk to the
+//! The command line: `bardo-updater check|status|install|rollback|confirm|recover`. The first four talk to the
 //! daemon; `confirm` and `recover` work without it.
 //!
 //! Each command prints one plain line on standard output and exits with a documented code.
@@ -14,7 +14,7 @@ pub use client::{Reply, dispatch};
 pub use confirm::{confirm, vouch};
 pub use recover::recover;
 
-/// Exit codes of `slipway`.
+/// Exit codes of `bardo-updater`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Exit {

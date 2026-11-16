@@ -1,4 +1,4 @@
-//! `slipway recover`: run by the session before it starts the compositor.
+//! `bardo-updater recover`: run by the session before it starts the compositor.
 //!
 //! It works without the update service and without the session bus: it asks the privileged health
 //! helper, which counts the boots the current release has been started in without being confirmed and

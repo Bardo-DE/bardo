@@ -11,7 +11,7 @@ fn a_good_release_parses_with_everything_in_it() {
     assert_eq!(release.bundle.size, 123);
     assert_eq!(release.components["casement"], "e616a79");
     assert_eq!(release.files.len(), 2);
-    assert_eq!(release.file("bin/casement").map(|f| f.mode), Some(0o644));
+    assert_eq!(release.file("bin/bardo-compositor").map(|f| f.mode), Some(0o644));
     assert_eq!(release.exports.len(), 1);
 }
 
@@ -97,17 +97,17 @@ fn hostile_and_broken_releases_are_refused_for_the_right_reason() {
         ),
         (
             "reserved folder",
-            |d| d.files.push(f(".slipway/release.toml", "x")),
+            |d| d.files.push(f(".bardo-updater/release.toml", "x")),
             |e| matches!(e, ReleaseError::Unreadable(_)),
         ),
         (
             "duplicate file",
-            |d| d.files.push(f("bin/casement", "other")),
+            |d| d.files.push(f("bin/bardo-compositor", "other")),
             |e| matches!(e, ReleaseError::DuplicateFile(_)),
         ),
         (
             "file inside file",
-            |d| d.files.push(f("bin/casement/x", "x")),
+            |d| d.files.push(f("bin/bardo-compositor/x", "x")),
             |e| matches!(e, ReleaseError::FileInsideFile(_)),
         ),
         (
@@ -197,7 +197,7 @@ fn path_errors_carry_through() {
 fn export_links_are_allowed_only_below_the_listed_folders() {
     // (link, allowed)
     let table: [(&str, bool); 26] = [
-        ("/usr/local/bin/casement", true),
+        ("/usr/local/bin/bardo-compositor", true),
         ("/usr/share/wayland-sessions/bardo.desktop", true),
         ("/usr/share/xdg-desktop-portal/portals/bardo.portal", true),
         ("/usr/share/dbus-1/services/org.bardo.Mail.service", true),
@@ -219,7 +219,7 @@ fn export_links_are_allowed_only_below_the_listed_folders() {
         // Other system places are the system step's, never an export.
         ("/etc/bardo/accountd-callers.toml", false),
         ("/usr/lib/systemd/system/bardo-key-remap.service", false),
-        ("/usr/share/polkit-1/rules.d/keycap.rules", false),
+        ("/usr/share/polkit-1/rules.d/bardo-key-remap.rules", false),
         // A polkit action can make pkexec run a program as root with no password: a release never adds one.
         (
             "/usr/share/polkit-1/actions/org.bardo.updater.policy",

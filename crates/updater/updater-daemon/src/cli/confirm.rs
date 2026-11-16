@@ -1,4 +1,4 @@
-//! `slipway confirm`: the session says the shell came up, so the release in use is good.
+//! `bardo-updater confirm`: the session says the shell came up, so the release in use is good.
 //!
 //! The contract the session relies on: run it once per login, after the shell has answered; running it
 //! again changes nothing; it needs neither the update service nor the session bus. It records the good
@@ -13,7 +13,7 @@ use crate::state::StateStore;
 use std::path::Path;
 
 /// Records the version `root/current` names as confirmed. Does nothing when no release is
-/// installed under the root (a computer not updated by slipway). Returns whether a release is installed.
+/// installed under the root (a computer not updated by bardo-updater). Returns whether a release is installed.
 /// Already confirmed means nothing is written.
 pub fn confirm(root: &Path, store: &StateStore) -> std::io::Result<bool> {
     let Some(version) = current_version(root) else {
@@ -25,7 +25,7 @@ pub fn confirm(root: &Path, store: &StateStore) -> std::io::Result<bool> {
     Ok(true)
 }
 
-/// The whole of `slipway confirm`: the person's state, then the system's record through `elevate`.
+/// The whole of `bardo-updater confirm`: the person's state, then the system's record through `elevate`.
 pub fn vouch(root: &Path, store: &StateStore, elevate: &dyn Elevate) -> Reply {
     match confirm(root, store) {
         Ok(false) => Reply::done("No update is installed, so there is nothing to confirm."),

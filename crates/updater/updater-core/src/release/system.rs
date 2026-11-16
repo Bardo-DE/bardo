@@ -49,9 +49,9 @@ const fn rule(dir: &'static str, name: NameRule) -> SystemRule {
 }
 
 /// Every file a release may place, and nothing else.
-pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
+pub const ALLOWED_SYSTEM_FILES: [SystemRule; 19] = [
     // The shell's login service.
-    rule("/etc/pam.d", NameRule::Exact("sill")),
+    rule("/etc/pam.d", NameRule::Exact("bardo-shell")),
     // Brightness over the monitor's own bus.
     rule("/etc/udev/rules.d", NameRule::Exact("60-bardo-shell-ddc.rules")),
     rule("/etc/modules-load.d", NameRule::Exact("bardo-shell-ddc.conf")),
@@ -63,10 +63,10 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
         "/etc/polkit-1/rules.d",
         NameRule::Exact("bardo-key-remap.polkit.rules"),
     ),
-    rule("/etc/modules-load.d", NameRule::Exact("keycap.conf")),
+    rule("/etc/modules-load.d", NameRule::Exact("bardo-key-remap.conf")),
     // The desktop's vendor defaults for the keyboard daemon (the Caps Lock rule), read under the
-    // administrator's file. /etc/keycap stays the administrator's: no release places a file there.
-    rule("/usr/lib/keycap", NameRule::Exact("keycap.toml")),
+    // administrator's file. /etc/bardo/key-remap stays the administrator's: no release places a file there.
+    rule("/usr/lib/bardo/key-remap", NameRule::Exact("key-remap.toml")),
     // The input service that owns the virtual keyboard device: its two units (socket-activated), the
     // rule that takes the device node away from the person's session, and the module it needs.
     rule(
@@ -78,7 +78,7 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
         NameRule::Exact("bardo-input-broker.service"),
     ),
     rule("/etc/udev/rules.d", NameRule::Exact("72-bardo-input-broker.rules")),
-    rule("/etc/modules-load.d", NameRule::Exact("turnstile.conf")),
+    rule("/etc/modules-load.d", NameRule::Exact("bardo-input-broker.conf")),
     // The touchpad daemon (a system service, as the keyboard daemon is): its device rule, its module
     // options and its unit in the vendor folder.
     rule("/etc/udev/rules.d", NameRule::Exact("70-bardo-mouse-gestures.rules")),
@@ -97,8 +97,6 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 21] = [
         NameRule::Exact("10-bardo.conf"),
     ),
     // Who may call each daemon: the machine's caller tables.
-    rule("/etc/porter", NameRule::Exact("callers.toml")),
-    rule("/etc/porter", NameRule::Exact("inferd-callers.toml")),
     rule("/etc/bardo", NameRule::Ending("-callers.toml")),
     // The desktop's system-wide default settings (the XDG config folder, read below the person's own).
     rule("/etc/xdg/bardo", NameRule::Ending(".toml")),

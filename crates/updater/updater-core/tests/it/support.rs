@@ -46,7 +46,7 @@ impl Doc {
             bundle_sha: Sha256Hex::of(b"bundle").to_string(),
             bundle_size: "123".into(),
             files: vec![
-                f("bin/casement", "casement"),
+                f("bin/bardo-compositor", "casement"),
                 f("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
             ],
             exports: vec![(

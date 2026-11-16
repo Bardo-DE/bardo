@@ -51,7 +51,7 @@ fn cases() -> Vec<Case> {
             true,
         ),
         (
-            "the slipway program",
+            "the bardo-updater program",
             service("updater_cli", Proof::Exe),
             true,
             false,

@@ -1,6 +1,6 @@
 # Architecture
 
-slipway keeps the quire desktop (the casement compositor, the sill shell and the apps) up to date
+bardo-updater keeps the quire desktop (the casement compositor, the sill shell and the apps) up to date
 from prebuilt, signed release bundles that CI builds from the desktop repository's manifest and
 publishes on the public releases repository `PoHsuanLai/desktop-releases`. It checks once a day,
 tells the person when something newer exists, shows it on the Software Update page of Settings, and
@@ -13,7 +13,7 @@ and can be rolled back. The behaviour follows macOS Software Update.
 | --- | --- | --- |
 | `updater-core` | `Release` (parse and validate `release.toml`), `BundlePath`, version `standing`, signature check (`Authenticator`, `PublicKey`), digests, `Audit` (the bundle against the release), the install `Plan`, `plan_exports`, `next_check` (the schedule), `ProgressGate`, `decide_boot` (the health rule) | none |
 | `updater-root` | everything that runs as root: the verified unpack and atomic switch (`apply`), the three programs' entry points (`helper`) and binaries `bardo-updater-apply`, `bardo-updater-rollback`, `bardo-updater-health`, the install root's layout (`layout`), small file operations (`fsutil`), the trust anchor (`keys`), the report the helper prints (`report`) and the two system settings it reads (`settings`) | files, a child process (`restorecon`) |
-| `slipway` | downloading (`fetch`), the session service (`service`), the command line (`cli`), the daemon's files (`config`, `state`, `dirs`), the `pkexec` seam (`elevate`), and one binary: `slipway` | files, network, session bus, a child process |
+| `bardo-updater` | downloading (`fetch`), the session service (`service`), the command line (`cli`), the daemon's files (`config`, `state`, `dirs`), the `pkexec` seam (`elevate`), and one binary: `bardo-updater` | files, network, session bus, a child process |
 
 `updater-core` reaches no network, bus, runtime or archive crate. `updater-root` may read archives (`tar`,
 `zstd`) but reaches no network client, TLS, bus or async runtime (`ureq`, `rustls`, `zbus`, `tokio`):
@@ -21,7 +21,7 @@ the programs that run with administrator rights link only `updater-core`, `thise
 `rustix`, `tar` and `zstd` (and what those bring). `scripts/check-boundary.sh` checks both edges: `updater-core`
 reaches none of the network, bus, runtime or archive crates, and the whole tree of `updater-root` (normal and build
 dependencies) holds none of the user-level program, the caller-identity library, the network client and TLS, the bus,
-the async runtime and its building blocks, or `tracing`, and its direct dependencies are exactly the seven above. `slipway`
+the async runtime and its building blocks, or `tracing`, and its direct dependencies are exactly the seven above. `bardo-updater`
 depends on `updater-root` (for `Layout`, the file operations, the key loader, the report and the helper's
 exit codes), never the other way. `updater-core` reads no clock, environment or file: the caller passes
 bytes, times and what it saw on disk.
@@ -31,10 +31,10 @@ bytes, times and what it saw on disk.
 ```
 crates/slipway-core/src/{lib, version, digest, sign, path, audit, exports, system, health, schedule, progress}.rs
                         release/{mod, error, file, export, system}.rs      plan/{mod, prune}.rs
-crates/slipway-root/src/{lib, settings, layout, fsutil, keys, report, helper}.rs
+crates/bardo-updater-root/src/{lib, settings, layout, fsutil, keys, report, helper}.rs
                         bin/{slipway_apply, slipway_rollback, slipway_health}.rs
                         apply/{mod, error, staged, unpack, step, install, exports, system, relabel, lock, open, harden, private, synced, guard}.rs
-crates/slipway/src/{lib, main, config, dirs, state, clock, elevate, problem, report, health, login, bootstrap}.rs
+crates/bardo-updater/src/{lib, main, config, dirs, state, clock, elevate, problem, report, health, login, bootstrap}.rs
                    fetch/{mod, feed, stage, cache, ureq_fetch}.rs
                    service/{mod, context, engine, object, notify, run, status}.rs
                    cli/{mod, args, client, wait, confirm, recover}.rs
@@ -43,7 +43,7 @@ scripts/install.sh  scripts/check-boundary.sh
 .github/workflows/ci.yml  deny.toml
 ```
 
-`slipway` re-exports `layout`, `fsutil` and `keys` from `updater-root`, and `report` adds the logging of a
+`bardo-updater` re-exports `layout`, `fsutil` and `keys` from `updater-root`, and `report` adds the logging of a
 report to the type `updater-root` defines. The three binaries are built with
 `cargo build --release --locked -p updater-root`; the user program with `-p updater-daemon`.
 
@@ -69,7 +69,7 @@ size }`, informational `[components]`, one `[[file]]` (`path`, `sha256`, `mode`)
 the bundle, `[[export]]` (`link`, `target`) per link the system needs, and `[[system]]` (`path`) per
 file the helper copies into a system folder. `updater-core::Release`
 validates all of it: simple paths only (no absolute, `..`, empty or backslash parts, nothing under
-`.slipway/`), unique files with none inside another, modes that are plain permission bits readable
+`.bardo-updater/`), unique files with none inside another, modes that are plain permission bits readable
 by the owner and not writable by anyone else, no setuid; export links only under the ten allowed
 directories (`ALLOWED_LINK_DIRS`, each named, no wildcards; never polkit's actions folder, which could grant root without a password), unique, each pointing at a file the bundle lists
 (not a folder); system files only at a path `ALLOWED_SYSTEM_FILES` names (a folder and an exact name or a name ending), unique, each with
@@ -86,14 +86,14 @@ file does not exist. No key: nothing is installed and the person is told so. The
 ## 4. Install layout and the switch
 
 ```
-<root>/releases/<version>/            complete releases; .slipway/release.toml(+.minisig) is the verified copy
+<root>/releases/<version>/            complete releases; .bardo-updater/release.toml(+.minisig) is the verified copy
 <root>/releases/<version>.partial/    an unpack in progress
 <root>/current  -> releases/<version>
 <root>/previous -> releases/<version>
 <root>/.private/                      0700, root only: the update lock and the private copy of a bundle
 ```
 
-The root defaults to `/opt/quire`. `updater-core::plan_install` turns (current, previous, releases,
+The root defaults to `/opt/bardo`. `updater-core::plan_install` turns (current, previous, releases,
 target) into ordered steps: `Unpack`, `Publish` (rename `.partial` to the version), `SetPrevious`,
 `SwitchCurrent`, `SyncExports`, `SyncSystem`, `Prune`. Every prefix of the list leaves a working system: the new
 tree is complete and flushed before the single `rename(2)` that changes what runs (`current.new` is
@@ -157,9 +157,9 @@ one is a warning printed by the helper. The program runner is a trait (`RunProgr
 
 ```
 person's session                          root (pkexec; one polkit action per program)
-slipway run  --download, verify--> cache --> bardo-updater-apply <staged dir>   org.bardo.updater.apply     no password
-slipway rollback (Settings)  ------------> bardo-updater-rollback               org.bardo.updater.rollback  administrator's password
-slipway recover / confirm  --------------> bardo-updater-health recover|confirmed  org.bardo.updater.health  no password
+bardo-updater run  --download, verify--> cache --> bardo-updater-apply <staged dir>   org.bardo.updater.apply     no password
+bardo-updater rollback (Settings)  ------------> bardo-updater-rollback               org.bardo.updater.rollback  administrator's password
+bardo-updater recover / confirm  --------------> bardo-updater-health recover|confirmed  org.bardo.updater.health  no password
 ```
 
 The three programs are separate files because polkit matches an action to the program's path: the installing
@@ -172,7 +172,7 @@ program is described in section 7.
 Settings come from two files. The system file `/etc/bardo/updater.toml` (written once by
 `scripts/install.sh`, never overwritten by it) holds `root` and `pubkey_path` and may hold any other
 setting; `bardo-updater-apply` reads only it (and only its `root` and `pubkey_path`, `slipway_root::settings`), and the daemon and the command line read it first, so they
-cannot disagree about the root or the key. The person's own `$XDG_CONFIG_HOME/slipway/config.toml`
+cannot disagree about the root or the key. The person's own `$XDG_CONFIG_HOME/bardo-updater/config.toml`
 may only set `settings_command` and `name` (what the notification's button runs and what the software
 is called); every other key in it is ignored.
 
@@ -183,7 +183,7 @@ for at most two minutes (`READ_WINDOW`), a connection that brought bytes is simp
 brought none counts as a stall; four stalls in a row give up. The digest of the finished file decides, so
 resuming trusts nothing. The cache keeps only the version being fetched (`prune_cache`).
 
-The daemon never writes under the root. It downloads into `$XDG_CACHE_HOME/slipway/<version>/`,
+The daemon never writes under the root. It downloads into `$XDG_CACHE_HOME/bardo-updater/<version>/`,
 checks the signature of `release.toml` and then the bundle's size and digest, and only then asks
 `bardo-updater-apply` to install the directory. The helper trusts nothing but the path, and not even that:
 
@@ -200,7 +200,7 @@ checks the signature of `release.toml` and then the bundle's size and digest, an
   the file system has less than four times the bundle's size free.
 - It unpacks into `<version>.partial`, which is `0700` with files `0600` until it is whole (regular
   files and plain directories only, each created fresh, nothing through a link, each file hashed as
-  it is written), keeps `.slipway/release.toml` and its signature (`0644`, root-owned), makes the
+  it is written), keeps `.bardo-updater/release.toml` and its signature (`0644`, root-owned), makes the
   folders `0755`, flushes, then runs the plan.
 - Whatever it later reads back from a release folder (the kept record, a system file's contents) is
   checked again: the record against the signature with the key, a system file against the digest in
@@ -219,7 +219,7 @@ leaves the state at "installing" for ever.
 
 ## 6. The session service
 
-`slipway run` owns `org.bardo.Updates1` at `/org/bardo/Updates1` on the session bus.
+`bardo-updater run` owns `org.bardo.Updates1` at `/org/bardo/Updates1` on the session bus.
 
 Properties (all emit `PropertiesChanged`): `State` (idle, checking, available, downloading, ready,
 installing, installed, failed), `Current`, `Available` ("" when none), `Notes`, `Size` (bytes),
@@ -234,7 +234,7 @@ the bus names the caller's process, peephole holds it by the descriptor the bus 
 unit and judges it against the desktop's own table (`/etc/bardo/desktop-callers.toml`, root-owned; loaded once at
 start by `bootstrap.rs`, an empty table when it is missing or not trustworthy, which refuses every `Install` and
 `Rollback`). `Install` is answered for the roles `shell` (proved up to the unit manager), `settings` and
-`updater_cli` (the `slipway` program itself; both known by their root-owned image); `Rollback` for `shell` and
+`updater_cli` (the `bardo-updater` program itself; both known by their root-owned image); `Rollback` for `shell` and
 `settings`, and the system then asks for the administrator's password; `Check` for any caller that can be
 identified at all. A refused `Rollback` or `Check` is `org.freedesktop.DBus.Error.AccessDenied` with a plain
 sentence; a refused `Install` is `org.bardo.Updates1.Error.AccessDenied` with its own (all in `problem.rs`).
@@ -261,7 +261,7 @@ version through `standing`, only `Newer` is offered), notify once per version, d
 pending first login. The schedule (`next_check`) runs from `service/run.rs`: at start if overdue,
 24 h plus up to an hour of per-machine jitter after a good check, an hour after a failed one.
 
-State file `$XDG_STATE_HOME/slipway/state.toml` (last check and outcome, notified version, confirmed
+State file `$XDG_STATE_HOME/bardo-updater/state.toml` (last check and outcome, notified version, confirmed
 version, pending marker, refused version) is written beside and renamed over. The configuration files
 are only read.
 
@@ -284,13 +284,13 @@ read through the `login::here` seam) and `XDG_SESSION_ID` when the session manag
 **What the session must call** (the desktop's `bardo-session`, or the shell). Both work when the update
 service is not running and need no session bus:
 
-- `slipway recover`, once per session start, **before the compositor is started**. It asks the privileged
+- `bardo-updater recover`, once per session start, **before the compositor is started**. It asks the privileged
   health helper (`bardo-updater-health recover`, a separate polkit action that needs no password) to note that
   this boot started the current release without anyone having vouched for it, and to put the previous
   release back when that has happened in more than two *different* boots (`MAX_UNCONFIRMED_BOOTS`). Exit 0:
   nothing to do; exit 5: the previous version was put back, start the session again; exit 1: could not
   ask (log it, start anyway).
-- `slipway confirm`, once per login, **after the shell has answered**. It records the current release as
+- `bardo-updater confirm`, once per login, **after the shell has answered**. It records the current release as
   good in the person's state (so the service stops watching it) and in the helper's record (so the release is
   never rolled back for the boots it used while being tried). Running it again changes nothing; with no
   release installed under the root it does nothing and exits 0; exit 1 means the system could not be told.
@@ -327,7 +327,7 @@ is indistinguishable from a restart, so the check waits for the next boot.
 | `fetch::Fetch` | `UreqFetch` (HTTPS only) | in-memory map (`tests/it/feed_stage.rs`) |
 | `elevate::Elevate` | `Pkexec` (three programs) | recording stand-ins (`tests/it/health_start.rs`, `session_guard.rs`); `sh` scripts for `Pkexec` itself (`elevate_run.rs`) |
 | `slipway_core::Authenticator` | `PublicKey` (minisign) | accept-all and reject-all (`tests/it/support.rs`) |
-| `Layout { root, export_base }` | `/opt/quire` and `/` | a temporary directory for both |
+| `Layout { root, export_base }` | `/opt/bardo` and `/` | a temporary directory for both |
 | `login::here(var, read)` | `login::current()`: the environment and `/proc` | closures |
 
 The D-Bus object and the notification code are not covered by the unit tests (no bus in a test);

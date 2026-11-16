@@ -53,7 +53,7 @@ pub fn note_start(
     boot: &str,
 ) -> Result<Started, ApplyError> {
     if !layout.root.exists() {
-        // A computer that is not kept up to date by slipway: nothing to guard, nothing to create.
+        // A computer that is not kept up to date by bardo-updater: nothing to guard, nothing to create.
         return Ok(Started::Fine);
     }
     let _lock = locked(layout)?;

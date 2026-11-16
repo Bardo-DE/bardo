@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install slipway's system pieces: the privileged helpers, their polkit actions, the user unit, the bus
+# Install bardo-updater's system pieces: the privileged helpers, their polkit actions, the user unit, the bus
 # activation file, the system settings file and, when given, the release key.
 #
 #   scripts/install.sh [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--bin-dir DIR] [--no-build | --build-only]
@@ -28,21 +28,25 @@
 # people who work on the code) is not read, and the toolchain pinned in rust-toolchain.toml is passed on
 # through RUSTUP_TOOLCHAIN. It needs git and cargo, and no RUSTFLAGS.
 #
-# --root      the install root the desktop lives under (default /opt/quire); the unit starts
-#             ROOT/current/bin/slipway and the system settings name it
+# --root      the install root the desktop lives under (default /opt/bardo); the unit starts
+#             ROOT/current/bin/bardo-updater and the system settings name it
 # --pubkey    the minisign public key releases are signed with, installed as the trust anchor
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
-#   PREFIX/libexec/bardo-updater-apply                       the privileged helper that installs a release
-#   PREFIX/libexec/bardo-updater-rollback                    the privileged helper that goes back (asks for a password)
-#   PREFIX/libexec/bardo-updater-health                      the privileged half of the health check
+#   PREFIX/libexec/bardo/bardo-updater-apply                 the privileged helper that installs a release
+#   PREFIX/libexec/bardo/bardo-updater-rollback              the privileged helper that goes back (asks for a password)
+#   PREFIX/libexec/bardo/bardo-updater-health                the privileged half of the health check
 #   PREFIX/share/polkit-1/actions/org.bardo.updater.policy   lets the person at the keyboard run them
 #   PREFIX/lib/systemd/user/bardo-updater.service            the daily check, part of the graphical session
 #   PREFIX/share/dbus-1/services/org.bardo.Updates1.service
 #                                                      starts that unit when the update service is called
-#   SYSCONFDIR/slipway/config.toml                     the system settings: root and key path, read by
+#   SYSCONFDIR/bardo/updater.toml                            the system settings: root and key path, read by
 #                                                      the helper and by the daemon (never overwritten)
-#   PREFIX/share/slipway/release.pub                   the trust anchor (only with --pubkey)
+#   PREFIX/share/bardo/updater/release.pub                   the trust anchor (only with --pubkey)
+#
+# A reinstall over the old layout removes the old names (slipway-apply, slipway-rollback, slipway-health in
+# PREFIX/libexec, slipway.service, org.quire.slipway.policy, org.quire.Updates1.service); the old
+# system settings and key (SYSCONFDIR/slipway, PREFIX/share/slipway) are moved to the new places once.
 #
 # The system settings file is the one place the install root and the key path are written down: the
 # privileged helper reads only it and the daemon reads it first, so they cannot disagree. A file that
@@ -77,7 +81,7 @@ destdir=${DESTDIR:-}
 bin_dir=
 build=yes
 build_only=no
-root=/opt/quire
+root=/opt/bardo
 pubkey=
 sysconfdir=${SYSCONFDIR:-}
 
@@ -280,8 +284,8 @@ for target in "$destdir$prefix/libexec" "$destdir$sysconfdir"; do
     fi
 done
 
-# The files in dist/ name /usr/libexec/bardo/bardo-updater-apply and /opt/quire; different choices change those paths.
-libexec=$prefix/libexec
+# The files in dist/ name /usr/libexec/bardo/bardo-updater-apply and /opt/bardo; different choices change those paths.
+libexec=$prefix/libexec/bardo
 put 755 "$built/bardo-updater-apply" "$libexec/bardo-updater-apply"
 put 755 "$built/bardo-updater-rollback" "$libexec/bardo-updater-rollback"
 put 755 "$built/bardo-updater-health" "$libexec/bardo-updater-health"
@@ -289,15 +293,49 @@ put 644 "$dist/org.bardo.updater.policy" "$prefix/share/polkit-1/actions/org.bar
     /usr/libexec/bardo/bardo-updater-apply "$libexec/bardo-updater-apply" \
     /usr/libexec/bardo/bardo-updater-rollback "$libexec/bardo-updater-rollback" \
     /usr/libexec/bardo/bardo-updater-health "$libexec/bardo-updater-health"
-put 644 "$dist/bardo-updater.service" "$prefix/lib/systemd/user/bardo-updater.service" /opt/quire "$root"
+put 644 "$dist/bardo-updater.service" "$prefix/lib/systemd/user/bardo-updater.service" /opt/bardo "$root"
 put 644 "$dist/org.bardo.Updates1.service" "$prefix/share/dbus-1/services/org.bardo.Updates1.service" \
-    /opt/quire "$root"
+    /opt/bardo "$root"
 if [ -n "$pubkey" ]; then
-    put 644 "$pubkey" "$prefix/share/slipway/release.pub"
+    put 644 "$pubkey" "$prefix/share/bardo/updater/release.pub"
+fi
+
+# remove PATH (under DESTDIR) when it is there: the old name of something installed above.
+drop() {
+    if [ -e "$destdir$1" ] || [ -L "$destdir$1" ]; then
+        rm -f "$destdir$1"
+        changed=$((changed + 1))
+        echo "removed $1"
+    fi
+}
+drop "$prefix/libexec/slipway-apply"
+drop "$prefix/libexec/slipway-rollback"
+drop "$prefix/libexec/slipway-health"
+drop "$prefix/lib/systemd/user/slipway.service"
+drop "$prefix/share/polkit-1/actions/org.quire.slipway.policy"
+drop "$prefix/share/dbus-1/services/org.quire.Updates1.service"
+
+# The old system settings and key move to the new places, once (an existing new file wins).
+old_settings=$destdir$sysconfdir/slipway/config.toml
+if [ ! -e "$destdir$sysconfdir/bardo/updater.toml" ] && [ -f "$old_settings" ]; then
+    make_dir "$destdir$sysconfdir/bardo"
+    mv "$old_settings" "$destdir$sysconfdir/bardo/updater.toml"
+    sed -i 's#/share/slipway/release.pub#/share/bardo/updater/release.pub#; s#"/opt/quire#"/opt/bardo#' "$destdir$sysconfdir/bardo/updater.toml"
+    rmdir "$destdir$sysconfdir/slipway" 2>/dev/null || true
+    changed=$((changed + 1))
+    echo "moved $sysconfdir/slipway/config.toml to $sysconfdir/bardo/updater.toml"
+fi
+old_key=$destdir$prefix/share/slipway/release.pub
+if [ ! -e "$destdir$prefix/share/bardo/updater/release.pub" ] && [ -f "$old_key" ]; then
+    make_dir "$destdir$prefix/share/bardo/updater"
+    mv "$old_key" "$destdir$prefix/share/bardo/updater/release.pub"
+    rmdir "$destdir$prefix/share/slipway" 2>/dev/null || true
+    changed=$((changed + 1))
+    echo "moved $prefix/share/slipway/release.pub to $prefix/share/bardo/updater/release.pub"
 fi
 
 # The system settings, written once. An existing file is never touched.
-settings=$destdir$sysconfdir/slipway/config.toml
+settings=$destdir$sysconfdir/bardo/updater.toml
 if [ -e "$settings" ]; then
     kept=$(sed -n 's/^root[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$settings" | tail -n 1)
     echo "kept ${settings#"$destdir"}"
@@ -307,10 +345,10 @@ if [ -e "$settings" ]; then
 else
     make_dir "$(dirname "$settings")"
     {
-        echo "# slipway system settings: read by bardo-updater-apply (as root) and by the update service."
+        echo "# Update service settings: read by bardo-updater-apply (as root) and by the update service."
         echo "# The person's own file may only change settings_command and name."
         echo "root = \"$root\""
-        echo "pubkey_path = \"$prefix/share/slipway/release.pub\""
+        echo "pubkey_path = \"$prefix/share/bardo/updater/release.pub\""
     } >"$work/config.toml"
     place 644 "$work/config.toml" "$settings" || true
     changed=$((changed + 1))

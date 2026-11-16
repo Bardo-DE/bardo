@@ -1,7 +1,7 @@
 //! The install root's layout, and reading what is installed there.
 //!
 //! ```text
-//! <root>/releases/<version>/         complete releases (with .slipway/release.toml inside)
+//! <root>/releases/<version>/         complete releases (with .bardo-updater/release.toml inside)
 //! <root>/releases/<version>.partial/ an unpack in progress
 //! <root>/current  -> releases/<version>
 //! <root>/previous -> releases/<version>
@@ -18,7 +18,7 @@ use std::path::{Path, PathBuf};
 use updater_core::Installed;
 
 /// The folder in each release holding the verified description it was installed from.
-pub const RECORD_DIR: &str = ".slipway";
+pub const RECORD_DIR: &str = ".bardo-updater";
 /// The verified `release.toml` kept in each release.
 pub const RECORD_RELEASE: &str = "release.toml";
 /// Its signature.
@@ -30,7 +30,7 @@ pub const PRIVATE_DIR: &str = ".private";
 /// Paths under an install root.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Layout {
-    /// The install root (`/opt/quire`).
+    /// The install root (`/opt/bardo`).
     pub root: PathBuf,
     /// What an absolute export link path is relative to (`/`).
     pub export_base: PathBuf,

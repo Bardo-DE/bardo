@@ -53,7 +53,7 @@ impl<'a> Recipe<'a> {
         Self {
             version,
             listed: vec![
-                ("bin/casement", "casement 1"),
+                ("bin/bardo-compositor", "casement 1"),
                 ("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
             ],
             packed: None,
@@ -194,7 +194,7 @@ impl Sandbox {
     pub fn new() -> Self {
         let tmp = tempfile::tempdir().expect("tempdir");
         let layout = Layout {
-            root: tmp.path().join("opt/quire"),
+            root: tmp.path().join("opt/bardo"),
             export_base: tmp.path().join("fs"),
         };
         Self { tmp, layout }

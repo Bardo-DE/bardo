@@ -11,7 +11,7 @@ fn words(args: &[&str]) -> impl Iterator<Item = String> {
 }
 
 #[test]
-fn slipway_apply_installs_a_folder_and_nothing_else() {
+fn bardo_updater_apply_installs_a_folder_and_nothing_else() {
     let table: [(&[&str], Parsed<PathBuf>); 8] = [
         (
             &["/var/tmp/stage"],
@@ -32,7 +32,7 @@ fn slipway_apply_installs_a_folder_and_nothing_else() {
 }
 
 #[test]
-fn slipway_rollback_takes_no_arguments_and_health_knows_two_words() {
+fn bardo_updater_rollback_takes_no_arguments_and_health_knows_two_words() {
     let rollback: [(&[&str], Parsed<()>); 5] = [
         (&[], Parsed::Run(())),
         (&["--help"], Parsed::Help),

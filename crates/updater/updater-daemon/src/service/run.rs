@@ -1,4 +1,4 @@
-//! `slipway run`: start the service and keep it going until told to stop.
+//! `bardo-updater run`: start the service and keep it going until told to stop.
 
 use super::context::Context;
 use super::engine::{Engine, Job};

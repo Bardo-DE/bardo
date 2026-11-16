@@ -24,7 +24,7 @@ impl UreqFetch {
             .timeout_connect(Some(Duration::from_secs(20)))
             .timeout_recv_response(Some(ANSWER_WITHIN))
             .timeout_recv_body(Some(READ_WINDOW))
-            .user_agent("slipway")
+            .user_agent("bardo-updater")
             .build();
         Self {
             agent: ureq::Agent::new_with_config(config),

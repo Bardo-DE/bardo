@@ -11,7 +11,7 @@ use updater_root::apply::{
 const UDEV: &str = "/etc/udev/rules.d/70-bardo-key-remap.rules";
 const UDEV_IN_BUNDLE: &str = "system/etc/udev/rules.d/70-bardo-key-remap.rules";
 const PAM: &str = "/etc/pam.d/bardo-shell";
-const PAM_IN_BUNDLE: &str = "system/etc/pam.d/sill";
+const PAM_IN_BUNDLE: &str = "system/etc/pam.d/bardo-shell";
 
 /// A release placing the udev rule with these contents.
 fn placing<'a>(version: &'a str, udev: &'a str) -> Recipe<'a> {
@@ -229,11 +229,11 @@ fn a_release_listing_a_system_file_no_rule_names_is_refused_whole() {
         "/etc/pam.d/sudo",
         "/etc/udev/rules.d/99-evil.rules",
         "/usr/lib/systemd/system/evil.service",
-        "/usr/lib/systemd/system/turnstile.timer",
+        "/usr/lib/systemd/system/bardo-input-broker.timer",
         "/etc/systemd/system/bardo-input-broker.socket",
-        "/etc/udev/rules.d/73-turnstile.rules",
-        "/etc/modules-load.d/turnstile.d.conf",
-        "/usr/lib/systemd/user/sill.target",
+        "/etc/udev/rules.d/73-bardo-input-broker.rules",
+        "/etc/modules-load.d/bardo-input-broker.d.conf",
+        "/usr/lib/systemd/user/bardo-shell.target",
         "/usr/lib/systemd/user/xdg-desktop-portal.service.d/20-evil.conf",
         "/usr/lib/systemd/system/bardo-mouse-gestures.service.d",
     ];
@@ -370,7 +370,7 @@ fn relabelling_runs_restorecon_only_where_selinux_is_in_use_and_never_fails_an_i
             PathBuf::from("/b/restorecon"),
         ]
     };
-    let root = vec![PathBuf::from("/opt/quire")];
+    let root = vec![PathBuf::from("/opt/bardo")];
 
     // (case, status file, what the tools answer, paths, reach, outcome, calls made)
     type Case = (
@@ -451,11 +451,11 @@ fn relabelling_runs_restorecon_only_where_selinux_is_in_use_and_never_fails_an_i
     let calls = fake.calls.borrow();
     assert_eq!(
         calls[0].1,
-        vec![OsString::from("-RF"), OsString::from("/opt/quire")]
+        vec![OsString::from("-RF"), OsString::from("/opt/bardo")]
     );
     assert_eq!(
         calls[1].1,
-        vec![OsString::from("-F"), OsString::from("/opt/quire")]
+        vec![OsString::from("-F"), OsString::from("/opt/bardo")]
     );
 }
 
@@ -463,7 +463,7 @@ const INPUT_FILES: [&str; 4] = [
     "/usr/lib/systemd/system/bardo-input-broker.socket",
     "/usr/lib/systemd/system/bardo-input-broker.service",
     "/etc/udev/rules.d/72-bardo-input-broker.rules",
-    "/etc/modules-load.d/turnstile.conf",
+    "/etc/modules-load.d/bardo-input-broker.conf",
 ];
 
 #[test]

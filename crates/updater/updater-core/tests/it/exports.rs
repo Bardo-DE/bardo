@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use updater_core::{BundlePath, Export, ExportAction, Found, plan_exports};
 
-const ROOT: &str = "/opt/quire";
+const ROOT: &str = "/opt/bardo";
 const LINK: &str = "/usr/share/wayland-sessions/bardo.desktop";
 
 fn export(link: &str, target: &str) -> Export {
@@ -66,8 +66,8 @@ fn a_stale_link_into_the_root_is_replaced() {
 fn nothing_that_is_not_ours_is_ever_replaced() {
     let new = [export(LINK, "share/q.desktop")];
     let elsewhere = Found::Link(PathBuf::from("/usr/lib/other/q.desktop"));
-    let climbing = Found::Link(PathBuf::from("/opt/quire/../etc/shadow"));
-    let sibling = Found::Link(PathBuf::from("/opt/quire2/current/x"));
+    let climbing = Found::Link(PathBuf::from("/opt/bardo/../etc/shadow"));
+    let sibling = Found::Link(PathBuf::from("/opt/bardo2/current/x"));
     for seen in [Found::Foreign, elsewhere, climbing, sibling] {
         assert_eq!(
             plan(&new, &[], &[(LINK, seen.clone())]),

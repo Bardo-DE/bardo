@@ -1,4 +1,4 @@
-//! The daemon's own memory: `$XDG_STATE_HOME/slipway/state.toml`, written atomically.
+//! The daemon's own memory: `$XDG_STATE_HOME/bardo/updater/state.toml`, written atomically.
 
 use crate::fsutil::write_atomic;
 use semver::Version;

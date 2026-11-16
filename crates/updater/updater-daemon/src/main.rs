@@ -1,11 +1,11 @@
-//! `slipway`: the update service (`run`) and its command line.
+//! `bardo-updater`: the update service (`run`) and its command line.
 
 use std::path::Path;
 use std::process::ExitCode;
 use updater_daemon::bootstrap::production;
 use updater_daemon::cli::{Command, Exit, Reply, USAGE, dispatch, parse, recover, vouch};
 use updater_daemon::config::{Config, SYSTEM_CONFIG_PATH};
-use updater_daemon::dirs::Dirs;
+use updater_daemon::dirs::{Dirs, move_pre_bardo_folders};
 use updater_daemon::elevate::{Helpers, Pkexec};
 use updater_daemon::service::run;
 use updater_daemon::state::StateStore;
@@ -26,13 +26,14 @@ fn main() -> ExitCode {
         return recover_session();
     }
     let Some(dirs) = Dirs::resolve(|name| std::env::var_os(name)) else {
-        eprintln!("slipway: cannot tell where your settings are (no home folder)");
+        eprintln!("bardo-updater: cannot tell where your settings are (no home folder)");
         return exit(Exit::Failed);
     };
+    move_pre_bardo_folders(&dirs);
     let config = match Config::load_layered(Path::new(SYSTEM_CONFIG_PATH), &dirs.config_file) {
         Ok(config) => config,
         Err(e) => {
-            eprintln!("slipway: {e}");
+            eprintln!("bardo-updater: {e}");
             return exit(Exit::Failed);
         }
     };
@@ -65,7 +66,7 @@ fn run_service(config: Config, dirs: &Dirs) -> ExitCode {
     match outcome {
         Ok(()) => exit(Exit::Done),
         Err(why) => {
-            eprintln!("slipway: {why}");
+            eprintln!("bardo-updater: {why}");
             exit(Exit::Failed)
         }
     }
@@ -96,7 +97,7 @@ fn recover_session() -> ExitCode {
     match Config::load(Path::new(SYSTEM_CONFIG_PATH)) {
         Ok(config) => say(&recover(&Pkexec::new(Helpers::from(&config)))),
         Err(e) => {
-            eprintln!("slipway: {e}");
+            eprintln!("bardo-updater: {e}");
             exit(Exit::Failed)
         }
     }

@@ -27,7 +27,7 @@ fn digest_text_has_one_spelling() {
 
 // The key and signature below are the example from minisign-verify 0.2.5's own documentation
 // (src/lib.rs): a prehashed signature of the four bytes `test`. They are a fixed test pair, not
-// a key slipway ever trusts.
+// a key bardo-updater ever trusts.
 const TEST_KEY: &str = "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
 const TEST_SIGNATURE: &str = concat!(
     "untrusted comment: signature from minisign secret key\n",

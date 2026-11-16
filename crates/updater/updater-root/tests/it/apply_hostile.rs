@@ -19,7 +19,7 @@ fn a_changed_file_is_refused_and_nothing_is_installed() {
     let sandbox = Sandbox::new();
     let mut recipe = Recipe::new("0.1.0");
     recipe.packed = Some(vec![
-        ("bin/casement", "casement EVIL"),
+        ("bin/bardo-compositor", "casement EVIL"),
         ("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
     ]);
     let err = sandbox.install(&build(&recipe)).expect_err("tampered");
@@ -53,7 +53,7 @@ fn a_bundle_with_an_extra_file_is_refused() {
 fn a_bundle_missing_a_listed_file_is_refused() {
     let sandbox = Sandbox::new();
     let mut recipe = Recipe::new("0.1.0");
-    recipe.packed = Some(vec![("bin/casement", "casement 1")]);
+    recipe.packed = Some(vec![("bin/bardo-compositor", "casement 1")]);
     let err = sandbox.install(&build(&recipe)).expect_err("missing");
     assert!(
         matches!(err, ApplyError::Bundle(AuditError::Missing(_))),
@@ -156,7 +156,7 @@ fn an_unsigned_or_wrongly_signed_release_is_refused() {
 fn a_description_that_breaks_the_rules_is_refused_even_when_signed() {
     let sandbox = Sandbox::new();
     let mut recipe = Recipe::new("0.1.0");
-    recipe.exports = vec![("/etc/systemd/system/evil.service", "bin/casement")];
+    recipe.exports = vec![("/etc/systemd/system/evil.service", "bin/bardo-compositor")];
     let err = sandbox
         .install(&build(&recipe))
         .expect_err("export outside the allowed places");

@@ -1,7 +1,7 @@
 //! Reading the command line.
 
 /// The help text.
-pub const USAGE: &str = "usage: slipway <command>
+pub const USAGE: &str = "usage: bardo-updater <command>
 
   run        keep the update service going (the session starts this)
   check      look for a newer version now
@@ -40,7 +40,7 @@ pub enum Command {
 
 /// The command line was not understood.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
-#[error("slipway: {0}\n{USAGE}")]
+#[error("bardo-updater: {0}\n{USAGE}")]
 pub struct UsageError(pub String);
 
 /// Reads the arguments after the program name.

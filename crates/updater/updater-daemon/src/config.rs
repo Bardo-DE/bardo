@@ -1,9 +1,9 @@
-//! The configuration: read only, never written by slipway.
+//! The configuration: read only, never written by bardo-updater.
 //!
 //! Two files, one meaning. The system file (`/etc/bardo/updater.toml`, written by the installer) holds
 //! every setting, including the two that decide what may be installed and where: `root` and
 //! `pubkey_path`. The privileged helper reads only that file, and the daemon reads it first, so the two
-//! cannot disagree. The person's own file (`$XDG_CONFIG_HOME/slipway/config.toml`) may only change what
+//! cannot disagree. The person's own file (`$XDG_CONFIG_HOME/bardo/updater/config.toml`) may only change what
 //! is shown: `settings_command` and `name`; anything else in it is ignored.
 //!
 //! The privileged programs read just `root` and `pubkey_path` from the system file
@@ -18,7 +18,7 @@ pub use updater_root::settings::{DEFAULT_PUBKEY_PATH, DEFAULT_ROOT, SYSTEM_CONFI
 /// The default release index: the public releases of the desktop.
 pub const DEFAULT_INDEX_URL: &str = "https://github.com/PoHsuanLai/desktop-releases/releases";
 /// What opens the Software Update page.
-pub const DEFAULT_SETTINGS_COMMAND: &str = "detent --page software-update";
+pub const DEFAULT_SETTINGS_COMMAND: &str = "bardo-settings --page software-update";
 /// The name shown for the software.
 pub const DEFAULT_NAME: &str = "Quire";
 /// Where the privileged helper lives (the polkit action names this path).
