@@ -1,6 +1,7 @@
-//! The numbers `NetworkManager` sends for kinds and states, as enums. Each has an `Other` that keeps
-//! a value this crate does not name, so a newer `NetworkManager` never decodes to a wrong variant,
-//! and `to_wire` gives back the number it came from.
+//! The numbers `NetworkManager` sends for kinds and states, as enums.
+//!
+//! Each has an `Other` that keeps a value this crate does not name, so a newer `NetworkManager`
+//! never decodes to a wrong variant, and `to_wire` gives back the number it came from.
 
 /// `NMDeviceType`: what kind of device it is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

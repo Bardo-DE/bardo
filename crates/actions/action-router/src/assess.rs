@@ -31,7 +31,7 @@ impl<S: Seams> Router<S> {
         let answer = self
             .seams
             .link()
-            .classify(&first.request.action.app, self.invocation(&first))
+            .classify(&first.request.action.app, Self::invocation(&first))
             .await;
         let class = classify_step(first.decl.effect, &first.request.action, answer, |a| {
             self.locked().registry.action(a).is_some()
