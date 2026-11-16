@@ -33,6 +33,9 @@ pub enum StagedError {
     /// The signature is wrong.
     #[error(transparent)]
     Signature(#[from] SignError),
+    /// The signature file is not text.
+    #[error("the signature is not text")]
+    SignatureNotText(#[source] std::string::FromUtf8Error),
     /// The signed description is not a valid release.
     #[error(transparent)]
     Release(#[from] ReleaseError),
@@ -149,8 +152,7 @@ impl Staged {
             MAX_SIGNATURE_BYTES,
             "reading the signature",
         )?)
-        .ok()
-        .ok_or(StagedError::Signature(SignError::BadSignature))?;
+        .map_err(StagedError::SignatureNotText)?;
         auth.authenticate(&release_bytes, &signature)?;
         let release = Release::parse(&release_bytes)?;
         let bundle = dir.join(&release.bundle.name);

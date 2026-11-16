@@ -111,7 +111,7 @@ impl From<&KeyError> for Problem {
     fn from(e: &KeyError) -> Self {
         match e {
             KeyError::Missing => Self::NoKey,
-            KeyError::Unreadable => Self::KeyUnreadable,
+            KeyError::Unreadable(_) => Self::KeyUnreadable,
         }
     }
 }

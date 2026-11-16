@@ -12,7 +12,7 @@ use std::fs;
 use std::io;
 use std::path::Path;
 use updater_core::release::MAX_INDEX_BYTES;
-use updater_core::{Authenticator, ExportAction, Found, Release, SignError, plan_exports};
+use updater_core::{Authenticator, ExportAction, Found, Release, plan_exports};
 
 /// The longest signature text read.
 const MAX_SIGNATURE_BYTES: usize = 4096;
@@ -40,8 +40,7 @@ pub(super) fn recorded(
         MAX_SIGNATURE_BYTES,
         version,
     )?)
-    .ok()
-    .ok_or(StagedError::Signature(SignError::BadSignature))?;
+    .map_err(StagedError::SignatureNotText)?;
     auth.authenticate(&bytes, &signature)
         .map_err(StagedError::Signature)?;
     Ok(Release::parse(&bytes).map_err(StagedError::Release)?)

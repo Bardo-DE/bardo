@@ -14,7 +14,7 @@ pub enum KeyError {
     Missing,
     /// A key is there but cannot be read.
     #[error("the key to check updates with cannot be read")]
-    Unreadable,
+    Unreadable(#[source] Box<dyn std::error::Error + Send + Sync>),
 }
 
 /// Loads the key from `path`, or the compiled-in one when `path` does not exist.
@@ -25,9 +25,9 @@ pub enum KeyError {
 /// [`KeyError::Missing`] when there is no file and no compiled-in key.
 pub fn load_key(path: &Path) -> Result<PublicKey, KeyError> {
     match std::fs::read_to_string(path) {
-        Ok(text) => PublicKey::parse(&text).ok().ok_or(KeyError::Unreadable),
+        Ok(text) => PublicKey::parse(&text).map_err(|e| KeyError::Unreadable(Box::new(e))),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => from_compiled(COMPILED_KEY),
-        Err(_) => Err(KeyError::Unreadable),
+        Err(e) => Err(KeyError::Unreadable(Box::new(e))),
     }
 }
 
@@ -41,5 +41,5 @@ pub fn from_compiled(compiled: Option<&str>) -> Result<PublicKey, KeyError> {
     let text = compiled
         .filter(|t| !t.trim().is_empty())
         .ok_or(KeyError::Missing)?;
-    PublicKey::parse(text).ok().ok_or(KeyError::Unreadable)
+    PublicKey::parse(text).map_err(|e| KeyError::Unreadable(Box::new(e)))
 }

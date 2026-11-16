@@ -95,12 +95,12 @@ fn keys_load_from_a_file_or_the_compiled_in_text_and_say_why_not() {
     .expect("write");
     load_key(&file).unwrap();
     std::fs::write(&file, "garbage").expect("write");
-    assert!(matches!(load_key(&file), Err(KeyError::Unreadable)));
+    assert!(matches!(load_key(&file), Err(KeyError::Unreadable(_))));
     assert!(matches!(from_compiled(None), Err(KeyError::Missing)));
     assert!(matches!(from_compiled(Some("  ")), Err(KeyError::Missing)));
     assert!(matches!(
         from_compiled(Some("nonsense")),
-        Err(KeyError::Unreadable)
+        Err(KeyError::Unreadable(_))
     ));
     from_compiled(Some(KEY)).unwrap();
 }
