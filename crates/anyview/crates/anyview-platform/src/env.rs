@@ -1,12 +1,10 @@
 //! Everything the edge reaches outside the process, chosen once by the binary: the person's
-//! directories, the session bus and the way a program is started. No implementation reads an
+//! directories and the session bus. No implementation reads an
 //! environment variable, a directory or a bus address itself; this file
 //! is the one place the process is asked.
 
-use crate::spawn::{ProcessSpawn, RefuseSpawn, Spawn};
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
 
 /// Where the person's files, caches and application entries live.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -105,47 +103,25 @@ pub struct Env {
     pub dirs: Dirs,
     /// The session bus.
     pub session: BusRoute,
-    /// How a program is started.
-    pub spawn: Arc<dyn Spawn>,
-    /// The audio driver the person asked for (`ANYVIEW_AUDIO_OUTPUT`), as they wrote it: the
-    /// player parses it, and without one it lets the system's sound server choose.
-    pub audio_output: Option<String>,
-    /// `PATH`: the folders programs are found in, as the system wrote it.
-    pub tool_path: OsString,
-    /// The screen to fit windows to in place of the desktop's (`ANYVIEW_WINDOW_SCREEN`), as they
-    /// wrote it: `WIDTHxHEIGHT` logical pixels, parsed by the window. For tests.
-    pub window_screen: Option<String>,
 }
 
 impl Env {
-    /// The process's own directories, session bus and child processes.
+    /// The process's own directories, session bus.
     #[must_use]
     pub fn from_process() -> Env {
         Env {
             dirs: Dirs::from_process(),
             session: BusRoute::Usual,
-            spawn: Arc::new(ProcessSpawn),
-            audio_output: std::env::var("ANYVIEW_AUDIO_OUTPUT")
-                .ok()
-                .filter(|text| !text.is_empty()),
-            tool_path: std::env::var_os("PATH").unwrap_or_default(),
-            window_screen: std::env::var("ANYVIEW_WINDOW_SCREEN")
-                .ok()
-                .filter(|text| !text.is_empty()),
         }
     }
 
-    /// Nothing outside `scratch`: every directory inside it, no bus, and no program ever
-    /// started. For tests that must never reach the person's session or files.
+    /// Nothing outside `scratch`: every directory inside it, and no bus. For tests that must
+    /// never reach the person's session or files.
     #[must_use]
     pub fn isolated(scratch: &Path) -> Env {
         Env {
             dirs: Dirs::under(scratch),
             session: BusRoute::Absent,
-            spawn: Arc::new(RefuseSpawn),
-            audio_output: None,
-            tool_path: OsString::new(),
-            window_screen: None,
         }
     }
 
@@ -159,35 +135,5 @@ impl Env {
     #[must_use]
     pub fn with_session(self, session: BusRoute) -> Env {
         Env { session, ..self }
-    }
-
-    /// The same environment starting programs with `spawn`.
-    #[must_use]
-    pub fn with_spawn(self, spawn: Arc<dyn Spawn>) -> Env {
-        Env { spawn, ..self }
-    }
-
-    /// The same environment finding programs in the folders of `tool_path`.
-    #[must_use]
-    pub fn with_tool_path(self, tool_path: OsString) -> Env {
-        Env { tool_path, ..self }
-    }
-
-    /// The same environment fitting windows to the screen `window_screen` names.
-    #[must_use]
-    pub fn with_window_screen(self, window_screen: Option<String>) -> Env {
-        Env {
-            window_screen,
-            ..self
-        }
-    }
-
-    /// The same environment with the audio driver the person asked for, as they wrote it.
-    #[must_use]
-    pub fn with_audio_output(self, audio_output: Option<String>) -> Env {
-        Env {
-            audio_output,
-            ..self
-        }
     }
 }

@@ -1,18 +1,14 @@
-//! The platform edge: what the viewer needs from the desktop around it, each as a trait with a
-//! Linux implementation (`linux`) and a fake (`testing`, behind the `testing` feature). The
-//! traits are single instance, the media session, the thumbnail cache, printing,
-//! sharing, revealing a file, choosing a file, opening a web link, opening Settings at a place and window stacking. This is the
-//! only crate that names D-Bus or the freedesktop file formats; the directories, the session bus
-//! and the way a program is started come in through [`Env`].
+//! The platform edge the desktop uses from the viewer's slice: single instance (the request the
+//! launcher hands the viewer) and the shared thumbnail cache. Each is a trait with a portable or
+//! Linux implementation and a fake (`testing`, behind the `testing` feature). This is the only
+//! crate that names D-Bus here; the directories and the session bus come in through [`Env`].
 //!
-//! Two implementation modules. `portable` is built everywhere and calls no desktop service: single
-//! instance over a per-user socket, the platform's opener, the thumbnail cache, and the traits'
-//! "not available" answers. `linux` is the Linux desktop's own services over D-Bus and the
-//! freedesktop formats, built on Linux with the `quire-desktop` feature (opt-in); without
-//! the feature this crate does not depend on zbus.
+//! Two implementation modules. `portable` is built everywhere and calls no desktop service:
+//! single instance over a per-user socket and the thumbnail cache. `linux` is the Linux desktop's
+//! own D-Bus single instance and agent intents, built on Linux with the `quire-desktop` feature
+//! (opt-in); without the feature this crate does not depend on zbus.
 //!
 //! A viewer claims the name once at start; a second launch forwards its request and leaves:
-//!
 //! ```no_run
 //! use anyview_platform::portable::LatchkeyInstance;
 //! use anyview_platform::{Claim, Instance, PlatformError, Request};
@@ -32,8 +28,7 @@
 //! ```
 //!
 //! Every public item is reached from this root once, except the implementations, which are
-//! reached through `portable`, `linux` and `testing`. Another platform adds a module beside
-//! `linux` and changes nothing outside this crate.
+//! reached through `portable`, `linux` and `testing`.
 
 #![warn(missing_docs)]
 
@@ -41,16 +36,6 @@ mod env;
 mod error;
 mod handoff;
 mod instance;
-mod link;
-mod media;
-mod picker;
-mod plugin;
-mod printer;
-mod reveal;
-mod settings;
-mod share;
-mod spawn;
-mod stacking;
 mod thumbnail;
 mod uri;
 
@@ -65,16 +50,5 @@ pub mod testing;
 pub use env::{BusRoute, Dirs, Env};
 pub use error::{IoOp, PlatformError};
 pub use instance::{Claim, Handoff, Instance, Primary, Request};
-pub use link::OpenLink;
-pub use media::{Artwork, MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection};
-pub use picker::{FileKinds, PickOutcome, Picker};
-pub use plugin::{Discovery, PluginFacts, PluginRunner, Rejected, Timeouts, discover, discover_in};
-pub use printer::{PrintOutcome, Printer};
-pub use reveal::Reveal;
-pub use settings::{OpenSettings, Opening};
-pub use share::{Share, ShareTarget};
-pub use spawn::{Argv, ProcessSpawn, RefuseSpawn, Spawn};
-pub use stacking::WindowStacking;
 pub use thumbnail::{ThumbPixels, ThumbSize, ThumbnailCache};
-pub use ui_core::settings::{ExtensionId, SettingsTarget};
 pub use uri::file_uri;

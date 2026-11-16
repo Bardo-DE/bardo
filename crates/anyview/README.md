@@ -34,7 +34,7 @@ your own copy of `Cargo.toml`; do not commit it.
 
 Checks: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`,
 `cargo test --workspace`, `scripts/check-boundary.sh`, `dev/no-linked-codecs.sh`, `scripts/check-deny.sh`
-(needs `cargo-deny`) and `dev/install-test.sh`.
+(needs `cargo-deny`).
 
 ### Without the Linux desktop's services
 

@@ -1,6 +1,5 @@
 //! Single instance over the session bus: the first viewer owns `org.bardo.Anyview1`, and a
-//! later launch calls `Open`, `Peek`, `Play` or `Handoff` on it. The `.service` file in `dist/` lets the
-//! bus start the viewer when someone calls the name while none runs.
+//! later launch calls `Open`, `Peek`, `Play` or `Handoff` on it. The bus starts the viewer when someone calls the name while none runs.
 
 use super::intents;
 use crate::env::Env;

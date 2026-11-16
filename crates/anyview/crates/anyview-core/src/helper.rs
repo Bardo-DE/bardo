@@ -4,7 +4,7 @@ use ui_core::word::Word;
 
 /// A tool of the person's own system that a plugin runs, and that the viewer can offer to install
 /// when it is not there. The slug of each is the capability's name in the helpers file the
-/// viewer ships (`dist/helpers/anyview.toml`), so the file and the code agree by construction.
+/// viewer ships.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum Helper {
     /// mpv, which plays video and every audio format the built-in player does not.

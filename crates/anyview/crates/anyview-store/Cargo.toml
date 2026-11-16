@@ -1,6 +1,6 @@
 [package]
 name = "anyview-store"
-description = "The viewer's memory on disk: the recently-viewed history and per-file view memory, one format with a read API and a write API."
+description = "The viewer's recently-viewed history on disk, read by the launcher."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,19 +9,11 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-base-time = { path = "../../../base/base-time" }
 base-fs = { path = "../../../base/base-fs" }
 anyview-core = {path = "../anyview-core"}
-# Capped reads, atomic writes and moving a damaged file aside: quire's, shared by the desktop's apps.
-log = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-
-# Safe wrappers of renameat2 (no-replace renames), extended attributes, ownership, `kill(pid, 0)` and
-# the store's `flock`: `src/sys/unix.rs`. Windows takes the standard library's (`src/sys/windows.rs`).
-[target.'cfg(unix)'.dependencies]
-rustix = {version = "1.1.6", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 
 [dev-dependencies]
 tempfile = { workspace = true }

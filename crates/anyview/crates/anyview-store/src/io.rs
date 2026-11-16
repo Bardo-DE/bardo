@@ -1,14 +1,9 @@
-//! The disk edge: whole-file reads, atomic writes, directory listing, removal and `stat`.
-//! Nothing here decides anything; the pure modules say what to write.
+//! The disk edge: whole-file reads of the history. Nothing here decides anything.
 
 use crate::error::{StoreError, StoreOp};
-use crate::sys;
-use anyview_core::{ByteLen, FileStamp, ModTime};
-use serde::Serialize;
 use serde::de::DeserializeOwned;
-use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 pub(crate) fn io_error(op: StoreOp, path: &Path, error: &io::Error) -> StoreError {
     StoreError::Io {
@@ -58,76 +53,4 @@ fn read_failed<T>(path: &Path, error: base_fs::ReadError) -> Result<Option<T>, S
             Err(io_error(StoreOp::Read, path, &io::Error::other(other)))
         }
     }
-}
-
-/// Writes `value` as the whole content of `path` with quire's `base_fs::write_atomic`: a
-/// uniquely named temporary file beside it, synced, renamed over `path`, and the directory synced
-/// so the rename survives a crash. A concurrent reader opens either the old file or the new one,
-/// and two writers in this process take turns. A new file is its owner's alone; the directory is
-/// created when missing, closed to everyone else: the history lists every file the person opened.
-pub(crate) fn write_json<T: Serialize>(path: &Path, value: &T) -> Result<(), StoreError> {
-    let dir = path.parent().unwrap_or_else(|| Path::new("."));
-    create_private_dir(dir)?;
-    let mut bytes = serde_json::to_vec(value).map_err(|error| StoreError::Corrupt {
-        path: path.to_path_buf(),
-        reason: error.to_string(),
-    })?;
-    bytes.push(b'\n');
-    base_fs::write_atomic(path, &bytes, base_fs::NewFileMode::OwnerOnly)
-        .map_err(|error| io_error(StoreOp::Write, &error.path, &error.source))
-}
-
-/// Moves the damaged store file at `path` aside, to `<name>.bad-<at>` beside it, so a fresh one
-/// can be written without losing the person's bytes. Returns where it went.
-pub(crate) fn move_aside(path: &Path, at: u64) -> Result<PathBuf, StoreError> {
-    base_fs::move_aside(
-        path,
-        base_time::UnixSeconds(i64::try_from(at).unwrap_or(i64::MAX)),
-    )
-    .map_err(|error| io_error(StoreOp::Rename, &error.path, &error.source))
-}
-
-/// The folder `path` and every missing one above it, readable by its owner alone.
-pub(crate) fn create_private_dir(path: &Path) -> Result<(), StoreError> {
-    sys::create_private_dir(path).map_err(|e| io_error(StoreOp::CreateDir, path, &e))
-}
-
-/// The `.json` files directly inside `dir`; none when the directory does not exist. The
-/// temporary files of a write in progress end in `.tmp`, and a damaged file moved aside ends in
-/// `.bad-<seconds>`, so neither is listed.
-pub(crate) fn list_json(dir: &Path) -> Result<Vec<PathBuf>, StoreError> {
-    let entries = match fs::read_dir(dir) {
-        Ok(entries) => entries,
-        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
-        Err(error) => return Err(io_error(StoreOp::List, dir, &error)),
-    };
-    let mut files = Vec::new();
-    for entry in entries {
-        let path = entry.map_err(|e| io_error(StoreOp::List, dir, &e))?.path();
-        if path.extension().is_some_and(|ext| ext == "json") {
-            files.push(path);
-        }
-    }
-    files.sort();
-    Ok(files)
-}
-
-/// Deletes `path`; a file already gone is fine.
-pub(crate) fn remove(path: &Path) -> Result<(), StoreError> {
-    match fs::remove_file(path) {
-        Err(error) if error.kind() != io::ErrorKind::NotFound => {
-            Err(io_error(StoreOp::Remove, path, &error))
-        }
-        Ok(()) | Err(_) => Ok(()),
-    }
-}
-
-/// The length and modification time of `path` now, or `None` when it cannot be read (gone, or
-/// not reachable): such a file has no memory worth keeping.
-pub(crate) fn stamp_of(path: &Path) -> Option<FileStamp> {
-    let meta = fs::metadata(path).ok()?;
-    Some(FileStamp {
-        len: ByteLen(meta.len()),
-        modified: ModTime::from_system_time(meta.modified().ok()?),
-    })
 }

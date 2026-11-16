@@ -1,6 +1,6 @@
 [package]
 name = "anyview-platform"
-description = "The platform edge: single instance, media session, thumbnail cache, print, share, reveal and window stacking, each a trait with a Linux implementation and a fake."
+description = "The platform edge the desktop uses: the viewer's single instance and request hand-off, and the shared thumbnail cache, each with a portable or Linux implementation and a fake."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,13 +9,12 @@ repository.workspace = true
 publish.workspace = true
 
 [features]
-# The Linux desktop's services: D-Bus (single instance with bus activation, the media session, the
-# file chooser and print portals, the file manager) and the freedesktop application entries. Opt in:
+# The Linux desktop's services: D-Bus single instance with bus activation and the agent intents. Opt in:
 # the default build is the traits, the portable implementations and the `testing` fakes, with no zbus.
 # The code behind the feature is also gated on `target_os = "linux"`, so a build for another platform
 # ignores it (quire design/36).
 default = []
-quire-desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus", "dep:memfd", "dep:futures-util"]
+quire-desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus"]
 # The fakes (`anyview_platform::testing`), for the tests of the crates that consume the traits.
 testing = ["dep:tempfile"]
 
@@ -23,14 +22,8 @@ testing = ["dep:tempfile"]
 base-fs = { path = "../../../base/base-fs" }
 # Capped reads and atomic writes of the thumbnail and cover caches: quire's, shared by the desktop's apps.
 anyview-core = {path = "../anyview-core"}
-anyview-plugin = {path = "../anyview-plugin"}
-anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}
-plugin-host = {default-features = false, features = ["host"], path = "../../../plugin/plugin-host"}
 dirs = { workspace = true }
 ui-core = {path = "../../../ui/ui-core"}
-# The folder scan of Extensions and the file that turns some off; ui-settings without its D-Bus client reads that file.
-ui-extensions = {path = "../../../ui/ui-extensions"}
-ui-settings = {default-features = false, path = "../../../ui/ui-settings"}
 service-locator = {path = "../../../platform/service-locator"}
 log = { workspace = true }
 md-5 = { workspace = true }
@@ -43,8 +36,6 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 
 # Only a Linux build has a session bus and the freedesktop entries; `quire-desktop` names them.
 [target.'cfg(target_os = "linux")'.dependencies]
-futures-util = { workspace = true, optional = true }
-memfd = { workspace = true, optional = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
 action-provider = {features = ["dbus"], optional = true, path = "../../../actions/action-provider"}
 action-core = {optional = true, path = "../../../actions/action-core"}
