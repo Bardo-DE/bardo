@@ -67,9 +67,11 @@ impl<L: Lookup> GenericFlow<L> {
         let login = LoginName(typed.login().unwrap_or(address).to_owned());
         let built = match &typed {
             Manual::Imap(servers) => mail_typed(Family::Imap, servers, address, &self.spec)
-                .map_err(|_| SignInFault::Unreadable),
+                .ok()
+                .ok_or(SignInFault::Unreadable),
             Manual::Pop3(servers) => mail_typed(Family::Pop3, servers, address, &self.spec)
-                .map_err(|_| SignInFault::Unreadable),
+                .ok()
+                .ok_or(SignInFault::Unreadable),
             Manual::Jmap(server) => {
                 jmap::session(&self.io, &server.session, &login, &incoming).await
             }

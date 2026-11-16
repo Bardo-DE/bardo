@@ -186,11 +186,13 @@ fn to_rgb(raw: &RawFrame<'_>) -> Result<Vec<u8>, PrepError> {
 fn resize_rgb(rgb: Vec<u8>, from: DeviceSize, to: (u32, u32)) -> Result<Vec<u8>, PrepError> {
     use fast_image_resize::{PixelType, Resizer, images::Image};
     let src = Image::from_vec_u8(from.w, from.h, rgb, PixelType::U8x3)
-        .map_err(|_| PrepError::ShortBuffer)?;
+        .ok()
+        .ok_or(PrepError::ShortBuffer)?;
     let mut dst = Image::new(to.0, to.1, PixelType::U8x3);
     Resizer::new()
         .resize(&src, &mut dst, None)
-        .map_err(|_| PrepError::Encode)?;
+        .ok()
+        .ok_or(PrepError::Encode)?;
     Ok(dst.into_vec())
 }
 
@@ -214,6 +216,6 @@ fn encode(
                 .write_image(rgb, w, h, color),
         ),
     };
-    result.map_err(|_| PrepError::Encode)?;
+    result.ok().ok_or(PrepError::Encode)?;
     Ok((media, out))
 }

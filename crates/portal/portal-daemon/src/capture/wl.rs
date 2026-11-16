@@ -425,12 +425,12 @@ impl Copier {
         if bytes > MAX_FRAME_BYTES {
             return Err(CaptureError::TooLarge);
         }
-        let len = usize::try_from(bytes).map_err(|_| CaptureError::TooLarge)?;
+        let len = usize::try_from(bytes).ok().ok_or(CaptureError::TooLarge)?;
         let file = scratch_file(len)?;
-        let to_i32 = |v: u32| i32::try_from(v).map_err(|_| CaptureError::Unsupported);
+        let to_i32 = |v: u32| i32::try_from(v).ok().ok_or(CaptureError::Unsupported);
         let pool = self.shm.create_pool(
             file.as_fd(),
-            i32::try_from(len).map_err(|_| CaptureError::Unsupported)?,
+            i32::try_from(len).ok().ok_or(CaptureError::Unsupported)?,
             &self.link.qh,
             (),
         );

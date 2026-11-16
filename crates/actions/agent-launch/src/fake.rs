@@ -198,7 +198,7 @@ impl Accounts for FakeAccounts {
         _session: &SessionToken,
     ) -> Result<GrantId, AccountFault> {
         self.note(Call::Permit(program.as_str().to_owned()))?;
-        GrantId::parse("permit-1").map_err(|_| AccountFault::Other)
+        GrantId::parse("permit-1").ok().ok_or(AccountFault::Other)
     }
 
     #[expect(
@@ -213,7 +213,9 @@ impl Accounts for FakeAccounts {
     ) -> Result<Issued, AccountFault> {
         self.note(Call::Issue(program.as_str().to_owned()))?;
         Ok(Issued {
-            id: ProcessCredentialId::parse("cred-1").map_err(|_| AccountFault::Other)?,
+            id: ProcessCredentialId::parse("cred-1")
+                .ok()
+                .ok_or(AccountFault::Other)?,
             key: SecretText::new(self.secrets.key.clone()),
         })
     }

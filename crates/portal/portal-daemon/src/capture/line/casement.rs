@@ -36,7 +36,8 @@ impl PortalLine for CasementLine {
     /// be asked from a blocking thread (where captures connect) without starting a runtime.
     fn open(&self) -> Result<OwnedFd, LineError> {
         let runtime = tokio::runtime::Handle::try_current()
-            .map_err(|_| LineError::Refused("no bus runtime on this thread".to_owned()))?;
+            .ok()
+            .ok_or_else(|| LineError::Refused("no bus runtime on this thread".to_owned()))?;
         let (answer, wait) = mpsc::channel();
         let link = self.link.clone();
         runtime.spawn(async move {

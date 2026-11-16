@@ -109,7 +109,8 @@ impl DynLogin for Platform {
             } else {
                 let read = tokio::task::spawn_blocking(RustlsConnect::platform)
                     .await
-                    .map_err(|_| SignInFault::Unreachable)?;
+                    .ok()
+                    .ok_or(SignInFault::Unreachable)?;
                 self.0.get_or_init(|| read).clone()
             };
             login(plan, &connect).await
@@ -122,7 +123,8 @@ async fn login<C: Connect>(plan: RelayPlan, connect: &C) -> Result<(), SignInFau
     let app = Probe(Arc::clone(&up));
     let end = tokio::time::timeout(WITHIN, relay(plan, app, connect))
         .await
-        .map_err(|_| SignInFault::Unreachable)?;
+        .ok()
+        .ok_or(SignInFault::Unreachable)?;
     match (up.load(Ordering::Acquire), end) {
         (true, _) => Ok(()),
         (false, RelayEnd::Failed(fault)) => Err(fault_of(fault)),

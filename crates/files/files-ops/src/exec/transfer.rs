@@ -147,7 +147,8 @@ impl Run<'_> {
         let another = || {
             keep_both(name, split, taken)
                 .map(Place::At)
-                .map_err(|_| OpFailure::NameTooLong)
+                .ok()
+                .ok_or(OpFailure::NameTooLong)
         };
         if !taken(name) {
             return Ok(Place::At(name.clone()));

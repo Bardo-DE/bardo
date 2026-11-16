@@ -169,11 +169,13 @@ impl Lookup for MailLookup {
         let built = match &manual {
             Manual::Imap(servers) => {
                 proto_mail::typed(Family::Imap, servers, &typed.login, seams.spec)
-                    .map_err(|_| SignInFault::Unreadable)
+                    .ok()
+                    .ok_or(SignInFault::Unreadable)
             }
             Manual::Pop3(servers) => {
                 proto_mail::typed(Family::Pop3, servers, &typed.login, seams.spec)
-                    .map_err(|_| SignInFault::Unreadable)
+                    .ok()
+                    .ok_or(SignInFault::Unreadable)
             }
             Manual::Jmap(server) => {
                 if let Some(token) = &server.token {
@@ -241,7 +243,10 @@ impl Lookup for FixedLookup {
         let Some((address, password)) = address_and_password(&answers) else {
             return Outcome::Fail(SignInFault::Unreadable);
         };
-        match proto_mail::fixed(&address, seams.spec).map_err(|_| SignInFault::Unreadable) {
+        match proto_mail::fixed(&address, seams.spec)
+            .ok()
+            .ok_or(SignInFault::Unreadable)
+        {
             Ok((endpoints, claims)) => Outcome::Known(Located {
                 credential: Credential::Password(password),
                 label: address,

@@ -181,7 +181,8 @@ impl Accounts for DbusAccounts {
             .map_err(|e| fault(&e))?;
         let ChildKey::Value { value: key, .. } = credential
             .child_key(key_env, KeyDelivery::Value)
-            .map_err(|_| AccountFault::Other)?
+            .ok()
+            .ok_or(AccountFault::Other)?
         else {
             return Err(AccountFault::Other);
         };

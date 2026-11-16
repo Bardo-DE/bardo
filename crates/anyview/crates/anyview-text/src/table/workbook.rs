@@ -341,7 +341,8 @@ impl Workbook {
         let mut workbook = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             open_workbook_auto_from_rs(Cursor::new(bytes))
         }))
-        .map_err(|_| failed("the file is damaged"))?
+        .ok()
+        .ok_or_else(|| failed("the file is damaged"))?
         .map_err(failed)?;
         let names = workbook.sheet_names();
         let sheet_count = u32::try_from(names.len()).unwrap_or(u32::MAX);

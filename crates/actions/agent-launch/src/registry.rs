@@ -12,7 +12,8 @@ pub fn launch(dir: &AgentsDir, id: &str, version: &str) -> Result<Launch, Launch
     let (slug, pinned) = (Slug::parse(id)?, Slug::parse(version)?);
     let at = dir.installed(&slug, &pinned);
     let record = std::fs::read_to_string(at.join(FILE))
-        .map_err(|_| RecordFault::Missing)
+        .ok()
+        .ok_or(RecordFault::Missing)
         .and_then(|text| Record::parse(&text))
         .map_err(|why| LaunchFault::Record {
             id: id.to_owned(),
@@ -20,6 +21,8 @@ pub fn launch(dir: &AgentsDir, id: &str, version: &str) -> Result<Launch, Launch
             why,
         })?;
     let home = dir.home(&slug);
-    std::fs::create_dir_all(&home).map_err(|_| LaunchFault::Home)?;
+    std::fs::create_dir_all(&home)
+        .ok()
+        .ok_or(LaunchFault::Home)?;
     Ok(Launch::of(&record, &at, home))
 }

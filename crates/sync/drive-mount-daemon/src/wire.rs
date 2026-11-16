@@ -199,7 +199,9 @@ fn fields(bytes: &[u8]) -> Result<Vec<&str>, BadMessage> {
     if bytes.len() > MAX_MESSAGE {
         return Err(BadMessage::TooLong);
     }
-    let text = std::str::from_utf8(bytes).map_err(|_| BadMessage::NotFields)?;
+    let text = std::str::from_utf8(bytes)
+        .ok()
+        .ok_or(BadMessage::NotFields)?;
     let body = text.strip_suffix('\0').ok_or(BadMessage::NotFields)?;
     Ok(body.split('\0').collect())
 }

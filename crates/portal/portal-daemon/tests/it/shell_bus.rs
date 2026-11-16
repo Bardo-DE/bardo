@@ -35,7 +35,8 @@ async fn from_portal(connection: &Connection, header: &Header<'_>) -> fdo::Resul
         .await?
         .get_name_owner(name)
         .await
-        .map_err(|_| denied())?;
+        .ok()
+        .ok_or_else(|| denied())?;
     match header.sender() {
         Some(sender) if sender.as_str() == owner.as_str() => Ok(()),
         _ => Err(denied()),

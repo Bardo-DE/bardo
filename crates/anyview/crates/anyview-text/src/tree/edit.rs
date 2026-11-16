@@ -118,10 +118,13 @@ fn bounds(range: &Range<u64>) -> Range<usize> {
 fn literal(shape: Shape, typed: &str) -> Result<String, TreeEditError> {
     let trimmed = typed.trim();
     match shape {
-        Shape::String => serde_json::to_string(typed).map_err(|_| TreeEditError::NotEditable),
+        Shape::String => serde_json::to_string(typed)
+            .ok()
+            .ok_or(TreeEditError::NotEditable),
         Shape::Number => serde_json::from_str::<serde_json::Number>(trimmed)
             .map(|_| trimmed.to_owned())
-            .map_err(|_| TreeEditError::NotANumber),
+            .ok()
+            .ok_or(TreeEditError::NotANumber),
         Shape::True | Shape::False => match trimmed {
             "true" | "false" => Ok(trimmed.to_owned()),
             _ => Err(TreeEditError::NotTrueOrFalse),
@@ -134,7 +137,9 @@ fn literal(shape: Shape, typed: &str) -> Result<String, TreeEditError> {
                 | serde_json::Value::String(_),
             ) => Ok(trimmed.to_owned()),
             Ok(serde_json::Value::Array(_) | serde_json::Value::Object(_)) | Err(_) => {
-                serde_json::to_string(typed).map_err(|_| TreeEditError::NotEditable)
+                serde_json::to_string(typed)
+                    .ok()
+                    .ok_or(TreeEditError::NotEditable)
             }
         },
         Shape::Object | Shape::Array | Shape::Unreadable => Err(TreeEditError::NotEditable),
@@ -247,7 +252,9 @@ impl TreeSession {
     pub fn rename_key(&mut self, path: &TreePath, name: &str) -> Result<(), TreeEditError> {
         let around = self.tree.around(path)?;
         let key = around.this.key.ok_or(TreeEditError::NotEditable)?;
-        let text = serde_json::to_string(name).map_err(|_| TreeEditError::NotEditable)?;
+        let text = serde_json::to_string(name)
+            .ok()
+            .ok_or(TreeEditError::NotEditable)?;
         self.splice(bounds(&key), text.into_bytes())
     }
 
@@ -341,8 +348,9 @@ impl TreeSession {
         let mut added = separator;
         match &around.this.key {
             Some(key) => {
-                let name =
-                    serde_json::to_string(NEW_KEY).map_err(|_| TreeEditError::NotEditable)?;
+                let name = serde_json::to_string(NEW_KEY)
+                    .ok()
+                    .ok_or(TreeEditError::NotEditable)?;
                 added.extend_from_slice(name.as_bytes());
                 added.extend(between(key.end as usize, around.this.value.start as usize));
                 added.extend_from_slice(b"null");

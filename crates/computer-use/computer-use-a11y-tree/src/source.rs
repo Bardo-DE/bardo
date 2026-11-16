@@ -6,7 +6,6 @@ use computer_use_action::{Size, WindowSpace};
 use computer_use_desktop::{Pid, WindowTitle};
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// Which window's tree to take. The match is by process and title; it must be unambiguous.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

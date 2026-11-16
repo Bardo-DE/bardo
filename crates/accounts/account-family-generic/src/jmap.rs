@@ -29,6 +29,8 @@ pub(super) async fn session(
         jmap::request(url, sensitive(&authorization).map_err(fault_of)?).map_err(fault)?;
     let response = io.http.send(request).await.map_err(fault_of)?;
     let body = jmap::session_text(&response).map_err(fault)?;
-    let found = parse_jmap_session(body).map_err(|_| SignInFault::Unreadable)?;
+    let found = parse_jmap_session(body)
+        .ok()
+        .ok_or(SignInFault::Unreadable)?;
     Ok((jmap::as_login(found.endpoints, login), found.claims))
 }

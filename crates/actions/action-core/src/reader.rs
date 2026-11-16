@@ -246,8 +246,9 @@ impl ValueSchema {
             ValueSchema::Record(fields) => fields
                 .iter()
                 .map(|(name, schema)| {
-                    let name =
-                        FieldName::new(name.as_str()).map_err(|_| SchemaFault::NotRepresentable)?;
+                    let name = FieldName::new(name.as_str())
+                        .ok()
+                        .ok_or(SchemaFault::NotRepresentable)?;
                     Ok(Field {
                         name,
                         shape: schema.shape()?,

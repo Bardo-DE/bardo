@@ -59,13 +59,16 @@ impl Reach {
         let denied = patterns(program, "deny", deny)?;
         let sites = allowed.iter().map(shown).collect();
         let ports = Ports::new(DEFAULT_PORTS.iter().chain(extra_ports).copied().collect())
-            .map_err(|_| fault(program, "a port is 1 to 65535"))?;
-        let policy = EgressPolicy::new(allowed, denied, ports).map_err(|_| {
-            fault(
-                program,
-                "network allowlist needs at least one entry in allow",
-            )
-        })?;
+            .ok()
+            .ok_or_else(|| fault(program, "a port is 1 to 65535"))?;
+        let policy = EgressPolicy::new(allowed, denied, ports)
+            .ok()
+            .ok_or_else(|| {
+                fault(
+                    program,
+                    "network allowlist needs at least one entry in allow",
+                )
+            })?;
         Ok(Self { policy, sites })
     }
 

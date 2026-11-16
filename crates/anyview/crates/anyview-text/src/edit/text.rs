@@ -71,7 +71,9 @@ impl EditText {
             bytes = bytes.split_off(usize::from(detected.mark));
         }
         // The detector looked at the bytes before a mark too, but not past it.
-        std::str::from_utf8(&bytes).map_err(|_| EditRefusal::NotUtf8)?;
+        std::str::from_utf8(&bytes)
+            .ok()
+            .ok_or(EditRefusal::NotUtf8)?;
         Ok(EditText { bytes, bom })
     }
 

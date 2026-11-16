@@ -266,17 +266,30 @@ pub fn compose(shots: &[Placed]) -> Result<Canvas, ShotError> {
         .map(|s| i64::from(s.origin.y) + i64::from(s.size.height))
         .max()
         .unwrap_or(top);
-    let width = u32::try_from(right - left).map_err(|_| ShotError::TooLarge)?;
-    let height = u32::try_from(bottom - top).map_err(|_| ShotError::TooLarge)?;
+    let width = u32::try_from(right - left)
+        .ok()
+        .ok_or(ShotError::TooLarge)?;
+    let height = u32::try_from(bottom - top)
+        .ok()
+        .ok_or(ShotError::TooLarge)?;
     let pixels = u64::from(width) * u64::from(height);
     if pixels == 0 || pixels > MAX_PIXELS {
         return Err(ShotError::TooLarge);
     }
-    let mut rgba = vec![0u8; usize::try_from(pixels * 4).map_err(|_| ShotError::TooLarge)?];
+    let mut rgba = vec![
+        0u8;
+        usize::try_from(pixels * 4)
+            .ok()
+            .ok_or(ShotError::TooLarge)?
+    ];
     for shot in shots {
         let origin = (
-            usize::try_from(i64::from(shot.origin.x) - left).map_err(|_| ShotError::TooLarge)?,
-            usize::try_from(i64::from(shot.origin.y) - top).map_err(|_| ShotError::TooLarge)?,
+            usize::try_from(i64::from(shot.origin.x) - left)
+                .ok()
+                .ok_or(ShotError::TooLarge)?,
+            usize::try_from(i64::from(shot.origin.y) - top)
+                .ok()
+                .ok_or(ShotError::TooLarge)?,
         );
         paint(&mut rgba, width as usize, origin, shot.size, &shot.frame)?;
     }

@@ -179,7 +179,8 @@ impl Procs for BwrapProcs {
         let mut filter = ChildFilter(Some(PathBuf::from(file.as_str())));
         self.sandbox
             .write_filter(&file)
-            .map_err(|_| ProcFault::Spawn)?;
+            .ok()
+            .ok_or(ProcFault::Spawn)?;
         // Limits, the syscall filter, exactly the environment of `run` (and none of ours, none of
         // it on a command line) all come with the command. It fails closed.
         let mut command = Command::from(
@@ -197,7 +198,7 @@ impl Procs for BwrapProcs {
                 None => Stdio::null(),
             })
             .kill_on_drop(true);
-        let mut child = command.spawn().map_err(|_| ProcFault::Spawn)?;
+        let mut child = command.spawn().ok().ok_or(ProcFault::Spawn)?;
         let stdin = child.stdin.take().ok_or(ProcFault::Spawn)?;
         let stdout = child.stdout.take().ok_or(ProcFault::Spawn)?;
         let level = Arc::new(OnceLock::new());
@@ -238,7 +239,8 @@ impl BwrapProcs {
         let file = self.filter_path().ok_or(ProcFault::Spawn)?;
         self.sandbox
             .write_filter(&file)
-            .map_err(|_| ProcFault::Spawn)?;
+            .ok()
+            .ok_or(ProcFault::Spawn)?;
         let command = self
             .sandbox
             .agent_command(run, Some(&file))

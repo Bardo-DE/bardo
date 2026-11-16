@@ -67,7 +67,9 @@ fn resume_of(
 }
 
 fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
-    let path = AbsPath::parse(text).map_err(|_| bad(program, "a path must be absolute"))?;
+    let path = AbsPath::parse(text)
+        .ok()
+        .ok_or_else(|| bad(program, "a path must be absolute"))?;
     if path.is_root() {
         Err(bad(program, "a path must not be /"))
     } else {
@@ -76,8 +78,12 @@ fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
 }
 
 fn env(program: &str, name: Option<&String>) -> Result<Option<EnvName>, ConfigFault> {
-    name.map(|n| EnvName::parse(n).map_err(|_| bad(program, "not an environment variable name")))
-        .transpose()
+    name.map(|n| {
+        EnvName::parse(n)
+            .ok()
+            .ok_or_else(|| bad(program, "not an environment variable name"))
+    })
+    .transpose()
 }
 
 /// Variables the person's `set` table may not touch: the dynamic linker, the search path, and
@@ -156,8 +162,10 @@ fn source(at: &str, raw: &Raw, dir: Option<&AgentsDir>) -> Result<Source, Config
 
 pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFault> {
     let at = raw.program.clone();
-    let name = ProgramName::parse(&raw.program).map_err(|_| bad(&at, "not a program name"))?;
-    let program = AgentProgram::parse(&raw.program).map_err(|_| {
+    let name = ProgramName::parse(&raw.program)
+        .ok()
+        .ok_or_else(|| bad(&at, "not a program name"))?;
+    let program = AgentProgram::parse(&raw.program).ok().ok_or_else(|| {
         bad(
             &at,
             "a program is lower-case letters, digits and - (porter's grammar)",
@@ -183,8 +191,9 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
         .set
         .iter()
         .map(|(k, v)| {
-            let name =
-                EnvName::parse(k).map_err(|_| bad(&at, "not an environment variable name"))?;
+            let name = EnvName::parse(k)
+                .ok()
+                .ok_or_else(|| bad(&at, "not an environment variable name"))?;
             let fine = !forbidden(k)
                 && Some(&name) != key_env.as_ref()
                 && Some(&name) != base_url_env.as_ref()
@@ -271,13 +280,15 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
             .as_deref()
             .map(SignIn::parse)
             .transpose()
-            .map_err(|_| bad(&at, "sign_in is 1 to 64 letters, digits, - _ or ."))?,
+            .ok()
+            .ok_or_else(|| bad(&at, "sign_in is 1 to 64 letters, digits, - _ or ."))?,
         model: raw
             .model
             .as_deref()
             .map(ModelId::parse)
             .transpose()
-            .map_err(|_| bad(&at, "a model id has no spaces or control characters"))?,
+            .ok()
+            .ok_or_else(|| bad(&at, "a model id has no spaces or control characters"))?,
         registry: raw.registry.clone(),
         rewind: raw.checkpoints.unwrap_or(if claude_code {
             Rewind::Agent

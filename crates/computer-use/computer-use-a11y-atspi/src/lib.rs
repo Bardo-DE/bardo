@@ -55,7 +55,8 @@ impl AtspiSource {
             .get_or_try_init(|| async {
                 let bus = ::atspi::AccessibilityConnection::new()
                     .await
-                    .map_err(|_| A11yError::NoBus)?;
+                    .ok()
+                    .ok_or(A11yError::NoBus)?;
                 Ok(bus.connection().clone())
             })
             .await
