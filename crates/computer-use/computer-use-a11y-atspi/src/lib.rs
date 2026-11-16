@@ -53,10 +53,10 @@ impl AtspiSource {
     async fn connected(&self) -> Result<&zbus::Connection, A11yError> {
         self.connection
             .get_or_try_init(|| async {
-                let bus = ::atspi::AccessibilityConnection::new()
-                    .await
-                    .ok()
-                    .ok_or(A11yError::NoBus)?;
+                let bus = ::atspi::AccessibilityConnection::new().await.map_err(|e| {
+                    eprintln!("cuad: the accessibility bus could not be reached: {e}");
+                    A11yError::NoBus
+                })?;
                 Ok(bus.connection().clone())
             })
             .await

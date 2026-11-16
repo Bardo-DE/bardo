@@ -304,13 +304,10 @@ impl<S: Seams> Supervisor<S> {
             return Err(ControlRefusal::ModelUnavailable);
         }
         if let TaskTarget::Window(ident) = &task.target {
-            let known = self
-                .shared
-                .desktop
-                .windows()
-                .await
-                .ok()
-                .ok_or(ControlRefusal::WindowUnknown)?;
+            let known = self.shared.desktop.windows().await.map_err(|e| {
+                eprintln!("cuad: the desktop's windows could not be listed: {e}");
+                ControlRefusal::WindowUnknown
+            })?;
             let window = known
                 .iter()
                 .find(|w| &w.ident == ident)
@@ -334,11 +331,10 @@ impl<S: Seams> Supervisor<S> {
             let mut state = self.shared.state();
             let id = mint_run_id(state.next + 1);
             if let TaskTarget::Window(ident) = &task.target {
-                state.leases = state
-                    .leases
-                    .claim(ident, &id)
-                    .ok()
-                    .ok_or(ControlRefusal::LeaseHeld)?;
+                state.leases = state.leases.claim(ident, &id).map_err(|held| {
+                    eprintln!("cuad: a window was asked for twice: {held}");
+                    ControlRefusal::LeaseHeld
+                })?;
             }
             state.next += 1;
             id
@@ -397,10 +393,10 @@ impl<S: Seams> Supervisor<S> {
     fn send(&self, run: &RunId, input: RunInput) -> Result<(), ControlRefusal> {
         let state = self.shared.state();
         let live = state.live.get(run).ok_or(ControlRefusal::WrongState)?;
-        live.control
-            .send(input)
-            .ok()
-            .ok_or(ControlRefusal::WrongState)
+        live.control.send(input).map_err(|e| {
+            eprintln!("cuad: a run takes no more control: {e}");
+            ControlRefusal::WrongState
+        })
     }
 
     /// A control call on one run: cancel, pause, resume, take over, hand back.
