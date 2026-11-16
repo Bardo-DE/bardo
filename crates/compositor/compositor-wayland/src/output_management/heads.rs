@@ -104,8 +104,7 @@ where
                 output: facts.key.clone(),
             },
         )
-        .ok()
-        .ok_or(WaylandFault::SurfaceGone)?;
+        .map_err(WaylandFault::ObjectGone)?;
     manager.head(&head);
     head.name(facts.name.as_str().to_owned());
     head.description(describe(facts));
@@ -128,8 +127,7 @@ where
                     mode: *mode,
                 },
             )
-            .ok()
-            .ok_or(WaylandFault::SurfaceGone)?;
+            .map_err(WaylandFault::ObjectGone)?;
         head.mode(&object);
         object.size(side(mode.size.w), side(mode.size.h));
         object.refresh(side(mode.refresh.0));

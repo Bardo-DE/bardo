@@ -44,20 +44,20 @@ impl RealCaptureGpu {
 
     /// The renderer, or an error while a frame is being drawn with it.
     fn renderer(&self) -> Result<RefMut<'_, GlesRenderer>, BackendError> {
-        self.renderer.try_borrow_mut().ok().ok_or_else(busy)
+        self.renderer.try_borrow_mut().map_err(busy)
     }
 
     /// The scene images, or an error while they are in use.
     fn store(&self) -> Result<RefMut<'_, SceneStore>, BackendError> {
-        self.scenes.try_borrow_mut().ok().ok_or_else(busy)
+        self.scenes.try_borrow_mut().map_err(busy)
     }
 }
 
 /// The error of a renderer or store that is in use.
-fn busy() -> BackendError {
-    BackendError::from(RenderError::Renderer(
-        "the display renderer is busy".to_owned(),
-    ))
+fn busy(error: std::cell::BorrowMutError) -> BackendError {
+    BackendError::from(RenderError::Renderer(format!(
+        "the display renderer is busy: {error}"
+    )))
 }
 
 impl CaptureGpu for RealCaptureGpu {

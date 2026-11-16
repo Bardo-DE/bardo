@@ -28,7 +28,7 @@ pub fn render_window_texture(
     size: PhysicalSize,
     (scale, radius): (Scale, u32),
 ) -> Result<GlesTexture, RenderError> {
-    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let (w, h) = (edge(size.w)?, edge(size.h)?);
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let image = |renderer: &mut GlesRenderer| -> Result<GlesTexture, RenderError> {
@@ -94,7 +94,7 @@ fn cut_corners(
 ) -> Result<(), RenderError> {
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let rect = shape.rect();
-    let side = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let side = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let whole = Rectangle::<i32, Physical>::from_size(Size::from((side(rect.w)?, side(rect.h)?)));
     let mut framebuffer = renderer.bind(target).map_err(|e| fault(&e))?;
     let mut frame = renderer
@@ -105,7 +105,7 @@ fn cut_corners(
         .map_err(|e| fault(&e))?;
     bake_corners(&mut frame, from, shape).map_err(|e| fault(&e))?;
     let done = frame.finish().map_err(|e| fault(&e))?;
-    done.wait()
-        .ok()
-        .ok_or_else(|| RenderError::Renderer("the window image draw was interrupted".to_owned()))
+    done.wait().map_err(|error| {
+        RenderError::Renderer(format!("the window image draw was interrupted: {error}"))
+    })
 }

@@ -121,14 +121,14 @@ impl TtySession for RealSession {
         }
         self.seat
             .open(path.as_path(), OFlags::RDWR)
-            .ok()
-            .ok_or_else(|| SessionFault::DeniedOpen(path.as_path().display().to_string()))
+            .map_err(|error| {
+                SessionFault::DeniedOpen(format!("{}: {error}", path.as_path().display()))
+            })
     }
 
     fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
         let vt = i32::try_from(vt.0)
-            .ok()
-            .ok_or_else(|| SessionFault::Unavailable(format!("no VT {}", vt.0)))?;
+            .map_err(|error| SessionFault::Unavailable(format!("no VT {}: {error}", vt.0)))?;
         self.seat
             .change_vt(vt)
             .map_err(|error| SessionFault::Unavailable(error.to_string()))

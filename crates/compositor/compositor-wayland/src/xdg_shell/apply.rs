@@ -120,9 +120,7 @@ pub fn apply_popup_done(part: &mut XdgShellPart, popup: PopupKey) -> Result<(), 
     }
     let kind = PopupKind::Xdg(surface.clone());
     if let Ok(root) = find_popup_root_surface(&kind) {
-        PopupManager::dismiss_popup(&root, &kind)
-            .ok()
-            .ok_or(WaylandFault::SurfaceGone)
+        PopupManager::dismiss_popup(&root, &kind).map_err(WaylandFault::PopupGone)
     } else {
         surface.send_popup_done();
         Ok(())

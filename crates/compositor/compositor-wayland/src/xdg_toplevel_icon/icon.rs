@@ -10,7 +10,7 @@ use smithay::reexports::wayland_server::backend::ClientId;
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::reexports::wayland_server::{Client, DataInit, DisplayHandle, Resource};
 use smithay::wayland::Dispatch2;
-use smithay::wayland::shm::with_buffer_contents;
+use smithay::wayland::shm::{BufferAccessError, with_buffer_contents};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 /// A pixel buffer of an icon: shm-backed and square, at a scale.
@@ -63,30 +63,22 @@ enum Phase {
 }
 
 /// What an `add_buffer` can be refused for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, thiserror::Error)]
 enum Refusal {
     /// Not backed by `wl_shm`.
-    NotShm,
+    #[error("The wl_buffer must be backed by wl_shm")]
+    NotShm(#[source] BufferAccessError),
     /// Not square.
+    #[error("The wl_buffer must be a square")]
     NotSquare,
-}
-
-impl Refusal {
-    fn text(self) -> &'static str {
-        match self {
-            Refusal::NotShm => "The wl_buffer must be backed by wl_shm",
-            Refusal::NotSquare => "The wl_buffer must be a square",
-        }
-    }
 }
 
 /// The edge of `buffer`, or why it is no icon buffer.
 fn edge_of(buffer: &WlBuffer) -> Result<u32, Refusal> {
     let size = with_buffer_contents(buffer, |_, _, data| (data.width, data.height))
-        .ok()
-        .ok_or(Refusal::NotShm)?;
+        .map_err(Refusal::NotShm)?;
     match size {
-        (w, h) if w == h => u32::try_from(w).ok().ok_or(Refusal::NotSquare),
+        (w, h) if w == h && w >= 0 => Ok(w.unsigned_abs()),
         _ => Err(Refusal::NotSquare),
     }
 }
@@ -231,7 +223,7 @@ where
                     }
                     Err(refusal) => resource.post_error(
                         xdg_toplevel_icon_v1::Error::InvalidBuffer,
-                        refusal.text().to_owned(),
+                        refusal.to_string(),
                     ),
                 }
             }

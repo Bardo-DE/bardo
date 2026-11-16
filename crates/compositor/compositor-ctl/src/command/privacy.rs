@@ -152,9 +152,7 @@ async fn compositor_pid() -> Result<i32, String> {
         .get_connection_unix_process_id(name)
         .await
         .map_err(|error| unreachable(&error))?;
-    i32::try_from(pid)
-        .ok()
-        .ok_or_else(|| "casement's process number is not usable".to_owned())
+    i32::try_from(pid).map_err(|error| format!("casement's process number is not usable: {error}"))
 }
 
 /// Sends the reload signal to `pid`, once it is checked to be a casement.

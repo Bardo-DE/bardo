@@ -37,6 +37,9 @@ pub enum RenderError {
     /// The output has nothing to render into.
     #[error("output has no target")]
     NoTarget,
+    /// A size or a position that does not fit the renderer's integers.
+    #[error("a size does not fit the renderer")]
+    Size(#[source] std::num::TryFromIntError),
 }
 
 /// What every output shows where no element draws: opaque black.

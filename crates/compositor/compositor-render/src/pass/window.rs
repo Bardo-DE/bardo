@@ -95,7 +95,7 @@ pub fn render_window<R, T>(
 where
     R: Compositor + Bind<T> + ExportMem,
 {
-    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let mode = Size::from((edge(size.w)?, edge(size.h)?));
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let mut tracker = OutputDamageTracker::new(mode, scale.as_f64(), Transform::Normal);
@@ -152,7 +152,7 @@ pub fn render_window_dmabuf<R>(
 where
     R: Compositor + Bind<Dmabuf>,
 {
-    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let mode = Size::<i32, Physical>::from((edge(size.w)?, edge(size.h)?));
     let held = target.size();
     if (held.w, held.h) != (mode.w, mode.h) {
@@ -174,11 +174,9 @@ where
             DamageError::Rendering(error) => fault(&error),
             DamageError::OutputNoMode(_) => RenderError::NoTarget,
         })?;
-    drawn
-        .sync
-        .wait()
-        .ok()
-        .ok_or_else(|| RenderError::Renderer("the dma-buf draw was interrupted".to_owned()))
+    drawn.sync.wait().map_err(|error| {
+        RenderError::Renderer(format!("the dma-buf draw was interrupted: {error}"))
+    })
 }
 
 #[cfg(test)]

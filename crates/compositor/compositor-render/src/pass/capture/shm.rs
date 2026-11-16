@@ -22,6 +22,9 @@ pub enum ShmWriteError {
     /// The buffer's layout is negative, or lies outside its pool.
     #[error("the buffer lies outside its pool")]
     Layout,
+    /// A number of the buffer's layout is negative.
+    #[error("the buffer's layout has a negative number")]
+    Negative(#[source] std::num::TryFromIntError),
     /// The buffer is smaller than the frame.
     #[error("the buffer is smaller than the frame")]
     TooSmall,
@@ -37,9 +40,9 @@ pub(super) struct Layout {
 }
 
 impl Layout {
-    /// The layout `data` describes, or `Layout` if a number is negative.
-    pub(super) fn of(data: &BufferData) -> Result<Layout, ShmWriteError> {
-        let number = |n: i32| usize::try_from(n).ok().ok_or(ShmWriteError::Layout);
+    /// The layout `data` describes, or the error of the first number that is negative.
+    pub(super) fn of(data: &BufferData) -> Result<Layout, std::num::TryFromIntError> {
+        let number = |n: i32| usize::try_from(n);
         Ok(Layout {
             offset: number(data.offset)?,
             stride: number(data.stride)?,
@@ -67,7 +70,7 @@ impl Layout {
 /// not produce, has a layout outside its pool, or is smaller than the frame.
 pub fn write_frame(buffer: &WlBuffer, frame: &CapturedFrame) -> Result<(), ShmWriteError> {
     with_shm_pool_mut(buffer, |pool, data| {
-        let layout = Layout::of(&data)?;
+        let layout = Layout::of(&data).map_err(ShmWriteError::Negative)?;
         let format_fits = matches!(data.format, Format::Argb8888 | Format::Xrgb8888);
         if !format_fits {
             return Err(ShmWriteError::Format(data.format));

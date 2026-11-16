@@ -183,7 +183,7 @@ impl TtySession for SharedSession {
 
 /// A memfd holding `bytes`, read position at the start.
 fn memfd_of(path: &Path, bytes: &[u8]) -> Result<OwnedFd, SessionFault> {
-    let denied = |_| SessionFault::DeniedOpen(path.display().to_string());
+    let denied = |errno| SessionFault::DeniedOpen(format!("{}: {errno}", path.display()));
     let fd = rustix::fs::memfd_create("casement-session-fixture", MemfdFlags::CLOEXEC)
         .map_err(denied)?;
     let mut rest = bytes;
@@ -233,7 +233,8 @@ impl TtySession for FakeSession {
     }
 
     fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
-        let vt = i32::try_from(vt.0).ok().ok_or(SessionFault::Inactive)?;
+        let vt = i32::try_from(vt.0)
+            .map_err(|error| SessionFault::Unavailable(format!("no VT {}: {error}", vt.0)))?;
         Session::change_vt(self, vt)
     }
 

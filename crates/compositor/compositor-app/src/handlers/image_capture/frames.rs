@@ -58,8 +58,10 @@ fn capture(
     let buffer = frame.buffer();
     let size = buffer_size(&buffer).ok_or(CaptureFailure::BufferMismatch)?;
     let request = image_capture::on_frame_request(&mut state.wl.image_capture.book, id, size)
-        .ok()
-        .ok_or(CaptureFailure::OutputGone)?;
+        .map_err(|error| {
+            tracing::debug!(%error, "the capture session names no output");
+            CaptureFailure::OutputGone
+        })?;
     let wanted = constraints_of(state, &request.output).ok_or(CaptureFailure::OutputGone)?;
     // The mode changed since the session announced its constraints: announce the new ones and
     // fail this frame (the client allocates again).

@@ -6,7 +6,7 @@
 //! 4. `Model::check_invariants` holds;
 //! 5. privileged globals never appear on a connection that may not see them (I7).
 
-use super::failure::{FuzzFailure, PanicSite};
+use super::failure::{FuzzFailure, PanicSite, panic_message};
 use super::host::FuzzHost;
 use crate::fixture::ClientId;
 use compositor_core::policy::{ConnectionRole, GlobalKind, advertised};
@@ -37,9 +37,7 @@ pub(super) fn snapshot<H: FuzzHost>(host: &mut H, id: ClientId) -> Snapshot {
 /// Oracle 1: pumps, and says so if the compositor panicked doing it.
 pub(super) fn alive_pump<H: FuzzHost>(host: &mut H) -> Result<(), FuzzFailure> {
     catch_unwind(AssertUnwindSafe(|| host.pump()))
-        .map(|_| ())
-        .ok()
-        .ok_or(FuzzFailure::Panicked(PanicSite::Pump))
+        .map_err(|payload| FuzzFailure::Panicked(PanicSite::Pump, panic_message(&*payload)))
 }
 
 /// Oracle 2 for one client: no protocol error, or a documented one.

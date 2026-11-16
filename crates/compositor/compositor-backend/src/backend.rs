@@ -14,6 +14,7 @@ use smithay::backend::allocator::Format;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::renderer::gles::GlesError;
 use smithay::backend::renderer::pixman::PixmanError;
+use smithay::utils::UnmanagedResource;
 use std::path::PathBuf;
 use ui_core::geometry::scale::Scale;
 
@@ -158,6 +159,9 @@ pub enum BackendChoice {
 /// Why a backend could not start or act.
 #[derive(Debug, thiserror::Error)]
 pub enum BackendError {
+    /// A client's buffer is not a dma-buf.
+    #[error("the client's buffer is not a dma-buf")]
+    NotDmabuf(#[source] UnmanagedResource),
     /// An output spec did not parse.
     #[error("bad output spec {text}: {why}")]
     BadSpec {

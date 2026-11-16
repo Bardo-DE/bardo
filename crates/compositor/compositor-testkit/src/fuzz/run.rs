@@ -1,6 +1,6 @@
 //! Running a sequence of ops and checking the five oracles after each.
 
-use super::failure::{FuzzFailure, PanicSite};
+use super::failure::{FuzzFailure, PanicSite, panic_message};
 use super::host::FuzzHost;
 use super::ops::{FuzzOp, FuzzRequest, MAX_REPEAT, ObjectRef};
 use super::oracles::{self, Snapshot};
@@ -70,9 +70,9 @@ impl<'h, H: FuzzHost> Run<'h, H> {
         match op {
             FuzzOp::Advance(ms) => {
                 let by = Duration::from_millis(u64::from(*ms));
-                catch_unwind(AssertUnwindSafe(|| self.host.advance(by)))
-                    .ok()
-                    .ok_or(FuzzFailure::Panicked(PanicSite::Advance))
+                catch_unwind(AssertUnwindSafe(|| self.host.advance(by))).map_err(|payload| {
+                    FuzzFailure::Panicked(PanicSite::Advance, panic_message(&*payload))
+                })
             }
             FuzzOp::Request {
                 role,
@@ -84,8 +84,9 @@ impl<'h, H: FuzzHost> Run<'h, H> {
                     let id = self.fuzzer(role);
                     self.send(id, *object, request);
                 }))
-                .ok()
-                .ok_or(FuzzFailure::Panicked(PanicSite::Request))?;
+                .map_err(|payload| {
+                    FuzzFailure::Panicked(PanicSite::Request, panic_message(&*payload))
+                })?;
                 oracles::alive_pump(self.host)
             }
         }

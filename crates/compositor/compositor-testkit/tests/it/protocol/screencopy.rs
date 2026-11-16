@@ -9,6 +9,7 @@ use compositor_core::input::DeviceClass;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
 use compositor_core::{DeviceId, Event, OutputName};
+use compositor_testclient::ClientError;
 use compositor_testclient::capture::{
     Copied, CopyArea, CopyFailure, CopyKind, CursorMode, ScreenCopy,
 };
@@ -539,23 +540,27 @@ fn a_client_with_copies_held_for_the_answer_is_cut_at_the_cap() {
 fn pile_one(fixture: &mut Fixture, copy: &mut ScreenCopy) -> Result<(), Cut> {
     settle_or_cut(fixture, copy)?;
     copy.capture("HEADLESS-1", CopyArea::Output, CursorMode::Hidden)
-        .ok()
-        .ok_or(Cut)?;
+        .map_err(Cut::Client)?;
     settle_or_cut(fixture, copy)?;
-    let offer = *copy.offers().first().ok_or(Cut)?;
-    copy.copy(offer, CopyKind::Plain).ok().ok_or(Cut)?;
+    let offer = *copy.offers().first().ok_or(Cut::NoOffer)?;
+    copy.copy(offer, CopyKind::Plain).map_err(Cut::Client)?;
     settle_or_cut(fixture, copy)
 }
 
 /// The client's connection is gone.
 #[derive(Debug)]
-struct Cut;
+enum Cut {
+    /// The client's call or pump failed.
+    Client(ClientError),
+    /// The compositor offered nothing to copy.
+    NoOffer,
+}
 
 /// [`settle`], except that a connection the compositor closed ends it with [`Cut`].
 fn settle_or_cut(fixture: &mut Fixture, copy: &mut ScreenCopy) -> Result<(), Cut> {
     for _ in 0..100 {
         let compositor = fixture.pump();
-        let client = copy.pump().ok().ok_or(Cut)?;
+        let client = copy.pump().map_err(Cut::Client)?;
         if !(compositor || client) {
             return Ok(());
         }

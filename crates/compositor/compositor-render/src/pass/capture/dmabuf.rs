@@ -44,7 +44,7 @@ pub fn write_dmabuf<R>(
 where
     R: Renderer + ImportMem + Bind<Dmabuf>,
 {
-    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     if frame.format != CaptureFormat::Argb8888 || frame.stride != frame.area.w.saturating_mul(4) {
         return Err(RenderError::NoTarget);
@@ -94,7 +94,7 @@ pub fn blit_texture<R>(
 where
     R: Renderer + Bind<Dmabuf>,
 {
-    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let (x, y) = (from.x, from.y);
     let size = Size::<i32, Physical>::from((edge(from.w)?, edge(from.h)?));
@@ -129,9 +129,9 @@ where
         )
         .map_err(|e| fault(&e))?;
     let done = drawing.finish().map_err(|e| fault(&e))?;
-    done.wait()
-        .ok()
-        .ok_or_else(|| RenderError::Renderer("the dma-buf draw was interrupted".to_owned()))
+    done.wait().map_err(|error| {
+        RenderError::Renderer(format!("the dma-buf draw was interrupted: {error}"))
+    })
 }
 
 /// Reads `source`, a client's dma-buf (a cursor surface's buffer), through `renderer`.
@@ -163,7 +163,7 @@ where
         .copy_texture(&texture, region, Fourcc::Abgr8888)
         .map_err(|e| fault(&e))?;
     let rgba = renderer.map_texture(&mapping).map_err(|e| fault(&e))?;
-    let edge = |n: i32| u32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let edge = |n: i32| u32::try_from(n).map_err(RenderError::Size);
     Ok(ArgbImage::from_rgba(
         PhysicalSize {
             w: edge(size.w)?,

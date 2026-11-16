@@ -75,16 +75,14 @@ impl Bridge {
                 refused("the two GPUs share no picture format the render GPU can draw to")
             })?
         };
-        let format = Fourcc::try_from(entry.format.0)
-            .ok()
-            .ok_or_else(|| refused("the picture format is not a known format"))?;
+        let format = Fourcc::try_from(entry.format.0).map_err(|error| {
+            refused(format!("the picture format is not a known format: {error}"))
+        })?;
         let modifier = Modifier::from(entry.modifier.0);
         let width = u32::try_from(mode.w)
-            .ok()
-            .ok_or_else(|| refused("the mode is negative"))?;
+            .map_err(|error| refused(format!("the mode is negative: {error}")))?;
         let height = u32::try_from(mode.h)
-            .ok()
-            .ok_or_else(|| refused("the mode is negative"))?;
+            .map_err(|error| refused(format!("the mode is negative: {error}")))?;
         let mut allocator = GbmAllocator::new(gbm.clone(), GbmBufferFlags::RENDERING);
         let buffer = allocator
             .create_buffer(width, height, format, &[modifier])
@@ -200,8 +198,7 @@ fn wait_bounded(sync: &SyncPoint) -> Result<(), KmsError> {
         },
         None => sync
             .wait()
-            .ok()
-            .ok_or_else(|| refused("the render GPU was interrupted")),
+            .map_err(|error| refused(format!("the render GPU was interrupted: {error}"))),
     }
 }
 

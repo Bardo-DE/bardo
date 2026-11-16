@@ -26,6 +26,9 @@ pub enum ReadError {
     /// The buffer's layout is negative, or lies outside its pool.
     #[error("the buffer lies outside its pool")]
     Layout,
+    /// A number of the buffer's layout is negative, or the image is wider than a `u32`.
+    #[error("the buffer's layout has a number out of range")]
+    Number(#[source] std::num::TryFromIntError),
 }
 
 /// An image of little-endian premultiplied `Argb8888` pixels (B, G, R, A bytes), top row first,
@@ -98,7 +101,7 @@ impl ArgbImage {
                 Format::Xrgb8888 => true,
                 other => return Err(ReadError::Format(other)),
             };
-            let layout = Layout::of(&data).ok().ok_or(ReadError::Layout)?;
+            let layout = Layout::of(&data).map_err(ReadError::Number)?;
             unpack(pool, layout, opaque)
         })?
     }
@@ -210,7 +213,7 @@ fn unpack(pool: &[u8], layout: Layout, opaque: bool) -> Result<ArgbImage, ReadEr
             .iter_mut()
             .for_each(|pixel| pixel[3] = 255);
     }
-    let side = |n: usize| u32::try_from(n).ok().ok_or(ReadError::Layout);
+    let side = |n: usize| u32::try_from(n).map_err(ReadError::Number);
     Ok(ArgbImage {
         size: PhysicalSize {
             w: side(layout.width)?,

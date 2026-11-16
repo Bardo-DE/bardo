@@ -14,11 +14,13 @@ use compositor_testkit::writeback::{RawFrame, compare_raw, format_named, toleran
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-fn number<T: std::str::FromStr>(text: Option<&String>, what: &str) -> Result<T, String> {
+fn number<T: std::str::FromStr>(text: Option<&String>, what: &str) -> Result<T, String>
+where
+    T::Err: std::fmt::Display,
+{
     text.ok_or_else(|| format!("missing {what}"))?
         .parse()
-        .ok()
-        .ok_or_else(|| format!("{what} is not a number"))
+        .map_err(|error| format!("{what} is not a number: {error}"))
 }
 
 fn run(args: &[String]) -> Result<ExitCode, String> {

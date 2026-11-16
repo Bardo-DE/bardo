@@ -9,6 +9,16 @@ use compositor_core::policy::ConnectionRole;
 use compositor_testclient::{ClientError, ClientProtocolError};
 use std::fmt;
 
+/// What a panic said, as text: the payload of `catch_unwind`.
+#[must_use]
+pub(super) fn panic_message(payload: &(dyn std::any::Any + Send)) -> String {
+    payload
+        .downcast_ref::<&str>()
+        .map(|text| (*text).to_owned())
+        .or_else(|| payload.downcast_ref::<String>().cloned())
+        .unwrap_or_else(|| "a panic with no message".to_owned())
+}
+
 /// Where the compositor panicked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PanicSite {
@@ -35,8 +45,8 @@ impl fmt::Display for PanicSite {
 #[derive(Debug, thiserror::Error)]
 pub enum FuzzFailure {
     /// Oracle 1: the compositor panicked.
-    #[error("oracle 1: the compositor panicked {0}")]
-    Panicked(PanicSite),
+    #[error("oracle 1: the compositor panicked {0}: {1}")]
+    Panicked(PanicSite, String),
     /// Oracle 2: a client got a protocol error its interface does not document.
     #[error("oracle 2: client {client:?} got an undocumented protocol error: {error:?}")]
     UndocumentedError {

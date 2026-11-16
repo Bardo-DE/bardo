@@ -17,15 +17,15 @@ const CALL_PATIENCE: Duration = Duration::from_secs(60);
 pub enum BusError {
     /// `$DBUS_SESSION_BUS_ADDRESS` is not set: not started through `dev/up.sh`.
     #[error(
-        "DBUS_SESSION_BUS_ADDRESS is not set (start casement with dev/up.sh and source its env file)"
+        "DBUS_SESSION_BUS_ADDRESS is not usable (start casement with dev/up.sh and source its env file)"
     )]
-    NoBus,
+    NoBus(#[source] std::env::VarError),
     /// The bus or the call refused.
     #[error("{0}")]
     Zbus(#[from] zbus::Error),
     /// The call did not come back in time.
     #[error("no answer from casement within {0:?}")]
-    TimedOut(Duration),
+    TimedOut(Duration, #[source] tokio::time::error::Elapsed),
 }
 
 /// What a call answered.
@@ -46,9 +46,7 @@ pub enum Answer {
 
 /// The connection to the private bus named by `$DBUS_SESSION_BUS_ADDRESS`.
 pub async fn connect() -> Result<Connection, BusError> {
-    let address = std::env::var("DBUS_SESSION_BUS_ADDRESS")
-        .ok()
-        .ok_or(BusError::NoBus)?;
+    let address = std::env::var("DBUS_SESSION_BUS_ADDRESS").map_err(BusError::NoBus)?;
     Ok(zbus::connection::Builder::address(address.as_str())?
         .build()
         .await?)
@@ -64,8 +62,7 @@ pub async fn make(connection: &Connection, call: Call) -> Result<Answer, BusErro
     let sent = send(&proxy, call);
     tokio::time::timeout(patience, sent)
         .await
-        .ok()
-        .ok_or(BusError::TimedOut(patience))?
+        .map_err(|elapsed| BusError::TimedOut(patience, elapsed))?
 }
 
 async fn send(proxy: &Proxy<'_>, call: Call) -> Result<Answer, BusError> {

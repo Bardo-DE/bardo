@@ -186,6 +186,12 @@ pub enum WaylandFault {
     /// The surface was destroyed before the effect arrived.
     #[error("surface gone")]
     SurfaceGone,
+    /// The client's connection no longer holds the object the effect names.
+    #[error("the client's object is gone")]
+    ObjectGone(#[source] smithay::reexports::wayland_server::backend::InvalidId),
+    /// The popup's surface was destroyed before the effect arrived.
+    #[error("the popup's surface is gone")]
+    PopupGone(#[source] smithay::utils::DeadResource),
     /// The keymap could not be compiled (the seat's keyboard cannot start).
     #[error("keymap: {0}")]
     Keymap(String),

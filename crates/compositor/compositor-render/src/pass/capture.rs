@@ -133,7 +133,7 @@ pub fn capture_output<R: Compositor + ExportMem>(
     request: &CaptureRequest,
 ) -> Result<CapturedFrame, RenderError> {
     let area = request.area;
-    let side = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let side = |n: u32| i32::try_from(n).map_err(RenderError::Size);
     let region = Rectangle::<i32, Buffer>::new(
         (area.x, area.y).into(),
         (side(area.w)?, side(area.h)?).into(),
