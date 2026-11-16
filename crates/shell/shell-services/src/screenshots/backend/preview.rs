@@ -33,9 +33,10 @@ pub(crate) fn make_in(from: &Path, cache: &Path) -> Result<PathBuf, ServiceError
     }
     std::fs::create_dir_all(cache).map_err(|e| io(cache, e))?;
     let image = image::open(from).map_err(|e| io(from, std::io::Error::other(e)))?;
-    let small = match image.width().max(image.height()) > PREVIEW_MAX {
-        true => image.thumbnail(PREVIEW_MAX, PREVIEW_MAX),
-        false => image,
+    let small = if image.width().max(image.height()) > PREVIEW_MAX {
+        image.thumbnail(PREVIEW_MAX, PREVIEW_MAX)
+    } else {
+        image
     };
     let mut png = Vec::new();
     small

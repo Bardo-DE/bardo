@@ -15,6 +15,11 @@ use crate::capture_pick_bus::{Shell1Proxy, rig, serving, wait_for};
 
 #[tokio::test(flavor = "multi_thread")]
 async fn transom_asks_and_each_button_comes_back_as_its_number() {
+    const CASES: &[(PermissionOutcome, u32)] = &[
+        (PermissionOutcome::Grant, 0),
+        (PermissionOutcome::Deny, 1),
+        (PermissionOutcome::Closed, 2),
+    ];
     let Some(bus) = PrivateBus::start() else {
         eprintln!("skipped: no dbus-daemon");
         return;
@@ -24,11 +29,6 @@ async fn transom_asks_and_each_button_comes_back_as_its_number() {
     let proxy = Shell1Proxy::new(&transom)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    const CASES: &[(PermissionOutcome, u32)] = &[
-        (PermissionOutcome::Grant, 0),
-        (PermissionOutcome::Deny, 1),
-        (PermissionOutcome::Closed, 2),
-    ];
     for &(outcome, want) in CASES {
         let asked = {
             let proxy = proxy.clone();

@@ -87,13 +87,13 @@ impl Introduced {
 
     /// `who` is the service `role`, to every service that asks, now and later.
     pub(crate) fn service(&self, who: &Connection, role: Role) {
-        self.introduce(who, role.standing());
+        self.introduce(who, &role.standing());
     }
 
     /// `who` is a program the system owns (the image `path`), not a service.
     pub(crate) fn program(&self, who: &Connection, path: &str) {
         let standing = introduced_program(path).unwrap_or_else(|| panic!("a valid path")); // test-only
-        self.introduce(who, standing);
+        self.introduce(who, &standing);
     }
 
     /// The unique name `unique` is a program the system owns (the image `exe`) that the launcher
@@ -103,11 +103,11 @@ impl Introduced {
             exe: ExePath::new(exe).unwrap_or_else(|e| panic!("{e}")), // test-only
             scope_app: Some(AppKey::new(launched_as).unwrap_or_else(|e| panic!("{e}"))), // test-only
         };
-        self.introduce_name(unique, standing);
+        self.introduce_name(unique, &standing);
     }
 
     /// The unique name `name` stands as `standing`, for a stand-in that is another process.
-    pub(crate) fn introduce_name(&self, name: &str, standing: Standing) {
+    pub(crate) fn introduce_name(&self, name: &str, standing: &Standing) {
         self.standings
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
@@ -127,17 +127,17 @@ impl Introduced {
         match as_ {
             Who::Service(role) => self.service(who, role),
             #[cfg(feature = "dev-callers")]
-            Who::StandIn(role) => self.introduce(who, role.standing_at(Proof::Dev)),
+            Who::StandIn(role) => self.introduce(who, &role.standing_at(Proof::Dev)),
             Who::Program => self.program(who, "/usr/bin/stranger"),
-            Who::Nobody => self.introduce(who, introduced_unverified(WhyNot::ImageWritable)),
+            Who::Nobody => self.introduce(who, &introduced_unverified(WhyNot::ImageWritable)),
         }
     }
 
-    fn introduce(&self, who: &Connection, standing: Standing) {
+    fn introduce(&self, who: &Connection, standing: &Standing) {
         let name = who
             .unique_name()
             .map_or_else(|| panic!("a connection with no name"), ToString::to_string); // test-only
-        self.introduce_name(&name, standing);
+        self.introduce_name(&name, &standing);
     }
 }
 

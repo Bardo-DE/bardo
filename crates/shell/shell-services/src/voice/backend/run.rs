@@ -176,7 +176,7 @@ impl Live {
     fn inbound(&mut self, message: Inbound) {
         match message {
             Inbound::Event(event) => self.feed(event),
-            Inbound::Opened(serial, path, stream) => self.opened(serial, path, stream),
+            Inbound::Opened(serial, path, stream) => self.opened(serial, &path, stream),
             Inbound::Frame(serial, frame) if self.current(serial) => {
                 self.feed(VoiceEvent::Frame(frame));
             }
@@ -197,7 +197,7 @@ impl Live {
     }
 
     /// `Begin` returned: follow the stream, tell the machine, then replay what `Ended` came early.
-    fn opened(&mut self, serial: Serial, path: OwnedObjectPath, stream: UnixStream) {
+    fn opened(&mut self, serial: Serial, path: &OwnedObjectPath, stream: UnixStream) {
         let Utterance::Beginning(began, early) =
             std::mem::replace(&mut self.utterance, Utterance::None)
         else {
@@ -351,10 +351,10 @@ async fn ask_begin(
         trigger,
         space: SpaceId::desktop(),
     };
-    let body = seal(&begin).map_err(|_| VoiceEvent::Unreachable)?;
+    let body = seal(&begin).map_err(unreachable_because("cannot seal the begin"))?;
     let voice = VoiceProxy::new(connection)
         .await
-        .map_err(|_| VoiceEvent::Unreachable)?;
+        .map_err(unreachable_because("cannot reach voiced"))?;
     match voice.begin(&body).await {
         Ok((path, fd)) => Ok((path, stream_of(fd.into())?)),
         Err(zbus::Error::MethodError(name, ..)) => {
@@ -371,5 +371,13 @@ fn stream_of(fd: OwnedFd) -> Result<UnixStream, VoiceEvent> {
     socket
         .set_nonblocking(true)
         .and_then(|()| UnixStream::from_std(socket))
-        .map_err(|_| VoiceEvent::Unreachable)
+        .map_err(unreachable_because("cannot follow the stream"))
+}
+
+/// The error mapper that logs the cause of a failed step and says `Unreachable`.
+fn unreachable_because<E: std::fmt::Display>(step: &'static str) -> impl FnOnce(E) -> VoiceEvent {
+    move |error| {
+        eprintln!("bardo-shell: voice: {step}: {error}");
+        VoiceEvent::Unreachable
+    }
 }

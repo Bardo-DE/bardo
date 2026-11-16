@@ -181,7 +181,7 @@ fn drain(
 ) -> Option<Session> {
     loop {
         match commands.try_recv() {
-            Ok(command) if link == Link::Ready => apply(context, sink, tx, command),
+            Ok(command) if link == Link::Ready => apply(context, sink, tx, &command),
             Ok(_) => {}
             Err(TryRecvError::Empty) => return None,
             Err(TryRecvError::Disconnected) => return Some(Session::Commands),
@@ -220,7 +220,7 @@ fn refresh(
     let sink = Rc::clone(sink);
     introspector.get_server_info(move |info| {
         if let Some(name) = info.default_sink_name.as_deref() {
-            fetch_sink(&context, name.to_owned(), &tx, &sink);
+            fetch_sink(&context, name, &tx, &sink);
         } else {
             *sink.borrow_mut() = Sink::default();
             tx.feed(VolumeEvent::SinkGone);
@@ -231,7 +231,7 @@ fn refresh(
 /// Reads the named sink's volume, mute and description, and publishes it.
 fn fetch_sink(
     context: &Rc<RefCell<Context>>,
-    name: String,
+    name: &str,
     tx: &Published<Volume, VolumeEvent>,
     sink: &Rc<RefCell<Sink>>,
 ) {
@@ -239,7 +239,7 @@ fn fetch_sink(
     let tx = tx.clone();
     let sink = Rc::clone(sink);
     let mut seen = false;
-    introspector.get_sink_info_by_name(&name, move |result| match result {
+    introspector.get_sink_info_by_name(name, move |result| match result {
         ListResult::Item(info) => {
             seen = true;
             *sink.borrow_mut() = Sink {
@@ -272,13 +272,13 @@ fn apply(
     context: &Rc<RefCell<Context>>,
     sink: &Rc<RefCell<Sink>>,
     tx: &Published<Volume, VolumeEvent>,
-    command: VolumeCommand,
+    command: &VolumeCommand,
 ) {
     let Sink { index, channels } = *sink.borrow();
     if channels == 0 {
         return;
     }
-    match command {
+    match *command {
         VolumeCommand::SetLevel(level) => {
             let volumes = channel_volumes(level, channels);
             context

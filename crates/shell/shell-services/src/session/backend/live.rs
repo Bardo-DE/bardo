@@ -150,9 +150,9 @@ async fn probe(
         presence: Presence::Present,
         lock: lock_log_out,
         log_out: lock_log_out,
-        restart: offer_of(restart),
-        power_off: offer_of(power_off),
-        suspend: offer_of(suspend),
+        restart: offer_of(&restart),
+        power_off: offer_of(&power_off),
+        suspend: offer_of(&suspend),
     };
     (SessionEvent::Probed(probed), session_id)
 }
@@ -192,9 +192,9 @@ async fn run_action(manager: &ManagerProxy<'_>, session_id: Option<&str>, action
 
 /// logind's `Can*` result to an [`Offer`], by way of the frozen [`Offer::from_logind`] and
 /// `IsSupported`'s own word (`enum_impl_str_conv`); an error is `Unavailable`, same as `no`.
-fn offer_of(result: zbus::Result<IsSupported>) -> Offer {
+fn offer_of(result: &zbus::Result<IsSupported>) -> Offer {
     match result {
-        Ok(supported) => Offer::from_logind(<&str>::from(supported)),
+        Ok(supported) => Offer::from_logind(<&str>::from(*supported)),
         Err(_) => Offer::Unavailable,
     }
 }

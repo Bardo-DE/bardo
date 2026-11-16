@@ -114,7 +114,7 @@ impl Live {
                 });
             }
             ShotEffect::Open(path) => {
-                super::child::detach(self.children.as_ref(), "xdg-open", &[path.as_os_str()])
+                super::child::detach(self.children.as_ref(), "xdg-open", &[path.as_os_str()]);
             }
             ShotEffect::Trash(path) => {
                 super::child::detach(
@@ -135,7 +135,7 @@ impl Live {
             let _ = events.send(ShotEvent::TakeEnded);
         };
         match self.policy {
-            Some(_) => super::child::run_then(portal_command(kind), ended),
+            Some(_) => super::child::run_then(&portal_command(kind), ended),
             None => ended(),
         }
     }
@@ -143,8 +143,9 @@ impl Live {
 
 /// What a `Watching` says for `folders` that exist (none: `Off`).
 pub(crate) fn watching_of(folders: Vec<PathBuf>) -> Watching {
-    match folders.is_empty() {
-        true => Watching::Off,
-        false => Watching::Folders(folders),
+    if folders.is_empty() {
+        Watching::Off
+    } else {
+        Watching::Folders(folders)
     }
 }

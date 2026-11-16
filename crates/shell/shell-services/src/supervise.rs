@@ -1,5 +1,6 @@
-//! Keeping a service alive: waiting between attempts with a growing delay, and naming a panic
-//! that stopped a service. A service that cannot do its work right now waits and tries again; it
+//! Keeping a service alive: waiting with a growing delay, and naming a panic.
+//!
+//! A service that cannot do its work right now waits and tries again; it
 //! never ends for good because a peer was late.
 
 use std::any::Any;
@@ -83,7 +84,7 @@ mod tests {
         for _ in 0..4 {
             backoff.wait();
         }
-        backoff.after_attempt(HEALTHY_FOR - Duration::from_secs(1));
+        backoff.after_attempt(HEALTHY_FOR.saturating_sub(Duration::from_secs(1)));
         assert_eq!(backoff.wait(), FIRST_WAIT * 16);
         backoff.after_attempt(HEALTHY_FOR);
         assert_eq!(backoff.wait(), FIRST_WAIT);

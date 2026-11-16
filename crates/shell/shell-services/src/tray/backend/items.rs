@@ -68,8 +68,8 @@ pub(super) fn to_tray_icon(name: Option<&str>, pixmaps: Option<&[SniPixmap]>) ->
         return TrayIcon::None;
     };
     TrayIcon::Pixmap(Pixmap {
-        width: largest.width.max(0) as u32,
-        height: largest.height.max(0) as u32,
+        width: u32::try_from(largest.width).unwrap_or_default(),
+        height: u32::try_from(largest.height).unwrap_or_default(),
         argb32: largest.pixels.clone(),
     })
 }

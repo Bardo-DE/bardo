@@ -55,16 +55,28 @@ struct Account {
 #[zbus::interface(name = "org.bardo.Accounts1.Account")]
 impl Account {
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property getter takes `&self`; this fake always answers the same"
+    )]
     fn id(&self) -> String {
         "work".to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property getter takes `&self`; this fake always answers the same"
+    )]
     fn provider(&self) -> String {
         "google".to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property getter takes `&self`; this fake always answers the same"
+    )]
     fn label(&self) -> String {
         "Work mail".to_owned()
     }
@@ -82,9 +94,10 @@ impl Account {
     async fn reauthenticate(
         &mut self,
         parent_window: String,
-        _options: HashMap<String, OwnedValue>,
+        options: HashMap<String, OwnedValue>,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) -> OwnedObjectPath {
+        let _ = options;
         self.record
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)

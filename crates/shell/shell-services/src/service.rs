@@ -7,7 +7,6 @@
 //! it and publishes.
 
 use std::fmt;
-use std::future::Future;
 use std::time::{Duration, Instant};
 
 use tokio::sync::{mpsc, watch};
@@ -170,19 +169,16 @@ async fn run_once<S: Service>(
     let mut work = tokio::spawn(S::run(env, deps, io));
     loop {
         tokio::select! {
-            command = outer.commands.recv() => match command {
-                Some(command) => {
-                    // The run may have just ended; the command then waits in `outer` no more.
-                    let _gone_is_dropped = inner.control.send(command);
+            command = outer.commands.recv() => if let Some(command) = command {
+                // The run may have just ended; the command then waits in `outer` no more.
+                let _gone_is_dropped = inner.control.send(command);
+            } else {
+                drop(inner.control);
+                if tokio::time::timeout(WIND_DOWN, &mut work).await.is_err() {
+                    work.abort();
                 }
-                None => {
-                    drop(inner.control);
-                    if tokio::time::timeout(WIND_DOWN, &mut work).await.is_err() {
-                        work.abort();
-                    }
-                    publish(&outer.state, &inner.state);
-                    return None;
-                }
+                publish(&outer.state, &inner.state);
+                return None;
             },
             changed = inner.state.changed() => {
                 if changed.is_err() {
@@ -247,10 +243,11 @@ mod tests {
             reason = "an `async fn` would hold the `&Env` it never reads; the trait wants a 'static future"
         )]
         fn run(
-            _env: &Env,
+            env: &Env,
             runs: Arc<AtomicU32>,
             mut io: ServiceIo<Self>,
         ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
+            let _ = env;
             async move {
                 let run = runs.fetch_add(1, Ordering::SeqCst) + 1;
                 assert!(run > 1, "the first run panics");
@@ -278,10 +275,12 @@ mod tests {
             reason = "an `async fn` would hold the `&Env` it never reads; the trait wants a 'static future"
         )]
         fn run(
-            _env: &Env,
+            env: &Env,
             runs: Arc<AtomicU32>,
-            _io: ServiceIo<Self>,
+            io: ServiceIo<Self>,
         ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
+            let _ = env;
+            drop(io);
             async move {
                 runs.fetch_add(1, Ordering::SeqCst);
                 panic!("every run panics");

@@ -354,7 +354,7 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
     let forger = connect(&bus, None).await;
-    let forged = host(&forger).await;
+    let sheet_as_forger = host(&forger).await;
 
     let refused = |result: zbus::Result<()>, what: &str| match result {
         Err(zbus::Error::MethodError(name, ..)) => {
@@ -372,7 +372,7 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
         }
         other => panic!("{what}: {other:?}"),
     };
-    refused(forged.open("evil", "", &providers()).await, "Open");
+    refused(sheet_as_forger.open("evil", "", &providers()).await, "Open");
     tokio::time::sleep(QUIET).await;
     assert!(
         shell.sheet.state.borrow().open.is_empty(),
@@ -390,8 +390,11 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
             == 1)
         .await
     );
-    refused(forged.update("accountd-0", &form()).await, "Update");
-    refused(forged.close("accountd-0").await, "Close");
+    refused(
+        sheet_as_forger.update("accountd-0", &form()).await,
+        "Update",
+    );
+    refused(sheet_as_forger.close("accountd-0").await, "Close");
     let state = shell.sheet.state.borrow().clone();
     assert!(
         matches!(state.open[0].view, SheetView::Providers(_)),

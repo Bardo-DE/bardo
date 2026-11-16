@@ -57,7 +57,10 @@ async fn until(
     match waited {
         Ok(Ok(())) => {}
         Ok(Err(e)) => panic!("{what}: {e}"),
-        Err(_) => panic!("timed out waiting for {what}: {:?}", rx.borrow()),
+        Err(elapsed) => panic!(
+            "timed out waiting for {what} ({elapsed}): {:?}",
+            rx.borrow()
+        ),
     }
 }
 

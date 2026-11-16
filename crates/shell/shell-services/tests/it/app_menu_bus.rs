@@ -52,6 +52,10 @@ fn app_menu_app() -> PathBuf {
 /// The bus name of `app`'s menu: these ids are already legal bus-name elements, so quire's
 /// derivation (`shell_ui_kit::app_menu::menu_name_of`, held to it by its own test) is the prefix and
 /// the id.
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "`AppMenuDeps::name_of` is a fn pointer returning `Option<MenuName>`"
+)]
 fn name_of(app: &MenuApp) -> Option<MenuName> {
     Some(MenuName(format!("org.bardo.AppMenu.{}", app.0)))
 }
@@ -370,6 +374,10 @@ fn manifests() -> Vec<ValidManifest> {
 }
 
 impl Transport for RecordingIntentd {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Transport::call` is async; the recorder answers at once"
+    )]
     async fn call(&self, request: IntentsRequest) -> Result<IntentsReply, TransportError> {
         match request {
             IntentsRequest::Manifests => Ok(IntentsReply::Manifests(manifests())),
@@ -409,7 +417,7 @@ fn window(key: u64, app_id: &str) -> Toplevel {
 /// An agent on `bus` whose windows are `apps` (the first focused), whose intentd records, and
 /// whose `/proc` says the process `pid` was launched as `launched_as` (nobody, when `None`).
 struct Agent {
-    agent: MenuAgent<RecordingIntentd>,
+    menu: MenuAgent<RecordingIntentd>,
     intentd: RecordingIntentd,
     wl: tokio::sync::mpsc::UnboundedReceiver<WlCommand>,
     _windows: watch::Sender<WindowModel>,
@@ -475,7 +483,7 @@ async fn agent_reporting(
         callers.peers_on(connection.clone()),
     );
     Agent {
-        agent,
+        menu: agent,
         intentd,
         wl: wl_commands,
         _windows: windows_tx,
@@ -504,7 +512,7 @@ async fn the_listing_names_every_row_and_carries_the_apps_commands() {
     let agent = agent(&bus, scratch.path(), &callers, &["test.app", "other"], None).await;
 
     let listed = agent
-        .agent
+        .menu
         .list(None)
         .await
         .unwrap_or_else(|e| panic!("{e:?}"));
@@ -532,14 +540,14 @@ async fn the_listing_names_every_row_and_carries_the_apps_commands() {
 
     // A window with no menu has the shell's own rows alone, Quit included.
     let bare = agent
-        .agent
+        .menu
         .list(Some("other"))
         .await
         .unwrap_or_else(|e| panic!("{e:?}"));
     assert!(bare.text.contains("[quit] Quit other"), "{}", bare.text);
     assert!(!bare.text.contains("Edit"), "{}", bare.text);
     assert_eq!(
-        agent.agent.list(Some("nothing.here")).await.map(|l| l.text),
+        agent.menu.list(Some("nothing.here")).await.map(|l| l.text),
         Err(MenuFault::NoWindow)
     );
 }
@@ -555,7 +563,7 @@ async fn an_unverified_apps_items_are_destructive_whatever_their_titles_or_comma
     let mut agent = agent(&bus, scratch.path(), &callers, &["test.app"], None).await;
 
     // An item that names another app's harmless Read action: a claim, so a destructive click.
-    let spoof = agent.agent.activate(None, "22", None).await;
+    let spoof = agent.menu.activate(None, "22", None).await;
     let spoof = spoof.unwrap_or_else(|e| panic!("{e:?}"));
     assert_eq!(
         (spoof.how, spoof.effect),
@@ -564,7 +572,7 @@ async fn an_unverified_apps_items_are_destructive_whatever_their_titles_or_comma
     app.logged("Event 22 clicked").await;
 
     // An item under a View title: the title is the app's too.
-    let erase = agent.agent.activate(None, "42", None).await;
+    let erase = agent.menu.activate(None, "42", None).await;
     let erase = erase.unwrap_or_else(|e| panic!("{e:?}"));
     assert_eq!(
         (erase.how, erase.effect),
@@ -573,7 +581,7 @@ async fn an_unverified_apps_items_are_destructive_whatever_their_titles_or_comma
     app.logged("Event 42 clicked").await;
 
     // The command id of its own manifest's action, with nobody proving the app: still a click.
-    let own = agent.agent.activate(None, "21", None).await;
+    let own = agent.menu.activate(None, "21", None).await;
     let own = own.unwrap_or_else(|e| panic!("{e:?}"));
     assert_eq!(
         (own.how, own.effect),
@@ -583,15 +591,11 @@ async fn an_unverified_apps_items_are_destructive_whatever_their_titles_or_comma
 
     // A submenu parent and an unknown key run nothing.
     assert_eq!(
-        agent.agent.activate(None, "20", None).await.map(|a| a.how),
+        agent.menu.activate(None, "20", None).await.map(|a| a.how),
         Err(MenuFault::NotRunnable)
     );
     assert_eq!(
-        agent
-            .agent
-            .activate(None, "9999", None)
-            .await
-            .map(|a| a.how),
+        agent.menu.activate(None, "9999", None).await.map(|a| a.how),
         Err(MenuFault::NoSuchItem)
     );
     assert!(
@@ -624,7 +628,7 @@ async fn a_verified_apps_own_command_is_handed_back_as_the_next_call_and_never_c
     )
     .await;
 
-    let done = agent.agent.activate(None, "21", None).await;
+    let done = agent.menu.activate(None, "21", None).await;
     let done = done.unwrap_or_else(|e| panic!("{e:?}"));
     assert_eq!(
         done.effect,
@@ -636,7 +640,7 @@ async fn a_verified_apps_own_command_is_handed_back_as_the_next_call_and_never_c
         Activated::Delegated(CallRequest {
             action: notes("notes.archive"),
             target: TargetValue::Nothing,
-            args: Default::default(),
+            args: std::collections::BTreeMap::default(),
             origin: Origin::AppInternal,
         })
     );
@@ -651,7 +655,7 @@ async fn a_verified_apps_own_command_is_handed_back_as_the_next_call_and_never_c
     );
 
     // A command this app's manifest does not declare is a claim, even from the verified app.
-    let spoof = agent.agent.activate(None, "22", None).await;
+    let spoof = agent.menu.activate(None, "22", None).await;
     let spoof = spoof.unwrap_or_else(|e| panic!("{e:?}"));
     assert_eq!(
         (spoof.how, spoof.effect),
@@ -697,15 +701,15 @@ async fn classify_answers_read_destructive_or_delegates_as_the_table_says() {
         ("quit", destructive()),
     ];
     for (item, want) in cases {
-        let got = verified.agent.classify(None, item).await;
+        let got = verified.menu.classify(None, item).await;
         assert_eq!(got, Ok(want), "{item}");
     }
     assert_eq!(
-        verified.agent.classify(None, "20").await,
+        verified.menu.classify(None, "20").await,
         Err(MenuFault::NotRunnable)
     );
     assert_eq!(
-        verified.agent.classify(None, "9999").await,
+        verified.menu.classify(None, "9999").await,
         Err(MenuFault::NoSuchItem)
     );
 
@@ -716,13 +720,13 @@ async fn classify_answers_read_destructive_or_delegates_as_the_table_says() {
     let unverified = agent(&bus, scratch.path(), &callers, &["test.app"], None).await;
     for item in ["21", "22", "42"] {
         assert_eq!(
-            unverified.agent.classify(None, item).await,
+            unverified.menu.classify(None, item).await,
             Ok(destructive()),
             "{item}"
         );
     }
     assert_eq!(
-        unverified.agent.classify(None, "minimise:1").await,
+        unverified.menu.classify(None, "minimise:1").await,
         Ok(read())
     );
 }
@@ -745,18 +749,18 @@ async fn perform_refuses_an_item_that_changed_since_it_was_gated_and_always_take
     .await;
 
     // Gated as Read, but item 21 is a delegation now: refused, nothing sent or done.
-    let changed = agent.agent.activate(None, "21", Some(&read())).await;
+    let changed = agent.menu.activate(None, "21", Some(&read())).await;
     assert_eq!(changed.map(|a| a.how), Err(MenuFault::Changed));
     // Gated as a delegation of another action: refused.
     let other = CallClass::Delegates(notes("notes.erase"));
-    let changed = agent.agent.activate(None, "21", Some(&other)).await;
+    let changed = agent.menu.activate(None, "21", Some(&other)).await;
     assert_eq!(changed.map(|a| a.how), Err(MenuFault::Changed));
     // Gated as Read, but the item is a click now.
-    let changed = agent.agent.activate(None, "22", Some(&read())).await;
+    let changed = agent.menu.activate(None, "22", Some(&read())).await;
     assert_eq!(changed.map(|a| a.how), Err(MenuFault::Changed));
     // Gated as a delegation, but the item is gone from the menu.
     let gone = agent
-        .agent
+        .menu
         .activate(
             None,
             "9999",
@@ -773,7 +777,7 @@ async fn perform_refuses_an_item_that_changed_since_it_was_gated_and_always_take
 
     // The same item as gated is carried out: the delegation is handed back.
     let ok = agent
-        .agent
+        .menu
         .activate(
             None,
             "21",
@@ -781,24 +785,21 @@ async fn perform_refuses_an_item_that_changed_since_it_was_gated_and_always_take
         )
         .await;
     assert!(matches!(ok.map(|a| a.how), Ok(Activated::Delegated(_))));
-    let own = agent
-        .agent
-        .activate(None, "minimise:1", Some(&read()))
-        .await;
+    let own = agent.menu.activate(None, "minimise:1", Some(&read())).await;
     assert_eq!(own.map(|a| a.how), Ok(Activated::Own));
     assert_eq!(agent.wl.try_recv(), Ok(WlCommand::Minimize(WindowKey(1))));
 
     // Destructive is the ceiling, the router's re-ask path: always accepted, whatever it is now.
-    let click = agent.agent.activate(None, "22", Some(&destructive())).await;
+    let click = agent.menu.activate(None, "22", Some(&destructive())).await;
     assert_eq!(click.map(|a| a.how), Ok(Activated::Clicked));
     app.logged("Event 22 clicked").await;
-    let delegated = agent.agent.activate(None, "21", Some(&destructive())).await;
+    let delegated = agent.menu.activate(None, "21", Some(&destructive())).await;
     assert!(matches!(
         delegated.map(|a| a.how),
         Ok(Activated::Delegated(_))
     ));
     let quit = agent
-        .agent
+        .menu
         .activate(None, "quit", Some(&destructive()))
         .await;
     assert_eq!(quit.map(|a| a.how), Ok(Activated::Own));
@@ -816,7 +817,7 @@ async fn a_menu_served_by_another_program_than_the_apps_is_neither_listed_nor_cl
     let agent = agent(&bus, scratch.path(), &callers, &["dev.notes"], None).await;
 
     let listed = agent
-        .agent
+        .menu
         .list(None)
         .await
         .unwrap_or_else(|e| panic!("{e:?}"));
@@ -825,7 +826,7 @@ async fn a_menu_served_by_another_program_than_the_apps_is_neither_listed_nor_cl
         "the squatter's menu was listed: {}",
         listed.text
     );
-    let clicked = agent.agent.activate(None, "21", None).await;
+    let clicked = agent.menu.activate(None, "21", None).await;
     assert!(matches!(clicked, Err(MenuFault::NoMenu)), "{clicked:?}");
     tokio::time::sleep(Duration::from_millis(300)).await;
     assert!(
@@ -925,7 +926,7 @@ async fn the_shells_own_rows_do_what_the_table_calls_cheap() {
         ),
     ];
     for (item, effect, want) in cases {
-        let done = agent.agent.activate(None, item, None).await;
+        let done = agent.menu.activate(None, item, None).await;
         let done = done.unwrap_or_else(|e| panic!("{item}: {e:?}"));
         assert_eq!((done.how, done.effect), (Activated::Own, effect), "{item}");
         let mut got = Vec::new();
@@ -995,7 +996,7 @@ mod routed {
                 let ask = menu_ask_of(&inv)
                     .map_err(AppFault::Refused)?
                     .ok_or(AppFault::Refused(AppRefusal::Unsupported))?;
-                return menus::perform(&self.shell.agent, ask, &inv, classified)
+                return menus::perform(&self.shell.menu, ask, &inv, classified)
                     .await
                     .map_err(AppFault::Refused);
             }
@@ -1024,15 +1025,24 @@ mod routed {
                 .ok()
                 .flatten()
                 .ok_or(ClassifyFault::Unsupported)?;
-            menus::classify(&self.shell.agent, ask)
+            menus::classify(&self.shell.menu, ask)
                 .await
-                .map_err(|_| ClassifyFault::Refused)
+                .ok()
+                .ok_or(ClassifyFault::Refused)
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the `AppLink` trait is async; this fake refuses or answers at once"
+        )]
         async fn dry_run(&self, _: &AppName, _: Invocation) -> Result<Preview, AppRefusal> {
             Err(AppRefusal::Unsupported)
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the `AppLink` trait is async; this fake refuses or answers at once"
+        )]
         async fn undo(
             &self,
             _: &AppName,
@@ -1042,14 +1052,26 @@ mod routed {
             Err(action_core::UndoFault::AppUnavailable)
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the `AppLink` trait is async; this fake refuses or answers at once"
+        )]
         async fn context(&self, _: &AppName) -> Result<action_core::ContextSnapshot, LinkFault> {
             Err(LinkFault::Unavailable)
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the `AppLink` trait is async; this fake refuses or answers at once"
+        )]
         async fn running(&self, _: &AppName) -> bool {
             true
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the `AppLink` trait is async; this fake refuses or answers at once"
+        )]
         async fn preview(
             &self,
             _: &AppName,
@@ -1058,6 +1080,10 @@ mod routed {
             Err(LinkFault::Unavailable)
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the `AppLink` trait is async; this fake refuses or answers at once"
+        )]
         async fn suggest(
             &self,
             _: &AppName,

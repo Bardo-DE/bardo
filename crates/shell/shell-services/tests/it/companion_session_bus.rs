@@ -239,9 +239,8 @@ async fn a_handle_refused_after_close_reads_plainly_and_is_not_asked_again() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn somebody_elses_words_are_quoted_and_the_persons_own_are_not() {
     let mail = Handle(MAIL_HANDLE);
-    let bench = match bench_on(Some("s-9"), Router::Labelled, mail).await {
-        Some(bench) => bench,
-        None => return,
+    let Some(bench) = bench_on(Some("s-9"), Router::Labelled, mail).await else {
+        return;
     };
     bench.ask();
     assert_eq!(
@@ -254,9 +253,8 @@ async fn somebody_elses_words_are_quoted_and_the_persons_own_are_not() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_router_without_labels_is_read_plainly_and_everything_is_quoted() {
-    let bench = match bench_on(Some("s-9"), Router::Older, HANDLE).await {
-        Some(bench) => bench,
-        None => return,
+    let Some(bench) = bench_on(Some("s-9"), Router::Older, HANDLE).await else {
+        return;
     };
     bench.ask();
     assert_eq!(

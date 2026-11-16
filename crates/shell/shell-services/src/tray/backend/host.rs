@@ -395,7 +395,7 @@ mod tests {
                 assert!(!enabled);
                 assert_eq!(visibility, Visibility::Hidden);
             }
-            other => panic!("expected an Item, got {other:?}"),
+            other @ TrayMenuKind::Separator => panic!("expected an Item, got {other:?}"),
         }
     }
 
@@ -436,7 +436,7 @@ mod tests {
                 assert_eq!(children.len(), 1);
                 assert_eq!(children[0].id, 9);
             }
-            other => panic!("expected an Item, got {other:?}"),
+            other @ TrayMenuKind::Separator => panic!("expected an Item, got {other:?}"),
         }
     }
 
@@ -461,7 +461,7 @@ mod tests {
         item.label = Some("_Quit".to_owned());
         match to_menu_entry(&item).kind {
             TrayMenuKind::Item { label, .. } => assert_eq!(label, "Quit"),
-            other => panic!("expected an Item, got {other:?}"),
+            other @ TrayMenuKind::Separator => panic!("expected an Item, got {other:?}"),
         }
     }
 
@@ -503,7 +503,7 @@ mod tests {
             TrayMenuKind::Item { label, .. } => {
                 assert!(label.chars().count() <= shell_model::tray::MENU_LABEL_MAX_CHARS + 1);
             }
-            other => panic!("expected an Item, got {other:?}"),
+            other @ TrayMenuKind::Separator => panic!("expected an Item, got {other:?}"),
         }
     }
 
@@ -513,7 +513,7 @@ mod tests {
         let pixmaps = vec![SniPixmap {
             width: side,
             height: side,
-            pixels: vec![0; (side * side * 4) as usize],
+            pixels: vec![0; usize::try_from(side * side * 4).unwrap_or_default()],
         }];
         assert_eq!(to_tray_icon(None, Some(&pixmaps)), TrayIcon::None);
     }

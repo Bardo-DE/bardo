@@ -27,14 +27,15 @@ pub struct StandInSession(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Session")]
 impl StandInSession {
-    async fn turn(&self, session: String, turn: String, _options: Details) -> fdo::Result<u64> {
+    fn turn(&self, session: String, turn: String, options: Details) -> fdo::Result<u64> {
+        let _ = options;
         self.0.push(format!("turn {session} {turn}"));
         Ok(41)
     }
 
     /// The labelled reading the shell asks for first. Handle [`MAIL_HANDLE`] holds somebody
     /// else's words (mail); every other handle is the person's own.
-    async fn display_labelled(&self, session: String, handle: u64) -> fdo::Result<String> {
+    fn display_labelled(&self, session: String, handle: u64) -> fdo::Result<String> {
         self.0.push(format!("display {session} {handle}"));
         if self.0.lines().contains(&format!("close {session}")) {
             return Err(fdo::Error::Failed("NoSuchSession".to_owned()));
@@ -68,7 +69,8 @@ pub struct StandInModeSession {
 
 #[interface(name = "org.bardo.Intents1.Session")]
 impl StandInModeSession {
-    async fn turn(&self, session: String, turn: String, _options: Details) -> fdo::Result<u64> {
+    fn turn(&self, session: String, turn: String, options: Details) -> fdo::Result<u64> {
+        let _ = options;
         self.log.push(format!("turn {session} {turn}"));
         Ok(41)
     }
@@ -106,12 +108,13 @@ pub struct StandInOlderSession(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Session")]
 impl StandInOlderSession {
-    async fn turn(&self, session: String, turn: String, _options: Details) -> fdo::Result<u64> {
+    fn turn(&self, session: String, turn: String, options: Details) -> fdo::Result<u64> {
+        let _ = options;
         self.0.push(format!("turn {session} {turn}"));
         Ok(41)
     }
 
-    async fn display(&self, session: String, handle: u64) -> fdo::Result<String> {
+    fn display(&self, session: String, handle: u64) -> fdo::Result<String> {
         self.0.push(format!("display {session} {handle}"));
         Ok(format!("the text of handle {handle}"))
     }
@@ -122,7 +125,8 @@ pub struct StandInMessage(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Message")]
 impl StandInMessage {
-    async fn send(&self, session: String, draft: String, _options: Details) -> fdo::Result<String> {
+    fn send(&self, session: String, draft: String, options: Details) -> fdo::Result<String> {
+        let _ = options;
         self.0.push(format!("send {session} {draft}"));
         let delivery: Result<Delivery, SendRefusal> = Ok(Delivery {
             message: MessageId::parse("m-1").unwrap_or_else(|e| panic!("{e}")),
@@ -138,7 +142,7 @@ pub struct StandInRegistry(pub Vec<ValidManifest>);
 
 #[interface(name = "org.bardo.Intents1.Registry")]
 impl StandInRegistry {
-    async fn manifests(&self) -> Vec<(String, String)> {
+    fn manifests(&self) -> Vec<(String, String)> {
         self.0
             .iter()
             .map(|valid| (valid.manifest().app.as_str().to_owned(), json(valid)))
@@ -157,7 +161,8 @@ pub struct StandInSearch {
 
 #[interface(name = "org.bardo.Intents1.Search")]
 impl StandInSearch {
-    async fn query(&self, text: String, _scope: String, generation: u64) -> fdo::Result<String> {
+    fn query(&self, text: String, scope: String, generation: u64) -> fdo::Result<String> {
+        let _ = scope;
         self.log.push(format!("search {text} {generation}"));
         let hits = self.hits.lock().unwrap_or_else(|e| panic!("{e}"));
         Ok(json(&*hits))
@@ -171,7 +176,8 @@ pub struct StandInControl(pub Arc<Mutex<Vec<UndoEntry>>>);
 
 #[interface(name = "org.bardo.Intents1.Control")]
 impl StandInControl {
-    async fn journal(&self, _filter: String) -> fdo::Result<String> {
+    fn journal(&self, filter: String) -> fdo::Result<String> {
+        let _ = filter;
         Ok(json(&*self.0.lock().unwrap_or_else(|e| panic!("{e}"))))
     }
 
@@ -183,15 +189,16 @@ pub struct StandInRun(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Run")]
 impl StandInRun {
-    async fn perform(
+    fn perform(
         &self,
         call: String,
         session: String,
         parent_window: String,
-        _options: Details,
+        options: Details,
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &Connection,
     ) -> fdo::Result<OwnedObjectPath> {
+        let _ = options;
         self.0
             .push(format!("perform {call} {session} {parent_window}"));
         let path = OwnedObjectPath::try_from("/org/bardo/Intents1/request/2")
@@ -219,7 +226,7 @@ impl StandInRun {
         Ok(path)
     }
 
-    async fn undo(
+    fn undo(
         &self,
         entry: u64,
         #[zbus(header)] header: Header<'_>,
@@ -269,11 +276,12 @@ pub struct StandInCompanion {
 
 #[interface(name = "org.bardo.Companion1")]
 impl StandInCompanion {
-    async fn prepare(&self, _options: Details) {
+    fn prepare(&self, options: Details) {
+        let _ = options;
         self.log.push("prepare");
     }
 
-    async fn open(&self, open: String) -> fdo::Result<String> {
+    fn open(&self, open: String) -> fdo::Result<String> {
         self.log.push(format!("open {open}"));
         Ok(json(&SessionOpened {
             session: SessionId::parse("s-1").unwrap_or_else(|e| panic!("{e}")),
@@ -285,9 +293,10 @@ impl StandInCompanion {
     async fn ask(
         &self,
         ask: String,
-        _options: Details,
+        options: Details,
         #[zbus(object_server)] server: &zbus::ObjectServer,
     ) -> fdo::Result<OwnedObjectPath> {
+        let _ = options;
         self.log.push(format!("ask {ask}"));
         let path = OwnedObjectPath::try_from(answer_path(&task()))
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
@@ -306,11 +315,11 @@ impl StandInCompanion {
         Ok(path)
     }
 
-    async fn told(&self, agent: String, space: String, turn: String) {
+    fn told(&self, agent: String, space: String, turn: String) {
         self.log.push(format!("told {agent} {space} {turn}"));
     }
 
-    async fn close(&self, session: String) {
+    fn close(&self, session: String) {
         self.log.push(format!("close {session}"));
     }
 
@@ -331,7 +340,7 @@ pub struct StandInAnswer {
 
 #[interface(name = "org.bardo.Companion1.Answer")]
 impl StandInAnswer {
-    async fn act(&self, action: String) -> fdo::Result<OwnedObjectPath> {
+    fn act(&self, action: String) -> fdo::Result<OwnedObjectPath> {
         self.log.push(format!("act {action}"));
         match self.acts {
             ActsAs::Accepts => OwnedObjectPath::try_from("/org/bardo/Companion1/request/1")
@@ -340,19 +349,19 @@ impl StandInAnswer {
         }
     }
 
-    async fn cancel(&self) {
+    fn cancel(&self) {
         self.log.push("cancel");
     }
 
     #[zbus(property)]
-    async fn session(&self) -> fdo::Result<String> {
+    fn session(&self) -> fdo::Result<String> {
         self.session
             .clone()
             .ok_or_else(|| fdo::Error::UnknownProperty("Session".to_owned()))
     }
 
     #[zbus(property)]
-    async fn routing(&self) -> fdo::Result<String> {
+    fn routing(&self) -> fdo::Result<String> {
         self.routing
             .as_ref()
             .map(|routing| routing.lock().unwrap_or_else(|e| panic!("{e}")).clone())
@@ -360,7 +369,7 @@ impl StandInAnswer {
     }
 
     #[zbus(property)]
-    async fn view(&self) -> String {
+    fn view(&self) -> String {
         self.view.lock().unwrap_or_else(|e| panic!("{e}")).clone()
     }
 
@@ -397,12 +406,12 @@ pub struct StandInManager {
 
 #[interface(name = "org.bardo.ComputerUse1.Manager")]
 impl StandInManager {
-    async fn runs(&self) -> Vec<OwnedObjectPath> {
+    fn runs(&self) -> Vec<OwnedObjectPath> {
         self.runs.clone()
     }
 
     #[zbus(property)]
-    async fn sight_note(&self) -> String {
+    fn sight_note(&self) -> String {
         self.sight.lock().unwrap_or_else(|e| panic!("{e}")).clone()
     }
 
@@ -419,46 +428,46 @@ pub struct StandInRunObject {
 
 #[interface(name = "org.bardo.ComputerUse1.Run")]
 impl StandInRunObject {
-    async fn pause(&self) {
+    fn pause(&self) {
         self.log.push(format!("pause {}", self.id));
     }
 
-    async fn cancel(&self) {
+    fn cancel(&self) {
         self.log.push(format!("cancel {}", self.id));
     }
 
     #[zbus(property)]
-    async fn state(&self) -> String {
+    fn state(&self) -> String {
         self.state.lock().unwrap_or_else(|e| panic!("{e}")).clone()
     }
 
     #[zbus(property)]
-    async fn id(&self) -> String {
+    fn id(&self) -> String {
         self.id.replace('_', "-")
     }
 
     #[zbus(property)]
-    async fn step(&self) -> u32 {
+    fn step(&self) -> u32 {
         2
     }
 
     #[zbus(property)]
-    async fn goal(&self) -> String {
+    fn goal(&self) -> String {
         "book a table".to_owned()
     }
 
     #[zbus(property)]
-    async fn window(&self) -> String {
+    fn window(&self) -> String {
         r#"{"app":"org.mozilla.firefox","title":"Tables"}"#.to_owned()
     }
 
     #[zbus(property)]
-    async fn mode(&self) -> String {
+    fn mode(&self) -> String {
         "in_place".to_owned()
     }
 
     #[zbus(property)]
-    async fn budget(&self) -> String {
+    fn budget(&self) -> String {
         String::new()
     }
 
@@ -472,7 +481,8 @@ pub struct StandInMemory(pub Vec<TimelineEntry>);
 
 #[interface(name = "org.bardo.Memory1.Control")]
 impl StandInMemory {
-    async fn timeline(&self, _space: String, _query: String) -> String {
+    fn timeline(&self, space: String, query: String) -> String {
+        let _ = (space, query);
         json(&TimelinePage {
             entries: self.0.clone(),
             next: None,
@@ -488,7 +498,8 @@ pub struct StandInWaiting {
 
 #[interface(name = "org.bardo.Memory1.Control")]
 impl StandInWaiting {
-    async fn timeline(&self, _space: String, _query: String) -> String {
+    fn timeline(&self, space: String, query: String) -> String {
+        let _ = (space, query);
         json(&TimelinePage {
             entries: Vec::new(),
             next: None,
@@ -496,7 +507,7 @@ impl StandInWaiting {
     }
 
     /// The desktop and a "work" Space; what waits is in "work", where a helper's job remembers.
-    async fn spaces(&self) -> String {
+    fn spaces(&self) -> String {
         let space = |id: &str| {
             serde_json::json!({
                 "id": id, "state": {"kind": "open"}, "vault": "sealed", "created": 0
@@ -505,14 +516,14 @@ impl StandInWaiting {
         serde_json::json!([space("desktop"), space("work")]).to_string()
     }
 
-    async fn pending(&self, space: String) -> String {
+    fn pending(&self, space: String) -> String {
         match space.as_str() {
             "work" => json(&self.facts),
             _ => "[]".to_owned(),
         }
     }
 
-    async fn settle(&self, fact: String, verdict: String) {
+    fn settle(&self, fact: String, verdict: String) {
         self.log.push(format!("settle {fact} {verdict}"));
     }
 }

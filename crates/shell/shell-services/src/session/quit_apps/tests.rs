@@ -55,6 +55,10 @@ impl AppsHost for Fake {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait's `wait` is async; the fake only counts the polls"
+    )]
     async fn wait(&self, span: Duration) {
         assert_eq!(span, POLL);
         self.polls.set(self.polls.get() + 1);

@@ -327,7 +327,7 @@ impl Voice {
 }
 
 /// The shell with its notifications service passive, and a voice on its answers.
-async fn shell_under(bus: &PrivateBus) -> (Shell, Voice) {
+fn shell_under(bus: &PrivateBus) -> (Shell, Voice) {
     let answers = Answers::default();
     let scratch = TempDir::new("accounts-bus-id");
     let env = Env {
@@ -361,7 +361,7 @@ async fn the_server_naming_the_notice_sill_posted_signs_in_once() {
         return;
     };
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
-    let (mut shell, voice) = shell_under(&bus).await;
+    let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
     accountd.refuse().await;
     let id = notice_shown(&mut shell).await;
@@ -377,7 +377,7 @@ async fn an_id_sill_did_not_post_for_the_account_does_nothing() {
         return;
     };
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
-    let (mut shell, voice) = shell_under(&bus).await;
+    let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
     accountd.refuse().await;
     let id = notice_shown(&mut shell).await;
@@ -401,7 +401,7 @@ async fn a_closed_notice_does_nothing() {
         return;
     };
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
-    let (mut shell, voice) = shell_under(&bus).await;
+    let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
     accountd.refuse().await;
     let id = notice_shown(&mut shell).await;
@@ -421,7 +421,7 @@ async fn after_the_account_is_well_and_needs_them_again_only_the_new_id_works() 
         return;
     };
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
-    let (mut shell, voice) = shell_under(&bus).await;
+    let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
     accountd.refuse().await;
     let old = notice_shown(&mut shell).await;

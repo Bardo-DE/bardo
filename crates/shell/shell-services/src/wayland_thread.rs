@@ -118,7 +118,7 @@ pub(crate) fn start<F: Follow>(
     let (orders, from_service) = channel::channel();
     std::thread::Builder::new()
         .name(format!("shell-{}", F::NAME))
-        .spawn(move || run::<F>(&display, start, from_service, tell))?;
+        .spawn(move || run::<F>(&display, start, from_service, &tell))?;
     Ok(Wire { orders })
 }
 
@@ -137,7 +137,7 @@ fn run<F: Follow>(
     display: &WaylandRoute,
     start: F::Start,
     orders: channel::Channel<F::Order>,
-    tell: Tell<F::Event>,
+    tell: &Tell<F::Event>,
 ) {
     if let Err(refusal) = follow::<F>(display, start, orders, tell.clone()) {
         eprintln!("bardo-shell: {}: {refusal}; {}", F::NAME, F::UNFOLLOWED);
@@ -172,7 +172,7 @@ fn follow<F: Follow>(
         .insert(handle.clone())
         .map_err(|error| error.error)?;
     handle
-        .insert_source(orders, move |event, _, state: &mut F| match event {
+        .insert_source(orders, move |event, &mut (), state: &mut F| match event {
             Event::Msg(order) => state.order(order),
             Event::Closed => signal.stop(),
         })

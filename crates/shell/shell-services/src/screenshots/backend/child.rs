@@ -26,7 +26,7 @@ pub(crate) fn detach(children: &dyn Children, program: &str, args: &[&OsStr]) {
 }
 
 /// Run `line` and call `ended` once it exits (or could not start).
-pub(crate) fn run_then(line: CommandLine, ended: impl FnOnce() + Send + 'static) {
+pub(crate) fn run_then(line: &CommandLine, ended: impl FnOnce() + Send + 'static) {
     let mut command = Command::new(&line.program);
     command.args(&line.args);
     wait_then(command, &line.program, ended);

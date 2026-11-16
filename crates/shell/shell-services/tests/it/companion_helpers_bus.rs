@@ -80,14 +80,14 @@ struct StandInHelpers {
 
 #[interface(name = "org.bardo.Companion1.Helpers2")]
 impl StandInHelpers {
-    async fn list(&self, after: u64) -> fdo::Result<String> {
+    fn list(&self, after: u64) -> fdo::Result<String> {
         self.log.push(format!("list {after}"));
         Ok(json(
             &*self.held.view.lock().unwrap_or_else(|e| panic!("{e}")),
         ))
     }
 
-    async fn card(&self, helper: String) -> fdo::Result<String> {
+    fn card(&self, helper: String) -> fdo::Result<String> {
         self.log.push(format!("card {helper}"));
         let held = self.held.card.lock().unwrap_or_else(|e| panic!("{e}"));
         match held.as_ref() {
@@ -96,77 +96,77 @@ impl StandInHelpers {
         }
     }
 
-    async fn create(&self, form: String) -> fdo::Result<String> {
+    fn create(&self, form: String) -> fdo::Result<String> {
         self.log.push(format!("create {form}"));
         Ok(json(
             &*self.held.reply.lock().unwrap_or_else(|e| panic!("{e}")),
         ))
     }
 
-    async fn edit(&self, helper: String, form: String) -> fdo::Result<String> {
+    fn edit(&self, helper: String, form: String) -> fdo::Result<String> {
         self.log.push(format!("edit {helper} {form}"));
         Ok(json(
             &*self.held.reply.lock().unwrap_or_else(|e| panic!("{e}")),
         ))
     }
 
-    async fn pause(&self, helper: String) -> fdo::Result<()> {
+    fn pause(&self, helper: String) -> fdo::Result<()> {
         self.log.push(format!("pause {helper}"));
         Ok(())
     }
 
-    async fn resume(&self, helper: String) -> fdo::Result<()> {
+    fn resume(&self, helper: String) -> fdo::Result<()> {
         self.log.push(format!("resume {helper}"));
         Ok(())
     }
 
-    async fn remove(&self, helper: String) -> fdo::Result<()> {
+    fn remove(&self, helper: String) -> fdo::Result<()> {
         self.log.push(format!("remove {helper}"));
         Ok(())
     }
 
-    async fn post_job(&self, helper: String, goal: String, things: String) -> fdo::Result<String> {
+    fn post_job(&self, helper: String, goal: String, things: String) -> fdo::Result<String> {
         self.log.push(format!("post {helper} {goal} {things}"));
         Ok(json(
             &*self.held.reply.lock().unwrap_or_else(|e| panic!("{e}")),
         ))
     }
 
-    async fn sign_in(&self, helper: String, way: String) -> fdo::Result<String> {
+    fn sign_in(&self, helper: String, way: String) -> fdo::Result<String> {
         self.log.push(format!("sign_in {helper} {way}"));
         Ok(json(
             &*self.held.reply.lock().unwrap_or_else(|e| panic!("{e}")),
         ))
     }
 
-    async fn sign_out(&self, helper: String) -> fdo::Result<String> {
+    fn sign_out(&self, helper: String) -> fdo::Result<String> {
         self.log.push(format!("sign_out {helper}"));
         Ok(json(
             &*self.held.reply.lock().unwrap_or_else(|e| panic!("{e}")),
         ))
     }
 
-    async fn routines(&self) -> fdo::Result<String> {
+    fn routines(&self) -> fdo::Result<String> {
         self.log.push("routines".to_owned());
         Ok(json(&RoutinesView::default()))
     }
 
-    async fn add_routine(&self, form: String) -> fdo::Result<String> {
+    fn add_routine(&self, form: String) -> fdo::Result<String> {
         self.log.push(format!("add_routine {form}"));
         Ok(json(&RoutineReply::Done))
     }
 
-    async fn pause_routine(&self, routine: String) -> fdo::Result<()> {
+    fn pause_routine(&self, routine: String) -> fdo::Result<()> {
         self.log.push(format!("pause_routine {routine}"));
         Ok(())
     }
 
-    async fn resume_routine(&self, routine: String) -> fdo::Result<()> {
+    fn resume_routine(&self, routine: String) -> fdo::Result<()> {
         self.log.push(format!("resume_routine {routine}"));
         Ok(())
     }
 
-    async fn remove_routine(&self, routine: String) -> fdo::Result<()> {
+    fn remove_routine(&self, routine: String) -> fdo::Result<()> {
         self.log.push(format!("remove_routine {routine}"));
         Ok(())
     }
