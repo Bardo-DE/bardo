@@ -172,6 +172,10 @@ impl Fixture for Memory {
     fn store(&self) -> &MemorySecrets {
         &self.0
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn filed(&self, _: &str, _: &str) -> Option<bool> {
         None
     }
@@ -230,6 +234,10 @@ impl Fixture for Mock {
     fn store(&self) -> &StoreSecrets {
         &self.store
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn filed(&self, account: &str, purpose: &str) -> Option<bool> {
         let entry = self
             .mock

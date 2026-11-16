@@ -418,6 +418,10 @@ mod tests {
             clippy::unused_async,
             reason = "the fake stands in for a keyring call, which the code under test awaits"
         )]
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async and this implementation has nothing to wait for"
+        )]
         async fn open(&self) -> Result<u32, SecretsError> {
             Ok(self.opens.fetch_add(1, Ordering::SeqCst) + 1)
         }
@@ -431,6 +435,10 @@ mod tests {
         #[expect(
             clippy::unused_async,
             reason = "the fake stands in for a keyring call, which the code under test awaits"
+        )]
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async and this implementation has nothing to wait for"
         )]
         async fn read(&self, keyring: Arc<u32>) -> Result<u32, SecretsError> {
             if *keyring >= self.started.load(Ordering::SeqCst) {

@@ -24,11 +24,19 @@ impl MemorySecrets {
 }
 
 impl Secrets for MemorySecrets {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn put(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
         self.entries().insert(key.clone(), value.clone());
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn put_if_absent(
         &self,
         key: &SecretKey,
@@ -44,6 +52,10 @@ impl Secrets for MemorySecrets {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn get(&self, key: &SecretKey) -> Result<Credential, SecretsError> {
         self.entries()
             .get(key)
@@ -51,16 +63,28 @@ impl Secrets for MemorySecrets {
             .ok_or(SecretsError::Missing)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {
         self.entries().remove(key);
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn delete_account(&self, account: &AccountId) -> Result<(), SecretsError> {
         self.entries().retain(|key, _| key.account != *account);
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn accounts_filed(&self) -> Result<Vec<AccountId>, SecretsError> {
         let mut accounts: Vec<AccountId> = self
             .entries()

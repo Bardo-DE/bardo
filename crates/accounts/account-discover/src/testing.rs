@@ -104,6 +104,10 @@ impl Table {
 }
 
 impl Http for Table {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let key = format!("{} {}", request.method(), request.uri());
         self.seen.lock().expect("seen").push(key.clone());
@@ -125,6 +129,10 @@ pub(crate) struct Records {
 }
 
 impl Dns for Records {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn srv(&self, name: &str) -> Result<Vec<SrvRecord>, DnsFault> {
         self.asked
             .lock()
@@ -137,6 +145,10 @@ impl Dns for Records {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn mx(&self, domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
         self.asked
             .lock()

@@ -49,6 +49,10 @@ impl<W: Window> IntentProvider for Files<W> {
         shape.outcome(&ask, reply)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn dry_run(&self, _call: Invocation) -> Result<Preview, AppRefusal> {
         Err(AppRefusal::Unsupported)
     }
@@ -64,14 +68,26 @@ impl<W: Window> IntentProvider for Files<W> {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn search(&self, _text: &str) -> Vec<Hit> {
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn preview(&self, _id: &EntityId) -> Preview {
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suggest(&self, _ask: SuggestAsk) -> Vec<EntityRef> {
         Vec::new()
     }

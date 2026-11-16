@@ -111,6 +111,10 @@ impl InferSession for Session {
         self.send_attached(frame, vec![]).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn send_attached(
         &mut self,
         frame: ClientFrame,
@@ -137,6 +141,10 @@ impl InferSession for Session {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn next(&mut self) -> Result<InferEvent, SessionError> {
         self.ready.pop_front().ok_or(SessionError::Closed)
     }
@@ -145,6 +153,10 @@ impl InferSession for Session {
 impl Transport for Scripted {
     type Session = Session;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn prepare(
         &self,
         _need: &Need,
@@ -155,10 +167,18 @@ impl Transport for Scripted {
         self.readiness.ok_or(TransportError::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn places(&self) -> Result<Vec<PlaceRow>, TransportError> {
         self.places.clone().ok_or(TransportError::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn open_with(
         &self,
         need: &Need,

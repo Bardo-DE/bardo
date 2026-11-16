@@ -103,6 +103,10 @@ impl Desktop for CasementDesktop {
         BackendCaps::of(BackendKind::Casement)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn windows(&self) -> Result<Vec<ToplevelInfo>, DesktopError> {
         self.listed()
     }
@@ -160,12 +164,20 @@ impl LeaseControl for CasementDesktop {
         self.door.proxy().end_lease(lease.0).await.map_err(protocol)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suspend(&self, lease: LeaseId, why: Suspend) -> Result<(), DesktopError> {
         // On a shared seat cuad stops emulating; the compositor is told nothing.
         let _ = why;
         self.leases().check(lease)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn resume(&self, lease: LeaseId) -> Result<(), DesktopError> {
         self.leases().check(lease)
     }
@@ -179,6 +191,10 @@ impl LeaseControl for CasementDesktop {
             .map_err(protocol)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn glow(&self, _lease: LeaseId, _glow: GlowState) -> Result<(), DesktopError> {
         // The shell's orb is the only glow here.
         Ok(())

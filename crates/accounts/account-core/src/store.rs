@@ -89,10 +89,18 @@ pub trait RegistryStore: Send + Sync {
 pub struct NoStore;
 
 impl RegistryStore for NoStore {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn load(&self) -> Result<Persisted, StoreError> {
         Ok(Persisted::empty())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn save(&self, _state: &Persisted) -> Result<(), StoreError> {
         Ok(())
     }

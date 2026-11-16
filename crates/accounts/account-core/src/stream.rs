@@ -155,6 +155,10 @@ impl ByteStream for DuplexEnd {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn shutdown(&mut self) -> io::Result<()> {
         self.shutdown_now();
         Ok(())
