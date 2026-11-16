@@ -141,6 +141,20 @@ mod tests {
     use shell_model::seed::Store;
     use shell_testkit::TempDir;
 
+    /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
+    fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
+        let prefix = format!("{name}.bad-");
+        std::fs::read_dir(dir)
+            .ok()?
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .find(|p| {
+                p.file_name()
+                    .and_then(|n| n.to_str())
+                    .is_some_and(|n| n.starts_with(&prefix))
+            })
+    }
+
     fn pins(ids: &[&str]) -> DockPins {
         DockPins {
             pinned: ids.iter().map(|id| AppId((*id).to_owned())).collect(),
@@ -221,7 +235,11 @@ mod tests {
         write(&dir, FILE_NAME, "not = [toml");
         write(&dir, "dock.json", r#"{"pinned":["foot"]}"#);
         assert_eq!(load(dir.path()), pins(&["foot"]));
-        assert_eq!(read(&dir, "layout.toml.damaged"), "not = [toml");
+        let kept = set_aside_copy(dir.path(), FILE_NAME).unwrap_or_else(|| panic!("no copy kept"));
+        assert_eq!(
+            std::fs::read_to_string(kept).unwrap_or_default(),
+            "not = [toml"
+        );
         assert_eq!(read(&dir, "dock.json"), r#"{"pinned":["foot"]}"#);
     }
 

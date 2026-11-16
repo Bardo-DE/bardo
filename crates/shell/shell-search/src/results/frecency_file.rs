@@ -41,6 +41,20 @@ mod tests {
     use shell_launcher::{Frecency, ItemId, ItemKey, ProviderKind, UnixTime};
     use shell_testkit::TempDir;
 
+    /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
+    fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
+        let prefix = format!("{name}.bad-");
+        std::fs::read_dir(dir)
+            .ok()?
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .find(|p| {
+                p.file_name()
+                    .and_then(|n| n.to_str())
+                    .is_some_and(|n| n.starts_with(&prefix))
+            })
+    }
+
     const NOW: UnixTime = UnixTime(1_790_000_000);
 
     fn key(provider: ProviderKind, id: &str) -> ItemKey {
@@ -75,10 +89,12 @@ mod tests {
             std::fs::write(dir.path().join(FILE_NAME), text).unwrap_or_else(|e| panic!("{e}"));
             assert_eq!(load_frecency(dir.path()), Frecency::default(), "{text:?}");
             assert!(
-                dir.path().join("frecency.json.damaged").exists(),
+                set_aside_copy(dir.path(), FILE_NAME).is_some(),
                 "{text:?} is kept for the person, not left for the next save to replace"
             );
-            let _ = std::fs::remove_file(dir.path().join("frecency.json.damaged"));
+            if let Some(kept) = set_aside_copy(dir.path(), FILE_NAME) {
+                let _ = std::fs::remove_file(kept);
+            }
         }
     }
 

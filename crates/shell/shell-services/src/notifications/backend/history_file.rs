@@ -60,6 +60,20 @@ mod tests {
     };
     use shell_model::notifications::{STORED_VERSION, StoredHistory, for_disk};
 
+    /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
+    fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
+        let prefix = format!("{name}.bad-");
+        std::fs::read_dir(dir)
+            .ok()?
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .find(|p| {
+                p.file_name()
+                    .and_then(|n| n.to_str())
+                    .is_some_and(|n| n.starts_with(&prefix))
+            })
+    }
+
     fn note(id: u32, image: NoteImage) -> Notification {
         Notification {
             id: NotificationId(id),
@@ -134,7 +148,7 @@ mod tests {
         std::fs::write(&broken, "{ not json").unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(load(&broken), StoredHistory::default());
         assert!(
-            dir.join("broken.json.damaged").exists(),
+            set_aside_copy(&dir, "broken.json").is_some(),
             "the unreadable history is kept, not left for the next save to replace"
         );
         let foreign = dir.join("foreign.json");
