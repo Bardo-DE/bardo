@@ -91,10 +91,6 @@ pub(crate) fn read_text<P: ProcFs>(fs: &P, path: &Path) -> Result<String, LoadEr
     let bytes = fs
         .read_capped(path, TABLE_FILE_CAP)
         .map_err(|e| unreadable(path, e))?;
-    String::from_utf8(bytes).ok().ok_or_else(|| {
-        unreadable(
-            path,
-            io::Error::new(io::ErrorKind::InvalidData, "not UTF-8"),
-        )
-    })
+    String::from_utf8(bytes)
+        .map_err(|source| unreadable(path, io::Error::new(io::ErrorKind::InvalidData, source)))
 }

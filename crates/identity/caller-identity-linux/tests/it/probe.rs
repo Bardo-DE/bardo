@@ -202,7 +202,7 @@ fn malformed_files_are_errors_and_a_missing_cgroup_is_a_gone_process() {
     let bad_cgroup = FixtureProc::new().file("/proc/4242/cgroup", "garbage\n", FileTrust::RootOnly);
     assert!(matches!(
         probe(bad_cgroup),
-        Err(ProbeError::Malformed { .. })
+        Err(ProbeError::BadCgroup { .. })
     ));
     assert!(matches!(
         probe(FixtureProc::new()),
@@ -213,7 +213,7 @@ fn malformed_files_are_errors_and_a_missing_cgroup_is_a_gone_process() {
     assert!(matches!(probe(tree), Err(ProbeError::Malformed { .. })));
     let not_text =
         FixtureProc::new().file("/proc/4242/cgroup", vec![0xff, 0xfe], FileTrust::RootOnly);
-    assert!(matches!(probe(not_text), Err(ProbeError::Malformed { .. })));
+    assert!(matches!(probe(not_text), Err(ProbeError::NotText { .. })));
 }
 
 #[test]

@@ -128,17 +128,13 @@ impl<P: ProcFs> Prober<P> {
             .fs
             .read_capped(path, PROBE_READ_CAP)
             .map_err(|e| read_error(what, e))?;
-        String::from_utf8(bytes)
-            .ok()
-            .ok_or(ProbeError::Malformed { what })
+        String::from_utf8(bytes).map_err(|source| ProbeError::NotText { what, source })
     }
 
     fn cgroup(&self, budget: &mut Budget, dir: &Path) -> Result<CgroupPath, ProbeError> {
         let what = "the process's cgroup";
         let text = self.text(budget, &dir.join("cgroup"), what)?;
-        CgroupPath::from_proc(&text)
-            .ok()
-            .ok_or(ProbeError::Malformed { what })
+        CgroupPath::from_proc(&text).map_err(|source| ProbeError::BadCgroup { what, source })
     }
 
     /// A readable `.flatpak-info` is a Flatpak sandbox (one that names nobody is `Malformed`);

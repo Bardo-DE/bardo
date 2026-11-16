@@ -56,6 +56,24 @@ pub enum ProbeError {
         #[source]
         source: io::Error,
     },
+    /// A file is not UTF-8 text.
+    #[error("{what} is not text")]
+    NotText {
+        /// Which fact.
+        what: &'static str,
+        /// The cause.
+        #[source]
+        source: std::string::FromUtf8Error,
+    },
+    /// A cgroup file does not name a valid cgroup.
+    #[error("{what} is not a valid cgroup")]
+    BadCgroup {
+        /// Which fact.
+        what: &'static str,
+        /// The cause.
+        #[source]
+        source: caller_identity_core::IdError,
+    },
     /// A file does not say what a file of its kind says, or is over a limit.
     #[error("{what} is malformed")]
     Malformed {
