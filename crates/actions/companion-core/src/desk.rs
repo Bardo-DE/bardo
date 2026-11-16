@@ -153,7 +153,7 @@ pub fn person_job(
     if board.card(helper).is_none() {
         return Err(Refusal::Job(JobRefusal::NoSuchHelper));
     }
-    let goal = GoalText::parse(goal).ok().ok_or(Refusal::NoGoal)?;
+    let goal = GoalText::parse(goal).map_err(Refusal::NoGoal)?;
     Ok(NewJob {
         to: helper.clone(),
         goal,
@@ -207,7 +207,7 @@ fn latest_answer(board: &Board, name: &str) -> Option<JobId> {
 pub fn planner_job(board: &Board, gift: PlannerJob<'_>) -> Result<NewJob, Refusal> {
     let card =
         named_in(board, gift.helper, gift.space).ok_or(Refusal::Job(JobRefusal::NoSuchHelper))?;
-    let goal = GoalText::parse(gift.goal).ok().ok_or(Refusal::NoGoal)?;
+    let goal = GoalText::parse(gift.goal).map_err(Refusal::NoGoal)?;
     let with = match gift.after {
         None => Vec::new(),
         Some(name) => vec![
@@ -262,7 +262,7 @@ pub fn routine_wish(
         RoutineWho::Itself(id) => board.card(id),
     }
     .ok_or(Refusal::Job(JobRefusal::NoSuchHelper))?;
-    let goal = GoalText::parse(wish.goal).ok().ok_or(Refusal::NoGoal)?;
+    let goal = GoalText::parse(wish.goal).map_err(Refusal::NoGoal)?;
     let when = wish.when.trim();
     Schedule::parse(when).map_err(Refusal::Schedule)?;
     let why = wish.why.trim();

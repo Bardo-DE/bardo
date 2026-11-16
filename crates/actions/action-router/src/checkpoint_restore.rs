@@ -54,6 +54,11 @@ fn say(fault: &CheckpointFault) -> AppRefusal {
     AppRefusal::Failed(FailText(words.to_owned()))
 }
 
+/// The refusal for a restore point that cannot be named, with what was wrong with the name.
+fn no_such_point(why: &impl std::fmt::Display) -> AppRefusal {
+    AppRefusal::Failed(FailText(format!("There is no such restore point: {why}")))
+}
+
 /// What the call asks.
 struct Ask {
     session: SessionId,
@@ -102,13 +107,10 @@ fn ask_of(inv: &Invocation) -> Result<Ask, AppRefusal> {
         return Err(missing("plan"));
     };
     Ok(Ask {
-        session: SessionId::parse(session)
-            .ok()
-            .ok_or_else(|| say(&CheckpointFault::NoSuchPoint))?,
+        session: SessionId::parse(session).map_err(|e| no_such_point(&e))?,
         point: u32::try_from(*point)
             .map(CheckpointId)
-            .ok()
-            .ok_or_else(|| say(&CheckpointFault::NoSuchPoint))?,
+            .map_err(|e| no_such_point(&e))?,
         digest: PlanDigest(plan.clone()),
     })
 }

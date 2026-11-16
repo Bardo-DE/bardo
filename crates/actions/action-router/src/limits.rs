@@ -79,16 +79,13 @@ impl<S: Seams> Router<S> {
             .ok_or_else(|| failed("that is not a kind of change"))?;
         let app = text_arg(inv, "app")
             .map(|t| {
-                AppName::parse(&t)
-                    .ok()
-                    .ok_or_else(|| failed("that is not an app name"))
+                AppName::parse(&t).map_err(|e| failed(&format!("that is not an app name: {e}")))
             })
             .transpose()?;
         let action = text_arg(inv, "action")
             .map(|t| {
                 ActionName::parse(&t)
-                    .ok()
-                    .ok_or_else(|| failed("that is not an action name"))
+                    .map_err(|e| failed(&format!("that is not an action name: {e}")))
             })
             .transpose()?;
         let scope = match (app, action) {

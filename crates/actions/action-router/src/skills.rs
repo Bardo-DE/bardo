@@ -45,11 +45,11 @@ impl<S: Seams> Router<S> {
         let Actor::Companion { session, .. } = &inv.actor else {
             return Err(AppRefusal::Unsupported);
         };
-        let param = ParamName::parse("id").ok().ok_or(AppRefusal::Unsupported)?;
+        let param = ParamName::parse("id").expect("`id` is a valid parameter name");
         let id = match inv.args.get(&param).map(|a| &a.value) {
-            Some(Value::Text(t)) => SkillId::parse(t)
-                .ok()
-                .ok_or_else(|| failed("that is not a skill id"))?,
+            Some(Value::Text(t)) => {
+                SkillId::parse(t).map_err(|e| failed(&format!("that is not a skill id: {e}")))?
+            }
             _ => {
                 return Err(AppRefusal::NeedsParam {
                     param,

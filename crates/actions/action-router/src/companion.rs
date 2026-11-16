@@ -55,8 +55,7 @@ fn companion() -> CallerId {
 
 fn text_arg(inv: &Invocation, param: &str) -> Result<String, AppRefusal> {
     let name = ParamName::parse(param)
-        .ok()
-        .ok_or(AppRefusal::Unsupported)?;
+        .map_err(|e| failed(&format!("`{param}` is not a parameter name: {e}")))?;
     match inv.args.get(&name).map(|a| &a.value) {
         Some(Value::Text(t)) if !t.is_empty() => Ok(t.clone()),
         Some(Value::Text(_)) | None => Err(AppRefusal::NeedsParam {
@@ -146,8 +145,7 @@ impl<S: Seams> Router<S> {
                 .args
                 .get(
                     &ParamName::parse(param)
-                        .ok()
-                        .ok_or(AppRefusal::Unsupported)?,
+                        .map_err(|e| failed(&format!("`{param}` is not a parameter name: {e}")))?,
                 )
                 .is_some_and(|arg| {
                     arg.label.sources.iter().all(|source| {
@@ -249,8 +247,7 @@ impl<S: Seams> Router<S> {
             return Err(AppRefusal::Unsupported);
         }
         let start = TaskStart::from_args(&inv.args)
-            .ok()
-            .ok_or_else(|| failed("the goal is missing"))?;
+            .map_err(|e| failed(&format!("the goal is missing ({e:?})")))?;
         let (parent, worker) = {
             let mut st = self.locked();
             let parent = st
@@ -259,9 +256,7 @@ impl<S: Seams> Router<S> {
                 .map(|r| r.task.clone())
                 .ok_or_else(|| failed("the session is gone"))?;
             let n = st.mint();
-            let worker = TaskId::parse(&format!("t-{n}"))
-                .ok()
-                .ok_or_else(|| failed("no task id"))?;
+            let worker = TaskId::parse(&format!("t-{n}")).expect("`t-<n>` is always a task id");
             (parent, worker)
         };
         let opened = self.open_session(
@@ -343,13 +338,11 @@ impl<S: Seams> Router<S> {
                 .ok_or_else(|| failed("the session is gone"))?;
             record
                 .know([thing.clone()])
-                .ok()
-                .ok_or_else(|| failed("too many things are held"))?;
+                .map_err(|e| failed(&format!("too many things are held: {e}")))?;
             record
                 .handles
                 .try_mint_entity(thing, app_label(&name()))
-                .ok()
-                .ok_or_else(|| failed("too many things are held"))?
+                .map_err(|e| failed(&format!("too many things are held: {e}")))?
         };
         let answer = BTreeMap::from([
             (param("handle"), Value::Handle(handle)),

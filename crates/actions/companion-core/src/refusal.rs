@@ -2,7 +2,8 @@
 //! told are made once, at the edge that serves them (companiond today, the view crate later); a
 //! decision here never carries words.
 
-use companion_model::helper::{HandFault, HelperName, JobFault, JobRefusal, ReachFault};
+use base_ids::IdError;
+use companion_model::helper::{GoalFault, HandFault, HelperName, JobFault, JobRefusal, ReachFault};
 use companion_model::routine::ScheduleFault;
 
 /// What a request to the helper's app was for.
@@ -30,7 +31,7 @@ pub enum Refusal {
     /// Another helper already has this name.
     NameTaken(HelperName),
     /// The goal is empty or too long to be one.
-    NoGoal,
+    NoGoal(GoalFault),
     /// The helper named has no finished job to hand on.
     NothingToHandOn(String),
     /// The board made no job, and said nothing about it.
@@ -77,7 +78,7 @@ pub enum Refusal {
     /// A routine was asked for a helper that is not there.
     UnknownHelper,
     /// The kind of thing to watch for is not one.
-    WatchKind,
+    WatchKind(IdError),
     /// Nothing was said to watch for.
     WatchWords,
     /// The routine book made no routine.

@@ -354,8 +354,7 @@ pub async fn start(
     )
     .map_err(|e| DaemonFault::Policy(e.to_string()))?;
     let kept = AbsPath::parse(&checkpoints.to_string_lossy())
-        .ok()
-        .ok_or_else(|| DaemonFault::State(checkpoints.display().to_string()))?;
+        .map_err(|e| DaemonFault::State(format!("{}: {e}", checkpoints.display())))?;
     let seams = SystemSeams {
         link,
         confirmer,

@@ -42,8 +42,8 @@ const CLI_NAME: &str = "org.bardo.Do";
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum PeerFault {
     /// The connection is gone.
-    #[error("the connection is gone")]
-    Gone,
+    #[error("the connection is gone: {0}")]
+    Gone(String),
     /// It belongs to another user.
     #[error("another user's connection")]
     WrongUser,
@@ -179,8 +179,7 @@ impl Peers {
         let credentials = dbus
             .get_connection_credentials(who)
             .await
-            .ok()
-            .ok_or(PeerFault::Gone)?;
+            .map_err(|e| PeerFault::Gone(e.to_string()))?;
         if own_uid().is_some_and(|ours| credentials.unix_user_id() != Some(ours)) {
             return Err(PeerFault::WrongUser);
         }
@@ -214,8 +213,7 @@ impl Peers {
         let owner = dbus
             .get_name_owner(well_known)
             .await
-            .ok()
-            .ok_or(PeerFault::Gone)?;
+            .map_err(|e| PeerFault::Gone(e.to_string()))?;
         self.caller(owner.as_str()).await
     }
 }

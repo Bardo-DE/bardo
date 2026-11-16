@@ -8,9 +8,7 @@ use companion_wire::{EventForm, RoutineForm, WhenForm};
 use memory_core::KindPattern;
 
 fn event_of(form: EventForm) -> Result<EventMatch, Refusal> {
-    let kind = KindPattern::parse(&form.kind)
-        .ok()
-        .ok_or(Refusal::WatchKind)?;
+    let kind = KindPattern::parse(&form.kind).map_err(Refusal::WatchKind)?;
     let words = form.words.trim();
     if words.is_empty() {
         return Err(Refusal::WatchWords);
@@ -39,7 +37,7 @@ fn trigger_of(when: WhenForm) -> Result<Trigger, Refusal> {
 /// Returns a [`Refusal`] when the goal, the watched kind or the schedule is not valid, or the
 /// helper does not exist.
 pub fn new_routine(form: RoutineForm) -> Result<NewRoutine, Refusal> {
-    let goal = GoalText::parse(&form.goal).ok().ok_or(Refusal::NoGoal)?;
+    let goal = GoalText::parse(&form.goal).map_err(Refusal::NoGoal)?;
     let trigger = trigger_of(form.when)?;
     Ok(NewRoutine {
         helper: form.helper,

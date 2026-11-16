@@ -76,11 +76,12 @@ impl<T: MemoryTransport> HostedLink<T> {
         checkpoints: CheckpointsPort,
     ) -> Result<Self, ManifestFileError> {
         let [memory, companion, _agents, restore] =
-            <[ValidManifest; 4]>::try_from(builtin_manifests()?)
-                .ok()
-                .ok_or_else(|| {
-                    ManifestFileError::Toml("the built-in manifests are not four".to_owned())
-                })?;
+            <[ValidManifest; 4]>::try_from(builtin_manifests()?).map_err(|manifests| {
+                ManifestFileError::Toml(format!(
+                    "the built-in manifests are not four: there are {}",
+                    manifests.len()
+                ))
+            })?;
         Ok(Self {
             apps,
             builtins: Chain(

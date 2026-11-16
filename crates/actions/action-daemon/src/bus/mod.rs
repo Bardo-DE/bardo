@@ -81,13 +81,11 @@ pub(crate) fn or_refused<T>(
 }
 
 /// A text id of the wire.
-pub(crate) fn parsed<T, E>(
+pub(crate) fn parsed<T, E: std::fmt::Display>(
     text: &str,
     parse: impl FnOnce(&str) -> Result<T, E>,
 ) -> Result<T, IntentsError> {
-    parse(text)
-        .ok()
-        .ok_or_else(|| IntentsError::Malformed(format!("not an id: {text}")))
+    parse(text).map_err(|e| IntentsError::Malformed(format!("not an id: {text}: {e}")))
 }
 
 impl Gateway {

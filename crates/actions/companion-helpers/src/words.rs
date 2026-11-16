@@ -23,7 +23,7 @@ pub(crate) fn sentence(refusal: &Refusal) -> String {
         Refusal::NameTaken(name) => {
             format!("There is already a helper called {}.", name.as_str())
         }
-        Refusal::NoGoal => "Say what it is to do, in a few sentences.".to_owned(),
+        Refusal::NoGoal(_) => "Say what it is to do, in a few sentences.".to_owned(),
         Refusal::NothingToHandOn(name) => format!("{name} has nothing finished to hand on."),
         Refusal::JobNotGiven => "The job could not be given.".to_owned(),
         Refusal::NeedWhy => "Say why in one short sentence.".to_owned(),
@@ -65,7 +65,7 @@ pub(crate) fn sentence(refusal: &Refusal) -> String {
         Refusal::SignInNotStarted => "It could not be started.".to_owned(),
         Refusal::SignOutFailed => "Signing out did not work.".to_owned(),
         Refusal::UnknownHelper => "There is no such helper.".to_owned(),
-        Refusal::WatchKind => "Say which kind of thing to watch for.".to_owned(),
+        Refusal::WatchKind(_) => "Say which kind of thing to watch for.".to_owned(),
         Refusal::WatchWords => "Say what to watch for, in a few words.".to_owned(),
         Refusal::RoutineNotMade => "The routine could not be made.".to_owned(),
     }
