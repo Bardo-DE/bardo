@@ -120,6 +120,30 @@ impl RefusedError {
     }
 }
 
+/// `error` and everything it came from, one after the other, as one line.
+pub(crate) fn chain(error: &(dyn std::error::Error + 'static)) -> String {
+    let mut line = error.to_string();
+    let mut cause = error.source();
+    while let Some(next) = cause {
+        line.push_str(": ");
+        line.push_str(&next.to_string());
+        cause = next.source();
+    }
+    line
+}
+
+impl std::fmt::Display for RefusedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.text.is_empty() {
+            f.write_str(self.name.as_str())
+        } else {
+            f.write_str(&self.text)
+        }
+    }
+}
+
+impl std::error::Error for RefusedError {}
+
 impl DBusError for RefusedError {
     fn create_reply(&self, msg: &Header<'_>) -> zbus::Result<Message> {
         Message::error(msg, self.name.clone())?.build(&(self.text.as_str(),))

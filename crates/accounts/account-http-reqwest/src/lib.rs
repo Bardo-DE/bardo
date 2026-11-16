@@ -114,9 +114,9 @@ impl ReqwestHttp {
         let outgoing = Self::outgoing(request, None)?;
         let mut response = tokio::time::timeout(idle, self.client.execute(outgoing))
             .await
-            .ok()
-            .ok_or(HttpError::TimedOut)?
-            .map_err(|error| fault(&error))?;
+            .map_or(Err(HttpError::TimedOut), |sent| {
+                sent.map_err(|error| fault(&error))
+            })?;
         let status = response.status();
         if sink.head(status, response.headers()).is_break() {
             return Ok(status);
@@ -124,9 +124,9 @@ impl ReqwestHttp {
         loop {
             let next = tokio::time::timeout(idle, response.chunk())
                 .await
-                .ok()
-                .ok_or(HttpError::TimedOut)?
-                .map_err(|error| fault(&error))?;
+                .map_or(Err(HttpError::TimedOut), |chunk| {
+                    chunk.map_err(|error| fault(&error))
+                })?;
             let Some(data) = next else {
                 return Ok(status);
             };

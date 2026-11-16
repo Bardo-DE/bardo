@@ -87,8 +87,7 @@ impl AddArgs {
     pub fn parse(provider: &str, allow: &[String], classes: &[String]) -> Result<Self, AddError> {
         let bad = |what: &str, text: &str| AddError::Argument(format!("{what} `{text}`"));
         let provider = ProviderId::parse(provider)
-            .ok()
-            .ok_or_else(|| bad("provider id", provider))?;
+            .map_err(|e| AddError::Argument(format!("provider id `{provider}`: {e}")))?;
         let allow = allow
             .iter()
             .map(|text| {
@@ -98,8 +97,7 @@ impl AddArgs {
                 };
                 Ok(AppId {
                     name: AppName::parse(name)
-                        .ok()
-                        .ok_or_else(|| bad("app id", text))?,
+                        .map_err(|e| AddError::Argument(format!("app id `{text}`: {e}")))?,
                     isolation: isolation.ok_or_else(|| bad("isolation in", text))?,
                 })
             })

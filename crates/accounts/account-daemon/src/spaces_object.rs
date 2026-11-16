@@ -50,8 +50,11 @@ fn fault(fault: SpaceFault) -> RefusedError {
             "Too many new Spaces at once: at most {CREATES_PER_WINDOW} a minute. Try again in a \
              minute."
         )),
-        // Unsaved.
-        SpaceFault::Unsaved | SpaceFault::Write(_) => RefusedError::failed("The Spaces could not be saved."),
+        SpaceFault::Unsaved => RefusedError::failed("The Spaces could not be saved."),
+        SpaceFault::Write(why) => RefusedError::failed(format!(
+            "The Spaces could not be saved: {}",
+            crate::errors::chain(&why)
+        )),
     }
 }
 
@@ -69,10 +72,9 @@ fn name_arg(text: &str) -> Result<SpaceName, RefusedError> {
 }
 
 fn look_arg(text: &str) -> Result<SpaceLook, RefusedError> {
-    SpaceLook::parse(text)
-        .map_err(|e| {
-            RefusedError::invalid(format!("A Space's look must be at most 1024 bytes: {e}"))
-        })
+    SpaceLook::parse(text).map_err(|e| {
+        RefusedError::invalid(format!("A Space's look must be at most 1024 bytes: {e}"))
+    })
 }
 
 impl<H: Host, C: Callers> SpacesObject<H, C> {

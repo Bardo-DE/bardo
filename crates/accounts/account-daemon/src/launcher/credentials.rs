@@ -67,7 +67,7 @@ impl Credentials {
         &self,
         issue: &Issue<'_>,
     ) -> Result<(ProcessCredentialId, OwnedFd), Refusal> {
-        let id = self.next_id()?;
+        let id = self.next_id();
         let fd = account_secrets::sealed_key(issue.key.expose()).map_err(|why| {
             eprintln!("accountd: process credential {id}: {why}");
             Refusal::Unavailable
@@ -84,13 +84,11 @@ impl Credentials {
         Ok((id, fd))
     }
 
-    fn next_id(&self) -> Result<ProcessCredentialId, Refusal> {
+    fn next_id(&self) -> ProcessCredentialId {
         let mut state = locked(&self.state);
         state.next += 1;
-        // "cred-<n>" is always an id; the error arm is not reachable.
         ProcessCredentialId::parse(&format!("{ID_PREFIX}{}", state.next))
-            .ok()
-            .ok_or(Refusal::Unavailable)
+            .expect("\"cred-<n>\" is always an id")
     }
 
     /// Ends `id` for the connection `owner` that was issued it: `note` is told (the audit line).

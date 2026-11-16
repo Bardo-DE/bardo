@@ -82,13 +82,15 @@ fn may_use(role: CallerRole) -> bool {
 
 fn identity_arg(text: &str) -> Result<IdentityId, RefusedError> {
     IdentityId::parse(text)
-        .ok()
-        .ok_or_else(|| RefusedError::invalid("There is no such identity."))
+        .map_err(|e| RefusedError::invalid(format!("There is no such identity: {e}")))
 }
 
 /// What a use that could not be saved is told, in plain words.
-fn unsaved(_: Unsaved) -> RefusedError {
-    RefusedError::failed("The list of apps could not be saved.")
+fn unsaved(why: Unsaved) -> RefusedError {
+    RefusedError::failed(format!(
+        "The list of apps could not be saved: {}",
+        crate::errors::chain(&why)
+    ))
 }
 
 impl<H: Host, C: Callers> IdentitiesObject<H, C> {

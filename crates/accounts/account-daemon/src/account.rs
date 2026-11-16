@@ -54,11 +54,9 @@ async fn visible<H: Host, C: Callers>(
     header: Option<&Header<'_>>,
 ) -> fdo::Result<Account> {
     let header = header.ok_or_else(|| fdo::Error::AccessDenied("no caller".into()))?;
-    let caller = core
-        .identify(header, Standing::Any)
-        .await
-        .ok()
-        .ok_or_else(|| fdo::Error::AccessDenied("accountd does not know this caller".into()))?;
+    let caller = core.identify(header, Standing::Any).await.map_err(|e| {
+        fdo::Error::AccessDenied(format!("accountd does not know this caller: {e}"))
+    })?;
     let registry = core.host.registry();
     let path = header
         .path()

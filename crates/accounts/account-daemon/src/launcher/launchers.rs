@@ -384,8 +384,7 @@ impl Launchers {
             let owner = state.programs.get(program).cloned().ok_or(NoLauncher)?;
             state.next += 1;
             let request = LoginRequestId::parse(&format!("login-{}", state.next))
-                .ok()
-                .ok_or(NoLauncher)?;
+                .expect("\"login-<n>\" is always an id");
             let (done, waiting) = oneshot::channel();
             let bound = i64::try_from(self.timing.bound.as_secs()).unwrap_or(i64::MAX);
             state.pending.insert(

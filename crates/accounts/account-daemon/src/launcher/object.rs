@@ -201,8 +201,7 @@ impl<H: Host, C: Callers> LauncherObject<H, C> {
         let request = LoginRequestId::parse(request).map_err(RefusedError::invalid)?;
         // The words are not echoed back: whatever else a launcher sent stays its own.
         let outcome = LoginOutcome::from_wire(outcome, reason)
-            .ok()
-            .ok_or_else(|| RefusedError::invalid("not an outcome of a login"))?;
+            .map_err(|e| RefusedError::invalid(format!("not an outcome of a login: {e}")))?;
         let pending = self.0.launchers.take(&sender, &request, kind)?;
         // The state first, so whoever waits finds the account as the report left it.
         let state = match (kind, outcome) {

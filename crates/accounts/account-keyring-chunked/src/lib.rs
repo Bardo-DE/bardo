@@ -92,6 +92,9 @@ pub enum ChunkError {
         MOST_PARTS
     )]
     BadHead,
+    /// The head begins with the marker but what follows is not text.
+    #[error("the stored value is unreadable: its head is not text")]
+    HeadNotText(#[source] std::str::Utf8Error),
     /// The marker given to [`ChunkedStore::new`] is empty, so every value would begin with it.
     #[error("the marker of a chunked store cannot be empty")]
     EmptyMarker,
