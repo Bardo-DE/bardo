@@ -45,6 +45,6 @@ impl Http for Scripted {
             .lock()
             .expect("lock")
             .pop_front()
-            .unwrap_or(Err(HttpError::Unreachable))
+            .unwrap_or(Err(HttpError::Unreachable(None)))
     }
 }

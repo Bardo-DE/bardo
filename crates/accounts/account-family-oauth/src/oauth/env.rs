@@ -165,7 +165,7 @@ mod tests {
             reason = "the trait method is async; this implementation has nothing to wait for"
         )]
         async fn send(&self, _: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-            Err(HttpError::Unreachable)
+            Err(HttpError::Unreachable(None))
         }
     }
 

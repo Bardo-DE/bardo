@@ -33,7 +33,7 @@ impl Dial for Once {
                 .lock()
                 .unwrap_or_else(PoisonError::into_inner)
                 .take()
-                .ok_or(HttpError::Unreachable),
+                .ok_or(HttpError::Unreachable(None)),
         )
     }
 }

@@ -53,7 +53,7 @@ impl Scripted {
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .pop_front()
-            .ok_or(HttpError::Unreachable)?;
+            .ok_or(HttpError::Unreachable(None))?;
         let (end, peer) = tokio::io::duplex(64 * 1024);
         tokio::spawn(serve(peer, answers, after, Arc::clone(&self.counts.seen)));
         Ok(end)

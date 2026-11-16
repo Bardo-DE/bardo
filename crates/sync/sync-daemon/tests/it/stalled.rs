@@ -41,7 +41,7 @@ impl Dial for Once {
             .lock()
             .expect("lock")
             .take()
-            .ok_or(HttpError::Unreachable)
+            .ok_or(HttpError::Unreachable(None))
     }
 }
 

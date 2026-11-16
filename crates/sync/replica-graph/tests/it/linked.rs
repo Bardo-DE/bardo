@@ -35,7 +35,7 @@ impl Http for Linked {
         async move {
             match client {
                 Some(client) => client.send(request).await,
-                None => Err(HttpError::Unreachable),
+                None => Err(HttpError::Unreachable(None)),
             }
         }
     }

@@ -69,8 +69,7 @@ where
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         // The URI is a `WebUrl`'s text (account_http::request), so it reads back as one.
         let origin = WebUrl::parse(&request.uri().to_string())
-            .ok()
-            .ok_or(HttpError::Malformed)?
+            .map_err(HttpError::malformed)?
             .origin();
         if origin == self.home_origin {
             return self.home.send(request).await;

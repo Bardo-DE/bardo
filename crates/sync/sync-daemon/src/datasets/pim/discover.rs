@@ -75,7 +75,7 @@ pub async fn discover<H: Http>(
     kind: PimKind,
 ) -> Result<Vec<Found>, DiscoverError> {
     let sending = |e| match e {
-        HttpError::Unreachable | HttpError::TimedOut => DiscoverError::Unreachable,
+        HttpError::Unreachable(..) | HttpError::TimedOut => DiscoverError::Unreachable,
         _ => DiscoverError::Unreadable,
     };
     let uri = account_http::uri(endpoint).map_err(sending)?;
@@ -134,7 +134,7 @@ mod tests {
                 .answers
                 .iter()
                 .find(|(p, _, _)| *p == path)
-                .ok_or(HttpError::Unreachable)?;
+                .ok_or(HttpError::Unreachable(None))?;
             Ok(Response::builder()
                 .status(*status)
                 .body(body.clone().into_bytes())

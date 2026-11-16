@@ -26,10 +26,7 @@ pub fn request(method: Method, url: &WebUrl) -> Builder {
 /// # Errors
 /// [`HttpError::Malformed`] when the URL is not one the `http` crate takes as a URI.
 pub fn uri(url: &WebUrl) -> Result<Uri, HttpError> {
-    url.as_str().parse().map_err(|error| {
-        tracing::warn!(%error, "the url is not a uri");
-        HttpError::Malformed
-    })
+    url.as_str().parse().map_err(HttpError::malformed)
 }
 
 /// A request to an endpoint's URL. A scheme that is not HTTP is `Malformed`, and plain `http`
@@ -49,12 +46,9 @@ pub fn request_to(method: Method, url: &EndpointUrl) -> Result<Builder, HttpErro
 /// [`HttpError::Malformed`] when the scheme is not HTTP; [`HttpError::Tls`] for plain `http` to
 /// another computer.
 pub fn web_url(url: &EndpointUrl) -> Result<WebUrl, HttpError> {
-    WebUrl::try_from(url).map_err(|error| {
-        tracing::warn!(%error, "the endpoint is not a web url");
-        match url.origin().scheme {
-            UrlScheme::Http => HttpError::Tls,
-            _ => HttpError::Malformed,
-        }
+    WebUrl::try_from(url).map_err(|error| match url.origin().scheme {
+        UrlScheme::Http => HttpError::tls(error),
+        _ => HttpError::malformed(error),
     })
 }
 
@@ -194,8 +188,8 @@ mod tests {
         let cases = [
             ("https://cloud.example.org/dav/", Ok(())),
             ("http://127.0.0.1:8080/dav/", Ok(())),
-            ("http://cloud.example.org/dav/", Err(HttpError::Tls)),
-            ("imaps://mail.example.org", Err(HttpError::Malformed)),
+            ("http://cloud.example.org/dav/", Err(HttpError::Tls(None))),
+            ("imaps://mail.example.org", Err(HttpError::Malformed(None))),
         ];
         for (text, want) in cases {
             let url = EndpointUrl::parse(text).expect(text);

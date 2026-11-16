@@ -321,11 +321,11 @@ async fn send_form<H: Http>(
 /// cannot be reached; an answer past the size cap is one that cannot be read.
 fn unreached(error: HttpError) -> ExchangeFailure {
     let fault = match error {
-        HttpError::Unreachable
-        | HttpError::Tls
+        HttpError::Unreachable(..)
+        | HttpError::Tls(..)
         | HttpError::TimedOut
         | HttpError::NotGranted
-        | HttpError::Malformed => ExchangeFault::Unreachable,
+        | HttpError::Malformed(..) => ExchangeFault::Unreachable,
         _ => ExchangeFault::Unreadable,
     };
     ExchangeFailure {
@@ -398,7 +398,7 @@ mod tests {
             ("429", answer(429, ""), Err(ExchangeFault::Unreachable)),
             (
                 "no route",
-                Err(HttpError::Unreachable),
+                Err(HttpError::Unreachable(None)),
                 Err(ExchangeFault::Unreachable),
             ),
             (
@@ -406,7 +406,11 @@ mod tests {
                 Err(HttpError::TimedOut),
                 Err(ExchangeFault::Unreachable),
             ),
-            ("tls", Err(HttpError::Tls), Err(ExchangeFault::Unreachable)),
+            (
+                "tls",
+                Err(HttpError::Tls(None)),
+                Err(ExchangeFault::Unreachable),
+            ),
             (
                 "html",
                 answer(200, "<html>"),
@@ -463,7 +467,7 @@ mod tests {
             let http = Scripted::new(vec![answer(status, "")]);
             assert_eq!(revoke(&http, &ends, &token).await, want, "{status}");
         }
-        let http = Scripted::new(vec![Err(HttpError::Unreachable)]);
+        let http = Scripted::new(vec![Err(HttpError::Unreachable(None))]);
         assert_eq!(
             revoke(&http, &ends, &token).await,
             Err(ExchangeFault::Unreachable)
@@ -560,7 +564,7 @@ mod tests {
             ),
             (
                 "no route",
-                Err(HttpError::Unreachable),
+                Err(HttpError::Unreachable(None)),
                 ExchangeFault::Unreachable,
                 false,
             ),

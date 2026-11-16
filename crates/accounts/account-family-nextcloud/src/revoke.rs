@@ -30,9 +30,10 @@ pub(super) async fn revoke(
 /// What a request that went nowhere says about the account.
 fn http_fault(error: HttpError) -> ProviderError {
     match error {
-        HttpError::Unreachable | HttpError::Tls | HttpError::TimedOut | HttpError::NotGranted => {
-            ProviderError::Unreachable
-        }
+        HttpError::Unreachable(..)
+        | HttpError::Tls(..)
+        | HttpError::TimedOut
+        | HttpError::NotGranted => ProviderError::Unreachable,
         // too large, malformed, and a failure a later account-http adds
         _ => ProviderError::Unreadable,
     }

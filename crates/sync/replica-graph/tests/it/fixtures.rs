@@ -72,7 +72,7 @@ impl Http for Script {
         let key = format!("{} {}", request.method(), request.uri());
         self.sent.lock().expect("lock").push(request);
         let found = self.answers.lock().expect("lock").get(&key).cloned();
-        async move { found.ok_or(HttpError::Unreachable) }
+        async move { found.ok_or(HttpError::Unreachable(None)) }
     }
 }
 

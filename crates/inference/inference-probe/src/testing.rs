@@ -46,6 +46,6 @@ impl Http for Table {
         self.answers
             .get(&key)
             .cloned()
-            .ok_or(HttpError::Unreachable)
+            .ok_or(HttpError::Unreachable(None))
     }
 }

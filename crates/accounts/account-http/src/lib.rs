@@ -44,7 +44,7 @@ mod shared;
 mod sleep;
 pub mod webdav;
 
-pub use error::HttpError;
+pub use error::{Cause, HttpError};
 pub use http;
 pub use message::{HeaderText, SensitiveHeader, request, request_to, uri, web_url};
 pub use seam::Http;

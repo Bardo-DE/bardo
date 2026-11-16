@@ -38,9 +38,8 @@ impl Wire {
 
 impl Http for Wire {
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-        let (address, target) = split_loopback(&request.uri().to_string())
-            .ok()
-            .ok_or(HttpError::Unreachable)?;
+        let (address, target) =
+            split_loopback(&request.uri().to_string()).map_err(HttpError::unreachable)?;
         let mut wire = account_fake_servers::http::Request::new(request.method().as_str(), &target);
         for (name, value) in request.headers() {
             if let Ok(value) = value.to_str() {
@@ -56,8 +55,7 @@ impl Http for Wire {
         }
         let response = send(&address, Scheme::Http, &wire)
             .await
-            .ok()
-            .ok_or(HttpError::Unreachable)?;
+            .map_err(HttpError::unreachable)?;
         let answer = response
             .headers
             .iter()

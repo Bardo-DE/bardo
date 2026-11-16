@@ -52,9 +52,8 @@ impl Fakes {
 
 impl Http for Fakes {
     async fn send(&self, mut request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-        let url = base_url::WebUrl::parse(&request.uri().to_string())
-            .ok()
-            .ok_or(HttpError::Malformed)?;
+        let url =
+            base_url::WebUrl::parse(&request.uri().to_string()).map_err(HttpError::malformed)?;
         let origin = url.origin();
         self.sent
             .lock()
@@ -66,11 +65,10 @@ impl Http for Fakes {
                 .iter()
                 .filter(|p| p.host == origin.host && url.path().starts_with(p.prefix))
                 .max_by_key(|p| p.prefix.len())
-                .ok_or(HttpError::Unreachable)?;
+                .ok_or(HttpError::Unreachable(None))?;
             *request.uri_mut() = format!("http://127.0.0.1:{}{}", place.port, url.path())
                 .parse()
-                .ok()
-                .ok_or(HttpError::Malformed)?;
+                .map_err(HttpError::malformed)?;
         }
         self.inner.send(request).await
     }

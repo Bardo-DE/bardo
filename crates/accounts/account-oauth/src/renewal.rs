@@ -143,7 +143,7 @@ mod tests {
             ("503", answer(503, ""), RenewOutcome::Offline),
             (
                 "offline",
-                Err(HttpError::Unreachable),
+                Err(HttpError::Unreachable(None)),
                 RenewOutcome::Offline,
             ),
             ("gibberish", answer(200, "nope"), RenewOutcome::Offline),

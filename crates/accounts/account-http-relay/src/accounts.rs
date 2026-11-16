@@ -16,10 +16,10 @@ use std::sync::Arc;
 /// it on) is its own error, so the dataset says so instead of retrying; anything else is a
 /// connection that did not open.
 #[must_use]
-pub fn dial_error(error: &GrantsError) -> HttpError {
+pub fn dial_error(error: GrantsError) -> HttpError {
     match error {
         GrantsError::Refused(Refusal::NeedsConsent) => HttpError::NotGranted,
-        _ => HttpError::Unreachable,
+        other => HttpError::unreachable(other),
     }
 }
 
@@ -94,14 +94,12 @@ impl<T: GrantsLink> Dial for RelayDial<T> {
                     .await
             }
             Kind::Linked(origin) => {
-                let origin = origin.as_ref().ok_or(HttpError::Unreachable)?;
+                let origin = origin.as_ref().ok_or(HttpError::Unreachable(None))?;
                 self.accounts.open_linked(&self.grant, origin).await
             }
         }
-        .map_err(|error| dial_error(&error))?;
-        RelayStream::from_relay(stream)
-            .ok()
-            .ok_or(HttpError::Unreachable)
+        .map_err(dial_error)?;
+        RelayStream::from_relay(stream).map_err(HttpError::unreachable)
     }
 }
 
@@ -112,13 +110,13 @@ mod tests {
     #[test]
     fn access_not_given_reaches_the_client_as_its_own_error() {
         assert_eq!(
-            dial_error(&GrantsError::Refused(Refusal::NeedsConsent)),
+            dial_error(GrantsError::Refused(Refusal::NeedsConsent)),
             HttpError::NotGranted
         );
         for other in [Refusal::NeedsReauth, Refusal::Denied, Refusal::UnknownGrant] {
             assert_eq!(
-                dial_error(&GrantsError::Refused(other)),
-                HttpError::Unreachable,
+                dial_error(GrantsError::Refused(other)),
+                HttpError::Unreachable(None),
                 "{other:?}"
             );
         }

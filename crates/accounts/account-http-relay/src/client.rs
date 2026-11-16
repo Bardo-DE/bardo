@@ -252,7 +252,7 @@ impl<D: Dial> RelayHttp<D> {
         });
         let (sender, connection) = within(&progress, self.limits.silence, http1::handshake(io))
             .await?
-            .map_err(|error| fault(&error))?;
+            .map_err(fault)?;
         tokio::spawn(async move {
             // The connection ends when the server closes it or the sender is dropped.
             let _ = connection.await;
@@ -272,7 +272,7 @@ impl<D: Dial> RelayHttp<D> {
             conn.sender.send_request(request),
         )
         .await?
-        .map_err(|error| fault(&error))
+        .map_err(fault)
     }
 
     /// The whole response, read from `incoming` within the cap.
@@ -316,7 +316,7 @@ impl<D: Dial> account_http::Http for RelayHttp<D> {
                     self.pool.clear();
                 }
                 Ok(response) => return self.whole(response, conn).await,
-                Err(HttpError::Unreachable) => {}
+                Err(HttpError::Unreachable(..)) => {}
                 Err(other) => return Err(other),
             }
         }
@@ -350,7 +350,7 @@ impl RelayBody {
             let frame = within(&conn.progress, self.silence, incoming.frame()).await;
             match frame {
                 Err(timed_out) => return Err(self.broken(timed_out)),
-                Ok(Some(Err(error))) => return Err(self.broken(fault(&error))),
+                Ok(Some(Err(error))) => return Err(self.broken(fault(error))),
                 Ok(Some(Ok(frame))) => {
                     if let Ok(data) = frame.into_data() {
                         return Ok(Some(data));
@@ -407,27 +407,34 @@ fn prepare(request: Request<Outgoing>) -> Result<Request<Outgoing>, HttpError> {
 }
 
 /// What a hyper error comes to: a connection that is gone, a stall, or garbage.
-fn fault(error: &hyper::Error) -> HttpError {
+fn fault(error: hyper::Error) -> HttpError {
     if error.is_timeout() {
         return HttpError::TimedOut;
     }
     if error.is_canceled() || error.is_closed() || error.is_incomplete_message() {
-        return HttpError::Unreachable;
+        return HttpError::unreachable(error);
     }
+    match io_kind(&error) {
+        Some(io::ErrorKind::TimedOut) => HttpError::TimedOut,
+        Some(
+            io::ErrorKind::BrokenPipe
+            | io::ErrorKind::ConnectionReset
+            | io::ErrorKind::ConnectionAborted
+            | io::ErrorKind::NotConnected
+            | io::ErrorKind::UnexpectedEof,
+        ) => HttpError::unreachable(error),
+        _ => HttpError::malformed(error),
+    }
+}
+
+/// The kind of the first `io::Error` in `error`'s chain of causes.
+fn io_kind(error: &hyper::Error) -> Option<io::ErrorKind> {
     let mut current = error.source();
     while let Some(source) = current {
         if let Some(io) = source.downcast_ref::<io::Error>() {
-            return match io.kind() {
-                io::ErrorKind::TimedOut => HttpError::TimedOut,
-                io::ErrorKind::BrokenPipe
-                | io::ErrorKind::ConnectionReset
-                | io::ErrorKind::ConnectionAborted
-                | io::ErrorKind::NotConnected
-                | io::ErrorKind::UnexpectedEof => HttpError::Unreachable,
-                _ => HttpError::Malformed,
-            };
+            return Some(io.kind());
         }
         current = source.source();
     }
-    HttpError::Malformed
+    None
 }

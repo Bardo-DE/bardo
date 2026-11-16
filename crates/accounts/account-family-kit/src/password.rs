@@ -60,9 +60,10 @@ pub fn typed_password(answers: &[FieldAnswer]) -> Option<SecretText> {
 #[must_use]
 pub fn fault_of(error: HttpError) -> SignInFault {
     match error {
-        HttpError::Unreachable | HttpError::Tls | HttpError::TimedOut | HttpError::NotGranted => {
-            SignInFault::Unreachable
-        }
+        HttpError::Unreachable(..)
+        | HttpError::Tls(..)
+        | HttpError::TimedOut
+        | HttpError::NotGranted => SignInFault::Unreachable,
         // too large, malformed, and a failure a later account-http adds
         _ => SignInFault::Unreadable,
     }
@@ -108,9 +109,7 @@ pub fn basic(login: &str, password: &SecretText) -> String {
 /// # Errors
 /// [`HttpError::Malformed`] when `value` is not a valid header value.
 pub fn sensitive(value: &str) -> Result<HeaderValue, HttpError> {
-    let mut value = HeaderValue::from_str(value)
-        .ok()
-        .ok_or(HttpError::Malformed)?;
+    let mut value = HeaderValue::from_str(value).map_err(HttpError::malformed)?;
     value.set_sensitive(true);
     Ok(value)
 }

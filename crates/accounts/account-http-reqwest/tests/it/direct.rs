@@ -144,7 +144,7 @@ async fn a_closed_port_is_unreachable() {
     let outcome = ReqwestHttp::new()
         .send(get(&url("http", "127.0.0.1", port, "/")))
         .await;
-    assert_eq!(outcome.err(), Some(HttpError::Unreachable));
+    assert_eq!(outcome.err(), Some(HttpError::Unreachable(None)));
 }
 
 #[tokio::test]
@@ -155,7 +155,7 @@ async fn a_certificate_is_checked_against_the_roots_and_a_private_ca_must_be_add
     let strict = ReqwestHttp::new();
     assert_eq!(
         strict.send(get(&target)).await.err(),
-        Some(HttpError::Tls),
+        Some(HttpError::Tls(None)),
         "the scratch CA is not a platform root"
     );
 
@@ -182,21 +182,21 @@ async fn plain_http_is_for_this_computer_only() {
     let plain = EndpointUrl::parse("http://192.0.2.1/").expect("url");
     assert_eq!(
         request_to(Method::GET, &plain).map(|_| ()),
-        Err(HttpError::Tls)
+        Err(HttpError::Tls(None))
     );
     let other = EndpointUrl::parse("imaps://mail.example.org").expect("url");
     assert_eq!(
         request_to(Method::GET, &other).map(|_| ()),
-        Err(HttpError::Malformed)
+        Err(HttpError::Malformed(None))
     );
     WebUrl::parse("http://192.0.2.1/").unwrap_err();
     // A request built without a `WebUrl` meets the same rule in the client.
     let raw = |uri: &str| http::Request::get(uri).body(Vec::new()).expect("request");
     let client = ReqwestHttp::new();
     let cases = [
-        ("http://192.0.2.1/", HttpError::Tls),
-        ("http://cloud.example.org/", HttpError::Tls),
-        ("ftp://cloud.example.org/", HttpError::Malformed),
+        ("http://192.0.2.1/", HttpError::Tls(None)),
+        ("http://cloud.example.org/", HttpError::Tls(None)),
+        ("ftp://cloud.example.org/", HttpError::Malformed(None)),
     ];
     for (uri, want) in cases {
         assert_eq!(client.send(raw(uri)).await.err(), Some(want), "{uri}");

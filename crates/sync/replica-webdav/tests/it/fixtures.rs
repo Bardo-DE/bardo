@@ -69,7 +69,7 @@ impl Http for Script {
                 0 | 1 => queue.first().cloned(),
                 _ => Some(queue.remove(0)),
             });
-        async move { found.ok_or(HttpError::Unreachable) }
+        async move { found.ok_or(HttpError::Unreachable(None)) }
     }
 }
 

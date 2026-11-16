@@ -15,7 +15,6 @@ base-url = { path = "../../base/base-url" }
 http = { workspace = true }
 httpdate = { workspace = true }
 thiserror = { workspace = true }
-tracing = { workspace = true }
 
 [lints]
 workspace = true

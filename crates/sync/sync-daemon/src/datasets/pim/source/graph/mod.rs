@@ -193,7 +193,7 @@ pub(super) async fn get<H: Http>(
     prefer: Option<&str>,
 ) -> Result<Response<Vec<u8>>, HttpError> {
     let Ok(url) = WebUrl::parse(url) else {
-        return Err(HttpError::Unreachable);
+        return Err(HttpError::Unreachable(None));
     };
     let mut builder = request(Method::GET, &url).header("Accept", "application/json");
     if let Some(prefer) = prefer {
@@ -217,7 +217,7 @@ impl<T: GrantsLink + 'static> PimSource for GraphCalendarSource<T> {
         // A user has tens of calendars; a bound keeps a looping server from holding the loop.
         for _ in 0..50 {
             let response = get(&*self.http, &url, None).await.map_err(|e| match e {
-                HttpError::Unreachable | HttpError::TimedOut => DiscoverError::Unreachable,
+                HttpError::Unreachable(..) | HttpError::TimedOut => DiscoverError::Unreachable,
                 _ => DiscoverError::Unreadable,
             })?;
             match response.status().as_u16() {

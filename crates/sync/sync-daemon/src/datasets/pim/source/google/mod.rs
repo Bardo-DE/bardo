@@ -149,7 +149,7 @@ pub(super) async fn list_all<T: GrantsLink, I: DeserializeOwned>(
             asked.push(("pageToken", page));
         }
         let response = api.get(&api.url(path, &asked)).await.map_err(|e| match e {
-            HttpError::Unreachable | HttpError::TimedOut => DiscoverError::Unreachable,
+            HttpError::Unreachable(..) | HttpError::TimedOut => DiscoverError::Unreachable,
             _ => DiscoverError::Unreadable,
         })?;
         match response.status().as_u16() {

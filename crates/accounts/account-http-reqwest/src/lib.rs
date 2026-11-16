@@ -93,7 +93,7 @@ impl ReqwestHttp {
         timeout: Option<Duration>,
     ) -> Result<reqwest::Request, HttpError> {
         in_the_clear_only_here(request.uri())?;
-        let mut outgoing = reqwest::Request::try_from(request).map_err(|error| fault(&error))?;
+        let mut outgoing = reqwest::Request::try_from(request).map_err(fault)?;
         *outgoing.timeout_mut() = timeout;
         Ok(outgoing)
     }
@@ -114,9 +114,7 @@ impl ReqwestHttp {
         let outgoing = Self::outgoing(request, None)?;
         let mut response = tokio::time::timeout(idle, self.client.execute(outgoing))
             .await
-            .map_or(Err(HttpError::TimedOut), |sent| {
-                sent.map_err(|error| fault(&error))
-            })?;
+            .map_or(Err(HttpError::TimedOut), |sent| sent.map_err(fault))?;
         let status = response.status();
         if sink.head(status, response.headers()).is_break() {
             return Ok(status);
@@ -124,9 +122,7 @@ impl ReqwestHttp {
         loop {
             let next = tokio::time::timeout(idle, response.chunk())
                 .await
-                .map_or(Err(HttpError::TimedOut), |chunk| {
-                    chunk.map_err(|error| fault(&error))
-                })?;
+                .map_or(Err(HttpError::TimedOut), |chunk| chunk.map_err(fault))?;
             let Some(data) = next else {
                 return Ok(status);
             };
@@ -138,13 +134,9 @@ impl ReqwestHttp {
 
     async fn exchange(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let outgoing = Self::outgoing(request, Some(self.limits.timeout))?;
-        let mut response = self
-            .client
-            .execute(outgoing)
-            .await
-            .map_err(|error| fault(&error))?;
+        let mut response = self.client.execute(outgoing).await.map_err(fault)?;
         let mut bytes = Vec::new();
-        while let Some(data) = response.chunk().await.map_err(|error| fault(&error))? {
+        while let Some(data) = response.chunk().await.map_err(fault)? {
             if bytes.len() + data.len() > self.limits.max_body {
                 return Err(HttpError::TooLarge);
             }
@@ -193,21 +185,21 @@ fn in_the_clear_only_here(uri: &Uri) -> Result<(), HttpError> {
             if origin.is_loopback() {
                 Ok(())
             } else {
-                Err(HttpError::Tls)
+                Err(HttpError::Tls(None))
             }
         }
-        _ => Err(HttpError::Malformed),
+        _ => Err(HttpError::Malformed(None)),
     }
 }
 
 /// What a reqwest error comes to: a timeout, a certificate or handshake refusal, no route, or
 /// garbage.
-fn fault(error: &reqwest::Error) -> HttpError {
-    match (error.is_timeout(), is_tls(error), error.is_connect()) {
+fn fault(error: reqwest::Error) -> HttpError {
+    match (error.is_timeout(), is_tls(&error), error.is_connect()) {
         (true, _, _) => HttpError::TimedOut,
-        (false, true, _) => HttpError::Tls,
-        (false, false, true) => HttpError::Unreachable,
-        (false, false, false) => HttpError::Malformed,
+        (false, true, _) => HttpError::tls(error),
+        (false, false, true) => HttpError::unreachable(error),
+        (false, false, false) => HttpError::malformed(error),
     }
 }
 
