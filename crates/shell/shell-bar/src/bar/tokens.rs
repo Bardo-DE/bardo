@@ -34,6 +34,11 @@ impl Default for BarTokens {
 impl BarTokens {
     /// The values `length` resolves (a property name to its length), the shipped value for each
     /// it does not.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to 0..=u16::MAX just before the cast"
+    )]
     pub fn read(length: impl Fn(&str) -> Option<Px>) -> BarTokens {
         let shipped = BarTokens::default();
         let one = |name: &str, shipped: u16| {

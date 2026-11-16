@@ -121,6 +121,10 @@ fn walk(folder: &Path, depth: usize, from: PictureFrom, found: &mut Vec<Picture>
 }
 
 /// `name`, or `name` with ` 2`, ` 3`... before its ending, whichever `taken` does not say is used.
+#[expect(
+    clippy::maybe_infinite_iter,
+    reason = "the first number that is free ends the search, and only finitely many names are taken"
+)]
 fn unique_name(name: &str, taken: impl Fn(&str) -> bool) -> String {
     if !taken(name) {
         return name.to_owned();

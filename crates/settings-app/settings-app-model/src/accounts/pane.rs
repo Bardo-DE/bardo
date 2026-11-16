@@ -127,6 +127,10 @@ impl AccountsPane {
         pane
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one arm per kind of row the module describes"
+    )]
     fn absorb(&mut self, module: ModuleId, described: &Described) {
         let pane = self;
         pane.modules.push(module);

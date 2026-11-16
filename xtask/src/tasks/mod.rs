@@ -15,10 +15,12 @@ use anyhow::{Context, Result};
 /// Prints `command` and runs it in `dir` with inherited output. `Ok(true)` if it exited 0.
 pub fn run_logged(dir: &Path, command: &mut Command) -> Result<bool> {
     println!("xtask: $ {command:?}");
-    let status = command
-        .current_dir(dir)
-        .status()
-        .with_context(|| format!("could not start {:?}", command.get_program()))?;
+    let status = command.current_dir(dir).status().with_context(|| {
+        format!(
+            "could not start {}",
+            command.get_program().to_string_lossy()
+        )
+    })?;
     Ok(status.success())
 }
 
@@ -35,7 +37,12 @@ pub fn run_logged_within(dir: &Path, command: &mut Command, deadline: Duration) 
         .current_dir(dir)
         .process_group(0)
         .spawn()
-        .with_context(|| format!("could not start {:?}", command.get_program()))?;
+        .with_context(|| {
+            format!(
+                "could not start {}",
+                command.get_program().to_string_lossy()
+            )
+        })?;
     let started = Instant::now();
     loop {
         if let Some(status) = child.try_wait()? {

@@ -178,7 +178,7 @@ impl Inner {
         format!("{stem}-{tag}{ext}")
     }
 
-    fn checked(&self, item: &LocalId) -> Result<(), DatasetError> {
+    fn checked(item: &LocalId) -> Result<(), DatasetError> {
         if vdir::is_item_name(&item.0) {
             Ok(())
         } else {
@@ -193,7 +193,7 @@ impl Inner {
         &self,
         at: Option<&LocalId>,
         path: &ItemPath,
-        content: Blob,
+        content: &Blob,
     ) -> Result<Scanned, DatasetError> {
         let name = self.name_for(at, path, &content.0);
         let hash = fingerprint(&content.0);
@@ -228,7 +228,7 @@ impl Inner {
     }
 
     fn discard(&self, item: &LocalId) -> Result<(), DatasetError> {
-        self.checked(item)?;
+        Self::checked(item)?;
         vdir::remove_file(&self.root, &item.0)
             .map_err(|e| fail(&format!("cannot remove {}", item.0), e))?;
         self.ledger().remove(item);
@@ -277,7 +277,7 @@ impl Dataset for PimMirror {
     }
 
     async fn read(&self, item: &LocalId) -> Result<Blob, DatasetError> {
-        self.inner.checked(item)?;
+        Inner::checked(item)?;
         let (inner, item) = (Arc::clone(&self.inner), item.clone());
         blocking(move || {
             std::fs::read(inner.root.join(&item.0))
@@ -294,7 +294,7 @@ impl Dataset for PimMirror {
         content: Blob,
     ) -> Result<Scanned, DatasetError> {
         let (inner, at, path) = (Arc::clone(&self.inner), at.cloned(), path.clone());
-        blocking(move || inner.store(at.as_ref(), &path, content)).await
+        blocking(move || inner.store(at.as_ref(), &path, &content)).await
     }
 
     async fn discard(&self, item: &LocalId) -> Result<(), DatasetError> {

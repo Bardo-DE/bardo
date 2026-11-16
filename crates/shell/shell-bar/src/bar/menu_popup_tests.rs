@@ -80,12 +80,12 @@ fn rows() -> Vec<TrayMenuEntry> {
 }
 
 fn app() -> Element {
-    document(rows())
+    document(&rows())
 }
 
 /// A menu whose submenu has a submenu: Open, Devices > (Phone > (Ping), Share).
 fn deep_app() -> Element {
-    document(vec![
+    document(&[
         row(1, "Open", Vec::new()),
         row(
             2,
@@ -98,7 +98,7 @@ fn deep_app() -> Element {
     ])
 }
 
-fn document(rows: Vec<TrayMenuEntry>) -> Element {
+fn document(rows: &[TrayMenuEntry]) -> Element {
     let (reports, receiver) = mpsc::unbounded_channel();
     REPORTS.with(|slot| *slot.borrow_mut() = Some(receiver));
     use_context_provider(|| PopupLink {
@@ -109,7 +109,7 @@ fn document(rows: Vec<TrayMenuEntry>) -> Element {
     });
     let current = PopupView {
         menu: BarMenu::Tray(TraySlot(0)),
-        body: PopupBody::Menu(menu_items(&tray_pick, &rows, &|_| None)),
+        body: PopupBody::Menu(menu_items(&tray_pick, rows, &|_| None)),
         placement: PopupPlacement {
             anchor_rect: HostRect {
                 x: 0,

@@ -15,7 +15,21 @@ use crate::page_traits::LivePane;
 use ui_settings::schema::Page;
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 fn each_standing_shows_its_facts_actions_and_bar() {
+    type Case<'a> = (
+        &'a str,
+        UpdateStatus,
+        &'a str,
+        UpdateStanding,
+        Option<UpdateMeter>,
+        Vec<UpdateAction>,
+        Option<Checked>,
+    );
+
     let download = UpdateStatus {
         progress: Permille(250),
         ..offered(UpdatePhase::Downloading)
@@ -32,15 +46,6 @@ fn each_standing_shows_its_facts_actions_and_bar() {
     let resting = vec![UpdateAction::Check { running: false }];
     let five_minutes = Some(Checked::Ago(300));
     // `(case, the status, version, standing, bar, actions, last checked)`.
-    type Case<'a> = (
-        &'a str,
-        UpdateStatus,
-        &'a str,
-        UpdateStanding,
-        Option<UpdateMeter>,
-        Vec<UpdateAction>,
-        Option<Checked>,
-    );
     let cases: Vec<Case> = vec![
         (
             "up to date",

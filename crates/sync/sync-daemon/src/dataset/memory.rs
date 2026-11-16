@@ -73,6 +73,10 @@ impl Dataset for MemoryDataset {
         self.rule
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn scan(&self) -> Result<Vec<Scanned>, DatasetError> {
         Ok(self
             .files()
@@ -81,12 +85,20 @@ impl Dataset for MemoryDataset {
             .collect())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn read(&self, item: &LocalId) -> Result<Blob, DatasetError> {
         self.get(&item.0)
             .map(Blob)
             .ok_or_else(|| DatasetError(format!("{} is not held", item.0)))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn store(
         &self,
         at: Option<&LocalId>,
@@ -104,6 +116,10 @@ impl Dataset for MemoryDataset {
         Ok(stored)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn discard(&self, item: &LocalId) -> Result<(), DatasetError> {
         self.files().remove(&item.0);
         Ok(())

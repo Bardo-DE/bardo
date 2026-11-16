@@ -108,6 +108,10 @@ pub fn use_spring_motion(at: f32, scale: PxPerUnit) -> SpringMotion {
 /// the speed it has, on the spring `spec` chooses (critical for a remote change or a tap, 0.8 for a
 /// throw toward it; critical under Reduced). Asks for frames only while it moves.
 #[must_use]
+#[expect(
+    clippy::float_cmp,
+    reason = "a change of the exact value the caller passed is what restarts the spring"
+)]
 pub fn use_spring(target: f32, spec: SpringSpec, scale: PxPerUnit) -> SpringFrame {
     let motion = use_spring_motion(target, scale);
     let mut seen = use_hook(|| CopyValue::new(target));

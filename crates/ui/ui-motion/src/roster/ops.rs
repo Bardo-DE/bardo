@@ -19,6 +19,7 @@ impl<K: Clone + PartialEq> RosterState<K> {
     ///
     /// Rows keep the consumer's order. A leaving row the consumer no longer lists stays
     /// right after the listed row that preceded it (or first, if none did).
+    #[must_use]
     pub fn reconcile(self, keys: &[K]) -> Self {
         let mut lingering: Vec<(Option<usize>, RosterEntry<K>)> = Vec::new();
         let mut anchor = None;
@@ -115,6 +116,7 @@ impl<K: Clone + PartialEq> RosterState<K> {
     /// heals by the sum of `pitch` over the dropped rows above it (each leaving row's measured
     /// height), so it starts exactly where it stood and ends in its new place. A key taken back
     /// meanwhile ([`Self::stay`]) is present, not leaving, and stays.
+    #[must_use]
     pub fn settled_batch(self, keys: &[K], pitch: impl Fn(&K) -> RowPitch) -> Self {
         let mut gap: Option<Px> = None;
         let mut kept = Vec::with_capacity(self.entries.len());

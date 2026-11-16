@@ -28,6 +28,10 @@ enum Expect {
     Hold(Hold),
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a table-row helper: each row builds its expectation inline, and a reference would put & in front of every row"
+)]
 fn check(name: &str, inputs: Inputs, expect: Expect) {
     // The jitter is seeded, and a table row holds for every seed: try several.
     for seed in 0..25 {
@@ -163,6 +167,8 @@ fn push_runs_after_its_window_and_polls_only_as_a_safety_net() {
 
 #[test]
 fn the_user_the_network_and_the_metered_setting_hold_the_dataset() {
+    use MeteredPolicy::{Allow, Pause};
+
     let held = |pausing, network, metered| Inputs {
         pausing,
         network,
@@ -176,7 +182,6 @@ fn the_user_the_network_and_the_metered_setting_hold_the_dataset() {
         },
         ..base()
     };
-    use MeteredPolicy::{Allow, Pause};
     check(
         "paused",
         held(Pausing::Paused, Network::Unmetered, Pause),

@@ -90,6 +90,10 @@ async fn storing_what_is_already_there_does_not_touch_the_file() {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "the extension is one this code writes itself, in lower case"
+)]
 async fn a_uid_that_changes_moves_the_file_and_a_shared_uid_keeps_both_items() {
     let (mirror, _journal, _dir) = open("names");
     let first = mirror
@@ -183,8 +187,8 @@ fn row(local: &str, hash: Option<&ContentHash>, state: ItemState) -> sync_core::
 
 #[tokio::test]
 async fn opening_queues_every_damaged_item_to_be_fetched_again_and_nothing_else() {
-    let _guard = scratch("heal");
-    let dir = _guard.path().to_owned();
+    let guard = scratch("heal");
+    let dir = guard.path().to_owned();
     let journal = Journal::open(&dir.join("j.sqlite")).expect("journal");
     let root = dir.join("vdir/a1/personal");
     std::fs::create_dir_all(&root).expect("root");

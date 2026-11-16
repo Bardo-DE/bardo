@@ -123,6 +123,10 @@ async fn a_denied_microphone_ends_the_utterance_failed() {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn hold_to_ask_hears_the_words_and_the_mic_closes_after_the_tail() {
     let world = world(Options::new(ScriptedInfer::new(vec![transcript(
         "hel",

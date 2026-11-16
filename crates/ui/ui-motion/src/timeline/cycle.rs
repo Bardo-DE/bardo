@@ -49,9 +49,9 @@ impl Timeline for Cycle {
 
     fn at(&self, elapsed: Duration) -> i64 {
         let into = match self.repeat {
-            Repeat::Forever if !self.period.is_zero() => {
-                Duration::from_nanos((elapsed.as_nanos() % self.period.as_nanos()) as u64)
-            }
+            Repeat::Forever if !self.period.is_zero() => Duration::from_nanos(
+                u64::try_from(elapsed.as_nanos() % self.period.as_nanos()).unwrap_or(u64::MAX),
+            ),
             _ => elapsed,
         };
         let ease = Ease {
@@ -72,13 +72,14 @@ mod tests {
 
     #[test]
     fn a_cycle_runs_once_and_stands_at_its_end() {
+        const CASES: &[(u64, i64)] = &[(0, 0), (200, 500), (400, 1000), (9_000, 1000)];
+
         let once = Cycle {
             period: MS(400),
             easing: Easing::Linear,
             repeat: Repeat::Once,
         };
         // (elapsed ms, frame): the start, the middle, the end and past it.
-        const CASES: &[(u64, i64)] = &[(0, 0), (200, 500), (400, 1000), (9_000, 1000)];
         for &(ms, want) in CASES {
             assert_eq!(once.at(MS(ms)), want, "{ms} ms");
         }
@@ -88,12 +89,13 @@ mod tests {
 
     #[test]
     fn a_repeating_cycle_goes_round_and_never_settles() {
+        const CASES: &[(u64, i64)] = &[(0, 0), (250, 250), (1_000, 0), (1_500, 500), (7_250, 250)];
+
         let forever = Cycle {
             period: MS(1000),
             easing: Easing::Linear,
             repeat: Repeat::Forever,
         };
-        const CASES: &[(u64, i64)] = &[(0, 0), (250, 250), (1_000, 0), (1_500, 500), (7_250, 250)];
         for &(ms, want) in CASES {
             assert_eq!(forever.at(MS(ms)), want, "{ms} ms");
         }

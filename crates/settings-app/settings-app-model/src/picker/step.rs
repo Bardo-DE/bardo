@@ -139,7 +139,7 @@ fn ready_step(mut ready: Ready, input: PickerInput) -> (Ready, Vec<PickerEffect>
             effects.push(PickerEffect::AddAccount);
         }
         PickerInput::PoolToggled { path, word } if ready.is_idle() => {
-            effects.extend(toggle_pool(&mut ready, path, word));
+            effects.extend(toggle_pool(&mut ready, path, &word));
         }
         PickerInput::PoolApplied(path) => {
             if let Some(write) = take_pooling(&mut ready, &path) {
@@ -316,11 +316,11 @@ fn choose_engine(ready: &mut Ready, path: &KeyPath, id: String) {
 
 /// What turning `word` in or out of the pool at `path` asks: the write, or the reason the model
 /// cannot be added.
-fn toggle_pool(ready: &mut Ready, path: KeyPath, word: String) -> Option<PickerEffect> {
+fn toggle_pool(ready: &mut Ready, path: KeyPath, word: &str) -> Option<PickerEffect> {
     let pool = ready.pool_at(&path)?;
-    let member = pool.chosen.contains(&word);
-    let words = pool.toggled(&word);
-    if let (Gate::Blocked(reason), false) = (pool.gate(&word), member) {
+    let member = pool.chosen.iter().any(|chosen| chosen == word);
+    let words = pool.toggled(word);
+    if let (Gate::Blocked(reason), false) = (pool.gate(word), member) {
         return Some(PickerEffect::Tell(reason));
     }
     ready.busy = Busy::Pooling(PoolWrite {

@@ -40,6 +40,10 @@ fn undeclared(main: &str, entries: &[(String, bool)]) -> Vec<String> {
 }
 
 /// The entries of `dir` that can be modules: `.rs` files, and directories with their own `mod.rs`.
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "Rust source files are named in lower case; a case-insensitive match would admit files cargo does not read"
+)]
 fn entries_of(dir: &Path) -> Result<Vec<(String, bool)>> {
     let mut entries = Vec::new();
     for entry in fs::read_dir(dir)? {

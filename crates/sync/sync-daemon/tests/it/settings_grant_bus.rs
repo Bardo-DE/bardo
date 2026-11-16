@@ -83,6 +83,10 @@ struct Rig {
     _network: watch::Sender<Network>,
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn rig() -> Rig {
     let graph = FakeGraph::start(BEARER).await.expect("graph");
     graph.set_limit(1_000_000);

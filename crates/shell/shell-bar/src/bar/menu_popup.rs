@@ -64,8 +64,9 @@ const GAP: Px = Px(7.0);
 /// it provides quire's document host itself.
 #[component]
 pub(crate) fn BarPopup() -> Element {
-    ui_blitz::provide_host();
-    shell_ui_kit::root::provide_keymap();
+    // Providing the host and the key source is the point; the handles are read through context.
+    let _ = ui_blitz::provide_host();
+    let _ = shell_ui_kit::root::provide_keymap();
     let link = use_context::<PopupLink>();
     let surface = use_surface();
     let view = use_watch(link.view.clone());

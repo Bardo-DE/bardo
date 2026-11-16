@@ -122,7 +122,11 @@ async fn a_handle_learns_of_a_pause_and_of_being_dropped() {
     let settings = caller("org.bardo.Settings", CallerRole::Settings);
     assert!(hub.set_pausing(&settings, &name("a1/pim"), Pausing::Paused));
     assert!(handle.changed().await, "the switch changed");
-    hub.forget_account(&AccountDir::parse("a1").expect("account"));
+    assert!(
+        !hub.forget_account(&AccountDir::parse("a1").expect("account"))
+            .is_empty(),
+        "the account had a dataset"
+    );
     assert!(!handle.changed().await, "dropped: the engine stops");
 }
 
@@ -200,14 +204,14 @@ fn the_shell_hears_every_hold_and_nothing_else_of_a_dataset_it_does_not_own() {
         }),
         ..StatusSnapshot::default()
     });
-    let held = vec![(
+    let expected = vec![(
         name("a1/notes"),
         MassDelete {
             discard: 3,
             held: 3,
         },
     )];
-    assert_eq!(hub.holds_for(&shell), held);
+    assert_eq!(hub.holds_for(&shell), expected);
     assert_eq!(hub.holds_for(&stranger), vec![]);
 }
 
@@ -268,15 +272,16 @@ async fn holding_the_cycles_waits_for_the_one_running_and_starts_no_other() {
 
 #[tokio::test(start_paused = true)]
 async fn sync_now_wakes_the_driver_once_whenever_it_is_asked_and_a_paused_dataset_refuses() {
-    let hub = Hub::default();
-    let dataset = name("a1/pim");
-    let mut handle = hub.register(dataset.clone(), Access::default());
     async fn nothing_waits(handle: &mut Handle) -> bool {
         let waiting = handle.nudged();
         tokio::time::timeout(std::time::Duration::from_secs(60), waiting)
             .await
             .is_err()
     }
+
+    let hub = Hub::default();
+    let dataset = name("a1/pim");
+    let mut handle = hub.register(dataset.clone(), Access::default());
     assert_eq!(
         hub.sync_now(&name("a1/none")),
         Err(SyncNowError::NoSuchDataset)

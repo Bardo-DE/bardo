@@ -27,6 +27,10 @@ pub struct Playback<T: Timeline> {
     scope: ScopeId,
 }
 
+#[expect(
+    clippy::expl_impl_clone_on_copy,
+    reason = "a derive would bound the type parameter by Clone, which the handle does not need"
+)]
 impl<T: Timeline> Clone for Playback<T> {
     fn clone(&self) -> Self {
         *self

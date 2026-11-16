@@ -6,6 +6,7 @@
 //! bodies are written here against our types.
 
 use crate::support;
+use std::fmt::Write as _;
 use std::ops::ControlFlow;
 
 use std::sync::Mutex;
@@ -35,6 +36,10 @@ impl TurnSink for Keep {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn chunk(delta: Value, finish: Option<&str>) -> String {
     json!({"id":"c","choices":[{"index":0,"delta":delta,"finish_reason":finish}]}).to_string()
 }
@@ -155,7 +160,7 @@ fn a_recorded_turn_replays_to_the_same_events_under_every_chunking() {
 fn an_exchange_recorded_through_the_driver_replays_through_the_driver() {
     let mut raw = String::new();
     for frame in scenario() {
-        raw.push_str(&format!("data: {frame}\n\n"));
+        write!(raw, "data: {frame}\n\n").expect("a String takes writes");
     }
     let server = FakeServer {
         head: ResponseHead {

@@ -228,6 +228,10 @@ const KEEP_ALL_WORDS: (&str, &str) = (
 /// Everything Downloaded" and hides the app folder's switch once that is off), whether keeping
 /// everything does not fit the free space, and whether the app folder's mirror is on.
 #[derive(Debug, Clone, Copy, Default)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "five independent facts the Files row tells apart, each read by its name"
+)]
 pub(crate) struct FilesRow {
     pub offered: bool,
     pub not_on: bool,
@@ -366,6 +370,10 @@ fn word_of(outcome: &Result<(), ContinueError>) -> &'static str {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "takes anything printable by value, as its callers pass a message, a `format!` or an error value"
+)]
 fn failed(why: impl ToString) -> LiveError {
     LiveError::Failed(why.to_string())
 }

@@ -25,6 +25,14 @@ fn the_powers_are_in_the_pages_order_and_each_has_its_word() {
 
 #[test]
 fn rows_become_programs_with_every_power_and_the_unanswered_ones_ask() {
+    const CASES: &[(&str, PrivacyPower, PowerStanding)] = &[
+        (GRIM, PrivacyPower::ScreenRecording, PowerStanding::Allowed),
+        (GRIM, PrivacyPower::Clipboard, PowerStanding::Denied),
+        (GRIM, PrivacyPower::KeyboardInput, PowerStanding::Ask),
+        (LOUPE, PrivacyPower::Windows, PowerStanding::Allowed),
+        (LOUPE, PrivacyPower::ScreenRecording, PowerStanding::Ask),
+    ];
+
     let shown = Publication::default()
         .answered("screen", "aaa", GRIM, "on")
         .answered("clipboard", "bbb", GRIM, "off")
@@ -40,13 +48,6 @@ fn rows_become_programs_with_every_power_and_the_unanswered_ones_ask() {
     assert_eq!(who, [GRIM, LOUPE], "in the order the rows first name them");
     assert_eq!(shown.programs[0].cells.len(), 7);
     // `(program, power, where it stands)`.
-    const CASES: &[(&str, PrivacyPower, PowerStanding)] = &[
-        (GRIM, PrivacyPower::ScreenRecording, PowerStanding::Allowed),
-        (GRIM, PrivacyPower::Clipboard, PowerStanding::Denied),
-        (GRIM, PrivacyPower::KeyboardInput, PowerStanding::Ask),
-        (LOUPE, PrivacyPower::Windows, PowerStanding::Allowed),
-        (LOUPE, PrivacyPower::ScreenRecording, PowerStanding::Ask),
-    ];
     for (who, power, want) in CASES {
         assert_eq!(standing(&shown, who, *power), *want, "{who} {power:?}");
     }
@@ -86,6 +87,12 @@ fn an_administrators_answer_is_locked_and_wins_over_the_persons() {
 
 #[test]
 fn a_power_nobody_answered_is_a_switch_at_ask_with_nothing_to_forget() {
+    const CASES: &[(&str, PrivacyPower, &str)] = &[
+        (GRIM, PrivacyPower::KeyboardInput, "privacy.keys.bbb"),
+        (LOUPE, PrivacyPower::ScreenRecording, "privacy.screen.ccc"),
+        (LOUPE, PrivacyPower::KeyboardInput, "privacy.keys.ddd"),
+    ];
+
     // Grim has answered one power; Loupe none, so it is listed only because of its Ask rows.
     let shown = Publication::default()
         .answered("screen", "aaa", GRIM, "on")
@@ -100,11 +107,6 @@ fn a_power_nobody_answered_is_a_switch_at_ask_with_nothing_to_forget() {
         .collect();
     assert_eq!(who, [GRIM, LOUPE]);
     // `(program, power, the switch)`.
-    const CASES: &[(&str, PrivacyPower, &str)] = &[
-        (GRIM, PrivacyPower::KeyboardInput, "privacy.keys.bbb"),
-        (LOUPE, PrivacyPower::ScreenRecording, "privacy.screen.ccc"),
-        (LOUPE, PrivacyPower::KeyboardInput, "privacy.keys.ddd"),
-    ];
     for (who, power, switch) in CASES {
         let cell = shown
             .programs

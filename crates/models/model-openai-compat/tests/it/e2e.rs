@@ -28,9 +28,7 @@ fn endpoint(path: std::path::PathBuf) -> HttpEndpoint {
 
 /// Answers one request with `response`, in `pieces` written a few milliseconds apart; returns
 /// the request it read.
-async fn serve_once(
-    response: Vec<Vec<u8>>,
-) -> (std::path::PathBuf, tokio::task::JoinHandle<String>) {
+fn serve_once(response: Vec<Vec<u8>>) -> (std::path::PathBuf, tokio::task::JoinHandle<String>) {
     static N: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
     let n = N.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     let dir = std::env::temp_dir().join(format!("openai-compat-e2e-{}-{n}", std::process::id()));
@@ -77,7 +75,7 @@ async fn describe_reads_the_models_over_the_socket() {
         body.len()
     )
     .into_bytes()];
-    let (path, server) = serve_once(pieces).await;
+    let (path, server) = serve_once(pieces);
     let provider = OpenAiCodec::new(Flavor::Vllm).provider(HttpClient::new(endpoint(path)));
     let models = provider.describe().await.unwrap();
     assert_eq!(models[0].loaded_context.0, 16384);

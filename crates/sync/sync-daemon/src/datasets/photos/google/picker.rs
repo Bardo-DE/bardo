@@ -18,6 +18,7 @@ use account_http::http::{Method, Response};
 use account_http::{Http, request};
 use base_url::WebUrl;
 use serde::Deserialize;
+use std::fmt::Write as _;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -321,7 +322,8 @@ impl<H: Http> PhotosPicker<H> {
         loop {
             let mut path = format!("mediaItems?sessionId={session}&pageSize=100");
             if let Some(token) = &page {
-                path.push_str(&format!("&pageToken={}", encode(token)));
+                // Writing to a String cannot fail.
+                let _ = write!(path, "&pageToken={}", encode(token));
             }
             let response = self
                 .send(request(Method::GET, &self.url(&path)?), Vec::new())

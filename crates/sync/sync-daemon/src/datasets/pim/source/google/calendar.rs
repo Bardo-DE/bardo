@@ -139,7 +139,7 @@ impl<T: GrantsLink> GoogleCalendarFeed<T> {
 
     /// An event as the journal records it, with the bytes it converts to; `None` for one that
     /// cannot be written (it is left out and said on standard error).
-    fn upsert(&self, event: &Event) -> Option<FeedChange> {
+    fn upsert(event: &Event) -> Option<FeedChange> {
         let ics = match event::to_ics(event) {
             Ok(ics) => ics.into_bytes(),
             Err(why) => {
@@ -214,7 +214,7 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
                         deleted_at: self.clock.now(),
                     }))
                 } else {
-                    self.upsert(event)
+                    Self::upsert(event)
                 }
             })
             .collect();

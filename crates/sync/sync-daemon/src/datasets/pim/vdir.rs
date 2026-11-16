@@ -234,8 +234,8 @@ mod tests {
 
     #[test]
     fn an_atomic_write_leaves_the_whole_file_and_no_temporary() {
-        let _dir_guard = scratch("atomic");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("atomic");
+        let dir = dir_guard.path().to_owned();
         write_atomic(&dir, "a.ics", b"one").expect("write");
         write_atomic(&dir, "a.ics", b"two!").expect("rewrite");
         assert_eq!(std::fs::read(dir.join("a.ics")).expect("read"), b"two!");
@@ -252,8 +252,8 @@ mod tests {
 
     #[test]
     fn metadata_files_follow_the_collection_and_are_not_touched_when_unchanged() {
-        let _dir_guard = scratch("meta");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("meta");
+        let dir = dir_guard.path().to_owned();
         let meta = Meta {
             displayname: Some("Work".into()),
             color: Some("#0082c9FF".into()),
@@ -297,8 +297,8 @@ mod tests {
         // The account was removed and its mirror deleted between the supervisor's look at the
         // collections and its write of their names: nothing comes back (rel-13 follow-up, the
         // pim_bus removal test that found the account's directory again).
-        let _root_guard = scratch("meta-gone");
-        let root = _root_guard.path().to_owned();
+        let root_guard = scratch("meta-gone");
+        let root = root_guard.path().to_owned();
         let dir = root.join("account").join("personal");
         let meta = Meta {
             displayname: Some("Work".into()),
@@ -311,8 +311,8 @@ mod tests {
 
     #[test]
     fn listing_returns_only_the_kinds_visible_files() {
-        let _dir_guard = scratch("list");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("list");
+        let dir = dir_guard.path().to_owned();
         for name in ["b.ics", "a.ics", "c.vcf", ".d.ics.1.tmp", "displayname"] {
             std::fs::write(dir.join(name), "x").expect("file");
         }

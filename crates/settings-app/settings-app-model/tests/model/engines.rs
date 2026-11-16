@@ -187,6 +187,10 @@ fn the_note_shows_only_while_llama_cpp_is_missing_and_starting_follows_the_resta
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 fn the_restart_asks_first_and_looks_again_when_it_ends() {
     let missing = EnginesState {
         llama_cpp: LlamaCpp::Missing,

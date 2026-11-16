@@ -100,6 +100,10 @@ impl EventDoc {
 /// searched, and a body that is not for recall ([`Recallable::No`]) contributes nothing whatever
 /// its shape.
 #[must_use]
+#[expect(
+    clippy::match_same_arms,
+    reason = "the wildcard stands for body kinds a newer build adds, apart from the kinds named as having no text"
+)]
 pub fn event_docs(event: &EventRef, header_label: &Label, body: &EventBody) -> Vec<EventDoc> {
     if Recallable::of_body(body) == Recallable::No {
         return Vec::new();

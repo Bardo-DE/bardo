@@ -82,7 +82,7 @@ where
             return;
         };
         match event {
-            LinkEvent::Ready => self.engine_ready().await,
+            LinkEvent::Ready => self.engine_ready(),
             LinkEvent::Closed(fault) => {
                 self.stt = None;
                 self.utt_event(UtteranceEvent::EngineFailed(fault)).await;
@@ -95,7 +95,7 @@ where
         }
     }
 
-    async fn engine_ready(&mut self) {
+    fn engine_ready(&mut self) {
         let Some(utt) = self.utt.as_mut() else { return };
         let end_pending = match utt.engine {
             SttLink::Cold { end_pending } => end_pending,

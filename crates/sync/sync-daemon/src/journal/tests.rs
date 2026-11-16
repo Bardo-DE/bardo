@@ -50,8 +50,8 @@ fn conflict(local: &str) -> StoredConflict {
 
 #[test]
 fn every_kind_of_row_round_trips() {
-    let _dir_guard = scratch("rows");
-    let dir = _dir_guard.path().to_owned();
+    let dir_guard = scratch("rows");
+    let dir = dir_guard.path().to_owned();
     let journal = Journal::open(&dir.join("sync/acct/files.sqlite")).expect("open");
     let anchor = StoredAnchor {
         anchor: Anchor("seq-4".into()),
@@ -87,8 +87,8 @@ fn every_kind_of_row_round_trips() {
 
 #[test]
 fn put_replaces_by_local_id_and_the_other_ops_undo_their_rows() {
-    let _dir_guard = scratch("ops");
-    let dir = _dir_guard.path().to_owned();
+    let dir_guard = scratch("ops");
+    let dir = dir_guard.path().to_owned();
     let journal = Journal::open(&dir.join("j.sqlite")).expect("open");
     journal
         .apply(&[
@@ -135,8 +135,8 @@ fn put_replaces_by_local_id_and_the_other_ops_undo_their_rows() {
 
 #[test]
 fn a_cut_write_leaves_none_of_its_rows_and_a_reopened_file_holds_what_committed() {
-    let _dir_guard = scratch("cut");
-    let dir = _dir_guard.path().to_owned();
+    let dir_guard = scratch("cut");
+    let dir = dir_guard.path().to_owned();
     let path = dir.join("j.sqlite");
     let journal = Journal::open(&path).expect("open");
     journal
@@ -175,8 +175,8 @@ fn a_file_of_another_schema_version_is_emptied_and_made_again() {
 
 #[test]
 fn a_row_this_build_cannot_read_is_corruption_not_a_panic() {
-    let _dir_guard = scratch("corrupt");
-    let dir = _dir_guard.path().to_owned();
+    let dir_guard = scratch("corrupt");
+    let dir = dir_guard.path().to_owned();
     let path = dir.join("j.sqlite");
     drop(Journal::open(&path).expect("open"));
     Connection::open(&path)

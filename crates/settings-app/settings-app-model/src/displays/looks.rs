@@ -36,6 +36,10 @@ fn looks_at(pixels: PixelSize, scale: u32) -> PixelSize {
 
 /// The density of `pixels` spread over `size`, along the diagonal; `None` when the size is
 /// missing or implausible.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel density: a saturated or NaN value fails the plausible-range check below"
+)]
 fn density(pixels: PixelSize, size: Option<Millimetres>) -> Option<u32> {
     let size = size?;
     let diagonal_px = f64::from(pixels.width).hypot(f64::from(pixels.height));

@@ -23,6 +23,10 @@ pub struct Throw {
 impl Throw {
     /// Where the throw would come to rest: `from + v·r/(1-r)`.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a pixel position: f32 holds a screen coordinate to well under a pixel"
+    )]
     pub fn projected(self) -> Px {
         let per_ms = self.velocity.px_per_s() / 1000.0;
         let travel = per_ms * DECELERATION_PER_MS / (1.0 - DECELERATION_PER_MS);
@@ -66,7 +70,6 @@ mod tests {
 
     #[test]
     fn a_throw_lands_on_the_end_nearest_its_projection_not_its_release() {
-        let ends = [Px(0.0), Px(100.0)];
         const CASES: &[(f32, i32, f32)] = &[
             // Released at 30 %: still, it falls back; flicked at 1500 px/s, it carries on.
             (30.0, 0, 0.0),
@@ -75,6 +78,8 @@ mod tests {
             (70.0, -400, 0.0),
             (70.0, 0, 100.0),
         ];
+
+        let ends = [Px(0.0), Px(100.0)];
         for &(from, v, want) in CASES {
             let throw = Throw {
                 from: Px(from),

@@ -36,8 +36,8 @@ const NAME: &str = "Contacts";
 /// One page of `people.connections.list`.
 #[derive(Debug, Deserialize)]
 struct Connections {
-    #[serde(default)]
-    connections: Vec<Person>,
+    #[serde(default, rename = "connections")]
+    listed: Vec<Person>,
     #[serde(rename = "nextPageToken")]
     next_page: Option<String>,
     #[serde(rename = "nextSyncToken")]
@@ -80,6 +80,10 @@ pub struct GooglePeopleFeed<T: GrantsLink> {
 impl<T: GrantsLink + 'static> PimSource for GooglePeopleSource<T> {
     type Feed = GooglePeopleFeed<T>;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn collections(&self, kind: PimKind) -> Result<Vec<Found>, DiscoverError> {
         debug_assert_eq!(kind, PimKind::Contacts, "this source reads contacts");
         let url = format!("{}/people/me/connections/", self.api.base());
@@ -171,7 +175,7 @@ impl<T: GrantsLink + 'static> Feed for GooglePeopleFeed<T> {
             _ => return Err(ReplicaError::Transient(RetryAfter(30))),
         };
         let changes = listing
-            .connections
+            .listed
             .iter()
             .map(|person| {
                 if person.is_deleted() {

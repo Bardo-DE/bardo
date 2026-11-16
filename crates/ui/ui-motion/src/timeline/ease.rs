@@ -58,18 +58,19 @@ mod tests {
 
     #[test]
     fn a_linear_ease_is_its_share_of_the_length_and_whole_at_the_end() {
-        let ease = Ease {
-            length: MS(700),
-            easing: Easing::Linear,
-        };
-        assert_eq!(ease.total(), MS(700));
-        // (elapsed, through, eased): zero, half, the end and past it.
         const CASES: &[(u64, u16, u16)] = &[
             (0, 0, 0),
             (350, 500, 500),
             (700, 1000, 1000),
             (5_000, 1000, 1000),
         ];
+
+        let ease = Ease {
+            length: MS(700),
+            easing: Easing::Linear,
+        };
+        assert_eq!(ease.total(), MS(700));
+        // (elapsed, through, eased): zero, half, the end and past it.
         for &(ms, through, eased) in CASES {
             let want = Eased {
                 through: Fraction(through),

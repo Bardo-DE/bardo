@@ -18,6 +18,7 @@ pub enum Live<R> {
 impl<R> Live<R> {
     /// The state after a read: a good read refreshes the ready state (`refresh`, given the state
     /// and what was read) or starts one (`fresh`); a failed read makes the pane unavailable.
+    #[must_use]
     pub fn found<D>(
         self,
         read: Result<D, Absence>,

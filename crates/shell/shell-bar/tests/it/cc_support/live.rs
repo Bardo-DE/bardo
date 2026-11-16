@@ -60,9 +60,9 @@ fn app() -> Element {
     use_context_provider(|| world.settings.clone());
     use_context_provider(|| world.focus.clone());
     let pages = Arc::clone(&world.reports);
-    let closes = Arc::clone(&world.reports);
+    let sink = Arc::clone(&world.reports);
     let closed = EventHandler::new(move |()| {
-        if let Ok(mut reports) = closes.lock() {
+        if let Ok(mut reports) = sink.lock() {
             reports.push(Report::Closed);
         }
     });

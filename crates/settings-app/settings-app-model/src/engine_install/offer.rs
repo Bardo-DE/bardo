@@ -170,6 +170,14 @@ fn followed(offer: EngineOffer, rows: &[EngineRow]) -> EngineOffer {
 
 /// The next state, and what to do about it.
 #[must_use]
+#[expect(
+    clippy::match_same_arms,
+    reason = "the arm names the one offer Go leaves alone, and the later arms must not see it"
+)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a state machine table with one arm per state and input"
+)]
 pub fn engine_offer_step(
     state: EngineOfferState,
     input: EngineOfferInput,
@@ -194,8 +202,8 @@ pub fn engine_offer_step(
             EngineOffer::Asking {
                 engine,
                 way,
-                scope: _,
                 replacing,
+                ..
             },
             EngineOfferInput::Scope(scope),
         ) => (
@@ -286,10 +294,7 @@ pub fn engine_offer_step(
         }
         (
             EngineOffer::Failed {
-                engine,
-                way,
-                scope,
-                reason: _,
+                engine, way, scope, ..
             },
             EngineOfferInput::Go,
         ) => {

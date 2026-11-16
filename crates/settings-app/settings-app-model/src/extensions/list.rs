@@ -108,7 +108,7 @@ pub struct ExtensionList {
 impl ExtensionList {
     /// The list of `rows`, grouped and sorted by name.
     #[must_use]
-    pub fn of(rows: Vec<ExtensionRow>) -> ExtensionList {
+    pub fn of(rows: &[ExtensionRow]) -> ExtensionList {
         let order = GROUPS
             .iter()
             .map(|(_, kind)| *kind)
@@ -161,7 +161,7 @@ mod tests {
     #[test]
     fn rows_are_grouped_by_what_they_provide_then_the_unusable_last() {
         let broken = ExtensionStanding::Unusable(ExtensionTrouble::Unreadable);
-        let list = ExtensionList::of(vec![
+        let list = ExtensionList::of(&[
             row("c.broken", "Broken", &["look"], broken),
             row(
                 "b.zed",
@@ -227,7 +227,7 @@ mod tests {
         );
         broken.summary = Some("Warm paper".to_owned());
         assert_eq!(broken.power(), None);
-        assert!(ExtensionList::of(Vec::new()).is_empty());
+        assert!(ExtensionList::of(&[]).is_empty());
     }
 
     #[test]

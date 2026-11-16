@@ -15,6 +15,10 @@ use super::model::BarInput;
 use super::track::{Event, Target, point};
 
 /// The pointer's position in the bar, whole logical pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pixel coordinate: float to integer casts saturate, and no screen is near the limit"
+)]
 pub(crate) fn pointer_at(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {

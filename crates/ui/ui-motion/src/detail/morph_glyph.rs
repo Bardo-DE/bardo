@@ -90,7 +90,7 @@ pub fn MorphGlyph(
     let drawn = Thousandths(slash.frame().value.clamp(0, 1000) as i32);
     let cut = match style {
         MorphStyle::Slash => drawn,
-        _ => Thousandths::default(),
+        MorphStyle::CrossFade => Thousandths::default(),
     };
     let alias = if shown.round.is_multiple_of(2) {
         "b"

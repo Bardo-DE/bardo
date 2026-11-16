@@ -134,7 +134,7 @@ impl StreamDecoder {
             let mut usage = read_usage(self.flavor, value);
             usage.charge = match self.flavor.server().charges() {
                 Charges::PerReply => read_charge(frame),
-                _ => None,
+                Charges::NotReported => None,
             };
             self.usage = Some(usage);
             events.push(TurnEvent::Usage(usage));
@@ -260,9 +260,9 @@ impl StreamDecoder {
     }
 
     fn finish_reason(&mut self, reason: &str) -> Result<Vec<TurnEvent>, CodecError> {
-        // A call left half-written by a cut turn is dropped, not a hard error.
+        // A call left half-written by a cut turn (`length`, or a reason this build does not
+        // know) is dropped, not a hard error.
         let how = match reason {
-            "length" => IfMalformed::Drop,
             "content_filter" | "tool_calls" | "function_call" | "stop" | "end_turn"
             | "stop_sequence" => IfMalformed::Fail,
             _ => IfMalformed::Drop,

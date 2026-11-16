@@ -113,7 +113,6 @@ async fn run<D: AudioDevice>(
                     let _ = events.send(Played::Failed);
                 }
             }
-            Cmd::Samples { .. } => {}
             Cmd::Fade { generation, ms } => {
                 if let Some((_, stream)) = open.as_mut() {
                     stream.fade_out(ms).await;
@@ -128,7 +127,7 @@ async fn run<D: AudioDevice>(
                 open = None;
                 let _ = events.send(Played::Drained(generation));
             }
-            Cmd::Drain { .. } => {}
+            Cmd::Samples { .. } | Cmd::Drain { .. } => {}
         }
     }
 }

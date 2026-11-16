@@ -39,7 +39,7 @@ pub fn ModuleDropdown(
             "data-drop": "module",
             tabindex: "-1",
             style: panel_style(cap),
-            onmounted: move |event: MountedEvent| home.mounted(event),
+            onmounted: move |event: MountedEvent| home.mounted(&event),
             {body}
             TurnOffAlert { on_answered: move |()| home.take() }
         }

@@ -72,6 +72,10 @@ impl Computers {
 }
 
 /// Why a change was not made: the form's own fault, or the service's reason.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn refusal_of(failure: ChangeFailure) -> ServerRefusal {
     match failure {
         ChangeFailure::Fault(fault) => ServerRefusal::Form(fault),

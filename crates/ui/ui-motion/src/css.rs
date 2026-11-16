@@ -11,6 +11,7 @@ use crate::{
     anim::Anim,
     recipe::{Fill, Iteration, Recipe},
 };
+use std::fmt::Write as _;
 use ui_core::word::Word;
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::emit::{attr_selector, property, rule};
@@ -26,7 +27,8 @@ pub fn motion_css() -> String {
     let mut css = String::from(MOTION.trim_end());
     css.push('\n');
     for (name, body) in keyframes(MOTION) {
-        css.push_str(&format!("@keyframes {name}{ALIAS}{body}\n"));
+        // Writing to a String cannot fail.
+        let _ = writeln!(css, "@keyframes {name}{ALIAS}{body}");
     }
     for anim in Anim::ALL {
         for (phase, name) in [("a", String::new()), ("b", ALIAS.to_owned())] {
@@ -200,9 +202,6 @@ mod tests {
 
     #[test]
     fn symbol_effects_hold_or_fade_under_reduced_and_the_loops_loop_in_the_stylesheet() {
-        let css = motion_css();
-        let compact: String = css.split_whitespace().collect();
-        // (anim, its Reduced keyframes): what moves holds or fades, what only dims plays as it is.
         const CASES: &[(Anim, &str)] = &[
             (Anim::Bounce, "hold"),
             (Anim::BounceLoop, "hold"),
@@ -218,6 +217,10 @@ mod tests {
             (Anim::Appear, "fade"),
             (Anim::Disappear, "menu-out"),
         ];
+
+        let css = motion_css();
+        let compact: String = css.split_whitespace().collect();
+        // (anim, its Reduced keyframes): what moves holds or fades, what only dims plays as it is.
         for &(anim, still) in CASES {
             let recipe = anim.recipe();
             assert_eq!(

@@ -26,6 +26,10 @@ impl Script {
 }
 
 /// Whether a file name is a legacy check script.
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "script names in the repository are lower case; a case-insensitive match would admit files nobody means"
+)]
 fn is_check_script(name: &str) -> bool {
     name.starts_with("check-") && name.ends_with(".sh")
 }

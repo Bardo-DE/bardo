@@ -16,6 +16,10 @@ pub struct MachineState<M: Machine> {
     pub clock: FrameClock,
 }
 
+#[expect(
+    clippy::expl_impl_clone_on_copy,
+    reason = "a derive would bound the type parameter by Clone, which the handle does not need"
+)]
 impl<M: Machine> Clone for MachineState<M> {
     fn clone(&self) -> Self {
         *self

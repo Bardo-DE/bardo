@@ -194,9 +194,9 @@ fn list_of(found: &Found, own: bool) -> ExtensionList {
     });
     let mut seen = BTreeSet::new();
     ExtensionList::of(
-        on.chain(off)
+        &on.chain(off)
             .chain(unread)
             .filter(|row| seen.insert(row.id.clone()))
-            .collect(),
+            .collect::<Vec<_>>(),
     )
 }

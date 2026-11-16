@@ -46,6 +46,10 @@ pub fn use_pane_slide(
         round.set(next);
         unreported.set(Some(shown));
     }
+    #[expect(
+        clippy::float_cmp,
+        reason = "a spring that has come to rest reports exactly its target position"
+    )]
     let resting = frame.phase() == SpringPhase::Rest && frame.position() == place(shown);
     if !resting {
         let moving = PaneSlide::Moving {

@@ -69,8 +69,13 @@ impl<C: Callers> Core<C> {
     ) -> Result<(), RefusedError> {
         let caller = self.identify(header).await?;
         let name = self.visible(&caller, dataset)?;
-        self.hub.set_pausing(&caller, &name, pausing);
-        Ok(())
+        // The dataset can be dropped between the check above and this call: then there is
+        // none to pause, as for a caller who never saw it.
+        if self.hub.set_pausing(&caller, &name, pausing) {
+            Ok(())
+        } else {
+            Err(RefusedError::of(Refusal::NoFittingAccount))
+        }
     }
 
     /// Sends `event` to each connection that is told of it (see [`Hub::hears`]).

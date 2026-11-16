@@ -80,9 +80,9 @@ pub enum ProgramsEffect {
 }
 
 impl Programs {
-    fn valued(mut self, path: &KeyPath, value: String) -> Programs {
+    fn valued(mut self, path: &KeyPath, value: &str) -> Programs {
         for row in self.rows.iter_mut().filter(|row| &row.path == path) {
-            row.value.clone_from(&value);
+            row.value.replace_range(.., value);
         }
         self
     }
@@ -95,7 +95,7 @@ impl Programs {
             }
             ProgramsInput::Applied(path, value) | ProgramsInput::Changed(path, value) => {
                 self.refused.remove(&path);
-                (self.valued(&path, value), Vec::new())
+                (self.valued(&path, &value), Vec::new())
             }
             ProgramsInput::Refused(path, words) => {
                 self.refused.insert(path, words);

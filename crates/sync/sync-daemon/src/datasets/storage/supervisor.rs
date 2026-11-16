@@ -455,6 +455,10 @@ where
         }
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "wires one drive from its journal to its engines, in order"
+    )]
     async fn run_drive<L, F>(
         &self,
         account: &AccountDir,
@@ -531,7 +535,7 @@ where
                 let account = account.to_string();
                 Some(tokio::task::spawn_blocking(move || {
                     match mounter.mount(fs, &path) {
-                        Ok(mounted) => Some(mounted),
+                        Ok(mount) => Some(mount),
                         Err(why) => {
                             eprintln!("syncd: {account} is not shown at {}: {why}", path.display());
                             live.set_unshown(crate::words::unshown(&why));
@@ -784,7 +788,11 @@ where
             self.wiring.hub.stop(&name).await;
         }
         match running {
-            Running::Folder { task, .. } => task.abort(),
+            Running::Folder { task, .. }
+            | Running::GooglePhotos {
+                upload: Some((_, task)),
+                ..
+            } => task.abort(),
             Running::Drive {
                 task, limit, id, ..
             } => {
@@ -796,10 +804,6 @@ where
                     eprintln!("syncd: a drive's folder was not taken away: {why}");
                 }
             }
-            Running::GooglePhotos {
-                upload: Some((_, task)),
-                ..
-            } => task.abort(),
             _ => {}
         }
     }
@@ -906,15 +910,15 @@ impl<T: GrantsLink, G> Drop for StorageSupervisor<T, G> {
     fn drop(&mut self) {
         for running in self.running.values() {
             match running {
-                Running::Folder { task, .. } => task.abort(),
+                Running::Folder { task, .. }
+                | Running::GooglePhotos {
+                    upload: Some((_, task)),
+                    ..
+                } => task.abort(),
                 Running::Drive { task, limit, .. } => {
                     task.abort();
                     limit.abort();
                 }
-                Running::GooglePhotos {
-                    upload: Some((_, task)),
-                    ..
-                } => task.abort(),
                 _ => {}
             }
         }
@@ -950,8 +954,8 @@ mod tests {
 
     #[tokio::test]
     async fn a_drive_held_while_its_account_is_removed_is_not_started() {
-        let _root_guard = crate::testing::scratch("held-drive");
-        let root = _root_guard.path().to_owned();
+        let root_guard = crate::testing::scratch("held-drive");
+        let root = root_guard.path().to_owned();
         let paths = crate::paths::Paths {
             journals: root.join("state/bardo/sync"),
             mirrors: root.join("data/bardo/sync/vdir"),

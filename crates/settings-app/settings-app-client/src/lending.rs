@@ -39,6 +39,10 @@ impl Lending {
     }
 
     /// Nothing follows the switch: it moves when the person turns it.
+    #[expect(
+        clippy::unused_async,
+        reason = "the `pane!` macro awaits every pane's follow loop"
+    )]
     async fn follow(&self) {}
 }
 

@@ -1,6 +1,9 @@
 //! A fake speech server on a Unix socket in a private directory, and the audio helpers the
 //! `speech_*` tests share. Each test file uses a subset.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a shared test helper: each test binary uses only part of it"
+)]
 
 use std::collections::VecDeque;
 use std::ops::ControlFlow;
@@ -223,6 +226,10 @@ pub fn chunk(at: u64, samples: u16) -> AudioChunk {
 pub struct Spoken(pub VecDeque<AudioChunk>);
 
 impl AudioSource for Spoken {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self) -> Option<AudioChunk> {
         self.0.pop_front()
     }

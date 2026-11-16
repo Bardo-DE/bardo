@@ -191,6 +191,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+    )]
     fn the_bar_drives_one_popup_through_design_13s_sessions() {
         let settings = BarPick::Settings;
         let telegram = BarMenu::Tray(TraySlot(0));

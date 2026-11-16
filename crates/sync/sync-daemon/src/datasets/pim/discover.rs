@@ -119,6 +119,10 @@ mod tests {
     }
 
     impl Http for Script {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
             let path = request.uri().path().to_owned();
             self.asked.lock().expect("lock").push(path.clone());

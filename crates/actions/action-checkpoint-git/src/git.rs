@@ -80,6 +80,7 @@ impl GitStore {
 
     /// Where the cause of a failed command goes (the operator's log): the subcommand, how it
     /// ended and the tail of its standard error. Never put it in front of a person.
+    #[must_use]
     pub fn with_problems(mut self, sink: impl Fn(&GitProblem) + Send + Sync + 'static) -> Self {
         self.report = Report::to(sink);
         self

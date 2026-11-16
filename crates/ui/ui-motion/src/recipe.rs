@@ -52,6 +52,7 @@ pub struct Recipe {
 impl Anim {
     /// The canonical declaration.
     #[must_use]
+    #[expect(clippy::too_many_lines, reason = "a table with one arm per animation")]
     pub fn recipe(self) -> Recipe {
         match self {
             // design/30 section 1.3: an inserted row fades and slides down over `--t-move`.
@@ -95,16 +96,8 @@ impl Anim {
                 Iteration::Once,
             ),
             Anim::MenuOut => own::MENU_OUT,
-            // `S:225`.
-            Anim::PeekIn => recipe(
-                "peek-in",
-                DurationToken::Move,
-                EasingToken::Out,
-                Fill::None,
-                Iteration::Once,
-            ),
-            // `C:1050`.
-            Anim::PeekFullIn => recipe(
+            // `S:225` and `C:1050`.
+            Anim::PeekIn | Anim::PeekFullIn => recipe(
                 "peek-in",
                 DurationToken::Move,
                 EasingToken::Out,

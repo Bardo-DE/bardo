@@ -245,6 +245,10 @@ fn uploads(graph: &GraphHandle) -> usize {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn a_folder_syncs_against_graph_through_the_relay_and_status_shows_the_quota() {
     let rig = rig().await;
     let dataset = Arc::new(MemoryDataset::new(
@@ -284,7 +288,9 @@ async fn a_folder_syncs_against_graph_through_the_relay_and_status_shows_the_quo
 
     // Up: a small file is one PUT, a large one a session; Status carries the quota the drive
     // reports.
-    let large: Vec<u8> = (0..CHUNK_UNIT + 1000).map(|i| (i % 253) as u8).collect();
+    let large: Vec<u8> = (0..CHUNK_UNIT + 1000)
+        .map(|i| u8::try_from(i % 253).expect("below 253"))
+        .collect();
     dataset.put("2026/IMG_1.HEIC", b"abcdef");
     dataset.put("2026/BIG.MOV", &large);
     eventually(&rig, "both files are on the drive", || {
@@ -359,8 +365,12 @@ async fn a_folder_syncs_against_graph_through_the_relay_and_status_shows_the_quo
     assert_eq!(uploads(&rig.graph), before, "no re-upload after the expiry");
     assert_eq!(dataset.snapshot().len(), 4);
 
-    rig.hub
-        .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"));
+    assert!(
+        !rig.hub
+            .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"))
+            .is_empty(),
+        "the account had datasets"
+    );
     eventually(&rig, "the driver stops", || running.is_finished()).await;
 }
 

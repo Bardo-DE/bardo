@@ -111,7 +111,10 @@ mod tests {
 
     /// The settle of the OSD's entrance and exit at Standard, in ms.
     fn settles() -> (u64, u64) {
-        let ms = |anim| crate::settle::settle(anim, MotionLevel::Standard).as_millis() as u64;
+        let ms = |anim| {
+            u64::try_from(crate::settle::settle(anim, MotionLevel::Standard).as_millis())
+                .unwrap_or(u64::MAX)
+        };
         (ms(Anim::PaletteFade), ms(Anim::OsdOut))
     }
 

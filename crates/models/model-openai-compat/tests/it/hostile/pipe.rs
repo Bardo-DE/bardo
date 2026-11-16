@@ -1,6 +1,7 @@
 //! The path the driver takes: bytes in chunks, through the SSE framer, into the stream decoder.
 
 use std::collections::BTreeSet;
+use std::fmt::Write as _;
 
 use model_http::{SseDecoder, SseError};
 use model_openai_compat::{CodecError, Flavor, LeakMarker, StreamDecoder};
@@ -36,11 +37,11 @@ pub fn run(chunks: &[&[u8]]) -> Reply {
         end: Err(why),
     };
     for chunk in chunks {
-        let frames = match framer.feed(chunk) {
-            Ok(frames) => frames,
+        let found = match framer.feed(chunk) {
+            Ok(found) => found,
             Err(e) => return failed(events, &decoder, Refused::Framing(e)),
         };
-        for frame in frames {
+        for frame in found {
             match decoder.feed(&frame.data) {
                 Ok(more) => events.extend(more),
                 Err(e) => return failed(events, &decoder, Refused::Decoding(e)),
@@ -123,11 +124,18 @@ pub fn assert_sound(reply: &Reply) {
 }
 
 pub fn sse(frames: &[String]) -> Vec<u8> {
-    let mut body: String = frames.iter().map(|f| format!("data: {f}\n\n")).collect();
+    let mut body = String::new();
+    for frame in frames {
+        write!(body, "data: {frame}\n\n").expect("a String takes writes");
+    }
     body.push_str("data: [DONE]\n\n");
     body.into_bytes()
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 pub fn chunk(delta: Value, finish: Option<&str>) -> String {
     json!({"id":"c","object":"chat.completion.chunk","model":"holo",
            "choices":[{"index":0,"delta":delta,"finish_reason":finish}]})
@@ -148,6 +156,10 @@ pub fn call(index: u32, id: Option<&str>, name: Option<&str>, args: Option<&str>
     c
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 pub fn calls(list: Vec<Value>) -> Value {
     json!({ "tool_calls": list })
 }

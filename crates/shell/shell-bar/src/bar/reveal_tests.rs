@@ -30,8 +30,8 @@ fn run(mode: MenuBarHiding, motion: Motion, script: &Script) -> (BarReveal, Vec<
     (state, effects)
 }
 
-fn phase(mode: MenuBarHiding, script: Script) -> Phase {
-    run(mode, Motion::Standard, &script).0.phase
+fn phase(mode: MenuBarHiding, script: &Script) -> Phase {
+    run(mode, Motion::Standard, script).0.phase
 }
 
 #[test]
@@ -58,6 +58,10 @@ fn each_mode_rests_as_its_place_asks_on_the_desktop_and_in_full_screen() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 fn a_hiding_bar_follows_the_pointer_the_popups_and_the_timer() {
     let hiding = [MenuBarHiding::Always, MenuBarHiding::DesktopOnly];
     let cases: Vec<(&str, Script, Phase)> = vec![
@@ -183,7 +187,7 @@ fn a_hiding_bar_follows_the_pointer_the_popups_and_the_timer() {
     ];
     for mode in hiding {
         for (name, script, want) in &cases {
-            assert_eq!(phase(mode, script.clone()), *want, "{mode:?}: {name}");
+            assert_eq!(phase(mode, &script), *want, "{mode:?}: {name}");
         }
     }
 }

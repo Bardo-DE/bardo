@@ -52,9 +52,12 @@ fn asked(running: &mut cc_support::live::Running) {
 }
 
 /// The alert went, sending `want`.
-fn answered(running: &mut cc_support::live::Running, want: Option<BluetoothCommand>) {
+fn answered(running: &mut cc_support::live::Running, want: Option<&BluetoothCommand>) {
     settle_until(&mut running.harness, |h| h.count(ALERT) == 0);
-    assert_eq!(running.feeds.bluetooth_commands.try_recv().ok(), want);
+    assert_eq!(
+        running.feeds.bluetooth_commands.try_recv().ok().as_ref(),
+        want
+    );
     assert_eq!(running.feeds.bluetooth_commands.try_recv().ok(), None);
 }
 
@@ -99,13 +102,13 @@ fn the_tile_asks_before_off_and_only_turn_off_or_return_sends_it() {
     asked(&mut running);
     running.harness.advance(ms(100));
     running.harness.send(Input::key(ShortcutKey::Enter));
-    answered(&mut running, OFF);
+    answered(&mut running, OFF.as_ref());
 
     // Turn Off.
     press_tile(&mut running.harness);
     asked(&mut running);
     press(&mut running.harness, TURN_OFF);
-    answered(&mut running, OFF);
+    answered(&mut running, OFF.as_ref());
     assert_settles_to_zero_frames(&mut running.harness);
 
     // The panel has the keyboard back: Escape now closes the control center.
@@ -150,6 +153,6 @@ fn the_panes_switch_asks_too() {
     press(&mut running.harness, ".shell-cc-detail .ds-toggle");
     asked(&mut running);
     press(&mut running.harness, TURN_OFF);
-    answered(&mut running, OFF);
+    answered(&mut running, OFF.as_ref());
     assert_settles_to_zero_frames(&mut running.harness);
 }

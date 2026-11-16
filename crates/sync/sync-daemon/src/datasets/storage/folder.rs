@@ -74,10 +74,9 @@ fn walk(root: &Path, dir: &Path, into: &mut Vec<Scanned>) -> io::Result<()> {
             let Some(rel) = rel.to_str().map(str::to_owned) else {
                 continue;
             };
-            let (id, size) = match hash_file(&entry.path()) {
-                Ok(read) => read,
-                // Gone or unreadable between the listing and the read: not this scan's.
-                Err(_) => continue,
+            // Gone or unreadable between the listing and the read: not this scan's.
+            let Ok((id, size)) = hash_file(&entry.path()) else {
+                continue;
             };
             into.push(Scanned {
                 local: LocalId(rel.clone()),
@@ -237,7 +236,6 @@ mod tests {
 
     #[test]
     fn only_plain_relative_paths_name_a_file_inside_the_folder() {
-        let root = Path::new("/r");
         const CASES: &[(&str, bool)] = &[
             ("a.txt", true),
             ("2026/09/a b.txt", true),
@@ -253,6 +251,8 @@ mod tests {
             (".tmp-1-1", false),
             ("dir/.tmp-1-1", false),
         ];
+
+        let root = Path::new("/r");
         for (rel, ok) in CASES {
             assert_eq!(below(root, rel).is_some(), *ok, "{rel:?}");
         }

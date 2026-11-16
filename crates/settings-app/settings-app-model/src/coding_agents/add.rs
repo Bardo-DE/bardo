@@ -135,6 +135,7 @@ impl AddForm {
 
     /// The form with the fetched `offers` first, in their order, then the installed ones the list
     /// does not know; those `rows` have already are left out. Only a form still loading takes it.
+    #[must_use]
     pub fn catalogue(mut self, offers: Vec<Candidate>) -> Self {
         if self.list != Listing::Loading {
             return self;

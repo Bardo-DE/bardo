@@ -49,7 +49,7 @@ mod tests {
         Missing,
     }
 
-    fn account(status: AccountStatus, expires: Option<&str>, reauth: Reauth) -> Account {
+    fn account(status: AccountStatus, expires: Option<&str>, reauth: &Reauth) -> Account {
         Account {
             key: AccountKey("work".to_owned()),
             module: ModuleId::Accountd,
@@ -96,27 +96,27 @@ mod tests {
         let cases = [
             (
                 "ended",
-                account(AccountStatus::NeedsReauth, ended, Reauth::Offered),
+                account(AccountStatus::NeedsReauth, ended, &Reauth::Offered),
                 Some(Attention::SignInEnded),
             ),
             (
                 "ended without an expiry row",
-                account(AccountStatus::NeedsReauth, None, Reauth::Offered),
+                account(AccountStatus::NeedsReauth, None, &Reauth::Offered),
                 Some(Attention::SignInEnded),
             ),
             (
                 "ending",
-                account(AccountStatus::Ok, ending, Reauth::Offered),
+                account(AccountStatus::Ok, ending, &Reauth::Offered),
                 Some(Attention::SignInEnding { day }),
             ),
             (
                 "ended wins over ending",
-                account(AccountStatus::NeedsReauth, ending, Reauth::Offered),
+                account(AccountStatus::NeedsReauth, ending, &Reauth::Offered),
                 Some(Attention::SignInEnded),
             ),
             (
                 "ending with no sign-in row",
-                account(AccountStatus::Ok, ending, Reauth::Missing),
+                account(AccountStatus::Ok, ending, &Reauth::Missing),
                 None,
             ),
             (
@@ -124,13 +124,13 @@ mod tests {
                 account(
                     AccountStatus::Ok,
                     Some("Google signs this account out"),
-                    Reauth::Offered,
+                    &Reauth::Offered,
                 ),
                 None,
             ),
             (
                 "fine",
-                account(AccountStatus::Ok, None, Reauth::Offered),
+                account(AccountStatus::Ok, None, &Reauth::Offered),
                 None,
             ),
         ];

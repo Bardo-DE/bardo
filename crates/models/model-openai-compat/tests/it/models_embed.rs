@@ -14,6 +14,10 @@ fn info(name: &str, loaded: u32, trained: u32) -> ModelInfo {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn models(flavor: Flavor, body: Value) -> Result<Vec<ModelInfo>, CodecError> {
     OpenAiCodec::new(flavor).parse_models(body.to_string().as_bytes())
 }
@@ -170,6 +174,10 @@ fn dimensions_are_sent_only_where_the_server_honours_them() {
     );
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn decode(body: Value) -> Result<model_provider::EmbedEnd, CodecError> {
     OpenAiCodec::new(Flavor::Vllm)
         .decode_embed(ModelName("nomic".into()), body.to_string().as_bytes())
@@ -231,6 +239,10 @@ fn an_empty_data_array_is_no_vectors() {
 }
 
 #[test]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "test indices are small, exact in f32"
+)]
 fn any_permutation_of_indexes_is_put_back_in_order() {
     use proptest::prelude::*;
     let mut runner = proptest::test_runner::TestRunner::default();

@@ -63,28 +63,26 @@ pub fn advance(memory: Memory, effect: SymbolEffect) -> (Memory, SymbolAttrs) {
     let fired = round > 0;
     let attrs = match effect {
         SymbolEffect::Once(once, _) if fired => play(once_anim(once), alias),
-        SymbolEffect::Once(..) => SymbolAttrs::default(),
         SymbolEffect::While(looped, true) => play(loop_anim(looped), Some("a")),
         SymbolEffect::While(_, false) if memory.ran => play(Anim::Hold, Some("a")),
-        SymbolEffect::While(..) => SymbolAttrs::default(),
         SymbolEffect::Transition(TransitionEffect::Appear, true) if fired => {
             play(Anim::Appear, alias)
         }
-        SymbolEffect::Transition(TransitionEffect::Appear, false) => SymbolAttrs {
-            hidden: true,
-            ..SymbolAttrs::default()
-        },
         SymbolEffect::Transition(TransitionEffect::Disappear, false) if fired => {
             play(Anim::Disappear, alias)
         }
-        SymbolEffect::Transition(TransitionEffect::Disappear, false) => SymbolAttrs {
-            hidden: true,
-            ..SymbolAttrs::default()
-        },
+        SymbolEffect::Transition(TransitionEffect::Appear | TransitionEffect::Disappear, false) => {
+            SymbolAttrs {
+                hidden: true,
+                ..SymbolAttrs::default()
+            }
+        }
         SymbolEffect::Transition(TransitionEffect::Disappear, true) if fired => {
             play(Anim::Hold, alias)
         }
-        SymbolEffect::Transition(..) => SymbolAttrs::default(),
+        SymbolEffect::Once(..) | SymbolEffect::While(..) | SymbolEffect::Transition(..) => {
+            SymbolAttrs::default()
+        }
     };
     (next, attrs)
 }
@@ -133,9 +131,10 @@ mod tests {
 
     #[test]
     fn a_while_effect_runs_while_active_and_holds_when_it_stops() {
-        let turn = |activity| SymbolEffect::While(LoopEffect::Rotate, activity);
         const ACTIVE: bool = true;
         const IDLE: bool = false;
+
+        let turn = |activity| SymbolEffect::While(LoopEffect::Rotate, activity);
         let got = wear(&[
             turn(IDLE),
             turn(ACTIVE),

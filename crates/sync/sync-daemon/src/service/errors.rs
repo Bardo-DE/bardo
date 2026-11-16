@@ -34,7 +34,7 @@ impl RefusedError {
         }
     }
 
-    fn bus(error: fdo::Error) -> Self {
+    fn bus(error: &fdo::Error) -> Self {
         Self {
             name: error.name().into_owned(),
             text: error.description().unwrap_or_default().to_owned(),
@@ -42,8 +42,12 @@ impl RefusedError {
     }
 
     /// An argument that is not what the interface says.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "takes anything printable by value, as its callers pass a message, a `format!` or an error value"
+    )]
     pub fn invalid(why: impl ToString) -> Self {
-        Self::bus(fdo::Error::InvalidArgs(why.to_string()))
+        Self::bus(&fdo::Error::InvalidArgs(why.to_string()))
     }
 
     /// A conflict that is not there (unknown, or already settled):
@@ -95,13 +99,21 @@ impl RefusedError {
     }
 
     /// The daemon could not do it.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "takes anything printable by value, as its callers pass a message, a `format!` or an error value"
+    )]
     pub fn failed(why: impl ToString) -> Self {
-        Self::bus(fdo::Error::Failed(why.to_string()))
+        Self::bus(&fdo::Error::Failed(why.to_string()))
     }
 
     /// A caller the daemon will not answer.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "takes anything printable by value, as its callers pass a message, a `format!` or an error value"
+    )]
     pub fn access_denied(why: impl ToString) -> Self {
-        Self::bus(fdo::Error::AccessDenied(why.to_string()))
+        Self::bus(&fdo::Error::AccessDenied(why.to_string()))
     }
 
     /// The error's D-Bus name.
@@ -112,8 +124,8 @@ impl RefusedError {
 }
 
 impl DBusError for RefusedError {
-    fn create_reply(&self, call: &Header<'_>) -> zbus::Result<Message> {
-        Message::error(call, self.name.clone())?.build(&(self.text.as_str(),))
+    fn create_reply(&self, msg: &Header<'_>) -> zbus::Result<Message> {
+        Message::error(msg, self.name.clone())?.build(&(self.text.as_str(),))
     }
 
     fn name(&self) -> ErrorName<'_> {

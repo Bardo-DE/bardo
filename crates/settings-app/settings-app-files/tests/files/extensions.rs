@@ -50,8 +50,9 @@ fn shape(read: &InstalledExtensions) -> (Vec<String>, Vec<(ExtensionKind, Rows)>
 #[test]
 fn a_look_is_offered_after_standard_and_a_torn_one_is_listed_apart_with_its_reason() {
     let (scratch, home) = world("extensions-read");
-    install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
-    install_torn_look(&scratch.join("data"), "org.example.Torn", "Torn");
+    // The folder of what is installed is not needed: the home reads it back.
+    let _ = install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
+    let _ = install_torn_look(&scratch.join("data"), "org.example.Torn", "Torn");
     let read = home.read();
     let (offered, groups) = shape(&read);
     assert_eq!(offered, ["standard", PAPER]);
@@ -87,7 +88,8 @@ fn a_look_is_offered_after_standard_and_a_torn_one_is_listed_apart_with_its_reas
 #[test]
 fn turning_one_off_writes_the_file_keeps_its_other_lines_and_turning_it_on_removes_the_row() {
     let (scratch, home) = world("extensions-power");
-    install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
+    // The folder of what is installed is not needed: the home reads it back.
+    let _ = install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
     let file = scratch.join("config/bardo/extensions.toml");
     std::fs::create_dir_all(file.parent().expect("a file has a parent")).expect("mkdir");
     std::fs::write(&file, "# mine\nversion = 1\n").expect("write");
@@ -123,7 +125,8 @@ fn turning_one_off_writes_the_file_keeps_its_other_lines_and_turning_it_on_remov
 #[test]
 fn a_file_that_cannot_be_understood_turns_nothing_off_and_is_not_written_over() {
     let (scratch, home) = world("extensions-garbled");
-    install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
+    // The folder of what is installed is not needed: the home reads it back.
+    let _ = install_look(&scratch.join("data"), PAPER, "Paper", "Warm paper");
     let file = scratch.join("config/bardo/extensions.toml");
     std::fs::create_dir_all(file.parent().expect("a file has a parent")).expect("mkdir");
     std::fs::write(&file, "[extensions\noff = ").expect("write");
@@ -170,7 +173,8 @@ fn a_stored_look_nothing_installed_has_is_kept_on_load() {
 #[test]
 fn a_file_icons_set_is_offered_after_standard_and_listed_under_file_icons() {
     let (scratch, home) = world("extensions-file-icons");
-    install_file_icons(
+    // The folder of what is installed is not needed: the home reads it back.
+    let _ = install_file_icons(
         &scratch.join("data"),
         "org.example.Dots",
         "Dots",
@@ -188,13 +192,15 @@ fn a_file_icons_set_is_offered_after_standard_and_listed_under_file_icons() {
 fn your_changes_is_never_offered_and_has_a_switch_only_while_it_holds_nothing() {
     for holds in [false, true] {
         let (scratch, home) = world("extensions-your-changes");
-        install_file_icons(
+        // The folder of what is installed is not needed: the home reads it back.
+        let _ = install_file_icons(
             &scratch.join("data"),
             "org.example.Dots",
             "Dots",
             "Round dots",
         );
-        install_your_changes(&scratch.join("data"), holds);
+        // The folder of what is installed is not needed: the home reads it back.
+        let _ = install_your_changes(&scratch.join("data"), holds);
         let read = home.read();
         assert_eq!(
             read.offers.of("file_icons").words,

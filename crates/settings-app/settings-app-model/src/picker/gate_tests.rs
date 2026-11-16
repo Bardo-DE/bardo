@@ -164,13 +164,14 @@ fn a_stored_word_is_nothing_automatic_or_a_model_and_only_nothing_marks_no_item(
 
 #[test]
 fn the_empty_word_reads_none_whatever_the_module_calls_it_and_claims_no_default() {
+    const CASES: &[(&str, &str)] = &[("", ""), ("auto", "Automatic"), ("local/qwen", "qwen")];
+
     // The module's own labels call the empty word "Catalogue default".
     let ready = ready_of(vec![menu("ai.model.text.balanced", "Balanced")]);
     let row = &ready.kinds[0].rows[0];
     assert_eq!(row.value, "", "nothing the module answered is chosen");
     assert_eq!(row.choice(), Choice::Nothing);
     // `(word, what the menu calls it)`; the window words the empty one.
-    const CASES: &[(&str, &str)] = &[("", ""), ("auto", "Automatic"), ("local/qwen", "qwen")];
     for (word, label) in CASES {
         assert_eq!(row.label_of(word), *label, "{word:?}");
     }

@@ -87,6 +87,10 @@ impl SpringPresence {
 
     /// `data-presence`: entering, present, or leaving.
     #[must_use]
+    #[expect(
+        clippy::float_cmp,
+        reason = "a spring that has come to rest reports exactly its target position, 1.0"
+    )]
     pub fn slug(&self) -> &'static str {
         match *self.stage.peek() {
             Stage::Arrival => match self.entrance.phase() {

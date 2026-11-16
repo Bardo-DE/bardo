@@ -59,12 +59,11 @@ impl Access {
             CallerRole::Settings | CallerRole::PorterDaemon => true,
             CallerRole::App | CallerRole::SheetHost => self.owners.contains(&caller.app.name),
             CallerRole::Agent
+            | CallerRole::AiBroker
             | CallerRole::Cua
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor => false,
-            // A role porter does not know yet sees no dataset.
-            _ => false,
         }
     }
 }
@@ -87,12 +86,11 @@ impl Access {
             CallerRole::Settings
             | CallerRole::PorterDaemon
             | CallerRole::Agent
+            | CallerRole::AiBroker
             | CallerRole::Cua
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor => false,
-            // A role porter does not know yet owns nothing.
-            _ => false,
         }
     }
 }

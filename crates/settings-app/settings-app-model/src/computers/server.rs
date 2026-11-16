@@ -194,6 +194,7 @@ pub struct ServerDraft {
 
 impl ServerForm {
     /// The form after `edit`.
+    #[must_use]
     pub fn edited(mut self, edit: ServerEdit) -> ServerForm {
         match edit {
             ServerEdit::Name(name) => self.name = name,

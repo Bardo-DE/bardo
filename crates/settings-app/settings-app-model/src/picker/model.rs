@@ -238,7 +238,7 @@ impl Ready {
         for spec in described.keys.iter().filter(|spec| is_pool(spec)) {
             let words = described.lists.get(&spec.path).cloned().unwrap_or_default();
             if let Some(pool) = AutoPool::of(spec, words) {
-                give_pool(&mut kinds, pool);
+                give_pool(&mut kinds, &pool);
             }
         }
         Ready {
@@ -332,7 +332,7 @@ pub(super) fn sections_of(spec: &KeySpec) -> Vec<ChoiceSection> {
 }
 
 /// Hands `pool` to every row of the slot it belongs to.
-fn give_pool(kinds: &mut [KindRows], pool: AutoPool) {
+fn give_pool(kinds: &mut [KindRows], pool: &AutoPool) {
     let rows = kinds
         .iter_mut()
         .flat_map(|kind| kind.rows.iter_mut())

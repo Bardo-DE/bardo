@@ -33,6 +33,10 @@ pub trait Warm: Send + Sync + 'static {
 pub struct FixedWarm(pub Readiness);
 
 impl Warm for FixedWarm {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn warm(&self) -> Readiness {
         self.0
     }

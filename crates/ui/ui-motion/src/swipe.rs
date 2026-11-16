@@ -161,11 +161,15 @@ impl Machine for SwipeState {
     type Params = SwipeMetrics;
     type Ctx = ();
 
+    #[expect(
+        clippy::match_same_arms,
+        reason = "a gone swipe ignores every input, apart from the catch-all of inputs the other arms leave alone"
+    )]
     fn step(
         self,
         input: SwipeInput,
         at: Stamp,
-        metrics: &SwipeMetrics,
+        params: &SwipeMetrics,
         (): &(),
     ) -> (Self, Vec<SwipeEffect>) {
         let none = |state| (state, Vec::new());
@@ -193,13 +197,13 @@ impl Machine for SwipeState {
                         last: Sample { x, at },
                         before: Some(last),
                     },
-                    offset: shaped(raw, *metrics),
+                    offset: shaped(raw, *params),
                     swallows_click: moved,
                 })
             }
             (Source::Pointer { last, before, .. }, SwipeInput::Up) => {
                 let speed = release_speed(last, before, at);
-                self.decide(speed, *metrics)
+                self.decide(speed, *params)
             }
             (Source::Idle | Source::Scroll { .. }, SwipeInput::Scroll { dx, dy }) => {
                 if dx.0.abs() <= dy.0.abs() {
@@ -214,12 +218,12 @@ impl Machine for SwipeState {
                         raw,
                         quiet_until: at.after_span(DelayToken::SwipeQuiet.delay()),
                     },
-                    offset: shaped(raw, *metrics),
+                    offset: shaped(raw, *params),
                     swallows_click: self.swallows_click,
                 })
             }
             (Source::Scroll { quiet_until, .. }, SwipeInput::Elapsed) if at >= quiet_until => {
-                self.decide(Speed(0.0), *metrics)
+                self.decide(Speed(0.0), *params)
             }
             (Source::Idle | Source::Scroll { .. } | Source::Pointer { .. }, _) => none(self),
         }
@@ -266,6 +270,10 @@ fn shaped(raw: Px, metrics: SwipeMetrics) -> Px {
 
 /// The pointer's speed at a release at `at`, from its last two positions; nothing when it had
 /// stopped (its last move was more than [`DelayToken::ReleaseWindow`] before the release) or moved once.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a gap between two pointer events in milliseconds, far below 2^24, exact in f32"
+)]
 fn release_speed(last: Sample, before: Option<Sample>, at: Stamp) -> Speed {
     let Some(before) = before else {
         return Speed(0.0);

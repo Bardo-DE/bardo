@@ -135,6 +135,10 @@ pub struct ScriptedPlayback {
 }
 
 impl PlaybackStream for ScriptedPlayback {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn write(&mut self, samples: &[i16]) -> Result<(), DeviceError> {
         self.log
             .played
@@ -153,10 +157,18 @@ impl AudioDevice for ScriptedDevice {
     type Capture = ScriptedCapture;
     type Playback = ScriptedPlayback;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn sources(&self) -> Vec<AudioNode> {
         self.nodes.clone()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_capture(
         &self,
         node: &AudioNode,
@@ -180,6 +192,10 @@ impl AudioDevice for ScriptedDevice {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_playback(&self, format: PlaybackFormat) -> Result<ScriptedPlayback, DeviceError> {
         Ok(ScriptedPlayback {
             rate: format.rate,

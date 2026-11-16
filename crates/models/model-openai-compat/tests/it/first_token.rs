@@ -57,10 +57,18 @@ fn hosted_gateways_are_not_asked() {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn entry(token: &str, logprob: Value) -> Value {
     json!({"token": token, "logprob": logprob, "bytes": null})
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn chunk(delta: Value, logprobs: Value, finish: Option<&str>) -> String {
     json!({"id":"c","choices":[{"index":0,"delta":delta,"logprobs":logprobs,"finish_reason":finish}]})
         .to_string()
@@ -88,14 +96,14 @@ fn pass_flag() -> Value {
     logged("pass", &[("pass", json!(-0.2)), ("flag", json!(-1.8))])
 }
 
-fn expected() -> Option<FirstTokenLogprobs> {
+fn expected() -> FirstTokenLogprobs {
     let t = |token: &str, nats: f64| TokenLogprob {
         token: token.into(),
         logprob: Logprob::from_nats(nats).unwrap(),
     };
-    Some(FirstTokenLogprobs {
+    FirstTokenLogprobs {
         top: vec![t("pass", -0.2), t("flag", -1.8)],
-    })
+    }
 }
 
 #[test]
@@ -106,7 +114,7 @@ fn the_first_answer_chunk_gives_the_record_on_both_engines() {
             chunk(json!({"content":"pass"}), pass_flag(), None),
             chunk(json!({}), Value::Null, Some("stop")),
         ];
-        assert_eq!(run(flavor, &frames), expected());
+        assert_eq!(run(flavor, &frames), Some(expected()));
     }
 }
 
@@ -118,7 +126,7 @@ fn a_reasoning_model_attributes_the_answers_first_token_not_the_thinking() {
         chunk(json!({"content":"pass"}), pass_flag(), None),
         chunk(json!({}), Value::Null, Some("stop")),
     ];
-    assert_eq!(run(Flavor::Vllm, &frames), expected());
+    assert_eq!(run(Flavor::Vllm, &frames), Some(expected()));
 }
 
 #[test]
@@ -152,7 +160,7 @@ fn only_the_first_answer_chunk_counts() {
         chunk(json!({"content":"ed"}), later, None),
         chunk(json!({}), Value::Null, Some("stop")),
     ];
-    assert_eq!(run(Flavor::Vllm, &frames), expected());
+    assert_eq!(run(Flavor::Vllm, &frames), Some(expected()));
 }
 
 #[test]

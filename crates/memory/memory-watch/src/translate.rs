@@ -41,7 +41,7 @@ fn space_path(path: &Path) -> Option<SpacePath> {
 
 impl Inbox {
     /// Takes one notify event; whatever it settles into goes on the queue.
-    pub fn accept(&mut self, event: Event, at: Stamp) {
+    pub fn accept(&mut self, event: &Event, at: Stamp) {
         let path = event.paths.first().cloned();
         let cookie = event.tracker();
         match (event.kind, path) {

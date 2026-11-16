@@ -9,6 +9,7 @@ use model_provider::{
 use model_wire::ChatDecoder;
 use proptest::prelude::*;
 use serde_json::{Value, json};
+use std::fmt::Write as _;
 
 fn decoder(flavor: Flavor) -> StreamDecoder {
     StreamDecoder::new(flavor, ModelName("holo".into()))
@@ -46,12 +47,20 @@ fn run(frames: &[String]) -> Run {
     run_with(Flavor::Vllm, frames)
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn chunk(delta: Value, finish: Option<&str>) -> String {
     json!({"id":"c","object":"chat.completion.chunk","model":"holo",
            "choices":[{"index":0,"delta":delta,"finish_reason":finish}]})
     .to_string()
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
+)]
 fn usage_chunk(usage: Value) -> String {
     json!({"id":"c","choices":[],"usage":usage}).to_string()
 }
@@ -101,17 +110,17 @@ fn finished(id: &str, name: &str, input: &str) -> TurnEvent {
     })
 }
 
-fn end(stop: StopReason, usage: TurnUsage) -> Result<TurnEnd, CodecError> {
-    Ok(TurnEnd {
+fn end(stop: StopReason, usage: TurnUsage) -> TurnEnd {
+    TurnEnd {
         stop,
         usage,
         served: ModelName("holo".into()),
         first_token: None,
-    })
+    }
 }
 
 fn plain(stop: StopReason) -> Result<TurnEnd, CodecError> {
-    end(stop, TurnUsage::default())
+    Ok(end(stop, TurnUsage::default()))
 }
 
 #[test]
@@ -178,7 +187,7 @@ fn the_usage_only_trailing_chunk_with_no_choices() {
         ..TurnUsage::default()
     };
     assert_eq!(got.events, vec![text("x"), TurnEvent::Usage(want)]);
-    assert_eq!(got.outcome, end(StopReason::EndTurn, want));
+    assert_eq!(got.outcome, Ok(end(StopReason::EndTurn, want)));
 }
 
 #[test]
@@ -235,7 +244,7 @@ fn usage_variants_are_reported_or_absent() {
             frames.push(usage_chunk(usage));
         }
         let got = run_with(flavor, &frames);
-        assert_eq!(got.outcome, end(StopReason::EndTurn, want), "{label}");
+        assert_eq!(got.outcome, Ok(end(StopReason::EndTurn, want)), "{label}");
     }
 }
 
@@ -251,12 +260,12 @@ fn llama_server_reports_cached_tokens_in_timings() {
     };
     assert_eq!(
         run_with(Flavor::LlamaServer, &frames).outcome,
-        end(StopReason::EndTurn, want)
+        Ok(end(StopReason::EndTurn, want))
     );
     // The same fields on another flavor are read too, when its own spelling is absent.
     assert_eq!(
         run_with(Flavor::Vllm, &frames).outcome,
-        end(StopReason::EndTurn, want)
+        Ok(end(StopReason::EndTurn, want))
     );
 }
 
@@ -803,11 +812,11 @@ fn flavors_read_the_same_chunks() {
 // ---- every split offset, end to end through the SSE framer ----
 
 fn sse_body(frames: &[String]) -> Vec<u8> {
-    frames
-        .iter()
-        .map(|f| format!("data: {f}\n\n"))
-        .collect::<String>()
-        .into_bytes()
+    let mut body = String::new();
+    for frame in frames {
+        write!(body, "data: {frame}\n\n").expect("a String takes writes");
+    }
+    body.into_bytes()
 }
 
 /// SSE bytes in chunks through the framer into the decoder.
@@ -815,12 +824,12 @@ fn through_framer(body: &[&[u8]]) -> Run {
     let mut framer = model_http::SseDecoder::new();
     let mut d = decoder(Flavor::Vllm);
     let mut events = Vec::new();
-    let mut frames = Vec::new();
+    let mut found = Vec::new();
     for bytes in body {
-        frames.extend(framer.feed(bytes).unwrap());
+        found.extend(framer.feed(bytes).unwrap());
     }
-    frames.extend(framer.finish());
-    for frame in frames {
+    found.extend(framer.finish());
+    for frame in found {
         match d.feed(&frame.data) {
             Ok(more) => events.extend(more),
             Err(error) => {
@@ -857,14 +866,14 @@ fn every_chunk_split_offset_gives_the_same_reply() {
     let whole = through_framer(&[&body]);
     assert_eq!(
         whole.outcome,
-        end(
+        Ok(end(
             StopReason::ToolUse,
             TurnUsage {
                 input: Tokens(5),
                 output: Tokens(2),
                 ..Default::default()
             }
-        )
+        ))
     );
     assert_eq!(
         whole

@@ -28,8 +28,6 @@ mod tests {
 
     #[test]
     fn a_stored_word_reads_as_a_label() {
-        let labels =
-            WordLabels([("workspace_prev".to_owned(), "Previous workspace".to_owned())].into());
         // `(stored word, what is read)`: the schema's label wins, else the word humanized.
         const CASES: &[(&str, &str)] = &[
             ("when_scrolling", "When scrolling"),
@@ -40,6 +38,9 @@ mod tests {
             ("workspace_prev", "Previous workspace"),
             ("smart_zoom", "Smart zoom"),
         ];
+
+        let labels =
+            WordLabels([("workspace_prev".to_owned(), "Previous workspace".to_owned())].into());
         for (word, want) in CASES {
             assert_eq!(word_label(&labels, word), *want, "{word:?}");
         }

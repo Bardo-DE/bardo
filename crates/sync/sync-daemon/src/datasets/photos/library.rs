@@ -315,8 +315,8 @@ mod tests {
 
     #[test]
     fn an_import_is_stored_by_its_content_and_the_same_bytes_again_store_nothing() {
-        let _dir_guard = scratch("lib-import");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("lib-import");
+        let dir = dir_guard.path().to_owned();
         let (library, _) = open(&dir, "a", 1_000);
         let first = library
             .import(&photo(&dir, "one.jpg", b"pixels"))
@@ -349,8 +349,8 @@ mod tests {
 
     #[test]
     fn an_import_that_cannot_read_its_file_is_an_error_and_stores_nothing() {
-        let _dir_guard = scratch("lib-import-missing");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("lib-import-missing");
+        let dir = dir_guard.path().to_owned();
         let (library, _) = open(&dir, "a", 1_000);
         assert!(matches!(
             library.import(&dir.join("nope.jpg")),
@@ -361,8 +361,8 @@ mod tests {
 
     #[test]
     fn export_copies_the_original_out_and_a_missing_photo_is_named() {
-        let _dir_guard = scratch("lib-export");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("lib-export");
+        let dir = dir_guard.path().to_owned();
         let (library, _) = open(&dir, "a", 1_000);
         let id = library
             .import(&photo(&dir, "one.jpg", b"pixels"))
@@ -382,8 +382,8 @@ mod tests {
 
     #[test]
     fn edits_are_stamped_in_order_and_survive_a_restart_even_when_the_clock_went_back() {
-        let _dir_guard = scratch("lib-restart");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("lib-restart");
+        let dir = dir_guard.path().to_owned();
         let (library, millis) = open(&dir, "a", 5_000);
         let id = ContentId::of(b"p");
         library
@@ -410,8 +410,8 @@ mod tests {
 
     #[test]
     fn the_device_name_is_the_one_first_stored() {
-        let _dir_guard = scratch("lib-device");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("lib-device");
+        let dir = dir_guard.path().to_owned();
         let root = dir.join("lib");
         let millis: Arc<dyn Millis> = Arc::new(ManualMillis::at(1));
         let first = PhotoLibrary::open(
@@ -430,8 +430,8 @@ mod tests {
 
     #[test]
     fn the_view_merges_every_devices_file_and_skips_what_is_not_a_manifest() {
-        let _dir_guard = scratch("lib-merge");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("lib-merge");
+        let dir = dir_guard.path().to_owned();
         let (a, _) = open(&dir, "a", 1_000);
         let id = ContentId::of(b"p");
         a.edit(vec![Edit::Caption(id.clone(), "mine".into())])

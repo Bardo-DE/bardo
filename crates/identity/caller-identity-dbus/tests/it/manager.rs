@@ -23,6 +23,10 @@ struct Manager;
 
 #[zbus::interface(name = "org.freedesktop.systemd1.Manager")]
 impl Manager {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn get_unit(&self, name: &str) -> fdo::Result<OwnedObjectPath> {
         match name {
             "bardo-shell.service" => {
@@ -38,11 +42,19 @@ struct UnitProps(FakeUnit);
 #[zbus::interface(name = "org.freedesktop.systemd1.Unit")]
 impl UnitProps {
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn id(&self) -> String {
         "bardo-shell.service".to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn load_state(&self) -> String {
         "loaded".to_owned()
     }

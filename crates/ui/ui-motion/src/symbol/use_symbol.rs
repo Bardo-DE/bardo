@@ -36,8 +36,7 @@ fn plan(was: Option<PartRun>, run: PartRun, gesture: PlanFor, level: MotionLevel
     match (was, run) {
         (None, PartRun::Once(_)) => None,
         (Some(PartRun::Once(before)), PartRun::Once(now)) if before == now => None,
-        (_, PartRun::Once(_)) => Some(cycle(gesture.0, run, level)),
-        (_, PartRun::While(true)) => Some(cycle(gesture.0, run, level)),
+        (_, PartRun::Once(_) | PartRun::While(true)) => Some(cycle(gesture.0, run, level)),
         (_, PartRun::While(false)) => rest,
     }
 }

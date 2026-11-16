@@ -57,7 +57,12 @@ fn count(rig: &Rig, method: &str, part: &str) -> usize {
 /// A JPEG-ish payload, distinct per `n`.
 fn photo(n: u8) -> Vec<u8> {
     let mut bytes = vec![0xFF, 0xD8, 0xFF, 0xE0];
-    bytes.extend((0..2000u32).map(|i| (i as u8).wrapping_mul(n).wrapping_add(n)));
+    bytes.extend((0..2000u32).map(|i| {
+        u8::try_from(i % 256)
+            .expect("below 256")
+            .wrapping_mul(n)
+            .wrapping_add(n)
+    }));
     bytes
 }
 
@@ -431,13 +436,16 @@ async fn no_secret_is_in_the_ledger_the_journal_or_the_picked_files() {
     eventually(&rig, "it is up", || synced(&rig) == ["a.jpg"]).await;
     let picker = rig.supervisor.google_picker(&rig.account).expect("picker");
     let session = picker.start().await.expect("session");
-    rig.google.picker_pick(
-        session.id.as_str(),
-        vec![Pick {
-            filename: "p.jpg".into(),
-            bytes: photo(5),
-            mime: "image/jpeg".into(),
-        }],
+    assert!(
+        rig.google.picker_pick(
+            session.id.as_str(),
+            vec![Pick {
+                filename: "p.jpg".into(),
+                bytes: photo(5),
+                mime: "image/jpeg".into(),
+            }],
+        ),
+        "the session is known"
     );
     picker.import(&session.id).await.expect("import");
 

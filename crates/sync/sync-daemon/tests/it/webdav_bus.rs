@@ -171,6 +171,8 @@ fn puts(nextcloud: &NextcloudHandle) -> usize {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_folder_syncs_against_nextcloud_through_the_relay_and_status_shows_the_quota() {
+    use base64::Engine as _;
+
     let rig = rig().await;
     let dataset = Arc::new(MemoryDataset::new(
         "photos_originals",
@@ -228,7 +230,6 @@ async fn a_folder_syncs_against_nextcloud_through_the_relay_and_status_shows_the
 
     // The relay, not syncd, authenticated: every request the server saw carries the app
     // password's Basic header, which syncd never held.
-    use base64::Engine as _;
     let want = format!(
         "Basic {}",
         base64::engine::general_purpose::STANDARD.encode(format!("alice:{PASSWORD}"))
@@ -260,7 +261,11 @@ async fn a_folder_syncs_against_nextcloud_through_the_relay_and_status_shows_the
     );
     assert_eq!(dataset.snapshot().len(), 3);
 
-    rig.hub
-        .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"));
+    assert!(
+        !rig.hub
+            .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"))
+            .is_empty(),
+        "the account had datasets"
+    );
     eventually(&rig, "the driver stops", || running.is_finished()).await;
 }

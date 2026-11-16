@@ -82,9 +82,10 @@ mod tests {
 
     #[test]
     fn a_glide_moves_along_its_curve_and_lands_on_its_target() {
+        const CASES: &[(u64, i64)] = &[(0, 0), (350, 465), (700, 930), (5_000, 930)];
+
         let glide = Glide::between(0, 930, MS(700), Easing::Linear);
         assert_eq!(glide.total(), MS(700));
-        const CASES: &[(u64, i64)] = &[(0, 0), (350, 465), (700, 930), (5_000, 930)];
         for &(ms, want) in CASES {
             assert_eq!(glide.at(MS(ms)).value, want, "{ms} ms");
         }

@@ -128,6 +128,10 @@ fn grant(id: &str, class: DataClass) -> Grant {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn rig(photos: PhotosGrant) -> Rig {
     let graph = FakeGraph::start(BEARER).await.expect("graph");
     graph.set_limit(1_000_000);

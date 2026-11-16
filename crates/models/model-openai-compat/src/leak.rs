@@ -72,7 +72,9 @@ mod tests {
 
     fn watch(chunks: &[&str]) -> Option<LeakMarker> {
         let mut w = LeakWatch::default();
-        chunks.iter().for_each(|c| w.see(c));
+        for c in chunks {
+            w.see(c);
+        }
         w.found()
     }
 

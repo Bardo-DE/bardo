@@ -18,6 +18,12 @@ const RADIUS: f32 = 225.0;
 /// assert_eq!(got.rgba[3], 0); // the corner is clear
 /// ```
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "the edge is a few thousand pixels at most, exact in f32; each channel is rounded within 0..=255"
+)]
 pub fn plate(edge: u32, ink: [u8; 4]) -> Option<Pixels> {
     (edge > 0).then(|| {
         let side = edge as f32;

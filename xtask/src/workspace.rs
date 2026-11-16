@@ -69,7 +69,7 @@ impl Workspace {
     }
 
     /// The directory of `name` relative to the root, if it is a member.
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn dir_of(&self, name: &str) -> Option<&Path> {
         self.dirs.get(name).map(PathBuf::as_path)
     }

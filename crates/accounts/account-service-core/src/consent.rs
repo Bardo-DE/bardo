@@ -55,6 +55,10 @@ pub fn ask_for(
 /// `Allow` for an account that was not offered is treated as dismissed, and so is one whose scope
 /// is a session other than the one the ask carried (`session`): a sheet cannot make a session scope
 /// the ask did not offer.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the first arm is a session answer for another session, the second the person dismissing the sheet: the same refusal for different reasons"
+)]
 pub fn settle(
     registry: &mut Registry,
     need: &Need,

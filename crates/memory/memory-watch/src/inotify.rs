@@ -36,6 +36,10 @@ fn wake(inbox: &mut Inbox) {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn backend_error(err: notify::Error) -> WatchError {
     match err.kind {
         notify::ErrorKind::MaxFilesWatch => WatchError::LimitReached,
@@ -61,7 +65,7 @@ impl InotifyWatch {
         let watcher = notify::recommended_watcher(move |event: notify::Result<notify::Event>| {
             let Ok(event) = event else { return };
             let mut guard = locked(&sink);
-            guard.accept(event, now());
+            guard.accept(&event, now());
             let unpaired = guard.has_unpaired();
             wake(&mut guard);
             drop(guard);

@@ -75,7 +75,11 @@ pub(crate) struct SessionDeps {
 /// The last status item's slot, vertically centred in the bar, at its right end: the control
 /// center's title rect when it opens with no pointer event behind it. The slot is quire's
 /// (design/29): `max(--bar-status-w, box)` wide by the box tall.
-pub(super) fn status_box(bar_width: i32, bar: &BarTokens) -> Rect {
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a bar width in pixels, far below 2^24, exact in f32"
+)]
+pub(super) fn status_box(bar_width: i32, bar: BarTokens) -> Rect {
     let side = f32::from(bar.status_box);
     let width = side.max(f32::from(SHELL_SCALE.status_width.0));
     let height = f32::from(bar.height);

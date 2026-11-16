@@ -92,7 +92,7 @@ async fn a_failed_command_keeps_the_tail_of_its_stderr_for_the_log_only() {
     let all = seen.lock().expect("log");
     let exit = all.iter().find_map(|p| match &p.cause {
         GitCause::Exit { stderr, .. } => Some((p.command.clone(), stderr.clone())),
-        _ => None,
+        GitCause::Run(_) => None,
     });
     let (command, stderr) = exit.expect("an exit was logged");
     assert_eq!(command, "update-ref");

@@ -168,11 +168,11 @@ impl Person {
     }
 }
 
-fn text(value: &Option<String>) -> &str {
-    value.as_deref().map_or("", str::trim)
+fn text(value: Option<&str>) -> &str {
+    value.map_or("", str::trim)
 }
 
-fn present(value: &Option<String>) -> Option<&str> {
+fn present(value: Option<&str>) -> Option<&str> {
     Some(text(value)).filter(|t| !t.is_empty())
 }
 
@@ -180,7 +180,7 @@ fn emails(person: &Person) -> impl Iterator<Item = (&str, &Typed)> {
     person
         .emails
         .iter()
-        .filter_map(|e| Some((present(&e.value)?, e)))
+        .filter_map(|e| Some((present(e.value.as_deref())?, e)))
 }
 
 /// The name a card is shown by.
@@ -196,7 +196,7 @@ fn full_name(person: &Person) -> String {
     .into_iter()
     .filter_map(present)
     .collect();
-    present(&name.display_name)
+    present(name.display_name.as_deref())
         .map(str::to_owned)
         .or_else(|| (!parts.is_empty()).then(|| parts.join(" ")))
         .or_else(|| emails(person).next().map(|(v, _)| v.to_owned()))
@@ -204,14 +204,14 @@ fn full_name(person: &Person) -> String {
             person
                 .phones
                 .iter()
-                .find_map(|p| present(&p.value))
+                .find_map(|p| present(p.value.as_deref()))
                 .map(str::to_owned)
         })
         .or_else(|| {
             person
                 .organizations
                 .iter()
-                .find_map(|o| present(&o.name))
+                .find_map(|o| present(o.name.as_deref()))
                 .map(str::to_owned)
         })
         .unwrap_or_else(|| person.resource_name.clone())
@@ -268,16 +268,17 @@ fn adr_value(address: &Postal) -> Option<String> {
         &address.postal_code,
         &address.country,
     ];
-    if fields.iter().any(|f| present(f).is_some()) {
+    if fields.iter().any(|f| present(f.as_deref()).is_some()) {
         Some(
             fields
                 .iter()
-                .map(|f| escape(text(f)))
+                .map(|f| escape(text(f.as_deref())))
                 .collect::<Vec<_>>()
                 .join(";"),
         )
     } else {
-        present(&address.formatted).map(|t| format!(";;{};;;;", escape(&t.replace('\n', ", "))))
+        present(address.formatted.as_deref())
+            .map(|t| format!(";;{};;;;", escape(&t.replace('\n', ", "))))
     }
 }
 
@@ -296,7 +297,7 @@ fn birthday(date: &Date) -> Option<String> {
 #[must_use]
 pub fn to_vcf(person: &Person) -> String {
     let name = person.names.first().cloned().unwrap_or_default();
-    let component = |value: &Option<String>| escape(text(value));
+    let component = |value: &Option<String>| escape(text(value.as_deref()));
     let mut lines: Vec<String> = vec![
         "BEGIN:VCARD".into(),
         "VERSION:3.0".into(),
@@ -318,7 +319,7 @@ pub fn to_vcf(person: &Person) -> String {
         }),
     );
     lines.extend(person.phones.iter().filter_map(|p| {
-        let value = present(&p.value)?;
+        let value = present(p.value.as_deref())?;
         Some(with_type(
             "TEL",
             phone_type(p.kind.as_deref()),
@@ -332,12 +333,12 @@ pub fn to_vcf(person: &Person) -> String {
             &adr_value(a)?,
         ))
     }));
-    if let Some(org) = person
-        .organizations
-        .iter()
-        .find(|o| present(&o.name).or(present(&o.department)).is_some())
-    {
-        let parts = [text(&org.name), text(&org.department)];
+    if let Some(org) = person.organizations.iter().find(|o| {
+        present(o.name.as_deref())
+            .or(present(o.department.as_deref()))
+            .is_some()
+    }) {
+        let parts = [text(org.name.as_deref()), text(org.department.as_deref())];
         let value = if parts[1].is_empty() {
             escape(parts[0])
         } else {
@@ -349,7 +350,7 @@ pub fn to_vcf(person: &Person) -> String {
         person
             .organizations
             .iter()
-            .find_map(|o| present(&o.title))
+            .find_map(|o| present(o.title.as_deref()))
             .map(|t| format!("TITLE:{}", escape(t))),
     );
     lines.extend(
@@ -363,14 +364,14 @@ pub fn to_vcf(person: &Person) -> String {
         person
             .biographies
             .iter()
-            .find_map(|b| present(&b.value))
+            .find_map(|b| present(b.value.as_deref()))
             .map(|n| format!("NOTE:{}", escape(n))),
     );
     lines.extend(
         person
             .urls
             .iter()
-            .filter_map(|u| present(&u.value))
+            .filter_map(|u| present(u.value.as_deref()))
             .map(|u| format!("URL:{}", escape(u))),
     );
     lines.push("END:VCARD".into());

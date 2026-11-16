@@ -267,7 +267,6 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
 
     /// `row` as agreed with the replica at `version`.
     pub(crate) fn synced(
-        &self,
         row: &JournalItem,
         remote: &RemoteId,
         version: &RemoteVersion,

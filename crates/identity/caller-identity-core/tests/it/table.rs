@@ -1,6 +1,7 @@
 //! The table format: a golden reading and the files it refuses.
 
 use caller_identity_core::{ExePath, RoleName, Table, TableError, UnitName};
+use std::fmt::Write as _;
 
 const GOLDEN: &str = r#"
 # A comment.
@@ -119,8 +120,13 @@ fn a_later_table_adds_programs_and_cannot_take_over_a_unit() {
 fn an_enormous_table_is_refused_before_it_is_parsed() {
     let text = "#".repeat(caller_identity_core::TABLE_BYTES_MAX + 1);
     assert!(matches!(refused(&text), TableError::TooLong { .. }));
-    let many: String = (0..=caller_identity_core::TABLE_ROWS_MAX)
-        .map(|i| format!("[[peer]]\napp = \"org.x.A{i}\"\nexe = [\"/usr/bin/a\"]\nrole = \"r\"\n"))
-        .collect();
+    let mut many = String::new();
+    for i in 0..=caller_identity_core::TABLE_ROWS_MAX {
+        writeln!(
+            many,
+            "[[peer]]\napp = \"org.x.A{i}\"\nexe = [\"/usr/bin/a\"]\nrole = \"r\""
+        )
+        .expect("a String takes writes");
+    }
     assert!(matches!(refused(&many), TableError::TooManyRows { .. }));
 }

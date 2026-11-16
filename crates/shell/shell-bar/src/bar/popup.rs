@@ -79,10 +79,18 @@ pub(crate) fn anchor_rect(
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pixel coordinate: float to integer casts saturate, and no screen is near the limit"
+)]
 fn floor(px: Px) -> i32 {
     px.0.floor() as i32
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pixel coordinate: float to integer casts saturate, and no screen is near the limit"
+)]
 fn ceil(px: Px) -> i32 {
     px.0.ceil() as i32
 }

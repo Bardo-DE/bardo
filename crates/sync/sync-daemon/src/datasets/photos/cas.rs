@@ -139,8 +139,8 @@ mod tests {
 
     #[test]
     fn hashing_a_file_matches_hashing_its_bytes_and_counts_them() {
-        let _dir_guard = scratch("cas-hash");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("cas-hash");
+        let dir = dir_guard.path().to_owned();
         let bytes: Vec<u8> = (0..200_000u32).map(|i| (i % 251) as u8).collect();
         std::fs::write(dir.join("big"), &bytes).expect("file");
         assert_eq!(
@@ -152,8 +152,8 @@ mod tests {
 
     #[test]
     fn an_atomic_write_replaces_whole_and_leaves_no_temp_file() {
-        let _dir_guard = scratch("cas-atomic");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("cas-atomic");
+        let dir = dir_guard.path().to_owned();
         let target = dir.join("a/b/file");
         write_atomic(&target, b"one").expect("first");
         write_atomic(&target, b"two").expect("second");

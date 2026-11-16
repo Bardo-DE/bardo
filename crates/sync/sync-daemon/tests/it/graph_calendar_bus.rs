@@ -133,6 +133,10 @@ impl Drop for Rig {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn rig(seed: bool) -> Rig {
     let graph = FakeGraph::start(BEARER).await.expect("graph");
     if seed {

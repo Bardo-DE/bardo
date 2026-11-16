@@ -112,6 +112,10 @@ impl InferSession for ScriptedSession {
 impl Transport for ScriptedInfer {
     type Session = ScriptedSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn prepare(
         &self,
         need: &Need,

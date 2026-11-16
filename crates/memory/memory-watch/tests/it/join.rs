@@ -50,6 +50,10 @@ fn explained(j: &Joined) -> bool {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 fn join_table() {
     // (name, pending, now, settled count, explained flags of the settled, waiting observed, waiting whys)
     type Row = (&'static str, Pending, i64, Vec<bool>, usize, usize);

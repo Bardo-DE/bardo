@@ -174,17 +174,18 @@ mod tests {
 
     #[test]
     fn a_throw_lands_in_the_cell_nearest_its_projection() {
-        let cells = [
-            pt(0.0, 0.0),
-            pt(200.0, 0.0),
-            pt(0.0, 200.0),
-            pt(200.0, 200.0),
-        ];
         const CASES: &[Case] = &[
             ((60.0, 60.0), (0, 0), (0.0, 0.0)),
             ((60.0, 60.0), (600, 0), (200.0, 0.0)),
             ((60.0, 60.0), (600, 600), (200.0, 200.0)),
             ((150.0, 150.0), (-800, 0), (0.0, 200.0)),
+        ];
+
+        let cells = [
+            pt(0.0, 0.0),
+            pt(200.0, 0.0),
+            pt(0.0, 200.0),
+            pt(200.0, 200.0),
         ];
         for &((x, y), (vx, vy), (wx, wy)) in CASES {
             let throw = PointThrow {

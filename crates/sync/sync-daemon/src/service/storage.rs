@@ -90,7 +90,7 @@ fn state_of(status: &Status) -> ItemState {
         drive_core::ItemState::Uploading => ItemState::Uploading,
         drive_core::ItemState::Conflict => ItemState::Conflict,
         drive_core::ItemState::Error => ItemState::Error,
-        _ => ItemState::Cloud,
+        drive_core::ItemState::Cloud => ItemState::Cloud,
     }
 }
 
@@ -233,7 +233,7 @@ impl<C: Callers> Core<C> {
     }
 
     /// `id`'s absolute path and its details, then each folder above it, on `drive`.
-    fn with_folders(&self, drive: &LiveDrive, id: &NodeId, into: &mut ItemDetails) {
+    fn with_folders(drive: &LiveDrive, id: &NodeId, into: &mut ItemDetails) {
         if drive.drive.local_only(id) {
             return;
         }
@@ -266,7 +266,7 @@ impl<C: Callers> Core<C> {
     async fn tell_items(&self, drive: &LiveDrive, ids: &BTreeSet<NodeId>) {
         let mut details = ItemDetails::new();
         for id in ids {
-            self.with_folders(drive, id, &mut details);
+            Self::with_folders(drive, id, &mut details);
         }
         if details.is_empty() {
             return;

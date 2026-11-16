@@ -30,11 +30,11 @@ pub struct Stamped<T> {
 
 /// The later of two writes of one field (stamps are unique per device, so a tie is the same
 /// write).
-fn later<T: Clone>(a: &Option<Stamped<T>>, b: &Option<Stamped<T>>) -> Option<Stamped<T>> {
+fn later<T: Clone>(a: Option<&Stamped<T>>, b: Option<&Stamped<T>>) -> Option<Stamped<T>> {
     match (a, b) {
         (Some(x), Some(y)) => Some(if y.at > x.at { y } else { x }.clone()),
         (Some(x), None) => Some(x.clone()),
-        (None, other) => other.clone(),
+        (None, other) => other.cloned(),
     }
 }
 
@@ -66,14 +66,14 @@ impl PhotoMeta {
             let ours = albums.get(album).cloned();
             albums.insert(
                 album.clone(),
-                later(&ours, &Some(theirs.clone())).unwrap_or_else(|| theirs.clone()),
+                later(ours.as_ref(), Some(theirs)).unwrap_or_else(|| theirs.clone()),
             );
         }
         Self {
-            name: later(&self.name, &other.name),
-            favourite: later(&self.favourite, &other.favourite),
-            caption: later(&self.caption, &other.caption),
-            deleted: later(&self.deleted, &other.deleted),
+            name: later(self.name.as_ref(), other.name.as_ref()),
+            favourite: later(self.favourite.as_ref(), other.favourite.as_ref()),
+            caption: later(self.caption.as_ref(), other.caption.as_ref()),
+            deleted: later(self.deleted.as_ref(), other.deleted.as_ref()),
             albums,
         }
     }

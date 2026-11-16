@@ -79,6 +79,7 @@ impl<P: ProcFs + Clone + 'static> BusPeers<P, ManagerLink<P>> {
 
 impl<P, U> BusPeers<P, U> {
     /// The same, running the blocking probe through `offload`.
+    #[must_use]
     pub fn with_offload(self, offload: Offload) -> Self {
         BusPeers { offload, ..self }
     }
@@ -101,6 +102,7 @@ impl<P, U> BusPeers<P, U> {
     /// The same, with `answer` standing for the system manager's word on who the user manager is
     /// (`None`: it says nothing). For tests on a private bus, which has no process 1 behind it.
     #[cfg(feature = "fake")]
+    #[must_use]
     pub fn with_user_manager(self, answer: Option<Pid>) -> Self {
         BusPeers {
             attest: Attest::Fixed(answer),
@@ -257,13 +259,13 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         let (held, label) = self.pin_of(sender).await?;
         let held = Arc::new(held);
         let (prober, who) = (Arc::clone(&self.prober), Arc::clone(&held));
-        let probed = self
+        let outcome = self
             .offload
             .run(move || prober.probe(&who, None))
             .await
             .ok()
             .ok_or(WhoError::Offload)?;
-        let facts = match probed {
+        let facts = match outcome {
             Ok(mut facts) => {
                 if let (SandboxFacts::Native, Some(snap)) = (&facts.sandbox, label) {
                     facts.sandbox = snap;

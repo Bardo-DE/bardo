@@ -229,7 +229,7 @@ impl Daemon {
             proc_root,
             pim,
             storage,
-            bus: _,
+            ..
         } = config;
         let table = account_callers::load_callers(&paths.callers_system, &paths.callers_user)?;
         let callers = Arc::new(match proc_root {

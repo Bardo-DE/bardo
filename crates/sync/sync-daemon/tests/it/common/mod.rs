@@ -1,6 +1,9 @@
 //! The rig every bus test of syncd uses: a private bus, callers named by unique name, clients.
 //! Nothing here reaches the real session bus, `~/.config` or the network.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a shared test helper: each test binary uses only part of it"
+)]
 
 pub mod bus;
 pub mod hosted;
@@ -65,6 +68,10 @@ impl Known {
 }
 
 impl Callers for Known {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn caller_of(&self, sender: &str) -> Option<Caller> {
         self.0
             .lock()

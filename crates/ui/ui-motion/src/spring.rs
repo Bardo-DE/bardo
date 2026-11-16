@@ -167,13 +167,15 @@ fn critical(d0: f64, v0: f64, omega: f64, t: f64) -> (f64, f64) {
 /// Under-damped: `d(t) = e^(-z w t) (A cos(wd t) + B sin(wd t))`.
 fn under(d0: f64, v0: f64, omega: f64, zeta: f64, t: f64) -> (f64, f64) {
     let wd = omega * (1.0 - zeta * zeta).sqrt();
-    let a = d0;
-    let b = (v0 + zeta * omega * d0) / wd;
+    let cos_weight = d0;
+    let sin_weight = (v0 + zeta * omega * d0) / wd;
     let decay = (-zeta * omega * t).exp();
     let (sin, cos) = (wd * t).sin_cos();
-    let d = decay * (a * cos + b * sin);
-    let v = decay * ((-zeta * omega * a + wd * b) * cos + (-zeta * omega * b - wd * a) * sin);
-    (d, v)
+    let position = decay * (cos_weight * cos + sin_weight * sin);
+    let velocity = decay
+        * ((-zeta * omega * cos_weight + wd * sin_weight) * cos
+            + (-zeta * omega * sin_weight - wd * cos_weight) * sin);
+    (position, velocity)
 }
 
 #[cfg(test)]

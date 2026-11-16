@@ -92,7 +92,7 @@ struct Rig {
     hosted: Hosted,
     settings: LiveClient,
     supervisor: StorageSupervisor<Link, ClientStorageGrants<Link>>,
-    _bus: PrivateBus,
+    bus: PrivateBus,
     _keep: Vec<zbus::Connection>,
     _network: watch::Sender<Network>,
 }
@@ -115,6 +115,10 @@ async fn rig_with_room(sheets: ScriptedSheets, room: FreeSpace) -> Rig {
     build(sheets, |_| DriveMount::Off, room).await
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn build(
     sheets: ScriptedSheets,
     mount: impl FnOnce(&std::path::Path) -> DriveMount,
@@ -231,7 +235,7 @@ async fn build(
         hosted,
         settings,
         supervisor,
-        _bus: bus,
+        bus,
         _keep: vec![server, settings_side],
         _network: network_keeps,
     }
@@ -443,7 +447,7 @@ async fn a_listed_drive_downloads_a_file_into_its_cache_when_asked() {
     );
     let cache = rig.paths.drive_cache_dir(&rig.account);
     assert_eq!(drive.drive.cache_dir(), cache.as_path());
-    assert!(cache.starts_with(rig._bus.scratch()), "a scratch cache");
+    assert!(cache.starts_with(rig.bus.scratch()), "a scratch cache");
 }
 
 #[tokio::test(flavor = "multi_thread")]

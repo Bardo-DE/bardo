@@ -254,7 +254,7 @@ impl<T: GrantsLink> GraphCalendarFeed<T> {
 
     /// An event as the journal records it, with the bytes it converts to; `None` for one that
     /// cannot be written (it is left out and said on standard error).
-    fn upsert(&self, event: &Event) -> Option<FeedChange> {
+    fn upsert(event: &Event) -> Option<FeedChange> {
         let ics = match convert::to_ics(event) {
             Ok(ics) => ics.into_bytes(),
             Err(why) => {
@@ -320,7 +320,7 @@ impl<T: GrantsLink + 'static> Feed for GraphCalendarFeed<T> {
                     version: RemoteVersion(DELETED.to_owned()),
                     deleted_at: self.clock.now(),
                 })),
-                None => self.upsert(event),
+                None => Self::upsert(event),
             })
             .collect();
         Ok(Page {
@@ -354,6 +354,10 @@ mod tests {
     use super::*;
 
     #[test]
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "the extension is one this code writes itself, in lower case"
+    )]
     fn names_are_short_stable_and_safe_whatever_the_id() {
         let id = "AAMkAGI2TG93AAA=/with+odd/chars";
         assert_eq!(segment_of(id), segment_of(id));

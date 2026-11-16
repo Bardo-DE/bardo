@@ -106,7 +106,7 @@ pub(crate) fn body(menu: BarMenu, state: &BarState, icon: RowIcon) -> PopupBody 
                 })
                 .unwrap_or_default(),
         ),
-        BarMenu::System => PopupBody::Menu(system_menu(&state.session)),
+        BarMenu::System => PopupBody::Menu(system_menu(state.session)),
         BarMenu::App => PopupBody::Menu(app_menu(state.app.as_ref(), state.menus.as_ref(), icon)),
         BarMenu::AppMenu(AppTitle(index)) => PopupBody::Menu(
             state
@@ -155,7 +155,7 @@ pub(crate) fn front_app(
 /// The system menu, the bar's first (macOS's Apple menu): System Settings, then the session's
 /// power actions in macOS's order (Sleep, Restart, Shut Down; Lock Screen, Log Out), named by the words the power menu and the launcher use. An action logind does not offer
 /// stays in its place, dimmed.
-fn system_menu(session: &Session) -> Vec<MenuItem<BarPick>> {
+fn system_menu(session: Session) -> Vec<MenuItem<BarPick>> {
     let power = |action: SessionAction| {
         let availability = match session.offer(action) {
             Offer::Available | Offer::NeedsAuth => Availability::Enabled,

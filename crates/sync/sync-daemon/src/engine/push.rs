@@ -87,20 +87,20 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                 .into_iter()
                 .collect(),
             LocalChange::Removed(local) => held(&local)
-                .map(|row| match row.remote {
-                    // It never reached the replica: nothing to remove there.
-                    None => Op::DeleteItem(local.clone()),
-                    Some(_) => {
-                        let base = match (&row.state, &row.remote_version) {
-                            (ItemState::Synced, Some(version)) => BaseVersion::At(version.clone()),
-                            _ => row.base.clone(),
-                        };
-                        Op::PutItem(JournalItem {
-                            base,
-                            state: ItemState::PendingRemove,
-                            ..row.clone()
-                        })
+                .map(|row| {
+                    if row.remote.is_none() {
+                        // It never reached the replica: nothing to remove there.
+                        return Op::DeleteItem(local.clone());
                     }
+                    let base = match (&row.state, &row.remote_version) {
+                        (ItemState::Synced, Some(version)) => BaseVersion::At(version.clone()),
+                        _ => row.base.clone(),
+                    };
+                    Op::PutItem(JournalItem {
+                        base,
+                        state: ItemState::PendingRemove,
+                        ..row.clone()
+                    })
                 })
                 .into_iter()
                 .collect(),
@@ -126,7 +126,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
         match self.replica.put(put, base).await {
             Ok((id, version)) => {
                 self.journal
-                    .apply(&[Op::PutItem(self.synced(row, &id, &version))])?;
+                    .apply(&[Op::PutItem(Self::synced(row, &id, &version))])?;
                 report.uploaded += 1;
                 Ok(())
             }
@@ -156,7 +156,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
         {
             return Ok(self
                 .journal
-                .apply(&[Op::PutItem(self.synced(row, id, version))])?);
+                .apply(&[Op::PutItem(Self::synced(row, id, version))])?);
         }
         let ops = self.conflict_ops(row, conflict, report);
         Ok(self.journal.apply(&ops)?)

@@ -148,18 +148,18 @@ impl<K: Clone + PartialEq + 'static> Machine for HoverIntent<K> {
     type Params = TipDelay;
     type Ctx = ();
 
-    /// Apply `event` at `now` (the profile's open and close, 400 ms warm).
+    /// Apply `input` at `at` (the profile's open and close, 400 ms warm).
     ///
     /// A wake carries no key, so a stale one is recognised by its time: `Elapsed` acts only once
-    /// `now` has reached the phase's own `due`.
+    /// `at` has reached the phase's own `due`.
     fn step(
         self,
-        event: HoverEvent<K>,
-        now: Stamp,
-        tip: &TipDelay,
+        input: HoverEvent<K>,
+        at: Stamp,
+        params: &TipDelay,
         (): &(),
     ) -> (Self, Vec<IntentEffect<K>>) {
-        let (next, effect) = self.advance(event, now, *tip);
+        let (next, effect) = self.advance(input, at, *params);
         (next, effect.into_iter().collect())
     }
 
@@ -175,6 +175,10 @@ impl<K: Clone + PartialEq + 'static> Machine for HoverIntent<K> {
 type Effect<K> = Option<IntentEffect<K>>;
 
 impl<K: Clone + PartialEq> HoverIntent<K> {
+    #[expect(
+        clippy::match_same_arms,
+        reason = "the arms follow the table of events and phases, and some phases coincide in their effect"
+    )]
     fn advance(self, event: HoverEvent<K>, now: Stamp, tip: TipDelay) -> (Self, Effect<K>) {
         let warm = self.warmth(now);
         let held = self.profile;
@@ -253,10 +257,7 @@ fn over<K: Clone + PartialEq>(
     now: Stamp,
 ) -> (HoverIntent<K>, Effect<K>) {
     match phase {
-        IntentPhase::Open { key: open } if open == key => {
-            to(IntentPhase::Open { key: open }, warm_until, None)
-        }
-        IntentPhase::Closing { key: open, .. } if open == key => {
+        IntentPhase::Open { key: open } | IntentPhase::Closing { key: open, .. } if open == key => {
             to(IntentPhase::Open { key: open }, warm_until, None)
         }
         IntentPhase::Pending { key: pending, due } if pending == key => {

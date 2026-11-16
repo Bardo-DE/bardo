@@ -1,7 +1,10 @@
 //! The harness: voiced served on a private bus over a scripted device and a scripted inferd, with
 //! a shell client, scratch HOME and XDG, and no real device, daemon or session bus.
 
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a shared test helper: each test binary uses only part of it"
+)]
 
 pub mod device;
 pub mod infer;

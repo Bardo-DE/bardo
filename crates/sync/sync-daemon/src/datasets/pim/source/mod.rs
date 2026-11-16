@@ -177,9 +177,8 @@ pub fn choose(kind: PimKind, candidate: &Candidate) -> Result<Chosen, NoSource> 
     // A candidate whose capability is not the kind's (or an older bus peer) is the kind's
     // protocol family, which is what the mirror did before sources existed.
     let transport = transport_of(kind, candidate).unwrap_or(match kind {
-        PimKind::Calendar => PimTransport::CalDav,
+        PimKind::Calendar | PimKind::Tasks => PimTransport::CalDav,
         PimKind::Contacts => PimTransport::CardDav,
-        PimKind::Tasks => PimTransport::CalDav,
     });
     match (kind, transport) {
         // A task list over CalDAV is a calendar of `VTODO`s: the CalDAV account's calendars

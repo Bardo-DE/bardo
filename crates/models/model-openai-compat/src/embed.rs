@@ -75,6 +75,10 @@ pub(crate) fn decode(served: ModelName, body: &[u8]) -> Result<EmbedEnd, CodecEr
     })
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a JSON number beyond f32 becomes infinite and is filtered out by the is_finite check that follows"
+)]
 fn vector(item: &Value) -> Result<EmbedVector, CodecError> {
     item.get("embedding")
         .and_then(Value::as_array)

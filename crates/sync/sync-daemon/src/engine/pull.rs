@@ -164,7 +164,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                 Compared::Same
             ) {
                 self.journal
-                    .apply(&[Op::PutItem(self.synced(old, &item.id, &item.version))])?;
+                    .apply(&[Op::PutItem(Self::synced(old, &item.id, &item.version))])?;
                 rebound.extend(old.remote.clone());
                 rebound.insert(item.id.clone());
             }
@@ -196,7 +196,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
             // the same path.
             let same = self.compare(&row, &item.id, item.hash.as_ref()).await?;
             let ops = match same {
-                Compared::Same => vec![Op::PutItem(self.synced(&row, &item.id, &item.version))],
+                Compared::Same => vec![Op::PutItem(Self::synced(&row, &item.id, &item.version))],
                 Compared::Differs(_) => {
                     let remote = RemoteSide::Exists(item.id.clone(), item.version.clone());
                     let conflict = conflict_of(&item.id, BaseVersion::Absent, remote);
@@ -205,7 +205,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
             };
             Ok(self.journal.apply(&ops)?)
         } else {
-            let row = self.fetching_row(None, &item);
+            let row = Self::fetching_row(None, &item);
             self.fetch_into(&row, &item.id, None, report).await
         }
     }
@@ -227,7 +227,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                     _ => Compared::Differs(None),
                 };
                 match compared {
-                    Compared::Same => Ok(self.journal.apply(&[Op::PutItem(self.synced(
+                    Compared::Same => Ok(self.journal.apply(&[Op::PutItem(Self::synced(
                         &row,
                         &item.id,
                         &item.version,
@@ -242,14 +242,16 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                             let ops = self.conflict_ops(&row, conflict, report);
                             return Ok(self.journal.apply(&ops)?);
                         }
-                        let row = self.fetching_row(Some(&row), &item);
+                        let row = Self::fetching_row(Some(&row), &item);
                         self.fetch_into(&row, &item.id, fetched, report).await
                     }
                 }
             }
             ItemState::PendingUpload | ItemState::PendingRemove => {
                 let ops = match self.compare(&row, &item.id, item.hash.as_ref()).await? {
-                    Compared::Same => vec![Op::PutItem(self.synced(&row, &item.id, &item.version))],
+                    Compared::Same => {
+                        vec![Op::PutItem(Self::synced(&row, &item.id, &item.version))]
+                    }
                     Compared::Differs(_) => {
                         let remote = RemoteSide::Changed(item.version.clone());
                         let conflict = conflict_of(&item.id, row.base.clone(), remote);
@@ -270,7 +272,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
     }
 
     /// The row that says "this item's replica content is being stored locally".
-    fn fetching_row(&self, existing: Option<&JournalItem>, item: &RemoteItem) -> JournalItem {
+    fn fetching_row(existing: Option<&JournalItem>, item: &RemoteItem) -> JournalItem {
         JournalItem {
             local: existing.map_or_else(|| provisional(&item.id), |row| row.local.clone()),
             remote: Some(item.id.clone()),
@@ -316,7 +318,7 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
             local: stored.local.clone(),
             size: stored.size,
             hash: Some(stored.hash),
-            ..self.synced(row, id, &version)
+            ..Self::synced(row, id, &version)
         })];
         if stored.local != row.local {
             ops.insert(0, Op::DeleteItem(row.local.clone()));

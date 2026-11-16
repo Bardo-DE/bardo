@@ -39,6 +39,10 @@ pub fn timing() -> MenuTiming {
 
 /// A pointer position in whole logical pixels, as the tracker's point.
 #[must_use]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a pixel position, far below 2^24, exact in f32"
+)]
 pub fn point(at: layer_shell_host::Point) -> Point {
     Point {
         x: Px(at.x as f32),

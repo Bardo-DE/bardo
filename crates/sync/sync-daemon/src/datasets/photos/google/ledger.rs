@@ -107,8 +107,8 @@ mod tests {
 
     #[test]
     fn a_ledger_survives_a_restart_and_a_damaged_one_is_not_an_empty_one() {
-        let _dir_guard = scratch("ledger");
-        let dir = _dir_guard.path().to_owned();
+        let dir_guard = scratch("ledger");
+        let dir = dir_guard.path().to_owned();
         let path = dir.join("sync/acct/google_photos_upload.ledger.json");
         assert_eq!(Ledger::load(&path), Ok(Ledger::default()));
         let ledger = Ledger {

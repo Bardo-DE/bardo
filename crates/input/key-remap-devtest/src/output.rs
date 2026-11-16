@@ -124,12 +124,12 @@ impl Output {
     ///
     /// Returns a [`Failure`] under the same conditions as [`Self::expect`], with `wait` as the
     /// limit.
-    pub fn expect_within(&mut self, want: &str, wait: Duration) -> Result<(), Failure> {
+    pub fn expect_within(&mut self, want: &str, within: Duration) -> Result<(), Failure> {
         let want: Vec<String> = want.split_whitespace().map(str::to_owned).collect();
         let shown = |tokens: &[String]| format!("[{}]", tokens.join(" "));
         self.log(&format!("expect {}", shown(&want)));
         let mut got: Vec<String> = Vec::new();
-        let deadline = Instant::now() + wait;
+        let deadline = Instant::now() + within;
         while got != want {
             got.extend(self.read());
             if !want.starts_with(&got) {
@@ -142,7 +142,7 @@ impl Output {
             if got != want {
                 if Instant::now() >= deadline {
                     return Err(Failure::new(format!(
-                        "output incomplete after {wait:?}: want {} got {}",
+                        "output incomplete after {within:?}: want {} got {}",
                         shown(&want),
                         shown(&got)
                     )));

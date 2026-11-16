@@ -32,6 +32,10 @@ impl Once {
 impl Dial for Once {
     type Stream = RelayStream;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dial(&self) -> Result<RelayStream, HttpError> {
         self.stream
             .lock()

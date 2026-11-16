@@ -172,9 +172,10 @@ impl Pending {
         };
         let input = match (parsed, how) {
             (Some(input), _) => input,
-            (None, IfMalformed::Fail) => return Err(CodecError::BadToolArguments),
+            (None, IfMalformed::Fail | IfMalformed::Superseded) => {
+                return Err(CodecError::BadToolArguments);
+            }
             (None, IfMalformed::Drop) => return Ok(None),
-            (None, IfMalformed::Superseded) => return Err(CodecError::BadToolArguments),
         };
         Ok(Some(ToolCall {
             id: ToolCallId(id),

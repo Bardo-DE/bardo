@@ -57,13 +57,13 @@ pub(super) fn bar(output: OutputInfo) -> Element {
     if *shared.peek() != tokens {
         shared.set(tokens);
     }
-    let session = use_bar(&output, popup_look, &tokens);
+    let session = use_bar(&output, popup_look, tokens);
     let times = timing(environment.settings.appearance.motion_level);
     let mode = mode_on(file.bar.autohide, use_full_screen(output.id)());
     let hide = use_hide(mode, times, session, output.id);
-    use_follow_layer(layer(&output, mode, &tokens));
+    use_follow_layer(layer(&output, mode, tokens));
     let state = *hide.machine.read();
-    let lift = lifted(&state, (hide.drawn)(), &times, &tokens).0;
+    let lift = lifted(&state, (hide.drawn)(), &times, tokens).0;
     let lifted_style = match lift {
         0 => String::new(),
         up => format!("transform:translateY(-{:.2}px)", f64::from(up) / 100.0),

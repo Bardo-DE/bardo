@@ -120,9 +120,7 @@ impl<E: Ports> Ctx<E> {
         if refusal == Refusal::NeedsReauth {
             // The app is refused either way; a state that could not be saved is set again by the
             // next refusal.
-            self.set_state(account, AccountState::NeedsReauth)
-                .await
-                .ok();
+            let _ = self.set_state(account, AccountState::NeedsReauth).await;
         }
         refusal
     }

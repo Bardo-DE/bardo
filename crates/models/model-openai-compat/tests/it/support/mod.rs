@@ -1,6 +1,9 @@
 //! Builders for requests, and a blocking poll for futures that never wait.
 
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a shared test helper: each test binary uses only part of it"
+)]
 
 use model_provider::{
     EngineExtras, ImageInput, Knob, Limits, Message, Milli, ModelName, OutputShape, Part,

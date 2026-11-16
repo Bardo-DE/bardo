@@ -20,8 +20,7 @@ pub const DRAW: TweenSpec = TweenSpec {
 /// the rest decelerate into place.
 fn easing(gesture: PartGesture, run: PartRun) -> EasingToken {
     match (gesture, run) {
-        (PartGesture::Layers, _) => EasingToken::Linear,
-        (PartGesture::Turn, PartRun::While(_)) => EasingToken::Linear,
+        (PartGesture::Layers, _) | (PartGesture::Turn, PartRun::While(_)) => EasingToken::Linear,
         (PartGesture::Turn, PartRun::Once(_)) | (PartGesture::Ring, PartRun::While(_)) => {
             EasingToken::InOut
         }

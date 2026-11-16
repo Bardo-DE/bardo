@@ -24,6 +24,10 @@ struct Flaky {
 }
 
 impl PimGrants for Flaky {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn granted(&self, _kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
         if self.down.load(Ordering::SeqCst) {
             Err(AccountdUnavailable)

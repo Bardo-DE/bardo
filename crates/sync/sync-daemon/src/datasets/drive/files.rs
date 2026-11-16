@@ -641,7 +641,7 @@ mod tests {
         let again = DriveSet::default().with_settings(settings.clone());
         assert!(again.was_paused("one"), "paused after a restart");
         assert!(!again.was_paused("two"));
-        set.set_paused("one", false);
+        assert!(set.set_paused("one", false), "the drive is there");
         assert!(
             !DriveSet::default()
                 .with_settings(settings)

@@ -137,6 +137,10 @@ fn describe(entries: &[MenuItem<BarPick>]) -> String {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 fn layouts_become_entries() {
     let cases: Vec<(&str, Vec<TrayMenuEntry>, &str)> = vec![
         ("an empty layout", vec![], ""),

@@ -86,7 +86,7 @@ pub(crate) fn control_center(
             class: "shell-cc",
             tabindex: "-1",
             style,
-            onmounted: move |event: MountedEvent| home.mounted(event),
+            onmounted: move |event: MountedEvent| home.mounted(&event),
             onkeydown: move |event: KeyboardEvent| {
                 // Escape on a detail page goes back; on the grid it reaches the popover, which
                 // closes.
@@ -120,7 +120,7 @@ pub(crate) struct KeyboardHome(Signal<Option<Rc<MountedData>>>);
 
 impl KeyboardHome {
     /// The panel mounted: keep it and give it the keyboard.
-    pub(crate) fn mounted(mut self, event: MountedEvent) {
+    pub(crate) fn mounted(mut self, event: &MountedEvent) {
         let element = event.data();
         self.0.set(Some(Rc::clone(&element)));
         focus_soon(element);

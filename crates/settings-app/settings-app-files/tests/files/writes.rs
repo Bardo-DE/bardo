@@ -15,7 +15,7 @@ fn a_private_file_stays_private() {
     write_file(&home, "[dock]\nposition = \"left\"\n");
     let path = home.path_of(&spec().file);
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).expect("chmod");
-    save_key(&home, "dock.bounce", toml::Value::Boolean(false)).expect("save");
+    save_key(&home, "dock.bounce", &toml::Value::Boolean(false)).expect("save");
     let mode = std::fs::metadata(&path).expect("meta").permissions().mode() & 0o777;
     assert_eq!(mode, 0o600);
 }
@@ -30,7 +30,7 @@ fn a_linked_settings_file_stays_a_link_and_its_target_changes() {
     std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
     symlink(&target, &path).expect("link");
 
-    save_key(&home, "dock.bounce", toml::Value::Boolean(false)).expect("save");
+    save_key(&home, "dock.bounce", &toml::Value::Boolean(false)).expect("save");
 
     assert!(
         std::fs::symlink_metadata(&path)
@@ -61,7 +61,7 @@ fn saves_from_two_threads_both_land() {
         .cloned()
         .map(|(path, value)| {
             let home = Arc::clone(&home);
-            std::thread::spawn(move || save_key(&home, path, value).expect("save"))
+            std::thread::spawn(move || save_key(&home, path, &value).expect("save"))
         })
         .collect();
     for thread in threads {
@@ -100,7 +100,7 @@ fn a_save_waits_for_another_writer_of_the_file_and_keeps_its_change() {
     };
     holding.recv().expect("the other writer holds the file");
 
-    save_key(&home, "dock.bounce", toml::Value::Boolean(false)).expect("save");
+    save_key(&home, "dock.bounce", &toml::Value::Boolean(false)).expect("save");
 
     other.join().expect("the other writer");
     let text = read_file(&home);

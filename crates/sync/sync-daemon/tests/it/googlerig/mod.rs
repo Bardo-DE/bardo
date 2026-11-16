@@ -2,7 +2,10 @@
 //! Google account whose Drive, Photos upload and Picker endpoints are the fake Google's, the grants
 //! syncd would hold, and a `StorageSupervisor` over them. The relay, not syncd, authenticates:
 //! the bearer is the fake provider's, and the credential the service holds appears nowhere.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a shared test helper: each test binary uses only part of it"
+)]
 
 use crate::common::bus::PrivateBus;
 use crate::common::hosted::{Link, host};
@@ -171,10 +174,10 @@ fn grant(id: &str, kind: CapabilityKind, class: DataClass) -> Grant {
     }
 }
 
-fn endpoint(family: Family, url: String) -> ServiceEndpoint {
+fn endpoint(family: Family, url: &str) -> ServiceEndpoint {
     ServiceEndpoint {
         family,
-        url: EndpointUrl::parse(&url).expect("url"),
+        url: EndpointUrl::parse(url).expect("url"),
         tls: Tls::Plain,
         login: LoginName("ada@gmail.test".into()),
     }
@@ -224,6 +227,10 @@ pub async fn rig_picker_only(photos: PhotosGrant) -> Rig {
     build(photos, Media::Same, true).await
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "building the whole rig in order: each step needs the one before it"
+)]
 async fn build(photos: PhotosGrant, media: Media, picker_only: bool) -> Rig {
     let google = FakeGoogle::start_fixed(DRIVE_BEARER).await.expect("google");
     google.accept_bearer(UPLOAD_BEARER);
@@ -266,12 +273,12 @@ async fn build(photos: PhotosGrant, media: Media, picker_only: bool) -> Rig {
             .collect(),
         restriction: Restriction::none(),
         endpoints: vec![
-            endpoint(Family::GoogleDrive, format!("{base}/drive/v3")),
-            endpoint(Family::GooglePhotosUpload, format!("{base}/v1")),
+            endpoint(Family::GoogleDrive, &format!("{base}/drive/v3")),
+            endpoint(Family::GooglePhotosUpload, &format!("{base}/v1")),
             // Google's two Photos APIs are on two hosts; here they share the fake's origin, so
             // the path tells accountd's endpoint match (exact URL) which is which. The clients
             // use only the origin.
-            endpoint(Family::GooglePhotosPicker, format!("{base}/v1/picker")),
+            endpoint(Family::GooglePhotosPicker, &format!("{base}/v1/picker")),
         ],
     };
     if picker_only {

@@ -565,6 +565,10 @@ fn entry(row: Row, path: ItemPath) -> DriveEntry {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn corrupt(error: serde_json::Error) -> JournalError {
     JournalError::Corrupt(error.to_string())
 }

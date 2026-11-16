@@ -118,7 +118,7 @@ fn drawn(page: &PageModel) -> Vec<Block> {
         Body::Sections => sections.collect(),
         Body::Before(live) => panes(live).into_iter().chain(sections).collect(),
         Body::After(live) => sections.chain(panes(live)).collect(),
-        Body::Only(pane) => vec![Block::Pane(pane)],
+        Body::Only(only) => vec![Block::Pane(only)],
         Body::Intelligence => intelligence_blocks(page),
         Body::Styles => sections.flat_map(with_style_notes).collect(),
     }

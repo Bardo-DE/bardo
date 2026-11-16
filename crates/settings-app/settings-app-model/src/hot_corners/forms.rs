@@ -49,9 +49,8 @@ pub fn web_address(typed: &str) -> Option<String> {
     }
     let full = match text.split_once("://") {
         Some((scheme, _)) if scheme == "http" || scheme == "https" => text.to_owned(),
-        Some(_) => return None,
         None if text.contains('.') => format!("https://{text}"),
-        None => return None,
+        Some(_) | None => return None,
     };
     let host = full.split_once("://").map(|(_, rest)| rest)?;
     let has_host = host

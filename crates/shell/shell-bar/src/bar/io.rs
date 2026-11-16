@@ -115,7 +115,7 @@ struct Slots {
 
 /// The bar on `output`: its menu session, provided to the titles as context, and the control
 /// center asks it follows.
-pub(super) fn use_bar(output: &OutputInfo, look: PopupLook, tokens: &BarTokens) -> MenuBar {
+pub(super) fn use_bar(output: &OutputInfo, look: PopupLook, tokens: BarTokens) -> MenuBar {
     let file = use_settings()();
     let on = output.name.clone().map(OutputName);
     let app = front_app(
@@ -145,7 +145,7 @@ pub(super) fn use_bar(output: &OutputInfo, look: PopupLook, tokens: &BarTokens) 
         focus,
         output_name: on,
         bar_width: output.logical.width,
-        cap: height_cap(output.logical.height, tokens),
+        cap: height_cap(output.logical.height, &tokens),
         status_box: status_box(output.logical.width, tokens),
         center: use_link::<CenterLink>(),
     });
@@ -379,7 +379,8 @@ fn show(slots: Slots, deps: &SessionDeps, menu: BarMenu) {
         Some(actions) => root.context(actions.clone()),
         None => root,
     };
-    surface.open_popup(config, first, root);
+    // The popup is followed through its events, not by the id it is given here.
+    let _ = surface.open_popup(config, first, root);
     link.write().view = Some(tx);
     open.set(Some(menu));
     announce(deps, menu);

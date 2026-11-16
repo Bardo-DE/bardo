@@ -75,6 +75,10 @@ pub struct Roster<K: Clone + PartialEq + 'static> {
     pitches: Pitches<K>,
 }
 
+#[expect(
+    clippy::expl_impl_clone_on_copy,
+    reason = "a derive would bound the type parameter by Clone, which the handle does not need"
+)]
 impl<K: Clone + PartialEq + 'static> Clone for Roster<K> {
     fn clone(&self) -> Self {
         *self

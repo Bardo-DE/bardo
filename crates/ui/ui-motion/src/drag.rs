@@ -57,6 +57,7 @@ impl<K: Clone + PartialEq> Drag<K> {
     }
 
     /// Pointer down on `key`.
+    #[must_use]
     pub fn down(self, key: K, at: Point) -> Self {
         Drag {
             phase: DragPhase::Pending { key, from: at },
@@ -65,6 +66,7 @@ impl<K: Clone + PartialEq> Drag<K> {
     }
 
     /// Pointer moved.
+    #[must_use]
     pub fn moved(self, at: Point) -> Self {
         let phase = match self.phase {
             DragPhase::Idle => DragPhase::Idle,
@@ -100,6 +102,7 @@ impl<K: Clone + PartialEq> Drag<K> {
     }
 
     /// Replace the drop-target rects the hit test runs against.
+    #[must_use]
     pub fn with_targets(self, targets: Vec<Rect>) -> Self {
         let phase = match self.phase {
             DragPhase::Live { key, at, .. } => DragPhase::Live {
@@ -203,6 +206,11 @@ fn hit(targets: &[Rect], at: Point) -> Option<usize> {
 ///
 /// The Slider's value while its thumb is dragged (design/04-COMPONENTS.md section 5).
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "clamped to 0..=1000 just above, so the cast cannot truncate or lose a sign"
+)]
 pub fn fraction_along(track: Rect, x: Px, step: Fraction) -> Fraction {
     let width = track.size.width.0;
     let raw = if width > 0.0 {

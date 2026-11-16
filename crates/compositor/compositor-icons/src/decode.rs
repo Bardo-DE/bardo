@@ -92,6 +92,10 @@ fn no_outside_files() -> usvg::Options<'static> {
 }
 
 /// An SVG drawn to fill `edge` by `edge`.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "the edge is a pixel count of a few thousand at most, exact in f32"
+)]
 fn svg(bytes: &[u8], edge: u32) -> Result<Pixels, IconError> {
     let tree = usvg::Tree::from_data(bytes, &no_outside_files())
         .map_err(|error| IconError::Decode(error.to_string()))?;

@@ -134,13 +134,13 @@ mod tests {
         }
     }
 
-    fn face(line: &str, switch: Check, warm: bool) -> Option<Face> {
-        Some(Face {
+    fn face(line: &str, switch: Check, warm: bool) -> Face {
+        Face {
             line: line.to_owned(),
             switch,
             // casement's default 3400 K sits at 815 thousandths of the slider.
             warmth: warm.then_some(Fraction(815)),
-        })
+        }
     }
 
     #[test]
@@ -154,22 +154,22 @@ mod tests {
             (
                 "off",
                 ready(Schedule::Off, None, NightWarmthMode::Off),
-                face("Off", Check::Off, false),
+                Some(face("Off", Check::Off, false)),
             ),
             (
                 "until tomorrow",
                 ready(Schedule::Always, Some(by_hand), NightWarmthMode::Off),
-                face("On until tomorrow", Check::On, true),
+                Some(face("On until tomorrow", Check::On, true)),
             ),
             (
                 "all day",
                 ready(Schedule::Always, None, NightWarmthMode::Off),
-                face("On", Check::On, true),
+                Some(face("On", Check::On, true)),
             ),
             (
                 "on a schedule",
                 ready(Schedule::Scheduled, None, NightWarmthMode::Off),
-                face("Scheduled, 22:00 to 07:00", Check::Off, true),
+                Some(face("Scheduled, 22:00 to 07:00", Check::Off, true)),
             ),
         ];
         for (name, state, want) in cases {

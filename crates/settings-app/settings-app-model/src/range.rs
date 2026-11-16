@@ -48,6 +48,10 @@ impl Range {
 
     /// `value` as this range's number, when it is one and lies inside the range.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "range bounds are small whole numbers, far below 2^53, so i64 to f64 is exact"
+    )]
     pub fn admit(&self, value: &toml::Value) -> Option<toml::Value> {
         let inside = |n: f64| n >= self.min as f64 && n <= self.max as f64;
         match (value, self.number) {
@@ -60,6 +64,10 @@ impl Range {
         }
     }
 
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "range bounds are small whole numbers, far below 2^53, so i64 to f64 is exact"
+    )]
     fn number_of(value: &toml::Value) -> f64 {
         match value {
             toml::Value::Integer(n) => *n as f64,
@@ -72,12 +80,22 @@ impl Range {
     /// from a schema, and `max - min` of two `i64`s overflows for bounds far apart (a panic in a
     /// debug build, a wrong number in a release one).
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "range bounds are small whole numbers, far below 2^53, so i64 to f64 is exact"
+    )]
     pub fn span(&self) -> f64 {
         self.max as f64 - self.min as f64
     }
 
     /// Where `value` stands on the slider, in thousandths (0 at the floor).
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        clippy::cast_sign_loss,
+        reason = "the position is clamped to 0..=1 and scaled by FULL (1000) just before the cast; range bounds are small whole numbers, far below 2^53, so i64 to f64 is exact"
+    )]
     pub fn position(&self, value: &toml::Value) -> u16 {
         let span = self.span();
         if span <= 0.0 {
@@ -89,6 +107,11 @@ impl Range {
 
     /// The value at `position` thousandths of the travel.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        reason = "raw lies within the range, whose bounds are i64; range bounds are small whole numbers, far below 2^53, so i64 to f64 is exact"
+    )]
     pub fn value_at(&self, position: u16) -> toml::Value {
         let span = self.span();
         let raw = self.min as f64 + span * f64::from(position.min(1000)) / FULL;

@@ -4,7 +4,10 @@
 //! host is a person who allows the first account of every consent ask (Always) and whose
 //! conversations (a sign-in) are scripted, and the relays reach the fake servers. No bus for
 //! accounts, no real keyring.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a shared test helper: each test binary uses only part of it"
+)]
 
 use account_client::{Grants, Porter};
 use account_client_inproc::{Hosted as HostedLink, PorterRelays};
@@ -33,6 +36,10 @@ pub struct Person {
 impl Sheets for Person {
     type Link = ScriptedLink;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn consent(&self, ask: ConsentAsk, _window: &ParentWindow) -> ConsentAnswer {
         self.asked.fetch_add(1, Ordering::SeqCst);
         match ask.accounts.first() {

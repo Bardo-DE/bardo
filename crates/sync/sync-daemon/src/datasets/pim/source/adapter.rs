@@ -110,6 +110,10 @@ impl<F: Feed> Replica for FeedReplica<F> {
         Ok(Blob(cut(bytes, range)))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn put(
         &self,
         _item: PutItem,
@@ -118,6 +122,10 @@ impl<F: Feed> Replica for FeedReplica<F> {
         Err(PutRefused::Forbidden)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn remove(
         &self,
         _item: &RemoteId,

@@ -15,6 +15,11 @@ impl Velocity {
 
     /// A swipe's measured speed, rounded to whole pixels per second.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        reason = "clamped to the i32 range just before; the f32 bounds round to values that make the cast saturate"
+    )]
     pub fn from_speed(speed: Speed) -> Velocity {
         let rounded = speed.0.round();
         Velocity(rounded.clamp(i32::MIN as f32, i32::MAX as f32) as i32)

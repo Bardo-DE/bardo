@@ -108,6 +108,10 @@ async fn with_no_dataset_every_name_answers_the_refusal_and_a_bad_name_is_invali
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn a_caller_sees_what_it_owns_settings_sees_all_and_status_carries_quota_and_the_pause() {
     let rig = rig().await;
     let photos = rig
@@ -406,7 +410,11 @@ async fn a_running_engine_syncs_to_its_replica_and_the_bus_shows_it_until_it_is_
     assert_eq!(used_reaches(&sync, "a1/photos_originals", 7).await, Some(7));
 
     // Removing the account's datasets from the hub ends the driver.
-    rig.hub
-        .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"));
+    assert!(
+        !rig.hub
+            .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"))
+            .is_empty(),
+        "the account had datasets"
+    );
     eventually("the driver stops", || running.is_finished()).await;
 }

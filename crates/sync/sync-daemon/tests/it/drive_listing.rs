@@ -44,6 +44,10 @@ impl Http for Bearer {
 struct NotGranted;
 
 impl Http for NotGranted {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn send(&self, _: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         Err(HttpError::NotGranted)
     }
@@ -345,8 +349,9 @@ async fn my_drive_is_listed_with_its_documents_as_entries_that_open_online() {
     let scratch = Scratch::new("drive-google");
     let fake = FakeGoogle::start_fixed(TOKEN).await.expect("fake google");
     fake.my_drive_put_file("Docs/a.txt", b"a");
-    fake.my_drive_document("Docs/Plan", "application/vnd.google-apps.document");
-    fake.my_drive_document("Survey", "application/vnd.google-apps.form");
+    // The ids of the planted documents are not needed: the listing finds them by path.
+    let _ = fake.my_drive_document("Docs/Plan", "application/vnd.google-apps.document");
+    let _ = fake.my_drive_document("Survey", "application/vnd.google-apps.form");
     let journal = DriveJournal::open(&scratch.path().join("storage_drive.sqlite")).expect("open");
     let replica = google(fake.base_url(), 2, journal.folders().expect("tree"));
     let pass = list_once(&journal, &replica).await.expect("pass");

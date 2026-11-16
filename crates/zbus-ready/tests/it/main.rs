@@ -76,6 +76,10 @@ struct Echo;
 
 #[zbus::interface(name = "org.example.Echo1")]
 impl Echo {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn echo(&self, text: String) -> String {
         text
     }

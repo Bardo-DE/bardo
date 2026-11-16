@@ -2,6 +2,7 @@
 
 use crate::error::IdError;
 use crate::ids::{AppKey, UnitName};
+use std::fmt::Write as _;
 
 /// The cgroup path of a process: absolute, on one line.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -71,7 +72,8 @@ pub fn escape_unit(text: &str) -> String {
         if plain {
             out.push(char::from(byte));
         } else {
-            out.push_str(&format!("\\x{byte:02x}"));
+            // Writing to a String cannot fail.
+            let _ = write!(out, "\\x{byte:02x}");
         }
     }
     out

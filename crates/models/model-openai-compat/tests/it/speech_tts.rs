@@ -17,7 +17,7 @@ use speech_provider::{AudioMs, SampleIndex, TextToSpeech};
 /// `n` seconds-worth of distinct samples at 24 kHz: sample `i` is `i` mod 65536.
 fn tone(samples: u32) -> Vec<u8> {
     (0..samples)
-        .flat_map(|i| (i as u16).to_le_bytes())
+        .flat_map(|i| u16::try_from(i % 65_536).expect("below 2^16").to_le_bytes())
         .collect()
 }
 

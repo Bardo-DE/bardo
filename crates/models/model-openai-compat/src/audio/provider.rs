@@ -39,6 +39,7 @@ impl<T> OpenAiTranscription<T> {
     /// (the catalog's `speech` table gives the caps). `describe` answers the ones the server
     /// lists; a served model the catalog does not know is left out, because its caps cannot be
     /// said.
+    #[must_use]
     pub fn with_known(self, known: Vec<SpeechModelInfo>) -> Self {
         Self { known, ..self }
     }
@@ -63,6 +64,7 @@ impl<T> KokoroSpeech<T> {
     }
 
     /// As [`OpenAiTranscription::with_known`].
+    #[must_use]
     pub fn with_known(self, known: Vec<SpeechModelInfo>) -> Self {
         Self { known, ..self }
     }

@@ -115,7 +115,7 @@ fn resolve_all<R: SpaceReader>(r: &R, fused: &[Fused]) -> Result<Vec<RecallHit>,
 
 /// Two ranked lists as one: reciprocal-rank fusion by position, each hit keeping the `why` of
 /// the list it came from.
-fn merged<R: SpaceReader>(r: &R, facts: Vec<Fused>, events: Vec<Fused>) -> Vec<Fused> {
+fn merged<R: SpaceReader>(r: &R, facts: &[Fused], events: &[Fused]) -> Vec<Fused> {
     let listed = |list: &[Fused]| -> Vec<Ranked> {
         list.iter()
             .zip(1u32..)
@@ -125,7 +125,7 @@ fn merged<R: SpaceReader>(r: &R, facts: Vec<Fused>, events: Vec<Fused>) -> Vec<F
             })
             .collect()
     };
-    let fused = fuse_rrf(&[listed(&facts), listed(&events)], r.index().rrf_k());
+    let fused = fuse_rrf(&[listed(facts), listed(events)], r.index().rrf_k());
     fused
         .into_iter()
         .filter_map(|f| {
@@ -143,7 +143,7 @@ fn merged<R: SpaceReader>(r: &R, facts: Vec<Fused>, events: Vec<Fused>) -> Vec<F
 pub fn search<R: SpaceReader>(
     r: &R,
     vector: Option<&Vector>,
-    q: RecallQuery,
+    q: &RecallQuery,
 ) -> Result<Vec<RecallHit>, Refusal> {
     let fused = ranked_with(
         r,
@@ -167,7 +167,7 @@ pub fn search<R: SpaceReader>(
 pub fn inject<R: SpaceReader>(
     r: &R,
     vector: Option<&Vector>,
-    q: InjectQuery,
+    q: &InjectQuery,
 ) -> Result<Vec<RecallHit>, Refusal> {
     let pool = q.k.0.saturating_mul(4).max(16);
     let text = q.text.as_str();
@@ -175,7 +175,7 @@ pub fn inject<R: SpaceReader>(
         RecallOver::Both => {
             let facts = ranked_with(r, text, vector, RecallOver::Facts, q.trust, pool)?;
             let events = ranked_with(r, text, vector, RecallOver::Events, q.trust, pool)?;
-            merged(r, facts, events)
+            merged(r, &facts, &events)
         }
         over => ranked_with(r, text, vector, over, q.trust, pool)?,
     };

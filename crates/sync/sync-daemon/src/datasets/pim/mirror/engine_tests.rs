@@ -143,8 +143,8 @@ fn engine(
 #[tokio::test]
 async fn a_local_edit_a_deletion_and_a_stray_file_cost_the_server_nothing_and_the_next_change_overwrites()
  {
-    let _dir_guard = scratch("engine-readonly");
-    let dir = _dir_guard.path().to_owned();
+    let dir_guard = scratch("engine-readonly");
+    let dir = dir_guard.path().to_owned();
     let server = Server::new();
     server.set("a.ics", ics("a", "one")).await;
     server.set("big.ics", big("big", "v1")).await;
@@ -193,8 +193,8 @@ async fn a_local_edit_a_deletion_and_a_stray_file_cost_the_server_nothing_and_th
 
 #[tokio::test]
 async fn a_restart_fetches_again_exactly_the_items_whose_files_were_damaged() {
-    let _dir_guard = scratch("engine-restart");
-    let dir = _dir_guard.path().to_owned();
+    let dir_guard = scratch("engine-restart");
+    let dir = dir_guard.path().to_owned();
     let server = Server::new();
     server.set("a.ics", ics("a", "one")).await;
     server.set("big.ics", big("big", "v1")).await;

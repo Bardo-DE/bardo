@@ -108,6 +108,10 @@ pub(crate) fn press_action(
 }
 
 /// A surface-local point in the compositor's logical space, whole pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pixel coordinate: float to integer casts saturate, and no screen is near the limit"
+)]
 pub(crate) fn screen_point(origin: ScreenOrigin, at: Point) -> (i32, i32) {
     (
         origin.x + at.x.0.round() as i32,
@@ -119,6 +123,10 @@ pub(crate) fn screen_point(origin: ScreenOrigin, at: Point) -> (i32, i32) {
 /// or right). layer-shell-host hands Blitz the axis value negated (its `input/pointer.rs`), so a line
 /// delta is turned back. A high-resolution wheel's half notch rounds to one; a pixel delta (a
 /// touchpad's continuous scroll) and a page delta are not notches and send nothing.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded scroll step count: float to integer casts saturate"
+)]
 pub(crate) fn scroll_delta(delta: WheelDelta) -> Option<ScrollDelta> {
     let WheelDelta::Lines(lines) = delta else {
         return None;

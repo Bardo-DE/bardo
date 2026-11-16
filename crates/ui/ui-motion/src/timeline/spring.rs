@@ -41,6 +41,10 @@ pub struct SpringFrame {
 
 impl SpringFrame {
     /// A frame at `state`, `phase` along.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the spring is integrated in f64 and a frame carries f32: the values are pixels and speeds"
+    )]
     pub(crate) fn of(state: State, phase: SpringPhase) -> SpringFrame {
         SpringFrame {
             position: state.position as f32,
@@ -168,7 +172,7 @@ mod tests {
         let spring = from_to(0.0, 100.0);
         let total = spring.total();
         assert!(
-            (300..1_200).contains(&(total.as_millis() as u64)),
+            (300..1_200).contains(&u64::try_from(total.as_millis()).unwrap_or(u64::MAX)),
             "rests at {total:?}"
         );
         let rest = SpringFrame::of(

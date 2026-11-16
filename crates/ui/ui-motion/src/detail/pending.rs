@@ -68,11 +68,12 @@ mod tests {
 
     #[test]
     fn each_style_lights_its_own_layers() {
-        let wifi = PendingSpec::Iterate { layers: 4 };
-        let lit =
-            |frame: PendingFrame, spec| (0..4).map(|l| frame.lit(spec, l)).collect::<Vec<_>>();
         const ON: bool = true;
         const OFF: bool = false;
+
+        let lit =
+            |frame: PendingFrame, spec| (0..4).map(|l| frame.lit(spec, l)).collect::<Vec<_>>();
+        let wifi = PendingSpec::Iterate { layers: 4 };
         assert_eq!(lit(PendingFrame::Step(2), wifi), [OFF, OFF, ON, OFF]);
         assert_eq!(lit(PendingFrame::Step(5), wifi), [OFF, ON, OFF, OFF]);
         assert_eq!(lit(PendingFrame::Idle, wifi), [ON, ON, ON, ON]);

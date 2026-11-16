@@ -29,13 +29,13 @@ impl<K: Clone + PartialEq + 'static> Machine for RosterState<K> {
         input: RosterIn<K>,
         at: Stamp,
         params: &RosterParams,
-        measured: &Measured<K>,
+        cx: &Measured<K>,
     ) -> (Self, Vec<RosterOut<K>>) {
         match input {
             RosterIn::List(keys) => (self.listed(&keys, at, *params), Vec::new()),
             RosterIn::Leave(keys) => (self.leaving(&keys, at, *params), Vec::new()),
             RosterIn::Stay(key) => (self.stay(&key).0, Vec::new()),
-            RosterIn::Elapsed => self.elapsed(at, *params, measured),
+            RosterIn::Elapsed => self.elapsed(at, *params, cx),
         }
     }
 

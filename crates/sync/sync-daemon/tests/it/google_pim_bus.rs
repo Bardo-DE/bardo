@@ -157,6 +157,10 @@ async fn eventually(rig: &Rig, what: &str, check: impl FnMut() -> bool) {
 }
 
 /// A Google account granted to syncd for `kinds`, over a fake Google holding the seeded sets.
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn rig(kinds: &[PimKind]) -> Rig {
     let issuer = FakeIssuer::start().await.expect("issuer");
     let google = FakeGoogle::start(&issuer).await.expect("google");
@@ -330,6 +334,10 @@ fn everything_mirrored(rig: &Rig) -> bool {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn two_calendars_the_contacts_and_two_task_lists_mirror_into_the_vdir() {
     let rig = rig(&ALL).await;
     eventually(&rig, "every collection is mirrored", || {

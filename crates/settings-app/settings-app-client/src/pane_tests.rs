@@ -12,6 +12,10 @@ struct Counting {
 pane!(Counting, Vec<u32>, follow);
 
 impl Counting {
+    #[expect(
+        clippy::unused_async,
+        reason = "the `pane!` macro awaits every pane's follow loop"
+    )]
     async fn follow(&self) {}
 
     fn send(&self, input: u32) -> Pending {
@@ -23,13 +27,17 @@ impl Machine for Counting {
     type Input = u32;
     type Effect = u32;
 
-    fn step(mut log: Vec<u32>, input: u32) -> (Vec<u32>, Vec<u32>) {
-        log.push(input);
+    fn step(mut state: Vec<u32>, input: u32) -> (Vec<u32>, Vec<u32>) {
+        state.push(input);
         let effects = if input < 3 { vec![input] } else { Vec::new() };
-        (log, effects)
+        (state, effects)
     }
 
     /// Each effect leads to the next number.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn run(&self, effect: u32) -> Vec<u32> {
         vec![effect + 1]
     }

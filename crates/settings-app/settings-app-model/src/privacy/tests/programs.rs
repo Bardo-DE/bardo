@@ -32,16 +32,6 @@ fn book_of(apps: Vec<DesktopApp>) -> ProgramBook {
 
 #[test]
 fn a_program_is_named_by_the_system_entry_that_starts_it_else_by_its_file_and_folder() {
-    let mut try_only = app("try", "Tried", None, None);
-    try_only.try_exec = Some("/opt/try/bin/tried".to_owned());
-    let book = book_of(vec![
-        app("grim", "Grim", Some("/usr/bin/grim"), None),
-        app("bare", "Bare", Some("bare"), None),
-        try_only,
-        app("loupe", "Image Viewer", Some("flatpak"), Some(LOUPE)),
-        app("nameless", "", Some("/usr/bin/nameless"), None),
-    ]);
-    // `(case, subject, name, has the entry's icon, the folder shown)`.
     const CASES: &[(&str, &str, &str, bool, Option<&str>)] = &[
         ("the same path", "/usr/bin/grim", "Grim", true, None),
         (
@@ -102,6 +92,17 @@ fn a_program_is_named_by_the_system_entry_that_starts_it_else_by_its_file_and_fo
         ),
         ("nothing to go by", "", "", false, None),
     ];
+
+    let mut try_only = app("try", "Tried", None, None);
+    try_only.try_exec = Some("/opt/try/bin/tried".to_owned());
+    let book = book_of(vec![
+        app("grim", "Grim", Some("/usr/bin/grim"), None),
+        app("bare", "Bare", Some("bare"), None),
+        try_only,
+        app("loupe", "Image Viewer", Some("flatpak"), Some(LOUPE)),
+        app("nameless", "", Some("/usr/bin/nameless"), None),
+    ]);
+    // `(case, subject, name, has the entry's icon, the folder shown)`.
     for (case, who, name, icon, place) in CASES {
         let look = book.look_of(&subject(who));
         assert_eq!(look.name.as_deref().unwrap_or_default(), *name, "{case}");

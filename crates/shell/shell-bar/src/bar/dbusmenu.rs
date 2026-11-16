@@ -50,7 +50,7 @@ fn entry(pick: RowPick, row: &TrayMenuEntry, icon: RowIcon) -> Option<MenuItem<B
         icon: row_icon,
         children,
         shortcut,
-        command: _,
+        ..
     } = &row.kind
     else {
         return Some(MenuItem::Separator);

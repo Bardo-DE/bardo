@@ -217,6 +217,10 @@ fn grant_for(kind: CapabilityKind, class: DataClass, id: &str) -> Grant {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a scenario test tells one story in order; splitting it would hide the sequence"
+)]
 async fn rig(with_grants: bool) -> Rig {
     let nextcloud = FakeNextcloud::start("alice").await.expect("nextcloud");
     nextcloud.seed_app_password(PASSWORD);
@@ -357,6 +361,8 @@ fn names(rig: &Rig) -> Vec<String> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn two_calendars_and_an_address_book_mirror_into_the_vdir_with_their_metadata() {
+    use base64::Engine as _;
+
     let rig = rig(true).await;
     let personal = rig.calendar("personal");
     let work = rig.calendar("work");
@@ -409,7 +415,6 @@ async fn two_calendars_and_an_address_book_mirror_into_the_vdir_with_their_metad
 
     // The relay, not syncd, authenticated: every DAV request carries the app password's Basic
     // header, which syncd never held.
-    use base64::Engine as _;
     let want = format!(
         "Basic {}",
         base64::engine::general_purpose::STANDARD.encode(format!("alice:{PASSWORD}"))
@@ -570,6 +575,10 @@ async fn a_local_edit_a_deletion_and_a_new_file_are_never_sent_to_the_server() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "the temporary files carry the lower-case extension this code gives them"
+)]
 async fn a_reader_never_sees_a_file_that_is_not_a_complete_item() {
     let rig = rig(true).await;
     let personal = rig.calendar("personal");

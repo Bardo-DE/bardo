@@ -49,6 +49,10 @@ pub struct UploadReplica<H> {
     kept: Mutex<Kept>,
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn refusal(error: ApiError) -> PutRefused {
     match error {
         ApiError::Unreached | ApiError::Unreadable => PutRefused::Transient(RetryAfter(30)),
@@ -123,6 +127,10 @@ impl<H: Http> UploadReplica<H> {
 }
 
 impl<H: Http> Replica for UploadReplica<H> {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn changes(&self, _from: Cursor) -> Result<ChangePage, ReplicaError> {
         Ok(ChangePage {
             changes: Vec::new(),
@@ -131,6 +139,10 @@ impl<H: Http> Replica for UploadReplica<H> {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn fetch(&self, _item: &RemoteId, _range: ByteRange) -> Result<Blob, ReplicaError> {
         // Nothing is read back from the library.
         Err(ReplicaError::Gone)
@@ -174,6 +186,10 @@ impl<H: Http> Replica for UploadReplica<H> {
         Ok((RemoteId(media.0), version))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn remove(
         &self,
         _item: &RemoteId,
@@ -182,6 +198,10 @@ impl<H: Http> Replica for UploadReplica<H> {
         Ok(RemoteVersion(DELETED.to_owned()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn quota(&self) -> Result<Quota, ReplicaError> {
         Ok(Quota {
             used: Bytes(0),
