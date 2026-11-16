@@ -153,7 +153,7 @@ mod tests {
         }
     }
 
-    fn grant(path: &str, power: Power, verdict: Verdict, at: u64) -> Grant {
+    fn grant(path: &str, power: Power, verdict: Verdict, at: i64) -> Grant {
         Grant {
             power,
             subject: Subject::Program(ProgramPath::parse(path).expect("a path")),
@@ -185,7 +185,7 @@ mod tests {
                 &format!("/usr/bin/tool{n}"),
                 Power::Screen,
                 Verdict::Allow,
-                u64::try_from(n).unwrap_or(0),
+                i64::try_from(n).unwrap_or(0),
             )
         });
         let full = rows.fold(Book::empty(), Book::with);

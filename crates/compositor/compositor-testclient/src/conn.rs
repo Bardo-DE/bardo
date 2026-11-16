@@ -16,6 +16,7 @@ mod wire;
 
 use crate::globals::{GlobalList, GlobalListContents};
 use crate::transcript::Transcript;
+use base_xdg::Xdg;
 use compositor_core::time::Mono;
 use objects::Life;
 use std::ops::RangeInclusive;
@@ -147,9 +148,10 @@ impl TestClient {
         let path = if path.is_absolute() {
             path.to_path_buf()
         } else {
-            let runtime = std::env::var_os("XDG_RUNTIME_DIR")
+            let runtime = Xdg::process()
+                .runtime_dir()
                 .ok_or_else(|| ClientError::Connect("XDG_RUNTIME_DIR is not set".to_owned()))?;
-            std::path::Path::new(&runtime).join(path)
+            runtime.join(path)
         };
         let stream = UnixStream::connect(&path)
             .map_err(|error| ClientError::Connect(format!("{}: {error}", path.display())))?;

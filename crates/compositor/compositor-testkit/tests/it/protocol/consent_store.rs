@@ -7,7 +7,6 @@
 
 use super::consent::{ScriptedShell, advertised, golden_of, program, use_keys};
 use compositor_app::privacy::{FloorFiles, Owner, PrivacyFiles};
-use compositor_app::time::WallClock;
 use compositor_core::Event;
 use compositor_core::privilege::{ClientStanding, UnixSeconds, Verdict};
 use compositor_testkit::{ASKED_PROGRAM, Fixture, FixtureSpec, program_standing};
@@ -16,7 +15,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 /// The date every answer in these tests is stamped with.
-const TODAY: u64 = 1_760_000_000;
+const TODAY: i64 = 1_760_000_000;
 
 /// A scratch home: casement's state folder and the administrator's folder.
 struct Home {
@@ -66,7 +65,7 @@ impl Home {
     fn start_owned_by(&self, owner: u32) -> (Fixture, ScriptedShell) {
         let spec = FixtureSpec::desktop()
             .with_privacy(self.files(owner))
-            .with_wall(WallClock::Fixed(UnixSeconds(TODAY)));
+            .with_wall(UnixSeconds(TODAY));
         let mut fixture = Fixture::start(spec).expect("fixture");
         let shell = ScriptedShell::start(&mut fixture);
         (fixture, shell)

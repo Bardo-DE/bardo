@@ -22,6 +22,7 @@ use crate::fakes::{
 };
 use crate::input::FixtureInput;
 use crate::spec::FixtureSpec;
+use base_time::FixedClock;
 use compositor_app::cli::{ClockChoice, Entropy, StartConfig, StartMode, TtyMode, XwaylandSource};
 use compositor_app::display::{self, SharedDisplay, attach_display};
 use compositor_app::privacy::{FilePrivacyStore, SystemDir};
@@ -199,7 +200,7 @@ impl Fixture {
             Box::new(spawner.clone()),
         )
         .with_lock_marker(Box::new(lock_marker.clone()))
-        .with_wall(spec.wall)
+        .with_wall(Arc::new(FixedClock::new(spec.wall)))
         .with_a11y(Box::new(a11y.clone()));
         let kept_privacy = spec.privacy.is_some();
         let seams = match spec.privacy {

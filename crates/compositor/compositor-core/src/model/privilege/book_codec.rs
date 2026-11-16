@@ -76,7 +76,7 @@ impl GrantDto {
         GrantDto {
             power: grant.power,
             answer: grant.verdict,
-            at: i64::try_from(grant.at.0).unwrap_or(i64::MAX),
+            at: grant.at.0,
             subject: SubjectDto::of(&grant.subject),
         }
     }
@@ -86,7 +86,7 @@ impl GrantDto {
             power: self.power,
             subject: self.subject.subject()?,
             verdict: self.answer,
-            at: UnixSeconds(u64::try_from(self.at).unwrap_or(0)),
+            at: UnixSeconds(self.at.max(0)),
         })
     }
 }

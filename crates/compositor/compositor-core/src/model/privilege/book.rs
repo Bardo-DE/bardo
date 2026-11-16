@@ -7,10 +7,10 @@ use desktop_protocols::vocab::Power;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-/// A wall-clock instant in whole seconds since 1970, as the edge reads it. Core never reads a
-/// clock: the stamp on a grant is only shown in Settings and used to drop the oldest.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct UnixSeconds(pub u64);
+// A wall-clock instant, as the edge reads it. Core never reads a clock: the stamp on a grant
+// is only shown in Settings and used to drop the oldest. The type is the base one; it is part of
+// this module's vocabulary (a grant's `at`), so it is named here for the other crates.
+pub use base_time::UnixSeconds;
 
 /// What a stored answer says.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

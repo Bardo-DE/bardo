@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 account-core = {path = "../../accounts/account-core"}
 ui-core = {path = "../../ui/ui-core", default-features = false}

@@ -14,12 +14,13 @@ use crate::privacy::{
 use crate::space_store::{BackgroundSpaceStore, EphemeralSpaceStore, SpaceStore, StateDirs};
 use crate::space_sync::SpaceSync;
 use crate::spawn::{ChildEnv, ProcessSpawner, Spawner};
-use crate::time::WallClock;
+use base_time::{Clock, FixedClock, SystemClock, UnixSeconds};
 use compositor_backend::tty::TtySeams;
 use compositor_ipc::shell_calls::{ShellCalls, ZbusShellCalls};
+use std::fmt;
+use std::sync::Arc;
 
 /// The injected seams.
-#[derive(Debug)]
 pub struct Seams {
     /// Where the Spaces file is stored.
     pub space_store: Box<dyn SpaceStore>,
@@ -42,10 +43,28 @@ pub struct Seams {
     /// directory is given).
     pub privacy: Box<dyn PrivacyStore>,
     /// The date a kept answer is stamped with (the epoch until the run gives it the system's).
-    pub wall: WallClock,
+    pub wall: Arc<dyn Clock>,
     /// Who checks that a window's accessibility root belongs to the window's own program
     /// (nobody until `run` is given a bus: a root stays unknown).
     pub a11y: Box<dyn A11yChecks>,
+}
+
+impl fmt::Debug for Seams {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Seams")
+            .field("space_store", &self.space_store)
+            .field("shell_calls", &self.shell_calls)
+            .field("spawner", &self.spawner)
+            .field("child_env", &self.child_env)
+            .field("space_sync", &self.space_sync)
+            .field("notify", &self.notify)
+            .field("tty", &self.tty)
+            .field("lock_marker", &self.lock_marker)
+            .field("privacy", &self.privacy)
+            .field("wall", &self.wall.now())
+            .field("a11y", &self.a11y)
+            .finish()
+    }
 }
 
 impl Seams {
@@ -65,7 +84,7 @@ impl Seams {
             tty: None,
             lock_marker: Box::new(NoLockMarker),
             privacy: Box::new(NoPrivacyStore),
-            wall: WallClock::epoch(),
+            wall: Arc::new(FixedClock::new(UnixSeconds(0))),
             a11y: Box::new(NoA11y),
         }
     }
@@ -78,7 +97,7 @@ impl Seams {
 
     /// The same with kept answers stamped from `wall`.
     #[must_use]
-    pub fn with_wall(self, wall: WallClock) -> Seams {
+    pub fn with_wall(self, wall: Arc<dyn Clock>) -> Seams {
         Seams { wall, ..self }
     }
 
@@ -147,6 +166,6 @@ impl Seams {
         )
         .with_lock_marker(lock_marker)
         .with_privacy(privacy)
-        .with_wall(WallClock::System)
+        .with_wall(Arc::new(SystemClock))
     }
 }

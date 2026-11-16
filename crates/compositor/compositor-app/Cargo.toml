@@ -19,6 +19,8 @@ path = "src/main.rs"
 required-features = ["tty", "libinput"]
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
+base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }
 compositor-core = {path = "../compositor-core"}
 compositor-layout = {path = "../compositor-layout"}

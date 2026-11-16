@@ -19,7 +19,7 @@ fn flatpak(id: &str) -> Subject {
     }
 }
 
-fn grant(power: Power, subject: Subject, verdict: Verdict, at: u64) -> Grant {
+fn grant(power: Power, subject: Subject, verdict: Verdict, at: i64) -> Grant {
     Grant {
         power,
         subject,
@@ -62,7 +62,7 @@ fn any_grant() -> impl Strategy<Value = Grant> {
         any_power(),
         any_subject(),
         any_verdict(),
-        0u64..2_000_000_000,
+        0i64..2_000_000_000,
     )
         .prop_map(|(power, subject, verdict, at)| grant(power, subject, verdict, at))
 }
@@ -251,7 +251,12 @@ fn the_floor_can_add_to_the_programs_never_remembered() {
 fn a_full_book_drops_its_oldest_answer() {
     let rows = (0..MAX_GRANTS + 5).map(|n| {
         let path = format!("/usr/bin/p{n}");
-        grant(Power::Screen, program(&path), Verdict::Allow, n as u64)
+        grant(
+            Power::Screen,
+            program(&path),
+            Verdict::Allow,
+            i64::try_from(n).expect("a small count"),
+        )
     });
     let book = rows.fold(Book::empty(), Book::with);
     assert_eq!(book.len(), MAX_GRANTS);

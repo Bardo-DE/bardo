@@ -243,10 +243,7 @@ impl PrivacyStore for FilePrivacyStore {
     }
 
     fn set_book_aside(&mut self, at: UnixSeconds) -> Result<(), StoreError> {
-        let kept = move_aside(
-            &self.files.book,
-            base_time::UnixSeconds(i64::try_from(at.0).unwrap_or(i64::MAX)),
-        )?;
+        let kept = move_aside(&self.files.book, at)?;
         tracing::warn!(
             kept = %kept.display(),
             "the privacy book was damaged; it was kept under another name and a new one started"

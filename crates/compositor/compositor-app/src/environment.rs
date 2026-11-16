@@ -9,29 +9,12 @@ use crate::icons::IconSearch;
 use crate::notify::watchdog_period;
 use crate::space_store::StateDirs;
 use crate::xwayland::{self, XwaylandConfig, XwaylandMode};
+use base_xdg::Xdg;
 use compositor_backend::BackendChoice;
-use std::path::PathBuf;
 use ui_settings::AppName;
 
 /// The compositor's folder name inside each XDG base (`<base>/bardo/compositor`).
 const APP: AppName = AppName::desktop("compositor");
-
-/// The environment values state placement reads.
-struct StateEnv {
-    xdg_state_home: Option<PathBuf>,
-    home: Option<PathBuf>,
-    xdg_runtime_dir: Option<PathBuf>,
-}
-
-impl StateEnv {
-    fn read() -> StateEnv {
-        StateEnv {
-            xdg_state_home: std::env::var_os("XDG_STATE_HOME").map(PathBuf::from),
-            home: std::env::var_os("HOME").map(PathBuf::from),
-            xdg_runtime_dir: std::env::var_os("XDG_RUNTIME_DIR").map(PathBuf::from),
-        }
-    }
-}
 
 /// Where state files go. An explicit `--state-home DIR` (`flag` is `Some`) always wins, for any
 /// backend. Otherwise the headless backend keeps none (its runs are throwaway), and the others
@@ -40,7 +23,7 @@ impl StateEnv {
 fn state_home(
     flag: Option<StateDirs>,
     backend: BackendChoice,
-    env: &StateEnv,
+    xdg: &Xdg<impl Fn(&str) -> Option<String>>,
 ) -> Option<StateDirs> {
     if flag.is_some() {
         return flag;
@@ -48,14 +31,11 @@ fn state_home(
     if backend == BackendChoice::Headless {
         return None;
     }
-    let base = env
-        .xdg_state_home
-        .clone()
-        .or_else(|| env.home.as_ref().map(|home| home.join(".local/state")));
+    let base = xdg.state_home().ok();
     base.map(|base| {
         let dirs = StateDirs::at(APP.under(&base));
-        match &env.xdg_runtime_dir {
-            Some(runtime) => dirs.with_runtime(APP.under(runtime)),
+        match xdg.runtime_dir() {
+            Some(runtime) => dirs.with_runtime(APP.under(&runtime)),
             None => dirs,
         }
     })
@@ -67,12 +47,7 @@ fn icon_search(backend: BackendChoice, mode: StartMode) -> Option<IconSearch> {
     if backend == BackendChoice::Headless || mode == StartMode::Safe {
         return None;
     }
-    Some(IconSearch::xdg(
-        std::env::var_os("XDG_CONFIG_HOME").map(PathBuf::from),
-        std::env::var_os("XDG_DATA_HOME").map(PathBuf::from),
-        std::env::var_os("HOME").map(PathBuf::from),
-        std::env::var("XDG_DATA_DIRS").ok(),
-    ))
+    Some(IconSearch::xdg(&Xdg::process()))
 }
 
 /// How X11 apps are served: a flag wins; else the settings file; else the satellite when it is
@@ -96,7 +71,7 @@ fn x11_setup(start: &StartConfig) -> XwaylandConfig {
 /// The run `start` asks for, with everything the environment decides filled in.
 #[must_use]
 pub fn run_config(mut start: StartConfig) -> RunConfig {
-    start.state_home = state_home(start.state_home.clone(), start.backend, &StateEnv::read());
+    start.state_home = state_home(start.state_home.clone(), start.backend, &Xdg::process());
     start.icons = icon_search(start.backend, start.mode);
     start.xwayland = x11_setup(&start);
     if start.xwayland.mode == XwaylandMode::Off {
@@ -123,7 +98,7 @@ pub fn run_config(mut start: StartConfig) -> RunConfig {
     // which listens under the runtime folder; a headless run has none.
     let scopes = match start.backend {
         BackendChoice::Headless => None,
-        _ => std::env::var_os("XDG_RUNTIME_DIR").map(PathBuf::from),
+        _ => Xdg::process().runtime_dir(),
     };
     RunConfig::new(start)
         .with_scopes(scopes)
@@ -137,17 +112,28 @@ pub fn run_config(mut start: StartConfig) -> RunConfig {
 mod tests {
     use super::*;
     use crate::cli::{self, Command};
+    use std::path::PathBuf;
 
     fn at(dir: &str) -> Option<StateDirs> {
         Some(StateDirs::at(PathBuf::from(dir)))
     }
 
-    fn env(xdg: Option<&str>, home: Option<&str>) -> StateEnv {
-        StateEnv {
-            xdg_state_home: xdg.map(PathBuf::from),
-            home: home.map(PathBuf::from),
-            xdg_runtime_dir: None,
-        }
+    fn env(
+        xdg: Option<&str>,
+        home: Option<&str>,
+        runtime: Option<&str>,
+    ) -> Xdg<impl Fn(&str) -> Option<String>> {
+        let (xdg, home, runtime) = (
+            xdg.map(str::to_owned),
+            home.map(str::to_owned),
+            runtime.map(str::to_owned),
+        );
+        Xdg::new(move |name| match name {
+            "XDG_STATE_HOME" => xdg.clone(),
+            "HOME" => home.clone(),
+            "XDG_RUNTIME_DIR" => runtime.clone(),
+            _ => None,
+        })
     }
 
     #[test]
@@ -163,10 +149,7 @@ mod tests {
 
     #[test]
     fn the_lock_marker_goes_to_the_runtime_directory_when_there_is_one() {
-        let with_runtime = StateEnv {
-            xdg_runtime_dir: Some(PathBuf::from("/run/user/1000")),
-            ..env(Some("/x"), None)
-        };
+        let with_runtime = env(Some("/x"), None, Some("/run/user/1000"));
         let want = Some(
             StateDirs::at(PathBuf::from("/x/bardo/compositor"))
                 .with_runtime(PathBuf::from("/run/user/1000/bardo/compositor")),
@@ -186,42 +169,42 @@ mod tests {
                 "flag, headless",
                 at("/f"),
                 BackendChoice::Headless,
-                env(Some("/x"), Some("/h")),
+                env(Some("/x"), Some("/h"), None),
                 at("/f"),
             ),
             (
                 "flag, tty",
                 at("/f"),
                 BackendChoice::Tty,
-                env(Some("/x"), Some("/h")),
+                env(Some("/x"), Some("/h"), None),
                 at("/f"),
             ),
             (
                 "headless, no flag",
                 None,
                 BackendChoice::Headless,
-                env(Some("/x"), Some("/h")),
+                env(Some("/x"), Some("/h"), None),
                 None,
             ),
             (
                 "tty, xdg",
                 None,
                 BackendChoice::Tty,
-                env(Some("/x"), Some("/h")),
+                env(Some("/x"), Some("/h"), None),
                 at("/x/bardo/compositor"),
             ),
             (
                 "winit, home only",
                 None,
                 BackendChoice::Winit,
-                env(None, Some("/h")),
+                env(None, Some("/h"), None),
                 at("/h/.local/state/bardo/compositor"),
             ),
             (
                 "tty, no home",
                 None,
                 BackendChoice::Tty,
-                env(None, None),
+                env(None, None, None),
                 None,
             ),
         ];

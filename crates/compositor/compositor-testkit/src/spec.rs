@@ -2,9 +2,9 @@
 
 use crate::fakes::{MemoryLockMarker, MemorySpaceStore};
 use crate::gpu::GpuTopology;
+use base_time::UnixSeconds;
 use compositor_app::icons::IconSearch;
 use compositor_app::privacy::PrivacyFiles;
-use compositor_app::time::WallClock;
 use compositor_backend::{RenderCostModel, SoftRenderer, VirtualOutputSpec};
 use compositor_core::settings::CasementSettings;
 use std::time::Duration;
@@ -37,7 +37,7 @@ pub struct FixtureSpec {
     /// fixture started on the same files is a restart.
     pub privacy: Option<PrivacyFiles>,
     /// The date kept answers are stamped with. It never moves.
-    pub wall: WallClock,
+    pub wall: UnixSeconds,
     /// Whether Mission Control looks for app icons (off: none are drawn).
     pub icons: Option<IconSearch>,
 }
@@ -60,7 +60,7 @@ impl FixtureSpec {
             space_store: MemorySpaceStore::empty(),
             lock_marker: MemoryLockMarker::absent(),
             privacy: None,
-            wall: WallClock::epoch(),
+            wall: UnixSeconds(0),
             icons: None,
         }
     }
@@ -80,7 +80,7 @@ impl FixtureSpec {
     }
 
     /// The same, with the date fixed at `wall`.
-    pub fn with_wall(self, wall: WallClock) -> FixtureSpec {
+    pub fn with_wall(self, wall: UnixSeconds) -> FixtureSpec {
         FixtureSpec { wall, ..self }
     }
 

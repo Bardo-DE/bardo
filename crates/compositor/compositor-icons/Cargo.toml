@@ -9,14 +9,15 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 freedesktop-icons = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"] }
 resvg = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 thiserror = { workspace = true }
 
 [dev-dependencies]
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 tempfile = { workspace = true }
 
 [lints]

@@ -6,44 +6,25 @@
 //! each of them.
 
 use crate::IconError;
-use rustix::fs::{Mode, OFlags, open};
-use std::fs::File;
-use std::io::Read;
+use base_fs::{ReadCap, ReadError, read_capped};
 use std::path::Path;
 
 /// The bytes of the plain file at `path`, at most `limit` of them.
 ///
-/// The file is opened without blocking (a pipe with no writer opens at once), looked at through
-/// the open descriptor (so a path swapped for a device between a check and the read is no gap),
-/// and refused unless it is a regular file. Symbolic links are followed: icon themes are full of
-/// them, and what counts is what they lead to. A file longer than `limit` is refused, not cut.
+/// Symbolic links are followed: icon themes are full of them, and what counts is what they lead
+/// to. A file longer than `limit` is refused, not cut.
 pub(crate) fn plain_file(path: &Path, limit: u64) -> Result<Vec<u8>, IconError> {
-    let read = |source: std::io::Error| IconError::Read {
-        path: path.to_path_buf(),
-        source,
-    };
-    let fd = open(
-        path,
-        OFlags::RDONLY | OFlags::NONBLOCK | OFlags::CLOEXEC,
-        Mode::empty(),
-    )
-    .map_err(|errno| read(std::io::Error::from(errno)))?;
-    let file = File::from(fd);
-    let metadata = file.metadata().map_err(read)?;
-    if !metadata.is_file() {
-        return Err(IconError::NotAFile {
-            path: path.to_path_buf(),
-        });
-    }
-    let mut bytes = Vec::new();
-    // One byte past the limit tells a file of exactly `limit` bytes from a longer one.
-    file.take(limit.saturating_add(1))
-        .read_to_end(&mut bytes)
-        .map_err(read)?;
-    match u64::try_from(bytes.len()).is_ok_and(|len| len <= limit) {
-        true => Ok(bytes),
-        false => Err(IconError::TooLarge {
-            path: path.to_path_buf(),
-        }),
-    }
+    read_capped(path, ReadCap::bytes(limit)).map_err(|error| match error {
+        ReadError::NotRegular { path } => IconError::NotAFile { path },
+        ReadError::TooBig { path, .. } => IconError::TooLarge { path },
+        ReadError::NotFound { path } => IconError::Read {
+            source: std::io::ErrorKind::NotFound.into(),
+            path,
+        },
+        ReadError::Io { path, source } => IconError::Read { path, source },
+        ReadError::NotText { path, source } => IconError::Read {
+            path,
+            source: std::io::Error::new(std::io::ErrorKind::InvalidData, source),
+        },
+    })
 }

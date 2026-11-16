@@ -7,6 +7,7 @@
 //! again; the person's answers are never read again, casement's copy is the one that counts.
 
 use super::CommandError;
+use base_xdg::Xdg;
 use compositor_privacy::{FilePrivacyStore, Owner, PrivacyFiles, SystemDir, book_in, list};
 use std::path::PathBuf;
 use zbus::fdo::DBusProxy;
@@ -85,11 +86,7 @@ pub fn run(privacy: Privacy) -> u8 {
 /// `$HOME/.local/state/bardo/compositor`.
 fn state_dir(places: &Places) -> Option<PathBuf> {
     places.state_home.clone().or_else(|| {
-        let base = std::env::var_os("XDG_STATE_HOME")
-            .map(PathBuf::from)
-            .or_else(|| {
-                std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/state"))
-            })?;
+        let base = Xdg::process().state_home().ok()?;
         Some(base.join("bardo/compositor"))
     })
 }
