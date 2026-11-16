@@ -41,11 +41,18 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         name: &str,
         need: &[Requirement],
     ) -> Result<OwnedUniqueName, Refused> {
-        let owner = self.owner_name(name).await.ok().ok_or(Refused::Unknown)?;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "Refused never says which check failed, so it carries no cause"
+        )]
+        let owner = self.owner_name(name).await.map_err(|_| Refused::Unknown)?;
         self.require(Some(&owner), need).await?;
-        OwnedUniqueName::try_from(owner)
-            .ok()
-            .ok_or(Refused::Unknown)
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "Refused never says which check failed, so it carries no cause"
+        )]
+        let unique = OwnedUniqueName::try_from(owner).map_err(|_| Refused::Unknown);
+        unique
     }
 
     /// Subscribes to changes of the owner of `name`. Call it before [`BusPeers::owner_of`].

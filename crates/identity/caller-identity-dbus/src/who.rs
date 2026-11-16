@@ -163,11 +163,14 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     ) -> Result<Standing, Refused> {
         let sender = sender.ok_or(Refused::NoSender)?;
         let ask_units = need.iter().any(|r| r.at_least >= Proof::Unit);
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "Refused never says which check failed, so it carries no cause"
+        )]
         let standing = self
             .standing(sender, ask_units)
             .await
-            .ok()
-            .ok_or(Refused::Unknown)?;
+            .map_err(|_| Refused::Unknown)?;
         standing.holds(need).cloned()
     }
 
