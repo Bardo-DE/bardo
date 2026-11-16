@@ -76,7 +76,7 @@ impl SmtpRelay {
     }
 
     /// A complete reply from the server, as `(code, lines)`.
-    fn on_reply(&mut self, code: u16, reply: Vec<u8>) -> Vec<Effect> {
+    fn on_reply(&mut self, code: u16, reply: &[u8]) -> Vec<Effect> {
         match self.phase.clone() {
             SmtpPhase::Greeting => match code {
                 220 => {
@@ -86,7 +86,7 @@ impl SmtpRelay {
                 _ => fail(RelayFault::Protocol),
             },
             SmtpPhase::Ehlo | SmtpPhase::EhloAgain => {
-                let ehlo = match EhloReply::parse(&reply) {
+                let ehlo = match EhloReply::parse(reply) {
                     Ok(ehlo) if code == 250 => ehlo,
                     _ => return fail(RelayFault::Protocol),
                 };
@@ -156,7 +156,7 @@ impl SmtpRelay {
                 continue;
             }
             let reply = std::mem::take(&mut self.reply);
-            effects.extend(self.on_reply(code, reply));
+            effects.extend(self.on_reply(code, &reply));
             if closes(&effects) || effects.contains(&Effect::StartTls) {
                 return effects;
             }

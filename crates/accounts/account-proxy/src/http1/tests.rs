@@ -132,6 +132,10 @@ fn a_token_is_presented_as_a_bearer_and_a_custom_port_stays_in_host() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of refused heads, each case a few lines of text"
+)]
 fn another_origin_or_an_ambiguous_head_is_refused() {
     const CASES: &[(&str, &str, RelayFault)] = &[
         (

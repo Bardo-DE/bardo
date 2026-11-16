@@ -41,6 +41,9 @@ impl Pop3Auth {
     /// has no `CAPA`), or `Protocol` when it offers none: a token needs `SASL XOAUTH2`; a
     /// password goes by `USER`/`PASS`, the way every server takes it, unless the server offers
     /// `SASL PLAIN` and not `USER`.
+    ///
+    /// # Errors
+    /// [`RelayFault::Protocol`] when the server offers no way to present `auth`.
     pub fn choose(capabilities: &[String], auth: &RelayAuth) -> Result<Self, RelayFault> {
         let user = capabilities.iter().any(|c| c.eq_ignore_ascii_case("USER"));
         let plain = !user && sasl(capabilities, "PLAIN");

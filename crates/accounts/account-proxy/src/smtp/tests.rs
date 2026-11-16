@@ -83,7 +83,7 @@ mod scripted {
     use crate::step::{Effect, Input, RelayEnd, Relaying, Side};
     use crate::testing::{bytewise, sent, whole};
     use account_capability::CapabilityKind;
-    use account_core::{EndpointUrl, Family, LoginName, RelayPlan, ServiceEndpoint, Tls};
+    use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
 
     fn relay(tls: Tls) -> SmtpRelay {
         SmtpRelay::new(RelayPlan::new(

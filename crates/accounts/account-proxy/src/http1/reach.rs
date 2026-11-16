@@ -108,7 +108,6 @@ mod tests {
 
     #[test]
     fn a_contacts_relay_on_nextcloud_stays_under_the_address_books() {
-        let contacts = plan(books());
         const CASES: &[(&str, &str, Option<&str>, bool)] = &[
             ("the home", "PROPFIND", Some("1"), true),
             ("the home without its slash", "PROPFIND", Some("1"), true),
@@ -157,6 +156,7 @@ mod tests {
             "/remote.php/dav/",
             "*",
         ];
+        let contacts = plan(books());
         for ((name, method, depth, allowed), target) in CASES.iter().zip(targets) {
             let got = check(&contacts, method, target, *depth);
             let want = match allowed {

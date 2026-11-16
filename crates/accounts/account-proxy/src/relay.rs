@@ -19,8 +19,9 @@ use std::task::Poll;
 /// How much one read takes.
 const READ: usize = 16 * 1024;
 
-/// Dials the plan's endpoint through `connect`, runs the machine of its protocol and relays
-/// until either side finishes. The relay holds the plan, and so the credential, for as long as
+/// Dials the plan's endpoint through `connect`, runs the machine of its protocol and relays.
+///
+/// It relays until either side finishes. The relay holds the plan, and so the credential, for as long as
 /// it runs and never writes it anywhere but to the endpoint.
 ///
 /// The protocol is the one the endpoint's URL scheme names. `ByteStream::read` must be cancel

@@ -58,6 +58,9 @@ fn has_capability(capabilities: &[String], name: &str) -> bool {
 impl SieveAuth {
     /// The way to present `auth` to a server whose capability lines are `capabilities`, or
     /// `Protocol` when it offers none: a password needs `PLAIN`, a token `XOAUTH2`.
+    ///
+    /// # Errors
+    /// [`RelayFault::Protocol`] when the server offers no way to present `auth`.
     pub fn choose(capabilities: &[String], auth: &RelayAuth) -> Result<Self, RelayFault> {
         let offered = mechanisms(capabilities);
         let has = |name: &str| offered.iter().any(|m| m == name);
@@ -72,11 +75,14 @@ impl SieveAuth {
 /// `STARTTLS`, then `OK`.
 #[must_use]
 pub fn app_greeting(capabilities: &[String]) -> Vec<u8> {
-    let mut out: String = capabilities
+    let mut out = String::new();
+    for line in capabilities
         .iter()
         .filter(|l| !matches!(capability_name(l).as_deref(), Some("SASL" | "STARTTLS")))
-        .map(|l| format!("{l}\r\n"))
-        .collect();
+    {
+        out.push_str(line);
+        out.push_str("\r\n");
+    }
     out.push_str("OK \"porter relay ready\"\r\n");
     out.into_bytes()
 }

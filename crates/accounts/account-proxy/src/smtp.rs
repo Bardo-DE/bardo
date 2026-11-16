@@ -34,8 +34,13 @@ fn body(line: &str, more: bool) -> Result<&str, RelayFault> {
 
 impl EhloReply {
     /// Reads a complete `250` reply: every line `250-...` but the last, which is `250 ...`.
+    ///
+    /// # Errors
+    /// [`RelayFault::Protocol`] when `reply` is not text, or is not a complete `250` reply.
     pub fn parse(reply: &[u8]) -> Result<Self, RelayFault> {
-        let text = std::str::from_utf8(reply).map_err(|_| RelayFault::Protocol)?;
+        let text = std::str::from_utf8(reply)
+            .ok()
+            .ok_or(RelayFault::Protocol)?;
         let lines: Vec<&str> = text.split("\r\n").filter(|l| !l.is_empty()).collect();
         let (last, earlier) = lines.split_last().ok_or(RelayFault::Protocol)?;
         let mut texts = earlier
@@ -110,6 +115,9 @@ impl EhloReply {
 impl SmtpAuth {
     /// The way to present `auth` to a server whose `EHLO` reply is `ehlo`, or `Protocol` when it
     /// offers none: a token needs `XOAUTH2`, a password needs `PLAIN`.
+    ///
+    /// # Errors
+    /// [`RelayFault::Protocol`] when the server offers no way to present `auth`.
     pub fn choose(ehlo: &EhloReply, auth: &RelayAuth) -> Result<Self, RelayFault> {
         let mechanisms = ehlo.mechanisms();
         let offered = |name: &str| mechanisms.iter().any(|m| m == name);

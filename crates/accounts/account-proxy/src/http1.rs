@@ -76,9 +76,14 @@ impl HttpRelay {
     }
 }
 
-/// The head the server is sent for the app's `head` (request line and headers, through the blank
-/// line): the target and `Host` checked against the plan's origin, the app's credentials
-/// dropped and the relay's added; or why it is refused.
+/// The head the server is sent for the app's `head`, or why it is refused.
+///
+/// `head` is the request line and headers, through the blank line: the target and `Host` are
+/// checked against the plan's origin, the app's credentials dropped and the relay's added.
+///
+/// # Errors
+/// The [`RelayFault`] [`head::rewrite`] gives: `Protocol` for a head that is malformed or
+/// ambiguous, `ForeignOrigin` for another origin or a path outside the grant.
 pub fn rewrite_head(head: &[u8], plan: &RelayPlan) -> Result<Vec<u8>, RelayFault> {
     head::rewrite(head, plan).map(|rewritten| rewritten.head)
 }

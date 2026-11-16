@@ -42,9 +42,9 @@ fn size_of(line: &[u8]) -> Result<u64, Malformed> {
         .collect();
     let rest = &line[digits.len()..];
     let extension_ok = rest.is_empty() || rest[0] == b';' || rest[0] == b' ' || rest[0] == b'\t';
-    let text = std::str::from_utf8(&digits).map_err(|_| Malformed)?;
+    let text = std::str::from_utf8(&digits).ok().ok_or(Malformed)?;
     match (digits.is_empty() || digits.len() > 15, extension_ok) {
-        (false, true) => u64::from_str_radix(text, 16).map_err(|_| Malformed),
+        (false, true) => u64::from_str_radix(text, 16).ok().ok_or(Malformed),
         _ => Err(Malformed),
     }
 }
@@ -52,6 +52,9 @@ fn size_of(line: &[u8]) -> Result<u64, Malformed> {
 impl ChunkParser {
     /// Consumes bytes of `data` up to the end of the body or the end of `data`; returns how many
     /// it took. `state == Done` after it means the body ended at that byte.
+    ///
+    /// # Errors
+    /// [`Malformed`] when the bytes are not a well formed chunked body.
     pub fn feed(&mut self, data: &[u8]) -> Result<usize, Malformed> {
         let mut at = 0;
         while at < data.len() && self.state != Chunked::Done {

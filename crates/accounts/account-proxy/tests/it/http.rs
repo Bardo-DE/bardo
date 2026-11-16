@@ -148,17 +148,6 @@ async fn a_different_origin_is_refused_with_a_4xx_and_nothing_is_sent() {
 
 #[tokio::test]
 async fn a_contacts_relay_reaches_the_address_books_and_not_the_files_or_ocs() {
-    let contacts_plan = |base: &str| {
-        let mut plan = plan(
-            Family::CardDav,
-            &format!("{base}/dav/addressbooks/users/alice/"),
-            Tls::Plain,
-            password(),
-        );
-        plan.endpoint.login.0 = "alice".into();
-        plan.kind = account_capability::CapabilityKind::Contacts;
-        confined_to(plan, "/dav/addressbooks/users/alice")
-    };
     const REFUSED: &[(&str, &str)] = &[
         (
             "the files",
@@ -173,6 +162,17 @@ async fn a_contacts_relay_reaches_the_address_books_and_not_the_files_or_ocs() {
             "GET /dav/addressbooks/users/alice/../../files/ HTTP/1.1\r\nHost: {host}\r\n\r\n",
         ),
     ];
+    let contacts_plan = |base: &str| {
+        let mut plan = plan(
+            Family::CardDav,
+            &format!("{base}/dav/addressbooks/users/alice/"),
+            Tls::Plain,
+            password(),
+        );
+        plan.endpoint.login.0 = "alice".into();
+        plan.kind = account_capability::CapabilityKind::Contacts;
+        confined_to(plan, "/dav/addressbooks/users/alice")
+    };
     for (name, request) in REFUSED {
         let dav = FakeDav::start("alice", PASSWORD).await.expect("dav");
         let base = dav.base_url().to_owned();

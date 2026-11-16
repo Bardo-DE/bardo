@@ -1,7 +1,10 @@
 //! What the relay tests share: the app's end of a relay, the plans, and a minimal fake
 //! `ManageSieve` server (account-fake-servers has none).
 
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses part of this shared module, and a different part"
+)]
 
 pub mod sieve;
 

@@ -102,14 +102,14 @@ fn target_for(target: &str, origin: &Origin) -> Result<String, RelayFault> {
 
 /// The `Authorization` header line the relay adds, or none for a relay that adds no credential.
 /// A way of authenticating this relay does not know is `Protocol`, never an anonymous request.
-fn credential(auth: &RelayAuth, login: &str) -> Result<Option<String>, RelayFault> {
+fn credential(auth: &RelayAuth, login: &str) -> Option<String> {
     match auth {
-        RelayAuth::Password(password) => Ok(Some(format!(
+        RelayAuth::Password(password) => Some(format!(
             "Basic {}",
             STANDARD.encode(format!("{login}:{}", password.expose()))
-        ))),
-        RelayAuth::AccessToken(token) => Ok(Some(format!("Bearer {}", token.expose()))),
-        RelayAuth::Anonymous => Ok(None),
+        )),
+        RelayAuth::AccessToken(token) => Some(format!("Bearer {}", token.expose())),
+        RelayAuth::Anonymous => None,
     }
 }
 
@@ -118,7 +118,7 @@ fn credential(auth: &RelayAuth, login: &str) -> Result<Option<String>, RelayFaul
 /// credentials dropped and the relay's added, and the framing of the body.
 pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
     let origin = plan.endpoint.url.origin();
-    let text = std::str::from_utf8(head).map_err(|_| RelayFault::Protocol)?;
+    let text = std::str::from_utf8(head).ok().ok_or(RelayFault::Protocol)?;
     let body = text.strip_suffix("\r\n\r\n").ok_or(RelayFault::Protocol)?;
     if body.bytes().any(|b| b == 0) || body.replace("\r\n", "").contains(['\r', '\n']) {
         return Err(RelayFault::Protocol);
@@ -148,7 +148,9 @@ pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
     let mut depths = Vec::new();
     let (mut lengths, mut codings) = (Vec::new(), Vec::new());
     for header in request.headers.iter() {
-        let value = std::str::from_utf8(header.value).map_err(|_| RelayFault::Protocol)?;
+        let value = std::str::from_utf8(header.value)
+            .ok()
+            .ok_or(RelayFault::Protocol)?;
         let value = value.trim_matches([' ', '\t']);
         let line = if value.is_empty() {
             format!("{}:", header.name)
@@ -215,8 +217,10 @@ pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
         out.push_str(&line);
         out.push_str("\r\n");
     }
-    if let Some(value) = credential(&plan.auth, &plan.endpoint.login.0)? {
-        out.push_str(&format!("Authorization: {value}\r\n"));
+    if let Some(value) = credential(&plan.auth, &plan.endpoint.login.0) {
+        out.push_str("Authorization: ");
+        out.push_str(&value);
+        out.push_str("\r\n");
     }
     out.push_str("\r\n");
     Ok(Rewritten {

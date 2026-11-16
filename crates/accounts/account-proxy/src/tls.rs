@@ -116,14 +116,18 @@ impl RustlsConnect {
     }
 
     async fn handshake(&self, stream: TcpStream, host: &str) -> Result<NetStream, RelayFault> {
-        let name = ServerName::try_from(host.to_owned()).map_err(|_| RelayFault::Tls)?;
+        let name = ServerName::try_from(host.to_owned())
+            .ok()
+            .ok_or(RelayFault::Tls)?;
         // A server that accepts the connection and never answers the hello is unreachable, not a
         // refused certificate.
         tokio::time::timeout(self.handshake_timeout, self.connector.connect(name, stream))
             .await
-            .map_err(|_| RelayFault::Unreachable)?
+            .ok()
+            .ok_or(RelayFault::Unreachable)?
+            .ok()
             .map(|tls| NetStream::Tls(Box::new(tls)))
-            .map_err(|_| RelayFault::Tls)
+            .ok_or(RelayFault::Tls)
     }
 }
 
@@ -158,8 +162,9 @@ impl Connect for RustlsConnect {
     async fn dial(&self, origin: &Origin, tls: Tls) -> Result<NetStream, RelayFault> {
         let tcp = tokio::time::timeout(DIAL_TIMEOUT, connect_probed(&origin.host, origin.port))
             .await
-            .map_err(|_| RelayFault::Unreachable)?
-            .map_err(|_| RelayFault::Unreachable)?;
+            .ok()
+            .and_then(Result::ok)
+            .ok_or(RelayFault::Unreachable)?;
         match tls {
             Tls::Implicit => self.handshake(tcp, &origin.host).await,
             Tls::StartTls | Tls::Plain => Ok(NetStream::Plain(tcp)),

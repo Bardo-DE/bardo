@@ -6,9 +6,10 @@ use crate::fault::RelayFault;
 use account_core::Tls;
 use account_core::stream::ByteStream;
 use base_url::Origin;
-use std::future::Future;
 
-/// Opens connections to an endpoint's origin. A connection that cannot be made is
+/// Opens connections to an endpoint's origin.
+///
+/// A connection that cannot be made is
 /// [`RelayFault::Unreachable`] (no route, refused, or the name does not resolve) or
 /// [`RelayFault::Tls`] (the handshake failed or the certificate was refused for the server's
 /// name).

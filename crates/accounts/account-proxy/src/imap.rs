@@ -30,6 +30,9 @@ impl ImapAuth {
     /// The way to present `auth` to a server offering `capabilities` (upper case atoms, as the
     /// server wrote them), or `Protocol` when it offers none: a token needs `AUTH=XOAUTH2`, and
     /// a password needs `AUTH=PLAIN` or a `LOGIN` that is not disabled.
+    ///
+    /// # Errors
+    /// [`RelayFault::Protocol`] when the server offers no way to present `auth`.
     pub fn choose(capabilities: &[String], auth: &RelayAuth) -> Result<Self, RelayFault> {
         let has = |atom: &str| capabilities.iter().any(|c| c.eq_ignore_ascii_case(atom));
         match pick(auth, has("AUTH=PLAIN"), has("AUTH=XOAUTH2")) {
@@ -44,8 +47,9 @@ impl ImapAuth {
     }
 }
 
-/// The capabilities the app is told: the server's, less what concerns authenticating or
-/// upgrading (`STARTTLS`, `LOGINDISABLED`, every `AUTH=` mechanism), since the app has no
+/// The capabilities the app is told: the server's, less what concerns authenticating or upgrading.
+///
+/// That is `STARTTLS`, `LOGINDISABLED` and every `AUTH=` mechanism, since the app has no
 /// credential to present and the connection is already as secure as the relay made it.
 #[must_use]
 pub fn app_capabilities(server: &[String]) -> Vec<String> {
