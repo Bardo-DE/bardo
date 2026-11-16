@@ -47,6 +47,7 @@ fn bar_config(blur: BlurSpec) -> LayerConfig {
         output: OutputTarget::CompositorPicks,
         blur,
         input: RegionSpec::Whole,
+        opaque: false,
     }
 }
 

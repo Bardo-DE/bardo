@@ -107,6 +107,7 @@ impl LayerPreset {
             output: OutputTarget::Output(output.id),
             blur: BlurSpec::None,
             input: self.input(),
+            opaque: false,
         };
         match self {
             LayerPreset::FullOutputSheet { blur } => LayerConfig {

@@ -60,6 +60,7 @@ fn layer_config() -> LayerConfig {
         output: OutputTarget::CompositorPicks,
         blur: BlurSpec::Region(card_region()),
         input: card_region(),
+        opaque: false,
     }
 }
 

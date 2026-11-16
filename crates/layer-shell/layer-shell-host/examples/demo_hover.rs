@@ -93,6 +93,7 @@ fn config(which: Card) -> LayerConfig {
         output: OutputTarget::CompositorPicks,
         blur: BlurSpec::None,
         input: RegionSpec::Whole,
+        opaque: false,
     }
 }
 

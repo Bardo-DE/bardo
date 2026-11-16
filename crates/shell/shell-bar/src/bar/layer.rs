@@ -42,6 +42,7 @@ pub(super) fn layer(output: &OutputInfo, mode: MenuBarHiding, tokens: BarTokens)
             Phase::Fixed => RegionSpec::Whole,
             _ => strip_input(),
         },
+        opaque: false,
     }
 }
 

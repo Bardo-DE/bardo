@@ -95,10 +95,47 @@ fn alpha_is_premultiplied_else_postmultiplied_else_opaque() {
         ("nothing listed", &[], A::Opaque, AlphaMode::Opaque),
     ];
     for (name, offered, want, stats) in cases {
-        let chosen = choose_alpha(offered);
+        let chosen = choose_alpha(offered, false);
         assert_eq!(chosen, *want, "{name}");
         assert_eq!(alpha_mode_of(chosen), *stats, "{name}");
     }
+}
+
+#[test]
+fn an_opaque_surface_prefers_opaque_alpha_when_offered() {
+    let cases: &[(&str, &[A], A)] = &[
+        (
+            "opaque beats pre",
+            &[A::PreMultiplied, A::Opaque],
+            A::Opaque,
+        ),
+        (
+            "opaque beats post",
+            &[A::PostMultiplied, A::Opaque],
+            A::Opaque,
+        ),
+        (
+            "pre when opaque is not offered",
+            &[A::PostMultiplied, A::PreMultiplied],
+            A::PreMultiplied,
+        ),
+        (
+            "post when only post is offered",
+            &[A::PostMultiplied],
+            A::PostMultiplied,
+        ),
+        ("inherit only", &[A::Inherit], A::Inherit),
+        ("nothing listed", &[], A::Opaque),
+    ];
+    for (name, offered, want) in cases {
+        assert_eq!(choose_alpha(offered, true), *want, "{name}");
+    }
+}
+
+#[test]
+fn a_translucent_surface_ignores_the_opaque_preference() {
+    let offered = [A::Opaque, A::PreMultiplied];
+    assert_eq!(choose_alpha(&offered, false), A::PreMultiplied);
 }
 
 #[test]

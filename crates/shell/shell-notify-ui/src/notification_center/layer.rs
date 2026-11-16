@@ -51,6 +51,7 @@ pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerConfig {
         output: OutputTarget::Output(output.id),
         blur: BlurSpec::Region(panel_region()),
         input: RegionSpec::Whole,
+        opaque: false,
     }
 }
 

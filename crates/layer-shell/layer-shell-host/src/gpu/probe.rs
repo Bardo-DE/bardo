@@ -197,7 +197,7 @@ fn present_once(
             height: 1,
             present_mode: choose_present(&caps.present_modes),
             desired_maximum_frame_latency: 2,
-            alpha_mode: choose_alpha(&caps.alpha_modes),
+            alpha_mode: choose_alpha(&caps.alpha_modes, false),
             view_formats: vec![],
         },
     );

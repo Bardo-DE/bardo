@@ -60,13 +60,17 @@ fn gpu_presenter<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId) -> Result<Pres
     let Some(surface) = state.surfaces.get(&id) else {
         return Err(HostError::NoSurface(id));
     };
+    let opaque = surface.role.opaque();
     let wgpu_surface = create_surface(instance, conn, surface.role.wl_surface())?;
     if state.gpu.is_none() {
         let compositor = state.render_device.as_ref().and_then(RenderDevice::ids);
         let pref = follow_compositor(&ctx.adapter, compositor);
         state.gpu = Some(GpuContext::new(instance, &wgpu_surface, &pref)?);
     }
-    Ok(Presenter::Wgpu(Box::new(Swapchain::new(wgpu_surface))))
+    Ok(Presenter::Wgpu(Box::new(Swapchain::new(
+        wgpu_surface,
+        opaque,
+    ))))
 }
 
 fn surface_wl(state: &HostState, id: SurfaceId) -> Result<WlSurface> {

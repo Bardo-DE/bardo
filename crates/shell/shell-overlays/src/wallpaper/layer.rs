@@ -7,11 +7,16 @@ use shell_ui_kit::surface::{LayerPreset, Pointer};
 
 /// The wallpaper's layer configuration on `output`.
 pub fn layer(output: &OutputInfo) -> LayerConfig {
-    LayerPreset::Whole {
-        level: LayerLevel::Background,
-        pointer: Pointer::Takes,
+    LayerConfig {
+        // The picture sits on an opaque `--paper` ground over the whole surface (style.css), so
+        // the compositor need not blend it or draw what it covers.
+        opaque: true,
+        ..LayerPreset::Whole {
+            level: LayerLevel::Background,
+            pointer: Pointer::Takes,
+        }
+        .config("wallpaper", output)
     }
-    .config("wallpaper", output)
 }
 
 #[cfg(test)]
@@ -29,5 +34,6 @@ mod tests {
         assert_eq!(config.exclusive, ExclusiveZone::Ignore);
         assert_eq!(config.input, RegionSpec::Whole);
         assert_eq!(config.blur, BlurSpec::None);
+        assert!(config.opaque);
     }
 }

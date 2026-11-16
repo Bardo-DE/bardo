@@ -27,6 +27,10 @@ pub struct LayerConfig {
     pub output: OutputTarget,
     pub blur: BlurSpec,
     pub input: RegionSpec,
+    /// Every pixel the surface draws is opaque: the host tells the compositor so (an opaque
+    /// region over the whole surface) and asks for an opaque swapchain when the display offers
+    /// one, so the compositor can skip what it covers. `false` for anything translucent.
+    pub opaque: bool,
 }
 
 /// Which stacking layer a surface lives in, bottom to top.

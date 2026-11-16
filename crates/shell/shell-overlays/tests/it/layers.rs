@@ -110,6 +110,7 @@ fn the_sheets_are_keyboard_exclusive_full_output_overlays() {
             },
             "{name}: blur"
         );
+        assert!(!layer.opaque, "{name}: a sheet is translucent");
         assert_eq!(
             layer.input,
             match input {

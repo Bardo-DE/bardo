@@ -69,6 +69,7 @@ pub fn layer(output: &OutputInfo, tokens: OsdTokens) -> LayerConfig {
             inflate: 0,
         }),
         input: RegionSpec::Empty,
+        opaque: false,
     }
 }
 
