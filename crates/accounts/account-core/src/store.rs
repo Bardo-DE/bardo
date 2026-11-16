@@ -60,16 +60,38 @@ pub enum StoreFault {
 }
 
 /// Why the registry could not be read or written.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+///
+/// Two errors are equal when they are the same kind (an `Io` pair when its `io::ErrorKind` is the
+/// same), since the sources behind them are not comparable.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum StoreError {
     /// The stored document was refused (corrupt, from a newer build); the daemon must not start
     /// empty over it.
     #[error(transparent)]
     Fault(#[from] StoreFault),
-    /// The medium failed (a full disk, a read-only state directory).
+    /// The store is out of reach for a reason it has no error for (a stand-in store that refuses).
     #[error("registry store unavailable")]
     Unavailable,
+    /// The medium failed (a full disk, a read-only state directory).
+    #[error("registry store unavailable")]
+    Io(#[source] std::sync::Arc<std::io::Error>),
+    /// The task that was to read or write the registry did not finish.
+    #[error("registry store unavailable")]
+    Task(#[source] std::sync::Arc<dyn std::error::Error + Send + Sync>),
 }
+
+impl PartialEq for StoreError {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Fault(a), Self::Fault(b)) => a == b,
+            (Self::Io(a), Self::Io(b)) => a.kind() == b.kind(),
+            (Self::Unavailable, Self::Unavailable) | (Self::Task(_), Self::Task(_)) => true,
+            _ => false,
+        }
+    }
+}
+
+impl Eq for StoreError {}
 
 /// Where the registry lives between runs (porter PLAN §2.3).
 ///

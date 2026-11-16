@@ -119,7 +119,7 @@ impl FileStore {
                 Ok(Persisted::from_json(&text)?)
             }
             Ok(None) => Ok(Persisted::empty()),
-            Err(_) => Err(StoreError::Unavailable),
+            Err(e) => Err(StoreError::Io(std::sync::Arc::new(e))),
         }
     }
 
@@ -130,7 +130,9 @@ impl FileStore {
         if let Err(StoreError::Fault(fault)) = self.load_blocking() {
             return Err(StoreError::Fault(fault));
         }
-        self.file.write(&text).ok().ok_or(StoreError::Unavailable)
+        self.file
+            .write(&text)
+            .map_err(|e| StoreError::Io(std::sync::Arc::new(e)))
     }
 }
 
@@ -139,8 +141,7 @@ impl RegistryStore for FileStore {
         let store = self.clone();
         tokio::task::spawn_blocking(move || store.load_blocking())
             .await
-            .ok()
-            .ok_or(StoreError::Unavailable)?
+            .map_err(|e| StoreError::Task(std::sync::Arc::new(e)))?
     }
 
     async fn save(&self, state: &Persisted) -> Result<(), StoreError> {
@@ -148,8 +149,7 @@ impl RegistryStore for FileStore {
         let state = state.clone();
         tokio::task::spawn_blocking(move || store.save_blocking(&state))
             .await
-            .ok()
-            .ok_or(StoreError::Unavailable)?
+            .map_err(|e| StoreError::Task(std::sync::Arc::new(e)))?
     }
 }
 

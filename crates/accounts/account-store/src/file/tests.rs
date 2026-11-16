@@ -183,7 +183,7 @@ async fn a_file_that_cannot_be_read_is_unavailable_not_empty() {
     let store = store_in(&scratch);
     // A directory where the file should be: reading it fails, and it is not "nothing stored".
     std::fs::create_dir_all(store.path()).expect("dir");
-    assert_eq!(store.load().await, Err(StoreError::Unavailable));
+    assert!(matches!(store.load().await, Err(StoreError::Io(_))));
 }
 
 /// The migration table: one row per vocabulary bump. There is no bump yet (the current version
