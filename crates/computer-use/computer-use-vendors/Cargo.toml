@@ -15,6 +15,7 @@ computer-use-parse = {path = "../computer-use-parse"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }

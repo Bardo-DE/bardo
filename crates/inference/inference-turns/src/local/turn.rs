@@ -2,7 +2,7 @@
 //! request's shape asks), a task, embeddings. Its events go to the sink it is given.
 
 use super::{EngineUse, chat_provider, client, note_no_scores, run_turn};
-use crate::bridge::{self, Frames};
+use crate::bridge::{self, BridgeError, Frames};
 use crate::structured::{self, Checked, Limits, Shaping};
 use account_capability::Tier;
 use inference_core::{
@@ -104,6 +104,12 @@ impl<U: EngineUse> LocalTurn<'_, U> {
     }
 }
 
+/// The one refusal any request the bridge cannot express gets; the cause goes to the log.
+fn unsupported(error: BridgeError) -> InferRefusal {
+    tracing::warn!(error = %error, "a request could not be turned into a model turn");
+    InferRefusal::Unsupported
+}
+
 impl<U: EngineUse> Model for LocalTurn<'_, U> {
     fn card(&self) -> &ModelCard {
         &self.model.card
@@ -114,13 +120,9 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
         request: &ChatRequest,
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
-        #[expect(
-            clippy::map_err_ignore,
-            reason = "any bridge failure is the one refusal Unsupported, which carries no cause"
-        )]
         let turn = bridge::chat_turn(self.model, request, self.frames)
             .map(|turn| self.within_ceiling(turn))
-            .map_err(|_| InferRefusal::Unsupported)?;
+            .map_err(unsupported)?;
         let shaping = structured::shaping(self.model, request, self.limits);
         self.run(&turn, shaping, sink).await
     }
@@ -130,13 +132,9 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
         request: &TaskRequest,
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
-        #[expect(
-            clippy::map_err_ignore,
-            reason = "any bridge failure is the one refusal Unsupported, which carries no cause"
-        )]
         let turn = bridge::task_turn(self.model, request, self.tier)
             .map(|turn| self.within_ceiling(turn))
-            .map_err(|_| InferRefusal::Unsupported)?;
+            .map_err(unsupported)?;
         self.run(&turn, Shaping::Unchecked, sink).await
     }
 

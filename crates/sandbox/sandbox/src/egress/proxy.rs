@@ -102,16 +102,14 @@ impl Gate {
         self.policy
             .check(&target.host, target.port)
             .map_err(Failure::Refused)?;
-        #[expect(
-            clippy::map_err_ignore,
-            reason = "the agent is told only that the host is unreachable, whatever the lookup error was"
-        )]
         let addrs = match &target.host {
             Host::Addr(addr) => vec![*addr],
-            Host::Name(name) => self
-                .resolver
-                .resolve(name, target.port)
-                .map_err(|_| Failure::Unreachable)?,
+            Host::Name(name) => self.resolver.resolve(name, target.port).map_err(|error| {
+                // The agent is told only that the host is unreachable; the lookup error is
+                // for the log.
+                tracing::warn!(error = %error, host = %name, "a host name did not resolve");
+                Failure::Unreachable
+            })?,
         };
         if addrs.is_empty() {
             return Err(Failure::Unreachable);

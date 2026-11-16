@@ -32,6 +32,14 @@ pub struct BoundEdge {
 #[error("{EDGE_TOKEN_ENV} is missing or not a session token")]
 pub struct NoToken;
 
+/// The fixed fault a failed step answers with; the cause goes to the log, not to the peer.
+fn unavailable<E: std::fmt::Display>(step: &'static str) -> impl FnOnce(E) -> ToolFault {
+    move |error| {
+        tracing::warn!(error = %error, step, "the router's edge socket could not be asked");
+        ToolFault::Unavailable
+    }
+}
+
 impl BoundEdge {
     /// A bridge to `socket` speaking with `token`.
     #[must_use]
@@ -54,32 +62,28 @@ impl BoundEdge {
     }
 
     /// One request and its reply. Any trouble with the socket is the router being unavailable.
-    #[expect(
-        clippy::map_err_ignore,
-        reason = "every socket or codec failure means the same fixed `Unavailable` fault"
-    )]
     async fn ask(&self, op: EdgeOp) -> Result<EdgeReply, ToolFault> {
         let request = EdgeRequest {
             token: self.token.clone(),
             op,
         };
-        let mut text = serde_json::to_string(&request).map_err(|_| ToolFault::Unavailable)?;
+        let mut text = serde_json::to_string(&request).map_err(unavailable("encode"))?;
         text.push('\n');
         let stream = UnixStream::connect(&self.socket)
             .await
-            .map_err(|_| ToolFault::Unavailable)?;
+            .map_err(unavailable("connect"))?;
         let (read, mut write) = stream.into_split();
         write
             .write_all(text.as_bytes())
             .await
-            .map_err(|_| ToolFault::Unavailable)?;
+            .map_err(unavailable("write"))?;
         let mut reader = BufReader::new(read).take(EDGE_LINE_MAX as u64);
         let mut line = Vec::new();
         reader
             .read_until(b'\n', &mut line)
             .await
-            .map_err(|_| ToolFault::Unavailable)?;
-        serde_json::from_slice(&line).map_err(|_| ToolFault::Unavailable)
+            .map_err(unavailable("read"))?;
+        serde_json::from_slice(&line).map_err(unavailable("decode"))
     }
 }
 

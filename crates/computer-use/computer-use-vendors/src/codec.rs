@@ -126,10 +126,6 @@ impl<S: CoordSpace> Tally<S> {
 
     /// Every call being no tool of the dialect, or no JSON object, is a fault of the whole
     /// reply; anything else is per-call drops in the `Parsed`.
-    #[expect(
-        clippy::map_err_ignore,
-        reason = "any parse fault of the batch is the one `UnknownTool` fault of the reply; its detail has no meaning on the wire"
-    )]
     fn finish(self, wrap: impl FnOnce(Vec<CuaAction<S>>) -> InSpace) -> Result<Parsed, WireError> {
         if self.calls > 0 && self.unreadable == self.calls {
             return Err(WireError::BadArguments);
@@ -137,9 +133,12 @@ impl<S: CoordSpace> Tally<S> {
         if self.calls > 0 && self.unknown + self.unreadable == self.calls {
             return Err(WireError::UnknownTool);
         }
-        self.batch
-            .into_parsed(None, wrap)
-            .map_err(|_| WireError::UnknownTool)
+        self.batch.into_parsed(None, wrap).map_err(|error| {
+            // The wire answer is one fixed fault; the parse fault (offsets and limits only,
+            // never the reply's text) goes to the log.
+            tracing::warn!(error = %error, "a batch of calls did not parse");
+            WireError::UnknownTool
+        })
     }
 }
 

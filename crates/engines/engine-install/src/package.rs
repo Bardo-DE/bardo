@@ -23,10 +23,6 @@ fn refresh_args(manager: PackageManager) -> Option<&'static [&'static str]> {
 }
 
 async fn run(program: &Path, args: &[&str], cancel: &CancelToken) -> Result<(), Failure> {
-    #[expect(
-        clippy::map_err_ignore,
-        reason = "`Failure` is the fixed category the helper reports to the person; the OS error has no place in it"
-    )]
     let mut child = Command::new(program)
         .args(args)
         .env_clear()
@@ -38,7 +34,11 @@ async fn run(program: &Path, args: &[&str], cancel: &CancelToken) -> Result<(), 
         .stderr(Stdio::null())
         .kill_on_drop(true)
         .spawn()
-        .map_err(|_| Failure::Package)?;
+        .map_err(|error| {
+            // `Failure` is the fixed category reported to the person; the OS error is for the log.
+            eprintln!("bardo-engines: the package manager could not be started: {error}");
+            Failure::Package
+        })?;
     let ended = tokio::select! {
         status = child.wait() => Ended::Exited(status),
         () = cancel.cancelled() => Ended::Stopped,

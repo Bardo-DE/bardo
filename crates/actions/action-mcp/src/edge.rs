@@ -77,15 +77,11 @@ impl<T: Transport> McpEdge<T> {
         }
     }
 
-    #[expect(
-        clippy::map_err_ignore,
-        reason = "any transport failure means the same fixed `Unavailable` fault"
-    )]
     async fn registry(&self) -> Result<Vec<ValidManifest>, ToolFault> {
-        self.intents
-            .manifests()
-            .await
-            .map_err(|_| ToolFault::Unavailable)
+        self.intents.manifests().await.map_err(|error| {
+            tracing::warn!(error = %error, "the router's registry could not be read");
+            ToolFault::Unavailable
+        })
     }
 
     /// The tools offered right now, each with its description: nothing while the edge is off.

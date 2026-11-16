@@ -29,12 +29,11 @@ use sandbox::Argv;
 use serde::Serialize;
 use serde_json::Value as Json;
 
-#[expect(
-    clippy::map_err_ignore,
-    reason = "the agent is told a fixed message; the serializer's detail is not for the peer"
-)]
 pub(super) fn ok(value: &impl Serialize) -> Result<Json, Error> {
-    serde_json::to_value(value).map_err(|_| fault::internal("could not answer"))
+    serde_json::to_value(value).map_err(|error| {
+        tracing::warn!(error = %error, "a reply to the agent could not be serialized");
+        fault::internal("could not answer")
+    })
 }
 
 /// What running a staged request produced.

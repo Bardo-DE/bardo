@@ -66,6 +66,9 @@ pub enum CopyFailure {
     Failed,
     /// The compositor closed the connection on a protocol error.
     Protocol,
+    /// The shared-memory file the compositor wrote could not be read back; the kind of the I/O
+    /// error.
+    Unreadable(std::io::ErrorKind),
 }
 
 /// A finished copy.
@@ -316,17 +319,16 @@ impl ScreenCopy {
         let length = usize::try_from(u64::from(offer.stride) * u64::from(offer.size.h)).ok()?;
         let mut bytes = vec![0_u8; length];
         let read = file.read_exact_at(&mut bytes, 0);
-        #[expect(
-            clippy::map_err_ignore,
-            reason = "an unreadable shm file is the one failure `CopyFailure::Failed` names; the io error adds nothing the test acts on"
-        )]
-        let copied = read.map_err(|_| CopyFailure::Failed).map(|()| Copied {
-            size: offer.size,
-            stride: offer.stride,
-            bytes,
-            damage: Some(std::mem::take(&mut self.state.damage)).filter(|rects| !rects.is_empty()),
-            flags: self.state.flags,
-        });
+        let copied = read
+            .map_err(|error| CopyFailure::Unreadable(error.kind()))
+            .map(|()| Copied {
+                size: offer.size,
+                stride: offer.stride,
+                bytes,
+                damage: Some(std::mem::take(&mut self.state.damage))
+                    .filter(|rects| !rects.is_empty()),
+                flags: self.state.flags,
+            });
         Some(copied)
     }
 
