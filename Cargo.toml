@@ -752,8 +752,12 @@ trivial_numeric_casts = "warn"
 unsafe_op_in_unsafe_fn = "warn"
 unused_lifetimes = "warn"
 
+# Not the `cargo` group: its multiple_crate_versions walks the whole dependency graph again for every
+# crate it lints, minutes per crate in a workspace this size (a gate spent 23 minutes linting one
+# proc-macro crate). cargo-deny checks duplicate versions and wildcards once for the workspace
+# (deny.toml [bans], run by `cargo xtask check deny`); the crates.io metadata lints do not apply to
+# crates that are not published.
 [workspace.lints.clippy]
-cargo = { level = "warn", priority = -1 }
 complexity = { level = "warn", priority = -1 }
 correctness = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
