@@ -38,9 +38,9 @@ impl EhloReply {
     /// # Errors
     /// [`RelayFault::Protocol`] when `reply` is not text, or is not a complete `250` reply.
     pub fn parse(reply: &[u8]) -> Result<Self, RelayFault> {
-        let text = std::str::from_utf8(reply)
-            .ok()
-            .ok_or(RelayFault::Protocol)?;
+        let Ok(text) = std::str::from_utf8(reply) else {
+            return Err(RelayFault::Protocol);
+        };
         let lines: Vec<&str> = text.split("\r\n").filter(|l| !l.is_empty()).collect();
         let (last, earlier) = lines.split_last().ok_or(RelayFault::Protocol)?;
         let mut texts = earlier

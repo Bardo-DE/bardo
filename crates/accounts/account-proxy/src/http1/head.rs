@@ -138,7 +138,9 @@ fn framing_of(lengths: &[&str], codings: &[&str]) -> Result<Framing, RelayFault>
 /// credentials dropped and the relay's added, and the framing of the body.
 pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
     let origin = plan.endpoint.url.origin();
-    let text = std::str::from_utf8(head).ok().ok_or(RelayFault::Protocol)?;
+    let Ok(text) = std::str::from_utf8(head) else {
+        return Err(RelayFault::Protocol);
+    };
     let body = text.strip_suffix("\r\n\r\n").ok_or(RelayFault::Protocol)?;
     if body.bytes().any(|b| b == 0) || body.replace("\r\n", "").contains(['\r', '\n']) {
         return Err(RelayFault::Protocol);
@@ -168,9 +170,9 @@ pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
     let mut depths = Vec::new();
     let (mut lengths, mut codings) = (Vec::new(), Vec::new());
     for header in request.headers.iter() {
-        let value = std::str::from_utf8(header.value)
-            .ok()
-            .ok_or(RelayFault::Protocol)?;
+        let Ok(value) = std::str::from_utf8(header.value) else {
+            return Err(RelayFault::Protocol);
+        };
         let value = value.trim_matches([' ', '\t']);
         let line = if value.is_empty() {
             format!("{}:", header.name)

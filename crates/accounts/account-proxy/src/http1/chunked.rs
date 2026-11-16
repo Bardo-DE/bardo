@@ -42,9 +42,11 @@ fn size_of(line: &[u8]) -> Result<u64, Malformed> {
         .collect();
     let rest = &line[digits.len()..];
     let extension_ok = rest.is_empty() || rest[0] == b';' || rest[0] == b' ' || rest[0] == b'\t';
-    let text = std::str::from_utf8(&digits).ok().ok_or(Malformed)?;
     match (digits.is_empty() || digits.len() > 15, extension_ok) {
-        (false, true) => u64::from_str_radix(text, 16).ok().ok_or(Malformed),
+        // At most 15 hex digits: the value fits in a `u64`.
+        (false, true) => Ok(digits.iter().fold(0u64, |size, digit| {
+            size << 4 | u64::from(char::from(*digit).to_digit(16).unwrap_or(0))
+        })),
         _ => Err(Malformed),
     }
 }

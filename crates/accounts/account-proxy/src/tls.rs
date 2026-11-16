@@ -116,18 +116,18 @@ impl RustlsConnect {
     }
 
     async fn handshake(&self, stream: TcpStream, host: &str) -> Result<NetStream, RelayFault> {
-        let name = ServerName::try_from(host.to_owned())
-            .ok()
-            .ok_or(RelayFault::Tls)?;
+        let Ok(name) = ServerName::try_from(host.to_owned()) else {
+            return Err(RelayFault::Tls);
+        };
         // A server that accepts the connection and never answers the hello is unreachable, not a
         // refused certificate.
-        tokio::time::timeout(self.handshake_timeout, self.connector.connect(name, stream))
+        match tokio::time::timeout(self.handshake_timeout, self.connector.connect(name, stream))
             .await
-            .ok()
-            .ok_or(RelayFault::Unreachable)?
-            .ok()
-            .map(|tls| NetStream::Tls(Box::new(tls)))
-            .ok_or(RelayFault::Tls)
+        {
+            Err(_elapsed) => Err(RelayFault::Unreachable),
+            Ok(Ok(tls)) => Ok(NetStream::Tls(Box::new(tls))),
+            Ok(Err(_refused)) => Err(RelayFault::Tls),
+        }
     }
 }
 
