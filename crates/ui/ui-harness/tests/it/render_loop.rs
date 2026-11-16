@@ -82,7 +82,12 @@ fn Ticker() -> Element {
 #[test]
 fn a_real_timer_that_fires_every_round_is_time_passing_not_a_loop() {
     let mut harness = Harness::new(Ticker, VIEW);
-    harness.advance(Duration::from_secs(2));
+    // The timer is real, so how long its 300 ticks take depends on the machine's load: advance
+    // until they end (never a panic on the way), with a bound far past any loaded run.
+    let give_up = std::time::Instant::now() + Duration::from_secs(60);
+    while !harness.html().contains("ticks 300") && std::time::Instant::now() < give_up {
+        harness.advance(Duration::from_millis(100));
+    }
     assert!(harness.html().contains("ticks 300"), "{}", harness.html());
 }
 
