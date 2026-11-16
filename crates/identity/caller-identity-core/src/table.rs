@@ -43,6 +43,10 @@ impl Row {
 
     /// Whether this row can give a real proof: every row of a build without `dev-rows`.
     #[cfg(not(feature = "dev-rows"))]
+    #[expect(
+        clippy::unused_self,
+        reason = "the same method as the `dev-rows` build, where the answer reads the row"
+    )]
     pub(crate) fn proves(&self) -> bool {
         true
     }
