@@ -99,7 +99,7 @@ pub(super) async fn fetch<S: AsyncRead + AsyncWrite + Unpin>(
                 ))
                 .await?;
         } else {
-            lines.send(&format!("{head})")).await?
+            lines.send(&format!("{head})")).await?;
         }
     }
     lines.send(&format!("{tag} OK FETCH completed")).await

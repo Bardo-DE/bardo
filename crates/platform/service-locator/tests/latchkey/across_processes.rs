@@ -150,7 +150,7 @@ fn a_killed_agent_locks_nobody_out() {
             home.join("agent.sock").exists(),
             "the residue is the whole point"
         );
-        assert!(home.join("agent.lock").exists())
+        assert!(home.join("agent.lock").exists());
     };
     assert!(
         !matches!(agent.connect(), Ok(Some(_))),

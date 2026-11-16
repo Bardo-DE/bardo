@@ -21,7 +21,7 @@ fn secrets_and_bodies_do_not_print() {
         assert_eq!(
             format!("{:?}", JsonBody("{\"a\":1}".into())),
             "JsonBody(<7 bytes>)"
-        )
+        );
     };
     {
         let header = ExtraHeader {
@@ -30,7 +30,7 @@ fn secrets_and_bodies_do_not_print() {
         };
         assert!(!format!("{header:?}").contains("tenant-secret"));
         let json = r#"{"name":"x-routing","value":"tenant-secret"}"#;
-        assert_eq!(serde_json::from_str::<ExtraHeader>(json).unwrap(), header)
+        assert_eq!(serde_json::from_str::<ExtraHeader>(json).unwrap(), header);
     };
     {
         let ex = Exchange {
@@ -41,7 +41,7 @@ fn secrets_and_bodies_do_not_print() {
             framing: Framing::Sse,
         };
         assert!(!format!("{ex:?}").contains("private"));
-        assert_eq!(ex.clone(), ex)
+        assert_eq!(ex.clone(), ex);
     };
     {
         let up = Upload {

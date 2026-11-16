@@ -54,7 +54,7 @@ async fn the_add_sheet_is_shown_with_the_window_and_ended_by_the_host() {
         assert!(
             matches!(view, SheetView::Providers(_)),
             "the provider list: {view:?}"
-        )
+        );
     };
     send_input(&rig.host_connection, &handle, &SheetInput::Dismiss).await;
     let (code, results) = sheet.response(&path).await.expect("response");

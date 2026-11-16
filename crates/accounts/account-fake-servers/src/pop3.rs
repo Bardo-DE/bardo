@@ -219,9 +219,9 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
             ("PASS", _) => lines.send("-ERR USER first").await?,
             ("AUTH", Stage::Authorization(_)) => {
                 if auth(&mut lines, ctx, (n, peer), rest).await? {
-                    stage = Stage::Transaction
+                    stage = Stage::Transaction;
                 } else {
-                    lines.send("-ERR [AUTH] invalid credentials").await?
+                    lines.send("-ERR [AUTH] invalid credentials").await?;
                 }
                 if stage == Stage::Transaction {
                     lines.send("+OK maildrop locked and ready").await?;
@@ -256,9 +256,9 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                         for text in m.raw.split("\r\n") {
                             // Dot-stuffing: a line starting with a dot gets another.
                             if text.starts_with('.') {
-                                lines.send(&format!(".{text}")).await?
+                                lines.send(&format!(".{text}")).await?;
                             } else {
-                                lines.send(text).await?
+                                lines.send(text).await?;
                             }
                         }
                         lines.send(".").await?;

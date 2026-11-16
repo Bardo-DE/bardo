@@ -55,9 +55,10 @@ impl PrivateBus {
             address: address.trim().to_owned(),
             _scratch: scratch,
         };
-        if !bus.address.starts_with("unix:") {
-            panic!("{test}: the private dbus-daemon printed no address");
-        }
+        assert!(
+            bus.address.starts_with("unix:"),
+            "{test}: the private dbus-daemon printed no address"
+        );
         Some(bus)
     }
 

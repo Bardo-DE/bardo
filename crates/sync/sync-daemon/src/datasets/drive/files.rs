@@ -793,7 +793,7 @@ mod tests {
             drive.set_paused(true);
             let (_, handle) = drive.create(&NodeId::Top, "offline.txt").expect("create");
             drive.write(handle, 0, b"not sent").await.expect("write");
-            drive.release_write(handle)
+            drive.release_write(handle);
         };
         let kept = DriveSet::default()
             .retire(&paths, &account)

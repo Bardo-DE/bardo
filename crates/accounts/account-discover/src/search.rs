@@ -79,9 +79,9 @@ impl NotFound {
 impl fmt::Display for NotFound {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.offline() {
-            f.write_str("could not reach anything to ask; is this computer offline?")?
+            f.write_str("could not reach anything to ask; is this computer offline?")?;
         } else {
-            f.write_str("no usable configuration was found")?
+            f.write_str("no usable configuration was found")?;
         }
         self.tried.iter().try_for_each(|tried| {
             let why = match tried.miss {

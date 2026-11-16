@@ -132,7 +132,7 @@ impl Fake {
     pub(super) async fn wait(&self, ready: impl FnMut(&Log) -> bool) {
         let mut log = self.0.log.subscribe();
         let seen = tokio::time::timeout(super::PATIENCE, log.wait_for(ready)).await;
-        assert!(!seen.is_err(), "timed out; log {:?}", self.0.log.borrow())
+        assert!(seen.is_ok(), "timed out; log {:?}", self.0.log.borrow());
     }
 
     pub(super) fn provider(&self) -> Arc<dyn Provider> {

@@ -216,7 +216,7 @@ async fn a_pass_cut_short_resumes_and_a_restart_keeps_the_tree_and_the_anchor() 
             (pass.outcome, pass.pages),
             (Listed::Retry(RetryAfter(5)), 1)
         );
-        assert!(journal.listing().expect("listing"), "still listing")
+        assert!(journal.listing().expect("listing"), "still listing");
     };
     // A new process: the journal again, a replica from the tree it kept.
     let journal = DriveJournal::open(&file).expect("open again");

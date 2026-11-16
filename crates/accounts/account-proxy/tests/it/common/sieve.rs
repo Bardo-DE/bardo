@@ -112,9 +112,9 @@ async fn secure<S: tokio::io::AsyncRead + tokio::io::AsyncWrite + Unpin>(
             });
             authed = accepted;
             if accepted {
-                lines.send("OK \"Authenticated\"").await?
+                lines.send("OK \"Authenticated\"").await?;
             } else {
-                lines.send("NO \"Authentication failed\"").await?
+                lines.send("NO \"Authentication failed\"").await?;
             }
         } else if upper == "LISTSCRIPTS" && authed {
             lines

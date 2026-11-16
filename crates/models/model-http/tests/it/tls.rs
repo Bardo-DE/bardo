@@ -100,7 +100,7 @@ async fn serve(leaf: Option<(CertificateDer<'static>, KeyPair)>, steps: Vec<Step
             let (_, conn) = tls.get_ref();
             let mut seen = record.lock().unwrap();
             seen.sni = conn.server_name().map(str::to_owned);
-            seen.alpn = conn.alpn_protocol().map(<[u8]>::to_vec)
+            seen.alpn = conn.alpn_protocol().map(<[u8]>::to_vec);
         };
         let mut raw = Vec::new();
         let mut buf = [0u8; 4096];

@@ -7,7 +7,6 @@ use ui_components::prelude::*;
 use ui_components::window::host::{use_window_host_provider, use_window_tiled};
 use ui_components::window::tiled::{TileEdge, Tiled};
 use ui_components::window::vocab::{ResizeEdge, TileError, WindowTile, Zoom};
-use ui_core::word::Word;
 
 /// A host that does nothing and reports `tiled`.
 struct Tiling(Tiled);

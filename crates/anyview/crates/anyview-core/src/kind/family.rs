@@ -72,7 +72,7 @@ pub(crate) mod tests {
         ];
         for (name, check) in families {
             assert!(
-                !std::panic::catch_unwind(check).is_err(),
+                std::panic::catch_unwind(check).is_ok(),
                 "the table of {name} is not well formed (see the message above)"
             );
         }

@@ -159,13 +159,13 @@ fn a_position_far_outside_any_arrangement_is_refused() {
         want.position = Some(at);
         let resolved = resolve_change(&facts, &config, &want);
         if fine {
-            assert!(resolved.is_ok(), "{name}")
+            assert!(resolved.is_ok(), "{name}");
         } else {
             assert_eq!(
                 resolved,
                 Err(OutputRefusal::PositionOutOfRange(at)),
                 "{name}"
-            )
+            );
         }
     }
 }

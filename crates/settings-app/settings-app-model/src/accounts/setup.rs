@@ -69,7 +69,7 @@ mod tests {
             (SetupAction::Continue, true, SetupAvailability::Now),
         ];
         for (button, any, want) in cases {
-            let shown: &[SignedIn] = if any { &*listed } else { &[] };
+            let shown: &[SignedIn] = if any { &listed } else { &[] };
             assert_eq!(
                 accounts_setup_offer(shown, button),
                 want,

@@ -84,9 +84,9 @@ impl<const SYNC: bool> Harness for WebDav<SYNC> {
 
     fn expire_anchors(&mut self) {
         if SYNC {
-            self.server.dav.expire_sync_tokens()
+            self.server.dav.expire_sync_tokens();
         } else {
-            self.replica = self.server.replica(self.page)
+            self.replica = self.server.replica(self.page);
         }
     }
 }

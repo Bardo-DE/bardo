@@ -114,9 +114,9 @@ pub fn apply_presented(
             part.cleared.note(client);
         }
         if remaining {
-            still.push(watched)
+            still.push(watched);
         } else {
-            watch_mark::clear::<Watched>(&surface)
+            watch_mark::clear::<Watched>(&surface);
         }
     }
     part.watched = still;

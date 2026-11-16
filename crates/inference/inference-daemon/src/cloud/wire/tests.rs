@@ -85,7 +85,7 @@ fn luna_takes_tools_only_with_reasoning_off_in_each_provider_spelling() {
         let shape = BodyShape::of(&provider(id), "gpt-6-luna", Temperature::Sent);
         let got = applied(shape, &body(tools));
         if let Some((field, value)) = want {
-            assert_eq!(got[field], value, "{id} tools={tools}")
+            assert_eq!(got[field], value, "{id} tools={tools}");
         } else {
             assert!(got.get("reasoning_effort").is_none(), "{id}");
             assert!(got.get("reasoning").is_none(), "{id}");

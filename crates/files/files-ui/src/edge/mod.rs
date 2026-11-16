@@ -125,7 +125,7 @@ impl Edge {
         // made (see `submit`), and the cause is logged here, once.
         let ops = Worker::start(Arc::clone(&seams.trash), sink)
             .inspect_err(|why| {
-                eprintln!("bardo-files: the queue of changes could not start: {why}")
+                eprintln!("bardo-files: the queue of changes could not start: {why}");
             })
             .ok();
         let prefs = prefs::Prefs::start(Arc::clone(&seams.prefs), heard.clone());

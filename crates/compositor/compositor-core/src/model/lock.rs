@@ -197,9 +197,8 @@ impl Model {
             } => {
                 if covered.contains(&output) {
                     return Moved::of(self);
-                } else {
-                    (holder, with_output(covered, &output), Vec::new())
                 }
+                (holder, with_output(covered, &output), Vec::new())
             }
             LockState::Locked {
                 holder,

@@ -448,7 +448,7 @@ impl MemorySink {
     fn show(&self, entry: Entry) {
         let mut state = held(&self.state);
         if let Some(lag) = state.lagging.as_mut() {
-            lag.push(Some(entry))
+            lag.push(Some(entry));
         } else {
             drop(state);
             self.listing.put(entry);
@@ -458,7 +458,7 @@ impl MemorySink {
     fn hide(&self, id: &RemoteId) {
         let mut state = held(&self.state);
         if state.lagging.is_some() {
-            state.lag_removed.push(id.clone())
+            state.lag_removed.push(id.clone());
         } else {
             drop(state);
             self.listing.remove(&id.0);

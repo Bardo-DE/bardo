@@ -112,7 +112,7 @@ fixed_scale = 150
         assert_eq!(settings.keyboard.layout.rules, "");
         assert_eq!(settings.keyboard.repeat_delay, Duration::from_millis(250));
         assert_eq!(settings.keyboard.repeat_rate, RepeatRate(30));
-        assert_eq!(settings.outputs.first_sight, ScalePolicy::Fixed(Scale(180)))
+        assert_eq!(settings.outputs.first_sight, ScalePolicy::Fixed(Scale(180)));
     };
     {
         let settings = settings_of(
@@ -137,7 +137,7 @@ disable_while_typing = false
         assert_eq!(
             settings.pointer.touchpad.natural_scroll,
             defaults.pointer.touchpad.natural_scroll
-        )
+        );
     };
     {
         use compositor_core::settings::SwipeFingers;

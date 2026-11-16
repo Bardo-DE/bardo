@@ -43,7 +43,7 @@ impl<S: Seams> Router<S> {
                 .perform_once(&who, next, window.clone(), None, Depth(depth), watch)
                 .await
             {
-                outcome = done
+                outcome = done;
             } else {
                 outcome.follow = Follow::Nothing;
                 break;

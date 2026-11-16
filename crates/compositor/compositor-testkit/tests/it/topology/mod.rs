@@ -199,7 +199,7 @@ fn display_on_a_client_from_b(
         let texture = renderer
             .import_dmabuf(&client.dmabuf, None)
             .expect("the foreign dma-buf imports");
-        draw(&mut renderer, &mut out, &texture).expect("the frame draws")
+        draw(&mut renderer, &mut out, &texture).expect("the frame draws");
     };
     assert_eq!(
         out.mismatches(3).expect("read back"),
@@ -272,7 +272,7 @@ fn unplugging_a_gpu_falls_back_to_shm() {
         let texture = renderer
             .import_dmabuf(&client.dmabuf, None)
             .expect("imports");
-        draw(&mut renderer, &mut out, &texture).expect("draws")
+        draw(&mut renderer, &mut out, &texture).expect("draws");
     };
     assert_eq!(
         out.mismatches(1).expect("read back"),

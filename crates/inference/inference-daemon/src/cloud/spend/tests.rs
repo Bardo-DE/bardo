@@ -257,7 +257,7 @@ fn a_ledger_opened_on_a_file_keeps_what_it_was_told_across_a_restart() {
             charged(7, 3, 1_234),
             LEAP_NOON,
         );
-        ledger.record(&who, &account("openrouter"), used(1, 1), LEAP_NOON)
+        ledger.record(&who, &account("openrouter"), used(1, 1), LEAP_NOON);
     };
     let again = Ledger::open_at(file.clone(), LEAP_NOON);
     let scope = SpendScope::App(who);

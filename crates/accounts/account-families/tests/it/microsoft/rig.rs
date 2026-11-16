@@ -69,15 +69,15 @@ impl Graph {
             .lock()
             .unwrap()
             .push((path.clone(), bearer.clone()));
-        let status = if !self.issuer.access_is_live(&bearer) {
-            401
-        } else {
+        let status = if self.issuer.access_is_live(&bearer) {
             self.statuses
                 .lock()
                 .unwrap()
                 .get(&path)
                 .copied()
                 .unwrap_or(200)
+        } else {
+            401
         };
         let body = match (status, path.as_str()) {
             (200, "/v1.0/me") => {

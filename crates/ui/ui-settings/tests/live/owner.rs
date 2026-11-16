@@ -246,13 +246,13 @@ async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
         let client = LiveClient::new(&settings, &name, PATH, AnyOwner).expect("client");
         let (described, snapshot) = (client.describe().await, client.snapshot().await);
         if case.starts_with("at the") {
-            assert!(described.is_ok() && snapshot.is_ok(), "{case}")
+            assert!(described.is_ok() && snapshot.is_ok(), "{case}");
         } else {
             assert!(
                 matches!(described, Err(LiveError::Failed(_)))
                     && matches!(snapshot, Err(LiveError::Failed(_))),
                 "{case}: {described:?} {snapshot:?}"
-            )
+            );
         }
     }
 }

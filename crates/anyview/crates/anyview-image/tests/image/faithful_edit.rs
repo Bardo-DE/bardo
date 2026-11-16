@@ -181,7 +181,7 @@ fn tiff_pages(white_is_zero: bool) -> Vec<u8> {
             image.y_resolution(Rational { n: 150, d: 1 });
             image
                 .encoder()
-                .write_tag(Tag::ImageDescription, (&*format!("page {n}")))
+                .write_tag(Tag::ImageDescription, &*format!("page {n}"))
                 .unwrap();
             let data: Vec<u16> = (0..w * h * 3)
                 .map(|i| (i * 1021 + n as u32 * 7) as u16)

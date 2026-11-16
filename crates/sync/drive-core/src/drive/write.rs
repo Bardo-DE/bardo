@@ -435,17 +435,14 @@ impl Inner {
             .items
             .get(&remote.0)
             .is_some_and(|row| row.version == entry.version.0 && row.present.covers(0, size));
-        let copied = match cached {
-            true => {
-                let (from, to) = (self.content(remote, &entry.version.0), path.clone());
-                // A whole file's copy waits on the disk: off the runtime's threads.
-                tokio::task::spawn_blocking(move || copy_span(&from, &to, size))
-                    .await
-                    .unwrap_or_else(|why| {
-                        Err(WriteError::Cache(format!("a cache task failed: {why}")))
-                    })
-            }
-            false => self.download_into(drive, &id, &path, size).await,
+        let copied = if cached {
+            let (from, to) = (self.content(remote, &entry.version.0), path.clone());
+            // A whole file's copy waits on the disk: off the runtime's threads.
+            tokio::task::spawn_blocking(move || copy_span(&from, &to, size))
+                .await
+                .unwrap_or_else(|why| Err(WriteError::Cache(format!("a cache task failed: {why}"))))
+        } else {
+            self.download_into(drive, &id, &path, size).await
         };
         if let Err(why) = copied {
             self.drop_file(n);
@@ -1192,7 +1189,7 @@ impl Drive {
                 if open {
                     inner.change(id, |edit, _| edit.removed = true);
                 } else {
-                    inner.forget_made(*n)
+                    inner.forget_made(*n);
                 }
             }
             NodeId::Remote(remote) => inner.remove_remote(remote, open)?,
@@ -1454,7 +1451,7 @@ impl Drive {
                 inner.at_hook("saved over");
                 drop(guards);
                 if let NodeId::Local(n) = from {
-                    inner.alias(*n, over)
+                    inner.alias(*n, over);
                 } else {
                     let ino = inner.ino(from);
                     held(&inner.index).inos.insert(key_text(over), ino);

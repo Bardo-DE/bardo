@@ -343,7 +343,7 @@ impl<S: Seams> Supervisor<S> {
             .open_session(&id, &task.space, &conversation)
             .await
         {
-            task.session = session
+            task.session = session;
         } else {
             let mut state = self.shared.state();
             state.leases = state.leases.release(&id);

@@ -431,7 +431,7 @@ impl TextureHandle {
                 Origin::Upload,
             );
         } else {
-            self.redraw()
+            self.redraw();
         }
         Ok(())
     }

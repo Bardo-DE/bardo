@@ -95,7 +95,7 @@ impl<H: Http + 'static> Provider for ApiKeyProvider<H> {
             let server = own_server(&account.endpoints).ok_or(ProviderError::Unreadable)?;
             check_server(&*self.http, &server.url, key).await?;
         } else {
-            check(&*self.http, &self.spec, key).await?
+            check(&*self.http, &self.spec, key).await?;
         }
         Ok(crate::key::claims(&self.spec))
     }

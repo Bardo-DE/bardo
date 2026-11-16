@@ -293,7 +293,7 @@ mod tests {
                 rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
             )
             .unwrap();
-            cases.push(("a named pipe", pipe, MAX_INLINE, None))
+            cases.push(("a named pipe", pipe, MAX_INLINE, None));
         };
         for (name, path, most, want) in cases {
             assert_eq!(DiskFiles.read(&path, most), want, "{name}");

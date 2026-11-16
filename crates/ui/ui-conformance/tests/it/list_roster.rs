@@ -128,7 +128,12 @@ fn one_row_leaves_and_the_rows_below_heal_by_its_height() {
     assert_eq!(presence(&harness, 2).as_deref(), Some("leaving"));
     assert_eq!(harness.attr(&nth(2), "data-exit").as_deref(), Some("row"));
     let out = fold(MotionLevel::Standard);
-    harness.advance(out.checked_sub(removed).unwrap() - ms(1));
+    harness.advance(
+        out.checked_sub(removed)
+            .unwrap()
+            .checked_sub(ms(1))
+            .unwrap(),
+    );
     assert_eq!(harness.count(".ds-list-item"), 4, "drawn until it settles");
     harness.advance(ms(1));
     assert_eq!(harness.count(".ds-list-item"), 3, "dropped at its settle");

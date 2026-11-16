@@ -631,7 +631,7 @@ fn a_dropped_turn_still_tells_the_sink() {
         let turn = d.turn(&req, &mut sink);
         let mut turn = std::pin::pin!(turn);
         let polled = turn.as_mut().poll(&mut Context::from_waker(Waker::noop()));
-        assert!(matches!(polled, Poll::Pending))
+        assert!(matches!(polled, Poll::Pending));
     };
     let seen = TurnUsage {
         input: Tokens(7),

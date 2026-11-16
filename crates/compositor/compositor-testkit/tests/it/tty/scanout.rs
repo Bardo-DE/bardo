@@ -60,7 +60,7 @@ fn run(frames: u64, cost: &RenderCostModel) -> (u64, u64) {
         {
             let mut fake = fake.0.borrow_mut();
             fake.vblank = wanted;
-            fake.script.push_back(Presented::new(shown, shown_at))
+            fake.script.push_back(Presented::new(shown, shown_at));
         };
         scanout.record_cost(spent);
         let queued = set.present(&output(), &EmptyScene, now).expect("present");

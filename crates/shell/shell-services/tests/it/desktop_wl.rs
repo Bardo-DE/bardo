@@ -518,9 +518,9 @@ fn what_sill_says_a_backend_supports_is_what_the_wire_client_accepts() {
                 .try_for_each(|request| session.desktop.send(request).map(drop))
         });
         if supports(DesktopBackend::Wlr, command) {
-            assert_eq!(sent, Ok(Ok(())), "{command:?} is offered and sent")
+            assert_eq!(sent, Ok(Ok(())), "{command:?} is offered and sent");
         } else {
-            assert_eq!(sent, Err(Refusal::Unsupported), "{command:?} is refused")
+            assert_eq!(sent, Err(Refusal::Unsupported), "{command:?} is refused");
         }
     }
 }

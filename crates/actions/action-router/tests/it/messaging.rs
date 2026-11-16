@@ -113,7 +113,7 @@ async fn a_cross_space_request_is_delivered_with_the_senders_label_and_grants_no
         let receiver = &st.sessions[&front.session];
         assert!(receiver.saw.untrusted);
         assert_eq!(receiver.policy, None, "a message grants no policy");
-        assert_eq!(receiver.inbox.len(), 1)
+        assert_eq!(receiver.inbox.len(), 1);
     };
     let lines = inbox(&router, AgentRef::Companion).await;
     assert_eq!(lines.len(), 1);

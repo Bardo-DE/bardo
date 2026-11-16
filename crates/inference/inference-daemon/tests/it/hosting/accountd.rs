@@ -173,7 +173,7 @@ impl Accountd for FakeAccountd {
                 calls
                     .verdicts
                     .push((app.name.as_str().to_owned(), slug(&class)));
-                calls.usages.push(usage_asked.clone())
+                calls.usages.push(usage_asked.clone());
             };
             let looks = self.looks.lock().expect("lock").clone();
             let accounts = self.accounts.lock().expect("lock").clone();

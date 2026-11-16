@@ -58,7 +58,7 @@ impl Keymap {
         }
         for (row, conflict) in collided {
             if let Some(binding) = self.fall_back(row, &staged) {
-                stage(&mut staged, row, binding)
+                stage(&mut staged, row, binding);
             } else {
                 refused.push(row.action.clone());
                 first.get_or_insert(conflict);

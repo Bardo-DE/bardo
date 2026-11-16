@@ -133,7 +133,7 @@ pub(super) fn proceed(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, want: F
         ActionClass::Pointer | ActionClass::Keyboard => authorise(run, fx, n, head),
         ActionClass::Observe => {
             if let CuaAction::Wait { for_ms } = head.action {
-                wait(run, fx, at, n, for_ms.ms())
+                wait(run, fx, at, n, for_ms.ms());
             } else {
                 run.pending.actions.pop_front();
                 let done = ActionOutcome {

@@ -30,6 +30,7 @@ pub struct PrivateBus {
 
 impl PrivateBus {
     /// Start a bus; panics, saying how to install it, when `dbus-daemon` is missing.
+    #[must_use]
     pub fn start() -> Option<PrivateBus> {
         let scratch = tempfile::tempdir().ok()?;
         let socket = scratch.path().join("bus");

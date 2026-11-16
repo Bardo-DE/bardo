@@ -332,7 +332,7 @@ fn on_grid_999(actions: ActionProfile) -> (String, String) {
     let Part::Text(system) = &request.messages[0].parts[0] else {
         panic!("a system text")
     };
-    let description = match (&*request.tools) {
+    let description = match &*request.tools {
         [ToolSpec::Function { description, .. }] => description.clone(),
         _ => String::new(),
     };

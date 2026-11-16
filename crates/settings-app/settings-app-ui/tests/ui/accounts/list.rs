@@ -108,7 +108,7 @@ fn resting_the_pointer_on_an_app_names_the_services_it_uses() {
             .clone()
             .granting("g3", "Companion can use Language model")
             .granted_on("g3", "2026-10-08", "always")
-            .granting("g4", "Companion can use Speech")
+            .granting("g4", "Companion can use Speech");
     };
     w.announce(
         ModuleId::Accountd,

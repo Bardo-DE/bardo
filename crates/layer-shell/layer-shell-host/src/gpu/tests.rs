@@ -546,7 +546,7 @@ fn an_image_the_full_atlas_refused_is_drawn_on_the_next_frame() {
     {
         let mut gpu = gpu();
         gpu.resources = resources;
-        gpu.images = images
+        gpu.images = images;
     };
     assert!(
         close(first_red, [255, 0, 0, 255]),

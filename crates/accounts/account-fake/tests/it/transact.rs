@@ -556,7 +556,7 @@ async fn a_listener_that_asks_later_hears_every_change_after_it_in_commit_order(
     let late = Arc::new(std::sync::Mutex::new(Vec::new()));
     {
         let early = early.clone();
-        ctx.follow(move |c| early.lock().expect("early").push(c.after.toggles.len()))
+        ctx.follow(move |c| early.lock().expect("early").push(c.after.toggles.len()));
     };
     for kind in [CapabilityKind::Calendar, CapabilityKind::Contacts] {
         ctx.transact(|registry| {

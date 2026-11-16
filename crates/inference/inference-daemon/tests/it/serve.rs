@@ -278,7 +278,7 @@ async fn one_request_queues_behind_a_running_turn_with_its_own_descriptors() {
     {
         let started = rig.runner.started.lock().expect("lock");
         assert_eq!(started[1].request, queued);
-        assert_eq!(started[1].attachments, vec![b"queued picture".to_vec()])
+        assert_eq!(started[1].attachments, vec![b"queued picture".to_vec()]);
     };
     push(&rig, 1, TurnStep::Done(answer("second")));
     assert_eq!(

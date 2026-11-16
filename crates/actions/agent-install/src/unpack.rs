@@ -207,7 +207,7 @@ fn zip(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackFau
             .enclosed_name()
             .and_then(|p| inside(&p))
             .filter(|_| !link)
-            .ok_or_else(|| UnpackFault::Path(shown))?;
+            .ok_or(UnpackFault::Path(shown))?;
         let target = into.join(rel);
         if file.is_dir() {
             std::fs::create_dir_all(&target).map_err(damaged)?;

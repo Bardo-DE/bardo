@@ -486,9 +486,10 @@ fn write_drives(file: &Path, list: &str, id: &str, listed: bool) -> std::io::Res
                     .collect()
             })
             .unwrap_or_default();
-        match listed {
-            true => ids.insert(id.to_owned()),
-            false => ids.remove(id),
+        if listed {
+            ids.insert(id.to_owned())
+        } else {
+            ids.remove(id)
         };
         storage.insert(list, toml_edit::value(ids.into_iter().collect::<Array>()));
     })

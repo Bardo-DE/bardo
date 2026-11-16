@@ -248,7 +248,7 @@ async fn auth<S: AsyncRead + AsyncWrite + Unpin>(
     let admitted =
         credentials.is_some_and(|(mech, user, secret)| ctx.attempt(n, peer, mech, user, secret));
     if admitted {
-        lines.send("235 2.7.0 Authentication successful").await?
+        lines.send("235 2.7.0 Authentication successful").await?;
     } else {
         lines
             .send("535 5.7.8 Authentication credentials invalid")

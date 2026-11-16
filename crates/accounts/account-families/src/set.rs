@@ -533,9 +533,9 @@ mod tests {
                             .find(|s| s.id.as_str() == "microsoft")
                             .expect("shipped"),
                         "{name}"
-                    )
+                    );
                 } else {
-                    assert!(loaded.specs.is_empty(), "{name}")
+                    assert!(loaded.specs.is_empty(), "{name}");
                 }
                 let [(_, why)] = loaded.skipped.as_slice() else {
                     panic!("{name} {system}: one skipped: {:?}", loaded.skipped);

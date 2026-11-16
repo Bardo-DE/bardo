@@ -91,7 +91,7 @@ fn policy() -> impl Strategy<Value = Policy> {
         proptest::sample::select(vec![Floor::OnDevice, Floor::Anywhere]),
     )
         .prop_map(|(local_only, voice)| Policy {
-            local_only: local_only,
+            local_only,
             floors: vec![
                 ClassFloor {
                     class: DataClass::Voice,

@@ -133,7 +133,7 @@ fn destroying_a_surface_before_its_buffer_is_clean() {
         surface.attach(&buffer);
         surface.commit();
         surface.destroy();
-        drop(buffer)
+        drop(buffer);
     };
     {
         let client = fixture.client(second);
@@ -142,7 +142,7 @@ fn destroying_a_surface_before_its_buffer_is_clean() {
         surface.attach(&buffer);
         surface.commit();
         drop(buffer);
-        surface.destroy()
+        surface.destroy();
     };
     fixture.pump();
     for id in [first, second] {
