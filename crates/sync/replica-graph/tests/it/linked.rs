@@ -197,7 +197,10 @@ async fn an_origin_the_declaration_does_not_name_is_never_reached() {
         .put(item("big.bin", big()), BaseVersion::Absent)
         .await;
     assert!(
-        matches!(refused, Err(PutRefused::Transient(_))),
+        matches!(
+            refused,
+            Err(PutRefused::Transient(_) | PutRefused::Failed(..))
+        ),
         "{refused:?}"
     );
     assert_eq!(graph.file("big.bin"), None);
@@ -213,7 +216,10 @@ async fn an_origin_the_declaration_does_not_name_is_never_reached() {
     };
     let fetched = replica.fetch(&found.id, ByteRange::Whole).await;
     assert!(
-        matches!(fetched, Err(ReplicaError::Transient(_))),
+        matches!(
+            fetched,
+            Err(ReplicaError::Transient(_) | ReplicaError::Failed(..))
+        ),
         "{fetched:?}"
     );
     assert!(graph.link_hits().is_empty());

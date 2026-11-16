@@ -656,8 +656,7 @@ impl Sink for MemorySink {
                 let chunk = upload
                     .content
                     .read(at, self.chunk)
-                    .ok()
-                    .ok_or(PutRefused::Transient(RetryAfter(0)))?;
+                    .map_err(|error| PutRefused::failed(RetryAfter(0), error))?;
                 {
                     let mut state = held(&self.state);
                     state.largest = state.largest.max(chunk.len() as u64);

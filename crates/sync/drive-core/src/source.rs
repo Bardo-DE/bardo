@@ -22,7 +22,7 @@ pub enum SourceError {
 impl From<ReplicaError> for SourceError {
     fn from(error: ReplicaError) -> Self {
         match error {
-            ReplicaError::Transient(_) => SourceError::Offline,
+            ReplicaError::Transient(_) | ReplicaError::Failed(..) => SourceError::Offline,
             // anchor expired, unauthorized, gone, needs consent, and a failure a later
             // sync-core adds
             _ => SourceError::Refused,

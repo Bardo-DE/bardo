@@ -735,7 +735,7 @@ async fn reserved(inner: &Arc<Inner>, sink: &dyn Sink, mut op: Op) -> Option<Op>
     }
     let given = match sink.reserve_ids(1).await {
         Ok(ids) => ids.into_iter().next(),
-        Err(PutRefused::Transient(after)) => {
+        Err(PutRefused::Transient(after) | PutRefused::Failed(after, _)) => {
             inner.back_off(Duration::from_secs(u64::from(after.0)));
             return None;
         }
@@ -974,7 +974,7 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                     eprintln!("ferry-drive: the cache's index could not be written: {why}");
                 }
             }
-            Err(PutRefused::Transient(after)) => {
+            Err(PutRefused::Transient(after) | PutRefused::Failed(after, _)) => {
                 inner.back_off(Duration::from_secs(u64::from(after.0)));
                 inner.emit(vec![op.id().clone()]);
             }

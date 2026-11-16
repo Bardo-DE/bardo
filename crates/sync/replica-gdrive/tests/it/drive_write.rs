@@ -204,7 +204,10 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
         progress: &kept,
     };
     let cut = drive(&server, uploads).upload(upload(None)).await;
-    assert!(matches!(cut, Err(PutRefused::Transient(_))), "{cut:?}");
+    assert!(
+        matches!(cut, Err(PutRefused::Transient(_) | PutRefused::Failed(..))),
+        "{cut:?}"
+    );
     let session = kept.session().expect("the session is kept for a resume");
     assert_eq!(kept.sent(), CHUNK_UNIT as u64);
     assert_eq!(server.google.my_drive_file("big.bin"), None);

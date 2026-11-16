@@ -7,6 +7,7 @@
 //! `Http` as everything else, which routes a request for another origin to a stream that adds no
 //! credential (`account_http_relay::Routed`).
 
+use crate::drive::again;
 use crate::json::Session;
 use crate::replica::GraphReplica;
 use crate::write::Target;
@@ -50,11 +51,8 @@ impl<H: Http> GraphReplica<H> {
         if created.status().as_u16() != 200 {
             return Ok(created);
         }
-        let again = || PutRefused::Transient(RetryAfter(30));
-        let session: Session = serde_json::from_slice(created.body())
-            .ok()
-            .ok_or_else(again)?;
-        let upload = WebUrl::parse(&session.upload_url).ok().ok_or_else(again)?;
+        let session: Session = serde_json::from_slice(created.body()).map_err(again)?;
+        let upload = WebUrl::parse(&session.upload_url).map_err(again)?;
         let total = bytes.len();
         let mut sent = 0;
         for chunk in bytes.chunks(self.uploads.chunk) {
@@ -76,6 +74,6 @@ impl<H: Http> GraphReplica<H> {
                 return Ok(response);
             }
         }
-        Err(again())
+        Err(PutRefused::Transient(RetryAfter(30)))
     }
 }

@@ -36,8 +36,8 @@ use sync_core::{
     RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
 };
 
-fn again() -> PutRefused {
-    PutRefused::Transient(RetryAfter(30))
+fn again(source: impl std::error::Error + Send + Sync + 'static) -> PutRefused {
+    PutRefused::failed(RetryAfter(30), source)
 }
 
 /// Whether Drive takes `name`: any but an empty one.
@@ -156,7 +156,7 @@ impl<H: Http> GdriveReplica<H> {
         };
         let response = match (small, &upload.to) {
             (true, to) => {
-                let bytes = upload.content.read(0, size).ok().ok_or_else(again)?;
+                let bytes = upload.content.read(0, size).map_err(again)?;
                 let response = match to {
                     UploadTo::New(_) => self.create_small(&meta, bytes).await?,
                     UploadTo::Replace(id) => self.update_small(&id.0, bytes).await?,
@@ -240,7 +240,7 @@ impl<H: Http> GdriveReplica<H> {
             .header("location")
             .and_then(link)
             .filter(|url| Some(url.origin()) == self.addr.origin())
-            .ok_or_else(again)?;
+            .ok_or(PutRefused::Transient(RetryAfter(30)))?;
         upload
             .progress
             .session(Some(&Session::new(url.as_str().to_owned())));
@@ -291,8 +291,7 @@ impl<H: Http> GdriveReplica<H> {
             let chunk = upload
                 .content
                 .read(sent, self.uploads.chunk as u64)
-                .ok()
-                .ok_or_else(again)?;
+                .map_err(again)?;
             let last = sent + chunk.len() as u64 - 1;
             // The last chunk commits the file: what it replaces is asked about first.
             if last + 1 == total
@@ -326,7 +325,7 @@ impl<H: Http> GdriveReplica<H> {
                 }
             }
         }
-        Err(again())
+        Err(PutRefused::Transient(RetryAfter(30)))
     }
 
     /// A `files.update` of `id`'s metadata, with these parent changes.
@@ -413,9 +412,7 @@ impl<H: Http> GdriveReplica<H> {
         let response = self.write_send(get).await?;
         match response.status().as_u16() {
             200 => {
-                let ids: GeneratedIds = serde_json::from_slice(response.body())
-                    .ok()
-                    .ok_or_else(again)?;
+                let ids: GeneratedIds = serde_json::from_slice(response.body()).map_err(again)?;
                 Ok(ids.ids.into_iter().map(RemoteId).collect())
             }
             _ => Err(write_error(&response, self.clock.now())),

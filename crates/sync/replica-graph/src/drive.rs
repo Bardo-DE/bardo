@@ -75,8 +75,8 @@ pub fn accepts_name(name: &str) -> bool {
         && !device("lpt")
 }
 
-fn again() -> PutRefused {
-    PutRefused::Transient(RetryAfter(30))
+pub(crate) fn again(source: impl std::error::Error + Send + Sync + 'static) -> PutRefused {
+    PutRefused::failed(RetryAfter(30), source)
 }
 
 /// Whether `response` says the name is taken (`409 nameAlreadyExists`).
@@ -115,9 +115,7 @@ impl<H: Http> GraphReplica<H> {
 
     /// What a write that made or changed an item answered with: the item.
     fn written(response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutRefused> {
-        let item: DriveItem = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(again)?;
+        let item: DriveItem = serde_json::from_slice(response.body()).map_err(again)?;
         let written = Written {
             id: RemoteId(item.id.clone()),
             version: RemoteVersion(item.etag.clone().unwrap_or_default()),
@@ -224,7 +222,7 @@ impl<H: Http> GraphReplica<H> {
         }
         let size = upload.content.size();
         let response = if size <= self.uploads.simple_max as u64 {
-            let bytes = upload.content.read(0, size).ok().ok_or_else(again)?;
+            let bytes = upload.content.read(0, size).map_err(again)?;
             let url = match &upload.to {
                 UploadTo::New(place) => {
                     let parent = self.parent_id(place).await?;
@@ -265,9 +263,8 @@ impl<H: Http> GraphReplica<H> {
         let response = self.write_send(get).await?;
         match response.status().as_u16() {
             200 => {
-                let status: SessionStatus = serde_json::from_slice(response.body())
-                    .ok()
-                    .ok_or_else(again)?;
+                let status: SessionStatus =
+                    serde_json::from_slice(response.body()).map_err(again)?;
                 Ok(status.from().map(|from| (url, from)))
             }
             404 | 410 => Ok(None),
@@ -308,10 +305,8 @@ impl<H: Http> GraphReplica<H> {
         if created.status().as_u16() != 200 {
             return Ok(Err(created));
         }
-        let session: SessionJson = serde_json::from_slice(created.body())
-            .ok()
-            .ok_or_else(again)?;
-        let url = WebUrl::parse(&session.upload_url).ok().ok_or_else(again)?;
+        let session: SessionJson = serde_json::from_slice(created.body()).map_err(again)?;
+        let url = WebUrl::parse(&session.upload_url).map_err(again)?;
         upload
             .progress
             .session(Some(&Session::new(url.as_str().to_owned())));
@@ -351,8 +346,7 @@ impl<H: Http> GraphReplica<H> {
             let chunk = upload
                 .content
                 .read(sent, self.uploads.chunk as u64)
-                .ok()
-                .ok_or_else(again)?;
+                .map_err(again)?;
             let last = sent + chunk.len() as u64 - 1;
             // The last chunk commits the file, with no `If-Match` looked at: asked first.
             if last + 1 == total
@@ -390,7 +384,7 @@ impl<H: Http> GraphReplica<H> {
                 }
             }
         }
-        Err(again())
+        Err(PutRefused::Transient(RetryAfter(30)))
     }
 
     async fn drive_make_folder(&self, place: &Place) -> Result<Written, PutRefused> {

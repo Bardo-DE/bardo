@@ -469,6 +469,15 @@ fn now_secs() -> i64 {
     base_time::Clock::now(&base_time::SystemClock).0
 }
 
+/// An action's `Reason` for a listing that could not be read: `Reason` is a code and carries no
+/// cause, so the cause is written to the log here.
+fn unlisted(reason: Reason) -> impl FnOnce(DriveError) -> Reason {
+    move |why| {
+        eprintln!("ferry-drive: the listing could not be read: {why}");
+        reason
+    }
+}
+
 fn held<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     // Every critical section is a plain update of a map.
     mutex.lock().unwrap_or_else(PoisonError::into_inner)

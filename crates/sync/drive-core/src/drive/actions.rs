@@ -1,7 +1,7 @@
 //! What a person asks of a drive's items (Download Now, Keep Downloaded, Remove Download) and of
 //! the whole drive (Keep Everything Downloaded), what a new listing changes, and eviction.
 
-use super::{Drive, FreeSpace, Inner, NodeId, held};
+use super::{Drive, FreeSpace, Inner, NodeId, held, unlisted};
 use crate::Reason;
 use crate::listing::Entry;
 use std::collections::BTreeSet;
@@ -12,7 +12,10 @@ use sync_core::{ItemKind, RemoteId};
 impl Inner {
     /// The files at or under `id` (a file: itself), from the listing.
     pub(super) fn files_under(&self, id: &RemoteId) -> Result<Vec<Entry>, Reason> {
-        let entry = self.entry(id).ok().flatten().ok_or(Reason::NotOnADrive)?;
+        let entry = self
+            .entry(id)
+            .map_err(unlisted(Reason::NotOnADrive))?
+            .ok_or(Reason::NotOnADrive)?;
         Ok(match entry.kind {
             ItemKind::Folder => self
                 .listing
@@ -190,8 +193,7 @@ impl Drive {
         let entry = self
             .inner
             .entry(remote)
-            .ok()
-            .flatten()
+            .map_err(unlisted(Reason::NotOnADrive))?
             .ok_or(Reason::NotOnADrive)?;
         if matches!(entry.kind, ItemKind::Online { .. }) {
             return Err(Reason::OnlineOnly);
@@ -239,8 +241,7 @@ impl Drive {
         };
         let entry = inner
             .entry(remote)
-            .ok()
-            .flatten()
+            .map_err(unlisted(Reason::NotOnADrive))?
             .ok_or(Reason::NotOnADrive)?;
         if matches!(entry.kind, ItemKind::Online { .. }) {
             return Err(Reason::OnlineOnly);
@@ -311,8 +312,7 @@ impl Drive {
         };
         let entry = inner
             .entry(remote)
-            .ok()
-            .flatten()
+            .map_err(unlisted(Reason::NotOnADrive))?
             .ok_or(Reason::NotOnADrive)?;
         if matches!(entry.kind, ItemKind::Online { .. }) {
             return Err(Reason::OnlineOnly);

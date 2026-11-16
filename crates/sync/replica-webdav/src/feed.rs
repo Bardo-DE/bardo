@@ -75,6 +75,8 @@ struct Batch {
 enum Report {
     /// The server does not serve this report (or not at this level): use the tree.
     Unsupported,
+    /// The server answered with a body that is no report: use the tree.
+    Unparsed(account_dav_proto::Error),
     /// The token is no longer good.
     Expired,
     /// The read failed in a way the caller reports.
@@ -200,6 +202,9 @@ impl<H: Http> WebDavReplica<H> {
             match self.report("").await {
                 Ok(reported) => return Ok(self.first_listing(reported)),
                 Err(Report::Failed(error)) => return Err(error),
+                Err(Report::Unparsed(error)) => {
+                    tracing::warn!(error = %error, "the server's sync report could not be read; walking the tree");
+                }
                 Err(Report::Unsupported | Report::Expired) => {}
             }
         }
@@ -237,6 +242,10 @@ impl<H: Http> WebDavReplica<H> {
         let reported = match self.report(token).await {
             Ok(reported) => reported,
             Err(Report::Expired | Report::Unsupported) => return Err(ReplicaError::AnchorExpired),
+            Err(Report::Unparsed(error)) => {
+                tracing::warn!(error = %error, "the server's sync report could not be read; listing again");
+                return Err(ReplicaError::AnchorExpired);
+            }
             Err(Report::Failed(error)) => return Err(error),
         };
         let mut state = self.state();
@@ -343,7 +352,7 @@ impl<H: Http> WebDavReplica<H> {
     }
 
     fn reported(&self, body: &str) -> Result<Reported, Report> {
-        let status: Multistatus = parse_multistatus(body).ok().ok_or(Report::Unsupported)?;
+        let status: Multistatus = parse_multistatus(body).map_err(Report::Unparsed)?;
         let reply = parse_sync_collection(&status);
         // A reply with no token cannot be continued: the server does not stand behind it.
         // A cut-short report that listed nothing made no progress: asking again at once could
@@ -408,8 +417,7 @@ impl<H: Http> WebDavReplica<H> {
             207 => {
                 let text = String::from_utf8_lossy(response.body());
                 let status = parse_multistatus(&text)
-                    .ok()
-                    .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+                    .map_err(|error| ReplicaError::failed(RetryAfter(30), error))?;
                 Ok(entries(&self.root, &status))
             }
             404 if *folder != self.root.folder() => Ok(Vec::new()),

@@ -101,7 +101,9 @@ pub async fn list_once<R: DriveReplica>(
                 pass.outcome = match error {
                     ReplicaError::NeedsConsent => Listed::NeedsConsent,
                     ReplicaError::Unauthorized => Listed::Unauthorized,
-                    ReplicaError::Transient(after) => Listed::Retry(after),
+                    ReplicaError::Transient(after) | ReplicaError::Failed(after, _) => {
+                        Listed::Retry(after)
+                    }
                     ReplicaError::Gone => Listed::Gone,
                     // A listing from the start that the feed calls expired: try again later.
                     ReplicaError::AnchorExpired => Listed::Retry(RetryAfter(30)),

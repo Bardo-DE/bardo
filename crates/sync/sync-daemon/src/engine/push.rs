@@ -137,9 +137,11 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                 Ok(())
             }
             Err(PutRefused::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
-            Err(PutRefused::Transient(after) | PutRefused::InUse(after)) => {
-                Err(Halt::Stop(Outcome::Retry(after)))
-            }
+            Err(
+                PutRefused::Transient(after)
+                | PutRefused::InUse(after)
+                | PutRefused::Failed(after, _),
+            ) => Err(Halt::Stop(Outcome::Retry(after))),
         }
     }
 
@@ -187,9 +189,11 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                 Ok(())
             }
             Err(PutRefused::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
-            Err(PutRefused::Transient(after) | PutRefused::InUse(after)) => {
-                Err(Halt::Stop(Outcome::Retry(after)))
-            }
+            Err(
+                PutRefused::Transient(after)
+                | PutRefused::InUse(after)
+                | PutRefused::Failed(after, _),
+            ) => Err(Halt::Stop(Outcome::Retry(after))),
         }
     }
 

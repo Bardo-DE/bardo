@@ -27,8 +27,8 @@ use sync_core::{
 /// How many folders a path may have above a file before the walk gives up.
 const DEPTH: usize = 64;
 
-fn busy() -> ReplicaError {
-    ReplicaError::Transient(RetryAfter(30))
+fn busy(source: impl std::error::Error + Send + Sync + 'static) -> ReplicaError {
+    ReplicaError::failed(RetryAfter(30), source)
 }
 
 impl<H: Http> GraphReplica<H> {
@@ -56,13 +56,11 @@ impl<H: Http> GraphReplica<H> {
             (410, true) => return Err(ReplicaError::AnchorExpired),
             _ => return Err(read_error(&response, self.clock.now())),
         }
-        let page: DeltaPage = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let page: DeltaPage = serde_json::from_slice(response.body()).map_err(busy)?;
         let (next, more) = match (page.next, page.delta) {
             (Some(next), _) => (next, More::More),
             (None, Some(delta)) => (delta, More::Done),
-            (None, None) => return Err(busy()),
+            (None, None) => return Err(ReplicaError::Transient(RetryAfter(30))),
         };
         let changes = self.apply(page.value).await?;
         Ok(ChangePage {

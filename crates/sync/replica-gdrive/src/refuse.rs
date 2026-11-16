@@ -143,11 +143,8 @@ mod tests {
             (500, None, None, ReplicaError::Transient(RETRY)),
         ];
         for (status, retry, reason, want) in CASES {
-            assert_eq!(
-                read_error(&answer(*status, *retry, *reason), UnixSeconds(0)),
-                *want,
-                "{status} {reason:?}"
-            );
+            let got = read_error(&answer(*status, *retry, *reason), UnixSeconds(0));
+            assert!(got == *want, "{status} {reason:?}: {got:?}");
         }
     }
 
@@ -187,11 +184,8 @@ mod tests {
             (502, None, None, PutRefused::Transient(RETRY)),
         ];
         for (status, retry, reason, want) in CASES {
-            assert_eq!(
-                write_error(&answer(*status, *retry, *reason), UnixSeconds(0)),
-                *want,
-                "{status} {reason:?}"
-            );
+            let got = write_error(&answer(*status, *retry, *reason), UnixSeconds(0));
+            assert!(got == *want, "{status} {reason:?}: {got:?}");
         }
     }
 

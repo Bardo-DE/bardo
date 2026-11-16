@@ -26,7 +26,6 @@ impl<H: Http> GdriveReplica<H> {
         meta: &str,
         bytes: Vec<u8>,
     ) -> Result<Response<Vec<u8>>, PutRefused> {
-        let again = || PutRefused::Transient(RetryAfter(30));
         let pairs = [("uploadType", "resumable"), ("fields", FILE_FIELDS)];
         let start = match over {
             None => self.addr.upload("files", &pairs),
@@ -53,7 +52,7 @@ impl<H: Http> GdriveReplica<H> {
             .header("location")
             .and_then(link)
             .filter(|url| Some(url.origin()) == self.addr.origin())
-            .ok_or_else(again)?;
+            .ok_or(PutRefused::Transient(RetryAfter(30)))?;
         let total = bytes.len();
         let mut sent = 0;
         for chunk in bytes.chunks(self.uploads.chunk) {
@@ -69,6 +68,6 @@ impl<H: Http> GdriveReplica<H> {
                 return Ok(response);
             }
         }
-        Err(again())
+        Err(PutRefused::Transient(RetryAfter(30)))
     }
 }

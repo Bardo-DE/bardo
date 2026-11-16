@@ -130,8 +130,7 @@ impl<H: Http> WebDavReplica<H> {
         }
         let text = String::from_utf8_lossy(response.body());
         let status = parse_multistatus(&text)
-            .ok()
-            .ok_or(ReplicaError::Transient(sync_core::RetryAfter(30)))?;
+            .map_err(|error| ReplicaError::failed(sync_core::RetryAfter(30), error))?;
         let reported = account_dav_proto::quota(&status);
         let used = reported.used.unwrap_or(0);
         Ok(Quota {

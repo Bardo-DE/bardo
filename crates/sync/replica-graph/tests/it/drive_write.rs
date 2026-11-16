@@ -199,7 +199,10 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
         progress: &kept,
     };
     let cut = drive(&server, uploads).upload(upload(None)).await;
-    assert!(matches!(cut, Err(PutRefused::Transient(_))), "{cut:?}");
+    assert!(
+        matches!(cut, Err(PutRefused::Transient(_) | PutRefused::Failed(..))),
+        "{cut:?}"
+    );
     let session = kept.session().expect("the session is kept for a resume");
     assert_eq!(kept.sent(), CHUNK_UNIT as u64);
     assert_eq!(server.graph.root_file("big.bin"), None);
@@ -305,7 +308,10 @@ async fn a_resumed_session_asks_first_whether_the_file_it_replaces_changed() {
     };
     server.graph.cut_upload_after(1);
     let cut = drive(&server, uploads).upload(upload(None)).await;
-    assert!(matches!(cut, Err(PutRefused::Transient(_))), "{cut:?}");
+    assert!(
+        matches!(cut, Err(PutRefused::Transient(_) | PutRefused::Failed(..))),
+        "{cut:?}"
+    );
     let session = kept.session().expect("kept");
     server.graph.put_root_file("big.bin", b"theirs");
     let stale = drive(&server, uploads).upload(upload(Some(session))).await;

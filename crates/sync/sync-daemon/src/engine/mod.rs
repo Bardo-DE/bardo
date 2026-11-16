@@ -105,7 +105,7 @@ pub(crate) fn halt(error: ReplicaError) -> Halt {
     Halt::Stop(match error {
         ReplicaError::Unauthorized => Outcome::Unauthorized,
         ReplicaError::NeedsConsent => Outcome::NeedsConsent,
-        ReplicaError::Transient(after) => Outcome::Retry(after),
+        ReplicaError::Transient(after) | ReplicaError::Failed(after, _) => Outcome::Retry(after),
         // anchor expired, gone, and a failure a later sync-core adds
         _ => Outcome::Gone,
     })

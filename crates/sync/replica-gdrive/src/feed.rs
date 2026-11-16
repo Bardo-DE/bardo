@@ -34,8 +34,8 @@ use sync_core::{
 /// How many folders a path may have above a file before the walk gives up.
 const DEPTH: usize = 64;
 
-fn busy() -> ReplicaError {
-    ReplicaError::Transient(RetryAfter(30))
+fn busy(source: impl std::error::Error + Send + Sync + 'static) -> ReplicaError {
+    ReplicaError::failed(RetryAfter(30), source)
 }
 
 /// Where in the feed an anchor says the replica is.
@@ -97,9 +97,7 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let token: StartToken = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let token: StartToken = serde_json::from_slice(response.body()).map_err(busy)?;
         Ok(token.token)
     }
 
@@ -134,9 +132,7 @@ impl<H: Http> GdriveReplica<H> {
             (_, true) => return Err(Self::resumed(&response, self.clock.now())),
             _ => return Err(read_error(&response, self.clock.now())),
         }
-        let list: FileList = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let list: FileList = serde_json::from_slice(response.body()).map_err(busy)?;
         let changes = self.apply_files(list.files).await?;
         let (place, more) = match list.next {
             Some(next) => (
@@ -176,13 +172,11 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(Self::resumed(&response, self.clock.now()));
         }
-        let list: ChangeList = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let list: ChangeList = serde_json::from_slice(response.body()).map_err(busy)?;
         let (next, more) = match (list.next, list.new_start) {
             (Some(next), _) => (next, More::More),
             (None, Some(start)) => (start, More::Done),
-            (None, None) => return Err(busy()),
+            (None, None) => return Err(ReplicaError::Transient(RetryAfter(30))),
         };
         let changes = self.apply_changes(list.changes).await?;
         Ok(ChangePage {
@@ -201,9 +195,7 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let file: File = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let file: File = serde_json::from_slice(response.body()).map_err(busy)?;
         Ok(file.id)
     }
 
@@ -232,9 +224,7 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let list: FileList = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let list: FileList = serde_json::from_slice(response.body()).map_err(busy)?;
         Ok(list.files)
     }
 
@@ -259,9 +249,7 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let file: File = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or_else(busy)?;
+        let file: File = serde_json::from_slice(response.body()).map_err(busy)?;
         Ok(file.id)
     }
 

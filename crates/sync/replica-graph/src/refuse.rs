@@ -57,11 +57,8 @@ mod tests {
             (502, None, PutRefused::Transient(RETRY)),
         ];
         for (status, retry, want) in CASES {
-            assert_eq!(
-                write_error(&answer(*status, *retry), UnixSeconds(0)),
-                *want,
-                "{status}"
-            );
+            let got = write_error(&answer(*status, *retry), UnixSeconds(0));
+            assert!(got == *want, "{status}: {got:?}");
         }
     }
 }

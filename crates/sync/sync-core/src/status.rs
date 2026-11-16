@@ -36,7 +36,7 @@ pub fn read_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> ReplicaErro
 pub fn unreached(error: HttpError) -> ReplicaError {
     match error {
         HttpError::NotGranted => ReplicaError::NeedsConsent,
-        _ => ReplicaError::Transient(RETRY),
+        error => ReplicaError::failed(RETRY, error),
     }
 }
 
@@ -45,7 +45,7 @@ pub fn unreached(error: HttpError) -> ReplicaError {
 pub fn write_unreached(error: HttpError) -> PutRefused {
     match error {
         HttpError::NotGranted => PutRefused::Forbidden,
-        _ => PutRefused::Transient(RETRY),
+        error => PutRefused::failed(RETRY, error),
     }
 }
 
@@ -57,6 +57,7 @@ pub fn refused(error: ReplicaError) -> PutRefused {
         ReplicaError::Unauthorized => PutRefused::Unauthorized,
         ReplicaError::NeedsConsent => PutRefused::Forbidden,
         ReplicaError::Transient(after) => PutRefused::Transient(after),
+        ReplicaError::Failed(after, source) => PutRefused::Failed(after, source),
         ReplicaError::Gone | ReplicaError::AnchorExpired => PutRefused::Transient(RetryAfter(1)),
     }
 }
@@ -88,11 +89,8 @@ mod tests {
             (500, None, ReplicaError::Transient(RETRY)),
         ];
         for (status, retry, want) in CASES {
-            assert_eq!(
-                read_error(&answer(*status, *retry), UnixSeconds(0)),
-                *want,
-                "{status}"
-            );
+            let got = read_error(&answer(*status, *retry), UnixSeconds(0));
+            assert!(got == *want, "{status}: {got:?}");
         }
     }
 
@@ -109,12 +107,12 @@ mod tests {
             PutRefused::Unauthorized
         );
         assert_eq!(
-            unreached(HttpError::Unreachable),
-            ReplicaError::Transient(RETRY)
+            unreached(HttpError::TimedOut),
+            ReplicaError::failed(RETRY, HttpError::TimedOut)
         );
         assert_eq!(
-            write_unreached(HttpError::Unreachable),
-            PutRefused::Transient(RETRY)
+            write_unreached(HttpError::TimedOut),
+            PutRefused::failed(RETRY, HttpError::TimedOut)
         );
     }
 

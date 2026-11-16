@@ -2,6 +2,10 @@
 
 use crate::item::{BaseVersion, RemoteId, RemoteVersion};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
+
+/// The error that made a replica's answer unusable, kept so a log can walk the chain.
+pub type Cause = Arc<dyn std::error::Error + Send + Sync>;
 
 /// A write whose base is not the replica's current version.
 ///
@@ -35,7 +39,10 @@ pub enum RemoteSide {
 pub struct RetryAfter(pub u32);
 
 /// Why a write was refused.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+///
+/// Two refusals are equal when they are the same kind of refusal with the same values; two
+/// [`PutRefused::Failed`] are equal when they ask for the same wait, whatever caused them.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum PutRefused {
     /// The base is stale.
     #[error("conflict on {:?}", .0.item)]
@@ -61,10 +68,43 @@ pub enum PutRefused {
     /// The replica refused the change for a reason of its own, which no name taken explains.
     #[error("declined")]
     Declined,
+    /// The write could not be made or its answer used (no connection, a body that does not parse,
+    /// content that could not be read): try again after the wait. It keeps the cause.
+    #[error("failed; retry after {} s", .0.0)]
+    Failed(RetryAfter, #[source] Cause),
 }
 
+impl PutRefused {
+    /// A write that failed because of `source`: try again after `after`.
+    pub fn failed(
+        after: RetryAfter,
+        source: impl std::error::Error + Send + Sync + 'static,
+    ) -> Self {
+        Self::Failed(after, Arc::new(source))
+    }
+}
+
+impl PartialEq for PutRefused {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Conflict(a), Self::Conflict(b)) => a == b,
+            (Self::Transient(a), Self::Transient(b))
+            | (Self::InUse(a), Self::InUse(b))
+            | (Self::Failed(a, _), Self::Failed(b, _)) => a == b,
+            (Self::Quota, Self::Quota)
+            | (Self::Forbidden, Self::Forbidden)
+            | (Self::Unauthorized, Self::Unauthorized)
+            | (Self::NameRefused, Self::NameRefused)
+            | (Self::Declined, Self::Declined) => true,
+            _ => false,
+        }
+    }
+}
+
+impl Eq for PutRefused {}
+
 /// Why an online document could not be exported as a file.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ExportError {
     /// The backend exports no file of it (a Form, a Site, a Map, or a backend with no export).
     #[error("no file format")]
@@ -78,7 +118,10 @@ pub enum ExportError {
 }
 
 /// Why a read failed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+///
+/// Two failures are equal when they are the same kind of failure with the same values; two
+/// [`ReplicaError::Failed`] are equal when they ask for the same wait, whatever caused them.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ReplicaError {
     /// The anchor is no longer valid (Dropbox 409, Graph resync, an expired page token):
     /// list from `Cursor::Start` and reconcile by content hash, uploading nothing known.
@@ -97,4 +140,35 @@ pub enum ReplicaError {
     /// when first used): nothing is retried until the person gives it.
     #[error("access not given yet")]
     NeedsConsent,
+    /// The read could not be made or its answer used (no connection, a body that does not
+    /// parse): try again after the wait. It keeps the cause.
+    #[error("failed; retry after {} s", .0.0)]
+    Failed(RetryAfter, #[source] Cause),
 }
+
+impl ReplicaError {
+    /// A read that failed because of `source`: try again after `after`.
+    pub fn failed(
+        after: RetryAfter,
+        source: impl std::error::Error + Send + Sync + 'static,
+    ) -> Self {
+        Self::Failed(after, Arc::new(source))
+    }
+}
+
+impl PartialEq for ReplicaError {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Transient(a), Self::Transient(b)) | (Self::Failed(a, _), Self::Failed(b, _)) => {
+                a == b
+            }
+            (Self::AnchorExpired, Self::AnchorExpired)
+            | (Self::Unauthorized, Self::Unauthorized)
+            | (Self::Gone, Self::Gone)
+            | (Self::NeedsConsent, Self::NeedsConsent) => true,
+            _ => false,
+        }
+    }
+}
+
+impl Eq for ReplicaError {}

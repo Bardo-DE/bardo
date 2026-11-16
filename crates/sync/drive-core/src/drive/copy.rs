@@ -1,7 +1,7 @@
 //! "Save a Copy": an online document's export, written next to it as a file made on this
 //! computer, "Waiting to upload" until it is sent.
 
-use super::{Drive, NodeId, held, now_secs};
+use super::{Drive, NodeId, held, now_secs, unlisted};
 use crate::Reason;
 use crate::index::{Dirty, Edit};
 use crate::naming;
@@ -29,8 +29,7 @@ impl Drive {
         let inner = &self.inner;
         let entry = inner
             .entry(remote)
-            .ok()
-            .flatten()
+            .map_err(unlisted(Reason::NotADocument))?
             .ok_or(Reason::NotADocument)?;
         let ItemKind::Online { export, .. } = &entry.kind else {
             return Err(Reason::NotADocument);
@@ -50,13 +49,17 @@ impl Drive {
             })?;
         let folder = inner
             .parent_of(id)
-            .ok()
-            .flatten()
+            .map_err(|why| {
+                eprintln!("ferry-drive: the folder of a document to copy is unknown: {why}");
+                Reason::CopyFailed
+            })?
             .ok_or(Reason::NotADocument)?;
         let taken: Vec<String> = inner
             .children(&folder)
-            .ok()
-            .ok_or(Reason::CopyFailed)?
+            .map_err(|why| {
+                eprintln!("ferry-drive: the folder of a copy could not be listed: {why}");
+                Reason::CopyFailed
+            })?
             .into_iter()
             .map(|node| node.name)
             .collect();
@@ -65,8 +68,10 @@ impl Drive {
         let n = held(&inner.index).take_local();
         AtomicWrite::PRIVATE
             .write(&inner.local_file(n), &bytes)
-            .ok()
-            .ok_or(Reason::CopyFailed)?;
+            .map_err(|why| {
+                eprintln!("ferry-drive: a copy of a document could not be written: {why}");
+                Reason::CopyFailed
+            })?;
         let made = now_secs();
         let dirty = Dirty {
             file: n,
