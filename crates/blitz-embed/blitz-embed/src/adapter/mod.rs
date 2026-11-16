@@ -1,6 +1,7 @@
-//! Choosing the adapter: the facts about each wgpu adapter, the preference a shell configures,
-//! the order to try the candidates in, and the one lock every opener in a process takes
-//! ([`opening`]). Validating a candidate by a first present needs a
+//! Choosing the adapter.
+//!
+//! The facts about each wgpu adapter, the preference a shell configures, the order to try the
+//! candidates in, and the one lock every opener in a process takes ([`opening`]). Validating a candidate by a first present needs a
 //! Wayland surface, so that half stays with the host.
 
 mod device;

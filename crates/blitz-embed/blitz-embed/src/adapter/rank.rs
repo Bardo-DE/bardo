@@ -2,9 +2,10 @@
 
 use super::{AdapterFacts, AdapterPref, DeviceKind, GpuBackend};
 
-/// The order to try `candidates` in (indices into it) under `pref`: a `Named` match (case-
-/// insensitive substring) or a `Device` match (PCI ids) first, then by kind as the preference says, Vulkan before GL, and
-/// software rasterizers last. Pure.
+/// The order to try `candidates` in (indices into it) under `pref`.
+///
+/// A `Named` match (case-insensitive substring) or a `Device` match (PCI ids) comes first, then
+/// by kind as the preference says, Vulkan before GL, and software rasterizers last. Pure.
 #[must_use]
 pub fn rank(pref: &AdapterPref, candidates: &[AdapterFacts]) -> Vec<usize> {
     let mut order: Vec<usize> = (0..candidates.len()).collect();
@@ -61,5 +62,5 @@ fn kind_rank(pref: &AdapterPref, kind: DeviceKind) -> u8 {
     order
         .iter()
         .position(|k| *k == kind)
-        .map_or(u8::MAX, |p| p as u8)
+        .map_or(u8::MAX, |p| u8::try_from(p).unwrap_or(u8::MAX))
 }

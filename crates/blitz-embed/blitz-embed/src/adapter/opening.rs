@@ -9,7 +9,9 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 static OPENING: Mutex<()> = Mutex::new(());
 
 /// Hold the returned guard while making a `wgpu::Instance`, enumerating its adapters and
-/// requesting a device. The lock is not re-entrant: blitz-embed's own [`request_device`] and
+/// requesting a device.
+///
+/// The lock is not re-entrant: blitz-embed's own [`request_device`] and
 /// [`request_watched_device`] do not take it, so a caller may hold it around them.
 ///
 /// [`request_device`]: super::request_device

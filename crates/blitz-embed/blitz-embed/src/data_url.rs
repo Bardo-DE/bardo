@@ -1,5 +1,7 @@
-//! Decoding a `data:` URL's body (RFC 2397): the payload after the first comma, percent-decoded,
-//! then base64-decoded when the header ends in `;base64`. Both forms matter: a design system's
+//! Decoding a `data:` URL's body (RFC 2397).
+//!
+//! The payload after the first comma is percent-decoded, then base64-decoded when the header
+//! ends in `;base64`. Both forms matter: a design system's
 //! grain PNG is base64 and its icon masks are percent-encoded SVG.
 
 /// The bytes `url` carries, or `None` when it is not a well-formed `data:` URL.

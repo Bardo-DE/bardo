@@ -11,7 +11,9 @@ pub enum LastMove {
     At(BlitzPointerEvent),
 }
 
-/// The record after the document is fed `event`. A move is kept as it is; a press or release
+/// The record after the document is fed `event`.
+///
+/// A move is kept as it is; a press or release
 /// is kept as a move at its point with the buttons it left held, so the move fed again carries
 /// the buttons that are down now.
 #[must_use]

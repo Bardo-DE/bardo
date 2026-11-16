@@ -1,7 +1,6 @@
 //! Opening a device on a ranked adapter: what every consumer's GPU setup shares.
 
 use std::fmt;
-use std::future::Future;
 use std::pin::{Pin, pin};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU8, AtomicU32, Ordering};
@@ -142,6 +141,10 @@ impl std::error::Error for DeviceError {}
 ///
 /// wgpu's own handler for an error nobody catches panics; this device logs it instead (a
 /// bounded number of lines), and a lost device is logged.
+///
+/// # Errors
+///
+/// Fails with wgpu's [`wgpu::RequestDeviceError`] when the adapter refuses the device.
 pub fn request_device(
     adapter: &wgpu::Adapter,
     label: &str,
@@ -153,6 +156,11 @@ pub fn request_device(
 
 /// [`request_device`] for a consumer that rebuilds on device loss: the device's [`DeviceHealth`]
 /// comes with it, and the request gives up after `deadline`.
+///
+/// # Errors
+///
+/// Fails with [`DeviceError::NoAnswer`] when the adapter does not answer within `deadline`, and
+/// with [`DeviceError::Refused`] when it refuses the device.
 pub fn request_watched_device(
     adapter: &wgpu::Adapter,
     label: &str,

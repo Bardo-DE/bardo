@@ -22,6 +22,10 @@ pub fn element_of(doc: &BaseDocument, id: NodeId) -> Option<NodeId> {
 /// The element Blitz would hover at `at`: the hit, lifted out of anonymous boxes as
 /// `set_hover_to` lifts it, then to its element.
 pub fn element_at(doc: &BaseDocument, at: PagePoint) -> Option<NodeId> {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "page coordinates are far inside f32's range, and f32 is Blitz's own coordinate type"
+    )]
     let hit = doc.hit(at.x as f32, at.y as f32)?;
     element_of(doc, doc.nearest_non_anonymous_ancestor(hit.node_id)?)
 }

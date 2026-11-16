@@ -10,7 +10,9 @@ pub struct PciVendor(pub u32);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PciDevice(pub u32);
 
-/// Which adapter the GPU backend prefers. A preference, not a guarantee: every candidate is
+/// Which adapter the GPU backend prefers.
+///
+/// A preference, not a guarantee: every candidate is
 /// validated by a first present on a probe surface over a throwaway connection, because a
 /// cross-GPU adapter can pass `is_surface_supported` and still have its first buffer rejected
 /// with a fatal protocol error (RADV on this machine, `zwp_linux_dmabuf` error 7).
@@ -39,6 +41,7 @@ pub enum AdapterPref {
 impl AdapterPref {
     /// The preference in force once the environment is read: a non-empty `WGPU_ADAPTER_NAME`
     /// wins over whatever was configured.
+    #[must_use]
     pub fn with_env(self, env_value: Option<&str>) -> AdapterPref {
         match env_value.map(str::trim) {
             Some(name) if !name.is_empty() => AdapterPref::Named(name.to_owned()),
