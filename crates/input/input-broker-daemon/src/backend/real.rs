@@ -1,6 +1,7 @@
 //! The real kernel side: `/dev/uinput` through `input-linux`'s safe wrappers of the ioctls.
 
 use super::{Backend, BackendError, Device};
+use input_broker_wire::{AbsAxis, DeviceSpec, Event};
 use input_linux::{
     AbsoluteAxis, AbsoluteInfo, AbsoluteInfoSetup, EventKind, EventTime, InputId, InputProperty,
     Key, LedKind, RangeError, RelativeAxis, UInputHandle, sys,
@@ -10,7 +11,6 @@ use std::ffi::CString;
 use std::io;
 use std::os::fd::OwnedFd;
 use std::path::PathBuf;
-use input_broker_wire::{AbsAxis, DeviceSpec, Event};
 
 /// The uinput control node.
 pub const UINPUT: &str = "/dev/uinput";

@@ -5,11 +5,11 @@
 use crate::support::pdf_read;
 use crate::support::print_fixture;
 
-use ui_blitz::{PageSpec, pdf};
 use peniko::kurbo::Rect;
 use print_fixture::{BREAK_HEADING, CJK_WORD, KEEP_HEADING, LATIN_WORD, SCREEN_ONLY};
 use std::sync::LazyLock;
 use std::time::{Duration, Instant};
+use ui_blitz::{PageSpec, pdf};
 
 /// The fixture's JPEG, the printout, and how long a warm print took.
 struct Printed {

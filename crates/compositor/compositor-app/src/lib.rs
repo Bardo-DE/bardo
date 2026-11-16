@@ -20,7 +20,7 @@
 //! loop turn. `State` is the one type smithay dispatches into, so the host builds with the union
 //! of smithay features this crate lists in its manifest (`wayland_frontend`, `desktop`, the
 //! renderers, the backends it starts and `use_system_lib`); the pure crates under it
-//! (`casement-core`, `-layout`, `-motion`) need none of them.
+//! (`compositor-core`, `-layout`, `-motion`) need none of them.
 //!
 //! ```
 //! use compositor_app::RunConfig;

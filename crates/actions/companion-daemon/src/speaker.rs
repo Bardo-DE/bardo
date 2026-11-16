@@ -19,13 +19,13 @@
 //! Every call the companion then makes goes through intentd's gate in the role `companion`, and
 //! a confirmation is still answered on the sheet by the person.
 
-use companion_core::{Call, Speaker, permits};
+use account_callers::ProcRoot;
+use account_core::AppName;
 use action_dbus::BusConnection;
 use action_dbus::callers::{Caller, Callers, Identity, Role};
 use action_procroot::{own_uid, terminal_scope};
 use action_wire::TerminalScope;
-use account_callers::ProcRoot;
-use account_core::AppName;
+use companion_core::{Call, Speaker, permits};
 use std::sync::Arc;
 use zbus::fdo::{self, DBusProxy};
 use zbus::message::Header;

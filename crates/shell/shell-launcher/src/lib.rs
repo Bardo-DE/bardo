@@ -2,7 +2,7 @@
 //!
 //! Pure by construction: `scripts/check-boundary.sh` keeps `dioxus`, `zbus`, `wayland-client`,
 //! `tokio` and `libpulse-binding` out of this crate. Providers that need the system live in
-//! `sill-services::providers` and implement [`Provider`] from there; the clock is always an
+//! `shell-services::providers` and implement [`Provider`] from there; the clock is always an
 //! argument ([`UnixTime`]).
 
 pub mod actions;

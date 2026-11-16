@@ -4,17 +4,17 @@
 //! `routine_link.rs`; the decisions are `companion_core`'s.
 
 use crate::spawn::{Cutoff, Spawn};
+use action_client::Transport as IntentsTransport;
+use action_manifest::ValidManifest;
+use action_vocab::Clock;
+use action_wire::SessionOpen;
+use agent_planner::Planner;
 use companion_core::{Answers, Logins, OpenedJob, Proposals, Terminals, Told, ToldLog, by_space};
 use companion_model::helper::{
     AgentApps, Board, BoardEffect, BoardEvent, HelperCard, HelperName, HelperSeat, JobId, Notice,
     SeatPlace, step,
 };
-use action_client::Transport as IntentsTransport;
-use action_manifest::ValidManifest;
-use agent_planner::Planner;
 use companion_tasks::{Change, Companion, Shared, Surface};
-use action_vocab::Clock;
-use action_wire::SessionOpen;
 use futures_util::lock::Mutex as AsyncMutex;
 use provenance::{AgentRef, HelperId, SessionId, SpaceId, TaskId};
 use std::collections::BTreeMap;

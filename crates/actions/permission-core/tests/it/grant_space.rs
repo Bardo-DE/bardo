@@ -2,10 +2,10 @@
 //! a Space that is gone ends its grants, and another app's own Space is never open.
 
 use crate::support::*;
-use permission_core::*;
 use account_core::DesktopSpace;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{DataClass, GrantId};
+use permission_core::*;
 use provenance::SpaceScope;
 
 fn grant(id: &str, caller: GrantCaller, scope: SpaceScope) -> ActionGrant {

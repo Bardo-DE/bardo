@@ -24,9 +24,9 @@ async-io = ["zbus/async-io"]
 tokio = ["dep:tokio", "zbus/tokio"]
 # Test seams (`BusPeers::introduce`); a shipped binary never enables it.
 fake = ["caller-identity-linux/fake"]
-# Forwarded to peephole-core (`roles`).
+# Forwarded to caller-identity-core (`roles`).
 desktop = ["caller-identity-linux/desktop"]
-# Forwarded to peephole-core (developer rows). Never shipped.
+# Forwarded to caller-identity-core (developer rows). Never shipped.
 dev-rows = ["caller-identity-linux/dev-rows"]
 
 [dev-dependencies]

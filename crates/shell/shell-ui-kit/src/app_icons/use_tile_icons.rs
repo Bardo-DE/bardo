@@ -2,9 +2,9 @@
 //! read against the active Space's look, the output's scale, the re-tint cache and the
 //! installed apps.
 
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_services::AppsService;
+use ui_components::prelude::*;
 
 use super::{IconContext, LogicalPx, TileIcons, icon_look, use_icon_resolver};
 use crate::hooks::{use_appearance, use_service};

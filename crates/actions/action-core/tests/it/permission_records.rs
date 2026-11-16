@@ -1,4 +1,4 @@
-//! Records of docket-core that carry permission types.
+//! Records of action-core that carry permission types.
 
 use action_core::{AuditRecord, NeverOffer, SheetLimits};
 use permission_core::{Ended, GrantEnd};

@@ -1,8 +1,8 @@
 //! Window-management settings (`windows.*`, 03 §1.17).
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
+use ui_core::word::Word;
 
 /// `windows.*`.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -15,7 +15,6 @@ mod harness;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use serde_json::json;
 use layer_shell_host::{
     Anchor, BlurSpec, ExclusiveZone, Host, HostEvent, HostRoot, KeyboardMode, LayerConfig,
     LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, PopupPlacement, Rect, RegionSpec,
@@ -24,6 +23,7 @@ use layer_shell_host::{
 use layer_shell_host::{
     PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
 };
+use serde_json::json;
 
 const CSS: &str = "html,body{margin:0;padding:0}\
 .bar{height:32px;display:flex;align-items:center;background:rgb(40,40,60);color:white;\

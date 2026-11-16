@@ -2,8 +2,8 @@
 //! most (1, 1.25, 1.5, 2), and the properties that make a layout tile at every one of them.
 
 use super::*;
-use ui_core::geometry::scale::Scale;
 use proptest::prelude::*;
+use ui_core::geometry::scale::Scale;
 
 /// The scales of the tables, as 120ths.
 const SCALES: [(&str, u32); 4] = [("1", 120), ("1.25", 150), ("1.5", 180), ("2", 240)];

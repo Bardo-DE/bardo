@@ -5,14 +5,14 @@
 //! one more row written.
 
 use crate::journal::{JournalError, prepare_with};
-use sync_core::{
-    Anchor, Change, ChangePage, ContentHash, Cursor, Folders, ItemKind, ItemPath, More, RemoteId,
-    RemoteItem, RemoteVersion,
-};
 use account_ids::{Bytes, UnixSeconds};
 use rusqlite::{Connection, OptionalExtension, Transaction, params};
 use std::path::Path;
 use std::sync::{Mutex, MutexGuard, PoisonError};
+use sync_core::{
+    Anchor, Change, ChangePage, ContentHash, Cursor, Folders, ItemKind, ItemPath, More, RemoteId,
+    RemoteItem, RemoteVersion,
+};
 
 /// How many folders a path may have before it is given up as a loop.
 const DEPTH: usize = 64;
@@ -288,10 +288,7 @@ impl DriveJournal {
 }
 
 impl drive_core::Listing for DriveJournal {
-    fn entry(
-        &self,
-        id: &RemoteId,
-    ) -> Result<Option<drive_core::Entry>, drive_core::ListingError> {
+    fn entry(&self, id: &RemoteId) -> Result<Option<drive_core::Entry>, drive_core::ListingError> {
         let connection = self.connection();
         listed_where(&connection, "id = ?1", params![id.0]).map(|mut rows| rows.pop())
     }

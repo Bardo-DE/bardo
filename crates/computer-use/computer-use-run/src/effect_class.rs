@@ -3,10 +3,10 @@
 use crate::chord_scope::{OURS, acts_on_desktop};
 use crate::commit::commits;
 use crate::rules::CommitRules;
+use action_gate_wire::EffectBasis;
 use computer_use_a11y_tree::{A11yNode, TypedHint};
 use computer_use_action::WindowClass;
 use computer_use_action::{ActionClass, CuaAction, WindowSpace};
-use action_gate_wire::EffectBasis;
 use keyboard_types::Key;
 use provenance::Effect;
 

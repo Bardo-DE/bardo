@@ -2,10 +2,10 @@
 
 use crate::fault::Unresolved;
 use crate::skill::Skill;
+use account_core::AppName;
 use action_core::{SkillCard, SkillId};
 use action_manifest::{AgentReach, ValidManifest};
 use action_vocab::ActionRef;
-use account_core::AppName;
 use provenance::EntityKind;
 use std::collections::BTreeSet;
 

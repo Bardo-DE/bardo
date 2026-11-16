@@ -3,6 +3,7 @@
 //! go springs home; each of them stops asking for frames once it rests.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::time::FRAME_TICK;
 use ui_components::motion::detail::touch::Touch;
 use ui_components::motion::projection::Throw;
@@ -11,7 +12,6 @@ use ui_components::motion::velocity::Velocity;
 use ui_components::prelude::*;
 use ui_harness::harness::assert_settles_to_zero_frames;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,
@@ -167,7 +167,8 @@ static CELL: GlobalSignal<(f32, f32)> = Signal::global(|| (0.0, 0.0));
 fn Widget() -> Element {
     let (x, y) = CELL();
     let spec = SpringSpec::for_touch(Touch::Remote);
-    let frame = ui_components::motion::spring_point::use_spring_point(Point { x: Px(x), y: Px(y) }, spec);
+    let frame =
+        ui_components::motion::spring_point::use_spring_point(Point { x: Px(x), y: Px(y) }, spec);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
             div { class: "widget", "data-x": "{frame.at.x.0}", "data-y": "{frame.at.y.0}" }

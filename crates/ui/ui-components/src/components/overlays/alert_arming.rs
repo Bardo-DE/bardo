@@ -3,10 +3,10 @@
 //! permission question) must not land on a question the person never saw.
 
 use crate::components::overlays::alert_model::{AlertRole, default_button, escape_button};
+use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_core::vocab::Availability;
-use std::time::Duration;
 
 /// Whether an alert takes answers yet: `Alert`'s `arm_after` holds them off for a moment after
 /// the alert appears, so a keypress or click that was already on its way (the person typing in
@@ -117,10 +117,10 @@ impl Machine for Arming {
 mod tests {
     use super::{AlertInput, Arming, Hearing, Route, route};
     use crate::components::overlays::alert_model::AlertRole::{Cancel, Normal};
+    use std::time::Duration;
     use ui_core::machine::{Elapsed, Machine};
     use ui_core::time::stamp::Stamp;
     use ui_core::vocab::Availability;
-    use std::time::Duration;
 
     #[test]
     fn arming_waits_for_its_deadline_and_the_clock_alone_ends_it() {

@@ -5,11 +5,11 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::{distance, keep, modal, pixels, rect};
 use ui_components::prelude::*;
 use ui_components::style::tokens::accent_table::accent_of;
 use ui_components::style::tokens::hex::Hex;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use probe::{distance, keep, modal, pixels, rect};
 
 const VIEW: Viewport = Viewport {
     width: 300,

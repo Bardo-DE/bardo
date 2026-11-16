@@ -3,6 +3,7 @@
 //! markup side of each fix is in ds's goldens; these are the pictures the goldens cannot show.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::send_pill::SendPill;
 use ui_components::components::app::space_editor::DotIndex;
 use ui_components::motion::detail::operation::Operation;
@@ -12,7 +13,6 @@ use ui_components::stack::toast_hub::UndoToken;
 use ui_components::style::space::presets::PRESETS;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

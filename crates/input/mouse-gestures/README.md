@@ -1,7 +1,7 @@
 # palmrest
 
 The Magic Mouse 2 gesture daemon of the desktop shell program. It reads the mouse's touch
-reports from hidraw, turns them into scroll and gesture streams, and delivers them over a socket to shell-host surfaces and, through
+reports from hidraw, turns them into scroll and gesture streams, and delivers them over a socket to layer-shell-host surfaces and, through
 virtual input devices, to every other client. Specified in quire's
 `design/12-BEHAVIOUR-gestures.md` (and `design/11-BEHAVIOUR-scroll.md` for how the host uses
 the stream; `design/22-SETTINGS.md` §3.9-3.10 for the settings). Portable to any Linux; no
@@ -56,7 +56,7 @@ sensor's millimetres feel the same per millimetre.
 | `gestures` | contacts and palm/rest rejection P1-P5, `stroke` (the one recogniser: axis lock, scroll or Spaces-swipe intent, phases, motion in mm), G4 one-finger swipe, G5 the fired swipe for a remapped two-finger mapping, G6/G7 double-taps |
 | `tracker` | `Tracker::step(self, &Report, now) -> (Self, Vec<Out>)`: all of the above composed (12.4) |
 | `action`, `keys` | the gesture -> action table and what an action asks of the shell (the same on every desktop) |
-| `palmrest-protocol` (crate) | the socket messages and their codec (12.3.10) |
+| `mouse-gestures-proto` (crate) | the socket messages and their codec (12.3.10) |
 | `config` | `gestures.toml`, lenient per key, the watch |
 | `outputs` | the `Emitter` seam, `RecordingEmitter`, the virtual touchpad session (`pad`: scroll pair and four-finger Spaces swipe, and the policy of what may be down), evdev event encoding |
 | `recording`, `replay` | the `palmrest record` file (v1 hidraw, v2 any sensor) and the replay used by every acceptance test |
@@ -221,7 +221,7 @@ Waiting for the user and the device (FINDINGS has the core's list: items 8, 9, 1
 - **Acceleration:** record real sessions (`palmrest record`) and scroll with the curve; tune the
   constants in `feel/curve.rs` if slow scrolling is not precise or a flick runs away (the shell's
   feel only; apps scroll by libinput's).
-- **Suppression:** hovering a shell-host surface stops the touchpad's scroll.
+- **Suppression:** hovering a layer-shell-host surface stops the touchpad's scroll.
 
 ## Tests
 

@@ -10,12 +10,12 @@ use crate::launcher_harness;
 use launcher_harness::launcher_support;
 
 use dioxus::prelude::*;
-use ui_lint::{LintConfig, Profile, assert_clean, markup};
 use shell_launcher_ui::Launcher;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::LauncherLink;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{MountProps, mount};
+use ui_lint::{LintConfig, Profile, assert_clean, markup};
 
 const LAUNCHER_CSS: &str = include_str!("../../src/launcher/style.css");
 

@@ -18,8 +18,8 @@ use compositor_core::time::{Due, Mono, TimerKey};
 use compositor_core::{Effect, Event, LayerKey, Model, OutputKey};
 use compositor_render::RaisedDraw;
 use compositor_wayland::seat::Candidate;
-use ui_core::vocab::Fraction;
 use smithay::desktop::PopupManager;
+use ui_core::vocab::Fraction;
 
 /// The surface of `output` that holds the role `edge` reveals: each output has its own bar and
 /// its own dock.

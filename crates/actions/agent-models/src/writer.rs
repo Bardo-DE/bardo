@@ -1,4 +1,4 @@
-//! The policy writer over any inferd-client Transport: it reads the person's own turns and the
+//! The policy writer over any inference-client Transport: it reads the person's own turns and the
 //! action catalogue, never content, and asks a model for a draft of the task's policy as JSON
 //! under a schema; `draft::policy_of` checks the draft. The router stamps `from` and `expires`
 //! and bounds the result by the grants (`Router::bound_policy`); if the writer fails there is no
@@ -6,20 +6,20 @@
 
 use crate::draft::{Draft, key, policy_of, schema};
 use crate::model::{Discard, chat_of, turn};
-use action_core::{ActionCard, Derived, PolicyWriter, UserTurn};
-use permission_core::ReviewError;
-use inference_client::Transport;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Permille, Tokens};
+use account_match::LlmNeed;
+use account_match::Need;
+use action_core::{ActionCard, Derived, PolicyWriter, UserTurn};
+use inference_client::Transport;
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, InferRequest, Knob, MessagePart, ModelError, Reasoning,
     ReplyShape, Role, Sampling, ToolChoice, ToolParallelism,
 };
-use account_match::LlmNeed;
-use account_match::Need;
+use permission_core::ReviewError;
 use provenance::{SpaceId, TaskId};
 use std::collections::BTreeSet;
 

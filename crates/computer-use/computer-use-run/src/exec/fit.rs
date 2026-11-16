@@ -8,9 +8,11 @@
 use super::observe::visibility_of;
 use crate::machine::input::Moved;
 use crate::observation::{Focus, Visibility};
-use computer_use_action::{Coord, CuaAction, Size, WindowSpace};
-use computer_use_desktop::{GlobalRect, Pid, SeatIsolation, ToplevelIdent, ToplevelInfo, ToplevelState};
 use account_core::AppName;
+use computer_use_action::{Coord, CuaAction, Size, WindowSpace};
+use computer_use_desktop::{
+    GlobalRect, Pid, SeatIsolation, ToplevelIdent, ToplevelInfo, ToplevelState,
+};
 
 /// The window as the last observation saw it: what an action was aimed at.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -143,9 +145,11 @@ pub(super) fn fit_of(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computer_use_desktop::{GlobalCoord, GlobalRect, Pid, ToplevelIdent, WindowTitle, WorkspaceRef};
     use account_core::AppName;
     use account_ids::Px;
+    use computer_use_desktop::{
+        GlobalCoord, GlobalRect, Pid, ToplevelIdent, WindowTitle, WorkspaceRef,
+    };
     use std::collections::BTreeSet;
 
     fn window(state: &[ToplevelState]) -> ToplevelInfo {

@@ -4,11 +4,13 @@ use super::io::save;
 use crate::assistant_model::AssistantPicker;
 use crate::env::Env;
 use crate::picker::{Picker, use_picker};
+use dioxus::prelude::*;
 use settings_app_model::{
     Clearing, FirstRun, FirstRunEffect, FirstRunInput, PageKind, PickerInput, PickerState, Stage,
     first_run_step,
 };
-use dioxus::prelude::*;
+use std::sync::Arc;
+use ui_blitz::{AppHandle, TokioSpawner, use_app_handle};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
@@ -19,9 +21,7 @@ use ui_components::root::pass_through::ExtraClass;
 use ui_components::stack::toast_hub::ToastHub;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_blitz::{AppHandle, TokioSpawner, use_app_handle};
 use ui_settings::{AppName, ConfigRoot, Store, use_environment};
-use std::sync::Arc;
 
 fn send(state: &mut Signal<FirstRun>, input: FirstRunInput) -> Vec<FirstRunEffect> {
     let (next, effects) = first_run_step(state.peek().clone(), input);

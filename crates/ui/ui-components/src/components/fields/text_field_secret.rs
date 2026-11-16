@@ -1,8 +1,8 @@
 //! What a secure field refuses: the keys that would copy or cut its text out. Paste stays.
 
 use crate::edit::keys::{KeyAction, classify};
-use keymap::Keymap;
 use dioxus::prelude::{Key, Modifiers};
+use keymap::Keymap;
 
 /// Whether `key` with `modifiers` could copy or cut text out of a field: the platform's copy and
 /// cut chords under `keymap`, Ctrl+Insert (copy) and Shift+Delete (cut), and, whatever the
@@ -26,8 +26,8 @@ fn any_layers_copy(key: &Key, modifiers: Modifiers) -> bool {
 #[cfg(test)]
 mod tests {
     use super::takes_text_out;
-    use keymap::{Desktop, Keymap, Platform};
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::{Desktop, Keymap, Platform};
 
     type Case = (&'static str, Platform, Key, Modifiers, bool);
 

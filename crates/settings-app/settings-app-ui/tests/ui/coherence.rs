@@ -2,9 +2,9 @@
 //! is only quire's components. The markup is a server render of every page of the real schemas.
 
 use crate::support::Sandbox;
+use dioxus::prelude::VirtualDom;
 use settings_app_model::PageSlug;
 use settings_app_ui::{App, Env, Opening, STYLE};
-use dioxus::prelude::VirtualDom;
 use ui_lint::{LintConfig, Profile, assert_clean, markup};
 
 /// A server render of the app opened on `page`, inside the runtime the app's watches need.

@@ -1,8 +1,8 @@
 //! cuad: the computer-use daemon, as a library and a binary.
 //!
 //! It owns the step loop of every run: the pure machine ([`computer_use_run::Run`]) says what to do, the
-//! [`Supervisor`] does it against the seams (`computer_use_system::SystemSeams` in the daemon, `cua-fake`
-//! in tests) and feeds the answers back. It serves `org.quire.Cua1` (`cua-dbus`) and
+//! [`Supervisor`] does it against the seams (`computer_use_system::SystemSeams` in the daemon, `computer-use-fake`
+//! in tests) and feeds the answers back. It serves `org.quire.Cua1` (`computer-use-dbus`) and
 //! `org.quire.IntentProvider1` as `org.quire.Cua` with one action, `cua.run.start`
 //! ([`CuaProvider`]).
 //!
@@ -17,7 +17,7 @@
 //! [`computer_use_run::Exec`], with the person's controls, the desktop's events and the clock racing
 //! whatever the run waits on), the bus ([`serve`], [`serve_on`]) and the start-up ([`run`]). The
 //! adapters to the system (input over EIS, window capture, the casement desktop, the model over
-//! inferd, the links to the router and memoryd) are in `cua-system`; this crate wires them. With
+//! inferd, the links to the router and memoryd) are in `computer-use-system`; this crate wires them. With
 //! no compositor it still starts and reports the backend as unavailable (`Backend = none`).
 
 mod bus;

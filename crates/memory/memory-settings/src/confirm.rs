@@ -5,7 +5,7 @@
 //! the Settings app, which says so to memoryd (`Memory1.ConfirmSettings`). memoryd keeps the
 //! confirmations in `confirmed-settings.toml` in its own data directory, which the agent sandbox
 //! and the apps cannot write. This module is the pure half: the confirmations as a value, their
-//! text, the check of what a confirmation may say and the gate over a read. `almanac-host` reads
+//! text, the check of what a confirmation may say and the gate over a read. `memory-host` reads
 //! and writes the file.
 
 use crate::MemorySettings;

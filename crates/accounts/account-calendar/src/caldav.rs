@@ -32,7 +32,7 @@ impl<H: Http> CalDav<H> {
         Self { http, home }
     }
 
-    /// The calendar home found from `start`, any URL on the server: dav-proto's discovery walk
+    /// The calendar home found from `start`, any URL on the server: account-dav-proto's discovery walk
     /// asks it for the principal (RFC 5397) and the principal's `calendar-home-set` (RFC 4791
     /// §6.2.1).
     pub async fn discover(http: H, start: WebUrl) -> Result<Self, CalendarError> {
@@ -200,7 +200,7 @@ impl<H: Http> CalendarStore for CalDav<H> {
     }
 }
 
-/// What dav-proto's discovery walk finds from `start` as far as `reach`, each request sent
+/// What account-dav-proto's discovery walk finds from `start` as far as `reach`, each request sent
 /// through the seam (any host the server points to: iCloud keeps its homes on another).
 async fn walk<H: Http>(
     http: &H,

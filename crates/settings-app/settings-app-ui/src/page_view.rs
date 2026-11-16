@@ -6,8 +6,8 @@ use crate::env::Env;
 use crate::files::{Edit, Files};
 use crate::memory_consent::MemoryConsent;
 use crate::page_body::PageBody;
-use settings_app_model::{Offers, PageModel, PageSlug, holds_memory_settings};
 use dioxus::prelude::*;
+use settings_app_model::{Offers, PageModel, PageSlug, holds_memory_settings};
 use ui_components::prelude::PageHeader;
 use ui_settings::schema::KeyPath;
 

@@ -6,8 +6,8 @@
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
 use compositor_core::geometry::{LogicalPoint, LogicalRect, PhysicalRect};
-use ui_core::geometry::scale::Scale;
 use smithay::utils::{Physical, Rectangle};
+use ui_core::geometry::scale::Scale;
 
 /// Which corners a clip rounds, and what it does with the pixels outside its rectangle.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

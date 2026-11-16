@@ -8,7 +8,7 @@
 //! ("Bluetooth Settings…" at the foot).
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
+use shell_kit::prelude::*;
 use shell_model::attempt::Attempts;
 use shell_model::bluetooth::{
     Bluetooth, BluetoothCommand, BtAddress, BtBattery, BtConnection, BtDevice, BtKind, BtPairing,
@@ -16,7 +16,7 @@ use shell_model::bluetooth::{
 };
 use shell_model::units::Presence;
 use shell_services::BluetoothService;
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
 
 use super::feature_switch::{FeatureSwitch, back_button};
 use super::foot::SettingsFoot;
@@ -185,8 +185,6 @@ mod tests {
     use super::{connecting, device_row, device_rows, empty_title};
     use crate::control_center::item_phase::{ItemPhase, RowDisc};
     use crate::control_center::rows::RowMark;
-    use ui_components::motion::detail::stamp::EventStamp;
-    use ui_components::prelude::*;
     use shell_model::bluetooth::{
         Bluetooth, BluetoothCommand, BtAddress, BtBattery, BtConnection, BtDevice, BtKind,
         BtPairing, BtPower,
@@ -195,6 +193,8 @@ mod tests {
         attempt::{Attempt, Attempts, OpStamp},
         units::{Percent, Presence},
     };
+    use ui_components::motion::detail::stamp::EventStamp;
+    use ui_components::prelude::*;
 
     fn device(connection: BtConnection, pairing: BtPairing, battery: BtBattery) -> BtDevice {
         BtDevice {

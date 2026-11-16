@@ -9,22 +9,22 @@ use crate::best_effort::best_effort;
 use crate::fault::ServeFault;
 use crate::runtime::Companion;
 use crate::seams::Surface;
-use agent_loop::{
-    IdleEffect, IdleInput, NarrativeJob, SideEffect, SideInput, side_episode, side_step,
-};
-use memory_core::{Episode, Narrative, UserText};
-use action_client::Transport as IntentsTransport;
-use agent_planner::Planner;
-use action_vocab::Clock;
-use action_wire::{LedgerStep, NoteAsk};
-use futures_util::future::Either;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
+use action_client::Transport as IntentsTransport;
+use action_vocab::Clock;
+use action_wire::{LedgerStep, NoteAsk};
+use agent_loop::{
+    IdleEffect, IdleInput, NarrativeJob, SideEffect, SideInput, side_episode, side_step,
+};
+use agent_planner::Planner;
+use futures_util::future::Either;
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, Reasoning, ReplyShape, Role,
     ToolChoice, ToolParallelism,
 };
+use memory_core::{Episode, Narrative, UserText};
 use provenance::{AgentRef, Confidentiality, Integrity, Label, ModelRole, Source, UnixSeconds};
 use std::collections::BTreeSet;
 

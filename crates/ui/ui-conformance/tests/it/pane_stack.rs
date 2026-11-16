@@ -5,13 +5,13 @@
 //! one once it rests, and nothing asks for a frame after that.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

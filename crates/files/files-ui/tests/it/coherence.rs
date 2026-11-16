@@ -15,22 +15,26 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use files_core::{FileName, FolderPath, ItemRef, Location};
+use files_fs::FakePrefs;
+use files_trash::{FakeTrash, Trash};
+use files_ui::{PlaceKind, Places, STYLE};
 use ui_components::base::press::PointerButton;
 use ui_components::prelude::ShortcutKey;
 use ui_harness::harness::settle_until;
 use ui_harness::{Harness, Input};
 use ui_lint::{LintConfig, Profile, Rule, assert_clean, markup};
-use files_core::{FileName, FolderPath, ItemRef, Location};
-use files_fs::FakePrefs;
-use files_trash::{FakeTrash, Trash};
-use files_ui::{PlaceKind, Places, STYLE};
 
 use super::support::{RecordingOpener, harness, launch_remembering, scratch_folder};
 
 /// What `markup` needs to know is styled: quire's own stylesheet, plus the window's.
 fn window_css() -> String {
     // The card of Quick Look is anyview's and brings its own stylesheet, as it does at run time.
-    format!("{}\n{STYLE}\n{}", ui_components::stylesheet(), anyview_peek::STYLE)
+    format!(
+        "{}\n{STYLE}\n{}",
+        ui_components::stylesheet(),
+        anyview_peek::STYLE
+    )
 }
 
 /// What the window is showing when its markup is taken.
@@ -253,7 +257,11 @@ fn our_stylesheet_lints_clean() {
 fn rendered_markup_uses_only_styled_classes() {
     for pose in POSES {
         let html = page(pose);
-        let offences = markup(&html, &window_css(), &LintConfig::new(&ui_components::kits()));
+        let offences = markup(
+            &html,
+            &window_css(),
+            &LintConfig::new(&ui_components::kits()),
+        );
         let unstyled: Vec<_> = offences
             .iter()
             .filter(|offence| offence.rule == Rule::UnstyledClass)
@@ -267,7 +275,11 @@ fn rendered_markup_uses_only_styled_classes() {
 fn no_raw_form_control_or_svg_is_rendered() {
     for pose in POSES {
         let html = page(pose);
-        let offences = markup(&html, &window_css(), &LintConfig::new(&ui_components::kits()));
+        let offences = markup(
+            &html,
+            &window_css(),
+            &LintConfig::new(&ui_components::kits()),
+        );
         let raw: Vec<_> = offences
             .iter()
             .filter(|offence| offence.rule == Rule::RawMarkup)
@@ -281,7 +293,11 @@ fn no_raw_form_control_or_svg_is_rendered() {
 #[test]
 fn no_inline_style_carries_a_literal_colour_or_duration() {
     let html = page(Pose::Renaming);
-    let offences = markup(&html, &window_css(), &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &html,
+        &window_css(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     let inline: Vec<_> = offences
         .iter()
         .filter(|offence| {

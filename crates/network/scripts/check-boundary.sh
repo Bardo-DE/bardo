@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 FORBIDDEN="dbus libdbus-sys reqwest hyper ureq rustls openssl openssl-sys"
 fail=0
 
-for crate in airwaves-nm airwaves-bluez; do
+for crate in networkmanager-proxy bluez-proxy; do
   # A crate that cargo cannot find would make every check below pass vacuously.
   if ! cargo tree -p "$crate" --depth 0 >/dev/null 2>&1; then
     echo "ERROR: cargo tree cannot resolve $crate; the boundary was not checked"

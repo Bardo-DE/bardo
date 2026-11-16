@@ -2,9 +2,9 @@
 //! menu at a press of the secondary button.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_model::ids::OutputName;
+use ui_components::prelude::*;
 
 use super::io::use_crossfade;
 use super::menu::{secondary_press, use_desktop_menu};

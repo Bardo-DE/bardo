@@ -1,6 +1,6 @@
 //! The models this computer runs itself, as the Intelligence page meets them: what each one is
 //! doing, the memory it takes, and the start or stop that changes it. Pure; the calls and the
-//! words are `detent-ui`'s.
+//! words are `settings-app-ui`'s.
 
 mod board;
 mod model;

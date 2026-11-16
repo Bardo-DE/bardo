@@ -2,10 +2,10 @@
 //! beside them, however long a label is.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::fields::fact_list::{Fact, FactList};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

@@ -2,12 +2,12 @@
 //! Run with `--nocapture` to read the table.
 
 use crate::support::*;
+use account_core::AppName;
 use action_cli::{Exit, Invocation, Stdin, Stdout, run};
 use action_client::{Intents, Transport, TransportError};
 use action_core::{ConfirmAnswer, ConfirmEnd};
 use action_fake::Answering;
 use action_wire::{IntentsReply, IntentsRequest};
-use account_core::AppName;
 
 /// The intentd that is not there.
 struct Down;

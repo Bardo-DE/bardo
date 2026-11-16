@@ -1,12 +1,12 @@
 use super::*;
 use crate::lab::Lab;
-use model_http::Port;
 use account_fake_servers::net::Bind;
+use base_testkit::Scratch;
 use inference_router::attached::config::{Place, Reach};
 use inference_router::attached::key::{KeyFile, KeyFileProblem};
+use model_http::Port;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
-use base_testkit::Scratch;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 const SERVED: &str = "qwen3-32b";

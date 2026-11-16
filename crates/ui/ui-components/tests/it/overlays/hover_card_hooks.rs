@@ -4,6 +4,7 @@
 
 use super::cases::Case;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::menus::item::item::MenuImage;
 use ui_components::components::overlays::hover_card::intent::{HoverAnchor, use_hover_intent};
 use ui_components::components::overlays::hover_card::parts::HoverCardPart;
@@ -11,7 +12,6 @@ use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::stack::hover_hub::{HoverKey, HoverKind};
 use ui_motion::hover_intent::HoverProfile;
-use std::time::Duration;
 
 /// Past the 500 ms hover intent.
 const INTENT: Duration = Duration::from_millis(570);

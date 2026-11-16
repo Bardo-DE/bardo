@@ -16,14 +16,15 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use base_testkit::Scratch;
 use inference_core::{
     Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, InferEvent,
     InferRefusal, InferReply, LangPick, LicenceClass, Modality, ModelCard, ModelError, ModelLabel,
     ModelRef, Pipeline, Policy, Refusal, RequestShape, Role, Slot, StageRole, SwapCost, TierMap,
     TranscribeBegin, TranscribeMode, TranscribeReply,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use inference_router::audio::AudioIn;
 use inference_router::pipeline::{catalogue_of, plan};
 use inference_router::router::Listed;
@@ -31,7 +32,6 @@ use inference_turns::pipeline::{PipelineInput, Transcriber, VecAudio, run_pipeli
 use std::collections::BTreeSet;
 use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex};
-use base_testkit::Scratch;
 use tokio::net::UnixListener;
 
 fn need() -> Need {

@@ -6,8 +6,8 @@ use crate::{
     css::{ALIAS, motion_css},
     detail::grammar::{GRAMMAR_DURATIONS, GRAMMAR_EASINGS},
 };
-use ui_style::kit::{Kit, KitRank, Kits, Section, Vocabulary};
 use std::borrow::Cow;
+use ui_style::kit::{Kit, KitRank, Kits, Section, Vocabulary};
 
 /// The motion layer's contribution to the stylesheet and the linter.
 pub static KIT: Kit = Kit {

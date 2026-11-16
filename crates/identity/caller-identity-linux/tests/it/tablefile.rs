@@ -1,7 +1,7 @@
 //! Loading the table from root-owned files, and refusing the rest.
 
-use caller_identity_linux::{FixtureProc, LoadError, TableFiles};
 use caller_identity_core::{FileTrust, Uid, Writer};
+use caller_identity_linux::{FixtureProc, LoadError, TableFiles};
 use std::path::PathBuf;
 
 const MAIN: &str = "/etc/quire/desktop-callers.toml";

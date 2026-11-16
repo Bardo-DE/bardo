@@ -33,7 +33,7 @@
 //! the parts of a tuple answer.
 //!
 //! The expansion names `::account_dbus::Call` and `::account_dbus::Unserved`, so a crate that uses it
-//! depends on porter-dbus, which declares its own interfaces under `extern crate self as account_dbus`.
+//! depends on account-dbus, which declares its own interfaces under `extern crate self as account_dbus`.
 
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;

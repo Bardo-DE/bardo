@@ -1,10 +1,10 @@
 //! Reading an account from its issuer's API with a bearer token: who it is (OpenID Connect's
 //! userinfo), and what a non-success status means for the account.
 
-use account_oauth_probe_proto::{Failure, bearer_get};
 use account_core::EndpointUrl;
 use account_http::Http;
 use account_http::http::Response;
+use account_oauth_probe_proto::{Failure, bearer_get};
 use account_provider::ProviderError;
 use serde::Deserialize;
 

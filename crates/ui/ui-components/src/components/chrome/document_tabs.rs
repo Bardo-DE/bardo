@@ -27,15 +27,15 @@ use crate::host::measure::client_rect;
 use crate::keys::use_keys;
 use crate::root::common::Common;
 use crate::stack::roving::Rove;
-use keymap::Context;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
+use keymap::Context;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px};
 use ui_core::vocab::{DropState, aria_word};
 use ui_motion::drag::{DRAG_THRESHOLD, DragPhase, use_drag};
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
-use std::rc::Rc;
 
 /// One tab: the document's title, shown in full in its tooltip.
 #[derive(Debug, Clone, PartialEq)]

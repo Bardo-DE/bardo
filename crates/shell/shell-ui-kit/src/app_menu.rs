@@ -2,8 +2,8 @@
 //! function the menu service and the agent's actions are given (a services crate links no
 //! design system).
 
-use ui_components::components::menus::export::AppMenuAddress;
 use shell_model::app_menu::{MenuApp, MenuName};
+use ui_components::components::menus::export::AppMenuAddress;
 
 /// The bus name `app`'s menu is served at, or `None` for an id no name can be made from.
 pub fn menu_name_of(app: &MenuApp) -> Option<MenuName> {

@@ -3,14 +3,14 @@
 use super::pace::{EVENTS_PER_CALL_MAX, Pace};
 use super::permit::{self, Caller, MenuPermit, SenderName, Verdict};
 use super::wire::{self, Layout, Props, WireError};
-use ui_components::base::command::CommandId;
-use ui_components::components::menus::export::{
-    Change, Depth, Dispatch, MenuState, MenuTree, NodeId, PropNames, Revision,
-};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Instant;
+use ui_components::base::command::CommandId;
+use ui_components::components::menus::export::{
+    Change, Depth, Dispatch, MenuState, MenuTree, NodeId, PropNames, Revision,
+};
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::object_server::SignalEmitter;

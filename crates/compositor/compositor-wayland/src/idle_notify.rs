@@ -19,10 +19,10 @@ pub use machine::{IdleBook, Moved, Signal};
 use crate::client::ClientState;
 use crate::limits::{self, Limit};
 use crate::states::{GlobalFilter, WaylandFault};
+use account_core::PeerIdentity;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::time::{IdleNotifierId, Mono};
 use compositor_core::{ClientKey, Effect};
-use account_core::PeerIdentity;
 use smithay::reexports::wayland_protocols::ext::idle_notify::v1::server::{
     ext_idle_notification_v1::{self, ExtIdleNotificationV1},
     ext_idle_notifier_v1::{self, ExtIdleNotifierV1},

@@ -9,13 +9,13 @@
 //! no press of its own: the dock's input layer reads every pointer event.
 
 use dioxus::prelude::*;
+use shell_kit::dock::tile::plate_side;
+use shell_kit::prelude::*;
+use shell_model::badges::Badge;
+use shell_model::units::{Cpx, Permille};
 use ui_components::components::controls::badge::BadgeContent;
 use ui_components::prelude::*;
 use ui_components::style::scale::use_scale;
-use shell_model::badges::Badge;
-use shell_model::units::{Cpx, Permille};
-use shell_kit::dock::tile::plate_side;
-use shell_kit::prelude::*;
 
 use crate::dock::frame::Rows;
 use crate::dock::icon::{IconContext, TileSizes, drawn, tile_art};

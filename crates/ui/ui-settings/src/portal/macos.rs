@@ -9,14 +9,14 @@
 
 use super::SystemPrefs;
 use crate::latest::{self, Receiver, Sender};
-use ui_core::spawner::Spawner;
-use ui_style::appearance::system::Contrast;
-use ui_style::appearance::theme::Scheme;
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
     CFRetained, CFString,
 };
 use std::time::Duration;
+use ui_core::spawner::Spawner;
+use ui_style::appearance::system::Contrast;
+use ui_style::appearance::theme::Scheme;
 
 /// How often the watch reads the preferences again.
 const EVERY: Duration = Duration::from_secs(1);

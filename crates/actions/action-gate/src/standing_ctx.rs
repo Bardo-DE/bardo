@@ -3,14 +3,14 @@
 
 use crate::gate::Pending;
 use crate::standing_facts::{exec_of, facts_of};
-use action_review::plan;
 use action_manifest::{ActionDecl, ArgSink};
+use action_review::plan;
+use action_vocab::CallRequest;
 use permission_core::{
     AlwaysOffer, AskFacts, AskReason, CallFacts, ExecFacts, GrantCaller, Impact, Limited, Ruling,
     StandingGrant, StandingGrantId, Withheld, blocker, covers_approval, find_standing_for,
     holds_standing, may_offer,
 };
-use action_vocab::CallRequest;
 use provenance::Integrity;
 
 /// What the router knows about standing grants for one call.

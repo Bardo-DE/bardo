@@ -1,8 +1,8 @@
 //! docket's client API, the caller side of `org.quire.Intents1`: a caller (sill, companiond, an
 //! MCP edge) holds [`Intents`] over a [`Transport`] and asks the router. (The app side, the
-//! `IntentProvider` an app implements, is `docket-provider`.) The transport is the only thing that changes between the desktop's D-Bus
+//! `IntentProvider` an app implements, is `action-provider`.) The transport is the only thing that changes between the desktop's D-Bus
 //! (`DbusTransport`, feature `dbus`) and a test or an embedding host (`InProcess`, feature
-//! `in_process`, which is the only way this crate reaches the router, cedar and policy-point).
+//! `in_process`, which is the only way this crate reaches the router, cedar and permission-policy).
 
 #[cfg(feature = "dbus")]
 mod awaiting;

@@ -1,25 +1,25 @@
 //! Dictation in process: one utterance from a microphone to text, over the `AudioDevice` seam and
-//! any inferd-client `Transport`, with no bus, no skeletons and no daemon. The caller is already
+//! any inference-client `Transport`, with no bus, no skeletons and no daemon. The caller is already
 //! allowed to hear (consent is the caller's to check); the capture ends at the silence after
 //! speech, or when the stream does.
 
 use crate::frames::{Dictation, Frames};
 use crate::link::fault_of as link_fault;
 use crate::warm::stt_need;
-use inference_client::{InferSession, Transport};
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use inference_core::{
-    AudioFrame, AudioRate, Base64Bytes, ClientFrame, InferEvent, InferReply, InferRequest,
-    LangPick, ModelError, ServedBy, TranscribeBegin, TranscribeMode,
-};
-use speech_provider::FRAME_SAMPLES;
 use agent_voice_audio::{
     AudioDevice, CaptureFormat, CaptureStream, SNAPSHOT_BUDGET, choose_capture, snapshot_before,
 };
 use agent_voice_loop::CAPTURE_RATE;
 use agent_voice_wire::{HeardText, VoiceFault};
+use inference_client::{InferSession, Transport};
+use inference_core::{
+    AudioFrame, AudioRate, Base64Bytes, ClientFrame, InferEvent, InferReply, InferRequest,
+    LangPick, ModelError, ServedBy, TranscribeBegin, TranscribeMode,
+};
+use speech_provider::FRAME_SAMPLES;
 
 /// What dictation heard.
 #[derive(Debug, Clone, PartialEq, Eq)]

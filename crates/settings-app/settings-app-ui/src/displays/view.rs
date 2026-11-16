@@ -6,13 +6,13 @@ use crate::copy::absence::Subject;
 use crate::icons::tile_of;
 use crate::live::{use_events, use_live};
 use crate::system::Unavailable;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{
     ArrangeSide, Brightness, BrightnessList, DisplayChange, DisplayEdit, DisplayRotation,
     DisplaysInput, DisplaysReady, DisplaysState, Monitor, OutputId, PageKind, PixelSize,
     RefreshMilliHz, ScaleMilli, default_scale, looks_like, mode_sizes, native_size, side_of,
 };
-use dioxus::prelude::*;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;

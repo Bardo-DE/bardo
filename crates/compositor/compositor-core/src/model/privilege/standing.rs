@@ -1,5 +1,5 @@
 //! What the compositor knows of the program on the other end of a public connection, as
-//! casement-core's own vocabulary. The composition root fills it from the caller-identity
+//! compositor-core's own vocabulary. The composition root fills it from the caller-identity
 //! library when the connection is accepted; the model never reads a process.
 
 use super::limits::{MAX_ROLE_BYTES, MAX_SUBJECT_BYTES};

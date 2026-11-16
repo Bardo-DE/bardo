@@ -2,17 +2,17 @@
 //! context menu and the services. The only effectful part of the dock; every decision is
 //! `machine::step`, `effects`, `changes`, `context_menu` or `menu_geometry`.
 //!
-//! Frames follow shell-host's frame hook: the machine's `RequestFrames` takes a
+//! Frames follow layer-shell-host's frame hook: the machine's `RequestFrames` takes a
 //! `FrameDrive`, every frame tick of the surface feeds `Frame`, and `StopFrames` drops the drive,
 //! so an idle dock renders nothing. A `Redraw` stamps the time the next render draws at.
 
 use dioxus::prelude::*;
-use ui_components::base::time::clock::sleep;
-use ui_components::base::time::stamp::Stamp;
-use ui_components::prelude::MenuItem;
 use layer_shell_host::{FrameDrive, Rect, SurfaceHandle};
 use shell_model::badges::Badges;
 use shell_ui_kit::services::Services;
+use ui_components::base::time::clock::sleep;
+use ui_components::base::time::stamp::Stamp;
+use ui_components::prelude::MenuItem;
 
 use crate::dock::context_menu::{OptionHeld, app, divider, menu_entries, menu_windows, trash};
 use crate::dock::effects::{EffectCtx, effect_commands};
@@ -24,10 +24,10 @@ use crate::dock::menu_geometry::{GEOM, pill_anchor, tile_anchor};
 use crate::dock::pick::{DockCommand, DockPick, pick_commands};
 use crate::dock::pointer::{DockInput, resolve};
 use crate::dock::system::{change_login, empty_trash_availability, login_state};
-use ui_components::base::time::stamp::FrameClock;
 use shell_ui_kit::hooks::{use_link, use_services};
 use shell_ui_kit::links::{ActionLink, Origin};
 use shell_ui_kit::menu::{ContextMenu, PopupLook, use_context_menu_closing};
+use ui_components::base::time::stamp::FrameClock;
 
 /// What the session decides against, from the dock's latest render.
 #[derive(Clone)]
@@ -239,7 +239,7 @@ fn apply(
         }
         DockEffect::OpenMenu { tile } => open_menu(slots, deps, outward, *tile),
         DockEffect::OpenDividerMenu { at } => open_divider_menu(slots, deps, outward, *at),
-        // The label is ds `Tooltip{Fly}`'s own (tile.rs); minimize targets need shell-host
+        // The label is ds `Tooltip{Fly}`'s own (tile.rs); minimize targets need layer-shell-host
         // support first.
         DockEffect::ShowLabel { .. } | DockEffect::HideLabel | DockEffect::SetMinimizeRects => {}
         DockEffect::Launch { .. }

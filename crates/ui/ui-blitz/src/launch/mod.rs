@@ -3,7 +3,7 @@
 //! and a redraw when a timer or an image lands.
 //!
 //! The window is blitz's portable `dioxus-native` shell (winit), so an app runs the same on any
-//! OS; `crate::host` wraps the app to supply what quire needs on top of it. ds-blitz runs the
+//! OS; `crate::host` wraps the app to supply what quire needs on top of it. ui-blitz runs the
 //! event loop itself (`crate::window_shell`), one dioxus-native application per window, so the
 //! app can open more windows (`crate::open_window`).
 
@@ -32,12 +32,12 @@ use crate::window_requests::{Requests, Root};
 use crate::window_shell::Windows;
 use crate::window_size::WindowSize;
 use blitz_embed::net::FileRoots;
-use keymap::{KeymapSource, Overrides, Platform};
 use dioxus::prelude::*;
-use ui_components::window::icon::WindowIcon;
+use keymap::{KeymapSource, Overrides, Platform};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::runtime::Handle;
+use ui_components::window::icon::WindowIcon;
 
 /// How the window starts, and what its document is given: build it with [`AppConfig::new`] and
 /// the `with_*` methods.
@@ -229,7 +229,10 @@ impl AppConfig {
 }
 
 /// `keys` with the app's own changes on top, when it has any.
-fn layered(keys: ui_components::keys::KeySource, overrides: Option<Overrides>) -> ui_components::keys::KeySource {
+fn layered(
+    keys: ui_components::keys::KeySource,
+    overrides: Option<Overrides>,
+) -> ui_components::keys::KeySource {
     match overrides {
         Some(overrides) => keys.with_overrides(overrides),
         None => keys,

@@ -8,7 +8,6 @@
 
 use companion_model::helper::HelperPhase;
 use companion_wire::{HelperLine, HelperNeeds};
-use ui_core::word::Word;
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, Choice, CompanionAct, HelperAttention, HelperControl,
     HelperFacts, IconRef, Item, ItemId, Provider, ProviderKind, Query, ResultSink, Scope, Score,
@@ -16,6 +15,7 @@ use shell_launcher::{
 };
 use shell_model::companion::{Companion, controls_of};
 use tokio::sync::watch;
+use ui_core::word::Word;
 
 /// The id of the row that starts a new helper.
 const NEW_ID: &str = "helper:new";

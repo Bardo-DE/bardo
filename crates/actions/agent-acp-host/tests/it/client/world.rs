@@ -2,9 +2,6 @@
 //! of the person's answers, or the host's own desk for a session routed there), the host's
 //! performer answering for the pseudo-app, and the seams that wire them.
 
-use sandbox::fake::FakeSandbox;
-use agent_acp_host::fake::{FakeFiles, FakeSpawn};
-use agent_acp_host::{Files, IntentsCourt, OsFiles, Performer, Seams};
 use action_client::InProcess;
 use action_core::{
     AppRefusal, ConfirmAnswer, ConfirmId, ConfirmRequest, Confirmer, Invocation, Outcome, UndoFault,
@@ -13,9 +10,12 @@ use action_fake::{
     BoxFut, FakeSeams, FixedClock, HostedApp, ScriptedConfirmer, ScriptedReviewer, ScriptedWriter,
 };
 use action_host::{EditorDesk, SheetConfirmer};
-use agent_session::fake::MemoryLog;
 use action_vocab::UndoToken;
+use agent_acp_host::fake::{FakeFiles, FakeSpawn};
+use agent_acp_host::{Files, IntentsCourt, OsFiles, Performer, Seams};
+use agent_session::fake::MemoryLog;
 use provenance::Actor;
+use sandbox::fake::FakeSandbox;
 use std::sync::Arc;
 
 /// The desktop's sheet (a script of the person's answers) for a call, and the host's own desk for

@@ -1,6 +1,6 @@
 //! Why a model answered, or why the one the person named could not: the footer under the
 //! picker. Both come from inferd's `InferEvent` (`Why` and `Declined`), closed sets of facts; the
-//! window's words for them are in `detent-ui`'s copy.
+//! window's words for them are in `settings-app-ui`'s copy.
 
 use inference_core::{Declined, InferEvent, Why};
 

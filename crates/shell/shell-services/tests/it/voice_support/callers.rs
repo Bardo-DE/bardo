@@ -4,8 +4,8 @@
 use std::fmt;
 use std::sync::{Arc, Mutex, PoisonError};
 
-use caller_identity_dbus::peephole::fake::{introduced_program, introduced_service};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table};
+use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};
 use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
 use shell_services::callers::{CallerSource, Peers};
 use zbus::Connection;

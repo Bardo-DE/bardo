@@ -4,11 +4,11 @@
 use crate::copy::privacy::program_name;
 use crate::copy::screen_sharing::grant_line;
 use crate::key_row::row_id;
+use dioxus::prelude::*;
 use settings_app_model::{
     ProgramBook, ProgramSubject, ScreenGrant, ScreenSharingInput, ScreenSharingReady, UnixSeconds,
     allow_candidates,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::disclosure::Disclosure;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};

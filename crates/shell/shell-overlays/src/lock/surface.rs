@@ -1,4 +1,4 @@
-//! The lock screen as a [`LockSurface`]: one document per output, made by shell-host's session lock.
+//! The lock screen as a [`LockSurface`]: one document per output, made by layer-shell-host's session lock.
 
 use super::layer::config;
 use super::view::lock;

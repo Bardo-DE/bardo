@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// (`ui_lint::user_stylesheet` reports them).
 ///
 /// It lives beside [`super::KitRank::User`], which puts it last in the cascade, so `ds` can take
-/// it as a prop while `ds-settings` stores it.
+/// it as a prop while `ui-settings` stores it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct UserStyle(pub String);

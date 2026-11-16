@@ -4,14 +4,14 @@
 
 use crate::agent::InAppAgent;
 use crate::audit_file::AuditFileError;
-use action_review::Reviewer;
 use action_core::MemoryLink;
 use action_core::{PolicyWriter, Reader};
 use action_host::ConfirmSheet;
-use companion_memory::Report;
 use action_provider::{ContextSource, IntentProvider};
+use action_review::Reviewer;
 use action_router::GrantStore;
 use action_vocab::Clock;
+use companion_memory::Report;
 use inference_client::Transport as ModelTransport;
 
 impl<P, C, T, R, M: ModelTransport, K, G, Y, W, D> InAppAgent<P, C, T, R, M, K, G, Y, W, D>

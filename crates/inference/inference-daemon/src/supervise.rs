@@ -15,8 +15,8 @@ use engine_supervisor::{
     MonoMs, Probe, ReadyProbe, Supervisor, SupervisorConfig, SupervisorIn, SupervisorOut, UnitSpec,
     step,
 };
-use model_catalog::MiB;
 use inference_router::startup::{Cause, Diagnostics, Tail};
+use model_catalog::MiB;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
@@ -116,7 +116,7 @@ pub struct Supervised {
     began: Option<SystemTime>,
 }
 
-/// The turns of `porter-turns` tell the supervisor which engine they use (the inherent `used`).
+/// The turns of `inference-turns` tell the supervisor which engine they use (the inherent `used`).
 impl inference_turns::local::EngineUse for Supervised {
     fn used(&self, engine: &EngineId) {
         Supervised::used(self, engine);

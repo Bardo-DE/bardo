@@ -2,11 +2,11 @@
 //! which inferd's settings module lists as text under "Local models": where the person says the
 //! program is when the assistant does not find it itself. Empty means it finds it. The module
 //! refuses a path it will not run, in plain words, and the row shows them. Pure; the calls are
-//! `detent-ui`'s.
+//! `settings-app-ui`'s.
 
 use crate::{Absence, Described, Live};
-use ui_settings::schema::{Exposure, KeyKind, KeyPath};
 use std::collections::BTreeMap;
+use ui_settings::schema::{Exposure, KeyKind, KeyPath};
 
 /// The section of the module whose text rows these are.
 pub const PROGRAMS_SECTION: &str = "Local models";

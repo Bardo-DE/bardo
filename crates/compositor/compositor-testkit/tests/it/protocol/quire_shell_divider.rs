@@ -9,11 +9,11 @@ use compositor_core::input::ButtonCode;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::space::SpaceContent;
 use compositor_layout::{DividerTarget, LayoutKnobs, RustScene, SceneLayout, spec_of};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::quire::shell::WindowEntry;
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testkit::{Fixture, FixtureSpec};
 use compositor_wayland::foreign_toplevel_list::identifier_of;
+use desktop_protocols::vocab::PressEdge;
 use ui_core::vocab::Fraction;
 
 const LEFT_BUTTON: ButtonCode = ButtonCode(0x110);

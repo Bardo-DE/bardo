@@ -1,15 +1,15 @@
 //! Every card's footer: which model served it, what it drew on, what the prompt carried.
 
-use companion_wire::FooterWire;
+use account_capability::Locality;
 use action_core::{ContextKeep, Keep};
 use action_vocab::EntityRef;
+use companion_wire::FooterWire;
 use ui_components::components::companion::answer::footer::{
     CardFooter, ServedByView, ServedPlace, ServedPlaceKind, SourceChip, SourceKey,
 };
 use ui_components::components::companion::{ChipKind, ContextChip};
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::prelude::Icon;
-use account_capability::Locality;
 
 /// The footer of a card.
 pub fn footer_view(footer: &FooterWire) -> CardFooter {
@@ -92,8 +92,8 @@ fn place_of(locality: &Locality, account: &str) -> ServedPlace {
 #[cfg(test)]
 mod tests {
     use super::place_of;
-    use ui_components::components::companion::answer::footer::ServedPlaceKind;
     use account_capability::Locality;
+    use ui_components::components::companion::answer::footer::ServedPlaceKind;
 
     #[test]
     fn a_model_ran_on_this_computer_on_the_network_or_at_a_provider() {

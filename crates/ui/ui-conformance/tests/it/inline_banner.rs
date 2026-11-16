@@ -3,11 +3,11 @@
 //! colour. `shown` only switches it in or out of the flow: no motion, no `Ds` root needed.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::overlays::inline_banner::InlineBanner;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

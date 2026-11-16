@@ -3,14 +3,14 @@
 //! the planner's two helper actions and the shell's helper calls reach it. A host with no helpers
 //! passes none, and the actions are refused.
 
+use action_core::HelperRosterLine;
+use action_vocab::{Caller, TurnId};
 use companion_model::helper::{Ceiling, GoalOrigin};
 use companion_model::{SeenCommand, WatchedAgent};
 use companion_wire::{
     BroughtBack, HelperCardView, HelperForm, HelperReply, HelpersView, ProposalId, RoutineProposal,
     SayReply, TerminalSession,
 };
-use action_core::HelperRosterLine;
-use action_vocab::{Caller, TurnId};
 use provenance::{EntityId, HelperId, SessionId, SpaceId, TaskId};
 use std::fmt;
 use std::future::Future;

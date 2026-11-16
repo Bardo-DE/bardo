@@ -2,13 +2,13 @@
 //! two or more tabs (as Finder does).
 
 use dioxus::prelude::*;
+use files_model::{Input, TabId};
 use ui_components::components::chrome::column::model::ColumnAlign;
 use ui_components::components::chrome::column::view::Column;
 use ui_components::components::controls::choice::Choice;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::SegmentedControl;
 use ui_components::style::tokens::control_size::ControlSize;
-use files_model::{Input, TabId};
 
 use crate::places::title_words;
 use crate::state::Browse;

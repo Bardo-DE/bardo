@@ -11,10 +11,10 @@ use anyview_core::{
 };
 use anyview_fs::open_regular;
 use anyview_text::Tally;
-use ui_core::word::Word;
 use std::fs::{self, DirEntry};
 use std::io::Read;
 use std::path::Path;
+use ui_core::word::Word;
 
 /// The most entries a peek counts; a folder with more is reported as "at least" this many.
 pub const FOLDER_ENTRIES: usize = 10_000;

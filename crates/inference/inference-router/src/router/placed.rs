@@ -11,11 +11,11 @@ use super::{Decided, Listed, Unchosen, choose, chosen_for, fits};
 use account_capability::ModelId;
 use account_capability::Tier;
 use account_core::DataClass;
+use account_match::Need;
 use inference_core::{
     AutoPolicy, InferRefusal, NoPlaceReason, PickRefusal, PlaceId, PlaceRefusal, Policy, RouteAsk,
     RouteCandidate, TierChoice, TierMap, admit,
 };
-use account_match::Need;
 use std::collections::BTreeMap;
 
 /// The places a session may run, in order of preference, and the model to use at some of them.

@@ -4,15 +4,15 @@
 //! origin to its caret, as `EditSurface`'s `ime_area` already expects).
 
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::time::Duration;
+use ui_blitz::TextureLayer;
 use ui_components::host::document::{DocumentHost, use_document_host};
 use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use ui_blitz::TextureLayer;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

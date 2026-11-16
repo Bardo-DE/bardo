@@ -4,6 +4,11 @@
 
 use super::owner::Hub;
 use crate::words::{refused, sentence};
+use action_client::Transport as IntentsTransport;
+use action_core::HelperRosterLine;
+use action_manifest::Manifest;
+use action_vocab::Clock;
+use agent_planner::Planner;
 use companion_core::{
     AppStep, PlannerJob, Refusal, RoutineWho, RoutineWish, card_draft, created, helper_form,
     name_free, person_job, planner_job, posted, resume_event, roster_lines, routine_wish, same_app,
@@ -14,20 +19,15 @@ use companion_model::helper::{
     TerminalRequest,
 };
 use companion_model::{SeenCommand, WatchedAgent};
+use companion_tasks::{
+    HelperDesk, Pending, PostFromPerson, PostFromPlanner, Proposal, RoutineAsk, RoutineFor,
+    SayFromPerson, Surface,
+};
 use companion_wire::{
     AnswerPhase, BroughtBack, HelperCardView, HelperForm, HelperLine, HelperNeeds, HelperReply,
     HelpersView, LoginShown, ProposalId, RoutineProposal, SayReply, SignInChoice, TerminalSession,
     ToldWire, card_of, line_of,
 };
-use action_client::Transport as IntentsTransport;
-use action_core::HelperRosterLine;
-use action_manifest::Manifest;
-use agent_planner::Planner;
-use companion_tasks::{
-    HelperDesk, Pending, PostFromPerson, PostFromPlanner, Proposal, RoutineAsk, RoutineFor,
-    SayFromPerson, Surface,
-};
-use action_vocab::Clock;
 use provenance::{HelperId, SessionId, SpaceId};
 
 impl<P, I, K, S> Hub<P, I, K, S>

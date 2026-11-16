@@ -1,10 +1,10 @@
 //! `$XDG_CONFIG_HOME/quire/intentd.toml`: which bus names play which role, the reviewer models
 //! and the proposed values. The serde form is the file; every key is written.
 
-use action_review::ReviewerSet;
-use action_core::AgentConfig;
-use action_vocab::CallerRole;
 use account_core::AppName;
+use action_core::AgentConfig;
+use action_review::ReviewerSet;
+use action_vocab::CallerRole;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 

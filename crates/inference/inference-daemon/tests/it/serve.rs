@@ -5,20 +5,20 @@
 
 use crate::support;
 
-use inference_daemon::serve::serve_session;
 use account_capability::Tier;
 use account_capability::{CuaEnv, SpeechMode};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Count, Tokens};
+use account_match::Need;
+use account_match::{CuaNeed, SpeechNeed};
 use inference_core::{
     AttachIndex, AudioFrame, AudioRate, Base64Bytes, ChatControl, ChatMessage, ChatReply,
     ChatRequest, ClientFrame, CuaBegin, CuaStepReply, ImagePart, ImageSource, InferEvent,
     InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason, TokenUsage,
     ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply,
 };
-use account_match::Need;
-use account_match::{CuaNeed, SpeechNeed};
+use inference_daemon::serve::serve_session;
 use inference_router::carried::Carried;
 use inference_router::seams::{Seams, TurnStep};
 use inference_router::session::SessionSpec;
@@ -466,7 +466,10 @@ async fn a_computer_use_step_before_a_begin_is_refused_and_after_one_it_runs() {
         ClientFrame::Request(InferRequest::CuaStep(inference_core::CuaStepRequest::new(
             inference_core::StepIndex(n),
             inference_core::WindowGeometry {
-                logical: computer_use_action::Size::new(computer_use_action::Coord(1), computer_use_action::Coord(1)),
+                logical: computer_use_action::Size::new(
+                    computer_use_action::Coord(1),
+                    computer_use_action::Coord(1),
+                ),
                 scale: computer_use_action::Scale120(120),
             },
             inference_core::FrameImage {

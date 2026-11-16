@@ -1,4 +1,4 @@
-//! The model-backed reviewer: one model per stage over porter-infer's `Model` seam. A failure of
+//! The model-backed reviewer: one model per stage over inference-core's `Model` seam. A failure of
 //! any kind is an error, which `tighten` turns into a confirmation; the reviewer never allows
 //! by failing.
 //!
@@ -11,18 +11,18 @@ use crate::parse::parse_verdict;
 use crate::render::render;
 use crate::request::{CODES, ReviewRequest, slug};
 use crate::verdict::ReviewVerdict;
-use action_core::ReviewTimeouts;
-use permission_core::{ReviewError, Stage};
-use action_vocab::Millis;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Permille, Tokens};
+use action_core::ReviewTimeouts;
+use action_vocab::Millis;
 use inference_core::{
     ChatControl, ChatMessage, ChatReply, ChatRequest, ChatSink, InferEvent, Knob, MessagePart,
     Model, ModelError, Reasoning, ReplyShape, Role, Sampling, StopReason, ToolChoice,
     ToolParallelism, TurnError,
 };
+use permission_core::{ReviewError, Stage};
 use serde_json::json;
 use std::ops::ControlFlow;
 

@@ -1,7 +1,7 @@
 //! The desktop menu as a [`MenuModel`]: Change Wallpaper..., always.
 
-use ui_components::prelude::*;
 use shell_ui_kit::menu::MenuModel;
+use ui_components::prelude::*;
 
 /// One entry of the desktop menu.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -26,8 +26,8 @@ impl MenuModel for DesktopMenu {
 
 #[cfg(test)]
 mod tests {
-    use ui_components::prelude::*;
     use shell_ui_kit::menu::MenuModel;
+    use ui_components::prelude::*;
 
     use super::{DesktopMenu, DesktopPick};
 

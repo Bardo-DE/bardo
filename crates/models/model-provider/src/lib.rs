@@ -36,13 +36,13 @@ pub use caps::{
     Batching, Caps, Constraint, CuaSupport, ImageLimits, InputKind, ShapeWithTools, Support,
     ToolSupport, Zoom,
 };
+/// Re-exported so a crate that builds `ImageLimits` need not depend on `computer-use-action` and
+/// `model-vision-prep` itself (a dependency edge changes every consumer's lock file).
+pub use computer_use_action::ModelSpace;
 pub use control::{
     EngineExtras, KeepAlive, LlamaExtras, OllamaExtras, PromptCache, Sampling, ThoughtSeal,
     ToolParallelism, VllmExtras,
 };
-/// Re-exported so a crate that builds `ImageLimits` need not depend on `cua-action` and
-/// `vision-prep` itself (a dependency edge changes every consumer's lock file).
-pub use computer_use_action::ModelSpace;
 pub use detail::{ProviderDetail, redact_excerpt};
 pub use embed::{
     EmbedCaps, EmbedEnd, EmbedFault, EmbedPrompts, EmbedRole, EmbedTurn, EmbedVector, Embedder,
@@ -54,6 +54,7 @@ pub use ids::{
     ToolNameError,
 };
 pub use logprobs::{ChoiceScores, FirstTokenLogprobs, Logprob, TokenLogprob};
+pub use model_vision_prep::ResizeRule;
 pub use money::{Charges, Money, MoneyError};
 pub use provider::{ModelInfo, Provider, ProviderError};
 pub use request::{
@@ -73,4 +74,3 @@ pub use units::{
     Attempt, BatchMax, CallIndex, CharCount, Count, Dims, ImageCount, Knob, Milli, Permille,
     RepairBudget, RetrySeconds, Seconds, Seed, ServerStatus, SlotId, Tokens, WaitMs,
 };
-pub use model_vision_prep::ResizeRule;

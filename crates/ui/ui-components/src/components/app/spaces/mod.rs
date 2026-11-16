@@ -23,10 +23,6 @@ pub(crate) mod today_state;
 
 pub use chord::SwitchChord;
 pub use controller::{SpacesHandle, use_spaces};
-pub use ui_style::space::list::{
-    Entry, Epoch, IDLE, NoPark, Parked, Recall, Refused, Removed, SlideIn, Space, SpaceId, Spaces,
-    Switched, Today,
-};
 pub use edit::EditSpaceSheet;
 pub use foot::SpacesFoot;
 pub use head::SpaceHead;
@@ -37,6 +33,10 @@ pub use open_menu::{OpenMenu, Showing};
 pub use source::SpacesSource;
 pub use today_section::{TodayRow, TodaySection};
 pub use today_state::{TodayHandle, use_today};
+pub use ui_style::space::list::{
+    Entry, Epoch, IDLE, NoPark, Parked, Recall, Refused, Removed, SlideIn, Space, SpaceId, Spaces,
+    Switched, Today,
+};
 
 /// The least width of a sidebar that holds the Space foot: four 28 px tiles and their gaps, as
 /// design/30 section 2.11 sizes the sidebar. The app gives its `Sidebar` at least this.

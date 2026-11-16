@@ -3,11 +3,11 @@
 //! is settled once, when the popover closes; a preset's press is settled at once.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::space_editor::swatches::PresetSwatches;
 use ui_components::prelude::*;
 use ui_components::style::space::look::SpaceLook;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 600,

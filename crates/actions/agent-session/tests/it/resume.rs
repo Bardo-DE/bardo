@@ -1,6 +1,6 @@
 use crate::support::*;
-use permission_core::BreakerTrip;
 use agent_session::*;
+use permission_core::BreakerTrip;
 
 fn plan(entries: &[SessionEntry]) -> ResumePlan {
     resume_plan(&rows(entries)).expect("a plan")
@@ -219,7 +219,13 @@ fn a_summary_never_lowers_taint_and_a_tainted_one_taints() {
     // (entries before the summary, taint it says, the plan's taint, its integrity, faults)
     let table = [
         (vec![], false, false, provenance::Integrity::Trusted, 0),
-        (vec![taint()], false, true, provenance::Integrity::Untrusted, 0),
+        (
+            vec![taint()],
+            false,
+            true,
+            provenance::Integrity::Untrusted,
+            0,
+        ),
         (vec![], true, true, provenance::Integrity::Untrusted, 1),
     ];
     for (before, says, taint_is, integrity, faults) in table {

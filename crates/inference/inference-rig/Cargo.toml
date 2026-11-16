@@ -1,6 +1,6 @@
 [package]
 name = "inference-rig"
-description = "Test tooling, never installed and never in dist: steward-rig-client acts as an app over the session bus a jailed scenario gives it and opens an inferd session, with one chat turn when asked. The identity fixture is porter-rig's, so the same --proc-root tree names it to accountd and inferd alike. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: steward-rig-client acts as an app over the session bus a jailed scenario gives it and opens an inferd session, with one chat turn when asked. The identity fixture is account-rig's, so the same --proc-root tree names it to accountd and inferd alike. Nothing shipped depends on it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

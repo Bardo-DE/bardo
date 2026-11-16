@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
-use caller_identity_dbus::peephole::fake::introduced_program;
+use caller_identity_dbus::caller_identity_linux::fake::introduced_program;
 use portal_daemon::access::{Answer, Asker, Question, ShellAsker, response_of};
 use portal_daemon::chooser::ShellError;
 use portal_daemon::shell::SHELL_NAME;

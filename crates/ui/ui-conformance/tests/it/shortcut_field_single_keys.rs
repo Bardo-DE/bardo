@@ -2,13 +2,13 @@
 //! recorded, Escape and Backspace still cancel and clear, and `more` draws a cap per extra key
 //! beside the value without being touched by a recording.
 
+use dioxus::prelude::*;
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey};
-use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_blitz::FocusFallback;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use std::time::Duration;
+use ui_blitz::FocusFallback;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 420,

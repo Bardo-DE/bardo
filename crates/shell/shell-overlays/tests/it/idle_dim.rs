@@ -5,16 +5,16 @@
 //! level edit while dimmed does not animate; Reduced motion shows the level at once. On the
 //! virtual clock with the appearance pinned, and every change ends at 0 frames.
 
-use ui_components::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
 
-use ui_harness::Viewport;
-use ui_harness::harness::assert_settles_to_zero_frames;
-use ui_settings::Environment;
 use shell_model::idle::{DimLevel, DimShown, Idle, IdleMode, IdlePhase};
 use shell_overlays::IdleDim;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::hooks::PinnedAppearance;
+use ui_harness::Viewport;
+use ui_harness::harness::assert_settles_to_zero_frames;
+use ui_settings::Environment;
 
 const VIEW: Viewport = Viewport {
     width: 320,

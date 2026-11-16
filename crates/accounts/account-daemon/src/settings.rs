@@ -1,7 +1,7 @@
 //! `org.quire.SettingsModule1` at `/org/quire/Accounts1/settings` (design/22 §9.4, PLAN §2.5),
 //! served through quire's `ui_settings::live`. Only the `Settings` role may `Get`, `Describe`,
 //! `Snapshot` or `Set`: the keys name accounts, and a `Set` removes them. The keys are in
-//! `porter-settings`; this file hosts them and applies what is written.
+//! `account-settings`; this file hosts them and applies what is written.
 //!
 //! Every read, `Describe`, `Get` and `Snapshot` alike, starts from one [`View`]: one copy of the
 //! registry (and of the apps using each identity and the clients file) taken once, from which
@@ -14,10 +14,6 @@ use crate::callers::Callers;
 use crate::host::Host;
 use crate::launcher::SignOutNews;
 use crate::state::Core;
-use ui_settings::live::{
-    Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve,
-};
-use ui_settings::schema::KeyPath;
 use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_core::ProviderId;
@@ -39,6 +35,10 @@ use account_wire::AccountsReply;
 use account_wire::ParentWindow;
 use account_wire::names::ACCOUNTS_SETTINGS_PATH;
 use std::sync::Arc;
+use ui_settings::live::{
+    Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve,
+};
+use ui_settings::schema::KeyPath;
 use zbus::Connection;
 
 /// The settings module's path.
@@ -183,7 +183,7 @@ impl<H: Host, C> AccountsSettings<H, C> {
     }
 }
 
-/// What the rows of `porter-settings` ask of the daemon: how a provider and an app are called.
+/// What the rows of `account-settings` ask of the daemon: how a provider and an app are called.
 struct Names<'a> {
     apps: &'a AppNames,
     providers: &'a ProviderNames,

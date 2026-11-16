@@ -8,8 +8,8 @@ use crate::copy::extensions::{
 };
 use crate::env::Env;
 use crate::key_row::{HIT_CLASS, row_id};
-use settings_app_model::ExtensionRow;
 use dioxus::prelude::*;
+use settings_app_model::ExtensionRow;
 use ui_components::components::content::label::LabelRole;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::overlays::empty_state::EmptyState;

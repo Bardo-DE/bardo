@@ -8,11 +8,11 @@
 //! with [`MenuBarModel::with_items`].
 
 use crate::components::menus::item::item::{MenuImage, MenuItem};
+use serde::{Deserialize, Serialize};
 use ui_core::standard_action::StandardAction;
 use ui_core::vocab::{Availability, Shortcut};
 use ui_core::word::Word;
 use ui_style::icon::Icon;
-use serde::{Deserialize, Serialize};
 
 /// A menu of the bar, in the order the bar draws them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Serialize, Deserialize)]

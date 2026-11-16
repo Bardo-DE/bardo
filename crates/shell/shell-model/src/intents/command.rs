@@ -1,8 +1,8 @@
 //! What tells the seat things, what happens in it, and what that asks of the outside.
 
 use action_core::ConfirmId;
-use permission_core::StandingGrantId;
 use action_vocab::ActionRef;
+use permission_core::StandingGrantId;
 use serde::{Deserialize, Serialize};
 
 use super::IntentsLink;

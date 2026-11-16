@@ -4,9 +4,9 @@
 //! provides that beside the app list as the machine's context at every step, including the step
 //! the delay's wake causes.
 
+use ui_behaviour::switcher::{Phase, SwIn, SwOut, SwitcherParams};
 use ui_components::base::machine::Machine;
 use ui_components::base::time::stamp::Stamp;
-use ui_behaviour::switcher::{Phase, SwIn, SwOut, SwitcherParams};
 
 use super::hold::{Hold, tick_input};
 

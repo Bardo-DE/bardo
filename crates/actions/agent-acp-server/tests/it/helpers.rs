@@ -4,21 +4,21 @@
 //! A scripted editor over the existing transport; the helpers are a fake seam.
 
 use crate::support::*;
-use sandbox::AbsPath;
-use companion_model::helper::{HelperName, JobId};
-use companion_wire::{JobLine, JobShown, ToldWire};
-use agent_acp_server::{ConversationTurns, HelperRefusal, HelperRow, Helpers};
+use account_ids::Count;
 use action_core::{
     Anchor, AppRefusal, CallRefusal, ConfirmDetail, ConfirmId, ConfirmOffer, ConfirmParts,
     ConfirmRequest, FailText, Gesture, StepEnd, TaintNote, UserTurn,
 };
-use permission_core::{AlwaysOffer, StandingScope};
+use action_vocab::{Caller, LabelText, Seconds};
+use agent_acp_server::{ConversationTurns, HelperRefusal, HelperRow, Helpers};
 use agent_session::fake::MemoryLog;
 use agent_session::{BackendEvent, BackendKind, Opening, Seq, SessionEntry, SessionLog};
 use agent_session::{SheetChoice, TurnEnd};
-use action_vocab::{Caller, LabelText, Seconds};
-use account_ids::Count;
+use companion_model::helper::{HelperName, JobId};
+use companion_wire::{JobLine, JobShown, ToldWire};
+use permission_core::{AlwaysOffer, StandingScope};
 use provenance::{Actor, AgentRef, Effect, HelperId, SessionId, SpaceId, TaskId};
+use sandbox::AbsPath;
 use serde_json::{Value, json};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

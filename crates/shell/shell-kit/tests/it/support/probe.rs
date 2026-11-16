@@ -22,9 +22,9 @@
 //! Probes shared by the headless tests: a laid-out rect, the pixels inside it, and how far
 //! they stand out from their own ground. Each test crate uses some of them.
 
+use image::RgbaImage;
 use ui_components::prelude::*;
 use ui_harness::Harness;
-use image::RgbaImage;
 
 pub fn rect(harness: &Harness, selector: &str) -> Rect {
     harness

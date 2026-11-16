@@ -6,10 +6,10 @@ use crate::support::Sandbox;
 use crate::support::drive::click;
 use crate::support::inferd::Inferd;
 use settings_app_files::FirstRunMark;
+use std::time::Duration;
 use ui_components::prelude::Scheme;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
-use std::time::Duration;
 
 const LOCAL_ONLY: &str = ".first-run [aria-label=\"Keep AI on this computer\"] .ds-toggle";
 const DONE: &str = ".first-run > .ds-button";

@@ -3,8 +3,8 @@
 //! Pure constants and slug functions: no `tracing` dependency here. Spans are created only in the
 //! daemons (inferd, companiond, readerd, cuad, memoryd, intentd), each in one `telemetry.rs`
 //! whose `macro_rules!` span constructors spell these names as literals; a unit test there asserts
-//! the macro's declared field set equals [`attr::ALL`] (and `genai-names` for the `gen_ai.*`
-//! half). The OpenTelemetry GenAI names live in stoker's `genai-names`, the lowest repo.
+//! the macro's declared field set equals [`attr::ALL`] (and `model-genai-names` for the `gen_ai.*`
+//! half). The OpenTelemetry GenAI names live in stoker's `model-genai-names`, the lowest repo.
 //!
 //! Privacy, hard: no prompt, completion, tool argument or result, screen text, title, recipient
 //! or `SpaceId` ever goes on a span or metric. Counts, sizes, hashed ids, slugs and enums only.

@@ -9,13 +9,13 @@
 //! only granted cards, so such a card is never served).
 
 use super::accountd::AccountVerdict;
-use model_catalog::{Locality, ModelEntry, ProviderId, Reach, Wire, reachable};
 use account_capability::ModelId;
 use account_capability::{Billing, Locality as Where};
 use account_core::AccountState;
 use account_core::consent::Verdict;
 use account_core::{AccountId, GrantId};
 use inference_core::{ModelCard, ModelRef, Permit};
+use model_catalog::{Locality, ModelEntry, ProviderId, Reach, Wire, reachable};
 use std::collections::BTreeSet;
 
 /// The wires this build speaks to a hosted model. Anthropic's Messages API waits for a stoker

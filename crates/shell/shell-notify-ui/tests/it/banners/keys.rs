@@ -3,12 +3,12 @@
 //! hold; Up and Down move along the stack, Enter presses the card, Tab reaches its buttons,
 //! Enter presses a button too, Escape, Delete and Backspace dismiss the card and hand the focus on.
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
-use ui_components::prelude::*;
 use shell_model::notifications::{ActionKey, Activation, NotificationId, NotificationsCommand};
 use shell_ui_kit::links::Transient;
+use ui_components::prelude::*;
 
 use super::{Done, HOLD_MS, Running, commands, file, leaving, live, note, one, show, start, until};
 

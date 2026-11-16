@@ -2,14 +2,14 @@
 //! answer in order, its emphasis set in quire's text runs (`ds-run`), never as markup.
 
 use dioxus::prelude::*;
+use shell_model::companion::{
+    AnswerFacts, Emphasis, ProgressShown, Span, body_lines, preview_progress, spans,
+};
 use ui_components::components::content::text_runs::{RunTone, TextLine, TextRun, text};
 use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
 use ui_components::components::controls::progress::view::ProgressIndicator;
 use ui_components::motion::detail::operation::{Operation, PendingToken};
 use ui_components::style::tokens::control_size::ControlSize;
-use shell_model::companion::{
-    AnswerFacts, Emphasis, ProgressShown, Span, body_lines, preview_progress, spans,
-};
 
 /// The answer's lines as paragraphs under the question, and while it is being made, what the
 /// companion said as it went.

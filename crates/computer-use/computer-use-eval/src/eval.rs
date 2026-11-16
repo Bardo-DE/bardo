@@ -8,10 +8,10 @@ use crate::run::{RunRecord, SetupError, Stopwatch, play};
 use crate::script::ScriptModel;
 use crate::task::{Engines, Served, TaskDef};
 use crate::verdict::Verdict;
-use model_provider::Provider;
 use account_capability::ModelId;
 use account_core::AccountId;
 use inference_core::ServedBy;
+use model_provider::Provider;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -244,8 +244,8 @@ pub fn start_screens(
             stride: pixels.stride,
             format: pixels.format,
         };
-        let png =
-            model_vision_prep::prepare(raw, &map, model_vision_prep::Encoding::Png).map_err(|e| id(&e))?;
+        let png = model_vision_prep::prepare(raw, &map, model_vision_prep::Encoding::Png)
+            .map_err(|e| id(&e))?;
         shots.push((task.id.clone(), png.bytes));
     }
     Ok(shots)

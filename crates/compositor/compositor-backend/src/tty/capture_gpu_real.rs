@@ -12,12 +12,12 @@ use compositor_render::RenderError;
 use compositor_render::pass::{
     CapturedFrame, render_window_dmabuf, render_window_texture, write_dmabuf,
 };
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::Format;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::renderer::gles::{GlesRenderer, GlesTexture};
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
+use ui_core::geometry::scale::Scale;
 
 /// A device's renderer and scene images, shared with its scanouts and its later lenders.
 #[derive(Debug)]

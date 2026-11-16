@@ -33,10 +33,10 @@ touches a device, so a script replays to exactly the outputs the live daemon pro
 | `gate` | `check_gate`: a keyboard is grabbed only once no key is down |
 | `escape` | the emergency chord, both Shifts + Esc |
 | `backoff` | the pure reconnect backoff |
-| `keycap-protocol` (crate) | the socket messages and their codec |
+| `key-remap-proto` (crate) | the socket messages and their codec |
 | `keymap` | the person's keymap file (`keymap`, chordkit's overrides line format): read, judged against the last good copy, watched |
-| `keycap-client` (crate) | a program's end of the socket, and `KeycapSource`, this desktop's chordkit keymap source |
-| `daemon` | threads, socket, discovery, the uinput keyboard, sd_notify, sd_notify; the ioctls are `keycap-sys`, through `input-linux`'s safe handles (the workspace forbids `unsafe`) |
+| `key-remap-client` (crate) | a program's end of the socket, and `KeycapSource`, this desktop's chordkit keymap source |
+| `daemon` | threads, socket, discovery, the uinput keyboard, sd_notify, sd_notify; the ioctls are `key-remap-evdev`, through `input-linux`'s safe handles (the workspace forbids `unsafe`) |
 
 ## The socket protocol
 
@@ -245,7 +245,7 @@ Three tiers, each in its own CI job (`.github/workflows/ci.yml`).
 2. **The device tests** (`devices`). `crates/keycap/tests/devices` runs the built `keycap` binary
    against a fake keyboard on `/dev/uinput` and reads the "keycap keyboard" it writes back from
    `/dev/input`, through the real evdev grab, the real uinput device and the real socket. The
-   harness is the `keycap-devtest` crate. Every test is `#[ignore]`d and asserts
+   harness is the `key-remap-devtest` crate. Every test is `#[ignore]`d and asserts
    `KEYCAP_DEVICE_TESTS=1`. On a Linux machine you may use as a test bed (they create and grab
    a keyboard for a few seconds each; the fake is grabbed, your real keyboards are not):
 

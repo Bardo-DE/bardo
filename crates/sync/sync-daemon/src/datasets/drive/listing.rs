@@ -5,12 +5,12 @@
 
 use super::journal::DriveJournal;
 use crate::journal::JournalError;
-use sync_core::{Cursor, Folders, More, Replica, ReplicaError, RetryAfter};
 use account_http::Http;
-use std::sync::Arc;
-use std::time::Duration;
 use replica_gdrive::GdriveReplica;
 use replica_graph::GraphReplica;
+use std::sync::Arc;
+use std::time::Duration;
+use sync_core::{Cursor, Folders, More, Replica, ReplicaError, RetryAfter};
 use tokio::sync::watch;
 
 /// A replica of a whole drive whose tree the listing keeps between processes.

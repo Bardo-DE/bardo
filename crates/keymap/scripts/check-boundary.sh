@@ -4,10 +4,10 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-EFFECTS="tokio async-std smol futures zbus zvariant notify rustix libc nix mio evdev toml serde_json plist chordkit-file"
+EFFECTS="tokio async-std smol futures zbus zvariant notify rustix libc nix mio evdev toml serde_json plist keymap-fs"
 RULES=(
   "chordkit: $EFFECTS"
-  "chordkit-macos: $EFFECTS"
+  "keymap-macos: $EFFECTS"
 )
 fail=0
 for rule in "${RULES[@]}"; do

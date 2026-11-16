@@ -6,13 +6,13 @@
 use crate::keys::{Decoded, decode};
 use crate::surface::{Cond, Surface, render, snapshot};
 use computer_use_a11y_tree::A11ySnapshot;
+use computer_use_action::Button;
+use computer_use_capture::PixelBuf;
+use computer_use_desktop::Stamp;
+use computer_use_seat_input::{InputOp, Press};
 use keymap::keyboard_types::Modifiers;
 use keymap::{Action, Context, Key, KeyInput, Keymap};
-use computer_use_action::Button;
-use computer_use_desktop::Stamp;
-use computer_use_capture::PixelBuf;
 use provenance::Label;
-use computer_use_seat_input::{InputOp, Press};
 use std::collections::BTreeSet;
 use std::sync::{Mutex, MutexGuard};
 

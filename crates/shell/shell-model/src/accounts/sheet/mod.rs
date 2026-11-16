@@ -3,7 +3,7 @@
 //! typed or switched on it so far (the sheet is controlled: the shell owns every value the form
 //! shows). The pure step turns what the person does into the `SheetInput` accountd is told, and
 //! nothing else: a typed password lives only in the draft, and is gone from it the moment it is
-//! sent. `sill-services` serves the bus; `sill-overlays` draws.
+//! sent. `shell-services` serves the bus; `shell-overlays` draws.
 
 mod command;
 mod draft;

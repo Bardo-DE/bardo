@@ -1,6 +1,6 @@
 use super::*;
-use std::path::PathBuf;
 use base_testkit::Scratch;
+use std::path::PathBuf;
 
 /// The directory a Spaces file is kept in, under `scratch`.
 fn store(scratch: &Scratch) -> PathBuf {

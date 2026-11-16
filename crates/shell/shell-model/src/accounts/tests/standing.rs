@@ -1,7 +1,7 @@
 use crate::accounts::{AccountStanding, SignInAsk};
 use ui_core::word::Word;
 
-/// The words accountd's `State` property carries (`porter-dbus`'s `state_slug`).
+/// The words accountd's `State` property carries (`account-dbus`'s `state_slug`).
 const CASES: &[(&str, Option<AccountStanding>, bool)] = &[
     ("ok", Some(AccountStanding::Ok), false),
     ("needs_reauth", Some(AccountStanding::NeedsReauth), true),

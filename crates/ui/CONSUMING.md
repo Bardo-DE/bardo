@@ -18,15 +18,15 @@ comment naming the section. Change a snippet and its twin together.
 ## 1. Adding quire
 
 **Rust version.** quire's minimum is `rust-version = "1.92"`: pdfrum's crates (PDF output,
-`ds-blitz`) declare 1.92, above the 1.91 blitz needs at the pinned rev. The toolchain quire
+`ui-blitz`) declare 1.92, above the 1.91 blitz needs at the pinned rev. The toolchain quire
 builds and tests on stays pinned at 1.98.1 (`rust-toolchain.toml`); a consumer on an older
-compiler than 1.92 cannot build `ds-blitz`.
+compiler than 1.92 cannot build `ui-blitz`.
 
-**zbus and your executor.** `ds-settings` builds zbus with its default `async-io` backend, which
+**zbus and your executor.** `ui-settings` builds zbus with its default `async-io` backend, which
 works under any executor, tokio included. Do not enable `zbus/tokio` in an app: Cargo unifies
 features, and with `tokio` on, zbus's blocking API panics on a thread that drives a tokio
 runtime ("Cannot start a runtime from within a runtime"; mailo's keyring and notifications hit
-this). A shell that runs zbus on tokio everywhere enables `ds-settings = { features = ["tokio"] }`
+this). A shell that runs zbus on tokio everywhere enables `ui-settings = { features = ["tokio"] }`
 deliberately.
 
 **Imports.** `use ds::prelude::*;` brings in the names an app draws with (the root, the appearance
@@ -35,8 +35,8 @@ that shows account sheets or the missing-helper sheet adds `use ds_shell::prelud
 assembly (`ds::stylesheet()`, `ds::kits()`, `ds::component_sheets()`, `ds::KIT`, `ds::selectors`, and
 the same four in `ds_shell`) and the three facades. Every other name is reached by its home path
 (`ds::components::..`, `ds::host::..`, `ds::stack::..`, `ds::style::..`, `ds::base::..`,
-`ds::motion::..`), one path each. A program depends on `ds` alone: `ds::base` (`ds-core`),
-`ds::style` (`ds-style`) and `ds::motion` (`ds-motion`) are the three crates under it,
+`ds::motion::..`), one path each. A program depends on `ds` alone: `ds::base` (`ui-core`),
+`ds::style` (`ui-style`) and `ds::motion` (`ui-motion`) are the three crates under it,
 re-exported as modules. `#[derive(Word)]` and `#[derive(Token)]` find the crate they name through
 your manifest, so a crate that depends on `ds` alone derives them (`::ds::base`, `::ds::style`).
 
@@ -46,47 +46,47 @@ path, the way `examples/consumer/Cargo.toml` does:
 ```toml
 [dependencies]
 ds          = { path = "ui-components" }
-ds-settings = { path = "ui-settings", features = ["dioxus"] }  # `dioxus`: `use_environment`; `tokio`: zbus on tokio
-ds-blitz    = { path = "ui-blitz" }    # only if you run on Blitz; features `pdf`, `print`, `spell`; `debug-probe` for scenario builds only
-ds-settings-page = { path = "ui-settings-page" }  # only an app that draws a settings page from a schema (SettingsPage)
-ds-extensions = { path = "ui-extensions" }  # only a program that finds, lists or reads Extensions (a look, file icons, anyview's plugins)
-ds-shell    = { path = "ui-shell" }    # only an app that shows the account sheets, the consent alert or the missing-helper sheet
+ui-settings = { path = "ui-settings", features = ["dioxus"] }  # `dioxus`: `use_environment`; `tokio`: zbus on tokio
+ui-blitz    = { path = "ui-blitz" }    # only if you run on Blitz; features `pdf`, `print`, `spell`; `debug-probe` for scenario builds only
+ui-settings-page = { path = "ui-settings-page" }  # only an app that draws a settings page from a schema (SettingsPage)
+ui-extensions = { path = "ui-extensions" }  # only a program that finds, lists or reads Extensions (a look, file icons, anyview's plugins)
+ui-shell    = { path = "ui-shell" }    # only an app that shows the account sheets, the consent alert or the missing-helper sheet
 
 [dev-dependencies]
-ds-lint     = { path = "ui-lint" }     # your own tests call it (section 5 below)
-ds-harness  = { path = "ui-harness" }  # the test driver: `Harness`, `Input`, `snapshot` (feature `pdf`: `pdf_app`)
+ui-lint     = { path = "ui-lint" }     # your own tests call it (section 5 below)
+ui-harness  = { path = "ui-harness" }  # the test driver: `Harness`, `Input`, `snapshot` (feature `pdf`: `pdf_app`)
 ```
 
 The crates and what each holds: `ds` (the components, the `Ds` root, the host seams, the facades),
-`ds-shell` (the app-facing parts above `ds`: account sheets, consent alert, missing-helper sheet; every one cross-platform), `ds-settings` (settings files, the schema derive, the
-portal, `use_environment`), `ds-blitz` (the Blitz host: `launch`, windows, PDF, print, spell),
-`ds-lint` (the linter), `ds-harness` (the test driver). `ds-core`, `ds-style` and `ds-motion` sit
-under `ds` and are reached as `ds::base`, `ds::style` and `ds::motion`. `ds-conformance` and
+`ui-shell` (the app-facing parts above `ds`: account sheets, consent alert, missing-helper sheet; every one cross-platform), `ui-settings` (settings files, the schema derive, the
+portal, `use_environment`), `ui-blitz` (the Blitz host: `launch`, windows, PDF, print, spell),
+`ui-lint` (the linter), `ui-harness` (the test driver). `ui-core`, `ui-style` and `ui-motion` sit
+under `ds` and are reached as `ds::base`, `ds::style` and `ds::motion`. `ui-conformance` and
 `ds-gallery` are quire's own tests and contact sheet (section 9), not for consumers.
 
-The linter is its own crate, `ds-lint` (coherence rules 1 and 2, section 5 below), so a consumer
-that never lints does not pull in `cssparser`. The app-facing parts are `ds-shell`, which an app
+The linter is its own crate, `ui-lint` (coherence rules 1 and 2, section 5 below), so a consumer
+that never lints does not pull in `cssparser`. The app-facing parts are `ui-shell`, which an app
 depends on next to `ds` and draws with `Ds { sheet: Some(ds_shell::stylesheet()) }`; it lints
 against `ds_shell::kits()` where an app that takes `ds` alone lints against `ds::kits()`. The
 surfaces only our desktop shell draws (bar, dock, control center, lock, switcher, OSD,
 notifications, widgets, emoji, month grid, date picker) are not quire's: they are sill's
-`sill-shell-kit`, which adds its own kit and `stylesheet()` over these.
+`shell-kit`, which adds its own kit and `stylesheet()` over these.
 
 **A git dependency** is how a program outside this checkout takes quire, pinned at a full revision,
 with the release it is in a trailing comment:
 
 ```toml
 ds       = { git = "https://github.com/Bardo-DE/quire.git", rev = "<full sha>" }  # v0.2.31
-ds-blitz = { git = "https://github.com/Bardo-DE/quire.git", rev = "<full sha>" }  # v0.2.31; only if you run on Blitz
+ui-blitz = { git = "https://github.com/Bardo-DE/quire.git", rev = "<full sha>" }  # v0.2.31; only if you run on Blitz
 ```
 
 The spelling is the same in every repo: the URL ends in `.git`, the revision is the full 40-character
 sha (never a tag, never a branch), and a trailing `# vX.Y.Z` names the release it is. Cargo finds each
 crate by name in the one repository, so the crates of a revision share it.
-Nothing else is needed for quire's own dependencies: `blitz-kit` (its own public repo,
+Nothing else is needed for quire's own dependencies: `blitz-embed` (its own public repo,
 github.com/Bardo-DE/blitz-kit) comes transitively at the rev quire's `Cargo.toml` pins, and so
-does the rest of the pinned block. Do not add a `[patch]` for it unless you develop `blitz-kit`
-alongside: quire's own `[patch]` table (its local `blitz-kit` checkout, the vello and anyrender
+does the rest of the pinned block. Do not add a `[patch]` for it unless you develop `blitz-embed`
+alongside: quire's own `[patch]` table (its local `blitz-embed` checkout, the vello and anyrender
 forks) applies only when quire is the workspace root, never to a consumer, so a consumer that
 needs the forks' behaviour (the CSS `filter` functions) copies the `[patch.crates-io]` block
 from quire's root `Cargo.toml` into its own workspace root. The same block carries the
@@ -94,9 +94,9 @@ from quire's root `Cargo.toml` into its own workspace root. The same block carri
 `subsecond-types`, all at one rev of github.com/Bardo-DE/dioxus): dioxus-core 0.7.10 can spin forever
 in `wait_for_work` when a task is cancelled before it is polled (a `use_resource` restart), fixed
 upstream only in 0.8 (DioxusLabs/dioxus#5554). Every consumer that runs a `VirtualDom` copies those
-five lines too, and drops them when quire moves to dioxus 0.8. shell-host and sill add, for their
+five lines too, and drops them when quire moves to dioxus 0.8. layer-shell-host and sill add, for their
 local checkouts, `[patch."https://github.com/Bardo-DE/blitz-kit"]` pointing at a sibling
-`blitz-kit` so every path-linked repo builds one copy.
+`blitz-embed` so every path-linked repo builds one copy.
 
 **Launching on Blitz.** `ds_blitz::launch(app, AppConfig::new(title, WindowSize::new(width, height)))`
 runs `app` until its window closes and returns `Result<(), LaunchError>` (no runtime, or an event loop that cannot run; `main` can return it). The app's `tokio::spawn` calls run on a runtime `launch` builds and owns, or on the caller's own via `AppConfig::with_runtime(handle)`. A `WindowSize` is what the window opens at and, with
@@ -260,7 +260,7 @@ compositor that offers it, so on GNOME, KDE and X11 a window looks as it did. It
 `quire-desktop` feature, which is on by default.
 
 **The pinned dependency block.** `ds`'s own manifest resolves its dependencies (`dioxus`,
-and for `ds-blitz`, the whole blitz/anyrender/wgpu stack) against *quire's own* workspace —
+and for `ui-blitz`, the whole blitz/anyrender/wgpu stack) against *quire's own* workspace —
 a path dependency does not inherit your workspace's `[workspace.dependencies]`, because
 `crates/ds/Cargo.toml` has no `[workspace]` of its own and so joins whichever ancestor manifest
 does (quire's root, not yours). You only need to pin the lines **you** name directly: at minimum
@@ -268,7 +268,7 @@ does (quire's root, not yours). You only need to pin the lines **you** name dire
 (section 5). Copy those lines **verbatim** from `docs/workspace-deps.toml` in quire
 (the pinned block is copied verbatim into
 every workspace; `docs/workspace-deps.toml` is quire's own copy of the source of truth, not
-owned by this doc). If you also run on Blitz (`ds-blitz`), your own crate that calls
+owned by this doc). If you also run on Blitz (`ui-blitz`), your own crate that calls
 `dioxus_native::*` directly (rare — most consumers only call `ds_blitz::launch`) needs the
 `dioxus-native`/`blitz-*` lines too, exactly as pinned, never a different revision.
 
@@ -284,7 +284,7 @@ does; `scripts/check-consumer.sh` builds, lints and tests that example in the ga
 **A bare document, with no `Ds` root** (a never-painted input catcher, a 2 px hot-corner
 surface) still carries Blitz's user-agent stylesheet, which sets `body { margin: 8px }`: its
 content never reaches the true (0, 0) corner, and `position: absolute`/`fixed` with `inset: 0`
-paints nothing on it (sill's hot corners). shell-host injects `body { margin: 0 }`
+paints nothing on it (sill's hot corners). layer-shell-host injects `body { margin: 0 }`
 into every document it hosts; a bare document elsewhere (`ds_blitz::launch`,
 a test) must cancel the margin itself or draw inside a `Ds`.
 
@@ -326,7 +326,7 @@ fn App() -> Element {
 | `material` | `Material` | required | which of the eight materials this root paints (design/03-COLOR.md §17.1) |
 | `blur` | `BlurState` | `BlurState::default()` | whether the compositor blurs behind this surface |
 | `stylesheet` | `Inject` | `Inject::Inline` | `Inline` puts a `<style>` inside `.ds` (spike S1); `Host` lets you inject `ds::stylesheet()` yourself |
-| `sheet` | `Option<&'static str>` | `None`: `ds::stylesheet()` | the text `Inject::Inline` writes; an app that takes `ds-shell` passes `Some(ds_shell::stylesheet())` |
+| `sheet` | `Option<&'static str>` | `None`: `ds::stylesheet()` | the text `Inject::Inline` writes; an app that takes `ui-shell` passes `Some(ds_shell::stylesheet())` |
 | `styles` | `ReadSignal<Styles>` | empty | the look and the person's desktop-wide and per-app stylesheets, drawn after the design system's (section 12) |
 | `custom_styles` | `bool` | `true` | `false` draws none of the three sheets (`appearance.custom_styles`, "Use my styles", section 12) |
 | `surface` | `Option<&'static str>` | `None` | stamped as `data-surface`, the name a user stylesheet selects this root by |
@@ -335,7 +335,7 @@ fn App() -> Element {
 | `frame` | `Option<FrameTint>` | `None`: `FrameTint::of(material, chrome)` | `Opaque` (the window's frame), `Tinted` (the Space gradient at the tint alpha: bar, dock, a painted popover, OSD, widget) or `None` (the material's flat tint) |
 | `radius` | `Option<Corner>` | `None`: the material's own corner | `Corner::Token(Radius::…)` or `Corner::Px(Px(n))`: overrides `--m-radius` inline, for a root whose corner is a setting (the dock's `dock.pill_radius_px`) |
 | `extent` | `RootExtent` | `RootExtent::Content` | `Content`: as tall as the root's content (a window, the bar, a card). `Viewport`: at least the viewport (`min-height:100vh; min-width:100vw`), **the option for an overlay surface** (an OSD, a sheet, a click catcher) whose content is all positioned and would otherwise leave the root, and everything it places, 0 px tall (FINDINGS "Root height") |
-| `scale` | `Option<Scale>` | `None`: the host's `ds::prelude::HostSignals` scale, else 1x | the device scale this root draws for, in 120ths (`Scale(180)` is 1.5x, the `wp_fractional_scale_v1` unit and shell-host's `Scale`); the root writes the pixel tokens for it (below). `ds_blitz::launch`, `Harness` and `snapshot` provide `HostSignals` themselves; a host that is not `ds-blitz` passes `scale` |
+| `scale` | `Option<Scale>` | `None`: the host's `ds::prelude::HostSignals` scale, else 1x | the device scale this root draws for, in 120ths (`Scale(180)` is 1.5x, the `wp_fractional_scale_v1` unit and layer-shell-host's `Scale`); the root writes the pixel tokens for it (below). `ds_blitz::launch`, `Harness` and `snapshot` provide `HostSignals` themselves; a host that is not `ui-blitz` passes `scale` |
 | `window` | `WindowFrame` | `WindowFrame::None`: the root is what it was | `WindowFrame::Titlebar { title, lights: bool, timing }` (or `WindowFrame::titlebar(title, lights)`): the client-decorated window's frame, a 28 px titlebar that moves and zooms the window, the traffic lights, the body and eight resize edges, all acting through the host's `ds::prelude::HostWindow` — section 6, "Window frame" |
 
 ### Pixel snapping: `scale`, the pixel tokens and `snap_to_device`
@@ -345,7 +345,7 @@ full row and one half row. Three pieces keep every line whole device pixels (des
 §2.1; FINDINGS "Pixel snapping"):
 
 1. **The root knows the scale.** `Ds { scale: Some(Scale(180)) }` (or the scale in the `ds::prelude::HostSignals`
-   ds-blitz provides) makes the root write the pixel tokens' inputs inline. With no scale, or
+   ui-blitz provides) makes the root write the pixel tokens' inputs inline. With no scale, or
    at `Scale::ONE`, it writes nothing and every token is its 1x value, so nothing changes.
 2. **Lines read the pixel tokens** (`ds::style::tokens::pixel::PixelToken`, on `.ds`):
 
@@ -365,7 +365,7 @@ full row and one half row. Three pieces keep every line whole device pixels (des
    pixels, so at 1.5 a box at y 11 starts at device y 16.5 whatever its width.
    `ds_blitz::snap_to_device(&mut BaseDocument)` re-rounds the laid-out document on the device
    grid (and rounds a pure translation to whole device pixels). `Harness` and `snapshot` run it
-   every frame. **A host that resolves its own documents (shell-host) calls it after every
+   every frame. **A host that resolves its own documents (layer-shell-host) calls it after every
    `resolve` and before painting**; it does nothing at a whole scale. `ds_blitz::launch`'s
    window cannot (blitz-shell resolves and paints in one call), so there the tokens apply but a
    line may still sit half a device pixel off.
@@ -411,7 +411,7 @@ value.
 ### `ds_settings::use_environment`
 
 `ds_settings::use_environment(store, system, spawner) -> ReadSignal<Environment>` (feature
-`dioxus` of `ds-settings`; `ds-settings/src/environment.rs`) is the one hook that gives you a live
+`dioxus` of `ui-settings`; `ui-settings/src/environment.rs`) is the one hook that gives you a live
 `Environment { settings: AppearanceFile, system: SystemPrefs }`: it loads `appearance.toml` from
 the `Store`, watches the directory for edits (30 ms debounce), reads the freedesktop settings
 portal (`SystemPrefsSource::Portal`), and watches it for changes, merging both into one signal.
@@ -448,7 +448,7 @@ tint with the vibrancy boost off. The compositor reads `Appearance.transparency`
 it reads `theme` from.
 
 **Nothing here names a runtime.** The file watch and the portal watch are tasks handed to the
-`ds::base::spawner::Spawner` you pass (`ds-settings` may not depend on `tokio`, `scripts/check-boundary.sh`).
+`ds::base::spawner::Spawner` you pass (`ui-settings` may not depend on `tokio`, `scripts/check-boundary.sh`).
 On Blitz, `ds_blitz::TokioSpawner::current()` is the implementor: `ds_blitz::launch` enters a
 process-wide, lazily built Tokio runtime (multi-thread, two workers;
 `crates/ds-blitz/src/launch/runtime.rs`) and holds the guard for the process's life, and
@@ -706,7 +706,7 @@ when it returns. Use `Clock::Virtual` for any test that needs the strict guarant
 
 Text, glyphs and images keep 8 px (`--s-8`, the menu and row text inset) from the painted left and
 right edge of the box they sit in. Rule 1 cannot see this (a row with no `padding` is clean CSS),
-so one test renders your surface and measures the laid-out document. `ds-harness` is the
+so one test renders your surface and measures the laid-out document. `ui-harness` is the
 dev-dependency you already have:
 
 ```rust,ignore
@@ -799,7 +799,7 @@ or `Slot`; a busy row (`Availability::Busy`) shows the spinner in place of its a
 `List { label, items: Vec<ListItem<K>>, style: ListStyle }` roves with the arrows and Home/End.
 `Table { label, columns, rows, sort, on_sort, selection, cursor, onselect }` (`TableColumn::new(id, title, width)`, `TableRow::new(key, label, cells)`) is a header of sortable, resizable columns over a `List`.
 
-`Table` and `VirtualTable` take `rules: ColumnRules::{None, Hairline}` (prelude; default `None`): `Hairline` draws a hairline between the columns, header and cells, like Numbers; apps never style `.ds-table-*` themselves (ds-lint's DsInternals rule).
+`Table` and `VirtualTable` take `rules: ColumnRules::{None, Hairline}` (prelude; default `None`): `Hairline` draws a hairline between the columns, header and cells, like Numbers; apps never style `.ds-table-*` themselves (ui-lint's DsInternals rule).
 
 **A table of many rows: `VirtualTable`.** `ds::components::lists::virtual_table::{VirtualTable, row_pitch}`
 shows a file of a million lines without building them. `VirtualTable::<C> { label, columns:
@@ -1007,7 +1007,7 @@ A few props worth knowing about before you read the signatures:
   `Harness::clipboard_text()`. `write_to(ClipboardTarget::Primary, text)` and `read_from(target)` reach the
   primary selection (Linux only; elsewhere a write is `Unavailable`), read back with `Harness::primary_text()`.
   A custom `Clipboard` implements `read_from` and `write_to`; `read_text`/`write_text` are provided.
-  ds-shell has no clipboard of its own.
+  ui-shell has no clipboard of its own.
 - Files on the clipboard: `ds_blitz::clipboard::write_files(&ClipboardFiles::new(FileOp::Copy, paths))` on
   ⌘C/⌘X and `read_files()` on ⌘V (`ClipboardFiles { op, paths }`; `uris()` for the `file://` form). The system
   clipboard carries a `text/uri-list` only, so another app pastes a copy and reads back as `FileOp::Copy`.
@@ -1020,7 +1020,7 @@ A few props worth knowing about before you read the signatures:
 - A settings enum key's menu is built by the caller from `KeySpec::grouped_choices()`: a
   `MenuItem::Header(group)` over each group's items, an unavailable choice as `MenuItem::new(..)
   .with_availability(Availability::Disabled)` with `MenuItem::Info { title: reason, detail: None }` right
-  under it (detent's `menu_items` is the worked example). ds does not depend on ds-settings, so quire
+  under it (detent's `menu_items` is the worked example). ds does not depend on ui-settings, so quire
   has no converter. `KeySpec::place_of(word)` says where a choice's model runs (`ChoicePlace`: this
   computer, your computer, cloud, assistant) for the mark beside it, and `KeySpec::note` is the short
   line to show under the key (`help` stays behind the info button).
@@ -1046,7 +1046,7 @@ A few props worth knowing about before you read the signatures:
   (`fold: FieldFold::Advanced`) under one "Advanced" `Disclosure` after the shown fields, grouped
   there by its own part (mailo: the ports and security choices); the disclosure starts closed and
   is open while a `problem` marks one of its fields.
-- `SpaceEditor` (and `SpaceDot`) live in `ds`, not `ds-shell`, and take two more optional props: `name: Option<String>` (the Space's own name
+- `SpaceEditor` (and `SpaceDot`) live in `ds`, not `ui-shell`, and take two more optional props: `name: Option<String>` (the Space's own name
   field, drawn inside the editor rather than beside it) and
   `on_active_dot: Option<EventHandler<ActiveDot>>` (fires when the person's focus moves to a
   different dot, separately from `onchange`, which fires on an actual edit).
@@ -1160,7 +1160,7 @@ External icons and a caller-driven tooltip (FINDINGS "Pointer events"):
   symbolic; anything coloured is an image) and is the caller's decision. `Button { icon }`
   takes an `IconSource`, and an `Icon` (or `Option<Icon>` for `Button`)
   still converts, so existing call sites are unchanged. `ds::prelude::IconView { source, size }` draws one
-  anywhere else. The URL loads through the document's net provider (ds-blitz and shell-host's
+  anywhere else. The URL loads through the document's net provider (ui-blitz and layer-shell-host's
   `LocalNet` answer `data:` and `file:`), one frame late. A `file:` URL loads only when the app
   named its directory with `AppConfig::with_file_roots` (and `HarnessConfig::with_file_roots` in
   tests), and only for a regular file of at most 32 MiB; a path outside the roots, through a
@@ -1202,7 +1202,7 @@ External icons and a caller-driven tooltip (FINDINGS "Pointer events"):
 
 For a bar (FINDINGS "Bar gaps"):
 
-- **A Blitz host that is not `ds_blitz::launch`** (shell-host's surfaces, a popup's document)
+- **A Blitz host that is not `ds_blitz::launch`** (layer-shell-host's surfaces, a popup's document)
   calls `ds_blitz::provide_host()` at the top of its root component, before any quire
   component reads the document. It installs every part of `ds::prelude::DocumentHost` at once (rects,
   focus, caret, scroll, edit, drop), so a root can never hold a subset; a root under a window's
@@ -1233,7 +1233,7 @@ For a bar (FINDINGS "Bar gaps"):
   shadow on its own box (`data-chrome="transparent"`); the `.ds-popover`/`.ds-menu` and
   `.ds-sheet` cards inside paint the material's tint (`--m-tint` over blur, `--m-tint-solid`
   without), edge and drop (`--m-box`). A popup document keeps `Material::Popover` and its
-  spare room is alpha 0 (sill's sill-shell-kit/tests/bar_frame.rs proves it over
+  spare room is alpha 0 (sill's shell-kit/tests/bar_frame.rs proves it over
   `Harness::render_over(Backdrop::Clear)`).
 - **The frame ground (target (clean-up phase): removed with the frame model; the `--f-*` inks go).** Under `data-ground="frame"` (a Bar or Dock root, or `Surface { on:
   Some(Ground::Frame) }`) `--ink`, `--ink-soft`, `--ink-faint` are the Space's `--f-ink*`,
@@ -1463,7 +1463,7 @@ measured numbers.
 | Need | API | Notes |
 | --- | --- | --- |
 | An HTML document as a PDF | feature `pdf`: `ds_blitz::pdf(&html, PageSpec::default()) -> Result<Vec<u8>, PdfError>` | A whole document (`<!DOCTYPE html>...`). quire's faces are registered; the network is sealed: only `data:` URLs load (no `file:`, no fetch). `@media print` applies. Laid out once at the page's content width, at scale 1. |
-| A Dioxus tree as a PDF | `ds_harness::pdf_app(app, HarnessConfig::new(viewport), spec)`, ds-harness feature `pdf` | Built as `config` says (its contexts and `NetPolicy`; the viewport is replaced by the page's content box), rendered until its mount-time work and images have landed (as `snapshot`), then printed. |
+| A Dioxus tree as a PDF | `ds_harness::pdf_app(app, HarnessConfig::new(viewport), spec)`, ui-harness feature `pdf` | Built as `config` says (its contexts and `NetPolicy`; the viewport is replaced by the page's content box), rendered until its mount-time work and images have landed (as `snapshot`), then printed. |
 | In a test | `Harness::pdf(spec) -> Result<Vec<u8>, PdfError>` | Prints the harness's document as it is now, at the page width with `@media print`; the harness's own viewport and media come back afterwards. Read the PDF back with `pdfrum` (dev-dependency) to assert on text. |
 | The sheet | `PageSpec { size, margins }`; `PageSize::{A4, Letter, Custom { width: Pt, height: Pt }}`; `Margins { top, right, bottom, left }`, `Margins::uniform(Pt)`, `Margins::symmetric(vertical, horizontal)`; `Pt::from_mm`, `Pt::from_inches` | `PageSpec::default()` is A4 with 18 mm above and below, 16 mm at the sides. `@page` is not read: the spec's margins are the only ones. `PdfError::NoContentArea` when the margins meet. |
 | Start a new page at an element | `"data-break-before": "page"` | CSS `break-before`/`page-break-before` do nothing on Blitz (stylo drops them). A marker at the document's top makes no blank page. |
@@ -1472,14 +1472,14 @@ measured numbers.
 | CJK text | name the family: `font-family: "Noto Sans CJK TC", sans-serif` | Otherwise fontique's fallback picks (DroidSansFallback on this machine). A variable face prints at the instance the layout used. |
 | Print it | `ds_blitz::print_dialog(&pdf, title) -> Result<PrintOutcome, PrintError>`, feature `print` | Linux: the desktop portal's print dialog (GTK or KDE backend), then the portal prints the PDF. No portal or no print backend, and other systems: the PDF is written to a temp file and opened in the viewer. `PrintOutcome::{Printed, Cancelled, Opened(PathBuf)}`, `PrintError::{Portal, Write, NoViewer}`. **Blocks** until the dialog is answered: call it off the UI thread. The dialog is not parented to the window. |
 | Try it by hand | `cargo run --release -p ui-blitz --example pdf -- out.pdf`; `cargo run -p ui-blitz --features print --example print` | The first writes the fixture and prints its size and time; the second opens the real dialog. |
-| The painter alone | the `pdfrum-anyrender` crate, on crates.io | Pages recorded into anyrender's `Scene` by any anyrender renderer, written as one PDF; Blitz-free. `ds-blitz`'s `pdf` feature depends on it as a git dependency pinned to pdfrum rev 61371040, so a consumer that only prints through `ds_blitz::pdf` names nothing new; one that calls the painter directly adds the same git dependency at the same rev. Its own docs describe its page and source types. |
+| The painter alone | the `pdfrum-anyrender` crate, on crates.io | Pages recorded into anyrender's `Scene` by any anyrender renderer, written as one PDF; Blitz-free. `ui-blitz`'s `pdf` feature depends on it as a git dependency pinned to pdfrum rev 61371040, so a consumer that only prints through `ds_blitz::pdf` names nothing new; one that calls the painter directly adds the same git dependency at the same rev. Its own docs describe its page and source types. |
 
 ### Missing helpers
 
 An app that runs distro tools (mpv, ffmpeg, heif-dec) can ask for one that is not installed, like
 Totem's codec prompt: a sheet says what the app needs, the person says yes, PackageKit installs it
 (and asks polkit for the password itself), and the app retries without restarting. Two parts:
-`ds-helpers` (I/O, no renderer; zbus only) and the `HelperSheet` in `ds-shell`.
+`ui-helpers` (I/O, no renderer; zbus only) and the `HelperSheet` in `ui-shell`.
 
 **The rule: ask at the moment of use.** Probe when the person tries the feature that needs the
 tool (`Helpers::available`), show the sheet then, and never at launch or in the background. A
@@ -1546,7 +1546,7 @@ the first candidate package, `Unsupported` the first probe executable: take them
 family and pass its `.text()` (`None` when the list is empty, or when you cannot tell which family
 is theirs). With `Some`, the sheet says to run it in Terminal (the person's computer cannot install it for them, as on a stock Arch with no PackageKit) and shows it as a selectable line with a Copy button: give
 `HelperSheet` / `HelperBody` an `on_copy: EventHandler<String>` (default: nothing) that writes the
-clipboard (`ds_blitz::clipboard::write_text`; ds-shell does not depend on ds-blitz) and a
+clipboard (`ds_blitz::clipboard::write_text`; ui-shell does not depend on ui-blitz) and a
 `copy: CopyState` (`ds::components::controls::copy_state::CopyState`, also at `ds_shell::accounts::model::CopyState`; default `Idle`; set `Copied` after you copied, as `BrowserWait` does) so the
 button says "Copied". The line itself is `ds`'s `CommandLine` (next section). `on_dismiss` is Not Now and Close;
 Escape does nothing while `Installing`. `HelperBody` is the same column without the sheet; both are
@@ -1606,7 +1606,7 @@ rsx! {
 
 A quire app's `MenuBarModel` can be served over the session bus as `com.canonical.dbusmenu`, so the
 shell's bar shows the focused app's App, File, Edit, View, Window and Help menus and an agent can
-list and run them (design/27 section 5.2 rule a). Off by default: feature `menus` of `ds-blitz`.
+list and run them (design/27 section 5.2 rule a). Off by default: feature `menus` of `ui-blitz`.
 
 1. Make every command type answer `AppCommand::id` (the ids your UI manifest already lists). A
    command that wraps `BarCommand` answers with `BarCommand::id()` (`standard.undo`, `bar.about`).
@@ -1653,7 +1653,7 @@ zbus's `tokio` feature, `MenuExport::start` enters the process-wide runtime itse
 For a viewer: a drag that keeps following the pointer outside its element, a touchpad's pinch and
 scroll with their phases, and the pill of controls that floats over content. FINDINGS "Events"
 has the reasons: Blitz has no pointer capture, no pinch event and no wheel phase, but the window
-sees winit's events before the document does, so ds-blitz publishes them and nothing in the
+sees winit's events before the document does, so ui-blitz publishes them and nothing in the
 Blitz fork is needed.
 
 | Need | API | Notes |
@@ -1764,12 +1764,12 @@ next to your `.desktop` file. `KeyKind` picks the widget for you — a two-varia
 `Toggle` when its words are an on/off pair and two segments otherwise, three to five a
 `SegmentedControl`, more a `Menu`, a `#[settings(range = "..")]` newtype a `Slider` — see
 `ds_settings::schema::KeyKind::widget` (design/22-SETTINGS.md section 9.1) for the full table; you
-never choose a widget yourself. quire's own schema is written the same way by the `ds-settings`
+never choose a widget yourself. quire's own schema is written the same way by the `ui-settings`
 example: `cargo run -p ui-settings --example write_schema -- --write-schema target/schema`.
 
 ### Drawing the schema in your own settings window: `SettingsPage`
 
-`ds-settings-page` draws one page from one or more schemas, the way the Settings app does: a
+`ui-settings-page` draws one page from one or more schemas, the way the Settings app does: a
 titled `FormSection` per schema section, a `FieldRow` per key, the control `KeyKind` picks (a
 switch, segments, a pop-up button; a kind not drawn yet is shown read-only). It holds no values
 and saves nothing: you pass the file's TOML in `values` and apply each `SettingEdit` it hands back
@@ -1799,7 +1799,7 @@ a page is window plumbing and stays in each app.
 
 ### Extensions: finding, choosing and reading them
 
-`ds-extensions` is a library with no UI, runtime or bus. A host that reads Extensions:
+`ui-extensions` is a library with no UI, runtime or bus. A host that reads Extensions:
 
 ```rust,ignore
 use ds_extensions::{Capability, ExtensionsFile, Search, choices_for, chosen};
@@ -1863,8 +1863,8 @@ let choice = match pick {
 rsx! { FileIcon { choice, size: IconSize::Px(IconPx(32)) } }
 ```
 
-The mapping is three arms because `ds-extensions` may not name `ds` (the components) and `ds` may
-not name `ds-extensions`; `IconPick` is made of `ds-style` types both know. Pass a folder as
+The mapping is three arms because `ui-extensions` may not name `ds` (the components) and `ds` may
+not name `ui-extensions`; `IconPick` is made of `ui-style` types both know. Pass a folder as
 `FolderFacts::Folder(FolderKind::Downloads)` (`FolderKind::Plain` for any other).
 
 A pack is an Extension with a `file_icons` entry; its `file-icons/` folder is keyed by the names
@@ -2025,7 +2025,7 @@ the derive cannot place at all gets an error saying what to add.
 ## 11. Scrolling
 
 One engine owns scroll physics for every Blitz document (design/11-BEHAVIOUR-scroll.md section
-11.3.1): `blitz_kit::scroll`, which shell-host (a shell's surfaces) and `ds-blitz` (an app's
+11.3.1): `blitz_kit::scroll`, which layer-shell-host (a shell's surfaces) and `ui-blitz` (an app's
 windows, `ds_blitz::launch`) both run. It does not let Blitz's default scroll act (Blitz jumps 20 px
 a line), it writes raw offsets itself every frame, and a wheel detent is 60 px eased over at most
 200 ms, detents accumulating; a touchpad flick glides and may stretch past an edge where a
@@ -2044,7 +2044,7 @@ scroll (`MountedData::scroll_to`, `scroll-behavior: smooth`).
 animate })`, `ScrollCmd::By { element, axis, delta, animate }` or `ScrollCmd::IntoView { element,
 animate }` runs at the next frame; `element` is a `ds_blitz::ElementId` naming the container by its
 `id` attribute, `animate` is `ScrollAnimate::Smooth` (the 200 ms ease) or `Instant`. The same
-`ScrollCmd` is shell-host's `SurfaceHandle::scroll`. `ScrollerRef::scroll_to` (the `Scroller`
+`ScrollCmd` is layer-shell-host's `SurfaceHandle::scroll`. `ScrollerRef::scroll_to` (the `Scroller`
 component's own offset) is a separate thing and writes at once.
 
 **A component that moves its own content from the wheel listens to gestures, and may ask for the
@@ -2226,7 +2226,7 @@ is the rule and the table of who is what). Three things follow for a consumer.
   entry your packaging sets). Core modules never import `crate::desktop` or zbus, and
   `cargo check --workspace --no-default-features` must pass. Run
   `quire/scripts/check-portable.sh <your-workspace-dir>` from your lane gate to check both.
-- **Probe.** `ds-desktop` (features `dbus`, `dioxus`) answers `Capability::{Intents, Accounts,
+- **Probe.** `ui-desktop` (features `dbus`, `dioxus`) answers `Capability::{Intents, Accounts,
   Memory, Companion, Appearance, Materials, Peek, Share, Helpers}` as `Presence::{Here,
   Absent}`. `Desktop::probe().await` once, `Desktop::watch()` to follow services starting and
   stopping, or `use_desktop()` in a component for a signal. Without `dbus` everything is `Absent`.
@@ -2442,9 +2442,9 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   `action/spec.rs` `Binding::Own` rows are `AppAction`s. Cmd+1/9 as zoom conflicts with the app's
   Primary+1..9 Space chord: chordkit's registration refuses it, so pick one (the zoom is `Bigger` and
   `Smaller`; set the Space chord `Unbound` if the app has no Spaces).
-- **sill.** `sill-launcher/src/chord.rs:55-95` (`reveal`, `copy`, `search_web`, `quick_look`, `forget`)
+- **sill.** `shell-launcher/src/chord.rs:55-95` (`reveal`, `copy`, `search_web`, `quick_look`, `forget`)
   and `launcher/chord_keys.rs:41-61` are `StandardAction::{Reveal, Copy, QuickLook}` plus `AppAction`s;
-  `sill-dock/src/dock/pointer.rs:98` (own `SUPER|CONTROL|META`) uses `ds::base::command::holds_primary`
+  `shell-dock/src/dock/pointer.rs:98` (own `SUPER|CONTROL|META`) uses `ds::base::command::holds_primary`
   or the action. The switcher's `command_keys` (Alt/Meta release) is a modifier *release*, which is
   not a chord: keep it, on `ds::base::command::modifiers_of`. `dist/keycap/keycap.toml` remap rules
   stay keycap's. The desktop launcher passes keycap's `KeymapSource` to

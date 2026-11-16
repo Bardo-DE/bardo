@@ -7,10 +7,10 @@
 //! every extracted value are screen text (FINDINGS, upstream asks).
 
 use crate::state::CuaOutcome;
+use account_ids::Count;
+use action_core::{Delivery, DraftPart, MessageDraft, SendRefusal};
 use computer_use_action::{Extracted, Summary};
 use computer_use_desktop::Ms;
-use action_core::{Delivery, DraftPart, MessageDraft, SendRefusal};
-use account_ids::Count;
 use inference_core::ChargeTotal;
 use provenance::{MAX_PARTS, MAX_TEXT_BYTES, MessageKind, MessageText, ReportStatus};
 use serde::{Deserialize, Serialize};

@@ -11,12 +11,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    the OS (MOK, BIOS) the K5 Max must be on Cable or 2.4G, not Bluetooth.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/sill`: `almanac`, `anyview`,
-   `blitz-kit`, `cua`, `docket`, `keycap`, `porter`, `quire`, `shell-host`, plus `stoker` and
-   `casement-protocols` (reached through them). `palmrest` is not needed to build. A stale one
+   `blitz-embed`, `cua`, `docket`, `keycap`, `porter`, `quire`, `layer-shell-host`, plus `stoker` and
+   `desktop-protocols` (reached through them). `palmrest` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
-   for r in anyview quire shell-host keycap blitz-kit almanac cua docket porter stoker casement-protocols; do
+   for r in anyview quire layer-shell-host keycap blitz-embed almanac cua docket porter stoker desktop-protocols; do
      git -C ~/$r pull --ff-only || echo "NOT FAST-FORWARD: $r"; done
    git -C ~/anyview pull --ff-only                          # the one that was behind
    cd ~/sill && git status --short && git log --oneline -1  # clean, master
@@ -212,7 +212,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   `zwp_linux_dmabuf_v1`'s default feedback, which needs version 4) and takes the wgpu adapter with
   that PCI vendor and device id, so frames cross no GPU boundary. If the compositor does not say,
   or no adapter matches, wgpu's own order applies (a discrete GPU first), and any adapter that fails
-  a first test frame is skipped. The journal line `shell-host: adapter <name> ...` names the one
+  a first test frame is skipped. The journal line `layer-shell-host: adapter <name> ...` names the one
   chosen. To override, put `WGPU_ADAPTER_NAME=<part of the adapter's name>` (for example `AMD` or
   `NVIDIA`) in `~/.config/desktop-session/session.env` (plain `NAME=value`, read at the next login;
   the file is never created for you): it wins over the detection. If the shell is slow or the CPU is

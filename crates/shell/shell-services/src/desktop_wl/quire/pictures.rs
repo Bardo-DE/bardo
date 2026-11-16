@@ -3,8 +3,8 @@
 use std::io::Cursor;
 use std::sync::Arc;
 
-use desktop_protocols::vocab::Transform;
 use desktop_client::Frame;
+use desktop_protocols::vocab::Transform;
 use image::codecs::png::{CompressionType, FilterType, PngEncoder};
 use image::{ExtendedColorType, ImageEncoder, ImageFormat, RgbaImage};
 use shell_model::desktop::{OutputPicture, OutputShot, SpacePicture};

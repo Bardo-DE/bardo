@@ -1,7 +1,9 @@
 //! Every control in every state, as data: the table the golden test walks.
 
 use dioxus::prelude::*;
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::controls::badge::{Badge, BadgeContent, BadgeTone};
 use ui_components::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ui_components::components::controls::chip::{Chip, ChipVariant};

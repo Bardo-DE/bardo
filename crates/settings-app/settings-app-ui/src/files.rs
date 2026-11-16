@@ -2,12 +2,12 @@
 
 use crate::env::Env;
 use crate::reported::Reported;
+use dioxus::prelude::{ReadableExt, Signal, WritableExt};
 use settings_app_client::{FileValues, FilesError, load, save};
 use settings_app_model::external::toml;
 use settings_app_model::{ConfigFile, FileSpec, KeyEntry};
-use dioxus::prelude::{ReadableExt, Signal, WritableExt};
-use ui_components::stack::toast_hub::ToastHub;
 use std::collections::{BTreeMap, BTreeSet};
+use ui_components::stack::toast_hub::ToastHub;
 
 /// The current values of every file the catalogue reads.
 pub type Files = BTreeMap<ConfigFile, FileValues>;

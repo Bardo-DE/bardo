@@ -1,6 +1,6 @@
 [package]
 name = "action-router"
-description = "The pure router: `Router` and the seams the daemon passes in, over docket-context (what it remembers) and docket-gate (the pure steps of a call)."
+description = "The pure router: `Router` and the seams the daemon passes in, over action-context (what it remembers) and action-gate (the pure steps of a call)."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

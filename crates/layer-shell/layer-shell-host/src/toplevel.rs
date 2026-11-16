@@ -1,5 +1,5 @@
 //! xdg toplevels: every app window (design/20-SURFACES.md, "All apps are xdg toplevels through
-//! shell-host"). The configuration a window opens with, the window-management vocabulary a
+//! layer-shell-host"). The configuration a window opens with, the window-management vocabulary a
 //! client-decorated frame asks with (move, resize, zoom, minimize, fullscreen), and the state
 //! the compositor answers with in each configure.
 //!

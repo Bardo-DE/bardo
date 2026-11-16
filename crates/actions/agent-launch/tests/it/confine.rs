@@ -1,9 +1,9 @@
 //! What a person is told of how far an agent is held: the words for every network and every
 //! level the exec stage can report, and the strict reading of its report line.
 
-use sandbox::{LandlockLevel, NetworkMode};
 use agent_launch::Confinement;
 use agent_launch::procs::level_in;
+use sandbox::{LandlockLevel, NetworkMode};
 
 const MODES: [NetworkMode; 4] = [
     NetworkMode::None,

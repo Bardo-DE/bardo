@@ -1,11 +1,11 @@
 //! Why sill drew digits and spaces from Noto Color Emoji (FINDINGS "Colour emoji"):
 //! the stack `"Inter","Noto Color Emoji",system-ui,sans-serif` is laid out here through the font
-//! context shell-host builds for every surface (`layer_shell_host::dom::fonts::SharedFonts::system`:
+//! context layer-shell-host builds for every surface (`layer_shell_host::dom::fonts::SharedFonts::system`:
 //! `FontContext::new()` and Blitz's bullet face, nothing else) and through quire's own
 //! (`ui_blitz::font_context`, which registers `ui_components::style::fonts::FACES`).
 //!
 //! Under quire's context Inter is a family, maps every character of ordinary text, and the stack
-//! lays out exactly as `"Inter"` alone. Under shell-host's there is no family called Inter (it is
+//! lays out exactly as `"Inter"` alone. Under layer-shell-host's there is no family called Inter (it is
 //! not installed on the system and `SharedFonts::register` has no caller), so the stack's first
 //! family that exists is Noto Color Emoji, which maps U+0020 and 0-9 (the keycap sequences' bases):
 //! the space and the digits come from it, wide, and every other character from system-ui.
@@ -25,7 +25,7 @@ const EMOJI: &str = "\u{1F600}\u{1F44D}\u{1F3FD}\u{1F1F9}\u{1F1FC}\u{1F469}\u{20
 const LAST: &str = "\"Inter\",system-ui,sans-serif,\"Noto Color Emoji\"";
 const TEXTS: &[&str] = &["m9-extra-1.pdf", "00:22", "a b c"];
 
-/// shell-host's context, as `SharedFonts::system()` builds it.
+/// layer-shell-host's context, as `SharedFonts::system()` builds it.
 fn shell_host_fonts() -> FontContext {
     let mut fonts = FontContext::new();
     fonts.source_cache.make_shared();
@@ -50,7 +50,7 @@ fn Line(stack: String, text: String) -> Element {
     }
 }
 
-/// The width `text` lays out at in `stack` under `fonts`, through Blitz as a shell-host surface
+/// The width `text` lays out at in `stack` under `fonts`, through Blitz as a layer-shell-host surface
 /// lays it out.
 fn width(fonts: FontContext, stack: &str, text: &str) -> f64 {
     let vdom = VirtualDom::new_with_props(
@@ -137,7 +137,7 @@ fn inter_is_not_a_family_in_shell_hosts_font_context() {
     );
 }
 
-/// Under quire's context the stack is Inter's to the pixel; under shell-host's it is wider than
+/// Under quire's context the stack is Inter's to the pixel; under layer-shell-host's it is wider than
 /// system-ui alone by the emoji face's advances, which is sill's "m 9 -extra- 1 .pdf".
 #[test]
 fn the_stack_is_inter_under_quire_and_takes_the_emoji_faces_digits_under_shell_host() {
@@ -165,7 +165,7 @@ fn the_stack_is_inter_under_quire_and_takes_the_emoji_faces_digits_under_shell_h
     }
 }
 
-/// Why the emoji face cannot simply go last under shell-host's context: `system-ui` already maps
+/// Why the emoji face cannot simply go last under layer-shell-host's context: `system-ui` already maps
 /// emoji (fontconfig lists Symbola under it here), so a face named after it is never reached.
 /// The emoji of `"Inter",system-ui,sans-serif,"Noto Color Emoji"` lay out as system-ui's, not as
 /// the colour face's.

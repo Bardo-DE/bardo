@@ -2,15 +2,15 @@
 //! says what an agent may know of the accounts, and nothing in the manifest changes one.
 
 use crate::support::{Listed, World, entity, key};
+use account_sheet::ProviderGroup;
+use action_core::AppRefusal;
+use action_vocab::Value;
+use provenance::Integrity;
 use settings_app_model::{
     Absence, Account, AccountKey, AccountService, AccountSpend, AccountStatus, AccountsPane,
     ModuleId, Place,
 };
-use action_core::AppRefusal;
-use action_vocab::Value;
 use ui_settings::schema::KeyPath;
-use account_sheet::ProviderGroup;
-use provenance::Integrity;
 
 fn account(id: &str, label: &str, status: AccountStatus, kinds: &[&str]) -> Account {
     Account {

@@ -1,5 +1,5 @@
 //! The Software Update pane: following the service, asking it, and starting the log-out. The steps
-//! are `detent-model`'s `updates_step`.
+//! are `settings-app-model`'s `updates_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

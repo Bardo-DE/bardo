@@ -5,8 +5,8 @@
 use crate::app::AppKey;
 use crate::ids::{OutputKey, WindowId};
 use crate::space::SpaceIndex;
-use desktop_protocols::vocab::{Assign, PlaceTarget, Toggle};
 use account_core::SpaceId;
+use desktop_protocols::vocab::{Assign, PlaceTarget, Toggle};
 
 /// One management request on the desktop.
 #[derive(Debug, Clone, PartialEq, Eq)]

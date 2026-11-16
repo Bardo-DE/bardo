@@ -1,8 +1,16 @@
 //! The fakes do what their docs say: they are the doubles every other crate's tests lean on, so
 //! they are tested like code.
 
+use account_core::{AppName, DataClass};
+use account_ids::Px;
+use action_core::{CallRefusal, ConfirmEnd, DraftPart, InboxAsk, MessageDraft};
+use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_wire::{GrantAnswer, GrantAsk};
 use computer_use_action::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size};
 use computer_use_bus::CuaRecord;
+use computer_use_capture::{
+    CaptureError, CaptureSession, Frame, FrameSeq, MaskReport, PixelBuf, WholeMask, WindowCapture,
+};
 use computer_use_desktop::{
     BackendKind, Desktop, DesktopError, DesktopEvent, LeaseControl, LeaseRequest, MaskWhere,
     ReleasePlacement, RunMode, Stamp, ToplevelIdent, ToplevelInfo, WindowTrust,
@@ -14,14 +22,6 @@ use computer_use_run::{
     CuaModel, CuaModelError, FrameAttachment, GateCheck, GateEvent, GateLink, MessageLink,
     RecordSink, StepSink,
 };
-use action_core::{CallRefusal, ConfirmEnd, DraftPart, InboxAsk, MessageDraft};
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
-use action_wire::{GrantAnswer, GrantAsk};
-use computer_use_capture::{
-    CaptureError, CaptureSession, Frame, FrameSeq, MaskReport, PixelBuf, WholeMask, WindowCapture,
-};
-use account_core::{AppName, DataClass};
-use account_ids::Px;
 use inference_core::{CuaBegin, CuaStepReply, StepIndex};
 use provenance::{
     Address, AgentRef, Confidentiality, Effect, Integrity, Label, MessageKind, MessageText, RunId,
@@ -210,7 +210,10 @@ fn the_fake_desktop_leases_what_the_backend_supports_and_refuses_the_rest() {
     ];
     let stock = FakeDesktop::new(BackendKind::KwinStock, windows.clone());
     let first = ready(stock.lease(request("w1", RunMode::InPlace))).expect("in place works");
-    assert_eq!(first.grant.seat, computer_use_desktop::SeatIsolation::SharedSeat);
+    assert_eq!(
+        first.grant.seat,
+        computer_use_desktop::SeatIsolation::SharedSeat
+    );
     assert_eq!(first.grant.ei, computer_use_desktop::EiOrigin::SenderSocket);
     assert_eq!(
         ready(stock.lease(request("w1", RunMode::AgentWorkspace))).unwrap_err(),

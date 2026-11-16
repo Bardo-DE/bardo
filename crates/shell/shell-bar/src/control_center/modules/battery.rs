@@ -8,15 +8,17 @@
 //! `bar.battery_low_percent`.
 
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
-use ui_components::prelude::*;
-use shell_model::battery::{Battery, Charge};
-use shell_model::bluetooth::{Bluetooth, BtBattery, BtConnection};
-use shell_model::units::Presence;
 use shell_kit::battery::device_glyph::Device;
 use shell_kit::battery::ring::Readout;
 use shell_kit::prelude::*;
+use shell_model::battery::{Battery, Charge};
+use shell_model::bluetooth::{Bluetooth, BtBattery, BtConnection};
+use shell_model::units::Presence;
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
+use ui_components::prelude::*;
 
 use super::PowerProfileControl;
 use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
@@ -192,14 +194,16 @@ impl CcModule for BatteryCc {
 #[cfg(test)]
 mod tests {
     use super::{DeviceRing, device_rings};
-    use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
-    use ui_components::prelude::*;
+    use shell_kit::battery::device_glyph::Device;
     use shell_model::battery::{Battery, Charge};
     use shell_model::bluetooth::{
         Bluetooth, BtAddress, BtBattery, BtConnection, BtDevice, BtKind, BtPairing, BtPower,
     };
     use shell_model::units::{Percent, Presence};
-    use shell_kit::battery::device_glyph::Device;
+    use ui_components::components::content::status::battery_state::{
+        BatteryPower, BatteryState, LowAt,
+    };
+    use ui_components::prelude::*;
 
     fn device(address: &str, connection: BtConnection, battery: BtBattery) -> BtDevice {
         BtDevice {

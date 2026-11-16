@@ -3,9 +3,9 @@
 //! Quick Look window read the same file at different sizes, each its own entry).
 
 use super::request::{ThumbKey, ThumbRequest};
-use ui_components::components::content::pdf_thumb::PdfPage;
 use std::collections::{HashMap, VecDeque};
 use std::sync::{LazyLock, Mutex, PoisonError};
+use ui_components::components::content::pdf_thumb::PdfPage;
 
 /// How many pages the cache holds before it drops the oldest.
 pub const THUMB_CACHE_ENTRIES: usize = 64;
@@ -55,10 +55,10 @@ pub fn pdf_thumb_cached(request: &ThumbRequest) -> Option<PdfPage> {
 mod tests {
     use super::{Cache, THUMB_CACHE_ENTRIES};
     use crate::pdf_thumb::{DeviceBox, ThumbKey};
-    use ui_components::components::content::pdf_thumb::PdfPage;
-    use ui_components::prelude::*;
     use std::path::PathBuf;
     use std::time::SystemTime;
+    use ui_components::components::content::pdf_thumb::PdfPage;
+    use ui_components::prelude::*;
 
     fn key(n: usize) -> ThumbKey {
         ThumbKey {

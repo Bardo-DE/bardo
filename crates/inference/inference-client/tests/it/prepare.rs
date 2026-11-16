@@ -5,20 +5,20 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use common::inferd::{Behaviour, FakeInferd, Seen, slugs};
-use inference_client::{
-    Brokered, ClientError, DbusTransport, Inference, NoBroker, SessionHost, TransportError,
-};
 use account_capability::SpeechMode;
 use account_capability::Tier;
 use account_core::consent::Usage;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use account_ids::Permille;
-use inference_core::testing::FakeInferSession;
-use inference_core::{OpenOptions, Readiness, Traceparent};
 use account_match::Need;
 use account_match::SpeechNeed;
+use common::bus::PrivateBus;
+use common::inferd::{Behaviour, FakeInferd, Seen, slugs};
+use inference_client::{
+    Brokered, ClientError, DbusTransport, Inference, NoBroker, SessionHost, TransportError,
+};
+use inference_core::testing::FakeInferSession;
+use inference_core::{OpenOptions, Readiness, Traceparent};
 use std::sync::{Arc, Mutex};
 
 fn stt() -> Need {

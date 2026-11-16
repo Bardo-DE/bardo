@@ -7,7 +7,9 @@
 //! text to [`PeerUnitTable::parse`]).
 
 use super::callers::{CallerCheck, WhoFuture};
-use caller_identity_dbus::caller_identity_core::{AppKey, Pin as Pinning, Proof, RoleName, Standing, roles};
+use caller_identity_dbus::caller_identity_core::{
+    AppKey, Pin as Pinning, Proof, RoleName, Standing, roles,
+};
 use std::sync::Arc;
 use zbus::Connection;
 use zbus::fdo::DBusProxy;

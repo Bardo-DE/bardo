@@ -2,19 +2,19 @@
 //! `Unreachable`, as on a bus with no daemon, so a caller degrades); one that hands in a broker
 //! gets the broker's sessions, opened for the app the host names.
 
-use inference_client::{
-    Brokered, ClientError, InferSession, Inference, NoBroker, SessionHost, TransportError,
-};
 use account_capability::Tier;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use inference_client::{
+    Brokered, ClientError, InferSession, Inference, NoBroker, SessionHost, TransportError,
+};
 use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{
     ChatControl, ChatReply, ClientFrame, InferEvent, InferReply, InferRequest, OpenOptions,
     RequestKind, ServedBy, StopReason, TokenUsage, ToolParallelism, Traceparent,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use std::sync::{Arc, Mutex};
 
 fn app() -> AppId {

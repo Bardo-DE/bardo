@@ -1,5 +1,5 @@
 //! The proposed values the specs name, as one typed configuration with its defaults. This crate
-//! never reads settings: `cua-host` holds the key table and the schema, and cuad receives a
+//! never reads settings: `computer-use-host` holds the key table and the schema, and cuad receives a
 //! [`CuaConfig`].
 //!
 //! `cua.budget.denials` is not here: the router's breaker (`agent.breaker.*`) counts denials.

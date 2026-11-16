@@ -6,10 +6,10 @@
 
 use crate::hosting;
 
-use hosting::rig::{Plan, World};
 use account_fake_servers::HeldRuntime;
-use std::time::Duration;
+use hosting::rig::{Plan, World};
 use inference_dbus::inference::InferenceProxy;
+use std::time::Duration;
 
 /// How long the start may show it is waiting for the held runtime, and how long a call has to
 /// leave before the runtime runs (see `HeldRuntime`). The start here includes making the world

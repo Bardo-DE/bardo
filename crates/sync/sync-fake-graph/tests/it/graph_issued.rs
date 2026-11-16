@@ -1,11 +1,11 @@
 //! A Graph drive that accepts the access tokens the fake issuer minted, and no other.
 
-use sync_fake_graph::FakeGraph;
 use account_fake::FakeAddress;
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, Scheme, post_form, send};
 use account_fake_servers::oauth::TokenResult;
 use account_fake_servers::{FakeIssuer, IssuerEvent};
+use sync_fake_graph::FakeGraph;
 
 async fn status(address: &FakeAddress, bearer: Option<&str>) -> u16 {
     let mut request = Request::new("GET", "/v1.0/me/drive");

@@ -8,13 +8,13 @@ use crate::{HEIGHT, WIDTH, ended, enter_runtime_block, environment};
 use settings_app_intents::{ServeFault, SettingsProvider, serve_session};
 use settings_app_model::{Inbox, Notice, Outbox, Receiver, inbox};
 use settings_app_ui::{App, Env, Opening};
+use std::process::ExitCode;
+use std::sync::Arc;
+use std::time::Duration;
 use ui_blitz::{
     AppConfig, AppHandle, AppId, Decorations, FileRoots, LastWindowClosed, WindowSize, WindowSpec,
     enter_runtime, launch_idle,
 };
-use std::process::ExitCode;
-use std::sync::Arc;
-use std::time::Duration;
 
 /// How long the service stays up with no window open: long enough that a burst of actions (an
 /// agent reading three keys) starts it once, short enough that nothing idles all session.

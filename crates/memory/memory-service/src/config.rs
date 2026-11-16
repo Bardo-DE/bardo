@@ -1,5 +1,5 @@
 //! The two TOML files memoryd writes: `memory.toml` (the rule set) and `spaces.toml`, as text.
-//! Reading and writing the files is `almanac-host`.
+//! Reading and writing the files is `memory-host`.
 
 use memory_core::{RuleSet, SpaceMeta};
 use serde::{Deserialize, Serialize};

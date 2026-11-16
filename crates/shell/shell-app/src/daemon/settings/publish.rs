@@ -1,10 +1,10 @@
 //! The settings the daemon holds: the one watch channel every surface and policy follows, fed by
 //! the file watch and by `sill reload`.
 
-use ui_settings::Store;
 use layer_shell_host::HostEvent;
 use shell_settings::ShellFile;
 use tokio::sync::watch;
+use ui_settings::Store;
 
 use crate::daemon::msg::ShellMsg;
 
@@ -33,10 +33,10 @@ pub fn publish_watched(settings_tx: &watch::Sender<ShellFile>, event: &HostEvent
 mod settings_publish_tests {
     use std::time::Duration;
 
-    use ui_blitz::TokioSpawner;
     use layer_shell_host::HostEvent;
     use shell_settings::ShellFile;
     use tokio::sync::watch;
+    use ui_blitz::TokioSpawner;
 
     use super::publish_watched;
     use crate::daemon::msg::ShellMsg;

@@ -4,10 +4,10 @@
 //! planner's words or for an instruction.
 
 use crate::planner::PlanFault;
-use agent_loop::ModelOutput;
 use action_core::{HandleShape, PlannerView, ReplyFault};
 use action_manifest::{ArgsFault, Why};
 use action_vocab::{Handle, ParamName};
+use agent_loop::ModelOutput;
 use inference_core::ToolCallPart;
 use serde_json::Value as Json;
 

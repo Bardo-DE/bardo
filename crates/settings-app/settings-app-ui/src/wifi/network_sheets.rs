@@ -1,8 +1,8 @@
 //! The sheets that forget a network, and join one that does not announce its name.
 
 use crate::copy::wifi::{forget_body, forget_title, hidden_security, other_help, other_title};
-use settings_app_model::{HiddenForm, HiddenSecurity, WifiInput};
 use dioxus::prelude::*;
+use settings_app_model::{HiddenForm, HiddenSecurity, WifiInput};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::menus::pop_up_button::PopUpButton;

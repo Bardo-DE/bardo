@@ -3,11 +3,11 @@
 //! back. Every case skips, with a note, where no GPU adapter opens (CI without one).
 
 use dioxus::prelude::*;
+use std::sync::{Arc, Mutex};
 use ui_blitz::{
     PixelFormat, Pixels, Sampling, TexelRect, TextureFit, TextureHandle, TextureLayer, use_gpu,
 };
 use ui_harness::{Backdrop, Backend, Harness, HarnessConfig, Viewport};
-use std::sync::{Arc, Mutex};
 
 /// One layer's box is this many pixels square.
 const BOX: u32 = 100;

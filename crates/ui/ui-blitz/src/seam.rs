@@ -1,8 +1,8 @@
-//! The parts a headless Blitz host wires a document from: `ds-harness` builds its document out of
+//! The parts a headless Blitz host wires a document from: `ui-harness` builds its document out of
 //! exactly what a window's does (the providers, the frame bookkeeping, the edit and focus
-//! wiring), so a test runs the code production runs. All of it is ds-blitz's own: it names `ds`
+//! wiring), so a test runs the code production runs. All of it is ui-blitz's own: it names `ds`
 //! types or the window's wiring. What was portable (the hover repair, fonts, pixel snap, the GPU
-//! device choice) is `blitz-kit`, which `ds-harness` uses directly. An app has no use for these;
+//! device choice) is `blitz-embed`, which `ui-harness` uses directly. An app has no use for these;
 //! it uses `launch`. Behind the `testing` feature, which has no stability promise.
 
 pub use crate::blitz_host::{Provided, Wiring};

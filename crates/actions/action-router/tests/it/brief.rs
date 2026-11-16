@@ -3,18 +3,16 @@
 //! session as the person's own; nothing a planner or an app says makes them so.
 
 use crate::support::*;
-use companion_model::helper::JobRefusal;
+use account_core::consent::{Decision, Grant};
+use account_core::{DataClass, GrantId};
 use action_core::*;
 use action_fake::{FakeSeams, ScriptedConfirmer, host_companion};
 use action_gate::companion_names::{BRIEF_CONFIRM, HELPER_POST_JOB};
-use permission_core::{
-    ActionGrantKey, ActionMatch, COMPANION_APP, GrantCaller, GrantTarget,
-};
 use action_router::{GrantStore, Router};
 use action_vocab::{ActionRef, CallRequest, Handle, Origin, TargetValue, Value};
 use action_wire::{IntentsReply, IntentsRequest};
-use account_core::consent::{Decision, Grant};
-use account_core::{DataClass, GrantId};
+use companion_model::helper::JobRefusal;
+use permission_core::{ActionGrantKey, ActionMatch, COMPANION_APP, GrantCaller, GrantTarget};
 use provenance::{
     ActionName, AgentRef, Effect, Label, Labelled, ModelRole, SessionId, Source, SpaceScope,
     UnixSeconds,

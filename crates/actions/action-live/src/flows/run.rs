@@ -4,7 +4,6 @@ use super::{Evidence, Flow, FlowReport, UndoCheck, judge, setup, transcript};
 use crate::hostile::at_rest;
 use crate::warm::WarmFault;
 use crate::warm_bus::warm_world;
-use companion_wire::AnswerWire;
 use action_accept::confirm::ByEffect;
 use action_accept::drive::Launcher;
 use action_accept::keys_home::KeysHome;
@@ -12,8 +11,9 @@ use action_accept::provider::{Focus, Sending};
 use action_accept::things::App;
 use action_accept::world::{Binaries, Consent, ModelSource, Options, World};
 use action_core::ModelExchange;
-use agent_session::SheetChoice;
 use action_wire::JournalFilter;
+use agent_session::SheetChoice;
+use companion_wire::AnswerWire;
 use std::time::Duration;
 
 pub(crate) fn exchanges_of(world: &World) -> Vec<ModelExchange> {
@@ -100,7 +100,8 @@ pub(crate) async fn observe(
     let launcher = match script.focus {
         Focus::Nowhere => launcher,
         Focus::Thread(_) => launcher.summoned_from(
-            account_core::AppName::parse("org.quire.Mail").expect("`org.quire.Mail` is an app name"),
+            account_core::AppName::parse("org.quire.Mail")
+                .expect("`org.quire.Mail` is an app name"),
         ),
     };
     let opened = launcher.open().await;

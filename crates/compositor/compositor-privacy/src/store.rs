@@ -5,12 +5,12 @@
 
 use super::floor_files::FloorFiles;
 use compositor_core::privilege::UnixSeconds;
-use ui_helpers::{
-    NewFileMode, ReadCap, ReadError, WriteError, move_aside, read_capped, write_atomic,
-};
 use std::fmt::Debug;
 use std::os::unix::fs::{DirBuilderExt, MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
+use ui_helpers::{
+    NewFileMode, ReadCap, ReadError, WriteError, move_aside, read_capped, write_atomic,
+};
 
 /// The largest book or floor file read (the model's own limit, `MAX_FILE_BYTES`).
 pub(super) const FILE_CAP: ReadCap = ReadCap::kib(64);

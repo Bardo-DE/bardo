@@ -6,9 +6,11 @@
 use crate::bridge::Frames;
 use crate::cua_step::{self, Failed};
 use computer_use_session::CuaSession;
-use model_provider::{Provider, Tokens};
-use inference_core::{ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError};
+use inference_core::{
+    ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError,
+};
 use inference_router::local::LocalModel;
+use model_provider::{Provider, Tokens};
 
 /// Only `Screen` data may enter a computer-use session; the rule moved to
 /// `inference_router::router`, which the route and the session machine apply too.

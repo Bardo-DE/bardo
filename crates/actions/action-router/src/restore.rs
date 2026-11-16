@@ -3,16 +3,16 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
+use account_ids::Count;
 use action_context::rebuild::{number_of, rebuild};
 use action_context::state::SessionKind;
 use action_context::wal::Writer;
+use action_vocab::{CallerRole, Clock};
+use action_wire::{CallerId, IntentsRequest};
 use agent_session::{
     Claimant, LogFault, Logged, PageSize, PlanRefusal, Seq, SessionLog, Standing, may_restore_plan,
     resume_plan,
 };
-use action_vocab::{CallerRole, Clock};
-use action_wire::{CallerId, IntentsRequest};
-use account_ids::Count;
 use provenance::SessionId;
 use std::sync::Arc;
 

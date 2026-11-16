@@ -1,4 +1,4 @@
-//! porter-secrets' one error.
+//! account-secrets' one error.
 
 /// Why the store could not answer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

@@ -1,6 +1,6 @@
 [package]
 name = "agent-reader"
-description = "The quarantined reader, portable: what the reader model is asked (`reader_request`), its reply read back as a typed value under the ask's schema (`answer_of`), and `read` / `TransportReader` over any inferd-client Transport. readerd is the desktop's process around it; an app-hosted agent uses `TransportReader` in its own process."
+description = "The quarantined reader, portable: what the reader model is asked (`reader_request`), its reply read back as a typed value under the ask's schema (`answer_of`), and `read` / `TransportReader` over any inference-client Transport. readerd is the desktop's process around it; an app-hosted agent uses `TransportReader` in its own process."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

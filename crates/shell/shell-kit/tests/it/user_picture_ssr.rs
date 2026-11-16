@@ -5,15 +5,15 @@
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
+use shell_kit::emoji::id::EmojiId;
+use shell_kit::prelude::*;
+use shell_kit::user_picture::choice::{FaceFile, PictureChoice, resolve_picture};
+use shell_kit::user_picture::picture::UserPicture;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
 use ui_components::prelude::*;
-use shell_kit::emoji::id::EmojiId;
-use shell_kit::prelude::*;
-use shell_kit::user_picture::choice::{FaceFile, PictureChoice, resolve_picture};
-use shell_kit::user_picture::picture::UserPicture;
 
 fn letter() -> AvatarFace {
     AvatarFace {

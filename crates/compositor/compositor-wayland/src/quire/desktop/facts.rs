@@ -4,6 +4,7 @@
 //! publishing the same state twice sends nothing the second time.
 
 use super::{DesktopView, SUBJECT_SINCE};
+use account_core::SpaceId;
 use compositor_core::app::{AppKey, AppVisibility as Held, MenuSource};
 use compositor_core::space::SpaceContent;
 use compositor_core::window::SpacePlace;
@@ -24,7 +25,6 @@ use desktop_protocols::server::quire_window_v1::quire_window_v1::{
     Emphasis, PlacementMark, WindowRole,
 };
 use desktop_protocols::vocab::{self, WireCode};
-use account_core::SpaceId;
 use smithay::reexports::wayland_server::Resource;
 use smithay::reexports::wayland_server::protocol::wl_output::WlOutput;
 use std::collections::BTreeMap;

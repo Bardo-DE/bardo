@@ -24,7 +24,7 @@ the world drops. No environment variable turns it on: the library reads none.
 | accountd (porter) | the packaged binary, built the same way from `../porter` with `--features test-keys,test-proc-root`; it holds the AI keys and starts before inferd, which asks it for them. `env_clear`, scratch dirs, `ACCOUNTD_KEYS=file:<scratch>/keys/accountd.keys` (or the key home's file), `ACCOUNTD_PROC_ROOT=<scratch>/proc`, `ACCOUNTD_TAILSCALE_SOCKET` at a scratch path. Callers by unit in `<scratch>/system/accountd-callers.toml`, named by `PORTER_SYSTEM_CALLERS` (inferd is the `ai_broker`; a row for the agent launcher) |
 | inferd (porter) | the packaged binary, built the same way from `../porter` with `--features test-proc-root`; `INFERD_PROC_ROOT=<scratch>/proc`; `inferd.toml` in the scratch config names the replay engine `scripted` (the cassette) and picks it for every text tier (`[ai.model.text]`); the callers by unit (`[apps]`: memoryd, intentd, companiond, readerd) are `<scratch>/system/inferd-callers.toml`, named by `PORTER_INFERD_CALLERS` |
 | caller identity | every daemon reads the callers' `<scratch>/proc/<pid>/cgroup` and the unit's main pid in `<scratch>/proc/units/`, which `World` writes for each daemon it spawns (`.../app.slice/<name>.service`) and for the test process as the shell (`sill.service`, its main process); the daemons' system callers files are the shipped `dist/*-callers.toml` copied to `<scratch>/system/`; an app is `.../app-<App>-1.scope` (`Cgroup::AppScope`, `as_app`), docket-acp is `docket-acp.scope` |
-| the bus | `docket-testbus`'s `dbus-daemon`, killed by PID on drop, with a watchdog if the test dies |
+| the bus | `action-testbus`'s `dbus-daemon`, killed by PID on drop, with a watchdog if the test dies |
 
 ## What is scripted
 

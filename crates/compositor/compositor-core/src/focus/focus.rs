@@ -3,8 +3,8 @@
 use super::{Press, PressRoute};
 use crate::app::AppKey;
 use crate::ids::{OutputKey, WindowId};
-use desktop_protocols::vocab::{ActorKind, Attention, Emphasis};
 use account_core::SpaceId;
+use desktop_protocols::vocab::{ActorKind, Attention, Emphasis};
 
 /// Who is active and which windows are key and main (03 A1, A2).
 #[derive(Debug, Clone, PartialEq, Eq)]

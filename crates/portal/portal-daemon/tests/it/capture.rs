@@ -1,5 +1,5 @@
-use portal_daemon::capture::{CaptureError, CaptureSource, FakeCapture, FrameData};
 use portal_core::Extent;
+use portal_daemon::capture::{CaptureError, CaptureSource, FakeCapture, FrameData};
 
 const SIZE: Extent = Extent {
     width: 4,
@@ -28,8 +28,8 @@ fn a_fake_serves_its_frames_in_order_then_ends() {
 
 #[test]
 fn a_waiting_read_steps_over_a_quiet_spell_and_a_timed_read_reports_it() {
-    use std::time::Duration;
     use portal_daemon::capture::Arrival;
+    use std::time::Duration;
 
     let frame = |n: u64| {
         FakeCapture::solid(SIZE, 1)
@@ -95,10 +95,10 @@ fn the_memory_of_a_picture_is_used_again_clean_and_within_a_bound() {
 /// portal's own, and the connection it hands out is the one used.
 #[test]
 fn a_connection_the_compositor_hands_out_is_the_way_in() {
+    use portal_daemon::capture::{DisplayName, FakeLine, Route};
     use std::io::{Read, Write};
     use std::os::unix::net::UnixStream;
     use std::sync::Arc;
-    use portal_daemon::capture::{DisplayName, FakeLine, Route};
 
     let line = Arc::new(FakeLine::granting());
     let display = DisplayName::session().with_portal_line(line.clone());
@@ -118,8 +118,8 @@ fn a_connection_the_compositor_hands_out_is_the_way_in() {
 /// session's own display, as it did before the compositor handed out connections.
 #[test]
 fn no_connection_from_the_compositor_falls_back_to_the_sessions_display() {
-    use std::sync::Arc;
     use portal_daemon::capture::{DisplayName, FakeLine, Route};
+    use std::sync::Arc;
 
     let cases = [
         ("nobody owns the name", FakeLine::unowned()),
@@ -140,8 +140,8 @@ fn no_connection_from_the_compositor_falls_back_to_the_sessions_display() {
 /// A display named by its socket path is used as given; the compositor is not asked.
 #[test]
 fn a_display_named_by_path_is_not_asked_of_the_compositor() {
-    use std::sync::Arc;
     use portal_daemon::capture::{DisplayName, FakeLine, Route};
+    use std::sync::Arc;
 
     let line = Arc::new(FakeLine::granting());
     let display = DisplayName::at("/run/user/1000/wayland-9").with_portal_line(line.clone());
@@ -187,9 +187,9 @@ fn display_behind_a_line() -> (
     std::sync::Arc<portal_daemon::capture::FakeLine>,
     portal_daemon::capture::DisplayName,
 ) {
+    use portal_daemon::capture::{DisplayName, FakeLine};
     use std::sync::Arc;
     use std::time::{Duration, Instant};
-    use portal_daemon::capture::{DisplayName, FakeLine};
 
     let line = Arc::new(FakeLine::granting());
     let waiting = Arc::clone(&line);
@@ -211,8 +211,8 @@ fn display_behind_a_line() -> (
 /// once, when it first needs one, and every step runs on what it got.
 #[test]
 fn every_step_of_a_job_runs_on_the_one_connection_the_line_hands_out() {
-    use portal_daemon::capture::{CaptureError, ExtCapture, Job};
     use portal_core::CastSource;
+    use portal_daemon::capture::{CaptureError, ExtCapture, Job};
 
     let (line, display) = display_behind_a_line();
     let job = Job::new(&display);
@@ -232,9 +232,9 @@ fn every_step_of_a_job_runs_on_the_one_connection_the_line_hands_out() {
 /// A screen-cast start with two streams: the lookups and both streams are one job.
 #[test]
 fn a_share_of_two_streams_asks_the_line_once() {
+    use portal_core::{CastSource, CursorMode};
     use portal_daemon::capture::{CaptureError, Job};
     use portal_daemon::screencast::run::{OpenError, Share};
-    use portal_core::{CastSource, CursorMode};
 
     let (line, display) = display_behind_a_line();
     let job = Job::new(&display);
@@ -263,8 +263,8 @@ fn public_display_may_exist() -> bool {
 /// socket once, not once per step.
 #[test]
 fn a_refused_line_sends_the_whole_job_to_the_public_socket_once() {
-    use std::sync::Arc;
     use portal_daemon::capture::{CaptureError, DisplayName, FakeLine, Job};
+    use std::sync::Arc;
 
     if public_display_may_exist() {
         eprintln!("skipped: a public Wayland display may be reachable, and tests do not use it");

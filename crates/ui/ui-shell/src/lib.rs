@@ -2,7 +2,7 @@
 //! missing-helper sheet, the confirm card, with their sheets, which `kits()` and `stylesheet()` add
 //! to the design system's. Every part is cross-platform: an app takes this crate for them. The
 //! surfaces only our desktop shell draws (bar, dock, control center, lock, switcher, OSD,
-//! notifications, widgets and the rest) live in sill's `sill-shell-kit`.
+//! notifications, widgets and the rest) live in sill's `shell-kit`.
 
 pub mod accounts;
 pub mod confirm;

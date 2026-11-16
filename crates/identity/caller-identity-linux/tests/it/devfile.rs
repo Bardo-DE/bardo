@@ -1,7 +1,7 @@
 //! Loading a developer rows file (feature `dev-rows`): the person's own plain file, nobody else's.
 
-use caller_identity_linux::{FixtureProc, LoadError, TABLE_FILE_CAP, TableFiles};
 use caller_identity_core::{FileTrust, RowOrigin, Table, Uid, Writer};
+use caller_identity_linux::{FixtureProc, LoadError, TABLE_FILE_CAP, TableFiles};
 use std::path::Path;
 
 const FILE: &str = "/home/p/scratch/dev-callers.toml";

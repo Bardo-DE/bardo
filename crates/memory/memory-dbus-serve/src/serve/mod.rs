@@ -11,7 +11,7 @@ mod record;
 mod signal;
 
 pub use control::ControlObject;
-pub use memory_recall::RecallObject;
+pub use recall::RecallObject;
 pub use record::RecordObject;
 pub use signal::{Signal, emit, emit_to};
 

@@ -1,5 +1,5 @@
 //! Output policy (what P0-F1-output makes pass): the first-sight scale, mode choice and
-//! placement. The scale rows are sill's PreferWhole table (`sill-model` `displays/scale.rs`),
+//! placement. The scale rows are sill's PreferWhole table (`shell-model` `displays/scale.rs`),
 //! in 120ths.
 
 use crate::support;
@@ -9,9 +9,9 @@ use compositor_core::output::{
     ModeWish, OutputConfig, SavedOutputs, ScalePolicy, first_sight_scale, pick_mode, place_outputs,
 };
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use std::collections::BTreeMap;
 use support::{display, headless, mode};
+use ui_core::geometry::scale::Scale;
 
 const PREFERRED: bool = true;
 const OTHER: bool = false;

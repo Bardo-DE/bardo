@@ -14,7 +14,7 @@
 //!   for the helper: its "always" is a grant for that helper alone.
 //! - `ConversationTurns`: the seam through which the person's words in a helper's conversation reach
 //!   the daemon that keeps the helper, which runs the turn; the editor carries words in and out.
-//! - The other direction (S4), an external agent as a session backend, is `docket-acp-host`.
+//! - The other direction (S4), an external agent as a session backend, is `agent-acp-host`.
 //!
 //! The protocol's wire types and the JSON-RPC connection, both directions, are the official
 //! `agent-client-protocol` SDK's (Apache-2.0); only the capped line source under it is ours.

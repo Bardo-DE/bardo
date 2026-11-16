@@ -1,13 +1,13 @@
 //! The sync-hold loop: syncd's `NeedsConfirmation` signals, the notifications server's answers
 //! and the commands, stepping [`SyncHoldState`] and posting its notices.
 
-use sync_bus::SyncProxy;
 use shell_model::launch::{LaunchCommand, SettingsOpen};
 use shell_model::notifications::Said;
 use shell_model::sync_hold::{
     Dataset, SyncHoldCommand, SyncHoldEffect, SyncHoldEvent, SyncHoldState, dataset_of, shown_for,
     step,
 };
+use sync_bus::SyncProxy;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::UnboundedReceiver;
 use zbus::Connection;

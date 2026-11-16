@@ -1,8 +1,8 @@
 //! The service's news: its two signals, and its coming and going.
 
-use sync_bus::StorageProxy;
 use files_core::{CloudNews, DriveId};
 use futures_util::StreamExt;
+use sync_bus::StorageProxy;
 
 use super::decode;
 use files_fs::News;

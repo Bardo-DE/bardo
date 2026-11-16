@@ -1,5 +1,5 @@
 //! The client's integration tests: one executable, one module per pane, each a flow over the
-//! in-memory links of `detent-system` (feature `testing`). A bus is never reached: the client is
+//! in-memory links of `settings-app-system` (feature `testing`). A bus is never reached: the client is
 //! built over `BusSource::Absent`.
 
 mod accounts;

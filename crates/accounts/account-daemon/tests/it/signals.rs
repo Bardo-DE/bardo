@@ -3,12 +3,12 @@
 
 use crate::common;
 
-use common::*;
-use ui_settings::schema::KeyPath;
 use account_callers::CallerRole;
 use account_dbus::accounts::AccountProxy;
 use account_dbus::accounts::account_path;
+use common::*;
 use std::time::Duration;
+use ui_settings::schema::KeyPath;
 use zbus::zvariant::ObjectPath;
 
 /// A connection that has called accountd as `who`, so that it is among those told.

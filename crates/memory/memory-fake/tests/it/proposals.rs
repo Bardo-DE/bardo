@@ -2,15 +2,15 @@
 //! can be discarded or superseded, records its outcome instead of vanishing, and the applied
 //! view lists what was applied and what was skipped. Scratch Space, scripted drafts, no clock.
 
+use chrono::{Offset, Utc};
 use memory_core::*;
 use memory_fake::*;
+use memory_files_format::{Block, TopicFile, render_topic};
 use memory_service::Caller;
 use memory_service::{MemoryService, ServiceEvent};
 use memory_settings::{ConsolidateApply, MemorySettings};
 use memory_store::{Vault, VaultPath};
 use memory_tidy::{ConsolidateError, Draft};
-use chrono::{Offset, Utc};
-use memory_files_format::{Block, TopicFile, render_topic};
 
 type Service = MemoryService<FakeBackend>;
 

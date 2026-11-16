@@ -4,13 +4,13 @@
 //! by asking `Identities1`). This file is the pure half: the events between two registries and
 //! who hears each. `publish` is the live half (the signals sent).
 
-use ui_settings::schema::KeyPath;
 use account_callers::CallerRole;
 use account_core::AccountId;
 use account_ids::word::word as word_of;
 use account_service_core::registry::Registry;
 use account_settings::accounts::{Key, expiry_text, path, since_text};
 use account_settings::{EXPIRES, LABEL, REVOKE, SCOPE, SINCE, STATE};
+use ui_settings::schema::KeyPath;
 
 /// One change a client may be told of.
 #[derive(Debug, Clone, PartialEq, Eq)]

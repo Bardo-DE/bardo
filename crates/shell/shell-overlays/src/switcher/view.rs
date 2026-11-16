@@ -10,12 +10,12 @@
 //! `onhover` / `onactivate` as `Hover` / `Click`. Style nothing under `.ds-switcher*`.
 
 use dioxus::prelude::*;
-use ui_components::focus::soon::focus_soon;
-use ui_components::prelude::*;
 use layer_shell_host::{OutputInfo, SurfaceHandle};
 use shell_kit::prelude::*;
 use shell_kit::switcher::app_switcher::AppKey;
 use shell_kit::switcher::app_switcher::SwitcherApp as Tile;
+use ui_components::focus::soon::focus_soon;
+use ui_components::prelude::*;
 
 use super::io::{SwitcherCtx, use_switcher};
 use super::pointer::At;
@@ -23,14 +23,14 @@ use super::session::{Session, Windows};
 use super::surface::PANEL_ID;
 use super::tiles::{key_of, output_width, tiles};
 use super::watch::ChordWatch;
-use ui_behaviour::switcher::{Phase, SwitcherParams};
-use shell_services::AppsService;
 use shell_kit::switcher::switcher_fit::SwitcherMetrics;
+use shell_services::AppsService;
 use shell_ui_kit::app_icons::{ICON_SIDE, IconContext, TileIcons, icon_look, use_icon_resolver};
 use shell_ui_kit::hooks::{use_appearance, use_service};
 use shell_ui_kit::links::SwitcherLink;
 use shell_ui_kit::look::use_active_look;
 use shell_ui_kit::root::{SurfaceRoot, use_host_scale};
+use ui_behaviour::switcher::{Phase, SwitcherParams};
 
 /// The switcher's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
 pub const SWITCHER_CSS: &str = include_str!("style.css");

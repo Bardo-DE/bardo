@@ -2,8 +2,8 @@
 //! watched for new screenshots. macOS keeps its screenshot
 //! shortcuts under Keyboard, hence `Page::KeyboardAndShortcuts`. All Advanced.
 
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
+use ui_settings::schema::Page;
 
 /// Screenshots.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]

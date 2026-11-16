@@ -8,7 +8,7 @@
 
 use dioxus::prelude::*;
 
-/// The tag `ds-blitz` knows the frame by.
+/// The tag `ui-blitz` knows the frame by.
 const FRAME_TAG: &str = "anyview-peek-markdown";
 
 /// The frame's own stylesheet: literal values, because a frame's document cannot read the

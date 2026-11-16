@@ -4,9 +4,9 @@
 //! no model tap) and no environment variable can change either. The world sets these variables
 //! on the processes it spawns (`world::spawn`).
 
+use account_callers::ProcRoot;
 use action_dbus::InferWatch;
 use action_trace::Tap;
-use account_callers::ProcRoot;
 use std::path::PathBuf;
 
 /// The variable that names the file the model tap appends to (prompts go to disk).

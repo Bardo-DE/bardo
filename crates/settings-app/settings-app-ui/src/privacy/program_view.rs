@@ -3,11 +3,11 @@
 
 use crate::copy::privacy::{SET_BY_ADMINISTRATOR, power_label, program_name, standing_label};
 use crate::key_row::row_id;
+use dioxus::prelude::*;
 use settings_app_model::{
     CellKind, PowerCell, PowerStanding, PrivacyInput, PrivacyProgram, PrivacyReady, ProgramBook,
     ProgramLook, ProgramSubject,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::menus::pop_up_button::PopUpButton;

@@ -2,8 +2,8 @@
 //! and a reach, and the limit a generated rule puts into a ruling.
 
 use action_core::Invocation;
-use permission_core::{AskReason, LimitLevel, LimitNote, Limited, Ruling, StandingGrantId};
 use action_vocab::{ParamName, Value};
+use permission_core::{AskReason, LimitLevel, LimitNote, Limited, Ruling, StandingGrantId};
 use provenance::Effect;
 
 fn param(name: &str) -> ParamName {

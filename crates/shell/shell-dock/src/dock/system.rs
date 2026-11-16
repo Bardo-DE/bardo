@@ -2,11 +2,11 @@
 //! holds anything, whether an app starts at login, and turning that on or off. The folders are
 //! the process's own (`Dirs::from_process`); the changes run off the UI thread.
 
-use ui_components::prelude::Availability;
 use shell_launcher::AppId;
 use shell_services::autostart;
 use shell_services::env::Dirs;
 use shell_services::trash;
+use ui_components::prelude::Availability;
 
 use crate::dock::context_menu::Checked;
 use crate::dock::pick::LoginChange;

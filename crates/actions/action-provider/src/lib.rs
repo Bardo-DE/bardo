@@ -1,7 +1,7 @@
 //! The app side of `org.quire.Intents1`. An app implements [`IntentProvider`] and answers the
-//! router's calls; `docket-ds` answers [`ContextSource`] and [`SummonTarget`] for a quire app.
+//! router's calls; `action-ui-adapter` answers [`ContextSource`] and [`SummonTarget`] for a quire app.
 //! With the `dbus` feature, [`serve`] and [`serve_on`] put the provider on the app's own bus name.
-//! The caller side (`Intents` over a `Transport`) is `docket-client`.
+//! The caller side (`Intents` over a `Transport`) is `action-client`.
 
 #[cfg(feature = "dbus")]
 mod bus;

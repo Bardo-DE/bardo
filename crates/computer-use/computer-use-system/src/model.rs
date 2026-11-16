@@ -1,23 +1,23 @@
 //! The computer-use model over inferd.
 
 use crate::frame_fd::frame_fd;
+use account_capability::CuaEnv;
+use account_capability::Tier;
+use account_core::DataClass;
+use account_ids::Tokens;
+use account_match::CuaNeed;
+use account_match::Need;
 use computer_use_run::{
     CuaModel, CuaModelError, FrameAttachment, ModelReach, ModelSight, StepEvent, StepSink,
     ThoughtText,
 };
 use inference_client::{OpenOptions, Transport, TransportError};
-use account_capability::CuaEnv;
-use account_capability::Tier;
-use account_core::DataClass;
-use account_ids::Tokens;
 use inference_core::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, Declined,
     DeclinedBecause, FrameLayout, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest,
     InferSession, NO_MODEL_SEES_SCREEN, PlaceRow, PlaceState, Readiness, ServedBy, SessionError,
     Sight, TokenUsage, cannot_see_screen,
 };
-use account_match::CuaNeed;
-use account_match::Need;
 use std::collections::BTreeSet;
 
 /// A [`CuaModel`] over one inferd session (`Need::ComputerUse`, class `Screen`): `CuaBegin`

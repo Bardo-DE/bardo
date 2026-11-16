@@ -7,14 +7,14 @@
 //! [`crate::webdav::webdav_replica`] cannot express (it takes a folder below the endpoint), so
 //! the replica is built here over the collection's own URL; the relay only checks the origin.
 
-use sync_core::Clock;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http_relay::{RelayDial, RelayHttp, RelayLimits};
 use account_ids::WebUrl;
-use std::sync::Arc;
 use replica_webdav::WebDavReplica;
+use std::sync::Arc;
+use sync_core::Clock;
 
 /// The HTTP seam over relays to `endpoint`.
 pub fn pim_http<T: GrantsLink>(

@@ -1,5 +1,5 @@
 //! The one door the window uses. A [`Client`] holds every service the Settings app reaches (the
-//! links of `detent-system`) and the bus they are looked for on; each pane's handle comes from it,
+//! links of `settings-app-system`) and the bus they are looked for on; each pane's handle comes from it,
 //! and a handle is a live value to draw and the commands to give it. The window never touches a
 //! link, a deadline or a follow loop.
 

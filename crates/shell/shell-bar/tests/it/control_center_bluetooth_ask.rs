@@ -8,10 +8,10 @@ use crate::cc_support;
 
 use cc_support::details::{center, ms, open, press};
 use cc_support::live::Report;
+use shell_model::bluetooth::{BluetoothCommand, BtPower};
 use ui_components::prelude::*;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Harness, Input};
-use shell_model::bluetooth::{BluetoothCommand, BtPower};
 
 /// The Bluetooth tile: the grid's second module (Wi-Fi, Bluetooth, Focus, ...).
 const TILE: &str = ".ds-module-grid > .ds-module-tile:nth-child(2)";

@@ -1,5 +1,5 @@
 //! The screen rules: the phrases, window classes, commit words and sensitive titles the run
-//! checks a screen against, as plain data. cua-run reads no file: the host reads the shipped
+//! checks a screen against, as plain data. computer-use-run reads no file: the host reads the shipped
 //! `dist/screen-rules.toml` (or the administrator's replacement) and hands the parsed [`Rules`]
 //! in, through the seams ([`crate::Parts`]) and the run's environment ([`crate::RunEnv`]).
 

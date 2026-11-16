@@ -3,12 +3,12 @@
 //! (`privacy.<power>.<id>` with `.forget` beside a person's answer, a read-out for an
 //! administrator's) and writing down what it was asked.
 
+use std::sync::{Arc, Mutex};
 use ui_settings::live::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict};
 use ui_settings::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Note, Page, Section,
 };
-use std::sync::{Arc, Mutex};
 
 /// The powers the compositor names in a row's path.
 const POWERS: [&str; 7] = [

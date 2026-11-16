@@ -4,8 +4,8 @@
 //! rather than from the item.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
+use ui_components::prelude::*;
 
 use super::menus::BarMenu;
 use super::status_item::StatusIcon;

@@ -3,11 +3,11 @@
 
 use companion_wire::{HelperCardView, JobLine, JobShown};
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::prelude::*;
 use shell_model::companion::{
     HelpersModel, HelpersMsg, Open, job_answer, job_prompt, job_words, needs_sign_in_line,
 };
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::prelude::*;
 
 use super::agent::sign_in_row;
 use super::say::{Say, use_say};

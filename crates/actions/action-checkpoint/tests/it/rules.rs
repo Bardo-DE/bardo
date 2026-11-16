@@ -1,10 +1,10 @@
 //! `retention`, `next_id` and `decide`, as tables.
 
-use sandbox::AbsPath;
+use account_ids::{Count, UnixSeconds};
 use action_checkpoint::{Decision, Saved, TreeId, WorkRoot, decide, next_id, retention};
 use action_core::{CheckpointEvent, CheckpointId, CheckpointNote, Retention, Rewind, SkipReason};
 use action_vocab::{Days, TurnId, Workspace};
-use account_ids::{Count, UnixSeconds};
+use sandbox::AbsPath;
 
 const DAY: i64 = 86_400;
 const NOW: i64 = 100 * DAY;

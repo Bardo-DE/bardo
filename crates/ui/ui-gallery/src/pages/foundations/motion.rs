@@ -3,12 +3,12 @@
 
 use crate::pages::Section;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::motion::recipe::{Fill, Iteration};
 use ui_components::prelude::*;
 use ui_components::style::tokens::delay::DelayToken;
 use ui_components::style::tokens::easing::EasingToken;
 use ui_components::style::tokens::timing::DurationToken;
-use std::time::Duration;
 
 /// `170ms`, `5.2s`.
 pub fn millis(duration: Duration) -> String {

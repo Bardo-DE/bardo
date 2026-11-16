@@ -9,9 +9,9 @@
 //! multi-threaded filters, so a case that reads `Ignored` means a fork regressed.
 
 use dioxus::prelude::*;
+use image::RgbaImage;
 use ui_components::prelude::*;
 use ui_harness::{Backend, Clock, Harness, HarnessConfig, Viewport};
-use image::RgbaImage;
 
 const VIEW: Viewport = Viewport {
     width: 720,

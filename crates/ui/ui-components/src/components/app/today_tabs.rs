@@ -12,12 +12,12 @@ use crate::components::lists::row::row::Row;
 use crate::components::lists::row::shape::{Expiry, RowShape};
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::time::{Duration, Instant};
 use ui_core::press::Press;
 use ui_core::time::clock::{now, sleep};
 use ui_core::vocab::RowState;
 use ui_style::icon::Icon;
 use ui_style::tokens::control_size::SidebarSize;
-use std::time::{Duration, Instant};
 
 /// How little time a tab has left before it is drawn quieter.
 const SOON: Duration = Duration::from_secs(30 * 60);

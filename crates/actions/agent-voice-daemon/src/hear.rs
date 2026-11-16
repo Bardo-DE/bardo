@@ -7,13 +7,13 @@ use crate::frames::wire_level;
 use crate::link::LinkEvent;
 use crate::usage::UseSource;
 use crate::warm::Warm;
+use agent_voice_audio::AudioDevice;
+use agent_voice_loop::{Transcript, UtteranceEvent, UtteranceState};
+use agent_voice_wire::{HeardSegment, HeardTail, HeardText, VoiceFault};
 use inference_client::Transport;
 use inference_core::{HeardDelta, InferEvent, InferReply, ModelError};
 use speech_provider::{FRAME_SAMPLES, Frame512};
 use speech_vad::level_of;
-use agent_voice_audio::AudioDevice;
-use agent_voice_loop::{Transcript, UtteranceEvent, UtteranceState};
-use agent_voice_wire::{HeardSegment, HeardTail, HeardText, VoiceFault};
 
 impl<D: AudioDevice + 'static, T: Transport + 'static, W: Warm, U: UseSource> Core<D, T, W, U>
 where

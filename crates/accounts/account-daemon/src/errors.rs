@@ -41,7 +41,7 @@ impl RefusedError {
         }
     }
 
-    /// Something the bus refused while a Request object was being made (porter-sheets), under
+    /// Something the bus refused while a Request object was being made (account-sheets), under
     /// the bus's own name.
     pub(crate) fn from_request(error: fdo::Error) -> Self {
         Self::bus(error)

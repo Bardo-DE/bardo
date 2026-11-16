@@ -1,9 +1,9 @@
 //! `notifications.*` (design/22 §3.12; design/13 §13.3.6). Do Not Disturb and the banner style are on the Notifications page (§5); the rest
 //! are Advanced.
 
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 use shell_model::notifications::{Presentation, Swipe};
+use ui_settings::schema::Page;
 
 /// Notification banners.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]

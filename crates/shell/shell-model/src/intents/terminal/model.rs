@@ -65,7 +65,8 @@ pub fn parse_grant(text: &str) -> Result<ActionRef, GrantError> {
         .split_once(':')
         .ok_or_else(|| GrantError::Shape(text.to_owned()))?;
     let app = provenance::AppName::parse(app).map_err(|e| GrantError::Name(e.to_string()))?;
-    let name = provenance::ActionName::parse(action).map_err(|e| GrantError::Name(e.to_string()))?;
+    let name =
+        provenance::ActionName::parse(action).map_err(|e| GrantError::Name(e.to_string()))?;
     Ok(ActionRef { app, name })
 }
 

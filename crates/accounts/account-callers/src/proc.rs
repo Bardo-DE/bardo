@@ -3,8 +3,8 @@
 use super::standing::caller_of;
 use super::translate::{manager_need, peephole_table};
 use super::{Caller, CallerTable, Callers};
-use caller_identity_dbus::{BusPeers, ManagerCheck};
 use caller_identity_core::Standing;
+use caller_identity_dbus::{BusPeers, ManagerCheck};
 use zbus::Connection as BusConnection;
 
 /// Callers by process: peephole holds the process behind a sender (a pidfd), reads what `/proc`

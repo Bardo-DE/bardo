@@ -20,6 +20,8 @@ use cases::{CASES, Case};
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
 use dom_time::TimedDom;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::app::peek::Peek;
 use ui_components::host::measure::Anchor;
@@ -28,8 +30,6 @@ use ui_components::stack::layer_stack::Dismissal;
 use ui_components::stack::layer_stack::LayerId;
 use ui_components::stack::layer_stack::LayerStack;
 use ui_style::appearance::peek::PeekMode;
-use std::cell::Cell;
-use std::time::Duration;
 
 #[derive(Props, Clone)]
 struct HostProps {

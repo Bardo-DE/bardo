@@ -1,11 +1,11 @@
 //! The one test that makes a real device. It needs `/dev/uinput` and is never run in the jail: it is
 //! on the owner's manual queue (`sill/docs/manual-checks.md`).
 
-use std::time::{Duration, Instant};
 use input_broker_daemon::backend::real::UinputBackend;
 use input_broker_daemon::backend::{Backend, Device};
 use input_broker_wire::codes::{ABS_MT_SLOT, EV_ABS};
 use input_broker_wire::{Create, Event, plan};
+use std::time::{Duration, Instant};
 
 /// Whether an input device called `name` is registered with the kernel.
 fn registered(name: &str) -> bool {

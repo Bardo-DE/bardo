@@ -6,7 +6,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Data, DeriveInput, Fields};
 
-/// `impl <ds-core>::word::Word for X`, or the reason `X` cannot have one.
+/// `impl <ui-core>::word::Word for X`, or the reason `X` cannot have one.
 pub(crate) fn expand(input: &DeriveInput) -> syn::Result<TokenStream> {
     let Data::Enum(data) = &input.data else {
         return Err(syn::Error::new_spanned(

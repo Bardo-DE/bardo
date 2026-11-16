@@ -5,13 +5,13 @@
 //! pointer leaves.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::overlays::hover_card::intent::{HoverAnchor, use_hover_intent};
 use ui_components::host::measure::MountedRef;
 use ui_components::motion::hover_intent::HoverProfile;
 use ui_components::prelude::*;
 use ui_components::stack::hover_hub::HoverKey;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

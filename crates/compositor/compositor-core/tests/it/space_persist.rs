@@ -3,6 +3,7 @@
 
 use crate::support::driver::{Op, fresh, last, plug, run, run_from};
 use crate::support::{headless, ms, space_id};
+use account_core::SpaceId;
 use compositor_core::OutputKey;
 use compositor_core::settings::CasementSettings;
 use compositor_core::space::{
@@ -10,7 +11,6 @@ use compositor_core::space::{
     WorkspaceRequest,
 };
 use compositor_core::{Effect, Event, Model};
-use account_core::SpaceId;
 
 fn output_key(text: &str) -> OutputKey {
     serde_json::from_str::<OutputKey>(&format!("\"{text}\"")).expect("output key")
@@ -114,7 +114,10 @@ fn a_damaged_file_is_trimmed_to_what_casement_would_have_written() {
 
     let many: String = (0..1000).map(|n| two(&format!("s-{n:032}"), n)).collect();
     let capped = SpaceFile::parse(&many).expect("parse");
-    assert_eq!(capped.spaces.len(), compositor_core::space::MAX_STORED_SPACES);
+    assert_eq!(
+        capped.spaces.len(),
+        compositor_core::space::MAX_STORED_SPACES
+    );
 }
 
 #[test]

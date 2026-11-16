@@ -10,7 +10,7 @@
 //!
 //! The library reads no environment variable. The daemon passes in how it looks one up, so a
 //! test (or a program that runs a daemon inside itself) passes a table instead. Which `/proc` and
-//! which caller tables a daemon reads are in `porter-callers`.
+//! which caller tables a daemon reads are in `account-callers`.
 
 mod registry;
 #[cfg(feature = "watch")]

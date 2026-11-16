@@ -32,8 +32,6 @@
 use crate::Bus;
 use crate::credential::{ProcessCredential, Revoked};
 use crate::failure::{launcher_error, link_error};
-use futures_util::StreamExt;
-use futures_util::stream::select;
 use account_capability::AgentProgram;
 use account_capability::{LoginOutcome, LoginRequestId};
 use account_client::{Changes, LinkError, Malformed};
@@ -51,6 +49,8 @@ use account_wire::AccountsReply;
 use account_wire::AskKind;
 use account_wire::LauncherFault;
 use account_wire::Refusal;
+use futures_util::StreamExt;
+use futures_util::stream::select;
 
 /// Why a launcher call failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

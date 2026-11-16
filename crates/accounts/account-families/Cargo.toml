@@ -1,6 +1,6 @@
 [package]
 name = "account-families"
-description = "The registry of the protocol families: DynProvider is porter-provider's Provider as a trait object, the family that serves each provider file, and the small families (an API key, a coding agent that signs itself in, Tailscale). The families with a protocol of their own are porter-family-oauth, -generic and -nextcloud."
+description = "The registry of the protocol families: DynProvider is account-provider's Provider as a trait object, the family that serves each provider file, and the small families (an API key, a coding agent that signs itself in, Tailscale). The families with a protocol of their own are account-family-oauth, -generic and -nextcloud."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -49,14 +49,14 @@ base64 = {version = "0.22"}
 # `family_of`, `served`, `FamilyIo`), over every family it maps: nextcloud, generic, oauth,
 # api_key, agent_login and tailnet, with the system resolver.
 set = ["nextcloud", "generic", "oauth", "api_key", "agent_login", "tailnet", "dep:thiserror", "dep:account-discover", "account-discover/io", "dep:account-http-reqwest"]
-# Nextcloud (porter-family-nextcloud): Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV, Notes.
+# Nextcloud (account-family-nextcloud): Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV, Notes.
 nextcloud = ["dep:account-family-nextcloud"]
 # Generic IMAP/SMTP and DAV with a password or app password, found by autoconfig
-# (porter-family-generic). The password is tried at the incoming mail server before the account is
+# (account-family-generic). The password is tried at the incoming mail server before the account is
 # added (the relay's own login).
 generic = ["dep:account-family-generic"]
-# OAuth (porter-family-oauth): PKCE through a loopback redirect, one family for every issuer (the
-# rules of Google and Microsoft, and any issuer whose data in porter-provider's `issuers.toml`
+# OAuth (account-family-oauth): PKCE through a loopback redirect, one family for every issuer (the
+# rules of Google and Microsoft, and any issuer whose data in account-provider's `issuers.toml`
 # says who answered). Google: Calendar, People, Tasks, the Drive app folder, Photos, and Gmail
 # IMAP/SMTP XOAUTH2 for a client of the person's own. Microsoft: IMAP/SMTP XOAUTH2 and Graph.
 oauth = ["dep:account-family-oauth"]

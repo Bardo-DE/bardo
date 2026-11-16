@@ -1,7 +1,5 @@
 //! The fake issuer driven with a minimal client and the scripted browser.
 
-use base64::Engine;
-use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use account_fake::{FakeAddress, FakeServer};
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, Response, Scheme, post_form, send, serve};
@@ -9,6 +7,8 @@ use account_fake_servers::net::{Bind, Listener};
 use account_fake_servers::oauth::{Consent, FakeIssuer, IssuerEvent, TokenResult};
 use account_fake_servers::seen::{Running, Seen};
 use account_fake_servers::{follow, shipped};
+use base64::Engine;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
 

@@ -10,10 +10,10 @@ use crate::fetch::{self, Fetched};
 use crate::fsutil::remove_tree;
 use crate::problem::Problem;
 use semver::Version;
-use updater_core::{Authenticator, Emit, Offer, Outcome, Pending, ProgressGate, offer};
-use updater_root::apply::Staged;
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock, PoisonError};
 use std::time::Instant;
+use updater_core::{Authenticator, Emit, Offer, Outcome, Pending, ProgressGate, offer};
+use updater_root::apply::Staged;
 use zbus::Connection;
 
 /// A request to the engine.

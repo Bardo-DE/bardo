@@ -5,14 +5,14 @@
 //! card; and under Reduced the flight settles at Reduced's length.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::harness::settle_until;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::notifications::parts::AppMark;
 use shell_kit::notifications::swipe::NotificationSwipe;
 use shell_kit::prelude::*;
 use std::cell::Cell;
 use std::time::{Duration, Instant};
+use ui_components::prelude::*;
+use ui_harness::harness::settle_until;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 480,

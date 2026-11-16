@@ -5,9 +5,11 @@ use memory_core::{
     Fact, FactId, FactState, FactText, FactView, SourceView, ThingView, TopicPath, UseCount,
     UserText, Validity,
 };
-use ui_core::time::stamp::Stamp;
-use provenance::{Actor, AgentProgram, AppName, EntityId, EntityKey, EntityKind, Label, SystemPart};
+use provenance::{
+    Actor, AgentProgram, AppName, EntityId, EntityKey, EntityKind, Label, SystemPart,
+};
 use shell_launcher::Generation;
+use ui_core::time::stamp::Stamp;
 
 use super::helpers::HelpersModel;
 use super::{

@@ -1,5 +1,5 @@
 //! The inject grammar (11 §4.1): one command per line, each answered `ok <line>` once it
-//! reached the compositor. A superset of shell-host's `fake-input.sh`:
+//! reached the compositor. A superset of layer-shell-host's `fake-input.sh`:
 //!
 //! ```text
 //! move X Y                          absolute pointer position (global logical px; decimals round)
@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn every_fake_input_line_parses() {
-        // shell-host's `fake-input.sh` grammar, line for line (the superset's floor).
+        // layer-shell-host's `fake-input.sh` grammar, line for line (the superset's floor).
         let rows: [(&str, InjectLine); 7] = [
             (
                 "move 300 200",
@@ -211,7 +211,7 @@ mod tests {
         }
     }
 
-    /// Every command shell-host's eight acceptance scripts send through `fake-input.sh`, with the
+    /// Every command layer-shell-host's eight acceptance scripts send through `fake-input.sh`, with the
     /// shell variables filled in, and the cases of fake-input's own parser test: the grammar's floor.
     #[test]
     fn shell_hosts_fake_input_script_replays() {

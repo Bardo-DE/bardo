@@ -8,8 +8,8 @@
 //! only it can build a client's data (its key, its gone queue). Frozen at P2-Z; filled by
 //! P2-Q2.
 
-use compositor_core::policy::ConnectionRole;
 use caller_identity_core::{RoleName, roles};
+use compositor_core::policy::ConnectionRole;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 

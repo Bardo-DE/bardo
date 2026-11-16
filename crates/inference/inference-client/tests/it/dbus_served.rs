@@ -6,10 +6,6 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use common::inferd::{Behaviour, FakeInferd, Served};
-use common::served::{Gate, Route, Scripted};
-use inference_client::{DbusTransport, InferSession, Inference};
 use account_capability::CuaEnv;
 use account_capability::ModelId;
 use account_capability::{Locality, Tier};
@@ -17,14 +13,18 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Dims, Tokens};
+use account_match::Need;
+use account_match::{CuaNeed, DimsNeed, EmbedNeed};
+use common::bus::PrivateBus;
+use common::inferd::{Behaviour, FakeInferd, Served};
+use common::served::{Gate, Route, Scripted};
+use inference_client::{DbusTransport, InferSession, Inference};
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepReply, EmbedReply, EmbedRequest, EmbedRole,
     EmbedVector, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest, Readiness,
     RequestKind, ServedBy, TokenUsage,
 };
-use account_match::Need;
-use account_match::{CuaNeed, DimsNeed, EmbedNeed};
 use inference_router::session::RouteDecision;
 use std::sync::Arc;
 use tokio::sync::Notify;
@@ -193,7 +193,8 @@ async fn a_loading_engine_is_a_waiting_event_until_it_is_ready() {
 async fn a_computer_use_run_needs_its_begin_and_its_frame_rides_as_a_memfd() {
     let ack = InferReply::CuaStep(CuaStepReply::new(vec![]));
     let step_reply = InferReply::CuaStep(
-        CuaStepReply::new(vec![computer_use_action::CuaAction::Observe]).with_thought("done".into()),
+        CuaStepReply::new(vec![computer_use_action::CuaAction::Observe])
+            .with_thought("done".into()),
     );
     let scripts = vec![
         Script {
@@ -256,7 +257,10 @@ fn step_request() -> inference_core::CuaStepRequest {
     inference_core::CuaStepRequest::new(
         inference_core::StepIndex(0),
         inference_core::WindowGeometry {
-            logical: computer_use_action::Size::new(computer_use_action::Coord(1), computer_use_action::Coord(1)),
+            logical: computer_use_action::Size::new(
+                computer_use_action::Coord(1),
+                computer_use_action::Coord(1),
+            ),
             scale: computer_use_action::Scale120(120),
         },
         inference_core::FrameImage {

@@ -8,8 +8,6 @@ use crate::cc_support;
 use cc_support::{fake, live};
 use std::time::Duration;
 
-use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
-use ui_harness::{Harness, Viewport};
 use shell_bar::Bar;
 use shell_model::attempt::{Attempt, Attempts, OpStamp};
 use shell_model::battery::{Battery, Charge};
@@ -21,6 +19,8 @@ use shell_model::wifi::Radio;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::ControlCenterLink;
+use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
+use ui_harness::{Harness, Viewport};
 
 const BAR: Viewport = Viewport {
     width: 1280,

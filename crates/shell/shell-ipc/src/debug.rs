@@ -1,12 +1,11 @@
-//! Development probes, the IPC form of shell-host's per-surface debug commands and of the
+//! Development probes, the IPC form of layer-shell-host's per-surface debug commands and of the
 //! made-up inputs an acceptance script drives the daemon with. A made-up input is the real
-//! `sill-model` value the service would have received (a `Posting`, a `FakeRequest`, a
+//! `shell-model` value the service would have received (a `Posting`, a `FakeRequest`, a
 //! `FakeVerdict`). The names of surfaces, points and buttons are this wire's own words for
-//! shell-host's: this crate may not depend on shell-host (`scripts/check-boundary.sh`).
+//! layer-shell-host's: this crate may not depend on layer-shell-host (`scripts/check-boundary.sh`).
 
 use std::path::PathBuf;
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
 use shell_launcher::{AppId, PreviewKind};
 use shell_model::auth::FakeVerdict;
@@ -17,6 +16,7 @@ use shell_model::osd::OsdKind;
 use shell_model::polkit_agent::FakeRequest;
 use shell_model::units::Percent;
 use shell_model::volume::Mute;
+use ui_core::word::Word;
 
 /// A probe. Every one is answered even in a release build; the ones that act are refused there.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -38,7 +38,7 @@ pub enum DebugRequest {
         button: PointerButton,
     },
     /// `button` presses at `at` on `surface` and stays down: the first half of a real drag
-    /// (shell-host's `Inject::PointerDown`). `Pointer` moves while it is held; `PointerRelease`
+    /// (layer-shell-host's `Inject::PointerDown`). `Pointer` moves while it is held; `PointerRelease`
     /// lets go.
     PointerPress {
         surface: SurfaceName,
@@ -53,7 +53,7 @@ pub enum DebugRequest {
         button: PointerButton,
     },
     /// A key on `surface`, as if typed: it enters the surface where a real key does
-    /// (shell-host's `Inject::Key`), so the surface reads it whether or not it holds the
+    /// (layer-shell-host's `Inject::Key`), so the surface reads it whether or not it holds the
     /// compositor's keyboard focus.
     Key {
         surface: SurfaceName,
@@ -115,12 +115,12 @@ pub enum PointerButton {
 }
 
 /// The name a debug request addresses a surface by: its layer namespace (`sill-bar-DP-1`,
-/// `sill-dock-DP-1`), as shell-host's `SurfaceName` spells it.
+/// `sill-dock-DP-1`), as layer-shell-host's `SurfaceName` spells it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SurfaceName(pub String);
 
-/// A key in shell-host's spelling: a W3C key name or `Space`, then `+shift`, `+ctrl`, `+alt`
+/// A key in layer-shell-host's spelling: a W3C key name or `Space`, then `+shift`, `+ctrl`, `+alt`
 /// or `+super` (`Tab`, `ArrowDown`, `k+ctrl`, `Tab+shift`). Parsed by the daemon, which answers a
 /// failure for a name it does not know.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -169,7 +169,7 @@ pub struct RowsSection {
     pub hidden: u32,
 }
 
-/// One surface's frame statistics, the wire's form of shell-host's `FrameStats`.
+/// One surface's frame statistics, the wire's form of layer-shell-host's `FrameStats`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SurfaceStats {
     pub surface: SurfaceName,

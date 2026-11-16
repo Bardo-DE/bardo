@@ -4,6 +4,7 @@
 //! off the page and held to the style; the accessible names keep their full wording.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};
 use ui_components::components::app::row_more::RowMore;
 use ui_components::components::app::thread_row::ThreadRow;
@@ -16,7 +17,6 @@ use ui_components::components::lists::row::row::{Outline, Row};
 use ui_components::prelude::*;
 use ui_components::style::space::frame_vars::FrameVars;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

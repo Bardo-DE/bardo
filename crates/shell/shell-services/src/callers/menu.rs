@@ -50,10 +50,12 @@ fn owner_of(standing: &Standing) -> MenuOwner {
 
 #[cfg(test)]
 mod tests {
-    use caller_identity_dbus::peephole::fake::{
+    use caller_identity_dbus::caller_identity_core::{
+        AppKey, Engine, Pin, Proof, Standing, WhyNot,
+    };
+    use caller_identity_dbus::caller_identity_linux::fake::{
         introduced_program, introduced_service, introduced_unverified,
     };
-    use caller_identity_dbus::caller_identity_core::{AppKey, Engine, Pin, Proof, Standing, WhyNot};
     use shell_model::app_menu::MenuOwner;
 
     use super::owner_of;

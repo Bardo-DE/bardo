@@ -3,11 +3,11 @@
 use crate::copy;
 use crate::env::Env;
 use crate::live::use_live;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{
     EnginesInput, InstallAdvice, Restart, StartStanding, install_advice, setup_note,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::command_line::CommandLine;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};

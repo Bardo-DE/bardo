@@ -1,4 +1,4 @@
-//! Skills in the in-app agent: installed from skill directories (the `docket-skills` format) the
+//! Skills in the in-app agent: installed from skill directories (the `agent-skills` format) the
 //! app names or passes in as parsed skills. A skill adds words to the planner's view and never a
 //! grant: the call it mentions still asks on the app's sheet.
 
@@ -6,8 +6,8 @@ use crate::support::TestSheet;
 use crate::support::host::{ARCHIVE, clock, parts, thread};
 use crate::support::infer::{ScriptedInfer, call, words};
 use action_core::StepEnd;
-use agent_inapp::InAppAgent;
 use action_router::GrantStore;
+use agent_inapp::InAppAgent;
 use agent_skills::{Origin, Skill, parse};
 use serde_json::json;
 

@@ -6,12 +6,12 @@ use super::sections::{
     OutputsSection, PointerSection, SpacesSection, TouchpadSection, WindowsSection,
     XwaylandSection,
 };
-use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store, Watch};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
+use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store, Watch};
 
 /// `casement/settings.toml`: one section per `CasementSettings` part. A key it does not read
-/// is reported on load and dropped on save (ds-settings).
+/// is reported on load and dropped on save (ui-settings).
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CasementDoc {
@@ -52,7 +52,7 @@ const APP: AppName = AppName("casement");
 /// itself.
 ///
 /// `Some(dir)` stands in for `$XDG_CONFIG_HOME`, so the file is `dir/casement/settings.toml`
-/// (ds-settings' scratch root); `None` reads the environment.
+/// (ui-settings' scratch root); `None` reads the environment.
 pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
     let loaded = store(home).load::<CasementDoc>();
     for key in &loaded.unknown {
@@ -70,7 +70,7 @@ pub fn xwayland_of(home: Option<&Path>) -> XwaylandSection {
     store(home).load::<CasementDoc>().value.xwayland
 }
 
-/// `home` as the ds-settings store it names.
+/// `home` as the ui-settings store it names.
 pub(crate) fn store(home: Option<&Path>) -> Store {
     let root = home.map_or(ConfigRoot::Xdg, |dir| {
         ConfigRoot::Scratch(dir.to_path_buf())
@@ -78,7 +78,7 @@ pub(crate) fn store(home: Option<&Path>) -> Store {
     Store::new(root, APP)
 }
 
-/// A watch on `home`'s document: every settled change of the file arrives whole (ds-settings,
+/// A watch on `home`'s document: every settled change of the file arrives whole (ui-settings,
 /// debounced). It runs as a task on `spawn`.
 pub(crate) fn watch(
     home: Option<&Path>,

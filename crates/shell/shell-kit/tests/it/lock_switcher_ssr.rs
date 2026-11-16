@@ -6,6 +6,10 @@ use crate::support::specimens::Specimen;
 
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
+use shell_kit::emoji::id::EmojiId;
+use shell_kit::lock::vocab::{CapsLock, LockLook, LockUser, PromptState};
+use shell_kit::prelude::*;
+use shell_kit::switcher::app_switcher::{AppKey, SwitcherApp};
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
@@ -13,10 +17,6 @@ use ui_components::components::content::avatar::{
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
-use shell_kit::emoji::id::EmojiId;
-use shell_kit::lock::vocab::{CapsLock, LockLook, LockUser, PromptState};
-use shell_kit::prelude::*;
-use shell_kit::switcher::app_switcher::{AppKey, SwitcherApp};
 
 fn user() -> LockUser {
     LockUser::new(

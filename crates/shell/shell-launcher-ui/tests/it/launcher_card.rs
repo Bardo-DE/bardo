@@ -4,11 +4,11 @@
 
 use crate::launcher_harness;
 
-use ui_components::prelude::*;
-use ui_harness::Input;
 use launcher_harness::{Press, open, settle};
 use shell_launcher_ui::launcher::{CARD_ID, PANEL_HEIGHT};
 use shell_ui_kit::links::PanelHit;
+use ui_components::prelude::*;
+use ui_harness::Input;
 
 /// Advance until the panel has published its card (at most two seconds).
 fn measured(open: &mut launcher_harness::Open) {

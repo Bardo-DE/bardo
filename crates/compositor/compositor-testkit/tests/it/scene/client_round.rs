@@ -7,10 +7,10 @@
 use crate::scene::desk::{Desk, Dpi};
 use compositor_backend::SoftRenderer;
 use compositor_core::input::ButtonCode;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::Pattern;
 use compositor_testclient::quire::window::{FrameMode, WindowManager};
 use compositor_testkit::{Fixture, FixtureSpec};
+use desktop_protocols::vocab::PressEdge;
 
 /// The app the window belongs to.
 const APP: &str = "org.example.round";

@@ -11,11 +11,11 @@ use super::switch::{check_of, switch_of};
 use crate::copy::account_sync::{spend_line, sync_lines};
 use crate::copy::accounts::{reauth_help, service_label, sign_in_words, status_label};
 use crate::marks::ProviderMarks;
+use dioxus::prelude::*;
 use settings_app_model::{
     Account, AccountKey, AccountService, AccountSync, Attention, DatasetName, HoldInput, Holds,
     ModuleId, ModuleRow, SyncBook, SyncHold,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::prelude::*;

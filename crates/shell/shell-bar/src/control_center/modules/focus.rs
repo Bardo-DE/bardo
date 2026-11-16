@@ -3,9 +3,9 @@
 //! the shell's `ToggleFocus` action, which writes `settings.toml`.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use shell_launcher::actions::ActionId;
 use shell_kit::prelude::*;
+use shell_launcher::actions::ActionId;
+use ui_components::prelude::*;
 
 use super::cc_module::{CcCx, CcModule, Span};
 use crate::control_center::focus_status;

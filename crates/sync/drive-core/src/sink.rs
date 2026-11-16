@@ -1,16 +1,16 @@
-//! Where a drive's changes go: ferry-sync's whole-drive writes, one step at a time.
+//! Where a drive's changes go: sync-core's whole-drive writes, one step at a time.
 
 use crate::source::ReplicaSource;
+use std::future::Future;
+use std::pin::Pin;
 use sync_core::{
     BaseVersion, DriveWrite, Found, Place, PutRefused, RemoteId, Session, Upload, Written,
 };
-use std::future::Future;
-use std::pin::Pin;
 
 /// A write under way.
 pub type Sending<'a, T> = Pin<Box<dyn Future<Output = Result<T, PutRefused>> + Send + 'a>>;
 
-/// The writes of a drive, as the core sends its changes: ferry-sync's [`DriveWrite`], boxed
+/// The writes of a drive, as the core sends its changes: sync-core's [`DriveWrite`], boxed
 /// so a drive holds any of them.
 pub trait Sink: Send + Sync {
     /// Whether the drive takes `name` for a file or folder.

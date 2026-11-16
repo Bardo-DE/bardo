@@ -1,7 +1,7 @@
 //! Why a request to the service failed.
 
-use std::io;
 use input_broker_wire::{Reason, WireError};
+use std::io;
 
 /// Why a request to the service failed.
 #[derive(Debug, thiserror::Error)]

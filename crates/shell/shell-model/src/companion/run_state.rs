@@ -3,14 +3,14 @@
 
 use computer_use_action::RunMode;
 use computer_use_bus::{CuaOutcome, RunStateSlug};
-use ui_core::word::Word;
 use provenance::RunId;
 use shell_launcher::RunControl;
+use ui_core::word::Word;
 
 use super::model::Companion;
 
 /// A run as a row words it. The view enum of quire's run row has the same variants; the
-/// conversion between them is `sill-ui-kit`'s `*_total` test.
+/// conversion between them is `shell-ui-kit`'s `*_total` test.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum RunState {
     /// Asking consent or leasing a window.

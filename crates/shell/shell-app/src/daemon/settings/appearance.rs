@@ -3,13 +3,13 @@
 //! section 8). Like the other watches, the task sends each settled value to the host thread,
 //! which publishes it.
 
+use layer_shell_host::{HostEvent, HostHandle};
+use tokio::runtime::Runtime;
+use tokio::sync::watch;
 use ui_blitz::TokioSpawner;
 use ui_settings::{
     AppName, AppearanceFile, ConfigRoot, Environment, Store, SystemPrefsSource, SystemPrefsWatch,
 };
-use layer_shell_host::{HostEvent, HostHandle};
-use tokio::runtime::Runtime;
-use tokio::sync::watch;
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;
@@ -84,9 +84,9 @@ pub fn publish_watched_appearance(
 
 #[cfg(test)]
 mod tests {
-    use ui_settings::Environment;
     use layer_shell_host::HostEvent;
     use tokio::sync::watch;
+    use ui_settings::Environment;
 
     use super::publish_watched_appearance;
     use crate::daemon::msg::ShellMsg;

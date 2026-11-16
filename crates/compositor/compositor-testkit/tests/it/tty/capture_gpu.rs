@@ -9,15 +9,15 @@ use compositor_core::geometry::LogicalPoint;
 use compositor_core::gpu::GpuChoice;
 use compositor_core::output::OutputConfig;
 use compositor_core::time::Mono;
-use desktop_protocols::vocab::Transform;
 use compositor_testkit::fakes::{
     EmptyScene, FakeCaptureGpu, FakeKms, FakeKmsOpener, FakeSession, FakeUdev, SceneBehaviour,
     SharedSession, SyntheticTopology,
 };
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::Transform;
 use smithay::backend::allocator::{Format, Fourcc, Modifier};
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 fn card() -> DevicePath {
     DevicePath(PathBuf::from("/dev/dri/card0"))

@@ -7,8 +7,6 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Harness, Input, Viewport};
 use layer_shell_host::OutputId;
 use shell_model::apps::AppIndex;
 use shell_model::capture_pick::{
@@ -20,6 +18,8 @@ use shell_overlays::PermissionSheet;
 use shell_overlays::permission_sheet::PERMISSION_ARM_AFTER;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{SheetLink, SheetOutput};
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<PermissionSheet>;
 

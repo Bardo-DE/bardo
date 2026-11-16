@@ -7,7 +7,7 @@
 //! The sheets reach the document as a `<style>` whose text follows the `Styles` signal (a look
 //! or a style sheet change restyles the document on the next frame). A component that sizes
 //! itself from tokens uses [`use_resolved`]: the host reads them after every resolved frame
-//! (through the blitz-kit `AfterResolve` it provides), outside render, and sets the component's signal only when the reading changed, so a
+//! (through the blitz-embed `AfterResolve` it provides), outside render, and sets the component's signal only when the reading changed, so a
 //! restyle re-renders it with the new values and nothing waits on a timer.
 //!
 //! [`Tokens`] reads on demand instead, for a read in an event handler or a task. It answers
@@ -17,9 +17,9 @@ use blitz_dom::{Atom, BaseDocument, NodeId};
 use blitz_embed::after_resolve::{AfterResolve, Registration};
 use dioxus::prelude::*;
 use dioxus_native_dom::NodeHandle;
+use std::rc::Rc;
 use ui_components::prelude::Px;
 use ui_components::style::task::try_set;
-use std::rc::Rc;
 
 /// Reads of resolved custom properties on one node of a document.
 #[derive(Debug)]
@@ -173,7 +173,7 @@ pub fn use_resolved<T: PartialEq + Clone + 'static>(read: fn(&Lookup) -> T) -> R
 
 impl<T: PartialEq + Clone + 'static> ResolvedTokens<T> {
     /// The value as last read; `None` before the first frame after mount, and without a
-    /// host that provides an `AfterResolve` (a ds-blitz window, the harness or a shell-host
+    /// host that provides an `AfterResolve` (a ui-blitz window, the harness or a layer-shell-host
     /// surface).
     pub fn value(&self) -> ReadSignal<Option<T>> {
         self.value.into()

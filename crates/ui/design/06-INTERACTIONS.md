@@ -256,7 +256,7 @@ calc(50% + 16px)` inside the row (C:487). S's placement wins.
 ### 4.4 Desktop
 
 A popup that leaves its surface is an `xdg_popup`: ds computes `PopoverRequest{anchor,
-placement, size}` and shell-host maps it to `xdg_positioner` with flip and slide constraints
+placement, size}` and layer-shell-host maps it to `xdg_positioner` with flip and slide constraints
 (plan, `PopoverRequest`). The rules above become the positioner's anchor (bottom-left of the
 trigger, offset -8, +6), gravity (down-right), and constraint adjustment (flip_y, slide_x,
 slide_y); the 8 px margin is the output's usable area.
@@ -316,7 +316,7 @@ prototype uses HTML5 drag (S:2269-2275): drag start on a handle marks the object
 first child whose vertical midpoint is below the pointer (else at the end); drop replaces the
 line with the object; drag end clears. A click on the handle opens the object menu: Move up,
 Move down, Duplicate, Delete (S:2231-2236). The Rust editor replaces HTML5 drag with ds
-`DragTracker` (plan, `ds-motion/drag.rs`); the 8 px threshold of 6.1 applies.
+`DragTracker` (plan, `ui-motion/drag.rs`); the 8 px threshold of 6.1 applies.
 
 ## 7. Sidebar hide and edge peek
 
@@ -622,7 +622,7 @@ One Escape dismisses exactly one layer: the innermost. The table is the port's r
 
 ## 20. Desktop interactions (settled)
 
-What the shell (sill, on shell-host) must do. Status: **settled (user)** = decided with the user
+What the shell (sill, on layer-shell-host) must do. Status: **settled (user)** = decided with the user
 (plan, "UX decisions settled with the user"); **settled (plan)** = in the approved plan's
 `<shell>` design; **proposed** = macOS behaviour from Appendix C adopted here, awaiting the
 user; **not specified**. Appendix C confidence (H primary source, M reliable secondary, L

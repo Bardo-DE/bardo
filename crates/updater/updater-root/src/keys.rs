@@ -1,7 +1,7 @@
 //! The trust anchor: the minisign public key releases are signed with.
 
-use updater_core::{PublicKey, SignError};
 use std::path::Path;
+use updater_core::{PublicKey, SignError};
 
 /// A key compiled in at build time (`SLIPWAY_RELEASE_PUBKEY`), used when no key file exists.
 pub const COMPILED_KEY: Option<&str> = option_env!("SLIPWAY_RELEASE_PUBKEY");

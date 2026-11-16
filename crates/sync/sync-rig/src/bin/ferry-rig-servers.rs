@@ -6,12 +6,12 @@
 //! cleanly and removes `rig.json`.
 
 use clap::Parser;
-use sync_rig::control::{Levers, serve_levers};
-use sync_rig::rigfile::RigFile;
-use sync_rig::servers::{Options, Rig};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::{Arc, Mutex};
+use sync_rig::control::{Levers, serve_levers};
+use sync_rig::rigfile::RigFile;
+use sync_rig::servers::{Options, Rig};
 use tokio::signal::unix::{SignalKind, signal};
 use tokio::sync::Notify;
 

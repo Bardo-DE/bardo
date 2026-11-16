@@ -4,15 +4,15 @@
 use crate::support::Sandbox;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::inferd::Inferd;
-use settings_app_client::ReasonFeed;
-use settings_app_model::PageSlug;
-use settings_app_ui::Opening;
-use ui_harness::{Harness, Input};
-use ui_settings::live::Verdict;
 use account_capability::ModelId;
 use account_core::AccountId;
 use inference_core::{Declined, DeclinedBecause, InferEvent, ModelRef, Why};
+use settings_app_client::ReasonFeed;
+use settings_app_model::PageSlug;
+use settings_app_ui::Opening;
 use std::time::Duration;
+use ui_harness::{Harness, Input};
+use ui_settings::live::Verdict;
 
 mod absent;
 mod picker;

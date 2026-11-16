@@ -1,9 +1,9 @@
 //! Where a surface's keymap comes from: our desktop's keycap, unless the document already has one.
 
-use keymap::{Desktop, Platform};
 use dioxus::prelude::{provide_context, try_consume_context, use_hook};
-use ui_components::keys::KeySource;
 use key_remap_client::KeycapSource;
+use keymap::{Desktop, Platform};
+use ui_components::keys::KeySource;
 
 /// What every shell document loads its keymap from: the conventions of our desktop, the
 /// desktop's own bindings and the machine's and the person's keymap files, kept live by keycap.

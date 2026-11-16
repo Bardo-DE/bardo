@@ -7,8 +7,8 @@ use crate::cc_support;
 use std::time::Duration;
 
 use cc_support::{fake, live};
-use ui_components::prelude::*;
 use shell_ui_kit::harness::ink_contrast;
+use ui_components::prelude::*;
 
 /// WCAG's floor for a graphic.
 const GRAPHIC: f32 = 3.0;

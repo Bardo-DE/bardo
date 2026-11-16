@@ -1,6 +1,6 @@
 # Dev harness
 
-Runs a throwaway headless compositor (KWin, or casement in a jail) so shell-host surfaces and
+Runs a throwaway headless compositor (KWin, or casement in a jail) so layer-shell-host surfaces and
 layer-shell test clients can be developed, driven with synthetic input and screenshotted without
 touching the person's session.
 
@@ -10,7 +10,7 @@ touching the person's session.
   (`WAYLAND_DISPLAY=<kwin> grim <out.png>`). Otherwise falls back to a host screenshot via
   `spectacle -b -n -f -o <out.png>`.
 - `globals.sh` — re-queries the headless KWin with `wayland-info` and prints a table of whether it
-  advertises the protocols shell-host depends on (`zwlr_layer_shell_v1`,
+  advertises the protocols layer-shell-host depends on (`zwlr_layer_shell_v1`,
   `ext_background_effect_manager_v1`, `wp_fractional_scale_manager_v1`, `wp_viewporter`,
   `ext_foreign_toplevel_list_v1`, `ext_workspace_manager_v1`, `zwp_text_input_manager_v3`) and at
   what version.

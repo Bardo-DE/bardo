@@ -12,7 +12,7 @@
 # The daemon runs the way every dev script runs it (dev/lib): a private dbus-daemon as both its
 # session and its system bus, a scratch HOME, XDG_CONFIG/DATA/STATE/CACHE_HOME and its own
 # XDG_RUNTIME_DIR (so its IPC socket is never a real shell's), a fake DDC monitor, and a dry run
-# for the power menu. A made-up NetworkManager, BlueZ and MPRIS player (sill-testkit's
+# for the power menu. A made-up NetworkManager, BlueZ and MPRIS player (shell-testkit's
 # `mpris_player` example) are the only services on that bus. The terminal and the mail app it
 # opens get the same scratch environment. ~/.config, ~/.cache, the real buses, wayland-0 and the
 # host session are not touched: casement runs headless on its own socket and bus (the casement
@@ -172,7 +172,7 @@ start_fake() {
   return 1
 }
 
-# sill-testkit's `mpris_player` on the private bus, so Now Playing has a track. It has to be on the
+# shell-testkit's `mpris_player` on the private bus, so Now Playing has a track. It has to be on the
 # bus before the daemon's first scan or arrive after: the service watches for players either way.
 start_player() {
   in_env setsid "$PLAYER" demo --title "So What" --artist "Miles Davis" --album "Kind of Blue" \
@@ -394,7 +394,7 @@ EOF
 # ---------------------------------------------------------------- shot and video
 
 # A screenshot of the output with grim, on the compositor's own socket: never the host
-# (shell-host's shot.sh falls back to spectacle on the host when no compositor answers).
+# (layer-shell-host's shot.sh falls back to spectacle on the host when no compositor answers).
 take_shot() {
   [ -S "$WL" ] || { echo "demo.sh: no compositor at $WL" >&2; return 1; }
   mkdir -p "$(dirname "$1")"

@@ -5,16 +5,16 @@
 //! subscription is made, so a restart drops what the removal left behind.
 
 use crate::grants::FileGrants;
-use action_core::AuditRecord;
-use action_core::{EventSink, MemoryLink};
-use action_dbus::BusConnection;
-use permission_core::{Ended, KnownSpaces};
-use action_router::{Router, Seams};
-use action_store::GrantFileError;
-use action_vocab::Clock;
 use account_client::SpacesError;
 use account_client_dbus::{Bus, Spaces};
 use account_core::{DesktopSpace, SpaceChange};
+use action_core::AuditRecord;
+use action_core::{EventSink, MemoryLink};
+use action_dbus::BusConnection;
+use action_router::{Router, Seams};
+use action_store::GrantFileError;
+use action_vocab::Clock;
+use permission_core::{Ended, KnownSpaces};
 use provenance::SpaceId;
 use std::sync::Arc;
 use std::time::Duration;

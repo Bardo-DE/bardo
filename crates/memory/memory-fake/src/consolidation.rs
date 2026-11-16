@@ -3,8 +3,8 @@
 
 use crate::fixtures::{mail_label, trusted_label};
 use memory_core::*;
-use memory_tidy::{ConsolidationInput, InputEvent, InputTopic};
 use memory_files_format::{Block, TopicFile, render_topic};
+use memory_tidy::{ConsolidationInput, InputEvent, InputTopic};
 
 fn run_id() -> RunId {
     RunId::parse("c-0123456789abcdef0123").expect("run")

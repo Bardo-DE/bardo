@@ -4,9 +4,9 @@
 //! router derives for a companion session: every untrusted text is a [`Reveal::Handle`]. Only
 //! the router builds a view, so a model never reads text it was not meant to.
 
-use action_vocab::{CharCount, EntityRef, Handle, TextTargetRef, ViewName};
 use account_core::AppName;
 use account_ids::Count;
+use action_vocab::{CharCount, EntityRef, Handle, TextTargetRef, ViewName};
 use provenance::{EntityId, EntityKind, Labelled};
 use serde::{Deserialize, Serialize};
 

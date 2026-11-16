@@ -10,9 +10,9 @@ use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::probe::Probe;
 use dioxus::core::ScopeId;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::task::{spawn_in, try_set_if_changed};
-use std::rc::Rc;
 
 /// Whether an input method has preedit text in the field, after `event` when it was `composing`
 /// before: composing while there is preedit text, not once it is cleared, committed or the IME

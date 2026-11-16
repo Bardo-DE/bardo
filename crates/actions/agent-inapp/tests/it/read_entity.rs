@@ -7,17 +7,17 @@
 use crate::support::TestSheet;
 use crate::support::host::{clock, mail, work};
 use crate::support::infer::{ScriptedInfer, call, words};
+use account_core::AppName;
 use action_core::{
     AppRefusal, Hit, Invocation, Outcome, Preview, ReaderAsk, ReaderTask, SuggestAsk, UndoFault,
     ValueSchema,
 };
 use action_fake::{FakeMail, MAIL_MANIFEST};
-use agent_inapp::{Ending, InAppAgent, InAppKit, InAppParts, TransportReader};
 use action_manifest::ValidManifest;
 use action_manifest::parse;
 use action_provider::IntentProvider;
 use action_vocab::{ChoiceId, EntityRef, Handle, TargetValue, UndoToken, Value};
-use account_core::AppName;
+use agent_inapp::{Ending, InAppAgent, InAppKit, InAppParts, TransportReader};
 use provenance::{ActionName, Actor, EntityId, EntityKey, EntityKind, Labelled};
 use serde_json::{Value as Json, json};
 

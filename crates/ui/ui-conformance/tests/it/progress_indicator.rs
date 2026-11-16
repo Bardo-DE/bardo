@@ -4,6 +4,7 @@
 //! and a busy button shows one in its leading slot and takes no press.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::button_marks::Leading;
 use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
 use ui_components::components::controls::progress::view::ProgressIndicator;
@@ -12,7 +13,6 @@ use ui_components::motion::detail::operation::PendingToken;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 320,
@@ -139,7 +139,8 @@ fn a_busy_button_shows_a_spinner_and_takes_no_press() {
     );
     assert_eq!(harness.attr("#button .ds-button-lead", "data-fade"), None);
     assert!(
-        ui_components::stylesheet().contains(".ds-busy-seen > .ds-button-lead{ animation:fade var(--t-quick)"),
+        ui_components::stylesheet()
+            .contains(".ds-busy-seen > .ds-button-lead{ animation:fade var(--t-quick)"),
         "the stylesheet fades it in over --t-quick"
     );
     let at = harness.centre("#button .ds-button").expect("the button");

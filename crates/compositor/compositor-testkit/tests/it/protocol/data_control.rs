@@ -8,7 +8,6 @@ macro_rules! data_control_suite {
             use compositor_core::geometry::PhysicalSize;
             use compositor_core::policy::ConnectionRole;
             use compositor_core::privilege::Verdict;
-            use desktop_protocols::vocab::{Answer, Power};
             use compositor_testclient::seat::keyboard::Keyboard;
             use compositor_testclient::selection::data_device::DataDevice;
             use compositor_testclient::surface::layer::{
@@ -16,6 +15,7 @@ macro_rules! data_control_suite {
             };
             use compositor_testclient::{Pattern, shm_buffer};
             use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
+            use desktop_protocols::vocab::{Answer, Power};
             use $control as Control;
 
             /// A clipboard manager is told of every new selection.

@@ -24,10 +24,10 @@ fn capslock_in(layer: ConfigLayer) -> Option<RuleAction> {
 mod trusted_files {
     use std::path::Path;
 
+    use caller_identity_core::{FileTrust, Uid, Writer};
+    use caller_identity_linux::FixtureProc;
     use key_remap_core::ConfigSource;
     use key_remap_devtest::Scratch;
-    use caller_identity_linux::FixtureProc;
-    use caller_identity_core::{FileTrust, Uid, Writer};
 
     use super::super::load::system_through;
     use super::super::trusted::LAYER_FILE_CAP;

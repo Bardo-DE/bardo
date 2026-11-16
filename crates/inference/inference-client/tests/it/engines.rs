@@ -2,21 +2,21 @@
 //! loopback (no network, no real model).
 #![cfg(feature = "engines")]
 
-use inference_client::engines::{
-    Dialect, Engine, EngineHost, EngineId, EngineUrl, KeySource, NoKeys, Route,
-};
-use inference_client::{InferRefusal, InferSession, OpenOptions, Policy, SessionHost, Slot};
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::{AppId, AppName, DataClass, Isolation, SecretText};
 use account_fake_servers::{FakeModels, ModelDef, ModelsHandle, Running, Wire};
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use inference_client::engines::{
+    Dialect, Engine, EngineHost, EngineId, EngineUrl, KeySource, NoKeys, Route,
+};
+use inference_client::{InferRefusal, InferSession, OpenOptions, Policy, SessionHost, Slot};
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest,
     MessagePart, ModelError, Role, ToolParallelism,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use std::sync::{Arc, Mutex};
 
 fn app() -> AppId {

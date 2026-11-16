@@ -10,8 +10,8 @@
 //! first asks Tailscale who is at the address (`inference_tailnet::Dialer`).
 
 use super::machines::Machines;
-use inference_tailnet::{Dialer, LentModel, greet};
 use account_tailscale::{MachineOwner, NodeId};
+use inference_tailnet::{Dialer, LentModel, greet};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;

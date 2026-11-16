@@ -1,6 +1,6 @@
 //! The image under a click inside a frame, for the app's look at it (mailo opens an inline
 //! image in Peek). A click on an `img` in a frame document does nothing, and the app's handlers
-//! around the `iframe` cannot see inside it; ds-blitz hit-tests the primary release
+//! around the `iframe` cannot see inside it; ui-blitz hit-tests the primary release
 //! (`crate::frame_hit`) and tells the app which image, if any, it ended on. An image inside a link
 //! is the link's click (`crate::frame_links`), never reported here.
 

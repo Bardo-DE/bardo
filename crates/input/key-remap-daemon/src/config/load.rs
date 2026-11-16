@@ -2,9 +2,9 @@
 
 use std::path::Path;
 
+use caller_identity_linux::{ProcFs, RealProc};
 use key_remap_core::{ConfigLayer, ConfigSource};
 use key_remap_proto::Warning;
-use caller_identity_linux::{ProcFs, RealProc};
 
 use super::trusted::read_layer;
 

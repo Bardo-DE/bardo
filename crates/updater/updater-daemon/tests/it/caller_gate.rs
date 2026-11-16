@@ -5,8 +5,10 @@
 use crate::feed_stage::{block_on, engine_serving};
 use crate::private_bus::{PrivateBus, name_of};
 use crate::support::Sandbox;
-use caller_identity_dbus::peephole::fake::{introduced_program, introduced_service, introduced_unverified};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table, WhyNot};
+use caller_identity_dbus::caller_identity_linux::fake::{
+    introduced_program, introduced_service, introduced_unverified,
+};
 use updater_daemon::problem::Problem;
 use updater_daemon::service::{BUS_NAME, Gate, PATH, Updates, peers_on};
 use updater_daemon::state::StateStore;

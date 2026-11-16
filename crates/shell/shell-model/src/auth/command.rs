@@ -1,7 +1,7 @@
 //! What the auth service can be told.
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 use super::Secret;
 

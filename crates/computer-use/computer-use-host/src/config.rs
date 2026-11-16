@@ -2,9 +2,9 @@
 //! once, at the edge. Who may call is not here: it is the process behind a connection, named by
 //! `cuad-callers.toml`.
 
+use account_capability::Tier;
 use computer_use_desktop::BackendKind;
 use computer_use_run::CuaConfig;
-use account_capability::Tier;
 use serde::{Deserialize, Serialize};
 
 /// Which backend cuad uses.

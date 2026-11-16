@@ -78,7 +78,7 @@ step_always() {
   sheet_gone || return 1
   [ "$(grant_field $app scope)" = always ] || { echo "the permit is $(grant_field $app scope), not always" >&2; return 1; }
   ask $app always2
-  asked_nothing always2 "the second request after Always Allow drew the consent sheet again: accountd's RequestKey (porter-service choose.rs: ask_for builds a sheet from the fitting accounts and never reads the grants) asks every time" || return 1
+  asked_nothing always2 "the second request after Always Allow drew the consent sheet again: accountd's RequestKey (account-service choose.rs: ask_for builds a sheet from the fitting accounts and never reads the grants) asks every time" || return 1
   out=$(answered always2) || return 1
   case "$out" in *'"result":"granted"'*) ;; *) echo "the second request was not answered from the permit: $out" >&2; return 1 ;; esac
   sheet_hidden || { echo "a sheet was drawn for the second request" >&2; return 1; }

@@ -4,8 +4,8 @@
 //! is not a search file is said so and ignored.
 
 use crate::shipped::{ShippedEntries, ShippedFault};
-use action_router::{Router, Seams};
 use account_core::AppName;
+use action_router::{Router, Seams};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 

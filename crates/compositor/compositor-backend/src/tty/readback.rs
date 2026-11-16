@@ -20,8 +20,8 @@ use compositor_core::OutputName;
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::output::{EdidFacts, EdidSerial, OutputConfig};
 use compositor_core::time::{Mono, VblankSeq};
-use ui_core::geometry::scale::Scale;
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
 
 /// The shadow outputs, drawn only while watched.
 #[derive(Debug, Default)]

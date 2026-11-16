@@ -120,11 +120,11 @@ fn fnv1a(bytes: &[u8]) -> u64 {
 mod tests {
     use super::{IconKey, TintKey, fnv1a};
     use crate::app_icons::size::AssetPx;
+    use std::collections::HashSet;
+    use std::path::PathBuf;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
-    use std::collections::HashSet;
-    use std::path::PathBuf;
 
     fn key(path: PathBuf, px: u16, style: IconStyle, hue: f32) -> IconKey {
         IconKey {

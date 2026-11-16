@@ -177,9 +177,9 @@ mod offers {
     use crate::accounts::{Account, AccountKey, AccountSpend, AccountStatus, AccountsPane, Place};
     use crate::assistants::{PlaceRef, offers_for};
     use crate::picker::{Busy, ChoiceSection, KindRows, ModelRow, Ready};
-    use ui_settings::schema::{KeyPath, WordLabels};
     use account_sheet::ProviderGroup;
     use std::collections::BTreeMap;
+    use ui_settings::schema::{KeyPath, WordLabels};
 
     fn picker(words: &[&str]) -> Ready {
         Ready {

@@ -4,13 +4,14 @@
 //! (`compositor_agent::hand_out`), and the server end of the new socket inserted into the display
 //! as a client of that role.
 //!
-//! `casement-agent` makes the socket pair and the decision; only this crate can build a
+//! `compositor-agent` makes the socket pair and the decision; only this crate can build a
 //! client's data (its key, its gone queue), so the insertion is here. Frozen at P2-Z; filled
 //! by P2-Q2.
 
 use crate::State;
 use crate::clients::{Vetting, insert_client};
 use crate::core_loop::{feed, tty::desktop_extent};
+use account_core::PeerIdentity;
 use compositor_agent::{
     KeymapText, RefuseWhy, RemoteEvent, RemoteFor, RemoteHandle, RemoteKinds, RoleName,
     agent_may_lease, hand_out, open_remote_eis, portal_may_connect,
@@ -24,7 +25,6 @@ use compositor_ipc::dbus::{
 use compositor_wayland::ClientState;
 use compositor_wayland::foreign_toplevel_list::window_of_identifier;
 use compositor_wayland::seat_keymap::keymap_text;
-use account_core::PeerIdentity;
 use smithay::reexports::calloop::channel::{Channel, Event as ChannelEvent};
 use smithay::reexports::calloop::{Error as LoopError, LoopHandle, RegistrationToken};
 
@@ -94,7 +94,7 @@ pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply {
 }
 
 /// What the caller is told for a hand-out `hand_out` refused. A socket pair that could not be
-/// made is logged here (`casement-agent` has no logger).
+/// made is logged here (`compositor-agent` has no logger).
 fn refusal_of(why: RefuseWhy) -> ConnectRefusal {
     match why {
         RefuseWhy::UnknownUnit => ConnectRefusal::UnknownUnit,
@@ -352,7 +352,7 @@ fn close(state: &mut State, ended: Vec<(RemoteHandle, RegistrationToken)>) {
 }
 
 /// One input event from a remote session into the model, by the path every input takes. Its
-/// origin was set where it entered (`casement-agent`'s EIS) and is not changed here.
+/// origin was set where it entered (`compositor-agent`'s EIS) and is not changed here.
 pub fn deliver_remote(state: &mut State, event: InputEvent) {
     feed(state, vec![Event::Input(event)]);
 }

@@ -25,12 +25,12 @@ BUILDS=(
   # unified in. inferd is docket's sibling binary.
   "inferd (default) :: -p inference-daemon"
 
-  # inferd-client, in the sets its consumers name: detent's Settings (dbus, lending), docket and
+  # inference-client, in the sets its consumers name: detent's Settings (dbus, lending), docket and
   # almanac (dbus), inferd's tests (dbus), an app that hosts inference itself (engines).
-  "inferd-client (no features) :: -p inference-client --no-default-features"
-  "inferd-client (dbus: inferd's tests, docket, almanac) :: -p inference-client --no-default-features --features dbus"
-  "inferd-client (dbus,lending: detent's Settings) :: -p inference-client --no-default-features --features dbus,lending"
-  "inferd-client (engines) :: -p inference-client --features engines"
+  "inference-client (no features) :: -p inference-client --no-default-features"
+  "inference-client (dbus: inferd's tests, docket, almanac) :: -p inference-client --no-default-features --features dbus"
+  "inference-client (dbus,lending: detent's Settings) :: -p inference-client --no-default-features --features dbus,lending"
+  "inference-client (engines) :: -p inference-client --features engines"
 )
 
 logs="${CARGO_TARGET_DIR:-target}/check-features"

@@ -17,10 +17,10 @@ use anyview_core::{ByteLen, FilePath, FileStamp, ModTime};
 use anyview_platform::linux::FreedesktopThumbnails;
 use anyview_platform::{Env, ThumbSize, ThumbnailCache, file_uri};
 use dioxus::prelude::*;
-use ui_components::components::content::image_source::ImageSource;
 use md5::{Digest, Md5};
 use shell_services::env::Dirs;
 use shell_ui_kit::services::Services;
+use ui_components::components::content::image_source::ImageSource;
 
 /// The picture types a row shows a thumbnail of.
 const PICTURES: [&str; 4] = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -134,9 +134,9 @@ mod tests {
     use anyview_core::{FilePath, PixelLen, PixelSize};
     use anyview_platform::linux::FreedesktopThumbnails;
     use anyview_platform::{Env, ThumbPixels, ThumbSize, ThumbnailCache};
-    use ui_components::components::content::image_source::ImageSource;
     use shell_services::env::Dirs;
     use shell_testkit::TempDir;
+    use ui_components::components::content::image_source::ImageSource;
 
     use super::{RowThumbs, stamp_of, thumbnail_file};
 

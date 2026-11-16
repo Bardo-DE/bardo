@@ -1,7 +1,7 @@
 //! A `true` or `false`: a switch.
 
-use settings_app_model::external::toml;
 use dioxus::prelude::*;
+use settings_app_model::external::toml;
 use ui_components::prelude::*;
 
 /// On when the value is `true`.

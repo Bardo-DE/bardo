@@ -1,10 +1,10 @@
 //! The service's side of a helper run: what it reads back, and what it does when the helper hangs.
 //! A shell and scratch scripts stand in for `pkexec` and the helper; nothing privileged runs.
 
-use updater_daemon::elevate::{Elevate, Helpers, Pkexec, Recovery};
-use updater_daemon::report::Report;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
+use updater_daemon::elevate::{Elevate, Helpers, Pkexec, Recovery};
+use updater_daemon::report::Report;
 
 /// A shell script that plays the helper, run through `sh` the way `pkexec` would run the real one.
 fn helper(dir: &Path, script: &str, patience: Duration) -> Pkexec {

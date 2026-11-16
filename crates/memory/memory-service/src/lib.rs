@@ -1,12 +1,12 @@
 //! memoryd's core over seams: the authorisation matrix, the Space and forget-plan machines,
 //! retention, timeline assembly, the export writer, the per-Space request queue, the config
 //! files, and `MemoryService` over a `Backend`. It drives the fact and consolidation machines,
-//! the prompt and the removal notes of `almanac-tidy` over its seams.
+//! the prompt and the removal notes of `memory-tidy` over its seams.
 //!
 //! Pure over its seams (`Clock`, `KeyStore`, `Vault`, `LogWrite`, `SearchIndex`, `Embedder`,
-//! `memory_tidy::Consolidator`): the store seams come from `almanac-store`, so the service links no SQLite,
+//! `memory_tidy::Consolidator`): the store seams come from `memory-store`, so the service links no SQLite,
 //! SQLCipher or OpenSSL, and builds wherever the stores do. Whoever builds a service picks the
-//! concrete stores by implementing [`Backend`] (`almanac-local`, `almanac-fake`, `memoryd`). The
+//! concrete stores by implementing [`Backend`] (`memory-local`, `memory-fake`, `memoryd`). The
 //! machines return effects as values.
 //!
 //! ```

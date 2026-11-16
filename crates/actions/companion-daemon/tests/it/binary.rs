@@ -5,10 +5,10 @@
 //! bus, HOME and every XDG directory are scratch.
 
 use crate::support::bus::PrivateBus;
-use companion_wire::FrontTask;
 use action_core::{Roster, TurnVia, UserTurn};
 use action_dbus::CompanionProxy;
 use action_vocab::{Caller, TurnId};
+use companion_wire::FrontTask;
 use provenance::{AgentRef, TaskId};
 use std::path::Path;
 use std::process::{Child, Command, Stdio};

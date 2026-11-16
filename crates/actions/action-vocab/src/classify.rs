@@ -1,6 +1,6 @@
 //! Per-call effect: an action's declared effect is a ceiling, and an action that opts in
 //! (`classified = true` in its manifest) lets its provider say what one particular call
-//! does. The router never lets that answer pass the ceiling (see `docket-router::classify`).
+//! does. The router never lets that answer pass the ceiling (see `action-router::classify`).
 //!
 //! `Delegates` is the answer of a provider whose call only forwards to another typed action
 //! (a menu item that is a verified command id). The outer call is then gated as `Read`, and the

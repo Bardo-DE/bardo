@@ -1,14 +1,14 @@
 //! A watch on the inferd link: the seam a trace hooks into. The link tells its watch about every
 //! frame sent and every event received, and does nothing else with them. What a watch keeps, and
-//! where, is the watcher's (the test-only `docket-trace` crate keeps the words of each exchange);
+//! where, is the watcher's (the test-only `action-trace` crate keeps the words of each exchange);
 //! this crate holds no code that writes a prompt anywhere, and a link with no watch takes no copy
 //! of anything.
 
-use inference_client::{Transport, TransportError};
 use account_capability::Tier;
 use account_core::DataClass;
-use inference_core::{ClientFrame, InferEvent, InferSession, OpenOptions, Readiness, SessionError};
 use account_match::Need;
+use inference_client::{Transport, TransportError};
+use inference_core::{ClientFrame, InferEvent, InferSession, OpenOptions, Readiness, SessionError};
 use std::fmt::Debug;
 use std::sync::Arc;
 

@@ -3,12 +3,12 @@
 //! read by no one. An entry with no logout command cannot be signed out, and says so.
 
 use super::live::Live;
-use companion_model::helper::AgentPending;
+use account_capability::LoginOutcome;
 use agent_acp_host::Logout;
 use agent_launch::login::{LoginRunner, VisibleLogin};
 use agent_launch::{Accounts, AskKind};
+use companion_model::helper::AgentPending;
 use permission_core::ProgramName;
-use account_capability::LoginOutcome;
 use provenance::AgentProgram;
 use std::sync::Arc;
 

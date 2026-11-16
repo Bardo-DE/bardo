@@ -17,9 +17,9 @@ mod words;
 use std::io;
 use std::path::{Path, PathBuf};
 
+use serde::{Deserialize, Serialize};
 use ui_settings::schema::{AppId, FilePath, KeySpec, Schema, SettingsSchema, WordLabels};
 use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store};
-use serde::{Deserialize, Serialize};
 
 use ui_components::prelude::Word;
 

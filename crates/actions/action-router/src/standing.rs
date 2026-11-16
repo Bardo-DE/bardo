@@ -9,10 +9,8 @@ use crate::seams::{GrantStore, Seams};
 use action_core::AuditRecord;
 use action_core::EventSink;
 use action_gate::prepared::Prepared;
-use permission_core::{
-    CallFacts, GrantCaller, StandingGrant, StandingGrantId, StandingScope,
-};
 use action_vocab::Clock;
+use permission_core::{CallFacts, GrantCaller, StandingGrant, StandingGrantId, StandingScope};
 
 impl<S: Seams> Router<S> {
     /// Spends the approval a call ran on: gone if it was spent in the meantime (the call must not

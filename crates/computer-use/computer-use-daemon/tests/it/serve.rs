@@ -6,14 +6,14 @@
 
 use crate::support::bus::PrivateBus;
 use crate::support::enabled;
+use action_dbus::callers::{Identity, Role};
 use computer_use_action::{CuaAction, Summary};
 use computer_use_bus::{BudgetBody, CuaEnvelope, CuaOutcome, CuaTask, RunEnd, WindowBody};
+use computer_use_daemon::{SHELL_BUS, Supervisor, serve_on_with, shipped_callers};
 use computer_use_dbus::{CUA_BUS, ManagerProxy, RunProxy};
 use computer_use_desktop::BackendKind;
 use computer_use_fake::FakePdp;
 use computer_use_fake::scene::{click, finish, reply, task, world};
-use computer_use_daemon::{SHELL_BUS, Supervisor, serve_on_with, shipped_callers};
-use action_dbus::callers::{Identity, Role};
 use futures_util::StreamExt;
 use std::sync::Arc;
 use std::time::Duration;
@@ -224,7 +224,10 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
         .expect("a signal");
     let end: CuaEnvelope<RunEnd> = serde_json::from_str(signal.args().unwrap().end).unwrap();
     assert_eq!(end.body.outcome, CuaOutcome::Done);
-    assert!(matches!(end.body.report, computer_use_bus::ReportDelivery::Sent(_)));
+    assert!(matches!(
+        end.body.report,
+        computer_use_bus::ReportDelivery::Sent(_)
+    ));
 
     // The states came in order, from the lease to the end.
     let mut seen = Vec::new();
@@ -316,7 +319,10 @@ async fn start_and_stop_are_refused_to_the_wrong_callers_with_their_error_names(
     );
 }
 
-fn invocation(args: &[(&str, action_vocab::Value)], actor: provenance::Actor) -> action_core::Invocation {
+fn invocation(
+    args: &[(&str, action_vocab::Value)],
+    actor: provenance::Actor,
+) -> action_core::Invocation {
     use action_vocab::{Args, CallId, Origin, ParamName, TargetValue};
     let words = |value| provenance::Labelled::new(value, provenance::Label::trusted_user());
     action_core::Invocation {
@@ -393,7 +399,10 @@ async fn the_router_starts_a_run_through_the_provider_and_gets_its_id() {
     assert_eq!(view.task.goal.value, "sign in");
     assert_eq!(
         view.task.report.to,
-        provenance::Address::new(provenance::AgentRef::Companion, computer_use_fake::scene::space()),
+        provenance::Address::new(
+            provenance::AgentRef::Companion,
+            computer_use_fake::scene::space()
+        ),
         "the report goes back to the planner"
     );
 
@@ -741,13 +750,14 @@ async fn no_app_and_no_focus_gives_the_choices_even_when_the_shell_has_it() {
         "{refused:?}"
     );
     // An open app the person has not listed is no choice: it would only be refused next.
-    fx.supervisor.apply_settings(&computer_use_daemon::CuaSettings {
-        config: fx.supervisor.settings(),
-        apps: computer_use_daemon::Apps::Listed(vec![computer_use_daemon::AppRule {
-            app: provenance::AppName::parse("app.zen_browser.zen").expect("an app"),
-            allow: computer_use_daemon::AppAllow::Ask,
-        }]),
-    });
+    fx.supervisor
+        .apply_settings(&computer_use_daemon::CuaSettings {
+            config: fx.supervisor.settings(),
+            apps: computer_use_daemon::Apps::Listed(vec![computer_use_daemon::AppRule {
+                app: provenance::AppName::parse("app.zen_browser.zen").expect("an app"),
+                allow: computer_use_daemon::AppAllow::Ask,
+            }]),
+        });
     let Err(action_core::AppRefusal::NeedsParam { options, .. }) = start_with(&fx, None).await
     else {
         panic!("a refusal with choices");

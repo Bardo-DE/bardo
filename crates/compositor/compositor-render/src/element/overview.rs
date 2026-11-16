@@ -8,9 +8,9 @@ use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
 use crate::texture_book::TextureBook;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalRect};
-use ui_core::vocab::Fraction;
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::utils::CommitCounter;
+use ui_core::vocab::Fraction;
 
 /// The colours Mission Control draws with, premultiplied: the dimming over the picture and the
 /// hovered window's ring. The composition root makes them from quire's tokens (the scrim and the

@@ -2,22 +2,22 @@
 //! quire's timer (`ui_components::base::time::clock::sleep`, for the thumbnail hold or the banners' rest after a
 //! hover, never a literal), one at a time and a task of the thumbnail's own scope; `Show` maps
 //! the surface, `Hide` unmaps it, `Leave` tells the service; a drag out is a task of the same
-//! scope awaiting shell-host's outcome. `TakeKeyboard` asks the compositor for the keyboard
+//! scope awaiting layer-shell-host's outcome. `TakeKeyboard` asks the compositor for the keyboard
 //! (`Exclusive`, the one mode that takes it without a click), marks the seat's modality as the
 //! keyboard's so quire's focus ring shows before the first key, and focuses the picture;
 //! `ReleaseKeyboard` sets the mode back to `None`. While hidden no task runs.
 
-use ui_components::base::time::clock::sleep;
 use std::time::Duration;
+use ui_components::base::time::clock::sleep;
 
 use dioxus::core::{Runtime, ScopeId, Task, current_scope_id};
 use dioxus::prelude::*;
-use ui_components::focus::select::Select;
-use ui_components::focus::selector::{FocusError, focus_by_selector};
-use ui_components::prelude::*;
 use layer_shell_host::{KeyboardMode, SurfaceHandle, Visibility};
 use shell_model::screenshots::{ShotCommand, ShotId};
 use shell_services::Control;
+use ui_components::focus::select::Select;
+use ui_components::focus::selector::{FocusError, focus_by_selector};
+use ui_components::prelude::*;
 
 use shell_ui_kit::links::{BannerLink, Transient};
 

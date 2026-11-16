@@ -2,9 +2,9 @@
 //! grace lives here because it belongs to the lock screen, but its `KeySpec` is on the Power page
 //! with `idle.*` (design/22 §3.19; `crate::schema` moves it, the derive has one page a struct).
 
+use serde::{Deserialize, Serialize};
 use ui_settings::Secs;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// The lock screen.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]

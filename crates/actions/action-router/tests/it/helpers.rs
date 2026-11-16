@@ -2,17 +2,17 @@
 //! the helper's reach, one live job writes a thing, and what another helper writes to it is data.
 
 use crate::support::*;
-use companion_model::helper::HelperSeat;
 use action_core::*;
 use action_fake::ScriptedWriter;
 use action_gate::companion_names::{HELPER_POST_JOB, HELPER_PROPOSE, ROUTINE_PROPOSE};
-use permission_core::{ActionMatch, COMPANION_APP, DenyCode, TaskPolicy};
 use action_vocab::{
     ActionRef, CallId, CallRequest, Caller, CallerRole, Origin, TargetValue, TurnId, Value,
 };
 use action_wire::{
     CallerId, IntentsReply, IntentsRequest, NoteAsk, SessionOpen, SessionOpened, WireRefusal,
 };
+use companion_model::helper::HelperSeat;
+use permission_core::{ActionMatch, COMPANION_APP, DenyCode, TaskPolicy};
 use provenance::{
     Actor, Address, AgentRef, AgentRole, Confidentiality, Effect, HelperId, Integrity, Label,
     Labelled, MessageKind, MessageText, ModelRole, SessionId, Source, UnixSeconds,

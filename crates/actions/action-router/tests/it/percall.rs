@@ -5,13 +5,13 @@
 use crate::support::*;
 use action_core::*;
 use action_fake::{MenuItem, MenuPerform};
-use permission_core::{ActionGrantKey, GrantCaller, GrantTarget, Strictness};
 use action_router::Router;
 use action_vocab::{
     ActionRef, CallClass, CallRequest, Classification, ClassifyAnswer, ClassifyFault,
     DelegationEnd, LabelText, Origin, TargetValue, Value,
 };
 use action_wire::{IntentsReply, IntentsRequest};
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget, Strictness};
 use provenance::{ActionName, AgentRef, Effect};
 
 fn menu() -> account_core::AppName {
@@ -51,8 +51,8 @@ fn yes() -> ConfirmAnswer {
 
 /// Standing consent for the menu app (a first use asks otherwise, which is not under test here).
 fn grant_menu(router: &Router<action_fake::FakeSeams>) {
-    use action_router::GrantStore;
     use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use action_router::GrantStore;
     for (n, usage) in [Usage::Interactive, Usage::Background]
         .into_iter()
         .enumerate()

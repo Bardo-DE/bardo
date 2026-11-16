@@ -20,16 +20,16 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::{distance, rect};
+use shell_kit::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::base::time::FRAME_TICK;
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Part, Srgba, Viewport};
-use probe::{distance, rect};
-use shell_kit::prelude::*;
-use std::cell::Cell;
-use std::time::Duration;
 
 thread_local! {
     static CASE: Cell<(Theme, Accent)> = const { Cell::new((Theme::Light, Accent::Blue)) };

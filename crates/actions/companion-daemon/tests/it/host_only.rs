@@ -2,8 +2,8 @@
 //! host, so listing it would only cost context and invite refused calls.
 
 use crate::support::planner_view::manifest;
-use companion_daemon::*;
 use action_manifest::{ValidManifest, Visibility};
+use companion_daemon::*;
 
 #[test]
 fn the_external_agents_pseudo_app_is_not_in_the_planners_tools_or_cards() {

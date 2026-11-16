@@ -4,12 +4,12 @@
 
 use crate::support;
 
-use ui_core::spawner::Spawner;
-use ui_settings::{Store, UserStyle, WatchState};
 use std::future::Future;
 use std::pin::Pin;
 use std::time::Duration;
 use support::Scratch;
+use ui_core::spawner::Spawner;
+use ui_settings::{Store, UserStyle, WatchState};
 
 /// Generous slack over the 30 ms debounce for a test runner under load.
 const MARGIN: Duration = Duration::from_millis(2_000);

@@ -2,10 +2,10 @@
 //! file operations and the reading of what is installed.
 
 use crate::support::{Recipe, Sandbox, build, v};
+use std::path::{Path, PathBuf};
 use updater_root::fsutil::{switch_link, write_atomic};
 use updater_root::keys::{KeyError, from_compiled, load_key};
 use updater_root::settings::{DEFAULT_PUBKEY_PATH, DEFAULT_ROOT, RootSettings, SettingsError};
-use std::path::{Path, PathBuf};
 
 #[test]
 fn the_settings_give_root_and_key_and_ignore_the_rest() {

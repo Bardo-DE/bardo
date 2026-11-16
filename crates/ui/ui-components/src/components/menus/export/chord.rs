@@ -1,8 +1,8 @@
 //! A key equivalent as `com.canonical.dbusmenu` writes it: the key names of one chord, modifiers
 //! first (`["Super", "Z"]`; the Mac's Command key is `Super`, as Qt's exporter names Meta).
 
-use ui_core::vocab::{Shortcut, ShortcutKey};
 use serde::{Deserialize, Serialize};
+use ui_core::vocab::{Shortcut, ShortcutKey};
 
 /// The key names of one chord: modifiers in the Mac's order, then the key.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

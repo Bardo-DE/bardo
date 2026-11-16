@@ -7,13 +7,13 @@
 
 use crate::launcher_harness;
 
-use ui_components::prelude::*;
-use ui_harness::Input;
 use launcher_harness::launcher_support::{self, FIREFOX_WINDOW};
 use launcher_harness::{is_open, open, settle, titles};
 use shell_launcher::WindowKey;
 use shell_model::results::SearchCommand;
 use shell_model::windows::WlCommand;
+use ui_components::prelude::*;
+use ui_harness::Input;
 
 #[test]
 fn three_downs_and_enter_run_the_fourth_row() {

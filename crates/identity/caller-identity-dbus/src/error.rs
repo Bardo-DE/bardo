@@ -1,7 +1,7 @@
 //! The errors of the bus crate, and the one refusal a method returns.
 
-use caller_identity_linux::PinError;
 use caller_identity_core::Refused;
+use caller_identity_linux::PinError;
 use zbus::fdo;
 
 /// A bus peer that could not be identified. A caller that gets this treats the peer as unknown.

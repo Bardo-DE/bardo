@@ -2,18 +2,18 @@
 //! and what the person's controls do to a run in flight.
 
 use crate::support::*;
+use action_gate_wire::GateAnswer;
 use computer_use_action::{CuaAction, Summary};
 use computer_use_bus::{
     CancelledBy, ControlRefusal, CuaCaller, CuaMember, CuaOutcome, QuestionId, ReportDelivery,
 };
+use computer_use_daemon::Supervisor;
 use computer_use_desktop::{BackendKind, DesktopEvent, Suspend};
 use computer_use_fake::scene::{click, finish, reply, task, user_goal, window};
 use computer_use_fake::{DesktopCall, FakePdp, Fixture, SeatEvent, Verdict};
 use computer_use_run::{CuaSignal, FORCED_YES, RunPhase};
-use computer_use_daemon::Supervisor;
-use action_gate_wire::GateAnswer;
-use provenance::{Labelled, MessageKind, ReportStatus};
 use computer_use_seat_input::Emulation;
+use provenance::{Labelled, MessageKind, ReportStatus};
 
 const STOCK: BackendKind = BackendKind::KwinStock;
 
@@ -122,8 +122,9 @@ async fn start_refused_for_non_planner_caller_and_while_disabled_or_unaimed() {
         Err(ControlRefusal::NotPermitted)
     );
     let mut missing = task();
-    missing.target =
-        computer_use_bus::TaskTarget::Window(computer_use_desktop::ToplevelIdent::parse("nope").unwrap());
+    missing.target = computer_use_bus::TaskTarget::Window(
+        computer_use_desktop::ToplevelIdent::parse("nope").unwrap(),
+    );
     assert_eq!(
         sup.start(CuaCaller::Router, missing).await,
         Err(ControlRefusal::WindowUnknown)
@@ -178,7 +179,10 @@ async fn computer_use_on_with_no_model_that_reads_images_says_so_beside_the_sett
         };
         Supervisor::new(parts, config).sight_note().await
     };
-    assert_eq!(note(true, true).await, Some(computer_use_run::NO_SIGHT_NOTE));
+    assert_eq!(
+        note(true, true).await,
+        Some(computer_use_run::NO_SIGHT_NOTE)
+    );
     assert_eq!(
         note(false, true).await,
         None,
@@ -368,7 +372,9 @@ async fn kill_chord_finishes_all_runs() {
     let first = sup.start(CuaCaller::Router, task()).await.unwrap();
     until(&sup, &first, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     let mut other = task();
-    other.target = computer_use_bus::TaskTarget::Window(computer_use_desktop::ToplevelIdent::parse("w2").unwrap());
+    other.target = computer_use_bus::TaskTarget::Window(
+        computer_use_desktop::ToplevelIdent::parse("w2").unwrap(),
+    );
     let second_id = sup.start(CuaCaller::Router, other).await.unwrap();
     // The first run waits for the person and has let the model go, so the second gets it.
     until(&sup, &second_id, |p| {

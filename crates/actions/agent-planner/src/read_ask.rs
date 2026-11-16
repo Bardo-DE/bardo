@@ -2,9 +2,9 @@
 //! which one and what it looks like, instead of the turn failing on an unreadable reply.
 
 use crate::want::settle_want;
-use agent_loop::ModelOutput;
 use action_core::{HandleShape, ReadFault, ReaderAsk, ReaderTask, ReplyFault, ValueSchema};
 use action_vocab::Handle;
+use agent_loop::ModelOutput;
 use serde_json::Value as Json;
 
 /// The most handles one read may name: a model that lists hundreds has not chosen.

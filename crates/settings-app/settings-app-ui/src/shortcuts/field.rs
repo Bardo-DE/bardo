@@ -1,8 +1,8 @@
 //! How a chord is shown and changed in a row: quire's recorder. The one file that names it.
 
 use crate::copy::shortcuts::{action_name, standard_action_name};
-use settings_app_model::{ShortcutRow, ShortcutsInput};
 use dioxus::prelude::*;
+use settings_app_model::{ShortcutRow, ShortcutsInput};
 use ui_components::prelude::*;
 
 /// The recorder of `row`: a chord recorded is set, Delete clears, Escape changes nothing. While

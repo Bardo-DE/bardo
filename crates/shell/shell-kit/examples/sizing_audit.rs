@@ -5,6 +5,9 @@
 //! `cargo run --release -p ui-blitz --example sizing_audit -- OUT_DIR`
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use std::path::PathBuf;
+use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::button_model::{Answers, ImagePosition};
 use ui_components::components::controls::segmented::Tracking;
@@ -16,9 +19,6 @@ use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Harness, Viewport};
-use shell_kit::prelude::*;
-use std::path::PathBuf;
-use std::time::Duration;
 
 const PARTS: [&str; 16] = [
     ".ds-toggle",

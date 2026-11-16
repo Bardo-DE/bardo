@@ -2,9 +2,9 @@
 //! `ProviderError` to `ModelError`, `StopReason` both ways. The only place the two vocabularies
 //! meet on the way out.
 
-use model_provider as sp;
 use account_ids::Tokens;
 use inference_core as pi;
+use model_provider as sp;
 
 use crate::scores::{NoScores, option_scores};
 

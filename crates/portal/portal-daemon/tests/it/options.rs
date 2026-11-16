@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
+use portal_core::{
+    CastSource, CursorMode, Extent, Keep, Multiple, PersistMode, PwNode, RestoreToken, SourceKinds,
+};
 use portal_daemon::screencast::Dict;
 use portal_daemon::screencast::options::{
     StreamInfo, cursor_modes, granted_results, restore_data, restore_token, selection,
-};
-use portal_core::{
-    CastSource, CursorMode, Extent, Keep, Multiple, PersistMode, PwNode, RestoreToken, SourceKinds,
 };
 use zbus::zvariant::{OwnedValue, Structure, StructureBuilder, Value};
 

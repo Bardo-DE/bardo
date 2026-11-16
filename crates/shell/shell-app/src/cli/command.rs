@@ -2,10 +2,10 @@
 //! group's file.
 
 use clap::Subcommand;
-use ui_core::word::Word;
 use shell_ipc::act::{DisplayRequest, SwitcherRequest, WorkspaceRequest};
 use shell_ipc::show::{CompanionRequest, Reveal, VoiceRequest};
 use shell_model::screenshots::ShotKind;
+use ui_core::word::Word;
 
 use super::action::DoArgs;
 use super::debug::DebugAction;

@@ -3,9 +3,9 @@
 
 use crate::machine::finish::said_of;
 use crate::turn::sent_input;
+use account_core::AppName;
 use computer_use_action::{CuaAction, WindowSpace};
 use computer_use_bus::{ActionResult, CuaOutcome, CuaRecord, LocalRefusal, Refusal};
-use account_core::AppName;
 use provenance::RunId;
 use serde::{Deserialize, Serialize};
 
@@ -155,7 +155,9 @@ pub fn steps_words(tried: &[Tried]) -> String {
 
 /// What a stalled run tells its planner: the screen stopped changing, and what was tried.
 pub fn stall_words(tried: &[Tried]) -> String {
-    let base = said_of(CuaOutcome::BudgetOut(computer_use_bus::RunBudgetKind::Stall));
+    let base = said_of(CuaOutcome::BudgetOut(
+        computer_use_bus::RunBudgetKind::Stall,
+    ));
     if tried.is_empty() {
         return base.to_owned();
     }

@@ -63,9 +63,9 @@ mod pane {
     use anyview_peek::{AnyPeeked, Card};
     use dioxus::core::VirtualDom;
     use dioxus::prelude::*;
+    use std::sync::Arc;
     use ui_components::assembly::ds::Inject;
     use ui_components::prelude::{Appearance, Ds, Material};
-    use std::sync::Arc;
 
     #[derive(Props, Clone, PartialEq)]
     struct Setup {

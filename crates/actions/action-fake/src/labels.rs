@@ -1,9 +1,9 @@
 //! Literal labels for fixtures: the fakes write the few labels they need out in full, so a
 //! fixture shows exactly what an app reports.
 
+use account_core::{AppName, DataClass};
 use action_core::{Follow, Outcome, Preview, Undoable};
 use action_vocab::{EntityRef, LabelText};
-use account_core::{AppName, DataClass};
 use provenance::{
     Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled, Source, SpaceId,
 };

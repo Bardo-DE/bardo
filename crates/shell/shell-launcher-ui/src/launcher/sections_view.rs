@@ -9,12 +9,16 @@
 use std::path::Path;
 
 use dioxus::prelude::*;
-use ui_components::components::content::image_source::ImageSize;
-use ui_components::components::lists::emoji_grid::grid::{EMOJI_CELL, EMOJI_COLUMNS, EmojiCell, EmojiCells};
-use ui_components::components::lists::row::shape::{ClipBody, RowShape};
-use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups, PaletteRow};
-use ui_components::prelude::*;
 use shell_launcher::{ClipKey, ClipKind, Item, More, Section, ShownSection, Subject, UnixTime};
+use ui_components::components::content::image_source::ImageSize;
+use ui_components::components::lists::emoji_grid::grid::{
+    EMOJI_CELL, EMOJI_COLUMNS, EmojiCell, EmojiCells,
+};
+use ui_components::components::lists::row::shape::{ClipBody, RowShape};
+use ui_components::components::menus::palette::palette_group::{
+    PaletteGroup, PaletteGroups, PaletteRow,
+};
+use ui_components::prelude::*;
 
 use crate::launcher::entries::{RowRef, kind_trail, row_chord};
 use crate::launcher::groups::Mix;

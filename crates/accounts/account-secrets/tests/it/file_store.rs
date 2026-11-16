@@ -5,9 +5,9 @@
 use account_core::AccountId;
 use account_core::{Credential, SecretKey, SecretPurpose, SecretText};
 use account_secrets::{FileSecrets, FileSecretsError, Namespace, Secrets, SecretsError};
+use base_testkit::Scratch;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
-use base_testkit::Scratch;
 
 fn key(account: &str) -> SecretKey {
     SecretKey {

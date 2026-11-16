@@ -5,10 +5,10 @@ use crate::components::lists::emoji_grid::nav::{GridMove, GridStep, grid_step};
 use crate::components::lists::list::keys::{ListKey, list_key};
 use crate::components::lists::virtual_list::model::roved;
 use crate::stack::roving::{Edge, Rove};
-use keymap::Platform;
 use dioxus::prelude::{Key, Modifiers};
-use ui_core::command::holds_primary;
+use keymap::Platform;
 use std::ops::Range;
+use ui_core::command::holds_primary;
 
 /// What a key asks of a collection.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -92,8 +92,8 @@ mod tests {
     use super::{CollectionKey, collection_key, target, tiles_in};
     use crate::components::lists::emoji_grid::nav::GridStep;
     use crate::stack::roving::Edge;
-    use keymap::Platform;
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::Platform;
 
     #[test]
     fn a_key_is_read_as_an_arrow_an_edge_an_open_or_letters_and_the_rest_are_left_alone() {

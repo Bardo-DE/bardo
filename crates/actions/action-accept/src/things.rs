@@ -10,13 +10,13 @@
 //! untrusted, from the source the app's manifest names for its content.
 
 use crate::provider::{AppLog, Message, Sending, words_match};
+use account_core::{AppName, DataClass};
 use action_core::{
     AppRefusal, Follow, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault, Undoable,
 };
 use action_manifest::{ArgSink, ResultShape, TargetKind, ValidManifest};
 use action_provider::IntentProvider;
 use action_vocab::{EntityRef, LabelText, ParamName, TargetValue, UndoToken, Value};
-use account_core::{AppName, DataClass};
 use provenance::{
     Actor, Confidentiality, Effect, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled,
     Source, SpaceId,

@@ -29,9 +29,6 @@ pub use arrangement::{
     Arrangement, BackdropTarget, ConfigureNeed, DividerTarget, LayoutReport, OverviewSlot,
     SlotKind, SpaceTarget, SpaceThumb, WindowTarget,
 };
-pub use ui_style::appearance::theme::{Scheme, Theme};
-pub use ui_style::appearance::transparency::Transparency;
-pub use ui_style::tokens::chrome::GroupHover;
 pub use frame::{frame_style, metrics as frame_metrics, pressed, scheme_of};
 pub use knobs::LayoutKnobs;
 pub use look::{
@@ -45,3 +42,6 @@ pub use spec::{
     OutputSpec, OverviewKind, SceneMode, SceneSpec, SpaceArrangement, SpaceSpec, StackIndex,
     WindowPlacement, WindowSpec,
 };
+pub use ui_style::appearance::theme::{Scheme, Theme};
+pub use ui_style::appearance::transparency::Transparency;
+pub use ui_style::tokens::chrome::GroupHover;

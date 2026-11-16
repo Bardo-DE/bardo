@@ -4,12 +4,12 @@
 
 use super::facts::{ActiveFacts, AppFacts, Objects, SpaceFacts, WindowFacts};
 use super::{AppData, Bound, DesktopView, Makers, SpaceData, WindowData};
+use account_core::SpaceId;
 use compositor_core::WindowId;
 use compositor_core::app::AppKey;
 use compositor_core::desktop::DesktopRef;
 use desktop_protocols::server::quire_desktop_v1::quire_desktop_manager_v1::ActorKind;
 use desktop_protocols::server::quire_desktop_v1::quire_desktop_window_v1::QuireDesktopWindowV1;
-use account_core::SpaceId;
 use smithay::reexports::wayland_server::Resource;
 use std::collections::BTreeMap;
 

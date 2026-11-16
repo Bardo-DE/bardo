@@ -8,7 +8,7 @@
 //! A node qualifies when it is a mouse (`REL_X`, `REL_Y`) with multitouch slots
 //! (`ABS_MT_SLOT`, `ABS_MT_TRACKING_ID`, `ABS_MT_POSITION_X/Y`). Touchpads never do: a node
 //! udev tags `ID_INPUT_TOUCHPAD=1`, or that has `BTN_TOOL_FINGER` (what that tag is derived
-//! from), is skipped, so touchpads stay with libinput and shell-host's own scroll physics. The
+//! from), is skipped, so touchpads stay with libinput and layer-shell-host's own scroll physics. The
 //! node is opened read-only and never grabbed.
 
 use super::sys::{self, AbsInfo, MtAxis};

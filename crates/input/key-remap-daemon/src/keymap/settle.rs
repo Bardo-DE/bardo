@@ -4,8 +4,8 @@
 //! on top: a file that is unusable, or whose every line is bad, is a bad edit (half a save, a
 //! pasted error), so the last good copy stays in force and the problem is reported.
 
-use keymap::{Desktop, Keymap, OverrideProblem, Overrides, Platform};
 use key_remap_proto::{KeymapProblem, KeymapState};
+use keymap::{Desktop, Keymap, OverrideProblem, Overrides, Platform};
 
 use key_remap_client::FileText;
 

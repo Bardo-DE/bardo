@@ -4,15 +4,15 @@
 
 use crate::common;
 
-use common::{Proc, eventually};
-use sync_rig::rigfile::RigFile;
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, Scheme, post_form, send};
 use account_rig::control::call;
 use account_rig::planted;
+use base_testkit::Scratch;
+use common::{Proc, eventually};
 use serde_json::Value;
 use std::net::TcpStream;
-use base_testkit::Scratch;
+use sync_rig::rigfile::RigFile;
 
 fn json(text: &str) -> Value {
     serde_json::from_str(text).expect("JSON")

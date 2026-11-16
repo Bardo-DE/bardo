@@ -5,6 +5,7 @@
 //! `content` takes the title's place and moves nothing.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::components::lists::row::row::Outline;
@@ -14,7 +15,6 @@ use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

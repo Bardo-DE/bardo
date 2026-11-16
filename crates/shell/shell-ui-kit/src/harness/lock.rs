@@ -1,5 +1,5 @@
 //! [`LockHarness`]: a [`LockSurface`] mounted in a `ui_harness::Harness` outside a lock document
-//! (no shell-host `LockHandle`, as in every test), on the fake services, a pinned appearance and
+//! (no layer-shell-host `LockHandle`, as in every test), on the fake services, a pinned appearance and
 //! the virtual clock, with the surface's link in the test's hand.
 
 use std::fmt;
@@ -7,11 +7,11 @@ use std::rc::Rc;
 
 use crate::settings::SettingsFeed;
 use dioxus::prelude::*;
-use ui_components::style::kit::Styles;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use layer_shell_host::OutputInfo;
 use shell_settings::ShellFile;
 use tokio::sync::watch;
+use ui_components::style::kit::Styles;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 use super::fake;
 use super::surface::{Build, WORLD, app};

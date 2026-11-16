@@ -4,13 +4,13 @@
 //! `use_service::<NetworkService>`; sends `WifiCommand::Radio`.
 
 use dioxus::prelude::*;
-use ui_components::components::content::status::wifi_state::WifiState;
-use ui_components::prelude::*;
+use shell_kit::prelude::*;
 use shell_model::network::Network;
 use shell_model::units::Presence;
 use shell_model::wifi::{Radio, Wifi, WifiCommand};
 use shell_services::WifiService;
-use shell_kit::prelude::*;
+use ui_components::components::content::status::wifi_state::WifiState;
+use ui_components::prelude::*;
 
 use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
 use crate::bar::{BarMenu, StatusIcon};
@@ -128,15 +128,15 @@ impl CcModule for WifiCc {
 #[cfg(test)]
 mod tests {
     use super::{radio_availability, radio_of, radio_state, wifi_tile_state};
-    use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
-    use ui_components::motion::detail::stamp::EventStamp;
-    use ui_components::prelude::*;
     use shell_model::network::{Connectivity, Link, Network};
     use shell_model::wifi::{Radio, Wifi};
     use shell_model::{
         attempt::{Attempt, Attempts, OpStamp},
         units::{Percent, Presence},
     };
+    use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
+    use ui_components::motion::detail::stamp::EventStamp;
+    use ui_components::prelude::*;
 
     fn wifi(device: Presence, radio: Radio) -> Wifi {
         Wifi {

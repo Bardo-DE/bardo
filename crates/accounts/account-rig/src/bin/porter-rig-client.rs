@@ -28,10 +28,10 @@
 //!
 //! Identity: see `account_rig::fixture`. Test tooling, never installed.
 
-use clap::Parser;
-use clap::error::ErrorKind;
 use account_rig::client::{Command, run};
 use account_rig::fixture::Identity;
+use clap::Parser;
+use clap::error::ErrorKind;
 use std::path::PathBuf;
 use std::process::ExitCode;
 

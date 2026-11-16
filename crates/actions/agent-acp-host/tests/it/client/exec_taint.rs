@@ -4,13 +4,13 @@
 
 use super::agent::{AGENT_SESSION, Act, call};
 use super::rig::{CWD, Setup, abs, always, once, program, read, run_turn, started};
-use sandbox::{Network, NetworkMode, fake::Script};
 use action_core::AuditRecord;
 use permission_core::{
     AlwaysOffer, CommandPrefix, GrantCaller, StandingGrant, StandingScope, TERMINAL_RUN, Withheld,
     acp_agent_action,
 };
 use provenance::UnixSeconds;
+use sandbox::{Network, NetworkMode, fake::Script};
 use serde_json::json;
 
 fn run(tag: &'static str, command: &str, args: &[&str]) -> Act {

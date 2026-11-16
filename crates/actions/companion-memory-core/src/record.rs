@@ -1,18 +1,18 @@
 //! The router's records as almanac's events. Never content: ids, kinds, decisions. A message and
 //! an episode are almanac's own bodies; everything else is an `Area { area: Docket }` payload
-//! in `docket-core`'s serde form, with the things it names for cascade-forget.
+//! in `action-core`'s serde form, with the things it names for cascade-forget.
 //!
-//! What memoryd checks of a record from the router (almanac-service `record_fault`): a message
+//! What memoryd checks of a record from the router (memory-service `record_fault`): a message
 //! was sent by the record's actor, an episode's skeleton is trusted and its Space is the
 //! record's, and the record's label covers the labels of the documents it carries. Each arm
 //! below meets those by construction.
 
+use account_core::AppName;
+use action_core::AuditRecord;
 use memory_core::{
     AreaPayload, AreaTag, Cause, EventBody, JsonText, KindTag, Record, ThingRole, ThingView,
     UserText,
 };
-use action_core::AuditRecord;
-use account_core::AppName;
 use provenance::{
     Actor, AgentRef, AgentRole, Confidentiality, Effect, Integrity, Label, SessionId, Source,
     SpaceId, SystemPart, UnixSeconds,

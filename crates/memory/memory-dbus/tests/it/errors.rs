@@ -18,10 +18,7 @@ fn refusals_map_one_to_one_to_error_names() {
         (Refusal::Busy, "Busy"),
         (Refusal::SpaceFull, "SpaceFull"),
         (Refusal::Unavailable, "Unavailable"),
-        (
-            Refusal::NotKept(memory_core::DropReason::Paused),
-            "NotKept",
-        ),
+        (Refusal::NotKept(memory_core::DropReason::Paused), "NotKept"),
         (Refusal::Invalid("x".into()), "Invalid"),
     ];
     let mut names = std::collections::BTreeSet::new();

@@ -1,7 +1,7 @@
 //! The wall clock and the per-computer jitter seed; the only readers of either.
 
-use updater_core::{Sha256Hex, UnixSeconds};
 use std::time::{SystemTime, UNIX_EPOCH};
+use updater_core::{Sha256Hex, UnixSeconds};
 
 /// The time now.
 pub fn now() -> UnixSeconds {

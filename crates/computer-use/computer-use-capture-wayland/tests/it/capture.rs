@@ -3,19 +3,21 @@
 //! granted or refused.
 
 use crate::support::{FakeCompositor, Stance, Window};
-use desktop_protocols::server::quire_agent_v1::quire_agent_lease_v1::RevokeReason;
-use computer_use_action::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace};
-use computer_use_desktop::{
-    EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
-    ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
+use account_core::AppName;
+use account_ids::Px;
+use computer_use_action::{
+    Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
 };
 use computer_use_capture::{
     CaptureError, CaptureSession, DamageSource, FrameWant, MaskReason, MaskRegion, WholeMask,
     WindowCapture,
 };
 use computer_use_capture_wayland::{QuireMaskedCapture, StampClock, StockToplevelCapture};
-use account_core::AppName;
-use account_ids::Px;
+use computer_use_desktop::{
+    EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
+    ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
+};
+use desktop_protocols::server::quire_agent_v1::quire_agent_lease_v1::RevokeReason;
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -103,7 +105,10 @@ async fn a_frame_carries_the_windows_pixels_at_logical_resolution() {
     assert_eq!(frame.scale, Scale120(120));
     assert_eq!(frame.at, Stamp(41));
     assert_eq!(frame.seq.0, 1);
-    assert_eq!(frame.masks.applied_by, computer_use_desktop::MaskWhere::Cuad);
+    assert_eq!(
+        frame.masks.applied_by,
+        computer_use_desktop::MaskWhere::Cuad
+    );
     assert_eq!(frame.masks.whole, WholeMask::None);
     assert_eq!(frame.damage.len(), 1, "the first frame is all new");
     assert_eq!(frame.damage[0].size, Size::new(Coord(4), Coord(3)));
@@ -172,7 +177,10 @@ async fn a_still_window_gives_the_current_frame_when_the_wait_ends() {
         let first = session.frame(FrameWant::Now, &[]).await.expect("first");
         let started = std::time::Instant::now();
         let still = session.frame(want, &[]).await.expect("a frame, not a hang");
-        assert!(started.elapsed().as_millis() >= u128::from(computer_use_capture::AFTER_DAMAGE_LIMIT_MS));
+        assert!(
+            started.elapsed().as_millis()
+                >= u128::from(computer_use_capture::AFTER_DAMAGE_LIMIT_MS)
+        );
         assert!(still.damage.is_empty(), "{want:?}: nothing changed");
         assert_eq!(still.pixels, first.pixels, "{want:?}: the current frame");
 
@@ -310,7 +318,10 @@ async fn a_masked_frame_is_the_compositors_and_the_hints_go_to_it() {
         .expect("frame");
     // The fake compositor masks nothing: cuad did not either.
     assert_eq!(&*frame.pixels.data, &window.pixels[..]);
-    assert_eq!(frame.masks.applied_by, computer_use_desktop::MaskWhere::Compositor);
+    assert_eq!(
+        frame.masks.applied_by,
+        computer_use_desktop::MaskWhere::Compositor
+    );
     assert_eq!(frame.masks.regions, vec![region(1, 0, 2, 1)]);
     let words: Vec<u8> = [1u32, 0, 2, 1, 0]
         .into_iter()

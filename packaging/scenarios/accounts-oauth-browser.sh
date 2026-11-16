@@ -2,7 +2,7 @@
 # Scenario `accounts-oauth-browser` (design 31 §7.1): a Microsoft-shaped account is added through the browser
 # sign-in against the ferry rig's fake OAuth issuer, the identity is stored, and Graph (the rig's fake drive, which takes only
 # the access tokens the issuer minted) is reached by syncd (ferry's), which has no accounts of its own: it uses accountd's
-# account through porter-client over org.quire.Grants1, after one consent sheet for that account.
+# account through account-client over org.quire.Grants1, after one consent sheet for that account.
 #
 # The browser is the scenario's own `xdg-open` first on sill's PATH (harness/lib/accounts.sh sill_start): sill opens
 # the page the sheet shows (BrowserWait), the opener records the address and follows it with curl, redirects

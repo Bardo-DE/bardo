@@ -7,10 +7,10 @@
 //! The constants and the token defaults are the only two copies; a test compares them. The
 //! bar's height is quire's `SHELL_SCALE.bar` (`--shell-bar-h`).
 
-use ui_components::prelude::Px;
-use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 use shell_kit::tokens::launcher::LauncherToken;
 use shell_ui_kit::links::PanelPlace;
+use ui_components::prelude::Px;
+use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 
 /// `--sill-launcher-top-bar-gap`'s shipped value.
 pub const TOP_BAR_GAP: u16 = 24;
@@ -84,9 +84,9 @@ impl shell_ui_kit::hooks::ReadTokens for LauncherTokens {
 #[cfg(test)]
 mod tests {
     use super::{LauncherTokens, TOP_BAR_GAP, TOP_CENTRE_BIAS};
+    use shell_kit::tokens::launcher::LauncherToken;
     use ui_components::prelude::Px;
     use ui_components::style::tokens::token::TokenScope;
-    use shell_kit::tokens::launcher::LauncherToken;
 
     #[test]
     fn the_constants_are_the_tokens_defaults() {

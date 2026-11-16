@@ -8,14 +8,14 @@ use crate::companion_support;
 
 use std::sync::{Arc, Mutex};
 
+use action_core::Reveal;
+use action_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
+use action_vocab::Handle;
 use companion_support::stand_ins::{
     ActsAs, MAIL_HANDLE, StandInAnswer, StandInCompanion, StandInOlderSession, StandInSession,
 };
 use companion_support::{Desk, ask_input, json, serve, task, wire};
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire};
-use action_core::Reveal;
-use action_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
-use action_vocab::Handle;
 use shell_model::companion::{CompanionCommand, answer_line};
 use zbus::Connection;
 use zbus::zvariant::ObjectPath;

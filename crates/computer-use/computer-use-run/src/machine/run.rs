@@ -13,8 +13,8 @@ use crate::stall::Repeats;
 use computer_use_a11y_tree::NodeBudget;
 use computer_use_bus::{BudgetUse, CuaTask, RunStateSlug};
 use computer_use_desktop::{BackendCaps, LeaseId, Ms, Stamp};
-use permission_core::Level;
 use inference_core::ServedBy;
+use permission_core::Level;
 use provenance::{Label, RunId};
 use serde::{Deserialize, Serialize};
 

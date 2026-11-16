@@ -9,12 +9,12 @@
 use crate::planner::{PlanFault, PlannerModel};
 use crate::seam::Planner;
 use crate::step_text::step_line;
-use agent_loop::{SummaryInput, leaked_call};
-use action_core::{SummaryFault, SummaryText};
-use inference_client::Transport;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
+use action_core::{SummaryFault, SummaryText};
+use agent_loop::{SummaryInput, leaked_call};
+use inference_client::Transport;
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, ReplyShape, Role, ServedBy,
     StopReason, ToolChoice,
@@ -160,10 +160,10 @@ impl<P: Transport> PlannerModel<P> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use account_ids::Count;
     use action_core::Covers;
     use action_fake::WordsModel;
     use action_vocab::Handle;
-    use account_ids::Count;
     use provenance::Integrity;
 
     fn input() -> SummaryInput {

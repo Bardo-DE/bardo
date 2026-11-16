@@ -10,9 +10,9 @@
 //! plays, and only the shell begins.
 
 use crate::config::{VoiceRole, VoicedConfig};
+use account_core::AppName;
 use action_dbus::callers::{Caller, Callers, Identity, Role};
 use action_procroot::own_uid;
-use account_core::AppName;
 use std::sync::Arc;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;

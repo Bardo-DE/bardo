@@ -2,13 +2,13 @@
 //! the table, the ledger of each task until it ends (it becomes an episode), and the roster.
 
 use crate::state::SessionRecord;
-use memory_core::{Episode, EpisodeKind, EpisodeOutcome};
 use action_core::{
     Budget, LeadText, Reveal, Roster, RosterDetail, RosterFull, RosterLine, RosterState, StepLine,
     TaskTotals, totals_of,
 };
-use permission_core::{TaskPolicy, intersection};
 use action_wire::{TaskLedger, close};
+use memory_core::{Episode, EpisodeKind, EpisodeOutcome};
+use permission_core::{TaskPolicy, intersection};
 use provenance::{AgentRef, ReportStatus, SessionId, SpaceId, TaskId};
 use std::collections::BTreeMap;
 

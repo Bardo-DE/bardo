@@ -1,11 +1,11 @@
 //! recall's pure parts and the contracts the fill must meet.
 
 use memory_core::{Count, DegradedWhy, IndexView, RecallWhy, StaleWhy};
+use memory_recall::*;
 use memory_store::{
     EmbedRole, EmbedderCard, MaxBatch, Metric, PromptPrefixes, RrfK, Urgency, Vector, chunk,
     fuse_rrf, nearest_exact,
 };
-use memory_recall::*;
 
 fn id(s: &str) -> DocId {
     DocId(s.to_owned())

@@ -4,12 +4,10 @@
 //! text row per OAuth issuer for a bring-your-own client id. Sync switches are syncd's. What an
 //! account spent on hosted models is inferd's (`spend.month` and `spend.cap`, whose paths this
 //! module spells so that both modules name the same account). Every key is under `accounts.`, so
-//! it is never agent-settable (`ds-settings` refuses a schema that says otherwise).
+//! it is never agent-settable (`ui-settings` refuses a schema that says otherwise).
 
 use crate::spec as spec_of;
 use crate::{At, GrantRow, PERMITS, ROWS, Row};
-use ui_settings::live::LiveSchema;
-use ui_settings::schema::{Exposure, KeyKind, KeySpec};
 use account_core::consent::Grant;
 use account_core::{Account, AccountId, AccountState, AppName, GrantId, ProviderId};
 use account_ids::word::{from_word, word};
@@ -17,6 +15,8 @@ use account_provider::Issuer;
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
 use std::collections::BTreeMap;
+use ui_settings::live::LiveSchema;
+use ui_settings::schema::{Exposure, KeyKind, KeySpec};
 
 /// What the daemon knows that the registry does not: how a provider and an app are called, and
 /// where an account is listed.

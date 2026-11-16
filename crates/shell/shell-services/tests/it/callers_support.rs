@@ -6,8 +6,12 @@
 use std::fmt;
 use std::sync::{Arc, Mutex, PoisonError};
 
-use caller_identity_dbus::peephole::fake::{introduced_program, introduced_service, introduced_unverified};
-use caller_identity_dbus::caller_identity_core::{AppKey, ExePath, Pin, Proof, Standing, Table, WhyNot};
+use caller_identity_dbus::caller_identity_core::{
+    AppKey, ExePath, Pin, Proof, Standing, Table, WhyNot,
+};
+use caller_identity_dbus::caller_identity_linux::fake::{
+    introduced_program, introduced_service, introduced_unverified,
+};
 use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
 use shell_services::callers::{CallerSource, Peers};
 use zbus::Connection;

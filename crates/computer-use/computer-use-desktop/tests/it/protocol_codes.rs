@@ -1,10 +1,10 @@
 //! The glow, revoke, suspend and mode tables equal the generated `quire_agent_v1` enums.
 
+use computer_use_desktop::{GlowState, RevokeReason, RunMode, Suspend, WireCode, mode_code};
 use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::{
     GlowState as ProtocolGlow, RevokeReason as ProtocolRevoke, SuspendReason as ProtocolSuspend,
 };
 use desktop_protocols::client::quire_agent_v1::quire_agent_manager_v1::LeaseMode;
-use computer_use_desktop::{GlowState, RevokeReason, RunMode, Suspend, WireCode, mode_code};
 
 #[test]
 fn the_wire_tables_equal_the_protocol_enums() {
@@ -14,8 +14,14 @@ fn the_wire_tables_equal_the_protocol_enums() {
         WireCode(ProtocolGlow::Working as u32)
     );
     let at = computer_use_action::Rect {
-        origin: computer_use_action::Point::new(computer_use_action::Coord(0), computer_use_action::Coord(0)),
-        size: computer_use_action::Size::new(computer_use_action::Coord(1), computer_use_action::Coord(1)),
+        origin: computer_use_action::Point::new(
+            computer_use_action::Coord(0),
+            computer_use_action::Coord(0),
+        ),
+        size: computer_use_action::Size::new(
+            computer_use_action::Coord(1),
+            computer_use_action::Coord(1),
+        ),
     };
     assert_eq!(
         GlowState::Acting { at }.code(),

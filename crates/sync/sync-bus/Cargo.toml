@@ -1,6 +1,6 @@
 [package]
 name = "sync-bus"
-description = "ferry's D-Bus interfaces, each written once under porter-dbus's `#[bus_interface]`: org.quire.Sync1 (syncd's datasets), org.quire.Storage1 (the drives shown in Files) and, behind the `photos-picker` feature, org.quire.Photos1.Picker, with their bus names, object paths, option keys and row codecs."
+description = "ferry's D-Bus interfaces, each written once under account-dbus's `#[bus_interface]`: org.quire.Sync1 (syncd's datasets), org.quire.Storage1 (the drives shown in Files) and, behind the `photos-picker` feature, org.quire.Photos1.Picker, with their bus names, object paths, option keys and row codecs."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

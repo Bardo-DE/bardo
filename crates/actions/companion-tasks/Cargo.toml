@@ -1,6 +1,6 @@
 [package]
 name = "companion-tasks"
-description = "The companion's task model, portable: one identity over many tasks (TaskRuntime, the drive loop's effects, the roster, the front pointer, side conversations, the idle pass, restart recovery), generic over the router link, the `Planner`, the clock and the surface. companiond is its bus adapter; docket-inapp uses it in one app."
+description = "The companion's task model, portable: one identity over many tasks (TaskRuntime, the drive loop's effects, the roster, the front pointer, side conversations, the idle pass, restart recovery), generic over the router link, the `Planner`, the clock and the surface. companiond is its bus adapter; agent-inapp uses it in one app."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

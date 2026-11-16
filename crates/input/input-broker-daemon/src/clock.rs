@@ -1,8 +1,8 @@
 //! Time as an argument: the service reads the clock in one place.
 
+use input_broker_wire::Millis;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
-use input_broker_wire::Millis;
 
 /// A source of monotonic milliseconds.
 pub trait Clock: Send + Sync + 'static {

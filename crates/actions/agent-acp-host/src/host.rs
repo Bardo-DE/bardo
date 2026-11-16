@@ -15,21 +15,22 @@
 
 use super::backend::{AcpBackend, Seams};
 use super::running::RunningTurn;
+use action_core::{ConfirmId, Rewind, SheetSurface, TurnEnd as Ended, UserTurn};
+use action_vocab::TurnId;
 use agent_acp_core::cause::Step;
 use agent_acp_core::court::{Court, OpenAgent};
-use companion_model::{RunsIn, WatchedAgent};
-use action_core::{ConfirmId, Rewind, SheetSurface, TurnEnd as Ended, UserTurn};
 use agent_session::{
     BackendEvent, BackendFault, BackendKind, EndCause, HostFault, Opening, ResumePlan,
     SessionBackend, SessionExport, SessionHost, SheetChoice, SheetDesk, StartSession, TurnEnd,
 };
-use action_vocab::TurnId;
+use companion_model::{RunsIn, WatchedAgent};
 use futures_util::future::{Either, select};
 use provenance::SessionId;
 use std::future::Future;
 use std::pin::{Pin, pin};
 
-type Recording = Pin<Box<dyn Future<Output = Result<TurnId, agent_acp_core::court::CourtFault>> + Send>>;
+type Recording =
+    Pin<Box<dyn Future<Output = Result<TurnId, agent_acp_core::court::CourtFault>> + Send>>;
 
 /// A turn the router is recording and the agent has not yet been given.
 struct Opening2 {

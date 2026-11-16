@@ -5,8 +5,8 @@
 
 use crate::page::Page;
 use crate::progress_copy::ProgressCopy;
-use ui_components::prelude::*;
 use std::path::PathBuf;
+use ui_components::prelude::*;
 
 /// What the gallery was asked to do.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -147,8 +147,8 @@ mod tests {
     use super::{Args, parse};
     use crate::page::Page;
     use crate::progress_copy::ProgressCopy;
-    use ui_components::prelude::*;
     use std::path::PathBuf;
+    use ui_components::prelude::*;
 
     /// A command line and what it parses to: the arguments, or the start of the error.
     type Case = (&'static [&'static str], Result<Args, &'static str>);

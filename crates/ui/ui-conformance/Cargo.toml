@@ -1,6 +1,6 @@
 [package]
 name = "ui-conformance"
-description = "Behaviour tests for every quire component, driven through ds-harness on a real Blitz document. Test-only."
+description = "Behaviour tests for every quire component, driven through ui-harness on a real Blitz document. Test-only."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

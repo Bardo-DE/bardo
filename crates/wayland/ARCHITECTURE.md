@@ -1,15 +1,15 @@
 # Architecture
 
-casement-protocols holds the desktop's private Wayland protocols, `quire_*_v1`: the XML, the pure
+desktop-protocols holds the desktop's private Wayland protocols, `quire_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
 compositor. It is a leaf: it depends on nothing of ours, so the compositor (casement), the shell
-(sill, shell-host), the agent tier (cua, docket, porter's `prov`), the portal (transom) and
-quire's `ds-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
+(sill, layer-shell-host), the agent tier (cua, docket, porter's `prov`), the portal (transom) and
+quire's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
 
 ## 1. The crate and its layers
 
-One crate, `casement-protocols`, in three layers:
+One crate, `desktop-protocols`, in three layers:
 
 | Layer | Path | Built | Depends on |
 | --- | --- | --- | --- |
@@ -25,17 +25,17 @@ Allowed edges (checked by `scripts/check-boundary.sh`):
   wayland-backend, wayland-client, wayland-server, wayland-protocols and bitflags.
 - `src/vocab/` and `src/lib.rs` name no wayland crate.
 
-Consumers take the layer they need: pure crates (casement-core, sill-model, cua-desktop,
-docket-core, prov) take default features; Wayland clients take `client`; casement takes `server`.
+Consumers take the layer they need: pure crates (compositor-core, shell-model, computer-use-desktop,
+action-core, prov) take default features; Wayland clients take `client`; casement takes `server`.
 
 ## 2. The six protocols
 
 | File | Interfaces | Advertised on | Server | Clients |
 | --- | --- | --- | --- | --- |
 | `protocols/quire-desktop-v1.xml` | `quire_desktop_manager_v1` (version 2), `quire_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `quire_desktop_window_v1`, `quire_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | casement | sill (full), cuad (read-only) |
-| `protocols/quire-shell-v1.xml` | `quire_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | casement | sill through shell-host |
-| `protocols/quire-window-v1.xml` | `quire_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `quire_window_v1` | every connection | casement | shell-host, ds-blitz, any app |
-| `protocols/quire-sensitive-v1.xml` | `quire_sensitive_manager_v1`, `quire_sensitive_surface_v1` | every connection, once served | not served yet | shell-host, ds-blitz, any app |
+| `protocols/quire-shell-v1.xml` | `quire_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | casement | sill through layer-shell-host |
+| `protocols/quire-window-v1.xml` | `quire_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `quire_window_v1` | every connection | casement | layer-shell-host, ui-blitz, any app |
+| `protocols/quire-sensitive-v1.xml` | `quire_sensitive_manager_v1`, `quire_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
 | `protocols/quire-agent-v1.xml` | `quire_agent_manager_v1`, `quire_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
 | `protocols/quire-trusted-surface-v1.xml` | `quire_trusted_manager_v1`, `quire_trusted_surface_v1` | Shell connections, once served | not served yet | sill |
 
@@ -88,7 +88,7 @@ Vocab files: `window.rs` (window and placement enums), `app.rs`, `space.rs`, `sh
 `held_mods.rs`, `output.rs`, `agent.rs` (lease enums, `LeaseState`, `PressEdge`), `sensitive.rs`,
 `trusted.rs`, `actor.rs`, `privilege.rs` (the seven `Power`s with the words a
 person reads for each, `SubjectKind`, `Memory`, `Answer`, `AskId`). A vocab enum whose concept carries data in
-casement-core is named `…Kind` (`WindowStateKind`, `SpaceKind`, `AppLifeKind`).
+compositor-core is named `…Kind` (`WindowStateKind`, `SpaceKind`, `AppLifeKind`).
 
 ## 4. The canonical trait
 
@@ -173,18 +173,18 @@ holds the frozen interface as tables (every message with its arguments, every er
 
 ## 8. `desktop-client` (second package, `desktop-client/`)
 
-The workspace has three members: `casement-protocols` (the repo root), `desktop-client` and `shell-verbs` (section 9). The
+The workspace has three members: `desktop-protocols` (the repo root), `desktop-client` and `shell-verbs` (section 9). The
 second is the one typed Wayland desktop client (amendment A3 of the P1 library plan): the
 standard wlroots-style protocols plus the Quire arm (`quire_desktop_v1`, `quire_shell_v1`,
 filled at P2-Z-dc). It is a separate package so a consumer that wants only toplevels and
 outputs on a stock compositor does not take the private bindings: its core takes
-`casement-protocols` with default features (the pure vocab, serde and thiserror only), and its
-`client` feature takes `casement-protocols/client` for the generated bindings.
+`desktop-protocols` with default features (the pure vocab, serde and thiserror only), and its
+`client` feature takes `desktop-protocols/client` for the generated bindings.
 
 | Layer | Path | Built | Depends on |
 | --- | --- | --- | --- |
-| core | `desktop-client/src/` (all but `client/`, `fake/`) | always | thiserror, casement-protocols (vocab only) |
-| wire | `desktop-client/src/client/` | feature `client` | wayland-client, wayland-protocols (ext), wayland-protocols-wlr, rustix (memfd, no mmap), casement-protocols `client` (the `quire_*` bindings) |
+| core | `desktop-client/src/` (all but `client/`, `fake/`) | always | thiserror, desktop-protocols (vocab only) |
+| wire | `desktop-client/src/client/` | feature `client` | wayland-client, wayland-protocols (ext), wayland-protocols-wlr, rustix (memfd, no mmap), desktop-protocols `client` (the `quire_*` bindings) |
 | fake | `desktop-client/src/fake/` | feature `fake` | nothing beyond the core |
 
 Core, one concept per file:
@@ -215,7 +215,7 @@ a consumer that reads only toplevels is unchanged. `quire_shell_v1` is bound onl
 caller says it holds the shell role (`DesktopConfig::holding_shell()`); `admit` returns
 `CommandError::NotBound` for a shell command otherwise. A shell connection comes either from
 the environment or handed over (`client::WaylandRoute::{Environment, Handed(OwnedFd)}`, the
-shape of shell-host's own `WaylandRoute`).
+shape of layer-shell-host's own `WaylandRoute`).
 
 **Recipe: a new Quire command.** Add the variant and its `CommandRoute` (`DesktopCommand::route` in
 `command.rs`, which `requires_on` and `carries` read), its target check in

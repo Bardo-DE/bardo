@@ -6,7 +6,9 @@ use dioxus::prelude::*;
 use ui_components::components::app::link_pill::{LinkPill, LinkTarget};
 use ui_components::components::app::peek::Peek;
 use ui_components::components::app::send_pill::SendPill;
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::content::label::LabelRole;
 use ui_components::components::content::label::LabelStyle;
 use ui_components::components::content::text_runs::{RunTone, TextRun};
@@ -37,13 +39,13 @@ use ui_style::icon::render::Glyph;
 use ui_style::icon::url::IconUrl;
 use ui_style::tokens::control_size::ControlSize;
 
+use std::time::Duration;
 use ui_components::components::content::image_source::ImageSource;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::empty_state::EmptyForm;
 use ui_components::components::overlays::inline_banner::InlineBanner;
 use ui_components::components::overlays::sheet_attach::Attach;
 use ui_components::components::overlays::skeleton::{Skeleton, SkeletonShape};
-use std::time::Duration;
 
 /// One component in one state.
 pub struct Case {

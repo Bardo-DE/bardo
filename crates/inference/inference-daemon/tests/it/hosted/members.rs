@@ -2,15 +2,15 @@
 //! session must survive.
 
 use super::*;
-use inference_daemon::engines::Engines;
-use inference_daemon::peers::TablePeers;
-use inference_daemon::service::Inference;
 use account_dbus::Details;
 use account_ids::UnixSeconds;
 use account_ids::clock::FixedClock;
 use inference_core::{InferRefusal, ModelError, Readiness};
-use inference_turns::audit::Discard;
+use inference_daemon::engines::Engines;
+use inference_daemon::peers::TablePeers;
+use inference_daemon::service::Inference;
 use inference_dbus::inference::{InferenceProxy, InferenceServed, need_to_dbus};
+use inference_turns::audit::Discard;
 use zbus::object_server::Interface;
 
 async fn proxy(world: &World) -> InferenceProxy<'_> {

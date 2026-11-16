@@ -3,18 +3,18 @@
 //! `crate::control_center::modules`), the detail panes behind quire's `PaneSwitcher`,
 //! and Escape.
 
-use ui_components::focus::soon::focus_soon;
 use std::rc::Rc;
+use ui_components::focus::soon::focus_soon;
 
 use dioxus::prelude::*;
-use ui_components::components::lists::preview::switcher::PaneSwitcher;
-use ui_components::motion::pane_slide::Pane;
-use ui_components::prelude::*;
-use shell_model::ids::OutputName;
-use shell_settings::ControlCenterModule;
 use shell_kit::control_center::module_grid::GridColumns;
 use shell_kit::prelude::*;
 use shell_kit::tokens::control_center::CONTROL_CENTER;
+use shell_model::ids::OutputName;
+use shell_settings::ControlCenterModule;
+use ui_components::components::lists::preview::switcher::PaneSwitcher;
+use ui_components::motion::pane_slide::Pane;
+use ui_components::prelude::*;
 
 use super::modules::bluetooth_ask::{TurnOffAlert, provide_power_ask};
 use super::modules::{CcCx, Module, module};

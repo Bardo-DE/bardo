@@ -15,12 +15,12 @@ use crate::host::event_point::pointer_point;
 use crate::host::measure::{RectProbe, use_rect};
 use crate::keys::use_platform;
 use crate::root::common::Common;
-use keymap::Platform;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
+use keymap::Platform;
+use std::ops::Range;
 use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::selection::RowSelection;
-use std::ops::Range;
 
 /// A drag in progress, in the scroller's content coordinates.
 #[derive(Debug, Clone, PartialEq)]

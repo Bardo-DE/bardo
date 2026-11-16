@@ -1,4 +1,4 @@
-//! `MemoryLog`: the log in a vector, for tests and almanac-fake. The contract every log meets.
+//! `MemoryLog`: the log in a vector, for tests and memory-fake. The contract every log meets.
 
 use crate::chain::{BodyState, Entry};
 use crate::filter::passes;

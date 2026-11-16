@@ -1,8 +1,8 @@
 //! What the picker decides, pure: which output shows an offer, which half of the screen the tiles
 //! fill, and where the selection goes.
 
-use ui_behaviour::Dir;
 use shell_model::desktop::SplitSide;
+use ui_behaviour::Dir;
 
 /// Whether the offer made for the output called `offer_output` (empty when the desktop does not
 /// say) shows on the output named `name`.
@@ -35,8 +35,8 @@ pub(super) fn index_of(windows: &[&str], key: &str) -> Option<usize> {
 
 #[cfg(test)]
 mod tests {
-    use ui_behaviour::Dir;
     use shell_model::desktop::SplitSide;
+    use ui_behaviour::Dir;
 
     use super::{index_of, moved, other_half, shows_on};
 

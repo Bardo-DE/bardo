@@ -1,9 +1,9 @@
 //! The seam a snapshot comes through.
 
 use crate::model::{A11ySnapshot, NodeBudget};
+use account_core::AppName;
 use computer_use_action::{Size, WindowSpace};
 use computer_use_desktop::{Pid, WindowTitle};
-use account_core::AppName;
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 use std::future::Future;

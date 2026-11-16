@@ -11,8 +11,8 @@ those and no others.
 ## Crates and seams
 
 ```
-turnstile-wire    pure          kinds, ceilings, codec, rate limiter, key table
-turnstile-client  rustix        Broker (the socket), FakeSource; palmrest and keycap link this
+input-broker-wire    pure          kinds, ceilings, codec, rate limiter, key table
+input-broker-client  rustix        Broker (the socket), FakeSource; palmrest and keycap link this
 turnstile         rustix,       Daemon, serve, Session, policy; seams: Backend, Authority,
                   input-linux,  SeatSource, Clock
                   peephole
@@ -92,7 +92,7 @@ can only be filled by the system manager, and a person's process cannot put itse
 unit folders are not read (the service cannot open a home folder), and a user-manager unit is not
 admitted at all: the policy asks for a group under `/system.slice`.
 
-## The ceilings (`turnstile-wire/src/ceiling/`)
+## The ceilings (`input-broker-wire/src/ceiling/`)
 
 | Kind | Delivery | Device and per-event rules |
 |---|---|---|
@@ -125,9 +125,9 @@ palmrest from becoming a general typist.
 
 ## Tests
 
-- `turnstile-wire`: tables for every ceiling row, the codec (round trips, every prefix, random bytes),
+- `input-broker-wire`: tables for every ceiling row, the codec (round trips, every prefix, random bytes),
   the limiter, and a comparison of the key table with palmrest's source when it sits next to this one.
-- `turnstile-client`: a thread stands in for the service on a socket pair or a socket in a scratch
+- `input-broker-client`: a thread stands in for the service on a socket pair or a socket in a scratch
   folder: create, split events, handed descriptors, refusals, timeouts, full queue, gone peer.
 - `turnstile`: `Session` with a fake kernel (caps, flood, hostile events, failures); `serve` over a
   socket pair with the real client; the accept loop on a real socket (idle exit, the connection cap);

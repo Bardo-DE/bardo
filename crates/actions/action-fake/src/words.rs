@@ -1,15 +1,15 @@
 //! A model that only talks: every chat is answered with the same words and no tool call. For an
 //! example or a test that needs a planner to finish a turn without caring what it says.
 
-use inference_client::{Transport, TransportError};
 use account_capability::{Locality, ModelId, Tier};
 use account_core::{AccountId, DataClass};
 use account_ids::Tokens;
+use account_match::Need;
+use inference_client::{Transport, TransportError};
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferReply, InferRequest, InferSession, OpenOptions,
     ServedBy, SessionError, StopReason, TokenUsage,
 };
-use account_match::Need;
 
 /// The model transport that answers every chat with `says`.
 #[derive(Debug, Clone)]

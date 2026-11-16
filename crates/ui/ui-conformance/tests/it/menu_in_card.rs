@@ -3,13 +3,13 @@
 //! at the size its face has.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::geometry::placement::{Align, Side};
 use ui_components::base::vocab::Dismiss;
 use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

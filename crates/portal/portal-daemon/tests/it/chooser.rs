@@ -1,3 +1,6 @@
+use portal_core::{
+    CastSource, ChoiceRequest, CursorMode, Multiple, Offer, PersistMode, SourceKinds,
+};
 use portal_daemon::access::{AccessService, Answer, FakeAsker, Question, response_of};
 use portal_daemon::chooser::{
     Chooser, FakeChooser, ShellError, answer_from_wire, nobody_answers, source_from_wire,
@@ -5,9 +8,6 @@ use portal_daemon::chooser::{
 };
 use portal_daemon::names::AppNames;
 use portal_daemon::screencast::Dict;
-use portal_core::{
-    CastSource, ChoiceRequest, CursorMode, Multiple, Offer, PersistMode, SourceKinds,
-};
 use zbus::zvariant::{OwnedValue, Value};
 
 fn request() -> ChoiceRequest {

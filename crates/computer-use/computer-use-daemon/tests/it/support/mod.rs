@@ -4,11 +4,11 @@
 pub mod bus;
 
 use computer_use_bus::RunEnd;
+use computer_use_daemon::{CuadConfig, Supervisor, SupervisorEvent};
 use computer_use_desktop::BackendKind;
 use computer_use_fake::scene::{world, world_over};
 use computer_use_fake::{FakePdp, FakeSeams, Fixture};
 use computer_use_run::{CuaConfig, CuaModelError, CuaSignal};
-use computer_use_daemon::{CuadConfig, Supervisor, SupervisorEvent};
 use inference_core::CuaStepReply;
 use provenance::RunId;
 use std::time::Duration;

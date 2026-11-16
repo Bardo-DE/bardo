@@ -1,4 +1,4 @@
-//! The integration tests of peephole-core: one binary, a module per concept.
+//! The integration tests of caller-identity-core: one binary, a module per concept.
 
 mod cgroup;
 mod common;

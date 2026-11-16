@@ -3,8 +3,8 @@
 //! Pure data and mappings. The binary finds the folders (the XDG user directories that exist) and
 //! passes them in as [`Places`]; [`groups`] says what the sidebar lists; `view` draws it.
 
-use ui_components::prelude::FolderKind;
 use files_core::{CloudDrive, DriveId, FolderPath, Location, Volume, VolumeId};
+use ui_components::prelude::FolderKind;
 
 use crate::words;
 

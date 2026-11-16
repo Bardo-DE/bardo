@@ -3,15 +3,15 @@
 
 use crate::support::infer::{call, words};
 use crate::support::*;
+use account_core::{AppId, Isolation};
 use action_core::{TurnState, TurnVia, UserTurn};
+use action_vocab::{Caller, CallerRole, TurnId, Workspace};
+use action_wire::{CallerId, IntentsReply, IntentsRequest};
 use agent_session::fake::MemoryLog;
 use agent_session::{
     BackendEvent, BackendKind, CallEvent, DeskFault, EndCause, Opening, Read, Seq, SessionEntry,
     SessionHost, SheetChoice, SheetDesk, Standing, TurnEnd, read_all,
 };
-use action_vocab::{Caller, CallerRole, TurnId, Workspace};
-use action_wire::{CallerId, IntentsReply, IntentsRequest};
-use account_core::{AppId, Isolation};
 use provenance::{AgentRef, UnixSeconds};
 use serde_json::json;
 use std::sync::Arc;
@@ -256,8 +256,8 @@ impl SheetDesk for Canned {
 
     fn request(&self, id: &action_core::ConfirmId) -> Option<action_core::ConfirmRequest> {
         use action_core::*;
-        use permission_core::{AlwaysOffer, Withheld};
         use action_vocab::{LabelText, Seconds};
+        use permission_core::{AlwaysOffer, Withheld};
         Some(
             ConfirmRequest::new(ConfirmParts {
                 id: id.clone(),

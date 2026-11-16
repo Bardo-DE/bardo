@@ -6,14 +6,14 @@
 
 use super::common;
 
-use common::bus::PrivateBus;
-use common::eventually;
-use common::fake_accountd::{FakeAccountd, Sheets};
 use account_client::{AiKeysError, LinkError};
 use account_client_dbus::{AiKeys, Bus};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_wire::{ParentWindow, Refusal};
+use common::bus::PrivateBus;
+use common::eventually;
+use common::fake_accountd::{FakeAccountd, Sheets};
 use std::sync::Arc;
 
 /// A private bus with the fake on it, and a client connection.

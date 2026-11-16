@@ -341,10 +341,13 @@ fn the_tool_changes_only_after_every_contact_lifted() {
     let scroll = stroke(2, Axis::Y, 5.0, 4, 12.0);
     let end = scroll.end_ms();
     let swipe = stroke(2, Axis::X, 30.0, 30, 12.0);
-    let shifted = swipe.records.iter().map(|r| mouse_gestures_daemon::recording::Record {
-        at: Mono(r.at.0 - 1_000_000_000 + ((end + 100.0) * 1e6) as u64),
-        bytes: r.bytes.clone(),
-    });
+    let shifted = swipe
+        .records
+        .iter()
+        .map(|r| mouse_gestures_daemon::recording::Record {
+            at: Mono(r.at.0 - 1_000_000_000 + ((end + 100.0) * 1e6) as u64),
+            bytes: r.bytes.clone(),
+        });
     let records: Vec<_> = scroll.records.iter().cloned().chain(shifted).collect();
     let frames = pad(&outs_of(&drive(Tracker::new(Config::default()), &records)));
     let tools: Vec<u16> = frames

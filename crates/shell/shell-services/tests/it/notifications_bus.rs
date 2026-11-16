@@ -1,4 +1,4 @@
-//! The notifications server on a private `dbus-daemon` (`sill-testkit`), never the
+//! The notifications server on a private `dbus-daemon` (`shell-testkit`), never the
 //! session bus: the person's own daemon holds `org.freedesktop.Notifications` there (on this
 //! machine, plasmashell). Without a `dbus-daemon` they say so and skip.
 //!

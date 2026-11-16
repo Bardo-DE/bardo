@@ -14,6 +14,7 @@ use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_core::vocab::Dismiss;
 use ui_core::word::Word;
@@ -24,7 +25,6 @@ use ui_motion::presence::{
     use_presence::{Presented, use_presence},
 };
 use ui_style::tokens::layer::ZLayer;
-use std::rc::Rc;
 
 /// A sheet.
 ///

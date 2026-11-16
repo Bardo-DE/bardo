@@ -3,6 +3,7 @@
 //! preview pane's action ends in a plain chord at its label's size, not in key caps.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::preview::content::PaneContent;
 use ui_components::components::lists::preview::pane::PaneAction;
 use ui_components::components::lists::row::shape::RowShape;
@@ -10,7 +11,6 @@ use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 1000,

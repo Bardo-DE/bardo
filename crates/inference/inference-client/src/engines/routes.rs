@@ -7,10 +7,10 @@ use super::engine::{Engine, EngineError, EngineId, KeyUse};
 use super::keys::KeySource;
 use account_capability::{Billing, Tier};
 use account_core::DataClass;
+use account_match::Need;
 use inference_core::{
     InferRefusal, Permit, Policy, RouteAsk, RouteCandidate, Slot, SpendVerdict, admit,
 };
-use account_match::Need;
 
 /// One row: these engines, most preferred first, serve `slot` at `tier`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,7 +82,7 @@ impl Table {
     }
 
     /// The engine that answers a session for `need`, `class` and `tier`: the first of the row
-    /// that porter-infer's `admit` (the hard rules, in the one place they are) lets through, with
+    /// that inference-core's `admit` (the hard rules, in the one place they are) lets through, with
     /// an engine that wants a key admitted only when `keys` has one.
     pub(crate) async fn choose(
         &self,

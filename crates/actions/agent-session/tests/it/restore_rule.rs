@@ -1,9 +1,9 @@
 //! Who may restore a stored plan: the opener rule, and an editor in a helper's conversation.
 
 use crate::support::*;
-use companion_model::helper::{HelperName, HelperSeat, SeatPlace};
-use agent_session::*;
 use action_vocab::CallerRole;
+use agent_session::*;
+use companion_model::helper::{HelperName, HelperSeat, SeatPlace};
 use provenance::AppName;
 
 fn plan_with(place: Option<SeatPlace>) -> ResumePlan {

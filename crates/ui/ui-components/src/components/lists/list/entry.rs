@@ -7,6 +7,7 @@ use crate::components::lists::list::reorder::Dragged;
 use crate::host::measure::client_rect;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::word::Word;
 use ui_motion::presence::Presence;
 use ui_motion::roster::{Heal, RosterEntry, RowPitch, presence_slug};
@@ -14,7 +15,6 @@ use ui_motion::use_roster::Pitches;
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
 use ui_style::task::spawn_in;
-use std::rc::Rc;
 
 /// Where an item stands among the `len` items of its set, for a screen reader and for a selector
 /// that addresses the nth item (`[aria-posinset="2"]`).

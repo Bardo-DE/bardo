@@ -5,10 +5,10 @@
 
 use crate::month_grid::data::{DayKey, Eventful, MonthDay, MonthKey, MonthWeek};
 use dioxus::prelude::*;
+use std::cmp::Ordering;
 use ui_components::base::word::Word;
 use ui_components::motion::anim::Anim;
 use ui_components::motion::timer::{TimerPhase, use_motion_timer};
-use std::cmp::Ordering;
 
 /// How a month's weeks arrive.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

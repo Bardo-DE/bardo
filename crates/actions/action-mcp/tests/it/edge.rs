@@ -1,18 +1,18 @@
 //! The edge end to end, in process: an rmcp client over a duplex pipe, the edge as its server,
 //! the router and the fake mail app behind it. No bus, no process, no network.
 
-use action_mcp::*;
-use action_tools::*;
+use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use account_core::{AppId, AppName, Isolation};
 use action_client::{InProcess, Intents, Transport, TransportError};
 use action_core::*;
 use action_fake::{FakeSeams, MailThread, fake_router};
 use action_manifest::ArgsFault;
-use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
+use action_mcp::*;
 use action_router::{GrantStore, Router};
+use action_tools::*;
 use action_vocab::{CallRequest, CallerRole, Origin};
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
-use account_core::consent::{Decision, Grant, GrantScope, Usage};
-use account_core::{AppId, AppName, Isolation};
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{ClientName, DataClass, Integrity, Source, SpaceId, SpaceScope, UnixSeconds};
 use rmcp::model::{CallToolRequestParams, CallToolResult};
 use rmcp::{RoleClient, ServiceExt, service::RunningService};

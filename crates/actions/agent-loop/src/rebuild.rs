@@ -3,9 +3,9 @@
 //! events, the computer-use runs' states and the episodes. Events come oldest first.
 
 use crate::front::{FrontEvent, front_step};
-use memory_core::{Episode, EpisodeOutcome};
-use companion_wire::{AnswerPhase, SessionRecord};
 use action_core::{LeadText, Roster, RosterDetail, RosterFull, RosterLine, RosterState};
+use companion_wire::{AnswerPhase, SessionRecord};
+use memory_core::{Episode, EpisodeOutcome};
 use provenance::{
     AgentRef, Message, MessageKind, Part, ReportStatus, RunId, SpaceId, TaskId, UnixSeconds,
 };

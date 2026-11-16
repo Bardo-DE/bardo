@@ -41,7 +41,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 account-secrets = { path = ".", features = ["oo7"] }
 
 [features]
-# `MemorySecrets`, for tests and porter-fake.
+# `MemorySecrets`, for tests and account-fake.
 testing = []
 # `FileSecrets`, one 0600 JSON file of plain-text credentials, for private-bus and scratch runs.
 # TEST ONLY: never default, never in a release or dist build (a daemon's `test-keys` turns it on;

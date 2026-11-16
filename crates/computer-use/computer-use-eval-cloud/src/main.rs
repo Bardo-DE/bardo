@@ -11,6 +11,13 @@
 //! with an environment that holds no key. The program checks that itself and says so.
 //! Exit status: 0 when the run finished or was stopped by its budget, 2 when it could not be set up.
 
+use account_capability::LlmFeature;
+use account_capability::Tier;
+use account_core::DataClass;
+use account_core::consent::Usage;
+use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
 use computer_use_eval::corpus::Corpus;
 use computer_use_eval::eval::{Cassette, Lot, run_live_until};
 use computer_use_eval::flags::FlagError;
@@ -23,15 +30,8 @@ use computer_use_eval_cloud::provider::InferdProvider;
 use computer_use_eval_cloud::request::SamplingFrom;
 use computer_use_eval_cloud::watch::{Totals, Watch};
 use inference_client::{DbusTransport, OpenOptions, Transport};
-use model_catalog::parse_entry;
-use account_capability::LlmFeature;
-use account_capability::Tier;
-use account_core::DataClass;
-use account_core::consent::Usage;
-use account_ids::Tokens;
 use inference_core::ServedBy;
-use account_match::LlmNeed;
-use account_match::Need;
+use model_catalog::parse_entry;
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 use std::process::ExitCode;

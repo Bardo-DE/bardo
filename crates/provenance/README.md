@@ -5,7 +5,7 @@ the labels that follow data (integrity, confidentiality, source) with the `Witne
 them. Also the message shape and the OpenTelemetry names the program's daemons share.
 
 Used by docket, almanac, sill, detent and files, each pinned by git rev. Its ids come from
-`porter-core`, pinned at the same porter rev as every consumer (porter moves first, then prov).
+`account-core`, pinned at the same porter rev as every consumer (porter moves first, then prov).
 
 Moved out of porter on 2026-10-28, unchanged since porter dcc16ada.
 

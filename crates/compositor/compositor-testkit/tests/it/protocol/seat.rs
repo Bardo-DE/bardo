@@ -4,7 +4,6 @@ use compositor_core::geometry::{LogicalPoint, PhysicalSize, SubPoint, SubPx};
 use compositor_core::input::{AxisFrame, AxisSource, DeviceClass, KeyCode};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::settings::RepeatRate;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::seat::pointer::Pointer;
 use compositor_testclient::surface::layer::{
@@ -12,6 +11,7 @@ use compositor_testclient::surface::layer::{
 };
 use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 /// A layer that spans the whole output at `level` and takes no keyboard.

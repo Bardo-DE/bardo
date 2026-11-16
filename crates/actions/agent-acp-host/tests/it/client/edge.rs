@@ -5,11 +5,11 @@
 
 use super::agent::{Act, Offered, bridge_call, bridge_list};
 use super::rig::{Rig, Setup, abs, always, ended_with, no, once, program, run_turn, started};
-use agent_acp_host::{ToolsEdge, ToolsOffer};
 use action_core::AuditRecord;
 use action_fake::{MailContact, MailThread};
-use permission_core::GrantCaller;
+use agent_acp_host::{ToolsEdge, ToolsOffer};
 use agent_session::{SessionHost, TurnEnd};
+use permission_core::GrantCaller;
 use provenance::{Actor, SessionId};
 use serde_json::{Value, json};
 

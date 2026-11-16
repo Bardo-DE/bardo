@@ -146,7 +146,7 @@ pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::R
 
 /// A compile-time assertion that `path` is not under a never-agent-settable prefix
 /// (`ui_settings::schema::AGENT_NEVER_SETTABLE`). The derive cannot read that list itself
-/// (`ds-settings` depends on this crate), so the check is a `const` evaluated in the
+/// (`ui-settings` depends on this crate), so the check is a `const` evaluated in the
 /// consumer's build: a violation is a compile error naming the key.
 fn never_settable_guard(path: &str) -> TokenStream {
     let message = format!(

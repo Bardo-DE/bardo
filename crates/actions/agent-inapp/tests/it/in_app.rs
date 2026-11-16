@@ -1,4 +1,4 @@
-//! The in-app agent end to end: the app's own provider (docket-fake's mail), a scripted model, a
+//! The in-app agent end to end: the app's own provider (action-fake's mail), a scripted model, a
 //! sheet the test answers, a virtual clock. No intentd, no bus, no daemon, no socket.
 
 use crate::support::infer::{Say, ScriptedInfer, call, words};

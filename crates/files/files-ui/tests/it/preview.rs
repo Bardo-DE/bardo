@@ -5,12 +5,12 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use anyview_image::{Rgba8, encode_png};
-use ui_components::prelude::{Point, ShortcutKey};
-use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Input};
 use files_fs::FakePrefs;
 use files_trash::FakeTrash;
 use tempfile::TempDir;
+use ui_components::prelude::{Point, ShortcutKey};
+use ui_harness::harness::settle_until;
+use ui_harness::{Harness, Input};
 
 use super::support::{RecordingOpener, at, harness, launch_remembering, scratch_folder};
 

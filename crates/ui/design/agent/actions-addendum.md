@@ -41,7 +41,7 @@ Several points from the coordinator's first auto-mode message change:
 - If the writer fails, there is no TaskPolicy. Every non-Read call is then "Outside".
 
 ```rust
-// docket-core::task_policy  (freeze now)
+// action-core::task_policy  (freeze now)
 pub struct TaskPolicy {
     pub task: TaskId, pub space: SpaceId, pub from: Vec<TurnId>,   // router-held user turns only
     pub actions: BTreeSet<ActionMatch>, pub kinds: BTreeSet<EntityKind>,
@@ -103,7 +103,7 @@ pub trait PolicyWriter: Send + Sync {
 - The Reviewing rows of §4.1.
 
 ```rust
-// policy-point: four outcomes; Cedar queries "perform", "perform_unasked", "perform_unjudged"
+// permission-policy: four outcomes; Cedar queries "perform", "perform_unasked", "perform_unjudged"
 pub enum Decision { Deny(Vec<PolicyId>), Ask(Vec<AskReason>), AllowJudged(Vec<PolicyId>), AllowFinal(Vec<PolicyId>) }
 //   perform not permitted                 -> Deny
 //   perform_unasked not permitted         -> Ask
@@ -256,7 +256,7 @@ when { (resource.effect == "outbound" || resource.effect == "destructive") &&
 
 ## A6. Minimal denial reasons to the agent (no oracle)
 
-**Replaces** `CallRefusal::Denied(DenyReason)` in §3.5. `DenyReason` stays internal to `policy-point` and the audit log.
+**Replaces** `CallRefusal::Denied(DenyReason)` in §3.5. `DenyReason` stays internal to `permission-policy` and the audit log.
 
 ```rust
 pub enum CallRefusal { App(AppRefusal), Denied(DenyCode), Unconfirmed(ConfirmEnd), Halted(SpaceScope),
@@ -354,7 +354,7 @@ Agent prose is never shown. Untrusted values are drawn as `Shown::Quoted` with t
 
 ## A9. Shipped red-team and eval suite
 
-**Replaces** the injection-corpus bullet in §5.4. **Adds** crate `docket-eval` to the §2.1 table and edges: it may depend on `docket-fake` and its dependencies, plus `porter-infer`. **Adds** fill-wave agent F1e to §6.
+**Replaces** the injection-corpus bullet in §5.4. **Adds** crate `docket-eval` to the §2.1 table and edges: it may depend on `action-fake` and its dependencies, plus `inference-core`. **Adds** fill-wave agent F1e to §6.
 
 ```rust
 // docket-eval  (freeze now: types; runner fill 1)

@@ -46,13 +46,13 @@ use std::time::Instant;
 use crate::thumbs::{Anyview, ThumbKey, Thumbed, Thumbnailer};
 use crate::words::volume_trouble_words;
 use anyview_peek::{AnyPeeked, PeekWorker};
-use ui_components::base::time::clock;
-use ui_blitz::clipboard;
 use files_core::{ItemRef, Location, Summary};
 use files_fs::WatchHandle;
 use files_model::{Effect, Input, Now, OpenTarget, TabId, Tabbed};
 use files_ops::{Job, Worker};
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
+use ui_blitz::clipboard;
+use ui_components::base::time::clock;
 
 pub use apps::{AppChoiceView, Apps, NoApps};
 #[cfg(feature = "testing")]

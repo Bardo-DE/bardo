@@ -4,7 +4,7 @@
 //! audit log, and by scripted ones in tests.
 //!
 //! The seams (`inference_router::seams`) and what a turn carried (`inference_router::carried`) are
-//! `porter-router`'s, so another host can fill them.
+//! `inference-router`'s, so another host can fill them.
 
 mod driver;
 mod guard;

@@ -4,9 +4,9 @@ use super::{Flow, INJECTED_ADDRESS, INJECTED_THREAD};
 use crate::pattern;
 use crate::stage::{Asker, asker};
 use crate::warm::WarmFault;
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou};
 use action_accept::provider::{INJECTION, Message};
 use action_core::{ConfirmDetail, ConfirmRequest, ModelExchange, Reveal, Shown};
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou};
 
 /// What kind of promise a failure breaks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

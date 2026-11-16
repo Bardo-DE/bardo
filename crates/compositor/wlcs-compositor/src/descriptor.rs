@@ -1,6 +1,6 @@
 //! The extensions casement serves that wlcs has tests for, in wlcs' descriptor format: wlcs
 //! skips the tests of an interface that is neither listed nor served. Versions are the ones in
-//! `casement-testkit/tests/golden/globals.txt`. Left out, because casement does not serve them:
+//! `compositor-testkit/tests/golden/globals.txt`. Left out, because casement does not serve them:
 //! `wl_shell`, `zxdg_shell_v6`, `zwlr_virtual_pointer_manager_v1`,
 //! `zwlr_foreign_toplevel_manager_v1`, the GTK primary selection and text-input v2.
 

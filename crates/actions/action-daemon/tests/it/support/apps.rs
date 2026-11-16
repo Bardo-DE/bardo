@@ -1,12 +1,15 @@
-//! The other processes on the private bus: a mail app (docket-fake's `FakeMail` behind
+//! The other processes on the private bus: a mail app (action-fake's `FakeMail` behind
 //! `action_provider::serve_on`, so the app side of `IntentProvider1` is the real one) and sill's
 //! `Confirm1` with scripted answers. Shared by intentd's tests and `quire-do`'s end-to-end test.
 #![allow(dead_code)]
 
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{
     AppRefusal, ConfirmAnswer, ConfirmEnd, ConfirmRequest, ContextSnapshot, Here, Hit, Invocation,
     Outcome, Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
 };
+use action_daemon::IntentdConfig;
 use action_dbus::BusConnection;
 use action_dbus::callers::{Identity, Role};
 use action_fake::{FakeMail, MailThread};
@@ -14,9 +17,6 @@ use action_manifest::ValidManifest;
 use action_provider::{ContextSource, IntentProvider, SummonTarget, serve_on_with};
 use action_vocab::{CallerRole, EntityRef, UndoToken};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
-use action_daemon::IntentdConfig;
-use account_core::AppName;
-use account_ids::Count;
 use provenance::{Actor, EntityId, Label, SpaceId};
 use std::collections::{BTreeSet, VecDeque};
 use std::sync::{Arc, Mutex};

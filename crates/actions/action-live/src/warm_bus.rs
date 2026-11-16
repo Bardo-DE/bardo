@@ -1,17 +1,17 @@
-//! The shipped [`Prepare`]: inferd-client's `Transport::prepare` over a private bus, as the
+//! The shipped [`Prepare`]: inference-client's `Transport::prepare` over a private bus, as the
 //! intentd unit (the policy writer's identity, which inferd serves every tier of a run to).
 
 use crate::warm::{POLL, Prepare, WarmFault, plan, warm_all};
-use action_accept::world::{Cgroup, ModelSource, World, place, restore_unit, unit_main};
-use inference_client::{DbusTransport, OpenOptions, Transport};
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
-use inference_core::Readiness;
 use account_match::LlmNeed;
 use account_match::Need;
+use action_accept::world::{Cgroup, ModelSource, World, place, restore_unit, unit_main};
+use inference_client::{DbusTransport, OpenOptions, Transport};
+use inference_core::Readiness;
 use std::collections::BTreeSet;
 use std::time::{Duration, Instant};
 

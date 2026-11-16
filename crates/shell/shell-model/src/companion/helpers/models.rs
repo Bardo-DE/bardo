@@ -5,8 +5,8 @@
 
 use std::collections::HashSet;
 
-use companion_model::helper::HelperModel;
 use account_core::AccountId;
+use companion_model::helper::HelperModel;
 pub use inference_core::Takes;
 use inference_core::{ModelRef, PlaceEngine, PlaceKind, PlaceRow};
 

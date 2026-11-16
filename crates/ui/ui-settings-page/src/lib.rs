@@ -4,9 +4,9 @@
 //! caller's, and a change is handed back as a [`SettingEdit`] for the app to save through its own
 //! `Store`.
 //!
-//! This is its own crate because the page needs `ds` (the rows and controls) and `ds-settings`
+//! This is its own crate because the page needs `ds` (the rows and controls) and `ui-settings`
 //! (the schema types) together, and neither may name the other (`scripts/check-boundary.sh`):
-//! `ds-shell` would have to take `ds-settings`' file watcher.
+//! `ui-shell` would have to take `ui-settings`' file watcher.
 
 mod control;
 mod edit;

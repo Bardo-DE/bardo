@@ -6,11 +6,11 @@
 #[path = "../../../companion-daemon/tests/it/support/infer.rs"]
 mod infer;
 
-use action_core::{ActionCard, PolicyWriter, TurnVia, UserTurn};
-use agent_models::{TransportModel, TransportWriter, card_of, placeholder_set, reviewer_over};
-use action_vocab::{ActionRef, Caller, TurnId};
-use infer::{Say, ScriptedInfer, words};
 use account_core::DataClass;
+use action_core::{ActionCard, PolicyWriter, TurnVia, UserTurn};
+use action_vocab::{ActionRef, Caller, TurnId};
+use agent_models::{TransportModel, TransportWriter, card_of, placeholder_set, reviewer_over};
+use infer::{Say, ScriptedInfer, words};
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, Model, ModelError, Reasoning,
     ReplyShape, Role, ToolChoice, ToolParallelism, TurnError,
@@ -65,7 +65,9 @@ async fn a_refusal_and_a_silence_are_errors_the_cascade_turns_into_asking() {
     let refused = model(vec![Say::Refuse(inference_core::InferRefusal::Unavailable)]);
     assert_eq!(
         refused.chat(&chat(), &mut Quiet).await.err(),
-        Some(TurnError::Refused(inference_core::InferRefusal::Unavailable))
+        Some(TurnError::Refused(
+            inference_core::InferRefusal::Unavailable
+        ))
     );
     let silent = model(vec![]);
     assert_eq!(
@@ -167,9 +169,6 @@ async fn a_writer_cut_at_the_models_limit_ran_out_of_room() {
             &SpaceId::parse("work").expect("space"),
         )
         .await;
-    assert_eq!(
-        derived.err(),
-        Some(permission_core::ReviewError::OutOfRoom)
-    );
+    assert_eq!(derived.err(), Some(permission_core::ReviewError::OutOfRoom));
     assert_eq!(transport.asked()[0].control.max_output, Knob::Off);
 }

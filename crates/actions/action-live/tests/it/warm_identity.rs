@@ -4,11 +4,11 @@
 //! audit records and no app call could be recorded (`NotRecorded`).
 
 use crate::support::*;
-use companion_wire::AnswerPhase;
 use action_accept::drive::{Launcher, recorded};
 use action_accept::world::{Consent, World, unit_main};
 use action_live::warm_bus::as_intentd;
 use agent_session::SheetChoice;
+use companion_wire::AnswerPhase;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn after_the_warm_up_the_real_intentd_is_still_the_intentd_unit() {

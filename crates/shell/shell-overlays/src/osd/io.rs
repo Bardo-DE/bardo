@@ -4,17 +4,17 @@
 //! has settled (`on_hidden`). Once hidden and
 //! gone, no task runs and nothing asks for a frame.
 
-use ui_components::base::time::clock::sleep;
 use std::time::Duration;
+use ui_components::base::time::clock::sleep;
 
 use dioxus::core::Task;
 use dioxus::prelude::*;
 use layer_shell_host::{OutputId, use_watch};
 
 use super::step::{OsdHold, OsdInput, OsdTimes, step};
-use ui_components::base::time::stamp::FrameClock;
 use shell_ui_kit::hooks::{use_map_when_shown, use_unmap_on_hidden};
 use shell_ui_kit::links::{OsdChange, OsdLink};
+use ui_components::base::time::stamp::FrameClock;
 
 /// How long the indicator holds after the last change.
 const HOLD: ui_components::base::time::stamp::Ms = ui_components::base::time::stamp::Ms(1500);

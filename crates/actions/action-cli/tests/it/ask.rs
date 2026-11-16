@@ -3,19 +3,19 @@
 //! steps, footer), a confirmation is never answered here, and the exit code says how it ended.
 
 use crate::support::{Desk, caller};
-use companion_client::{CompanionTransport, Follow};
-use companion_wire::{
-    AnswerBody, AnswerPhase, AnswerWire, AskWire, FooterWire, NeedsYou, PlanStepWire, PlanWire,
-    RefusalWire, StepWireState,
-};
+use account_capability::{Locality, ModelId};
+use account_core::{AccountId, DataClass};
 use action_cli::{Exit, JsonFlag, Stdout, ask_companion};
 use action_client::{InProcess, Intents, TransportError};
 use action_core::{ConfirmId, ContextKeep, Keep, Reveal};
 use action_fake::FakeSeams;
 use action_vocab::{ActionRef, Caller, CallerRole, LabelText, StepId};
 use action_wire::{SessionOpen, SessionOpened, StartedFrom, TerminalScope};
-use account_capability::{Locality, ModelId};
-use account_core::{AccountId, DataClass};
+use companion_client::{CompanionTransport, Follow};
+use companion_wire::{
+    AnswerBody, AnswerPhase, AnswerWire, AskWire, FooterWire, NeedsYou, PlanStepWire, PlanWire,
+    RefusalWire, StepWireState,
+};
 use inference_core::ServedBy;
 use provenance::{ActionName, Effect, SessionId, UnixSeconds};
 use std::collections::VecDeque;

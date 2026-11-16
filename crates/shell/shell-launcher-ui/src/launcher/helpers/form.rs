@@ -4,16 +4,16 @@ use std::collections::BTreeSet;
 
 use companion_model::helper::Ceiling;
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::components::controls::button_model::Bezel;
-use ui_components::components::controls::checkbox::Checkbox;
-use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
-use ui_components::prelude::*;
 use provenance::{AppName, HelperId};
 use shell_model::companion::{
     ADD_MODEL, Automatic, CEILINGS, Draft, HelpersMsg, LOOKING_FOR_MODELS, ModelGroup, ModelList,
     ModelOffer, NO_MODELS, Reach, app_label, ceiling_label, model_hint, model_line,
 };
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::components::controls::checkbox::Checkbox;
+use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
+use ui_components::prelude::*;
 
 use super::automatic::AutomaticPool;
 use super::say::{Say, use_say};

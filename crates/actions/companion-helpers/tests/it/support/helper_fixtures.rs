@@ -2,18 +2,18 @@
 //! the editor's turn in a conversation.
 
 use crate::support::world::*;
-use memory_core::{EventRef, EventSummary, JsonText, KindTag, RecentEntry, ReplicaId, Seq};
-use companion_model::helper::*;
-use companion_wire::{HelperForm, SayReply};
-use action_client::{InProcess, Intents};
-use action_core::{AuditRecord, TurnIn, TurnVia};
-use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
-use companion_tasks::{HelperDesk, SayFromPerson};
-use action_vocab::{Caller, CallerRole, LabelText, Origin};
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_ids::Count;
+use action_client::{InProcess, Intents};
+use action_core::{AuditRecord, TurnIn, TurnVia};
+use action_vocab::{Caller, CallerRole, LabelText, Origin};
+use companion_model::helper::*;
+use companion_tasks::{HelperDesk, SayFromPerson};
+use companion_wire::{HelperForm, SayReply};
 use inference_core::ModelRef;
+use memory_core::{EventRef, EventSummary, JsonText, KindTag, RecentEntry, ReplicaId, Seq};
+use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
 use provenance::{Actor, Effect, EntityKind, HelperId, UnixSeconds};
 use serde_json::json;
 use std::collections::BTreeSet;

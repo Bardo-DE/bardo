@@ -12,10 +12,10 @@
 
 use super::{GenericFlow, Lookup, Mid};
 use crate::jmap;
-use account_generic_proto::mail::typed as mail_typed;
 use account_core::{Credential, Family, LoginName, Restriction, SecretText};
 use account_family_kit::Move;
 use account_family_kit::password::typed_password;
+use account_generic_proto::mail::typed as mail_typed;
 use account_provider::{SignInMode, Signed};
 use account_sheet::{FieldAnswer, Manual, SignInFault, parse_manual};
 

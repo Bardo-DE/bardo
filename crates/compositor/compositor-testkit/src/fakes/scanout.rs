@@ -8,9 +8,9 @@ use compositor_backend::tty::{KmsError, Presented, QueueOutcome, QueuedFrame, Sc
 use compositor_core::frame::{CursorPlaneCaps, CursorPlaneChoice, cursor_plane_for};
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::time::{Mono, VblankSeq};
-use ui_core::geometry::scale::Scale;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use ui_core::geometry::scale::Scale;
 
 /// How the surface decides a frame reached the glass.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

@@ -1,4 +1,4 @@
-//! Starting the fakes: the one place that knows which `porter-fake-servers` fake each
+//! Starting the fakes: the one place that knows which `account-fake-servers` fake each
 //! `porter-rig-servers` flag means, what is planted in it, and what `rig.json` says of it.
 //! Everything listens on `127.0.0.1` on an ephemeral port (the OS gives ports from 32768 up,
 //! never below 1024), and everything of the rig lives in one scratch directory.

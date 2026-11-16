@@ -9,8 +9,8 @@ use settings_app_model::PageSlug;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
-use ui_harness::{Harness, Input};
 use std::time::Duration;
+use ui_harness::{Harness, Input};
 
 const GRIM: &str = "/usr/bin/grim";
 const OTHER: &str = "/opt/tools/capture";

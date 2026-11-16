@@ -4,11 +4,11 @@
 
 use crate::support::world::{app, caller};
 use action_core::*;
+use action_daemon::{IndexStore, ship_search_files};
 use action_fake::{FakeSeams, fake_router};
 use action_router::Router;
 use action_vocab::{CallerRole, Generation};
 use action_wire::{IntentsReply, IntentsRequest};
-use action_daemon::{IndexStore, ship_search_files};
 use provenance::{EntityKey, EntityKind, SpaceScope, UnixSeconds};
 use std::os::unix::fs::PermissionsExt;
 

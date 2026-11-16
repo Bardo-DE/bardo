@@ -3,12 +3,12 @@
 //! action is never a tool. The order is the registry's, so the first sections of the prompt stay
 //! byte-stable until the app set changes.
 
+use account_core::AppName;
 use action_core::{ActionCard, HandleCard, HandleShape, OneOf, ToolSchema, tool_schema};
 use action_manifest::{
     ActionDecl, AgentReach, RelationDecl, TargetKind, ValidManifest, Visibility,
 };
 use action_vocab::ActionRef;
-use account_core::AppName;
 use inference_core::{JsonText, SchemaText, ToolDecl, ToolName};
 use serde_json::{Value as Json, json};
 

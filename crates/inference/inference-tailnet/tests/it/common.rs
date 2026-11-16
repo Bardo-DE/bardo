@@ -1,13 +1,13 @@
 //! What the tests share: a pair of addresses of their own, a fake Tailscale, and waits.
 
 use account_fake_servers::{Daemon, FakeLocalApi, FakePeer, Network};
-use inference_tailnet::{Config, Limits, Observer, Seen, Timing};
 use account_tailscale::LocalApi;
+use base_testkit::{GENEROUS, Scratch};
+use inference_tailnet::{Config, Limits, Observer, Seen, Timing};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::ops::Deref;
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::time::Duration;
-use base_testkit::{GENEROUS, Scratch};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpSocket, TcpStream};
 use tokio::sync::watch;

@@ -3,10 +3,10 @@
 //! `NothingHeld`; every call is recorded.
 
 use super::bus::PrivateBus;
-use sync_bus::{SYNC_BUS, SYNC_PATH};
 use account_dbus::Details;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
+use sync_bus::{SYNC_BUS, SYNC_PATH};
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::Value;
 

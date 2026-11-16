@@ -7,6 +7,7 @@
 use crate::now_playing::kind::Playback;
 use crate::now_playing::position::{Report, TickIn, Ticker};
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::Fraction;
 use ui_components::components::content::label::{Label, LabelRole, LabelStyle};
 use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
@@ -14,7 +15,6 @@ use ui_components::components::controls::progress::view::ProgressIndicator;
 use ui_components::motion::machine::use_machine;
 use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
-use std::time::Duration;
 
 /// `m:ss`, or `h:mm:ss` past an hour.
 fn clock_text(at: Duration) -> String {

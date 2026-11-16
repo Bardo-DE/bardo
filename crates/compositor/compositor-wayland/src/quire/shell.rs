@@ -15,6 +15,7 @@ use super::{shell_overview, shell_screen, shell_space, shell_split, shell_trial}
 use crate::foreign_toplevel_list::{identifier_of, window_of_identifier};
 use crate::handler::{EventSink, OutputLookup};
 use crate::states::{GlobalFilter, WaylandFault};
+use account_core::SpaceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::overview_drag::SpaceTargets;
 use compositor_core::policy::GlobalKind;
@@ -24,7 +25,6 @@ use compositor_core::time::Mono;
 use compositor_core::{Event, LayerKey, OutputKey, WindowId};
 use desktop_protocols::server::quire_shell_v1::quire_shell_v1::{self, QuireShellV1};
 use desktop_protocols::vocab::{HeldMods, ShellRole, WindowEntry, WireCode};
-use account_core::SpaceId;
 use smithay::reexports::wayland_server::backend::{ClientId, GlobalId};
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::reexports::wayland_server::{

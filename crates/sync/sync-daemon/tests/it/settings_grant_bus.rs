@@ -9,13 +9,6 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use common::hosted::{Hosted, Link, Service, host, keep};
-use common::{Known, client};
-use ui_settings::live::{AnyOwner, LiveClient};
-use ui_settings::schema::KeyPath;
-use sync_bus::SyncProxy;
-use sync_fake_graph::{FakeGraph, GraphHandle};
 use account_callers::CallerRole;
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::AccountId;
@@ -29,9 +22,13 @@ use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use common::bus::PrivateBus;
+use common::hosted::{Hosted, Link, Service, host, keep};
+use common::{Known, client};
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+use sync_bus::SyncProxy;
 use sync_daemon::datasets::pim::Wiring;
 use sync_daemon::datasets::storage::{
     ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageSupervisor,
@@ -41,7 +38,10 @@ use sync_daemon::paths::{AccountDir, Paths};
 use sync_daemon::scheduler::{Network, Settings};
 use sync_daemon::service::{Access, Hub, serve};
 use sync_daemon::settings::{SETTINGS_PATH, SyncSettings, serve_settings};
+use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::sync::watch;
+use ui_settings::live::{AnyOwner, LiveClient};
+use ui_settings::schema::KeyPath;
 
 const ACCOUNT: &str = "graph-acct";
 const SEGMENT: &str = "graph_acct";
@@ -174,7 +174,9 @@ async fn rig() -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(account_ids::clock::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(1_700_000_000_000)),
+        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
+            1_700_000_000_000,
+        )),
     };
     let supervisor = StorageSupervisor::new(
         wiring,

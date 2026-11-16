@@ -1,6 +1,6 @@
 //! ClickAway: the transparent layer under a surface's panel that takes every press the panel
 //! does not, so a panel can close when the person clicks elsewhere. A sheet dims nothing and
-//! catches no click (design/30 Part 4), and click-outside belongs to the host: until shell-host
+//! catches no click (design/30 Part 4), and click-outside belongs to the host: until layer-shell-host
 //! delivers an outside press, this is the one place sill covers the output for it.
 //!
 //! Its box fills the nearest positioned ancestor, which is the surface's root.

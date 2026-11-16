@@ -1,6 +1,6 @@
 //! Starting programs (A5, P1-Z): the `Spawner` seam. A binding's program (`Effect::Spawn`) and
 //! xwayland-satellite go through it, so no code in the compositor calls `Command` itself and a
-//! test asserts what would have started (`casement-testkit`'s `FakeSpawner`).
+//! test asserts what would have started (`compositor-testkit`'s `FakeSpawner`).
 //!
 //! A program inherits the descriptors in [`SpawnSpec::pass`] (the listening sockets
 //! xwayland-satellite takes): the real spawner clears their close-on-exec flag, and the

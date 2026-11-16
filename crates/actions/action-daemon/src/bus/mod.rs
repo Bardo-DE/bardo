@@ -1,8 +1,8 @@
 //! The bus side of the router: every interface of `org.quire.Intents1` served at
 //! `/org/quire/Intents1` for one [`Gateway`], which derives the caller from the connection,
-//! hands the request to the router and answers. The members are those of `docket-dbus`'s
+//! hands the request to the router and answers. The members are those of `action-dbus`'s
 //! skeletons (the tests hold the introspection to `dbus/org.quire.Intents1.xml`); the bodies
-//! are the JSON of the typed values `docket-client`'s transport reads. No member here carries a
+//! are the JSON of the typed values `action-client`'s transport reads. No member here carries a
 //! doc comment: zbus would copy it into the introspection.
 
 mod checkpoint;

@@ -2,11 +2,11 @@
 //! items go behind the chevron, whose menu picks them.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::chrome::toolbar::model::{Picked, ToolbarItem, ToolbarRoom};
 use ui_components::components::chrome::toolbar::view::Toolbar;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

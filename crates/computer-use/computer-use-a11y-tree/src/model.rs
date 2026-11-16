@@ -1,9 +1,9 @@
 //! The snapshot of one window's accessibility tree.
 
+use account_ids::Count;
 use computer_use_action::{NodeId, Rect, WindowSpace};
 use computer_use_desktop::Stamp;
 pub use computer_use_types::Role;
-use account_ids::Count;
 use provenance::{ActionName, Labelled};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;

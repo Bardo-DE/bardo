@@ -5,9 +5,9 @@
 use crate::config::VoiceRole;
 use crate::error::VoiceError;
 use crate::peer::Peers;
+use agent_voice_wire::{CancelCause, SpeakWire, VoiceBegin, VoiceTarget};
 use std::os::fd::OwnedFd;
 use tokio::sync::{mpsc, oneshot};
-use agent_voice_wire::{CancelCause, SpeakWire, VoiceBegin, VoiceTarget};
 use zbus::message::Header;
 
 /// Who called: the connection's unique name and the role the daemon derived for it.

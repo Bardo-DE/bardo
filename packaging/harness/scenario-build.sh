@@ -8,9 +8,9 @@
 #   build/tools/bin/foot                                                 the host's (install foot from your distro), else, on Fedora only, its rpm (dnf download, unpacked)
 #   build/sill-target/debug/sill                                         sill with --features debug (the fake DDC)
 #   build/transom-target/debug/transom                                  transom (the portal backend), for portal-quire; needs libpipewire-devel and clang
-#   build/shell-host-target/debug/examples/demo_*                        shell-host's real-input demos
-#   build/detent-target/debug/detent                                     detent with ds-blitz/debug-probe, for the accounts-* and detent-on-casement-at-1.5 scenarios
-#   build/sill-probe-target/debug/sill                                   sill with --features debug,ds-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for sill's surfaces)
+#   build/shell-host-target/debug/examples/demo_*                        layer-shell-host's real-input demos
+#   build/detent-target/debug/detent                                     detent with ui-blitz/debug-probe, for the accounts-* and detent-on-casement-at-1.5 scenarios
+#   build/sill-probe-target/debug/sill                                   sill with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for sill's surfaces)
 #   build/porter-target/debug/accountd                                   porter's accountd, a test-proc-root build
 #   build/ferry-target/debug/syncd                                       ferry's syncd, a test-proc-root build (the sync daemon left porter)
 #   build/ferry-target/debug/ferry-rig-{servers,client}                  ferry's test rig: the OAuth issuer + Graph fake, an app client for syncd
@@ -21,7 +21,7 @@
 #   scenario-build.sh --accounts   only what the accounts-* scenarios need (casement, detent, sill with the probe, porter and its rig, ferry and its rig, steward)
 #   scenario-build.sh --w2         only what scenarios/w2-excalidraw.sh needs (casement, sill, and the two below):
 #   build/cua-target/debug/cuad                                          cuad (the screen helper) with --features fixture-callers: a plain build identifies nobody
-#   build/docket-target/debug/{docket-bringup,accept-*}                  docket-accept's test builds (the assistant's services on a fake /proc, quire-do)
+#   build/docket-target/debug/{docket-bringup,accept-*}                  action-accept's test builds (the assistant's services on a fake /proc, quire-do)
 #
 # Nothing is written into the tree.
 # Exit codes: 0 built, 2 run inside a jail, 3 a host tool is missing or a build failed.
@@ -82,11 +82,11 @@ fetch_foot() {
   chmod +x "$bin"
 }
 
-# detent is built with quire's ds-blitz `debug-probe` feature (a feature of a direct dependency, so detent's own manifest
+# detent is built with quire's ui-blitz `debug-probe` feature (a feature of a direct dependency, so detent's own manifest
 # is untouched): with QUIRE_DEBUG_PROBE=<dir> set it lists its controls by role and name (harness/lib/accounts.sh,
 # detent_press). Never a release build.
 build_detent() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/detent-target" cargo build -p settings-app --features ds-blitz/debug-probe,dev-callers)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/detent-target" cargo build -p settings-app --features ui-blitz/debug-probe,dev-callers)
 }
 
 build_sill() {
@@ -99,7 +99,7 @@ build_transom() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/transom-target" cargo build -p portal-daemon --features debug --locked)
 }
 
-# The demos shell-host's accept scripts run, built the way those scripts build them (two cargo
+# The demos layer-shell-host's accept scripts run, built the way those scripts build them (two cargo
 # invocations: the default features, then --features debug-inject, whose binaries the second set of
 # scripts need). The scripts look in $CARGO_TARGET_DIR/debug/examples, which the scenario sets to this build dir.
 build_shell_host() {
@@ -112,7 +112,7 @@ build_shell_host() {
     --example demo_popup_keys --example demo_window --example probe_toplevel)
 }
 
-# Porter's accountd and test rig (porter-rig). Test builds: `test-proc-root` makes each daemon read caller identities from
+# Porter's accountd and test rig (account-rig). Test builds: `test-proc-root` makes each daemon read caller identities from
 # a fixture /proc tree (ACCOUNTD_PROC_ROOT; ferry's syncd, below, reads SYNCD_PROC_ROOT and steward's inferd INFERD_PROC_ROOT),
 # because nothing in the jail runs in a systemd scope. A release build ignores the variables; the features are never default.
 build_porter() {
@@ -122,7 +122,7 @@ build_porter() {
 
 # Ferry's syncd and test rig. syncd is a test build like porter's accountd: `test-proc-root` makes it read caller identities from a
 # fixture /proc tree (SYNCD_PROC_ROOT). One invocation per package: `-p a -p b --features a/f,b/f` once left a daemon without its
-# feature (the binary then ignores the variable and no caller is known). ferry-rig gives ferry-rig-servers (the issuer and Graph)
+# feature (the binary then ignores the variable and no caller is known). sync-rig gives ferry-rig-servers (the issuer and Graph)
 # and ferry-rig-client.
 build_ferry() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/ferry-target" cargo build -p sync-daemon --features test-proc-root \
@@ -143,7 +143,7 @@ build_cuad() {
     built_at cua-target
 }
 
-# The assistant's services as docket-accept builds (fixture identities, scripted stand-ins), docket-bringup and quire-do's
+# The assistant's services as action-accept builds (fixture identities, scripted stand-ins), docket-bringup and quire-do's
 # test twin.
 build_docket() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/docket-target" nice cargo build -p action-accept --bins) &&
@@ -152,7 +152,7 @@ build_docket() {
 
 # sill with the debug probe: the accounts-* scenarios read the accounts sheet through it.
 build_sill_probe() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" cargo build -p shell-app --features debug,ds-blitz/debug-probe)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" cargo build -p shell-app --features debug,ui-blitz/debug-probe)
 }
 
 # foot is the scenarios' terminal: say how to get it before the long builds, not after.
@@ -165,19 +165,19 @@ stage "casement (bootstrap --build-only)" build_casement
 if [ "$only_w2" = 1 ]; then
   stage "sill (--features debug)" build_sill
   stage "cuad (--features fixture-callers)" build_cuad
-  stage "docket-accept (the assistant's services, test builds)" build_docket
+  stage "action-accept (the assistant's services, test builds)" build_docket
   echo "scenario-build: done for W2 ($SCEN_BUILD)"
   exit 0
 fi
 if [ "$only_accounts" = 0 ]; then
   stage "foot" fetch_foot
   stage "sill (--features debug)" build_sill
-  stage "shell-host demos" build_shell_host
+  stage "layer-shell-host demos" build_shell_host
   stage "transom" build_transom
 fi
 stage "detent (with the debug probe)" build_detent
 stage "sill with the debug probe" build_sill_probe
-stage "porter: accountd (test-proc-root) and porter-rig" build_porter
-stage "ferry: syncd (test-proc-root) and ferry-rig" build_ferry
+stage "porter: accountd (test-proc-root) and account-rig" build_porter
+stage "ferry: syncd (test-proc-root) and sync-rig" build_ferry
 stage "steward: inferd (test-proc-root) and steward-rig-client" build_steward
 echo "scenario-build: done ($SCEN_BUILD)"

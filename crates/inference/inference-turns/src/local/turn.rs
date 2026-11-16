@@ -4,15 +4,15 @@
 use super::{EngineUse, chat_provider, client, note_no_scores, run_turn};
 use crate::bridge::{self, Frames};
 use crate::structured::{self, Checked, Limits, Shaping};
-use model_openai_compat::OpenAiCodec;
-use model_provider as sp;
-use model_provider::Embedder;
 use account_capability::Tier;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
     ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
 };
 use inference_router::local::LocalModel;
+use model_openai_compat::OpenAiCodec;
+use model_provider as sp;
+use model_provider::Embedder;
 
 /// One request on `model`, which tells `engines` it is in use while the request runs.
 #[derive(Debug)]

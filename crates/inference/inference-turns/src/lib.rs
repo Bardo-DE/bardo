@@ -1,13 +1,13 @@
 //! Running model turns: the part of inferd that takes a routed session and a model of this
 //! computer (or any chat provider) and runs the turn, so an app or another daemon can run turns
 //! without inferd. No bus and no daemon: a tokio runtime and an OpenAI-compatible engine are all
-//! it needs. Routing is its sibling, `porter-router`.
+//! it needs. Routing is its sibling, `inference-router`.
 //!
 //! The pieces, from the bottom:
 //!
 //! - [`bridge`]: porter's requests as stoker's turns over a [`inference_router::local::LocalModel`]
 //!   (its catalogue entry's sampling and output limit, its engine's flavor); the mapping itself is
-//!   `porter-bridge`'s and is re-exported.
+//!   `inference-bridge`'s and is re-exported.
 //! - [`tee`]: a turn sink that keeps the whole turn for a pure session to read and shows the
 //!   person's thinking while it waits.
 //! - [`structured`]: a reply of a JSON shape or a choice is validated, and repaired within the

@@ -7,8 +7,8 @@
 //! reaches the roster or the front pointer, whatever else the log says about it.
 
 use agent_loop::{ReplayEvent, ReplayWhat};
-use companion_wire::SessionRecord;
 use agent_session::{Logged, Opening, Read, SessionEntry, SessionLog, read_all};
+use companion_wire::SessionRecord;
 use provenance::{AgentRef, TaskId, UnixSeconds};
 
 use crate::recover::ReplayFault;
@@ -96,8 +96,8 @@ pub async fn stored_events<L: SessionLog>(
 mod tests {
     use super::*;
     use action_core::{TurnVia, UserTurn};
-    use agent_session::{BackendKind, Seq};
     use action_vocab::{Caller, TurnId, Workspace};
+    use agent_session::{BackendKind, Seq};
     use provenance::SpaceId;
 
     fn opening(task: &str, cwd: Option<&str>) -> SessionEntry {

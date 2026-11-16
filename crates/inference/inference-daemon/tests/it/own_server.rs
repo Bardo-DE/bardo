@@ -7,11 +7,11 @@
 
 use crate::cloud::{COMPANION, app, finished, open_policy, routed, turn};
 use crate::hosting;
+use account_core::DataClass;
+use account_core::consent::Usage;
 use hosting::accountd::FakeServer;
 use hosting::engine::{Chat, Script};
 use hosting::rig::{Hosted, Plan, Trust, World};
-use account_core::DataClass;
-use account_core::consent::Usage;
 use inference_core::{InferReply, StopReason};
 
 const KEY_OWN: &str = "sk-own-S3CRET-SERVER-KEY-0042";

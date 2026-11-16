@@ -1,5 +1,5 @@
 //! Which provider the add-account sheet opens on: a value of the request that asks for it
-//! (`porter-wire`) and of the sheet's purpose (`porter-sheet`), so it lives below both.
+//! (`account-wire`) and of the sheet's purpose (`account-sheet`), so it lives below both.
 
 use crate::ProviderId;
 use serde::{Deserialize, Serialize};

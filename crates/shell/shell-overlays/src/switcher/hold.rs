@@ -1,10 +1,10 @@
-//! Whether the chord is held, from shell-host's modifiers on focus (`use_modifiers`): the
+//! Whether the chord is held, from layer-shell-host's modifiers on focus (`use_modifiers`): the
 //! compositor sends the seat's modifiers right after `wl_keyboard.enter`, so a held chord reads
 //! `Held` before its first key, and its release reads `Released` with no key event. Pure.
 //!
 //! What it changes: a publish of `Released` while armed or shown is the release (the panel closes
 //! and activates); once the chord is known `Held`, a second chord inside the show delay is Tab
-//! held down, not a second tap, so it steps. shell-host publishes only a change, so an opening
+//! held down, not a second tap, so it steps. layer-shell-host publishes only a change, so an opening
 //! starts from the value it mounts on (`watch.rs`: its baseline) and a focus that finds the same
 //! state publishes nothing. A second chord before any publish steps too (`chord_input`). The show delay then decides: an opening that reaches it without the
 //! chord read held was a tap, and switches with no UI; one read held shows the panel. (The
@@ -69,8 +69,8 @@ pub fn chord_input(state: Phase, hold: Option<Chord>, dir: Dir) -> SwIn {
 
 #[cfg(test)]
 mod tests {
-    use ui_components::base::time::stamp::Stamp;
     use layer_shell_host::{Modifier, Modifiers};
+    use ui_components::base::time::stamp::Stamp;
 
     use super::{Hold, Watch, chord_input, chord_of, tick_input};
     use crate::switcher::keys::Chord;

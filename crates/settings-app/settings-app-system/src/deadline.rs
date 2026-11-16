@@ -6,8 +6,8 @@
 //! kind of wait it is and never writes a bare duration. Live-module calls (`LiveClient`) carry
 //! theirs inside; this is for the calls detent makes itself.
 
-use ui_peer::within;
 use std::future::Future;
+use ui_peer::within;
 
 pub use ui_peer::Deadline;
 

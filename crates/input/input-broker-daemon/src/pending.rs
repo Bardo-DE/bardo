@@ -12,8 +12,8 @@
 
 use crate::tally::Tally;
 use caller_identity_core::Uid;
-use std::sync::{Arc, Mutex, PoisonError};
 use input_broker_wire::limits::{MAX_PENDING_IDENTIFICATIONS, MAX_PENDING_PER_USER};
+use std::sync::{Arc, Mutex, PoisonError};
 
 /// How many identifications may wait at once.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

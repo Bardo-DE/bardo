@@ -6,11 +6,11 @@
 //! the control endpoint (see `account_rig::control`) and waits. SIGTERM, SIGINT or
 //! `POST /stop` ends it cleanly and removes `rig.json`.
 
-use clap::Parser;
 use account_core::Tls;
 use account_rig::control::{Levers, serve_levers};
 use account_rig::rigfile::RigFile;
 use account_rig::servers::{Options, Rig};
+use clap::Parser;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::{Arc, Mutex};

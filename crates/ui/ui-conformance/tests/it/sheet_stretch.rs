@@ -4,11 +4,11 @@
 //! and it springs back.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::host::gesture::GesturePhase;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 1000,

@@ -2,10 +2,10 @@
 //! files dropped on it land inside it.
 
 use dioxus::prelude::*;
-use ui_components::file_drop::drag::FileDrop;
-use ui_components::file_drop::hook::use_file_drop;
 use files_core::{FileName, ItemRef};
 use files_model::{DropHow, Input, Modifier};
+use ui_components::file_drop::drag::FileDrop;
+use ui_components::file_drop::hook::use_file_drop;
 
 use super::menu::{ContextAt, point_of};
 use crate::menu::Over;

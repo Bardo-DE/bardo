@@ -1,12 +1,12 @@
-//! Bodies on the bus and frames on the fd: `voice-wire` types in an `Envelope`, JSON in `s`; the
-//! event fd carries a 4-byte big-endian length then one envelope (porter-core's framing, with
-//! `VoiceVocab`). Audio never appears here. The framing itself is `voice-wire`'s, so a client
+//! Bodies on the bus and frames on the fd: `agent-voice-wire` types in an `Envelope`, JSON in `s`; the
+//! event fd carries a 4-byte big-endian length then one envelope (account-core's framing, with
+//! `VoiceVocab`). Audio never appears here. The framing itself is `agent-voice-wire`'s, so a client
 //! such as sill needs no daemon crate.
 
 use crate::error::VoiceError;
-use serde::de::DeserializeOwned;
 use agent_voice_wire::{CancelCause, Envelope, VoiceVocab};
 pub use agent_voice_wire::{FrameError, MAX_FRAME, Unframed, frame, seal, unframe};
+use serde::de::DeserializeOwned;
 use zbus::zvariant::OwnedObjectPath;
 
 /// The longest body any member takes, in bytes: room for `MAX_SPOKEN_BYTES` of text with every

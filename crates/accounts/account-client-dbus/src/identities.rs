@@ -21,12 +21,12 @@
 
 use crate::Bus;
 use crate::failure::{identities_error, link_error};
-use futures_util::StreamExt;
 use account_client::{Changes, IdentitiesError, LinkError, Malformed, Picked};
 use account_core::SecretText;
 use account_core::{AppName, Identity, IdentityAddress, IdentityId, ProviderHint, ProviderId};
 use account_dbus::accounts::{IdentitiesProxy, IdentityRemoved, identity_from_dbus};
 use account_wire::ParentWindow;
+use futures_util::StreamExt;
 use std::io::Read;
 
 /// accountd's identities, as an app uses it over the bus.

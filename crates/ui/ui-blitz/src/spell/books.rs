@@ -4,14 +4,14 @@
 
 use super::choose::pick;
 use super::config::SpellConfig;
-use ui_components::spell::lang::Lang;
-use ui_components::spell::service::Learned;
-use ui_helpers::{ReadCap, read_text_capped};
 use spellbook::Dictionary;
 use std::collections::{HashMap, HashSet};
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
+use ui_components::spell::lang::Lang;
+use ui_components::spell::service::Learned;
+use ui_helpers::{ReadCap, read_text_capped};
 
 /// The most a person's learned-words file may hold: a word a line, a few KiB in practice, and a
 /// file past a megabyte is not a word list.

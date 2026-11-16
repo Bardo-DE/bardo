@@ -1,9 +1,9 @@
 //! An action aimed at the leased window, and how it ended.
 
 use crate::ids::WindowRef;
+use action_core::CallRefusal;
 use computer_use_action::{CuaAction, WindowSpace};
 use computer_use_types::SeatError;
-use action_core::CallRefusal;
 use provenance::Labelled;
 use serde::{Deserialize, Serialize};
 

@@ -1,19 +1,19 @@
 //! `BusSheets` against a sheet host written by hand on the private bus: only the verified host
 //! is dialled, only its `Input` for the right handle counts, and a host that leaves ends the
-//! sheet. The forged-signal tests are ported from the caller side's (`porter-dbus`). The sheet
+//! sheet. The forged-signal tests are ported from the caller side's (`account-dbus`). The sheet
 //! the tests start is `AddAccount`'s, the one sheet an app may still ask accountd for.
 
 use crate::common;
 
-use account_daemon::BusSheets;
-use common::host::send_input;
-use common::*;
 use account_callers::CallerRole;
 use account_core::SecretText;
+use account_daemon::BusSheets;
 use account_dbus::accounts::{ManagerProxy, Sheet};
 use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput, SheetView};
 use account_wire::ParentWindow;
+use common::host::send_input;
+use common::*;
 use std::sync::Arc;
 use std::time::Duration;
 

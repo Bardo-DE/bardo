@@ -8,9 +8,9 @@ use crate::geometry::{LogicalPoint, PhysicalSize};
 use crate::ids::{OutputKey, OutputName};
 use crate::time::Millihertz;
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use proptest::prelude::*;
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
 
 fn mode(w: u32, h: u32, millihertz: u32, preferred: bool) -> Mode {
     Mode {

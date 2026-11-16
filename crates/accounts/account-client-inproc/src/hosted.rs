@@ -1,4 +1,4 @@
-//! [`Hosted`]: `porter-client`'s accounts and grants answered by a service this process runs.
+//! [`Hosted`]: `account-client`'s accounts and grants answered by a service this process runs.
 
 use crate::relays::{NoRelays, RelayHost};
 use account_capability::CapabilityKind;
@@ -112,7 +112,9 @@ impl<C: Service + 'static, H: RelayHost + 'static> ServerEdits for Hosted<C, H> 
             .map_err(|refused| match refused {
                 account_service_accounts::EditError::Fixed(fixed) => EditError::Fixed(fixed),
                 account_service_accounts::EditError::NotThatProvider => EditError::NotThatProvider,
-                account_service_accounts::EditError::Refused(refusal) => EditError::Refused(refusal),
+                account_service_accounts::EditError::Refused(refusal) => {
+                    EditError::Refused(refusal)
+                }
             })
     }
 }

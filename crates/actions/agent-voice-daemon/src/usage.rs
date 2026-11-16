@@ -4,8 +4,8 @@
 //! a fixed answer. An unreadable or unparseable file is `NeedsConsent`: voice never turns on by
 //! accident.
 
-use std::path::PathBuf;
 use agent_voice_wire::VoiceUse;
+use std::path::PathBuf;
 
 /// Where the answer comes from.
 pub trait UseSource: Send + Sync + 'static {

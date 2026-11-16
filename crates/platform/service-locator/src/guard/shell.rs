@@ -8,8 +8,8 @@
 //! control group is all there is to go on, and the process is held by its pidfd so the name cannot
 //! belong to a process that has since been replaced.
 
-use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
 use caller_identity_core::{CgroupPath, PinNeed, RoleName, Standing, Table, judge};
+use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
 use rustix::fd::OwnedFd;
 
 /// How firmly a connection's process must have been held. Peephole's socket pin is made after

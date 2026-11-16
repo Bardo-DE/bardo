@@ -4,8 +4,8 @@
 //! router computes it.
 
 use action_core::{HandleCard, HandleShape, Reveal, size_of};
-use agent_session::HandleLabel;
 use action_vocab::{FileRef, Handle};
+use agent_session::HandleLabel;
 use provenance::{EntityId, Integrity, Label, Labelled, Measured, Quarantined, Source};
 use std::collections::BTreeMap;
 use std::hash::{DefaultHasher, Hash, Hasher};

@@ -3,8 +3,8 @@
 use super::field::ShortcutCell;
 use crate::copy::shortcuts::{shortcut_note, standard_action_name};
 use crate::key_row::row_id;
-use settings_app_model::{Origin, ShortcutRow, ShortcutsInput};
 use dioxus::prelude::*;
+use settings_app_model::{Origin, ShortcutRow, ShortcutsInput};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::prelude::*;

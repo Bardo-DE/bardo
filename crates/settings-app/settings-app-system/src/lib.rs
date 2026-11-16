@@ -1,8 +1,8 @@
 //! Every service Settings reaches: the bus, the portal, NetworkManager, BlueZ, the compositor,
 //! accountd, inferd, docket, memory and syncd. One module per service, named as its model is, each
-//! with a `Link` trait that takes and returns `detent-model` facts, the real implementation (zbus
+//! with a `Link` trait that takes and returns `settings-app-model` facts, the real implementation (zbus
 //! proxies, wire decoding, error to `Absence`), and an in-memory fake under the `testing` feature.
-//! Pure rules found while reading the wire live in `detent-model`; nothing here draws.
+//! Pure rules found while reading the wire live in `settings-app-model`; nothing here draws.
 
 pub mod accounts;
 pub mod bluetooth;

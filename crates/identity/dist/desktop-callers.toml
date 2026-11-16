@@ -14,7 +14,7 @@
 #
 # This sample is what the release lane generates from release/exports.toml and build.sh, so a
 # moved binary updates the table in the same bundle. Role names are the constants of
-# `peephole-core`'s `roles` module (feature `desktop`).
+# `caller-identity-core`'s `roles` module (feature `desktop`).
 
 # The shell: draws the desktop and asks the person on behalf of other programs.
 [[peer]]

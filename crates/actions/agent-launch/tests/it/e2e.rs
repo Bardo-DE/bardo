@@ -1,25 +1,25 @@
 //! The backend over the real spawner, with the fake porter and the recording process seam and
-//! the scripted agent of docket-acp-host's tests: a session start asks porter for what the agent needs,
+//! the scripted agent of agent-acp-host's tests: a session start asks porter for what the agent needs,
 //! and a close gives it all back.
 
-// The scripted agent is docket-acp-host's; this file uses part of it.
+// The scripted agent is agent-acp-host's; this file uses part of it.
 #[allow(dead_code)]
 #[path = "../../../agent-acp-host/tests/it/client/agent.rs"]
 mod agent;
 
 use super::support::{ENDPOINT, abs};
+use action_vocab::Workspace;
+use agent::{Act, agent as scripted, say};
 use agent_acp_core::call::AgentCall;
 use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
-use agent::{Act, agent as scripted, say};
-use sandbox::fake::FakeSandbox;
 use agent_acp_host::fake::FakeFiles;
 use agent_acp_host::{AcpBackend, Parts, Performer, Seams};
 use agent_launch::fake::{Call, FakeAccounts, FakeProcs, Mood, Secrets};
 use agent_launch::{AgentSpawn, AgentsFile, Registry};
-use permission_core::ProgramName;
 use agent_session::{BackendEvent, BackendKind, Opening, SessionBackend, StartSession, TurnEnd};
-use action_vocab::Workspace;
+use permission_core::ProgramName;
 use provenance::{AgentRef, SessionId, SpaceId, TaskId, UnixSeconds};
+use sandbox::fake::FakeSandbox;
 use std::sync::Arc;
 
 /// A router that is never asked: this test is about what the launcher lends and gives back, and

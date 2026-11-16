@@ -1,9 +1,9 @@
 //! The capability kinds, each written once. [`capability_kinds!`] is the one list: a row is the
-//! kind's docs, its variant, the struct of its capability, the struct of its need (porter-match's)
+//! kind's docs, its variant, the struct of its capability, the struct of its need (account-match's)
 //! and the name a person reads for it, with `ai` after the name for the kinds the AI broker
 //! routes. Everything that has one case per kind is generated from it: [`Capability`],
 //! [`CapabilityKind`] with its [`name`](CapabilityKind::name) and
-//! [`is_ai`](CapabilityKind::is_ai), and the [`Service`] a kind is. porter-match expands the same
+//! [`is_ai`](CapabilityKind::is_ai), and the [`Service`] a kind is. account-match expands the same
 //! list into `Need`, so a new kind is one row here, its capability struct and its need struct.
 //!
 //! The serde forms are the bus and file forms (`kind = "mail"`, `{ "kind": "mail", "v": {..} }`);
@@ -21,7 +21,7 @@ use serde::{Deserialize, Serialize};
 
 /// The list of capability kinds, handed to the macro named `$callback`, which sees every row as
 /// `$(#[doc])* Variant(CapabilityStruct, NeedStruct, "Name" $(, ai)?),`. The need structs are
-/// named for the expansion site: only porter-match, which defines them, expands them.
+/// named for the expansion site: only account-match, which defines them, expands them.
 #[macro_export]
 macro_rules! capability_kinds {
     ($callback:ident) => {
@@ -78,7 +78,7 @@ macro_rules! capability_kind_is_ai {
 
 /// What a kind is, as a type: its [`CapabilityKind`], the name a person reads and whether the AI
 /// broker routes it. One zero-sized type per kind lives in [`service`] (the calendar, the contacts
-/// and the tasks share one capability struct, so the struct cannot be the kind). porter-match's
+/// and the tasks share one capability struct, so the struct cannot be the kind). account-match's
 /// `Asks` adds the need that asks for it.
 pub trait Service {
     /// The kind.

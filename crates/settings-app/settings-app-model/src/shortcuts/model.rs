@@ -1,9 +1,7 @@
 //! What the Shortcuts list holds: the layers of the keymap and the rows drawn from them.
 
 use super::groups::ShortcutGroup;
-use keymap::{
-    Action, Chord, Desktop, Keymap, Overrides, Platform, StandardAction, SystemBinding,
-};
+use keymap::{Action, Chord, Desktop, Keymap, Overrides, Platform, StandardAction, SystemBinding};
 
 /// The platform whose keymap the list shows: this desktop's.
 pub(super) const OURS: Platform = Platform::Linux {

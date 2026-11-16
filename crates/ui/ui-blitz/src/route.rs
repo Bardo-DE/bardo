@@ -10,7 +10,7 @@ pub(crate) enum Route {
     Data,
     /// Read from the disk.
     File,
-    /// Handed to the provider the document had before ds-blitz's.
+    /// Handed to the provider the document had before ui-blitz's.
     Fallback,
     /// Put to the app's `AppNet`.
     App,

@@ -1,20 +1,20 @@
 use super::*;
 use crate::supervise::Ports;
 use crate::testkit::{Recorder, models};
-use engine_supervisor::{
-    EngineFailure, EngineId, ExitCode, FakeGpu, FakeReadyProbe, GpuMemory, MonoMs, Probe,
-    SupervisorConfig,
-};
-use model_catalog::MiB;
 use account_capability::ModelId;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, CuaEnv, LlmCap, LlmFeature, LlmWire, SpeechMode};
 use account_core::AccountId;
 use account_ids::Tokens;
-use inference_core::Slot;
 use account_match::{CuaNeed, LlmNeed, SpeechNeed};
-use inference_router::seams::Router;
 use base_testkit::Scratch;
+use engine_supervisor::{
+    EngineFailure, EngineId, ExitCode, FakeGpu, FakeReadyProbe, GpuMemory, MonoMs, Probe,
+    SupervisorConfig,
+};
+use inference_core::Slot;
+use inference_router::seams::Router;
+use model_catalog::MiB;
 
 fn llm() -> Need {
     Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))

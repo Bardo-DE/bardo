@@ -13,16 +13,16 @@ use super::{Api, SyncCursor, id_in, list_all, read_error, segment_of};
 use crate::dataset::fingerprint;
 use crate::datasets::pim::PimKind;
 use crate::datasets::pim::discover::{DiscoverError, Found};
-use sync_core::{Clock, DELETED};
-use sync_core::{
-    ItemKind, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter, Tombstone,
-};
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_ids::{Bytes, WebUrl};
 use serde::Deserialize;
 use std::sync::Arc;
+use sync_core::{Clock, DELETED};
+use sync_core::{
+    ItemKind, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter, Tombstone,
+};
 
 /// How many events a page asks for.
 const PAGE: &str = "250";

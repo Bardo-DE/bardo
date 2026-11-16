@@ -4,9 +4,6 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use ui_components::prelude::Point;
-use ui_harness::Input as Click;
-use ui_harness::harness::settle_until;
 use files_core::{
     EjectFailure, FolderPath, ProgramName, Volume, VolumeId, VolumeKind, VolumeName, VolumeTrouble,
 };
@@ -14,6 +11,9 @@ use files_model::{Effect, Input, TabId};
 use files_ui::edge::Heard;
 use files_ui::{FakeVolumes, Launch, VolumeCall};
 use tempfile::TempDir;
+use ui_components::prelude::Point;
+use ui_harness::Input as Click;
+use ui_harness::harness::settle_until;
 
 use super::edge::{next, rig_over};
 use super::support::{RecordingOpener, harness, launch, scratch_folder};

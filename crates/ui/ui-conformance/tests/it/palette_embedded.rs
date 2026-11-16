@@ -5,15 +5,15 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::rect;
+use std::time::Duration;
+use ui_blitz::FocusFallback;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::focus::request::{FocusRequest, use_focus_request};
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::style::icon::url::IconUrl;
-use ui_blitz::FocusFallback;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use probe::rect;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

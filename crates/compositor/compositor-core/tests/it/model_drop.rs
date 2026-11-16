@@ -3,13 +3,13 @@
 
 use crate::support;
 
+use account_core::SpaceId;
 use compositor_core::OutputKey;
 use compositor_core::desktop::{DesktopRequest, WindowAsk};
 use compositor_core::focus::TokenCheck;
 use compositor_core::window::{SpacePlace, WindowState};
 use compositor_core::{Event, Model, WindowId};
 use desktop_protocols::vocab::{Assign, PlaceTarget};
-use account_core::SpaceId;
 use support::driver::{Op, map, plug, run, run_from};
 use support::{headless, proven};
 

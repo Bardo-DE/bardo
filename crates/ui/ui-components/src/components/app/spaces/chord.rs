@@ -1,8 +1,8 @@
 //! The key that switches an app's own Space: the platform's primary modifier and the digits 1
 //! to 9.
 
-use keymap::{Context, Key as ChordKey, Platform};
 use dioxus::prelude::{Key, Modifiers};
+use keymap::{Context, Key as ChordKey, Platform};
 use ui_core::command::chord_of;
 use ui_core::standard_action::SpaceNumber;
 use ui_core::vocab::{Shortcut, ShortcutKey};

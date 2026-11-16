@@ -4,8 +4,8 @@
 //! built while a virtual one is alive must read the wall clock, not the virtual one's.
 
 use dioxus::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use std::time::{Duration, Instant};
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 200,

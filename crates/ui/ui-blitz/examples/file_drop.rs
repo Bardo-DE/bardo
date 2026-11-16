@@ -10,10 +10,10 @@
 //! browser lights nothing and is refused. Escape or closing the window quits.
 
 use dioxus::prelude::*;
+use ui_blitz::{AppConfig, AppId, WindowSize, launch};
 use ui_components::file_drop::drag::{FileDrag, FileDrop};
 use ui_components::file_drop::hook::use_file_drop;
 use ui_components::prelude::*;
-use ui_blitz::{AppConfig, AppId, WindowSize, launch};
 
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(

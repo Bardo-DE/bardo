@@ -8,10 +8,10 @@ use crate::protocol::xdg_shell::{check_golden, golden};
 use compositor_core::Event;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::manage::workspace::WorkspaceWatch;
 use compositor_testkit::fakes::MemorySpaceStore;
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
+use desktop_protocols::vocab::{Answer, Power};
 
 /// A fixture on `spec`, one public client and a bound workspace list, all read.
 fn watched(spec: FixtureSpec) -> (Fixture, ClientId, WorkspaceWatch) {

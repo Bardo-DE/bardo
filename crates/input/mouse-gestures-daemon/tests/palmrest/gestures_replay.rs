@@ -164,7 +164,9 @@ fn a_two_finger_swipe_never_scrolls_sideways_and_lands_four_contacts() {
     let lands: Vec<_> = all
         .iter()
         .filter_map(|o| match o {
-            Out::Pad(mouse_gestures_daemon::outputs::pad::PadFrame::Land { fingers, .. }) => Some(*fingers),
+            Out::Pad(mouse_gestures_daemon::outputs::pad::PadFrame::Land { fingers, .. }) => {
+                Some(*fingers)
+            }
             _ => None,
         })
         .collect();
@@ -281,7 +283,9 @@ fn a_click_cancels_the_scroll_and_holds_gestures_off() {
     let pad: Vec<&Out> = all.iter().filter(|o| matches!(o, Out::Pad(_))).collect();
     assert!(matches!(
         pad.last(),
-        Some(Out::Pad(mouse_gestures_daemon::outputs::pad::PadFrame::Lift))
+        Some(Out::Pad(
+            mouse_gestures_daemon::outputs::pad::PadFrame::Lift
+        ))
     ));
 }
 
@@ -397,7 +401,12 @@ fn the_pad_lifts_once_when_the_scroll_ends_and_the_app_runs_the_glide() {
         .iter()
         .filter(|o| matches!(o, Out::Pad(_)))
         .collect();
-    assert_eq!(pad, [&Out::Pad(mouse_gestures_daemon::outputs::pad::PadFrame::Lift)]);
+    assert_eq!(
+        pad,
+        [&Out::Pad(
+            mouse_gestures_daemon::outputs::pad::PadFrame::Lift
+        )]
+    );
 }
 
 #[test]
@@ -409,5 +418,10 @@ fn claiming_mid_stroke_lifts_the_touchpad() {
         (t, clock) = (nt, nc);
     }
     let (_, lifted) = t.claim(true, records[30].at);
-    assert_eq!(lifted, [Out::Pad(mouse_gestures_daemon::outputs::pad::PadFrame::Lift)]);
+    assert_eq!(
+        lifted,
+        [Out::Pad(
+            mouse_gestures_daemon::outputs::pad::PadFrame::Lift
+        )]
+    );
 }

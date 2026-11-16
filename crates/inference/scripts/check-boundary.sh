@@ -9,20 +9,20 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
-# never reach a bus, a runtime, an HTTP client or a keyring. inferd-client reaches none with its
-# default (empty) feature set; porter-tailnet reaches tokio and hyper only through its `io`
-# feature; steward-dbus is the bus vocabulary, so it reaches zbus but no client, keyring or
+# never reach a bus, a runtime, an HTTP client or a keyring. inference-client reaches none with its
+# default (empty) feature set; inference-tailnet reaches tokio and hyper only through its `io`
+# feature; inference-dbus is the bus vocabulary, so it reaches zbus but no client, keyring or
 # settings library.
-EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
+EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
 RULES=(
-  "porter-infer: $EFFECTS"
-  "porter-bridge: $EFFECTS"
-  "porter-router: $EFFECTS inferd"
-  "porter-turns: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ds-settings inferd"
-  "porter-tailnet: $EFFECTS"
-  "inferd-client: $EFFECTS"
-  "inferd-probe: $EFFECTS"
-  "steward-dbus: reqwest hyper ureq oo7 keyring secret-service ds-settings"
+  "inference-core: $EFFECTS"
+  "inference-bridge: $EFFECTS"
+  "inference-router: $EFFECTS inferd"
+  "inference-turns: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings inferd"
+  "inference-tailnet: $EFFECTS"
+  "inference-client: $EFFECTS"
+  "inference-probe: $EFFECTS"
+  "inference-dbus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
 fail=0
 
@@ -49,7 +49,7 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# ONE CLIENT: reqwest is named by porter-http-reqwest (porter's crate) and by no crate of this
+# ONE CLIENT: reqwest is named by account-http-reqwest (porter's crate) and by no crate of this
 # workspace; inferd takes `ReqwestHttp` from it.
 named=$(grep -lE '^reqwest[ .=]' crates/*/Cargo.toml || true)
 if [ -n "$named" ]; then
@@ -84,7 +84,7 @@ else
   echo "pure: inferd reads the environment only in from_env functions"
 fi
 
-# The inference libraries (porter-router, porter-turns) read no environment variable at all: what a
+# The inference libraries (inference-router, inference-turns) read no environment variable at all: what a
 # daemon or an app knows is passed in. Their test helpers are outside the rule, as above.
 lib_env_reads=$(find crates/porter-router/src crates/porter-turns/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
   | xargs -0 grep -nE 'env::(var|var_os|vars|vars_os|args|args_os|current_dir|home_dir)\b' | grep -vE '^[^:]*:[0-9]+:[[:space:]]*//' || true)
@@ -121,16 +121,16 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # Dev dependencies are outside it. steward depends on porter by git rev; porter never depends on
 # steward.
 EDGES=(
-  "inferd: cua-action cua-parse cua-session cua-vendors ds-settings engine-manifest engine-probe engine-spec engine-supervisor inferd-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire porter-bridge porter-callers porter-capability porter-client porter-client-dbus porter-core porter-daemon porter-dbus porter-fs porter-http porter-http-reqwest porter-ids porter-infer porter-match porter-provider porter-router porter-settings porter-store porter-tailnet porter-tailscale porter-turns porter-wire speech-host-client speech-provider steward-dbus vision-prep"
-  "inferd-client: model-http model-openai-compat model-provider model-wire porter-bridge porter-callers porter-capability porter-core porter-dbus porter-fs porter-ids porter-infer porter-match porter-tailnet porter-tailscale porter-turns porter-wire steward-dbus"
-  "inferd-probe: porter-capability porter-http porter-ids porter-provider"
-  "porter-bridge: model-catalog model-openai-compat model-provider porter-capability porter-core porter-ids porter-infer porter-match vision-prep"
-  "porter-infer: cua-action model-provider porter-capability porter-core porter-ids porter-match"
-  "porter-router: cua-action engine-probe engine-spec engine-supervisor model-catalog model-http model-openai-compat model-provider porter-capability porter-core porter-ids porter-infer porter-match porter-tailnet porter-tailscale speech-provider vision-prep"
-  "porter-tailnet: porter-fs porter-ids porter-tailscale"
-  "porter-turns: cua-action cua-parse cua-session cua-vendors engine-supervisor model-extract model-http model-openai-compat model-provider porter-bridge porter-capability porter-core porter-ids porter-infer porter-match porter-router vision-prep"
-  "steward-dbus: porter-core porter-dbus porter-dbus-macros porter-ids porter-match porter-wire"
-  "steward-rig: inferd-client porter-capability porter-core porter-ids porter-infer porter-match porter-rig"
+  "inferd: computer-use-action computer-use-parse computer-use-session computer-use-vendors ui-settings engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus account-fs account-http account-http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
+  "inference-client: model-http model-openai-compat model-provider model-wire inference-bridge account-callers account-capability account-core account-dbus account-fs account-ids inference-core account-match inference-tailnet account-tailscale inference-turns account-wire inference-dbus"
+  "inference-probe: account-capability account-http account-ids account-provider"
+  "inference-bridge: model-catalog model-openai-compat model-provider account-capability account-core account-ids inference-core account-match model-vision-prep"
+  "inference-core: computer-use-action model-provider account-capability account-core account-ids account-match"
+  "inference-router: computer-use-action engine-probe engine-spec engine-supervisor model-catalog model-http model-openai-compat model-provider account-capability account-core account-ids inference-core account-match inference-tailnet account-tailscale speech-provider model-vision-prep"
+  "inference-tailnet: account-fs account-ids account-tailscale"
+  "inference-turns: computer-use-action computer-use-parse computer-use-session computer-use-vendors engine-supervisor model-extract model-http model-openai-compat model-provider inference-bridge account-capability account-core account-ids inference-core account-match inference-router model-vision-prep"
+  "inference-dbus: account-core account-dbus account-dbus-macros account-ids account-match account-wire"
+  "inference-rig: inference-client account-capability account-core account-ids inference-core account-match account-rig"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -152,8 +152,8 @@ for member in $(sed -n 's#^  "crates/\(.*\)",$#\1#p' Cargo.toml); do
 done
 
 # inferd's test-only knobs are never on in a default build: neither `test-proc-root`
-# (`INFERD_PROC_ROOT`, which porter-callers' fixtures and peephole's `fake` come with) nor
-# porter-secrets' `test-keys` (a file key store that keeps credentials as plain text) may be among
+# (`INFERD_PROC_ROOT`, which account-callers' fixtures and peephole's `fake` come with) nor
+# account-secrets' `test-keys` (a file key store that keeps credentials as plain text) may be among
 # the features cargo resolves for inferd without any flag.
 if cargo tree -p inference-daemon --depth 0 -f '{p} {f}' 2>/dev/null | grep -q 'test-proc-root'; then
   echo "LEAK: inferd enables test-proc-root by default"
@@ -167,8 +167,8 @@ if cargo tree -p inference-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/nu
 else
   echo "test-only: inferd's default build does not include test-keys"
 fi
-if cargo tree -p inference-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(porter-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
-  echo "LEAK: inferd's default build enables porter-callers test-proc-root or peephole fake"
+if cargo tree -p inference-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
+  echo "LEAK: inferd's default build enables account-callers test-proc-root or peephole fake"
   fail=1
 else
   echo "test-only: inferd's default build has no caller fixtures"

@@ -7,8 +7,8 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-use caller_identity_dbus::peephole::fake::{introduced_program, introduced_service};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing};
+use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};
 use portal_daemon::link::BusLink;
 use portal_daemon::peers::Peers;
 use portal_daemon::screencast::restore::FileStore;

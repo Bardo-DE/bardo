@@ -1,7 +1,7 @@
 //! The compositor's heads and modes as the page's displays, and back.
 
-use desktop_protocols::vocab::Transform;
 use desktop_client::output::{Head, Mode, Outputs};
+use desktop_protocols::vocab::Transform;
 use settings_app_model::{
     DisplayMode, DisplayPosition, DisplayRotation, Millimetres, Monitor, OutputId, PixelSize,
     RefreshMilliHz, ScaleMilli,

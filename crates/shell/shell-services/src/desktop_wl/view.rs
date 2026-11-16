@@ -1,13 +1,13 @@
 //! The wire state as the shell's [`DesktopView`]: apps grouped and ranked, windows, Spaces and
 //! what is active. Grouping and recency are sill's: the protocols give windows, not apps.
 
+use desktop_client::toplevel::Toplevel as WireToplevel;
+use desktop_client::workspace::WorkspaceFlag;
+use desktop_client::{DesktopState, ToplevelKey};
 use desktop_protocols::vocab::{
     AppLifeKind, AppVisibility, Attention, Emphasis, LeaseState, Modality, PlacementMark,
     ProofKind, Responsiveness, SensitivityLevel, Shown, SpaceKind, WindowRole, WindowStateKind,
 };
-use desktop_client::toplevel::Toplevel as WireToplevel;
-use desktop_client::workspace::WorkspaceFlag;
-use desktop_client::{DesktopState, ToplevelKey};
 use shell_model::desktop::{
     ActiveView, AppView, DesktopView, SpacePlaceView, SpaceView, WindowView,
 };

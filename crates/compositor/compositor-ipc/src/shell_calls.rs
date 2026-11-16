@@ -1,6 +1,6 @@
 //! Bindings that call sill (A4, P1-Z; filled by P1-I1): the `ShellCalls` seam and its D-Bus
 //! implementation. The composition root names the call (a `DbusCall` from a binding) and never
-//! zbus; this crate, the one D-Bus crate, makes it. `casement-testkit` exports `FakeShellCalls`,
+//! zbus; this crate, the one D-Bus crate, makes it. `compositor-testkit` exports `FakeShellCalls`,
 //! which records the calls, so a test asserts that a binding called the method within one
 //! frame.
 //!

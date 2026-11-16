@@ -1,6 +1,6 @@
 [package]
 name = "account-client-inproc"
-description = "The hosted transport of porter-client: an app that runs the account service itself, with its own providers, secrets and sheet host."
+description = "The hosted transport of account-client: an app that runs the account service itself, with its own providers, secrets and sheet host."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -39,7 +39,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 # No feature is on by default: a consumer names the ones it uses.
 default = []
 # `PorterRelays`: a `RelayHost` that runs the authenticated relays of an app or daemon hosting its
-# own `AccountService`, on its tokio runtime, over rustls. Off by default: it brings porter-proxy
+# own `AccountService`, on its tokio runtime, over rustls. Off by default: it brings account-proxy
 # with TLS and a runtime.
 relays = ["dep:account-proxy", "dep:tokio"]
 

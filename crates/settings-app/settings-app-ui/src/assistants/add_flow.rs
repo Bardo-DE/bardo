@@ -4,10 +4,10 @@
 
 use super::outside_view::{Shown, shown};
 use crate::env::Env;
+use dioxus::prelude::*;
 use settings_app_client::add_agent;
 use settings_app_model::external::NewAgent;
 use settings_app_model::{AddAction, AddForm, Request};
-use dioxus::prelude::*;
 
 type Adding = Signal<Option<AddForm>>;
 

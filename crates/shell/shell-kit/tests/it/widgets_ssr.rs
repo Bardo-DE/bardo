@@ -5,13 +5,15 @@
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
-use ui_components::prelude::*;
-use ui_components::style::icon::render::Glyph;
 use shell_kit::battery::ring::percent_text;
 use shell_kit::prelude::*;
 use shell_kit::widget::kind::WidgetTitle;
+use ui_components::assembly::ds::Inject;
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
+use ui_components::prelude::*;
+use ui_components::style::icon::render::Glyph;
 
 #[derive(Props, Clone)]
 struct HostProps {

@@ -15,6 +15,7 @@
 
 use crate::eis_keymap::{KeymapFile, KeymapText};
 use crate::remote::{Fit, Held, RemoteFor, RemoteHandle, RemoteSlot, releases, tagged};
+use caller_identity_core::{RoleName, roles};
 use compositor_core::DeviceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
 use compositor_core::input::{
@@ -23,7 +24,6 @@ use compositor_core::input::{
 };
 use compositor_core::time::Mono;
 use desktop_protocols::vocab::PressEdge;
-use caller_identity_core::{RoleName, roles};
 use reis::calloop::{EisRequestSource, EisRequestSourceEvent};
 use reis::eis;
 use reis::request::{Connection, Device, DeviceCapability, EisRequest, Seat};

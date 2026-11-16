@@ -5,8 +5,8 @@
 //! untrusted content it runs in readerd (no tools), so the model that writes a narrative over
 //! mail text can never act.
 
-use memory_core::EpisodeId;
 use action_core::IdleRules;
+use memory_core::EpisodeId;
 use provenance::UnixSeconds;
 use serde::{Deserialize, Serialize};
 

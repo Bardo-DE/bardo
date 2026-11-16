@@ -1,5 +1,5 @@
 //! A helper's job as a value: the job to run, the session it opened, and what the run came to.
-//! The runner that opens the session and drives the loop is `docket-tasks`'; the board's rules
+//! The runner that opens the session and drives the loop is `companion-tasks`'; the board's rules
 //! for the report are `conclude`'s.
 
 use companion_model::helper::{CallVerdict, HelperCard, Job, JobFault, SignInWay};

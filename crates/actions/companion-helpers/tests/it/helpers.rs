@@ -1,5 +1,5 @@
 //! Helpers: the board the hub owns, its records, and the jobs it runs. Everything here runs over
-//! docket-fake's router in process, a scripted model per helper, and memory the test fills.
+//! action-fake's router in process, a scripted model per helper, and memory the test fills.
 
 use crate::support::helper_fixtures::{
     ARCHIVE, DELETE, READ, chosen_ref, created, draft, goal, model, person_job, posted, remembered,
@@ -7,10 +7,10 @@ use crate::support::helper_fixtures::{
 };
 use crate::support::infer::{Say, ScriptedInfer, call, words};
 use crate::support::world::*;
-use memory_core::MemoryReply;
-use companion_model::helper::*;
 use action_core::AuditRecord;
+use companion_model::helper::*;
 use inference_core::{Asker, OpenOptions};
+use memory_core::MemoryReply;
 use std::time::Duration;
 
 #[tokio::test]

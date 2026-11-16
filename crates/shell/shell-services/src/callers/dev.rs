@@ -5,8 +5,8 @@
 
 use std::path::Path;
 
-use caller_identity_dbus::peephole::{LoadError, RealProc, TableFiles};
 use caller_identity_dbus::caller_identity_core::{Table, Uid};
+use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
 
 use super::DesktopCallers;
 

@@ -13,13 +13,13 @@
 //! itself.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::root::chrome::Ground;
 use layer_shell_host::OutputInfo;
+use shell_kit::prelude::*;
 use shell_model::desktop::Shown;
 use shell_model::ids::OutputName;
 use shell_model::units::Cpx;
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
+use ui_components::root::chrome::Ground;
 
 use crate::dock::frame::{Area, Frame, Rows, frame};
 use crate::dock::geometry::{dock_metrics, pill_corner};

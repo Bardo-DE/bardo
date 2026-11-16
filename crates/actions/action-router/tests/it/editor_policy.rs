@@ -6,10 +6,10 @@ use crate::standing::{ADDRESS, scope_to, send, send_with, used};
 use crate::support::*;
 use action_core::*;
 use action_fake::{FakeSeams, MailContact, ScriptedConfirmer, ScriptedWriter};
-use permission_core::{ActionMatch, AlwaysOffer, AskReason, GrantCaller, TaskPolicy};
 use action_router::Router;
 use action_vocab::{CallRequest, CallerRole, Value};
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
+use permission_core::{ActionMatch, AlwaysOffer, AskReason, GrantCaller, TaskPolicy};
 use provenance::{AgentRef, ClientName, Effect, Labelled, SessionId};
 
 const ZED: &str = "org.zed.Zed";

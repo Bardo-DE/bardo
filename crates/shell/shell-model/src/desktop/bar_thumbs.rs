@@ -4,8 +4,8 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use desktop_protocols::vocab::WindowStateKind;
 use account_core::SpaceId;
+use desktop_protocols::vocab::WindowStateKind;
 
 use super::bar_layout::BarLayouts;
 use super::{DesktopView, SpacePlaceView, bar_space_ids};

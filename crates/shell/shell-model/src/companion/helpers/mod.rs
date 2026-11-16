@@ -1,6 +1,6 @@
 //! The helpers the person keeps, as the companion shows them: the list, the card being read or
 //! filled in, what the helpers told the person, and the one transition ([`update`]) that moves
-//! them. Pure: `sill-services` makes the calls [`HelpersCommand`] asks for and feeds back what
+//! them. Pure: `shell-services` makes the calls [`HelpersCommand`] asks for and feeds back what
 //! they came to, and the launcher draws [`HelpersModel`].
 
 mod apps;

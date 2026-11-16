@@ -1,9 +1,9 @@
 //! Reader schemas.
 
 use crate::support::*;
+use account_ids::Count;
 use action_core::*;
 use action_vocab::{ActionRef, CallId, CharCount, ChoiceId, Value};
-use account_ids::Count;
 
 fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFault>)> {
     let a = entity("mail.thread", "a");

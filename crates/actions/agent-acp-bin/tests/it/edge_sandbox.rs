@@ -3,14 +3,14 @@
 //! with a printed reason, where bwrap, user namespaces or python are missing. Scratch directories
 //! only; the court is a stand-in that holds the mail fixture's manifest and never performs.
 
-use agent_acp_core::call::AgentCall;
-use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
-use sandbox::AbsPath;
-use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EnvVar, Profile, agent_bwrap_args};
-use agent_acp_host::{ToolsEdge, ToolsOffer};
 use action_manifest::ValidManifest;
 use action_vocab::TurnId;
+use agent_acp_core::call::AgentCall;
+use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
+use agent_acp_host::{ToolsEdge, ToolsOffer};
 use provenance::SessionId;
+use sandbox::AbsPath;
+use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EnvVar, Profile, agent_bwrap_args};
 use std::path::Path;
 use std::process::{Command, Stdio};
 

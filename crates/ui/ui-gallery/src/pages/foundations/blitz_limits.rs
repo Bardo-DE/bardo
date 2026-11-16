@@ -6,13 +6,13 @@ use crate::axes::{Axes, Showcase};
 use crate::pages::{Scope, Section, Specimen};
 use crate::wallpaper;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::host::measure::use_rect;
 use ui_components::prelude::*;
 use ui_components::root::chrome::FrameTint;
 use ui_components::style::icon::render::Glyph;
 use ui_core::text::clip::clip_chars;
 use ui_core::time::clock::sleep;
-use std::time::Duration;
 
 /// Each spike finding: its id, what Blitz does, and what quire does about it.
 const LIMITS: [(&str, &str, &str); 16] = [

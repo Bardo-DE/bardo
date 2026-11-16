@@ -4,8 +4,8 @@
 use super::{Engine, SyncError};
 use crate::dataset::Dataset;
 use crate::journal::Op;
-use sync_core::{BaseVersion, ItemState, JournalItem, RemoteSide, Replica, Resolution};
 use account_ids::clock::Clock;
+use sync_core::{BaseVersion, ItemState, JournalItem, RemoteSide, Replica, Resolution};
 
 impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
     /// Settles conflict `number`. `false` when there is no such conflict (already settled).

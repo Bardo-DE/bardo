@@ -8,14 +8,14 @@ pub mod bus;
 pub mod inferd;
 
 use memory_core::{Dirs, SpaceId};
+use memory_daemon::{Confinement, Consent, Daemon, SpaceRegistry, SystemBackend, TablePeers};
 use memory_dbus_serve::serve_on;
 use memory_fake::ScriptedConsolidator;
+use memory_recall::{EmbedError, Embedder, FakeEmbedder};
 use memory_seal::{KeyError, KeyStore, MemoryKeys, SpaceKey};
 use memory_service::Caller;
 use memory_service::MemoryService;
 use memory_store::{EmbedRole, EmbedderCard, Urgency, Vector};
-use memory_daemon::{Confinement, Consent, Daemon, SpaceRegistry, SystemBackend, TablePeers};
-use memory_recall::{EmbedError, Embedder, FakeEmbedder};
 use std::path::Path;
 use std::sync::Arc;
 

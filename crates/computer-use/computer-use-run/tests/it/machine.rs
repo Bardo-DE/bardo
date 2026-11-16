@@ -2,6 +2,8 @@
 //! router's gate) states them.
 
 use crate::support::rules;
+use account_core::{AppName, DataClass};
+use action_wire::GrantAnswer;
 use computer_use_action::RunMode;
 use computer_use_action::{Button, ClickCount, Coord, CuaAction, Point, Target, WindowSpace};
 use computer_use_bus::{
@@ -15,8 +17,6 @@ use computer_use_run::{
     ActionQueue, CuaConfig, CuaSignal, Repeats, Run, RunEffect, RunEnv, RunInput, RunPhase,
     RunTrack,
 };
-use action_wire::GrantAnswer;
-use account_core::{AppName, DataClass};
 use inference_core::StepIndex;
 use provenance::{
     Address, AgentRef, Confidentiality, ConfirmId, Integrity, Label, Labelled, MessageKind,

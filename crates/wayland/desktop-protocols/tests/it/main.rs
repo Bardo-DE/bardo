@@ -1,4 +1,4 @@
-//! casement-protocols' integration tests: the XML, the vocab codes against the generated enums, serde round trips.
+//! desktop-protocols' integration tests: the XML, the vocab codes against the generated enums, serde round trips.
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 

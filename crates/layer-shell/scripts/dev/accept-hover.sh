@@ -138,10 +138,10 @@ fi
 # the GPU backend (SHELL_HOST_BACKEND=gpu): it picks the adapter by wgpu's own order and paints.
 if [ "$COMPOSITOR" = casement ] && [ "${SHELL_HOST_BACKEND:-}" = gpu ] \
   && [ "${CASEMENT_DMABUF:-none}" = none ]; then
-  adapter=$(grep '^shell-host: adapter ' "$LOG" | head -n 1)
+  adapter=$(grep '^layer-shell-host: adapter ' "$LOG" | head -n 1)
   offered=$( (comp_source; wayland-info 2>/dev/null) | grep -c "interface: 'zwp_linux_dmabuf_v1'")
   if [ -n "$adapter" ] && [ "$offered" = 0 ] && ! grep -q 'panicked' "$LOG"; then
-    echo "PASS f80_fallback: no zwp_linux_dmabuf_v1 offered; ${adapter#shell-host: }"
+    echo "PASS f80_fallback: no zwp_linux_dmabuf_v1 offered; ${adapter#layer-shell-host: }"
   else
     echo "FAIL f80_fallback: dmabuf offered $offered times; adapter line '${adapter:-none}'"
     status=1

@@ -8,8 +8,8 @@ use hosting::agent::*;
 use hosting::engine::Chat;
 use hosting::entries;
 use hosting::rig::{AgentsPlan, Plan, World};
-use inference_daemon::peers::Role;
 use inference_core::Policy;
+use inference_daemon::peers::Role;
 use serde_json::json;
 
 // ---- a model on this computer --------------------------------------------------------------

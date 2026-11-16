@@ -10,10 +10,10 @@ use crate::window_size::Extent;
 use dioxus::core::spawn_forever;
 use dioxus::prelude::*;
 use dioxus_native::winit::window::Window;
-use ui_components::base::time::clock::{now, sleep};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
+use ui_components::base::time::clock::{now, sleep};
 
 /// Resizes the window the calling component renders in, and says who last resized it.
 ///

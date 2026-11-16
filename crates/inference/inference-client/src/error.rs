@@ -1,4 +1,4 @@
-//! inferd-client's errors.
+//! inference-client's errors.
 
 use inference_core::{InferRefusal, NoPlaceReason, PlaceKind, SessionError};
 

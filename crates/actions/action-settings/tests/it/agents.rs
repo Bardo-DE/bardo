@@ -1,10 +1,10 @@
 //! The agent rows: what was offered against what is chosen, the plain words, and the in-place
 //! edit of `agents.toml`. A scratch agents directory; no agent starts and no clock is read.
 
+use action_settings::*;
 use agent_registry::dirs::AgentsDir;
 use agent_registry::offered::{Named, Offered, Start};
 use agent_registry::slug::Slug;
-use action_settings::*;
 
 const FILE: &str = r#"# my agents
 [[agent]]

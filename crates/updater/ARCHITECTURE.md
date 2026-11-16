@@ -11,19 +11,19 @@ and can be rolled back. The behaviour follows macOS Software Update.
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `slipway-core` | `Release` (parse and validate `release.toml`), `BundlePath`, version `standing`, signature check (`Authenticator`, `PublicKey`), digests, `Audit` (the bundle against the release), the install `Plan`, `plan_exports`, `next_check` (the schedule), `ProgressGate`, `decide_boot` (the health rule) | none |
-| `slipway-root` | everything that runs as root: the verified unpack and atomic switch (`apply`), the three programs' entry points (`helper`) and binaries `slipway-apply`, `slipway-rollback`, `slipway-health`, the install root's layout (`layout`), small file operations (`fsutil`), the trust anchor (`keys`), the report the helper prints (`report`) and the two system settings it reads (`settings`) | files, a child process (`restorecon`) |
+| `updater-core` | `Release` (parse and validate `release.toml`), `BundlePath`, version `standing`, signature check (`Authenticator`, `PublicKey`), digests, `Audit` (the bundle against the release), the install `Plan`, `plan_exports`, `next_check` (the schedule), `ProgressGate`, `decide_boot` (the health rule) | none |
+| `updater-root` | everything that runs as root: the verified unpack and atomic switch (`apply`), the three programs' entry points (`helper`) and binaries `slipway-apply`, `slipway-rollback`, `slipway-health`, the install root's layout (`layout`), small file operations (`fsutil`), the trust anchor (`keys`), the report the helper prints (`report`) and the two system settings it reads (`settings`) | files, a child process (`restorecon`) |
 | `slipway` | downloading (`fetch`), the session service (`service`), the command line (`cli`), the daemon's files (`config`, `state`, `dirs`), the `pkexec` seam (`elevate`), and one binary: `slipway` | files, network, session bus, a child process |
 
-`slipway-core` reaches no network, bus, runtime or archive crate. `slipway-root` may read archives (`tar`,
+`updater-core` reaches no network, bus, runtime or archive crate. `updater-root` may read archives (`tar`,
 `zstd`) but reaches no network client, TLS, bus or async runtime (`ureq`, `rustls`, `zbus`, `tokio`):
-the programs that run with administrator rights link only `slipway-core`, `thiserror`, `semver`, `toml`,
-`rustix`, `tar` and `zstd` (and what those bring). `scripts/check-boundary.sh` checks both edges: `slipway-core`
-reaches none of the network, bus, runtime or archive crates, and the whole tree of `slipway-root` (normal and build
+the programs that run with administrator rights link only `updater-core`, `thiserror`, `semver`, `toml`,
+`rustix`, `tar` and `zstd` (and what those bring). `scripts/check-boundary.sh` checks both edges: `updater-core`
+reaches none of the network, bus, runtime or archive crates, and the whole tree of `updater-root` (normal and build
 dependencies) holds none of the user-level program, the caller-identity library, the network client and TLS, the bus,
 the async runtime and its building blocks, or `tracing`, and its direct dependencies are exactly the seven above. `slipway`
-depends on `slipway-root` (for `Layout`, the file operations, the key loader, the report and the helper's
-exit codes), never the other way. `slipway-core` reads no clock, environment or file: the caller passes
+depends on `updater-root` (for `Layout`, the file operations, the key loader, the report and the helper's
+exit codes), never the other way. `updater-core` reads no clock, environment or file: the caller passes
 bytes, times and what it saw on disk.
 
 ## 2. Layout
@@ -43,8 +43,8 @@ scripts/install.sh  scripts/check-boundary.sh
 .github/workflows/ci.yml  deny.toml
 ```
 
-`slipway` re-exports `layout`, `fsutil` and `keys` from `slipway-root`, and `report` adds the logging of a
-report to the type `slipway-root` defines. The three binaries are built with
+`slipway` re-exports `layout`, `fsutil` and `keys` from `updater-root`, and `report` adds the logging of a
+report to the type `updater-root` defines. The three binaries are built with
 `cargo build --release --locked -p updater-root`; the user program with `-p updater-daemon`.
 
 Install: `scripts/install.sh` only places files. It makes folders with `install -d -m755` and files with
@@ -67,7 +67,7 @@ A release is the tag `v<semver>` on the releases repository with three assets, f
 `release.toml` holds `format = 1`, `version`, `date` (RFC 3339), `notes`, `bundle = { name, sha256,
 size }`, informational `[components]`, one `[[file]]` (`path`, `sha256`, `mode`) per regular file in
 the bundle, `[[export]]` (`link`, `target`) per link the system needs, and `[[system]]` (`path`) per
-file the helper copies into a system folder. `slipway-core::Release`
+file the helper copies into a system folder. `updater-core::Release`
 validates all of it: simple paths only (no absolute, `..`, empty or backslash parts, nothing under
 `.slipway/`), unique files with none inside another, modes that are plain permission bits readable
 by the owner and not writable by anyone else, no setuid; export links only under the ten allowed
@@ -93,7 +93,7 @@ file does not exist. No key: nothing is installed and the person is told so. The
 <root>/.private/                      0700, root only: the update lock and the private copy of a bundle
 ```
 
-The root defaults to `/opt/quire`. `slipway-core::plan_install` turns (current, previous, releases,
+The root defaults to `/opt/quire`. `updater-core::plan_install` turns (current, previous, releases,
 target) into ordered steps: `Unpack`, `Publish` (rename `.partial` to the version), `SetPrevious`,
 `SwitchCurrent`, `SyncExports`, `SyncSystem`, `Prune`. Every prefix of the list leaves a working system: the new
 tree is complete and flushed before the single `rename(2)` that changes what runs (`current.new` is
@@ -108,7 +108,7 @@ Exports: after the switch each `[[export]]` link is made to point at `<root>/cur
 link is created when missing, replaced only when it already points into the root, left alone and
 reported when something else is there (a regular file, a link elsewhere), and removed when the
 release being left listed it, the new one does not, and it still points into the root.
-`slipway-core::plan_exports` decides from what the caller observed; `apply/exports.rs` observes and
+`updater-core::plan_exports` decides from what the caller observed; `apply/exports.rs` observes and
 acts. The export base (`/` on a real system) is a field of `Layout`, so tests use a temporary
 directory.
 
@@ -130,7 +130,7 @@ that release whole. The same holds for `/usr/lib/keycap/keycap.toml`. A destinat
 parents, `0755` under the helper's umask) and is left in place when the file is later removed; the test
 `a_system_file_is_placed_replaced_and_dropped_with_the_releases` runs in a sandbox with no such folders.
 A file is overwritten or removed only when it still holds exactly what an earlier release placed
-(`slipway-core::plan_system`, by digest); a person's own file, an edited one, or a link is left alone and
+(`updater-core::plan_system`, by digest); a person's own file, an edited one, or a link is left alone and
 reported like a conflicting export. So is a name that is empty in `/etc` but that the distribution ships under
 the same name in its own folder (`/usr/lib/pam.d`, `/usr/lib/udev/rules.d`, `/usr/lib/modules-load.d`,
 `/usr/lib/modprobe.d`, `/usr/share/polkit-1/rules.d`: Fedora and Arch keep them there; `vendor_copies`): placing ours
@@ -165,7 +165,7 @@ slipway recover / confirm  --------------> slipway-health recover|confirmed  org
 The three programs are separate files because polkit matches an action to the program's path: the installing
 program cannot go back (a downgrade) at all, and the one that can asks for the administrator's password
 (`auth_admin_keep`). Installing a newer release signed with the project's key stays passwordless. They are also
-the only programs that run as root, and are built from their own crate (`slipway-root`) so that what runs with
+the only programs that run as root, and are built from their own crate (`updater-root`) so that what runs with
 those rights links nothing it does not need: no network client, bus or async runtime. The health
 program is described in section 7.
 
@@ -302,7 +302,7 @@ was confirmed, or that was just put back, is never rolled back. The cost: a cras
 (login screen, log in, crash, again) is not counted; it takes restarts of the computer. Going back by hand
 (section 6 `Rollback()`, or `slipway-rollback` run by an administrator) is for that case.
 
-At every start of the service `health::on_start` also applies `slipway-core::decide_boot` with the login of
+At every start of the service `health::on_start` also applies `updater-core::decide_boot` with the login of
 this start:
 
 | marker | confirmed | this start | action |

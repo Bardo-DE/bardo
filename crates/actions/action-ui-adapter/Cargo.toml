@@ -1,6 +1,6 @@
 [package]
 name = "action-ui-adapter"
-description = "The adapter quire apps use: ds-intents' view marks to and from docket's wire (context chips, things, summon answers), the context source and summon target over ds, and the voice bridge."
+description = "The adapter quire apps use: ui-intents' view marks to and from docket's wire (context chips, things, summon answers), the context source and summon target over ds, and the voice bridge."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

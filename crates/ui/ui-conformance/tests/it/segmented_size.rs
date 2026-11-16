@@ -3,11 +3,11 @@
 //! (18, 22, 26, 30, 38), all whole pixels, at scale 1 and 2. Measured on the laid-out rects.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 #[allow(non_snake_case)]
 fn Both() -> Element {

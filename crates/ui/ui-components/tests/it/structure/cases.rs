@@ -22,7 +22,9 @@ use ui_components::components::controls::checkbox::Checkbox;
 use ui_components::components::controls::scrubber_model::BufferedRange;
 use ui_components::components::fields::fact_list::{Fact, FactList};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow, RowLayout};
-use ui_components::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn, TableRow};
+use ui_components::components::lists::table::model::{
+    CellAlign, Sort, SortDirection, TableColumn, TableRow,
+};
 use ui_components::components::lists::table::view::Table;
 use ui_components::components::overlays::drag_ghost::DragCount;
 use ui_components::motion::spring::Millis;

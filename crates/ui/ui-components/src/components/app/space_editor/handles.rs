@@ -5,14 +5,14 @@
 use super::{Picker, dot_index, edit, field};
 use crate::host::measure::client_rect;
 use dioxus::prelude::*;
+use edit::Nudge;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::vocab::Check;
 use ui_motion::drag::{DragPhase, use_drag};
 use ui_style::appearance::theme::Scheme;
 use ui_style::space::dot_paint::DotPaint;
 use ui_style::space::{look::SpaceLook, palette::derive};
-use edit::Nudge;
-use std::rc::Rc;
 
 /// A handle's reach: pointer down within its radius picks it (`S:255`, 22 px across).
 const HANDLE_RADIUS: f32 = 11.0;

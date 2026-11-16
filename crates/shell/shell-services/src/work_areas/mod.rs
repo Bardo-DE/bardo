@@ -19,7 +19,7 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// The well-known name of the interface and its object path (quire's `ds-desktop` names the
+/// The well-known name of the interface and its object path (quire's `ui-desktop` names the
 /// same one for its `Outputs` capability).
 pub const BUS_NAME: &str = "org.quire.Outputs1";
 pub const PATH: &str = "/org/quire/Outputs1";

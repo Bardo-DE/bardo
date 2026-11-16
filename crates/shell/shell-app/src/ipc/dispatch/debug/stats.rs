@@ -1,5 +1,5 @@
 //! `sill debug stats`: every surface's frame statistics, through the always-public
-//! `HostCtx::take_stats` (it needs neither the `debug` feature nor shell-host's `debug-inject`;
+//! `HostCtx::take_stats` (it needs neither the `debug` feature nor layer-shell-host's `debug-inject`;
 //! draining, so each report covers only the time since the previous one).
 
 use layer_shell_host::{HostCtx, SurfaceId};
@@ -25,7 +25,7 @@ pub fn collect(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs) -> Vec<SurfaceSta
         .collect()
 }
 
-/// The lock surfaces are the host's (shell-host names each `sill-lock/<output>`), not a row of
+/// The lock surfaces are the host's (layer-shell-host names each `sill-lock/<output>`), not a row of
 /// `outputs`, so they are found by name.
 fn lock_surfaces(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs) -> Vec<(String, SurfaceId)> {
     outputs

@@ -3,9 +3,9 @@
 //! replace the inode by rename), a 30 ms debounce, then the whole file is read again through the
 //! lenient reader. The router is handed the result; the next call decides by it.
 
+use account_daemon_support::Watch;
 use action_router::{Router, Seams};
 use action_settings::{AgentSettings, Loaded, Locator};
-use account_daemon_support::Watch;
 use std::time::Duration;
 use tokio::sync::{mpsc, watch};
 

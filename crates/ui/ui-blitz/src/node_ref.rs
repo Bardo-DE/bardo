@@ -1,5 +1,5 @@
 //! One node of a Blitz document, however the app's handle on it was made: the `NodeHandle` a
-//! component's `onmounted` gives, or a [`FoundNode`] ds-blitz makes for an element found by
+//! component's `onmounted` gives, or a [`FoundNode`] ui-blitz makes for an element found by
 //! selector (`ui_components::focus::selector::focus_by_selector`), which dioxus-native-dom has no public way
 //! to make a `NodeHandle` for. The focus writes (`crate::focus`) take either.
 

@@ -183,9 +183,9 @@ fn an_asker_that_left_leaves_nothing_to_answer() {
 }
 
 mod view_tests {
-    use companion_model::helper::HelperName;
     use action_core::{ArgLine, ConfirmDetail, ConfirmOffer, Gesture, Shown, TaintNote};
     use action_vocab::{EntityRef, LabelText};
+    use companion_model::helper::HelperName;
     use provenance::{AppName, Effect, Label, Labelled, Source};
 
     use super::super::words::{app_words, asker_words, why_words};
@@ -305,7 +305,8 @@ mod view_tests {
         let thing = EntityRef {
             id: provenance::EntityId {
                 app: app("org.quire.Mail"),
-                kind: provenance::EntityKind::parse("mail.thread").unwrap_or_else(|e| panic!("{e}")),
+                kind: provenance::EntityKind::parse("mail.thread")
+                    .unwrap_or_else(|e| panic!("{e}")),
                 key: provenance::EntityKey::parse("t1").unwrap_or_else(|e| panic!("{e}")),
             },
             title: Labelled::new("Digest".to_owned(), Label::trusted_user()),
@@ -322,12 +323,7 @@ mod view_tests {
         let name: AppName = app("org.quire.Mail");
         assert_eq!(app_words(&name), "Mail");
         assert_eq!(app_words(&app("org.quire.Companion")), "Assistant");
-        assert!(
-            !why_words(&permission_core::AskReason::Mass(
-                account_ids::Count(3)
-            ))
-            .is_empty()
-        );
+        assert!(!why_words(&permission_core::AskReason::Mass(account_ids::Count(3))).is_empty());
         let said = |why: &str| permission_core::AskReason::Said {
             rule: permission_core::PolicyId("ask-after-untrusted".to_owned()),
             why: why.to_owned(),

@@ -6,10 +6,10 @@ use crate::support;
 
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
 use compositor_render::{CasementElement, ClosingBody, OutputView};
-use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 use smithay::backend::renderer::pixman::PixmanRenderer;
 use support::{pixman, render_once};
+use ui_core::geometry::scale::Scale;
+use ui_core::vocab::Fraction;
 
 const VIEW: OutputView = OutputView {
     area: LogicalRect {

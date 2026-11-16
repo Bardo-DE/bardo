@@ -7,12 +7,12 @@ use crate::support::hold;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::base::time::stamp::Ms;
-use ui_components::machine::{use_machine, use_machine_in, use_machine_state};
 use hold::{
     Hold, HoldIn, HoldOut, HoldParams, Lock, lock, outs, press, record, running, set_lock, word,
     word_of,
 };
+use ui_components::base::time::stamp::Ms;
+use ui_components::machine::{use_machine, use_machine_in, use_machine_state};
 
 fn params() -> HoldParams {
     HoldParams {

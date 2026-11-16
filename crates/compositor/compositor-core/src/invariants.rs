@@ -6,8 +6,8 @@ use crate::lock::{LockState, LockSurfaces};
 use crate::model::Model;
 use crate::space::{Space, SpaceContent};
 use crate::window::{SpacePlace, Window, WindowState};
-use desktop_protocols::vocab::Emphasis;
 use account_core::SpaceId;
+use desktop_protocols::vocab::Emphasis;
 use std::collections::BTreeSet;
 
 /// The first invariant found broken.

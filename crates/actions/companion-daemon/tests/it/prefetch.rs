@@ -4,10 +4,10 @@
 
 use crate::support::infer::{Say, call, words};
 use crate::support::world::*;
-use companion_wire::AnswerBody;
 use action_core::*;
 use action_fake::{Answering, BoxFut, HostedApp};
 use action_vocab::{LabelText, Value};
+use companion_wire::AnswerBody;
 use provenance::{Actor, Labelled};
 use serde_json::json;
 use std::sync::{Arc, Mutex};

@@ -2,8 +2,8 @@
 
 use crate::config::convert;
 use compositor_core::settings::CasementSettings;
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
+use ui_settings::schema::Page;
 
 /// `spaces.*`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]

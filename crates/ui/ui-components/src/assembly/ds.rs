@@ -66,6 +66,7 @@ use crate::stack::hover_hub::use_hover_hub_provider;
 use crate::stack::layer_stack::LayerStack;
 use crate::stack::toast_hub::use_toast_hub_provider;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::scale::Scale;
 use ui_core::vocab::modality_word;
 use ui_core::word::Word;
@@ -78,7 +79,6 @@ use ui_style::scope::{Scope, use_scope_provider};
 use ui_style::space::{frame_vars::FrameVars, look::SpaceLook, provided::use_space_look_provider};
 use ui_style::tokens::delay::TipDelay;
 use ui_style::tokens::{pixel::PixelToken, shape::Corner};
-use std::rc::Rc;
 
 /// How the stylesheet reaches the document.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

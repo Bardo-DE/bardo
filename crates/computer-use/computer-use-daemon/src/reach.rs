@@ -5,14 +5,14 @@
 //! here and intentd lays it over the manifest. cuad reloads the person's settings file while it
 //! runs ([`follow_settings`]), so a change of `cua.enabled` is announced with `ReachChanged`.
 //!
-//! This mirrors docket-dbus's `IntentReach1` (name, `Reach() -> s`, signal `ReachChanged`)
-//! because cua does not take docket's newer pin yet; it moves to docket-dbus's `ReachServer` at
+//! This mirrors action-dbus's `IntentReach1` (name, `Reach() -> s`, signal `ReachChanged`)
+//! because cua does not take docket's newer pin yet; it moves to action-dbus's `ReachServer` at
 //! the next docket pin.
 
 use crate::watch::SettingsWatch;
+use action_dbus::PROVIDER_PATH;
 use computer_use_host::Supervisor;
 use computer_use_run::Seams;
-use action_dbus::PROVIDER_PATH;
 use std::sync::Arc;
 use zbus::object_server::SignalEmitter;
 

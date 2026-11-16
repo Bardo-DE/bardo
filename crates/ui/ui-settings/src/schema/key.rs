@@ -3,8 +3,8 @@
 
 use std::collections::BTreeMap;
 
-use ui_core::settings::KeyPath;
 use serde::{Deserialize, Serialize};
+use ui_core::settings::KeyPath;
 
 use super::column::Column;
 use super::control::ControlName;

@@ -11,7 +11,6 @@ use compositor_core::input::{
 use compositor_core::policy::ConnectionRole;
 use compositor_core::{LeaseId, WindowId};
 use compositor_ipc::dbus::ConnectRefusal;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::seat::pointer::Pointer;
 use compositor_testclient::surface::layer::{
@@ -22,6 +21,7 @@ use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::fakes::callers;
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use compositor_wayland::foreign_toplevel_list::identifier_of;
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 const BTN_LEFT: ButtonCode = ButtonCode(0x110);

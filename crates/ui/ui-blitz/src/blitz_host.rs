@@ -21,6 +21,8 @@ use crate::node_ref::same;
 use crate::phase::Phase;
 use crate::reveal::reveal;
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::rc::Rc;
 use ui_components::host::captured::CapturedPointer;
 use ui_components::host::caret::{Caret, FieldSelection, InitialCaret};
 use ui_components::host::drop_hit::DropHit;
@@ -37,8 +39,6 @@ use ui_components::host::position::{TextPosition, TextRange};
 use ui_components::host::probe::Probe;
 use ui_components::host::reveal::Scrolled;
 use ui_components::prelude::*;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 /// How a document finds an element by selector, once it has a document to search.
 pub(crate) type FindDocument = Rc<dyn Fn(&str) -> Found>;

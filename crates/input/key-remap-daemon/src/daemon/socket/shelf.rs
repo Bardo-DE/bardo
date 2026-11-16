@@ -4,9 +4,9 @@
 
 use crate::daemon::inbox::ClientId;
 use crate::keymap::settle;
-use keymap::{AppAction, AppId, DefaultChord};
 use key_remap_client::FileText;
 use key_remap_proto::{KeymapCall, KeymapState, RegisteredAction, Registration, ToClient};
+use keymap::{AppAction, AppId, DefaultChord};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// Apps one connection may register at once; the rest are ignored.

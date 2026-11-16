@@ -1,10 +1,10 @@
 //! The bodies of `org.quire.Companion1` read from damaged text: no panic, and anything that does
 //! read is stable (written and read again it is the same value).
 
+use action_core::{ContextKeep, Keep, Reveal};
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, AskWire, FooterWire, NeedsYou, RefusalWire,
 };
-use action_core::{ContextKeep, Keep, Reveal};
 use proptest::prelude::*;
 use provenance::TaskId;
 use serde::{Serialize, de::DeserializeOwned};

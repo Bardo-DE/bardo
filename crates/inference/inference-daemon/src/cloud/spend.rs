@@ -11,12 +11,12 @@
 //! not reset a cap. The file holds money and counts, never a key or a prompt.
 
 use crate::settings::SpendLine;
-use model_provider::Money;
 use account_core::AccountId;
 use account_core::AppId;
 use account_fs::atomic::AtomicWrite;
 use account_ids::UnixSeconds;
 use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TokenUsage, spend_verdict};
+use model_provider::Money;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;

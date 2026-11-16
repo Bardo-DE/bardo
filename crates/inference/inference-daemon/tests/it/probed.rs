@@ -9,12 +9,6 @@
 
 use crate::hosting;
 
-use hosting::accountd::{FakeAccount, Standing};
-use hosting::engine::{Chat, Script};
-use hosting::entries;
-use hosting::rig::{Hosted, Plan, Trust, World};
-use inference_daemon::probe::ProbeConfig;
-use inference_client::InferSession;
 use account_capability::LlmFeature;
 use account_capability::{Locality, Tier};
 use account_core::consent::Usage;
@@ -22,14 +16,20 @@ use account_core::{AppId, AppName, DataClass, Isolation};
 use account_fake_servers::net::Bind;
 use account_fake_servers::{FakeModels, ModelDef, ModelsHandle, Running, Wire};
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use hosting::accountd::{FakeAccount, Standing};
+use hosting::engine::{Chat, Script};
+use hosting::entries;
+use hosting::rig::{Hosted, Plan, Trust, World};
+use inference_client::InferSession;
 use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
     MessagePart, Policy, Role as ChatRole,
 };
-use account_match::LlmNeed;
-use account_match::Need;
-use std::time::Duration;
+use inference_daemon::probe::ProbeConfig;
 use inference_dbus::inference::InferenceProxy;
+use std::time::Duration;
 
 const MAIL: &str = "org.quire.Mail";
 const KEY: &str = "sk-or-v1-NOT-USED-LOCAL-ONLY";

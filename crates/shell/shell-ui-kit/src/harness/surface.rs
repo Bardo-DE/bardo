@@ -8,13 +8,13 @@ use std::rc::Rc;
 
 use crate::settings::SettingsFeed;
 use dioxus::prelude::*;
-use ui_components::style::kit::{Styles, UserStyle};
-use ui_blitz::{FocusFallback, StylesGuard};
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use ui_settings::Environment;
 use layer_shell_host::{LayerExtent, OutputInfo};
 use shell_settings::ShellFile;
 use tokio::sync::watch;
+use ui_blitz::{FocusFallback, StylesGuard};
+use ui_components::style::kit::{Styles, UserStyle};
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
+use ui_settings::Environment;
 
 use super::fake;
 use crate::hooks::{PinnedAppearance, PinnedLocale, SwitchableAppearance};
@@ -189,7 +189,7 @@ impl<S: Surface> SurfaceSetup<S> {
 
     /// Where the keyboard goes when the element that had it leaves the document. The harness
     /// hands it on to an ancestor, as a window of quire's own does; `BlitzDefault` is what a
-    /// shell-host surface has today, which wires no focus keeper.
+    /// layer-shell-host surface has today, which wires no focus keeper.
     pub fn focus(mut self, focus: FocusFallback) -> Self {
         self.focus = focus;
         self

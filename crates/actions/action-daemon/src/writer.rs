@@ -1,12 +1,12 @@
-//! The policy writer over inferd. The writer itself is `docket-models`' `TransportWriter` (it
+//! The policy writer over inferd. The writer itself is `agent-models`' `TransportWriter` (it
 //! reads the person's own turns and the action catalogue, never content; nothing in a draft is
 //! believed as written); this adds the constructor over the session bus.
 
 use action_core::{ActionCard, Derived, PolicyWriter, UserTurn};
 use action_dbus::InferLink;
 use agent_models::TransportWriter;
-use permission_core::ReviewError;
 use inference_client::Transport;
+use permission_core::ReviewError;
 use provenance::{SpaceId, TaskId};
 
 /// The policy writer: reads the person's turns and the action catalogue, never content.

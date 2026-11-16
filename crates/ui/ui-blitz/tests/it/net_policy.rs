@@ -1,13 +1,13 @@
 //! The app's network policy. The app's document gets `file:` under `Local`, from inside the roots
 //! the app names and nowhere else, and nothing but `data:` under `Sealed`; under `Custom` every other request is put to the
 //! app's handler, which sees where it came from and decides. A frame is never served `file:` by
-//! ds-blitz, whatever the policy.
+//! ui-blitz, whatever the policy.
 
 use dioxus::prelude::*;
-use ui_blitz::{AppNet, FileRoots, FrameId, NetDecision, NetPolicy, NetReply, NetRequest};
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
+use ui_blitz::{AppNet, FileRoots, FrameId, NetDecision, NetPolicy, NetReply, NetRequest};
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 200,

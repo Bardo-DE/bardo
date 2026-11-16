@@ -9,12 +9,12 @@ use crate::copy::absence::Subject;
 use crate::icons::tile_of;
 use crate::live::use_live;
 use crate::system::{RowWork, Unavailable};
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{
     PageKind, SignalBars, Ssid, WifiAsking, WifiInput, WifiNetwork, WifiRadio, WifiReady,
     WifiSecurity, WifiState,
 };
-use dioxus::prelude::*;
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::prelude::*;

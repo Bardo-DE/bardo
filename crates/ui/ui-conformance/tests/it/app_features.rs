@@ -4,6 +4,7 @@
 //! and hands its address over on a click.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::time::clock::now;
 use ui_components::components::app::edge_peek::EdgePeek;
 use ui_components::components::app::link_pill::{LinkPill, LinkTarget};
@@ -11,7 +12,6 @@ use ui_components::components::app::today_tabs::{TodayTab, TodayTabs};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

@@ -3,11 +3,11 @@
 
 use crate::dock::tokens::DockTokens;
 use crate::magnify::MagnifyParams;
-use ui_components::prelude::*;
-use ui_components::style::tokens::shape::Corner;
+use shell_kit::tokens::dock::DockMetrics;
 use shell_model::units::Cpx;
 use shell_settings::DockSettings;
-use shell_kit::tokens::dock::DockMetrics;
+use ui_components::prelude::*;
+use ui_components::style::tokens::shape::Corner;
 
 /// quire's dock tokens from `dock.tile_size_px` and `dock.floor`: written inline around the
 /// dock's root (`DockMetrics::style_attr`), where `DockFloor` reads them. The gap, padding and

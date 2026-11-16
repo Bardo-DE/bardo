@@ -6,5 +6,5 @@ mod recall;
 mod record;
 
 pub(crate) use control::ControlSkeleton;
-pub(crate) use memory_recall::RecallSkeleton;
+pub(crate) use recall::RecallSkeleton;
 pub(crate) use record::RecordSkeleton;

@@ -6,14 +6,14 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Harness, Input, Viewport};
 use image::{Rgba, RgbaImage};
 use shell_model::capture_pick::{AskId, CaptureCommand, EyedropIn, Rgb8};
 use shell_model::desktop::{OutputPicture, OutputShot};
 use shell_overlays::ColorSampler;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::EyedropperLink;
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<ColorSampler>;
 

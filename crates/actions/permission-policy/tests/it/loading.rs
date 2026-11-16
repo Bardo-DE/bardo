@@ -81,9 +81,7 @@ fn a_policy_that_errors_asks_with_the_failure_and_never_permits() {
     let ruled = pdp.decide_checked(&support::base(provenance::Effect::Read));
     assert_eq!(
         ruled.ruling,
-        permission_core::Ruling::Ask(vec![
-            permission_core::AskReason::EvaluationFailed
-        ])
+        permission_core::Ruling::Ask(vec![permission_core::AskReason::EvaluationFailed])
     );
     assert_eq!(
         ruled.faults,

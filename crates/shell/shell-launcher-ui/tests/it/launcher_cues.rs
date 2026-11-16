@@ -7,14 +7,14 @@ use crate::launcher_harness;
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::harness::assert_settles_to_zero_frames;
-use ui_harness::{Harness, Input};
 use launcher_harness::launcher_support::m9;
 use launcher_harness::{
     Open, Press, Seen, await_off_thread, loaded, open, open_looking, settle, watch,
 };
 use shell_launcher::PreviewKind;
+use ui_components::prelude::*;
+use ui_harness::harness::assert_settles_to_zero_frames;
+use ui_harness::{Harness, Input};
 
 /// Show the preview pane with ⌘Y through the harness's keyboard.
 fn quick_look(open: &mut Open) {

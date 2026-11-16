@@ -14,9 +14,9 @@ use crate::components::lists::list::list::List;
 use crate::components::lists::list::model::ListStyle;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::hash::Hash;
 use ui_core::word::Word;
 use ui_style::tokens::control_size::SidebarSize;
-use std::hash::Hash;
 
 /// A sidebar of `sections`, with `header` above them and `foot` below. `cursor` is the place the
 /// keys rest on and the caller draws selected, across every list; `onselect` hears where a click,

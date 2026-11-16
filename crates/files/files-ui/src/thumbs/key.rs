@@ -2,8 +2,8 @@
 
 use std::time::SystemTime;
 
-use ui_components::prelude::ImageSource;
 use files_core::{Entry, EntryKind, ItemRef, LinkTo};
+use ui_components::prelude::ImageSource;
 
 /// The version of a file a thumbnail was asked for: a file that changes on disk is a new version,
 /// and a thumbnail of the old one is not shown for it.

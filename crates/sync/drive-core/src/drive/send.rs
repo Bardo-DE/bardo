@@ -32,14 +32,14 @@ use crate::index::{Awaiting, Base, Edit, Index, Row};
 use crate::naming;
 use crate::ranges::Ranges;
 use crate::sink::Sink;
-use sync_core::{
-    BaseVersion, Conflict, Content, Place, Progress, PutRefused, RemoteId, RemoteSide,
-    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
-};
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Weak};
 use std::time::{Duration, Instant};
+use sync_core::{
+    BaseVersion, Conflict, Content, Place, Progress, PutRefused, RemoteId, RemoteSide,
+    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
+};
 use tokio::sync::Notify;
 
 /// The first wait after the drive could not take a change.

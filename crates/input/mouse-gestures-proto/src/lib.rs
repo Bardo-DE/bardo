@@ -1,4 +1,4 @@
-//! The socket protocol between palmrest and shell-host (12.3.10, O1).
+//! The socket protocol between palmrest and layer-shell-host (12.3.10, O1).
 //!
 //! `/run/palmrest/events.sock`, `SOCK_SEQPACKET`: one JSON message per packet, so
 //! there is no framing to get wrong and a reader never sees half a message. The first packet

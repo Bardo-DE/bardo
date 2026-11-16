@@ -2,8 +2,8 @@
 //! `ProcRoot`: the system's, or a fixture in a test build); this crate reads under the directory
 //! it is handed, so a test builds a scratch one.
 
-use action_wire::TerminalScope;
 use account_core::CgroupPath;
+use action_wire::TerminalScope;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 

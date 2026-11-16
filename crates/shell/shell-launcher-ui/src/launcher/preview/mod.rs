@@ -19,11 +19,11 @@ pub mod load;
 pub mod moment;
 
 use dioxus::prelude::*;
+use shell_launcher::{Action, Preview};
 use ui_components::components::lists::preview::pane::PaneAction;
 use ui_components::motion::detail::touch::Touch;
 use ui_components::motion::detail::use_operation::use_operation;
 use ui_components::prelude::*;
-use shell_launcher::{Action, Preview};
 
 use crate::launcher::action_keys::action_shortcut;
 use crate::launcher::preview::content::Load;

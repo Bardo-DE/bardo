@@ -1,15 +1,15 @@
 //! Following a daemon's live settings module (`org.quire.SettingsModule1`) as a pane does: look
 //! for it when the pane appears, read its rows, and read again each time it comes back or says a
 //! row changed. Looking never starts it (`Client::start` does that, once per page visit). Where
-//! the module is looked for is `detent-system`'s `ModulesLink`; this is what a pane does with
+//! the module is looked for is `settings-app-system`'s `ModulesLink`; this is what a pane does with
 //! what it tells.
 
 use settings_app_system::bus::Daemon;
 pub(crate) use settings_app_system::modules::Followed;
 use settings_app_system::modules::{Module, ModulesLink};
-use ui_settings::schema::KeyKind;
 use std::sync::{Arc, Mutex, PoisonError};
 use tokio::sync::mpsc::unbounded_channel;
+use ui_settings::schema::KeyKind;
 
 /// The handle of a module while it is there.
 #[derive(Debug, Clone, Default)]

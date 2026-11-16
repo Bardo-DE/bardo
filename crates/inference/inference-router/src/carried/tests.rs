@@ -54,7 +54,10 @@ fn step() -> InferRequest {
     InferRequest::CuaStep(CuaStepRequest::new(
         StepIndex(0),
         WindowGeometry {
-            logical: computer_use_action::Size::new(computer_use_action::Coord(1), computer_use_action::Coord(1)),
+            logical: computer_use_action::Size::new(
+                computer_use_action::Coord(1),
+                computer_use_action::Coord(1),
+            ),
             scale: computer_use_action::Scale120(120),
         },
         FrameImage {

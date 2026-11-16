@@ -3,11 +3,11 @@
 
 use crate::labels::Voice;
 use crate::state::{RouterState, SessionRecord};
+use account_core::AppName;
 use action_core::ExternalAgent;
-use permission_core::{GrantCaller, ProgramName};
 use action_vocab::CallerRole;
 use action_wire::{CallerId, WireRefusal};
-use account_core::AppName;
+use permission_core::{GrantCaller, ProgramName};
 use provenance::{Actor, AgentRef, AgentRole, ClientName, SessionId, TaskId};
 
 /// The party behind a request.
@@ -218,8 +218,13 @@ impl RouterState {
                 let session =
                     SessionId::parse(&format!("s-{n}")).map_err(|_| WireRefusal::Malformed)?;
                 let task = TaskId::parse(&format!("t-{n}")).map_err(|_| WireRefusal::Malformed)?;
-                let mut record =
-                    SessionRecord::new(task, actor.clone(), app, provenance::SpaceId::desktop(), now);
+                let mut record = SessionRecord::new(
+                    task,
+                    actor.clone(),
+                    app,
+                    provenance::SpaceId::desktop(),
+                    now,
+                );
                 // A program that opened no session acts in one that starts in the start mode.
                 record.mode = start;
                 self.sessions.insert(session.clone(), record);

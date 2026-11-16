@@ -3,10 +3,10 @@
 //! under it, static; hidden, it fades out and `on_hidden` runs once at its settle.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_components::style::tokens::row_scale::ROW_SCALE;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

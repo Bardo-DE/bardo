@@ -11,7 +11,7 @@
 #   1. A debug click on the control center's item opens `sill-bar-<out>/popup` at the panel's
 #      size (320 + the shadow room), its card 8 px inside the output's right edge (read from a
 #      screenshot); a second click closes it. Screenshot dev/out/control-center-casement.png.
-#   2. An outside click (the bar's empty middle) closes it; Escape (`sill debug key`: shell-host's
+#   2. An outside click (the bar's empty middle) closes it; Escape (`sill debug key`: layer-shell-host's
 #      `Inject::Key`, which needs no grab) closes it too, or the step says why it could not try.
 #   3. The Wi-Fi tile's chevron slides the Wi-Fi pane in: the popup takes the pane's size (a
 #      Wi-Fi pane with a long list of networks may be as tall as the grid; then it only has to
@@ -25,7 +25,7 @@
 #   6. 5 s idle after closing: 0 frames on the bar.
 #
 # --real-input [bluetooth]: the Display module and the Bluetooth confirmation under real input,
-# on shell-host's private headless KWin (scripts/dev/kwin-virtual.sh) driven by shell-host's
+# on layer-shell-host's private headless KWin (scripts/dev/kwin-virtual.sh) driven by layer-shell-host's
 # scripts/dev/fake-input.sh: the control center is opened by a real click on its bar item, and its
 # brightness capsule is dragged and clicked by a real pointer, with real serials, through KWin's
 # own popup grab. No `sill debug` opener, click or pointer is used; `sill debug capture` and
@@ -171,7 +171,7 @@ EOF
 # --- nested compositor ---
 
 # SURFACE's size as "WIDTH HEIGHT", read from a capture (a popup is not in `debug stats`, but
-# shell-host names it `<bar>/popup` for `debug capture`); nothing when it is not mapped.
+# layer-shell-host names it `<bar>/popup` for `debug capture`); nothing when it is not mapped.
 size_of() {
   sill debug capture "$1" "$OUT_DIR/size.png" >/dev/null 2>&1 || return 1
   python3 -c 'import sys; from PIL import Image; print(*Image.open(sys.argv[1]).size)' \

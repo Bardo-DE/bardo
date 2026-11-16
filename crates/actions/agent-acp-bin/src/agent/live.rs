@@ -6,23 +6,23 @@
 use crate::agent::host::{Hosting, Wiring};
 use crate::agent::places::Places;
 use crate::agent::provider::{PerformerProvider, Quiet};
-use agent_registry::dirs::AgentsDir;
-use sandbox::{BwrapSandbox, Detected, NetworkMode};
-use agent_acp_host::{AcpBackend, EdgeMenu, IntentsCourt, OsFiles, Parts, Performer, ToolsOffer};
 use action_client::DbusTransport;
+use agent_acp_host::{AcpBackend, EdgeMenu, IntentsCourt, OsFiles, Parts, Performer, ToolsOffer};
+use agent_registry::dirs::AgentsDir;
 use permission_core::ProgramName;
+use sandbox::{BwrapSandbox, Detected, NetworkMode};
 
-use sandbox::AbsPath;
-use companion_model::helper::{TerminalLine, TerminalLogin, TerminalRun};
-use companion_model::{SeenCommand, WatchedAgent};
 use action_dbus::CONFIRM_PATH;
 use action_host::EditorDesk;
+use action_manifest::ValidManifest;
+use action_provider::serve_on_with;
 use agent_launch::{
     Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Entry, Registry, login_run,
 };
-use action_manifest::ValidManifest;
+use companion_model::helper::{TerminalLine, TerminalLogin, TerminalRun};
+use companion_model::{SeenCommand, WatchedAgent};
 use permission_core::ACP_AGENT_APP;
-use action_provider::serve_on_with;
+use sandbox::AbsPath;
 
 use action_store::SystemClock;
 use provenance::{HelperId, SessionId, TaskId};

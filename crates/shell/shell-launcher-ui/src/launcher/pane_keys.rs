@@ -11,8 +11,8 @@
 //! having moved the selection) come after it, to [`PanelCtx::field_key`].
 
 use dioxus::prelude::*;
-use ui_components::components::menus::palette::palette_claim::FieldKey;
 use shell_launcher::{Choice, Item, OwnAction, Preview, action_for_key, preview_for};
+use ui_components::components::menus::palette::palette_claim::FieldKey;
 
 use crate::launcher::claim_keys::{KeyPlace, pane_key};
 use crate::launcher::entries::RowRef;
@@ -174,7 +174,9 @@ impl PanelCtx {
 fn caret_of(caret: ui_components::host::caret::Caret) -> Caret {
     match caret {
         ui_components::host::caret::Caret::AtEnd => Caret::AtEnd,
-        ui_components::host::caret::Caret::Inside | ui_components::host::caret::Caret::Unknown => Caret::Inside,
+        ui_components::host::caret::Caret::Inside | ui_components::host::caret::Caret::Unknown => {
+            Caret::Inside
+        }
     }
 }
 
@@ -185,8 +187,17 @@ mod tests {
 
     #[test]
     fn only_a_caret_read_at_the_end_is_at_the_end() {
-        assert_eq!(caret_of(ui_components::host::caret::Caret::AtEnd), Caret::AtEnd);
-        assert_eq!(caret_of(ui_components::host::caret::Caret::Inside), Caret::Inside);
-        assert_eq!(caret_of(ui_components::host::caret::Caret::Unknown), Caret::Inside);
+        assert_eq!(
+            caret_of(ui_components::host::caret::Caret::AtEnd),
+            Caret::AtEnd
+        );
+        assert_eq!(
+            caret_of(ui_components::host::caret::Caret::Inside),
+            Caret::Inside
+        );
+        assert_eq!(
+            caret_of(ui_components::host::caret::Caret::Unknown),
+            Caret::Inside
+        );
     }
 }

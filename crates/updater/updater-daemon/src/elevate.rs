@@ -3,13 +3,13 @@
 
 use crate::config::Config;
 use crate::report::Report;
-use updater_root::apply::ExitCode;
 use std::ffi::OsStr;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
+use updater_root::apply::ExitCode;
 
 /// How long a helper run may take before the service stops waiting: an install of a large bundle takes
 /// minutes, and a password prompt waits for a person.

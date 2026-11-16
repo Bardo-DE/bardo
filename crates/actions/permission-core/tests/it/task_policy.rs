@@ -2,10 +2,10 @@
 //! rule that an untrusted argument is never inside.
 
 use crate::support::*;
-use action_manifest::{ActionDecl, ArgSink, ParamNeed};
-use permission_core::*;
-use action_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, TurnId, Value};
 use account_ids::Count;
+use action_manifest::{ActionDecl, ArgSink, ParamNeed};
+use action_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, TurnId, Value};
+use permission_core::*;
 use provenance::{Effect, Integrity, TaskId};
 use std::collections::{BTreeMap, BTreeSet};
 

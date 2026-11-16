@@ -3,11 +3,11 @@
 
 use crate::window_frame_controls::{Stub, VIEW, centre, log, ms};
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::prelude::*;
 use ui_components::window::host::{use_window_host, use_window_host_provider, use_window_title};
 use ui_components::window::icon::WindowIcon;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, WindowHosting};
-use std::rc::Rc;
 
 #[allow(non_snake_case)]
 fn Titled() -> Element {

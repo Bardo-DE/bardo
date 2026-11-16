@@ -2,9 +2,9 @@
 //! [`keymap::KeyInput`]. Everything that resolves a key to an action goes through it, so no
 //! other file decides what Ctrl, Super or Meta mean.
 
+use keyboard_types::{Key, Modifiers};
 use keymap::keyboard_types::{Key as LogicalKey, Modifiers as ChordModifiers, NamedKey};
 use keymap::{Key as ChordKey, KeyInput};
-use keyboard_types::{Key, Modifiers};
 
 // The toolkit (dioxus) hands in keyboard-types 0.7 values and chordkit reads 0.8: the two
 // conversions below go away when dioxus moves to 0.8 (phase 1b).

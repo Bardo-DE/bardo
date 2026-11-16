@@ -28,8 +28,8 @@ mod inset_tests;
 mod tests;
 
 use axes::{Axes, start_with};
-use ui_blitz::{AppConfig, FileRoots, WindowSize, launch};
 use std::path::Path;
+use ui_blitz::{AppConfig, FileRoots, WindowSize, launch};
 
 fn main() {
     let args = args::parse(std::env::args().skip(1));

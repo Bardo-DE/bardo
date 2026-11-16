@@ -10,17 +10,17 @@
 //! remove.
 
 use dioxus::prelude::*;
+use shell_model::intents::sheet::{
+    BRIEF_MAX_BYTES, BriefFlag, BriefView, Reach, ScrollSpot, SheetChoice, SheetView, remapped,
+    removed, span_text,
+};
+use shell_model::untrusted::for_display;
 use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::text_field_model::FieldRows;
 use ui_components::machine::MachineRef;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use shell_model::intents::sheet::{
-    BRIEF_MAX_BYTES, BriefFlag, BriefView, Reach, ScrollSpot, SheetChoice, SheetView, remapped,
-    removed, span_text,
-};
-use shell_model::untrusted::for_display;
 
 use super::gate::{AnswerGate, GateIn};
 

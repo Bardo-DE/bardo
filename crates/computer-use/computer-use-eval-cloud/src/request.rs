@@ -1,13 +1,13 @@
-//! A stoker turn as an inferd chat request: the inverse of what `porter-bridge` does inside inferd.
+//! A stoker turn as an inferd chat request: the inverse of what `inference-bridge` does inside inferd.
 //! The screenshots go inline (base64 in the frame), the sampling is the entry's or the provider's
 //! as the caller chooses, and nothing here names a model: inferd routes by the tier.
 
-use model_provider as sp;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Count, Permille, Tokens};
 use inference_core as pi;
+use model_provider as sp;
 use model_vision_prep::MediaType;
 
 /// Whose sampling a turn carries.

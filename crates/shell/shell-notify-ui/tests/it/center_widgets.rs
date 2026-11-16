@@ -43,8 +43,6 @@ fn the_center_draws_calendar_then_up_next_under_the_history() {
 mod center_support {
     use std::time::Duration;
 
-    use ui_harness::Harness;
-    use ui_harness::harness::settle_until;
     use shell_model::notifications::{
         AppGroup, AppKey, AppRef, Body, Expiry, Hints, History, IconRef, Notification,
         NotificationId, UnixMs,
@@ -52,6 +50,8 @@ mod center_support {
     use shell_notify_ui::NotificationCenter;
     use shell_ui_kit::harness::SurfaceHarness;
     use shell_ui_kit::links::CenterLink;
+    use ui_harness::Harness;
+    use ui_harness::harness::settle_until;
 
     pub use shell_ui_kit::harness::fake;
 

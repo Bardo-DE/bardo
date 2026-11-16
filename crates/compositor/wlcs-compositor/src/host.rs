@@ -1,4 +1,4 @@
-//! The [`Compositor`] behind the seam: casement's own test-kit [`Fixture`], the real `State` on
+//! The [`Compositor`] behind the seam: casement's own base-testkit [`Fixture`], the real `State` on
 //! the headless backend (pixman, virtual clock), driven from one thread.
 //!
 //! wlcs' clients live in another thread and talk at their own pace, so the loop alternates

@@ -1,10 +1,10 @@
 //! One connection's descriptor and the two calls made on it: send a message, read a packet.
 
-use service_locator::guard::{Claim, Origin};
 use mouse_gestures_proto::{self as protocol, ToDaemon, ToHost};
 use rustix::fd::{AsFd, OwnedFd};
 use rustix::io::Errno;
 use rustix::net::{RecvFlags, SendFlags};
+use service_locator::guard::{Claim, Origin};
 
 /// A connected subscriber: its descriptor and what it showed itself to be when it connected.
 #[derive(Debug)]

@@ -1,15 +1,15 @@
 //! The stripped review request holds no untrusted text, the prompt is deterministic and holds
 //! none either, and a reply that is not the stage's shape is never an allow.
 
-use action_review::*;
+use account_core::AppName;
+use account_ids::Count;
 use action_core::*;
 use action_manifest::{ArgSink, Lasting};
+use action_review::*;
+use action_vocab::{ActionRef, CallId, Caller, CharCount, LabelText, ParamName, TurnId};
 use permission_core::{
     ArgLabels, ReasonCode, ReasonText, ReviewError, SessionSaw, Stage, Strictness,
 };
-use action_vocab::{ActionRef, CallId, Caller, CharCount, LabelText, ParamName, TurnId};
-use account_core::AppName;
-use account_ids::Count;
 use provenance::{ActionName, Effect, Integrity, Label, Source, SpaceId};
 use std::collections::{BTreeMap, BTreeSet};
 

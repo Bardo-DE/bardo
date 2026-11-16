@@ -3,14 +3,14 @@
 //! a dictation. Neither touches the bus, a device or the engine, so both callers step the same
 //! way and a test can drive them with plain samples.
 
+use agent_voice_loop::CAPTURE_RATE;
+use agent_voice_wire::Level;
 use speech_provider::{
     AudioChunk, AudioFormat, FRAME_SAMPLES, Frame512, PcmBytes, PcmFormat, SampleIndex,
     VoiceActivity, Voiced,
 };
 use speech_vad::{Endpoint, EndpointParams, EnergyGate, EnergyGateParams, Framer, endpoint};
 use std::collections::VecDeque;
-use agent_voice_loop::CAPTURE_RATE;
-use agent_voice_wire::Level;
 
 /// Capture chunks of any size, cut into whole frames by `speech_vad::Framer`, in order. What is
 /// left over waits for the next chunk; the end of the stream drops it. The frames wait here, so
@@ -51,7 +51,7 @@ impl Frames {
     }
 }
 
-/// The meter's level as the wire carries it. The one place the two `Level`s meet: `voice-wire`
+/// The meter's level as the wire carries it. The one place the two `Level`s meet: `agent-voice-wire`
 /// has no stoker dependency, so the conversion lives here.
 pub(crate) fn wire_level(level: speech_vad::Level) -> Level {
     Level(level.0)

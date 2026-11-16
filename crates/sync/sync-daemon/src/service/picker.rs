@@ -1,7 +1,7 @@
 //! `org.quire.Photos1.Picker` on syncd's object (`sync_bus::PhotosPickerProxy`): the Google
 //! Photos Picker for the Photos app. Served in a build with the `photos-picker` feature; an
 //! account answers through it while its Photos row in Settings is on. The caller is identified as `Sync1`'s are (the connection's, by
-//! porter-dbus's `Callers`), and only an app that owns the Photos datasets (`org.quire.Photos`)
+//! account-dbus's `Callers`), and only an app that owns the Photos datasets (`org.quire.Photos`)
 //! may call it. Settings and the porter daemons see datasets but are not the app that imports
 //! photos, so they are `Denied`, as they are for `Sync1.Resolve`.
 //!
@@ -20,10 +20,6 @@ use super::hub::Access;
 use crate::datasets::photos::google::{GooglePicker, PickerError, PickerState, SessionId};
 use crate::paths::AccountDir;
 #[cfg(feature = "photos-picker")]
-use sync_bus::SYNC_PATH;
-#[cfg(feature = "photos-picker")]
-use sync_bus::{PICKER_PICKED, PICKER_WAITING, PhotosPickerServed, PhotosPickerServer};
-#[cfg(feature = "photos-picker")]
 use account_callers::Callers;
 use account_client::GrantsLink;
 #[cfg(feature = "photos-picker")]
@@ -33,6 +29,10 @@ use account_wire::Refusal;
 use std::collections::BTreeMap;
 use std::future::Future;
 use std::sync::{Arc, Mutex, PoisonError};
+#[cfg(feature = "photos-picker")]
+use sync_bus::SYNC_PATH;
+#[cfg(feature = "photos-picker")]
+use sync_bus::{PICKER_PICKED, PICKER_WAITING, PhotosPickerServed, PhotosPickerServer};
 #[cfg(feature = "photos-picker")]
 use zbus::Connection;
 #[cfg(feature = "photos-picker")]

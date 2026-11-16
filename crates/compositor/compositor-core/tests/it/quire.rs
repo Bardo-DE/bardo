@@ -4,6 +4,7 @@
 
 use crate::support::driver::{Op, last, map, plug, run, run_from};
 use crate::support::{headless, proven};
+use account_core::SandboxFacts;
 use compositor_core::app::AppVisibility;
 use compositor_core::desktop::{
     AppAsk, DesktopNote, DesktopRef, DesktopRequest, SpaceAsk, WindowAsk,
@@ -14,7 +15,6 @@ use compositor_core::space::SpaceIndex;
 use compositor_core::window::{SpacePlace, WindowState};
 use compositor_core::{CoreNote, Effect, Event, WindowId};
 use desktop_protocols::vocab::{Assign, PlaceTarget};
-use account_core::SandboxFacts;
 
 const GLOBALS: [GlobalKind; 3] = [
     GlobalKind::QuireDesktop,

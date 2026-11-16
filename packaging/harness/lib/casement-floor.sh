@@ -11,12 +11,12 @@
 #                               right for a scenario whose programs use no power and are no desktop program
 #   floor_shim NAME [TOOL...]   floor_make, then points CASEMENT_REPO and CASEMENT_DIR at a stand-in checkout
 #                               whose dev/up.sh adds `--system-dir` and whose dev/down.sh is casement's own. For
-#                               scripts that start casement themselves (sill's and shell-host's libraries, whose
+#                               scripts that start casement themselves (sill's and layer-shell-host's libraries, whose
 #                               pins may predate the flag): they call "$CASEMENT_REPO/dev/up.sh" and never see
 #                               the difference. The flag is added last, so this floor is the one casement reads
 #
 # A TOOL is a program the scenario starts and casement will see connect: a power tool from the system (grim, fcitx5,
-# ...), or a program built under build/ (casementctl, casement-probe, transom, sill, detent, the shell-host demos).
+# ...), or a program built under build/ (casementctl, casement-probe, transom, sill, detent, the layer-shell-host demos).
 # It is named by its real path (`readlink -f`), which is what casement reads from the process. Two things come out:
 #
 #   privacy.toml          an `allow` row per power the TOOL takes (floor_powers). casement reads the floor of a
@@ -55,9 +55,9 @@ floor_powers() {
 # floor_role TOOL: the role TOOL plays in the desktop's caller list (the roles casement checks: shell, settings,
 # portal, agent_tier; and the services sill, detent and transom check by role: accounts, inference, sync,
 # portal_frontend, compositor); nothing
-# for a program that is none. The shell-host demos stand in for the shell: they map the shell's
+# for a program that is none. The layer-shell-host demos stand in for the shell: they map the shell's
 # surfaces (an exclusive keyboard, an overlay), which casement gives only to the shell's connection. The ones that
-# need it start through casement-shell-exec (shell-host's comp_as_shell), which asks Compositor1.Connect("shell")
+# need it start through casement-shell-exec (layer-shell-host's comp_as_shell), which asks Compositor1.Connect("shell")
 # for that connection, so it is the program that must hold the role. demo_lock is a screen locker, a power a floor
 # row allows, and is not the shell.
 floor_role() {

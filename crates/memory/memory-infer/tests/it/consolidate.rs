@@ -2,15 +2,15 @@
 //! of every answer.
 
 use crate::support::{Scripted, chat};
+use account_capability::LlmFeature;
+use account_capability::Tier;
+use account_core::consent::Usage;
+use account_match::Need;
+use inference_core::{ClientFrame, InferRefusal, InferReply, InferRequest, ModelError, Task};
 use memory_core::DataClass;
 use memory_fake::{consolidation_event_link, consolidation_input};
 use memory_infer::InferdConsolidator;
 use memory_tidy::{ConsolidateError, Consolidator, render_prompt};
-use account_capability::LlmFeature;
-use account_capability::Tier;
-use account_core::consent::Usage;
-use inference_core::{ClientFrame, InferRefusal, InferReply, InferRequest, ModelError, Task};
-use account_match::Need;
 
 #[tokio::test]
 async fn the_consolidator_sends_the_prompt_as_a_background_extract_task() {

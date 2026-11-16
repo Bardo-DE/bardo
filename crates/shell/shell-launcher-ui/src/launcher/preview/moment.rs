@@ -4,10 +4,10 @@
 //! moment itself (quire rule 4): the cue goes to quire's `PreviewPane` (`cue`, and `operation`
 //! from `use_operation`), which plays it.
 
+use shell_launcher::PreviewKind;
 use ui_components::motion::detail::touch::Touch;
 use ui_components::motion::detail::use_detail::Detail;
 use ui_components::prelude::*;
-use shell_launcher::PreviewKind;
 
 /// The pane as the person sees it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -60,10 +60,10 @@ pub fn use_pane_detail(state: PaneState, touch: Touch) -> Detail<PaneState> {
 mod tests {
     use super::PaneState;
     use super::PaneState::{Failed, Hidden, Pending, Showing};
+    use shell_launcher::PreviewKind::{Emoji, File, Web};
     use ui_components::motion::detail::detailed::first_table;
     use ui_components::motion::detail::detailed::moment_table;
     use ui_components::prelude::*;
-    use shell_launcher::PreviewKind::{Emoji, File, Web};
 
     #[test]
     fn the_pane_moments() {

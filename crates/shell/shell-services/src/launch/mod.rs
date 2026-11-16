@@ -2,7 +2,7 @@
 //! Terminal=true wrapper, `systemd-run --user --scope --collect --unit=app-sill-<id>-<rand>.scope`
 //! (fallback process group)), and the desktop's one terminal opener (`backend/terminal/`).
 //!
-//! The activation token comes from shell-host (`SurfaceHandle::activation_token`) in the
+//! The activation token comes from layer-shell-host (`SurfaceHandle::activation_token`) in the
 //! daemon's `shell_app::launch`, which then sends a [`LaunchCommand`] here. [`LaunchService`] prefers
 //! `org.freedesktop.Application.Activate` for a `DBusActivatable` entry (`dbus.rs`); otherwise
 //! it plans the argument vector (`plan.rs`, pure) and runs it inside a transient

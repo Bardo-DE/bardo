@@ -5,13 +5,13 @@
 //! menu has none of these titles (design/27 §5.2 rule c).
 
 use dioxus::prelude::*;
-use ui_components::host::measure::use_rect;
-use ui_components::root::common::Common;
 use layer_shell_host::OutputInfo;
+use shell_kit::prelude::*;
 use shell_model::ids::OutputName;
 use shell_services::{AppMenuService, AppsService, WindowsService};
-use shell_kit::prelude::*;
 use shell_ui_kit::hooks::{use_service, use_service_part};
+use ui_components::host::measure::use_rect;
+use ui_components::root::common::Common;
 
 use super::content::{AppMenuState, front_app};
 use super::menus::{AppTitle, BarMenu};

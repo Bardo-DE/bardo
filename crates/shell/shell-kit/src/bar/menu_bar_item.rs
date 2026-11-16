@@ -20,7 +20,9 @@ use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::content::icon_view::IconView;
 use ui_components::components::content::text_runs::{TextLine, text};
 use ui_components::components::controls::button_model::ImagePosition;
-use ui_components::components::controls::press::{ActivationKeys, PressListeners, disabled, use_pressing};
+use ui_components::components::controls::press::{
+    ActivationKeys, PressListeners, disabled, use_pressing,
+};
 use ui_components::root::common::Common;
 use ui_components::style::icon::render::IconSize;
 

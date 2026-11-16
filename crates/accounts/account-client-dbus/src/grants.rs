@@ -14,7 +14,9 @@ use account_client::{
 use account_core::consent::{Availability, Grant, Usage};
 use account_core::{Account, AccountId, Candidate, DataClass, EndpointUrl, GrantId, ProviderId};
 use account_dbus::accounts::sheet::SheetKind;
-use account_dbus::accounts::{ACCOUNT_OPTION, GrantsProxy, candidate_from_dbus, from_text, to_text};
+use account_dbus::accounts::{
+    ACCOUNT_OPTION, GrantsProxy, candidate_from_dbus, from_text, to_text,
+};
 use account_ids::word::{from_word, word};
 use account_match::Need;
 use account_wire::{AccountsReply, ParentWindow};

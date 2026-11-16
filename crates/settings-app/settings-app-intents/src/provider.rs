@@ -6,22 +6,22 @@ use crate::ask::{Ask, ask};
 use crate::journal::{Change, Journal};
 use crate::limits::{ACCOUNTS_CHARS, KEY_VALUE_CHARS, many_lines, one_line};
 use crate::manifest::{ManifestFault, manifest};
-use settings_app_files::{ConfigHome, load, save};
-use settings_app_model::{
-    AgentSetting, Arrival, Catalogue, Control, KeyEntry, Notice, Outbox, PageSlug, TextFault,
-    arrival, show_value,
-};
+use account_core::{AppName, DataClass};
 use action_core::{
     AppRefusal, FactLine, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault, Undoable,
 };
 use action_manifest::ValidManifest;
 use action_provider::IntentProvider;
 use action_vocab::{EntityRef, LabelText, UndoToken, Value};
+use provenance::{Actor, EntityId, Label, Labelled, Source};
+use settings_app_files::{ConfigHome, load, save};
+use settings_app_model::{
+    AgentSetting, Arrival, Catalogue, Control, KeyEntry, Notice, Outbox, PageSlug, TextFault,
+    arrival, show_value,
+};
+use std::sync::{Arc, Mutex, MutexGuard};
 use ui_settings::schema::KeyPath;
 use ui_settings::target::SettingsTarget;
-use account_core::{AppName, DataClass};
-use provenance::{Actor, EntityId, Label, Labelled, Source};
-use std::sync::{Arc, Mutex, MutexGuard};
 
 /// The most things a suggestion or a preview lists.
 const LISTED: usize = 20;

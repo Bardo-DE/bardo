@@ -1,11 +1,13 @@
 //! The icon view: quire's `CollectionView` over the browser's rows, a grid of tiles.
 
 use dioxus::prelude::*;
-use ui_components::base::selection::Pick;
-use ui_components::components::lists::collection_view::{CollectionItem, CollectionView, Thumbnail};
-use ui_components::prelude::FileIconChoice;
 use files_core::{Entry, FileName, ItemRef};
 use files_model::{Browser, Input, Rename};
+use ui_components::base::selection::Pick;
+use ui_components::components::lists::collection_view::{
+    CollectionItem, CollectionView, Thumbnail,
+};
+use ui_components::prelude::FileIconChoice;
 
 use super::cloud::CloudBadge;
 use super::rename::RenameCell;

@@ -130,8 +130,8 @@ mod tests {
         Button, DockEffect, DockEvent, DockState, Hit, Point, TileApp, TileId,
     };
     use crate::dock::machine::{DropZone, step};
-    use ui_components::base::time::stamp::Stamp;
     use shell_model::units::Cpx;
+    use ui_components::base::time::stamp::Stamp;
 
     /// One scripted input sequence: `(ms, input)` pairs.
     type Script = Vec<(u64, DockEvent)>;

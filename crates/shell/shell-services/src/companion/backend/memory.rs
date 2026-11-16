@@ -1,15 +1,15 @@
 //! The memory timeline, read from memoryd as the shell: newest first, every actor and every app.
 
+use account_ids::Count;
 use memory_core::{
     ActorFilter, FactId, FactView, Settlement, SpaceState, SpaceSummary, TimelineFilter,
     TimelinePage, TimelineQuery, TrustFilter,
 };
 use memory_dbus::ControlProxy;
-use ui_core::vocab::MemoryVerb;
-use account_ids::Count;
 use provenance::{ConfirmId, ConfirmReceipt, InputProof, SpaceId, UnixSeconds};
 use shell_launcher::Generation;
 use shell_model::companion::CompanionEvent;
+use ui_core::vocab::MemoryVerb;
 use zbus::Connection;
 
 use super::text::{from_json, to_json};

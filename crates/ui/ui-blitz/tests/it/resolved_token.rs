@@ -4,8 +4,8 @@
 
 use blitz_dom::{BaseDocument, NodeId};
 use dioxus::prelude::*;
-use ui_components::prelude::Px;
 use ui_blitz::Resolved;
+use ui_components::prelude::Px;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {

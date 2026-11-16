@@ -1,5 +1,5 @@
 //! Your computers: the person's computers over inferd, the Add list, the guests, and the model
-//! servers added by hand. The steps are `detent-model`'s `computers_step`.
+//! servers added by hand. The steps are `settings-app-model`'s `computers_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

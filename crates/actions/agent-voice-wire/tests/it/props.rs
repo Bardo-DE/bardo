@@ -2,8 +2,8 @@
 //! four outcomes consistent with the four length bytes, and a stream cut anywhere reads back the
 //! same frames once the rest arrives.
 
-use proptest::prelude::*;
 use agent_voice_wire::{Level, MAX_FRAME, Unframed, VoiceEvent, frame, unframe};
+use proptest::prelude::*;
 
 fn events() -> impl Strategy<Value = Vec<VoiceEvent>> {
     prop::collection::vec(

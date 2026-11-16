@@ -28,14 +28,14 @@ _ID = r"(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-" + _ID + r"(\." + _ID + r")*)?$")
 DATE = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
-# slipway's limits (slipway-core), checked in pack and in verify.
+# slipway's limits (updater-core), checked in pack and in verify.
 MAX_BUNDLE = 8 << 30
 MAX_FILES = 100000
 MAX_NOTES = 16 * 1024
 MAX_RELEASE_TOML = 24 << 20
 MAX_TOTAL = 16 << 30
 PART = re.compile(r"^[A-Za-z0-9._+@=,~-]+$")
-# Must be the same list as slipway-core's ALLOWED_LINK_DIRS (release/export.rs). No polkit actions folder: an action can make
+# Must be the same list as updater-core's ALLOWED_LINK_DIRS (release/export.rs). No polkit actions folder: an action can make
 # pkexec run a program as root with no password, so a release never adds one (re-audit NEW-ROOT-3).
 EXPORT_ROOTS = (
     "/usr/share/wayland-sessions", "/usr/share/xdg-desktop-portal", "/usr/share/dbus-1/services",
@@ -48,7 +48,7 @@ AUTO_EXPORT_DIRS = (
     "share/applications", "share/quire", "share/porter", "share/stoker", "share/fonts",
 )
 # The tree of files slipway-apply copies (not links) to a system folder. A file is accepted only when a rule of
-# system-files.list names it: that file is a committed copy of slipway-core's ALLOWED_SYSTEM_FILES
+# system-files.list names it: that file is a committed copy of updater-core's ALLOWED_SYSTEM_FILES
 # (release/system.rs), checked against slipway's source by check-system-list.sh.
 SYSTEM_TREE = "system"
 SYSTEM_LIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "system-files.list")
@@ -462,7 +462,7 @@ def check_installed(directory, root, base="/"):
 
 
 def slipway_system_rules(source):
-    """The rules of slipway-core's ALLOWED_SYSTEM_FILES in the text of release/system.rs, as (folder, kind, name)."""
+    """The rules of updater-core's ALLOWED_SYSTEM_FILES in the text of release/system.rs, as (folder, kind, name)."""
     block = re.search(r"ALLOWED_SYSTEM_FILES[^=]*=\s*\[(.*?)\n\];", source, re.S)
     if not block:
         raise Refused("ALLOWED_SYSTEM_FILES is not in that file")

@@ -6,9 +6,9 @@ use compositor_core::output::{GammaRamp, GammaTable};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{HELD_REQUESTS, UnixSeconds, Verdict};
 use compositor_core::{Event, OutputName};
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::manage::gamma::{ControlId, ControlState, GammaControls};
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
+use desktop_protocols::vocab::{Answer, Power};
 
 /// A fixture with one output, a client and a gamma helper that has read the output name.
 fn boot() -> (Fixture, ClientId, GammaControls) {

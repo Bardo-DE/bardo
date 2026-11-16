@@ -89,7 +89,9 @@ pub fn publish(services: &Services, outputs: &Outputs, settings: &ShellFile) {
 mod tests {
     use super::*;
     use layer_shell_host::{BlurSpec, RegionSpec};
-    use layer_shell_host::{KeyboardMode, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget};
+    use layer_shell_host::{
+        KeyboardMode, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget,
+    };
 
     fn config(anchor: Anchor, exclusive: ExclusiveZone) -> LayerConfig {
         LayerConfig {

@@ -16,16 +16,16 @@
 use crate::bridge::{self, Frames};
 use crate::computer_use_run::{CuaRun, StepJob};
 use engine_supervisor::EngineId;
-use model_http::{HttpClient, Timeouts, WaitMs as HttpWaitMs};
-use model_openai_compat::{Flavor, OpenAiCodec, OpenAiCompat};
-use model_provider as sp;
-use model_provider::Retrying;
 use inference_core::{
     ChatReply, ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, InferEvent, InferRefusal,
     InferReply, ModelError, ServedBy,
 };
 use inference_router::local::LocalModel;
 use inference_router::seams::TurnStep;
+use model_http::{HttpClient, Timeouts, WaitMs as HttpWaitMs};
+use model_openai_compat::{Flavor, OpenAiCodec, OpenAiCompat};
+use model_provider as sp;
+use model_provider::Retrying;
 use std::future::Future;
 use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -46,8 +46,8 @@ impl sp::Sleeper for TokioSleep {
     }
 }
 
-/// Three attempts, a quarter of a second doubling to four seconds (porter-bridge's, shared with
-/// inferd-client's in-process engines).
+/// Three attempts, a quarter of a second doubling to four seconds (inference-bridge's, shared with
+/// inference-client's in-process engines).
 pub const RETRY: sp::RetryPolicy = inference_bridge::ENGINE_RETRY;
 
 /// An engine on a local socket answers its first byte after the prompt is read, which for an

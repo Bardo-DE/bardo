@@ -1,6 +1,6 @@
 //! What a launcher preview names that is not a file: a clipboard image's bytes from the clipboard
 //! service's history. A file is previewed by the viewer's own parts, off the UI thread, in
-//! `sill-launcher-ui` (`anyview_peek`); nothing here reads one.
+//! `shell-launcher-ui` (`anyview_peek`); nothing here reads one.
 
 use shell_launcher::ClipKey;
 

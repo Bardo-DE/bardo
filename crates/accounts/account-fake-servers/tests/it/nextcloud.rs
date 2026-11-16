@@ -2,11 +2,11 @@
 
 use crate::common;
 
-use common::{call, dav, nextcloud};
 use account_fake::FakeAddress;
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, post_form};
 use account_fake_servers::{LoginPolicy, NextcloudHandle};
+use common::{call, dav, nextcloud};
 
 /// Signs in through Login Flow v2 with the scripted approval; returns the app password.
 async fn sign_in(running: &NextcloudHandle, address: &FakeAddress) -> String {

@@ -7,11 +7,11 @@
 //! The compositor's edge reveal in full screen ([`Input::Edge`]) is the compositor's own motion:
 //! the machine goes straight between `Shown` and `Hidden` and the surface slides nowhere.
 
+use shell_model::desktop::Shown as EdgeShown;
+use shell_model::units::{Cpx, Permille};
 use ui_components::base::time::stamp::{Ms, Stamp};
 use ui_components::prelude::Fraction;
 use ui_components::style::tokens::easing::CubicBezier;
-use shell_model::desktop::Shown as EdgeShown;
-use shell_model::units::{Cpx, Permille};
 
 /// The auto-hide phase. `Fixed` is auto-hide off.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

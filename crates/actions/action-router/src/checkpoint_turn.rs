@@ -5,6 +5,7 @@
 use crate::deadline::within;
 use crate::router::Router;
 use crate::seams::Seams;
+use account_ids::Count;
 use action_checkpoint::{
     CheckpointStore, Decision, DropAsk, Saved, StoreFault, TakeAsk, WorkRoot, decide, next_id,
     retention,
@@ -13,9 +14,8 @@ use action_context::state::SessionKind;
 use action_core::{
     AgentConfig, CheckpointEvent, CheckpointId, CheckpointNote, Retention, Rewind, SkipReason,
 };
-use agent_session::{Logged, Read, SessionEntry, SessionLog, resume_plan};
 use action_vocab::{Clock, Millis, TurnId};
-use account_ids::Count;
+use agent_session::{Logged, Read, SessionEntry, SessionLog, resume_plan};
 use provenance::SessionId;
 use std::future::Future;
 

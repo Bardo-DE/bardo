@@ -10,6 +10,7 @@ use crate::link::Link;
 use crate::mode::Mode;
 use crate::out;
 use crate::server::{Known, Server, Turns};
+use action_vocab::{CallerRole, Clock, Workspace};
 use agent_acp_core::fault;
 use agent_client_protocol::schema::v1::{
     Error, ListSessionsRequest, ListSessionsResponse, LoadSessionRequest, LoadSessionResponse,
@@ -19,7 +20,6 @@ use agent_session::{
     BackendKind, Claimant, Opening, ResumePlan, SessionHost, SessionLog, may_restore_plan,
     read_all, resume_plan,
 };
-use action_vocab::{CallerRole, Clock, Workspace};
 use provenance::{AgentRef, SessionId, TaskId};
 use std::path::Path;
 

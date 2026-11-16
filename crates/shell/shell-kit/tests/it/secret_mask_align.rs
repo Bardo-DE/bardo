@@ -11,15 +11,15 @@
 //! paints no caret.
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use shell_kit::lock::vocab::LockUser;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use image::RgbaImage;
-use shell_kit::lock::vocab::LockUser;
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 900,

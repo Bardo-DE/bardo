@@ -2,8 +2,8 @@
 //! (answered like making a routine) and turning one down. This file is the only place that names
 //! the suggestion calls. The companion tells `Changed` when the list changes.
 
-use companion_wire::{ProposalId, RoutineProposal, RoutineReply};
 use action_dbus::CompanionHelpers2Proxy;
+use companion_wire::{ProposalId, RoutineProposal, RoutineReply};
 use shell_model::companion::{HelpersMsg, RoutinesMsg};
 
 use super::helpers::{silent, unreached};

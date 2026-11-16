@@ -2,13 +2,13 @@
 //! window title and privacy come from the app. The adapter assembles a `ContextSnapshot` with
 //! each text labelled by the kind's declared title trust.
 
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use action_manifest::TitleTrust;
 use action_provider::ContextSource;
-use ui_intents::ContextModel;
-use account_core::AppName;
-use account_ids::Count;
 use provenance::{Label, Labelled, SpaceId};
+use ui_intents::ContextModel;
 
 /// What only the app knows about its window.
 pub trait WindowFacts: Send + Sync {

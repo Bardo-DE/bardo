@@ -11,17 +11,17 @@
 
 use crate::attached::{Attached, AttachedEntry, AttachedError, Target};
 use crate::catalog::claims_of;
-use engine_spec::{ENGINES, EnginePaths, ProgramPath, engine};
-use engine_supervisor::{EngineSpec, EnvPair, SocketPath, UnitSpec, command};
-use model_catalog::{EngineKind, EngineProfile, ModelEntry, SamplingDefaults};
-use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath};
-use model_openai_compat::Flavor;
-use model_provider::{Caps, EmbedCaps, ModelName, Tokens};
 use account_capability::ModelId;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, Offer};
 use account_core::AccountId;
+use engine_spec::{ENGINES, EnginePaths, ProgramPath, engine};
+use engine_supervisor::{EngineSpec, EnvPair, SocketPath, UnitSpec, command};
 use inference_core::{ModelCard, ModelRef};
+use model_catalog::{EngineKind, EngineProfile, ModelEntry, SamplingDefaults};
+use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath};
+use model_openai_compat::Flavor;
+use model_provider::{Caps, EmbedCaps, ModelName, Tokens};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};

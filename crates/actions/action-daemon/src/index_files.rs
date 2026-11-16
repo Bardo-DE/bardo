@@ -4,9 +4,9 @@
 //! renamed), so a crash leaves the old file or the new one. The entries are not encrypted: they
 //! are as exposed as the app's own store.
 
+use account_core::AppName;
 use action_core::IndexEntry;
 use action_router::{Router, Seams};
-use account_core::AppName;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;

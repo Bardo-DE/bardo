@@ -19,6 +19,7 @@ use crate::client::ClientState;
 use crate::foreign_toplevel_list::window_of_identifier;
 use crate::handler::EventSink;
 use crate::states::{GlobalFilter, WaylandFault};
+use account_core::SpaceId;
 use compositor_core::app::AppKey;
 use compositor_core::desktop::{
     AppAsk, DesktopNote, DesktopRef, DesktopRequest, SpaceAsk, WindowAsk,
@@ -34,7 +35,6 @@ use desktop_protocols::server::quire_desktop_v1::{
     quire_desktop_window_v1::{self, QuireDesktopWindowV1},
 };
 use desktop_protocols::vocab::{Assign, PlaceTarget, Toggle, WireCode};
-use account_core::SpaceId;
 use smithay::output::Output;
 use smithay::reexports::wayland_server::backend::{ClientId, GlobalId};
 use smithay::reexports::wayland_server::{

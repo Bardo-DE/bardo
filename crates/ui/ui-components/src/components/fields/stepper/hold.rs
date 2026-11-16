@@ -4,10 +4,10 @@
 //! no wake and the hook's timer stops.
 
 use crate::components::fields::stepper::model::StepDirection;
+use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_style::tokens::delay::DelayToken;
-use std::time::Duration;
 
 /// When a held press repeats: how long it waits to start and the pitch after.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

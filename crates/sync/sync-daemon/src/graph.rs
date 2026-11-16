@@ -17,14 +17,14 @@
 //! `graph` endpoint under a Storage grant.
 
 use crate::webdav::BuildError;
-use sync_core::Clock;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http_relay::{RelayDial, RelayHttp, RelayLimits, Routed, bare_url};
 use account_ids::{Origin, WebUrl};
-use std::sync::Arc;
 use replica_graph::GraphReplica;
+use std::sync::Arc;
+use sync_core::Clock;
 
 /// Makes the client for one linked origin.
 type MakeLinked<T> = Box<dyn Fn(&Origin) -> RelayHttp<RelayDial<T>> + Send + Sync>;

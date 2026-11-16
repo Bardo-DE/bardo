@@ -6,13 +6,13 @@ use super::bus::{DEADLINE, within};
 use super::engine::{Chat, Script};
 use super::entries;
 use super::rig::{AgentsPlan, Hosted, Plan, Trust, World};
-use inference_daemon::peers::Role;
 use account_core::{AppId, AppName, Isolation};
 use account_dbus::Details;
 use inference_core::{Period, Policy, SpendScope};
+use inference_daemon::peers::Role;
+use inference_dbus::inference::{AgentsProxy, EndpointArg};
 use serde_json::{Value, json};
 use std::path::Path;
-use inference_dbus::inference::{AgentsProxy, EndpointArg};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 

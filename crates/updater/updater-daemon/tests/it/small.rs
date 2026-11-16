@@ -1,4 +1,7 @@
 use crate::support::v;
+use std::ffi::OsString;
+use std::path::PathBuf;
+use updater_core::{Attempt, Outcome, UnixSeconds};
 use updater_daemon::cli::{Command, parse};
 use updater_daemon::config::{Config, ConfigError};
 use updater_daemon::dirs::Dirs;
@@ -7,9 +10,6 @@ use updater_daemon::login;
 use updater_daemon::problem::Problem;
 use updater_daemon::service::{InstallError, MAX_VERSION_BYTES, Wanted, is_from_owner};
 use updater_daemon::state::StateStore;
-use updater_core::{Attempt, Outcome, UnixSeconds};
-use std::ffi::OsString;
-use std::path::PathBuf;
 
 #[test]
 fn the_configuration_has_defaults_and_overrides() {

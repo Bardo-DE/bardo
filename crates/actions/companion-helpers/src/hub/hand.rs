@@ -8,19 +8,19 @@
 
 use super::owner::Hub;
 use crate::words::{refused, sentence};
+use action_client::Transport as IntentsTransport;
+use action_vocab::Clock;
+use agent_planner::Planner;
 use companion_core::{AppStep, Refusal, terminal_sessions, why_not_to_terminal};
 use companion_model::helper::{
     BackOutcome, BoardEvent, BroughtOutcome, HandFault, HelperCard, JobRefusal, TerminalLogin,
     TerminalRequest, ToTerminalOutcome,
 };
 use companion_model::{SeenCommand, WatchedAgent};
+use companion_tasks::Surface;
 use companion_wire::{
     BroughtBack, Handover, HelperCardView, HelperLine, HelperReply, RunsIn, TerminalSession,
 };
-use action_client::Transport as IntentsTransport;
-use agent_planner::Planner;
-use companion_tasks::Surface;
-use action_vocab::Clock;
 use provenance::{HelperId, SessionId};
 
 impl<P, I, K, S> Hub<P, I, K, S>

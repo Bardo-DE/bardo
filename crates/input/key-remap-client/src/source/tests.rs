@@ -2,8 +2,8 @@
 
 use super::*;
 use crate::testing::FakeDaemon;
-use keymap::{Action, Context, StandardAction};
 use key_remap_proto::{KeymapState, PROTOCOL_VERSION};
+use keymap::{Action, Context, StandardAction};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, Instant};

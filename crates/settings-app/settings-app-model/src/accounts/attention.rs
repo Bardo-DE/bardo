@@ -39,8 +39,8 @@ mod tests {
     use super::*;
     use crate::accounts::model::{AccountExpiry, AccountProvider};
     use crate::accounts::{AccountKey, AccountSpend, ModuleId, Place};
-    use ui_settings::schema::KeyPath;
     use account_sheet::ProviderGroup;
+    use ui_settings::schema::KeyPath;
 
     /// Whether the account has a Sign in again row.
     enum Reauth {

@@ -14,9 +14,9 @@ use crate::keys::load_key;
 use crate::layout::Layout;
 use crate::report::Report;
 use crate::settings::{RootSettings, SYSTEM_CONFIG_PATH};
-use updater_core::PublicKey;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
+use updater_core::PublicKey;
 
 /// Where the kernel names this boot of the computer.
 pub const BOOT_ID_PATH: &str = "/proc/sys/kernel/random/boot_id";

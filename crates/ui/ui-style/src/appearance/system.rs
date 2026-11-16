@@ -1,4 +1,4 @@
-//! What the desktop says, read from the settings portal by `ds-settings`
+//! What the desktop says, read from the settings portal by `ui-settings`
 //! (`org.freedesktop.appearance`: color-scheme, reduced motion, contrast).
 
 use crate::appearance::theme::Scheme;

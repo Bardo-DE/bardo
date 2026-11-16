@@ -1,17 +1,17 @@
-//! A scripted inferd for the daemons' model tests: a inferd-client `Transport` whose sessions
-//! are porter-fake's scripted ones, wrapped so the test can read what was opened (the need, the
+//! A scripted inferd for the daemons' model tests: a inference-client `Transport` whose sessions
+//! are account-fake's scripted ones, wrapped so the test can read what was opened (the need, the
 //! data class, the tier) and every frame the code under test sent. No bus, no engine, no GPU.
 #![allow(dead_code)]
 
-use inference_client::{Transport, TransportError};
 use account_capability::Tier;
 use account_core::DataClass;
+use account_match::Need;
+use inference_client::{Transport, TransportError};
 use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferReply, InferSession, OpenOptions, RequestKind,
     ServedBy, SessionError, StopReason, TokenUsage,
 };
-use account_match::Need;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 
@@ -63,7 +63,7 @@ impl ScriptedInferd {
     }
 }
 
-/// The session the code under test sees: porter-fake's, with its frames logged.
+/// The session the code under test sees: account-fake's, with its frames logged.
 #[derive(Debug)]
 pub struct LoggedSession {
     inner: FakeInferSession,

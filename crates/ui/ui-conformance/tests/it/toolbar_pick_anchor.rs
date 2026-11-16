@@ -3,13 +3,13 @@
 //! overflow chevron reports the chevron.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::components::chrome::toolbar::model::{Picked, ToolbarItem, ToolbarRoom};
 use ui_components::components::chrome::toolbar::view::Toolbar;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 600,

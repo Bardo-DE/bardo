@@ -4,11 +4,11 @@
 
 use std::sync::{Arc, Mutex};
 
-use memory_core::{FactView, TimelineEntry, TimelinePage};
 use action_core::{Hit, UndoEntry, UndoFault};
 use action_dbus::{IntentsError, answer_path};
-use permission_core::Mode;
 use action_wire::{Displayed, SessionOpened, SummonAnswer};
+use memory_core::{FactView, TimelineEntry, TimelinePage};
+use permission_core::Mode;
 use provenance::{DataClass, Label, SessionId, Source, SpaceId};
 use zbus::fdo;
 use zbus::message::Header;

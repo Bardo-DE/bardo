@@ -6,8 +6,8 @@ use compositor_core::frame::{
 };
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::time::{Millihertz, Mono, VblankClock, VblankSeq};
-use ui_core::geometry::scale::Scale;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 fn ms(n: u64) -> Mono {
     Mono(Duration::from_millis(n))

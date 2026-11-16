@@ -9,11 +9,11 @@
 //! agent) has nothing else to rebuild its sessions from, and a log that has just begun may have
 //! older notes.
 
-use agent_loop::{Rebuilt, ReplayEvent, ReplayWhat, rebuild};
-use memory_core::{BodyMode, Episode, KindPattern, RecentEntry, RecentQuery, TrustFilter};
-use companion_wire::{SESSION_KIND_PREFIX, SessionRecord};
-use action_core::RosterState;
 use account_ids::Count;
+use action_core::RosterState;
+use agent_loop::{Rebuilt, ReplayEvent, ReplayWhat, rebuild};
+use companion_wire::{SESSION_KIND_PREFIX, SessionRecord};
+use memory_core::{BodyMode, Episode, KindPattern, RecentEntry, RecentQuery, TrustFilter};
 use provenance::{Message, RunId, SpaceId, UnixSeconds};
 use std::collections::BTreeMap;
 use std::future::Future;
@@ -24,7 +24,7 @@ const MESSAGE_KIND: &str = "companion.message";
 const EPISODE_KIND: &str = "companion.episode";
 /// The kinds of a computer-use run the rebuild reads: where it began, what it asked, who has the
 /// window, how it ended. Its steps are not read: they say nothing the roster shows. cuad writes
-/// them as `Area { Cua }` payloads in `cua-bus`'s `CuaRecord` form; docket names no cua type and
+/// them as `Area { Cua }` payloads in `computer-use-bus`'s `CuaRecord` form; docket names no cua type and
 /// reads only the words below.
 const RUN_KINDS: [&str; 6] = [
     "cua.run.started",

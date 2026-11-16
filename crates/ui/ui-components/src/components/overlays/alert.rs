@@ -60,6 +60,8 @@ use crate::components::overlays::sheet_width::SheetWidth;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::rc::Rc;
+use std::time::Duration;
 use ui_core::vocab::Availability;
 use ui_core::word::Word;
 use ui_motion::anim::Anim;
@@ -72,8 +74,6 @@ use ui_motion::presence::{
 use ui_style::icon::Icon;
 use ui_style::icon::render::{IconPx, IconSize};
 use ui_style::tokens::control_size::ControlSize;
-use std::rc::Rc;
-use std::time::Duration;
 
 /// The hero icon's side (design/34 section 3.7).
 const HERO_PX: u8 = 64;

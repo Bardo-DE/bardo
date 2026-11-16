@@ -48,7 +48,7 @@ fn only_an_account_over_the_network_has_spend_rows() {
 
 /// Both modules spell one account's rows the same way: the id in a spend row's path is found by
 /// the function accountd's rows are found by, and the paths this module lists are the ones
-/// `porter-settings` would parse, dotted ids included.
+/// `account-settings` would parse, dotted ids included.
 #[test]
 fn the_spend_rows_name_the_same_account_as_accountds_rows_for_an_id_with_a_dot() {
     let ids = ["a.b", "a", "openrouter-2"];

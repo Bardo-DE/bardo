@@ -1,9 +1,9 @@
 //! The drive's listing as the core reads it: entries by id, each with its parent and its own
 //! name, never a path.
 
-use sync_core::{ContentHash, ItemKind, RemoteId, RemoteVersion};
 use account_ids::{Bytes, UnixSeconds};
 use std::collections::{BTreeSet, VecDeque};
+use sync_core::{ContentHash, ItemKind, RemoteId, RemoteVersion};
 
 /// How deep a folder walk goes before it is given up as a loop.
 const DEPTH: usize = 64;

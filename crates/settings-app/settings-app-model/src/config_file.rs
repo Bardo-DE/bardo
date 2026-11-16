@@ -1,8 +1,8 @@
 //! A settings file's place under the config home, checked once where the schema is read.
 
 use crate::warning::StaleReason;
-use ui_settings::schema::FilePath;
 use std::path::{Component, Path, PathBuf};
+use ui_settings::schema::FilePath;
 
 /// `<app-dir>/<name>.toml`, relative to `$XDG_CONFIG_HOME`: exactly two plain components, so a
 /// schema can never name a path outside the config home.

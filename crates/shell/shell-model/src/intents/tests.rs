@@ -1,13 +1,13 @@
 //! The seat as a whole: the queue and the terminal moved through [`step`], and the fixtures the
 //! parts' tests share.
 
+use account_ids::Count;
 use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmId, ConfirmOffer, ConfirmParts, ConfirmRequest,
     Gesture, TaintNote,
 };
-use permission_core::AskReason;
 use action_vocab::{LabelText, Seconds};
-use account_ids::Count;
+use permission_core::AskReason;
 use provenance::{Actor, AppName, Effect, SpaceId, UnixSeconds};
 
 use super::sheet::{Reply, Serial, SheetChoice, SheetEffect, SheetEvent};
@@ -111,7 +111,8 @@ fn allowing_from_the_terminal_asks_for_the_grants_to_be_read_again() {
 fn the_terminal_moves_by_its_own_events() {
     let grant = action_vocab::ActionRef {
         app: app("org.quire.Mail"),
-        name: provenance::ActionName::parse("mail.thread.archive").unwrap_or_else(|e| panic!("{e}")),
+        name: provenance::ActionName::parse("mail.thread.archive")
+            .unwrap_or_else(|e| panic!("{e}")),
     };
     let (state, effects) = step(
         Intents::default(),

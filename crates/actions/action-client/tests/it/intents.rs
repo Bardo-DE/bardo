@@ -1,14 +1,14 @@
 //! `Intents` sends the request it is asked for and reads only the reply that request gets.
 
-use computer_use_action::{RunMode, WindowTrust};
 use action_client::{ClientError, Intents, Transport, TransportError};
 use action_core::*;
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
-use permission_core::DenyCode;
 use action_vocab::{ActionRef, Args, CallRequest, Handle, Origin, TargetValue, TurnId, Workspace};
 use action_wire::{
     Displayed, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, Member, WireRefusal,
 };
+use computer_use_action::{RunMode, WindowTrust};
+use permission_core::DenyCode;
 use provenance::{ActionName, AppName, SessionId};
 use std::collections::VecDeque;
 use std::sync::Mutex;

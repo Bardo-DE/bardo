@@ -1,7 +1,7 @@
 //! A `VirtualTable` that holds its leading columns in place while the others scroll sideways
 //! under them, drawn in two panes.
 //!
-//! `position: sticky` is not available (Blitz does not lay it out, and ds-lint bans it), so the
+//! `position: sticky` is not available (Blitz does not lay it out, and ui-lint bans it), so the
 //! table is two boxes side by side instead of one box with sticky cells. Both panes sit inside
 //! the table's one `Scroller`, so the rows of the pinned pane and of the scrolling pane are in
 //! the same vertical flow: a wheel or a drag over either moves both by the same pixels, and a row

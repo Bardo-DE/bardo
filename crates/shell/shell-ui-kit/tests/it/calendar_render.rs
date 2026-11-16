@@ -12,9 +12,6 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use ui_lint::{LintConfig, Profile, markup};
 use jiff::civil::Date;
 use jiff::tz::TimeZone;
 use jiff::{Timestamp, ToSpan, Zoned};
@@ -26,6 +23,9 @@ use shell_ui_kit::hooks::PinnedAppearance;
 use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::widgets::{CenterWidget, Widget, widgets_css};
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
+use ui_lint::{LintConfig, Profile, markup};
 
 /// Today's number, on the accent disc.
 const TODAY: &str = ".ds-month-day[*|aria-current=date] .ds-month-num";

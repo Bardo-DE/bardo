@@ -1,8 +1,8 @@
 //! memoryd's view of porter's registry of desktop-wide Spaces (`org.quire.Spaces1`).
 
+use account_client_dbus::Spaces;
 use memory_core::SpaceId;
 use memory_service::{Listing, RegistryError};
-use account_client_dbus::Spaces;
 use std::collections::BTreeSet;
 use std::time::Duration;
 

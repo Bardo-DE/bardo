@@ -52,7 +52,8 @@ mod tests {
     use crate::tokens::chrome::light_paint::{LightPaint, LightPart};
     use ui_core::word::Word;
 
-    const CSS: &str = include_str!("../../../../ui-components/src/components/chrome/window_frame.css");
+    const CSS: &str =
+        include_str!("../../../../ui-components/src/components/chrome/window_frame.css");
 
     #[test]
     fn the_lights_are_the_macos_colours_in_both_schemes() {

@@ -4,18 +4,18 @@
 //! and those callers arrive with the ACP edge. The tests key grants to the companion.)
 
 use crate::support::*;
-use action_review::{ReviewReason, ReviewVerdict};
-use sandbox::AbsPath;
 use action_core::*;
 use action_fake::{FakeSeams, MailContact, ReviewMode, ScriptedReviewer};
+use action_review::{ReviewReason, ReviewVerdict};
+use action_router::{GrantStore, Router};
+use action_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, Value};
+use action_wire::{IntentsReply, IntentsRequest};
 use permission_core::{
     ActionMatch, AlwaysOffer, DenyCode, GrantCaller, ReasonCode, ReasonText, Recipient,
     ReviewError, StandingGrant, StandingScope, Withheld,
 };
-use action_router::{GrantStore, Router};
-use action_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, Value};
-use action_wire::{IntentsReply, IntentsRequest};
 use provenance::{Labelled, UnixSeconds};
+use sandbox::AbsPath;
 
 pub(crate) const ADDRESS: &str = "accounting@example.test";
 

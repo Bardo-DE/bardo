@@ -4,11 +4,11 @@
 
 use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
+use std::collections::BTreeMap;
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::*;
 use ui_lint::{LintConfig, Rule, markup};
 use ui_style::space::frame_vars::FrameVars;
-use std::collections::BTreeMap;
 
 #[derive(Props, Clone, PartialEq)]
 struct Setup {
@@ -329,7 +329,11 @@ fn a_window_roots_markup_lints_clean_of_unstyled_classes() {
         stylesheet: Inject::Inline,
         ..Setup::default()
     });
-    let offences = markup(&rendered, ui_components::stylesheet(), &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &rendered,
+        ui_components::stylesheet(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     let unstyled: Vec<_> = offences
         .iter()
         .filter(|offence| offence.rule == Rule::UnstyledClass)

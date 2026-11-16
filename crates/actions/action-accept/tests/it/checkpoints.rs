@@ -5,6 +5,7 @@
 //! system is read or written.
 
 use crate::support::*;
+use account_core::AppName;
 use action_accept::drive::{Launcher, keep_nothing};
 use action_accept::world::{Consent, World, as_app};
 use action_client::{DbusTransport, Intents};
@@ -14,7 +15,6 @@ use action_core::{
 };
 use action_vocab::{ActionRef, CallRequest, Origin, TargetValue, Value, Workspace};
 use action_wire::SessionOpen;
-use account_core::AppName;
 use provenance::{ActionName, AgentRef, Label, Labelled, SpaceId};
 use std::path::Path;
 use std::process::Command;

@@ -4,10 +4,10 @@
 
 use crate::error::UnitError;
 use crate::timeout::bounded;
-use caller_identity_linux::{ProcFs, path_trust};
 use caller_identity_core::{
     DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
+use caller_identity_linux::{ProcFs, path_trust};
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::Path;

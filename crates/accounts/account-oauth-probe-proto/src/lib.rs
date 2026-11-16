@@ -13,9 +13,9 @@
 pub mod google;
 pub mod microsoft;
 
+use account_ids::WebUrl;
 use http::header::{ACCEPT, AUTHORIZATION};
 use http::{HeaderValue, Method, Request};
-use account_ids::WebUrl;
 
 /// Why a read could not be built or its answer not used.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

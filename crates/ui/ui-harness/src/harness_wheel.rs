@@ -7,11 +7,11 @@ use crate::harness::Harness;
 use crate::input::PointerAction;
 use crate::input::PointerInput;
 use blitz_traits::events::{BlitzWheelDelta, BlitzWheelEvent, PointerCoords, UiEvent};
+use keyboard_types::Modifiers;
+use ui_blitz::seam::{WheelDelta, WheelInput};
 use ui_components::host::gesture::{Gesture, GesturePhase, ScrollSource};
 use ui_components::prelude::*;
-use ui_blitz::seam::{WheelDelta, WheelInput};
 use ui_core::time::clock::now;
-use keyboard_types::Modifiers;
 
 impl Harness {
     /// Scroll by `dx`, `dy` pixels with the pointer at `at`. Like the window, Blitz hands the

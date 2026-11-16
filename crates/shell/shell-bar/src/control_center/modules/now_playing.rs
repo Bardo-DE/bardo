@@ -7,12 +7,12 @@ use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
 use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::modules::use_plate;
 use dioxus::prelude::*;
-use ui_components::prelude::*;
+use shell_kit::prelude::*;
 use shell_services::NowPlayingService;
 use shell_settings::ControlCenterSettings;
-use shell_kit::prelude::*;
 use shell_ui_kit::hooks::use_service;
 use shell_ui_kit::now_playing::{MediaView, use_media};
+use ui_components::prelude::*;
 
 /// The Now Playing module.
 #[component]

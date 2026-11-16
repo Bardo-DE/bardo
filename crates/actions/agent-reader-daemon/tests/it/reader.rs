@@ -1,8 +1,8 @@
 //! The reader's fixed instructions and the one place its key is made.
 
 use action_core::ReaderTask;
-use provenance::{Confidentiality, Integrity, Label, Labelled, Quarantined, Source};
 use agent_reader_daemon::*;
+use provenance::{Confidentiality, Integrity, Label, Labelled, Quarantined, Source};
 use std::collections::BTreeSet;
 
 #[test]

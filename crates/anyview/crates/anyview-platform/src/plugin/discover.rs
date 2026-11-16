@@ -1,6 +1,6 @@
 //! Finding the plugins: the Extensions under `quire/extensions` in the data directories (and, for
 //! one more release, the flat manifests under `anyview/plugins`), whether the programs they name
-//! are there, and which are turned off. The scan is quire's (`ds-extensions`), the entries are
+//! are there, and which are turned off. The scan is quire's (`ui-extensions`), the entries are
 //! this viewer's (`anyview-plugin`), the ranking is bayonet's; this names the roots.
 
 use crate::env::Env;
@@ -9,12 +9,12 @@ use anyview_plugin_protocol::PROTOCOL_VERSION;
 use plugin_host::manifest::{ManifestError, PluginId, Raw, RawCapability};
 use plugin_host::registry::{Candidate, Registry};
 use plugin_host::{Reparsed, reparse};
-use ui_extensions::{ExtensionId, ExtensionsFile, Search};
-use ui_settings::{AppName, ConfigRoot, Store};
 use std::convert::Infallible;
 use std::path::{Path, PathBuf};
+use ui_extensions::{ExtensionId, ExtensionsFile, Search};
+use ui_settings::{AppName, ConfigRoot, Store};
 
-/// The file an Extension's folder holds its manifest in (`ds-extensions` keeps the name to itself;
+/// The file an Extension's folder holds its manifest in (`ui-extensions` keeps the name to itself;
 /// it is only used to say which file a refusal is about).
 const MANIFEST_FILE: &str = "extension.toml";
 

@@ -15,13 +15,13 @@ use crate::components::lists::virtual_list::layout::Layout;
 use crate::components::lists::virtual_list::model::{Change, RowHeight, anchored, departed, roved};
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::hash::Hash;
 use ui_core::geometry::scroll::{Scroll, ScrollSpan};
 use ui_core::geometry::units::Px;
 use ui_core::word::Word;
 use ui_motion::presence::{Exit, Presence};
 use ui_motion::roster::{RosterEntry, RowPitch};
 use ui_motion::use_roster::{LeaveBy, RosterSpec, use_roster_from};
-use std::hash::Hash;
 
 /// The fewest rows mounted around the viewport besides the visible ones, when `overscan` is not
 /// set (it is otherwise a viewport's worth).

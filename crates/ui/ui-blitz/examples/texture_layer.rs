@@ -5,13 +5,13 @@
 //! `cargo run -p ui-blitz --example texture_layer`
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
+use std::thread;
+use std::time::{Duration, Instant};
 use ui_blitz::{
     AppConfig, AppId, PixelFormat, Pixels, TextureFit, TextureHandle, TextureLayer, WindowSize,
     launch, use_gpu,
 };
-use std::thread;
-use std::time::{Duration, Instant};
+use ui_components::prelude::*;
 
 /// How long the window stays up on its own.
 const LIFETIME: Duration = Duration::from_secs(3);

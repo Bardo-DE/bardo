@@ -1,9 +1,9 @@
 //! `calendar.*`: where the calendar widgets read events, and how the month is drawn (design/20
 //! §1.12, which sill moves into the notification center's widgets as macOS 11 does). All Advanced.
 
+use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// The first column of the month grid.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

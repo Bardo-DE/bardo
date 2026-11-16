@@ -2,8 +2,8 @@
 //! home folder, a folder that holds home, a place of secrets and an outside folder are refused.
 //! Scratch directories only.
 
-use sandbox::AbsPath;
 use agent_acp_host::{Workdir, WorkdirFault};
+use sandbox::AbsPath;
 use std::os::unix::fs::symlink;
 use std::path::Path;
 

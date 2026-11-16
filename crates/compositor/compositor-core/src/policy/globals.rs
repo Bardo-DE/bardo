@@ -11,7 +11,7 @@ use account_core::SandboxFacts;
 pub enum ConnectionRole {
     /// The public socket.
     Public,
-    /// A connection handed to the shell (sill, shell-host) through `org.quire.Compositor1`.
+    /// A connection handed to the shell (sill, layer-shell-host) through `org.quire.Compositor1`.
     Shell,
     /// A connection handed to the agent tier (cuad).
     Agent,

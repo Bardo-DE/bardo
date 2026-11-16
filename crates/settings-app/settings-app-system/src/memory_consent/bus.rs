@@ -5,9 +5,9 @@ use super::proxy::{MEMORY_NAME, control};
 use super::{MemoryFailure, MemoryLink};
 use crate::bus::{BusSource, Pinned, pinned};
 use crate::deadline::{Deadline, answered, peer};
+use account_dbus::{BusFailure, classify};
 use memory_core::WaitingSetting;
 use settings_app_model::{Confinement, SettingPair, Trouble, Work};
-use account_dbus::{BusFailure, classify};
 
 /// The bus name memory answers a refusal with when the caller may not do this.
 const NOT_ALLOWED: &str = "org.quire.Memory1.Error.NotAllowed";

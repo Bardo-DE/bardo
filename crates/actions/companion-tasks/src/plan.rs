@@ -5,9 +5,9 @@
 //! `Running` after, then `Done` or `Failed`. While the router waits for the person's sheet the
 //! answer is `NeedsYou(Confirm)`; when the sheet closes it is `Streaming` again.
 
-use companion_wire::{AnswerPhase, NeedsYou, PlanStepWire, PlanWire, StepWireState};
 use action_core::{CallProgress, CallRefusal, StepEnd};
 use action_vocab::{ActionRef, CallId, LabelText, StepId};
+use companion_wire::{AnswerPhase, NeedsYou, PlanStepWire, PlanWire, StepWireState};
 use provenance::Effect;
 
 /// The steps of one turn, in the order the calls were made.

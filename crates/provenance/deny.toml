@@ -44,5 +44,5 @@ deny = [
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# porter-core (and peephole-core under it) are the program's own git-pinned crates.
+# account-core (and caller-identity-core under it) are the program's own git-pinned crates.
 allow-git = ["https://github.com/Bardo-DE/porter", "https://github.com/Bardo-DE/peephole"]

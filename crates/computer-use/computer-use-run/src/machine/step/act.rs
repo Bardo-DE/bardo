@@ -10,16 +10,16 @@ use crate::machine::phase::RunPhase;
 use crate::machine::run::Run;
 use crate::machine::track::SettleWatch;
 use crate::observation::CursorObs;
+use account_ids::Count;
 use computer_use_action::{CuaAction, Point, WindowSpace};
 use computer_use_bus::{
     ActionOutcome, ActionResult, CuaOutcome, FailReason, LocalRefusal, Refusal, RunBudgetKind,
     TargetedAction,
 };
-use computer_use_desktop::{Ms, Stamp};
 use computer_use_capture::{DamageAt, FrameWant, Settle, settle};
-use account_ids::Count;
-use inference_core::StepIndex;
+use computer_use_desktop::{Ms, Stamp};
 use computer_use_seat_input::{InputReceipt, SeatError};
+use inference_core::StepIndex;
 
 /// Counts the actions of the last minute and, if one more is allowed, injects the head.
 pub(super) fn act(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, n: StepIndex) {

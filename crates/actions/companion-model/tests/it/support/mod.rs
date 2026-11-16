@@ -1,8 +1,8 @@
 //! Builders the tests share; labels come from prov's constructors.
 
+use account_core::{AppName, DataClass};
 use action_manifest::{ActionDecl, Manifest, Visibility};
 use action_vocab::{IntentsVocab, LabelText};
-use account_core::{AppName, DataClass};
 use provenance::{EntityId, EntityKey, EntityKind, Label, Source, SpaceId, UnixSeconds};
 
 pub fn app(name: &str) -> AppName {

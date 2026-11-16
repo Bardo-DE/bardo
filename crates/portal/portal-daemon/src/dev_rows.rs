@@ -5,8 +5,8 @@
 
 use std::path::Path;
 
-use caller_identity_dbus::peephole::{LoadError, RealProc, TableFiles};
 use caller_identity_dbus::caller_identity_core::{Table, Uid};
+use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
 
 /// `shipped`, with the developer rows in `path` added after its own (a row never takes a unit the
 /// shipped table names). The file must be a plain file of this user's (or root's) that no one else

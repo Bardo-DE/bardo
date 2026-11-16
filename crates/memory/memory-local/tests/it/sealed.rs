@@ -2,11 +2,11 @@
 //! a wrong key gives at each seam.
 
 use crate::support::*;
+use memory_eventlog::LogError;
+use memory_files::SpaceVault;
 use memory_seal::KeyStore;
 use memory_service::{Backend, BackendError};
 use memory_store::{Vault, VaultError, VaultPath};
-use memory_eventlog::LogError;
-use memory_files::SpaceVault;
 use std::path::Path;
 
 const NEEDLE: &str = "zebracorp";

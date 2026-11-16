@@ -14,7 +14,7 @@ use shell_services::service::{Handle, Service};
 pub use wiring::Wiring;
 
 /// A service [`Services`] holds, and which field holds it: what lets a reader name a service by
-/// its type alone (`sill-ui-kit`' `use_service::<S>()`).
+/// its type alone (`shell-ui-kit`' `use_service::<S>()`).
 pub trait Member: Service {
     fn of(services: &Services) -> &Handle<Self>;
 }

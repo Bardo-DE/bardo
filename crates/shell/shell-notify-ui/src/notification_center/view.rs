@@ -4,8 +4,8 @@
 //! widgets under the history bring their own stylesheets (`widgets_css`), injected beside it.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
+use ui_components::prelude::*;
 
 use super::column::Column;
 use shell_ui_kit::root::SurfaceRoot;

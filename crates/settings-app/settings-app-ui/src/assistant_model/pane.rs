@@ -2,8 +2,8 @@
 
 use super::picker::AssistantPicker;
 use crate::picker::{Picker, use_picker};
-use settings_app_model::Clearing;
 use dioxus::prelude::*;
+use settings_app_model::Clearing;
 
 /// The page: the picker's row.
 #[component]

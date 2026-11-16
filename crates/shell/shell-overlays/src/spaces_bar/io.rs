@@ -2,12 +2,8 @@
 //! while Mission Control is open on this output, unmapped once the lift has settled), publish
 //! where the cards lie, and write a click back to the link.
 
-use dioxus::prelude::*;
-use ui_components::prelude::{
-    BarLayout as DrawnBar, BarSpaceKey, DropState, ImageSource, Rect, Scheme, SpaceLook, SpaceTile,
-    resolve,
-};
 use account_core::SpaceId;
+use dioxus::prelude::*;
 use layer_shell_host::{OutputInfo, Visibility, use_watch};
 use shell_model::apps::AppIndex;
 use shell_model::desktop::target::Rect as WholeRect;
@@ -18,6 +14,10 @@ use shell_model::ids::OutputName;
 use shell_services::WallpaperService;
 use shell_ui_kit::hooks::{use_appearance, use_map_when_shown, use_service};
 use shell_ui_kit::links::{SpacesBarFeed, SpacesBarLink};
+use ui_components::prelude::{
+    BarLayout as DrawnBar, BarSpaceKey, DropState, ImageSource, Rect, Scheme, SpaceLook, SpaceTile,
+    resolve,
+};
 
 use crate::wallpaper::url_for;
 
@@ -209,8 +209,10 @@ fn use_publish_layout(
 #[cfg(test)]
 mod tests {
     use super::{published, whole};
-    use ui_components::prelude::{BarLayout as DrawnBar, BarSpaceKey, Point, Px, Rect, Size, SpaceRects};
     use shell_model::desktop::BarTile;
+    use ui_components::prelude::{
+        BarLayout as DrawnBar, BarSpaceKey, Point, Px, Rect, Size, SpaceRects,
+    };
 
     fn rect(x: f32, y: f32, w: f32, h: f32) -> Rect {
         Rect {

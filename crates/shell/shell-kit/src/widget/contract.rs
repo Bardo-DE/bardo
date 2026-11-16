@@ -6,10 +6,10 @@
 
 use crate::widget::kind::{WidgetSize, WidgetTitle};
 use dioxus::prelude::*;
-use ui_components::motion::epoch::Epoch;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+use ui_components::motion::epoch::Epoch;
 
 /// A widget's kind: a reverse-DNS name, unique across every app that provides widgets
 /// (`quire.month`). What a card's markup names the widget by.

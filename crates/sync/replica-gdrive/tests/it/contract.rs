@@ -1,4 +1,4 @@
-//! ferry-sync's contract tests (`ferry-sync/tests/contract.rs`), the same cases, run against the
+//! sync-core's contract tests (`sync-core/tests/contract.rs`), the same cases, run against the
 //! reference `MemoryReplica` (so the suite is the reference's) and against `GdriveReplica` over the
 //! fake Google's Drive, in two ways it can differ: small files by multipart upload and every file
 //! by resumable session; and once more in My Drive rather than the app data folder. A rule the
@@ -6,14 +6,14 @@
 
 use crate::common;
 
+use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
+use account_ids::{Bytes, UnixSeconds};
 use common::{Replica, Server};
+use replica_gdrive::{Root, Uploads};
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, MemoryReplica, More, PutItem,
     PutRefused, PutTarget, Quota, RemoteId, RemoteSide, Replica as _, ReplicaError, Tombstone,
 };
-use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_ids::{Bytes, UnixSeconds};
-use replica_gdrive::{Root, Uploads};
 
 /// A replica under test, its server, and the two knobs the contract needs from a server: an
 /// expired feed and a size limit.

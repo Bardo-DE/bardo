@@ -25,13 +25,13 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use ui_extensions::Search;
-use ui_settings::ConfigRoot;
 use files_core::{FolderPath, Location};
 use files_desktop::{Disks, ProcUsers};
 use files_trash::SystemTrash;
 use files_ui::settings;
 use files_ui::{IconSources, Launch};
+use ui_extensions::Search;
+use ui_settings::ConfigRoot;
 
 use crate::apps::InstalledApps;
 use crate::args::{Args, Start};

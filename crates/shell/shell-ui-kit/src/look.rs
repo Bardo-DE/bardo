@@ -3,17 +3,17 @@
 //! draws its `Ds { look }` from [`use_active_look`], so an output follows its own active
 //! workspace (rule 6).
 //!
-//! quire has no `spaces.json` store yet (design/21 §10 names `ds-settings`' writer); until it
+//! quire has no `spaces.json` store yet (design/21 §10 names `ui-settings`' writer); until it
 //! does [`use_space_look`] returns the design/21 §4 default for the workspace's index:
 //! `PRESETS[index % 8]`, the preset's own grain (35 and 55 for presets 1 and 2) or
 //! no grain. The card always wears the appearance accent.
 
-use ui_components::prelude::*;
-use ui_components::style::space::presets::default_look;
 use layer_shell_host::OutputInfo;
 use shell_model::ids::{OutputName, WorkspaceKey};
 use shell_model::windows::{WorkspaceGroup, Workspaces};
 use shell_services::WindowsService;
+use ui_components::prelude::*;
+use ui_components::style::space::presets::default_look;
 
 use crate::hooks::use_service_part;
 

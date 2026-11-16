@@ -9,11 +9,11 @@
 //! runs in `main` before the async runtime builds its workers. The policy is a pure value
 //! ([`policy_for`]) so it is a table test; [`enforce`] is the only effect.
 
-use memory_core::Dirs;
 use landlock::{
     ABI, Access, AccessFs, AccessNet, Ruleset, RulesetAttr, RulesetCreatedAttr, RulesetError,
     RulesetStatus, path_beneath_rules,
 };
+use memory_core::Dirs;
 use std::path::{Path, PathBuf};
 
 /// The newest Landlock ABI the crate knows; the kernel gives what it has (best effort).

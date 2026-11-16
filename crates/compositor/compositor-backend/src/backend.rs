@@ -9,13 +9,13 @@ use compositor_core::OutputName;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_render::RenderError;
 use compositor_render::pass::{ArgbImage, CapturedFrame};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::SwapBuffersError;
 use smithay::backend::allocator::Format;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::renderer::gles::GlesError;
 use smithay::backend::renderer::pixman::PixmanError;
 use std::path::PathBuf;
+use ui_core::geometry::scale::Scale;
 
 /// The running backend.
 #[derive(Debug)]

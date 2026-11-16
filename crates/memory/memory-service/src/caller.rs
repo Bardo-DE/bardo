@@ -6,7 +6,7 @@ use memory_core::AppId;
 /// no request, reply or stored file carries one. The daemon maps the D-Bus sender to its `AppId`
 /// (porter R12: unsandboxed callers are advisory); `Router`, `Cuad`, `ShellUi` and `Settings` are
 /// fixed `AppName`s configured in memoryd. A library user picks the class when it builds its
-/// transport (`almanac-client`'s `InProcess`).
+/// transport (`memory-client`'s `InProcess`).
 ///
 /// The companion has no class of its own: it reads and proposes through the action router
 /// (`org.quire.Memory` is a built-in provider of intentd), which calls as `Router` acting for

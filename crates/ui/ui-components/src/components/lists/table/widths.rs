@@ -2,8 +2,8 @@
 //! grid template that lays the header and every row out by them.
 
 use crate::components::lists::table::model::TableColumn;
-use ui_core::geometry::units::Px;
 use std::ops::Range;
+use ui_core::geometry::units::Px;
 
 /// A header title's average glyph, in logical pixels: `--fs-help` at weight 600 is about 11 px,
 /// and a glyph is a little over half that (the estimate the capsule's readouts use too).

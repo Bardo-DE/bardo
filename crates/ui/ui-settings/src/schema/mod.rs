@@ -35,7 +35,6 @@ pub use corners::{CornerBinding, CornerBindings, CornerDo, CornerKey, CornerKeys
 pub use corners_stored::fold_older_commands;
 pub use deep_link::{deep_link, deep_link_path};
 pub use doc_table::{DocTableError, key_table, regenerate};
-pub use ui_core::settings::{KeyPath, PageId};
 pub use footnote::{Footnote, FootnoteText};
 pub use key::{
     AgentSetting, ChoiceGroup, ChoiceUnavailable, ChoiceWord, Exposure, GroupedChoices, Help,
@@ -52,3 +51,4 @@ pub use program::{
 };
 pub use provided::{Provided, STANDARD};
 pub use traits::{ListElement, SettingsRow, SettingsSchema, choice_of, kind_of, to_value};
+pub use ui_core::settings::{KeyPath, PageId};

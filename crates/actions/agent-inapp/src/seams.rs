@@ -2,24 +2,24 @@
 //! four seams an app may choose an answer for: the consent store (in memory by default;
 //! [`FileGrantStore`](crate::FileGrantStore) keeps "always"), memory, the task-policy writer and
 //! the quarantined reader (each defaulting to a stub that says "unavailable", which the router
-//! already handles as "work with less"; the portable parts are `docket-memory`, `docket-models`
-//! and `docket-reader`), and the audit queue.
+//! already handles as "work with less"; the portable parts are `companion-memory`, `agent-models`
+//! and `agent-reader`), and the audit queue.
 
 use crate::link::ProviderLink;
-use action_review::Reviewer;
-use memory_core::{MemoryReply, MemoryRequest};
 use action_core::{
     ActionCard, AuditRecord, PolicyWriter, Reader, ReaderAsk, ReaderError, UserTurn,
 };
 use action_core::{EventSink, LinkFault, MemoryLink};
 use action_host::{ConfirmSheet, SheetConfirmer};
+use action_provider::{ContextSource, IntentProvider};
+use action_review::Reviewer;
+use action_router::{GrantStore, NoLog, NoStore, Seams};
+use action_vocab::{Clock, Value};
 use companion_memory_core::QueuedSink;
+use memory_core::{MemoryReply, MemoryRequest};
 use permission_core::{
     ActionGrant, ReviewError, StandingGrant, StandingGrantId, held_with, held_without,
 };
-use action_provider::{ContextSource, IntentProvider};
-use action_router::{GrantStore, NoLog, NoStore, Seams};
-use action_vocab::{Clock, Value};
 use provenance::{Quarantined, SessionId, SpaceId, TaskId};
 use std::sync::Mutex;
 

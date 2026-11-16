@@ -18,11 +18,11 @@ pub use gate::{WaitingManager, on_resolved};
 
 use crate::consent::{self, Admission, ConsentHandler, Held};
 use crate::states::{GlobalFilter, WaylandFault};
+use account_core::SpaceId;
 use compositor_core::policy::GlobalKind;
 use compositor_core::space::{SpaceBook, WorkspaceRequest};
 use compositor_core::{Event, OutputKey};
 use desktop_protocols::vocab::{Power, SpaceKind};
-use account_core::SpaceId;
 use smithay::output::Output;
 use smithay::reexports::wayland_protocols::ext::workspace::v1::server::{
     ext_workspace_group_handle_v1::{self, ExtWorkspaceGroupHandleV1, GroupCapabilities},

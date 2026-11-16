@@ -1,7 +1,7 @@
-//! What a sill process hands shell-host: quire's faces and the pre-paint pass.
+//! What a sill process hands layer-shell-host: quire's faces and the pre-paint pass.
 
-use ui_components::style::fonts::FACES;
 use shell_services::env::Dirs;
+use ui_components::style::fonts::FACES;
 
 use super::file_roots::file_roots;
 
@@ -12,7 +12,7 @@ pub fn prepaint() -> layer_shell_host::Prepaint {
 }
 
 /// quire's bundled faces (Inter, Inter Display, Space Mono), for `HostConfig::fonts`. Without
-/// them every document under shell-host falls back to the system face, since none of them is
+/// them every document under layer-shell-host falls back to the system face, since none of them is
 /// installed on the system.
 pub fn faces() -> layer_shell_host::FontFaces {
     layer_shell_host::FontFaces(FACES.iter().map(|face| face.bytes).collect())

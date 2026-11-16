@@ -4,8 +4,8 @@
 //! shares (Shift+Insert, Ctrl+Insert, Shift+Delete) are read as they are.
 
 use crate::edit::input::KeyInput;
-use keymap::{Action, Context, Keymap, StandardAction};
 use dioxus::prelude::{Key, Modifiers};
+use keymap::{Action, Context, Keymap, StandardAction};
 use ui_core::command::{resolve, types_text};
 
 /// What a key press on the surface means.
@@ -65,8 +65,8 @@ fn chord(key: &Key, modifiers: Modifiers) -> KeyAction {
 mod tests {
     use super::{KeyAction, classify};
     use crate::edit::input::KeyInput;
-    use keymap::{Desktop, Keymap, Platform};
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::{Desktop, Keymap, Platform};
 
     fn text(s: &str) -> Key {
         Key::Character(s.to_owned())

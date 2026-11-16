@@ -4,8 +4,8 @@
 //! gets an entry when the view holds the full set of what one of its parameters may name.
 
 use action_core::{OneOf, PlannerView};
-use permission_core::{COMPANION_APP, HAND_ON_JOB};
 use action_vocab::{ActionRef, ParamName};
+use permission_core::{COMPANION_APP, HAND_ON_JOB};
 
 /// The parameter of giving a job that names the helper to give it to. `after` (whose last answer
 /// is handed on) is left free: it may name the helper whose planner this is, which the view does

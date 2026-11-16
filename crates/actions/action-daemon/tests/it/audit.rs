@@ -5,18 +5,18 @@
 
 use crate::support::bus::PrivateBus;
 use crate::support::memoryd::{FakeMemoryd, record_fault};
-use memory_client::DbusTransport;
-use memory_core::{AreaTag, Cause, EventBody, MemoryReply, MemoryRequest, Refusal};
+use account_core::AppName;
 use action_core::EventSink;
 use action_core::*;
+use action_daemon::AuditLog;
+use action_vocab::{ActionRef, CallId, Millis, UndoId};
 use companion_memory_core::{QueuedSink, kind_tag_of, record_of};
+use memory_client::DbusTransport;
+use memory_core::{AreaTag, Cause, EventBody, MemoryReply, MemoryRequest, Refusal};
 use permission_core::{
     BreakerTrip, PolicyChangeKind, PolicyId, ReasonCode, ReviewMark, Stage, TaskPolicyState,
     VerdictKind,
 };
-use action_vocab::{ActionRef, CallId, Millis, UndoId};
-use action_daemon::AuditLog;
-use account_core::AppName;
 use provenance::{
     Actor, Address, AgentRef, ConfirmId, Effect, EntityId, EntityKey, EntityKind, Label, MessageId,
     MessageKind, MessageText, SessionId, SpaceId, SpaceScope, SystemPart, TaskId, ThreadId,
@@ -84,7 +84,9 @@ fn message() -> AuditRecord {
             space("work"),
         ),
         kind: MessageKind::Request,
-        parts: vec![provenance::Part::Text(MessageText::new("find the receipts"))],
+        parts: vec![provenance::Part::Text(MessageText::new(
+            "find the receipts",
+        ))],
         label: Label::untrusted(
             provenance::Source::Model(provenance::ModelRole::Planner),
             account_core::DataClass::Prompt,

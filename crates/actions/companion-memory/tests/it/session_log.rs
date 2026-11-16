@@ -1,25 +1,25 @@
-//! A session's log over almanac's in-process service (almanac-fake): the `SessionLog` contract,
+//! A session's log over almanac's in-process service (memory-fake): the `SessionLog` contract,
 //! its faults, an acknowledgement lost on the way, and a whole session restored from what a
 //! router wrote there before it was dropped.
 
+use account_core::AppName;
+use account_ids::Count;
+use action_core::*;
+use action_fake::{FixedClock, MailThread, ScriptedReviewer, ScriptedWriter, fake_router_on};
+use action_vocab::{ActionRef, CallRequest, CallerRole, LabelText, Origin, TargetValue, TurnId};
+use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
+use agent_session::{
+    BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog,
+};
+use companion_memory::AlmanacSessionLog;
 use memory_client::{Absent, InProcess, Transport, TransportError};
 use memory_core::{MemoryReply, MemoryRequest};
 use memory_fake::{FakeBackend, ScriptedConsolidator, fake_service};
 use memory_service::Caller;
 use memory_service::MemoryService;
-use action_core::*;
-use action_fake::{FixedClock, MailThread, ScriptedReviewer, ScriptedWriter, fake_router_on};
-use companion_memory::AlmanacSessionLog;
 use permission_core::{
     ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
 };
-use agent_session::{
-    BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog,
-};
-use action_vocab::{ActionRef, CallRequest, CallerRole, LabelText, Origin, TargetValue, TurnId};
-use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
-use account_core::AppName;
-use account_ids::Count;
 use provenance::{AgentRef, Integrity, SessionId, SpaceId, TaskId, UnixSeconds};
 use std::future::Future;
 use std::sync::Arc;
@@ -296,8 +296,8 @@ fn launcher() -> CallerId {
 
 /// Standing consent: the companion may use Mail's classes in `work`, always.
 fn standing_consent<R, W, K, L>(seams: &action_fake::FakeSeams<R, W, K, L>) {
-    use action_router::GrantStore;
     use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use action_router::GrantStore;
     for (n, class) in [provenance::DataClass::Mail, provenance::DataClass::Contacts]
         .into_iter()
         .enumerate()

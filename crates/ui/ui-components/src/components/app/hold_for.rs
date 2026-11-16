@@ -5,10 +5,10 @@
 //!
 //! [`DelayToken::ToastHold`]: ui_style::tokens::delay::DelayToken::ToastHold
 
+use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_motion::machine::{MachineRef, use_machine};
-use std::time::Duration;
 
 /// Where the hold is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -85,9 +85,9 @@ pub(crate) fn use_hold_for(delay: Duration, begin: Begin) -> MachineRef<HoldFor>
 #[cfg(test)]
 mod tests {
     use super::{HoldFor, HoldForIn};
+    use std::time::Duration;
     use ui_core::machine::Machine;
     use ui_core::time::stamp::Stamp;
-    use std::time::Duration;
 
     #[test]
     fn a_start_holds_for_the_delay_then_it_is_done() {

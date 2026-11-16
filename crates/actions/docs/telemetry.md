@@ -2,7 +2,7 @@
 
 The router writes OpenTelemetry GenAI spans: one `execute_tool` per action call and one
 `invoke_agent` per model turn. A span carries ids, action names, the effect class, the ruling,
-token counts and cost; never a prompt, an argument or a result. Callers of `docket-log` must never
+token counts and cost; never a prompt, an argument or a result. Callers of `action-log` must never
 put content on a span, and the exporter sends only the fields a span declared (no events, no event
 messages).
 
@@ -12,7 +12,7 @@ By default nothing leaves the machine: the spans are made and dropped. A daemon 
 ## Build
 
 `intentd` (where the router runs) and `companiond` each have an `otlp` feature that turns on
-`docket-log/otlp`. It is off by default, and without it `docket-log` depends on `tracing` alone.
+`action-log/otlp`. It is off by default, and without it `action-log` depends on `tracing` alone.
 
 ```sh
 cargo build --release -p action-daemon --features otlp

@@ -3,7 +3,9 @@ use caller_identity_core::Uid;
 use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::slots::{Bucket, NoSlot, Slots};
 use input_broker_wire::Maker;
-use input_broker_wire::limits::{MAX_CONNECTIONS, MAX_CONNECTIONS_PER_USER, MAX_RESERVED_PER_CLIENT};
+use input_broker_wire::limits::{
+    MAX_CONNECTIONS, MAX_CONNECTIONS_PER_USER, MAX_RESERVED_PER_CLIENT,
+};
 
 fn seat() -> ActiveUid {
     ActiveUid(Some(USER))

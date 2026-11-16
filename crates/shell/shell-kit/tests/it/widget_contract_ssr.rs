@@ -2,14 +2,11 @@
 //! only through `WidgetCard`, each size and state they take, with the card quire owns around
 //! them. Each specimen lints clean and every `ds-` class in it is styled by the stylesheet. The
 //! timeline's clock behaviour is proven on the virtual clock in
-//! `ds-conformance/tests/widget_timeline.rs`.
+//! `ui-conformance/tests/widget_timeline.rs`.
 
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::*;
-use ui_components::style::tokens::label_hue::LabelHue;
 use shell_kit::battery::device_glyph::Device;
 use shell_kit::month_grid::data::{
     DayKey, DayMark, DayPlace, Eventful, IsoWeek, MonthDay, MonthGridData, MonthKey, MonthWeek,
@@ -18,6 +15,9 @@ use shell_kit::prelude::*;
 use shell_kit::widget::calendar::{EventLine, MonthFace, TodayLine};
 use shell_kit::widget::calendar::{MonthEntry, MonthWidget};
 use shell_kit::widget::timeline::Timeline;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
+use ui_components::style::tokens::label_hue::LabelHue;
 
 #[derive(Props, Clone)]
 struct HostProps {

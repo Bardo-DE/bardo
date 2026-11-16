@@ -101,7 +101,7 @@ fn every_intents_member_is_declared() {
     for w in want {
         assert!(xml.contains(w), "missing {w}");
     }
-    // One method per `Member` of docket-core, plus the Request object's Close and Proceed.
+    // One method per `Member` of action-core, plus the Request object's Close and Proceed.
     assert_eq!(
         xml.matches("<method ").count(),
         action_wire::Member::ALL.len() + 2

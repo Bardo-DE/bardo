@@ -4,11 +4,11 @@
 
 use super::consent::{ScriptedShell, decided, kept, program};
 use crate::protocol::xdg_shell::{boot, map_toplevel, windows};
+use account_core::SandboxFacts;
 use compositor_core::geometry::{LogicalSize, PhysicalSize};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
 use compositor_core::{Event, OutputName, WindowId};
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::capture::toplevel_source::{CaptureFailure, CursorMode, WindowCapture};
 use compositor_testclient::surface::lock::Locker;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
@@ -16,8 +16,8 @@ use compositor_testclient::{Pattern, shm_buffer};
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec, FrameCount};
 use compositor_wayland::capture_source::capture_size;
 use compositor_wayland::foreign_toplevel_list::identifier_of;
+use desktop_protocols::vocab::{Answer, Power};
 use ui_core::geometry::scale::Scale;
-use account_core::SandboxFacts;
 
 const INTERFACE: &str = "ext_foreign_toplevel_image_capture_source_manager_v1";
 

@@ -1,13 +1,13 @@
 //! What a Google token shows, asked: one small read per service that has one (the paths are
 //! Google's `probe` rows of `issuers.toml`). What each answer means, and which services need no
-//! read, is oauth-probe-proto's.
+//! read, is account-oauth-probe-proto's.
 
 use super::apis_of;
 use super::scopes::Granted;
 use crate::oauth::{failure, get};
-use account_oauth_probe_proto::google;
 use account_capability::{CapabilityKind, Claim};
 use account_http::Http;
+use account_oauth_probe_proto::google;
 use account_provider::{Issuer, ProviderError, ProviderSpec};
 
 /// Probes the account behind `token` for every kind `spec` declares.

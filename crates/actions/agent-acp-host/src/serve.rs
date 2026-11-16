@@ -4,6 +4,8 @@
 use super::backend::{AcpBackend, Called, Phase, Seams, Staged};
 use super::handlers::ok;
 use super::link::{FromAgent, Plain, Reply, Work};
+use action_core::{StepLine, StepShown};
+use action_vocab::CallId;
 use agent_acp_core::call::AgentCall;
 use agent_acp_core::fault;
 use agent_acp_core::taint::TaintSource;
@@ -11,10 +13,8 @@ use agent_client_protocol::schema::v1::{
     CreateElicitationResponse, ElicitationAction, Error, RequestPermissionOutcome,
     RequestPermissionResponse, SessionNotification,
 };
-use action_core::{StepLine, StepShown};
-use permission_core::{FILES_READ, FILES_WRITE, TERMINAL_RUN, acp_agent_action};
 use agent_session::{BackendEvent, CallEvent, CallOpen, TurnEnd};
-use action_vocab::CallId;
+use permission_core::{FILES_READ, FILES_WRITE, TERMINAL_RUN, acp_agent_action};
 use provenance::Effect;
 use serde_json::Value;
 use std::time::Duration;
@@ -274,7 +274,9 @@ impl<X: Seams> AcpBackend<X> {
     /// if the run is being repeated.
     pub(super) fn stage_once(
         &mut self,
-        make: impl FnOnce(&super::performer::Performer<X::Files, X::Sandbox>) -> agent_acp_core::call::StageId,
+        make: impl FnOnce(
+            &super::performer::Performer<X::Files, X::Sandbox>,
+        ) -> agent_acp_core::call::StageId,
     ) -> agent_acp_core::call::StageId {
         if let Some(stage) = self.staged.as_ref().and_then(|s| s.stage.clone()) {
             return stage;

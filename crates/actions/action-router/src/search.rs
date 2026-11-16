@@ -8,6 +8,7 @@ use crate::rank::{Rank, rank_of};
 use crate::reading::link_refusal;
 use crate::router::Router;
 use crate::seams::{AppLink, Seams};
+use account_core::AppName;
 use action_context::index::IndexAction;
 use action_context::index::IndexEvent;
 use action_context::labels::app_label;
@@ -17,7 +18,6 @@ use action_core::{Hit, IndexBatch, IndexEntry, SearchAsk, SearchScope, SuggestAs
 use action_manifest::TitleTrust;
 use action_vocab::{CallerRole, EntityRef};
 use action_wire::{CallerId, IntentsReply, WireRefusal};
-use account_core::AppName;
 use provenance::{EntityId, EntityKind, Label, Labelled, SpaceId, SpaceScope, UnixSeconds};
 use std::collections::BTreeSet;
 

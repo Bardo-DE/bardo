@@ -22,10 +22,10 @@ pub use use_tokens::use_notification_tokens;
 pub use view::{use_app_mark, wall_now};
 
 use dioxus::prelude::*;
-use ui_components::root::common::Common;
-use shell_model::notifications::{ActionKey, Href, Notification, UnixMs};
 use shell_kit::notifications::parts::Hover;
 use shell_kit::notifications::swipe::NotificationSwipe;
+use shell_model::notifications::{ActionKey, Href, Notification, UnixMs};
+use ui_components::root::common::Common;
 
 /// Where the card is drawn: a banner paints the Toast material; a center row the
 /// center's Popover.

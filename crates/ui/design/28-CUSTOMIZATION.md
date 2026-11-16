@@ -77,11 +77,11 @@ Apple Support (Mac User Guide), user-facing settings, macOS 14 or 15 editions wh
 
 Our own: `20-SURFACES.md`, `22-SETTINGS.md` (sections 2, 3, 9), `23-WIDGETS.md`,
 `13-BEHAVIOUR-menus-windows.md`, `27-HIG-PARITY.md`. Code read (read-only): sill
-`crates/sill-launcher/src/{provider,ids,preview}.rs`, `sill-settings/src/{control_center,widgets,notifications}.rs`,
+`crates/sill-launcher/src/{provider,ids,preview}.rs`, `shell-settings/src/{control_center,widgets,notifications}.rs`,
 `sill-surfaces/src/surfaces/{bar,control_center,desktop_widgets,dock}/` (at master `0096872`:
 `desktop_widgets/{saved,placement,drag,arrange,view}.rs`, `widgets/mod.rs` `size_of`),
-`sill-services/src/{pins,tray,notifications}/`, `sill-launcher/src/rank/sections.rs`,
-sill-settings/tests/keys.rs,
+`shell-services/src/{pins,tray,notifications}/`, `shell-launcher/src/rank/sections.rs`,
+shell-settings/tests/keys.rs,
 sill `FINDINGS.md` F270-F271; quire `crates/ds-settings/src/schema/key.rs`, and the in-progress
 `crates/ds/src/widget/{contract,registry,wire}.rs` in the `widget-interface` worktree.
 
@@ -138,7 +138,7 @@ Desktop, In Stage Manager), Widget style (Automatic, Monochrome, Full-color), Us
 (mchlp1119). Third party: any app, through WidgetKit.
 
 **Today (sill master 0096872, "Widget drag", F880-F892).**
-- Kinds: `WidgetKind` closed enum in `sill-settings` (Calendar, UpNext, Battery, NowPlaying,
+- Kinds: `WidgetKind` closed enum in `shell-settings` (Calendar, UpNext, Battery, NowPlaying,
   WorldClock). Membership and order: the keys `widgets.center` and `widgets.desktop_widgets`
   (22 §3.20). The size is not chosen: sill's widget size table `size_of(kind, host)`
   fixes one size per kind and host (every notification center tile Medium, the month Large there;
@@ -158,7 +158,7 @@ Desktop, In Stage Manager), Widget style (Automatic, Monochrome, Full-color), Us
   free spot and back (F884); the motion is quire's `use_tween` in `placed.rs` (F885).
 - Scalars: `widgets.desktop` (the layer on or off), `widgets.desktop_cell_px`,
   `widgets.desktop_gap_px`, `widgets.world_clocks` (the zones, `;`-separated, read by
-  sill's `sill-ui-kit/src/widgets/world_clock`).
+  sill's `shell-ui-kit/src/widgets/world_clock`).
 
 quire (`widget-interface`, in progress): `ds::widget::Widget` trait (`Entry`, `Intent`, `kind`,
 `name`, `sizes`, `placeholder`, `view`, `title`), `WidgetKind` as a reverse-DNS string,
@@ -233,7 +233,7 @@ switch the user settled (22 §3.6): `launcher.web_search` (On/Off), `launcher.cl
 (Memory/Off; Off watches nothing), `launcher.files_backend` (Auto/Tracker/Baloo/Fd/Off). The user
 named this surface.
 
-**Mapping.** Owner: sill (`sill-launcher` keeps the trait; the registry of providers is sill's,
+**Mapping.** Owner: sill (`shell-launcher` keeps the trait; the registry of providers is sill's,
 non-UI); quire owns the `OrderedChecklist` picker and the `KindId` type. Trait change:
 `fn kind(&self) -> ProviderKind` becomes `fn info(&self) -> ProviderInfo { id: KindId, name,
 icon, section: SectionTitle, default_shown: Shown }`, so a provider from another process
@@ -344,7 +344,7 @@ Clock is essential and fixed. Third party: yes, any app's status item.
 
 **Today (sill master 0096872).** Tray items (StatusNotifierItem) in arrival order, each keyed by
 `TrayItemId`, which is the item's **bus address** (`<unique name><object path>`,
-`sill-model/src/tray/model.rs`): it changes every time the app restarts. sill does not read
+`shell-model/src/tray/model.rs`): it changes every time the app restarts. sill does not read
 the SNI `Id` property today. Control center module items follow `MENU_BAR_ORDER`; the control
 center item and the clock sit at the right end.
 
@@ -502,7 +502,7 @@ Quick Note, Start Screen Saver, Disable Screen Saver, Put Display to Sleep, Lock
 **Today.** `hot_corners.*` keys with the closed `CornerAction` enum and `*_command` text keys
 (22 §3.23); design/13 §13.3.12. The modifier key was retired on 2026-09-26 (sill FINDINGS
 "hot_corners.modifier retired"): a keyboard-less layer surface is never sent
-`wl_keyboard.modifiers`, so a corner cannot know what is held (shell-host F61, sill G121); the
+`wl_keyboard.modifiers`, so a corner cannot know what is held (layer-shell-host F61, sill G121); the
 wish is a fork item in docs/compositor-gaps.md in sill.
 
 **Mapping.** Owner: sill (actions are shell actions). It is the pattern with one slot per corner
@@ -695,10 +695,10 @@ placement list per Focus). Recorded, not specified: it needs Focus modes first.
 | **Cell** | where one instance sits on one output (or on every output); state, in `$XDG_STATE_HOME`. |
 | **Picker** | the UI that adds, removes, orders and configures placements. |
 
-### 5.2 `KindId`, `Shape`, `Placement`, `Layout`, `Cell` (data; crate `ds-settings`, no UI)
+### 5.2 `KindId`, `Shape`, `Placement`, `Layout`, `Cell` (data; crate `ui-settings`, no UI)
 
-Non-UI crates (sill-launcher, sill-services, palmrest) need these, so they live beside the
-settings loader and schema in `ds-settings` (decision 6, settled A). `AppId` moves there too
+Non-UI crates (shell-launcher, shell-services, palmrest) need these, so they live beside the
+settings loader and schema in `ui-settings` (decision 6, settled A). `AppId` moves there too
 (from `sill_launcher::ids`), so layouts, `notifications.apps` and the launcher share one type.
 
 ```rust
@@ -749,7 +749,7 @@ Rules (all layouts):
    an unknown value falls back to the field's default); the host never reads inside it.
 4. **One writer task per program, in its services.** Each program's layout file (and each state
    file) is written by exactly one task in that program's services crate (sill:
-   `sill-services`, the way `pins::run` owns `dock.json` today): it loads once, applies events
+   `shell-services`, the way `pins::run` owns `dock.json` today): it loads once, applies events
    through a pure reducer, saves atomically (temp file and rename), and picks up an outside edit
    through the directory watch (30 ms debounce, 22 §2). Surfaces and CLI commands never write:
    they send the task events (`sill dock pin` sends `PinEvent::Pin` today; a widget drop sends
@@ -794,7 +794,7 @@ Each surface keeps its **own typed trait** (the thing an implementer writes) and
 | Surface | Typed trait | Erased info | Owner |
 | --- | --- | --- | --- |
 | widgets | `Widget` (Entry, Intent, Config, view) | `WidgetInfo` | quire `ds::widget` |
-| launcher | `Provider` (query, activate) + `ProviderInfo` | `ProviderInfo` (no preview: the checklist row shows icon and name) | sill `sill-launcher`; data types from quire |
+| launcher | `Provider` (query, activate) + `ProviderInfo` | `ProviderInfo` (no preview: the checklist row shows icon and name) | sill `shell-launcher`; data types from quire |
 | control center | `ControlModule` (tile, panel, bar glyph, active) | `ModuleInfo` | quire contract, sill modules |
 | bar | none (items are sources) | `BarItemInfo` | sill |
 | toolbar | `ToolbarItem` (command, glyph, width) | `ToolbarItemInfo` | quire |
@@ -839,7 +839,7 @@ appear motion once when it scrolls into view (the wake stamp), never on a loop.
 - **Scalars and behaviour** stay in `settings.toml` (22 §2): the `menu_bar_*` presences,
   `widgets.desktop`, the grid geometry, per-app notification rules, shortcut bindings.
 - **design/22 gets a section for layouts outside §3**: a new `## 10. Layouts (layout.toml)`,
-  after §9 and after `## 4. Rust shape`, so sill's keys test (sill-settings/tests/keys.rs,
+  after §9 and after `## 4. Rust shape`, so sill's keys test (shell-settings/tests/keys.rs,
   which reads §3.4-3.8 and §3.11 through `## 4. Rust shape` in both directions) never parses a
   `layout.*` entry as a `settings.toml` key. Its tables use the `Layout entry` column head.
 - The layout structs derive `SettingsSchema` with `page` and `exposure = Advanced` except where
@@ -900,19 +900,19 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 
 | Today | Becomes | Where |
 | --- | --- | --- |
-| `ds::widget::WidgetKind` (`widget-interface`) | `KindId` | `ds-settings` (data) |
-| `sill_launcher::ids::AppId` | `AppId`, shared by launcher, layouts and `notifications.apps` | `ds-settings` |
+| `ds::widget::WidgetKind` (`widget-interface`) | `KindId` | `ui-settings` (data) |
+| `sill_launcher::ids::AppId` | `AppId`, shared by launcher, layouts and `notifications.apps` | `ui-settings` |
 | `ds::widget::WidgetRegistry`, `WidgetInfo::of`, `TakenKind`, `provide_/use_widget_registry` | `Registry<I>`, `KindInfo`, `provide_/use_registry` | `ds::place` |
 | the widget gallery page (`ds-gallery` pages `widgets`, the picker being built) | `KindGallery` | `ds::components::kind_gallery` |
-| `ds::components::widget_kind::WidgetSize`; sill `widgets::size_of(kind, host)` | `Shape`; `KindInfo::size_in(host)` | `ds-settings`; `ds::place` |
-| sill `desktop_widgets::saved::{SavedEntry, OutputKey}` | `Cell { instance, output: Option<OutputName>, column, row }` (`OutputKey::Any` is `None`) | `ds-settings`; sill keeps the file and `with_output` |
+| `ds::components::widget_kind::WidgetSize`; sill `widgets::size_of(kind, host)` | `Shape`; `KindInfo::size_in(host)` | `ui-settings`; `ds::place` |
+| sill `desktop_widgets::saved::{SavedEntry, OutputKey}` | `Cell { instance, output: Option<OutputName>, column, row }` (`OutputKey::Any` is `None`) | `ui-settings`; sill keeps the file and `with_output` |
 | sill `desktop_widgets::placement::{GridSlot, clamp, nearest_free}` | stay sill's (the desktop grid is sill's); `clamp` keeps rule 5.2.6 | sill |
 | sill sill's sill-widgets-ui/src/desktop/drag.rs (`Hold::{Idle,Pressed,Live}`, threshold, grab offset) with `arrange.rs` (`snap`, `make_room`), and sill `dock/machine/press.rs` (press, threshold, drag reorder, drag-out) | `ds::motion::reorder`: one press-travel-lift-drop machine and the make-room rule for a grid and for a row, used by the desktop, the dock, the bar's Command-drag, toolbars and checklists | quire |
 | sill `pins::model::{DockPins, PinEvent, PinAt}` and `pins::run` | `Layout` plus the dock's own events; `pins::run` is the model for rule 5.2.4's writer task | sill, over the shared data |
 | sill `ControlCenterModule`, `MENU_BAR_ORDER`, `in_menu_bar` | `ModuleInfo` in a registry; presence from the `menu_bar_*` keys, bar order from `layout.bar_items` | sill, contract in quire |
-| sill `ProviderKind` closed enum and its `ALL` order | built-in `KindId`s; order from `layout.launcher_categories` (Web pinned last) | sill-launcher |
+| sill `ProviderKind` closed enum and its `ALL` order | built-in `KindId`s; order from `layout.launcher_categories` (Web pinned last) | shell-launcher |
 | sill `CornerAction` closed enum; palmrest `Action` | `ShellAction` ids in one action registry | sill (palmrest reads ids) |
-| `ds-settings` `KeyKind::List` ("a rows editor") | its widget is `OrderedChecklist`; `KeyKind::Record` (P5) makes `List(Record)` a table editor | ds-settings + Settings app |
+| `ui-settings` `KeyKind::List` ("a rows editor") | its widget is `OrderedChecklist`; `KeyKind::Record` (P5) makes `List(Record)` a table editor | ui-settings + Settings app |
 | `SettingsRow`, `ds::motion::roster`, `DragGhost`, `DropPlace`, `ds::detail::use_tween` | reused unchanged by the pickers and the reorder machine | quire |
 | the appearance picker, `UserPicture` picker | stay single-value pickers (one choice, no placement) | unchanged |
 
@@ -920,7 +920,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 
 ### 6.0 Row order (sill's keys test)
 
-sill's sill-settings/tests/keys.rs checks design/22 against sill's registered `KeySpec`s in
+sill's shell-settings/tests/keys.rs checks design/22 against sill's registered `KeySpec`s in
 both directions over §3.4-3.8 and §3.11 through `## 4. Rust shape` (that is, §3.4-3.23 less
 palmrest's §3.9-3.10), reading quire's doc by path from sill's own checkout. A row with no spec,
 or a spec with no row, fails sill master at once, so a key is added, changed or retired in one change to both repos: the `KeySpec` and
@@ -939,14 +939,14 @@ Shell; each a quire lane plus a sill lane where named.
 1. **P0 Land the widget interface** (in progress on `widget-interface`) as the reference
    implementation. No generalisation inside that lane.
 2. **P1 Extract the pattern** (quire): `KindId`, `InstanceId`, `Shape`, `Shown`, `Placement`,
-   `Layout`, `Cell` and `AppId` in `ds-settings` with the lenient loader and the atomic writer;
+   `Layout`, `Cell` and `AppId` in `ui-settings` with the lenient loader and the atomic writer;
    `Registry<I>`/`KindInfo` (with `size_in`) in `ds::place`; `WidgetRegistry` becomes
    `Registry<WidgetInfo>`; `ds::motion::reorder` from sill's sill's sill-widgets-ui/src/desktop/drag.rs,
    `arrange.rs` and `dock/machine/press.rs`; `OrderedChecklist`; `KindGallery` from the widget
    gallery; design/22 `## 10. Layouts`. Warn sill before any rename lands (sill reads quire by
    path).
 3. **P2 Widgets on the shared shape** (sill): the hosts read `layout.center_widgets` and
-   `layout.desktop_widgets` (membership) through one writer task in `sill-services`; cells stay
+   `layout.desktop_widgets` (membership) through one writer task in `shell-services`; cells stay
    in `desktop-widgets.json` with the new `instance` field; World Clock's zones move to its
    instance config; the gallery opens from the desktop menu and the notification center;
    `EditMode` adds remove badges and size choices (dragging stays always on). Row order 6.0 for
@@ -958,7 +958,7 @@ Shell; each a quire lane plus a sill lane where named.
    the person's hands), `InMenuBar::WhenActive`, the new `control_center.menu_bar_focus` key;
    the tray service reads the SNI `Id` property (`TrayItem.sni_id`), and `layout.bar_items` /
    `layout.bar_hidden` are keyed by it; Command-drag in the bar on `ds::motion::reorder`.
-6. **P5 Notifications per app** (quire + sill): quire adds a record kind to ds-settings'
+6. **P5 Notifications per app** (quire + sill): quire adds a record kind to ui-settings'
    `KeyKind` (`Record { fields: Vec<FieldSpec> }`, so `List(Box<Record>)` describes a
    `Vec<struct>` key and the Settings app draws it as a table editor; today `List` holds only
    scalar kinds); sill adds `notifications.apps` and `notifications.previews`,
@@ -990,7 +990,7 @@ compositor fork reports held modifiers (4.9).
 
 ## 7. Open decisions (for the user; each has a recommendation)
 
-**Settled 2026-09-27.** The user picked 2 (B, reorderable), 3 (A, quire templates), 4 (add When Active) and 5 (A, membership only); 1, 6, 7, 8 and 9 follow the recommendations (1 B `layout.toml`, 6 A `ds-settings`, 7 consume KRunner and GNOME providers, 8 and 9 as recommended).
+**Settled 2026-09-27.** The user picked 2 (B, reorderable), 3 (A, quire templates), 4 (add When Active) and 5 (A, membership only); 1, 6, 7, 8 and 9 follow the recommendations (1 B `layout.toml`, 6 A `ui-settings`, 7 consume KRunner and GNOME providers, 8 and 9 as recommended).
 
 1. **Where placements live.** (A) as list keys in `settings.toml`; (B) a `layout.toml` per
    program beside `settings.toml`, schema'd the same way; (C) keep today's per-surface JSON files
@@ -1012,9 +1012,9 @@ compositor fork reports held modifiers (4.9).
 5. **Control center arrangement.** (A) membership of Other modules only, the design's order, as
    Sonoma/Sequoia; (B) free reorder and resize of tiles (the post-2025 editable Control Center).
    **Recommend A** (target era; B is Liquid Glass era).
-6. **Where the data types live.** (A) `ds-settings` (non-UI, already owns persistence and the
-   schema; sill-launcher and palmrest can depend on it); (B) a new small crate `ds-place`;
-   (C) `ds` (pulls dioxus into non-UI crates). **Recommend A**; split to B only if `ds-settings`
+6. **Where the data types live.** (A) `ui-settings` (non-UI, already owns persistence and the
+   schema; shell-launcher and palmrest can depend on it); (B) a new small crate `ds-place`;
+   (C) `ds` (pulls dioxus into non-UI crates). **Recommend A**; split to B only if `ui-settings`
    grows past its purpose.
 7. **Third-party launcher providers in v1.** Consume KRunner D-Bus runners and GNOME search
    providers during the app pass (cheap, many apps exist), or only our own interface later.

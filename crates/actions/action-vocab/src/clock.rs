@@ -1,5 +1,5 @@
-//! The one clock: what tells the time, and waits it out. The system's is in `docket-store`, a
-//! test's in `docket-fake`; nothing else in the repo reads the time or sleeps for a deadline.
+//! The one clock: what tells the time, and waits it out. The system's is in `action-store`, a
+//! test's in `action-fake`; nothing else in the repo reads the time or sleeps for a deadline.
 
 use crate::Millis;
 use provenance::UnixSeconds;

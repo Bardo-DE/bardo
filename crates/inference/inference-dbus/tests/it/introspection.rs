@@ -1,8 +1,8 @@
 //! The checked-in introspection files are the interfaces as they are declared once. A change to a
 //! signature changes the file in the same commit.
 
-use std::path::PathBuf;
 use inference_dbus::inference;
+use std::path::PathBuf;
 
 #[test]
 fn checked_in_introspection_matches_the_interfaces() {

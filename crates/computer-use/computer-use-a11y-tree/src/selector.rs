@@ -1,5 +1,5 @@
 //! Finding nodes again by role and name, for procedures (a later wave). The types are frozen so
-//! `SuccessCheck` can name them. The selector itself lives in `cua-types`, re-exported here.
+//! `SuccessCheck` can name them. The selector itself lives in `computer-use-types`, re-exported here.
 
 use computer_use_action::NodeId;
 pub use computer_use_types::{NameMatch, NodeSelector, SelectorStep};

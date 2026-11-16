@@ -48,7 +48,11 @@ fn a_consumer_class_on_a_quire_button_lints_clean() {
 fn the_class_is_unstyled_without_the_consumers_rule() {
     // The check above is not vacuous: the same markup against quire's sheet alone names the
     // consumer's class as unstyled.
-    let offences = markup(&render(), ui_components::stylesheet(), &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &render(),
+        ui_components::stylesheet(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     assert!(
         offences
             .iter()

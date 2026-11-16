@@ -1,8 +1,8 @@
 //! One tool list and one tool call made into a request, for every edge: the menu narrows both,
 //! an argument that does not fit is refused, and a call carries the client's label.
 
-use action_tools::{ToolFault, listing, prepare, tools};
 use action_manifest::{ArgsFault, Manifest, ValidManifest, validate};
+use action_tools::{ToolFault, listing, prepare, tools};
 use action_vocab::Origin;
 use provenance::{ClientName, Integrity};
 use serde_json::{Value as Json, json};

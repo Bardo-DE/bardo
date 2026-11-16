@@ -2,14 +2,14 @@
 
 use computer_use_action::{Button, ScrollDir};
 use computer_use_desktop::{EiOrigin, GlobalRect, LeaseGrant};
-use futures_util::{FutureExt, StreamExt};
-use reis::ei::{self, button::ButtonState, keyboard::KeyState};
-use reis::event::{Connection, Device, DeviceCapability, EiEvent};
-use reis::tokio::EiConvertEventStream;
 use computer_use_seat_input::Keymap;
 use computer_use_seat_input::region::{GlobalPoint, RegionMap};
 use computer_use_seat_input::{Emulation, SeatError};
 use computer_use_seat_input::{InputOp, Press};
+use futures_util::{FutureExt, StreamExt};
+use reis::ei::{self, button::ButtonState, keyboard::KeyState};
+use reis::event::{Connection, Device, DeviceCapability, EiEvent};
+use reis::tokio::EiConvertEventStream;
 use std::os::fd::OwnedFd;
 use std::os::unix::fs::FileExt;
 use std::os::unix::net::UnixStream;

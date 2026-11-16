@@ -2,8 +2,8 @@
 //! rounding is `blitz_embed::snap::snap_layout`; this reads the scale off the document's viewport.
 //!
 //! It must run after every `resolve` and before painting, because every resolve re-runs taffy's
-//! rounding. `ds-blitz`'s headless documents (`Harness`, `snapshot`) run it; a host that drives
-//! its own documents (shell-host) calls it after each `resolve`. At a whole scale it does
+//! rounding. `ui-blitz`'s headless documents (`Harness`, `snapshot`) run it; a host that drives
+//! its own documents (layer-shell-host) calls it after each `resolve`. At a whole scale it does
 //! nothing: Blitz's rounding is already right there, and every picture stays as it was.
 
 use blitz_dom::BaseDocument;

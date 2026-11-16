@@ -15,7 +15,6 @@
 
 use crate::Bus;
 use crate::failure::{link_error, spaces_error};
-use futures_util::StreamExt;
 use account_client::{Changes, LinkError, Malformed, SpacesError};
 use account_core::{DesktopSpace, DesktopSpaceRecord, SpaceChange, SpaceLook, SpaceName};
 use account_dbus::Details;
@@ -24,6 +23,7 @@ use account_dbus::accounts::{
 };
 use account_ids::UnixSeconds;
 use account_ids::word::from_word;
+use futures_util::StreamExt;
 
 /// accountd's registry of desktop-wide Spaces, as an app uses it over the bus.
 #[derive(Debug, Clone)]

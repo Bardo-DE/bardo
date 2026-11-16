@@ -3,13 +3,13 @@
 
 use super::discover::{Found, Who, discover};
 use super::flow::{poll, start};
-use account_nextcloud_proto::flow::{Granted, Polled, Started};
-use account_nextcloud_proto::paths::server_of;
 use account_core::{AccountLabel, Credential, EndpointUrl, Restriction, SecretPurpose};
 use account_family_kit::Io;
 use account_family_kit::password::{plain, text_of};
 use account_family_kit::{Flow, Move};
 use account_http::Sleep;
+use account_nextcloud_proto::flow::{Granted, Polled, Started};
+use account_nextcloud_proto::paths::server_of;
 use account_provider::{SignInMode, SignInStep, Signed};
 use account_sheet::{FieldKind, SignInFault, SignInInput};
 use std::time::Duration;

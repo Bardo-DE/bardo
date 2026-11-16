@@ -13,15 +13,15 @@ Status: cut from [porter](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
 | Crate | What it is |
 | --- | --- |
 | `inferd` | the daemon: serves `org.quire.Inference1` on the session bus, with the router, the engine host, the model turns and the audit trail |
-| `inferd-client` | the app's client of inferd, over D-Bus or hosted in the app |
-| `steward-dbus` | `org.quire.Inference1` written once: proxies, server traits, introspection, bus vocabulary |
-| `steward-rig` | test tooling, never installed: `steward-rig-client open`, an app opening an inferd session in a jailed scenario |
-| `inferd-probe` | the port probe that finds local runtimes (Ollama, llama.cpp, LM Studio) |
-| `porter-infer` | typed requests and replies, the routing policy, spend caps, audit entries |
-| `porter-router` | who answers a session, the catalogue, the local model book, the session machine |
-| `porter-turns` | running model turns: chat, embeddings, computer-use steps, structured replies |
-| `porter-bridge` | the one mapping between the wire types and stoker's provider types |
-| `porter-tailnet` | lending models to the person's other computers over their Tailscale network |
+| `inference-client` | the app's client of inferd, over D-Bus or hosted in the app |
+| `inference-dbus` | `org.quire.Inference1` written once: proxies, server traits, introspection, bus vocabulary |
+| `inference-rig` | test tooling, never installed: `steward-rig-client open`, an app opening an inferd session in a jailed scenario |
+| `inference-probe` | the port probe that finds local runtimes (Ollama, llama.cpp, LM Studio) |
+| `inference-core` | typed requests and replies, the routing policy, spend caps, audit entries |
+| `inference-router` | who answers a session, the catalogue, the local model book, the session machine |
+| `inference-turns` | running model turns: chat, embeddings, computer-use steps, structured replies |
+| `inference-bridge` | the one mapping between the wire types and stoker's provider types |
+| `inference-tailnet` | lending models to the person's other computers over their Tailscale network |
 
 `ARCHITECTURE.md` has the map and the allowed edges. steward depends on porter by git rev; porter
 never depends on steward.

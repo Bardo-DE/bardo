@@ -142,11 +142,11 @@ impl SheetDesk for EditorDesk {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use account_core::AppName;
+    use account_ids::Count;
     use action_core::{Anchor, ConfirmDetail, ConfirmOffer, ConfirmParts, Gesture, TaintNote};
     use action_vocab::{LabelText, Seconds};
     use futures_util::FutureExt;
-    use account_core::AppName;
-    use account_ids::Count;
     use provenance::{Actor, Effect, SpaceId};
 
     fn request(id: &str) -> ConfirmRequest {

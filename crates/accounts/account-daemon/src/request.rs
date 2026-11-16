@@ -1,4 +1,4 @@
-//! The sheet methods (`AddAccount`, `Reauthenticate`) over porter-sheets' Request objects.
+//! The sheet methods (`AddAccount`, `Reauthenticate`) over account-sheets' Request objects.
 //!
 //! A sheet method returns the path of a Request object at once and runs the service call in a
 //! task; the answer is the object's `Response` signal, sent to the caller alone, and the object

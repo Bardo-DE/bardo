@@ -20,6 +20,8 @@ use crate::root::common::Common;
 use crate::stack::typeahead::Typeahead;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
+use std::hash::Hash;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::time::clock::now;
 use ui_core::word::Word;
@@ -28,8 +30,6 @@ use ui_motion::presence::Exit;
 use ui_motion::roster::RowPitch;
 use ui_motion::use_roster::{LeaveBy, RosterSpec, use_roster};
 use ui_style::tokens::control_size::SidebarSize;
-use std::hash::Hash;
-use std::rc::Rc;
 
 /// A list of `items`, the whole list on every render: a key missing from it leaves. `cursor` is
 /// the row the keys rest on (the caller draws it selected through the row's own state);

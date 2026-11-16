@@ -1,11 +1,11 @@
 //! What the socket thread allows a subscriber, and when it stops listening or stops complaining.
 //! Every bound is against a subscriber that is broken or hostile: it is refused or cut, and
-//! never allowed to wedge the thread that serves shell-host.
+//! never allowed to wedge the thread that serves layer-shell-host.
 
 use service_locator::guard::{COMPLAINT_INTERVAL, Voice};
 use std::time::{Duration, Instant};
 
-/// Subscribers connected at once. shell-host is the only one in practice; a few more cover a
+/// Subscribers connected at once. layer-shell-host is the only one in practice; a few more cover a
 /// restart overlapping its predecessor and tools such as a stream viewer.
 pub(super) const MAX_CLIENTS: usize = 8;
 /// Packets read from one subscriber in one pass; the rest wait for the next pass, so one chatty

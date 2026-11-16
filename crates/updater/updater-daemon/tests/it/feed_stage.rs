@@ -2,6 +2,12 @@ use crate::private_bus::PrivateBus;
 use crate::support::{Accept, Recipe, Reject, Sandbox, build, v};
 use caller_identity_dbus::caller_identity_core::Table;
 use semver::Version;
+use std::collections::BTreeMap;
+use std::io::Cursor;
+use std::path::Path;
+use std::sync::{Arc, Mutex};
+use std::time::Duration;
+use updater_core::LoginSession;
 use updater_daemon::config::Config;
 use updater_daemon::elevate::{ApplyFailure, Elevate, Recovery};
 use updater_daemon::fetch::{
@@ -14,13 +20,7 @@ use updater_daemon::service::{
     BUS_NAME, Context, Engine, Gate, Job, PATH, Phase, Status, Updates, Wanted, peers_on,
 };
 use updater_daemon::state::StateStore;
-use updater_core::LoginSession;
 use updater_root::apply::Staged;
-use std::collections::BTreeMap;
-use std::io::Cursor;
-use std::path::Path;
-use std::sync::{Arc, Mutex};
-use std::time::Duration;
 
 /// Serves bytes from memory and remembers what was asked.
 pub struct Memory {

@@ -1,8 +1,8 @@
 //! A Bluetooth device's filled glyph (quire's `DeviceGlyph`): the control center's Battery
 //! module draws it beside each device's level.
 
-use shell_model::bluetooth::BtKind;
 use shell_kit::battery::device_glyph::Device;
+use shell_model::bluetooth::BtKind;
 
 /// The glyph for a device of `kind`.
 pub fn device_of(kind: BtKind) -> Device {
@@ -21,8 +21,8 @@ pub fn device_of(kind: BtKind) -> Device {
 #[cfg(test)]
 mod tests {
     use super::device_of;
-    use shell_model::bluetooth::BtKind;
     use shell_kit::battery::device_glyph::Device;
+    use shell_model::bluetooth::BtKind;
 
     #[test]
     fn each_kind_has_its_glyph() {

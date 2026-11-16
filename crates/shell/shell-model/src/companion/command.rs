@@ -1,15 +1,15 @@
 //! What tells the companion service things, what happens in it, and what that asks of the
 //! outside.
 
-use memory_core::{FactId, FactView, MemoryItem, TimelineEntry};
-use companion_wire::{AnswerWire, RouteNote};
 use action_core::{ContextKeep, Hit, TurnVia, UndoEntry, UndoScope};
-use permission_core::Mode;
 use action_vocab::{CallRequest, CardActionId, Handle};
 use action_wire::{SummonAnswer, SummonSerial};
-use ui_core::vocab::MemoryVerb;
+use companion_wire::{AnswerWire, RouteNote};
+use memory_core::{FactId, FactView, MemoryItem, TimelineEntry};
+use permission_core::Mode;
 use provenance::{AgentRef, AppName, RunId, SessionId, SpaceId, TaskId};
 use shell_launcher::{Generation, LauncherMode, RunControl, WindowKey};
+use ui_core::vocab::MemoryVerb;
 
 use std::collections::BTreeSet;
 

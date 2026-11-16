@@ -2,9 +2,9 @@
 //! person's and the assistant's, and the administrator's; and a rebuild put in force on a router.
 
 use action_core::AgentConfig;
+use action_daemon::{PolicyDirs, PresetOrigin, load_policies, read_sources, reload_policies};
 use action_fake::fake_router;
 use action_router::{Router, Seams};
-use action_daemon::{PolicyDirs, PresetOrigin, load_policies, read_sources, reload_policies};
 use permission_policy::{Layer, LayerError, PRESET};
 use std::path::Path;
 

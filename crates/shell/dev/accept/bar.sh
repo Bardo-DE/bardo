@@ -21,7 +21,7 @@
 #        closes it.
 #     9. quit: `sill quit` ends the daemon and a `ping` after it finds nobody home. Runs last.
 #   Bar demo (a headless KWin, `examples/bar_demo.rs`: the real `Bar` on fake services, with
-#   shell-host's `probe_toplevel`; works while the real session is locked):
+#   layer-shell-host's `probe_toplevel`; works while the real session is locked):
 #     1. exclusive zone: a maximised probe window is the output height minus the bar height;
 #     2. idle: five seconds with nothing changing, 0 frames and 0 commits (`stats`);
 #     3. menus: a click on the control center's item (the status item left of the clock, found
@@ -40,8 +40,8 @@
 #   reserve a bar there, so no exclusive-zone or idle step); screenshot dev/out/bar-casement-menu.png.
 #
 # --real-input [STEP...]: the bar's menus and the keyboard of the control center and the
-# notification center under REAL input, on shell-host's private headless KWin (scripts/dev/
-# kwin-virtual.sh) driven by shell-host's scripts/dev/fake-input.sh. Every menu and panel here is
+# notification center under REAL input, on layer-shell-host's private headless KWin (scripts/dev/
+# kwin-virtual.sh) driven by layer-shell-host's scripts/dev/fake-input.sh. Every menu and panel here is
 # opened by a real pointer click on its bar item, never by `sill control-center toggle` or
 # `sill notifications open`; every key is a real Wayland key event. `sill debug capture` and
 # `sill debug notify` only look and seed. As on the user's session, an app window has the
@@ -66,13 +66,13 @@
 #   6. A's menu open, a real click on the clock closes the menu and opens the center, which has
 #      the keyboard: real Down moves its ring, real Escape closes it; the sink gets no key.
 #   Keyboard back. After a bar menu closes, does the app have the keyboard back (a real "j"
-#      reaches the sink)? Recorded, not asserted: shell-host's side. Only on a full run.
+#      reaches the sink)? Recorded, not asserted: layer-shell-host's side. Only on a full run.
 # Captures: target/accept-bar/*.png. Then the input client, the sink, the daemon (`sill quit`) and
 # the headless KWin are stopped. Steps 0-6 must pass; the keyboard-back line never changes the
 # exit status.
 #
 # Only ONE headless KWin can exist at a time. SHELL_HOST_DEV may name a private copy of
-# shell-host's scripts/dev (with tools/ beside its scripts/): kwin-virtual.sh keeps one .kwin-env
+# layer-shell-host's scripts/dev (with tools/ beside its scripts/): kwin-virtual.sh keeps one .kwin-env
 # per scripts/dev, so a copy runs beside another agent's headless KWin.
 #
 # Exit 0 only when every step passed, 1 on a failure.
@@ -183,7 +183,7 @@ step_ipc_latency() {
 }
 
 # 5. A maximised foot window's height is output_h - bar_h (design/13 §13.3.1, design/29: Reserve(24)).
-#    shell-host's `probe_toplevel` stands in for foot: it asks to be maximised and prints each
+#    layer-shell-host's `probe_toplevel` stands in for foot: it asks to be maximised and prints each
 #    configure as JSON.
 step_exclusive_zone() {
   local out_h height dock_reserve=0
@@ -533,7 +533,7 @@ PY
 step_demo_kwin() { run_bar_demo kwin "$SHOTS/bar.png"; }
 step_demo_nested() { run_bar_demo casement "$SHOTS/bar-casement-menu.png"; }
 
-# The demo and shell-host's probe, built (a no-op when up to date). Under dev/accept.sh
+# The demo and layer-shell-host's probe, built (a no-op when up to date). Under dev/accept.sh
 # (SILL_PREBUILT) they were built outside the jail: only checked here.
 build_demo() {
   build || return 1
@@ -931,7 +931,7 @@ sink_takes_j() {
   [ "$(sink_keys)" -gt "$before" ] && echo yes || echo no
 }
 
-# Keyboard back. Recorded, not asserted (shell-host's side): the sink clicked back into
+# Keyboard back. Recorded, not asserted (layer-shell-host's side): the sink clicked back into
 # focus, a bar menu opened by a real click and closed by real Escape, then a real "j": does the
 # app have the keyboard back? Then the same around the notification center. OPEN while the
 # menu leaves no window with the keyboard.

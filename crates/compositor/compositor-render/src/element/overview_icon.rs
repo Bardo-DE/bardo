@@ -1,4 +1,4 @@
-//! The app's icon under a window in Mission Control: a raster made elsewhere (`casement-icons`
+//! The app's icon under a window in Mission Control: a raster made elsewhere (`compositor-icons`
 //! finds and decodes it), laid centred under the window, overlapping its bottom edge. It arrives
 //! with the window's slot: from nothing, as small and as faint as the window is far from it, to
 //! the layout's rectangle at rest, and leaves the same way.

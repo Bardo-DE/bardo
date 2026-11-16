@@ -7,14 +7,14 @@
 //! running. A host that cannot be reached answers every call as the failure it is, so a helper
 //! says so and the others go on.
 
+use action_dbus::{AgentHostProxy, BusConnection};
+use action_vocab::Workspace;
 use companion_model::helper::{
     AgentApps, AgentOutcome, AgentPending, AppsAsk, AppsReply, BackOutcome, BroughtOutcome,
     CheckOutcome, HandFault, HelperCard, Job, JobFault, SignInOutcome, SignInWay, SignOutOutcome,
     ToTerminalOutcome,
 };
 use companion_model::{SeenCommand, WatchedAgent};
-use action_dbus::{AgentHostProxy, BusConnection};
-use action_vocab::Workspace;
 use provenance::{HelperId, SessionId};
 
 /// Why the host of the agent apps gave no reply.

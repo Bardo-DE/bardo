@@ -3,10 +3,10 @@
 
 use crate::common;
 
-use common::{call, dav, hrefs, nextcloud};
 use account_fake_servers::FakeDav;
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::Request;
+use common::{call, dav, hrefs, nextcloud};
 
 #[tokio::test]
 async fn webdav_propfind_quota_and_sync_collection_agree() {

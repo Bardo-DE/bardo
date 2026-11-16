@@ -6,17 +6,15 @@
 //! runs. Our desktop's own source (keycap) is plugged in by the desktop's launcher, not found here.
 //! The environment is read through a lookup the caller passes, so a test supplies its own.
 
-use keymap::{
-    ChangeCallback, Desktop, HostOs, Keymap, KeymapSource, Platform, SourceError, Watch,
-};
+use keymap::{ChangeCallback, Desktop, HostOs, Keymap, KeymapSource, Platform, SourceError, Watch};
 use keymap_gnome::{GnomeSource, parse_dconf_dump};
 use keymap_kde::KdeSource;
-use ui_components::keys::KeySource;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::{Duration, SystemTime};
+use ui_components::keys::KeySource;
 
 /// Where, under the config directory, a GNOME session's saved `dconf dump /` is looked for when
 /// there is no `dconf` to run.

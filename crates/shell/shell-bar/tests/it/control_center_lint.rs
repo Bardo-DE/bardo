@@ -5,8 +5,8 @@
 use crate::cc_support;
 
 use cc_support::{fake, render};
-use ui_lint::{LintConfig, Profile, assert_clean, markup};
 use shell_settings::ShellFile;
+use ui_lint::{LintConfig, Profile, assert_clean, markup};
 
 const CONTROL_CENTER_CSS: &str = include_str!("../../src/control_center/style.css");
 

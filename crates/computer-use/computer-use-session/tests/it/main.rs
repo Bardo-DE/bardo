@@ -1,4 +1,4 @@
-//! The integration tests of `cua-session`, one binary (one link) for all of them.
+//! The integration tests of `computer-use-session`, one binary (one link) for all of them.
 
 mod cassette;
 mod context;

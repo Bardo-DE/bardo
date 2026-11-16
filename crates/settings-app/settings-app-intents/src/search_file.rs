@@ -9,8 +9,8 @@
 
 use crate::answer::entity;
 use crate::application::APP_NAME;
-use settings_app_model::{Catalogue, KeyEntry, PageModel};
 use account_core::AppName;
+use settings_app_model::{Catalogue, KeyEntry, PageModel};
 
 /// One `[[entries]]` table: the words the launcher shows and matches.
 struct Entry<'a> {

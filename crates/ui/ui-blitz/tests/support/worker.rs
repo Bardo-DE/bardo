@@ -7,8 +7,8 @@
 //! passing run comes near.
 #![allow(dead_code, reason = "each includer uses its own part of this module")]
 
-use ui_harness::Harness;
 use std::time::{Duration, Instant};
+use ui_harness::Harness;
 
 /// How long a test waits on a worker before it calls the worker hung. A passing run returns the
 /// moment the worker has answered and never waits on this.

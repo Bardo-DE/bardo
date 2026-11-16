@@ -206,7 +206,7 @@ impl<B: Backend> Open<B> {
 }
 
 /// The change an app's verb implies when no filesystem observation came with it (the same table
-/// as `almanac-watch::change_for`).
+/// as `memory-watch::change_for`).
 fn change_for(verb: Verb) -> FileChange {
     match verb {
         Verb::Created | Verb::Downloaded | Verb::Imported | Verb::Copied | Verb::Exported => {

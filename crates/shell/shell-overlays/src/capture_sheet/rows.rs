@@ -1,8 +1,8 @@
 //! What the card shows, as data: the rows of a tab with what is picked marked, the list keys and
 //! the words.
 
-use ui_components::prelude::*;
 use shell_model::capture_pick::{Picks, Plan, Plurality, Pointer, Remembered, Source, Tab};
+use ui_components::prelude::*;
 
 /// One row, as data.
 pub(super) struct RowData {

@@ -11,12 +11,10 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::time::Duration;
 
-use memory_core::MemoryItem;
 use action_core::UndoScope;
 use action_dbus::{COMPANION_BUS, CompanionProxy, INTENTS_BUS, answer_path};
 use action_vocab::{CardActionId, Handle};
-use ui_core::time::stamp::Stamp;
-use ui_core::vocab::MemoryVerb;
+use memory_core::MemoryItem;
 use provenance::{SessionId, TaskId, UnixSeconds};
 use shell_launcher::{Generation, RunControl};
 use shell_model::companion::{
@@ -28,6 +26,8 @@ use shell_model::launch::{LaunchCommand, SettingsOpen, assistant_model};
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinHandle;
 use tokio::time::Instant;
+use ui_core::time::stamp::Stamp;
+use ui_core::vocab::MemoryVerb;
 use zbus::Connection;
 use zbus::zvariant::OwnedObjectPath;
 

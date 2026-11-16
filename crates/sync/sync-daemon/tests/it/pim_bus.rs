@@ -6,9 +6,6 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use common::caller as caller_of;
-use common::hosted::{Link, Service, host, keep};
 use account_callers::{Caller, CallerRole};
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
@@ -27,6 +24,9 @@ use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use common::bus::PrivateBus;
+use common::caller as caller_of;
+use common::hosted::{Link, Service, host, keep};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -311,7 +311,9 @@ async fn rig(with_grants: bool) -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(account_ids::clock::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(1_700_000_000_000)),
+        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
+            1_700_000_000_000,
+        )),
     };
     let accountd_up = Arc::new(AtomicBool::new(true));
     let asked = Arc::new(AtomicUsize::new(0));

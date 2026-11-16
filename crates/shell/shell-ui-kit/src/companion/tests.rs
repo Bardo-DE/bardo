@@ -1,26 +1,28 @@
-use companion_wire::{
-    AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, FormWire, NeedsYou, PlanStepWire,
-    PlanWire, RefusalWire, StepWireState,
-};
+use account_core::DataClass;
 use action_core::{BudgetKind, CallRefusal, ConfirmId, ContextKeep, Keep, Reveal, TimeRange};
 use action_manifest::{ParamDecl, ParamNeed};
-use permission_core::DenyCode;
 use action_vocab::{
     ActionRef, Args, CardActionId, EntityRef, Handle, LabelText, ParamName, ParamType, StepId,
     UndoId, Value,
 };
+use companion_wire::{
+    AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, FormWire, NeedsYou, PlanStepWire,
+    PlanWire, RefusalWire, StepWireState,
+};
+use jiff::tz::TimeZone;
+use permission_core::DenyCode;
+use provenance::{AppName, EntityId, EntityKey, EntityKind, Label, Labelled, TaskId, UnixSeconds};
+use shell_model::companion::RunState;
 use ui_components::components::companion::answer::footer::ServedPlaceKind;
 use ui_components::components::companion::answer::model::AnswerView;
 use ui_components::components::companion::answer::refused::RefusedView;
 use ui_components::components::companion::form::model::{FormInput, FormValue};
-use ui_components::components::companion::plan::model::{PlanFinish, PlanPhase, PlanStepState, StopWhy};
+use ui_components::components::companion::plan::model::{
+    PlanFinish, PlanPhase, PlanStepState, StopWhy,
+};
 use ui_components::components::content::text_runs::TextLine;
 use ui_core::vocab::EffectMark;
 use ui_core::word::Word;
-use jiff::tz::TimeZone;
-use account_core::DataClass;
-use provenance::{AppName, EntityId, EntityKey, EntityKind, Label, Labelled, TaskId, UnixSeconds};
-use shell_model::companion::RunState;
 
 use super::*;
 
@@ -99,7 +101,8 @@ fn step(id: u32, state: StepWireState, effect: provenance::Effect) -> PlanStepWi
         id: StepId(id),
         action: ActionRef {
             app: app("org.quire.Mail"),
-            name: provenance::ActionName::parse("mail.message.forward").unwrap_or_else(|e| panic!("{e}")),
+            name: provenance::ActionName::parse("mail.message.forward")
+                .unwrap_or_else(|e| panic!("{e}")),
         },
         label: label("Forward"),
         effect,
@@ -189,7 +192,11 @@ fn answer_view_variants_total() {
         (
             "plan",
             AnswerBody::Plan(PlanWire {
-                steps: vec![step(1, StepWireState::Pending, provenance::Effect::Outbound)],
+                steps: vec![step(
+                    1,
+                    StepWireState::Pending,
+                    provenance::Effect::Outbound,
+                )],
             }),
             "Plan",
         ),
@@ -471,7 +478,8 @@ fn a_form_field_carries_its_need_its_input_and_its_value() {
     let form = FormWire {
         action: ActionRef {
             app: app("org.quire.Mail"),
-            name: provenance::ActionName::parse("mail.draft.create").unwrap_or_else(|e| panic!("{e}")),
+            name: provenance::ActionName::parse("mail.draft.create")
+                .unwrap_or_else(|e| panic!("{e}")),
         },
         params,
         values,

@@ -2,8 +2,8 @@
 
 use super::lookup::{Presence, a_file, apps_dir};
 use crate::units::Px;
-use ui_style::icon::retint::IconStyle;
 use std::path::{Path, PathBuf};
+use ui_style::icon::retint::IconStyle;
 
 /// The sizes every app ships in every style, each drawn directly (design/08 2.11): the
 /// freedesktop sizes, their `@2` up to 256@2, and the 1.5x sizes 36, 48, 72, 96. `tools/icons`
@@ -79,8 +79,8 @@ mod tests {
     use super::{APP_ICON_PX, AppIconName, find_app_icon, sizes_to_try};
     use crate::icon_assets::lookup::{Presence, a_file};
     use crate::units::Px;
-    use ui_style::icon::retint::IconStyle;
     use std::path::{Path, PathBuf};
+    use ui_style::icon::retint::IconStyle;
 
     #[test]
     fn the_exact_size_then_the_nearest_larger_then_the_largest_smaller() {
@@ -160,10 +160,7 @@ mod tests {
     /// The repository's own set answers every app, size and style it ships.
     #[test]
     fn the_shipped_set_has_every_file() {
-        let dir = Path::new(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/../assets/icons/apps"
-        ));
+        let dir = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../assets/icons/apps"));
         for app in ["mail", "files", "terminal", "notes", "photos"] {
             let name = AppIconName::parse(app).expect("a name");
             for style in [IconStyle::Colour, IconStyle::Muted, IconStyle::Monochrome] {

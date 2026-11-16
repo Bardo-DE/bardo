@@ -16,8 +16,10 @@ use std::future::poll_fn;
 use std::pin::pin;
 use std::time::Duration;
 
-use caller_identity_dbus::peephole::RealProc;
-use caller_identity_dbus::caller_identity_core::{Proof, Refused, Requirement, RoleName, Table, roles};
+use caller_identity_dbus::caller_identity_core::{
+    Proof, Refused, Requirement, RoleName, Table, roles,
+};
+use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerCheck, ManagerLink, Offload, access_denied};
 use zbus::export::futures_core::Stream;
 use zbus::message::Header;

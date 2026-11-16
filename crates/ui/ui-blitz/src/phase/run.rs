@@ -9,13 +9,13 @@ use crate::probe::Probe;
 use blitz_embed::after_resolve::{self, AfterResolve};
 use dioxus::core::{Runtime, RuntimeGuard};
 use dioxus::prelude::{MountedData, Signal};
+use std::cell::RefCell;
+use std::rc::Rc;
 use ui_components::base::geometry::scroll::Scroll;
 use ui_components::host::phase::{Observe, Observed, PhaseWrite, Watch};
 use ui_components::host::position::{TextPosition, TextRange};
 use ui_components::prelude::Rect;
 use ui_components::style::task::try_set;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 /// What one run of the phase did.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

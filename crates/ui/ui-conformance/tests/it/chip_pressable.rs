@@ -2,11 +2,11 @@
 //! and Space, and its remove button (on any variant, not Person alone) removes without pressing.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::chip::{Chip, ChipVariant};
 use ui_components::components::controls::chip_dot::ChipDot;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

@@ -2,12 +2,12 @@
 //! selection with it.
 
 use dioxus::prelude::*;
+use files_model::{AppPick, Input};
 use ui_components::base::vocab::RowState;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::prelude::{
     Button, Column, ColumnAlign, Form, Icon, IconSize, List, ListItem, Row, RowLeading, Sheet,
 };
-use files_model::{AppPick, Input};
 
 use crate::menu::{AppLine, app_names};
 use crate::state::Browse;

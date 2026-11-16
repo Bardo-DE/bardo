@@ -24,20 +24,20 @@ cd "$(dirname "$0")/.."
 
 # LAYERS: crate -> tier. Every workspace member has exactly one row.
 LAYERS=(
-  "cua-desktop: P"
-  "cua-types: P"
+  "computer-use-desktop: P"
+  "computer-use-types: P"
   "maskcap: P"
-  "seat-input: P"
-  "a11y-tree: P"
-  "a11y-atspi: C"
-  "seat-ei: C"
-  "maskcap-wayland: C"
-  "cua-bus: P"
-  "cua-run: P"
-  "cua-host: C"
-  "cua-dbus: C"
-  "cua-fake: C"
-  "cua-system: C"
+  "computer-use-seat-input: P"
+  "computer-use-a11y-tree: P"
+  "computer-use-a11y-atspi: C"
+  "computer-use-seat-ei: C"
+  "computer-use-capture-wayland: C"
+  "computer-use-bus: P"
+  "computer-use-run: P"
+  "computer-use-host: C"
+  "computer-use-dbus: C"
+  "computer-use-fake: C"
+  "computer-use-system: C"
   "cua-eval: A"
   "cua-eval-cloud: A"
   "cuad: A"
@@ -46,7 +46,7 @@ LAYERS=(
 # KNOWN: a violation that exists today, with the plan lane (~/rs-wt/agent-layers/PLAN.md) that
 # removes it. "crate: ban: lane". A row whose violation is gone fails, so the list only shrinks.
 # cua-eval-cloud reads the environment inside a library module instead of main.rs.
-# `Role::SheetHost` is a docket-core wire name; cua names it only in test code, which the bans
+# `Role::SheetHost` is a action-core wire name; cua names it only in test code, which the bans
 # skip, so it needs no row.
 KNOWN=(
   "cua-eval-cloud: env-var: C5.3"
@@ -73,52 +73,52 @@ BANS=(
 
 # RULES: what a crate reaches through ANY path (transitive, default features).
 #
-# The pure crates (cua-desktop, maskcap, seat-input, a11y-tree, cua-bus, cua-run) never reach a
+# The pure crates (computer-use-desktop, maskcap, computer-use-seat-input, computer-use-a11y-tree, computer-use-bus, computer-use-run) never reach a
 # bus, a runtime, an HTTP client, a wayland connection, an EIS client, an accessibility stack,
 # a database, a file watcher, an embedding runtime, the MCP SDK or the policy engine: their
-# backends are the C crates maskcap-wayland, seat-ei and a11y-atspi. `toml` is parsed at the
+# backends are the C crates computer-use-capture-wayland, computer-use-seat-ei and computer-use-a11y-atspi. `toml` is parsed at the
 # edge (cuad), never below it.
 EFFECTS="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
 RULES=(
-  "cua-desktop: $EFFECTS"
+  "computer-use-desktop: $EFFECTS"
   "maskcap: $EFFECTS"
-  "seat-input: $EFFECTS"
-  "a11y-tree: $EFFECTS"
+  "computer-use-seat-input: $EFFECTS"
+  "computer-use-a11y-tree: $EFFECTS"
   # The backends: each reaches its own stack and nothing else. The AT-SPI backend is the one
   # with a bus; the wayland and EIS ones have none.
-  "a11y-atspi: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
-  "seat-ei: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
-  "maskcap-wayland: zbus zvariant reqwest hyper hyper-util rustls pipewire reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
+  "computer-use-a11y-atspi: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
+  "computer-use-seat-ei: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
+  "computer-use-capture-wayland: zbus zvariant reqwest hyper hyper-util rustls pipewire reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
   # The bus bodies: serde, plus the vocabulary crates named in ONLY below. The capability crates
   # (accessibility, input, capture) are not reachable, so a consumer that reads the bodies
-  # (sill, the D-Bus codec) links none of them; the leaf types they share live in cua-types.
-  "cua-types: $EFFECTS a11y-tree seat-input maskcap"
-  "cua-bus: $EFFECTS a11y-tree seat-input maskcap"
-  "cua-run: $EFFECTS"
+  # (sill, the D-Bus codec) links none of them; the leaf types they share live in computer-use-types.
+  "computer-use-types: $EFFECTS computer-use-a11y-tree computer-use-seat-input maskcap"
+  "computer-use-bus: $EFFECTS computer-use-a11y-tree computer-use-seat-input maskcap"
+  "computer-use-run: $EFFECTS"
   # The run executor as a library: a runtime and the docket/almanac client traits, but no bus
   # (their `dbus` features are the daemon's), no backend and no file watcher.
-  "cua-host: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
-  # zbus (with its tokio feature) lives in cua-dbus; no wayland, no EIS, no accessibility stack.
-  "cua-dbus: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  "computer-use-host: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  # zbus (with its tokio feature) lives in computer-use-dbus; no wayland, no EIS, no accessibility stack.
+  "computer-use-dbus: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The fakes reach reis (the in-process EIS server) and, through model-replay, an HTTP stack;
   # never a bus, a wayland connection, the accessibility stack or a database.
-  "cua-fake: zbus zvariant wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  "computer-use-fake: zbus zvariant wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The eval is a tool, not a daemon: it reaches the fakes (reis), a runtime and, for the live path,
   # an HTTP client to an engine on this machine; never a bus, a wayland connection, the
   # accessibility stack, a database or the policy engine.
   "cua-eval: zbus zvariant wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
-  # The cloud eval is the eval plus the bus to inferd (zbus through inferd-client): a stoker Provider whose
+  # The cloud eval is the eval plus the bus to inferd (zbus through inference-client): a stoker Provider whose
   # turns are inferd chat turns, so a hosted model's key stays in accountd. It reaches no wayland
   # connection, accessibility stack, database or policy engine.
   "cua-eval-cloud: wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The system adapters reach what the daemon does, minus the daemon's own tree: the bus, a
   # runtime, wayland, EIS and AT-SPI; never HTTP, an embedding runtime, the MCP SDK or the policy
   # engine.
-  "cua-system: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
+  "computer-use-system: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
   # The daemon reaches the bus, a runtime, wayland, EIS and AT-SPI. It never reaches HTTP,
   # an embedding runtime, the MCP SDK or the policy engine. One decision point lives in the router
-  # and cuad asks it through `Intents1.Gate` (SPEC C10): cuad has no edge to `policy-point`
-  # (LAYERS above), and docket-client's `InProcess` (which links docket-router, hence cedar) is
+  # and cuad asks it through `Intents1.Gate` (SPEC C10): cuad has no edge to `permission-policy`
+  # (LAYERS above), and action-client's `InProcess` (which links action-router, hence cedar) is
   # behind its `in_process` feature, which only cuad's tests turn on (a dev-dependency).
   "cuad: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
 )
@@ -224,12 +224,12 @@ done
 
 # ONLY: crates whose DIRECT normal and build path dependencies are exactly this list. A dependency
 # not listed is a leak; so is one the crate no longer has, so the table stays exact.
-# cua-bus carries serde bodies, but their fields use the vocabulary of the crates it names:
-# almanac-core (EventRef in the log record), docket-core (Value, EffectBasis and the message
-# drafts of a report), porter-core and porter-infer (counts, money, step and served-by ids) and
+# computer-use-bus carries serde bodies, but their fields use the vocabulary of the crates it names:
+# memory-core (EventRef in the log record), action-core (Value, EffectBasis and the message
+# drafts of a report), account-core and inference-core (counts, money, step and served-by ids) and
 # prov (labels). None of them is a capability crate.
 ONLY=(
-  "cua-bus: almanac-core cua-action cua-desktop cua-types docket-core docket-gate-wire docket-vocab model-provider porter-core porter-ids porter-infer prov"
+  "computer-use-bus: memory-core computer-use-action computer-use-desktop computer-use-types action-core action-gate-wire action-vocab model-provider account-core account-ids inference-core prov"
 )
 for entry in "${ONLY[@]}"; do
   crate="${entry%%:*}"

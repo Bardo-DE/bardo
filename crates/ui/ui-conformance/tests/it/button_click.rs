@@ -6,13 +6,13 @@
 //! context and blitz-dom's `Node::hit` returns the parent, not the Button, so the click goes
 //! to the parent. A block after the Button (the anchor test's caption) or a flex parent puts
 //! the Button in a box of its own and the click lands. The same hit test serves a real window,
-//! so this is blitz-dom's (at the pinned rev), not the harness's; ds-blitz neither hit-tests
+//! so this is blitz-dom's (at the pinned rev), not the harness's; ui-blitz neither hit-tests
 //! nor routes clicks itself.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

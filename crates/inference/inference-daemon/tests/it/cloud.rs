@@ -6,27 +6,27 @@
 
 use crate::hosting;
 
+use account_capability::LlmFeature;
+use account_capability::Tier;
+use account_core::consent::Usage;
+use account_core::{AppId, AppName, DataClass, Isolation};
+use account_ids::{Tokens, TurnCount};
+use account_match::LlmNeed;
+use account_match::Need;
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::bus::within;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::InferSession;
-use model_provider::Money;
-use account_capability::LlmFeature;
-use account_capability::Tier;
-use account_core::consent::Usage;
-use account_core::{AppId, AppName, DataClass, Isolation};
-use account_ids::{Tokens, TurnCount};
 use inference_core::{
     ChargeTotal, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply,
     InferRequest, MessagePart, ModelError, OpenOptions, Policy, Role as ChatRole, StopReason,
 };
-use account_match::LlmNeed;
-use account_match::Need;
+use inference_dbus::inference::InferenceProxy;
+use model_provider::Money;
 use rust_decimal::Decimal;
 use std::path::Path;
-use inference_dbus::inference::InferenceProxy;
 
 /// OpenRouter's key, and OpenAI's: distinctive, so a scan for either cannot match by accident.
 const KEY_OR: &str = "sk-or-v1-S3CRET-CLOUD-KEY-0123456789";

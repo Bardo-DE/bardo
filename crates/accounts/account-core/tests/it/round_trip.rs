@@ -1,4 +1,4 @@
-//! Every stored or wire type of porter-core survives its serde form, and the forms that other
+//! Every stored or wire type of account-core survives its serde form, and the forms that other
 //! programs read keep their slugs.
 
 use account_capability::*;

@@ -16,17 +16,19 @@
 use crate::entry::{Entry, Kind, entries};
 use crate::replica::WebDavReplica;
 use crate::requests;
-use account_dav_proto::{Multistatus, SyncEnd, parse_multistatus, parse_sync_collection, token_expired};
+use account_dav_proto::{
+    Multistatus, SyncEnd, parse_multistatus, parse_sync_collection, token_expired,
+};
+use account_http::Http;
+use account_http::http::Response;
+use account_ids::Bytes;
+use std::collections::{BTreeMap, BTreeSet};
 use sync_core::DELETED;
 use sync_core::status::{read_error, unreached};
 use sync_core::{
     Anchor, Change, ChangePage, Cursor, More, RemoteId, RemoteVersion, ReplicaError, RetryAfter,
     Tombstone,
 };
-use account_http::Http;
-use account_http::http::Response;
-use account_ids::Bytes;
-use std::collections::{BTreeMap, BTreeSet};
 
 /// Which feed this server gave.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,6 +1,6 @@
 [package]
 name = "memory-daemon"
-description = "almanac's memory daemon: serves org.quire.Memory1 over almanac-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
+description = "almanac's memory daemon: serves org.quire.Memory1 over memory-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

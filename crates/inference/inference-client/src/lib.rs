@@ -1,10 +1,10 @@
 //! The app's client of inferd (design/31 §5.1): sessions, warm-ups, the places the assistant could
 //! run, the person's other computers that lend or ask for models, and the models inferd runs.
 //!
-//! **This crate sits in porter until steward takes it.** It is what `porter-client` held of
-//! inference, moved whole (`git mv`) when `porter-client` became the accounts client; the steward
+//! **This crate sits in porter until steward takes it.** It is what `account-client` held of
+//! inference, moved whole (`git mv`) when `account-client` became the accounts client; the steward
 //! lane lifts it out as it stands. It reaches accountd for nothing: the accounts, the AI keys and
-//! the agent launcher are `porter-client`'s.
+//! the agent launcher are `account-client`'s.
 //!
 //! An app asks for a capability, never a brand, and opens a session pinned to one model:
 //! `Inference::over(DbusTransport::session().await?)` and then `session`, `prepare`, `infer`.
@@ -38,11 +38,11 @@ pub use error::{ClientError, ComputerReason, TransportError};
 #[cfg(feature = "dbus")]
 pub use guests::{GuestChange, GuestChanges};
 pub use inference::Inference;
-/// The client's side of one `Open` fd, from porter-infer.
+/// The client's side of one `Open` fd, from inference-core.
 pub use inference_core::{
     ComputerName, InferSession, OpenOptions, PlaceId, SessionError, Traceparent,
 };
-/// What an [`engines::EngineHost`] is built from, from porter-infer.
+/// What an [`engines::EngineHost`] is built from, from inference-core.
 #[cfg(feature = "engines")]
 pub use inference_core::{InferRefusal, Policy, Slot};
 #[cfg(all(feature = "lending", feature = "dbus"))]

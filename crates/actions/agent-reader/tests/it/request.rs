@@ -2,10 +2,10 @@
 //! schema as the reply shape, and the strictest class of what it reads. The planner's words are
 //! nowhere in it: an ask is handles, a closed task and a schema.
 
-use action_core::*;
-use agent_reader::{class_of, reader_request, reply_shape, task_instruction};
-use action_vocab::{CharCount, ChoiceId, Handle, ParamName};
 use account_core::DataClass;
+use action_core::*;
+use action_vocab::{CharCount, ChoiceId, Handle, ParamName};
+use agent_reader::{class_of, reader_request, reply_shape, task_instruction};
 use inference_core::{MessagePart, ReplyShape, Role, ToolChoice};
 use proptest::prelude::*;
 use provenance::{Confidentiality, Integrity, Label, Labelled, Source};

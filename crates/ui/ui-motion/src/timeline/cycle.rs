@@ -4,8 +4,8 @@
 
 use super::Timeline;
 use super::ease::Ease;
-use ui_style::tokens::easing::Easing;
 use std::time::Duration;
+use ui_style::tokens::easing::Easing;
 
 /// How many times a cycle runs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -64,8 +64,8 @@ impl Timeline for Cycle {
 #[cfg(test)]
 mod tests {
     use super::{Cycle, Repeat, Timeline};
-    use ui_style::tokens::easing::Easing;
     use std::time::Duration;
+    use ui_style::tokens::easing::Easing;
 
     const MS: fn(u64) -> Duration = Duration::from_millis;
 

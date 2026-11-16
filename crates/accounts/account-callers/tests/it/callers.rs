@@ -6,11 +6,11 @@
 #[path = "callers/bus.rs"]
 mod bus;
 
-use bus::PrivateBus;
 use account_callers::{Caller, CallerRole, CallerTable, Callers, ProcCallers};
 use account_core::Isolation;
-use std::path::Path;
 use base_testkit::Scratch;
+use bus::PrivateBus;
+use std::path::Path;
 
 const SLICE: &str = "/user.slice/user-1000.slice/user@1000.service/app.slice";
 

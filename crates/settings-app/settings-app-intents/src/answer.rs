@@ -1,10 +1,12 @@
 //! What the provider says back: refusals in words, outcomes, labels and entity references.
 
-use settings_app_model::KeyEntry;
+use account_core::AppName;
 use action_core::{AppRefusal, FailText, Follow, Outcome, Preview, Undoable};
 use action_vocab::{EntityRef, LabelText};
-use account_core::AppName;
-use provenance::{Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled, Source};
+use provenance::{
+    Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled, Source,
+};
+use settings_app_model::KeyEntry;
 use std::collections::BTreeSet;
 
 /// Words an app wrote itself, trusted: ids, labels and counts.

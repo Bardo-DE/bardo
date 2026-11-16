@@ -7,9 +7,9 @@
 //! [`Stamp`]s, so its context is the [`FrameClock`] that turns one into the other.
 
 use crate::widget::timeline::{RefreshAsk, Timeline, Wake};
+use std::time::Instant;
 use ui_components::base::machine::{Elapsed, Machine};
 use ui_components::base::time::stamp::{FrameClock, Ms, Stamp};
-use std::time::Instant;
 
 /// What the follower wakes for next, and when.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -136,9 +136,9 @@ fn reached_by(clock: &FrameClock, at: Instant) -> Stamp {
 mod tests {
     use super::{Due, FollowIn, Follower};
     use crate::widget::timeline::{Dated, EntryDate, Refresh, RefreshAsk, Timeline};
+    use std::time::{Duration, Instant};
     use ui_components::base::machine::Machine;
     use ui_components::base::time::stamp::{FrameClock, Stamp};
-    use std::time::{Duration, Instant};
 
     /// Entries 'a' now, 'b' at 60 s, 'c' at 120 s; the refresh policy as given.
     fn timeline(origin: Instant, refresh: Refresh) -> Timeline<char> {

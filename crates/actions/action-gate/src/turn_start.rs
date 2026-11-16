@@ -12,11 +12,11 @@
 //! The same pass covers the main planner's own `memory.recall` and `memory.facts` on such a turn:
 //! reading the person's own memory for their own request does not ask either.
 
+use account_core::GrantId;
+use account_core::consent::{GrantScope, Verdict};
 use action_context::who::Who;
 use action_core::UserTurn;
 use action_vocab::{CallRequest, CallerRole, Origin, RECALL_ACTION, RECALL_APP};
-use account_core::GrantId;
-use account_core::consent::{GrantScope, Verdict};
 use provenance::{Actor, AgentRole};
 
 /// What the router makes of a call's claim to be a turn start.

@@ -2,13 +2,13 @@
 //! `LocalModel` (its catalog entry's default sampling and output limit, its engine's flavor), and
 //! the embedding limits of its entry. The mapping is `inference_bridge`'s.
 
-use model_provider as sp;
 use inference_bridge::{
     BridgeError, DefaultSampling, Frames, JsonReply, Target, chat_turn_for, embed_turns_for,
     task_turn_for,
 };
 use inference_core as pi;
 use inference_router::local::LocalModel;
+use model_provider as sp;
 
 /// The turn target of a model on this computer.
 pub fn local_target(model: &LocalModel) -> Target {

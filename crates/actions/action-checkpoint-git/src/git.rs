@@ -5,10 +5,10 @@ use crate::names::{PLAN, index_file, ref_name};
 use crate::parse::{object_id, staged_listing, tree_listing};
 use crate::problem::{GitCause, GitProblem, Report};
 use crate::run::{GitCommand, GitFault, GitOut, Limits, run_git};
-use sandbox::AbsPath;
 use action_checkpoint::{StoreFault, TreeListing, WorkRoot};
 use action_core::CheckpointId;
 use provenance::SessionId;
+use sandbox::AbsPath;
 use std::path::{Path, PathBuf};
 
 /// Options before every command, none of them from the folder: no background refresh, no pager,

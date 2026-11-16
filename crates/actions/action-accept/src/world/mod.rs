@@ -4,7 +4,7 @@
 //! playing a cassette. Everything is scratch: HOME, every XDG directory and the bus.
 //!
 //! Teardown is certain: every daemon is a `Reaped` child (killed by PID and waited for on drop,
-//! with a watchdog if the test process itself dies) and the bus is `docket-testbus`'s. Waits are
+//! with a watchdog if the test process itself dies) and the bus is `action-testbus`'s. Waits are
 //! on bus events (a name appearing); the long bounds exist only to turn a hang into a failure.
 
 //!

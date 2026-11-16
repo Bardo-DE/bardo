@@ -9,10 +9,10 @@ use crate::app::App;
 use crate::axes::{Axes, Showcase, start_with};
 use crate::page::Page;
 use crate::registry;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::inset::{Findings, Policy, insets};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 /// The width every page is laid out at, as the snapshots are.
 const WIDTH: u32 = 1280;

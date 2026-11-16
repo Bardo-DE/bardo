@@ -5,8 +5,8 @@
 
 use crate::assembly::kit::kits;
 use crate::assembly::sheets::SHEETS;
-use ui_style::css::document::placed;
 use std::sync::LazyLock;
+use ui_style::css::document::placed;
 
 /// Every rule the design system draws with, in cascade order. Built once, on first use.
 pub fn stylesheet() -> &'static str {

@@ -1,10 +1,10 @@
 use super::model::{Contrast, OrbColour, OrbColours, OrbMask, OrbMetrics, Turn};
 use super::step::turn_after;
 use super::view::style_attr;
+use std::time::Duration;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::Percent;
 use ui_style::tokens::hex::Hex;
-use std::time::Duration;
 
 /// One size and every value it must give, worked by hand from the reference's formulas.
 struct MetricsCase {

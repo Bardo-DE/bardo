@@ -5,11 +5,11 @@
 //!   conflicts), every change one transaction.
 //! - `keep`: what syncd keeps of the accounts accountd has: the sync switches (each is a grant
 //!   accountd asks the person for the first time), "Show in Files" and removal, all through
-//!   porter-client. `settings`: the Settings module (`org.quire.SettingsModule1`) over them.
+//!   account-client. `settings`: the Settings module (`org.quire.SettingsModule1`) over them.
 //! - `daemon`: the daemon as one call, [`Config`] (typed; [`Config::from_env`] is the one place the
 //!   environment is read), [`Daemon::build`] and [`Daemon::run`]. The binary only parses its
 //!   arguments and calls these.
-// peephole's caller types (porter-dbus ProcCallers) take the daemon's futures past the default
+// peephole's caller types (account-dbus ProcCallers) take the daemon's futures past the default
 // depth of 128.
 #![recursion_limit = "256"]
 pub mod clock;

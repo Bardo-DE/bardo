@@ -2,8 +2,8 @@
 
 use super::config::{Attached, Place, Reach};
 use super::key::{KeyFile, KeyFileProblem};
-use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath};
 use inference_core::ComputerName;
+use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath};
 use std::path::PathBuf;
 
 /// An attached engine as a connection is made to it.

@@ -1,12 +1,12 @@
 //! Building signed-looking bundles and a sandbox to install them into.
 
 use semver::Version;
-use updater_core::{Authenticator, Sha256Hex, SignError};
-use updater_root::Layout;
 use std::path::{Path, PathBuf};
 use tempfile::TempDir;
+use updater_core::{Authenticator, Sha256Hex, SignError};
+use updater_root::Layout;
 
-/// Accepts any signature: the signature check itself is tested in slipway-core with a real pair.
+/// Accepts any signature: the signature check itself is tested in updater-core with a real pair.
 pub struct Accept;
 
 impl Authenticator for Accept {

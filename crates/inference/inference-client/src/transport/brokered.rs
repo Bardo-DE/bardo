@@ -7,8 +7,8 @@ use super::broker::SessionHost;
 use crate::error::TransportError;
 use account_capability::Tier;
 use account_core::{AppId, DataClass};
-use inference_core::{OpenOptions, Readiness};
 use account_match::Need;
+use inference_core::{OpenOptions, Readiness};
 
 /// A [`SessionHost`], answering for one app.
 #[derive(Debug)]

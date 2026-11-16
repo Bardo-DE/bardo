@@ -2,8 +2,8 @@
 //! [`SettingsSchema`] a settings struct implements, and [`kind_of`], which reads a closed enum
 //! field's variant words off its own [`Word`] vocabulary.
 
-use ui_core::word::Word;
 use serde::Serialize;
+use ui_core::word::Word;
 
 use super::column::{Column, ColumnKind};
 use super::key::{KeyKind, kind_from_variants};

@@ -7,12 +7,12 @@
 
 use super::shell::{QuireShellHandler, QuireShellPart};
 use crate::foreign_toplevel_list::identifier_of;
+use account_core::SpaceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::overview_drag::SpaceTarget;
 use compositor_core::{OutputKey, WindowId};
 use desktop_protocols::server::quire_shell_v1::quire_shell_v1;
 use desktop_protocols::vocab::{DragOutcome, WireCode};
-use account_core::SpaceId;
 use smithay::output::Output;
 use smithay::reexports::wayland_server::{DataInit, Resource};
 use smithay::wayland::image_capture_source::{ImageCaptureSource, ImageCaptureSourceData};

@@ -6,10 +6,10 @@ use crate::catalogue::Catalogue;
 use crate::extensions::EXTENSIONS_SLUG;
 use crate::page::PageSlug;
 use crate::page_kind::PageKind;
-use ui_settings::schema::PageTable;
-use ui_settings::target::{ExtensionId, SettingsTarget};
 use account_core::AccountId;
 use account_ids::object_segment;
+use ui_settings::schema::PageTable;
+use ui_settings::target::{ExtensionId, SettingsTarget};
 
 /// What the window does for a target.
 #[derive(Debug, Clone, PartialEq, Eq)]

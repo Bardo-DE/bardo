@@ -1,10 +1,10 @@
 //! Opening Settings at a place: a page, a key, or one Extension's row.
 
 use crate::error::PlatformError;
-use ui_core::settings::SettingsTarget;
 use std::fmt::Debug;
 use std::future::Future;
 use std::pin::Pin;
+use ui_core::settings::SettingsTarget;
 
 /// The request to open Settings, ending when it has been made.
 pub type Opening<'a> = Pin<Box<dyn Future<Output = Result<(), PlatformError>> + Send + 'a>>;

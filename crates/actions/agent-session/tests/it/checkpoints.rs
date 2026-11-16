@@ -4,8 +4,8 @@ use crate::support::*;
 use action_core::{
     CheckpointEvent, CheckpointId, CheckpointNote, CheckpointRow, SavedState, SkipReason,
 };
-use agent_session::*;
 use action_vocab::TurnId;
+use agent_session::*;
 use provenance::UnixSeconds;
 
 fn note(turn: u64, at: i64, event: CheckpointEvent) -> SessionEntry {

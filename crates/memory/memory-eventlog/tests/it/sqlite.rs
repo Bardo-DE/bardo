@@ -3,8 +3,8 @@
 
 use crate::support::*;
 use memory_core::*;
-use memory_seal::{DbKey, Purpose, SpaceKey, derive};
 use memory_eventlog::*;
+use memory_seal::{DbKey, Purpose, SpaceKey, derive};
 use std::path::PathBuf;
 
 fn key() -> DbKey {

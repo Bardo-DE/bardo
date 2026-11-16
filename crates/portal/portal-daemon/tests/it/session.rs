@@ -1,11 +1,11 @@
-use std::time::{Duration, Instant};
 use portal_daemon::screencast::restore::{MemoryStore, RestoreStore};
+use std::time::{Duration, Instant};
 
-use portal_daemon::peers::{SESSION_LIMITS, Tether, UNSTARTED_TTL};
-use portal_daemon::screencast::session::{Refusal, SessionBook, SessionKey};
 use portal_core::Keep;
 use portal_core::restore::Grant;
 use portal_core::{CastIn, CastOut, CastSource, PwNode, RestoreBook, RestoreToken};
+use portal_daemon::peers::{SESSION_LIMITS, Tether, UNSTARTED_TTL};
+use portal_daemon::screencast::session::{Refusal, SessionBook, SessionKey};
 
 fn key(n: u32) -> SessionKey {
     SessionKey(format!("/org/freedesktop/portal/desktop/session/x/{n}"))

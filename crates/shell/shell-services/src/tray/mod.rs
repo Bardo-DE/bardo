@@ -3,7 +3,7 @@
 //!
 //! [`TrayService`] and its backend do the effect (a `system_tray::client::Client` on the
 //! session bus); [`icon_art`] turns a resolved `TrayIcon` into the art the bar draws (PNG bytes
-//! or a theme file). Neither reaches `dioxus`, `ds` or `shell-host`
+//! or a theme file). Neither reaches `dioxus`, `ds` or `layer-shell-host`
 //! (`scripts/check-boundary.sh`): the bar reads this module only through `shell_model::tray` and
 //! [`icon_art`], via `use_service::<TrayService>`.
 

@@ -4,12 +4,12 @@
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::*;
 use shell_kit::emoji::disc::{DiscHue, EmojiDisc};
 use shell_kit::emoji::id::EmojiId;
 use shell_kit::prelude::*;
 use shell_kit::user_picture::size::PictureSize;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 struct SpecimenProps {

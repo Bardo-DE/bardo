@@ -1,6 +1,6 @@
 //! Following Tailscale: the state of the Tailscale account, and the computers `Tailnet1` lists.
 //!
-//! accountd asks Tailscale (`porter-tailscale`, over its unix socket) and never keeps a copy of
+//! accountd asks Tailscale (`account-tailscale`, over its unix socket) and never keeps a copy of
 //! the answer longer than a look: `Machines` reads Tailscale when it is called. What this module
 //! keeps up to date is the account's state and the `Changed` signal.
 //!

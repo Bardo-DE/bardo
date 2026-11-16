@@ -21,12 +21,12 @@ cd "$(dirname "$0")/.."
 
 # LAYERS: crate -> tier. Every workspace member and every excluded crate has exactly one row.
 LAYERS=(
-  "cua-action: P"
-  "vision-prep: P"
-  "cua-parse: P"
-  "cua-vendors: P"
-  "cua-session: P"
-  "genai-names: P"
+  "computer-use-action: P"
+  "model-vision-prep: P"
+  "computer-use-parse: P"
+  "computer-use-vendors: P"
+  "computer-use-session: P"
+  "model-genai-names: P"
   "model-provider: P"
   "model-extract: P"
   "model-catalog: P"
@@ -51,8 +51,8 @@ LAYERS=(
   # Excluded from the workspace (they need a runtime outside the pinned block).
   "speech-vad-silero: C"
   "speech-host-sherpa: A"
-  # The fuzz targets of cua-parse (nightly only, their own `[workspace]` table).
-  "cua-parse/fuzz: A"
+  # The fuzz targets of computer-use-parse (nightly only, their own `[workspace]` table).
+  "computer-use-parse/fuzz: A"
 )
 
 # KNOWN: a violation that exists today, with the plan lane (~/rs-wt/agent-layers/PLAN.md) that
@@ -77,17 +77,17 @@ BANS=(
   'reqwest|P|\breqwest\b'
   'zbus|P|\bzbus\b'
   'rustix|P|\brustix\b'
-  'ui-words|PC|\b(Label|Help|Sheet|SettingRow)\b|ds-settings'
+  'ui-words|PC|\b(Label|Help|Sheet|SettingRow)\b|ui-settings'
 )
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The P crates
 # never reach a runtime, an HTTP client, a bus, a compositor, a database or an inference runtime;
-# vision-prep reaches the image stack only through its `pixels` feature; the one C crate with an
+# model-vision-prep reaches the image stack only through its `pixels` feature; the one C crate with an
 # HTTP stack (model-http) may reach a runtime but nothing below. The codecs (model-wire,
 # model-openai-compat) and model-extract are pure over the Transport trait, so when
 # `HttpClient`'s transport is used it sits behind a feature that only a daemon turns on, and these rows
 # keep checking default features. Nothing here reaches porter: stoker is portable.
-PORTER="porter-core porter-infer porter-client porter-provider"
+PORTER="account-core inference-core account-client account-provider"
 EFFECTS="tokio hyper hyper-util rustls zbus zvariant reqwest ureq wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify cedar-policy rmcp"
 # Audio devices belong to the voice daemon (docket's voiced), never to the speech crates; and no
 # TTS stack with a GPL grapheme step is ever linked: Kokoro runs as its own process (voice.md 0.3).
@@ -98,19 +98,19 @@ IO_FORBIDDEN="zbus zvariant reqwest wayland-client wayland-backend reis atspi oo
 # reaches a bus, a compositor, a database or an inference runtime.
 IO_NO_BUS="zbus zvariant wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify cedar-policy rmcp"
 RULES=(
-  "cua-action: $EFFECTS $PORTER"
-  "vision-prep: $EFFECTS $PORTER image fast_image_resize"
+  "computer-use-action: $EFFECTS $PORTER"
+  "model-vision-prep: $EFFECTS $PORTER image fast_image_resize"
   "model-provider: $EFFECTS $PORTER"
-  "cua-parse: $EFFECTS $PORTER"
-  "cua-vendors: $EFFECTS $PORTER"
-  "cua-session: $EFFECTS $PORTER"
+  "computer-use-parse: $EFFECTS $PORTER"
+  "computer-use-vendors: $EFFECTS $PORTER"
+  "computer-use-session: $EFFECTS $PORTER"
   "model-replay: $EFFECTS $PORTER"
   "model-catalog: $EFFECTS $PORTER"
   "engine-supervisor: $EFFECTS $PORTER"
   "model-http: $IO_FORBIDDEN $PORTER"
   "model-wire: $EFFECTS $PORTER"
   "model-extract: $EFFECTS $PORTER"
-  "genai-names: $EFFECTS $PORTER"
+  "model-genai-names: $EFFECTS $PORTER"
   "model-openai-compat: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
   "speech-provider: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
   "speech-vad: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
@@ -193,7 +193,7 @@ excluded=$(sed -n '/^exclude = \[/,/^\]/s#^  "crates/\(.*\)",$#\1#p' Cargo.toml)
 # Every crate has a row in LAYERS, and every row names a crate, so a new crate cannot slip in
 # unchecked. The fuzz targets are nested, so they are named here by their path under `crates/`.
 layer_rows=$(printf '%s\n' "${LAYERS[@]}" | grep -v '^#')
-for crate in $members $excluded cua-parse/fuzz; do
+for crate in $members $excluded computer-use-parse/fuzz; do
   grep -q "^$crate: [PCA]\$" <<<"$layer_rows" || { echo "ERROR: $crate has no row in LAYERS"; fail=1; }
 done
 for row in "${LAYERS[@]}"; do
@@ -288,7 +288,7 @@ for row in "${RULES[@]}"; do
 done
 
 # The excluded crates are checked from their own manifests.
-for crate in $excluded cua-parse/fuzz; do
+for crate in $excluded computer-use-parse/fuzz; do
   manifest="crates/$crate/Cargo.toml"
   leaked=0
   # The whole tree when it resolves. When it does not, say so and check what the manifest names

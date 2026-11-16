@@ -2,9 +2,9 @@
 //! adds, and that nothing of it is a file the agent could reach.
 
 use super::support::{LOGIN, confined, plan, rig};
-use sandbox::AgentRun;
 use agent_acp_host::{AgentChild, Spawn};
 use agent_launch::fake::Mood;
+use sandbox::AgentRun;
 use serde_json::json;
 
 fn env_of<'a>(run: &'a AgentRun, name: &str) -> Option<&'a str> {

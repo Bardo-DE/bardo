@@ -1,6 +1,6 @@
 //! Why accountd refuses a launcher's call, beside the refusals of `reply::Refusal`. `NoLauncher` is a
 //! `Refusal` (the sheet's answer to a login nobody can do); these are the launcher's own. On the
-//! bus each is an error named `<service's error prefix>.<name>`, which `porter-dbus` reads.
+//! bus each is an error named `<service's error prefix>.<name>`, which `account-dbus` reads.
 
 /// Why accountd refused a launcher's call.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

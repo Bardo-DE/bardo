@@ -2,7 +2,7 @@
 //! gap 10, padding 10, sliders spanning both columns; height fits content, at most
 //! `output_h - bar_h - 16`, then scrolls), pure. The width, gap and padding are `--cc-*` tokens
 //! (`CONTROL_CENTER`), the bar's height is [`BarTokens`] and the margin is
-//! `--sill-cc-bottom-margin`. The popup's size is shell-host's content fit, not computed here.
+//! `--sill-cc-bottom-margin`. The popup's size is layer-shell-host's content fit, not computed here.
 
 use shell_settings::ControlCenterModule;
 

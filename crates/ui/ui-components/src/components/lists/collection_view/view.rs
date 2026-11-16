@@ -63,6 +63,7 @@ use crate::keys::use_platform;
 use crate::root::common::Common;
 use crate::stack::typeahead::Typeahead;
 use dioxus::prelude::*;
+use std::hash::Hash;
 use ui_core::geometry::units::Px;
 use ui_core::selection::{Pick, PickHow, RowSelection};
 use ui_core::time::clock::now;
@@ -71,7 +72,6 @@ use ui_core::word::Word;
 use ui_motion::presence::Exit;
 use ui_motion::roster::RowPitch;
 use ui_motion::use_roster::{LeaveBy, RosterSpec, use_roster_from};
-use std::hash::Hash;
 
 /// How many rows around the viewport are mounted besides the visible ones.
 const OVERSCAN_ROWS: usize = 2;

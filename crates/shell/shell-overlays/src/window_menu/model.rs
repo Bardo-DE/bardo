@@ -1,9 +1,9 @@
 //! The window menu as a [`MenuModel`]: which entries it has and which are dimmed, as a function
 //! of the set the compositor sent (the entries that can be picked now).
 
-use ui_components::prelude::*;
 use shell_model::desktop::{WindowEntries, WindowEntry};
 use shell_ui_kit::menu::MenuModel;
+use ui_components::prelude::*;
 
 /// The menu of one window, opened with the compositor's `enabled` entries.
 #[derive(Debug, Clone, PartialEq, Eq)]

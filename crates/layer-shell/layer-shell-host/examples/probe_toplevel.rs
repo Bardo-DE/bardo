@@ -1,5 +1,5 @@
 //! The acceptance probe (`scripts/accept-demo.sh demo`): an ordinary xdg toplevel, not a
-//! shell-host surface, that asks to be maximized (or `--fullscreen`), paints a checkerboard of
+//! layer-shell-host surface, that asks to be maximized (or `--fullscreen`), paints a checkerboard of
 //! `--cell` physical px (default 2) at the preferred fractional scale, and prints every configure
 //! as a JSON line. Items a and b read the work area and the pixels behind the bar from it; item
 //! c covers the dock with it. It stands in for "some other app's window", so it talks to the

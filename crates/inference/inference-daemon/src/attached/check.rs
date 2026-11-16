@@ -2,11 +2,11 @@
 //! serves the model under. Asked when a session opens and nowhere else (no background polling),
 //! and answered with the one thing that is wrong, typed.
 
+use inference_router::attached::{NotReady, Target};
 use model_http::{
     BodySink, Exchange, Framing, HttpClient, HttpError, HttpStatus, ResponseHead, RouteRoot,
     Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
-use inference_router::attached::{NotReady, Target};
 use std::ops::ControlFlow;
 
 /// How long the probe waits at each stage: a tunnel that is up answers at once on a quiet

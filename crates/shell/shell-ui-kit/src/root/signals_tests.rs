@@ -1,15 +1,15 @@
 //! The republished signals reach `Ds`: the seat's modality decides the focus ring's `data-modality`
 //! and the surface's scale the root's pixel tokens, each following the seat as it changes. Driven
-//! with a stand-in seat because a `SurfaceHandle` cannot be built outside shell-host.
+//! with a stand-in seat because a `SurfaceHandle` cannot be built outside layer-shell-host.
 
 use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
+use layer_shell_host::{InputModality as SeatModality, Scale120};
 use ui_components::prelude::*;
 use ui_components::style::tokens::pixel::PixelToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use layer_shell_host::{InputModality as SeatModality, Scale120};
 
 use super::use_republished;
 

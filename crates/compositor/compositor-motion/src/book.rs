@@ -6,7 +6,7 @@ use compositor_core::time::Mono;
 use compositor_core::{OutputKey, WindowId};
 use std::collections::BTreeMap;
 
-/// Every moving quantity's leg. Holds ds-motion `Leg`s, whose state is float (springs are
+/// Every moving quantity's leg. Holds ui-motion `Leg`s, whose state is float (springs are
 /// closed-form arithmetic), so the book is `PartialEq` only; what leaves it is sampled and
 /// quantised.
 #[derive(Debug, Clone, PartialEq)]

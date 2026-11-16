@@ -1,10 +1,10 @@
 //! A real-looking desktop entry read through the public surface: its keys by type, its
 //! translations for a person's locales, its actions, and the size cap.
 
+use std::fs;
 use ui_helpers::{
     DESKTOP_ENTRY_CAP, DesktopFile, DesktopFileError, EntryLocale, ReadCap, read_text_capped,
 };
-use std::fs;
 
 const FILES: &str = "\u{feff}# A comment\n\
 [Desktop Entry]\n\

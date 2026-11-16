@@ -4,10 +4,10 @@
 //! shown is kept for the test and handed out on a channel; the verdict comes from a queue the
 //! test fills (the sheet's answer: Allow with a receipt, or the person saying no).
 
+use account_core::consent::GrantScope;
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmRequest};
 use action_dbus::{CONFIRM_BUS, CONFIRM_PATH};
 use agent_session::SheetChoice;
-use account_core::consent::GrantScope;
 use provenance::{Confidentiality, ConfirmReceipt, Effect, InputProof, UnixSeconds};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, PoisonError};

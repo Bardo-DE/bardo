@@ -14,12 +14,12 @@ use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use image::imageops::FilterType;
+use image::{ImageFormat, ImageReader, Limits, RgbaImage};
 use ui_components::prelude::*;
 use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::icon::retint::retint_in;
-use image::imageops::FilterType;
-use image::{ImageFormat, ImageReader, Limits, RgbaImage};
 
 use crate::app_icons::size::AssetPx;
 
@@ -211,10 +211,10 @@ mod tests {
         write_atomic,
     };
     use crate::app_icons::size::AssetPx;
+    use std::path::PathBuf;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
-    use std::path::PathBuf;
 
     fn temp(tag: &str) -> PathBuf {
         let dir =

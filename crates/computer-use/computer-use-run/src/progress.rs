@@ -2,8 +2,8 @@
 
 use crate::observation::TreeObs;
 use computer_use_a11y_tree::render;
-use computer_use_desktop::Digest32;
 use computer_use_capture::FrameDigest;
+use computer_use_desktop::Digest32;
 use serde::{Deserialize, Serialize};
 
 /// What one look at the window held, as digests: the frame, and the rendered tree when there is

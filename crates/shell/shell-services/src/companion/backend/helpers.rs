@@ -3,8 +3,8 @@
 //! it to read the list again. Every body is JSON of `companion-wire`'s helper types; a refusal is
 //! the companion's own sentence and the model shows it as it is.
 
-use companion_wire::{HelperCardView, HelperForm, HelperReply, HelpersView};
 use action_dbus::{COMPANION_BUS, CompanionHelpers2Proxy};
+use companion_wire::{HelperCardView, HelperForm, HelperReply, HelpersView};
 use inference_client::DbusTransport;
 use provenance::HelperId;
 use shell_model::companion::{Asked, CompanionEvent, HelpersCommand, HelpersMsg, model_groups};

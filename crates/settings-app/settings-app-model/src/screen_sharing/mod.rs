@@ -1,6 +1,6 @@
 //! The apps the screen-sharing portal lets share the screen without asking again, as the Privacy
 //! page meets them: the list, and the changes a person makes to it, taking an app back so it asks
-//! next time and letting another in. Pure; the portal is the window's (`detent-ui`).
+//! next time and letting another in. Pure; the portal is the window's (`settings-app-ui`).
 
 mod candidates;
 mod grant;

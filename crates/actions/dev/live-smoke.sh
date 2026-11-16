@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Live smoke: the docket-accept flows (dev/accept) against a real model instead of their cassettes,
+# Live smoke: the action-accept flows (dev/accept) against a real model instead of their cassettes,
 # with every daemon real (intentd, companiond, readerd, memoryd, inferd) on a private bus.
 #
 #   dev/live-smoke.sh --engine scripted                       # the cassettes: proves the harness

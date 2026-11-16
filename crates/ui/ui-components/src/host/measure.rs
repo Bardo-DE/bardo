@@ -17,10 +17,10 @@
 use crate::host::document::use_document_host;
 use crate::host::layout::use_layout_into;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Rect};
 use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::busy::{after_render, wait_out_busy};
-use std::rc::Rc;
 
 /// One attempt at reading an element's rect through the host.
 #[derive(Debug, Clone, Copy, PartialEq)]

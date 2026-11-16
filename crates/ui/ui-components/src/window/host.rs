@@ -1,6 +1,6 @@
 //! The host seam a window frame drives (FINDINGS "Window frame"). `ds` stays renderer-free: it
 //! names what a client-decorated window asks of its platform, and each host fills it in —
-//! ds-blitz over the winit window `launch` opens (`ui_blitz::window`), sill over shell-host's
+//! ui-blitz over the winit window `launch` opens (`ui_blitz::window`), sill over layer-shell-host's
 //! `SurfaceHandle` (`begin_move`, `begin_resize(edge)`, `set_maximized`, `use_toplevel_state`).
 //! A trait: each host holds its own window handle, and a test's stub records what it was asked.
 //!
@@ -132,8 +132,8 @@ impl WindowHost {
     }
 }
 
-/// Provide `host` to the calling component's subtree, once. ds-blitz's `launch` does this for
-/// its winit window; sill does it for a shell-host surface; a test does it with a stub.
+/// Provide `host` to the calling component's subtree, once. ui-blitz's `launch` does this for
+/// its winit window; sill does it for a layer-shell-host surface; a test does it with a stub.
 pub fn use_window_host_provider(host: impl FnOnce() -> Rc<dyn HostWindow>) -> WindowHost {
     use_context_provider(|| WindowHost::new(host()))
 }

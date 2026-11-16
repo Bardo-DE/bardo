@@ -1,8 +1,8 @@
 //! What the wallpaper shows, from what the service published.
 
-use ui_components::prelude::Scheme;
 use shell_model::ids::OutputName;
 use shell_model::wallpaper::{WallpaperImage, Wallpapers};
+use ui_components::prelude::Scheme;
 
 /// `wallpapers`' entry for `output`, if it has one yet (a fresh output, or a source that never
 /// resolved, has none).
@@ -17,7 +17,7 @@ fn image_for<'a>(
         .find(|image| &image.output == output)
 }
 
-/// A cache path as the `file://` URL shell-host's `LocalNet` reads directly (mirrors
+/// A cache path as the `file://` URL layer-shell-host's `LocalNet` reads directly (mirrors
 /// `shell_services::tray::icon::named_icon_file_url`).
 fn file_url(path: &std::path::Path) -> String {
     format!("file://{}", path.display())

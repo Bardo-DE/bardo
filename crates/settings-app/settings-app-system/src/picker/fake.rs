@@ -4,8 +4,8 @@ use super::PickerLink;
 use crate::fake_kit::Kit;
 use crate::modules::Module;
 use settings_app_model::Work;
-use ui_settings::schema::KeyPath;
 use std::sync::Arc;
+use ui_settings::schema::KeyPath;
 
 /// What the picker set.
 #[derive(Debug, Clone, PartialEq, Eq)]

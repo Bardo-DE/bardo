@@ -2,12 +2,12 @@
 //! log (or a locked key store) is `SpaceLocked`, never `Invalid`.
 
 use memory_core::{MemoryReply, MemoryRequest, Refusal, ReplicaId, RuleSet, SpaceId, SpaceMeta};
+use memory_eventlog::{LogError, MemoryLog};
 use memory_fake::{FakeBackend, ScriptedConsolidator, SharedVault, SteppedClock};
+use memory_recall::{ExactScan, FakeEmbedder, Index};
 use memory_seal::{MemoryKeys, SpaceKey};
 use memory_service::Caller;
 use memory_service::{Backend, BackendError, MemoryService, ServiceEvent};
-use memory_eventlog::{LogError, MemoryLog};
-use memory_recall::{ExactScan, FakeEmbedder, Index};
 
 /// The fake backend, except the log refuses to open with `error`.
 struct Refusing {

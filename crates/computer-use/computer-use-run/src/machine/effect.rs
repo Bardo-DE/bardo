@@ -4,17 +4,17 @@
 use crate::model::ThoughtText;
 use crate::screen::ScreenText;
 use crate::turn::FrameAttachment;
+use action_core::MessageDraft;
+use action_gate_wire::CuaAsk;
 use computer_use_a11y_tree::{NodeBudget, NodeSelector};
 use computer_use_bus::{
     ActionOutcome, AskBody, CuaOutcome, CuaRecord, QuestionId, RunStateSlug, TargetedAction,
 };
-use computer_use_desktop::{GlowState, LeaseId, LeaseRequest, Ms, Suspend};
-use action_core::MessageDraft;
-use action_gate_wire::CuaAsk;
 use computer_use_capture::FrameWant;
+use computer_use_desktop::{GlowState, LeaseId, LeaseRequest, Ms, Suspend};
+use computer_use_seat_input::PlannedAction;
 use inference_core::{CuaStepRequest, StepIndex};
 use provenance::SpaceId;
-use computer_use_seat_input::PlannedAction;
 use serde::{Deserialize, Serialize};
 
 /// Where the mask hints of a capture come from.

@@ -1,4 +1,4 @@
-//! The fake of `org.quire.Storage1` (syncd-fakes, which the rig serves to Files) says the words
+//! The fake of `org.quire.Storage1` (sync-fakes, which the rig serves to Files) says the words
 //! the live service says.
 
 use drive_core::Reason;

@@ -9,10 +9,10 @@ use super::staged::Staged;
 use super::step::run;
 use crate::layout::Layout;
 use semver::Version;
-use updater_core::{Authenticator, GuardRecord, Step, plan_install, plan_rollback};
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
+use updater_core::{Authenticator, GuardRecord, Step, plan_install, plan_rollback};
 
 /// What an install or rollback did.
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -2,10 +2,10 @@
 
 use std::sync::mpsc::SyncSender;
 
-use ui_settings::{Environment, UserStyle};
 use shell_ipc::request::Request;
 use shell_ipc::response::Response;
 use shell_settings::ShellFile;
+use ui_settings::{Environment, UserStyle};
 
 /// Which of the person's two `style.css` files a text is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -37,7 +37,7 @@ pub enum ShellMsg {
     TurnOnStyles,
     /// The appearance (`appearance.toml` and the portal) settled on a new value.
     Appearance(Box<Environment>),
-    /// Hold or drop shell-host's session lock (`crate::lock::spawn_follower` sends it).
+    /// Hold or drop layer-shell-host's session lock (`crate::lock::spawn_follower` sends it).
     Lock(crate::lock::LockWish),
     /// Map or unmap the idle dim surfaces (`crate::idle_dim::spawn_follower` sends it).
     Dim(shell_model::idle::DimShown),

@@ -116,7 +116,7 @@ async fn a_frontend_named_in_the_persons_rows_is_let_in_at_dev_proof_and_only_as
     introduce(
         &portal.peers,
         &stranger,
-        caller_identity_dbus::peephole::fake::introduced_program("/usr/bin/evil"),
+        caller_identity_dbus::caller_identity_linux::fake::introduced_program("/usr/bin/evil"),
     );
     let refused = call(
         &stranger,

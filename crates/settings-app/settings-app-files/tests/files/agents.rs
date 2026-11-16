@@ -1,6 +1,8 @@
 //! The outside agents in docket's `agents.toml`: read with what each last offered, the menus the
 //! row draws, and a choice written into its entry with every other line kept.
 
+use action_settings::NewAgent;
+use action_settings::{AddFault, ChoiceFault};
 use settings_app_files::{
     ConfigHome, DataHome, add_agent, installed_agents, load_agents, remove_agent, save_agent_choice,
 };
@@ -8,8 +10,6 @@ use settings_app_model::{
     AGENTS_OWN, AddForm, Request, model_choice, model_menu, unlisted_found, way_choice, way_menu,
 };
 use settings_app_testkit::Scratch;
-use action_settings::NewAgent;
-use action_settings::{AddFault, ChoiceFault};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 

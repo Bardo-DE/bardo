@@ -8,14 +8,14 @@ use crate::machine::input::{ModelReply, Moved, RunInput};
 use crate::model::{CuaModel, CuaModelError, StepEvent, StepSink};
 use crate::seams::{Clock, GateCheck, Seams};
 use crate::turn::FrameAttachment;
+use account_capability::Locality;
+use computer_use_capture::{CaptureError, WindowCapture};
 use computer_use_desktop::{
     DesktopError, GlowState, LeaseControl, LeaseGrant, LeaseId, LeaseRequest, Stamp, Suspend,
 };
 use computer_use_desktop::{ToplevelIdent, ToplevelInfo};
-use computer_use_capture::{CaptureError, WindowCapture};
-use account_capability::Locality;
-use inference_core::{CuaBegin, CuaStepRequest};
 use computer_use_seat_input::{AgentSeat, Emulation, InputOp, PlannedAction, SeatError, plan};
+use inference_core::{CuaBegin, CuaStepRequest};
 
 /// The lease a run holds, and the capture session over its window.
 pub(super) struct Held<S: Seams> {

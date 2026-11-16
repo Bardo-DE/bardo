@@ -3,9 +3,9 @@
 //! program, never linked); `fake::FakeProcs` records the run it was asked for and returns an
 //! in-memory pipe.
 
+use agent_acp_server::capped_lines;
 use agent_client_protocol::{Agent, Client, ConnectTo, Error};
 use sandbox::{AgentRun, BwrapSandbox, LandlockLevel, StartFault};
-use agent_acp_server::capped_lines;
 use std::future::Future;
 use std::path::PathBuf;
 use std::process::Stdio;

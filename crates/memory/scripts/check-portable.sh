@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 # The portable core (design/36-PORTABLE-CORE.md): these crates build and keep a clean dependency
 # tree with `--no-default-features`, so an app on macOS, Windows or another desktop can host
-# almanac in process. Everything else (almanac-dbus, almanac-dbus-serve, memoryd, almanac-fake) is a
+# almanac in process. Everything else (memory-dbus, memory-dbus-serve, memoryd, memory-fake) is a
 # desktop extra or a test helper and is not checked here.
 #
 # No network: every cargo call is --offline against the vendored/cached registry.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-# crate[:features]. almanac-client's in-process transport is its portable path, so it is checked
-# with `in_process` (its default-off `dbus` feature is the desktop's). almanac-watch keeps the
+# crate[:features]. memory-client's in-process transport is its portable path, so it is checked
+# with `in_process` (its default-off `dbus` feature is the desktop's). memory-watch keeps the
 # seam and the pure `join`; its `linux` feature (InotifyWatch) is off here.
 CORE=(
-  "almanac-core"
-  "almanac-seal"
-  "almanac-store"
+  "memory-core"
+  "memory-seal"
+  "memory-store"
   "eventlog"
   "memfiles"
-  "memfiles-format"
+  "memory-files-format"
   "recall"
-  "almanac-settings"
-  "almanac-tidy"
-  "almanac-search"
-  "almanac-service"
-  "almanac-host"
-  "almanac-watch"
-  "almanac-client:in_process"
-  "almanac-local"
+  "memory-settings"
+  "memory-tidy"
+  "memory-search"
+  "memory-service"
+  "memory-host"
+  "memory-watch"
+  "memory-client:in_process"
+  "memory-local"
 )
 # What the core must never reach, by crate name (platform services and the desktop's bus).
 FORBIDDEN='zbus|zvariant|inotify|notify|landlock|oo7|secret-service'
@@ -34,14 +34,14 @@ FORBIDDEN='zbus|zvariant|inotify|notify|landlock|oo7|secret-service'
 TARGETS=(x86_64-apple-darwin x86_64-pc-windows-gnu x86_64-pc-windows-msvc)
 # Crates without C dependencies check on every target; the SQLCipher ones need that target's C
 # toolchain (and OpenSSL's cross build), which a Linux box lacks, so they are only reported.
-PURE_RUST=(almanac-core almanac-seal almanac-store memfiles almanac-settings almanac-watch)
+PURE_RUST=(memory-core memory-seal memory-store memfiles memory-settings memory-watch)
 # blake3 builds C and assembly SIMD for x86_64 targets, which needs the target's C compiler too;
 # its `pure` feature (through each crate's `pure-hash`) is a plain-Rust build for the check.
 declare -A PURE_HASH=(
-  [almanac-seal]="pure-hash"
-  [almanac-store]="almanac-seal/pure-hash"
-  [memfiles]="almanac-seal/pure-hash"
-  [almanac-watch]="pure-hash"
+  [memory-seal]="pure-hash"
+  [memory-store]="memory-seal/pure-hash"
+  [memfiles]="memory-seal/pure-hash"
+  [memory-watch]="pure-hash"
 )
 
 fail=0

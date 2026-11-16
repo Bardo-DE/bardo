@@ -216,7 +216,9 @@ pub fn reconcile(current: &Outputs, now: &[OutputInfo]) -> Vec<OutputAction> {
 #[cfg(test)]
 mod tests {
     use super::{FocusRoute, OutputSurfaces, Outputs, Spawned, reconcile};
-    use layer_shell_host::{LayerExtent, LayerSize, OutputId, OutputInfo, Rect, Scale120, SurfaceId};
+    use layer_shell_host::{
+        LayerExtent, LayerSize, OutputId, OutputInfo, Rect, Scale120, SurfaceId,
+    };
     use shell_model::ids::OutputName;
     use shell_overlays::HotCorners;
     use shell_ui_kit::surface::OutputPolicy;

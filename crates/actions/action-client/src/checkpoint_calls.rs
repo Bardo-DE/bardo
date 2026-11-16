@@ -3,10 +3,10 @@
 
 use crate::intents::{ClientError, Intents};
 use crate::transport::Transport;
-use companion_model::{RunsIn, WatchedAgent, WatchedLine, Watching};
 use action_core::{CheckpointFault, CheckpointId, CheckpointList, RestorePlan, Rewind};
 use action_vocab::{TurnId, Workspace};
 use action_wire::{IntentsReply, IntentsRequest};
+use companion_model::{RunsIn, WatchedAgent, WatchedLine, Watching};
 use provenance::SessionId;
 
 impl<T: Transport> Intents<T> {

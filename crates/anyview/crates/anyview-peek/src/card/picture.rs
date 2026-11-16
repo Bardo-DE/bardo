@@ -3,12 +3,12 @@
 
 use anyview_image::ImagePeek;
 use dioxus::prelude::*;
-use ui_components::components::overlays::skeleton::{Skeleton, SkeletonShape};
-use ui_components::root::common::Common;
-use ui_blitz::{PixelFormat, Pixels, TextureFit, TextureLayer, use_gpu};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
+use ui_blitz::{PixelFormat, Pixels, TextureFit, TextureLayer, use_gpu};
+use ui_components::components::overlays::skeleton::{Skeleton, SkeletonShape};
+use ui_components::root::common::Common;
 
 /// `image` fitted into the card's media box (the box is the picture's: it fills it and the layer fits the
 /// picture inside at its own aspect). The device arrives with the window's first frame, so

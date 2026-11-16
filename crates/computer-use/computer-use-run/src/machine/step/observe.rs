@@ -11,11 +11,11 @@ use crate::machine::run::Run;
 use crate::observation::{CursorObs, Observation};
 use crate::progress::Look;
 use crate::stall::{Repeats, Stall};
+use account_ids::Count;
 use computer_use_action::ActionClass;
 use computer_use_bus::{ActionOutcome, ActionResult, FrameNote};
 use computer_use_bus::{CuaOutcome, CuaRecord, FailReason, RunBudgetKind};
 use computer_use_capture::{FrameDigest, FrameWant, digest};
-use account_ids::Count;
 
 /// Whether one of the actions ended as done and sent input.
 fn input_ran(prev: &[ActionOutcome]) -> bool {
@@ -90,7 +90,11 @@ pub(super) fn observed(run: &mut Run, fx: &mut Vec<RunEffect>, mut obs: Observat
     screen::stage(run, fx, n);
 }
 
-pub(super) fn capture_failed(run: &mut Run, fx: &mut Vec<RunEffect>, error: computer_use_capture::CaptureError) {
+pub(super) fn capture_failed(
+    run: &mut Run,
+    fx: &mut Vec<RunEffect>,
+    error: computer_use_capture::CaptureError,
+) {
     let RunPhase::Observing(_) = run.phase else {
         return;
     };

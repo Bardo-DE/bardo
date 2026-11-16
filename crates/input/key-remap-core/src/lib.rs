@@ -1,4 +1,4 @@
-//! keycap-core: the pure remap core of keycap.
+//! key-remap-core: the pure remap core of keycap.
 //!
 //! The core is vocabulary (`Key`, `Physical`, `Logical`, `Role`, `OutMod`, `Edge`, `Mono`) and
 //! the layout tables that say which physical key plays which role. Input and output speak

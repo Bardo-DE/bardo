@@ -9,12 +9,12 @@ use crate::components::controls::button_model::{Bezel, ImagePosition};
 use crate::components::fields::text_field_focus::FieldFocus;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::fmt;
 use ui_core::geometry::units::Px;
 use ui_core::press::Press;
 use ui_core::vocab::Availability;
 use ui_style::icon::Icon;
 use ui_style::tokens::control_size::ControlSize;
-use std::fmt;
 
 /// A toolbar's search item.
 #[derive(Clone, PartialEq)]

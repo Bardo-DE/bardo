@@ -5,11 +5,11 @@ use crate::copy::absence::{Subject, absence as absence_words};
 use crate::icons::tile_of;
 use crate::live::use_live;
 use crate::system::Absent;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{
     PageKind, RemovalStage, SpaceKey, SpaceRow, SpacesInput, SpacesReady, SpacesState,
 };
-use dioxus::prelude::*;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::overlays::empty_state::EmptyState;
 use ui_components::prelude::*;

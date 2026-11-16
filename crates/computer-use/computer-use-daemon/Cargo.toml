@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-daemon"
-description = "The computer-use daemon and its library: the supervisor of runs wired to the system seams of cua-system, the org.quire.Cua provider and org.quire.Cua1. The binary serves both names on the session bus."
+description = "The computer-use daemon and its library: the supervisor of runs wired to the system seams of computer-use-system, the org.quire.Cua provider and org.quire.Cua1. The binary serves both names on the session bus."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

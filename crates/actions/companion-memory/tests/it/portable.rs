@@ -1,16 +1,16 @@
-//! The memory seam over almanac-client transports that are not the bus: the service hosted in
-//! this process (almanac-fake's backend) and no service at all. The D-Bus path is covered by
+//! The memory seam over memory-client transports that are not the bus: the service hosted in
+//! this process (memory-fake's backend) and no service at all. The D-Bus path is covered by
 //! intentd's `audit.rs` through its re-exports.
 
-use memory_client::{Absent, InProcess};
-use memory_core::{BodyMode, MemoryReply, MemoryRequest, RecentQuery, TrustFilter};
-use memory_fake::{ScriptedConsolidator, fake_service};
-use memory_service::Caller;
+use account_ids::Count;
 use action_core::{AuditRecord, HaltCause};
 use action_core::{EventSink, LinkFault, MemoryLink};
 use companion_memory::{AlmanacMemory, AuditState, Link};
 use companion_memory_core::QueuedSink;
-use account_ids::Count;
+use memory_client::{Absent, InProcess};
+use memory_core::{BodyMode, MemoryReply, MemoryRequest, RecentQuery, TrustFilter};
+use memory_fake::{ScriptedConsolidator, fake_service};
+use memory_service::Caller;
 use provenance::{SpaceId, SpaceScope, UnixSeconds};
 use std::sync::Arc;
 

@@ -1,9 +1,9 @@
 //! The assistant's places in docket's settings file: written one key at a time, read back as
 //! docket reads them, and every other key of the file keeps its text.
 
+use action_settings::{CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places};
 use settings_app_files::{ConfigHome, load_places, save_places};
 use settings_app_testkit::Scratch;
-use action_settings::{CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 

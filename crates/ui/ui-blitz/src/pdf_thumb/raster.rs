@@ -1,13 +1,13 @@
 //! A PDF's first page as PNG pixels, through pdfrum's CPU rasteriser (vello_cpu).
 
 use super::request::DeviceBox;
-use ui_components::components::content::image_source::ImageSize;
-use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
-use ui_components::prelude::*;
 use image::ImageEncoder;
 use image::codecs::png::PngEncoder;
 use pdfrum::{Document, Error, RenderOptions, VelloCpuBackend};
 use std::panic::{AssertUnwindSafe, catch_unwind};
+use ui_components::components::content::image_source::ImageSize;
+use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
+use ui_components::prelude::*;
 
 /// `bytes`' first page fitted into `fit`, on white. An empty file, or a document with no
 /// pages, is [`PdfPage::Empty`]; a file that is not a PDF or will not draw is

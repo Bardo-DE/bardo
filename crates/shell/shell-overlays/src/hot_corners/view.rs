@@ -2,8 +2,8 @@
 //! no material, never painted), feeding the pointer's enter and leave to [`super::io`].
 
 use dioxus::prelude::*;
-use ui_components::prelude::AppStyle;
 use layer_shell_host::OutputInfo;
+use ui_components::prelude::AppStyle;
 
 use super::io::use_hot_corner;
 use shell_ui_kit::links::Corner;

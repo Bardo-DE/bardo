@@ -1,11 +1,11 @@
 //! Reading rows when the module moves between the listing and the values.
 
 use super::read::{Rows, read};
+use std::cell::Cell;
 use ui_settings::live::LiveError;
 use ui_settings::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
 };
-use std::cell::Cell;
 
 fn row(name: &str) -> KeySpec {
     KeySpec {

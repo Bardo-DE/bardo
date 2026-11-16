@@ -2,10 +2,10 @@
 
 use crate::support::*;
 use memory_core::*;
+use memory_eventlog::{LogRead, LogWrite, MemoryLog, NewHeader};
 use memory_seal::{Purpose, SpaceKey, derive};
 use memory_service::*;
 use memory_store::VaultPath;
-use memory_eventlog::{LogRead, LogWrite, MemoryLog, NewHeader};
 use std::io::Read;
 
 #[test]

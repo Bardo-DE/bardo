@@ -4,13 +4,13 @@
 
 use crate::core_loop;
 use crate::state::State;
+use account_core::PeerIdentity;
 use compositor_core::Event;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::ClientStanding;
 use compositor_wayland::ClientState;
 use compositor_wayland::consent::ImageWatch;
 use compositor_wayland::security_context::Maker;
-use account_core::PeerIdentity;
 use smithay::reexports::wayland_server::Client;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;

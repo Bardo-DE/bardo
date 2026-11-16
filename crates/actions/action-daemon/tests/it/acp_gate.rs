@@ -5,9 +5,9 @@
 
 use crate::support::world::*;
 use action_client::Transport;
+use action_daemon::{ACP_NAME, AcpGate, IntentdConfig};
 use action_vocab::CallerRole;
 use action_wire::{IntentsReply, IntentsRequest, RecallAsk, SessionOpen, WireRefusal};
-use action_daemon::{ACP_NAME, AcpGate, IntentdConfig};
 use provenance::{AgentRef, SessionId, SpaceId};
 use std::collections::BTreeMap;
 
@@ -127,9 +127,7 @@ async fn host_allowed(agents: bool, expose: bool) -> bool {
         ..IntentdConfig::empty()
     };
     let world = World::serving_gated(mail_router(), config, "test-runner.service", gate).await;
-    let (host, _keep) = world
-        .client(&[permission_core::ACP_AGENT_APP])
-        .await;
+    let (host, _keep) = world.client(&[permission_core::ACP_AGENT_APP]).await;
     !refused(&host.call(turn()).await.expect("a reply"))
 }
 

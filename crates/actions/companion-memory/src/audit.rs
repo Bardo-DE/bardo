@@ -8,10 +8,10 @@
 //! and counts them. `AuditState::flush` says what changed (`Report`) and prints nothing: the host
 //! decides what to tell the person.
 
-use memory_core::{MemoryReply, MemoryRequest, Refusal};
 use action_core::{AuditRecord, LinkFault, MemoryLink};
-use companion_memory_core::{QueuedSink, record_of, space_named_by};
 use action_vocab::CallId;
+use companion_memory_core::{QueuedSink, record_of, space_named_by};
+use memory_core::{MemoryReply, MemoryRequest, Refusal};
 use provenance::SpaceId;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 

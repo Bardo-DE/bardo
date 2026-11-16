@@ -5,9 +5,9 @@
 use crate::state::State;
 use compositor_core::ClientKey;
 use compositor_core::privilege::PowerOutcome;
-use desktop_protocols::vocab::Power;
 use compositor_wayland::consent::{self, Admission};
 use compositor_wayland::image_capture::GatedFrame;
+use desktop_protocols::vocab::Power;
 use smithay::wayland::image_copy_capture::{
     CaptureFailureReason, Frame, ImageCopyCaptureHandler, SessionRef,
 };

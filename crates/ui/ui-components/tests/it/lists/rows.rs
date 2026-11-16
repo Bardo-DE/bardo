@@ -6,7 +6,9 @@ use super::scoped::Scoped;
 use dioxus::prelude::*;
 use ui_components::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
 use ui_components::components::app::thread_row::ThreadRow;
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_components::components::content::status::battery_state::BatteryState;
 use ui_components::components::controls::button_model::Bezel;

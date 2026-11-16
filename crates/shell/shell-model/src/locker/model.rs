@@ -60,7 +60,7 @@ pub struct Locker {
 /// What the lock screen is doing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Lock {
-    /// The daemon holds shell-host's session lock whenever this is not `Unlocked`.
+    /// The daemon holds layer-shell-host's session lock whenever this is not `Unlocked`.
     pub phase: LockPhase,
     /// What started the current lock; `None` while `Unlocked`, kept from the request that
     /// started the lock until it is unlocked.

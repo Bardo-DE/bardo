@@ -5,7 +5,6 @@
 
 use std::collections::BTreeSet;
 
-use desktop_protocols::vocab::{PlaceTarget, Shown};
 use desktop_client::fake::FakeDesktop;
 use desktop_client::output::{HeadChange, ModeChange, OutputEvent, RefreshMilliHz, ScaleMilli};
 use desktop_client::toplevel::{ToplevelChange, ToplevelEvent, ToplevelFlag, ToplevelFlags};
@@ -17,6 +16,7 @@ use desktop_client::{
     OutputName as WireOutput, Point, Protocol, ProtocolSet, Size, ToplevelIdentifier, ToplevelKey,
     WorkspaceKey as WireWorkspaceKey,
 };
+use desktop_protocols::vocab::{PlaceTarget, Shown};
 use shell_launcher::WindowKey;
 use shell_model::apps::AppIndex;
 use shell_model::desktop::{DesktopBackend, DesktopCommand, GlobalOffer, SpacePlaceView, supports};

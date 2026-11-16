@@ -14,7 +14,6 @@ use compositor_render::pass::{
     write_dmabuf,
 };
 use compositor_render::{CasementElement, Compositor, render_output};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Format, Fourcc, Modifier};
 use smithay::backend::renderer::damage::OutputDamageTracker;
@@ -27,6 +26,7 @@ use smithay::reexports::pixman;
 use smithay::utils::{Buffer, Rectangle, Size};
 use std::any::Any;
 use std::fmt;
+use ui_core::geometry::scale::Scale;
 
 /// Which software renderer the headless backend uses (`--renderer`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

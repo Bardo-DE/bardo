@@ -1,5 +1,5 @@
 //! Transcribe over the speech host, hosted: the real `Inference1` object on a private bus, a
-//! client opening a `Transcribe` session through `porter-client`, the real router, supervisor and
+//! client opening a `Transcribe` session through `account-client`, the real router, supervisor and
 //! turn runner, and a fake speech host (the host protocol on a Unix socket) that the supervisor
 //! "runs" in place of the `speech-host` binary. No real binary, model, library, microphone or
 //! network is touched.
@@ -7,25 +7,25 @@
 use crate::hosting;
 use std::ops::ControlFlow;
 
-use engine_supervisor::{EngineId, SupervisorConfig};
-use hosting::engine::{Chat, Script};
-use hosting::entries;
-use hosting::rig::{Plan, SpeechPlan, World};
-use inference_daemon::runner::{Pin, Pinned, Turns};
-use inference_daemon::speech::Ears;
-use inference_client::{ClientError, DbusSession, DbusTransport, InferSession, Inference};
 use account_capability::SpeechMode;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
+use account_match::Need;
+use account_match::SpeechNeed;
+use engine_supervisor::{EngineId, SupervisorConfig};
+use hosting::engine::{Chat, Script};
+use hosting::entries;
+use hosting::rig::{Plan, SpeechPlan, World};
+use inference_client::{ClientError, DbusSession, DbusTransport, InferSession, Inference};
 use inference_core::{
     Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, ChatRequest,
     ClientFrame, HeardDelta, InferEvent, InferReply, InferRequest, LangPick, Modality, ModelError,
     ModelLabel, ModelRef, OpenOptions, Readiness, RequestShape, Role, StageRole, TierMap,
     TranscribeBegin, TranscribeMode,
 };
-use account_match::Need;
-use account_match::SpeechNeed;
+use inference_daemon::runner::{Pin, Pinned, Turns};
+use inference_daemon::speech::Ears;
 use inference_router::pipeline::plan;
 use inference_turns::pipeline::{PipelineInput, VecAudio, run_pipeline};
 use std::collections::BTreeSet;

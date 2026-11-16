@@ -4,13 +4,13 @@
 //! its own root, as CONSUMING.md "palette follow-ups" says.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::menus::palette::palette_group::PaletteGroup;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::focus::request::use_focus_request;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

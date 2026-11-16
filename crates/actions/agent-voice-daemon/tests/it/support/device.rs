@@ -2,13 +2,13 @@
 //! what was opened and played. No wall clock: the capture stream is the clock, and it moves when
 //! the test feeds a frame.
 
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex};
-use tokio::sync::mpsc;
 use agent_voice_audio::{
     AudioDevice, AudioNode, CaptureFormat, CaptureStream, DeviceError, NodeId, NodeKind,
     PlaybackFormat, PlaybackStream,
 };
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Mutex};
+use tokio::sync::mpsc;
 
 /// What happened to the device.
 #[derive(Debug, Default)]

@@ -1,4 +1,6 @@
-use portal_daemon::peers::{Admission, FRONTEND_NAME, HOLD_LIMITS, Limits, Tether, admit, departed};
+use portal_daemon::peers::{
+    Admission, FRONTEND_NAME, HOLD_LIMITS, Limits, Tether, admit, departed,
+};
 
 /// A name, its old owner, its new owner, and the peer taken off (if any).
 type OwnerChange<'a> = (&'a str, Option<&'a str>, Option<&'a str>, Option<&'a str>);

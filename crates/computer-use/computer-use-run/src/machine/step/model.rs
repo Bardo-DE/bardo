@@ -9,11 +9,11 @@ use crate::machine::ops::{
 };
 use crate::machine::phase::RunPhase;
 use crate::machine::run::Run;
+use account_ids::Count;
 use computer_use_action::{ActionClass, CuaAction};
 use computer_use_bus::{ActionOutcome, ActionResult, CuaOutcome, FailReason, RunBudgetKind};
-use computer_use_desktop::Stamp;
 use computer_use_capture::FrameWant;
-use account_ids::Count;
+use computer_use_desktop::Stamp;
 use inference_core::{CuaStepReply, StepIndex};
 
 pub(super) fn model_event(run: &mut Run, fx: &mut Vec<RunEffect>, event: crate::model::StepEvent) {

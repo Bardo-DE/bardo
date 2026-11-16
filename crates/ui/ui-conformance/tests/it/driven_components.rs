@@ -7,6 +7,7 @@
 //! button-click rules have their own files.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::space_editor::DotIndex;
 use ui_components::components::overlays::hover_card::target::HoverTarget;
 use ui_components::prelude::*;
@@ -14,7 +15,6 @@ use ui_components::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 use ui_components::style::space::presets::PRESETS;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

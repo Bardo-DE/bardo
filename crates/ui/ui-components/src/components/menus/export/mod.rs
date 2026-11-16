@@ -1,7 +1,7 @@
 //! An app's menu bar as data a process outside it can read and drive: the serialisable tree
 //! ([`MenuTree`]) built from the app's [`MenuBarModel`](crate::components::menus::menu_bar::MenuBarModel),
 //! its conversion to the `com.canonical.dbusmenu` layout and properties ([`dbusmenu`]), and the
-//! revision book the exporter keeps ([`MenuState`]). Pure data: ds-blitz's `menus` feature puts
+//! revision book the exporter keeps ([`MenuState`]). Pure data: ui-blitz's `menus` feature puts
 //! it on the session bus (design/27 section 5.2 rule a).
 
 mod address;

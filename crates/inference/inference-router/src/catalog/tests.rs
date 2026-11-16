@@ -1,7 +1,7 @@
 use super::*;
 use crate::testkit::entries;
-use std::path::PathBuf;
 use base_testkit::Scratch;
+use std::path::PathBuf;
 
 #[test]
 fn an_embedding_entry_makes_a_claim_from_its_embed_table() {

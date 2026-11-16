@@ -1,4 +1,4 @@
-//! The desktop portal's print dialog, as quire's `ds-blitz` print path does it: `PreparePrint`
+//! The desktop portal's print dialog, as quire's `ui-blitz` print path does it: `PreparePrint`
 //! shows the dialog and answers the chosen settings and a token, then `Print` hands over the PDF
 //! as a file descriptor with that token. Each call answers on a Request object whose path is
 //! known in advance from the `handle_token` option, so the answer is subscribed to before the

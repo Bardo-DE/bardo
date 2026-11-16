@@ -91,7 +91,7 @@ run_scenario() {
 
 # sill's own acceptance suite on casement (plan 20 §5.2: "sill's 19 minus listed WM-state steps"), from
 # this tree, every script in its own jail on a headless casement. Everything is
-# built outside the jail first (accept.sh --build: sill, the testkit's examples, sill-services' bins,
+# built outside the jail first (accept.sh --build: sill, the testkit's examples, shell-services' bins,
 # docket's intentd, casement's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
 # only for a script listed in sill-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
 # alone and one at a time (a loaded host starves the timing-sensitive scripts), and says so.

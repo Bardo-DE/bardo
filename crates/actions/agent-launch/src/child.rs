@@ -4,11 +4,11 @@
 use crate::accounts::Accounts;
 use crate::confine::Confinement;
 use crate::procs::Proc;
+use account_core::{ProcessCredentialId, SessionToken};
+use agent_acp_host::AgentChild;
 use sandbox::NetworkMode;
 use sandbox::egress::Proxy;
 use sandbox::forward::Bridge;
-use agent_acp_host::AgentChild;
-use account_core::{ProcessCredentialId, SessionToken};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, MutexGuard};

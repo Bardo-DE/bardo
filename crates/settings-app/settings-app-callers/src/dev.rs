@@ -3,8 +3,8 @@
 //! services they stand for, at `Proof::Dev`, below every real proof. A release build has none of this:
 //! the feature, the option and peephole's `dev-rows` are all absent.
 
-use caller_identity_dbus::peephole::{LoadError, RealProc, TableFiles};
 use caller_identity_dbus::caller_identity_core::{Table, Uid};
+use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
 use std::path::Path;
 use std::sync::OnceLock;
 

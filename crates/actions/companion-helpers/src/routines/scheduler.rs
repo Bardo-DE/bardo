@@ -5,11 +5,11 @@
 //! timers, written from the same schedules, only start companiond at the time.
 
 use super::host::Host;
+use action_vocab::{Clock, Millis};
 use companion_core::{EventWatch, Settle, ended_events, event_asks, group_by_space};
 use companion_model::routine::{
     RoutineBook, RoutineEffect, RoutineEvent, RoutineId, RoutineRecord, step,
 };
-use action_vocab::{Clock, Millis};
 use provenance::{SpaceId, UnixSeconds};
 use std::collections::VecDeque;
 use std::fmt;

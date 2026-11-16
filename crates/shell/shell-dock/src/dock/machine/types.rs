@@ -1,9 +1,9 @@
 //! The dock machine's vocabulary: its whole state, its events and its effects.
 
-use ui_components::base::time::stamp::Stamp;
 use layer_shell_host::{BlurSpec, ExclusiveZone, RegionSpec};
 use shell_model::desktop::Shown;
 use shell_model::units::Cpx;
+use ui_components::base::time::stamp::Stamp;
 
 use super::hover::Hover;
 use super::label::Label;

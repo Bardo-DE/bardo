@@ -1,5 +1,5 @@
 //! The system side of configuration: the machine file, the vendor file under it, and their
-//! watchers. The layers, their parsing and their folding into `Profiles` are `keycap-core`'s,
+//! watchers. The layers, their parsing and their folding into `Profiles` are `key-remap-core`'s,
 //! over strings.
 
 mod load;

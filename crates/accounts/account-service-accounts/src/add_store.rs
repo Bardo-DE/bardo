@@ -98,7 +98,10 @@ fn servers(endpoints: &[account_core::ServiceEndpoint]) -> HashSet<account_ids::
 
 /// Whether `held` and `new` are the same login at the same servers. An account with no login
 /// (an API key) is never the same as another: two keys of one provider are two accounts.
-fn same_login(held: &[account_core::ServiceEndpoint], new: &[account_core::ServiceEndpoint]) -> bool {
+fn same_login(
+    held: &[account_core::ServiceEndpoint],
+    new: &[account_core::ServiceEndpoint],
+) -> bool {
     let (held_logins, new_logins) = (logins(held), logins(new));
     !new_logins.is_empty() && held_logins == new_logins && servers(held) == servers(new)
 }

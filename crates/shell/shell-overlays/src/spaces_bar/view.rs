@@ -5,9 +5,9 @@
 //! lie; this file only draws.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_services::AppsService;
+use ui_components::prelude::*;
 
 use super::io::use_bar;
 use super::layer::BAR_ID;

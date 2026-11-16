@@ -9,10 +9,10 @@
 use super::cas::{self, ContentId};
 use super::library::{PhotoLibrary, originals_dir};
 use crate::dataset::{Dataset, DatasetError, DatasetId};
-use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};
 use account_ids::Bytes;
 use std::io;
 use std::path::Path;
+use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};
 
 /// Every original under `dir`, with its size. Files that are not `ab/<id>` are ignored.
 pub(super) fn list(dir: &Path) -> io::Result<Vec<(ContentId, u64)>> {

@@ -3,12 +3,12 @@
 //! panel spans both columns inside the grid's padding.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::slider_model::SliderLook;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 static VALUE: GlobalSignal<Fraction> = Signal::global(|| Fraction(200));
 

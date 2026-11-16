@@ -1,8 +1,8 @@
 use crate::common::{LOGIN_PAGE, network, start};
 use account_fake_servers::Daemon;
 use account_tailscale::{Backend, Notice, TailscaleError, Watch};
-use std::time::Duration;
 use base_testkit::{Deadline, GENEROUS};
+use std::time::Duration;
 
 async fn next(watch: &mut Watch) -> Notice {
     // A notice that should come is waited for as long as a starved machine needs.

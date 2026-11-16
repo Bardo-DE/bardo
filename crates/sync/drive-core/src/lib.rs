@@ -12,13 +12,13 @@
 //! - [`Drive`]: the content cache under one directory, one file per item keyed by its id and
 //!   version and an index of what is there (the whole file or the ranges fetched), whether it is
 //!   kept, its size and when it was last opened. A read waits for the chunk it needs while the
-//!   rest is fetched in chunks through a [`Source`] ([`ReplicaSource`] over ferry-sync's
+//!   rest is fetched in chunks through a [`Source`] ([`ReplicaSource`] over sync-core's
 //!   `Replica::fetch`), never the whole file in memory. Keep Downloaded, Remove Download,
 //!   Download Now, eviction oldest-opened first past a [`CacheLimit`] (kept and open files are
 //!   never evicted), and each item's [`Status`] as Files shows it.
 //! - **Changes made here** ([`Drive::open_writable`]): new files and folders, bytes written,
 //!   renames and moves (saving by rename over a file among them) and removals are kept in the
-//!   cache first, in a queue in its index, and sent through a [`Sink`] (ferry-sync's
+//!   cache first, in a queue in its index, and sent through a [`Sink`] (sync-core's
 //!   `DriveWrite`) once a file is closed and quiet for [`QUIET`]. Lock files and the desktop's
 //!   trash stay here ([`local_only`]).
 //!
@@ -48,9 +48,9 @@ pub use drive::{
     Attrs, Changed, Drive, DriveConfig, DriveError, FreeSpace, ItemState, Node, NodeId, NodeKind,
     QUIET, ROOT_INO, ReadError, Status, WriteError, WriteHandle,
 };
-pub use sync_core::{ContentHash, RemoteId};
 pub use limit::{AUTOMATIC_FLOOR, CacheLimit};
 pub use listing::{Entry, Listing, ListingError};
 pub use reason::Reason;
 pub use sink::{Sending, Sink};
 pub use source::{CopyError, Exporting, Fetching, ReplicaSource, Source, SourceError};
+pub use sync_core::{ContentHash, RemoteId};

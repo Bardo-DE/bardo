@@ -59,7 +59,7 @@ how the agent works inside.
 
 ## 3. Presence, the orb and the glow
 
-`CompanionPresence` (`ds-core::vocab`) is the one vocabulary: Idle, Listening, Working, Acting,
+`CompanionPresence` (`ui-core::vocab`) is the one vocabulary: Idle, Listening, Working, Acting,
 Waiting. It is derived in one place, sill's `presence_of`, with the priority Waiting, Acting,
 Working, Listening, Idle. An app derives its in-field presence from its own prompt state.
 
@@ -122,7 +122,7 @@ Working, Listening, Idle. An app derives its in-field presence from its own prom
   | On, any phase | a second summon | Off | Restore the kept query, CancelAsk if it was sent |
   | On | a chip removed | the chip gone; a fixed chip ignores it | none |
 
-- **Chips are the consent surface.** `ContextChip` (`ds-intents`) names what the prompt carries:
+- **Chips are the consent surface.** `ContextChip` (`ui-intents`) names what the prompt carries:
   the query, the results (with a count), the selection, the window, the app, the Space, a mention,
   a piece of text. A removable chip can be dropped; what is not shown is not sent. The context is
   frozen at the moment of the summon, before the field turns into a prompt.
@@ -145,7 +145,7 @@ Working, Listening, Idle. An app derives its in-field presence from its own prom
 ## 5. The summon seam and runs
 
 - **Summon.** sill's double-tap machine decides; if the focused app serves the companion, sill
-  asks it. `CompanionPort` (installed by the app's companion client, `docket-ds`) answers
+  asks it. `CompanionPort` (installed by the app's companion client, `action-ui-adapter`) answers
   synchronously: `TookField`, `TookAnchored`, `Restored` or `Declined`. A declined summon opens the
   launcher in companion mode. `NoPort` stands in where the feature is absent.
 - **Runs.** A computer-use run is a row: goal, app, step against budget, the last thought, where it
@@ -159,7 +159,7 @@ Working, Listening, Idle. An app derives its in-field presence from its own prom
 
 The control UI lives with the companion: a Memory filter in the launcher for the timeline and
 forget, and the Intelligence settings page for export and the consolidation diff. `MemoryVerb`
-(`ds-core::vocab`) is the one verb set: Forget, Keep, Discard, Open source, Export. A fact that
+(`ui-core::vocab`) is the one verb set: Forget, Keep, Discard, Open source, Export. A fact that
 came from untrusted text is pending until the person keeps it. Forgetting names its consequences
 ("Also forgets 3 facts and 1 routine") and never deletes the source itself. The retention table
 and the consolidation switches are `memory.*` settings (`22-SETTINGS.md` section 3.28).
@@ -168,15 +168,15 @@ and the consolidation switches are `memory.*` settings (`22-SETTINGS.md` section
 
 | Piece | Home |
 | --- | --- |
-| `CompanionPresence`, `MemoryVerb`, `EffectMark`, `ActorMark`, `Tally` | `ds-core::vocab` |
-| `ThingMark`, `ContextChip`, `ChipKind`, `Removal`, `FieldMode`, `SummonSerial`, `SummonAnswerMark`, `ContextModel` | `ds-intents`, re-exported from `ds::components::companion` |
+| `CompanionPresence`, `MemoryVerb`, `EffectMark`, `ActorMark`, `Tally` | `ui-core::vocab` |
+| `ThingMark`, `ContextChip`, `ChipKind`, `Removal`, `FieldMode`, `SummonSerial`, `SummonAnswerMark`, `ContextModel` | `ui-intents`, re-exported from `ds::components::companion` |
 | `CompanionOrb`, `ContextChips`, prompt mode, `AnswerCard` and the answer shapes, `PlanList`, `ReplaceBar`, `RunRow`, `ActivityStrip`, `MemoryTimeline`, `ConsolidationView`, `ServedByChip`, `CompanionPort` | `ds::components::companion` (layer `companion`, above `chrome`, below `app`) |
-| `ConfirmCard`, `glow_spec` | `ds-shell::confirm`, `ds-style::tokens::glow` |
-| `OrbListen`, `OrbWork`, `OrbAct` | `ds-style::tokens::timing` |
-| `Page::Intelligence` | `ds-settings::schema::key` |
+| `ConfirmCard`, `glow_spec` | `ui-shell::confirm`, `ui-style::tokens::glow` |
+| `OrbListen`, `OrbWork`, `OrbAct` | `ui-style::tokens::timing` |
+| `Page::Intelligence` | `ui-settings::schema::key` |
 
-`ds-intents` names no agent type. The adapter that converts the agent's wire to these marks
-(`docket-ds`) lives in the docket repo, so quire never links an agent crate.
+`ui-intents` names no agent type. The adapter that converts the agent's wire to these marks
+(`action-ui-adapter`) lives in the docket repo, so quire never links an agent crate.
 
 ## 8. Confirmation
 

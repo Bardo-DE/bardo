@@ -5,16 +5,16 @@
 
 use companion_wire::{RoutineLine, RoutineShown};
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::components::controls::button_model::Bezel;
-use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
-use ui_components::prelude::*;
 use provenance::HelperId;
 use shell_model::companion::{
     HelpersModel, HelpersMsg, MISSED_SKIPPED, NO_ROUTINES, REPEATS, Repeat, RoutineDraft,
     RoutineRemoval, RoutinesMsg, Sheet, last_run_line, remove_routine_question, repeat_label,
     state_label,
 };
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
+use ui_components::prelude::*;
 
 use super::proposals::proposal_panel;
 use super::say::{Say, use_say};

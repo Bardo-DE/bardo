@@ -1,6 +1,6 @@
 //! ferry's bus interfaces and vocabulary: syncd's datasets (`Sync`), the drives shown in Files
 //! (`Storage`) and, with feature `photos-picker`, the Photos Picker, with the bus names, object
-//! paths and keys that go with them. Each interface is written once under porter-dbus's
+//! paths and keys that go with them. Each interface is written once under account-dbus's
 //! `#[bus_interface]`, which makes its proxy, the trait the daemon implements and the object that
 //! serves it; the checked-in `dbus/*.xml` must equal the introspection (`tests/it/introspection.rs`).
 

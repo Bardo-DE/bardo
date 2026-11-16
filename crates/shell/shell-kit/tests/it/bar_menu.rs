@@ -5,6 +5,8 @@
 //! a status line is drawn and never selected; a press reports where it happened.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::base::press::{PointerButton, Press};
 use ui_components::components::controls::button_model::ImagePosition;
 use ui_components::host::measure::Anchor;
@@ -12,8 +14,6 @@ use ui_components::host::measure::use_rect;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,
@@ -333,7 +333,7 @@ fn a_press_reports_where_it_happened() {
 
 #[allow(non_snake_case)]
 fn MeasuredRoot() -> Element {
-    // What a shell-host surface's root does, where `ui_blitz::launch` did not provide it.
+    // What a layer-shell-host surface's root does, where `ui_blitz::launch` did not provide it.
     ui_blitz::provide_host();
     let probe = use_rect();
     let width = probe.rect().map_or(0.0, |rect| rect.size.width.0);

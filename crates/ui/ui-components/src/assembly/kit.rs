@@ -3,9 +3,9 @@
 
 use crate::assembly::selectors;
 use crate::assembly::sheets::SHEETS;
+use std::borrow::Cow;
 use ui_style::css::document::{placed, sheets, utilities_css};
 use ui_style::kit::{Kit, KitRank, Kits, STYLE_KIT, Section, Vocabulary};
-use std::borrow::Cow;
 
 /// The components' contribution to the stylesheet.
 pub static KIT: Kit = Kit {

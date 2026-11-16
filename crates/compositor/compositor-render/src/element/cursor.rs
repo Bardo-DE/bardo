@@ -11,7 +11,6 @@ use crate::scene::convert::{on_output, sub_of};
 use crate::scene::{ChromeLayer, CursorDraw, CursorShape, OutputView};
 use crate::texture_book::TextureBook;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::element::Kind;
 use smithay::backend::renderer::element::memory::{
@@ -19,6 +18,7 @@ use smithay::backend::renderer::element::memory::{
 };
 use smithay::backend::renderer::element::surface::render_elements_from_surface_tree;
 use smithay::utils::{Logical, Rectangle, Size, Transform};
+use ui_core::geometry::scale::Scale;
 
 /// The cursor `chrome` describes, on `view` (nothing when it is hidden or off this output).
 /// Named shapes are casement's own rasters at the output's native scale (A18), drawn 1:1.

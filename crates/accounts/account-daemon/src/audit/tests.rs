@@ -108,7 +108,7 @@ async fn the_file_a_service_writes_holds_none_of_the_fake_secrets() {
 
     assert_eq!(lines(&path).len(), 3);
     let text = std::fs::read_to_string(&path).expect("read");
-    // The values porter-fake files or mints: passwords, OAuth tokens, issued tokens.
+    // The values account-fake files or mints: passwords, OAuth tokens, issued tokens.
     for secret in [
         "app-pw",
         "access",

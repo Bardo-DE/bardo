@@ -9,8 +9,8 @@ pub mod peephole_authority;
 pub mod seat;
 pub mod unit_files;
 
-use caller_identity_linux::{LoadError, PinError, ProbeError};
 use caller_identity_core::{CgroupPath, ExePath, Pid, Proof, RoleName, Uid};
+use caller_identity_linux::{LoadError, PinError, ProbeError};
 use rustix::io::Errno;
 use rustix::net::sockopt::socket_peercred;
 use std::os::fd::OwnedFd;

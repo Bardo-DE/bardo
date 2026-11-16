@@ -2,19 +2,19 @@
 //! replica, with a scripted HTTP seam in place of a server: no network, no socket. The fixtures
 //! are written from Microsoft's documentation, not recorded from a live account.
 
+use account_http::http::{Request, Response};
+use account_http::{HeaderText, Http, HttpError};
+use account_ids::{Bytes, UnixSeconds, WebUrl};
+use replica_graph::{CHUNK_UNIT, GraphReplica, Uploads};
+use std::collections::BTreeMap;
+use std::future::Future;
+use std::sync::{Arc, Mutex};
 use sync_core::{
     Anchor, BaseVersion, Blob, Change, ContentHash, Cursor, ItemKind, ItemPath, More, PutItem,
     PutTarget, Quota, RemoteId, RemoteItem, RemoteVersion, Replica, ReplicaError, RetryAfter,
     Tombstone,
 };
 use sync_core::{Clock, DELETED};
-use account_http::http::{Request, Response};
-use account_http::{HeaderText, Http, HttpError};
-use account_ids::{Bytes, UnixSeconds, WebUrl};
-use std::collections::BTreeMap;
-use std::future::Future;
-use std::sync::{Arc, Mutex};
-use replica_graph::{CHUNK_UNIT, GraphReplica, Uploads};
 
 const ORIGIN: &str = "https://graph.microsoft.com";
 const DRIVE: &str = "https://graph.microsoft.com/v1.0/me/drive";

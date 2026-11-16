@@ -4,9 +4,9 @@
 //! another path or another Space fails to open.
 
 use crate::keys::SubKey;
-use memory_core::SpaceId;
 use chacha20poly1305::aead::{Aead, KeyInit, Payload};
 use chacha20poly1305::{XChaCha20Poly1305, XNonce};
+use memory_core::SpaceId;
 
 /// The four bytes every sealed file starts with.
 pub const MAGIC: &[u8; 4] = b"QMEM";

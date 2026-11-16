@@ -5,8 +5,8 @@ use model_provider::{
     ThoughtSeal, ToolCall, ToolCallId, ToolChoice, ToolParallelism, ToolSpec, ToolStatus,
     TurnRequest,
 };
-use serde::{Deserialize, Serialize};
 use model_vision_prep::MediaType;
+use serde::{Deserialize, Serialize};
 
 use crate::canon::{canonical, digest_hex, len64};
 

@@ -3,8 +3,8 @@
 //! Reading and matching are `ui_helpers`' (the same walk and the same five rules the dock uses),
 //! so Mission Control and the dock cannot pick different icons for one window.
 
-use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile, entry_for_window, load_entries};
 use std::path::PathBuf;
+use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile, entry_for_window, load_entries};
 
 /// What an app's `.desktop` file says about its icon and its window class.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

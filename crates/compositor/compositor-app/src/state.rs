@@ -137,7 +137,7 @@ pub struct RenderState {
     /// Whether the person reduced transparency (quire's `appearance.transparency`): every blur is
     /// drawn as its mostly opaque stand-in.
     pub transparency: compositor_layout::Transparency,
-    /// The window titles' rasteriser (`casement-chrome`), made when the first server-side frame
+    /// The window titles' rasteriser (`compositor-chrome`), made when the first server-side frame
     /// needs a title so a session without one never scans the fonts.
     pub titles: Option<compositor_chrome::TitleRaster>,
     /// The window Mission Control's pointer is on, if any.
@@ -166,7 +166,7 @@ pub struct AgentState {
     pub waiting: crate::core_loop::agent_wait::Waiting,
 }
 
-/// The D-Bus servers' handles (owned by `casement-ipc`, so their lanes change them there).
+/// The D-Bus servers' handles (owned by `compositor-ipc`, so their lanes change them there).
 #[derive(Debug)]
 pub struct IpcState {
     /// The handles.

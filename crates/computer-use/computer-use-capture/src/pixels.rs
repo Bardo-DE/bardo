@@ -7,7 +7,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::sync::Arc;
 
-/// Bytes per pixel of every format cua-action names (all four are 32-bit).
+/// Bytes per pixel of every format computer-use-action names (all four are 32-bit).
 pub(crate) const BYTES_PER_PIXEL: usize = 4;
 
 /// A frame counter within one capture session.
@@ -17,7 +17,7 @@ pub struct FrameSeq(pub u64);
 
 /// Device pixels of one window, row by row.
 ///
-/// A stock compositor offers only the 8-bit `ABGR8888` and `XBGR8888` shm formats that cua-action
+/// A stock compositor offers only the 8-bit `ABGR8888` and `XBGR8888` shm formats that computer-use-action
 /// names (and 10-bit ones this vocabulary does not carry): the capture backend asks for an 8-bit
 /// one. A buffer is screen content: `Debug` prints its shape, never its bytes, and the serde form
 /// (base64) is for tests and replay traces.

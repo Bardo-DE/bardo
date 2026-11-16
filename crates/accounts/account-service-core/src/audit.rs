@@ -210,8 +210,8 @@ pub enum AuditEvent {
     /// The person's own client id for an issuer was set or cleared (Settings' client row), so
     /// the next sign-ins with that issuer present another app. Never the id itself.
     ClientIdChanged {
-        /// The issuer's slug, as its Settings row names it (`microsoft`, `google`). porter-core
-        /// does not know the issuers (porter-provider's `Issuer` does); this is its word.
+        /// The issuer's slug, as its Settings row names it (`microsoft`, `google`). account-core
+        /// does not know the issuers (account-provider's `Issuer` does); this is its word.
         issuer: String,
         /// Whether the id was cleared (the shipped one, if any, is used again) and not set or
         /// replaced.

@@ -2,20 +2,20 @@
 //! labelled handles and the calls of the fixture mail app.
 #![allow(dead_code)]
 
+use account_core::{AppId, AppName, Isolation};
+use account_ids::Count;
 use action_context::state::SessionRecord;
 use action_core::*;
 use action_fake::{FakeSeams, MailContact, MailThread, fake_router};
-use permission_core::{
-    ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
-};
 use action_router::Router;
 use action_vocab::{
     ActionRef, CallRequest, CallerRole, Handle, LabelText, Origin, ParamName, TargetValue, TurnId,
     Value,
 };
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen, SessionOpened};
-use account_core::{AppId, AppName, Isolation};
-use account_ids::Count;
+use permission_core::{
+    ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
+};
 use provenance::{
     ActionName, AgentRef, DataClass, Effect, EntityId, EntityKey, EntityKind, Label, Labelled,
     SessionId, Source, SpaceId, TaskId, UnixSeconds,
@@ -215,8 +215,8 @@ pub fn grant_mail(router: &Router<FakeSeams>, in_space: &str) {
 
 /// Standing consent: `caller` may use Mail's classes in `in_space`, always.
 pub fn grant_mail_to(router: &Router<FakeSeams>, caller: GrantCaller, in_space: &str) {
-    use action_router::GrantStore;
     use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use action_router::GrantStore;
     for (n, class) in [DataClass::Mail, DataClass::Contacts]
         .into_iter()
         .enumerate()

@@ -1,9 +1,9 @@
 //! The values of one settings file.
 
 use settings_app_model::ConfigFile;
-use ui_settings::schema::KeyPath;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+use ui_settings::schema::KeyPath;
 
 /// `$XDG_CONFIG_HOME` (or a scratch directory standing in for it): the directory the settings
 /// files' `<app>/<name>.toml` paths are under.

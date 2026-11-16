@@ -1,5 +1,5 @@
 //! Programmatic scrolls (design/11 §11.3.11): `ScrollCmd`, which a host's handle accepts
-//! (shell-host's `SurfaceHandle::scroll`, ds-blitz's `ScrollHandle`). They run through the engine
+//! (layer-shell-host's `SurfaceHandle::scroll`, ui-blitz's `ScrollHandle`). They run through the engine
 //! with the smooth rule (or at once), never through Blitz's own `scroll_to` (whose 300 ms
 //! animation would fight the engine).
 

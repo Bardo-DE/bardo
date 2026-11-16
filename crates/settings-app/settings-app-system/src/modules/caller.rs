@@ -2,9 +2,9 @@
 //! that received the call, so the fake holds a private pair of connections to each other in this
 //! process; no bus is reached and nobody else can speak on it.
 
-use ui_settings::live::{Caller, LiveError, SenderName};
 use tokio::net::UnixStream;
 use tokio::sync::OnceCell;
+use ui_settings::live::{Caller, LiveError, SenderName};
 use zbus::connection::Builder;
 use zbus::{Connection, Guid};
 

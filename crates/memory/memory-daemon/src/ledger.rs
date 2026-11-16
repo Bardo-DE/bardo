@@ -2,9 +2,9 @@
 //! file is replaced whole through `atomic-write-file` (temp file, fsync, rename), so a crash
 //! leaves the old notes or the new ones.
 
+use atomic_write_file::AtomicWriteFile;
 use memory_core::{Removal, SpaceId};
 use memory_tidy::{LedgerError, RemovalLedger, removals_from_toml, removals_to_toml};
-use atomic_write_file::AtomicWriteFile;
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::PathBuf;

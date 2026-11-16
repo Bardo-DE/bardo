@@ -1,6 +1,6 @@
 //! Getting llama.cpp, vLLM or Strata when the person chooses one in "Runs with" and it is not
 //! there: the engines as the Local row lists them, followed, and what the offer asks of the
-//! desk. The steps are `detent-model`'s `engine_offer_step`.
+//! desk. The steps are `settings-app-model`'s `engine_offer_step`.
 
 use crate::live::Live;
 use crate::pane::{Machine, Pending, pane};

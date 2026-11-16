@@ -24,7 +24,7 @@
 //!   or an answer to the next state and what to do about it, with its tables in `step_tests`.
 //! - [`seams`] and [`carried`]: the traits a session server leans on (who answers, the engines
 //!   behind it, the model turn, the audit trail), and what a finished turn carried. Running turns
-//!   is `porter-turns`; hosting the socket is the daemon's.
+//!   is `inference-turns`; hosting the socket is the daemon's.
 //! - [`audio`] and [`startup`]: the rules every audio turn obeys, and why an engine did not start.
 //!
 //! Nothing here reads the environment or the clock; a daemon (inferd) or an app passes in what it

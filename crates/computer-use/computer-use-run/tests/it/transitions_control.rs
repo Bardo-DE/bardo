@@ -2,21 +2,21 @@
 //! take over, hand back, cancel, the kill chord, the active budget; and the table's invariants.
 
 use crate::support::*;
+use action_gate_wire::GateAnswer;
+use action_wire::GrantAnswer;
 use computer_use_action::{Coord, Rect, Size};
 use computer_use_bus::{
     ActionResult, BlockedOn, CancelledBy, CuaOutcome, FailReason, QuestionId, RunBudgetKind,
     SuccessCheck,
 };
+use computer_use_capture::{CaptureError, DamageAt, DamageSource, Settle};
 use computer_use_desktop::{
     BackendKind, DesktopEvent, GlowState, LeaseId, RevokeReason, Stamp, Suspend, ToplevelIdent,
 };
 use computer_use_run::{CheckResult, CuaModelError, RunEffect, RunInput, RunPhase, StepEvent};
-use action_gate_wire::GateAnswer;
-use action_wire::GrantAnswer;
-use computer_use_capture::{CaptureError, DamageAt, DamageSource, Settle};
+use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 use inference_core::StepIndex;
 use provenance::{ConfirmId, MessageKind, ReportStatus};
-use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 
 const STOCK: BackendKind = BackendKind::KwinStock;
 
@@ -277,7 +277,9 @@ fn every_input_in_every_phase_has_a_row_and_leaves_a_valid_run() {
             RunInput::LeaseRefused(computer_use_desktop::DesktopError::Busy),
             RunInput::Observed(Box::new(observation(4, tree(vec![])))),
             RunInput::CaptureFailed(CaptureError::Refused),
-            RunInput::ModelEvent(StepEvent::ThoughtDelta(computer_use_run::ThoughtText("x".into()))),
+            RunInput::ModelEvent(StepEvent::ThoughtDelta(computer_use_run::ThoughtText(
+                "x".into(),
+            ))),
             RunInput::ModelReplied(reply(vec![click_at(1, 1)])),
             RunInput::ModelFailed(CuaModelError::Transient),
             RunInput::ScreenRead(computer_use_run::ScreenRead::Instructions),

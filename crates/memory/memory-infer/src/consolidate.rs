@@ -1,18 +1,18 @@
 //! `InferdConsolidator`: a consolidation draft from an inferd task session.
 
 use crate::deadline::{Deadlines, turn, within};
-use memory_store::class_of;
-use memory_tidy::{
-    ConsolidateError, ConsolidationInput, Consolidator, Draft, parse_draft, render_prompt,
-};
-use inference_client::Transport;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::consent::Usage;
 use account_ids::Tokens;
-use inference_core::{InferRefusal, InferReply, InferRequest, ModelError, Task, TaskRequest};
 use account_match::LlmNeed;
 use account_match::Need;
+use inference_client::Transport;
+use inference_core::{InferRefusal, InferReply, InferRequest, ModelError, Task, TaskRequest};
+use memory_store::class_of;
+use memory_tidy::{
+    ConsolidateError, ConsolidationInput, Consolidator, Draft, parse_draft, render_prompt,
+};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

@@ -1,17 +1,17 @@
-use ui_components::components::lists::emoji_grid::grid::EMOJI_COLUMNS;
 use std::path::PathBuf;
+use ui_components::components::lists::emoji_grid::grid::EMOJI_COLUMNS;
 
-use keymap::StandardAction;
 use dioxus::prelude::*;
-use ui_components::components::lists::row::chord::ChordShown;
-use ui_components::components::lists::row::shape::{ClipBody, RowShape};
-use ui_components::components::menus::palette::palette_group::GroupEntries;
-use ui_components::prelude::*;
+use keymap::StandardAction;
 use shell_launcher::{
     Action, ActionId, ActionKeys, CharCount, ClipFacts, ClipKey, ClipKind, EmojiFacts, Excerpt,
     FileFacts, IconRef, Item, ItemId, Mime, More, ProviderKind, Score, Section, ShownSection,
     SkinTone, Subject, UnixTime,
 };
+use ui_components::components::lists::row::chord::ChordShown;
+use ui_components::components::lists::row::shape::{ClipBody, RowShape};
+use ui_components::components::menus::palette::palette_group::GroupEntries;
+use ui_components::prelude::*;
 
 use super::{ClockHours, Draw, HeaderAction, palette_groups};
 use crate::launcher::entries::tile;

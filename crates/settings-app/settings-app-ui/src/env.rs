@@ -7,10 +7,10 @@ use settings_app_client::{
     Client, ConfigHome, DataHome, ExtensionHome, FirstRunMark, KeymapFiles, StateHome,
 };
 use settings_app_model::{Catalogue, Inbox, OriginRule, PageSlug, Warning, discover};
-use ui_helpers::Environment;
-use ui_settings::SystemPrefsSource;
 use std::path::PathBuf;
 use std::sync::Arc;
+use ui_helpers::Environment;
+use ui_settings::SystemPrefsSource;
 
 /// Where the window opens.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

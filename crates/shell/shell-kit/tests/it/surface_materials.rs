@@ -7,6 +7,10 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::{Rgba, RgbaImage};
+use probe::{keep, rect};
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::base::geometry::placement::Align;
 use ui_components::base::geometry::placement::Side;
 use ui_components::components::menus::item::item::MenuImage;
@@ -20,10 +24,6 @@ use ui_components::style::tokens::shape::Corner;
 use ui_components::style::tokens::shell_type::ShellType;
 use ui_components::style::tokens::token::TokenScope;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use image::{Rgba, RgbaImage};
-use probe::{keep, rect};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

@@ -4,10 +4,10 @@
 //! beside its target.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 640,

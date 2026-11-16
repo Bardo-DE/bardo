@@ -2,14 +2,7 @@
 
 use crate::support::{USER, listed, palmrest};
 use caller_identity_core::Uid;
-use rustix::net::{
-    AddressFamily, SocketAddrUnix, SocketFlags, SocketType, bind, listen, socket_with,
-};
-use std::collections::{HashMap, VecDeque};
-use std::os::fd::{AsRawFd, OwnedFd, RawFd};
-use std::path::Path;
-use std::sync::{Condvar, Mutex, mpsc};
-use std::time::Duration;
+use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
 use input_broker_daemon::backend::fake::FakeBackend;
 use input_broker_daemon::clock::Monotonic;
 use input_broker_daemon::daemon::{Daemon, Settings};
@@ -18,10 +11,17 @@ use input_broker_daemon::identity::seat::FixedSeat;
 use input_broker_daemon::identity::{ActiveUid, Authority, Caller, IdentifyError};
 use input_broker_daemon::pending::Caps;
 use input_broker_daemon::serve::Context;
-use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
 use input_broker_wire::limits::{
     MAX_CONNECTIONS_PER_USER, MAX_PENDING_PER_USER, MAX_RESERVED_PER_CLIENT,
 };
+use rustix::net::{
+    AddressFamily, SocketAddrUnix, SocketFlags, SocketType, bind, listen, socket_with,
+};
+use std::collections::{HashMap, VecDeque};
+use std::os::fd::{AsRawFd, OwnedFd, RawFd};
+use std::path::Path;
+use std::sync::{Condvar, Mutex, mpsc};
+use std::time::Duration;
 
 fn listener(path: &Path) -> OwnedFd {
     let fd = socket_with(

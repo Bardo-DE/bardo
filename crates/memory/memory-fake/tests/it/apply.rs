@@ -2,15 +2,15 @@
 //! person's `ApplyConsolidation` runs the machine's `Proceed` step over the kept hunks, each
 //! checked again against the Space as it is then. Scratch Space, scripted drafts, no clock.
 
+use chrono::{Offset, Utc};
 use memory_core::*;
 use memory_fake::*;
+use memory_files_format::{Block, TopicFile, render_topic};
 use memory_service::Caller;
 use memory_service::MemoryService;
 use memory_settings::{ConsolidateApply, MemorySettings};
 use memory_store::{Vault, VaultPath};
 use memory_tidy::{ConsolidateError, Draft};
-use chrono::{Offset, Utc};
-use memory_files_format::{Block, TopicFile, render_topic};
 
 type Service = MemoryService<FakeBackend>;
 

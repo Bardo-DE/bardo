@@ -3,11 +3,11 @@
 
 use crate::common;
 
-use common::*;
 use account_core::{Family, Tls};
 use account_fake_servers::net::Bind;
 use account_fake_servers::{Accounts, FakeImap, MailEvent, Mechanism, Secret, mailbox};
 use account_proxy::RelayEnd;
+use common::*;
 
 fn accounts() -> Accounts {
     Accounts::password(USER, PASSWORD).with_bearer(TOKEN)

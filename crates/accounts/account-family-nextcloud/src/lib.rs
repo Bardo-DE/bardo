@@ -10,8 +10,6 @@ mod flow;
 mod revoke;
 mod sign_in;
 
-use discover::Who;
-use account_nextcloud_proto::paths::server_of;
 use account_capability::Claim;
 use account_core::AccountId;
 use account_core::{Account, Audience, Credential, EndpointUrl, IssuedToken};
@@ -19,14 +17,16 @@ use account_family_kit::Conversation;
 use account_family_kit::password::password_of;
 use account_family_kit::{Io, Pacing};
 use account_http::{SharedHttp, Sleep};
+use account_nextcloud_proto::paths::server_of;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInStart,
 };
 use account_sheet::SignInFault;
+use discover::Who;
 
 pub use sign_in::NextcloudFlow;
 
-/// What a nextcloud-proto error means for a sign-in. Plain `http` to another computer is a
+/// What a account-nextcloud-proto error means for a sign-in. Plain `http` to another computer is a
 /// server that cannot be reached safely.
 fn fault(error: account_nextcloud_proto::Error) -> SignInFault {
     match error {

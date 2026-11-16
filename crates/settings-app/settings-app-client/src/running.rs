@@ -1,5 +1,5 @@
 //! The Local models list: the models inferd runs itself, read again each time one changes state
-//! or inferd comes back. Looking never starts the assistant. The steps are `detent-model`'s
+//! or inferd comes back. Looking never starts the assistant. The steps are `settings-app-model`'s
 //! `running_step`.
 
 use crate::live::Live;

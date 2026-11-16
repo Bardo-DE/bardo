@@ -17,9 +17,9 @@ use compositor_core::input::{
 use compositor_core::settings::CasementSettings;
 use compositor_core::time::Mono;
 use desktop_protocols::vocab::PressEdge;
-use ui_core::vocab::Fraction;
 use smithay::backend::input::InputEvent;
 use std::time::Duration;
+use ui_core::vocab::Fraction;
 
 fn stamp() -> EventStamp {
     EventStamp {

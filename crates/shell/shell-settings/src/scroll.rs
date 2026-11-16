@@ -1,11 +1,11 @@
 //! `scroll.*` (design/22 §3.7 and `scroll.scrollbars` from §3.8; design/11 §11.6). The physics
-//! run in shell-host with constants (`shell_app::scroll`). Natural scrolling is on the Mouse & Gestures
+//! run in layer-shell-host with constants (`shell_app::scroll`). Natural scrolling is on the Mouse & Gestures
 //! page; the rest are Advanced (§5). `scroll.speed`, `scroll.lock_*` and the gains are
 //! palmrest's (`palmrest/gestures.toml`, §3.9), not here.
 
+use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// `scroll.natural`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

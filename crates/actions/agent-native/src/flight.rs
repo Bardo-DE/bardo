@@ -7,10 +7,10 @@
 //! on the pull that comes after the one that returned `Started`, and not before: whoever reads
 //! the events (an editor's permission round) has the whole time between the two pulls to stop it.
 
-use companion_wire::NeedsYou;
 use action_core::{Reveal, StepLine};
 use agent_session::{BackendEvent, CallEvent, CallOpen, TurnEnd};
 use companion_tasks::{Go, Tap};
+use companion_wire::NeedsYou;
 use futures_channel::mpsc::{UnboundedReceiver, UnboundedSender, unbounded};
 use futures_util::StreamExt;
 use futures_util::future::{BoxFuture, Either, select};

@@ -2,14 +2,14 @@
 //! of `props.rs`. A key the shell cannot parse (an account or provider that is not one) is no
 //! action.
 
-use ui_components::prelude::Check;
-use ui_shell::accounts::model::{
-    AllowScope, ChoiceKey, ConsentAnswer, FieldRole, FieldText, ProviderPick, ServiceKey,
-};
 use account_core::consent::GrantScope;
 use account_core::{SecretText, SessionToken};
 use account_sheet::FieldValue;
 use shell_model::accounts::sheet::{ListKey, SheetAction};
+use ui_components::prelude::Check;
+use ui_shell::accounts::model::{
+    AllowScope, ChoiceKey, ConsentAnswer, FieldRole, FieldText, ProviderPick, ServiceKey,
+};
 
 use super::props::{account_of, kind_of, provider_of};
 use super::words::service_of;

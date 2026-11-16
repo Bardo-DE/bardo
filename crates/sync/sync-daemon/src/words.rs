@@ -1,5 +1,5 @@
 //! The words Files shows for a drive's items and folders, written from the typed reasons
-//! ferry-drive, ferry-drive-fuse and porter-mountd return. syncd serves `org.quire.Storage1`
+//! drive-core, drive-fuse and porter-mountd return. syncd serves `org.quire.Storage1`
 //! and the sync settings rows, so the sentences live here and nowhere in those
 //! libraries.
 

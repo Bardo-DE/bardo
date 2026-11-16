@@ -7,12 +7,12 @@
 //! script inside the page, on the harness's clock, and passes only if nothing panics.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::time::clock::sleep;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

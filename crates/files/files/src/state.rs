@@ -4,8 +4,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ui_settings::{AppName, ConfigRoot};
 use files_fs::{NoPrefs, PrefsStore, TomlPrefs};
+use ui_settings::{AppName, ConfigRoot};
 
 /// The directory name under the state folder (`$XDG_STATE_HOME`, else `~/.local/state`).
 const APP: AppName = AppName("files");

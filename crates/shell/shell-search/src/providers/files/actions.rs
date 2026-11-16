@@ -9,12 +9,12 @@
 use anyview_core::{
     FileAction, FormatKind, Mime as CoreMime, Reach, actions_for, kind_of_mime, reach,
 };
-use ui_core::standard_action::StandardAction;
-use ui_core::word::Word;
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, FileFacts, Generation, Mime, OpenTarget, OwnAction,
     ViewerOpen,
 };
+use ui_core::standard_action::StandardAction;
+use ui_core::word::Word;
 
 /// What the launcher does for one action on one file.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -138,8 +138,8 @@ mod tests {
     use std::path::PathBuf;
 
     use anyview_core::{FileAction, shortcut};
-    use ui_core::vocab::Shortcut;
     use shell_launcher::{ActionKeys, Activation, Mime, OpenTarget, UnixTime};
+    use ui_core::vocab::Shortcut;
 
     use super::*;
 

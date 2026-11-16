@@ -2,8 +2,8 @@
 //! page scrolls and the grid does not.
 
 use super::Smalls;
-use settings_app_model::{PictureTile, current_place};
 use dioxus::prelude::*;
+use settings_app_model::{PictureTile, current_place};
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::lists::collection_view::{
     CollectionItem, CollectionSize, CollectionView, Flow, Thumbnail,

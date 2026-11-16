@@ -4,8 +4,8 @@
 use std::fmt::Debug;
 use std::sync::Arc;
 
-use caller_identity_dbus::peephole::{RealProc, TableFiles};
 use caller_identity_dbus::caller_identity_core::{Proof, Requirement, Table, roles};
+use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use caller_identity_dbus::{BusPeers, ManagerCheck, ManagerLink, Offload};
 use zbus::Connection;
 

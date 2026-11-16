@@ -3,16 +3,16 @@
 //! the profile is only what the person said themselves.
 
 use crate::support::*;
+use account_ids::Count;
+use action_core::*;
+use action_fake::FakeMemory;
+use action_wire::{IntentsReply, IntentsRequest, RecallAsk, RecallView};
 use memory_core::{
     BodyMode, Episode, EpisodeId, EpisodeKind, EpisodeOutcome, EventRef, EventSummary, Fact,
     FactId, FactState, FactText, FactView, JsonText, KindTag, MemoryItem, MemoryReply,
     MemoryRequest, Narrative, RecallHit, RecallWhy, RecentEntry, RecentQuery, ReplicaId, Seq,
     Skeleton, StepLine, StepOutcome, TopicPath, TrustFilter, UseCount, UserText, Validity,
 };
-use action_core::*;
-use action_fake::FakeMemory;
-use action_wire::{IntentsReply, IntentsRequest, RecallAsk, RecallView};
-use account_ids::Count;
 use provenance::{Actor, AgentRef, Label, Source, UnixSeconds};
 
 pub(crate) fn entry(

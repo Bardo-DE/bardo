@@ -8,13 +8,13 @@
 //!
 //! [`SwipeState`] is a `Machine`: it decides, and `use_swipe` runs it and draws the offset.
 
+use std::time::Duration;
 use ui_core::geometry::units::Px;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_core::vocab::Fraction;
 use ui_core::word::Word;
 use ui_style::tokens::delay::DelayToken;
-use std::time::Duration;
 
 /// A speed in logical pixels per second.
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Default)]

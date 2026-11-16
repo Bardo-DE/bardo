@@ -43,7 +43,11 @@ fn a_markup_exception_names_the_element() {
         reason: "the editor's swatch paints its picked colour inline",
     }];
     let html = "<span class=\"ds-space-swatch\" style=\"background:#944242\"></span>";
-    let bare = markup(html, ".ds-space-swatch{}", &LintConfig::new(&ui_components::kits()));
+    let bare = markup(
+        html,
+        ".ds-space-swatch{}",
+        &LintConfig::new(&ui_components::kits()),
+    );
     assert_eq!(bare.len(), 1, "{bare:?}");
     assert_eq!(bare[0].selector, "span.ds-space-swatch");
     let config = LintConfig {

@@ -4,9 +4,9 @@
 
 use std::sync::Arc;
 
+use agent_voice_wire::{Envelope, UtteranceEnd, VoiceVocab};
 use caller_identity_dbus::caller_identity_core::RoleName;
 use tokio::sync::mpsc::UnboundedSender;
-use agent_voice_wire::{Envelope, UtteranceEnd, VoiceVocab};
 use zbus::message::Type;
 use zbus::{Connection, MatchRule, MessageStream};
 

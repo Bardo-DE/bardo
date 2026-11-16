@@ -12,7 +12,7 @@
 //! [`ROWS`]. The daemon hosts the module and carries out the actions through [`Acts`]; only the
 //! spend rows, which read inferd's ledger, are served beside these by inferd.
 //!
-//! Every key is under `accounts.`, so it is never agent-settable (`ds-settings` refuses a schema
+//! Every key is under `accounts.`, so it is never agent-settable (`ui-settings` refuses a schema
 //! that says otherwise).
 
 pub mod accounts;
@@ -29,16 +29,16 @@ pub use rows::{
     SIGN_OUT, STATE, USED_BY, place_slug,
 };
 
-use accounts::{Directory, UsedBy};
-use ui_settings::live::LiveError;
-use ui_settings::schema::KeySpec;
 use account_capability::CapabilityKind;
 use account_core::consent::Grant;
 use account_core::{Account, AccountId, AppName, GrantId};
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
+use accounts::{Directory, UsedBy};
 use std::future::Future;
 use std::pin::Pin;
+use ui_settings::live::LiveError;
+use ui_settings::schema::KeySpec;
 
 /// What a write is: a future the daemon drives.
 pub type Boxed<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;

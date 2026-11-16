@@ -3,10 +3,10 @@
 //! and only the confirming button runs the confirmation; the row is not picked while it asks.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::row::confirm::RowConfirm;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

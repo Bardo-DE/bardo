@@ -6,7 +6,7 @@
 //! decision ([`settle`], [`DamageAt`], [`pixel_diff`]) and the two seams ([`WindowCapture`],
 //! [`CaptureSession`]).
 //!
-//! Pure: the backend, ext-image-copy-capture over wayland-client, is `maskcap-wayland`.
+//! Pure: the backend, ext-image-copy-capture over wayland-client, is `computer-use-capture-wayland`.
 
 mod capture;
 mod digest;

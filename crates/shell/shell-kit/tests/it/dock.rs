@@ -4,14 +4,14 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::style::icon::render::IconPx;
-use ui_components::style::tokens::shape::Corner;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use image::{Rgba, RgbaImage};
 use probe::rect;
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_components::style::icon::render::IconPx;
+use ui_components::style::tokens::shape::Corner;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 480,

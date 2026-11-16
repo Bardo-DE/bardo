@@ -5,9 +5,9 @@ use crate::support::*;
 use action_core::*;
 use action_fake::{FixedClock, ScriptedReviewer, ScriptedWriter, fake_router_on};
 use action_router::Router;
-use agent_session::fake::MemoryLog;
 use action_vocab::{CallerRole, Origin};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen, WireRefusal};
+use agent_session::fake::MemoryLog;
 use provenance::{AgentRef, SessionId, UnixSeconds};
 use std::sync::Arc;
 

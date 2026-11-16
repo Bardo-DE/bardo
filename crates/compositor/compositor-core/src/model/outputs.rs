@@ -13,8 +13,8 @@ use crate::reveal::RevealEdge;
 use crate::space::SpaceContent;
 use crate::time::TimerKey;
 use crate::window::{SpacePlace, WindowState};
-use desktop_protocols::vocab::WindowRole;
 use account_core::SpaceId;
+use desktop_protocols::vocab::WindowRole;
 
 impl Model {
     /// A display was plugged. One already known only has its facts replaced. A new one is

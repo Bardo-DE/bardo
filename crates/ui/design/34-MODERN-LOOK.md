@@ -147,7 +147,7 @@ retuned to 17 (an `FontSize::Title` value change, affects every user, see 4) and
 | `--shadow-1` (raised control) | inset white + 0 1 2 rgba .1 | none for filled buttons (flat fill, M); kept for knobs | |
 | `--shadow-pop` | menu/popover | 0 0 0 .5 rgba(0,0,0,.12), 0 10 30 -8 rgba(0,0,0,.28) (M: Sonoma menu = hairline + soft shadow) | same |
 | `--shadow-sheet` | | 0 0 0 .5 rgba(0,0,0,.14), 0 24 60 -12 rgba(0,0,0,.35) | same |
-| panel materials | opaque `--surface`/`--raise` | `Material::Panel`: tint alpha .72-.8 + 30 px blur (`ds-style/material/`); group fill stays opaque `--grp` (white / #2c2c2e dark) so rows read | |
+| panel materials | opaque `--surface`/`--raise` | `Material::Panel`: tint alpha .72-.8 + 30 px blur (`ui-style/material/`); group fill stays opaque `--grp` (white / #2c2c2e dark) so rows read | |
 | fills | `--surface-2` grey | filled button fill = `--fill-quaternary`-tier wash (rgba(0,0,0,.06) light, rgba(255,255,255,.1) dark); field fill = same | |
 | toolbar hairline | 1 px under toolbar | | none; scroll-edge fade: 20 px gradient of window colour -> transparent over the content, hard variant for macOS (H: WWDC25 356 "hard ... mostly used on macOS") |
 
@@ -330,8 +330,8 @@ Segmented control, Stepper, Chip, Badge, Tooltip, HoverCard, Toast take radii/he
 
 Goldens in quire (all must be re-recorded in the lane that changes them, never mixed):
 `crates/ds-shell/tests/snapshots/stylesheet.css` (3849 lines): every step changes them;
-ds-gallery `--snapshot` images; ds-conformance size-rule tests
-(`tokens/size_rules_tests.rs`, ladder values), `ds-style` token tests, `ds-lint` CSS rules
+ds-gallery `--snapshot` images; ui-conformance size-rule tests
+(`tokens/size_rules_tests.rs`, ladder values), `ui-style` token tests, `ui-lint` CSS rules
 that name tokens.
 Consumers: sill (`launcher_card.rs`, `osd.rs`, `switcher.rs`, `screenshot_thumb`, battery
 snapshot, any test asserting a px rect of a bar/menu/row; grep `row_h|menu_row|titlebar`),
@@ -358,11 +358,11 @@ API: additive unless noted.
 
 ## 5. Implementation lanes
 
-Rule: a lane owns files; shared token files (`ds-style/tokens/*`) go to Lane A only, per
+Rule: a lane owns files; shared token files (`ui-style/tokens/*`) go to Lane A only, per
 step; others read tokens.
 
 Step 1 (Sonoma):
-- **Lane 1A tokens** (ds-style): `tokens/shape.rs`, `spacing.rs`, `row_scale.rs`,
+- **Lane 1A tokens** (ui-style): `tokens/shape.rs`, `spacing.rs`, `row_scale.rs`,
   `elevation.rs`, `css/materials_css.rs`, `type_scale.rs` (add `Title2`), colour fill tokens
   (`tokens/colour.rs`, `--fill-btn`, `--grp`). Verify:
   `cargo test -p ui-style` and `cargo run -p ui-gallery --release -- --snapshot out/` (compare
@@ -387,7 +387,7 @@ Step 2 (Tahoe): same four lanes, files as above plus:
   row). Verify: `cargo test -p ui-style` (size_rules_tests updated to the new ladder).
 - **2B controls/menus** (capsule buttons, icons in menus, menu radius); **2C chrome**
   (window_frame.css, toolbar.css, sidebar.css, split_view, scroll-edge fade, transparent menu bar
-  in `sill-shell-kit/bar`); **2D overlays** radii, concentric sheet/alert. Verify per lane as above
+  in `shell-kit/bar`); **2D overlays** radii, concentric sheet/alert. Verify per lane as above
   plus `cargo test --workspace --all-features` and the sill gate.
 Step 2 starts only after step 1 is merged and the consumers are re-pinned and green.
 
@@ -433,7 +433,7 @@ Glass (excluded). So the recommendation below is a product choice that matches t
 direction, not an Apple-verified behaviour; flagged as question 4.
 
 The engine already follows WWDC18: `SpringSpec::for_touch` gives critical damping for a tap, key or remote
-and 0.8 only when a hand let go with momentum (`ds-motion/src/spring_spec.rs`), and
+and 0.8 only when a hand let go with momentum (`ui-motion/src/spring_spec.rs`), and
 Reduced maps every moving duration to `--t-quick` (`timing.rs`). Tokens now: `--t-quick` 150,
 `--t-move` 250, `--t-big` 400; easings `--e-out` (.22,.9,.3,1), `--e-exit` (.55,0,.75,.2),
 `--e-in-out` (.42,0,.58,1), spring responses 300/450.
@@ -472,11 +472,11 @@ principle "brief".)
 Interruptibility (H, WWDC18): sheet, popover and panel exits must be cancellable: a show
 during `leaving` restarts from the current state. The `data-pulse=b`/`hold` restart machinery
 already handles this; the new sheet keyframes must have identical `--b` aliases (the
-`ds-motion/css.rs` generator does it automatically) and an entry in `Anim` and the lint's
-known-keyframes list (`ds-lint/src/animation.rs`). Reduced motion: every above becomes the 120 ms
+`ui-motion/css.rs` generator does it automatically) and an entry in `Anim` and the lint's
+known-keyframes list (`ui-lint/src/animation.rs`). Reduced motion: every above becomes the 120 ms
 fade (already the rule).
 Lane: motion edits belong to Lane 1D (sheet, alert, peek) and a new small **Lane 1E motion**
-that owns `ds-motion/src/motion.css`, `anim.rs`, `recipe*.rs`, `ds-style/tokens/timing.rs`
+that owns `ui-motion/src/motion.css`, `anim.rs`, `recipe*.rs`, `ui-style/tokens/timing.rs`
 and `easing.rs` (token retune, keyframe edits, golden of the motion lab). Verify:
 `cargo test -p ui-motion -p ui-lint` and the gallery Motion page.
 

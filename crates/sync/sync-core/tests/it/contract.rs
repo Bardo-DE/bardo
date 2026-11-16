@@ -1,13 +1,13 @@
 //! The sync contract (design/31 §6.1), driven through the reference replica: anchors, base
 //! versions, conflicts as values, tombstones, and cursor reset.
 
+use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
+use account_ids::{Bytes, UnixSeconds};
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, ChangePage, Conflict, Cursor, ItemPath, MemoryReplica,
     More, PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteSide, Replica, ReplicaError,
     Tombstone,
 };
-use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_ids::{Bytes, UnixSeconds};
 
 fn replica(page: usize) -> MemoryReplica {
     let features = StorageCap {

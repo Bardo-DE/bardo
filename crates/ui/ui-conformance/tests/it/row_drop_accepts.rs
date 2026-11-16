@@ -3,12 +3,12 @@
 //! item keeps its size and its label stays where it was as a drag starts.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

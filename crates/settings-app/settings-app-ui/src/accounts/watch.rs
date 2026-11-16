@@ -1,9 +1,9 @@
 //! The accounts the modules list, read where a page outside the Accounts pane needs them. The
-//! reading is `detent-client`'s; this is its signal.
+//! reading is `settings-app-client`'s; this is its signal.
 
 use crate::live::use_live;
-use settings_app_client::Client;
 use dioxus::prelude::*;
+use settings_app_client::Client;
 
 pub(crate) use settings_app_client::Listed;
 

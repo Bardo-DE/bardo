@@ -1,8 +1,8 @@
 //! Driving the window the way a person does.
 
+use std::time::Duration;
 use ui_components::prelude::{Point, Px, ShortcutKey};
 use ui_harness::{Harness, Input};
-use std::time::Duration;
 
 /// How long a click or a keystroke is given to reach the document and its handlers.
 const SETTLE: Duration = Duration::from_millis(400);

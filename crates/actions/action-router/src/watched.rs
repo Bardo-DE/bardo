@@ -19,14 +19,14 @@ use crate::checkpoint_restore::{CHECKPOINTS_APP, CHECKPOINTS_RESTORE};
 use crate::restore::named_session;
 use crate::router::Router;
 use crate::seams::Seams;
-use companion_model::{WatchOwner, WatchedAgent, Watching};
 use action_context::session::SessionState;
 use action_context::state::{SessionKind, SessionRecord};
 use action_context::wal::Wal;
 use action_core::Rewind;
-use agent_session::{BackendKind, Opening, SessionEntry};
 use action_vocab::{CallRequest, CallerRole, Clock, TurnId, Workspace};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, WireRefusal};
+use agent_session::{BackendKind, Opening, SessionEntry};
+use companion_model::{WatchOwner, WatchedAgent, Watching};
 use provenance::{Actor, AgentRef, SessionId, SpaceId, TaskId};
 
 /// The longest label kept, in characters.

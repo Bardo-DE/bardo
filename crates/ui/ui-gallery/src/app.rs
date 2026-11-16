@@ -17,7 +17,7 @@ pub fn App() -> Element {
     let now = axes();
     rsx! {
         Ds {
-            // The root draws with ds-shell's sheet: the app-facing parts (accounts, confirm, helpers).
+            // The root draws with ui-shell's sheet: the app-facing parts (accounts, confirm, helpers).
             sheet: Some(ui_shell::stylesheet()),
             appearance: now.appearance(),
             look: now.look.clone(),

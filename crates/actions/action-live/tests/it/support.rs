@@ -1,5 +1,5 @@
 //! Shared by the live-harness tests: where the daemon binaries are. The daemons are
-//! `docket-accept`'s (`accept-intentd` and the rest), built into the same target directory as this
+//! `action-accept`'s (`accept-intentd` and the rest), built into the same target directory as this
 //! test: `cargo build -p action-accept --bins` builds them (a workspace test run does).
 #![allow(dead_code)]
 
@@ -16,7 +16,7 @@ fn built_in() -> PathBuf {
         .to_owned()
 }
 
-/// A program of `docket-accept` built beside this test.
+/// A program of `action-accept` built beside this test.
 pub fn accept_bin(name: &str) -> PathBuf {
     built_in().join(name)
 }
@@ -28,9 +28,7 @@ pub fn binaries() -> Binaries {
 }
 
 /// Flow (a), the person allows: search, contact search, forward, the closing words.
-pub const FLOW_A: Cassette = Cassette(include_str!(
-    "../../../dev/accept/cassettes/flow-a.jsonl"
-));
+pub const FLOW_A: Cassette = Cassette(include_str!("../../../dev/accept/cassettes/flow-a.jsonl"));
 
 /// A command line as the words the parser takes.
 pub fn words(line: &str) -> Vec<String> {

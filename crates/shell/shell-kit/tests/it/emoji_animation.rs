@@ -5,16 +5,16 @@
 //! frame never leaves 0.
 
 use dioxus::prelude::*;
-use ui_components::motion::epoch::Epoch;
-use ui_components::prelude::*;
-use ui_harness::harness::settle_until;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use shell_kit::emoji::disc::EmojiPlayback;
 use shell_kit::emoji::id::EmojiId;
 use shell_kit::prelude::*;
 use shell_kit::user_picture::size::PictureSize;
 use std::collections::BTreeSet;
 use std::time::Duration;
+use ui_components::motion::epoch::Epoch;
+use ui_components::prelude::*;
+use ui_harness::harness::settle_until;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 200,

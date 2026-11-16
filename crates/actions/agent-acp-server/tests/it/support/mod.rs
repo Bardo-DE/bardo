@@ -2,17 +2,17 @@
 //! around it. Scripted: no network, no process, no clock.
 #![allow(dead_code)]
 
-use agent_client_protocol::schema::v1::RequestId;
-use agent_client_protocol::{Agent, DynConnectTo};
-use agent_acp_server::{Helpers, NoHelpers, Server, capped_lines};
+use account_core::AppName;
 use action_core::{CallRefusal, StepEnd, StepLine, StepShown};
 use action_fake::FixedClock;
-use permission_core::DenyCode;
+use action_vocab::{ActionRef, CallId, LabelText};
+use agent_acp_server::{Helpers, NoHelpers, Server, capped_lines};
+use agent_client_protocol::schema::v1::RequestId;
+use agent_client_protocol::{Agent, DynConnectTo};
 use agent_session::fake::{FakeBackend, MemoryLog};
 use agent_session::fake_host::FakeHost;
 use agent_session::{BackendEvent, CallEvent, CallOpen, TurnEnd};
-use action_vocab::{ActionRef, CallId, LabelText};
-use account_core::AppName;
+use permission_core::DenyCode;
 use provenance::{ActionName, Effect, UnixSeconds};
 use serde_json::{Value, json};
 use std::sync::Arc;

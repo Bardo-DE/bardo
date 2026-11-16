@@ -5,13 +5,13 @@ use crate::protocol::xdg_shell::{
 };
 use compositor_core::DeviceId;
 use compositor_core::input::{DeviceClass, KeyCode};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::ime::input_method::InputMethodEvent;
 use compositor_testclient::ime::session::ImeSession;
 use compositor_testclient::ime::text_input::TextInputEvent;
 use compositor_testclient::ime::virtual_keyboard::VirtualBoard;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testkit::{ClientId, Fixture, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 
 /// The smallest keymap libxkbcommon accepts: one key.
 const KEYMAP: &str = "xkb_keymap {\n xkb_keycodes { <A> = 38; };\n xkb_types {};\n xkb_compat {};\n xkb_symbols { key <A> { [ a ] }; };\n};\n";

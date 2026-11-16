@@ -75,7 +75,7 @@ mod tests {
 
     use super::{apply, command_of};
 
-    /// The words of a window on offer come from the desktop's view (`sill-model`'s `cards_of`
+    /// The words of a window on offer come from the desktop's view (`shell-model`'s `cards_of`
     /// tests); here the view is empty, so a window it does not know has no card.
     #[test]
     fn the_notes_open_and_close_the_offer_and_a_window_the_view_lost_has_no_card() {

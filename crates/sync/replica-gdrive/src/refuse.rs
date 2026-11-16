@@ -5,10 +5,10 @@
 //! (`dailyLimitExceeded`, `quotaExceeded`) is waited out for [`DAY_LIMIT`].
 
 use crate::json::ErrorBody;
-use sync_core::status::{self, retry_after};
-use sync_core::{ExportError, PutRefused, ReplicaError, RetryAfter};
 use account_http::http::Response;
 use account_ids::UnixSeconds;
+use sync_core::status::{self, retry_after};
+use sync_core::{ExportError, PutRefused, ReplicaError, RetryAfter};
 
 /// How long to wait when a day's limit is used up: an hour, then again.
 pub const DAY_LIMIT: RetryAfter = RetryAfter(3600);
@@ -73,8 +73,8 @@ pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutRefused
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sync_core::status::RETRY;
     use account_http::http::Response;
+    use sync_core::status::RETRY;
 
     fn answer(status: u16, retry: Option<&str>, reason: Option<&str>) -> Response<Vec<u8>> {
         let body = reason

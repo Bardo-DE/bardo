@@ -3,14 +3,14 @@
 
 use crate::support::{Accept, Recipe, Reject, Sandbox, build, read, v};
 use rustix::fs::{Mode, mkfifoat};
-use updater_root::apply::harden::set_umask;
-use updater_root::apply::open::open_regular;
-use updater_root::apply::{ApplyError, Back, Staged, StagedError, install, rollback};
 use std::io::Read;
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::path::Path;
 use std::sync::mpsc;
 use std::time::Duration;
+use updater_root::apply::harden::set_umask;
+use updater_root::apply::open::open_regular;
+use updater_root::apply::{ApplyError, Back, Staged, StagedError, install, rollback};
 
 fn mode_of(path: &Path) -> u32 {
     std::fs::symlink_metadata(path)

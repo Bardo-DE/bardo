@@ -208,9 +208,10 @@ mod tests {
         let started = std::time::Instant::now();
         // The connector gives up by itself: a dial that never returned would be the bug, and the
         // outer wait is only the machine's allowance, not a claim about how fast it is.
-        let got = tokio::time::timeout(base_testkit::GENEROUS, connect.dial(&origin, Tls::Implicit))
-            .await
-            .expect("the connector gave up on the silent server");
+        let got =
+            tokio::time::timeout(base_testkit::GENEROUS, connect.dial(&origin, Tls::Implicit))
+                .await
+                .expect("the connector gave up on the silent server");
         assert!(matches!(got, Err(RelayFault::Unreachable)), "{got:?}");
         // It waited for the configured patience (a timer never fires early): the fault came from
         // the handshake timeout, not from an immediate failure.

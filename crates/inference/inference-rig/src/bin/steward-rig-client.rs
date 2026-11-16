@@ -9,14 +9,14 @@
 //! `background`; `fast`, `balanced`, `best`). Exit status 0 when the command did what it was
 //! asked, 1 otherwise. `--proc-root` defaults to `$RIG_PROC_ROOT`.
 //!
-//! Identity: porter-rig's fixture (`account_rig::fixture`). Test tooling, never installed.
+//! Identity: account-rig's fixture (`account_rig::fixture`). Test tooling, never installed.
 
+use account_rig::fixture::Identity;
 use clap::error::ErrorKind;
 use clap::{Parser, Subcommand};
-use account_rig::fixture::Identity;
+use inference_rig::open::{Open, failure, open};
 use std::path::PathBuf;
 use std::process::ExitCode;
-use inference_rig::open::{Open, failure, open};
 
 /// An app that uses inferd, for a jailed scenario.
 #[derive(Debug, Parser)]

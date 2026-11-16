@@ -1,4 +1,4 @@
-//! keyring-chunked over keyring-core's mock store: values in parts and whole, shrinking, a
+//! account-keyring-chunked over keyring-core's mock store: values in parts and whole, shrinking, a
 //! write that fails part-way, damaged heads, and the entries porter and mailo wrote before this
 //! crate. Nothing here touches a real keyring.
 
@@ -245,7 +245,7 @@ fn a_write_that_fails_part_way_leaves_the_old_value_or_nothing_but_never_a_mix()
     );
 }
 
-/// What porter-secrets' own `chunks.rs` wrote before this crate, at a limit of 16 units: the
+/// What account-secrets' own `chunks.rs` wrote before this crate, at a limit of 16 units: the
 /// format must read unchanged, and writing the same value must give the same entries.
 const PORTER_WROTE: &[(&str, &str)] = &[
     ("acct:oauth", "porter-parts:4"),

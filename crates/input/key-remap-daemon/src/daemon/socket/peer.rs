@@ -5,10 +5,10 @@ use super::limits::Pace;
 use super::seat::{Peer, peer_of};
 use crate::daemon::inbox::ClientId;
 use key_remap_proto::{self as protocol, KeymapState, MAX_PACKET, Status, ToClient};
-use service_locator::guard::Origin;
 use rustix::fd::{AsFd, OwnedFd};
 use rustix::io::Errno;
 use rustix::net::SendFlags;
+use service_locator::guard::Origin;
 use std::collections::BTreeSet;
 
 /// What a connection has shown itself to be. The shell's connections steer keycap; a

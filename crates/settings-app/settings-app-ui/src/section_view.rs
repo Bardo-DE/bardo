@@ -3,8 +3,8 @@
 use crate::files::{Edit, Files};
 use crate::key_row::{KeyBlock, KeyRow};
 use crate::memory_consent::ConfinementNote;
-use settings_app_model::{Control as Kind, KeyEntry, SectionModel, tells_confinement};
 use dioxus::prelude::*;
+use settings_app_model::{Control as Kind, KeyEntry, SectionModel, tells_confinement};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::FieldGroup;
 use ui_components::prelude::Label;

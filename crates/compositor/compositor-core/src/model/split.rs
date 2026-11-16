@@ -6,7 +6,7 @@
 //! *choosing* until a pick, a cancel, or the first window leaving; an unanswered choice leaves
 //! the first window alone, full screen, as the Mac does. Leaving full screen on either window
 //! ends the Split View (`requests.rs`); closing one leaves the other full screen
-//! ([`Model::split_survivor`]). Where the halves sit is layout's (`casement-layout`).
+//! ([`Model::split_survivor`]). Where the halves sit is layout's (`compositor-layout`).
 
 use super::Model;
 use super::moved::Moved;
@@ -18,9 +18,9 @@ use crate::ids::{OutputKey, WindowId};
 use crate::shell::{ShellNote, SplitChoices};
 use crate::space::{Space, SpaceContent, SplitPair};
 use crate::window::{Restore, SpacePlace, Window, WindowState};
+use account_core::SpaceId;
 use desktop_protocols::vocab::{SplitSide, WindowRole};
 use ui_core::vocab::Fraction;
-use account_core::SpaceId;
 
 /// Where a new Split View's divider starts: the middle.
 const MIDDLE: Fraction = Fraction(500);

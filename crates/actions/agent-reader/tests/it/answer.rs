@@ -2,8 +2,8 @@
 //! entity only if the ask offered it, and nothing out of schema passed on.
 
 use action_core::*;
-use agent_reader::answer_of;
 use action_vocab::{CharCount, ChoiceId, CivilDate, ParamName, Value};
+use agent_reader::answer_of;
 use provenance::{EntityId, EntityKey, EntityKind};
 use std::collections::BTreeMap;
 

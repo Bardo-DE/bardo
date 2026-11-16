@@ -8,15 +8,15 @@
 //! lands on the card while it is still sliding in, and never once it rests.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::harness::settle_until;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::notifications::banner_stack::{Banner, BannerKey};
 use shell_kit::notifications::parts::AppMark;
 use shell_kit::notifications::swipe::NotificationSwipe;
 use shell_kit::prelude::*;
 use std::cell::Cell;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::harness::settle_until;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 /// Wider than the stack, so a card displaced past its right edge is still on the page.
 const VIEW: Viewport = Viewport {

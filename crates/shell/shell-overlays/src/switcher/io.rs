@@ -13,20 +13,20 @@ use super::apps::{SwitcherApp, switcher_apps};
 use super::opening::{Facts, Opening};
 use super::pointer::{At, Pointer};
 use dioxus::prelude::*;
+use layer_shell_host::{OutputId, SurfaceHandle, Visibility, use_watch};
+use shell_kit::switcher::app_switcher::AppKey;
+use shell_launcher::AppId;
+use shell_ui_kit::services::Services;
 use ui_components::machine::{MachineRef, MachineState, use_machine_in, use_machine_state};
 use ui_components::prelude::*;
-use layer_shell_host::{OutputId, SurfaceHandle, Visibility, use_watch};
-use shell_launcher::AppId;
-use shell_kit::switcher::app_switcher::AppKey;
-use shell_ui_kit::services::Services;
 
 use super::hold::{Hold, Watch, chord_input};
 use super::keys::{Chord, chord_after_keyup, sw_key};
 use super::session::Session;
 use super::tiles::index_of;
+use shell_ui_kit::links::{AskSerial, SwitcherAsk, SwitcherLink};
 use ui_behaviour::Dir;
 use ui_behaviour::switcher::{Phase, SwIn, SwKey, SwOut, SwitcherParams};
-use shell_ui_kit::links::{AskSerial, SwitcherAsk, SwitcherLink};
 
 /// One surface's switcher: its machine, its opening, and what it talks to. Copy, so every
 /// handler and task holds it.

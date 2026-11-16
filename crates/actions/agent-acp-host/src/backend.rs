@@ -6,7 +6,7 @@
 //! the router allowed the call (`performer`). What the agent only reports is recorded for display
 //! and trusted for nothing (`reported`).
 //!
-//! The two rules a backend keeps (docket-session's contract):
+//! The two rules a backend keeps (agent-session's contract):
 //! - `next_event` is cancel-safe. Everything it holds between awaits is in a field: events heard
 //!   but not handed on are `ready`, messages the SDK has taken but we have not are in the link's
 //!   queue, a request that is waiting for its turn is `staged`. A dropped pull loses nothing and
@@ -26,6 +26,9 @@ use super::link::{Gone, Link, Reply, Work};
 use super::models::{ModelId, Models};
 use super::performer::Performer;
 use super::spawn::{AgentChild, SessionMeta, SignIn, Spawn};
+use action_core::UserTurn;
+use action_store::Waits;
+use action_vocab::CallId;
 use agent_acp_core::cause::Step;
 use agent_acp_core::court::Court;
 use agent_acp_core::reported::Reported;
@@ -35,19 +38,16 @@ use agent_client_protocol::schema::v1::{
     ContentBlock, Error, PromptRequest, PromptResponse, SessionId, StopReason,
     WaitForTerminalExitRequest,
 };
-use sandbox::AbsPath;
-use sandbox::Sandbox;
-use companion_model::helper::SignInWay;
-use action_core::UserTurn;
-use permission_core::PermissionKind;
-use permission_core::ProgramName;
 use agent_session::{
     BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend,
     StartSession, TurnEnd,
 };
-use action_store::Waits;
-use action_vocab::CallId;
+use companion_model::helper::SignInWay;
+use permission_core::PermissionKind;
+use permission_core::ProgramName;
 use provenance::Effect;
+use sandbox::AbsPath;
+use sandbox::Sandbox;
 use std::collections::VecDeque;
 
 /// The closed set of seams one agent connection is built from.

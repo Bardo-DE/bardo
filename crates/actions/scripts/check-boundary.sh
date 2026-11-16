@@ -25,72 +25,72 @@ cd "$(dirname "$0")/.."
 # KNOWN below with the plan lane that removes the breach; there is no other allowance.
 LAYERS=(
   # pure
-  "docket-vocab:P"
-  "docket-manifest:P"
-  "docket-permissions-core:P"
+  "action-vocab:P"
+  "action-manifest:P"
+  "permission-core:P"
   "companion-model:P"
-  "docket-core:P"
-  "docket-gate-wire:P"
-  "docket-wire:P"
-  "docket-skills:P"
-  "policy-point:P"
+  "action-core:P"
+  "action-gate-wire:P"
+  "action-wire:P"
+  "agent-skills:P"
+  "permission-policy:P"
   "action-review:P"
-  "docket-context:P"
-  "docket-gate:P"
-  "docket-router:P"
+  "action-context:P"
+  "action-gate:P"
+  "action-router:P"
   "companion-wire:P"
   "companion-core:P"
   "agent-loop:P"
-  "docket-session:P"
-  "docket-checkpoint:P"
-  "actions-tools:P"
-  "voice-wire:P"
-  "voice-loop:P"
-  "voice-audio:P"
-  "docket-memory-core:P"
-  "acp-core:P"
-  "agents-core:P"
+  "agent-session:P"
+  "action-checkpoint:P"
+  "action-tools:P"
+  "agent-voice-wire:P"
+  "agent-voice-loop:P"
+  "agent-voice-audio:P"
+  "companion-memory-core:P"
+  "agent-acp-core:P"
+  "agent-registry:P"
 
-  "eval-core:P"
+  "action-eval-core:P"
   # client / IO
-  "docket-store:C"
-  "docket-skills-disk:C"
-  "docket-planner:C"
-  "docket-tasks:C"
-  "docket-helpers:C"
-  "docket-native:C"
-  "docket-memory:C"
-  "docket-models:C"
-  "docket-reader:C"
-  "docket-fake:C"
-  "docket-checkpoint-git:C"
+  "action-store:C"
+  "agent-skills-disk:C"
+  "agent-planner:C"
+  "companion-tasks:C"
+  "companion-helpers:C"
+  "agent-native:C"
+  "companion-memory:C"
+  "agent-models:C"
+  "agent-reader:C"
+  "action-fake:C"
+  "action-checkpoint-git:C"
   "docket-acp:C"
-  "docket-acp-host:C"
-  "docket-host:C"
-  "docket-launch:C"
+  "agent-acp-host:C"
+  "action-host:C"
+  "agent-launch:C"
   "docket-agents:C"
-  "docket-settings:C"
-  "docket-dbus:C"
-  "docket-client:C"
-  "docket-provider:C"
+  "action-settings:C"
+  "action-dbus:C"
+  "action-client:C"
+  "action-provider:C"
   "companion-client:C"
-  "voice-dbus:C"
-  "voice-pipewire:C"
-  "docket-log:C"
-  "docket-procroot:C"
+  "agent-voice-dbus:C"
+  "agent-voice-pipewire:C"
+  "action-log:C"
+  "action-procroot:C"
   # test and acceptance support: the model tap writes prompts to disk, so no shipped crate lists it
-  "docket-trace:C"
+  "action-trace:C"
   # app / daemon / test binary
-  "docket-acp-bin:A"
-  "docket-inapp:A"
+  "agent-acp-bin:A"
+  "agent-inapp:A"
   "docket-eval:A"
-  "docket-testbus:A"
-  "docket-accept:A"
+  "action-testbus:A"
+  "action-accept:A"
   # operator tools over the acceptance world (docket-live, docket-bringup)
   "docket-live:A"
   "actions-mcp:A"
-  "docket-cli:A"
-  "docket-ds:A"
+  "action-cli:A"
+  "action-ui-adapter:A"
   "intentd:A"
   "companiond:A"
   "readerd:A"
@@ -279,13 +279,13 @@ self_test() {
     cp "$tmp/seed.bak" "$tmp/$1"
   }
   expect crates/voice-wire/src/lib.rs '\npub fn seeded() { let _ = std::fs::read("x"); }\n' \
-    'voice-wire src:std::fs' 'std::fs in a P crate'
+    'agent-voice-wire src:std::fs' 'std::fs in a P crate'
   expect crates/docket-log/Cargo.toml '\n[dependencies.intentd]\npath = "../intentd"\n' \
-    'docket-log dep:intentd' 'a C crate depending on an A crate'
+    'action-log dep:intentd' 'a C crate depending on an A crate'
   expect crates/actions-tools/src/lib.rs '\npub use serde_json;\n' \
-    'actions-tools reexport:ext' 'a whole external crate re-exported'
+    'action-tools reexport:ext' 'a whole external crate re-exported'
   expect crates/actions-tools/src/lib.rs '\npub use std::collections::*;\n' \
-    'actions-tools reexport:glob' 'a glob re-export'
+    'action-tools reexport:glob' 'a glob re-export'
   # A crate missing from LAYERS.
   mkdir -p "$tmp/crates/seeded/src" && : >"$tmp/crates/seeded/src/lib.rs"
   printf '[package]\nname = "seeded"\nversion = "0.0.0"\nedition = "2024"\n' >"$tmp/crates/seeded/Cargo.toml"
@@ -306,35 +306,35 @@ cd "$(dirname "$0")/.."
 
 # RULES: what a crate reaches through ANY path (transitive, default features).
 #
-# The pure crates (docket-vocab, docket-manifest, docket-permissions-core, companion-model, docket-core, docket-gate-wire, docket-wire, policy-point, action-review, docket-context, docket-gate, docket-router, companion-wire,
-# agent-loop, voice-wire, voice-loop, voice-audio) never reach a bus, a runtime, an HTTP client, an audio or
+# The pure crates (action-vocab, action-manifest, permission-core, companion-model, action-core, action-gate-wire, action-wire, permission-policy, action-review, action-context, action-gate, action-router, companion-wire,
+# agent-loop, agent-voice-wire, agent-voice-loop, agent-voice-audio) never reach a bus, a runtime, an HTTP client, an audio or
 # display or accessibility stack, a database, a file watcher, an embedding runtime or the MCP SDK.
-# Only policy-point reaches cedar-policy, and the crates above it (docket-router, the fakes and
-# the daemons that run the router; docket-client only behind its `in_process` feature). Only actions-mcp reaches rmcp. docket-core
-# and the pure crates beside it never reach toml: manifest TOML is parsed in docket-router.
+# Only permission-policy reaches cedar-policy, and the crates above it (action-router, the fakes and
+# the daemons that run the router; action-client only behind its `in_process` feature). Only actions-mcp reaches rmcp. action-core
+# and the pure crates beside it never reach toml: manifest TOML is parsed in action-router.
 EFFECTS="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
 NO_CEDAR="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
 RULES=(
-  "docket-vocab: $EFFECTS toml"
-  "docket-manifest: $EFFECTS toml"
-  "docket-permissions-core: $EFFECTS toml"
+  "action-vocab: $EFFECTS toml"
+  "action-manifest: $EFFECTS toml"
+  "permission-core: $EFFECTS toml"
   "companion-model: $EFFECTS toml"
-  "docket-core: $EFFECTS toml"
-  "docket-gate-wire: $EFFECTS toml"
-  "docket-wire: $EFFECTS toml"
-  "policy-point: $NO_CEDAR toml"
+  "action-core: $EFFECTS toml"
+  "action-gate-wire: $EFFECTS toml"
+  "action-wire: $EFFECTS toml"
+  "permission-policy: $NO_CEDAR toml"
   "action-review: $EFFECTS toml"
-  "docket-context: $NO_CEDAR"
-  "docket-gate: $NO_CEDAR"
-  "docket-router: $NO_CEDAR"
+  "action-context: $NO_CEDAR"
+  "action-gate: $NO_CEDAR"
+  "action-router: $NO_CEDAR"
   # Skills are read through a folder the caller injects: no bus, runtime, network or Cedar.
-  "docket-skills: $EFFECTS"
+  "agent-skills: $EFFECTS"
   # The real-disk skill folder: files only, no bus, runtime, network or Cedar.
-  "docket-skills-disk: $EFFECTS"
+  "agent-skills-disk: $EFFECTS"
   # Disk and timers under the pure core: files, threads and futures; no bus, runtime, network or Cedar.
-  "docket-store: $EFFECTS toml"
+  "action-store: $EFFECTS toml"
   # The tools an outside agent is offered, as pure data: shared by the MCP edge and the ACP host.
-  "actions-tools: $EFFECTS toml"
+  "action-tools: $EFFECTS toml"
   "companion-wire: $EFFECTS toml"
   # The companion's decisions as values: the helper board's outcomes, the desks' typed refusals, the routines'
   # due and event rules, the timer text and the caller policy. No bus, runtime, network, Cedar or toml.
@@ -343,106 +343,106 @@ RULES=(
   # runtime, network library or Cedar. It reads its own records as TOML.
   "docket-agents: $EFFECTS"
   # The registry values and the two small records as text: no disk, bus, runtime, network or Cedar.
-  "agents-core: $EFFECTS"
+  "agent-registry: $EFFECTS"
   "agent-loop: $EFFECTS toml"
-  # The planner is portable: it asks any inferd-client Transport (inferd-client without its
+  # The planner is portable: it asks any inference-client Transport (inference-client without its
   # `dbus` and `socket` features reaches no runtime), so inferd over D-Bus is companiond's
   # choice of transport, never the planner's.
-  "docket-planner: $EFFECTS"
+  "agent-planner: $EFFECTS"
   # The in-app agent: the router (and with it Cedar) hosted in one app, no bus, no runtime, no
-  # HTTP, no watcher. docket-client only behind `in_process`, never `dbus`.
+  # HTTP, no watcher. action-client only behind `in_process`, never `dbus`.
   # The task model is portable: the companion's tasks over any router link and any `Planner`,
   # a clock and a surface that are passed in; no bus, no runtime (the daemon's surface is the
   # one that holds tokio).
-  "docket-tasks: $EFFECTS"
+  "companion-tasks: $EFFECTS"
   # The helpers' runner: the hub, the desks and the routines' scheduler over a `Spawn` seam. No bus; the
   # runtime is only the `tokio` feature's `TokioSpawn`, which companiond switches on.
-  "docket-helpers: $EFFECTS"
+  "companion-helpers: $EFFECTS"
   # The durable-session backend over the task model: the same portable rules, no bus or runtime.
-  "docket-native: $EFFECTS"
+  "agent-native: $EFFECTS"
   # The durable session is portable and pure: no bus, runtime, HTTP, Cedar or toml; the log is a seam.
-  "docket-session: $EFFECTS toml"
+  "agent-session: $EFFECTS toml"
   # Restore points: the rules and the store seam, pure; the git store is another crate (a process).
-  "docket-checkpoint: $EFFECTS toml"
+  "action-checkpoint: $EFFECTS toml"
   # The git store runs git as a process through tokio: no bus, HTTP, desktop stack, database,
   # Cedar, MCP SDK or toml.
-  "docket-checkpoint-git: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
-  # Our own ACP rules, pure: no runtime, bus, HTTP, Cedar or toml; the connections are docket-acp's and docket-acp-host's.
-  "acp-core: $EFFECTS toml"
+  "action-checkpoint-git: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
+  # Our own ACP rules, pure: no runtime, bus, HTTP, Cedar or toml; the connections are docket-acp's and agent-acp-host's.
+  "agent-acp-core: $EFFECTS toml"
   # The ACP server edge: the lib is portable; no bus, HTTP, Cedar or MCP SDK. The protocol's types
   # and the JSON-RPC connection come from agent-client-protocol.
   "docket-acp: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The ACP client edge, an external agent as a session backend: it reaches the router only through
-  # docket-client (its `InProcess` transport is a dev-dependency): the host of an external agent calls
+  # action-client (its `InProcess` transport is a dev-dependency): the host of an external agent calls
   # the same Intents1 every caller does. Same bans as the server edge.
-  "docket-acp-host: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  "agent-acp-host: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # Starts the external agents: the bus is the `dbus` feature's, the runtime is its processes'; no
   # HTTP, desktop stack, database, Cedar or MCP SDK, and nothing that links a sandbox library.
-  "docket-launch: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy landlock libseccomp"
-  "docket-inapp: $NO_CEDAR"
+  "agent-launch: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy landlock libseccomp"
+  "agent-inapp: $NO_CEDAR"
   # The host side of a confirm sheet: values, a oneshot channel and the session seam; no bus, runtime, network or toml.
-  "docket-host: $EFFECTS toml"
+  "action-host: $EFFECTS toml"
   # The /proc reads (terminal scope, own uid) under an injected root: files only, no bus, runtime, network or Cedar.
-  "docket-procroot: $EFFECTS toml"
+  "action-procroot: $EFFECTS toml"
   # The docket-acp process (and `docket-agent`, the host of an external coding agent): the router
   # and the companion hosted in it, over the bus (zbus, tokio) and nothing else of the desktop. It
   # is wiring over clients: it reaches neither the in-app agent nor the router.
-  "docket-acp-bin: docket-inapp docket-router reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
+  "agent-acp-bin: agent-inapp action-router reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
   # The models, the quarantined reader and the memory seam are portable too (moved out of
-  # intentd and readerd): they ask any inferd-client or almanac-client Transport, never a bus or
-  # a runtime; almanac-client hosts its service only behind `in_process` (a dev-dependency here)
-  # and reaches the bus only behind `dbus`. docket-memory no longer sits on the router (the memory
-  # seam is in docket-core), so Cedar is not below it either.
-  "docket-models: $EFFECTS"
-  "docket-reader: $EFFECTS"
-  "docket-memory: $EFFECTS"
+  # intentd and readerd): they ask any inference-client or memory-client Transport, never a bus or
+  # a runtime; memory-client hosts its service only behind `in_process` (a dev-dependency here)
+  # and reaches the bus only behind `dbus`. companion-memory no longer sits on the router (the memory
+  # seam is in action-core), so Cedar is not below it either.
+  "agent-models: $EFFECTS"
+  "agent-reader: $EFFECTS"
+  "companion-memory: $EFFECTS"
   # The audit records as almanac events and the bounded queue: values only, no client, bus or runtime.
-  "docket-memory-core: $EFFECTS toml"
-  "voice-wire: $EFFECTS toml"
-  "voice-loop: $EFFECTS toml"
+  "companion-memory-core: $EFFECTS toml"
+  "agent-voice-wire: $EFFECTS toml"
+  "agent-voice-loop: $EFFECTS toml"
   # The audio device seam as values and traits: no runtime, bus or audio stack (futures-util only, for the expiry race).
-  "voice-audio: $EFFECTS toml"
+  "agent-voice-audio: $EFFECTS toml"
   # The PipeWire backend: libpipewire and tokio, nothing of the bus, HTTP, a database or the policy engine.
-  "voice-pipewire: zbus zvariant reqwest hyper hyper-util rustls oo7 ort fastembed rusqlite rmcp cedar-policy"
+  "agent-voice-pipewire: zbus zvariant reqwest hyper hyper-util rustls oo7 ort fastembed rusqlite rmcp cedar-policy"
   # The caller's side of Voice1: zbus (with its tokio feature) and nothing of the microphone or speech engines.
-  "voice-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
-  # zbus lives in docket-dbus, and in docket-client only behind its `dbus` feature.
-  "docket-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
+  "agent-voice-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
+  # zbus lives in action-dbus, and in action-client only behind its `dbus` feature.
+  "action-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
   # A client never links the router: `InProcess` (feature `in_process`) is the one way in.
-  "docket-client: $EFFECTS toml"
+  "action-client: $EFFECTS toml"
   # The app side of Intents1: the traits an app implements; zbus only behind its `dbus` feature, never the router.
-  "docket-provider: $EFFECTS toml"
-  "docket-fake: $NO_CEDAR"
-  # The model tap: the watch seam in docket-dbus (so zbus comes with it) and the exchange type in docket-core.
-  "docket-trace: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
+  "action-provider: $EFFECTS toml"
+  "action-fake: $NO_CEDAR"
+  # The model tap: the watch seam in action-dbus (so zbus comes with it) and the exchange type in action-core.
+  "action-trace: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
   "docket-eval: $NO_CEDAR"
   # The suite as values: the case and attack formats, the judgement, the scores and the summary. No router, so no Cedar; no bus, runtime or network.
-  "eval-core: $EFFECTS"
+  "action-eval-core: $EFFECTS"
   # Test only: a private bus for the daemons' tests; nothing of the router, Cedar or the effects.
-  "docket-testbus: docket-router policy-point action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
-  # quire-do is a thin client: it reaches the bus only through docket-client (LAYERS
+  "action-testbus: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
+  # quire-do is a thin client: it reaches the bus only through action-client (LAYERS
   # keeps it a C or A crate that cannot reach the router), never the router, the policy point, the reviewer's
   # cascade or Cedar: a terminal has no way around intentd's gate.
-  "companion-client: docket-router policy-point action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
-  "docket-cli: docket-router policy-point action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
-  "docket-ds: zbus zvariant tokio reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify rmcp"
-  # The edge reaches rmcp, tokio and, as a bus client of intentd (docket-client `dbus`), zbus; nothing else of the effects.
+  "companion-client: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
+  "action-cli: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
+  "action-ui-adapter: zbus zvariant tokio reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify rmcp"
+  # The edge reaches rmcp, tokio and, as a bus client of intentd (action-client `dbus`), zbus; nothing else of the effects.
   "actions-mcp: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify"
   # The settings reader is pure but for reading the file: no bus, no runtime, no watcher (intentd
   # owns the directory watch), so actions-mcp, which may not link one, can share the reader.
-  "docket-settings: $EFFECTS"
+  "action-settings: $EFFECTS"
   # The daemons reach the bus and a runtime; none reaches HTTP, an embedding runtime or the MCP
-  # SDK. almanac-client hosts the service only behind its `in_process` feature, so none reaches SQLite.
+  # SDK. memory-client hosts the service only behind its `in_process` feature, so none reaches SQLite.
   "intentd: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   "companiond: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   "readerd: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   # Test only: the acceptance run links the docket daemons to run them as processes (memoryd and inferd are built by build.rs, not linked); no HTTP,
   # audio, embedding runtime or MCP SDK.
   # (The acceptance run starts the actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)
-  "docket-accept: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
-  # Test only: the operator tools run the acceptance world; the same bans as docket-accept.
+  "action-accept: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
+  # Test only: the operator tools run the acceptance world; the same bans as action-accept.
   "docket-live: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
-  "docket-log: $EFFECTS toml"
+  "action-log: $EFFECTS toml"
   "voiced: reqwest hyper hyper-util rustls ort fastembed rusqlite rmcp cedar-policy"
 )
 fail=0
@@ -457,10 +457,10 @@ for rule in "${RULES[@]}"; do
     continue
   fi
   leaked=0
-  # docket-client's default feature is the desktop transport (`dbus`); the rule is about the
+  # action-client's default feature is the desktop transport (`dbus`); the rule is about the
   # portable build, so it is read without it. The `dbus` feature is a C-tier crate's.
   nodef=()
-  [ "$crate" = docket-client ] && nodef=(--no-default-features)
+  [ "$crate" = action-client ] && nodef=(--no-default-features)
   for dep in "${forbidden[@]}"; do
     if [ -n "$(cargo tree -p "$crate" "${nodef[@]}" -i "$dep" -e normal,build 2>/dev/null)" ]; then
       echo "LEAK: $crate depends on $dep"
@@ -478,7 +478,7 @@ layers_check . || fail=1
 
 # docket sits below cua and sill in the repo order (stoker, porter, almanac, docket, cua, sill):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
-THEIRS="cuad cua-bus cua-run cua-desktop cua-dbus cua-fake a11y-tree seat-input maskcap quire-agent-protocol"
+THEIRS="cuad computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input maskcap quire-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
 theirs_found=0
 for name in $THEIRS; do
@@ -498,13 +498,13 @@ if [ "$theirs_found" -eq 0 ]; then
 fi
 
 # No shipped crate carries a test-only switch. The proc root of the callers and the model tap are
-# arguments (`HarnessSeams`) that only the docket-accept mains pass (docket-live, which runs the same world, names them too); no daemon source reads
-# `*_PROC_ROOT` or `DOCKET_MODEL_TRACE`. porter reads a fixture tree only with porter-callers's
-# `test-proc-root`, which docket-dbus's `fixture-callers` forwards (that one line is the only
-# mention allowed); docket-accept, docket-live and tests' dev-dependencies turn it on.
+# arguments (`HarnessSeams`) that only the action-accept mains pass (docket-live, which runs the same world, names them too); no daemon source reads
+# `*_PROC_ROOT` or `DOCKET_MODEL_TRACE`. porter reads a fixture tree only with account-callers's
+# `test-proc-root`, which action-dbus's `fixture-callers` forwards (that one line is the only
+# mention allowed); action-accept, docket-live and tests' dev-dependencies turn it on.
 leaks=$(grep -rnE 'PROC_ROOT|DOCKET_MODEL_TRACE|test-proc-root|test-model-trace' crates \
-  --include='*.rs' --include=Cargo.toml --exclude-dir=docket-accept --exclude-dir=docket-live --exclude-dir=tests \
-  | grep -vE '^crates/docket-dbus/Cargo.toml:[0-9]+:fixture-callers = \["porter-callers/test-proc-root"\]$' || true)
+  --include='*.rs' --include=Cargo.toml --exclude-dir=action-accept --exclude-dir=docket-live --exclude-dir=tests \
+  | grep -vE '^crates/docket-dbus/Cargo.toml:[0-9]+:fixture-callers = \["account-callers/test-proc-root"\]$' || true)
 if [ -n "$leaks" ]; then
   echo "TEST SWITCH: a shipped crate names a harness switch:"
   echo "$leaks"
@@ -513,22 +513,22 @@ else
   echo "no shipped crate carries a proc-root or model-trace switch"
 fi
 
-# docket-trace writes prompts to disk and is test and acceptance support: only the harness
-# (docket-accept and docket-live) lists it as a dependency, so no shipped crate has code that could write one.
-trace_users=$(grep -lE '^docket-trace[[:space:]]*=' crates/*/Cargo.toml \
-  | grep -vE '^crates/(docket-accept|docket-live|docket-trace)/Cargo.toml$' || true)
+# action-trace writes prompts to disk and is test and acceptance support: only the harness
+# (action-accept and docket-live) lists it as a dependency, so no shipped crate has code that could write one.
+trace_users=$(grep -lE '^action-trace[[:space:]]*=' crates/*/Cargo.toml \
+  | grep -vE '^crates/(action-accept|docket-live|action-trace)/Cargo.toml$' || true)
 if [ -n "$trace_users" ]; then
-  echo "TEST SUPPORT: a crate other than docket-accept and docket-live depends on docket-trace:"
+  echo "TEST SUPPORT: a crate other than action-accept and docket-live depends on action-trace:"
   echo "$trace_users"
   fail=1
 else
-  echo "docket-trace is a dependency of docket-accept and docket-live alone"
+  echo "action-trace is a dependency of action-accept and docket-live alone"
 fi
 
 # Built as the installer builds it (`-p` each shipped package, no dev-dependencies), no shipped
-# package turns on the fixture tree. (A whole-workspace build unifies docket-accept's features, so
+# package turns on the fixture tree. (A whole-workspace build unifies action-accept's features, so
 # the installer never builds one.)
-for pkg in intentd companiond readerd actions-mcp docket-cli docket-acp-bin voiced; do
+for pkg in intentd companiond readerd actions-mcp action-cli agent-acp-bin voiced; do
   # `-e features` elides the edge a package's own feature makes; the feature list per package
   # (`{p} {f}`) shows it.
   # A tree cargo could not print would read as "off": that is an error, not a pass.

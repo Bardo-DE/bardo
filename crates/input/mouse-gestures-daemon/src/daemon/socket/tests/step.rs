@@ -4,11 +4,11 @@ use super::{OTHER, SHELL, USER, accepted, feed, id, logged, notes, seated, sends
 use crate::daemon::socket::FromSocket;
 use crate::daemon::socket::limits::MAX_CLIENTS;
 use crate::daemon::socket::model::{SocketEffect, SocketEvent, Subscribers};
-use service_locator::guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL};
 use mouse_gestures_proto::{
     DeviceInfo, Filter, HostAction, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
 };
 use rustix::io::Errno;
+use service_locator::guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL};
 use std::time::{Duration, Instant};
 
 fn nobody() -> DeviceInfo {

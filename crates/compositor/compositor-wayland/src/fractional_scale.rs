@@ -1,10 +1,9 @@
 //! `wp_fractional_scale_v1`: the exact scale a surface should draw at, sent before its first
-//! configure (shell-host FINDINGS 167).
+//! configure (layer-shell-host FINDINGS 167).
 
 use crate::states::{GlobalFilter, WaylandFault};
 use compositor_core::Event;
 use compositor_core::OutputBook;
-use ui_core::geometry::scale::Scale;
 use smithay::reexports::wayland_protocols::wp::fractional_scale::v1::server::{
     wp_fractional_scale_manager_v1::WpFractionalScaleManagerV1,
     wp_fractional_scale_v1::WpFractionalScaleV1,
@@ -18,6 +17,7 @@ use smithay::wayland::compositor::{send_surface_state, with_states};
 use smithay::wayland::fractional_scale::{
     FractionalScaleData, FractionalScaleHandler, FractionalScaleManagerState, with_fractional_scale,
 };
+use ui_core::geometry::scale::Scale;
 
 /// `wp_fractional_scale_manager_v1`.
 #[derive(Debug)]

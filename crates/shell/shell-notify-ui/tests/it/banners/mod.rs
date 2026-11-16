@@ -7,11 +7,10 @@
 //! the service dropped leaves silently; another output's column draws nothing; and the keyboard
 //! ([`keys`]) is asked for and never taken.
 
+use std::time::Duration;
 use ui_components::base::time::FRAME_SLACK;
 use ui_harness::Input;
-use std::time::Duration;
 
-use ui_components::prelude::*;
 use layer_shell_host::OutputId;
 use shell_model::notifications::{
     Action, ActionKey, Activation, AppRef, BannerLife, Body, Expiry, Hints, IconRef, LiveBanner,
@@ -21,6 +20,7 @@ use shell_notify_ui::Banners;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{BannerLink, BannerOutput};
+use ui_components::prelude::*;
 
 mod keys;
 

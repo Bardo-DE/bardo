@@ -38,9 +38,9 @@
 //! is converted to the parameter's type and keeps the label of its origin.
 
 use crate::model_script::ModelScript;
-use permission_core::{BreakerTrip, Mode};
-use action_vocab::ParamName;
 use account_core::AppName;
+use action_vocab::ParamName;
+use permission_core::{BreakerTrip, Mode};
 use provenance::{ActionName, Address, EntityKey, EntityKind, Integrity, MessageKind, SpaceId};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

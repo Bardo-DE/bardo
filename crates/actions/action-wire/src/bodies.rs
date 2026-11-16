@@ -2,17 +2,17 @@
 //! envelope, the asks and answers of the session and gate members, recall, notes, stored
 //! sessions and the wire refusal.
 
-use memory_core::{
-    Episode, EpisodeId, EventSummary, InjectQuery, JsonText, Narrative, RecentQuery,
-};
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{
     CallRefusal, ConfirmEnd, EpisodeLine, PrimerText, ProfileLine, ReadFault, ReaderAsk,
     RecalledLine, Reveal, SendRefusal, UndoFault,
 };
-use permission_core::TaskPolicy;
 use action_vocab::{ActionRef, IntentsVocab, NoteSlug, TurnId};
-use account_core::AppName;
-use account_ids::Count;
+use memory_core::{
+    Episode, EpisodeId, EventSummary, InjectQuery, JsonText, Narrative, RecentQuery,
+};
+use permission_core::TaskPolicy;
 use provenance::{RunId, SessionId, SpaceId};
 use serde::{Deserialize, Serialize};
 
@@ -293,7 +293,7 @@ pub enum StoredAsk {
     },
 }
 
-/// One row of a stored session: its position and its body, which `docket-session` writes and reads.
+/// One row of a stored session: its position and its body, which `agent-session` writes and reads.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StoredRow {
     /// The position.

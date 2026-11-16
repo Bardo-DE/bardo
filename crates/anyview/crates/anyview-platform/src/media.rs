@@ -3,9 +3,9 @@
 
 use crate::error::PlatformError;
 use anyview_core::{FilePath, MediaLength, MediaTime, Volume};
-use ui_core::word::Word;
 use std::future::Future;
 use std::sync::Arc;
+use ui_core::word::Word;
 
 /// Whether the recording is moving.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

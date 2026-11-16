@@ -88,7 +88,7 @@ impl Default for ThumbParams {
     }
 }
 
-/// How a drag out of the card ended (shell-host's `DragOutcome`, as the thumbnail reads it).
+/// How a drag out of the card ended (layer-shell-host's `DragOutcome`, as the thumbnail reads it).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DragEnd {
     /// Dropped and copied: the file stays where it was saved.

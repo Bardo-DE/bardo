@@ -19,8 +19,8 @@
 //! - An online document's link file renamed keeps its link extension out of the drive's name:
 //!   "Plan.gdoc" renamed "Budget.gdoc" is the document "Budget".
 
-use sync_core::ItemKind;
 use std::collections::BTreeSet;
+use sync_core::ItemKind;
 
 /// What a `/` in a name is shown as.
 pub const SLASH: char = '\u{FF0F}';

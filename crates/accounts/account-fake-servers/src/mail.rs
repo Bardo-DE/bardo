@@ -2,9 +2,9 @@
 //! record and the CRLF line reader.
 
 use crate::net::Peer;
+use account_core::Tls;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use account_core::Tls;
 use std::io;
 use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, BufReader};
 

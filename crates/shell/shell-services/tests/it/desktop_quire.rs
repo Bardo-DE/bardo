@@ -9,11 +9,7 @@ use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::{Arc, Mutex};
 
-use desktop_protocols::vocab::{
-    ActorKind, AppLifeKind, Corner, DragOutcome, Emphasis, HeldMods, KeyGesture, OverviewMode,
-    OverviewState, PlaceTarget, ProofKind, ScreenEdge, ShellRole, Shown, SpaceKind, SplitSide,
-    Toggle, TrialAnswer, TrialId, WindowEntries, WindowEntry, WindowStateKind,
-};
+use account_core::SpaceId;
 use desktop_client::capture::{CaptureEvent, ShmFormat};
 use desktop_client::fake::FakeDesktop;
 use desktop_client::quire::{
@@ -30,7 +26,11 @@ use desktop_client::{
     SpaceId as WireSpaceId, SpaceKey, SpaceTarget, SurfaceKey, ToplevelIdentifier, ToplevelKey,
     WorkspaceKey,
 };
-use account_core::SpaceId;
+use desktop_protocols::vocab::{
+    ActorKind, AppLifeKind, Corner, DragOutcome, Emphasis, HeldMods, KeyGesture, OverviewMode,
+    OverviewState, PlaceTarget, ProofKind, ScreenEdge, ShellRole, Shown, SpaceKind, SplitSide,
+    Toggle, TrialAnswer, TrialId, WindowEntries, WindowEntry, WindowStateKind,
+};
 use shell_model::desktop::{
     Answer, Consent, ConsentId, DesktopCommand, DisplayTrial, Memory, OverviewNote, Power,
     ShellNote, SpacePlaceView, SubjectKind, SwitcherNote,

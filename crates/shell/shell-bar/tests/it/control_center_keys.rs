@@ -4,13 +4,13 @@
 
 use crate::cc_support;
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
 use cc_support::fake;
 use cc_support::live::{self, Report};
-use ui_components::prelude::*;
 use shell_model::wifi::{Radio, WifiCommand};
+use ui_components::prelude::*;
 
 #[test]
 fn tab_walks_the_tiles_and_space_toggles_the_focused_one() {

@@ -7,11 +7,11 @@
 //! started by [`service::spawn`] against [`env::Env`]'s seams into a [`Handle`] (a watch
 //! receiver of its state and a [`Control`] for its commands), and a `backend` that carries its
 //! effects. Its state, commands and the pure `step` that is the only place the state changes
-//! live in `sill-model`, so every transition is table-tested without a bus or a socket. Shared
+//! live in `shell-model`, so every transition is table-tested without a bus or a socket. Shared
 //! data travels on `tokio::sync::watch`, never as a Dioxus signal.
 //!
 //! This crate never reaches `dioxus` (`scripts/check-boundary.sh`): the hooks that read these
-//! channels live in `sill-ui-kit::hooks`.
+//! channels live in `shell-ui-kit::hooks`.
 
 mod account_label;
 pub mod accounts;
@@ -95,7 +95,7 @@ pub use idle::{IdleLinks, IdleService};
 pub use input_source::InputSourceService;
 pub use intents::{IntentsLinks, IntentsService, ShellCall};
 pub use kbd_backlight::KbdBacklightService;
-pub use key_remap_daemon::{KeycapLinks, KeycapService};
+pub use keycap::{KeycapLinks, KeycapService};
 pub use launch::LaunchService;
 pub use locker::LockerService;
 pub use network::NetworkService;

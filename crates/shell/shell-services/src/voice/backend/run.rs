@@ -10,16 +10,16 @@ use std::os::fd::OwnedFd;
 use std::sync::Arc;
 
 use action_wire::VoiceIntent;
+use agent_voice_dbus::{UtteranceProxy, VoiceProxy};
+use agent_voice_wire::{
+    CancelCause, UtteranceEnd, VoiceBegin, VoiceEvent as Frame, VoiceRefusal, VoiceTrigger, seal,
+};
 use provenance::{SpaceId, UnixSeconds};
 use shell_model::companion::CompanionCommand;
 use shell_model::voice::{ConsentAnswer, Voice, VoiceConsent, VoiceEffect, VoiceEvent, step};
 use tokio::net::UnixStream;
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinHandle;
-use agent_voice_dbus::{UtteranceProxy, VoiceProxy};
-use agent_voice_wire::{
-    CancelCause, UtteranceEnd, VoiceBegin, VoiceEvent as Frame, VoiceRefusal, VoiceTrigger, seal,
-};
 use zbus::Connection;
 use zbus::zvariant::OwnedObjectPath;
 

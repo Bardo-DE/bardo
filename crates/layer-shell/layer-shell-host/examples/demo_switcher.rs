@@ -21,12 +21,12 @@ mod harness;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use serde_json::json;
 use layer_shell_host::{
     Anchor, BlurSpec, ExclusiveZone, Host, HostEvent, HostRoot, KeyboardMode, LayerConfig,
     LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
     use_modifiers,
 };
+use serde_json::json;
 
 const CSS: &str =
     "html,body{margin:0;padding:0}.panel{width:160px;height:100px;background:rgb(90,60,200)}";

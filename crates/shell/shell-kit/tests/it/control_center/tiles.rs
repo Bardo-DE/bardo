@@ -2,10 +2,10 @@
 //! (live, disabled with the tile, absent, open).
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::*;
 use shell_kit::control_center::module_tile_kind::TileSpan;
 use shell_kit::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
 
 /// One tile specimen.
 #[derive(Props, Clone, PartialEq)]

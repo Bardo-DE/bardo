@@ -6,8 +6,8 @@
 //! `coherence.rs` each once did).
 
 use crate::harness::Harness;
-use ui_core::time::clock::VirtualClock;
 use std::time::{Duration, Instant};
+use ui_core::time::clock::VirtualClock;
 
 /// How long a settled document must stay quiet for [`assert_settles_to_zero_frames`]: longer
 /// than a pending step (`--t-pending-step`, 360 ms at Calm) and a frame, so a timer still stepping

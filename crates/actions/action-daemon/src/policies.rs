@@ -1,5 +1,5 @@
 //! The policy files on disk: `quire/permissions/` under the data, configuration and system
-//! directories. The loader and its rules are `policy-point`'s (pure); this reads the files.
+//! directories. The loader and its rules are `permission-policy`'s (pure); this reads the files.
 //!
 //! - the preset `default`, the one grid both modes use: `<data dir>/quire/permissions/default/*.cedar`;
 //!   the first data directory that has one wins, like the manifests, so a copy under
@@ -13,7 +13,9 @@
 //! unreadable source, so its layer decides what that means. One policy set is built, from the
 //! core, the preset, and the person's, assistant's and administrator's layers.
 
-use permission_policy::{Layer, LayerError, Pdp, PolicySource, Presets, ReadFault, Rejected, SCHEMA};
+use permission_policy::{
+    Layer, LayerError, Pdp, PolicySource, Presets, ReadFault, Rejected, SCHEMA,
+};
 use std::fmt;
 use std::path::{Path, PathBuf};
 

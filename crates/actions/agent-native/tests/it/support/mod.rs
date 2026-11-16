@@ -1,4 +1,4 @@
-//! A native host over the fakes: docket-fake's router in process (the host's one identity plays
+//! A native host over the fakes: action-fake's router in process (the host's one identity plays
 //! the editor and the companion), a scripted planner model, a log shared by every router a test
 //! builds, and a clock the test never moves.
 #![allow(dead_code)]
@@ -6,25 +6,25 @@
 #[path = "../../../../companion-daemon/tests/it/support/infer.rs"]
 pub mod infer;
 
+use account_core::{AppId, AppName, Isolation};
+use account_ids::Count;
 use action_client::{InProcess, Intents};
 use action_core::*;
 use action_fake::{
     FakeSeams, FixedClock, MailContact, MailThread, ScriptedReviewer, ScriptedWriter,
     fake_router_on, host_companion,
 };
+use action_router::{GrantStore, Router};
+use action_vocab::{CallerRole, LabelText};
+use action_wire::CallerId;
 use agent_native::NativeHost;
+use agent_planner::PlannerModel;
+use agent_session::fake::MemoryLog;
+use companion_tasks::{Companion, Quiet};
+use infer::{Say, ScriptedInfer};
 use permission_core::{
     ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
 };
-use agent_planner::PlannerModel;
-use action_router::{GrantStore, Router};
-use agent_session::fake::MemoryLog;
-use companion_tasks::{Companion, Quiet};
-use action_vocab::{CallerRole, LabelText};
-use action_wire::CallerId;
-use infer::{Say, ScriptedInfer};
-use account_core::{AppId, AppName, Isolation};
-use account_ids::Count;
 use provenance::{DataClass, Effect, EntityKind, SessionId, SpaceId, TaskId, UnixSeconds};
 use std::collections::BTreeSet;
 use std::sync::Arc;

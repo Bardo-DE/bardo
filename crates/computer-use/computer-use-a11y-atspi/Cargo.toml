@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-a11y-atspi"
-description = "The AT-SPI backend of the accessibility tree: finds the leased window by process and title on the session's accessibility bus and walks it breadth first to the node budget. The model and the seam are in a11y-tree."
+description = "The AT-SPI backend of the accessibility tree: finds the leased window by process and title on the session's accessibility bus and walks it breadth first to the node budget. The model and the seam are in computer-use-a11y-tree."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

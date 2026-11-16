@@ -1,8 +1,8 @@
 //! The phases of a run, and the small facts about them that other crates read.
 
 use computer_use_bus::{CuaOutcome, QuestionId, RunStateSlug, TargetedAction};
-use computer_use_desktop::Stamp;
 use computer_use_capture::Settle;
+use computer_use_desktop::Stamp;
 use inference_core::StepIndex;
 use provenance::ConfirmId;
 use serde::{Deserialize, Serialize};

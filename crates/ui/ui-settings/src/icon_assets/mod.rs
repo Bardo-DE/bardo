@@ -14,7 +14,7 @@
 //!    at compile time: development only, for a consumer that takes quire as a path dependency.
 //!
 //! The first directory that exists wins, whole: a set is installed together, so a file missing
-//! from it is not looked for further down. This lives in `ds-settings`, not `ds`, because it
+//! from it is not looked for further down. This lives in `ui-settings`, not `ds`, because it
 //! reads the environment and the disk and `ds` stays effect-free; each step is a pure function
 //! of an [`AssetsEnv`] and a probe, which the tests drive with tables.
 

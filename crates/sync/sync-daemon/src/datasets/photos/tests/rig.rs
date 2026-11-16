@@ -5,7 +5,6 @@ use super::super::{DeviceId, ManualMillis, PhotoLibrary, PhotoMetadata, PhotoOri
 use crate::engine::{Engine, Report};
 use crate::journal::Journal;
 use crate::testing::scratch;
-use sync_core::Clock;
 use account_fake_servers::{DavHandle, FakeDav, Running};
 use account_http::http::header::{AUTHORIZATION, HeaderValue};
 use account_http::http::{Request, Response};
@@ -13,10 +12,11 @@ use account_http::{Http, HttpError};
 use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use account_ids::clock::SystemClock;
 use account_ids::{UnixSeconds, WebUrl};
+use replica_webdav::WebDavReplica;
 use std::future::Future;
 use std::path::PathBuf;
 use std::sync::Arc;
-use replica_webdav::WebDavReplica;
+use sync_core::Clock;
 use tokio::net::TcpStream;
 
 const USER: &str = "ada";

@@ -1,6 +1,6 @@
 //! keycap: the Mac keyboard mapping daemon.
 //!
-//! The pure remap core lives in `keycap-core` and is re-exported here, so the daemon, its tests
+//! The pure remap core lives in `key-remap-core` and is re-exported here, so the daemon, its tests
 //! and its examples name one set of types. This crate adds what touches the system: the system
 //! config file and its watcher, the daemon, and the `keycap` command.
 

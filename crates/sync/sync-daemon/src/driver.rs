@@ -12,10 +12,10 @@ use crate::scheduler::{
 use crate::service::{
     Confirm, ConfirmError, Event, Handle, Nudge, Settle, SettleError, StatusSnapshot,
 };
-use sync_core::{MassDelete, Quota, Replica, StoredConflict};
 use account_ids::clock::Clock;
 use std::sync::Arc;
 use std::time::Duration;
+use sync_core::{MassDelete, Quota, Replica, StoredConflict};
 use tokio::sync::{Notify, watch};
 
 /// How a wait ended.

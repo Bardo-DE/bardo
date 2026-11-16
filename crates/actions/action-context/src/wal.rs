@@ -7,8 +7,8 @@
 //! queue through one `Writer` per session, which owns the position, the durable taint and the
 //! rule that an untrusted handle never reaches the log before a taint entry.
 
-use agent_session::{LogFault, Seq, SessionEntry, SessionLog, TaintCause, TaintNote};
 use action_vocab::CallId;
+use agent_session::{LogFault, Seq, SessionEntry, SessionLog, TaintCause, TaintNote};
 use provenance::{Integrity, SessionId};
 use std::sync::Arc;
 

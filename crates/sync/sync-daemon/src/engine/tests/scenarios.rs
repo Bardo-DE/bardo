@@ -2,15 +2,15 @@ use super::rig::*;
 use crate::dataset::{Dataset, DatasetError, DatasetId, MemoryDataset};
 use crate::engine::{Engine, Outcome};
 use crate::journal::Journal;
+use account_capability::{Delta, HashKind};
+use account_ids::{Bytes, WebUrl};
+use std::collections::BTreeMap;
+use std::sync::{Arc, Mutex, PoisonError};
 use sync_core::{
     Acknowledgement, BaseVersion, Blob, Change, ConflictRule, ItemKind, ItemPath, ItemState,
     LocalId, PutRefused, RemoteId, RemoteItem, RemoteSide, RemoteVersion, ReplicaError, Resolution,
     RetryAfter, Scanned,
 };
-use account_capability::{Delta, HashKind};
-use account_ids::{Bytes, WebUrl};
-use std::collections::BTreeMap;
-use std::sync::{Arc, Mutex, PoisonError};
 
 fn files(pairs: &[(&str, &str)]) -> BTreeMap<String, Vec<u8>> {
     pairs

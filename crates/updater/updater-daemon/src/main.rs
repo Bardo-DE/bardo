@@ -1,5 +1,7 @@
 //! `slipway`: the update service (`run`) and its command line.
 
+use std::path::Path;
+use std::process::ExitCode;
 use updater_daemon::bootstrap::production;
 use updater_daemon::cli::{Command, Exit, Reply, USAGE, dispatch, parse, recover, vouch};
 use updater_daemon::config::{Config, SYSTEM_CONFIG_PATH};
@@ -7,8 +9,6 @@ use updater_daemon::dirs::Dirs;
 use updater_daemon::elevate::{Helpers, Pkexec};
 use updater_daemon::service::run;
 use updater_daemon::state::StateStore;
-use std::path::Path;
-use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let command = match parse(std::env::args().skip(1)) {

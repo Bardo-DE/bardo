@@ -4,9 +4,9 @@
 
 use crate::file_drop::drag::{DropAcceptance, FileDrag, FileDragInput, FileDrop, Offer};
 use dioxus::prelude::Modifiers;
+use std::path::PathBuf;
 use ui_core::geometry::units::Point;
 use ui_core::vocab::DropState;
-use std::path::PathBuf;
 
 /// What the drag carries, as far as the host knows.
 #[derive(Debug, Clone, PartialEq, Default)]

@@ -3,10 +3,10 @@
 
 use super::reach;
 use crate::fault::RelayFault;
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD;
 use account_core::{RelayAuth, RelayPlan};
 use account_ids::{Origin, UrlScheme};
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 
 /// How the request's body is framed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

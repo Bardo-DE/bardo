@@ -1,6 +1,6 @@
-//! What the app decides about the network: whether ds-blitz serves only
+//! What the app decides about the network: whether ui-blitz serves only
 //! local resources, nothing but inline ones, or hands the rest to the app's own fetcher (mail's
-//! consented remote images). Frames never get `file:` from ds-blitz: a frame's markup is not
+//! consented remote images). Frames never get `file:` from ui-blitz: a frame's markup is not
 //! the app's, so a sanitiser miss must not turn into a read of the disk.
 
 use crate::frame_tag::FrameTag;

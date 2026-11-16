@@ -3,7 +3,7 @@
 //!
 //! The pure half of the voice service. [`step`] keeps the published [`Voice`]: where the hold
 //! stands, the words heard so far, the refusal the person is told about and whether the consent
-//! sheet is up. `sill-services` does the bus and carries out each [`VoiceEffect`].
+//! sheet is up. `shell-services` does the bus and carries out each [`VoiceEffect`].
 
 mod command;
 mod model;
@@ -12,11 +12,11 @@ mod step;
 mod tests;
 mod words;
 
+pub use agent_voice_wire::{CancelCause, VoiceTrigger};
 pub use command::{VoiceCommand, VoiceEffect, VoiceEvent};
 pub use model::{
     AskScope, ConsentAnswer, Heard, HoldToTalk, Notice, Phase, Then, Voice, VoiceConsent,
     VoiceParams, Words,
 };
 pub use step::step;
-pub use agent_voice_wire::{CancelCause, VoiceTrigger};
 pub use words::{listening_line, notice_line};

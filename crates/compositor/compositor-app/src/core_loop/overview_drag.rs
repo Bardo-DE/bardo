@@ -2,7 +2,7 @@
 //! starts a [`Drag`]; past the threshold the window follows the pointer (its slot moves, motion
 //! carries the picture), the shell hears the drag begin (`window_drag_begin`) and which Space
 //! target is under it (`drop_target`), and the release drops it on that Space, flies it back to its slot, or, if the pointer never moved
-//! far, picks it as a press always did. The machine and the targets are `casement-core`'s
+//! far, picks it as a press always did. The machine and the targets are `compositor-core`'s
 //! (`overview_drag`); this is the glue to the seat, motion and the model.
 
 use super::overview::{escape_leaves, leave};
@@ -15,8 +15,8 @@ use compositor_core::overview_drag::{Drag, Landing, Moved, Over, Released};
 use compositor_core::shell::ShellNote;
 use compositor_core::{Cause, Effect, Event, OutputKey, OverviewPick, WindowId};
 use compositor_motion::retarget;
-use desktop_protocols::vocab::{DragOutcome, Shown};
 use compositor_render::{CursorDraw, CursorShape};
+use desktop_protocols::vocab::{DragOutcome, Shown};
 
 /// A press on `window`'s slot at `at`: it may become a drag, or be a pick.
 pub(super) fn press(state: &mut State, event: &InputEvent, window: WindowId, at: LogicalPoint) {
@@ -203,7 +203,10 @@ fn follow(state: &mut State, window: WindowId, top_left: LogicalPoint) {
     let mut slot = next.overview.remove(at);
     slot.rect.origin = top_left;
     next.overview.push(slot);
-    let motion = std::mem::replace(&mut state.core.motion, compositor_motion::MotionBook::empty());
+    let motion = std::mem::replace(
+        &mut state.core.motion,
+        compositor_motion::MotionBook::empty(),
+    );
     state.core.motion = retarget(
         motion,
         &state.core.arrangement,

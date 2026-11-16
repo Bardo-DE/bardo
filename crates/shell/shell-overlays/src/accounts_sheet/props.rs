@@ -1,7 +1,7 @@
-//! `SheetView` to quire's `ds-shell::accounts` props: the one place porter's sheet values become
-//! what the drawn parts take (PLAN §2.4, design/31 §5.1). It stands in `sill-overlays`, not
-//! `sill-model`: the props are quire's (they name `MarkProvider` and the `Word` enums of
-//! `ds-shell`), and `sill-model` may reach no design system (`scripts/check-boundary.sh`).
+//! `SheetView` to quire's `ui-shell::accounts` props: the one place porter's sheet values become
+//! what the drawn parts take (PLAN §2.4, design/31 §5.1). It stands in `shell-overlays`, not
+//! `shell-model`: the props are quire's (they name `MarkProvider` and the `Word` enums of
+//! `ui-shell`), and `shell-model` may reach no design system (`scripts/check-boundary.sh`).
 //! Plain values in, plain values out; the draft supplies what the person has typed.
 //!
 //! | `SheetView`          | drawn as                                             |
@@ -16,6 +16,12 @@
 //! | `Failed`             | `SignInFailed`                                       |
 //! | `Done`               | nothing (accountd closes the sheet)                  |
 
+use account_core::consent::{AskPurpose, ConsentAsk};
+use account_core::{AccountId, ProviderId, SessionToken};
+use account_sheet::{
+    Entry, FieldKind, FieldValue, ProblemKind as PorterProblem, ServiceState, SheetView,
+};
+use shell_model::accounts::sheet::{CopyMark, Draft, ListKey, OpenSheet};
 use ui_components::components::content::provider_mark::MarkProvider;
 use ui_components::prelude::Check;
 use ui_shell::accounts::hidden::Hidden;
@@ -25,12 +31,6 @@ use ui_shell::accounts::model::{
     ServiceOffer, SignInFault,
 };
 use ui_shell::prelude::{Recovery, WorkingFor};
-use account_core::consent::{AskPurpose, ConsentAsk};
-use account_core::{AccountId, ProviderId, SessionToken};
-use account_sheet::{
-    Entry, FieldKind, FieldValue, ProblemKind as PorterProblem, ServiceState, SheetView,
-};
-use shell_model::accounts::sheet::{CopyMark, Draft, ListKey, OpenSheet};
 
 use super::ranking::ranked;
 use super::words::{

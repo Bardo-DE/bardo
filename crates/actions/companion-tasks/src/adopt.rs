@@ -9,13 +9,13 @@ use crate::linger::dismissed;
 use crate::runtime::{Companion, idle_state};
 use crate::seams::Surface;
 use crate::task::TaskRuntime;
-use agent_loop::{LoopPhase, LoopState};
-use companion_wire::AnswerPhase;
 use action_client::Transport as IntentsTransport;
 use action_core::{StepEnd, StepLine, StepShown};
+use action_vocab::Clock;
+use agent_loop::{LoopPhase, LoopState};
 use agent_planner::Planner;
 use agent_session::{ResumePlan, Standing};
-use action_vocab::Clock;
+use companion_wire::AnswerPhase;
 use provenance::{AgentRef, SessionId, TaskId};
 
 /// The history of a plan: the calls that ended, and those the crash cut off, in call order.

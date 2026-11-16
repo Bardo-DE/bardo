@@ -19,9 +19,9 @@ use agent_client_protocol::schema::v1::{
     ResumeSessionRequest,
 };
 use agent_client_protocol::{SentRequest, UntypedMessage};
-use sandbox::AbsPath;
-use companion_model::helper::{SignInHow, SignInWay, TerminalLogin};
 use agent_session::{BackendFault, Choice, Choices};
+use companion_model::helper::{SignInHow, SignInWay, TerminalLogin};
+use sandbox::AbsPath;
 use std::path::PathBuf;
 
 /// What we offer the agent: file reads and writes through us, a terminal when `terminal` says the

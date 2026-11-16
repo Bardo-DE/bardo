@@ -2,7 +2,7 @@
 //! says how its frame looked; the loop keeps what it needs (the style, the title, who was
 //! active) for every framed window while it lives, and draws it from that once the window is
 //! gone but motion still has it fading out; its body is the image `bodies` took just before it
-//! unmapped. `casement-render` draws the frame
+//! unmapped. `compositor-render` draws the frame
 //! (`closing_elements`); this decides which windows those are.
 
 use super::frames::activity_of;

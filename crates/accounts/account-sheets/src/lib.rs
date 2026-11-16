@@ -3,7 +3,7 @@
 //! it:
 //!
 //! - [`BusSheets`] draws a sheet in the sheet host (sill) over `org.quire.AccountsSheet1`, as
-//!   porter-service's `Sheets` seam, and checks that the host is who it says (its caller role is
+//!   account-service's `Sheets` seam, and checks that the host is who it says (its caller role is
 //!   `SheetHost`). [`BusLink`] is one open sheet.
 //! - [`AppNames`] says what a person calls an app: the caller table's name, then its desktop
 //!   entry, then the agent's provider label.

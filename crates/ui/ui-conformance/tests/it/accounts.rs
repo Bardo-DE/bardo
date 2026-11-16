@@ -6,6 +6,7 @@
 //! the copy buttons report to the host.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::provider_mark::MarkProvider;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -16,7 +17,6 @@ use ui_shell::accounts::model::{
 };
 use ui_shell::helpers::HelperPhase;
 use ui_shell::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 800,

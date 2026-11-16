@@ -9,9 +9,9 @@
 
 use crate::rules::Rules;
 use crate::window_class::window_class_in;
+use account_core::AppName;
 use computer_use_a11y_tree::{A11yNode, Role};
 use computer_use_action::WindowClass;
-use account_core::AppName;
 use serde::{Deserialize, Serialize};
 
 /// The choice that lets a step in a sensitive window go on.

@@ -9,10 +9,10 @@ use anyrender::{PaintScene, render_to_buffer};
 use anyrender_vello_cpu::VelloCpuImageRenderer;
 use blitz_dom::BaseDocument;
 use blitz_paint::paint_scene;
-use ui_blitz::Gpu;
 use peniko::kurbo::{Affine, Rect};
 use peniko::{Color, Fill};
 use std::time::{Duration, Instant};
+use ui_blitz::Gpu;
 
 /// A frame's size in device pixels, its scale, and the ground under the document.
 #[derive(Debug, Clone, Copy, PartialEq)]

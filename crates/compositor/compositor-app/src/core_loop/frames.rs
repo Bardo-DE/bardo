@@ -1,6 +1,6 @@
 //! The server-side frame in the loop: which windows have one and how it looks, what the pointer
 //! is over on a frame, and what a press on it does (a light, a drag on the titlebar, a resize
-//! edge). The drawing is `casement-render`'s and the decisions are `casement-core`'s
+//! edge). The drawing is `compositor-render`'s and the decisions are `compositor-core`'s
 //! (`window::frame`, `window::frame_press`); this is the glue between them and the seat.
 
 use super::deliver::{held_mods, next_serial, run_model};
@@ -17,11 +17,11 @@ use compositor_core::window::{
 };
 use compositor_core::{Effect, Event, ResizeEdges, ToplevelRequest, WindowId};
 use compositor_layout::{GroupHover, frame_metrics, frame_style, pressed};
-use desktop_protocols::vocab::{Emphasis, HeldMods, WindowRole};
 use compositor_render::{ClientRound, CursorDraw, CursorShape, margin_of, window_content};
 use compositor_wayland::seat::{Candidate, SurfaceAt, surface_under};
 use compositor_wayland::serial::{PressKind, PressRecord};
 use compositor_wayland::xdg_decoration::DecorationMode;
+use desktop_protocols::vocab::{Emphasis, HeldMods, WindowRole};
 
 use smithay::input::Seat;
 use std::collections::BTreeMap;
@@ -139,7 +139,7 @@ fn decorated(
 }
 
 /// Whether a window in `state` has a server-side frame, and so its content is clipped at the
-/// bottom corners (`casement-render`'s rounded clip): every state but full screen and the
+/// bottom corners (`compositor-render`'s rounded clip): every state but full screen and the
 /// dock. A filled (zoomed) window keeps its radius, as on the Mac; full screen drops it.
 fn framed(state: &WindowState) -> bool {
     !matches!(
@@ -398,10 +398,10 @@ fn carry_out(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use account_core::SpaceId;
     use compositor_core::geometry::{LogicalPoint, LogicalSize};
     use compositor_core::window::Restore;
     use desktop_protocols::vocab::TileZone;
-    use account_core::SpaceId;
 
     #[test]
     fn which_states_have_a_frame_and_so_rounded_corners() {

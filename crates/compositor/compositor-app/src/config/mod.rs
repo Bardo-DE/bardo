@@ -1,4 +1,4 @@
-//! The stored settings: `casement/settings.toml` through ds-settings (lenient read, atomic
+//! The stored settings: `casement/settings.toml` through ui-settings (lenient read, atomic
 //! write, a debounced watch), its schema for detent (`casement --write-schema`), and the one
 //! conversion into the model's `CasementSettings` (ARCHITECTURE.md, "Add a settings key").
 
@@ -22,7 +22,7 @@ pub use sections::{
 /// Why the settings could not be read or the schema written.
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigError {
-    /// ds-settings refused.
+    /// ui-settings refused.
     #[error("settings: {0}")]
     Settings(String),
     /// The schema could not be written.

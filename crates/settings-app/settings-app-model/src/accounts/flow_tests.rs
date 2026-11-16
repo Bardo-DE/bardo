@@ -3,11 +3,11 @@
 
 use super::*;
 use crate::picker::Described;
+use std::collections::BTreeMap;
 use ui_settings::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Page, Section,
 };
-use std::collections::BTreeMap;
 
 pub(super) fn spec(key: &str, label: &str, kind: KeyKind) -> KeySpec {
     KeySpec {

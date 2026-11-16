@@ -3,7 +3,7 @@
 //!
 //! * [`TtySession`], [`DeviceSource`], [`KmsOpener`], [`Kms`] and [`ScanoutSurface`] are the
 //!   seams. Each has a thin real adapter (`*_real.rs`, compiled only under feature `tty`) and a
-//!   fake in `casement-testkit` (`FakeSession`, `FakeUdev`, `FakeKms`, `FakeScanout`), so a
+//!   fake in `compositor-testkit` (`FakeSession`, `FakeUdev`, `FakeKms`, `FakeScanout`), so a
 //!   [`TtyBackend`] runs in the jail with no device at all.
 //! * [`TtyDevices`] holds the open display devices; `hotplug::reconcile` turns what a device
 //!   reports into the same [`ConnectorEvent`]s the headless backend gives.

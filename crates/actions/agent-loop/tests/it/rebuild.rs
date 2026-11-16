@@ -1,12 +1,12 @@
 //! The restart rebuild.
 
 use crate::support::*;
-use agent_loop::*;
-use memory_core::{EpisodeKind, EpisodeOutcome};
-use companion_wire::{AnswerPhase, SessionRecord};
+use account_core::AppName;
 use action_core::*;
 use action_wire::{TaskLedger, close};
-use account_core::AppName;
+use agent_loop::*;
+use companion_wire::{AnswerPhase, SessionRecord};
+use memory_core::{EpisodeKind, EpisodeOutcome};
 use provenance::{
     Address, AgentRef, Message, MessageId, MessageKind, MessageText, Part, ReportStatus, RunId,
     ThreadId,

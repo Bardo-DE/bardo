@@ -4,13 +4,13 @@
 //! shown again while it fades, the hide is taken back and `on_hidden` never runs for it.
 
 use dioxus::prelude::*;
+use shell_kit::osd::OsdLevel;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use shell_kit::osd::OsdLevel;
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 static HIDDEN: GlobalSignal<u32> = Signal::global(|| 0);

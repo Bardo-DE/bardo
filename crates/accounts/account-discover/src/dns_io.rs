@@ -4,10 +4,10 @@
 //! Apache-2.0, same author).
 
 use crate::dns::{Dns, DnsFault, MxRecord, SrvRecord};
+use account_provider::DomainName;
 use hickory_resolver::TokioResolver;
 use hickory_resolver::net::NetError;
 use hickory_resolver::proto::rr::RData;
-use account_provider::DomainName;
 use std::fmt;
 use std::time::Duration;
 

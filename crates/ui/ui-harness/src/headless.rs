@@ -13,19 +13,22 @@ use crate::recorded_window::{WindowHosting, WindowLog};
 use crate::round_budget::{MAX_ROUNDS, RoundBudget};
 use crate::snapshot::Viewport;
 use blitz_dom::{BaseDocument, Document as _, DocumentConfig, NodeId, StyleThreading};
-use blitz_html::HtmlProvider;
 use blitz_embed::hit::element_of;
 use blitz_embed::hover::{LastMove, Repaired, Shift, remember, repair};
 use blitz_embed::scroll::geom::ViewPoint;
+use blitz_html::HtmlProvider;
 use blitz_traits::events::UiEvent;
 use blitz_traits::net::NetWaker;
 use blitz_traits::shell::{ColorScheme, ShellProvider, Viewport as BlitzViewport};
-use keymap::Platform;
 use dioxus::prelude::*;
 use dioxus_native_dom::DioxusDocument;
-use ui_components::file_drop::board::FileDropBoard;
-use ui_components::host::gesture::GestureBus;
-use ui_components::prelude::*;
+use keymap::Platform;
+use peniko::Color;
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::Arc;
+use std::task::{Context, Waker};
+use std::time::Duration;
 use ui_blitz::FocusFallback;
 use ui_blitz::ScrollHandle;
 use ui_blitz::WindowSizer;
@@ -50,13 +53,10 @@ use ui_blitz::seam::{
 use ui_blitz::seam::{LinkInbox, frame_links, read_link};
 use ui_blitz::seam::{Provided, Wiring};
 use ui_blitz::{FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu};
+use ui_components::file_drop::board::FileDropBoard;
+use ui_components::host::gesture::GestureBus;
+use ui_components::prelude::*;
 use ui_core::time::clock::now;
-use peniko::Color;
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::sync::Arc;
-use std::task::{Context, Waker};
-use std::time::Duration;
 
 /// Whether a document is laid out as it renders: a shell surface is not until it is mapped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

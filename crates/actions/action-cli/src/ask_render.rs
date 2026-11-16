@@ -2,11 +2,11 @@
 //! printed as `#<n>` (the text it names was held for the companion, and a terminal may not have
 //! it displayed), the footer says which model answered and where it ran.
 
+use account_capability::Locality;
+use action_core::Reveal;
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, FooterWire, NeedsYou, PlanWire, RefusalWire, StepWireState,
 };
-use action_core::Reveal;
-use account_capability::Locality;
 
 fn reveal(text: &Reveal<String>) -> String {
     match text {

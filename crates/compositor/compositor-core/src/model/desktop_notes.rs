@@ -10,11 +10,11 @@ use crate::effect::Effect;
 use crate::ids::{OutputKey, WindowId};
 use crate::space::Space;
 use crate::window::{SpacePlace, WindowState};
+use account_core::SpaceId;
 use desktop_protocols::vocab::{
     AppLifeKind, AppVisibility as Visibility, Attention, Emphasis, Modality, PlacementMark,
     SensitivityLevel, WindowRole,
 };
-use account_core::SpaceId;
 use std::collections::BTreeMap;
 
 /// What an app shows `quire_desktop_v1` clients.

@@ -1,14 +1,14 @@
 //! The desktop-entry layer on scratch folders and plain values: the folders searched, the walk
 //! and its ids, the five-rule window match, and the identity an entry declares.
 
-use ui_helpers::{
-    AppIdentity, AppKeys, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId, XdgEnv, entry_for_window,
-    first_of_each_id, load_entries, match_app, walk_applications,
-};
 use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
+use ui_helpers::{
+    AppIdentity, AppKeys, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId, XdgEnv, entry_for_window,
+    first_of_each_id, load_entries, match_app, walk_applications,
+};
 
 /// One test's own directory under the system temp dir, removed on drop.
 struct Scratch(PathBuf);

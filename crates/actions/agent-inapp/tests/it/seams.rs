@@ -1,25 +1,25 @@
 //! The in-app agent with real parts instead of the stubs: a write judged by a model-backed
 //! reviewer, a `quire_read` answered by the portable reader, recall and the audit trail through
 //! almanac's in-process memory, and consent that outlives an `InAppAgent`. Every model is a
-//! scripted transport, the memory is almanac-fake's backend, every file is in a scratch directory
+//! scripted transport, the memory is memory-fake's backend, every file is in a scratch directory
 //! and the clock is virtual.
 
 use crate::support::infer::{ScriptedInfer, call, words};
 use crate::support::{Nowhere, TestSheet, standing_mail_consent};
+use account_ids::Count;
+use action_core::{AgentConfig, ReaderAsk, ReaderTask, StepEnd, ValueSchema};
+use action_fake::{FakeMail, FixedClock, MailThread, ScriptedReviewer, mail_manifest};
+use action_vocab::{ChoiceId, Handle};
+use agent_inapp::{
+    AlmanacMemory, AuditTo, FileGrantStore, InAppAgent, InAppKit, InAppParts, TransportReader,
+    TransportWriter, reviewer_over,
+};
 use memory_client::{InProcess, Memory};
 use memory_core::{
     BodyMode, FactDraft, FactText, MemoryReply, MemoryRequest, RecentQuery, TopicPath, TrustFilter,
 };
 use memory_fake::{ScriptedConsolidator, fake_service};
 use memory_service::Caller;
-use action_core::{AgentConfig, ReaderAsk, ReaderTask, StepEnd, ValueSchema};
-use action_fake::{FakeMail, FixedClock, MailThread, ScriptedReviewer, mail_manifest};
-use agent_inapp::{
-    AlmanacMemory, AuditTo, FileGrantStore, InAppAgent, InAppKit, InAppParts, TransportReader,
-    TransportWriter, reviewer_over,
-};
-use action_vocab::{ChoiceId, Handle};
-use account_ids::Count;
 use provenance::{SpaceId, UnixSeconds};
 use serde_json::json;
 use std::sync::Arc;
@@ -260,7 +260,7 @@ async fn without_a_reader_the_read_ends_the_turn_as_failed() {
     );
 }
 
-/// The router's memory over almanac-fake's service, hosted in this process.
+/// The router's memory over memory-fake's service, hosted in this process.
 macro_rules! router_memory {
     ($service:expr) => {
         AlmanacMemory::over(InProcess::new($service.clone(), Caller::Router))

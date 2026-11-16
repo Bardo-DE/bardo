@@ -161,7 +161,7 @@ pub(crate) fn surface_root(
         .context(settings_feed.clone())
 }
 
-/// Each output's lock surface for shell-host's session lock: `LOCK`'s root with the
+/// Each output's lock surface for layer-shell-host's session lock: `LOCK`'s root with the
 /// daemon's usual contexts and the links `LOCK.needs` names.
 pub(crate) fn lock_factory(
     services: &Services,

@@ -1,4 +1,4 @@
-//! The ids of the accounts vocabulary, each in the one slug grammar of `porter-ids`.
+//! The ids of the accounts vocabulary, each in the one slug grammar of `account-ids`.
 
 use account_ids::slug_id;
 

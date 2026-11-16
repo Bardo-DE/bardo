@@ -5,14 +5,14 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use ui_settings::ConfigRoot;
-use ui_settings::schema::Schema;
 use files_core::{Behaviour, FileName, FolderPath, ItemRef};
 use files_trash::{FakeTrash, Trash};
 use files_ui::settings::{self, FilesDoc, NewWindow};
 use files_ui::{PlaceKind, Preferences, Sidebar};
 use tempfile::TempDir;
 use tokio::runtime::Handle;
+use ui_settings::ConfigRoot;
+use ui_settings::schema::Schema;
 
 /// A scratch config folder whose `files/settings.toml` says `text`.
 fn written(text: &str) -> (TempDir, ConfigRoot) {

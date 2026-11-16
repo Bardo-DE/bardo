@@ -1,6 +1,6 @@
 //! The quire desktop's portal backend: the D-Bus services `xdg-desktop-portal` forwards to.
 //!
-//! The pure decisions live in `transom-core`; this crate holds the I/O around them, each behind
+//! The pure decisions live in `portal-core`; this crate holds the I/O around them, each behind
 //! a seam so tests run on a private bus with fakes:
 //!
 //! - [`capture`]: where pixels come from ([`capture::CaptureSource`]).
@@ -117,7 +117,10 @@ impl Parts {
     }
 
     /// These parts recognising the programs `callers` names.
-    pub fn with_callers(mut self, callers: caller_identity_dbus::caller_identity_core::Table) -> Self {
+    pub fn with_callers(
+        mut self,
+        callers: caller_identity_dbus::caller_identity_core::Table,
+    ) -> Self {
         self.callers = callers;
         self
     }

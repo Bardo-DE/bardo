@@ -14,6 +14,9 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use agent_voice_wire::{
+    CancelCause, Envelope, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal, VoiceVocab, frame, seal,
+};
 use shell_model::companion::CompanionCommand;
 use shell_model::voice::{Voice, VoiceCommand, VoiceConsent};
 use shell_services::env::{BusRoute, Buses, Env};
@@ -24,9 +27,6 @@ use shell_testkit::PrivateBus;
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
 use tokio::sync::{mpsc, watch};
-use agent_voice_wire::{
-    CancelCause, Envelope, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal, VoiceVocab, frame, seal,
-};
 use zbus::message::Header;
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 use zbus::{Connection, DBusError};

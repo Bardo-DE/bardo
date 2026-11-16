@@ -147,7 +147,7 @@ impl Flight {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct CornerRadius(pub SubPx);
 
-/// Which compositor shadow a window casts (values from ds-style's elevation tokens at render
+/// Which compositor shadow a window casts (values from ui-style's elevation tokens at render
 /// time).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ShadowLevel {

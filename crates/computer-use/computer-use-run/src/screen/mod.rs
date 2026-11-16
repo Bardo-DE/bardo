@@ -33,12 +33,12 @@ pub use unseen::{UnseenWhy, Withheld, secret_masks, split_unseen};
 
 use crate::observation::{Observation, TreeObs};
 use crate::rules::InjectionRules;
+use account_core::AppName;
 use computer_use_a11y_tree::{A11yNode, NodeValue, Role};
 use computer_use_action::{Size, WindowSpace};
 use computer_use_bus::ScreenKind;
 use computer_use_desktop::Digest32;
 use excerpt::{fold, readable};
-use account_core::AppName;
 use serde::{Deserialize, Serialize};
 
 /// The most reasons one verdict carries: enough to say what was found, few enough to read.

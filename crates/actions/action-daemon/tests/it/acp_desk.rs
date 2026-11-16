@@ -2,23 +2,23 @@
 //! asks the `Confirm1` the docket-acp process serves (`ConfirmObject` over an `EditorDesk`), the
 //! host's side of the desk hands the sheet out and answers it, and what comes back is the
 //! router's answer. The roles are the shipped `intentd.toml`'s, read through the ACP gate. (The packaged `docket-acp`
-//! process is run by `docket-accept`; this is the half that needs intentd's own types.)
+//! process is run by `action-accept`; this is the half that needs intentd's own types.)
 
 use crate::support::apps::FakeSill;
 use crate::support::bus::PrivateBus;
-use agent_acp_bin::confirm::ConfirmObject;
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmEnd, ConfirmId, ConfirmOffer, ConfirmParts,
     ConfirmRequest, Confirmer, EditorRoute, Gesture, GrantScope, TaintNote,
 };
+use action_daemon::{AcpGate, IntentdConfig, ProcRoot, SheetConfirmer};
 use action_dbus::callers::{Identity, Role};
 use action_dbus::{CONFIRM_PATH, ConfirmProxy, INTENTS_BUS};
 use action_host::EditorDesk;
-use agent_session::{SheetChoice, SheetDesk};
 use action_vocab::{LabelText, Seconds};
-use action_daemon::{AcpGate, IntentdConfig, ProcRoot, SheetConfirmer};
-use account_core::AppName;
-use account_ids::Count;
+use agent_acp_bin::confirm::ConfirmObject;
+use agent_session::{SheetChoice, SheetDesk};
 use provenance::{Actor, ClientName, Effect, SessionId, SpaceId};
 use std::sync::Arc;
 

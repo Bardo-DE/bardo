@@ -8,12 +8,12 @@
 //! hosted one and an engine an app points at alike; what builds a target from a model book is the
 //! caller's.
 
+use account_match::DimsNeed;
+use inference_core as pi;
 use model_catalog::SamplingDefaults;
 use model_openai_compat::Flavor;
 use model_provider as sp;
 use model_provider::EmbedCaps;
-use inference_core as pi;
-use account_match::DimsNeed;
 #[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]

@@ -16,7 +16,7 @@ pub struct MailAt {
     pub host: String,
     /// The port, never below 1024.
     pub port: u16,
-    /// `implicit`, `start_tls` or `plain` (porter-core's `Tls`, snake case).
+    /// `implicit`, `start_tls` or `plain` (account-core's `Tls`, snake case).
     pub tls: String,
     /// The login name.
     pub user: String,

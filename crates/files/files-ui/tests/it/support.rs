@@ -3,8 +3,6 @@
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use ui_components::prelude::SystemPrefs;
-use ui_harness::{Harness, HarnessConfig, Viewport};
 use files_core::{FolderPath, Location};
 use files_fs::{DiskLister, FakePrefs, FakeWatcher, NoClouds};
 use files_model::AppPick;
@@ -15,6 +13,8 @@ use files_ui::{
     Opener, Zone,
 };
 use tempfile::TempDir;
+use ui_components::prelude::SystemPrefs;
+use ui_harness::{Harness, HarnessConfig, Viewport};
 
 /// An opener that remembers what it was asked to open, and how.
 #[derive(Debug, Default)]

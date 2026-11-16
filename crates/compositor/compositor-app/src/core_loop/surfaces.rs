@@ -7,12 +7,12 @@ use compositor_core::geometry::LogicalSize;
 use compositor_core::{Event, OutputKey};
 use compositor_render::SurfaceEntry;
 use compositor_wayland::fractional_scale;
-use ui_core::geometry::scale::Scale;
 use smithay::desktop::utils::bbox_from_surface_tree;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::wayland::compositor::{
     RegionAttributes, SurfaceAttributes, TraversalAction, with_states, with_surface_tree_downward,
 };
+use ui_core::geometry::scale::Scale;
 
 /// Brings the surface book up to date with `events`, in order.
 pub(super) fn sync(state: &mut State, events: &[Event]) {

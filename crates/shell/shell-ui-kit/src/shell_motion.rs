@@ -2,9 +2,9 @@
 //! `appearance.motion_level`, reduced also when the desktop asks for reduced motion, as quire's
 //! own resolve reads it.
 
+use shell_model::desktop::Motion as ShellMotion;
 use ui_components::prelude::Motion;
 use ui_settings::Environment;
-use shell_model::desktop::Motion as ShellMotion;
 
 /// The motion of `environment`, in the compositor's words.
 pub fn shell_motion(environment: &Environment) -> ShellMotion {
@@ -20,9 +20,9 @@ pub fn shell_motion(environment: &Environment) -> ShellMotion {
 #[cfg(test)]
 mod tests {
     use super::shell_motion;
+    use shell_model::desktop::Motion as ShellMotion;
     use ui_components::prelude::Motion;
     use ui_settings::Environment;
-    use shell_model::desktop::Motion as ShellMotion;
 
     #[test]
     fn either_the_person_or_the_desktop_reduces_motion() {

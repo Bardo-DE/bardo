@@ -60,7 +60,7 @@ fn every_member_of_the_spec_is_declared() {
     for w in want {
         assert!(xml.contains(w), "missing {w}");
     }
-    // One method per member the allow-list table names (cua-bus): nothing is callable that the
+    // One method per member the allow-list table names (computer-use-bus): nothing is callable that the
     // table does not rule on.
     assert_eq!(xml.matches("<method ").count(), CuaMember::ALL.len());
 }

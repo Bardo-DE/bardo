@@ -10,12 +10,12 @@ use crate::support::bus::PrivateBus;
 use crate::support::computers::{Asker, Fake, Lender, Own, serve_with};
 use crate::support::drive::{click, click_when_still, scroll_into_view, type_into};
 use crate::support::inferd::Inferd;
+use action_settings::{CloudAllowed, read_places};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use action_settings::{CloudAllowed, read_places};
+use std::time::Duration;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
-use std::time::Duration;
 
 mod agents;
 mod cloud;

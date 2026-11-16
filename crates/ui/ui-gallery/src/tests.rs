@@ -6,10 +6,10 @@ use crate::axes::{Axes, Showcase, start_with};
 use crate::page::Page;
 use crate::style;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, HarnessConfig, Viewport, snapshot_with};
 use ui_lint::{Exception, LintConfig, Profile, markup};
-use std::time::Duration;
 
 /// Offences in quire's own markup the gallery lives with: none. Every one would be drawn by a
 /// quire component, not by the gallery, and a gap reported to quire (the Gaps page lists them).

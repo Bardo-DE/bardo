@@ -1,8 +1,8 @@
 //! The event log and the message path, in memory.
 
+use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use computer_use_bus::CuaRecord;
 use computer_use_run::{LinkError, MessageLink, RecordSink};
-use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use provenance::{MessageId, SessionId, ThreadId};
 use std::collections::VecDeque;
 use std::sync::Mutex;

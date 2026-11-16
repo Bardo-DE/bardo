@@ -15,14 +15,14 @@ use super::synced::Synced;
 use crate::fsutil::write_atomic_mode;
 use crate::layout::Layout;
 use semver::Version;
-use updater_core::{
-    Authenticator, Placement, Sha256Hex, SystemAction, SystemFound, into_root, placements,
-    plan_system, vendor_copies,
-};
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
+use updater_core::{
+    Authenticator, Placement, Sha256Hex, SystemAction, SystemFound, into_root, placements,
+    plan_system, vendor_copies,
+};
 
 /// The largest system file read: ours are small, and a larger existing one is not ours.
 const MAX_SYSTEM_FILE_BYTES: u64 = 1 << 20;

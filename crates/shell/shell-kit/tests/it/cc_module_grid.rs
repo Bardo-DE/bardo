@@ -2,12 +2,12 @@
 //! props (`control_center.grid_*`), the columns share the width, and a Full tile spans them all.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use shell_kit::control_center::module_grid::GridColumns;
 use shell_kit::control_center::module_tile_kind::TileSpan;
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 400,

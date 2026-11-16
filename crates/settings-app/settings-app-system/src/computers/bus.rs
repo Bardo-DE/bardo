@@ -5,19 +5,19 @@ use super::{Change, ChangeFailure, ComputersLink};
 use crate::bus::{BusSource, Daemon, Pinned, ToAbsence, absence_of, inferd, read_once};
 use crate::deadline::{Deadline, answered, peer};
 use crate::ticks::{Ticker, Ticks};
-use settings_app_model::{
-    Absence, ComputerRow, ComputersFound, ComputersReason, ServerDraft, ServerModel, ServerReach,
-    Work, picker_row_is_choice, server_models,
-};
-use ui_peer::within;
+use account_dbus::BusStream;
 use inference_client::{
     ClientError, ComputerReach, ComputerReason, DbusTransport, Inference, NewComputer,
     NewComputerModel, TransportError,
 };
-use account_dbus::BusStream;
-use inference_tailnet::ComputerCandidate;
-use std::path::Path;
 use inference_dbus::inference::InferenceProxy;
+use inference_tailnet::ComputerCandidate;
+use settings_app_model::{
+    Absence, ComputerRow, ComputersFound, ComputersReason, ServerDraft, ServerModel, ServerReach,
+    Work, picker_row_is_choice, server_models,
+};
+use std::path::Path;
+use ui_peer::within;
 
 /// Why a call was refused, as the pane knows it.
 fn reason_of(error: &ClientError) -> ComputersReason {

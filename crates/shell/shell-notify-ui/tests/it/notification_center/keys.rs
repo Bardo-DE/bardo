@@ -5,11 +5,11 @@
 //! closes.
 
 use super::{advance, commands, opened, ringed, two_apps};
-use ui_components::prelude::*;
-use ui_harness::Input;
 use shell_model::notifications::{
     ActionKey, Activation, AppKey, Clear, NotificationId, NotificationsCommand,
 };
+use ui_components::prelude::*;
+use ui_harness::Input;
 
 #[test]
 fn the_column_holds_the_keyboard_and_the_arrows_move_the_ring() {

@@ -1,18 +1,18 @@
 //! A scripted model and the fixture request, shared by the reviewer tests.
 #![allow(dead_code)]
 
-use action_review::*;
-use action_core::*;
-use action_manifest::Lasting;
-use permission_core::{ArgLabels, SessionSaw, Strictness};
-use action_vocab::{Caller, LabelText, Millis, TurnId};
 use account_capability::{Billing, Locality, ModelId};
 use account_core::AccountId;
 use account_ids::Tokens;
+use action_core::*;
+use action_manifest::Lasting;
+use action_review::*;
+use action_vocab::{Caller, LabelText, Millis, TurnId};
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
     ModelCard, ModelError, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
 };
+use permission_core::{ArgLabels, SessionSaw, Strictness};
 use provenance::{ActionName, Effect, Integrity, SpaceId};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::future::Future;

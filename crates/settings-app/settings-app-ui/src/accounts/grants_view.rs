@@ -4,8 +4,8 @@
 
 use crate::copy::accounts::grant_when;
 use crate::key_row::row_id;
-use settings_app_model::{Account, AccountPermission, ModuleRow};
 use dioxus::prelude::*;
+use settings_app_model::{Account, AccountPermission, ModuleRow};
 use ui_components::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::overlays::hover_card::parts::HoverCardPart;

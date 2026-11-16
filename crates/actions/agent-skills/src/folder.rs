@@ -1,5 +1,5 @@
 //! The seam to the disk: how a skill directory is listed and read. The caller supplies the
-//! implementation (`docket-store` has the one over the real disk), so this crate does no IO.
+//! implementation (`action-store` has the one over the real disk), so this crate does no IO.
 
 use std::path::{Path, PathBuf};
 

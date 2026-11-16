@@ -8,7 +8,6 @@
 //! app's identity is the daemons' to find (see `fixture`). The sync commands (settle a conflict,
 //! watch for them) are `ferry-rig-client`'s.
 
-use clap::Subcommand;
 use account_capability::AgentProgram;
 use account_client::{Accounts, AccountsError, AiKeysError, IdentitiesError, Porter};
 use account_client_dbus::{Bus, Identities, Launcher, LauncherError};
@@ -18,6 +17,7 @@ use account_core::consent::Usage;
 use account_core::{AccountId, GrantId, ProviderId};
 use account_core::{DataClass, IdentityId};
 use account_wire::ParentWindow;
+use clap::Subcommand;
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
 

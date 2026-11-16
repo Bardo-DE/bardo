@@ -57,8 +57,8 @@ fn rows_in(fs: &RealProc, path: &Path) -> Table {
 mod tests {
     use super::*;
     use crate::clients::{Judge, Vetting};
-    use compositor_core::privilege::{ClientStanding, Floor, ServiceRole};
     use account_core::PeerIdentity;
+    use compositor_core::privilege::{ClientStanding, Floor, ServiceRole};
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::net::UnixStream;
     use std::path::PathBuf;

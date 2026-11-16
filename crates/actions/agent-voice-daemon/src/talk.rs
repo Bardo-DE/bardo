@@ -10,18 +10,18 @@ use crate::link::{self, Link, LinkEvent};
 use crate::playback::Played;
 use crate::usage::UseSource;
 use crate::warm::{Warm, tts_need};
-use inference_client::Transport;
 use account_capability::LanguageTag;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use inference_core::{
-    ClientFrame, InferEvent, InferReply, InferRequest, ModelError, Readiness, SpeakRequest,
-};
 use agent_voice_audio::{AudioDevice, samples_of};
 use agent_voice_dbus::speech_path;
 use agent_voice_loop::{SpeechEffect, SpeechEvent, SpeechPhase, SpeechState, speech_step};
 use agent_voice_wire::{SpeakWire, Speaking, SpeechEnd, VoiceFault, VoiceRefusal, VoiceUse};
+use inference_client::Transport;
+use inference_core::{
+    ClientFrame, InferEvent, InferReply, InferRequest, ModelError, Readiness, SpeakRequest,
+};
 use zbus::object_server::SignalEmitter;
 
 /// The most text one `Speak` may carry, in bytes.

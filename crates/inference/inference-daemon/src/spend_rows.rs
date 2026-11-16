@@ -12,15 +12,15 @@ use crate::broker::AccountList;
 use crate::cloud::accountd::Boxed;
 use crate::cloud::spend::written;
 use crate::cloud::wire::charges_of;
-use ui_settings::live::LiveError;
-use ui_settings::schema::{Help, KeySpec};
+use account_core::{AccountId, AiAccountRow};
+use account_settings::accounts::{SPEND_CAP, SPEND_MONTH, account_tail};
+use inference_core::ChargeTotal;
 use iso_currency::Currency;
 use model_provider::{Charges, Money};
-use account_core::{AccountId, AiAccountRow};
-use inference_core::ChargeTotal;
-use account_settings::accounts::{SPEND_CAP, SPEND_MONTH, account_tail};
 use rust_decimal::Decimal;
 use std::sync::Arc;
+use ui_settings::live::LiveError;
+use ui_settings::schema::{Help, KeySpec};
 
 /// What accounts have spent on hosted models this month, and the cap on each.
 pub trait SpendBook: Send + Sync + 'static {

@@ -8,7 +8,7 @@
 //! The process holds no authority: it forwards `tools/list` and `tools/call` over the socket, and
 //! the host makes each call as a router call in the session it opened, as the program it named,
 //! exactly as it makes a file read. The tool names, schemas, argument reading and outcomes are
-//! `actions-tools`', the same as the MCP edge's.
+//! `action-tools`', the same as the MCP edge's.
 //!
 //! - `ToolsOffer`: what the host is given to offer (a directory for sockets, the bridge program).
 //! - `ToolsEdge`: the listening side of one session. Dropped, it stops, and its socket is gone.

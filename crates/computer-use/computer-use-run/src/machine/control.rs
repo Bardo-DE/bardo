@@ -13,8 +13,8 @@ use computer_use_bus::TaskTarget;
 use computer_use_bus::{
     ActionResult, CancelledBy, CuaOutcome, CuaRecord, FailReason, ModeSupport, report_draft,
 };
-use computer_use_desktop::{DesktopEvent, GlowState, RevokeReason, Stamp, Suspend};
 use computer_use_capture::FrameWant;
+use computer_use_desktop::{DesktopEvent, GlowState, RevokeReason, Stamp, Suspend};
 use provenance::ReportStatus;
 
 /// Whether the person may pause in this phase: any that has a lease and is not already stopped.

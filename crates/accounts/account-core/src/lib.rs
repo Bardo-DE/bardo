@@ -1,7 +1,7 @@
 //! porter's pure accounts vocabulary: accounts and their endpoints, consent, and credentials'
-//! filing. No runtime, no file system, no I/O: the file writer lives in `porter-fs`. What it is
+//! filing. No runtime, no file system, no I/O: the file writer lives in `account-fs`. What it is
 //! built from lives below it, each in its own crate: ids, units, URLs, the clock and
-//! percent-encoding in `porter-ids`, the capability vocabulary in `porter-capability`.
+//! percent-encoding in `account-ids`, the capability vocabulary in `account-capability`.
 
 mod account;
 mod app_id;

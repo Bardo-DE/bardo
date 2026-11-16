@@ -3,10 +3,10 @@
 //! the inode by rename), a 30 ms debounce, then the whole file is read again through the lenient
 //! reader.
 
+use account_daemon_support::Watch;
 use memory_host::Locator;
 use memory_service::{Backend, MemoryService};
 use memory_settings::{Loaded, MemorySettings, SETTINGS_FILE};
-use account_daemon_support::Watch;
 use std::time::Duration;
 use tokio::sync::{mpsc, watch};
 

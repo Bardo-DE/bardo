@@ -2,9 +2,9 @@
 //! read-only git directories.
 
 use super::support::{ALLOWLIST, ENDPOINT, HANDOFF, LOGIN, plan, rig};
-use sandbox::{Access, AgentNet, Profile, agent_bwrap_args};
 use agent_acp_host::{AgentChild, Spawn};
 use agent_launch::fake::Mood;
+use sandbox::{Access, AgentNet, Profile, agent_bwrap_args};
 
 #[tokio::test]
 async fn the_tool_edge_is_bound_in_the_bridge_read_only_and_its_socket_read_write() {

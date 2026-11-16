@@ -7,7 +7,6 @@ use compositor_core::input::DeviceClass;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
 use compositor_core::{DeviceId, Event, OutputName};
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::capture::{
     BufferAsk, CaptureFailure, CursorEvent, CursorMode, OutputCapture, Size,
 };
@@ -15,6 +14,7 @@ use compositor_testkit::fakes::callers;
 use compositor_testkit::{
     ASKED_PROGRAM, ClientId, Fixture, FixtureSpec, FrameCount, ShotTarget, TestOrigin,
 };
+use desktop_protocols::vocab::{Answer, Power};
 
 pub(crate) fn name(text: &str) -> OutputName {
     OutputName::parse(text).expect("a name")

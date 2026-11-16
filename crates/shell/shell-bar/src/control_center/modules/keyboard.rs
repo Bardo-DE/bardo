@@ -6,11 +6,11 @@
 //! laptop's own brightness keys included.
 
 use dioxus::prelude::*;
-use ui_components::components::content::level_glyph::vocab::LevelGlyph;
-use ui_components::prelude::*;
 use shell_model::kbd_backlight::{KbdBacklight, KbdCommand};
 use shell_model::units::Presence;
 use shell_services::KbdBacklightService;
+use ui_components::components::content::level_glyph::vocab::LevelGlyph;
+use ui_components::prelude::*;
 
 use super::cc_module::{CcCx, CcModule, Span};
 use super::wired::{fraction_of, percent_of};
@@ -62,9 +62,9 @@ impl CcModule for KeyboardCc {
 #[cfg(test)]
 mod tests {
     use super::keyboard_level;
-    use ui_components::prelude::*;
     use shell_model::kbd_backlight::{KbdBacklight, KbdLevel};
     use shell_model::units::Presence;
+    use ui_components::prelude::*;
 
     #[test]
     fn the_module_shows_only_where_there_is_a_backlight() {

@@ -6,14 +6,14 @@
 
 use crate::common;
 
-use common::Proc;
-use common::bus::PrivateBus;
 use account_core::AccountId;
 use account_core::{Credential, SecretKey, SecretPurpose, SecretText};
 use account_ids::UnixSeconds;
 use account_secrets::{Oo7Secrets, Secrets, SecretsError};
-use std::process::{Command, Stdio};
 use base_testkit::Scratch;
+use common::Proc;
+use common::bus::PrivateBus;
+use std::process::{Command, Stdio};
 
 const CHILD: &str = "RIG_OO7_CHILD";
 

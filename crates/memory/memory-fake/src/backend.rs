@@ -3,12 +3,12 @@
 use crate::clock::SteppedClock;
 use crate::consolidator::ScriptedConsolidator;
 use memory_core::{ReplicaId, RuleSet, SpaceId, SpaceMeta, UnixSeconds};
-use memory_seal::{MemoryKeys, Purpose, SpaceKey, derive};
-use memory_service::{Backend, BackendError, Listing, MemoryService, RegistryError};
-use memory_store::{Vault, VaultError, VaultPath};
 use memory_eventlog::MemoryLog;
 use memory_files::MemoryVault;
 use memory_recall::{ExactScan, FakeEmbedder, Fts5, Index};
+use memory_seal::{MemoryKeys, Purpose, SpaceKey, derive};
+use memory_service::{Backend, BackendError, Listing, MemoryService, RegistryError};
+use memory_store::{Vault, VaultError, VaultPath};
 use std::collections::{BTreeMap, BTreeSet};
 use std::future::Future;
 use std::sync::atomic::{AtomicU64, Ordering};

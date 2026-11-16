@@ -1,7 +1,7 @@
 //! A link from outside to one Extension's row: the page switches and the row is marked.
 
-use settings_app_model::{EXTENSIONS_SLUG, PageSlug};
 use dioxus::prelude::*;
+use settings_app_model::{EXTENSIONS_SLUG, PageSlug};
 
 /// The window's means of showing an Extension: provided by the root, used by the page.
 #[derive(Clone, Copy)]

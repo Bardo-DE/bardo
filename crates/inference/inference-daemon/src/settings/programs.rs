@@ -4,15 +4,15 @@
 //! inferd runs with the person's files, so a path is taken only when nobody else could have put
 //! the program there or could change it: see [`checked`].
 
-use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
-};
-use model_catalog::EngineKind;
 use account_callers::held_under;
 use inference_router::local::EngineConfig;
+use model_catalog::EngineKind;
 use std::collections::BTreeMap;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
+use ui_settings::schema::{
+    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+};
 
 /// The section the rows are listed in.
 const SECTION: &str = "Local models";

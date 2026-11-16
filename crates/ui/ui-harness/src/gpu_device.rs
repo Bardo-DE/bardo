@@ -1,4 +1,4 @@
-//! Opening the GPU a hybrid harness paints on, as shell-host's offscreen context does: a
+//! Opening the GPU a hybrid harness paints on, as layer-shell-host's offscreen context does: a
 //! non-empty `WGPU_ADAPTER_NAME` names the adapter (a case-insensitive substring of its name),
 //! else [`AdapterPref`] ranks the kinds; Vulkan before GL, software rasterisers last. The first
 //! adapter that yields a device wins. The ranking and the device request are `blitz_embed::adapter`.
@@ -18,7 +18,7 @@ use wgpu_context::DeviceHandle;
 /// and never dropped because tearing one down while another test creates its own deadlocks the
 /// NVIDIA driver: `vkDestroyDevice` and EGL `destroy_context` on one thread against
 /// `vkEnumerateDeviceExtensionProperties` and `create_pipeline_layout` on others hung a test
-/// binary for hours (quire ds-blitz and anyview, 2026-10-15). A wgpu device is safe to use from
+/// binary for hours (quire ui-blitz and anyview, 2026-10-15). A wgpu device is safe to use from
 /// many threads, and each harness still owns its renderer, target and resources.
 static OPENED: Mutex<Vec<Opened>> = Mutex::new(Vec::new());
 
@@ -57,7 +57,7 @@ pub(crate) fn open_device(
 }
 
 /// A new instance and device on the preferred adapter. Called with [`OPENED`] held; it also
-/// holds blitz-kit's process-wide [`opening`] lock, so an app's own opener in the same test binary
+/// holds blitz-embed's process-wide [`opening`] lock, so an app's own opener in the same test binary
 /// never runs the Vulkan loader's scan beside it.
 fn open_new(
     pref: &AdapterPref,

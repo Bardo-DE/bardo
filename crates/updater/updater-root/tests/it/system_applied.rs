@@ -1,12 +1,12 @@
 use crate::support::{Accept, Recipe, Sandbox, build, read, v};
-use updater_root::apply::{
-    Change, Command, Ran, Reach, Relabel, Relabeled, RunProgram, Selinux, commands, install_with,
-    rollback,
-};
 use std::cell::RefCell;
 use std::ffi::OsString;
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::path::{Path, PathBuf};
+use updater_root::apply::{
+    Change, Command, Ran, Reach, Relabel, Relabeled, RunProgram, Selinux, commands, install_with,
+    rollback,
+};
 
 const UDEV: &str = "/etc/udev/rules.d/70-keycap.rules";
 const UDEV_IN_BUNDLE: &str = "system/etc/udev/rules.d/70-keycap.rules";

@@ -1,9 +1,9 @@
 //! The names of the companion's own actions, the rule that the helper ones are the companion's
 //! planners' alone, and the things that stand for its tasks.
 
-use permission_core::COMPANION_APP;
-use action_vocab::ActionRef;
 use account_core::AppName;
+use action_vocab::ActionRef;
+use permission_core::COMPANION_APP;
 use provenance::{EntityId, EntityKey, EntityKind, TaskId};
 
 /// The kind of thing a task is.

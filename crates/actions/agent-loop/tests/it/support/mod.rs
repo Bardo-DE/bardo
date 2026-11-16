@@ -1,10 +1,10 @@
 //! Builders the machine tests share.
 #![allow(dead_code)]
 
-use agent_loop::*;
-use companion_wire::SessionRecord;
 use action_core::*;
 use action_vocab::{Caller, TurnId};
+use agent_loop::*;
+use companion_wire::SessionRecord;
 use provenance::{AgentRef, SpaceId, TaskId, UnixSeconds};
 
 pub fn space(s: &str) -> SpaceId {

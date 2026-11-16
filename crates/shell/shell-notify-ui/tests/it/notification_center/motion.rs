@@ -5,10 +5,10 @@
 //! while the center is open enters. Every one of them ends at rest, asking for no frame.
 
 use super::{Running, advance, commands_until, fake, note, settle, start, two_apps, until};
-use ui_harness::harness::assert_settles_to_zero_frames;
-use ui_harness::{Harness, Input};
 use shell_model::notifications::{AppGroup, AppKey, Clear, History, NotificationsCommand};
 use shell_settings::ShellFile;
+use ui_harness::harness::assert_settles_to_zero_frames;
+use ui_harness::{Harness, Input};
 
 /// A group's toggle ("N more", "Show less") and Clear, in its header.
 const TOGGLE: &str = ".ds-group-header-actions .ds-button:first-child";

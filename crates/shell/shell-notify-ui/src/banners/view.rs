@@ -9,14 +9,14 @@
 //! [`BannerLink`]: shell_ui_kit::links::BannerLink
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::{OutputInfo, SurfaceHandle, Visibility, use_watch};
-use shell_model::notifications::{NotificationId, Notifications};
-use shell_services::NotificationsService;
 use shell_kit::notifications::banner_stack::BannerKey;
 use shell_kit::notifications::parts::Hover;
 use shell_kit::notifications::swipe::NotificationSwipe;
 use shell_kit::prelude::*;
+use shell_model::notifications::{NotificationId, Notifications};
+use shell_services::NotificationsService;
+use ui_components::prelude::*;
 
 use super::deck::{DeckIn, Entry, EntryKey};
 use super::deck_keys::KeysIn;

@@ -2,12 +2,12 @@
 //! action and its arguments, or says which argument is wrong.
 
 use crate::answer::{not_found, refusal};
-use settings_app_model::PageSlug;
+use account_core::AppName;
 use action_core::{AppRefusal, Invocation};
 use action_vocab::{ParamName, TargetValue, Value};
+use settings_app_model::PageSlug;
 use ui_settings::schema::KeyPath;
 use ui_settings::target::SettingsTarget;
-use account_core::AppName;
 
 /// What a call asks of Settings.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -3,10 +3,10 @@
 //! and the effects out; the open and close deadlines are in the state, so its wake is the one
 //! timer and a stale wake changes nothing.
 
+use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_style::tokens::delay::{DelayToken, TipDelay};
-use std::time::Duration;
 
 /// Which hover interface the pointer is resting on, and so how long it waits (design/30
 /// section 1.2): the three profiles of one machine.

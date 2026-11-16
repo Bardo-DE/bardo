@@ -9,9 +9,6 @@ use crate::cc_support;
 
 use cc_support::details::{center, center_at, ms};
 
-use ui_components::prelude::*;
-use ui_harness::harness::assert_settles_to_zero_frames;
-use ui_harness::{Harness, Input};
 use shell_model::displays::ddc::Endpoint;
 use shell_model::displays::{
     Controls, DdcDisplay, Displays, DisplaysCommand, Following, Level, LevelChange,
@@ -19,6 +16,9 @@ use shell_model::displays::{
 use shell_model::ids::{DdcId, OutputName};
 use shell_model::units::Percent;
 use tokio::sync::mpsc::UnboundedReceiver;
+use ui_components::prelude::*;
+use ui_harness::harness::assert_settles_to_zero_frames;
+use ui_harness::{Harness, Input};
 
 const CAPSULE: &str = ".ds-slider[*|aria-label=\"Display\"]";
 /// A module panel dimmed with its level (Display's, the one disabled here).

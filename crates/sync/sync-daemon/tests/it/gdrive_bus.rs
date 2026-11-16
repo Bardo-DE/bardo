@@ -10,10 +10,6 @@ use crate::common;
 use crate::googlerig as google_rig;
 
 use common::PhotosGrant;
-use sync_bus::SyncProxy;
-use sync_bus::{
-    CONFLICT_KEY_NUMBER, RESOLVE_KEEP_LOCAL, RESOLVE_KEEP_REMOTE, SYNC_ERROR_NO_SUCH_CONFLICT,
-};
 use google_rig::{
     DRIVE_BEARER, FILES_DATASET, Rig, SECRET_ACCESS, SECRET_REFRESH, SEGMENT, client_of,
     eventually, local, rig,
@@ -21,6 +17,10 @@ use google_rig::{
 use std::pin::Pin;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+use sync_bus::SyncProxy;
+use sync_bus::{
+    CONFLICT_KEY_NUMBER, RESOLVE_KEEP_LOCAL, RESOLVE_KEEP_REMOTE, SYNC_ERROR_NO_SUCH_CONFLICT,
+};
 use sync_daemon::datasets::storage::FILES_APP;
 use sync_daemon::service::DatasetName;
 use zbus::export::futures_core::Stream;

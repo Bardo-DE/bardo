@@ -3,11 +3,11 @@
 //! the generation it was sent in, and a stop makes the older ones stale. Half-duplex is the
 //! machines' business (speech never plays while the mic is open); this file only plays.
 
+use agent_voice_audio::{AudioDevice, PlaybackFormat, PlaybackStream};
+use agent_voice_loop::Earcon;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use tokio::sync::mpsc;
-use agent_voice_audio::{AudioDevice, PlaybackFormat, PlaybackStream};
-use agent_voice_loop::Earcon;
 
 /// The rate earcons play at.
 pub const EARCON_RATE: u32 = 24_000;

@@ -1,13 +1,13 @@
 //! [`RelayHttp`]: hyper's HTTP/1 connection over the streams a [`Dial`] opens.
 
+use account_http::HttpError;
+use account_http::http::header::{ACCEPT_ENCODING, HOST, HeaderValue};
+use account_http::http::{Request, Response, StatusCode, Uri};
 use http_body_util::combinators::UnsyncBoxBody;
 use http_body_util::{BodyExt, Full};
 use hyper::body::{Body, Bytes, Incoming};
 use hyper::client::conn::http1::{self, SendRequest};
 use hyper_util::rt::TokioIo;
-use account_http::HttpError;
-use account_http::http::header::{ACCEPT_ENCODING, HOST, HeaderValue};
-use account_http::http::{Request, Response, StatusCode, Uri};
 use std::error::Error;
 use std::future::Future;
 use std::io;

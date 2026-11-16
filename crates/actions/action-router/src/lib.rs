@@ -2,7 +2,7 @@
 //! who may call what (`auth`), the order in which a call is refused or let through (`gate`),
 //! tasks and the messages between them (`messages`) and the order of every request through the
 //! seams the daemon passes in. What it remembers and shows (the sessions, the handle table, the
-//! undo journal, the registry) is `docket-context`. `Router` ties them to the seams (`seams`).
+//! undo journal, the registry) is `action-context`. `Router` ties them to the seams (`seams`).
 //!
 //! No clock, bus, file or runtime is reached here; the daemon (`intentd`) passes them in.
 //!

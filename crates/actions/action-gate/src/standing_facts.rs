@@ -2,13 +2,13 @@
 //! grant is matched against. Read off the manifest's sinks, never off words an agent supplied
 //! beyond the typed values; anything unreadable is `Opaque`, which no grant covers.
 
-use sandbox::AbsPath;
 use action_manifest::{ActionDecl, ArgSink};
+use action_vocab::{CallRequest, ParamName, TargetValue, Value};
 use permission_core::{
     ArgFacts, CallFacts, DERIVES_PARAM, Domain, ExecFacts, NETWORK_PARAM, NetPrograms, Recipient,
     TERMINAL_RUN,
 };
-use action_vocab::{CallRequest, ParamName, TargetValue, Value};
+use sandbox::AbsPath;
 use std::sync::LazyLock;
 use url::Url;
 

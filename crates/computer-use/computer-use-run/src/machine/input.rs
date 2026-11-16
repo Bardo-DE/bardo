@@ -6,16 +6,16 @@ use crate::model::{CuaModelError, StepEvent};
 use crate::observation::Observation;
 use crate::screen::ScreenRead;
 use crate::seams::LinkError;
-use computer_use_bus::QuestionId;
-use computer_use_desktop::{DesktopError, DesktopEvent, LeaseGrant};
 use action_core::InboundLine;
 use action_gate_wire::GateAnswer;
 use action_wire::GrantAnswer;
+use computer_use_bus::QuestionId;
 use computer_use_capture::{CaptureError, DamageAt};
-use model_provider::Money;
-use inference_core::{CuaStepReply, ServedBy, TokenUsage};
-use provenance::{ConfirmId, Labelled};
+use computer_use_desktop::{DesktopError, DesktopEvent, LeaseGrant};
 use computer_use_seat_input::{InputReceipt, SeatError};
+use inference_core::{CuaStepReply, ServedBy, TokenUsage};
+use model_provider::Money;
+use provenance::{ConfirmId, Labelled};
 use serde::{Deserialize, Serialize};
 
 /// What about the window changed between the look an action was aimed at and its injection.

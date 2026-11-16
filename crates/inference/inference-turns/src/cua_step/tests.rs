@@ -1,20 +1,20 @@
 use super::*;
+use account_capability::CuaEnv;
+use base_testkit::Scratch;
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
 };
 use computer_use_session::TreeText;
+use inference_core::{AttachIndex, ImageSource, MediaType, StepIndex};
+use inference_router::testkit::models;
 use model_provider::{
     EngineExtras, ModelName, ProviderError, Script, ScriptedProvider, StopReason, ToolCall,
     ToolCallId as CallId, TurnEnd, TurnEvent, TurnUsage,
 };
 use model_provider::{Part, Role, TurnRequest};
-use account_capability::CuaEnv;
-use inference_core::{AttachIndex, ImageSource, MediaType, StepIndex};
-use inference_router::testkit::models;
 use std::io::Write;
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
-use base_testkit::Scratch;
 
 fn cua_model(scratch: &Scratch) -> LocalModel {
     models(scratch).remove(2)

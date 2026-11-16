@@ -143,7 +143,10 @@ fn each_stylesheet_earns_exactly_its_notes() {
 
 #[test]
 fn only_parse_errors_are_errors() {
-    let notes = user_stylesheet(".x { color: var(--nope) !important }\n}", &ui_components::kits());
+    let notes = user_stylesheet(
+        ".x { color: var(--nope) !important }\n}",
+        &ui_components::kits(),
+    );
     let errors: Vec<bool> = notes.iter().map(|note| note.is_parse_error()).collect();
     assert_eq!(errors, [false, false, false, true], "{notes:?}");
 }

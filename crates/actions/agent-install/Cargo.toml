@@ -1,6 +1,6 @@
 [package]
 name = "agent-install"
-description = "Installs coding agents from the agent registry: fetch a pinned version, check it against its digest, unpack it into a directory docket owns, and read and write the records kept there. The values are agents-core. Nothing here runs an agent, and the network is reached only by the install and update commands."
+description = "Installs coding agents from the agent registry: fetch a pinned version, check it against its digest, unpack it into a directory docket owns, and read and write the records kept there. The values are agent-registry. Nothing here runs an agent, and the network is reached only by the install and update commands."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

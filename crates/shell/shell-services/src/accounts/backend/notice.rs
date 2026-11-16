@@ -1,6 +1,8 @@
 //! The notification about an account: its posting.
 
-use shell_model::accounts::{NOTICE_ENTRY, NeedsSignIn, no_launcher_text, notice_text, sign_in_key};
+use shell_model::accounts::{
+    NOTICE_ENTRY, NeedsSignIn, no_launcher_text, notice_text, sign_in_key,
+};
 use shell_model::notifications::{
     Action, AppRef, Body, Expiry, Hints, IconRef, NotificationId, NotifyUrgency, Posting,
 };

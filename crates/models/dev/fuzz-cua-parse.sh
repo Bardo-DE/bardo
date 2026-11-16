@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fuzzes cua-parse on nightly with cargo-fuzz (QUESTIONS P11). A dev script, run by hand; the
+# Fuzzes computer-use-parse on nightly with cargo-fuzz (QUESTIONS P11). A dev script, run by hand; the
 # stable proptest suite (`never_panics`) is what CI runs. Needs `cargo install cargo-fuzz` and a
 # nightly toolchain.
 #

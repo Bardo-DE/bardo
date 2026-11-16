@@ -6,6 +6,8 @@
 //! `cargo run -p ui-blitz --example edit`
 
 use dioxus::prelude::*;
+use std::time::Duration;
+use ui_blitz::{AppConfig, AppId, WindowSize, launch};
 use ui_components::base::time::clock::sleep;
 use ui_components::edit::handle::use_edit_handle;
 use ui_components::edit::input::EditInput;
@@ -14,8 +16,6 @@ use ui_components::host::captured::PointerPhase;
 use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use ui_blitz::{AppConfig, AppId, WindowSize, launch};
-use std::time::Duration;
 
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(

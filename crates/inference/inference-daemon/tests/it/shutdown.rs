@@ -10,17 +10,17 @@
 
 use crate::hosting::bus;
 
+use base_testkit::Scratch;
 use engine_spec::ProgramPath;
 use engine_supervisor::{EngineHost, EngineId, GpuAccess, Network, Sandbox, UnitSpec};
 use inference_daemon::hosts::ProcessHost;
 use inference_daemon::shutdown::{Ended, Signals, on_signal};
+use inference_dbus::inference::INFERENCE_BUS;
 use model_catalog::{EngineArg, MiB};
 use rustix::process::{Pid, Signal, kill_process};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
-use inference_dbus::inference::INFERENCE_BUS;
-use base_testkit::Scratch;
 
 /// The stand-in's exit codes by how its shutdown ended.
 const DONE: i32 = 0;

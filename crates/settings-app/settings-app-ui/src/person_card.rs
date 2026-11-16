@@ -2,8 +2,8 @@
 
 use crate::live::use_client;
 use crate::marked::marked;
-use settings_app_model::Person;
 use dioxus::prelude::*;
+use settings_app_model::Person;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };

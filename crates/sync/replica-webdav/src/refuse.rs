@@ -1,10 +1,10 @@
 //! What a status the replica did not expect means to the contract: a write that was refused
-//! ([`PutRefused`]). The statuses every HTTP replica reads alike are ferry-sync's `status`.
+//! ([`PutRefused`]). The statuses every HTTP replica reads alike are sync-core's `status`.
 
-use sync_core::PutRefused;
-use sync_core::status::retry_after;
 use account_http::http::Response;
 use account_ids::UnixSeconds;
+use sync_core::PutRefused;
+use sync_core::status::retry_after;
 
 /// A write answered with `response`, which was not a success or a precondition failure.
 pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutRefused {

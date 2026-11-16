@@ -6,10 +6,16 @@ use super::cloud::FakeCloud;
 use super::engine::{FakeEngine, Script};
 use super::speech_host::SpeechEngines;
 use super::tailnet::{FakeTailscale, TailnetPlan};
+use account_core::{AppId, AppName, Isolation};
+use account_ids::UnixSeconds;
+use account_ids::clock::FixedClock;
+use base_testkit::Scratch;
 use engine_supervisor::{
     EngineHost, EngineId, ExitCode, FakeGpu, GpuMemory, HostError, Probe, ReadyProbe,
     SupervisorConfig, UnitSpec,
 };
+use inference_client::{DbusTransport, Inference as InferenceClient};
+use inference_core::{ModelCard, Policy, Slot, TierMap};
 use inference_daemon::attached::{Attached, AttachedBook};
 use inference_daemon::cloud::Cloud;
 use inference_daemon::cloud::spend::Ledger;
@@ -25,22 +31,16 @@ use inference_daemon::settings::{Settings, SpendLine};
 use inference_daemon::supervise::{Ports, Supervised};
 use inference_daemon::tailnet::{BusMachines, Parts, Tailnet};
 use inference_daemon::watch::{Probing, Watch};
-use inference_client::{DbusTransport, Inference as InferenceClient};
-use model_catalog::MiB;
-use model_http::{DerCertificate, TlsRoots};
-use account_core::{AppId, AppName, Isolation};
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
-use inference_core::{ModelCard, Policy, Slot, TierMap};
 use inference_router::catalog::{CatalogDirs, read_catalog};
 use inference_router::local::NamedEngine;
 use inference_router::local::{EngineConfig, LocalModel, build};
 use inference_router::startup::{Level, Log};
 use inference_turns::audit::Memory;
+use model_catalog::MiB;
+use model_http::{DerCertificate, TlsRoots};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use base_testkit::Scratch;
 
 /// An engine host that starts nothing: it records what it was asked for. An engine never exits by
 /// itself; one that is stopped exits (an eviction or an idle unload completes).
@@ -369,8 +369,9 @@ impl World {
             .collect();
         let replays = Replays::read(&named, &sockets);
         models.extend(replays.models.iter().cloned());
-        let attached = inference_daemon::attached::models(&plan.attached, &catalog.entries, &sockets)
-            .expect("the attached engines name catalog entries");
+        let attached =
+            inference_daemon::attached::models(&plan.attached, &catalog.entries, &sockets)
+                .expect("the attached engines name catalog entries");
         models.retain(|model| {
             attached
                 .iter()
@@ -464,32 +465,32 @@ impl World {
         // here and attached (each catalogue model as `local/<model>`, so a computer added later
         // is in it too), the remote ones, each catalogue model hosted by whichever account
         // reaches it (`cloud/<model>`), and what the plan adds.
-        let cloud = account_core::AccountId::parse(inference_daemon::engines::CLOUD_ACCOUNT).expect("id");
+        let cloud =
+            account_core::AccountId::parse(inference_daemon::engines::CLOUD_ACCOUNT).expect("id");
         let local = account_core::AccountId::parse("local").expect("id");
-        let pool: Vec<inference_core::ModelRef> =
-            models
-                .iter()
-                .chain(&attached)
-                .map(LocalModel::model_ref)
-                .chain(plan.remote.iter().map(|card| inference_core::ModelRef {
-                    account: card.account.clone(),
-                    model: card.model.clone(),
-                }))
-                .chain(catalog.entries.iter().flat_map(|entry| {
-                    let model = account_capability::ModelId::parse(&entry.id.0).ok();
-                    [local.clone(), cloud.clone()]
-                        .into_iter()
-                        .filter_map(move |account| {
-                            Some(inference_core::ModelRef {
-                                account,
-                                model: model.clone()?,
-                            })
+        let pool: Vec<inference_core::ModelRef> = models
+            .iter()
+            .chain(&attached)
+            .map(LocalModel::model_ref)
+            .chain(plan.remote.iter().map(|card| inference_core::ModelRef {
+                account: card.account.clone(),
+                model: card.model.clone(),
+            }))
+            .chain(catalog.entries.iter().flat_map(|entry| {
+                let model = account_capability::ModelId::parse(&entry.id.0).ok();
+                [local.clone(), cloud.clone()]
+                    .into_iter()
+                    .filter_map(move |account| {
+                        Some(inference_core::ModelRef {
+                            account,
+                            model: model.clone()?,
                         })
-                }))
-                .chain(plan.pooled.iter().map(|text| {
-                    inference_daemon::settings::parse_model(text).expect("an account/model to pool")
-                }))
-                .collect();
+                    })
+            }))
+            .chain(plan.pooled.iter().map(|text| {
+                inference_daemon::settings::parse_model(text).expect("an account/model to pool")
+            }))
+            .collect();
         let mut served = Engines::new(
             models.clone(),
             supervised.clone(),

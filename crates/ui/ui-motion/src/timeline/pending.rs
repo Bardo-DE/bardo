@@ -5,8 +5,8 @@
 
 use super::Timeline;
 use crate::detail::pending::{PendingFrame, SPIN_STEPS};
-use ui_style::tokens::timing::DurationToken;
 use std::time::Duration;
+use ui_style::tokens::timing::DurationToken;
 
 /// An operation's pending loop, one frame at a time: from the operation's age `from` to the
 /// instant the frame after it is due.

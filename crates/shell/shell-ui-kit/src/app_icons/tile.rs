@@ -6,11 +6,11 @@
 
 use std::path::Path;
 
+use shell_launcher::AppId;
+use shell_model::apps::{AppIcon, AppIndex};
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
 use ui_components::style::icon::url::IconUrl;
-use shell_launcher::AppId;
-use shell_model::apps::{AppIcon, AppIndex};
 
 use super::{IconContext, IconFile, LogicalPx, pick, theme_art};
 

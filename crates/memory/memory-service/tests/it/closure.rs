@@ -2,9 +2,9 @@
 
 use crate::support::*;
 use memory_core::*;
+use memory_eventlog::{LogWrite, MemoryLog, NewHeader};
 use memory_seal::{Purpose, SpaceKey, derive};
 use memory_service::{FactGraph, FactNode, plan_forget};
-use memory_eventlog::{LogWrite, MemoryLog, NewHeader};
 
 fn log_of(records: &[Record]) -> MemoryLog {
     let key = SpaceKey::from_bytes([9; 32]);

@@ -1,8 +1,8 @@
 //! The one caller type: how a turn's caller is built from a connection and the stored form it
 //! keeps from the old `TurnSource`.
 
-use action_vocab::{Caller, CallerRole};
 use account_core::AppName;
+use action_vocab::{Caller, CallerRole};
 
 fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")

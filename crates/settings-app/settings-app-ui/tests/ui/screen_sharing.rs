@@ -1,6 +1,6 @@
 //! The Privacy page's screen-sharing apps over a fake portal on a private bus: the apps it
 //! remembers are listed by the id it proved them by, Remove takes one back and the row goes, and a
-//! refusal is told. The rest is tested in `detent-model`.
+//! refusal is told. The rest is tested in `settings-app-model`.
 
 use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
@@ -13,9 +13,9 @@ use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_system::updates::NOW;
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_harness::Harness;
 use ui_settings::live::AnyOwner;
-use std::time::Duration;
 
 const MEET: &str = "org.example.Meet";
 const CALL: &str = "org.example.Call";

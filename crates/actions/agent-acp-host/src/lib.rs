@@ -2,7 +2,7 @@
 //! external coding agent is a session backend whose every call goes through the router. This is
 //! the SDK's client role plus the IO under it: files, the working directory, the agent's tool
 //! socket, the sandboxed terminals. The server edge (an editor drives us) is `docket-acp`; our own
-//! rules, shared by both, are `acp-core`.
+//! rules, shared by both, are `agent-acp-core`.
 //!
 //! - `AcpBackend`: a `SessionBackend` over a process behind the `Spawn` seam. It speaks ACP as
 //!   the client, on the SDK's client role (`link`: the SDK frames the JSON-RPC and routes each
@@ -11,7 +11,7 @@
 //!   the agent's own options.
 //! - `Court`: the router as the agent's host calls it. `AgentCall` is what the agent asked,
 //!   formed and confined; `Ruled` is how the router ruled. `IntentsCourt` is the real one, over
-//!   `docket-client`. The host decides nothing: not whether to ask the person, not whether a
+//!   `action-client`. The host decides nothing: not whether to ask the person, not whether a
 //!   standing grant stands in, not whether the breaker is tripped. Those are the router's, and
 //!   the sheet is whatever the router's confirmer is (sill's, or the host's own in the
 //!   development fallback).

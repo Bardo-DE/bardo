@@ -5,8 +5,8 @@
 //! trailing slash on a folder), so every href is decoded and encoded again the one way before it
 //! is compared or kept.
 
-use sync_core::{ItemPath, RemoteId};
 use account_ids::WebUrl;
+use sync_core::{ItemPath, RemoteId};
 
 /// The dataset's folder on the server.
 #[derive(Debug, Clone, PartialEq, Eq)]

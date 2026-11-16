@@ -5,13 +5,13 @@
 
 use std::time::{Duration, Instant};
 
-use ui_harness::Harness;
 use shell_model::units::Percent;
 use shell_model::volume::{Mute, Volume};
 use shell_overlays::Osd;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{Level, OsdKind, OsdLink};
+use ui_harness::Harness;
 
 /// How long the indicator holds after the last change (the constant in `osd::step`).
 const HOLD_MS: u64 = 1500;

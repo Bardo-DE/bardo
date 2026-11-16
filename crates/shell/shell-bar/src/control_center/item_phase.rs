@@ -9,8 +9,8 @@
 //! join) rests: quire plays a plain Change for a Succeeded nobody watched start, and no Change
 //! reads the same.
 
-use ui_components::motion::detail::stamp::EventStamp;
 use shell_model::attempt::{Attempt, Attempts, OpStamp};
+use ui_components::motion::detail::stamp::EventStamp;
 
 /// An operation on a row's item, stamped by the service that runs it: a running one makes the row
 /// busy, a failed one puts its reason in the detail line.
@@ -91,8 +91,8 @@ pub(crate) const FAILED_WORDS: &str = "Couldn’t connect";
 #[cfg(test)]
 mod tests {
     use super::{Aim, Item, ItemPhase, aim_after, item_phase};
-    use ui_components::motion::detail::stamp::EventStamp;
     use shell_model::attempt::{Attempt, Attempts, OpStamp};
+    use ui_components::motion::detail::stamp::EventStamp;
 
     fn at(now: Attempt, minted: u32) -> Attempts {
         Attempts {

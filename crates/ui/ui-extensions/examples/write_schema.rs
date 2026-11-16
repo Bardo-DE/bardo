@@ -1,6 +1,6 @@
 //! `cargo run -p ui-extensions --example write_schema -- --write-schema <dir>`: writes
 //! `quire.extensions.settings.toml`, the schema of `quire/extensions.toml`, beside the
-//! `quire.settings.toml` that ds-settings' own `write_schema` example writes (design/22-SETTINGS.md
+//! `quire.settings.toml` that ui-settings' own `write_schema` example writes (design/22-SETTINGS.md
 //! section 9.2). Installers run both.
 
 use std::path::PathBuf;

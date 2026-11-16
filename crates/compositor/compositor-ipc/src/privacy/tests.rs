@@ -6,13 +6,13 @@
 use super::{PRIVACY_PATH, PrivacyLink};
 use crate::dbus::COMPOSITOR_BUS_NAME;
 use crate::test_served::{Served, WHOLE_TEST, outcome, service};
+use caller_identity_dbus::caller_identity_core::Proof;
+use caller_identity_dbus::caller_identity_linux::fake::introduced_program;
 use calloop::channel::Channel;
 use compositor_core::policy::Power;
 use compositor_core::privilege::{Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict};
 use ui_settings::live::LiveSchema;
 use ui_settings::schema::{KeyKind, KeySpec};
-use caller_identity_dbus::peephole::fake::introduced_program;
-use caller_identity_dbus::caller_identity_core::Proof;
 use zbus::zvariant::{OwnedValue, Value};
 
 const NOT_PERMITTED: &str = "org.quire.SettingsModule1.Error.NotPermitted";

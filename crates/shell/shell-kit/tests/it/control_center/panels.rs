@@ -2,16 +2,16 @@
 //! level in each scheme, a bare one, a three-column `ModuleGrid`, and the compact picker.
 
 use dioxus::prelude::*;
+use shell_kit::control_center::module_grid::GridColumns;
+use shell_kit::control_center::module_panel::PanelPlate;
+use shell_kit::control_center::module_tile_kind::TileSpan;
+use shell_kit::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::components::controls::slider_model::SliderLook;
 use ui_components::prelude::*;
-use shell_kit::control_center::module_grid::GridColumns;
-use shell_kit::control_center::module_panel::PanelPlate;
-use shell_kit::control_center::module_tile_kind::TileSpan;
-use shell_kit::prelude::*;
 
 /// One specimen of this file.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,10 +1,10 @@
 use std::os::unix::fs::PermissionsExt;
 
-use portal_daemon::screencast::restore::{FileStore, RestoreStore, StoreError};
 use portal_core::restore::{Grant, InputGrant};
 use portal_core::{
     CastSource, DeviceKinds, Keep, RestoreBook, RestoreToken, Screens, StandingGrant,
 };
+use portal_daemon::screencast::restore::{FileStore, RestoreStore, StoreError};
 
 fn book_of_three() -> RestoreBook {
     let mut book = RestoreBook::new();

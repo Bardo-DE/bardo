@@ -1,12 +1,12 @@
 use super::source::KeySource;
 use super::state::KeyState;
 use super::use_keys_provider;
+use dioxus::prelude::*;
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{
     Action, AppAction, AppId, Chord, Conflict, Context, DefaultChord, Desktop, KeyInput, Keymap,
     KeymapSource, Overrides, Platform, Registration, SourceError, StandardAction, SystemBinding,
 };
-use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
 

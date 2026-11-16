@@ -6,16 +6,16 @@ use crate::dataset::MemoryDataset;
 use crate::engine::{Engine, Report};
 use crate::journal::Journal;
 use crate::testing::scratch;
-use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, ChangePage, ConflictRule, Cursor, ItemPath,
-    MemoryReplica, PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
-    ReplicaError,
-};
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_ids::{Bytes, UnixSeconds};
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
+use sync_core::{
+    BaseVersion, Blob, ByteRange, Change, ChangePage, ConflictRule, Cursor, ItemPath,
+    MemoryReplica, PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
+    ReplicaError,
+};
 
 pub fn caps(hashes: HashKind, quota: bool, delta: Delta) -> StorageCap {
     StorageCap {

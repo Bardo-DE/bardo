@@ -1,7 +1,7 @@
 //! The Tokio runtime a host enters, so `tokio::spawn` works for what a quire app runs.
 //!
 //! `ui_settings::use_environment` calls `tokio::spawn` directly in two places that are not
-//! optional for a Blitz consumer: the desktop-portal watch (`ds-settings/src/portal.rs`, over
+//! optional for a Blitz consumer: the desktop-portal watch (`ui-settings/src/portal.rs`, over
 //! zbus's `tokio` feature) and the file-watch debounce (`ui_settings::watch`, `tokio::time::
 //! timeout` inside a spawned task). Both panic ("there is no reactor running") unless a runtime
 //! is entered on the calling thread first (CONSUMING.md section 3).
@@ -14,12 +14,12 @@
 //! thread. Its guards share one Tokio entry per thread and count themselves, so they may drop in
 //! any order (Tokio's own guards panic unless they drop newest first).
 
-use ui_components::base::spawner::Spawner;
 use std::cell::RefCell;
 use std::future::Future;
 use std::marker::PhantomData;
 use std::pin::Pin;
 use tokio::runtime::{EnterGuard, Handle, Runtime};
+use ui_components::base::spawner::Spawner;
 
 /// A runtime of two worker threads, owned by whoever holds it.
 pub(super) fn build() -> std::io::Result<Runtime> {
@@ -135,7 +135,7 @@ mod tests {
     }
 }
 
-/// The [`Spawner`] every library below `ds-blitz` is given: it starts tasks on a Tokio runtime.
+/// The [`Spawner`] every library below `ui-blitz` is given: it starts tasks on a Tokio runtime.
 #[derive(Debug, Clone)]
 pub struct TokioSpawner(Handle);
 

@@ -7,14 +7,14 @@ use crate::stage::Stage;
 use crate::surface::{Surface, SurfaceDef};
 use crate::task::TaskDef;
 use crate::world::{EvalClock, WINDOW};
-use keymap::Keymap;
+use account_core::AppName;
+use account_ids::{Count, UnixSeconds};
 use computer_use_action::RunMode;
 use computer_use_bus::{CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget};
 use computer_use_desktop::{Stamp, ToplevelIdent};
 use computer_use_fake::FixedClock;
+use keymap::Keymap;
 use model_provider::Money;
-use account_core::AppName;
-use account_ids::{Count, UnixSeconds};
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, SessionId, Source, SpaceId,
 };
@@ -45,7 +45,9 @@ impl Arena {
         keymap: Keymap,
     ) -> Result<Arena, SetupError> {
         let state = Surface::new(surface, &task.start, &task.setup)?;
-        let hints = computer_use_run::shortcut_hint(&keymap).into_iter().collect();
+        let hints = computer_use_run::shortcut_hint(&keymap)
+            .into_iter()
+            .collect();
         Ok(Arena {
             stage: Arc::new(Stage::new(
                 state,

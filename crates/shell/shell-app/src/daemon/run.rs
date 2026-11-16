@@ -8,7 +8,6 @@
 use std::process::ExitCode;
 use std::time::{Duration, Instant};
 
-use ui_settings::Store;
 use layer_shell_host::{Host, HostConfig, HostHandle};
 use shell_model::desktop::{DesktopView, HeldMods};
 use shell_model::locker::LockPhase;
@@ -22,6 +21,7 @@ use shell_ui_kit::services::{Services, Wiring};
 use shell_ui_kit::settings::SettingsFeed;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
+use ui_settings::Store;
 
 use super::events::{Shell, handle};
 use super::msg::ShellMsg;
@@ -233,7 +233,7 @@ fn take_door() -> Result<(service_locator::Agent, Door), ExitCode> {
 /// How long, in ms, after a window gains focus its first click only focuses it.
 const FIRST_MOUSE_WINDOW_MS: u32 = 100;
 
-/// The host's configuration: shell-host's, with the first-mouse window and the connection
+/// The host's configuration: layer-shell-host's, with the first-mouse window and the connection
 /// `route` names.
 fn host_config(dirs: &Dirs, route: layer_shell_host::WaylandRoute) -> HostConfig {
     HostConfig {
@@ -314,8 +314,8 @@ fn spawn_followers(
 
 /// The bound [`shutdown_runtime`] gives every service's blocking-pool thread to finish once
 /// `host.run` has returned (`ctx.exit()`; every surface, and with it every clone of `Services`,
-/// is already gone by then — shell-host's own `Host::run` clears every surface before
-/// returning). Comfortably above `sill-services`' own bounded waits (a few
+/// is already gone by then — layer-shell-host's own `Host::run` clears every surface before
+/// returning). Comfortably above `shell-services`' own bounded waits (a few
 /// seconds at most), but not unbounded.
 const RUNTIME_SHUTDOWN_BOUND: Duration = Duration::from_secs(4);
 

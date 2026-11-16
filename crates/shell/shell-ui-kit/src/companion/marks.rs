@@ -1,10 +1,10 @@
 //! The small marks: an effect, a run's state and where it acts.
 
 use computer_use_action::RunMode;
-use ui_components::components::companion::run_row::model::{RunPlace, RunState as RunStateView};
-use ui_core::vocab::EffectMark;
 use provenance::Effect;
 use shell_model::companion::RunState;
+use ui_components::components::companion::run_row::model::{RunPlace, RunState as RunStateView};
+use ui_core::vocab::EffectMark;
 
 /// How much a call can change, for drawing.
 pub fn effect_mark(effect: Effect) -> EffectMark {

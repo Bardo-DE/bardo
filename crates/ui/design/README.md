@@ -1,6 +1,6 @@
 # quire design docs
 
-These documents are the canonical UX specification for quire (design system), shell-host
+These documents are the canonical UX specification for quire (design system), layer-shell-host
 and sill (the shell), mailo and every bundled app. Agents build from them; reviewers check
 against them.
 

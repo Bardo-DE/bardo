@@ -7,7 +7,7 @@
 # check for OUTPUT instead: any line naming the dependency is a leak.
 set -uo pipefail
 cd "$(dirname "$0")/.."
-crate=casement-protocols
+crate=desktop-protocols
 fail=0
 
 # A crate that cargo cannot find would make every check below pass vacuously.

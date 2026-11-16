@@ -21,12 +21,12 @@ use crate::journal::{Journal, JournalError};
 use crate::paths::{AccountDir, Paths};
 use crate::scheduler::{Network, Settings};
 use crate::service::{Access, DatasetName, Hub};
-use sync_core::Clock;
 use account_client::{Grants, GrantsLink};
 use account_core::Candidate;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use sync_core::Clock;
 use tokio::sync::{Notify, watch};
 use tokio::task::JoinHandle;
 

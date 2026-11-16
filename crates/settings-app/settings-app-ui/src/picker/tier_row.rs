@@ -6,8 +6,10 @@ use super::note::NoteLine;
 use super::pool_editor::PoolEditor;
 use crate::copy::picker as copy;
 use crate::key_row::row_id;
-use settings_app_model::{Applying, Choice, Clearing, Gate, MenuLine, ModelRow, PickerInput, loading_of};
 use dioxus::prelude::*;
+use settings_app_model::{
+    Applying, Choice, Clearing, Gate, MenuLine, ModelRow, PickerInput, loading_of,
+};
 use ui_components::components::content::label::LabelRole;
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::components::menus::pop_up_button::PopUpButton;

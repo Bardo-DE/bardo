@@ -2,22 +2,22 @@
 //! Every test runs over `MemoryLog`: no network, no clock, a crash is `crash_after(n)`.
 
 use crate::support::*;
+use account_ids::Count;
 use action_context::session::SessionState;
 use action_context::wal::Wal;
 use action_core::*;
 use action_fake::{
     FixedClock, MailContact, MailThread, ScriptedReviewer, ScriptedWriter, fake_router_on,
 };
-use permission_core::TaskPolicy;
 use action_router::{RestoreFault, Router};
+use action_vocab::{Handle, Value};
+use action_wire::{IntentsReply, IntentsRequest, SessionOpen, SessionOpened, WireRefusal};
 use agent_session::fake::{LogMood, MemoryLog};
 use agent_session::{
     BackendKind, HandleLabel, Opening, PageSize, Read, SessionEntry, SessionLog, Standing,
     TaintCause,
 };
-use action_vocab::{Handle, Value};
-use action_wire::{IntentsReply, IntentsRequest, SessionOpen, SessionOpened, WireRefusal};
-use account_ids::Count;
+use permission_core::TaskPolicy;
 use provenance::{AgentRef, Integrity, SessionId, Source, TaskId, UnixSeconds};
 use std::sync::Arc;
 

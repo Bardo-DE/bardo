@@ -1,7 +1,7 @@
 use super::*;
 use crate::callers;
-use action_dbus::callers::CallerTable;
 use account_callers::ProcCallers;
+use action_dbus::callers::CallerTable;
 
 fn config() -> IntentdConfig {
     IntentdConfig::shipped().expect("the shipped configuration")

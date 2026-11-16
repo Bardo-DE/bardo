@@ -1,9 +1,9 @@
 use super::face::{TrackTimes, playback_of, position_of, track_lines};
-use ui_components::base::time::stamp::Stamp;
+use shell_kit::now_playing::kind::Playback;
 use shell_model::now_playing::{Abilities, MediaPlayer, PlayerId, Track};
 use shell_model::now_playing::{Micros, Timeline};
-use shell_kit::now_playing::kind::Playback;
 use std::time::Duration;
+use ui_components::base::time::stamp::Stamp;
 
 #[test]
 fn a_stopped_player_offers_play() {
@@ -13,7 +13,10 @@ fn a_stopped_player_offers_play() {
             Playback::Playing,
         ),
         (shell_model::now_playing::Playback::Paused, Playback::Paused),
-        (shell_model::now_playing::Playback::Stopped, Playback::Paused),
+        (
+            shell_model::now_playing::Playback::Stopped,
+            Playback::Paused,
+        ),
     ];
     for (from, want) in cases {
         assert_eq!(playback_of(from), want, "{from:?}");

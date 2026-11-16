@@ -1,10 +1,10 @@
 //! The name field of a rename in place.
 
 use dioxus::prelude::*;
+use files_model::{Input, RenameProblem};
 use ui_components::components::fields::text_field_model::Invalid;
 use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::{FieldFocus, TextField, TextLine, Validity};
-use files_model::{Input, RenameProblem};
 
 use crate::state::Browse;
 

@@ -4,15 +4,15 @@
 //! line opens its section) and a dismissal. The other keys (the preview pane's, row chords) are `pane_keys.rs`.
 
 use dioxus::prelude::*;
-use ui_components::components::menus::palette::palette_motion::PaletteHandle;
-use ui_components::components::menus::palette::palette_motion::use_palette_handle;
-use ui_components::focus::request::{FocusRequest, use_focus_request};
-use ui_components::prelude::*;
-use ui_behaviour::Dir;
 use layer_shell_host::{OutputId, SurfaceHandle};
 use shell_launcher::{Choice, CompanionAct, ItemKey, LauncherMode};
 use shell_model::results::{Results, SearchCommand};
 use shell_ui_kit::services::Services;
+use ui_behaviour::Dir;
+use ui_components::components::menus::palette::palette_motion::PaletteHandle;
+use ui_components::components::menus::palette::palette_motion::use_palette_handle;
+use ui_components::focus::request::{FocusRequest, use_focus_request};
+use ui_components::prelude::*;
 
 use crate::launcher::activate::{
     AfterEffect, LauncherEffect, LauncherProviders, effect_of, file_results, with_results,

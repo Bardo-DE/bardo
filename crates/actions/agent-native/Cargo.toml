@@ -1,6 +1,6 @@
 [package]
 name = "agent-native"
-description = "The native durable-session backend: a docket-tasks Companion's planner loop behind docket-session's SessionBackend and SessionHost (NativeBackend, NativeHost), one cancel-safe flight per turn, sheets through a SheetDesk, fork and export over the log. The ACP edge's host in docket-acp-bin."
+description = "The native durable-session backend: a companion-tasks Companion's planner loop behind agent-session's SessionBackend and SessionHost (NativeBackend, NativeHost), one cancel-safe flight per turn, sheets through a SheetDesk, fork and export over the log. The ACP edge's host in agent-acp-bin."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

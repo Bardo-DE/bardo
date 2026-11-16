@@ -2,8 +2,8 @@
 
 use action_context::registry::Registry;
 use action_manifest::{ActionDecl, is_offered};
-use permission_core::is_agent_action;
 use action_vocab::{ActionRef, CallerRole};
+use permission_core::is_agent_action;
 
 /// Whether a caller in `role` may make a call of `action`. The pseudo-app belongs to the host of
 /// an external agent alone; that host makes it no call of another app but the ones the agent's

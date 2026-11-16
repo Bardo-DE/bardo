@@ -1,5 +1,5 @@
 //! Installing coding agents from the agent registry. Docket ships no list of agents: it reads a
-//! registry snapshot (`agents-core`), installs the version the person pinned (checked against the
+//! registry snapshot (`agent-registry`), installs the version the person pinned (checked against the
 //! digest the registry gives) into a directory it owns, and says what is installed.
 //!
 //! - `install`: `install` (a named version), and `standing` and `offers` (what the list offers

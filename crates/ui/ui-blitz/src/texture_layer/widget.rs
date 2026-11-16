@@ -1,6 +1,6 @@
 //! The Blitz widget behind a layer: it learns the renderer's device when the renderer first
 //! paints it, registers the layer's texture with the renderer, and records the paint that draws
-//! it. Blitz paints a widget with `blitz-paint/custom-widget` (ds-blitz turns it on).
+//! it. Blitz paints a widget with `blitz-paint/custom-widget` (ui-blitz turns it on).
 
 use super::fit::{place, visible_source};
 use super::gpu::{Frame, Gpu, Source, TextureHandle};

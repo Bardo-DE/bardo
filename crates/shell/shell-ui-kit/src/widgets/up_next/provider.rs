@@ -11,14 +11,14 @@
 //! at most [`EVENT_ROWS`], measured once against a real render (`ui_harness::Harness`) rather
 //! than guessed.
 
-use ui_components::prelude::*;
-use ui_components::style::tokens::label_hue::LabelHue;
 use jiff::Timestamp;
 use jiff::civil::Date;
 use jiff::tz::TimeZone;
+use shell_kit::widget::calendar::EventLine;
 use shell_model::clock::{ClockHours, time_of_day};
 use shell_model::events::{Agenda, CalEvent, CalendarName, Days, EventTime, SourceStatus, up_next};
-use shell_kit::widget::calendar::EventLine;
+use ui_components::prelude::*;
+use ui_components::style::tokens::label_hue::LabelHue;
 
 use super::widget::{DayLine, UpNextEntry, UpNextFace, UpNextRow};
 use crate::widgets::calendar::shown::weekday_name;

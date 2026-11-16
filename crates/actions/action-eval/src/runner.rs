@@ -1,5 +1,5 @@
-//! The runner: a harness over docket-fake's router, a maximal task policy, and the run itself.
-//! The endings and the judgement of a finished case are `eval-core`'s.
+//! The runner: a harness over action-fake's router, a maximal task policy, and the run itself.
+//! The endings and the judgement of a finished case are `action-eval-core`'s.
 //!
 //! CI runs every corpus except `UiSpoofing` through the deterministic layers with a reviewer
 //! that always allows (a fully hijacked judge) and a maximal task policy: the structural
@@ -7,17 +7,17 @@
 
 use crate::steps::Player;
 use crate::world::{install, state_of};
+use account_ids::Count;
 use action_context::state::RouterState;
 use action_core::{AgentConfig, AuditRecord, ModelExchange};
+use action_eval_core::{Case, CaseResult, CaseTrace, Cut, StepEnding};
 use action_fake::{
     FakeError, FakeLink, FakeSeams, Forget, MemoryGrants, RecordingSink, ScriptedConfirmer,
     ScriptedWriter, fake_router,
 };
-use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
 use action_router::{Router, Seams};
 use action_vocab::LabelText;
-use action_eval_core::{Case, CaseResult, CaseTrace, Cut, StepEnding};
-use account_ids::Count;
+use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
 use provenance::{Effect, SpaceId, TaskId, UnixSeconds};
 use serde::{Deserialize, Serialize};
 

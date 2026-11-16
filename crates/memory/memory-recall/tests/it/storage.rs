@@ -4,8 +4,8 @@
 
 use memory_core::Integrity;
 use memory_core::{DegradedWhy, IndexView, RecallWhy, StaleWhy};
-use memory_store::{EmbedRole, EmbedderCard, Urgency, Vector};
 use memory_recall::*;
+use memory_store::{EmbedRole, EmbedderCard, Urgency, Vector};
 use std::collections::BTreeSet;
 use std::sync::Mutex;
 

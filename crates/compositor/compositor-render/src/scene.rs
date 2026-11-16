@@ -25,13 +25,13 @@ use compositor_core::window::FrameStyle;
 use compositor_core::{LayerKey, OutputKey, WindowId};
 use compositor_motion::{Flight, OutputFrame, PlacedWindow};
 use convert::{on_output, sub_of};
-use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 pub use row::RowDraw;
 use smithay::backend::renderer::element::Kind;
 use smithay::backend::renderer::element::surface::render_elements_from_surface_tree;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
+use ui_core::vocab::Fraction;
 
 /// Where an output sits and how dense it is: what turns the frame's global sub-pixels into this
 /// output's physical pixels. (The plan's sketch had no source for it; FINDINGS.)
@@ -72,7 +72,7 @@ pub struct LayerDraw {
     /// The windows that draw their own frame and whose corners casement clips, and the shadow
     /// it casts for them. A window in `frames` is not in it, nor is one that is full screen.
     pub rounds: BTreeMap<WindowId, ClientRound>,
-    /// The title pixels laid over each framed window's titlebar (made by `casement-chrome`). A
+    /// The title pixels laid over each framed window's titlebar (made by `compositor-chrome`). A
     /// framed window not in it has no title drawn.
     pub titles: BTreeMap<WindowId, RasterImage>,
     /// How a window in a minimise flight is drawn (`windows.minimise_effect`).

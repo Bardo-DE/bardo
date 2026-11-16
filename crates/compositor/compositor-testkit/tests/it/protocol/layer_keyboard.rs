@@ -7,7 +7,6 @@ use super::xdg_shell::{boot_as, click, click_at, map_toplevel, pointer, settle, 
 use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::input::ButtonCode;
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::surface::layer::{
     Anchor, KeyboardInteractivity, Layer, LayerAsk, LayerSurface,
@@ -15,6 +14,7 @@ use compositor_testclient::surface::layer::{
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::{ClientId, Fixture};
+use desktop_protocols::vocab::PressEdge;
 use wayland_client::Proxy;
 use wayland_client::protocol::wl_surface::WlSurface;
 

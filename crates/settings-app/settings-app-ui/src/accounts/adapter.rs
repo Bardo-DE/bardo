@@ -4,8 +4,8 @@
 
 use crate::copy::account_sync::{KEEP_HELP, hold_banner};
 use crate::copy::accounts::{removal, secret_standing};
-use settings_app_model::{ClientValue, HoldCounts, RemovalQuestion, SyncHold};
 use dioxus::prelude::*;
+use settings_app_model::{ClientValue, HoldCounts, RemovalQuestion, SyncHold};
 use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};

@@ -1,6 +1,6 @@
 //! A raster made outside the renderer and laid over a frame: a window title, an icon. Chrome
-//! makes it (`casement-chrome`, the only crate that reaches the text stack), the renderer takes
-//! it (`casement-render`, which names no text crate), and this is the one type between them.
+//! makes it (`compositor-chrome`, the only crate that reaches the text stack), the renderer takes
+//! it (`compositor-render`, which names no text crate), and this is the one type between them.
 
 use std::sync::Arc;
 

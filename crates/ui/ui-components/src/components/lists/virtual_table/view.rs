@@ -83,12 +83,12 @@ use crate::components::lists::virtual_table::split::{self, Line, Pane, Panes};
 use crate::keys::use_platform;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::Px;
 use ui_core::press::Press;
 use ui_core::selection::{Pick, RowSelection};
 use ui_core::vocab::RowState;
 use ui_style::tokens::row_scale::ROW_SCALE;
-use std::rc::Rc;
 
 /// How many rows around the viewport are mounted besides the visible ones.
 const OVERSCAN_ROWS: usize = 4;

@@ -9,12 +9,12 @@ use crate::listing::Entry;
 use crate::online;
 use crate::ranges::Ranges;
 use crate::source::SourceError;
-use sync_core::{ContentHash, ItemKind, RemoteId};
 use std::collections::HashMap;
 use std::os::unix::fs::FileExt;
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex, Weak};
+use sync_core::{ContentHash, ItemKind, RemoteId};
 use tokio::sync::{Notify, watch};
 
 /// Why a read gave no bytes.

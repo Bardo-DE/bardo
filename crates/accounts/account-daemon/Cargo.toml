@@ -1,6 +1,6 @@
 [package]
 name = "account-daemon"
-description = "porter's identity daemon: org.quire.Accounts1 over porter-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
+description = "porter's identity daemon: org.quire.Accounts1 over account-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -67,7 +67,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 # check-boundary.sh checks it too.
 test-proc-root = ["account-callers/test-proc-root"]
 # Test builds only, never default and never in dist: `ACCOUNTD_KEYS=file:<absolute path>` keeps
-# credentials in one 0600 plain-text JSON file (porter-secrets' `FileSecrets`) instead of the
+# credentials in one 0600 plain-text JSON file (account-secrets' `FileSecrets`) instead of the
 # Secret Service, for private-bus and scratch runs with no keyring. A release build ignores the
 # variable and says so once. tests/dist.rs and check-boundary.sh fail if this feature is default.
 test-keys = ["account-secrets/test-keys"]

@@ -1,10 +1,10 @@
 //! The voice marks (agent-spec voice.md section 3.6): where a summon came from, what a field hears
 //! while the person speaks, and which dictation a field is answering. Plain values: the voice
-//! wire's own types are converted into these by `docket-ds`, so quire never links an agent crate.
+//! wire's own types are converted into these by `action-ui-adapter`, so quire never links an agent crate.
 
+use std::fmt;
 use ui_core::vocab::InputLevel;
 use ui_core::word::Word;
-use std::fmt;
 
 /// How a summon was started (the view of the agent's summon origin).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

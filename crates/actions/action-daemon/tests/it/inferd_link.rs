@@ -1,18 +1,18 @@
-//! intentd's inferd link is inferd-client's D-Bus transport on the daemon's own connection. The
+//! intentd's inferd link is inference-client's D-Bus transport on the daemon's own connection. The
 //! bus here is a private one with no inferd on it, so the first `open` says inferd is away (the
 //! reviewer then asks the person) instead of the daemon failing to start. The link is
 //! `action_dbus::inferd_transport`, the one constructor intentd, companiond and readerd share.
 
 use crate::support::bus::PrivateBus;
-use inference_client::{Transport, TransportError};
-use action_daemon::{InferdModel, InferdWriter, inferd_transport};
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_ids::Tokens;
-use inference_core::{Model, ModelCard};
 use account_match::LlmNeed;
 use account_match::Need;
+use action_daemon::{InferdModel, InferdWriter, inferd_transport};
+use inference_client::{Transport, TransportError};
+use inference_core::{Model, ModelCard};
 use std::collections::BTreeSet;
 
 #[tokio::test]

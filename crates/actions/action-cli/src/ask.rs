@@ -11,12 +11,12 @@ use crate::ask_render;
 use crate::exec::Style;
 use crate::exit::{Exit, Failure, of_client};
 use crate::{JsonFlag, Report, Stdout};
-use companion_client::{CompanionTransport, Follow};
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, AskWire, RefusalWire};
 use action_client::{ClientError, Intents, Transport, TransportError};
 use action_core::{ContextKeep, Keep, TurnIn, TurnVia, UserTurn};
 use action_vocab::{Caller, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened};
+use companion_client::{CompanionTransport, Follow};
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, AskWire, RefusalWire};
 use provenance::{AgentRef, SessionId, SpaceId, UnixSeconds};
 use serde_json::json;
 

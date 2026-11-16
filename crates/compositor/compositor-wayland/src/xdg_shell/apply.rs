@@ -4,7 +4,9 @@ use super::XdgShellPart;
 use crate::convert::size_to;
 use crate::states::WaylandFault;
 use compositor_core::geometry::LogicalSize;
-use compositor_core::{ClientKey, ConfigureSize, ConfigureSpec, PopupKey, ToplevelStates, WindowId};
+use compositor_core::{
+    ClientKey, ConfigureSize, ConfigureSpec, PopupKey, ToplevelStates, WindowId,
+};
 use smithay::desktop::{PopupKind, PopupManager, find_popup_root_surface};
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::State;
 use smithay::utils::SERIAL_COUNTER;

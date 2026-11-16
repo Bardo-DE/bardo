@@ -4,10 +4,10 @@
 
 use crate::error::SettingsError;
 use crate::lenient::{FileText, file_text};
-use ui_helpers::{ReadCap, UnixSeconds, move_aside};
-use ui_style::space::list::Epoch;
 use std::fmt;
 use std::path::{Path, PathBuf};
+use ui_helpers::{ReadCap, UnixSeconds, move_aside};
+use ui_style::space::list::Epoch;
 
 /// A file that exists and could not be read or understood: not text, too big, not a regular
 /// file, refused by the system, or not the document it should be.

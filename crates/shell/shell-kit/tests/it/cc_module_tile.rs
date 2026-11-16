@@ -3,11 +3,11 @@
 //! (Enter or Space on the tile toggles; Enter or Right on the chevron opens the detail).
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::control_center::module_tile_kind::TileSpan;
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 480,

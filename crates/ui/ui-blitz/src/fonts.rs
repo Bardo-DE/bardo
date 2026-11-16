@@ -7,9 +7,9 @@
 //! document resolves the same registered families without registering or parsing them again.
 
 use blitz_embed::fonts::{FontFaces, SharedFonts};
+use std::sync::LazyLock;
 use ui_components::style::fonts::FACES;
 use ui_emoji::{EmojiChoice, Fonts, prefer_colour};
-use std::sync::LazyLock;
 
 /// The context every document starts from, built on first use.
 static BASE: LazyLock<SharedFonts> = LazyLock::new(|| {

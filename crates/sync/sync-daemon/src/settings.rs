@@ -23,6 +23,15 @@ use crate::datasets::drive::CacheKnob;
 use crate::keep::{
     ContinueError, Keep, Snapshot, SwitchError, SyncClass, drive_allowed, sync_allowed, sync_offers,
 };
+use account_callers::{CallerRole, Callers};
+use account_client::{AccountsLink, GrantsLink};
+use account_core::AccountId;
+use account_core::{Account, Family};
+use account_wire::ParentWindow;
+use drive_core::CacheLimit;
+use std::collections::{BTreeMap, BTreeSet};
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use ui_settings::live::{
     Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve,
 };
@@ -30,15 +39,6 @@ use ui_settings::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Note, Page, Section, WordLabels,
 };
-use drive_core::CacheLimit;
-use account_callers::{CallerRole, Callers};
-use account_client::{AccountsLink, GrantsLink};
-use account_core::AccountId;
-use account_core::{Account, Family};
-use account_wire::ParentWindow;
-use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use zbus::Connection;
 
 /// The settings module's path.

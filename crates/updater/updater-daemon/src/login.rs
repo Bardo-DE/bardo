@@ -1,9 +1,9 @@
 //! Which login this process belongs to, for the health marker.
 
-use updater_core::LoginSession;
 use std::ffi::OsString;
 use std::io;
 use std::path::Path;
+use updater_core::LoginSession;
 
 pub use updater_root::helper::BOOT_ID_PATH;
 /// The variable the session manager sets to the login session's number.

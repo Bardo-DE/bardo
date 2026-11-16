@@ -5,17 +5,17 @@
 //! nowhere yet and it stays; a newer shot replaces it; `screenshot.thumbnail = "hide"` and
 //! another output draw nothing; the keyboard ([`keys`]) is asked for and never taken.
 
-use ui_harness::Input;
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_harness::Input;
 
-use ui_components::prelude::*;
 use layer_shell_host::OutputId;
 use shell_model::screenshots::{Shot, ShotCommand, ShotId, ShotLeave, ShotPreview, Shots};
 use shell_notify_ui::ScreenshotThumb;
 use shell_settings::{ScreenshotSettings, ShellFile};
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{BannerLink, BannerOutput};
+use ui_components::prelude::*;
 
 mod keys;
 

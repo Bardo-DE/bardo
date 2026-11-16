@@ -40,12 +40,12 @@ check() {
   fi
 }
 
-check "porter-infer" porter-infer "$BUS"
-check "porter-bridge" porter-bridge "$BUS"
-check "porter-router" porter-router "$BUS"
-check "porter-turns" porter-turns "$BUS"
-check "porter-tailnet" porter-tailnet "$BUS"
-check "inferd-probe" inferd-probe "$BUS"
-check "inferd-client (no features)" inferd-client "$BUS" --no-default-features
+check "inference-core" inference-core "$BUS"
+check "inference-bridge" inference-bridge "$BUS"
+check "inference-router" inference-router "$BUS"
+check "inference-turns" inference-turns "$BUS"
+check "inference-tailnet" inference-tailnet "$BUS"
+check "inference-probe" inference-probe "$BUS"
+check "inference-client (no features)" inference-client "$BUS" --no-default-features
 
 exit "$fail"

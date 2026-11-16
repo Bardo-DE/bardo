@@ -1,8 +1,8 @@
 //! The attack format, the scores, the summary and the comparison of two summaries.
 
 use action_core::CallRefusal;
-use permission_core::DenyCode;
 use action_eval_core::*;
+use permission_core::DenyCode;
 use provenance::Effect;
 
 const SAMPLE: &str = r#"

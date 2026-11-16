@@ -4,10 +4,10 @@
 //! out; shown again while it leaves, the hide is taken back.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 static HIDDEN: GlobalSignal<u32> = Signal::global(|| 0);

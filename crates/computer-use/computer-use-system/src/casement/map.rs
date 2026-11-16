@@ -1,5 +1,7 @@
 //! From what the desktop client reduced to what cuad's seams speak: pure, no connection.
 
+use account_core::AppName;
+use account_ids::Px;
 use computer_use_desktop::{
     DesktopError, DesktopEvent, GlobalCoord, GlobalRect, Pid, ToplevelIdent, ToplevelInfo,
     ToplevelState, WindowTitle, WindowTrust, WorkspaceRef,
@@ -8,8 +10,6 @@ use desktop_client::geometry::Rect;
 use desktop_client::quire::{QuireWindow, SpacePlace, WindowChange, WindowEvent};
 use desktop_client::toplevel::{Toplevel, ToplevelEvent, ToplevelFlag};
 use desktop_client::{DesktopEvent as Raised, DesktopState, Protocol, ToplevelKey};
-use account_core::AppName;
-use account_ids::Px;
 use std::collections::BTreeMap;
 
 /// The identifier of every announced toplevel that has one, by the client's key. The key of a

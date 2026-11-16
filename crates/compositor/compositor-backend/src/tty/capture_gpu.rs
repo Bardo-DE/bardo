@@ -14,14 +14,14 @@ use crate::headless::FrameSource;
 use compositor_core::OutputName;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_core::output::OutputConfig;
-use desktop_protocols::vocab::Transform;
 use compositor_render::RenderError;
 use compositor_render::pass::CapturedFrame;
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::Transform;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Format, Fourcc};
 use smithay::backend::renderer::Bind;
 use smithay::backend::renderer::gles::GlesTexture;
+use ui_core::geometry::scale::Scale;
 
 /// A display device's renderer, lent to draw captures.
 pub trait CaptureGpu: std::fmt::Debug {

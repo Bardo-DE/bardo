@@ -10,10 +10,10 @@ use crate::roster::{EpisodeLine, PrimerText, ProfileLine, RecalledLine, RollupLi
 use crate::schema::ToolSchema;
 use crate::skill::{SkillCard, SkillText};
 use action_manifest::{AgentReach, Lasting, RelationDecl, TargetKind};
-use permission_core::TaskPolicy;
 use action_vocab::{
     ActionRef, CallId, Caller, CharCount, Handle, LabelText, TurnId, UndoId, Value,
 };
+use permission_core::TaskPolicy;
 use provenance::{Effect, EntityKind, Integrity, Source, UnixSeconds};
 use serde::{Deserialize, Serialize};
 

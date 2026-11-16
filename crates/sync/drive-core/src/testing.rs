@@ -5,15 +5,15 @@
 use crate::listing::{Entry, Listing, ListingError};
 use crate::sink::{Sending, Sink};
 use crate::source::{CopyError, Exporting, Fetching, Source, SourceError};
-use sync_core::{
-    BaseVersion, Conflict, ContentHash, Found, ItemKind, Place, PutRefused, RemoteId, RemoteSide,
-    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
-};
 use account_capability::HashKind;
 use account_ids::{Bytes, UnixSeconds, WebUrl};
 use std::collections::{BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
+use sync_core::{
+    BaseVersion, Conflict, ContentHash, Found, ItemKind, Place, PutRefused, RemoteId, RemoteSide,
+    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
+};
 use tokio::sync::Semaphore;
 
 fn held<T>(mutex: &Mutex<T>) -> std::sync::MutexGuard<'_, T> {

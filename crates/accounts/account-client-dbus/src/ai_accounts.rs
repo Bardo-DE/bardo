@@ -16,7 +16,6 @@
 
 use crate::Bus;
 use crate::failure::{ai_accounts_error, link_error};
-use futures_util::StreamExt;
 use account_capability::Claim;
 use account_client::{AiAccountsError, Changes, LinkError, Malformed};
 use account_core::consent::Usage;
@@ -25,6 +24,7 @@ use account_core::{LlmVerdict, OwnServerRow, ProviderId, SecretText};
 use account_dbus::accounts::{BrokerProxy, ai_account_from_dbus};
 use account_dbus::accounts::{own_server_from_dbus, verdict_from_dbus};
 use account_ids::word::word as word_of;
+use futures_util::StreamExt;
 use std::io::Read;
 use zeroize::Zeroizing;
 

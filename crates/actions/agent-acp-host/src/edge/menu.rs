@@ -1,7 +1,7 @@
 //! Which of the desktop's actions one session's tool edge lists and lets through.
 
-use permission_core::TaskPolicy;
 use action_vocab::ActionRef;
+use permission_core::TaskPolicy;
 
 /// What the edge of one session offers its agent.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

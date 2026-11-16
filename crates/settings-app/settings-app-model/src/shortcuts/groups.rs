@@ -1,7 +1,7 @@
 //! The groups the list is drawn in, and the actions of each.
 
-use keymap::{SpaceNumber, StandardAction as A};
 use key_remap_client::handler;
+use keymap::{SpaceNumber, StandardAction as A};
 
 /// One titled group of the list.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

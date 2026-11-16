@@ -1,7 +1,7 @@
 //! The dock on a real compositor with fake services, for acceptance (`dev/accept/dock.sh`):
 //! one `shell_dock::Dock` per output, fed by fixed `watch` channels (Files and
 //! Terminal pinned, Terminal active with two windows, Firefox running with a count of 7 and
-//! 40 % progress), driven by shell-host's `debug-inject` commands on stdin (`sill-dock-<output>
+//! 40 % progress), driven by layer-shell-host's `debug-inject` commands on stdin (`sill-dock-<output>
 //! hover X Y`, `click X Y [primary|secondary|middle]`, `leave`, `capture PATH`, `stats`,
 //! `quit`). Commands the dock sends to the fake services are printed on stderr.
 //!
@@ -12,7 +12,6 @@ use std::fmt::Debug;
 use std::io::BufRead;
 use std::time::Instant;
 
-use ui_components::base::time::stamp::FrameClock;
 use layer_shell_host::{Host, HostCtx, HostEvent, HostRoot, OutputId, OutputInfo};
 use shell_dock::Dock;
 use shell_settings::ShellFile;
@@ -20,6 +19,7 @@ use shell_ui_kit::harness::fake;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{MountProps, Surface, mount};
 use tokio::sync::mpsc;
+use ui_components::base::time::stamp::FrameClock;
 
 /// A line from stdin, or its end.
 enum DemoMsg {

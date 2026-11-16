@@ -7,13 +7,13 @@
 use std::io::ErrorKind;
 use std::path::Path;
 
-use ui_core::settings::KeyPath;
-use ui_core::word::Word;
-use ui_settings::{Edit, SettingsError, SettingsWriter};
 use serde::{Deserialize, Serialize};
 use shell_model::ids::OutputName;
 use shell_model::night_shift::{Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth};
 use toml::{Table, Value};
+use ui_core::settings::KeyPath;
+use ui_core::word::Word;
+use ui_settings::{Edit, SettingsError, SettingsWriter};
 
 use crate::durable::{self, Access};
 
@@ -257,7 +257,9 @@ pub(super) fn write_manual(dir: &Path, manual: Option<&Manual>) -> Result<(), Fi
 #[cfg(test)]
 mod tests {
     use shell_model::ids::OutputName;
-    use shell_model::night_shift::{Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth};
+    use shell_model::night_shift::{
+        Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth,
+    };
     use shell_testkit::TempDir;
 
     use super::{

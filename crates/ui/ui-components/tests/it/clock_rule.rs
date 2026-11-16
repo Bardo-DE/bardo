@@ -1,9 +1,9 @@
-//! The clock rule, held over the design system's sources (`ds`, `ds-core`, `ds-style`, `ds-motion`,
-//! `ds-shell`): the design system reads time only through `ui_components::base::time::clock` (`now`, `since`, `sleep`), so a harness's virtual clock reaches every timer and
+//! The clock rule, held over the design system's sources (`ds`, `ui-core`, `ui-style`, `ui-motion`,
+//! `ui-shell`): the design system reads time only through `ui_components::base::time::clock` (`now`, `since`, `sleep`), so a harness's virtual clock reaches every timer and
 //! every "now". A direct `Instant::now()` (or `.elapsed()` on an `Instant`, which this scan
 //! cannot tell from a tween's own `elapsed`, so review catches it) or a
 //! `futures_timer` sleep would stay on the wall clock and drift from the harness again.
-//! `ds-core`'s `src/time/` itself and test modules (everything from a file's `#[cfg(test)]` on, and
+//! `ui-core`'s `src/time/` itself and test modules (everything from a file's `#[cfg(test)]` on, and
 //! `*tests.rs` files) are exempt; comments are skipped.
 //!
 //! The second half holds the tests: every harness a test builds names its clock. Time in a test
@@ -75,7 +75,7 @@ fn ds_reads_time_only_through_ds_time() {
     );
 }
 
-/// The test sources the harness-clock rule covers: every crate's `tests/` (`ds-harness`'s own
+/// The test sources the harness-clock rule covers: every crate's `tests/` (`ui-harness`'s own
 /// tests drive both clocks on purpose) and the gallery's in-crate tests.
 fn test_sources() -> Vec<PathBuf> {
     let crates = Path::new(env!("CARGO_MANIFEST_DIR")).join("..");

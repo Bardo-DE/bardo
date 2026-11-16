@@ -6,8 +6,8 @@ use crate::launcher_harness;
 
 use std::time::Duration;
 
-use ui_harness::harness::assert_settles_to_zero_frames;
 use launcher_harness::{Open, Press, Seen, await_off_thread, loaded, open, settle};
+use ui_harness::harness::assert_settles_to_zero_frames;
 
 /// Press `key` on the harness's keyboard.
 fn press(open: &mut Open, key: Press) {

@@ -6,11 +6,6 @@
 //! and class asked about, the grants resolved), never a key. The real store is
 //! accountd's, and its tests are accountd's.
 
-use inference_daemon::cloud::accountd::{AccountVerdict, Accountd, AccountdFault, Boxed};
-use inference_daemon::cloud::own::{OWN_PROVIDER, OwnServer};
-use inference_daemon::probe::Runtime;
-use inference_daemon::probed::Standing as Probed;
-use inference_daemon::report::{ReportFault, Reports};
 use account_capability::Claim;
 use account_core::consent::{GrantScope, Usage, Verdict};
 use account_core::{AccountId, GrantId};
@@ -18,6 +13,11 @@ use account_core::{
     AccountState, AppId, DataClass, EndpointUrl, Family, LoginName, SecretText, ServiceEndpoint,
     Tls,
 };
+use inference_daemon::cloud::accountd::{AccountVerdict, Accountd, AccountdFault, Boxed};
+use inference_daemon::cloud::own::{OWN_PROVIDER, OwnServer};
+use inference_daemon::probe::Runtime;
+use inference_daemon::probed::Standing as Probed;
+use inference_daemon::report::{ReportFault, Reports};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
 

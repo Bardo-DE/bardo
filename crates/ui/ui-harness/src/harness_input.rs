@@ -5,11 +5,11 @@ use crate::input::PasteChord;
 use blitz_traits::events::{
     BlitzPointerEvent, BlitzPointerId, MouseEventButton, MouseEventButtons, PointerCoords,
 };
+use keyboard_types::{Code, Key as DomKey, Modifiers};
 use keymap::{Context as KeyContext, Platform};
 use ui_components::prelude::*;
 use ui_core::command::modifiers_held;
 use ui_core::press::PointerButton;
-use keyboard_types::{Code, Key as DomKey, Modifiers};
 
 /// The Blitz button, and the held-buttons set while it is down, for a quire pointer button.
 pub(crate) fn blitz_button(button: PointerButton) -> (MouseEventButton, MouseEventButtons) {
@@ -175,8 +175,8 @@ fn letter(c: char) -> Code {
 #[cfg(test)]
 mod tests {
     use super::{keyboard, letter, modifier};
-    use ui_components::prelude::*;
     use keyboard_types::Code;
+    use ui_components::prelude::*;
 
     const LETTERS: &[(char, Code)] = &[
         ('a', Code::KeyA),

@@ -8,13 +8,13 @@
 use super::caps::{Caps, Identity, wanted};
 use crate::daemon::sys::{self, AbsInfo, BitSet, InputId, UinputAbsSetup, UinputSetup};
 use crate::outputs::events::{EV_ABS, EV_KEY, EV_REL, EV_SYN};
+use input_broker_client::{
+    ClientError, Create, DeviceId, DeviceSource, Event, Made, Reason, Sent, Session,
+};
 use rustix::fd::OwnedFd;
 use rustix::fs::{Mode, OFlags};
 use rustix::io::Errno;
 use std::io;
-use input_broker_client::{
-    ClientError, Create, DeviceId, DeviceSource, Event, Made, Reason, Sent, Session,
-};
 
 /// The uinput control node.
 pub const UINPUT: &str = "/dev/uinput";

@@ -1,7 +1,7 @@
 //! A call goes to the program that was checked, not to whoever holds the service's name when the
 //! call is made: the Privacy page over a fake portal that loses the name to a second one the
 //! moment the window has asked who owns it. (The Spaces registry's own case is tested in
-//! detent-system.)
+//! settings-app-system.)
 
 use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
@@ -11,9 +11,9 @@ use crate::support::portal;
 use settings_app_client::Vouch;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+use ui_harness::Harness;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 

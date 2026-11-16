@@ -3,8 +3,8 @@
 //! file read as TOML (behind the `manifest-file` feature) and a tool call's JSON arguments read
 //! into typed ones (`args_from_json`).
 //!
-//! Pure and portable: serde and `serde_json`, `url` for URL arguments, `docket-vocab` for ids
-//! and values, `porter-core` for app names and `prov` for who and what. The TOML parser is only
+//! Pure and portable: serde and `serde_json`, `url` for URL arguments, `action-vocab` for ids
+//! and values, `account-core` for app names and `prov` for who and what. The TOML parser is only
 //! reached with the `manifest-file` feature.
 
 mod args;

@@ -1,9 +1,9 @@
 use super::{Control, FileOnly};
+use toml::Value;
 use ui_settings::schema::{
     ActionLabel, ActionWeight, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page,
     Section,
 };
-use toml::Value;
 
 fn spec(kind: KeyKind, default: Value) -> KeySpec {
     KeySpec {

@@ -1,5 +1,5 @@
 //! 3x3 colour matrices: the linear-light conversion from one set of primaries to another. Floats
-//! are allowed here (a render pass); the primaries arrive as integers from `casement-core`.
+//! are allowed here (a render pass); the primaries arrive as integers from `compositor-core`.
 
 use compositor_core::output::{Chromaticity, D65, Gamut, Primaries, SRGB};
 

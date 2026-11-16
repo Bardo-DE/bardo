@@ -9,10 +9,10 @@ backend (see `dist/quire-portals.conf`).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `transom-core` | the screen-cast session machine (`step`), restore tokens and book, the source choice, the inhibit book, the layout of a picture of all outputs, when a held picture is sent again (`pacing`), the settings values and their wire numbers | none |
+| `portal-core` | the screen-cast session machine (`step`), restore tokens and book, the source choice, the inhibit book, the layout of a picture of all outputs, when a held picture is sent again (`pacing`), the settings values and their wire numbers | none |
 | `transom` | the six D-Bus interfaces (zbus), the seams and their real and fake implementations, `serve`, the binary | D-Bus, Wayland, PipeWire, files |
 
-`transom-core` depends on `thiserror` only. It reaches no zbus, tokio, pipewire, wayland, image
+`portal-core` depends on `thiserror` only. It reaches no zbus, tokio, pipewire, wayland, image
 or tracing (row T1 of `scripts/check-boundary.sh`) and reads no clock, environment or file (T5).
 
 Inside `transom` only these modules name the heavy crates: `capture/` the Wayland crates (T2),
@@ -80,7 +80,7 @@ shell's owner check, on a private bus.
 
 ## 3b-2. Who may call, and whom the portal asks (PORTAL-03, PORTAL-10)
 
-Caller identity is `peephole-bus` (git, tag v0.1.4, feature `tokio` and `desktop`); `serve` builds one
+Caller identity is `caller-identity-dbus` (git, tag v0.1.4, feature `tokio` and `desktop`); `serve` builds one
 `peers::Peers` on the name-owning connection from the root-owned caller table
 (`/etc/quire/desktop-callers.toml`, loaded by `main.rs`; a table that cannot be loaded is empty, so nobody is
 recognised, every call is refused and the shell is never asked).
@@ -105,7 +105,7 @@ recognised, every call is refused and the shell is never asked).
   picker all go through `Door`.
 - **The person's own rows (feature `debug`).** The desktop's test jail has no `/etc/quire/desktop-callers.toml` and no
   unit manager, so a stand-in frontend or shell built in a checkout could never be recognised. Built with
-  `--features debug` (which alone turns on `peephole-bus/dev-rows`; it is no default feature and no shipped build has
+  `--features debug` (which alone turns on `caller-identity-dbus/dev-rows`; it is no default feature and no shipped build has
   it), `main.rs` reads `TRANSOM_DEV_CALLERS=FILE`, the only place it is read, and `dev_rows::with_dev_rows` adds the
   file's `[[peer]]` rows after the shipped table (a plain file of the person's, or root's, that group and others cannot
   write; a link is refused). A file that cannot be taken stops the start with the reason in the log. A caller a row names

@@ -9,9 +9,9 @@ use account_daemon::paths::Paths;
 use account_daemon::{Config, Daemon};
 use account_dbus::BusTarget;
 use account_wire::names::ACCOUNTS_BUS;
+use base_testkit::{Deadline, GENEROUS};
 use std::path::Path;
 use std::time::Duration;
-use base_testkit::{Deadline, GENEROUS};
 
 /// The paths for a person whose whole home is `home`; every file is under it.
 fn paths(home: &Path) -> Paths {

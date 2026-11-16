@@ -3,7 +3,7 @@
 //! `print`), spellchecking (feature `spell`), the crash guard for the person's styles
 //! (`styles_guard`), the menu bar exported over D-Bus (feature `menus`),
 //! and the device-pixel layout snap (`snap`). The only
-//! quire crate that names the blitz crates; the test driver lives in `ds-harness`, which builds
+//! quire crate that names the blitz crates; the test driver lives in `ui-harness`, which builds
 //! its document from the parts in `seam` (feature `testing`).
 //!
 //! It is also the only quire crate that may depend on `tokio` (`scripts/check-boundary.sh`
@@ -117,9 +117,9 @@ mod xdg_activation;
 pub use app_handle::{AppEnded, AppHandle, AppHold, use_app_handle};
 pub use app_id::AppId;
 pub use app_life::LastWindowClosed;
-pub use blitz_host::provide_host;
 pub use blitz_embed::adapter::{ADAPTER_ENV, AdapterPref};
 pub use blitz_embed::net::FileRoots;
+pub use blitz_host::provide_host;
 pub use click_focus::FocusFallback;
 pub use close_request::use_close_request;
 pub use content_fit::{ContentFit, use_content_fit};
@@ -150,7 +150,6 @@ pub use pdf_thumb::{
 };
 #[cfg(feature = "print")]
 pub use print::{PrintError, PrintOutcome, print_dialog};
-pub use ui_emoji::{EMOJI_FAMILY_ENV, EmojiChoice, colrv1_emoji_file};
 pub use resolved::{Lookup, Resolved, ResolvedTokens, Tokens, use_resolved, use_tokens};
 pub use shell_keys::ShellKeys;
 pub use snap::snap_to_device;
@@ -159,6 +158,7 @@ pub use texture_layer::{
     Gpu, GpuError, Pace, PixelFormat, Pixels, PixelsError, Sampling, TexelRect, Texels, TextureFit,
     TextureHandle, TextureLayer, use_gpu,
 };
+pub use ui_emoji::{EMOJI_FAMILY_ENV, EmojiChoice, colrv1_emoji_file};
 pub use window::{Decorations, WinitWindow};
 pub use window_scroll::{ScrollBounds, ScrollHandle, use_scroll_handle};
 // What a scroll command names: the container's element `id`, the axis, and how it moves.

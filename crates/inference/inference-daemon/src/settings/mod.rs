@@ -31,12 +31,14 @@ pub use module::{InferdSettings, serve_settings};
 pub use pool::HelperPools;
 pub use resolve::{Resolved, floor_value, model_text, parse_model, resolve, slot_value};
 
-use model_provider::Money;
 use account_core::AccountId;
 use account_core::AppId;
 use account_ids::Permille;
-use inference_core::{AutoPolicy, ClassFloor, Floor, Period, Policy, SpendCap, SpendScope, TierMap};
+use inference_core::{
+    AutoPolicy, ClassFloor, Floor, Period, Policy, SpendCap, SpendScope, TierMap,
+};
 use inference_router::local::Lengths;
+use model_provider::Money;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;

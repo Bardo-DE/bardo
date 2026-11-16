@@ -6,6 +6,8 @@
 //! or Shift-arrow reaches rows the way Finder's list does.
 
 use dioxus::prelude::*;
+use std::cell::{Cell, RefCell};
+use std::collections::HashSet;
 use ui_components::base::press::PointerButton;
 use ui_components::base::selection::RowSelection;
 use ui_components::components::controls::scroller::handle::use_scroller;
@@ -14,8 +16,6 @@ use ui_components::components::lists::table::model::TableColumn;
 use ui_components::components::lists::virtual_table::{VirtualTable, row_pitch};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, PointerAction, PointerInput, Viewport};
-use std::cell::{Cell, RefCell};
-use std::collections::HashSet;
 
 const VIEW: Viewport = Viewport {
     width: 400,

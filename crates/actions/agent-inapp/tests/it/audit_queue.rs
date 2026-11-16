@@ -1,18 +1,18 @@
 //! The audit records waiting for memory survive an app restart: a file the app names, bounded,
-//! written atomically, typed errors, flushed by the next agent. The memory is almanac-fake's
+//! written atomically, typed errors, flushed by the next agent. The memory is memory-fake's
 //! backend behind a switch the test flips; every file is in a scratch directory.
 
 use crate::support::TestSheet;
 use crate::support::host::{ARCHIVE, clock, parts, thread, work};
 use crate::support::infer::{ScriptedInfer, call, words};
+use account_ids::Count;
+use action_core::{LinkFault, MemoryLink};
+use agent_inapp::{AlmanacMemory, AuditFile, AuditFileError, AuditTo, InAppAgent, InAppKit};
+use agent_session::SheetChoice;
 use memory_client::InProcess;
 use memory_core::{BodyMode, MemoryReply, MemoryRequest, RecentQuery, TrustFilter};
 use memory_fake::{ScriptedConsolidator, fake_service};
 use memory_service::Caller;
-use action_core::{LinkFault, MemoryLink};
-use agent_inapp::{AlmanacMemory, AuditFile, AuditFileError, AuditTo, InAppAgent, InAppKit};
-use agent_session::SheetChoice;
-use account_ids::Count;
 use provenance::UnixSeconds;
 use serde_json::json;
 use std::sync::Arc;

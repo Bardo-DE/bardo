@@ -1,7 +1,7 @@
 //! The words the settings are stored as: a closed `Word` enum, so the schema names every value.
 
-use ui_components::prelude::Word;
 use serde::{Deserialize, Serialize};
+use ui_components::prelude::Word;
 
 /// `general.new_windows_show`: the folder a new window opens on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

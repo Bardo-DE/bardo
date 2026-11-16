@@ -4,14 +4,14 @@
 //! Reduced (R7).
 
 use dioxus::prelude::*;
+use shell_kit::now_playing::kind::Playback;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_kit::now_playing::kind::Playback;
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

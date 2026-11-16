@@ -1,10 +1,10 @@
-use proptest::prelude::*;
 use portal_core::restore::{Grant, InputGrant};
 use portal_core::{
     CastSource, CursorMode, DeviceKinds, Keep, MAX_GRANTS, PersistMode, Remembered, RestoreBook,
     RestoreToken, UNTIL_REVOKED_SECS, WHILE_RUNNING_SECS,
 };
 use portal_core::{Screens, StandingGrant};
+use proptest::prelude::*;
 
 const NOW: u64 = 1_800_000_000;
 

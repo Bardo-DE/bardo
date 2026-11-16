@@ -19,7 +19,7 @@ second typeface ("Editorial": Bricolage Grotesque, Karla, Space Mono) is no long
 (`extensions/org.quire.look.Editorial/`), which a person picks under Settings > Look and which
 layers its own stacks, tracking and sizes after quire's sheet. The Editorial values in the tables
 below are the prototype's record (marked "history"). Bricolage Grotesque and Karla still ship in
-`ds-style` so the look can name them.
+`ui-style` so the look can name them.
 
 The user's decision (2026-09-26): "make this desktop use mostly inter". The reference desktop's
 system font (SF Pro) is licensed for its own platform only; Inter (SIL OFL 1.1, rsms/inter) is
@@ -49,7 +49,7 @@ History: the Editorial faces (Bricolage Grotesque, Karla) are not part of quire'
 lacks `← →`), so a `KeyEquivalent` fell to whatever face the system offered and U+2303 drew as a
 caret. Inter 4.1 draws all of them, so the upright Inter latin face keeps them
 (`cut-inter.sh`'s `KEYS`), and every stack names "Inter" right after its own face: a face that
-lacks a glyph hands it to Inter before the system. `ds-style`'s `fonts` tests check each
+lacks a glyph hands it to Inter before the system. `ui-style`'s `fonts` tests check each
 `ShortcutKey` glyph against the shipped cmap and each stack for the fallback.
 
 The design system ships the faces as subset TTFs (latin plus

@@ -121,7 +121,7 @@ follows the level"), and a CSS transition on `stroke-dashoffset` does not run
 (design/05 §9 rule 8). So a part *inside* a glyph either is its own stacked `svg` whose HTML
 wrapper CSS can move (layers: Pending, glyph Morph, Shake), or is recomputed per frame in Rust
 (shapes: Sweep, Check). The tween reads the easing tokens through `CubicBezier::at`
-(`ds-style/tokens/curve.rs`), so CSS-played and Rust-played motion share one curve table.
+(`ui-style/tokens/curve.rs`), so CSS-played and Rust-played motion share one curve table.
 
 ### 3.3 Rules
 
@@ -510,7 +510,7 @@ which moves onto them in D1's sill lane (CONSUMING.md "Status glyphs" lists what
 #### 5.1.1 Wi-Fi item
 States: Off, Joining, Connected {bars 1-3, secured}, NoInternet, Failed. Today the sill glyph is a
 bucket of `WifiLow`/`Wifi`/`WifiHigh`/`WifiOff`, and `Link::Connecting` shows `WifiOff`
-(sill's `sill-bar/src/bar/status_item.rs`): the bar reads "Wi-Fi off" while it is connecting, a bug (G1's sill side:
+(sill's `shell-bar/src/bar/status_item.rs`): the bar reads "Wi-Fi off" while it is connecting, a bug (G1's sill side:
 `Link::Connecting` must be `WifiState::Joining`). Built as `WifiState::{Off, Idle, Joining,
 Joined { bars, reach }, Failed}`: Idle (on, joined to nothing) is the faint fan, distinct from
 Off's slash; no internet is `Joined { reach: NoInternet }`; the lock is the menu's, not the
@@ -833,7 +833,7 @@ land on the primitives rather than beside them: battery-fill is the first consum
 | Wave | Lane | Scope | Where | Closes |
 | --- | --- | --- | --- | --- |
 | D0 | D0a primitives: time | `Moment`, `Touch`, `FirstShow`, `EventStamp`, `Operation`, `Detailed`, `use_detail`, `moment_table`; `Tween` on `CubicBezier::at` and a frame clock that stops at rest; `Sweep`, `CountUp`, `Reveal`; tokens `--t-sweep`, `--t-count-step`, `SettleHold` into design/05 and the token table; gallery page "Details" with a replay button per primitive; harness tests (idle after settle, Reduced jumps, retarget mid-flight) | Q | foundation. **Built 2026-09-27** (`details-d0b`) |
-| D0 | D0b primitives: state | `Pending` (+ `--t-pending-step`, `PendingGrace`, `PendingCap`), `Settle`, `Shake`, `MorphGlyph`, `RollDigits`, `Nudge`; `Spinner` rebuilt on `Pending` (its two infinite loops gone; `ModuleState::Busy` and `PromptState::Checking` inherit the bound; `SyncHalo`'s idle breathe, mailo's, goes as design/05 §12 item 4 proposes, so tell the mailo session before it lands) | Q | G15, G45 (quire side). **Built 2026-09-27** (`details-d0b`), with one change: `SyncHalo` keeps its loops (it is mail's; mailo decides, design/05 §12 item 4), listed in `ds-shell/tests/it/details_lint.rs` with the three other mail loops |
+| D0 | D0b primitives: state | `Pending` (+ `--t-pending-step`, `PendingGrace`, `PendingCap`), `Settle`, `Shake`, `MorphGlyph`, `RollDigits`, `Nudge`; `Spinner` rebuilt on `Pending` (its two infinite loops gone; `ModuleState::Busy` and `PromptState::Checking` inherit the bound; `SyncHalo`'s idle breathe, mailo's, goes as design/05 §12 item 4 proposes, so tell the mailo session before it lands) | Q | G15, G45 (quire side). **Built 2026-09-27** (`details-d0b`), with one change: `SyncHalo` keeps its loops (it is mail's; mailo decides, design/05 §12 item 4), listed in `ui-shell/tests/it/details_lint.rs` with the three other mail loops |
 | D1 | status glyphs | a layered `StatusGlyph` family: Wi-Fi (dot + 3 arcs, the "!" badge), battery (outline, fill layer, bolt, plug), Bluetooth (base, slash, connected dots), volume (on `LevelGlyph`), each with its `Detailed` state and moment table | Q | G1-G4, G8-G10, G12 (quire side), and the glyph side of G5-G7 (the failed-join shake, the Bluetooth glyph and its bounded breath). **Built 2026-09-27** (`details-d1`) |
 | D1 | bar wiring | sill's bar items on `StatusGlyph`: `Link::Connecting` → Joining with an op stamp from the network service, no-internet from connectivity, battery thresholds (`bar.battery_low_percent`), the Bluetooth bar item | S | G1-G12 |
 | D2 | control center modules | `ModuleTile` disc glyph on `MorphGlyph`/`Settle`; `SettingsRow` trailing `Pending`/`Settle{Check}`/`Shake`; Now Playing play/pause `MorphGlyph{OffUp}`, position bar, track cross-fade; Battery module rings on `Sweep`/`CountUp`; a keyboard-brightness module on `LevelControl` | Q+S | G14, G16-G18, G20, G21, G23, G25-G30. **Quire lane built 2026-09-27** (`details-d2`): `ModuleTile { disc: DiscMotion }`, `SettingsRow { phase: RowPhase, work: RowWork, disc: RowDisc }` and `RowTrailing::Battery`, `PlayPauseButton`, `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`, `Icon::MoonFilled`, `Anim::MorphInSpring`; the sill lane is CONSUMING.md "Control center details" |

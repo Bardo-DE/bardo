@@ -23,9 +23,9 @@ use crate::focus_chain::{Candidates, ChainNode, Target};
 use crate::node_ref::NodeRef;
 use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::host::fallback::Fallback;
 use ui_components::prelude::*;
-use std::rc::Rc;
 
 /// Where the keyboard goes after a click on nothing focusable, for a window or a harness.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

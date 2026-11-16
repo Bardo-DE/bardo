@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-seat-input"
-description = "The agent's input: InputOp, the pure plan from a CuaAction to input operations, the keymap and region maps, and the AgentSeat seam. The reis client is `seat-ei`."
+description = "The agent's input: InputOp, the pure plan from a CuaAction to input operations, the keymap and region maps, and the AgentSeat seam. The reis client is `computer-use-seat-ei`."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

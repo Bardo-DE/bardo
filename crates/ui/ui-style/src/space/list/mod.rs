@@ -17,7 +17,7 @@ mod today_ops;
 mod wire;
 
 pub use model::{Space, SpaceId, Spaces};
-pub use memory_recall::Recall;
+pub use recall::Recall;
 pub use remove::{Refused, Removed};
 pub use switch::{SlideIn, Switched};
 pub use time::{Epoch, IDLE};

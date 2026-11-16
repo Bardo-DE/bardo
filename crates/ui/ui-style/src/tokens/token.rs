@@ -7,8 +7,8 @@
 
 use super::name::VarName;
 use crate::appearance::{motion::MotionLevel, theme::Scheme};
-use ui_core::word::Word;
 use std::borrow::Cow;
+use ui_core::word::Word;
 
 pub use ui_core_derive::Token;
 

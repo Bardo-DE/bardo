@@ -2,10 +2,10 @@
 //! out by `false`, which keeps the dots; with one Space it draws no dots at all.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::spaces::{Spaces, SpacesFoot, Switched, use_spaces};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Part, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 420,

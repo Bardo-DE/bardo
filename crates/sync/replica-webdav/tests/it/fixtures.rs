@@ -1,17 +1,17 @@
 //! Recorded multistatus fixtures (the shapes Nextcloud and Sabre-based servers answer) through
 //! the replica, with a scripted HTTP seam in place of a server: no network, no socket.
 
+use account_http::http::{Request, Response};
+use account_http::{Http, HttpError};
+use account_ids::{Bytes, UnixSeconds, WebUrl};
+use replica_webdav::WebDavReplica;
+use std::collections::BTreeMap;
+use std::future::Future;
+use std::sync::{Arc, Mutex};
 use sync_core::Clock;
 use sync_core::{
     Change, Cursor, Quota, RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
-use account_ids::{Bytes, UnixSeconds, WebUrl};
-use std::collections::BTreeMap;
-use std::future::Future;
-use std::sync::{Arc, Mutex};
-use replica_webdav::WebDavReplica;
 
 fn fixture(name: &str) -> Vec<u8> {
     let path = format!("{}/tests/fixtures/{name}", env!("CARGO_MANIFEST_DIR"));

@@ -7,8 +7,8 @@
 
 use crate::appearance::motion::MotionLevel;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
 use std::time::Duration;
+use ui_core::word::Word;
 
 /// Whether Reduced motion shortens a [`DurationToken`] to `--t-quick`, or the token times a held
 /// state a person must still be able to register regardless of motion level. Data on the

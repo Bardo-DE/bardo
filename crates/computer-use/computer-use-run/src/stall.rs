@@ -1,7 +1,7 @@
 //! Whether the screen has stopped changing.
 
-use computer_use_capture::FrameDigest;
 use account_ids::Count;
+use computer_use_capture::FrameDigest;
 use serde::{Deserialize, Serialize};
 
 /// Whether the frames are still changing.

@@ -5,8 +5,8 @@ use super::sections::{
     GesturesSection, GpuSection, KeyboardSection, NightLightSection, OutputsSection,
     PointerSection, SpacesSection, TouchpadSection, WindowsSection, XwaylandSection,
 };
-use ui_settings::schema::{AppId, FilePath, Schema, SettingsSchema};
 use std::path::Path;
+use ui_settings::schema::{AppId, FilePath, Schema, SettingsSchema};
 
 /// The schema's version: bumped when a key's meaning changes, never for a new key.
 const VERSION: u16 = 1;

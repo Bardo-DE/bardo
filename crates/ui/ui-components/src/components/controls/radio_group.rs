@@ -15,10 +15,10 @@ use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving};
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::vocab::{Availability, Check};
 use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
-use std::rc::Rc;
 
 /// How the items are laid out (`data-arrangement`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

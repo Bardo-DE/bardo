@@ -12,12 +12,12 @@ use compositor_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
 use compositor_core::input::ButtonCode;
 use compositor_core::window::WindowState;
 use compositor_layout::{LayoutKnobs, zone_rect};
-use desktop_protocols::vocab::PressEdge;
-use desktop_protocols::vocab::TileZone;
 use compositor_testclient::surface::toplevel::{
     BoundPointer, ResizeEdge, Toplevel, WmBase, bind_pointer,
 };
 use compositor_testkit::Fixture;
+use desktop_protocols::vocab::PressEdge;
+use desktop_protocols::vocab::TileZone;
 
 const BTN_LEFT: ButtonCode = ButtonCode(0x110);
 const BTN_RIGHT: ButtonCode = ButtonCode(0x111);

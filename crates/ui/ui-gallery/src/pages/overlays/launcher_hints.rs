@@ -9,7 +9,9 @@ use ui_components::components::content::pdf_thumb::PdfPage;
 use ui_components::components::lists::preview::content::PaneContent;
 use ui_components::components::lists::preview::pane::PaneAction;
 use ui_components::components::lists::row::shape::RowShape;
-use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups, PaletteRow};
+use ui_components::components::menus::palette::palette_group::{
+    PaletteGroup, PaletteGroups, PaletteRow,
+};
 use ui_components::prelude::*;
 use ui_components::style::tokens::shape::{Corner, Radius};
 

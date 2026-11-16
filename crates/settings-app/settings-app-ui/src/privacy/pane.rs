@@ -5,9 +5,9 @@ use super::program_view::Listed;
 use crate::copy::absence::{Subject, absence as absence_words};
 use crate::live::use_live;
 use crate::system::Absent;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{PrivacyInput, PrivacyState};
-use dioxus::prelude::*;
 
 /// The programs that have been answered, with a choice for each power.
 #[component]

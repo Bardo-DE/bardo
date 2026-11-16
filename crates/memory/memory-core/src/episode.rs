@@ -17,7 +17,9 @@ use crate::text::{UserText, text_id};
 use crate::thing::{ThingRef, ThingRole, ThingView};
 use account_core::SpaceId;
 use account_ids::{Count, UnixSeconds, is_id};
-use provenance::{ActionName, AgentRef, Effect, Label, MessageText, ModelRole, OutcomeRef, UndoHandle};
+use provenance::{
+    ActionName, AgentRef, Effect, Label, MessageText, ModelRole, OutcomeRef, UndoHandle,
+};
 use serde::{Deserialize, Serialize};
 
 text_id!(

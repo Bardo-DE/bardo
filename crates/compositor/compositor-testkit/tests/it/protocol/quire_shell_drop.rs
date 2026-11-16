@@ -5,6 +5,7 @@
 use super::quire_shell_spaces::{Desk, centre_of, desk, move_to, open, press, release, target};
 use crate::protocol::image_capture::settle as settle_capture;
 use crate::protocol::xdg_shell::{map_toplevel, pointer, windows};
+use account_core::SpaceId;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::overview::Overview;
 use compositor_core::policy::ConnectionRole;
@@ -16,7 +17,6 @@ use compositor_testclient::quire::shell::{BoundOutput, DragOutcome, ShellHandle,
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testclient::{Pattern, shm_buffer};
 use compositor_testkit::{Fixture, FixtureSpec};
-use account_core::SpaceId;
 use std::time::Duration;
 use wayland_client::protocol::wl_output::WlOutput;
 

@@ -11,8 +11,8 @@
 
 use crate::icon::url::IconUrl;
 use crate::tokens::plate::EXPONENT;
-use ui_core::word::Word;
 use std::f64::consts::FRAC_PI_2;
+use ui_core::word::Word;
 
 /// Samples per quadrant for a corner mask, and for each quadrant of the plate.
 const SAMPLES: u32 = 48;

@@ -11,8 +11,8 @@
 //! longer listed; it stays in the deck until the stack says its exit has played
 //! (`BannerIn::Left`, from `on_hidden`).
 
-use ui_components::base::time::stamp::Stamp;
 use shell_model::notifications::NotificationsCommand;
+use ui_components::base::time::stamp::Stamp;
 
 use super::commands::leave_commands;
 use super::deck_keys::{KeysIn, keys, release_leavers};

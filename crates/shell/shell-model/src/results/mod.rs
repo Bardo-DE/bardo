@@ -1,5 +1,5 @@
 //! The launcher's search as state: the merged, sectioned result list, what it can be told, the
-//! launcher's policy, and how rows are arranged. The runner and its providers are `sill-search`'s.
+//! launcher's policy, and how rows are arranged. The runner and its providers are `shell-search`'s.
 
 mod arrange;
 mod command;

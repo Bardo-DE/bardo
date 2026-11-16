@@ -1,8 +1,8 @@
 //! Why an apply failed, and the exit code `slipway-apply` gives for it.
 
 use super::staged::StagedError;
-use updater_core::{AuditError, PlanError};
 use std::io;
+use updater_core::{AuditError, PlanError};
 
 /// The helper's exit codes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

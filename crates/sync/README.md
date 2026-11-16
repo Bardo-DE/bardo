@@ -17,20 +17,20 @@ half (sign-in, consent, the keyring), and ferry depends on it by git rev.
 
 | Crate | What it is |
 | --- | --- |
-| `ferry-sync` | the sync contract: `Replica`, anchors, base versions, conflicts, tombstones, and an in-memory replica |
-| `storage-webdav`, `storage-graph`, `storage-gdrive` | the replicas: WebDAV, OneDrive's Graph and Google Drive |
-| `ferry-drive`, `ferry-drive-fuse`, `ferry-mountd` | files on demand over a drive's listing, the FUSE adapter and the mount helper |
-| `ferry-bus` | the `Sync1`, `Storage1` and Photos Picker interfaces |
+| `sync-core` | the sync contract: `Replica`, anchors, base versions, conflicts, tombstones, and an in-memory replica |
+| `replica-webdav`, `replica-graph`, `replica-gdrive` | the replicas: WebDAV, OneDrive's Graph and Google Drive |
+| `drive-core`, `drive-fuse`, `drive-mount-daemon` | files on demand over a drive's listing, the FUSE adapter and the mount helper |
+| `sync-bus` | the `Sync1`, `Storage1` and Photos Picker interfaces |
 | `syncd` | the daemon: the journal, the engine, the scheduler, the datasets (calendars, contacts, tasks, the storage folder, whole drives, photos) and the bus objects |
 | `quickxorhash`, `windows-zones` | OneDrive's hash and the Windows-to-IANA time zone table |
-| `syncd-fakes`, `ferry-fake-graph`, `ferry-rig` | test tooling, never installed |
+| `sync-fakes`, `sync-fake-graph`, `sync-rig` | test tooling, never installed |
 
 [ARCHITECTURE.md](ARCHITECTURE.md) has the edges between them.
 
 ## Accounts
 
 The accounts are accountd's (porter). ferry reaches them only through porter's client crates
-(`porter-client` over `porter-client-dbus`): syncd lists the accounts, asks accountd for the grant
+(`account-client` over `account-client-dbus`): syncd lists the accounts, asks accountd for the grant
 it needs (accountd's consent sheet shows the first time a sync switch is turned on for an account,
 and its answer is kept), reads its own grants, and opens the streams to an account's servers that
 accountd has signed in. syncd holds no account, no token and no password of its own, and

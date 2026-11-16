@@ -1,5 +1,5 @@
 //! Routing the IME to the edit surface that has the keyboard (FINDINGS "Edit surface", route
-//! b). dioxus-native-dom drops `DomEventData::Ime`, so no Dioxus handler hears it; ds-blitz
+//! b). dioxus-native-dom drops `DomEventData::Ime`, so no Dioxus handler hears it; ui-blitz
 //! sees it first instead (the window's `use_window_event` runs before the document gets the
 //! event; the harness owns its document) and hands it to the surface registered at the focused
 //! node or its nearest registered ancestor.
@@ -7,10 +7,10 @@
 use blitz_dom::{BaseDocument, NodeId};
 use dioxus::prelude::EventHandler;
 use dioxus_native::winit::event::Ime;
-use ui_components::host::captured::{CapturedPointer, PointerPhase};
-use ui_components::host::ime::{ImeEvent, ImeListener};
 use std::cell::RefCell;
 use std::rc::Rc;
+use ui_components::host::captured::{CapturedPointer, PointerPhase};
+use ui_components::host::ime::{ImeEvent, ImeListener};
 
 /// The edit surfaces of one document listening for IME events, provided as root context.
 #[derive(Clone, Default)]

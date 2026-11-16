@@ -7,16 +7,16 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::root::common::Common;
-use ui_components::style::icon::url::IconUrl;
+use shell_kit::notifications::parts::{AppMark, Hover};
+use shell_kit::notifications::swipe::NotificationSwipe;
+use shell_kit::prelude::*;
 use shell_model::apps::AppIcon;
 use shell_model::notifications::{AppRef, Href, Notification, UnixMs};
 use shell_services::apps::{IconRoots, icon_theme, resolve_icon};
 use shell_services::env::Dirs;
-use shell_kit::notifications::parts::{AppMark, Hover};
-use shell_kit::notifications::swipe::NotificationSwipe;
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
+use ui_components::style::icon::url::IconUrl;
 
 use super::actions::card_actions;
 use super::body::rich_body;

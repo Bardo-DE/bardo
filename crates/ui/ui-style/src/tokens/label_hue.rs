@@ -7,8 +7,8 @@
 use super::hex::Hex;
 use super::token::{CssValue, Token, TokenScope};
 use crate::appearance::theme::Scheme;
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// One label hue.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

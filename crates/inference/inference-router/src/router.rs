@@ -17,14 +17,14 @@ use account_capability::LlmFeature;
 use account_capability::{Locality, Tier};
 use account_capability::{Offer as CoreOffer, SpeechMode};
 use account_core::DataClass;
+use account_match::Need;
+use account_match::{Match, matches};
 use inference_core::{
     AutoPolicy, Chosen, Declined, DeclinedBecause, InferRefusal, LicenceClass, ModelCard, ModelRef,
     Permit, Pick, PickCandidate, PickPolicy, PickRefusal, Policy, ProviderId, Readiness, RouteAsk,
     RouteCandidate, Sharing, Sight, Slot, SpendVerdict, SwapCost, Takes, TierMap, Why,
     default_choice, pick, tier_choice,
 };
-use account_match::Need;
-use account_match::{Match, matches};
 
 /// One model the router may pick, and how soon it can answer.
 #[derive(Debug, Clone, PartialEq, Eq)]

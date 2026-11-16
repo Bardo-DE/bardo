@@ -1,22 +1,22 @@
 //! A turn: the person says something, a task runs as far as it can alone, and the host reads the
 //! end of it off the task. The loop, the planner, the router calls, the reader and the records are
-//! `docket-tasks`'; this is the person's side (the `field` caller records the turn) and the
+//! `companion-tasks`'; this is the person's side (the `field` caller records the turn) and the
 //! reading of the result.
 
 use crate::agent::{AgentFault, Ending, InAppAgent, Reply};
 use crate::turn_watch::TurnWatch;
-use action_review::Reviewer;
-use agent_loop::{FinishedAs, LoopPhase, LoopState};
-use companion_wire::{AnswerPhase, AskWire, NeedsYou};
 use action_core::MemoryLink;
 use action_core::{ContextKeep, Keep, PolicyWriter, Reader, TurnEnd, TurnIn, TurnVia, UserTurn};
 use action_host::ConfirmSheet;
-use agent_planner::PlanFault;
 use action_provider::{ContextSource, IntentProvider};
+use action_review::Reviewer;
 use action_router::GrantStore;
-use companion_tasks::{Failure, TaskRuntime};
 use action_vocab::{Caller, Clock, Origin, WindowKey};
 use action_wire::SessionOpen;
+use agent_loop::{FinishedAs, LoopPhase, LoopState};
+use agent_planner::PlanFault;
+use companion_tasks::{Failure, TaskRuntime};
+use companion_wire::{AnswerPhase, AskWire, NeedsYou};
 use inference_client::Transport as ModelTransport;
 use provenance::{AgentRef, TaskId};
 

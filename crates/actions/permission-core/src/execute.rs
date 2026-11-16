@@ -4,7 +4,7 @@
 //! [`EXECUTE_AS`] is prov's own `Effect::Execute`, ranked above `Destructive`: a command can
 //! delete as well as send out, so every rule from `Outbound` or `Destructive` up covers it, and
 //! untrusted input into it is never grantable. The router rules a command like any other call (the `Execute` rules of S8
-//! are its policy point's, its `may_offer` and its terminal scope: see `docket-router`'s
+//! are its policy point's, its `may_offer` and its terminal scope: see `action-router`'s
 //! `terminal` and `standing`); this module keeps the two facts the host and the sandbox share.
 
 use provenance::Effect;

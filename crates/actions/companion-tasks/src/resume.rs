@@ -10,11 +10,11 @@ use crate::router_log::RouterLog;
 use crate::runtime::Companion;
 use crate::seams::Surface;
 use crate::stored_roster::stored_events;
-use agent_loop::Rebuilt;
 use action_client::Transport as IntentsTransport;
-use agent_planner::Planner;
 use action_vocab::Clock;
 use action_wire::{RecallAsk, RecallView, SessionOpen, SessionOpened};
+use agent_loop::Rebuilt;
+use agent_planner::Planner;
 use provenance::{AgentRef, SpaceId, UnixSeconds};
 
 /// What a restart found: the front task's fresh session, if it had one, and how many of the

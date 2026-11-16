@@ -7,9 +7,9 @@
 //! computer-use daemon touches only the session its own app opened).
 
 use crate::{Opening, ResumePlan};
-use companion_model::helper::SeatPlace;
 use action_vocab::CallerRole;
 use action_wire::StartedFrom;
+use companion_model::helper::SeatPlace;
 use provenance::AppName;
 
 /// A caller asking for a stored session.

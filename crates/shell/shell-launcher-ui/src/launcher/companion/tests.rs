@@ -1,10 +1,10 @@
 use action_core::Keep;
-use ui_behaviour::Dir;
 use provenance::{RunId, SpaceId, TaskId};
 use shell_launcher::{ProviderKind, WindowKey};
 use shell_model::apps::AppIndex;
 use shell_model::companion::{LauncherOrigin, Summon};
 use shell_model::windows::{Sizing, Toplevel, Toplevels};
+use ui_behaviour::Dir;
 
 use super::*;
 use crate::launcher::keys::Filter;
@@ -332,8 +332,8 @@ fn each_act_but_an_ask_and_a_mode_is_one_command() {
 }
 
 fn answer_in(phase: companion_wire::AnswerPhase) -> shell_model::companion::Companion {
-    use companion_wire::{AnswerBody, AnswerWire, FooterWire};
     use action_core::ContextKeep;
+    use companion_wire::{AnswerBody, AnswerWire, FooterWire};
     use shell_model::companion::{AnswerFacts, Busy, Companion};
     let wire = AnswerWire {
         task: task(),
@@ -370,8 +370,8 @@ fn answer_in(phase: companion_wire::AnswerPhase) -> shell_model::companion::Comp
 /// The pane by how far the selected answer is, and by there being no such answer.
 #[test]
 fn the_pane_follows_how_far_the_selected_answer_is() {
-    use companion_wire::{AnswerPhase as P, NeedsYou};
     use action_core::ConfirmId;
+    use companion_wire::{AnswerPhase as P, NeedsYou};
     let selected = Selected::Answer(task());
     type Case = (&'static str, P, Pane);
     let cases: Vec<Case> = vec![

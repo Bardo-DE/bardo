@@ -6,10 +6,10 @@ use anyview_core::{ByteLen, FormatKind};
 use anyview_font::FontError;
 use anyview_image::ImageError;
 use anyview_text::TextError;
-use ui_core::word::Word;
 use std::convert::Infallible;
 use std::path::PathBuf;
 use thiserror::Error;
+use ui_core::word::Word;
 
 /// Why a peek failed. Every peek reports through it, so the registry's one signature covers all of
 /// them; the pane shows [`PeekError`]'s words as the reason a file has no preview.

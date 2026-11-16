@@ -12,11 +12,11 @@ use memory_core::{
     MemoryOp, Record, Refusal, RuleSet, RunId, RunState, Seq, SpaceId, SystemPart, TopicPath,
     UnixSeconds,
 };
+use memory_files_format::{Block, MemfilesError};
 use memory_seal::{KeyError, SubKey};
 use memory_search::docs::{event_ref, fact_doc, indexed_docs, newest_episodes};
 use memory_store::{Doc, DocId, IndexFailure, SearchIndex};
 use memory_store::{Entry, LogError, LogRead, LogWrite, NewHeader, Vault, VaultPath};
-use memory_files_format::{Block, MemfilesError};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// What one request runs against: the seams, the rules as they are now and who is asking.

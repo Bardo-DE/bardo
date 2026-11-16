@@ -14,20 +14,20 @@ use crate::runtime::Companion;
 use crate::seams::Surface;
 use crate::tap::{Go, NoTap, Tap};
 use crate::task::Failure;
+use action_client::{ClientError, PerformEvent, Transport as IntentsTransport};
+use action_core::{BudgetKind, CallProgress, CallRefusal, Held, ReaderAsk, StepEnd};
+use action_store::Stop;
+use action_vocab::{CallId, CallRequest, Clock};
+use action_wire::WireRefusal;
 use agent_loop::{
     IdleInput, LoopEffect, LoopInput, LoopPhase, LoopState, ModelOutput, agent_step, assemble,
     idle_step,
 };
-use companion_wire::{AnswerPhase, RefusalWire, declined_text};
-use action_client::{ClientError, PerformEvent, Transport as IntentsTransport};
-use action_core::{BudgetKind, CallProgress, CallRefusal, Held, ReaderAsk, StepEnd};
-use permission_core::COMPANION_APP;
-use permission_core::TASK_START;
 use agent_planner::{PlanFault, Planner};
 use agent_session::CallOpen;
-use action_store::Stop;
-use action_vocab::{CallId, CallRequest, Clock};
-use action_wire::WireRefusal;
+use companion_wire::{AnswerPhase, RefusalWire, declined_text};
+use permission_core::COMPANION_APP;
+use permission_core::TASK_START;
 use provenance::{Effect, TaskId};
 use std::collections::VecDeque;
 

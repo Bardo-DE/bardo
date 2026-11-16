@@ -1,15 +1,15 @@
 use super::{IconContext, IconFile, TileArt, TileSizes, drawn, tile_art};
 use crate::dock::items::ItemKind;
-use ui_components::prelude::*;
-use ui_components::style::icon::render::IconPx;
-use ui_components::style::icon::retint::IconStyle;
-use ui_components::style::icon::retint::Tint;
 use shell_launcher::AppId;
 use shell_model::apps::{App, AppIcon, DbusActivation, Listing, Terminal};
 use shell_settings::DockSettings;
 use shell_ui_kit::app_icons::cache::Generation;
 use shell_ui_kit::app_icons::{IconLook, IconResolver};
 use std::path::PathBuf;
+use ui_components::prelude::*;
+use ui_components::style::icon::render::IconPx;
+use ui_components::style::icon::retint::IconStyle;
+use ui_components::style::icon::retint::Tint;
 
 fn app(id: &str, icon: AppIcon) -> App {
     App {

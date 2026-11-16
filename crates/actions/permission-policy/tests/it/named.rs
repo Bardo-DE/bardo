@@ -2,12 +2,12 @@
 //! the single-query operations.
 
 use crate::support::*;
+use account_ids::Count;
 use action_core::*;
 use action_manifest::{AgentReach, Lasting};
-use permission_core::{AskReason, PolicyId, Ruling, SessionSaw};
 use action_vocab::Origin;
+use permission_core::{AskReason, PolicyId, Ruling, SessionSaw};
 use permission_policy::*;
-use account_ids::Count;
 use provenance::{ActorKind, Effect, Integrity};
 
 #[test]
@@ -133,7 +133,8 @@ fn the_named_rules_of_the_table_ask_or_deny() {
             "an MCP client restoring a workspace",
             with(Effect::Destructive, |r| {
                 r.principal.kind = ActorKind::Mcp;
-                r.resource.app = account_core::AppName::parse("org.quire.Checkpoints").expect("app");
+                r.resource.app =
+                    account_core::AppName::parse("org.quire.Checkpoints").expect("app");
             }),
             Cell::Deny,
             None,
@@ -142,7 +143,8 @@ fn the_named_rules_of_the_table_ask_or_deny() {
             "an external agent restoring a workspace",
             with(Effect::Destructive, |r| {
                 r.principal.kind = ActorKind::Acp;
-                r.resource.app = account_core::AppName::parse("org.quire.Checkpoints").expect("app");
+                r.resource.app =
+                    account_core::AppName::parse("org.quire.Checkpoints").expect("app");
             }),
             Cell::Deny,
             None,

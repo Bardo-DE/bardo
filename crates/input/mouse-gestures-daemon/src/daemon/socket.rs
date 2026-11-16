@@ -31,12 +31,12 @@ mod shell;
 mod step;
 
 use io::{Exit, Server};
-pub use service_locator::guard::{SEAT_FILE, SeatFile};
 use limits::QUEUE_MAX;
 use mouse_gestures_proto::{DeviceInfo, HostAction, ToHost};
 use rustix::event::{EventfdFlags, eventfd};
 use rustix::fd::OwnedFd;
 use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
+pub use service_locator::guard::{SEAT_FILE, SeatFile};
 pub use shell::Steering;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};

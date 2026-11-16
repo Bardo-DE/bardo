@@ -13,38 +13,38 @@ cd "$(dirname "$0")/.."
 # ARCHITECTURE.md section 1 is the crate map; this file is its mechanical form, in two parts.
 #
 # RULES: what a crate reaches through ANY path (`cargo tree -i`, transitive).
-# sill-launcher, sill-model and sill-ipc are pure: no UI, no D-Bus, no Wayland, no runtime, no
-# audio, no design system. sill-settings is data and UI-free, but it names ds-settings (its dioxus
+# shell-launcher, shell-model and shell-ipc are pure: no UI, no D-Bus, no Wayland, no runtime, no
+# audio, no design system. shell-settings is data and UI-free, but it names ui-settings (its dioxus
 # feature off), whose file I/O brings zbus and tokio, so only the UI is forbidden to it.
-# sill-services and sill-search are effectful but UI-free: their state reaches surfaces only
-# through watch channels read by sill-ui-kit's hooks, so neither links a renderer. sill-services
-# names ds-settings (its dioxus feature off) for Night Shift's SettingsWriter edits.
-# sill-testkit is std only and names no sill crate.
-# sill-shell-kit (the shell-only parts over quire's `ds`) names no other sill crate and no service,
-# bus, runtime or compositor client: it is what the surfaces and sill-ui-kit draw with.
-# sill-ui-kit is what every surface shares, so it reaches no surface crate and not the binary.
+# shell-services and shell-search are effectful but UI-free: their state reaches surfaces only
+# through watch channels read by shell-ui-kit's hooks, so neither links a renderer. shell-services
+# names ui-settings (its dioxus feature off) for Night Shift's SettingsWriter edits.
+# shell-testkit is std only and names no sill crate.
+# shell-kit (the shell-only parts over quire's `ds`) names no other sill crate and no service,
+# bus, runtime or compositor client: it is what the surfaces and shell-ui-kit draw with.
+# shell-ui-kit is what every surface shares, so it reaches no surface crate and not the binary.
 # `sill` (the whole process) takes the viewer's light tier, its history, its vocabulary and its
 # D-Bus requests, and never its media player: it reaches neither libmpv binding.
 # The surface crates never depend on one another and none depends on `sill`; the daemon is the one
 # crate that names them all.
-PURE="dioxus dioxus-core zbus wayland-client tokio libpulse-binding shell-host ds ds-shell sill-shell-kit ds-blitz ds-harness blitz-dom"
-UI_FREE="dioxus dioxus-core blitz-dom shell-host ds ds-shell sill-shell-kit ds-blitz ds-harness"
-SURFACES=(sill-overlays sill-notify-ui sill-dock sill-launcher-ui sill-bar)
+PURE="dioxus dioxus-core zbus wayland-client tokio libpulse-binding layer-shell-host ds ui-shell shell-kit ui-blitz ui-harness blitz-dom"
+UI_FREE="dioxus dioxus-core blitz-dom layer-shell-host ds ui-shell shell-kit ui-blitz ui-harness"
+SURFACES=(shell-overlays shell-notify-ui shell-dock shell-launcher-ui shell-bar)
 # The other surfaces, and the binary, for one surface crate.
 others() {
   local self="$1" c
   for c in "${SURFACES[@]}" sill; do [ "$c" = "$self" ] || printf '%s ' "$c"; done
 }
 RULES=(
-  "sill-launcher: $PURE"
-  "sill-model: $PURE"
-  "sill-settings: $UI_FREE"
-  "sill-ipc: $PURE"
-  "sill-services: $UI_FREE"
-  "sill-search: $UI_FREE"
-  "sill-shell-kit: sill-launcher sill-model sill-settings sill-ipc sill-services sill-search sill-testkit sill-ui-kit ${SURFACES[*]} sill zbus tokio wayland-client libpulse-binding shell-host ds-blitz blitz-dom"
-  "sill-testkit: sill-launcher sill-model sill-settings sill-ipc sill-services sill-search sill-shell-kit sill-ui-kit ${SURFACES[*]} sill"
-  "sill-ui-kit: ${SURFACES[*]} sill"
+  "shell-launcher: $PURE"
+  "shell-model: $PURE"
+  "shell-settings: $UI_FREE"
+  "shell-ipc: $PURE"
+  "shell-services: $UI_FREE"
+  "shell-search: $UI_FREE"
+  "shell-kit: shell-launcher shell-model shell-settings shell-ipc shell-services shell-search shell-testkit shell-ui-kit ${SURFACES[*]} sill zbus tokio wayland-client libpulse-binding layer-shell-host ui-blitz blitz-dom"
+  "shell-testkit: shell-launcher shell-model shell-settings shell-ipc shell-services shell-search shell-kit shell-ui-kit ${SURFACES[*]} sill"
+  "shell-ui-kit: ${SURFACES[*]} sill"
   "sill: mpv-wgpu-player rsmpv"
 )
 for surface in "${SURFACES[@]}"; do
@@ -75,26 +75,26 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# The allowed edges between our own crates and quire and shell-host (ARCHITECTURE.md section 1):
+# The allowed edges between our own crates and quire and layer-shell-host (ARCHITECTURE.md section 1):
 # each crate's DIRECT normal and build dependencies that are path dependencies, and nothing else.
 # A dependency on a crate not listed is a leak; so is one the crate no longer has, so the table
 # stays exact. Dev dependencies are outside it (a test may reach further than the crate does).
 EDGES=(
-  "sill-launcher: almanac-core docket-core docket-vocab ds-core prov"
-  "sill-testkit:"
-  "sill-shell-kit: ds ds-core ds-shell"
-  "sill-model: almanac-core casement-protocols companion-model companion-wire cua-action cua-bus docket-core docket-manifest docket-permissions-core docket-vocab docket-wire ds-core ds-helpers keycap-protocol porter-capability porter-core porter-ids porter-infer porter-sheet prov sill-launcher voice-wire"
-  "sill-settings: ds-core ds-settings keycap-protocol sill-launcher sill-model"
-  "sill-ipc: ds-core sill-launcher sill-model"
-  "sill-services: almanac-core almanac-dbus anyview-core anyview-platform casement-protocols companion-model companion-wire cua-action cua-bus cua-dbus desktop-client docket-client docket-core docket-dbus docket-manifest docket-permissions-core docket-provider docket-vocab docket-wire ds-core ds-helpers ds-settings inferd-client keycap-protocol porter-client porter-client-dbus ferry-bus porter-core porter-dbus porter-ids porter-infer porter-sheet porter-tailnet porter-tailscale porter-wire prov sill-launcher sill-model voice-dbus voice-wire"
-  "sill-search: almanac-core anyview-core anyview-store companion-model companion-wire cua-action docket-core docket-manifest docket-permissions-core docket-vocab ds-core ds-settings prov sill-launcher sill-model sill-services"
-  "sill-ui-kit: companion-wire cua-action docket-core docket-manifest docket-permissions-core docket-vocab ds ds-behaviour ds-blitz ds-core ds-harness ds-settings keycap-client porter-capability porter-core prov shell-host sill-launcher sill-model sill-search sill-services sill-settings sill-shell-kit"
-  "sill-bar: ds ds-blitz ds-settings shell-host sill-launcher sill-model sill-services sill-settings sill-shell-kit sill-ui-kit"
-  "sill-dock: ds ds-blitz shell-host sill-launcher sill-model sill-services sill-settings sill-shell-kit sill-ui-kit"
-  "sill-launcher-ui: almanac-core anyview-core anyview-fs anyview-image anyview-peek anyview-platform companion-model companion-wire docket-core docket-permissions-core docket-vocab ds ds-behaviour ds-blitz prov shell-host sill-launcher sill-model sill-search sill-services sill-settings sill-shell-kit sill-ui-kit"
-  "sill-notify-ui: ds ds-blitz ds-settings shell-host sill-model sill-services sill-settings sill-shell-kit sill-ui-kit"
-  "sill-overlays: ds ds-behaviour ds-settings ds-shell porter-capability porter-core porter-ids porter-sheet shell-host sill-launcher sill-model sill-services sill-settings sill-shell-kit sill-ui-kit"
-  "sill: ds ds-blitz ds-core ds-extensions ds-lint ds-settings prov shell-host shell-verbs sill-bar sill-dock sill-ipc sill-launcher sill-launcher-ui sill-model sill-notify-ui sill-overlays sill-search sill-services sill-settings sill-shell-kit sill-ui-kit"
+  "shell-launcher: memory-core action-core action-vocab ui-core prov"
+  "shell-testkit:"
+  "shell-kit: ds ui-core ui-shell"
+  "shell-model: memory-core desktop-protocols companion-model companion-wire computer-use-action computer-use-bus action-core action-manifest permission-core action-vocab action-wire ui-core ui-helpers key-remap-proto account-capability account-core account-ids inference-core account-sheet prov shell-launcher agent-voice-wire"
+  "shell-settings: ui-core ui-settings key-remap-proto shell-launcher shell-model"
+  "shell-ipc: ui-core shell-launcher shell-model"
+  "shell-services: memory-core memory-dbus anyview-core anyview-platform desktop-protocols companion-model companion-wire computer-use-action computer-use-bus computer-use-dbus desktop-client action-client action-core action-dbus action-manifest permission-core action-provider action-vocab action-wire ui-core ui-helpers ui-settings inference-client key-remap-proto account-client account-client-dbus sync-bus account-core account-dbus account-ids inference-core account-sheet inference-tailnet account-tailscale account-wire prov shell-launcher shell-model agent-voice-dbus agent-voice-wire"
+  "shell-search: memory-core anyview-core anyview-store companion-model companion-wire computer-use-action action-core action-manifest permission-core action-vocab ui-core ui-settings prov shell-launcher shell-model shell-services"
+  "shell-ui-kit: companion-wire computer-use-action action-core action-manifest permission-core action-vocab ds ui-behaviour ui-blitz ui-core ui-harness ui-settings key-remap-client account-capability account-core prov layer-shell-host shell-launcher shell-model shell-search shell-services shell-settings shell-kit"
+  "shell-bar: ds ui-blitz ui-settings layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-dock: ds ui-blitz layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-launcher-ui: memory-core anyview-core anyview-fs anyview-image anyview-peek anyview-platform companion-model companion-wire action-core permission-core action-vocab ds ui-behaviour ui-blitz prov layer-shell-host shell-launcher shell-model shell-search shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-notify-ui: ds ui-blitz ui-settings layer-shell-host shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-overlays: ds ui-behaviour ui-settings ui-shell account-capability account-core account-ids account-sheet layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "sill: ds ui-blitz ui-core ui-extensions ui-lint ui-settings prov layer-shell-host shell-verbs shell-bar shell-dock shell-ipc shell-launcher shell-launcher-ui shell-model shell-notify-ui shell-overlays shell-search shell-services shell-settings shell-kit shell-ui-kit"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"

@@ -2,8 +2,8 @@
 //! page resumes there. Only the newest stop of each session is kept: paging goes forward, and a
 //! read from an older position just counts from the first row.
 
-use memory_core::Cursor;
 use agent_session::Seq;
+use memory_core::Cursor;
 use provenance::SessionId;
 use std::collections::BTreeMap;
 use std::sync::Mutex;

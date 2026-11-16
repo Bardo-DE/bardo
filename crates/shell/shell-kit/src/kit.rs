@@ -7,10 +7,10 @@ use crate::tokens::launcher::LauncherToken;
 use crate::tokens::notifications::NotificationToken;
 use crate::tokens::osd::OsdToken;
 use crate::tokens::widgets::WidgetGrid;
+use std::sync::LazyLock;
 use ui_components::style::css::document::placed;
 use ui_components::style::kit::{Kit, KitRank, Kits, Vocabulary};
 use ui_components::style::tokens::set::{Place, TokenSet};
-use std::sync::LazyLock;
 
 /// The shell's contribution to the stylesheet and the linter.
 pub static KIT: Kit = Kit {

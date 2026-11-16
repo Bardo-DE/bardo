@@ -1,10 +1,10 @@
 //! The embedder card and error contracts: prompt prefixes, batching, vector space, retry class.
 
 use memory_core::Integrity;
+use memory_recall::*;
 use memory_store::{
     EmbedRole, EmbedderCard, MaxBatch, Metric, PromptPrefixes, SpaceCheck, Urgency, Vector,
 };
-use memory_recall::*;
 
 fn card(model: &str) -> EmbedderCard {
     EmbedderCard {

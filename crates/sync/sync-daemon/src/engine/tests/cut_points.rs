@@ -6,9 +6,9 @@
 use super::rig::*;
 use crate::engine::SyncError;
 use crate::journal::JournalError;
-use sync_core::ItemState;
 use account_capability::StorageCap;
 use std::collections::BTreeMap;
+use sync_core::ItemState;
 
 type Files = BTreeMap<String, Vec<u8>>;
 

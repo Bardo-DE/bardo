@@ -3,7 +3,7 @@
 //! [`Pinned`] holds a process by pidfd; [`Prober`] reads what `/proc` says of it through a
 //! [`ProcFs`] (the real one, or a fixture tree under feature `fake`) and [`caller_identity_core::judge`] decides.
 //! The crate is synchronous: a probe is a few small reads, and an async caller wraps it in
-//! its own blocking pool (`peephole-bus` offers the seam). It contains no `unsafe`; the pidfd
+//! its own blocking pool (`caller-identity-dbus` offers the seam). It contains no `unsafe`; the pidfd
 //! comes from rustix.
 
 #[cfg(feature = "dev-rows")]
@@ -22,13 +22,13 @@ pub mod fake;
 #[cfg(feature = "fake")]
 mod fixture;
 
+pub use caller_identity_core;
 #[cfg(feature = "dev-rows")]
 pub use devfile::{NodeInfo, NodeKind};
 pub use error::{LoadError, PinError, ProbeError};
 #[cfg(feature = "fake")]
 pub use fixture::{FixtureImage, FixtureProc, FixtureProcess};
 pub use owners::OwnerView;
-pub use caller_identity_core;
 pub use pin::{Alive, Pinned};
 pub use probe::{PROBE_MAX_READS, PROBE_READ_CAP, Prober};
 pub use procfs::{Follow, ProcFs, RealProc, trust_of_mode};

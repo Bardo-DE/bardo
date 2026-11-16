@@ -1,5 +1,5 @@
 //! The Bluetooth pane: following BlueZ, looking for devices and hearing pairing questions while
-//! the pane is followed, and asking BlueZ. The steps are `detent-model`'s `bluetooth_step`.
+//! the pane is followed, and asking BlueZ. The steps are `settings-app-model`'s `bluetooth_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

@@ -1,9 +1,11 @@
 //! The context menu on a row or on the folder's background, drawn with quire's `Menu`.
 
 use dioxus::prelude::*;
-use ui_components::host::measure::Anchor;
-use ui_components::prelude::{Check, IconSize, Menu, MenuImage, MenuItem, MenuPlacement, Point, Px};
 use files_model::KeptMark;
+use ui_components::host::measure::Anchor;
+use ui_components::prelude::{
+    Check, IconSize, Menu, MenuImage, MenuItem, MenuPlacement, Point, Px,
+};
 
 use crate::menu::{Command, OTHER_APP, Over, Pick, app_lines, enabled, groups_for};
 use crate::state::Browse;

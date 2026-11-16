@@ -2,10 +2,10 @@
 
 use crate::support;
 
-use ui_settings::{FileName, Format, Loaded, SettingsDoc};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use support::Scratch;
+use ui_settings::{FileName, Format, Loaded, SettingsDoc};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(default)]

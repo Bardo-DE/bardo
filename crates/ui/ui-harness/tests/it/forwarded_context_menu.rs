@@ -4,11 +4,11 @@
 //! its text. These are anyview's right-click cases, without the app.
 
 use dioxus::prelude::*;
+use std::time::Duration;
+use ui_blitz::TextureLayer;
 use ui_components::base::press::PointerButton;
 use ui_components::prelude::{Point, Px};
-use ui_blitz::TextureLayer;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

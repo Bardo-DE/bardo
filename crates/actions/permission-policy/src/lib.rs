@@ -5,7 +5,7 @@
 //! [`Ruling`](permission_core::Ruling)s. Pure: no I/O, no runtime; the caller reads the files and
 //! passes their text as [`PolicySource`]s.
 //!
-//! The rulings and the reasons to ask live in `docket-core` because the router's refusals and
+//! The rulings and the reasons to ask live in `action-core` because the router's refusals and
 //! the audit name them; the reviewer's `tighten` consumes a `Ruling` and may not depend on this
 //! crate.
 

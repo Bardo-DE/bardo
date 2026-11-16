@@ -1,6 +1,7 @@
 //! The apps, over D-Bus: `IntentProvider1` on each app's own bus name. The router calls it only
 //! after checking that the name's owner is the person's own process.
 
+use account_core::AppName;
 use action_core::LinkFault;
 use action_core::{
     AppRefusal, ContextSnapshot, FailText, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
@@ -10,7 +11,6 @@ use action_manifest::Latency;
 use action_procroot::own_uid;
 use action_router::{AppFault, AppLink};
 use action_vocab::{EntityRef, UndoToken};
-use account_core::AppName;
 use provenance::{Actor, EntityId};
 use serde::Serialize;
 use serde::de::DeserializeOwned;

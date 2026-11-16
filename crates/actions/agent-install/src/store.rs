@@ -2,11 +2,11 @@
 //! what is installed listed. The paths are `agent_registry::dirs::AgentsDir`'s; the values and their
 //! text are `agent_registry`'s.
 
+use action_store::{read_optional, write_atomic};
 use agent_registry::dirs::AgentsDir;
 use agent_registry::offered::{Offered, OfferedFault};
 use agent_registry::record::{FILE, Record, RecordFault};
 use agent_registry::slug::Slug;
-use action_store::{read_optional, write_atomic};
 use std::path::Path;
 
 /// Writes the record into `dir`, the version's directory.

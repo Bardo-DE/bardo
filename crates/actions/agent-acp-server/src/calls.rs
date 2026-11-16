@@ -4,13 +4,13 @@
 //! call returned may hold handles and private Space data the editor was not granted, so only the
 //! app's own words (`said`, or why it refused) go out.
 
+use action_core::{AppRefusal, CallRefusal, StepEnd, StepLine};
 use agent_client_protocol::schema::v1::{
     Content, ContentBlock, ContentChunk, SessionUpdate, ToolCall, ToolCallContent, ToolCallId,
     ToolCallStatus, ToolCallUpdate, ToolCallUpdateFields, ToolKind,
 };
-use action_core::{AppRefusal, CallRefusal, StepEnd, StepLine};
-use permission_core::DenyCode;
 use agent_session::CallOpen;
+use permission_core::DenyCode;
 use provenance::Effect;
 
 /// How a call ended, for the editor.

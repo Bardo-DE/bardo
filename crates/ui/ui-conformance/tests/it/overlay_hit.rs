@@ -6,6 +6,7 @@
 //! on the row"; `ThreadRow`'s `onpointerback` says that only when it is so.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::app::thread_row::ThreadRow;
 use ui_components::components::app::thread_row_hooks::PartHooks;
@@ -17,7 +18,6 @@ use ui_components::stack::hover_hub::{HoverKey, HoverKind};
 use ui_components::style::tokens::layer::ZLayer;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

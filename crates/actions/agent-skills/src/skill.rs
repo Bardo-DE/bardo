@@ -1,9 +1,9 @@
 //! One skill: `skill.toml` and `SKILL.md` parsed and checked as pure functions of their text.
 
 use crate::fault::SkillFault;
+use account_core::AppName;
 use action_core::{SkillCard, SkillId, SkillText};
 use action_vocab::ActionRef;
-use account_core::AppName;
 use provenance::{ActionName, EntityKind, Source};
 use serde::Deserialize;
 

@@ -7,13 +7,13 @@
 //! and Escape closes it.
 
 use dioxus::prelude::*;
+use std::rc::Rc;
+use std::time::Duration;
 use ui_components::base::press::PointerButton;
 use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_components::window::vocab::{TileError, WindowTile, Zoom};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, PointerAction, PointerInput, Viewport};
-use std::rc::Rc;
-use std::time::Duration;
 
 pub(crate) const VIEW: Viewport = Viewport {
     width: 480,

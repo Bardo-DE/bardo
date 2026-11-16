@@ -2,8 +2,8 @@
 //! sits next to this repository (the lane worktree), a code palmrest has and this table lacks fails
 //! here; without it (CI of this repository alone) the comparison is skipped and says so.
 
-use std::path::PathBuf;
 use input_broker_wire::keytable::{KEY_TABLE, class_of};
+use std::path::PathBuf;
 
 /// Every `("name", code)` pair between `pub const NAMES` and the closing `];`.
 fn palmrest_names(source: &str) -> Vec<(String, u16)> {
@@ -38,8 +38,8 @@ fn the_table_has_no_duplicate_names_or_codes() {
 
 #[test]
 fn every_key_palmrest_can_name_is_in_the_table() {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../mouse-gestures-daemon/src/keys.rs");
+    let path =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../mouse-gestures-daemon/src/keys.rs");
     let Ok(source) = std::fs::read_to_string(&path) else {
         eprintln!("skipped: {} is not there", path.display());
         return;

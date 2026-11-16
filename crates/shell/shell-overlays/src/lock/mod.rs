@@ -1,5 +1,5 @@
 //! sill's own lock screen (design/20 §1.9): one
-//! `ext-session-lock-v1` surface per output, which shell-host creates when the daemon locks
+//! `ext-session-lock-v1` surface per output, which layer-shell-host creates when the daemon locks
 //! (`crates/sill/src/lock/`), never a layer surface. Each draws quire's `LockScreen` stage in
 //! `Ds { material: Window, extent: Viewport }`: the output's pre-blurred wallpaper crop
 //! ([`backdrop::backdrop_for`]), quire's `LockClock` ([`model::clock_lines`]) and, on the output
@@ -9,7 +9,7 @@
 //! in a signal. Escape (quire's) empties the field.
 //!
 //! When `Auth.phase` becomes `Accepted` every lock surface fades out (design/20 §1.9: `fade`
-//! `--t-move --e-exit`, quire's motion timer) and the prompt's calls shell-host's
+//! `--t-move --e-exit`, quire's motion timer) and the prompt's calls layer-shell-host's
 //! `use_lock().unlock()` when its fade settles; the daemon unlocks as a backstop if that never
 //! comes. A surface never decides a password itself.
 //!

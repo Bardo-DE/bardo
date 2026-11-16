@@ -1,4 +1,4 @@
-//! A content file's hash in the form its drive reports one (ferry-sync's `ContentHash`,
+//! A content file's hash in the form its drive reports one (sync-core's `ContentHash`,
 //! lowercase hex): MD5 for Google Drive, QuickXorHash for OneDrive, SHA-256 where a drive
 //! reports that. Other kinds are not computed here; a fetch of such a drive is checked by its
 //! version instead.

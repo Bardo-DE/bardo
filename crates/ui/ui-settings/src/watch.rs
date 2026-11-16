@@ -7,11 +7,11 @@ use crate::error::SettingsError;
 use crate::latest::{self, Receiver, Sender};
 use crate::lenient::{FileText, Loaded, Read, SETTINGS_CAP, file_text, read_within};
 use crate::store::Store;
-use ui_core::spawner::Spawner;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_core::spawner::Spawner;
 
 /// How long the watch waits for a burst of events to settle before re-reading.
 pub const DEBOUNCE: Duration = Duration::from_millis(30);

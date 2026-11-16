@@ -3,10 +3,10 @@
 use std::borrow::Cow;
 use std::path::Path;
 
-use ui_helpers::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLocale};
 use key_remap_proto::ProfileName;
 use shell_launcher::AppId;
 use shell_model::apps::{App, AppIcon, DbusActivation, DesktopActionEntry, Listing, Terminal};
+use ui_helpers::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLocale};
 
 use super::icon_roots::IconRoots;
 use super::icons::{IconTheme, resolve_icon};
@@ -184,12 +184,12 @@ mod tests {
     use super::super::icon_roots::IconRoots;
     use super::super::icons::IconTheme;
     use super::{is_application, is_listed, on_path, parse_entry};
-    use ui_helpers::{
-        AppKeys, ApplicationEntry, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId, EntryLocale,
-    };
     use key_remap_proto::ProfileName;
     use shell_model::apps::{App, Listing};
     use std::path::Path;
+    use ui_helpers::{
+        AppKeys, ApplicationEntry, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId, EntryLocale,
+    };
 
     fn file(text: &str) -> DesktopFile {
         DesktopFile::parse(text, DESKTOP_ENTRY_CAP).unwrap_or_else(|e| panic!("{e}"))

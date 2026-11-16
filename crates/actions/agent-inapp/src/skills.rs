@@ -1,19 +1,19 @@
 //! Skills in the app: instructions the app installs for its planner, from text files in the
-//! `docket-skills` format. The rule is the desktop's: a skill adds words to the planner's view and
+//! `agent-skills` format. The rule is the desktop's: a skill adds words to the planner's view and
 //! reorders what it may call, never a grant, a ruling or a wider policy. The only way skill text
 //! enters is a skill directory (`skill.toml` and `SKILL.md`) the app names or a [`Skill`] those
 //! files parsed into; nothing a model, a page or a message says can become one.
 
 use crate::agent::InAppAgent;
-use action_review::Reviewer;
 use action_core::MemoryLink;
 use action_core::{PolicyWriter, Reader};
 use action_host::ConfirmSheet;
 use action_provider::{ContextSource, IntentProvider};
+use action_review::Reviewer;
 use action_router::GrantStore;
+use action_vocab::Clock;
 use agent_skills::{Rejected, Roots, Skill, discover};
 use agent_skills_disk::DiskFolder;
-use action_vocab::Clock;
 use inference_client::Transport as ModelTransport;
 use std::path::Path;
 

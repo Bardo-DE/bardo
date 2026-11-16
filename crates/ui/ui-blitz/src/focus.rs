@@ -15,10 +15,10 @@ use crate::blitz_host::FindDocument;
 use crate::node_ref::{Busy, DocRef, FoundNode, NodeRef};
 use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::host::caret::{Caret, FieldSelection, InitialCaret, caret_at, stem_end};
 use ui_components::host::found::Found;
 use ui_components::prelude::*;
-use std::rc::Rc;
 
 /// The selector lookup over the document `source` reaches, once it has one.
 pub fn finder(source: impl Fn() -> Option<DocRef> + 'static) -> FindDocument {

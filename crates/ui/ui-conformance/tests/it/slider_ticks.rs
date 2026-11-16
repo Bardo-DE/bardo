@@ -3,9 +3,9 @@
 //! marks are drawn where the value would stop.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 static VALUE: GlobalSignal<Fraction> = Signal::global(|| Fraction(0));
 

@@ -22,9 +22,7 @@ pub fn binaries() -> Binaries {
 }
 
 /// Flow (a), the person allows: search, contact search, forward, the closing words.
-pub const FLOW_A: Cassette = Cassette(include_str!(
-    "../../../dev/accept/cassettes/flow-a.jsonl"
-));
+pub const FLOW_A: Cassette = Cassette(include_str!("../../../dev/accept/cassettes/flow-a.jsonl"));
 /// Flow (a) by the handles the planner is shown for what the searches found: the cassette's
 /// forward entry needs `#1 mail.thread, #2 mail.thread` and `#3 mail.contact` in the request.
 pub const FLOW_A_HANDLES: Cassette = Cassette(include_str!(
@@ -50,9 +48,7 @@ pub const FIRST_USE: Cassette = Cassette(include_str!(
 ));
 /// Flow (c): the injected thread, the reader, the send. Every planner entry refuses to answer a
 /// view that shows the body.
-pub const FLOW_C: Cassette = Cassette(include_str!(
-    "../../../dev/accept/cassettes/flow-c.jsonl"
-));
+pub const FLOW_C: Cassette = Cassette(include_str!("../../../dev/accept/cassettes/flow-c.jsonl"));
 
 /// Flow (c) where the planner replies to the thread's sender: it asks for the sender with
 /// `quire_related` (the sender is the relation `from` of the thread), and sends to that handle.

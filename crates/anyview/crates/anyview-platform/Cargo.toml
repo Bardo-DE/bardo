@@ -28,7 +28,7 @@ anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}
 plugin-host = {default-features = false, features = ["host"], path = "../../../plugin/plugin-host"}
 dirs = {version = "6"}
 ui-core = {path = "../../../ui/ui-core"}
-# The folder scan of Extensions and the file that turns some off; ds-settings without its D-Bus client reads that file.
+# The folder scan of Extensions and the file that turns some off; ui-settings without its D-Bus client reads that file.
 ui-extensions = {path = "../../../ui/ui-extensions"}
 ui-settings = {default-features = false, path = "../../../ui/ui-settings"}
 service-locator = {path = "../../../platform/service-locator"}
@@ -62,7 +62,7 @@ toml = {version = "1", optional = true}
 anyview-platform = { path = ".", default-features = false, features = ["testing"] }
 tempfile = {version = "3"}
 
-# The agent tests stand in for intentd with a fixture /proc, which docket-dbus reads only with
+# The agent tests stand in for intentd with a fixture /proc, which action-dbus reads only with
 # `fixture-callers`: a test build's feature, never a shipped one (check-boundary.sh).
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 action-dbus = {features = ["fixture-callers"], path = "../../../actions/action-dbus"}

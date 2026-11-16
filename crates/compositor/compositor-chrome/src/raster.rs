@@ -10,12 +10,12 @@ use crate::ink::{Ink, ink};
 use crate::key::TitleKey;
 use crate::place::{Margins, left_edge, longest_fit, room};
 use compositor_core::raster::{RasterId, RasterImage};
-use ui_style::tokens::chrome::{TitleFont, title_font};
 use parley::{
     FontContext, FontFamily, FontWeight, Layout, LayoutContext, PositionedLayoutItem, StyleProperty,
 };
 use std::fmt;
 use std::sync::Arc;
+use ui_style::tokens::chrome::{TitleFont, title_font};
 use vello_cpu::color::{AlphaColor, Srgb};
 use vello_cpu::{Level, Pixmap, RenderContext, RenderSettings, Resources};
 

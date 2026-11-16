@@ -1,28 +1,30 @@
 //! What a turn tells the model besides the frame: how the last actions ended, the notes that
 //! reached the run, and what is never said.
 
+use account_core::{AppName, DataClass};
+use action_core::{CallRefusal, InboundLine, InboundPart, Reveal};
 use computer_use_a11y_tree::TreeSource;
 use computer_use_action::WindowTrust;
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
     WindowSpace,
 };
-use computer_use_bus::{ActionOutcome, ActionResult, LocalRefusal, Refusal, TargetedAction, WindowRef};
+use computer_use_bus::{
+    ActionOutcome, ActionResult, LocalRefusal, Refusal, TargetedAction, WindowRef,
+};
+use computer_use_capture::{Frame, FrameSeq, MaskReason, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{MaskWhere, Stamp};
 use computer_use_run::{
     ContextObs, CursorObs, Focus, Observation, TreeAbsence, TreeObs, Visibility, WindowInfo,
     note_of, turn, turn_after,
 };
-use action_core::{CallRefusal, InboundLine, InboundPart, Reveal};
-use permission_core::DenyCode;
-use computer_use_capture::{Frame, FrameSeq, MaskReason, MaskReport, PixelBuf, WholeMask};
-use account_core::{AppName, DataClass};
+use computer_use_seat_input::SeatError;
 use inference_core::{MaskedRegions, NoteFrom, PrevResult, StepIndex, StepNote};
+use permission_core::DenyCode;
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, MessageId, MessageKind, Source,
     SpaceId, ThreadId,
 };
-use computer_use_seat_input::SeatError;
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

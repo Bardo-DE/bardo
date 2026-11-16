@@ -6,10 +6,10 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::{Point, Px};
-use ui_harness::Input;
 use shell_dock::Dock;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
+use ui_components::prelude::{Point, Px};
+use ui_harness::Input;
 
 /// What a rect is: its left, top, right and bottom edges.
 #[derive(Debug, Clone, Copy, PartialEq)]

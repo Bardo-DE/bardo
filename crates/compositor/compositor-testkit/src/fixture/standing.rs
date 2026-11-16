@@ -7,12 +7,12 @@
 //! as any standing it names ([`Fixture::connect_standing`]).
 
 use super::{ClientId, Fixture};
+use account_core::PeerIdentity;
 use compositor_app::clients::{self, Vetting};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{ClientStanding, ProgramPath, ServiceRole};
 use compositor_wayland::consent::{ImageWatch, Unwatched};
 use compositor_wayland::security_context::Maker;
-use account_core::PeerIdentity;
 use smithay::reexports::wayland_server::Client;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;

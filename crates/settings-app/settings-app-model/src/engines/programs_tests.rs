@@ -2,10 +2,10 @@
 
 use super::programs::{ProgramRow, ProgramsEffect, ProgramsInput, program_rows, programs_step};
 use crate::{Described, Live};
+use std::collections::BTreeMap;
 use ui_settings::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
 };
-use std::collections::BTreeMap;
 
 fn spec(path: &str, kind: KeyKind, exposure: Exposure, section: &str) -> KeySpec {
     KeySpec {

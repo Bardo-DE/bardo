@@ -3,7 +3,9 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::components::chrome::capsule::model::{CapsuleSlot, LevelSlot, ScrubEvent, ScrubSlot};
+use ui_components::components::chrome::capsule::model::{
+    CapsuleSlot, LevelSlot, ScrubEvent, ScrubSlot,
+};
 use ui_components::components::chrome::capsule::priority::essentials;
 use ui_components::components::chrome::capsule::view::Capsule;
 use ui_components::components::controls::scrubber_model::BufferedRange;
@@ -20,15 +22,17 @@ pub fn CapsuleSection() -> Element {
     let mut level = use_signal(|| Fraction(700));
     let mut playing = use_signal(|| Check::Off);
     let slots = vec![
-        CapsuleSlot::Item(ui_components::components::chrome::toolbar::model::ToolbarItem::new(
-            0,
-            "Play",
-            if playing() == Check::On {
-                Icon::Pause
-            } else {
-                Icon::Play
-            },
-        ))
+        CapsuleSlot::Item(
+            ui_components::components::chrome::toolbar::model::ToolbarItem::new(
+                0,
+                "Play",
+                if playing() == Check::On {
+                    Icon::Pause
+                } else {
+                    Icon::Play
+                },
+            ),
+        )
         .essential(),
         CapsuleSlot::Readout(clock(position())).droppable(1),
         CapsuleSlot::Scrub(ScrubSlot {

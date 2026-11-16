@@ -5,9 +5,9 @@
 
 use std::time::Duration;
 
+use account_core::{AppName, DataClass};
 use action_core::Invocation;
 use action_vocab::Value;
-use account_core::{AppName, DataClass};
 use provenance::{Label, Labelled, Source};
 use shell_model::screenshots::{ShotId, Shots};
 use tokio::sync::watch;

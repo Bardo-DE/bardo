@@ -2,12 +2,12 @@
 //! `Ignore` (at the true corner of the output, over the bar's and the dock's reserve), no
 //! keyboard, no blur, input the whole square.
 
-use ui_components::base::word::Word;
-use ui_behaviour::hot_corner::CornerParams;
 use layer_shell_host::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget, RegionSpec,
 };
+use ui_behaviour::hot_corner::CornerParams;
+use ui_components::base::word::Word;
 
 use shell_ui_kit::links::Corner;
 use shell_ui_kit::surface::namespace;

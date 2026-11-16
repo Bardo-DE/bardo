@@ -6,11 +6,11 @@
 //! change.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
 use ui_harness::{Backdrop, Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

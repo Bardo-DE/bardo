@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/ux.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "ux": the companion's user-facing surfaces (quire components, sill surfaces)
 
-Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in quire `ds`/`ds-core`/`ds-settings`, sill `sill-launcher`/`sill-launcher-ui`/`sill-ipc`/`sill-settings`/`sill-bar`, and detent.
+Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in quire `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and detent.
 
 Other area names below ("actions", "context", "agent", "cua", "memory", "models", "security", "compositor") are my best guess at the sibling spec files. Map them to the real names when you merge.
 
@@ -33,37 +33,37 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 
 ## 2. Repos and crates
 
-Dependency direction (unchanged rules): `ds-core < ds-style < ds-motion < ds < ds-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `keycap-protocol` today. quire never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
+Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `key-remap-proto` today. quire never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
 
 | Piece | Lives in | New / existing | Notes |
 |---|---|---|---|
-| `CompanionPresence` (5 states) | quire `ds-core::vocab` | new enum | the one home; sill-model and ds both name it |
+| `CompanionPresence` (5 states) | quire `ui-core::vocab` | new enum | the one home; shell-model and ds both name it |
 | `CompanionOrb`, `ContextChips`, prompt mode + `CompanionPort` seam, answer cards, `PlanList`, `ReplaceBar`, `CompactForm`, `RunRow`, `ActivityStrip`, `MemoryTimeline`, `ServedByChip` | quire `ds::components::companion/` | new group, layer order `… < editor < chrome < companion < app` | generic: both apps and the launcher draw them |
 | `TextField` / `CommandPalette` prompt props | quire `ds::components::fields`, `menus::palette` | existing, gains props | `mode: FieldMode` and `chips` only; default `Input` = today |
 | `EditSurface` proposal marks | quire `ds::editor` | existing, gains `proposals` prop | generic strike/insert spans (like `spell::marks`) |
-| `ConfirmCard` (content of the trusted surface), `GlowState`/`GlowSpec`/`glow_spec` | quire `ds-shell::{confirm, tokens::glow}` | new | shell-only |
-| Orb period tokens `OrbListen`, `OrbWork`, `OrbAct` | quire `ds-style::tokens::duration` | new tokens | lint `RawDuration`. Needs design/30 §1.2 rows (user) |
-| `Page::Intelligence` | quire `ds-settings::schema::key::Page` | new variant | then detent `page.rs` row + icon |
-| Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | sill `sill-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
-| Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | sill `sill-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
-| Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | sill `sill-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
-| `sill companion summon\|tap\|dismiss\|stop-all` | sill `sill-ipc::show` (`ShowRequest::Companion`), `sill/src/cli` | new request | |
-| Providers `CompanionProvider`, `RunsProvider`, `MemoryProvider` | sill `sill-search::providers/{companion,runs,memory}/` | new | rows from the companion service state |
-| Wire to props conversions (`view_of_*`) | sill `sill-ui-kit::companion/` | new module | the only place wire types meet ds props |
-| Launcher companion mode | sill `sill-launcher-ui::launcher/{mode.rs, companion_keys.rs, companion_pane.rs}` | new files; `keys.rs`/`session.rs`/`panel.rs` gain a mode | |
-| Bar item + control-centre module | sill `sill-bar::control_center::modules::companion`, `sill-settings::control_center::ControlCenterModule::Companion` | new variant + module | `InMenuBar::Show` gives the bar orb |
-| Confirmation surface, phase A (no fork) | sill `sill-overlays::confirm/` | new surface | not unforgeable; see §7 Q7 |
-| Glow, phase A (no fork) | sill `sill-overlays::glow/` | new input-transparent layer surface | phase B: the compositor draws it |
-| `companion` settings domain | sill `sill-settings::companion.rs` | new domain | `Page::Intelligence` |
+| `ConfirmCard` (content of the trusted surface), `GlowState`/`GlowSpec`/`glow_spec` | quire `ui-shell::{confirm, tokens::glow}` | new | shell-only |
+| Orb period tokens `OrbListen`, `OrbWork`, `OrbAct` | quire `ui-style::tokens::duration` | new tokens | lint `RawDuration`. Needs design/30 §1.2 rows (user) |
+| `Page::Intelligence` | quire `ui-settings::schema::key::Page` | new variant | then detent `page.rs` row + icon |
+| Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | sill `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
+| Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | sill `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
+| Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | sill `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
+| `sill companion summon\|tap\|dismiss\|stop-all` | sill `shell-ipc::show` (`ShowRequest::Companion`), `sill/src/cli` | new request | |
+| Providers `CompanionProvider`, `RunsProvider`, `MemoryProvider` | sill `shell-search::providers/{companion,runs,memory}/` | new | rows from the companion service state |
+| Wire to props conversions (`view_of_*`) | sill `shell-ui-kit::companion/` | new module | the only place wire types meet ds props |
+| Launcher companion mode | sill `shell-launcher-ui::launcher/{mode.rs, companion_keys.rs, companion_pane.rs}` | new files; `keys.rs`/`session.rs`/`panel.rs` gain a mode | |
+| Bar item + control-centre module | sill `shell-bar::control_center::modules::companion`, `shell-settings::control_center::ControlCenterModule::Companion` | new variant + module | `InMenuBar::Show` gives the bar orb |
+| Confirmation surface, phase A (no fork) | sill `shell-overlays::confirm/` | new surface | not unforgeable; see §7 Q7 |
+| Glow, phase A (no fork) | sill `shell-overlays::glow/` | new input-transparent layer surface | phase B: the compositor draws it |
+| `companion` settings domain | sill `shell-settings::companion.rs` | new domain | `Page::Intelligence` |
 | compositor binding + Toshy snippet | sill `dist/casement/.../custom`, `dist/toshy/companion_tap.py` | new rows/files | |
 
-Adopted crates: nothing new. Existing pins only: dioxus, serde, `ds-core::word::Word` derive, zbus (sill-services only).
+Adopted crates: nothing new. Existing pins only: dioxus, serde, `ui-core::word::Word` derive, zbus (shell-services only).
 
 ---
 
 ## 3. Frozen interfaces
 
-### 3.1 quire `ds-core::vocab` — freeze now
+### 3.1 quire `ui-core::vocab` — freeze now
 
 ```rust
 /// The companion's one presence (COMPANION 8): a look of the orb and the window glow, never a panel.
@@ -329,7 +329,7 @@ pub enum ModelState { Ready, Loading, NeedsDownload { size: String }, Unavailabl
 #[component] pub fn ServedByChip(current: ServedByView, options: Vec<ModelOption>, on_choose: EventHandler<String>) -> Element;
 ```
 
-### 3.6 quire `ds-shell` — GlowState freeze now, GlowSpec values later
+### 3.6 quire `ui-shell` — GlowState freeze now, GlowSpec values later
 
 ```rust
 pub enum GlowState { None, Working, Acting { spot: Option<GlowSpot> }, Waiting }
@@ -360,7 +360,7 @@ pub enum ConfirmAnswer { Allow { always: AlwaysChoice }, Deny }
 
 ### 3.7 sill — freeze now
 
-**`sill-launcher`** (pure; extends the pinned wire test):
+**`shell-launcher`** (pure; extends the pinned wire test):
 
 ```rust
 // ids.rs: ProviderKind gains, at the end of Tab order (ALL becomes [_; 12]):
@@ -392,13 +392,13 @@ pub enum CompanionAct {
     Mode(LauncherMode),
 }
 pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, Replay, UndoAll }
-pub enum MemoryVerb { Forget, Keep, Discard, OpenSource, Export }   // launcher's verb, sill-ui-kit maps ds's
+pub enum MemoryVerb { Forget, Keep, Discard, OpenSource, Export }   // launcher's verb, shell-ui-kit maps ds's
 pub enum LauncherMode { Search, Companion }
 ```
 
 `Activation::Intent { action, args }` belongs to "actions". It is listed here only because launcher coupling needs it.
 
-**`sill-ipc::show`**:
+**`shell-ipc::show`**:
 
 ```rust
 ShowRequest::Companion(CompanionRequest),
@@ -415,7 +415,7 @@ pub enum CompanionRequest {
 
 CLI: `sill companion tap|summon|dismiss|stop-all`.
 
-**`sill-model::companion`**:
+**`shell-model::companion`**:
 
 ```rust
 // tap.rs: the double-tap machine (also the compositor's reference implementation)
@@ -449,7 +449,7 @@ pub fn presence_of(state: &CompanionState) -> CompanionPresence; // priority Wai
 pub fn run_controls(state: RunStateWire, place: RunPlaceWire) -> Vec<RunControl>; // table, §4.6
 ```
 
-**`sill-settings::companion`** (data; full now):
+**`shell-settings::companion`** (data; full now):
 
 ```rust
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
@@ -486,13 +486,13 @@ Keys on `Page::Intelligence` owned by other areas (UX fixes only the section ord
 | actions / security | `ConfirmRequest` type (router-generated text, effect, taint, offer) and the compositor delivery | `ConfirmCard` |
 | compositor | `quire_agent_glow_v1.set(toplevel, GlowState, GlowSpec)`; `quire_trusted_surface_v1` (role, hardware-only input, no agent seat, no capture, compositor frame) | glow, confirm |
 
-Each area ships a **serde-only wire crate** (no zbus), the same way keycap ships `keycap-protocol`. `sill-model` depends on those crates.
+Each area ships a **serde-only wire crate** (no zbus), the same way keycap ships `key-remap-proto`. `shell-model` depends on those crates.
 
 ---
 
 ## 4. State machines
 
-### 4.1 Summon (sill-model `Summon`, effects in the daemon)
+### 4.1 Summon (shell-model `Summon`, effects in the daemon)
 
 | State | Event | Next | Out |
 |---|---|---|---|
@@ -530,7 +530,7 @@ The machine is idle in Rest and runs no timer there.
 | On(any) | SummonAgain | Off | Restore(kept), CancelAsk if Sent |
 | On | ChipRemoved(i) | chip removed (Fixed chips ignore it) | — |
 
-### 4.4 Launcher companion mode (sill-launcher-ui; extends `LauncherState`)
+### 4.4 Launcher companion mode (shell-launcher-ui; extends `LauncherState`)
 
 `LauncherState` gains `mode: Mode`, where `Mode = Search | Companion(Pane)` and `Pane = Composing | Thinking(AnswerKey) | Showing(AnswerKey) | Form(AnswerKey)`.
 
@@ -604,7 +604,7 @@ Glow per window: `None` unless leased. A leased window glows Acting while a step
 ## 5. Tests that pin the shapes
 
 quire:
-- `ds-core`: `companion_presence_words_round_trip` (Word ALL / slug / serde).
+- `ui-core`: `companion_presence_words_round_trip` (Word ALL / slug / serde).
 - `ds/companion/orb`:
   - `orb_look_table`: every presence × motion level;
   - `idle_and_waiting_never_move`;
@@ -620,37 +620,37 @@ quire:
 - `plan`: `plan_step_table`; `excluded_steps_not_run`; `stop_keeps_done_steps`; `undo_all_only_after_run`.
 - `replace`: `replace_step_table`; editor conformance `proposal_marks_do_not_enter_text`.
 - `run_row`, `activity`, `memory`: SSR goldens; `forget_preview_names_counts`.
-- `ds-shell`:
+- `ui-shell`:
   - `glow_spec_idle_and_waiting_have_no_period`;
   - `confirm_card_title_is_given_text` (no model text slot);
   - `arm_state_disables_buttons`.
-- `ds-settings`: `page_intelligence_label_and_order`.
+- `ui-settings`: `page_intelligence_label_and_order`.
 
 sill:
-- `sill-launcher`: `every_activation_has_a_pinned_wire_form_and_round_trips` (extended with all `CompanionAct` forms); `provider_kind_all_order` (12); preview_for over the new subjects.
-- `sill-ipc`: request round-trip for `CompanionRequest`.
-- `sill-model::companion`:
+- `shell-launcher`: `every_activation_has_a_pinned_wire_form_and_round_trips` (extended with all `CompanionAct` forms); `provider_kind_all_order` (12); preview_for over the new subjects.
+- `shell-ipc`: request round-trip for `CompanionRequest`.
+- `shell-model::companion`:
   - `tap_machine_table` (inside window, outside window, triple tap = one summon plus an armed state);
   - `tap_rest_has_no_wake`;
   - `summon_table` (every §4.1 row);
   - `presence_priority_table`;
   - `run_controls_table` (§4.6);
   - `wire_to_facts_total` (exhaustive match over each area's wire enums).
-- `sill-settings`: `companion_schema_round_trip`, `every_key_in_catalogue_has_a_spec` with the new design/22 §3.x rows; `toggle_words` (summon, notify, touch become switches).
-- `sill-ui-kit::companion`: `view_of_*_total`.
-- `sill-launcher-ui`:
+- `shell-settings`: `companion_schema_round_trip`, `every_key_in_catalogue_has_a_spec` with the new design/22 §3.x rows; `toggle_words` (summon, notify, touch become switches).
+- `shell-ui-kit::companion`: `view_of_*_total`.
+- `shell-launcher-ui`:
   - `companion_keys_table` (§4.4);
   - `escape_returns_to_search_with_query`;
   - `double_tap_in_open_launcher_switches_mode_in_place` (same serial, same rows, same selection);
   - surface test `answer_card_in_aside`.
-- `sill-bar`: `companion_item_idle_zero_frames` (shell-host stats: no frames over 2 s of virtual time in Idle and Waiting).
+- `shell-bar`: `companion_item_idle_zero_frames` (layer-shell-host stats: no frames over 2 s of virtual time in Idle and Waiting).
 - `sill` daemon (PrivateBus, scratch XDG): `summon_falls_back_to_launcher_after_app_wait`; `summon_routes_to_serving_app`; `stop_all_pauses_space`.
 
 Fakes and fixtures:
 - `FakeCompanionPort` (ds `testing` feature): scripted answers.
-- `FakeCompanionBackend` (sill-services env seam): presence, answers, runs, activity, memory.
+- `FakeCompanionBackend` (shell-services env seam): presence, answers, runs, activity, memory.
 - One fixture JSON per `AnswerView` variant, run, memory day and diff, shared by goldens and gallery pages.
-- A stand-in app in `sill-testkit/examples/companion_app.rs` that owns a bus name and answers `Summon`.
+- A stand-in app in `shell-testkit/examples/companion_app.rs` that owns a bus name and answers `Summon`.
 - detent fixture regenerated with `scripts/gen-fixtures.sh`.
 
 ---
@@ -660,47 +660,47 @@ Fakes and fixtures:
 **Freeze wave** (parallel, one agent per repo; bodies `todo!()`, shape tests pass):
 
 - **F1 quire.** Owns:
-  - `ds-core/src/vocab.rs` (+ test);
+  - `ui-core/src/vocab.rs` (+ test);
   - `ds/src/components/companion/**` (all `model.rs` types complete; `step` functions `todo!()`; views render a placeholder root `div.ds-<name>` so the lint passes);
   - `ds/src/components/companion/mod.rs` and the `components/mod.rs` line;
   - `ds/src/assembly/sheets.rs` (empty sheets registered);
-  - `ds-shell/src/{confirm,tokens/glow.rs}`;
-  - `ds-settings/src/schema/key.rs` (`Page::Intelligence`).
+  - `ui-shell/src/{confirm,tokens/glow.rs}`;
+  - `ui-settings/src/schema/key.rs` (`Page::Intelligence`).
 
   It does **not** touch TextField or CommandPalette yet. Verify: the quire gate (`cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --all-features; ./scripts/check-boundary.sh; ./scripts/check-consumer.sh; cargo deny check licenses`).
 - **F2 sill** (after F1's `Page` and vocab land, since these are path deps). Owns:
-  - `sill-launcher/src/{ids,subject,preview,activation}.rs` and the new `companion.rs`;
-  - `sill-ipc/src/show.rs`;
-  - `sill-model/src/companion/**`;
-  - `sill-settings/src/{companion.rs, control_center.rs (variant), lib.rs}`;
-  - `sill-ui-kit/src/companion/**` (signatures);
-  - `sill-launcher-ui/src/launcher/{mode.rs, companion_keys.rs}` (types only);
+  - `shell-launcher/src/{ids,subject,preview,activation}.rs` and the new `companion.rs`;
+  - `shell-ipc/src/show.rs`;
+  - `shell-model/src/companion/**`;
+  - `shell-settings/src/{companion.rs, control_center.rs (variant), lib.rs}`;
+  - `shell-ui-kit/src/companion/**` (signatures);
+  - `shell-launcher-ui/src/launcher/{mode.rs, companion_keys.rs}` (types only);
   - `dist/casement/.../custom` (one row: unique chord to `sill companion tap`);
   - `dist/toshy/companion_tap.py`;
   - design/22 §3 rows (doc edit in quire, coordinated).
 
   Exhaustive matches that gain arms in the daemon return `Effect::Nothing` until W4. Verify: `cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --features sill/debug; ./scripts/check-boundary.sh; cargo deny check licenses`.
-- **F3 detent** (after F1). Owns `detent-model/src/page.rs`, `detent-ui/src/icons.rs`, fixtures. Verify: the detent gate plus `scripts/gen-fixtures.sh`.
+- **F3 detent** (after F1). Owns `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures. Verify: the detent gate plus `scripts/gen-fixtures.sh`.
 
 **Fill waves** (file ownership is disjoint):
 
 - **W1 quire, prompt and orb.**
   - companion `orb*`, `chips*`, `prompt/**`;
   - `fields/text_field.rs` + `menus/palette/command_palette.rs` (prop pass-through only);
-  - `ds-style/src/tokens/duration.rs` (OrbListen/OrbWork/OrbAct; values need user approval);
+  - `ui-style/src/tokens/duration.rs` (OrbListen/OrbWork/OrbAct; values need user approval);
   - conformance and gallery pages.
 - **W2 quire, cards.** companion `card/**`, `plan/**`, `replace/**`, `form/**`; `editor/` proposal marks (`editor/proposals.rs` plus one prop in `surface.rs`).
-- **W3 quire, rows.** companion `run_row/**`, `activity/**`, `memory/**`, `served_by.rs`; `ds-shell` confirm view, `glow_spec`.
+- **W3 quire, rows.** companion `run_row/**`, `activity/**`, `memory/**`, `served_by.rs`; `ui-shell` confirm view, `glow_spec`.
 - **W4 sill.** Can start on fakes after F2; needs W1 for the field.
-  - `sill-model/companion` step bodies;
-  - `sill-services/companion/**` (fake plus zbus backend behind the areas' wire crates);
-  - `sill-search/providers/{companion,runs,memory}/**`;
-  - `sill-launcher-ui/launcher/{companion_pane.rs, keys.rs, session.rs, panel.rs}`;
+  - `shell-model/companion` step bodies;
+  - `shell-services/companion/**` (fake plus zbus backend behind the areas' wire crates);
+  - `shell-search/providers/{companion,runs,memory}/**`;
+  - `shell-launcher-ui/launcher/{companion_pane.rs, keys.rs, session.rs, panel.rs}`;
   - `sill/src/{cli,ipc,daemon}` companion arms.
 - **W5 sill.**
-  - `sill-bar/control_center/modules/companion/**` and its bar item;
-  - `sill-overlays/{confirm,glow}/**` (phase A);
-  - `sill-notify-ui` (NeedsYou notification only).
+  - `shell-bar/control_center/modules/companion/**` and its bar item;
+  - `shell-overlays/{confirm,glow}/**` (phase A);
+  - `shell-notify-ui` (NeedsYou notification only).
 - **W6, integration** (after the agent, cua, memory and models areas fill their daemons): replace fakes; end-to-end in a nested compositor with a private bus and scratch HOME.
 
 ---
@@ -723,7 +723,7 @@ Fakes and fixtures:
 3. **R2 "one infinite loop".** design/30 allows the spinner and the Active orb. The compositor glow pulse while Working or Acting is a third loop, outside quire. Proposal: allow it only while a run is live, never in Idle or Waiting.
 4. **Only the user changes design/30.** New catalogue rows (CompanionOrb, ContextChips, AnswerCard family, PlanList, RunRow, ActivityStrip, MemoryTimeline, ConfirmCard) and the three orb duration tokens need user approval. Until then they are marked "proposed" in DESIGN.md.
 5. **agent-ux P6** (threads as windows) vs COMPANION ("no chat panel"). Promote opens the owning app's window. Threads stay deferred.
-6. **One home vs three layers.** A wire enum (daemon), a verb (sill-launcher) and a view (ds) each own a separate concept. The `*_total` tests keep them in step.
+6. **One home vs three layers.** A wire enum (daemon), a verb (shell-launcher) and a view (ds) each own a separate concept. The `*_total` tests keep them in step.
 
 **Questions only the user can answer**
 1. In prompt mode, does the query collapse into a chip with the field emptied (my proposal), or stay as editable text?

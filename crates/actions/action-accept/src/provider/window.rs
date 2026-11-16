@@ -2,11 +2,11 @@
 
 use super::Focus;
 use crate::provider::threads;
+use account_core::{AppName, DataClass};
 use action_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use action_provider::{ContextSource, SummonTarget};
 use action_vocab::EntityRef;
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
-use account_core::{AppName, DataClass};
 use provenance::{
     Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled, Source, SpaceId,
 };

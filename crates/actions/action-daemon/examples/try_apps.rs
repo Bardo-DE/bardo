@@ -1,13 +1,13 @@
 //! A mail app and sill's sheet, for trying `quire-do` by hand on a private bus
-//! (`scripts/try-quire-do.sh` runs it). The mail app is docket-fake's `FakeMail` behind the real
+//! (`scripts/try-quire-do.sh` runs it). The mail app is action-fake's `FakeMail` behind the real
 //! `action_provider::serve_on`; the sheet is `Confirm1` asking on this terminal. Nothing here is
 //! the person's real session: it serves whatever bus `DBUS_SESSION_BUS_ADDRESS` names.
 
 #[path = "../tests/it/support/apps.rs"]
 mod apps;
 
-use apps::{Answer, FakeSill, serve_mail};
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmOffer, ConfirmRequest, GrantScope};
+use apps::{Answer, FakeSill, serve_mail};
 use provenance::{ConfirmId, ConfirmReceipt, InputProof, UnixSeconds};
 use std::io::{BufRead, Write};
 

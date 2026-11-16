@@ -3,10 +3,10 @@
 use settings_app_files::{ConfigHome, FilesError, load, save};
 use settings_app_model::{ConfigFile, FileSpec};
 use settings_app_testkit::Scratch;
+use toml::Value;
 use ui_settings::schema::{
     Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
 };
-use toml::Value;
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 

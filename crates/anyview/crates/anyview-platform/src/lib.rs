@@ -62,7 +62,6 @@ pub mod portable;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 
-pub use ui_core::settings::{ExtensionId, SettingsTarget};
 pub use env::{BusRoute, Dirs, Env};
 pub use error::{IoOp, PlatformError};
 pub use instance::{Claim, Handoff, Instance, Primary, Request};
@@ -77,4 +76,5 @@ pub use share::{Share, ShareTarget};
 pub use spawn::{Argv, ProcessSpawn, RefuseSpawn, Spawn};
 pub use stacking::WindowStacking;
 pub use thumbnail::{ThumbPixels, ThumbSize, ThumbnailCache};
+pub use ui_core::settings::{ExtensionId, SettingsTarget};
 pub use uri::file_uri;

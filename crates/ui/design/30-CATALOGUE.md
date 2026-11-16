@@ -58,12 +58,12 @@ P1 needed by the shell or mailo migration now; P2 needed by the next apps; mail 
 | Reduced | macOS "Reduce motion" (with "Prefer cross-fade transitions" always on) | slides, scales and springs become a cross-fade at `--t-quick`; springs are critically damped with no overshoot; drags track 1:1; the spinner keeps turning (macOS does); delays (hover, long press) do not change |
 
 `Calm` and `Extra` are deleted; `--data-motion` has two values; the system preference resolves to
-Reduced (`ds-style::appearance`). A Look never sets the level.
+Reduced (`ui-style::appearance`). A Look never sets the level.
 
 ### 1.2 Timing tokens
 
 Durations (`DurationToken`); every duration in CSS and Rust comes from this table (lint
-`RawDuration`; Rust `Duration::from_millis` outside `ds-style::tokens` is a lint too).
+`RawDuration`; Rust `Duration::from_millis` outside `ui-style::tokens` is a lint too).
 
 | Token | ms | macOS reference | Used for | Change |
 | --- | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ Delays (`DelayToken`, never scaled by any level, each with a settings override o
 | Mail-owned, move to `app`: SendCountdown 5000, SendTick 1000 | | | moved |
 
 Deleted delays: Fly, HealStep, FlashHold, PendingGrace, PendingCap, SettleHold. Frame pacing is
-one `FRAME_TICK` 16 (`ds-core::time`); `glide::FRAME` and `Motor::FRAME` are deleted.
+one `FRAME_TICK` 16 (`ui-core::time`); `glide::FRAME` and `Motor::FRAME` are deleted.
 
 Easings (`EasingToken`, evaluated only by `CubicBezier::at`; sill's own `ease` is deleted):
 
@@ -124,10 +124,10 @@ crate-private (Blitz fires no `animationend`).
 
 | Primitive | Survivor | Contract | Reduced | Absorbs (deleted) |
 | --- | --- | --- | --- | --- |
-| Presence | `ds-motion::presence::{Presence, use_presence}`; `Presence {Entering, Present, Leaving}` | one lifecycle for anything shown: enter with the chosen `Enter`, stay, leave with the chosen `Exit`, unmount after the exit ends, resume if re-shown mid-exit. `Enter {Instant, Fade, Slide(Side), Spring}`; `Exit {Instant, Fade, Slide(Side)}` | Fade | `ListPresence`, `ShownPhase`, `OsdPhase`, `spring_presence`, `CardPresence`, `palette_shown`, `PaneSlide`, sill `Reveal`, `use_entrance`, the popover/menu `data-presence` timers, `MenuEntrance`, `PaletteEntrance`, `FirstShow`, `Motion{Play,Still}` |
-| Roster | `ds-motion::roster::{Roster, use_roster}`; `LeaveBy {Action, Delist}` | list rows: insert fades and slides down `--t-move`; removal fades and slides up `--t-quick` accelerating, rows below close the gap over `--t-move` (macOS `NSTableView` `effectFade` + `slideUp`) | fade only, gap closes at once | `batch_roster`, `roster_exits`, `use_leaving`, `LeavingList`, `AnimatedList`, `Exit::{Fold,Curl,Crumple,TabOut,BannerOut}`, `heal`, the `max-height` tab hack |
-| Spring | `ds-motion::spring::Spring {damping, response}`, `SpringSpec::for_touch`, `use_spring`, `use_spring_point`, `Throw` | integrator, retargets mid-flight keeping position and velocity; damping 1.0 (tap, key), 0.8 when released with momentum toward the target; response Quick 300 ms, Move 450 ms (conf L); throw lands on the endpoint nearest `p + v*r/(1-r)`, r = .998/ms | critically damped, no throw | `--e-spring`, `use_spring_motion`, `use_spring_point_motion`, `SpringResponse` duplicates, overshoot keyframes |
-| Symbol effect | `ds-motion::symbol::{Symbol, SymbolEffect}` (design/35) | an icon's own opt-in motion, as SF Symbols: `Once` fires on a trigger change, `While` runs while active, `Transition` on a state change; whole-icon effects are `Anim` rows (`a-bounce`, `a-turn`...) at `--t-big`/`--t-turn`, part effects (trash lid, bell, flap, shackle, Wi-Fi bars) are Rust poses on annotated Lucide shapes | holds or fades; part motion still | `BusyLook::TurnIcon`'s hand-written `a-turn` markup |
+| Presence | `ui-motion::presence::{Presence, use_presence}`; `Presence {Entering, Present, Leaving}` | one lifecycle for anything shown: enter with the chosen `Enter`, stay, leave with the chosen `Exit`, unmount after the exit ends, resume if re-shown mid-exit. `Enter {Instant, Fade, Slide(Side), Spring}`; `Exit {Instant, Fade, Slide(Side)}` | Fade | `ListPresence`, `ShownPhase`, `OsdPhase`, `spring_presence`, `CardPresence`, `palette_shown`, `PaneSlide`, sill `Reveal`, `use_entrance`, the popover/menu `data-presence` timers, `MenuEntrance`, `PaletteEntrance`, `FirstShow`, `Motion{Play,Still}` |
+| Roster | `ui-motion::roster::{Roster, use_roster}`; `LeaveBy {Action, Delist}` | list rows: insert fades and slides down `--t-move`; removal fades and slides up `--t-quick` accelerating, rows below close the gap over `--t-move` (macOS `NSTableView` `effectFade` + `slideUp`) | fade only, gap closes at once | `batch_roster`, `roster_exits`, `use_leaving`, `LeavingList`, `AnimatedList`, `Exit::{Fold,Curl,Crumple,TabOut,BannerOut}`, `heal`, the `max-height` tab hack |
+| Spring | `ui-motion::spring::Spring {damping, response}`, `SpringSpec::for_touch`, `use_spring`, `use_spring_point`, `Throw` | integrator, retargets mid-flight keeping position and velocity; damping 1.0 (tap, key), 0.8 when released with momentum toward the target; response Quick 300 ms, Move 450 ms (conf L); throw lands on the endpoint nearest `p + v*r/(1-r)`, r = .998/ms | critically damped, no throw | `--e-spring`, `use_spring_motion`, `use_spring_point_motion`, `SpringResponse` duplicates, overshoot keyframes |
+| Symbol effect | `ui-motion::symbol::{Symbol, SymbolEffect}` (design/35) | an icon's own opt-in motion, as SF Symbols: `Once` fires on a trigger change, `While` runs while active, `Transition` on a state change; whole-icon effects are `Anim` rows (`a-bounce`, `a-turn`...) at `--t-big`/`--t-turn`, part effects (trash lid, bell, flap, shackle, Wi-Fi bars) are Rust poses on annotated Lucide shapes | holds or fades; part motion still | `BusyLook::TurnIcon`'s hand-written `a-turn` markup |
 | Cross-fade | `use_cross_fade` (over `MorphGlyph` layers) | a glyph, colour or content swap fades `--t-quick`; never pulses | same | `LayerGlyph`, `MorphGlyph` keyframes, `morph-*`, `fade-in` duplicates |
 | Collapse | `use_collapse(Shown)` | height (and content opacity) animate `--t-move` `--e-in-out` from the measured height; the disclosure triangle turns `--t-quick` | instant, triangle cross-fades | `tab-in/out max-height`, per-component chevron rotations |
 | Progress sweep | none (deleted) | a determinate value that changes tweens linearly over `--t-move` to the new value, retargeting; nothing sweeps in on first show | value jumps | `use_sweep`, `use_level_run`, `Fill`, `Sweep`, `RunTail`, `use_tween` callers that only counted |
@@ -135,7 +135,7 @@ crate-private (Blitz fires no `animationend`).
 | Emphasis | none (deleted) | no bump, gulp, seal, chip flash, pulse, nudge, accept beat or level tick. The two macOS attention moves are kept where they belong: the menu-item blink on activation (`Menu`, 2 flashes of 70 ms) and the Dock icon bounce (sill) | | `use_pulse`, `PulseKey`, `use_nudge`, `use_once` (public), `Anim::{Bump,Gulp,SealPop,ChipFlash,PictureAccept,LevelTick,NudgeUp}`, the `X--b` alias trick |
 | Shake | `use_shake(cue)` | one damped side-to-side `--t-shake` `--e-shake` on a failed secure entry or failed authentication (login window) | still | `shake` (C), Wi-Fi/row shakes on non-secure failures |
 | Drag settle | `use_drag_return` (2-D spring home) | a drop that is refused springs back to the source with the release velocity; an accepted drop just lands | jumps | `DragReturnFrame`, `--tilt`, `--pickup` |
-| Rubber band | `ds-motion::rubber::resist` (extracted from `Level`) | past a limit, displacement = .55 of the overshoot (conf M), spring back on release; used by swipe resistance and host scroll; not by sliders | 1:1, hard stop | `Rubber{On,Off}`, the level control's `--rb` |
+| Rubber band | `ui-motion::rubber::resist` (extracted from `Level`) | past a limit, displacement = .55 of the overshoot (conf M), spring back on release; used by swipe resistance and host scroll; not by sliders | 1:1, hard stop | `Rubber{On,Off}`, the level control's `--rb` |
 | Magnification | stays in sill `dock` (Plank parabola), evaluated with `CubicBezier::at` | 120 ms in / 200 ms out (design/10 R5-R6) | off | sill's own evaluator |
 | Pending loop | `use_pending(Operation)` | a spinner exists only while an `Operation` runs; it spins at once (no grace, no cap: the macOS default) in 12 steps of `--t-spin-step` | keeps turning | `PendingGrace`, `PendingCap`, `Spinner::Breathe`, `breathe`, `spin`, `dest` loops, `SyncHalo` |
 | Detail grammar | `Detailed`, `Moment`, `Cue`, `Touch` | state to moment to primitive; the `Moment` set is pruned to moments a survivor plays (Appear, Dismiss, Failure, Pending) | inside | moments whose primitive is deleted |
@@ -176,7 +176,7 @@ Motion of the macOS surfaces, all built from the rows above:
 
 ### 1.5 The shared state vocabulary (one enum per concept)
 
-| Concept | Survivor (`ds-core::vocab`) | Merged in (deleted) |
+| Concept | Survivor (`ui-core::vocab`) | Merged in (deleted) |
 | --- | --- | --- |
 | Open / closed / shown | `Shown {Visible, Hidden}` (maps to `aria-expanded`, `hidden`) | `Expanded`, `Disclosure`, tooltip `Shown`, `data-shown`, `MenuBarItem.open: Switch`, `Button.expanded`, `IconButton.expanded` |
 | On / off / mixed | `Check {Off, On, Mixed}` (= `NSControl.StateValue`; `Toggle` refuses Mixed) | `Switch`, `Check {Checked, Unchecked}`, `Button.pressed: Switch` (a toggle button's value) |
@@ -297,11 +297,11 @@ hover appearance. Every entry inherits `Common` (R8).
 | Name | AppKit | Contract | Sizes | States | Public parts | Absorbs | St | Pri |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Popover | `NSPopover` | `Dismiss` policy; `Arrow {Arrow, None}` by anchor: an app popover anchored to a control has the 34 x 8 arrow, shell popovers hung from the bar or Control Center have none (27 5.6); one at a time | Z- | `Shown` | body | `Elevation {Pop, Bubble, Sheet}`, `Dismiss` old | MERGE | P1 |
-| Sheet | `NSWindow` sheet | `Attach {Window, Within(Anchor), Centre, Bottom}`: window-attached slides from the titlebar, `Within(pane)` hangs from the top edge of one pane (an element or a rect) as a document sheet hangs from its own titlebar: centred over the pane, `min(width, 88%)` of the pane wide, held inside the pane's 36 px inset, clipped by the pane as it slides in, the rest of the window untouched; centre is the shell's app-modal dialog, bottom stands 8 above the bottom edge under half the root and rises from below (added: Edit Widgets' gallery must leave the desktop's top rows, where a new widget lands, in view); width Regular / Narrow / Wide (1040, added for the same gallery); dims nothing on macOS (no scrim) | Z- | `Shown` | body | `Scrim`, `ScrimStrength`, `SheetPlacement`, `PanelScrim`, sill click catchers L10 (shell-host) | MERGE | P1 |
+| Sheet | `NSWindow` sheet | `Attach {Window, Within(Anchor), Centre, Bottom}`: window-attached slides from the titlebar, `Within(pane)` hangs from the top edge of one pane (an element or a rect) as a document sheet hangs from its own titlebar: centred over the pane, `min(width, 88%)` of the pane wide, held inside the pane's 36 px inset, clipped by the pane as it slides in, the rest of the window untouched; centre is the shell's app-modal dialog, bottom stands 8 above the bottom edge under half the root and rises from below (added: Edit Widgets' gallery must leave the desktop's top rows, where a new widget lands, in view); width Regular / Narrow / Wide (1040, added for the same gallery); dims nothing on macOS (no scrim) | Z- | `Shown` | body | `Scrim`, `ScrimStrength`, `SheetPlacement`, `PanelScrim`, sill click catchers L10 (layer-shell-host) | MERGE | P1 |
 | Alert | `NSAlert` | `Style {Informational, Warning, Critical}`; icon, message, informative text, 1 to 3+ buttons (first is default, never destructive by default), optional suppression `Checkbox`, help button; floating on `Sheet` or inline in a popover | Z- | `Shown` | icon, title, body, footer | `AlertEmphasis`, `Flow` duplicates, the power-menu body (L4) | KEEP | P1 |
 | SidePanel | none (Notification Center side sheet) | edge Right; slides `--t-move`; shell only | Z- | `Shown` | header, body | `Panel`, `PanelEdge::Bottom` | MERGE | P1 |
 | SpacesBar | Mission Control's Spaces bar (Sonoma, Sequoia) | `shown: Shown` drops in from the top edge and lifts away over `--t-overview` (`DropIn`, `Exit::LiftOut`); `SpaceTile` per Space (`BarSpaceKey`, name, `Selection`, optional `ImageSource` thumbnail and backdrop, `DropState`); collapsed is a row of names, the pointer over the bar expands it to thumbnails (`BarExpansion`, controlled by `expansion` / `on_expansion_change`); a plus at the right edge when `on_add` is given (lit by `add_drop`); `on_layout` reports the measured rects | Z- | `Shown`, `BarExpansion`, `Selection`, `DropState` | space, thumb, backdrop, name, add | `WorkspacePills` for the Mission Control bar | NEW | P1 |
-| Tooltip | `NSToolTip` | one line, `HoverIntent` Tip; anchors to an element id or a rect; truncation expansion; `hover_key` keys it on the caller's own pointer hooks (`use_hover_intent`, a thread row's time): it wraps nothing and stands while the hub holds that key; a control inside it gets no `aria-description` of its own. **House style (owner decision 2026-10-09): a tip is just a noun with keybinds**, written `Name  ⌘K`: a short noun phrase in title case, two spaces, then the key as quire draws it (Kbd glyphs `⌘⇧⌥⌃`). No parentheses, no sentence, no full stop, no "this thread". Every tip is built by `TipText::new(name).with_shortcut(shortcut)` (`ds::prelude::TipText`; `Tooltip { text, shortcut }`, `Button { title, title_shortcut }`, `RowMore { tip, shortcut }`, `ThreadRow { star_shortcut }`, `SpacesFoot { new_shortcut }`), so the style cannot drift. The tip is separate from the accessible name: `aria-label` keeps its full wording ("Star this thread", "More actions", "Remove Ada"), only the visible tip is terse ("Star  S", "More", "Remove"). Held by `ds-conformance` `tip_style` | Z- | `Shown` | body | `TooltipKind`, `sub` line, `HoverKind::Tip` | MERGE | P1 |
+| Tooltip | `NSToolTip` | one line, `HoverIntent` Tip; anchors to an element id or a rect; truncation expansion; `hover_key` keys it on the caller's own pointer hooks (`use_hover_intent`, a thread row's time): it wraps nothing and stands while the hub holds that key; a control inside it gets no `aria-description` of its own. **House style (owner decision 2026-10-09): a tip is just a noun with keybinds**, written `Name  ⌘K`: a short noun phrase in title case, two spaces, then the key as quire draws it (Kbd glyphs `⌘⇧⌥⌃`). No parentheses, no sentence, no full stop, no "this thread". Every tip is built by `TipText::new(name).with_shortcut(shortcut)` (`ds::prelude::TipText`; `Tooltip { text, shortcut }`, `Button { title, title_shortcut }`, `RowMore { tip, shortcut }`, `ThreadRow { star_shortcut }`, `SpacesFoot { new_shortcut }`), so the style cannot drift. The tip is separate from the accessible name: `aria-label` keeps its full wording ("Star this thread", "More actions", "Remove Ada"), only the visible tip is terse ("Star  S", "More", "Remove"). Held by `ui-conformance` `tip_style` | Z- | `Shown` | body | `TooltipKind`, `sub` line, `HoverKind::Tip` | MERGE | P1 |
 | HoverCard | Safari link preview / data-detector popup | kept: a card with rich content after `HoverIntent` Card, Fade in and out `--t-quick`, no spring; kinds are content, not variants | Z- | `Shown` | body | `HoverKind` variants (content), `hc-in` spring | KEEP | P2 |
 | DragImage | `NSDraggingItem` | `DragGhost` follows 1:1, count badge for many; `DropLine` is a `List` part | Z- | dragging | ghost | `Grip`, `DragReturnFrame`, tilt | KEEP | P2 |
 
@@ -443,7 +443,7 @@ view in the shell, because quire never names an agent crate.
 | ActivityStrip | none | what the companion did, by `ActorMark`, with Undo while the journal can undo it | Z- | entry state | entry, undo | none | ADD (proposed) | P2 |
 | MemoryTimeline, ConsolidationView | none | the memory as days of rows with `MemoryVerb {Forget, Keep, Discard, OpenSource, Export}`; a pending fact (from untrusted text) awaits the person; the consolidation diff of one night | Z- | row standing | day, row, diff | none | ADD (proposed) | P2 |
 | ServedByChip | `NSPopUpButton` | the model that answers, with a menu of the others and their readiness | Z3 | model state | chip, menu | none | ADD (proposed) | P2 |
-| ConfirmCard | `NSAlert` | the content of the trusted confirmation surface (`ds-shell`): the asker, the target, a title generated by the router and never by a model, the arguments as facts, the effect, the taint line, the offer (once or always), the gesture (press or hold) and an arm delay during which the buttons take no input | alert | `ArmState` | title, facts, actions | none | ADD (proposed) | P2 |
+| ConfirmCard | `NSAlert` | the content of the trusted confirmation surface (`ui-shell`): the asker, the target, a title generated by the router and never by a model, the arguments as facts, the effect, the taint line, the offer (once or always), the gesture (press or hold) and an arm delay during which the buttons take no input | alert | `ArmState` | title, facts, actions | none | ADD (proposed) | P2 |
 
 ---
 
@@ -458,7 +458,7 @@ features (3.3), not values.
 ### 3.1 What the Look supplies
 
 Colour tokens (light and dark), radii, font families, the material recipes, the four shadows, the
-icon plate and the orb colours, all in `ds-style::tokens`; every component reads them and none
+icon plate and the orb colours, all in `ui-style::tokens`; every component reads them and none
 carries a value of its own. The Look never sets a size (`SizeScale`), a duration, easing or motion
 level, a behaviour or a default keyboard binding. User styles (ARCHITECTURE section 10) apply after
 it.
@@ -587,7 +587,7 @@ Each row is a DROP: name, then the reason.
 | `MenuKind`, `MenuEntrance`, `PickDismiss`, palette rows, menu row files | `Menu` placement, `MenuItem`, `Row` |
 | `SettingsRow`, `SidebarItem`, `TreeItem`, `ListRow` (component), `RowPhase`, `RowWork`, `Succeeded/Failed` flourishes | `Row` and `List` |
 | `HeaderKind` Frame/Field/Menu | `Label`, `MenuItem` header |
-| `Scrim` (public), `ScrimStrength`, `PanelScrim` | a sheet dims nothing; click-outside is a shell-host concern |
+| `Scrim` (public), `ScrimStrength`, `PanelScrim` | a sheet dims nothing; click-outside is a layer-shell-host concern |
 | `Panel` (as a Bottom edge), `SheetPlacement` | `SidePanel`, `Attach` |
 | `Elevation`, `Alert Flow` duplicates | one Popover / Alert look |
 | `TooltipKind`, `HoverKind::Tip`, `.sill-dock-label`, hover-card `sub` line | `Tooltip`, `DockLabel` |
@@ -595,7 +595,7 @@ Each row is a DROP: name, then the reason.
 | Toast pull tab, `pill-up` | Toast slides like a banner |
 | Portrait moods and life animations, `UserPortrait` component | `Avatar` |
 | `Switch`, old `Check`, `Expanded`, `Disclosure`, `ListPresence`, `AvatarMuting`, three `Held`, `Here`, `FirstShow`, `Motion{Play,Still}`, `OsdPhase`, `ShownPhase` | section 1.5 survivors |
-| sill `easing.rs::ease`, sill's `sill-dock/src/dock/machine/label.rs` machine, `PDF_THUMB_GRACE`, `THROW_WINDOW`, `FLING_WINDOW`, `glide::FRAME`, `RUN_GAP` | one evaluator, one `HoverIntent`, shared tokens |
+| sill `easing.rs::ease`, sill's `shell-dock/src/dock/machine/label.rs` machine, `PDF_THUMB_GRACE`, `THROW_WINDOW`, `FLING_WINDOW`, `glide::FRAME`, `RUN_GAP` | one evaluator, one `HoverIntent`, shared tokens |
 | Not built, no consumer: `ComboBox`, `ColorWell`, `ImageWell`, `PathControl`, `RatingIndicator`, column views, charts, iOS patterns | macOS has them; no shell or mail need |
 
 ---

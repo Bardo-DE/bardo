@@ -1,13 +1,13 @@
 //! Rows to values and back: the one place SQL text lives.
 
 use super::{JournalError, Op};
+use account_ids::{Bytes, UnixSeconds};
+use rusqlite::{Connection, OptionalExtension, Row, Transaction, params};
 use sync_core::{
     Acknowledgement, Anchor, BaseVersion, Conflict, ContentHash, ItemPath, ItemState, JournalItem,
     LocalId, RemoteId, RemoteSide, RemoteVersion, StoredAnchor, StoredConflict, StoredTombstone,
     Tombstone, TombstoneOrigin,
 };
-use account_ids::{Bytes, UnixSeconds};
-use rusqlite::{Connection, OptionalExtension, Row, Transaction, params};
 
 fn corrupt(what: &str, value: &str) -> JournalError {
     JournalError::Corrupt(format!("{what} `{value}` is not one this syncd knows"))

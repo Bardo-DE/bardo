@@ -2,8 +2,8 @@
 //! goal as trusted text in the planner's role, and the options every inference session of the
 //! helper opens with (who asks, and the one model it must run on).
 
-use companion_model::helper::{GoalSource, HelperCard, HelperModel, HelperName, Job};
 use agent_planner::{RoleFault, RoleText, Voice};
+use companion_model::helper::{GoalSource, HelperCard, HelperModel, HelperName, Job};
 use inference_core::{Asker, OpenOptions};
 use provenance::HelperId;
 

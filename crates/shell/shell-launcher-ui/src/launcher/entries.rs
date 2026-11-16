@@ -10,9 +10,11 @@
 
 use std::path::Path;
 
+use shell_launcher::{
+    Action, ActionId, ActionKeys, IconRef, Item, ItemId, OwnAction, ProviderKind,
+};
 use ui_components::prelude::*;
 use ui_components::style::icon::url::IconUrl;
-use shell_launcher::{Action, ActionId, ActionKeys, IconRef, Item, ItemId, OwnAction, ProviderKind};
 
 use crate::launcher::action_keys::action_shortcut;
 use crate::launcher::groups::Mix;
@@ -174,9 +176,11 @@ mod tests {
     use super::{RowRef, glyph, kebab, kind_trail, named, row_chord, tile};
     use crate::launcher::groups::Mix;
     use keymap::StandardAction;
+    use shell_launcher::{
+        Action, ActionId, ActionKeys, IconRef, Item, ItemId, ProviderKind, Score,
+    };
     use ui_components::components::lists::row::chord::ChordShown;
     use ui_components::prelude::*;
-    use shell_launcher::{Action, ActionId, ActionKeys, IconRef, Item, ItemId, ProviderKind, Score};
 
     fn item(provider: ProviderKind, title: &str, actions: usize) -> Item {
         Item {

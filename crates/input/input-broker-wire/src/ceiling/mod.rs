@@ -5,7 +5,7 @@
 //! caller's identity is the gate and the ceiling only shapes the device the service itself makes.
 
 mod filter;
-mod keycap;
+mod key_remap_daemon;
 mod keys;
 mod touchpad;
 mod wheel;

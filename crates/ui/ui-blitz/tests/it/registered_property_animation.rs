@@ -6,8 +6,8 @@
 //! the fact, measured only on the headless path, not in a window.
 
 use dioxus::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use std::time::Duration;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 300,

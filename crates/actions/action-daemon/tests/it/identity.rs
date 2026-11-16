@@ -5,9 +5,9 @@
 use crate::support::world::*;
 use action_client::{Intents, Transport};
 use action_core::ActivationToken;
+use action_daemon::IntentdConfig;
 use action_vocab::{Args, CallRequest, Origin, TargetValue};
 use action_wire::{IntentsReply, IntentsRequest, JournalFilter, WireRefusal};
-use action_daemon::IntentdConfig;
 use provenance::ActionName;
 
 fn token() -> ActivationToken {

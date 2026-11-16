@@ -22,5 +22,5 @@ mod session;
 
 pub use broker::{Broker, Connection, DEFAULT_SOCKET};
 pub use error::ClientError;
-pub use session::{DeviceSource, Made, Sent, Session};
 pub use input_broker_wire::{AbsAxis, Create, DeviceId, Event, Kind, PointerCaps, Reason};
+pub use session::{DeviceSource, Made, Sent, Session};

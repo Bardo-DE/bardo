@@ -5,7 +5,7 @@
 //! samples through both.
 //!
 //! Conventions: a Space is its plain id; every other typed argument is the serde JSON of its
-//! `almanac-core` type in an `s`; outputs are the same, in order. Three outputs are not JSON:
+//! `memory-core` type in an `s`; outputs are the same, in order. Three outputs are not JSON:
 //! `Primer` is the markdown, `RecordBatch`'s count is a decimal, and a `Record` or `RecordBatch`
 //! that admission dropped answers an empty first output (nothing was kept). One argument is not
 //! JSON either: `ConfirmSettings` takes its setting key to value pairs as an `a{ss}`. And one

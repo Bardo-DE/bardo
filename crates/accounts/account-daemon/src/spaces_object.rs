@@ -107,7 +107,10 @@ impl<H: Host, C: Callers> SpacesObject<H, C> {
     /// The caller, which must be the compositor, Settings or the shell: an id minted elsewhere is
     /// taken only from the processes that draw the workspaces, never from an app (which could
     /// take an id the compositor mints later).
-    async fn registrar(&self, header: &Header<'_>) -> Result<account_callers::Caller, RefusedError> {
+    async fn registrar(
+        &self,
+        header: &Header<'_>,
+    ) -> Result<account_callers::Caller, RefusedError> {
         let caller = self.0.identify(header, Standing::Spaces).await?;
         match caller.role {
             CallerRole::Compositor | CallerRole::Settings | CallerRole::SheetHost => Ok(caller),

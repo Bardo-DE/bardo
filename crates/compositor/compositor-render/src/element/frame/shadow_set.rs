@@ -8,9 +8,9 @@ use super::slices::Piece;
 use super::to_buffer;
 use crate::element::corner::corner_index;
 use compositor_core::window::{FrameLook, ShadowLayer};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::element::memory::MemoryRenderBuffer;
 use std::rc::Rc;
+use ui_core::geometry::scale::Scale;
 
 /// What a shadow's tiles are made from: the scale's numerator, the corner radius, the layers.
 /// The size of the window is not in it.

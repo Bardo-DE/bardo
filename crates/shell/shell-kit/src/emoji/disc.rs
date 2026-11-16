@@ -2,10 +2,10 @@
 //! tinted circle on one of the icon palette's eight hues (design/08 section 2.10), pale on light
 //! and deep on dark.
 
+use serde::{Deserialize, Serialize};
 use ui_components::base::colour::fit::oklch_hex;
 use ui_components::base::word::Word;
 use ui_components::style::appearance::theme::Scheme;
-use serde::{Deserialize, Serialize};
 
 /// One of the icon palette's eight hues, for a tinted disc. Stored by its name (`"teal"`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

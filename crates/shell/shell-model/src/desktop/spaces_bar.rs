@@ -2,8 +2,8 @@
 //! view: when the bar is up, which Spaces it lists on an output (named as the Mac names them) and
 //! which is marked, and the commands a click on a Space or on the plus sends. Pure.
 
-use desktop_protocols::vocab::{OverviewMode, OverviewState, Shown, SpaceKind, Toggle};
 use account_core::SpaceId;
+use desktop_protocols::vocab::{OverviewMode, OverviewState, Shown, SpaceKind, Toggle};
 
 use super::{DesktopCommand, DesktopView, SpacePlaceView, SpaceView};
 use crate::apps::AppIndex;

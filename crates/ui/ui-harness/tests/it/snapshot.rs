@@ -3,6 +3,9 @@
 //! rasteriser changes with Blitz revisions).
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use std::time::Duration;
+use ui_blitz::FileRoots;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
 use ui_components::components::controls::progress::view::ProgressIndicator;
@@ -11,11 +14,8 @@ use ui_components::motion::detail::operation::PendingToken;
 use ui_components::motion::pulse_key::PulseKey;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_blitz::FileRoots;
 use ui_harness::harness::settle_until;
 use ui_harness::{Harness, HarnessConfig, Viewport, snapshot, snapshot_at, snapshot_with};
-use image::RgbaImage;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 240,

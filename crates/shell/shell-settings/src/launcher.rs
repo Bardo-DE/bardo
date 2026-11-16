@@ -1,7 +1,7 @@
 //! `launcher.*` (design/22 §3.6; design/13 §13.3.9). All Advanced (§5).
 
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
+use ui_settings::schema::Page;
 
 use shell_launcher::SkinTone;
 use shell_model::clipboard::HistoryMode;

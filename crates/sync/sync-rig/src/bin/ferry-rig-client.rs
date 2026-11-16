@@ -11,12 +11,12 @@
 //!
 //! Identity: see `account_rig::fixture`. Test tooling, never installed.
 
+use account_rig::fixture::Identity;
 use clap::Parser;
 use clap::error::ErrorKind;
-use sync_rig::client::{Command, run};
-use account_rig::fixture::Identity;
 use std::path::PathBuf;
 use std::process::ExitCode;
+use sync_rig::client::{Command, run};
 
 /// An app, for a jailed scenario.
 #[derive(Debug, Parser)]

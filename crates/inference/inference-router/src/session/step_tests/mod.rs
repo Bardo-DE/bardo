@@ -9,8 +9,8 @@ mod rows_route;
 mod rows_turn;
 mod walk;
 
-use helpers::*;
 use account_core::DataClass;
+use helpers::*;
 use inference_core::{ClientFrame, InferEvent, InferReply, Readiness, RequestKind};
 
 fn rows() -> Vec<Row> {

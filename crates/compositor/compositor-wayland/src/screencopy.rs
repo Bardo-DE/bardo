@@ -33,7 +33,6 @@ use compositor_core::policy::GlobalKind;
 use compositor_core::time::Mono;
 use desktop_protocols::vocab::Power;
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::{Buffer as AllocBuffer, Fourcc};
 use smithay::reexports::wayland_protocols_wlr::screencopy::v1::server::{
     zwlr_screencopy_frame_v1::{self, ZwlrScreencopyFrameV1},
@@ -50,6 +49,7 @@ use smithay::wayland::dmabuf::get_dmabuf;
 use smithay::wayland::shm::with_buffer_contents;
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::sync::{Mutex, PoisonError};
+use ui_core::geometry::scale::Scale;
 
 /// The version casement serves.
 pub const VERSION: u32 = 3;

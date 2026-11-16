@@ -13,12 +13,12 @@ use compositor_core::space::{Space, SpaceContent, SpaceIndex, SplitPair, TaskTok
 use compositor_core::{LeaseId, WindowId};
 use desktop_protocols::vocab::Transform;
 use desktop_protocols::vocab::{HeldMods, PlaceTarget, SplitSide};
-use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::collections::BTreeMap;
 use support::{claimed, headless, mode, proven};
+use ui_core::geometry::scale::Scale;
+use ui_core::vocab::Fraction;
 
 /// `value`'s JSON is `json`, and reads back as `value`.
 fn pinned<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(value: &T, json: &str) {

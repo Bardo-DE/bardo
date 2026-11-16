@@ -5,13 +5,13 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
-use ui_components::prelude::{Point, ShortcutKey};
-use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Input};
 use files_core::{FolderPath, FolderPrefs};
 use files_fs::{FakePrefs, PrefsStore};
 use files_trash::FakeTrash;
 use tempfile::TempDir;
+use ui_components::prelude::{Point, ShortcutKey};
+use ui_harness::harness::settle_until;
+use ui_harness::{Harness, Input};
 
 use super::support::{RecordingOpener, at, harness, launch_remembering, scratch_folder};
 

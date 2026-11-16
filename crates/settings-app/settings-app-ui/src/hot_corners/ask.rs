@@ -7,11 +7,11 @@ use crate::copy::hot_corners::open_kind_label;
 use crate::env::Env;
 use crate::files::{Edit, Files};
 use crate::key_row::row_id;
+use dioxus::prelude::*;
 use settings_app_model::{
     Corner, CornerAsk, HotDo, HotKeys, HotKnown, HotOpenForm, HotOpenKind, KeyEntry, action_groups,
     apps_matching, binding_for, command_binding, with_binding,
 };
-use dioxus::prelude::*;
 use ui_components::base::vocab::RowState;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;

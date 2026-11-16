@@ -4,14 +4,16 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use caller_identity_dbus::peephole::{RealProc, TableFiles};
 use caller_identity_dbus::caller_identity_core::Table;
+use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use portal_daemon::access::ShellAsker;
 use portal_daemon::capture::DisplayName;
 use portal_daemon::link::BusLink;
 use portal_daemon::names::AppNames;
 use portal_daemon::screencast::restore::FileStore;
-use portal_daemon::screenshot::{ExtOpen, LiveLayout, OutputGrab, ScreenshotSetup, ShellColorPicker};
+use portal_daemon::screenshot::{
+    ExtOpen, LiveLayout, OutputGrab, ScreenshotSetup, ShellColorPicker,
+};
 use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve};
 

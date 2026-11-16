@@ -2,12 +2,12 @@
 //! token made into a media item. Pure over any [`Http`]; in syncd the `Http` is a relay that adds
 //! the bearer.
 
-use sync_core::Clock;
 use account_http::http::request::Builder;
 use account_http::http::{Method, Response, StatusCode};
 use account_http::{HeaderText, Http, request};
 use account_ids::{UnixSeconds, WebUrl};
 use serde::Deserialize;
+use sync_core::Clock;
 
 /// What an upload returns, to be made into a media item.
 #[derive(Debug, Clone, PartialEq, Eq)]

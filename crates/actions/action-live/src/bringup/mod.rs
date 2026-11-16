@@ -15,9 +15,9 @@ pub mod refuse;
 pub mod seed;
 pub mod up;
 
-use cli::{Command, UsageError};
 use action_accept::keys_home::HomeFault;
 use action_accept::world::{Binaries, env_of};
+use cli::{Command, UsageError};
 use procs::ProcsFault;
 use refuse::{Own, Refusal};
 use seed::ExtraFault;

@@ -2,12 +2,12 @@
 //! button, promote an answer into its app, steer a run, undo, settle a memory, switch the
 //! panel's mode. Pure vocabulary; the daemon's companion service carries each out.
 
-use memory_core::MemoryItem;
 use action_core::UndoScope;
 use action_vocab::CardActionId;
-use ui_core::vocab::MemoryVerb;
+use memory_core::MemoryItem;
 use provenance::{HelperId, RunId, SessionId, TaskId};
 use serde::{Deserialize, Serialize};
+use ui_core::vocab::MemoryVerb;
 
 /// What the panel is for: finding things, or talking to the companion.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -139,11 +139,11 @@ pub enum CompanionAct {
 #[cfg(test)]
 mod tests {
     use super::{CompanionAct, HelperControl, LauncherMode, RunControl};
-    use memory_core::MemoryItem;
     use action_core::UndoScope;
     use action_vocab::{CardActionId, UndoId};
-    use ui_core::vocab::MemoryVerb;
+    use memory_core::MemoryItem;
     use provenance::{RunId, TaskId};
+    use ui_core::vocab::MemoryVerb;
 
     /// Every form's wire text, pinned: the daemon and the panel agree on these.
     #[test]

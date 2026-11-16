@@ -2,7 +2,7 @@
 //! `Menu{Dropdown}` (or, for the control center and a module's own item, a ds `Popover` around
 //! `control_center::ControlCenter` or the module),
 //! following the bar's view channel: a new view swaps the contents and, when its anchor moved,
-//! repositions the popup (`xdg_popup.reposition`), none closes it. shell-host fits the popup to
+//! repositions the popup (`xdg_popup.reposition`), none closes it. layer-shell-host fits the popup to
 //! the frame (`PopupSize::FitContent`), so the popup is the card and its room. The root is
 //! `Material::Popover`, which paints nothing on its own box (quire's transparent popup root);
 //! the menu card paints the material. The menu opens with no entrance (design/13 §13.3.2) and
@@ -10,15 +10,15 @@
 //! (a tray item's dbusmenu has them) are the `Menu`'s own, timed by `menus.submenu_*`.
 
 use dioxus::prelude::*;
+use layer_shell_host::{PopupPlacement, use_surface, use_watch};
+use shell_model::ids::OutputName;
+use shell_settings::ControlCenterModule;
+use tokio::sync::{mpsc, watch};
 use ui_components::base::geometry::placement::{Align, Side};
 use ui_components::base::press::Press;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::stack::menu_track::types::MenuTiming;
-use layer_shell_host::{PopupPlacement, use_surface, use_watch};
-use shell_model::ids::OutputName;
-use shell_settings::ControlCenterModule;
-use tokio::sync::{mpsc, watch};
 
 use super::content::PopupBody;
 use super::model::PopupView;

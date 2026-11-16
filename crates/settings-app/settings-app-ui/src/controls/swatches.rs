@@ -1,7 +1,7 @@
 //! A colour: the accent swatch row.
 
-use settings_app_model::external::toml;
 use dioxus::prelude::*;
+use settings_app_model::external::toml;
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::prelude::*;
 use ui_components::style::css::accents_css::swatch_var;

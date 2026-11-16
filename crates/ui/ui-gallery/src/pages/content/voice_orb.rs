@@ -4,13 +4,13 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::voice_orb::model::{OrbColour, OrbColours};
 use ui_components::components::content::voice_orb::view::{ORB_PERIOD, VoiceOrb};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::hex::Hex;
 use ui_core::vocab::activity_word;
-use std::time::Duration;
 
 /// The sizes of the ladder: under 30 (no mask), 30 to 50, 50 to 100 and 100 and over.
 const LADDER: [f32; 6] = [24.0, 40.0, 64.0, 96.0, 128.0, 192.0];

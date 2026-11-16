@@ -1,11 +1,11 @@
 //! Builders the tests share; labels come from prov's constructors.
 
+use account_core::{AppName, DataClass};
 use action_manifest::{
     ActionDecl, AgentReach, ArgSink, DryRun, EntityDecl, KeyHint, Lasting, Latency, Manifest,
     ParamDecl, ParamNeed, ResultShape, TargetKind, TitleTrust, Visibility,
 };
 use action_vocab::{CharCount, IconName, IntentsVocab, LabelText, ParamName, ParamType};
-use account_core::{AppName, DataClass};
 use provenance::{ActionName, Effect, EntityId, EntityKey, EntityKind, Label};
 use std::collections::BTreeSet;
 

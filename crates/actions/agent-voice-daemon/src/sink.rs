@@ -4,13 +4,13 @@
 //! stream and no more), never the audio path; a client that closed ends the task.
 
 use crate::wire::frame;
+use agent_voice_wire::VoiceEvent;
 use std::os::fd::OwnedFd;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
 use tokio::sync::mpsc;
-use agent_voice_wire::VoiceEvent;
 
 /// How many frames may wait for a client that does not read (about half a minute of levels).
 pub(crate) const QUEUE_FRAMES: usize = 1024;

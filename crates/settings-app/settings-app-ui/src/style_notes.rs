@@ -4,9 +4,9 @@
 
 use crate::copy::style_notes::{STYLE_NOTES_LEAD, STYLE_NOTES_TITLE, note_place, notes_summary};
 use crate::env::Env;
+use dioxus::prelude::*;
 use settings_app_client::StyleInputs;
 use settings_app_model::{StyleFile, StyleNote, StyleNotes};
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};

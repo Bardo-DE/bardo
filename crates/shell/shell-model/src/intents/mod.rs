@@ -6,7 +6,7 @@
 //!
 //! This is the pure half: what a confirmation queue is and how an answer, a withdrawal or an
 //! expiry moves it ([`sheet`]), what the person sees of the terminal's grants ([`terminal`]), and
-//! how an invocation of a shell action reads ([`shell`]). `sill-services` does the bus.
+//! how an invocation of a shell action reads ([`shell`]). `shell-services` does the bus.
 
 mod command;
 mod model;
@@ -17,10 +17,10 @@ pub mod terminal;
 #[cfg(test)]
 mod tests;
 
-pub use command::{IntentsAsk, IntentsCommand, IntentsEffect, IntentsEvent};
 pub use action_core::{ConfirmId, ConfirmOffer, Gesture, NeverOffer};
-pub use permission_core::StandingGrantId;
 pub use action_vocab::ActionRef;
+pub use command::{IntentsAsk, IntentsCommand, IntentsEffect, IntentsEvent};
 pub use model::{Intents, IntentsLink};
+pub use permission_core::StandingGrantId;
 pub use provenance::Effect;
 pub use step::step;

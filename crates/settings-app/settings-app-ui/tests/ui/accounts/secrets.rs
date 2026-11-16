@@ -11,13 +11,13 @@ fn a_client_id_is_set_when_the_field_is_left() {
     });
     click(&mut w.harness, "[aria-label=\"microsoft client id\"] input");
     for letter in "abc".chars() {
-        w.harness
-            .send(ui_harness::Input::key(ui_components::prelude::ShortcutKey::Char(
-                letter,
-            )));
+        w.harness.send(ui_harness::Input::key(
+            ui_components::prelude::ShortcutKey::Char(letter),
+        ));
     }
-    w.harness
-        .send(ui_harness::Input::key(ui_components::prelude::ShortcutKey::Enter));
+    w.harness.send(ui_harness::Input::key(
+        ui_components::prelude::ShortcutKey::Enter,
+    ));
     settle(&mut w.harness, "the set", |_| !w.accountd.sets().is_empty());
     assert_eq!(
         w.accountd.sets(),
@@ -33,13 +33,13 @@ const SECRET_FIELD: &str = "[aria-label=\"microsoft client secret\"]";
 fn type_into(w: &mut World, field: &str, text: &str) {
     click(&mut w.harness, field);
     for letter in text.chars() {
-        w.harness
-            .send(ui_harness::Input::key(ui_components::prelude::ShortcutKey::Char(
-                letter,
-            )));
+        w.harness.send(ui_harness::Input::key(
+            ui_components::prelude::ShortcutKey::Char(letter),
+        ));
     }
-    w.harness
-        .send(ui_harness::Input::key(ui_components::prelude::ShortcutKey::Enter));
+    w.harness.send(ui_harness::Input::key(
+        ui_components::prelude::ShortcutKey::Enter,
+    ));
 }
 
 #[test]

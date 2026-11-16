@@ -1,7 +1,7 @@
 # What the accounts-regress-* scenarios share (on top of harness/lib/accounts.sh): checks that fail the step, the sheet's
 # traffic read from the recorded bus, and measurements of a capture. Sourced after accounts.sh.
 #
-# How a sheet is observed. sill draws it through shell-host, which never runs ds-blitz's debug probe (QUIRE_DEBUG_PROBE
+# How a sheet is observed. sill draws it through layer-shell-host, which never runs ui-blitz's debug probe (QUIRE_DEBUG_PROBE
 # writes nothing for any sill surface: only a window of a quire app does), so there is no list of its controls. What is
 # read instead: what accountd tells it (Open/Update, the SheetView) and what the person's keys made it send back (Input),
 # both in the bus record (sheet-bus.py); and the capture of its surface (pixels.py): where the card is, whether two

@@ -2,8 +2,8 @@
 //! confirmed (the ones helpers suggest are in `proposals`), pausing, resuming and removing. The companion tells `Changed` after each, and the
 //! screen reads the list again then, so the calls with no body say nothing back.
 
-use companion_wire::{RoutineReply, RoutinesView};
 use action_dbus::CompanionHelpers2Proxy;
+use companion_wire::{RoutineReply, RoutinesView};
 use shell_model::companion::{HelpersMsg, RoutinesCommand, RoutinesMsg};
 
 use super::helpers::{silent, unreached};

@@ -6,10 +6,10 @@
 //! shows nothing.
 
 use dioxus::prelude::*;
-use ui_components::prelude::StylesOffNotice;
-use ui_blitz::{StylesGuard, use_styles_guard};
 use layer_shell_host::use_watch;
 use shell_settings::ShellFile;
+use ui_blitz::{StylesGuard, use_styles_guard};
+use ui_components::prelude::StylesOffNotice;
 
 use crate::settings::{SettingsFeed, TurnOnStyles};
 

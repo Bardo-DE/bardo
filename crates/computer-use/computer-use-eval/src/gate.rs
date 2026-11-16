@@ -5,12 +5,12 @@
 //! class. What the eval measures is the model against this gate and cua's own classification
 //! in front of it.
 
-use computer_use_action::{ActionClass, WindowClass};
-use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
+use account_core::AppName;
 use action_core::{CallRefusal, ConfirmEnd};
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk};
-use account_core::AppName;
+use computer_use_action::{ActionClass, WindowClass};
+use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
 use provenance::{ConfirmId, Effect, RunId, SessionId, SpaceId};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

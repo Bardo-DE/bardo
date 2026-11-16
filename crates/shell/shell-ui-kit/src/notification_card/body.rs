@@ -3,10 +3,10 @@
 //! several at once takes the strongest: a link, then bold, then italic, then underline. The line
 //! clamp and its fade are quire's (`NotificationCard`), so nothing is clipped here.
 
+use shell_model::notifications::{Body, BodyRun, RunLink, RunStyle, Slant, Underline, Weight};
 use ui_components::components::content::rich_text::{Rich, RichRun};
 use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
-use shell_model::notifications::{Body, BodyRun, RunLink, RunStyle, Slant, Underline, Weight};
 
 /// `body` as quire's runs; `None` for an empty body (the card then draws no body line).
 pub fn rich_body(body: &Body) -> Option<Rich> {
@@ -39,10 +39,10 @@ fn tone(style: &RunStyle) -> RunTone {
 #[cfg(test)]
 mod tests {
     use super::rich_body;
+    use shell_model::notifications::{Body, parse_body};
     use ui_components::components::content::rich_text::{Rich, RichRun};
     use ui_components::components::content::text_runs::RunTone;
     use ui_components::prelude::*;
-    use shell_model::notifications::{Body, parse_body};
 
     fn run(text: &str, tone: RunTone) -> RichRun {
         RichRun::Run(TextRun::new(text, tone))

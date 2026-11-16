@@ -4,10 +4,10 @@
 //! `BluetoothCommand::Power`, asking first before off ([`super::bluetooth_ask`]).
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
+use shell_kit::prelude::*;
 use shell_model::bluetooth::{Bluetooth, BtPower};
 use shell_model::units::Presence;
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
 
 use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
 use crate::bar::{BarMenu, StatusIcon};
@@ -109,9 +109,9 @@ impl CcModule for BluetoothCc {
 #[cfg(test)]
 mod tests {
     use super::{adapter_availability, power_of, power_state};
-    use ui_components::prelude::*;
     use shell_model::bluetooth::{Bluetooth, BtPower};
     use shell_model::units::Presence;
+    use ui_components::prelude::*;
 
     #[test]
     fn the_tile_follows_the_adapter() {

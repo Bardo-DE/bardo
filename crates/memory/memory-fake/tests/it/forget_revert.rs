@@ -1,14 +1,14 @@
 //! Forget wins over Revert: nothing the person forgot comes back by a revert, whatever the last
 //! applied run kept in memory. Every test seeds the Space's files first.
 
+use chrono::{Offset, Utc};
 use memory_core::*;
 use memory_fake::*;
+use memory_files_format::{Block, TopicFile, render_topic};
 use memory_service::Caller;
 use memory_service::MemoryService;
 use memory_store::{Vault, VaultPath};
 use memory_tidy::{ConsolidateError, Draft};
-use chrono::{Offset, Utc};
-use memory_files_format::{Block, TopicFile, render_topic};
 
 fn work() -> SpaceId {
     SpaceId::parse("work").expect("space")

@@ -1,5 +1,5 @@
 //! The person's light or dark scheme and their Reduce transparency choice, read from quire's
-//! `appearance.toml` through ds-settings and followed while casement runs. The transparency is
+//! `appearance.toml` through ui-settings and followed while casement runs. The transparency is
 //! quire's `appearance.transparency` (`system` or `reduced`; a file without it is `system`), the
 //! one desktop-wide setting the shell reads too: `reduced` draws every blur as its mostly opaque
 //! stand-in in the scheme's paper ([`blur_finish`]), at the next frame. The server-side window frame is drawn in it
@@ -18,8 +18,6 @@ use crate::State;
 use compositor_ipc::system_scheme::SchemeWatch;
 use compositor_layout::{Scheme, Theme, Transparency, reduced_stand_in, scheme_of};
 use compositor_render::{BlurFinish, Rgba8};
-use ui_core::spawner::Spawner;
-use ui_settings::{AppName, AppearanceFile, ConfigRoot, Store, SystemPrefsSource};
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::future::Future;
 use std::ops::ControlFlow;
@@ -28,6 +26,8 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Wake, Waker};
 use std::thread::Thread;
+use ui_core::spawner::Spawner;
+use ui_settings::{AppName, AppearanceFile, ConfigRoot, Store, SystemPrefsSource};
 
 /// The appearance store of `home`: the real config tree, or a stand-in directory (a test or a
 /// jail never reaches the machine's own file).
@@ -232,7 +232,7 @@ pub(crate) fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate
         .map_err(|error| crate::StartError::Loop(error.to_string()))
 }
 
-/// Runs each task on a thread of its own, parked between wake-ups: ds-settings' watch is an
+/// Runs each task on a thread of its own, parked between wake-ups: ui-settings' watch is an
 /// async task and casement runs no async runtime.
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct ThreadSpawner;

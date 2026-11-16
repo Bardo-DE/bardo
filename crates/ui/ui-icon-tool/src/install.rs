@@ -3,8 +3,8 @@
 //! `$XDG_DATA_HOME/quire/icons/apps`, the lookup's second step, so an installed shell finds the
 //! icons without a checkout beside it.
 
-use ui_icon_tool::IconsError;
 use std::path::{Path, PathBuf};
+use ui_icon_tool::IconsError;
 
 /// The repository's shipped set.
 pub fn repository_set() -> PathBuf {

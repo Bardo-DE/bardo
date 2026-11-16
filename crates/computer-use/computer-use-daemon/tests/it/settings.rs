@@ -3,10 +3,10 @@
 
 use crate::support::supervisor;
 use computer_use_bus::{ControlRefusal, CuaCaller};
+use computer_use_daemon::{Apps, CuaSettings, Locator, SettingsWatch, WatchState};
 use computer_use_desktop::BackendKind;
 use computer_use_fake::FakePdp;
 use computer_use_fake::scene::{click, finish, reply, task};
-use computer_use_daemon::{Apps, CuaSettings, Locator, SettingsWatch, WatchState};
 use std::path::Path;
 
 /// What the Settings app does: a temp file, then a rename over the settings file.
@@ -132,5 +132,8 @@ async fn a_settings_file_that_cannot_be_read_is_reported_and_the_next_directory_
         model_provider::Money::usd(rust_decimal::Decimal::new(1900, 6))
     );
     assert_eq!(loaded.fallbacks.len(), 1);
-    assert!(matches!(loaded.fallbacks[0].why, computer_use_daemon::Why::Unreadable(_)));
+    assert!(matches!(
+        loaded.fallbacks[0].why,
+        computer_use_daemon::Why::Unreadable(_)
+    ));
 }

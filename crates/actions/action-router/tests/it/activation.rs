@@ -168,7 +168,9 @@ fn the_wire_form_is_the_invocations_with_one_optional_top_level_string() {
         classified(None).get("classified").is_none(),
         "absent when not classified"
     );
-    let read = classified(Some(action_vocab::CallClass::Effect(provenance::Effect::Read)));
+    let read = classified(Some(action_vocab::CallClass::Effect(
+        provenance::Effect::Read,
+    )));
     assert_eq!(
         read["classified"],
         serde_json::json!({"kind": "effect", "v": "read"})

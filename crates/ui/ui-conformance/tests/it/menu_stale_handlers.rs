@@ -10,12 +10,12 @@
 //! itself is unit-tested in `ui_components::components::menus::alive`.
 
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::time::Duration;
 use ui_components::components::menus::pop_up_button::{PopUpButton, PopUpKind};
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::RefCell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

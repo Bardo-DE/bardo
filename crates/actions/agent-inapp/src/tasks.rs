@@ -1,17 +1,17 @@
 //! Many tasks in one app: the front pointer, the roster, the person's words to a subagent, time
 //! passing (side conversations that end, the narrative of a finished task), and restart. All of
-//! it is `docket-tasks`' (companiond's own model); these are the host's doors to it.
+//! it is `companion-tasks`' (companiond's own model); these are the host's doors to it.
 
 use crate::agent::{AgentFault, InAppAgent};
-use action_review::Reviewer;
-use agent_loop::LoopPhase;
-use companion_wire::FrontTask;
 use action_core::MemoryLink;
 use action_core::{PolicyWriter, Reader, Roster, TurnVia, UserTurn};
 use action_host::ConfirmSheet;
 use action_provider::{ContextSource, IntentProvider};
+use action_review::Reviewer;
 use action_router::GrantStore;
 use action_vocab::{Caller, Clock};
+use agent_loop::LoopPhase;
+use companion_wire::FrontTask;
 use inference_client::Transport as ModelTransport;
 use provenance::{AgentRef, TaskId};
 

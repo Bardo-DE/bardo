@@ -15,9 +15,9 @@ use crate::components::lists::virtual_table::drag_model::{
     RowDrop, RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of,
 };
 use crate::host::event_point::pointer_point;
-use keymap::Platform;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
+use keymap::Platform;
 use ui_core::geometry::units::{Point, Px};
 use ui_core::selection::RowSelection;
 use ui_motion::drag::DRAG_THRESHOLD;

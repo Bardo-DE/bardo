@@ -2,8 +2,8 @@
 
 use crate::standing::{act, addr, command, files, outbound, path, paths, sends, terminal};
 use action_manifest::{AgentReach, ArgSink};
-use permission_core::*;
 use action_vocab::ActionRef;
+use permission_core::*;
 use proptest::prelude::*;
 use provenance::Effect;
 

@@ -5,9 +5,9 @@ use blitz_embed::scroll::engine::Kinetic;
 use blitz_embed::scroll::geom::ScrollAxis;
 use blitz_embed::scroll::pad::PointerScroll;
 use blitz_embed::scroll::time::Elapsed;
+use keyboard_types::Modifiers;
 use ui_components::host::gesture::{Gesture, GesturePhase, ScrollSource};
 use ui_components::prelude::*;
-use keyboard_types::Modifiers;
 
 /// How far a wheel or touchpad turned, in winit's sign: positive means the content moves right
 /// and down (the opposite of an offset).

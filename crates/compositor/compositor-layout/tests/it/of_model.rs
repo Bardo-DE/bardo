@@ -1,5 +1,6 @@
 //! spec_of reads the model: a Model built by Model::step is laid out as the spec says.
 
+use account_core::ClaimedId;
 use compositor_core::app::AppKey;
 use compositor_core::focus::TokenCheck;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
@@ -17,7 +18,6 @@ use compositor_layout::{
     LayoutKnobs, RustScene, SceneLayout, SceneMode, SceneSpec, WindowPlacement, spec_of,
 };
 use desktop_protocols::vocab::{Modality, WindowRole};
-use account_core::ClaimedId;
 use std::time::Duration;
 
 fn headless(name: &str) -> OutputFacts {

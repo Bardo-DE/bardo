@@ -2,10 +2,10 @@
 //! are named by agents and by the person, so each is drawn as quoted third-party text; a group
 //! shows at most `SHOWN` of them and then how many more. Nothing here names a tool.
 
+use account_core::AppName;
 use action_context::labels::{app_label, path_label};
 use action_core::{FactLine, RestorePlan, WorkPath};
 use action_vocab::LabelText;
-use account_core::AppName;
 use provenance::{Label, Labelled};
 
 /// How many paths of one group the sheet lists.

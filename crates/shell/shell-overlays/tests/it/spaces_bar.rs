@@ -8,7 +8,6 @@
 
 use std::time::Duration;
 
-use ui_harness::{Harness, Input, Viewport};
 use account_core::SpaceId;
 use shell_model::desktop::{
     BarPick, BarShow, DesktopView, Shown, SpaceKind, SpacePicture, SpaceView,
@@ -20,6 +19,7 @@ use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::harness::fake::output_named;
 use shell_ui_kit::links::SpacesBarLink;
 use tokio::sync::watch;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<SpacesBar>;
 

@@ -5,12 +5,12 @@ use account_capability::ModelId;
 use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
+use base_testkit::Scratch;
 use inference_core::{
     ChatMessage, ChatRequest, ImagePart, ImageSource, MessagePart, Role, SpeakRequest,
     TranscribeBegin, TranscribeMode, VoiceName,
 };
 use inference_router::seams::RunningTurn;
-use base_testkit::Scratch;
 use tokio::io::AsyncReadExt;
 use tokio::net::UnixListener;
 

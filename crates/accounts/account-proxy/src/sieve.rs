@@ -8,9 +8,9 @@ use crate::auth::{Sasl, pick};
 use crate::fault::RelayFault;
 use crate::lines::{MAX_EARLY, closes, fail, finished, overlong, send, send_line, take_line, text};
 use crate::step::{Effect, Input, Relaying, Side};
+use account_core::{RelayAuth, RelayPlan, Tls};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use account_core::{RelayAuth, RelayPlan, Tls};
 
 /// How the relay authenticates to a ManageSieve server.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -140,9 +140,10 @@ impl SieveRelay {
             (SieveAuth::Plain, RelayAuth::Password(password)) => {
                 ("PLAIN", account_core::token::plain(user, password.expose()))
             }
-            (SieveAuth::Xoauth2, RelayAuth::AccessToken(token)) => {
-                ("XOAUTH2", account_core::token::xoauth2(user, token.expose()))
-            }
+            (SieveAuth::Xoauth2, RelayAuth::AccessToken(token)) => (
+                "XOAUTH2",
+                account_core::token::xoauth2(user, token.expose()),
+            ),
             _ => return fail(RelayFault::Protocol),
         };
         self.phase = SievePhase::Authenticating;

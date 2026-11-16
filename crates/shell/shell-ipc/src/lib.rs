@@ -5,7 +5,7 @@
 //! the stream; this crate owns the words on it. A [`request::Request`] is one flat enum; the words
 //! some of its variants carry have a file each: [`show`] (panels, the companion), [`act`] (the
 //! display keys), [`status`] (what is read), [`debug`] (probes). What a status answers is a
-//! `sill-model` type, serialised.
+//! `shell-model` type, serialised.
 
 pub mod act;
 pub mod debug;

@@ -4,11 +4,11 @@ use crate::entries;
 use crate::lab::Lab;
 use account_capability::ModelId;
 use account_fake_servers::net::Bind;
+use base_testkit::Scratch;
 use inference_router::attached::config::{Attached, Place, Reach};
 use inference_router::catalog::parse_entry_text;
 use inference_router::startup::Level;
 use std::sync::Mutex;
-use base_testkit::Scratch;
 
 fn model_on(reach: Reach, place: Place, scratch: &Scratch) -> LocalModel {
     let attached = Attached {

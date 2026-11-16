@@ -6,11 +6,11 @@
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use ui_components::style::kit::{Styles, UserStyle};
+use layer_shell_host::HostEvent;
 use ui_blitz::StylesGuard;
 use ui_blitz::TokioSpawner;
+use ui_components::style::kit::{Styles, UserStyle};
 use ui_settings::{AppearanceFile, Store};
-use layer_shell_host::HostEvent;
 
 use super::StyleKeeper;
 use crate::daemon::msg::{Sheet, ShellMsg};

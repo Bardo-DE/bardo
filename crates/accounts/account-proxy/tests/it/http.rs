@@ -2,12 +2,12 @@
 
 use crate::common;
 
-use common::*;
 use account_core::{Family, Tls};
 use account_fake_servers::http::{Request, Response, serve};
 use account_fake_servers::net::{Bind, Listener};
 use account_fake_servers::{FakeDav, Seen, tls};
 use account_proxy::{RelayEnd, RelayFault};
+use common::*;
 use std::sync::Arc;
 
 fn dav_plan(base: &str, auth: account_core::RelayAuth) -> account_core::RelayPlan {

@@ -6,10 +6,10 @@
 //! `cargo test -p ui-blitz --release --test it hybrid_backend -- --ignored --nocapture`
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_blitz::AdapterPref;
-use ui_harness::{Backend, Harness, HarnessConfig, Input, Viewport};
 use std::time::{Duration, Instant};
+use ui_blitz::AdapterPref;
+use ui_components::prelude::*;
+use ui_harness::{Backend, Harness, HarnessConfig, Input, Viewport};
 
 const SMALL: Viewport = Viewport {
     width: 240,

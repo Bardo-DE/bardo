@@ -3,13 +3,13 @@
 
 use crate::bus::{PrivateBus, name_of};
 use crate::manager::{FakeUnit, serve};
-use caller_identity_linux::fake::introduced_service;
-use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess};
-use caller_identity_dbus::{BusPeers, ManagerCheck};
 use caller_identity_core::{
     FileTrust, LOADER_VARIABLES, Pid, Pin, Proof, Refused, Requirement, RoleName, Standing, Table,
     Uid, WhyNot, Writer,
 };
+use caller_identity_dbus::{BusPeers, ManagerCheck};
+use caller_identity_linux::fake::introduced_service;
+use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess};
 
 const IMAGE: &str = "/usr/bin/sill";
 const FRAGMENT: &str = "/usr/lib/systemd/user/sill.service";

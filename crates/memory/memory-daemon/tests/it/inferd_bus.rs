@@ -6,14 +6,14 @@
 use crate::support::inferd::{FakeInferd, Seen};
 use crate::support::{SharedKeys, bus::PrivateBus, connect, dirs_in, listed_spaces, space};
 use memory_core::*;
+use memory_daemon::{SystemBackend, inferd_link};
 use memory_fake::{mail_label, mail_thread_archived};
 use memory_infer::{InferdConsolidator, InferdEmbedder};
+use memory_recall::{ClassTag, Classed, EmbedError, Embedder, FakeEmbedder};
 use memory_service::Caller;
 use memory_service::MemoryService;
 use memory_store::{EmbedRole, Urgency};
 use memory_tidy::{ConsolidateError, ConsolidationInput, Consolidator};
-use memory_daemon::{SystemBackend, inferd_link};
-use memory_recall::{ClassTag, Classed, EmbedError, Embedder, FakeEmbedder};
 use std::sync::{Arc, Mutex};
 
 type LiveBackend = SystemBackend<

@@ -3,6 +3,7 @@
 //! dot draws the tip. Outside `Ds` there is no hub, so the plain `title` stays.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};
 use ui_components::components::app::row_more::RowMore;
 use ui_components::components::content::avatar::AvatarSize;
@@ -13,7 +14,6 @@ use ui_components::components::lists::row::row::{Outline, Row};
 use ui_components::prelude::*;
 use ui_components::style::space::frame_vars::FrameVars;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 300,

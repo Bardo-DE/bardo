@@ -2,14 +2,14 @@
 //! the gate, labelled by what the relation says and never better than where it was found.
 
 use crate::support::*;
+use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use action_context::handles::HandleValue;
 use action_core::*;
 use action_fake::FakeSeams;
 use action_manifest::{ArgSink, Cardinality, ManifestError, TitleTrust};
-use permission_core::{ActionGrantKey, AskReason, GrantCaller, GrantTarget};
 use action_router::{GrantStore, Router};
 use action_vocab::{ActionRef, CallRequest, ChoiceId, Handle, Origin, TargetValue, Value};
-use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use permission_core::{ActionGrantKey, AskReason, GrantCaller, GrantTarget};
 use provenance::{DataClass, Integrity, SessionId};
 
 fn related(kind: &str, key: &str, relation: &str) -> CallRequest {
@@ -139,7 +139,10 @@ async fn what_a_relation_takes_from_somebody_elses_words_is_untrusted_whatever_t
     assert_eq!(answered.label.integrity, Integrity::Untrusted);
     let (_, label, _) = held(&router, &session, &outcome);
     assert_eq!(label.integrity, Integrity::Untrusted);
-    assert!(label.sources.contains(&provenance::Source::Mail), "{label:?}");
+    assert!(
+        label.sources.contains(&provenance::Source::Mail),
+        "{label:?}"
+    );
     let st = router.state.lock().expect("lock");
     assert!(
         st.sessions[&session].saw.untrusted,

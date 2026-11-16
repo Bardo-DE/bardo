@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Power menu acceptance (design/20 §1.8), on a private headless KWin (shell-host
+# Power menu acceptance (design/20 §1.8), on a private headless KWin (layer-shell-host
 # scripts/dev/kwin-virtual.sh). Starts `sill run` from this checkout's debug build (`--features
 # debug`) with its own XDG_RUNTIME_DIR and scratch HOME and XDG dirs, on KWin's private bus (the
 # daemon's session AND system bus; start_compositor refuses to go on if it would be the real one), and
@@ -13,7 +13,7 @@
 # log (the "dry run, recording to" line, and `power_menu.backend=dry-run` with no
 # `power_menu.backend=live`); without that proof the pressing steps are skipped (exit 2), never run.
 #
-# KEYS. By default every key is `sill debug key SURFACE KEY`: shell-host's `Inject::Key`, which
+# KEYS. By default every key is `sill debug key SURFACE KEY`: layer-shell-host's `Inject::Key`, which
 # enters the power menu where a real xkb key does (the same machine, focus, modality and IME),
 # whether or not the compositor gave the menu the keyboard. The keys are only sent while the dry
 # run is proven and the menu is mapped. With --real-input every key and press is a real Wayland

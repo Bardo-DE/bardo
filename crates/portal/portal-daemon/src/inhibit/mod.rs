@@ -11,8 +11,8 @@ mod hub;
 
 use std::sync::Arc;
 
-use tokio::sync::Mutex as AsyncMutex;
 use portal_core::{InhibitFlags, RequestHandle};
+use tokio::sync::Mutex as AsyncMutex;
 use zbus::ObjectServer;
 use zbus::fdo;
 use zbus::message::Header;

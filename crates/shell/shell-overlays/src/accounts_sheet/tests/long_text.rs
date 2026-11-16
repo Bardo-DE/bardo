@@ -1,13 +1,13 @@
 //! What a long word, a long address and a long link do to the props, and how the provider list is
 //! ordered for a search.
 
-use ui_shell::accounts::model::ProviderPick;
 use account_capability::CapabilityKind;
 use account_core::consent::{AccountChoice as AskChoice, ConsentAsk, Usage};
 use account_core::{AccountLabel, DataClass};
 use account_ids::WebUrl;
 use account_sheet::{ProviderKind, ProviderRow, Review, ReviewView, RowKind, SheetView};
 use shell_model::accounts::sheet::SheetAction;
+use ui_shell::accounts::model::ProviderPick;
 
 use super::super::props::Step;
 use super::{account, app, provider, shown};

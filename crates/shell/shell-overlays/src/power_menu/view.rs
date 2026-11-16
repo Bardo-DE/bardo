@@ -7,23 +7,23 @@
 //! (`on_hidden`), where the menu closes and a chosen action runs.
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputInfo;
+use shell_model::session::Session;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use layer_shell_host::OutputInfo;
-use shell_model::session::Session;
 
 use super::choice::answers;
 use super::io::{MenuCtx, use_menu};
 use super::labels::{NONE_OFFERED_MESSAGE, NONE_OFFERED_TITLE, action_label, consequence, prompt};
 use super::sheet::{MenuSession, SheetInput};
 use super::surface::PANEL_ID;
-use ui_components::base::time::clock::sleep;
 use shell_model::session::words::{COUNTDOWN_SECONDS, countdown};
 use shell_ui_kit::links::OpenSerial;
 use shell_ui_kit::root::{ClickAway, SurfaceRoot};
 use shell_ui_kit::sheet_stage::SheetExit;
 use std::time::Duration;
+use ui_components::base::time::clock::sleep;
 
 /// The power menu's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
 pub const POWER_MENU_CSS: &str = include_str!("style.css");

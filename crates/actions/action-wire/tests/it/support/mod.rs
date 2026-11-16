@@ -1,7 +1,7 @@
 //! Builders the tests share; labels come from prov's constructors.
 
-use action_vocab::ParamName;
 use account_core::{AppName, DataClass};
+use action_vocab::ParamName;
 use provenance::{
     ActionName, EntityId, EntityKey, EntityKind, Label, Labelled, Source, SpaceId, UnixSeconds,
 };

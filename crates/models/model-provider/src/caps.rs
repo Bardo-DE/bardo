@@ -3,8 +3,8 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{ActionProfile, CuaDialect, ModelSpace};
-use serde::{Deserialize, Serialize};
 use model_vision_prep::ResizeRule;
+use serde::{Deserialize, Serialize};
 
 use crate::{ImageCount, Tokens};
 

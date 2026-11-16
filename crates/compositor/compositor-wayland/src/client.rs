@@ -3,11 +3,11 @@
 
 use crate::consent::{ImageWatch, Ledger, Unwatched};
 use crate::security_context::Maker;
+use account_core::PeerIdentity;
 use compositor_core::ClientKey;
 use compositor_core::policy::{ConnectionRole, PowerSet};
 use compositor_core::privilege::{ClientStanding, Privilege};
 use compositor_core::window::WindowOrigin;
-use account_core::PeerIdentity;
 use smithay::reexports::wayland_server::backend::{ClientData, ClientId, DisconnectReason};
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::reexports::wayland_server::{Client, Resource};

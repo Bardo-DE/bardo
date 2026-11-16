@@ -7,9 +7,9 @@ use compositor_core::input::{
     PortalSessionId,
 };
 use compositor_ipc::dbus::ConnectRefusal;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testkit::fakes::callers;
 use compositor_testkit::{Fixture, FixtureSpec};
+use desktop_protocols::vocab::PressEdge;
 use std::io::Read;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
@@ -19,7 +19,7 @@ const KEY_SPACE: KeyCode = KeyCode(57);
 
 /// Only the portal is handed a remote socket; the shell and another desktop program are refused
 /// with the reason the D-Bus caller is told. (That the caller is who it says is the bus thread's
-/// proof, tested in `casement-ipc`; a caller nobody could prove never reaches the loop.)
+/// proof, tested in `compositor-ipc`; a caller nobody could prove never reaches the loop.)
 #[test]
 fn only_the_portal_is_handed_a_remote_socket() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");

@@ -1,7 +1,7 @@
 //! accountd's core (design/31 §4.1): the account registry and consent over its seams, as the
-//! facade [`AccountService`] over the domains that do the work: `porter-service-accounts` (add,
-//! sign in again, remove, rediscover), `porter-service-grants` (who may use which account, the
-//! relays a grant opens) and what they share, `porter-service-core` (the registry, the audit
+//! facade [`AccountService`] over the domains that do the work: `account-service-accounts` (add,
+//! sign in again, remove, rediscover), `account-service-grants` (who may use which account, the
+//! relays a grant opens) and what they share, `account-service-core` (the registry, the audit
 //! trail, the sheets seam, the reach policy, the context). The seams are
 //! [`account_provider::Provider`] (protocol code), [`account_secrets::Secrets`], `Sheets` (the host
 //! that draws consent and sign-in), a `Clock`, a `RegistryStore` (where the registry lives
@@ -13,7 +13,7 @@
 //! token the issuer rotated is stored before the new access token is handed out. A host that
 //! keeps its registry on disk passes `account_store::FileStore` to
 //! [`AccountService::with_store`]; this crate depends on no executor, so the file store lives in
-//! `porter-store`.
+//! `account-store`.
 
 mod service;
 

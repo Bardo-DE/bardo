@@ -1,4 +1,4 @@
-//! `#[derive(SettingsSchema)]`, re-exported by `ds-settings` (design/22-SETTINGS.md section 9,
+//! `#[derive(SettingsSchema)]`, re-exported by `ui-settings` (design/22-SETTINGS.md section 9,
 //! "the schema is data").
 //!
 //! On a settings struct it emits `impl SettingsSchema for X { fn schema() -> Schema }`, one

@@ -5,6 +5,8 @@
 //! same inks.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::chrome::sidebar::Sidebar;
 use ui_components::components::chrome::sidebar_model::{SidebarFill, SidebarSection};
@@ -13,8 +15,6 @@ use ui_components::style::space::presets::PRESETS;
 use ui_components::style::tokens::colour::ColourToken;
 use ui_components::style::tokens::hex::Hex;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Part, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 300,

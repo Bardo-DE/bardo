@@ -1,4 +1,4 @@
-//! The app-menu service and the agent's two menu actions against `sill-testkit`'s fake app on a
+//! The app-menu service and the agent's two menu actions against `shell-testkit`'s fake app on a
 //! private bus, never the real session bus. The fake app exports a menu bar as quire apps do
 //! (`org.quire.AppMenu.<app_id>`, `com.canonical.dbusmenu`) and logs every call it receives.
 //! The service follows the app's menu, a click reaches the app as `Event "clicked"`, a menu
@@ -940,6 +940,8 @@ async fn the_shells_own_rows_do_what_the_table_calls_cheap() {
 
 mod routed {
     use super::*;
+    use account_core::consent::{Decision, Grant, Usage};
+    use account_core::{AppId, DataClass, Isolation};
     use action_core::LinkFault;
     use action_core::{
         AppRefusal, CallRefusal, ConfirmAnswer, GrantScope as ConsentScope, Invocation,
@@ -949,14 +951,12 @@ mod routed {
         ScriptedReviewer, ScriptedWriter,
     };
     use action_manifest::Latency;
-    use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
     use action_router::{AppFault, AppLink, GrantStore, NoLog, Router, Seams};
     use action_vocab::CallerRole;
     use action_vocab::{ClassifyFault, ParamName, Value};
     use action_wire::{CallerId, SessionOpen};
+    use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
     use permission_policy::Presets;
-    use account_core::consent::{Decision, Grant, Usage};
-    use account_core::{AppId, DataClass, Isolation};
     use provenance::{AgentRef, SpaceId, SpaceScope, UnixSeconds};
     use shell_model::intents::shell::menu_ask_of;
     use shell_services::intents::menus;
@@ -1050,7 +1050,11 @@ mod routed {
             true
         }
 
-        async fn preview(&self, _: &AppName, _: &provenance::EntityId) -> Result<Preview, LinkFault> {
+        async fn preview(
+            &self,
+            _: &AppName,
+            _: &provenance::EntityId,
+        ) -> Result<Preview, LinkFault> {
             Err(LinkFault::Unavailable)
         }
 

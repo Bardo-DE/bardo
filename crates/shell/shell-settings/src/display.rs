@@ -2,10 +2,10 @@
 //! rendering for other apps, colour management). All Advanced for now (design/22 §5 has no
 //! Displays page yet). There is no scale key: the compositor owns a display's scale.
 
-use ui_settings::Percent;
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 use shell_model::displays::{FontRenderingMode, HardwareVolume, KeysTarget, NightWarmthMode};
+use ui_settings::Percent;
+use ui_settings::schema::Page;
 
 /// Displays.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]

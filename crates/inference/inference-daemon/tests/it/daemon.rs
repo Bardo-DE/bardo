@@ -5,13 +5,13 @@
 
 use crate::hosting::bus::{self, PrivateBus};
 
+use account_dbus::BusTarget;
+use base_testkit::Deadline;
 use inference_daemon::config::{Dirs, ProgramSearch};
 use inference_daemon::{Config, Daemon};
-use account_dbus::BusTarget;
+use inference_dbus::inference::INFERENCE_BUS;
 use std::path::Path;
 use std::time::Duration;
-use inference_dbus::inference::INFERENCE_BUS;
-use base_testkit::Deadline;
 
 /// The probe table names no port: this daemon must not ask a port of this computer what it is
 /// (a real Ollama may be on one).

@@ -4,11 +4,11 @@
 
 Status: PROPOSAL for the freeze. Sources read: BRIEF.md; COMPANION.md; cua-integration.md;
 research-cua-models.md; research-ecosystem-agents.md and -infra.md; intents-research/models.md;
-design/31-ACCOUNTS.md (including §11, the frozen interfaces); the porter repo (porter-core
-`capability/ai.rs`, `need/`, `ai_props.rs`, `wire/frame.rs`, all of porter-infer, porter-dbus
-`inference.rs` + `dbus/org.quire.Inference1.xml`, inferd, porter-fake `FakeModel`,
+design/31-ACCOUNTS.md (including §11, the frozen interfaces); the porter repo (account-core
+`capability/ai.rs`, `need/`, `ai_props.rs`, `wire/frame.rs`, all of inference-core, account-dbus
+`inference.rs` + `dbus/org.quire.Inference1.xml`, inferd, account-fake `FakeModel`,
 ARCHITECTURE.md, CONVENTIONS.md, FINDINGS.md, `scripts/check-boundary.sh`); quire CONVENTIONS.md
-and `docs/workspace-deps.toml`; design/22 §9.4; design/30 §3.4 and VoiceOrb; sill-launcher
+and `docs/workspace-deps.toml`; design/22 §9.4; design/30 §3.4 and VoiceOrb; shell-launcher
 `Provider`. I also read the H Company local-inference page (2026-10-02). It serves Holo with
 `vllm serve ... --enable-auto-tool-choice --tool-call-parser qwen3_coder --reasoning-parser qwen3
 --limit-mm-per-prompt '{"image": 5}'`, or `llama-server -hf Hcompany/Holo-3.1-35B-A3B-GGUF`.
@@ -28,11 +28,11 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 - `model-replay`: record and replay cassettes for tests.
 - `model-catalog`: the curated model table and the engine profiles, as data files.
 - `engine-supervisor`: start, readiness, idle unload, crash backoff and the VRAM budget for llama-server and vLLM.
-- `vision-prep`: resize rules per model, a token estimate, and the `FrameMap` between window, image and grid coordinates.
-- `cua-action`: the provider-neutral action enum, with coordinate spaces typed so that mixing them is a compile error.
+- `model-vision-prep`: resize rules per model, a token estimate, and the `FrameMap` between window, image and grid coordinates.
+- `computer-use-action`: the provider-neutral action enum, with coordinate spaces typed so that mixing them is a compile error.
 - `cua-wire`: the Anthropic, OpenAI and Gemini computer-use encodings. Trait and enum frozen now, bodies later.
-- `cua-parse`: the text and tool-call dialects of local models (UI-TARS-1.5, Qwen computer_use, Holo). Strict, total, fuzzed.
-- `cua-session`: the model side of one CUA step: history, prompt assembly, parse with one repair, and mapping into window space.
+- `computer-use-parse`: the text and tool-call dialects of local models (UI-TARS-1.5, Qwen computer_use, Holo). Strict, total, fuzzed.
+- `computer-use-session`: the model side of one CUA step: history, prompt assembly, parse with one repair, and mapping into window space.
 - The model picker's data model (tier map, picker rows, readiness, fit).
 - How all of this reaches apps and cuad through porter's inferd and `org.quire.Inference1`. These are additive extensions plus three marked changes to frozen porter types.
 
@@ -58,57 +58,57 @@ engines; it sits beside porter, latchkey, sill and detent; the user names it, Q1
 
 Why a new repo rather than inside porter:
 - These crates are useful outside our desktop and outside porter's account model.
-- They must not depend on `porter-core`.
+- They must not depend on `account-core`.
 - porter's 31 §8.12 already foresees splitting AI out of porter.
 
 inferd stays in porter (31 §4.1). It is the one place where porter types and stoker types meet:
-the bridge is `inferd/src/bridge.rs`, the only mapping. One exception: `porter-infer` takes a
-dependency on `cua-action` (pure, serde only), so that `CuaAction` has one home and is not
+the bridge is `inferd/src/bridge.rs`, the only mapping. One exception: `inference-core` takes a
+dependency on `computer-use-action` (pure, serde only), so that `CuaAction` has one home and is not
 copied into the wire.
 
-**Conflict resolved: two request models?** porter-infer's `ChatRequest` is the app-facing broker
+**Conflict resolved: two request models?** inference-core's `ChatRequest` is the app-facing broker
 wire (tier, class, usage; no model id). model-provider's `TurnRequest` is the engine-facing
 request (a concrete model, sampling, grammar, native tools, prepared images). They are two
 concepts at two layers, like `Capability::Mail` vs mailo's `AccountCaps`. There is one mapping
 home (`inferd::bridge`), and that keeps the frozen porter wire independent of stoker churn.
-Alternative: porter-infer depends on model-provider's message types. Rejected: it couples the
+Alternative: inference-core depends on model-provider's message types. Rejected: it couples the
 frozen app wire to the backend crate.
 
 ### 2.2 Crates in `stoker` (layers bottom-up; a lower crate never names a higher one)
 
 | Crate | Content | I/O | Depends on (ours) |
 |---|---|---|---|
-| `cua-action` | geometry (`Point<S>`, `Size<S>`, `Rect<S>`, spaces), `CuaAction<S>`, keys, dialect names (`CuaDialect`) | none | none |
-| `vision-prep` | `ResizeRule`, `fit`, `image_tokens`, `FrameMap`, `RawFrame`; feature `pixels`: `prepare` (resize and encode) | none (`pixels` is CPU only) | cua-action |
-| `model-provider` | `TurnRequest`, `Message`, `Part`, `ToolSpec`, `TurnEvent`, `TurnSink`, `Caps`, `Provider` trait, `ProviderError`; feature `testing`: `ScriptedProvider` | none | cua-action, vision-prep |
-| `cua-parse` | `parse_text`, `parse_tool_calls` for `TextDialect` and `ToolDialect` | none | cua-action, model-provider |
-| `cua-wire` | the `WireCodec` trait and one module per `WireDialect` (tool specs, decode, result encode) | none | cua-action, model-provider, vision-prep |
-| `cua-session` | `CuaSession` (pure: history window, prompt templates, parse and repair, map to window space) | none | all of the above |
+| `computer-use-action` | geometry (`Point<S>`, `Size<S>`, `Rect<S>`, spaces), `CuaAction<S>`, keys, dialect names (`CuaDialect`) | none | none |
+| `model-vision-prep` | `ResizeRule`, `fit`, `image_tokens`, `FrameMap`, `RawFrame`; feature `pixels`: `prepare` (resize and encode) | none (`pixels` is CPU only) | computer-use-action |
+| `model-provider` | `TurnRequest`, `Message`, `Part`, `ToolSpec`, `TurnEvent`, `TurnSink`, `Caps`, `Provider` trait, `ProviderError`; feature `testing`: `ScriptedProvider` | none | computer-use-action, model-vision-prep |
+| `computer-use-parse` | `parse_text`, `parse_tool_calls` for `TextDialect` and `ToolDialect` | none | computer-use-action, model-provider |
+| `cua-wire` | the `WireCodec` trait and one module per `WireDialect` (tool specs, decode, result encode) | none | computer-use-action, model-provider, model-vision-prep |
+| `computer-use-session` | `CuaSession` (pure: history window, prompt templates, parse and repair, map to window space) | none | all of the above |
 | `model-replay` | cassette format, `ReplayProvider`, `RecordingProvider<P>` over a `CassetteSink` | file write through an injected sink | model-provider |
-| `model-catalog` | `ModelEntry`, `EngineProfile`, parser of `catalog/*.toml`, the shipped files | none | model-provider, vision-prep, cua-action |
+| `model-catalog` | `ModelEntry`, `EngineProfile`, parser of `catalog/*.toml`, the shipped files | none | model-provider, model-vision-prep, computer-use-action |
 | `engine-supervisor` | pure `step` machine and `budget`; seams `EngineHost`, `ReadyProbe`, `GpuProbe`; features `systemd` (zbus transient units), `process` (tokio::process), `nvidia` (nvidia-smi runner) | behind features | model-catalog |
 | `model-http` | `HttpTarget` (Tcp, Unix, Tls), a hyper client, the pure `SseDecoder`, `AuthHeader` (redacted Debug) | yes | none |
 | `model-openai-compat` | pure `codec` (request JSON, SSE chunk to `TurnEvent`) plus `OpenAiCompat: Provider` | yes, through model-http | model-provider, model-http |
 | `model-anthropic`, `model-openai-responses`, `model-gemini` | cloud backends (**later**) | yes | same |
 
 Boundary script (stoker `scripts/check-boundary.sh`, porter's form):
-- The pure set is cua-action, vision-prep (default features), model-provider, cua-parse, cua-wire, cua-session, model-catalog, model-replay, and engine-supervisor (default features).
+- The pure set is computer-use-action, model-vision-prep (default features), model-provider, computer-use-parse, cua-wire, computer-use-session, model-catalog, model-replay, and engine-supervisor (default features).
 - It never reaches `tokio hyper hyper-util rustls zbus reqwest`.
-- vision-prep reaches `fast_image_resize` and `image` only with the `pixels` feature.
+- model-vision-prep reaches `fast_image_resize` and `image` only with the `pixels` feature.
 
 ### 2.3 Changes in `porter` (extend, don't contradict)
 
 | Crate | Change |
 |---|---|
-| porter-core | `Capability::ComputerUse(CuaCap)`, `CapabilityKind::ComputerUse`, `Need::ComputerUse(CuaNeed)`, its `matching::fit` arm; `VocabVersion(2)` |
-| porter-provider | `Discovery::Supervised` (inferd-run engines; models from the catalog at `Provenance::Curated`); shipped file `providers/local.toml` |
-| porter-infer | new modules `event` (stream), `cua` (step wire), `choice` (picker), `readiness`; marked changes to `request`, `reply`, `error`, `model`, `audit`; new edge to `cua-action` |
-| porter-dbus | additive `Inference1` members (§3.8), XML regenerated |
-| porter-client | `Transport::open` and `InferSession` replace `Transport::infer`; `Accounts::infer` becomes a helper over a session |
-| porter-fake | `FakeModel` streams; `FakeInferSession` |
+| account-core | `Capability::ComputerUse(CuaCap)`, `CapabilityKind::ComputerUse`, `Need::ComputerUse(CuaNeed)`, its `matching::fit` arm; `VocabVersion(2)` |
+| account-provider | `Discovery::Supervised` (inferd-run engines; models from the catalog at `Provenance::Curated`); shipped file `providers/local.toml` |
+| inference-core | new modules `event` (stream), `cua` (step wire), `choice` (picker), `readiness`; marked changes to `request`, `reply`, `error`, `model`, `audit`; new edge to `computer-use-action` |
+| account-dbus | additive `Inference1` members (§3.8), XML regenerated |
+| account-client | `Transport::open` and `InferSession` replace `Transport::infer`; `Accounts::infer` becomes a helper over a session |
+| account-fake | `FakeModel` streams; `FakeInferSession` |
 | inferd | modules `bridge`, `session`, `engines`, `cua_run`, `catalog`; `AdapterModel::Local(...)` |
 
-Allowed new edges: `porter-infer -> cua-action`; `inferd -> cua-action, vision-prep, model-provider, cua-session, model-catalog, engine-supervisor, model-http, model-openai-compat`.
+Allowed new edges: `inference-core -> computer-use-action`; `inferd -> computer-use-action, model-vision-prep, model-provider, computer-use-session, model-catalog, engine-supervisor, model-http, model-openai-compat`.
 
 ### 2.4 Dependencies: what joins quire's pinned block first 
 
@@ -118,13 +118,13 @@ Allowed new edges: `porter-infer -> cua-action`; `inferd -> cua-action, vision-p
 | hyper-util | 0.1.21 (research-infra, 2026-09-24) | model-http | client legacy pool, tokio rt |
 | http-body-util | 0.1 [unverified] | model-http | streaming bodies |
 | hyper-rustls + rustls | 0.27 / 0.23 [unverified] | model-http (cloud, later) | no OpenSSL |
-| base64 | 0.22 [unverified] | porter-infer inline images, backends | quire ds-core has a codec, but porter and stoker may not depend on ds-core |
-| fast_image_resize | 6.1.0 (2026-07-21) | vision-prep `pixels` | SIMD resize |
+| base64 | 0.22 [unverified] | inference-core inline images, backends | quire ui-core has a codec, but porter and stoker may not depend on ui-core |
+| fast_image_resize | 6.1.0 (2026-07-21) | model-vision-prep `pixels` | SIMD resize |
 | blake3 | 1 [unverified] | model-replay image digests (31 §5.3 Photos already plans BLAKE3) | |
-| proptest | 1 [unverified], dev only | cua-parse, vision-prep properties | cargo-fuzz targets live in a non-workspace `fuzz/` crate on nightly (dev script, Q9) |
-| keyboard-types | 0.7 (pinned) **+ `serde` feature** | cua-action `Chord` | pinned line changes |
+| proptest | 1 [unverified], dev only | computer-use-parse, model-vision-prep properties | cargo-fuzz targets live in a non-workspace `fuzz/` crate on nightly (dev script, Q9) |
+| keyboard-types | 0.7 (pinned) **+ `serde` feature** | computer-use-action `Chord` | pinned line changes |
 | tokio | 1 (pinned) **+ `net`, `io-util`, `process`** | model-http, engine-supervisor `process`, inferd | pinned line changes; daemons and io crates only |
-| image | 0.25.6 (pinned) | vision-prep `pixels` encode | unchanged |
+| image | 0.25.6 (pinned) | model-vision-prep `pixels` encode | unchanged |
 | zbus, toml, serde, serde_json, thiserror | pinned | | unchanged |
 
 **Not adopted, and conflicts with the Build map:**
@@ -138,7 +138,7 @@ Allowed new edges: `porter-infer -> cua-action`; `inferd -> cua-action, vision-p
 
 Every type follows the rules: no `bool` anywhere; data is `Eq`, so no floats are stored; newtypes for every unit; enums with data use `#[serde(tag="kind", content="v", rename_all="snake_case")]`; the derive order is the standard one; each wire or stored type gets a round-trip test. Doc comments are left out here for space.
 
-### 3.1 `cua-action` (freeze now)
+### 3.1 `computer-use-action` (freeze now)
 
 ```rust
 // geometry.rs: coordinate spaces as uninhabited markers; mixing spaces does not compile.
@@ -207,7 +207,7 @@ Conflicts resolved:
 - **(e) Extras.** `Open{app}`, `Navigate{url}`, `Memo`, mouse down/up and hold_key are not variants. Parsers drop them as `DropReason::UnsupportedVerb`, so the model can never act through a verb the schema lacks.
 - **Later (needs a user decision, Q4):** `Target::Node(NodeId)` as a second form of `at`.
 
-### 3.2 `vision-prep` (freeze now; `prepare` body in W1)
+### 3.2 `model-vision-prep` (freeze now; `prepare` body in W1)
 
 ```rust
 pub enum ResizeRule {
@@ -340,10 +340,10 @@ pub enum Batching { One, Many }   pub enum Zoom { Absent, Native }   pub enum Su
 
 **Conflict resolved.** cua-integration writes `Box<dyn CuaSession>`, and research-agents writes `async fn chat -> Stream`. porter's rule is that async seams are `-> impl Future + Send`, and closed sets of implementations are enums, never `dyn`. That rule wins. inferd has `enum Backend { OpenAiCompat(..), Replay(..), ... }` implementing `Provider`. The push sink also avoids a `futures` dependency.
 
-### 3.4 `cua-parse`, `cua-wire`, `cua-session`
+### 3.4 `computer-use-parse`, `cua-wire`, `computer-use-session`
 
 ```rust
-// cua-parse (freeze now; UiTars15 and QwenComputerUse filled in W1)
+// computer-use-parse (freeze now; UiTars15 and QwenComputerUse filled in W1)
 pub enum InSpace { Image(Vec<CuaAction<ImageSpace>>), Grid(GridMax, Vec<CuaAction<GridSpace>>) }
 pub struct Parsed { pub thought: Option<String>, pub actions: InSpace, pub dropped: Vec<Dropped> }
 pub struct Dropped { pub verb: VerbText, pub reason: DropReason }   // VerbText: <= 64 chars
@@ -364,7 +364,7 @@ pub trait WireCodec {
 pub enum StepResult { Done(CallId), Refused { id: CallId, why: String }, NotRun(CallId) }  // stop-at-first-failure text per vendor
 pub fn codec(dialect: WireDialect) -> WireCodecs;   // closed enum implementing WireCodec
 
-// cua-session (freeze now, fill W2)
+// computer-use-session (freeze now, fill W2)
 pub struct CuaProfile { pub dialect: CuaDialect, pub rule: ResizeRule, pub space: ModelSpace,
                         pub history: FrameBudget /* last N images */, pub repair: RepairBudget /* 1 */, pub encoding: Encoding }
 pub struct CuaTaskText { pub goal: String, pub hints: Vec<String> }   // typed data from the planner, not raw untrusted blobs
@@ -383,7 +383,7 @@ pub enum StepOutcome {
 }
 ```
 
-Prompt templates are data: `cua-session/prompts/{ui_tars_15,qwen_computer_use}.txt`, taken from Apache-2.0 model cards with attribution in the file header. Mapping happens inside the session: an out-of-frame point becomes a `Dropped` entry (reason `OutOfFrame` via `MapError`), never a clamped click.
+Prompt templates are data: `computer-use-session/prompts/{ui_tars_15,qwen_computer_use}.txt`, taken from Apache-2.0 model cards with attribution in the file header. Mapping happens inside the session: an out-of-frame point becomes a `Dropped` entry (reason `OutOfFrame` via `MapError`), never a clamped click.
 
 ### 3.5 `model-replay` (freeze now, fill W1)
 
@@ -504,7 +504,7 @@ The proposed values are settings, with design/22 rows needed (area "settings"):
 
 ### 3.8 porter extensions (the frozen form; each is an edit to design/31 in step)
 
-**porter-core: vocabulary bump to `VocabVersion(2)`** (31 §2.3 gains a row).
+**account-core: vocabulary bump to `VocabVersion(2)`** (31 §2.3 gains a row).
 
 ```rust
 pub struct CuaCap { pub environments: BTreeSet<CuaEnv>, pub batching: CuaBatching, pub zoom: Offered,
@@ -517,9 +517,9 @@ pub struct CuaNeed { pub environments: BTreeSet<CuaEnv> }   // matches: subset; 
 
 This is how cua-integration's "`Need` gains the `cua` kind" lands in porter's versioned vocabulary. The dialect detail stays in stoker's `Caps`; its summary becomes a `Claim` at `Provenance::Curated` (from the catalog) or `Discovered`.
 
-**porter-provider:** `Discovery::Supervised`. inferd runs these engines. The account is present while the engine is stopped (readiness `Loadable`), unlike probed runtimes, which go `Offline`. File `providers/local.toml`: `auth = local_runtime`, `[ai] locality = on_device, billing = free`, with capability rows written from the catalog at run time.
+**account-provider:** `Discovery::Supervised`. inferd runs these engines. The account is present while the engine is stopped (readiness `Loadable`), unlike probed runtimes, which go `Offline`. File `providers/local.toml`: `auth = local_runtime`, `[ai] locality = on_device, billing = free`, with capability rows written from the catalog at run time.
 
-**porter-infer: `request.rs` changes (changes a frozen type).**
+**inference-core: `request.rs` changes (changes a frozen type).**
 
 ```rust
 pub struct ChatRequest { pub messages, pub shape, pub tier, pub class, pub usage,
@@ -536,7 +536,7 @@ pub enum InferRequest { Chat(ChatRequest), Embed(EmbedRequest), Task(TaskRequest
 
 Why `bytes` becomes `source`: today `Vec<u8>` is serialized in JSON as an array of numbers, about 3.5 times the size. cua-integration requires frames to travel "never base64 over the bus", and memfd attachments meet that.
 
-**porter-infer: `cua.rs` (new, freeze now).** This is the contract between cuad and inferd. Every point in it is in `WindowSpace`.
+**inference-core: `cua.rs` (new, freeze now).** This is the contract between cuad and inferd. Every point in it is in `WindowSpace`.
 
 ```rust
 pub struct CuaBegin { pub goal: String, pub hints: Vec<String>, pub env: CuaEnv }
@@ -552,7 +552,7 @@ pub struct CuaStepReply { pub thought: Option<String>, pub actions: Vec<CuaActio
 pub enum CuaStepFailure { Unparseable, ModelFailed(ModelError) }
 ```
 
-**porter-infer: `event.rs` (new; closes FINDINGS "Inference is one-shot").**
+**inference-core: `event.rs` (new; closes FINDINGS "Inference is one-shot").**
 
 ```rust
 pub enum ClientFrame { Request(InferRequest), Cancel }               // client -> inferd on the Open fd
@@ -575,9 +575,9 @@ pub struct ChatReply { pub text: String, pub tool_calls: Vec<ToolCallPart>, pub 
 pub struct AuditEntry { /* frozen fields */ pub images: Count }      // + images: "a frame was sent", never the frame
 ```
 
-**porter-infer: `model.rs` (change).** `Model::chat` is replaced, not added beside: `chat(&self, request: &ChatRequest, sink: &mut impl ChatSink) -> impl Future<Output = Result<ChatReply, ModelError>> + Send`. `ChatSink::event(&mut self, InferEvent) -> Flow`. `FakeModel` follows.
+**inference-core: `model.rs` (change).** `Model::chat` is replaced, not added beside: `chat(&self, request: &ChatRequest, sink: &mut impl ChatSink) -> impl Future<Output = Result<ChatReply, ModelError>> + Send`. `ChatSink::event(&mut self, InferEvent) -> Flow`. `FakeModel` follows.
 
-**porter-infer: `choice.rs` and `readiness.rs` (new, freeze now): the model picker's data model.**
+**inference-core: `choice.rs` and `readiness.rs` (new, freeze now): the model picker's data model.**
 
 ```rust
 pub struct ModelRef { pub account: AccountId, pub model: ModelId }
@@ -601,14 +601,14 @@ pub fn picker_rows(kind: AiKind, cards: &[PickerInput], map: &TierMap) -> Vec<Pi
 | Member | Signature | Notes |
 |---|---|---|
 | `Availability` | unchanged | `need` may now be `computer_use` |
-| `Open` | unchanged | the fd is a Unix stream socket. Client writes `ClientFrame` frames (porter-core framing: 4-byte length plus a `{vocab, body}` JSON envelope, 16 MiB cap). inferd writes `InferEvent` frames. `ImageSource::Attached(i)` names the i-th memfd received with SCM_RIGHTS on that frame. The route is chosen once per Open, so a session is pinned to one model (CUA history needs that). |
+| `Open` | unchanged | the fd is a Unix stream socket. Client writes `ClientFrame` frames (account-core framing: 4-byte length plus a `{vocab, body}` JSON envelope, 16 MiB cap). inferd writes `InferEvent` frames. `ImageSource::Attached(i)` names the i-th memfd received with SCM_RIGHTS on that frame. The route is chosen once per Open, so a session is pinned to one model (CUA history needs that). |
 | `Prepare(need: (sa{sv}), class: s, tier: s) -> s` | **new** | warms the engine the route would pick and returns a `Readiness` slug. Called on double-tap ⌘ so the first turn does not pay a cold start. Refusals answer with the refusal slug. |
 | `Usage`, `Rescan` | unchanged | |
 | signal `EnginesChanged()` | **new**, broadcast | engine state is not personal. Listeners re-read readiness through `Prepare` (callers) or the settings module (detent). |
 | property `Gpu s` | **new** | `idle`, `busy`, `loading` (31 §3.3 "`GpuBusy`") |
 | `org.quire.SettingsModule1` at `/org/quire/Inference1/settings` | 22 §9.4 shape | detent's Intelligence page: `Describe` gives `PickerRow`s per kind as the choices of `ai.model.<kind>.<tier>`; `Set` writes the `TierMap` |
 
-**porter-client (change).** `Transport::open(&self, need: &Need, class: DataClass, tier: Tier) -> impl Future<Output = Result<Self::Session, TransportError>> + Send`, with `type Session: InferSession`. `InferSession` has `send(ClientFrame)` and `next() -> InferEvent`. `Transport::infer` is removed. `Accounts::infer` and a new `Accounts::session` sit on top of it.
+**account-client (change).** `Transport::open(&self, need: &Need, class: DataClass, tier: Tier) -> impl Future<Output = Result<Self::Session, TransportError>> + Send`, with `type Session: InferSession`. `InferSession` has `send(ClientFrame)` and `next() -> InferEvent`. `Transport::infer` is removed. `Accounts::infer` and a new `Accounts::session` sit on top of it.
 
 ### 3.9 Engine confinement (freeze the shape; verify in W2)
 
@@ -667,7 +667,7 @@ Budget rule (pure):
 | any | EOF or Close | Closed | drop the future; Release(engine) |
 | Waiting | Request | Waiting (queued, depth 1) | |
 
-### 4.3 CUA step (`cua-session::absorb`, inside inferd's `cua_run`)
+### 4.3 CUA step (`computer-use-session::absorb`, inside inferd's `cua_run`)
 
 | State | Event | Next |
 |---|---|---|
@@ -694,11 +694,11 @@ Shape tests land in the freeze wave and must compile against the `todo!()` bodie
 
 | Crate | Test | Asserts |
 |---|---|---|
-| cua-action | `actions_round_trip` | every variant of `CuaAction<WindowSpace>` survives JSON, adjacently tagged |
+| computer-use-action | `actions_round_trip` | every variant of `CuaAction<WindowSpace>` survives JSON, adjacently tagged |
 | | `mixing_spaces_does_not_compile` (compile_fail doctest) | `let p: Point<WindowSpace> = image_point;` fails to compile |
 | | `text_limits_refuse` (table) | `TypedText` over 2048 chars or with a control char, and `Repeat(0)`/`Repeat(21)`, are refused |
 | | `class_of_every_variant` (table) | `ActionClass` per variant |
-| vision-prep | `fit_matches_reference_smart_resize` (W1) | `fixtures/smart_resize.csv` rows (generated by `dev/smart-resize-vectors.py` from qwen-vl-utils, Apache-2.0) for factors 28 and 32 and 20 window sizes including 2560x1600 and 1366x768 |
+| model-vision-prep | `fit_matches_reference_smart_resize` (W1) | `fixtures/smart_resize.csv` rows (generated by `dev/smart-resize-vectors.py` from qwen-vl-utils, Apache-2.0) for factors 28 and 32 and 20 window sizes including 2560x1600 and 1366x768 |
 | | `map_round_trips_within_one_px` (proptest, W1) | window→image→window moves a point by at most 1 px |
 | | `outside_image_is_refused` (table) | x == image.w gives OutOfFrame; no clamp |
 | | `grid_999_and_1000_differ` | the same grid point maps differently under `GridMax(999)` and `GridMax(1000)` |
@@ -706,13 +706,13 @@ Shape tests land in the freeze wave and must compile against the `todo!()` bodie
 | model-provider | `requests_and_events_round_trip` | every `Part`, `ToolSpec`, `TurnEvent` |
 | | `scripted_provider_replays_and_records` | sink order and the recorded request |
 | | `stop_flow_ends_turn` | `Flow::Stop` gives `StopReason::EndTurn` with no further events |
-| cua-parse | `ui_tars_examples_parse` (W1) | model-card examples in `fixtures/ui_tars_15/*.txt` give the expected actions |
+| computer-use-parse | `ui_tars_examples_parse` (W1) | model-card examples in `fixtures/ui_tars_15/*.txt` give the expected actions |
 | | `qwen_tool_calls_parse` (W1) | `fixtures/qwen_cu/*.json` (recorded from Holo-3.1-4B by `dev/record-engine.sh`) |
 | | `unknown_verbs_are_dropped_not_guessed` | `open_app(...)` gives `Dropped{UnsupportedVerb}` |
 | | `never_panics` (proptest over arbitrary strings, W1) and the `fuzz/` targets `parse_text`, `parse_tool_calls` (dev script) | total parsing |
 | | `limits_hold` | 9 actions give OverBatchLimit; 33 KiB gives TooLarge |
 | cua-wire | `dialects_round_trip` (freeze); `anthropic_batch_stops_at_first_failure`, `gemini_safety_only_adds` (later, doc fixtures) | |
-| cua-session | `history_keeps_last_n_frames`, `one_repair_then_unparseable`, `out_of_frame_becomes_dropped` (W2, ScriptedProvider) | |
+| computer-use-session | `history_keeps_last_n_frames`, `one_repair_then_unparseable`, `out_of_frame_becomes_dropped` (W2, ScriptedProvider) | |
 | model-replay | `cassette_round_trips`, `images_are_digests`, `mismatch_names_index` | |
 | model-catalog | `shipped_files_parse`, `missing_field_refuses`, `user_file_replaces_system` | |
 | | `command_is_pure` (table) | the expected `UnitSpec` args for Holo under vLLM |
@@ -724,14 +724,14 @@ Shape tests land in the freeze wave and must compile against the `todo!()` bodie
 | model-openai-compat | `codec_request_golden` | request JSON for a `TurnRequest` with an image and a tool |
 | | `codec_stream_fixture` | `fixtures/openai_compat/*.sse` (recorded from vLLM and llama-server) |
 | | `tool_call_fragments_join` | |
-| porter-core | `computer_use_round_trips`; `matching` rows for `CuaNeed` | `VocabVersion::CURRENT == 2` |
-| porter-infer | `infer_frames_round_trip` | every `ClientFrame`, `InferEvent`, `InferReply`, `CuaStepRequest` |
+| account-core | `computer_use_round_trips`; `matching` rows for `CuaNeed` | `VocabVersion::CURRENT == 2` |
+| inference-core | `infer_frames_round_trip` | every `ClientFrame`, `InferEvent`, `InferReply`, `CuaStepRequest` |
 | | `picker_rows_order` (table) | |
 | | `tier_choice_from_map` | |
 | | `session_transitions` (table, §4.2) | |
 | | `cua_needs_screen_class` | |
-| porter-dbus | `introspection` (existing test) | catches `Prepare`, `EnginesChanged` and `Gpu` against the XML |
-| porter-client | `session_end_to_end` (InProcess + FakeModel) | Routed → deltas → Finished; Cancel gives Cancelled |
+| account-dbus | `introspection` (existing test) | catches `Prepare`, `EnginesChanged` and `Gpu` against the XML |
+| account-client | `session_end_to_end` (InProcess + FakeModel) | Routed → deltas → Finished; Cancel gives Cancelled |
 | inferd | `bridge_maps_every_part` (table) | ChatRequest ↔ TurnRequest; ToolCallPart ↔ ToolCall |
 
 Fakes and fixtures:
@@ -757,13 +757,13 @@ Verify with quire's gate.
 - F1.0: read Holo-3.1-4B's `chat_template.jinja`, `preprocessor_config.json` and `config.json` read-only through WebFetch of the hub raw files. This fixes the `ToolDialect`, `GridMax` or ImagePx, and the factor. If Holo's schema is not Qwen's `computer_use`, add `ToolDialect::Holo31` before the freeze.
 - Then add, in order: workspace, CONVENTIONS.md (verbatim), ARCHITECTURE.md (crate map, one-home table, traits, recipes "add a backend", "add a dialect", "add a catalog entry"), FINDINGS.md (every `todo!()`), deny.toml, rust-toolchain.toml (porter's pin), `scripts/check-boundary.sh`.
 - Then every crate's types and traits per §3, bodies as `todo!()`, the shape tests of §5, and `catalog/holo-3.1-4b.toml`.
-- Commit cua-action first, so that F2 can path-patch it.
+- Commit computer-use-action first, so that F2 can path-patch it.
 
 **F2 porter** (owns porter files and **design/31-ACCOUNTS.md** in quire, edited in step).
 - §2.3 and §3.8 changes; the vocabulary bump; `providers/local.toml`; regenerated `dbus/org.quire.Inference1.xml`.
-- ARCHITECTURE edges and `check-boundary.sh` rows (porter-infer→cua-action; inferd→stoker crates); FINDINGS stubs (`Broker::infer` streaming, session server, Prepare).
+- ARCHITECTURE edges and `check-boundary.sh` rows (inference-core→computer-use-action; inferd→stoker crates); FINDINGS stubs (`Broker::infer` streaming, session server, Prepare).
 - inferd modules as skeletons.
-- Before cua-action lands in the pinned block, porter depends on it through a `[patch]` path to `../stoker` (quire CONSUMING.md §1 pattern).
+- Before computer-use-action lands in the pinned block, porter depends on it through a `[patch]` path to `../stoker` (quire CONSUMING.md §1 pattern).
 - design/31 edits: §2.3 (ComputerUse row), §3.3 (Readiness, Supervised), §4.4 (Inference1 members), §5.5 (streaming, tools, CUA steps, picker TierMap), §11 table.
 
 Verify each repo with:
@@ -779,8 +779,8 @@ cargo deny check licenses
 In quire, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not a gate).
 
 **Fill wave W1 (pure; stoker agents own one crate each, plus one porter agent):**
-- W1a vision-prep plus `dev/smart-resize-vectors.py` (run in the `~/vllm` uv environment).
-- W1b cua-parse (UiTars15, QwenComputerUse), proptest, `fuzz/`.
+- W1a model-vision-prep plus `dev/smart-resize-vectors.py` (run in the `~/vllm` uv environment).
+- W1b computer-use-parse (UiTars15, QwenComputerUse), proptest, `fuzz/`.
 - W1c model-catalog plus engine-supervisor `step` and `budget`.
 - W1d model-replay plus `ScriptedProvider`.
 - W1e porter: `matching` arm, `picker_rows`, `tier_choice`, `session` step, `FakeModel` streaming.
@@ -788,10 +788,10 @@ In quire, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not 
 **W2 (io):**
 - W2a model-http plus model-openai-compat; `dev/record-engine.sh` records fixtures from the user's engine (a manual run).
 - W2b engine-supervisor `systemd`, `process` and `nvidia` features; Spike S1 (Unix sockets and `PrivateNetwork` for both engines; a dev script on a scratch user unit).
-- W2c cua-session.
+- W2c computer-use-session.
 
 **W3 (integration, porter):**
-- inferd `bridge`, `engines` (supervisor host), fd session server with memfd attachments, `Prepare`, `Broker::infer` streaming, `cua_run`; porter-client `DbusTransport::open`.
+- inferd `bridge`, `engines` (supervisor host), fd session server with memfd attachments, `Prepare`, `Broker::infer` streaming, `cua_run`; account-client `DbusTransport::open`.
 - Acceptance dev script `dev/cua-step-holo.sh`: real Holo-3.1-4B on the 5070 Ti, a recorded window frame (fixture PNG of a GTK window), one `CuaStep`, and the window-space actions printed. Not a test: it touches the GPU.
 
 **W4 (later):** cloud backends plus cua-wire bodies (when the user turns on cloud); the mistral.rs spike; the weight downloader (`Downloading`); `Target::Node`.
@@ -804,7 +804,7 @@ In quire, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not 
 
 | Area | Needs from models | Models needs from it |
 |---|---|---|
-| "cua" (cuad, compositor) | `cua-action` types, `CuaStepRequest`/`CuaStepReply` over the Inference1 fd, `ActionClass`, `Dropped` | raw frames as memfd with `WindowGeometry`; the lease's window; `MaskedRegions`; the loop's budgets; acting on `ActionProposed` for the glow |
+| "cua" (cuad, compositor) | `computer-use-action` types, `CuaStepRequest`/`CuaStepReply` over the Inference1 fd, `ActionClass`, `Dropped` | raw frames as memfd with `WindowGeometry`; the lease's window; `MaskedRegions`; the loop's budgets; acting on `ActionProposed` for the glow |
 | "agent" (planner and reader) | `Accounts::session`, `ChatRequest.tools`, `InferEvent` streaming, `Prepare` | which tier and need per role. The reader is `Need::Llm{StructuredOutput}` with `ReplyShape::Json` and no tools. |
 | "intents" | carries `ToolDecl { name, description, params }` | `ActionDecl` → JSON Schema text (its home) |
 | "security" (policy, prov, egress) | `ActionClass`, `SafetyHint` (add-only), `ServedBy`/locality, audit `images` | the egress proxy for cloud backends (`model-http` takes a proxy `HttpTarget`); `Screen` floor stays OnDevice |

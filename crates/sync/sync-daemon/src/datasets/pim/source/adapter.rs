@@ -6,12 +6,12 @@
 //! a mirror is pull-only and the engine never sends one.
 
 use super::{Feed, FeedChange, FeedCursor};
+use std::collections::HashMap;
+use std::sync::{Mutex, PoisonError};
 use sync_core::{
     Anchor, BaseVersion, Blob, ByteRange, Change, ChangePage, Cursor, PutItem, PutRefused, Quota,
     RemoteId, RemoteVersion, Replica, ReplicaError,
 };
-use std::collections::HashMap;
-use std::sync::{Mutex, PoisonError};
 
 /// The most bytes of content kept between a page and its fetches.
 const HELD_MAX: usize = 32 * 1024 * 1024;

@@ -6,6 +6,9 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::{Rgba, RgbaImage};
+use probe::{keep, rect};
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::plate_tint::PlateTint;
@@ -13,9 +16,6 @@ use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::space::presets::PRESETS;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use image::{Rgba, RgbaImage};
-use probe::{keep, rect};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 520,

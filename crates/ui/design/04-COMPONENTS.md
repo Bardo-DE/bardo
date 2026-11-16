@@ -94,7 +94,7 @@ Rules that apply to every section (from the plan's §11 addenda):
 
 ## Shared vocabulary
 
-### Props enums (`ds-core/vocab.rs`)
+### Props enums (`ui-core/vocab.rs`)
 
 The plan names these; the mapping to attributes below is this document's proposal and is
 binding once 04 is approved.
@@ -177,7 +177,7 @@ Positions come from `place(anchor, content, bounds, want, gap) -> Placed` in Rus
 does not fit, clamp 8 px from the bounds.
 
 On shell surfaces a floating component is its own Wayland popup: the component emits a
-`PopoverRequest { anchor, placement, size }`, shell-host maps it to `xdg_positioner`, and the
+`PopoverRequest { anchor, placement, size }`, layer-shell-host maps it to `xdg_positioner`, and the
 component fills that surface. The popup's background is the Material recipe
 (`Material::Popover`, `--m-tint`, compositor blur); see 03-COLOR.
 
@@ -682,7 +682,7 @@ pointer (`S:1435-1441`, the field does the same). Move updates, up releases. Key
 minus one step, Right/Up plus one step (the handle uses 5° / .05 steps, `S:1455-1456`; slider
 step is a prop). See 06-INTERACTIONS "drag tracker". `data-wheel="capture"` (11-BEHAVIOUR-scroll.md
 section 11.3.1) marks the slider as one of the ds components that consumes wheel input itself, so
-shell-host's scroll engine hands it the raw event instead of scrolling the page under it.
+layer-shell-host's scroll engine hands it the raw event instead of scrolling the page under it.
 
 **Blitz notes.** `setPointerCapture` is JS; `DragTracker` in Rust owns the capture and writes
 `--f`. The white border and shadow literals need tokens (`--handle-ring`, O-3).
@@ -772,7 +772,7 @@ is required so the global focus ring does not double the accent ring.
   field is `Secret`.
 - A masked field's caret (sill Q360b, 2026-09-27). Blitz measures a `Password` or `Secret`
   field's hidden text in its editor's face, untracked, so its caret drifts off the Inter dots.
-  Where the host reads the selection (`ds::host::parts::CaretHost::selection`, ds-blitz's), the
+  Where the host reads the selection (`ds::host::parts::CaretHost::selection`, ui-blitz's), the
   input carries `data-caret=drawn` (`caret-color: transparent`) and `.ds-input-mask` draws the
   caret itself: `span.ds-input-caret` centred in the gap between the dots at the caret's
   character (half the tracking back; half a gap after the last dot at the end), Blitz's caret
@@ -2527,7 +2527,7 @@ SectionHeader (margin-bottom 6) over its control. Swatches reuse the Space dot (
 circle, 2px border, gap 5 as in the sidebar foot `S:845`). Overall width is the host
 surface's (O-16). Labels: Theme uses S's words (System, Light, Dark; C says Auto).
 
-**Behaviour.** Changes apply at once and persist through ds-settings (atomic write). "System"
+**Behaviour.** Changes apply at once and persist through ui-settings (atomic write). "System"
 follows the portal. The number of accents is the accent table's (03-COLOR). Changing Theme
 cross-fades the frame (layer opacity 380 ms, `S:86`; 05-MOTION).
 
@@ -3313,7 +3313,7 @@ content: `Small` draws compact; `Medium`, `Large` or no frame draws regular. `Re
 | Title | the UI face at `--fs-micro` 9.5, `--fw-caps` (600), tracked, upper, `--accent`; its left edge 4 in (`--s-4`), where a two-digit first column's number starts | the reference: month name top left in the accent, small caps weight |
 | Header | 14 high, no gap under it; the step buttons are plain 14 px `button.ds-month-step` round an 11 px glyph (`--ink-faint`, `--surface-2` under the pointer, squish pressed), since the Tool button's 28 x 26 would take a fifth of the height | Q190 |
 | Week numbers | never drawn, whatever `weeks` says (`data-weeks=hide`): a column would not fit | Q190 |
-| Snapshots | `tools/progress/shots/gallery/calendar-compact-{before,after}-{5wk,6wk}-{light,dark}-{1x,4x}.png`, from sill's ds-conformance/tests/month_grid_shots.rs (`QUIRE_CAL_SHOTS=<dir> QUIRE_CAL_TAG=<tag>`) | |
+| Snapshots | `tools/progress/shots/gallery/calendar-compact-{before,after}-{5wk,6wk}-{light,dark}-{1x,4x}.png`, from sill's ui-conformance/tests/month_grid_shots.rs (`QUIRE_CAL_SHOTS=<dir> QUIRE_CAL_TAG=<tag>`) | |
 
 **States.**
 
@@ -3397,7 +3397,7 @@ and `svg.ds-clock-pin`. Every vector is on `currentColor` with `data-ds-svg`. Di
 `--font-display` 800 tabular (`09:41`, `09:41:07` with seconds), at `--fs-widget-hero` in a Small
 frame and `--fs-subject` elsewhere, bumping on each new minute; a sun (`svg.ds-clock-sun`,
 `--warn`) or moon (`svg.ds-clock-moon`, `--ink-faint`) before the city. The hand angles are pure
-(sill-shell-kit/clock/angles.rs): hour `30 x (h mod 12) + m / 2 + s / 120` degrees, minute `6 x m + s / 10`,
+(shell-kit/clock/angles.rs): hour `30 x (h mod 12) + m / 2 + s / 120` degrees, minute `6 x m + s / 10`,
 second `6 x s`.
 
 **BatteryLevel**. `BatteryLevel { level:
@@ -3406,7 +3406,7 @@ Fraction, mark: RingMark::{Plain, Charging}, label: Text, wake: WakeStamp, child
 full circle in `--battery-track`; `svg.ds-battery-arc`, clockwise from twelve as far as the level
 in `--battery-fill`, `--battery-low` at or under 20 % (`data-tone` `low`, and `critical` at or
 under 10 %, the same red); charging is never low; stroke .093 of the ring, round caps, the path
-computed in Rust (`sill-shell-kit/battery/ring.rs`). `children` (the device glyph) sit centred in
+computed in Rust (`shell-kit/battery/ring.rs`). `children` (the device glyph) sit centred in
 `span.ds-battery-device` at .47 of the ring. `Charging` (`data-mark="charging"`) cuts a gap at
 twelve in both strokes and sets `svg.ds-battery-bolt` in it once the fill has arrived. The
 percentage is the caller's (design/23 section 4.1), counted in step with the fill by
@@ -3650,8 +3650,8 @@ steadily; Wince swaps in `EmojiId::WRONG` (confounded) once through, Happy `Emoj
 still (design/25 section 5). Reduced motion, or `playback: EmojiPlayback::Still` (a picker's
 grid): still frames only.
 
-**Tests.** sill-shell-kit/tests/emoji_ssr.rs (goldens, lint), `sill-shell-kit/emoji/tests.rs` (sheets,
-manifest, the script's idle rule, the mood mapping), sill's ds-conformance/tests/emoji_animation.rs (frames
+**Tests.** shell-kit/tests/emoji_ssr.rs (goldens, lint), `shell-kit/emoji/tests.rs` (sheets,
+manifest, the script's idle rule, the mood mapping), sill's ui-conformance/tests/emoji_animation.rs (frames
 advance, rest at 21 s, idle's rests, the wince swap, each mood as a `UserPortrait`, Reduced).
 
 ### 44a. UserPicture, UserPortrait and UserPicturePicker (2026-09-26; design/25 section 7)
@@ -3694,9 +3694,9 @@ click or an arrow key (the emoji grid's `grid_step`: Left and Right wrap rows, U
 inside) calls `onpick` with the new choice; `choice` is the caller's and marks one cell (none for
 `Auto` or `Photo`). Nothing in the picker plays.
 
-**Tests.** sill-shell-kit/tests/user_picture_ssr.rs (goldens of the letter, the emoji at rest, the photo
+**Tests.** shell-kit/tests/user_picture_ssr.rs (goldens of the letter, the emoji at rest, the photo
 and the picker; lint; the serde round trip; the `resolve_picture` table), `ds/src/components/
-user_picture/picker.rs` (cells and marks), sill's ds-conformance/tests/lock_switcher.rs (the emoji's moods
+user_picture/picker.rs` (cells and marks), sill's ui-conformance/tests/lock_switcher.rs (the emoji's moods
 in the lock prompt; the letter's beat).
 
 ### 45. PdfThumb and PdfFileThumb (a PDF's first page; sill M9 launcher v2, 2026-09-26; values proposed)
@@ -3736,7 +3736,7 @@ pub const PDF_THUMB_GRACE: Duration;          // 400 ms, design/26 PendingGrace
 pub const PDF_DEFAULT_SHEET: ImageSize;       // A4 portrait, 595 x 842 pt
 pub fn sheet_rect(room: Size, shape: ImageSize) -> Rect;
 #[component] pub fn PdfThumb(page: PdfPage, size: Size, label: Option<String>) -> Element
-// ds-blitz, feature `pdf`:
+// ui-blitz, feature `pdf`:
 #[component] pub fn PdfFileThumb(path: PathBuf, size: Size, label: Option<String>) -> Element
 pub struct ThumbRequest { pub path: PathBuf, pub size: Size, pub scale: Scale }
 pub fn pdf_thumb_blocking(&ThumbRequest) -> PdfPage;    // cached, else read + raster now
@@ -3772,10 +3772,10 @@ encrypted file that opens with the empty user password draws; one that needs a p
 `Failed(Locked)`.
 
 **Tests.** `ds/tests/it/pdf_thumb_ssr.rs` (a golden of each state, lint), `ds/src/components/
-pdf_thumb.rs` (the sheet's fit), `ds-blitz/tests/pdf_thumb.rs` (a generated PDF rasterised in
+pdf_thumb.rs` (the sheet's fit), `ui-blitz/tests/pdf_thumb.rs` (a generated PDF rasterised in
 its colour and aspect, the cache hit and the mtime miss, the failures, a document painting the
-page), `ds-blitz/tests/pdf_thumb_queue.rs` (20 quick requests run at most 4 rasters and show the
-last), `ds-blitz/pdf_thumb/cache.rs` (eviction).
+page), `ui-blitz/tests/pdf_thumb_queue.rs` (20 quick requests run at most 4 rasters and show the
+last), `ui-blitz/pdf_thumb/cache.rs` (eviction).
 
 ### 46. EmojiGrid (sill M9 launcher v2, Q291, 2026-09-26; values proposed)
 
@@ -3832,7 +3832,7 @@ for cell 0.
 
 **Tests.** `ds/components/lists/emoji_grid/nav.rs` (the moves), `ds/components/menus/palette/palette_stops.rs`
 (entering and leaving in a palette), `ds/tests/it/launcher_parts_ssr.rs` (`grid-in-palette`,
-`grid-alone`), `ds-conformance/tests/it/palette_grid_pane.rs` (the palette walk and the grid on its own).
+`grid-alone`), `ui-conformance/tests/it/palette_grid_pane.rs` (the palette walk and the grid on its own).
 
 ### 47. PreviewPane (sill M9 launcher v2, Q292, 2026-09-26; values proposed)
 
@@ -3879,7 +3879,7 @@ pub const PANE_MEDIA: Size;   // 328 x 220
 #[component] pub fn PreviewPane(content: PaneContent, actions: Vec<PaneAction>,
     focused: Option<usize>, onaction: EventHandler<usize>,
     shown: Shown /* Visible */, on_hidden: EventHandler<()>) -> Element
-// ds-blitz, feature `pdf`:
+// ui-blitz, feature `pdf`:
 pub fn use_pdf_page(path: Option<PathBuf>, size: Size) -> Option<PdfPage>
 ```
 
@@ -3928,10 +3928,10 @@ Operation` is the load the media waits on (Q371): `use_pending` with a Spin ring
 section 13.3.9's keys are the caller's, through the palette's `claim`, section 49), so `focused`
 draws which action the caller's Tab has reached. A click on an action calls `onaction(i)`.
 
-**Tests.** `ds/tests/it/launcher_parts_ssr.rs` (`pane-*`, `palette-aside`), `ds-conformance/tests/
+**Tests.** `ds/tests/it/launcher_parts_ssr.rs` (`pane-*`, `palette-aside`), `ui-conformance/tests/
 palette_grid_pane.rs` (the card widening over a window, the results narrowing in a surface, the exit
-settling before `on_hidden`), `ds-blitz/tests/pdf_thumb.rs` (a pane drawing a PDF through
-`use_pdf_page`), `ds-conformance/tests/it/launcher_pane_cues.rs` (each moment, Reduced, 0 frames).
+settling before `on_hidden`), `ui-blitz/tests/pdf_thumb.rs` (a pane drawing a PDF through
+`use_pdf_page`), `ui-conformance/tests/it/launcher_pane_cues.rs` (each moment, Reduced, 0 frames).
 
 ### 48. RowShape: file and clipboard rows in the palette (sill M9 launcher v2, Q290, 2026-09-26; values proposed)
 
@@ -4034,7 +4034,7 @@ prevented (the field types no Space, moves no caret) and `onkey` does not hear i
 as before. The caret is read from the field's editor when the key arrives: `AtEnd` for a bare
 caret after the last character (an empty field too), `Inside` for any other place or any
 selection. Blitz holds no borrow of the document while a handler runs, so the read is exact;
-without ds-blitz's `CaretHost` (a webview) it is `Unknown`. A verdict-returning callback was
+without ui-blitz's `CaretHost` (a webview) it is `Unknown`. A verdict-returning callback was
 chosen over a declarative `KeyPolicy`: whether Space is the pane's depends on the caller's own
 state (browsing or typing, sill F654), which a policy would have to mirror into props every
 render; the callback asks at the moment with the caret in hand. It is a new prop beside
@@ -4042,9 +4042,9 @@ render; the callback asks at the moment with the caret in hand. It is a new prop
 
 **Tests.** `ds/components/menus/palette/palette_stops.rs` (the stop order and the moves),
 `ds/host/caret.rs` (the caret's place), `ds/tests/it/launcher_parts_ssr.rs` (`show-more`,
-`show-more-selected`), `ds-conformance/tests/it/palette_grid_pane.rs` (Show More reached and run by keyboard;
+`show-more-selected`), `ui-conformance/tests/it/palette_grid_pane.rs` (Show More reached and run by keyboard;
 Space taken only while browsing, Right only at the end), `ds/components/menus/palette/palette_expand.rs`
-(what is an expand), `ds-conformance/tests/it/launcher_palette_cues.rs` (the rise, the expand and the
+(what is an expand), `ui-conformance/tests/it/launcher_palette_cues.rs` (the rise, the expand and the
 collapse, Reduced, 0 frames).
 
 ### 50. EditSurface spelling (mailo's composer, 2026-09-27; values proposed)
@@ -4091,7 +4091,7 @@ pub trait SpellService { fn languages(&self) -> Vec<Lang>;
     fn suggest(&self, Vec<Lang>, String) -> SpellFuture<Vec<String>>;
     fn ignore(&self, String); fn learn(&self, Lang, String) -> SpellFuture<Learned>; }
 pub const SPELL_SUGGESTIONS: usize;      // 5
-// ds-blitz, feature `spell`:
+// ui-blitz, feature `spell`:
 pub fn provide() -> Rc<dyn SpellService>;   // system dictionaries, the locale's language
 pub fn provide_with(SpellConfig, Vec<Lang>) -> Rc<dyn SpellService>;
 pub struct SpellConfig { pub dictionaries: Vec<PathBuf>, pub user: PathBuf }
@@ -4137,9 +4137,9 @@ pub struct SpellConfig { pub dictionaries: Vec<PathBuf>, pub user: PathBuf }
 **Tests.** `ds/src/spell/words_tests.rs` (tokenisation, every skip rule, CJK), `script.rs` (the
 CJK blocks), `marks_tests.rs` (marks following an edit, the word being typed), `lang.rs`;
 `ds/tests/it/edit_surface_ssr.rs` (`spell-on.html`, `spell-marked.html`);
-`ds-blitz/spell/choose.rs` (dictionary fallback, the locale);
-`ds-blitz/tests/spell_worker.rs` (a temporary `.aff`/`.dic`: check, suggest, ignore, learn and
-read back, the system's en_US only where installed); `ds-blitz/tests/spell_edit.rs` (typed
+`ui-blitz/spell/choose.rs` (dictionary fallback, the locale);
+`ui-blitz/tests/spell_worker.rs` (a temporary `.aff`/`.dic`: check, suggest, ignore, learn and
+read back, the system's en_US only where installed); `ui-blitz/tests/spell_edit.rs` (typed
 misspelling marked after the debounce, the typed word held, right-click and pick, undo restores
 it, Ignore, the context-menu key and Learn).
 
@@ -4172,7 +4172,7 @@ shell reads from `bar.battery_low_percent` (design/26 G10, proposed; sill's key)
 **Tests.** `ds/tests/it/status_tables.rs` (every catalogue row as a `moment_table`, the first frames,
 the quantising: bars by thirds, waves by thirds, the fill's steps, the low threshold);
 `ds/src/components/status/{wifi.rs, battery_state.rs}` (layers per state, frame and fill; steps and
-tone); `ds-conformance/tests/it/status_wifi.rs`, `status_battery.rs`, `status_bluetooth_volume.rs` (each
+tone); `ui-conformance/tests/it/status_wifi.rs`, `status_battery.rs`, `status_bluetooth_volume.rs` (each
 moment on a real Blitz document ending in `assert_settles_to_zero_frames`, the join's grace and
 its cap, a repeated stamp that does not shake, and Reduced: the still frame at once, the slash and
 the fill jumping, no shake). Gallery: Details, "Status glyphs".
@@ -4202,14 +4202,14 @@ outline drawn with `Shape::Solid` (filled and stroked, so its silhouette is the 
 
 **Tests.** `ds/tests/it/center_tables.rs` (the row and playback tables, the filled moon, the spring
 recipe); unit tables beside `Lighting`, `Percent`, `Reading` and `Playback`;
-`ds-conformance/tests/details_center_{tile,rows,player,battery}.rs`, all on `Clock::Virtual`, every
+`ui-conformance/tests/details_center_{tile,rows,player,battery}.rs`, all on `Clock::Virtual`, every
 moment ending in `assert_settles_to_zero_frames`, each with a Reduced case. Gallery: Details,
 "Control center modules".
 
 ### Window frame: WindowFrame, the titlebar and the traffic lights (settled 2026-09-25)
 
 **Purpose.** The frame of a client-decorated window: our apps on `ds_blitz::launch` (mailo)
-and, later, the shell's apps on shell-host toplevels. It moves, resizes and zooms the window
+and, later, the shell's apps on layer-shell-host toplevels. It moves, resizes and zooms the window
 through the host seam `ds::prelude::HostWindow` (design/13 section 13.3.11; FINDINGS "Window frame").
 **Props.** `Ds { window: WindowFrame }`. `WindowFrame::None` (default) draws nothing and leaves
 the root's markup as it was; `WindowFrame::Titlebar { title, lights: Shown::{Visible,
@@ -4292,8 +4292,8 @@ frames, and so does a live settings edit that moves `level` while already dimmed
 never fades in either: it jumps straight to the level, the way `Sweep`'s own `Stand` plan does.
 Ends at 0 frames once landed (R3).
 
-**Tests.** `sill-shell-kit/idle_dim/model.rs` (the plan table: waking and a settings edit always snap,
-dimming fades except under Reduced); sill's ds-conformance/tests/idle_dim.rs on `Clock::Virtual` (the fade
+**Tests.** `shell-kit/idle_dim/model.rs` (the plan table: waking and a settings edit always snap,
+dimming fades except under Reduced); sill's ui-conformance/tests/idle_dim.rs on `Clock::Virtual` (the fade
 lands on the level at `--t-idle-dim`, an input mid-fade snaps to zero at once, Reduced motion
 shows the level from its first frame, `assert_settles_to_zero_frames` once landed). CONSUMING.md
 "Idle dim".
@@ -4418,10 +4418,10 @@ it arms. Unset, the alert is armed at once and is as above.
 --e-out`); with `shown`, hidden, the driven spring fades and lowers it, the scrim plays `menu-out
 --t-quick --e-exit`, and `on_hidden` runs once the spring rests. Reduced: it only fades.
 
-**Tests.** `ds/tests/it/alert_ssr.rs` and `ds-conformance/tests/it/alert.rs` (the default button and faces, the
+**Tests.** `ds/tests/it/alert_ssr.rs` and `ui-conformance/tests/it/alert.rs` (the default button and faces, the
 keys, as tables); `ds/tests/it/alert_ssr.rs` (goldens under `tests/snapshots/alert/`: floating light
 and dark, inline in a 320 px popover, destructive, destructive with an icon, hidden both ways; lint
-clean; every class styled; the default is the filled button); `ds-conformance/tests/it/alert.rs` on
+clean; every class styled; the default is the filled button); `ui-conformance/tests/it/alert.rs` on
 `Clock::Virtual` (focus starts on the default, Cancel when destructive; Return presses the
 default wherever the focus is; Escape and the scrim cancel in both flows; Space presses the
 focused button; Tab stays inside; inline it fits inside a 320 px popover, floating it is centred in
@@ -4473,7 +4473,7 @@ A primary press only picks; a secondary one does nothing.
 by `use_presence`; `on_hidden` runs at `settle(LiftOut)`, when the host unmaps the surface. `--drop-dy`
 sets how far above it starts (`--s-48`). Reduced: a cross-fade over `--t-quick`.
 **Tests.** `ds/tests/it/components_overlays.rs` goldens (`spaces_bar/collapsed`, `expanded`);
-`ds-conformance/tests/it/spaces_bar.rs` (hover, press, plus, held expansion, drop lit, lift, the lit plus,
+`ui-conformance/tests/it/spaces_bar.rs` (hover, press, plus, held expansion, drop lit, lift, the lit plus,
 the backdrop under the picture, `on_layout` against the drawn elements) and
 `drop_in_lift_out.rs` (the motion on a virtual clock).
 

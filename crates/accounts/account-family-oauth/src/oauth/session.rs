@@ -170,7 +170,7 @@ impl<R: BrowserIssuer, H: Http + 'static> OAuthSession<R, H> {
                 ProviderError::Unauthorized
             }
             ExchangeFault::Unreachable => ProviderError::Unreachable,
-            // unreadable, and a fault a later porter-oauth adds
+            // unreadable, and a fault a later account-oauth adds
             _ => ProviderError::Unreadable,
         })?;
         let issued = IssuedToken::new(

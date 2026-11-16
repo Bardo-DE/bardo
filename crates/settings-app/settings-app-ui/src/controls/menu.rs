@@ -1,9 +1,9 @@
 //! More than five words: a pop-up button.
 
 use crate::copy::extensions::NOT_INSTALLED;
+use dioxus::prelude::*;
 use settings_app_model::external::toml;
 use settings_app_model::{stray_word, word_label};
-use dioxus::prelude::*;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;

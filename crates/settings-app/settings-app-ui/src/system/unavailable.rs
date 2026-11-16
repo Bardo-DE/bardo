@@ -3,8 +3,8 @@
 
 use crate::copy;
 use crate::copy::absence::Subject;
-use settings_app_model::Absence;
 use dioxus::prelude::*;
+use settings_app_model::Absence;
 use ui_components::components::overlays::empty_state::EmptyState;
 use ui_components::prelude::*;
 

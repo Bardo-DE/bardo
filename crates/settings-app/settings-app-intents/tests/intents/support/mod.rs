@@ -4,6 +4,11 @@
 
 mod bus;
 
+use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
+use action_dbus::callers::{INTENTD, Identity, intentd_only};
+use action_dbus::{Details, INTENTS_BUS, IntentProviderProxy};
+use action_vocab::{Args, CallId, EntityRef, Origin, ParamName, UndoToken, Value};
+use provenance::{Actor, EntityId, Label, Labelled, Source, SpaceId};
 use settings_app_callers::{BusPeers, RoleName, introduce_service, private_peers, roles};
 use settings_app_files::ConfigHome;
 use settings_app_intents::{AccountsRead, AccountsSource, SettingsProvider, serve_with};
@@ -11,11 +16,6 @@ use settings_app_model::{
     Absence, AccountsPane, Catalogue, Notice, OriginRule, Receiver, discover_under, inbox,
 };
 use settings_app_testkit::{Scratch, seed_schemas_settable};
-use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
-use action_dbus::callers::{INTENTD, Identity, intentd_only};
-use action_dbus::{Details, INTENTS_BUS, IntentProviderProxy};
-use action_vocab::{Args, CallId, EntityRef, Origin, ParamName, UndoToken, Value};
-use provenance::{Actor, EntityId, Label, Labelled, Source, SpaceId};
 use std::sync::{Arc, Mutex};
 
 pub use bus::PrivateBus;

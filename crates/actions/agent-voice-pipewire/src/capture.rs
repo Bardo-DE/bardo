@@ -2,6 +2,7 @@
 //! to the async side through a bounded queue.
 
 use crate::format::format_pod;
+use agent_voice_audio::{CaptureStream, DeviceError, samples_of};
 use pipewire as pw;
 use pw::properties::properties;
 use pw::spa;
@@ -10,7 +11,6 @@ use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::{Notify, oneshot};
-use agent_voice_audio::{CaptureStream, DeviceError, samples_of};
 
 /// Capture buffers held for the async side before the oldest is dropped (about three seconds).
 const CAPTURE_QUEUE: usize = 256;

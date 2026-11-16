@@ -1,4 +1,4 @@
-//! [`UploadReplica`]: ferry-sync's `Replica` for an upload-only target. The engine runs it over
+//! [`UploadReplica`]: sync-core's `Replica` for an upload-only target. The engine runs it over
 //! a [`crate::datasets::storage::FolderDataset`] of the upload folder, so the usual machinery
 //! (the journal, retries, the scheduler, `Sync1` status and pause) carries the uploads, and the
 //! replica is what makes them one-way:
@@ -18,15 +18,15 @@
 use super::api::{AlbumId, ApiError, MediaId, PhotosApi};
 use super::ledger::{Entry, Kept, LedgerError};
 use crate::dataset::fingerprint;
+use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
+use account_http::Http;
+use account_ids::Bytes;
+use std::path::PathBuf;
 use sync_core::DELETED;
 use sync_core::{
     Anchor, BaseVersion, Blob, ByteRange, ChangePage, Cursor, More, PutItem, PutRefused, PutTarget,
     Quota, RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
-use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_http::Http;
-use account_ids::Bytes;
-use std::path::PathBuf;
 use tokio::sync::Mutex;
 
 /// The dataset's name.

@@ -2,10 +2,10 @@
 //! server's answers and the commands, stepping [`GuestAsksState`], posting its notices and
 //! giving inferd the person's answers.
 
+use account_tailscale::NodeId;
 use inference_client::{
     ClientError, ComputerReason, DbusTransport, GuestChange, Inference, TransportError,
 };
-use account_tailscale::NodeId;
 use shell_model::guest_asks::{
     Ask, Computer, GuestAsksCommand, GuestAsksEffect, GuestAsksEvent, GuestAsksState, Verdict,
     choice_of, shown_for, step,

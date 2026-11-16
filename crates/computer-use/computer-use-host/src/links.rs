@@ -3,27 +3,29 @@
 
 use crate::clock::SystemClock;
 use crate::lock::locked;
+use account_core::{AppName, DataClass};
+use account_ids::UnixSeconds;
+use action_client::{ClientError, Intents, Transport as IntentsTransport, TransportError};
+use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
+use computer_use_bus::{CuaRecord, CuaTask};
+use computer_use_run::Clock;
+use computer_use_run::{LinkError, MessageLink, RecordSink};
 use memory_client::{Memory, Transport as MemoryTransport};
 use memory_core::{
     AreaPayload, AreaTag, Cause, EventBody, JsonText, KindTag, Record, ThingRole, ThingView,
     UserText,
 };
-use computer_use_bus::{CuaRecord, CuaTask};
-use computer_use_run::Clock;
-use computer_use_run::{LinkError, MessageLink, RecordSink};
-use action_client::{ClientError, Intents, Transport as IntentsTransport, TransportError};
-use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
-use account_core::{AppName, DataClass};
-use account_ids::UnixSeconds;
-use provenance::{Effect, EntityId, EntityKey, EntityKind, Label, RunId, SessionId, Source, SpaceId};
+use provenance::{
+    Effect, EntityId, EntityKey, EntityKind, Label, RunId, SessionId, Source, SpaceId,
+};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 /// The app whose things the conversations are. Must match docket's session log
-/// (`docket-memory`'s `SESSION_APP`): the router reads a conversation's records by this thing.
+/// (`companion-memory`'s `SESSION_APP`): the router reads a conversation's records by this thing.
 const CONVERSATION_APP: &str = "org.quire.Companion";
 /// The kind of the thing a conversation names itself as. Must match docket's session log
-/// (`docket-memory`'s `SESSION_KIND`).
+/// (`companion-memory`'s `SESSION_KIND`).
 const CONVERSATION_KIND: &str = "companion.session";
 /// The kind of the thing an app is, when a record names the app the run drives.
 const APP_KIND: &str = "desktop.app";
@@ -244,9 +246,9 @@ impl<M: MemoryTransport, I: IntentsTransport> MessageLink for DaemonLinks<M, I> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computer_use_bus::{CancelledBy, CuaOutcome};
     use account_core::DataClass;
     use account_ids::Count;
+    use computer_use_bus::{CancelledBy, CuaOutcome};
     use inference_core::ChargeTotal;
     use provenance::{ActorKind, Confidentiality, Integrity, RunId, Source};
     use std::collections::BTreeSet;

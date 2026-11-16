@@ -20,9 +20,9 @@ pub use decide::{FAILED_STARTS, decide};
 pub use record::{Record, parse, render};
 
 use dioxus::prelude::*;
-use ui_components::style::kit::{Fingerprint, Styles};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+use ui_components::style::kit::{Fingerprint, Styles};
 
 /// How long a program must live after its first frame for the start to count as good.
 pub const ALIVE_FOR: Duration = Duration::from_secs(5);

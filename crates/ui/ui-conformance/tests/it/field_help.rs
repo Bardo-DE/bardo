@@ -4,10 +4,10 @@
 //! is never drawn inline and stays the row's `aria-describedby`.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

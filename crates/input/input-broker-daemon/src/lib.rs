@@ -6,7 +6,7 @@
 //! its peer, so a peer that stalls the identification stalls only itself. A caller is
 //! identified by the kernel (the process behind the socket, held by a pidfd), judged against the
 //! root-owned table of desktop programs, and then may ask for exactly the device kinds of its own
-//! program. palmrest's devices are proxied: every event passes the ceiling in `turnstile-wire`.
+//! program. palmrest's devices are proxied: every event passes the ceiling in `input-broker-wire`.
 //! keycap's are made to a fixed shape and handed over as descriptors.
 //!
 //! The seams are traits with fakes: [`backend::Backend`] (the kernel), [`identity::Authority`] (who

@@ -1,22 +1,22 @@
 //! `InferdEmbedder`: embeddings through an inferd session.
 
 use crate::deadline::{Deadlines, turn, within};
-use memory_store::{
-    Classed, EmbedError, EmbedRole, Embedder, EmbedderCard, RetryClass, Urgency, Vector,
-    class_from_tag,
-};
-use inference_client::{Transport, TransportError};
 use account_capability::Modality;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Dims;
+use account_match::Need;
+use account_match::{DimsNeed, EmbedNeed};
+use inference_client::{Transport, TransportError};
 use inference_core::{
     EmbedReply, EmbedRequest, EmbedRole as WireRole, InferRefusal, InferReply, InferRequest,
     ModelError,
 };
-use account_match::Need;
-use account_match::{DimsNeed, EmbedNeed};
+use memory_store::{
+    Classed, EmbedError, EmbedRole, Embedder, EmbedderCard, RetryClass, Urgency, Vector,
+    class_from_tag,
+};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 

@@ -3,11 +3,11 @@
 //! `WebUrl`, and [`request`] is the one place it becomes the request's `Uri`.
 
 use crate::error::HttpError;
+use account_core::EndpointUrl;
+use account_ids::{UnixSeconds, UrlScheme, WebUrl};
 use http::header::{HeaderMap, HeaderName, HeaderValue};
 use http::request::Builder;
 use http::{Method, Request, Response, Uri};
-use account_core::EndpointUrl;
-use account_ids::{UnixSeconds, UrlScheme, WebUrl};
 
 /// A request to `url`: the builder with its method and URI set, to which the caller adds headers
 /// and a body. The URI is the URL's text; a URL the `http` crate does not take as a URI fails

@@ -1,10 +1,10 @@
 //! "The owner of this name must hold this role", and the watch for the name changing hands.
 
 use crate::bus::{PrivateBus, name_of};
+use caller_identity_core::{Pin, Proof, Refused, Requirement, RoleName, Table};
+use caller_identity_dbus::{BusPeers, ManagerCheck};
 use caller_identity_linux::FixtureProc;
 use caller_identity_linux::fake::introduced_service;
-use caller_identity_dbus::{BusPeers, ManagerCheck};
-use caller_identity_core::{Pin, Proof, Refused, Requirement, RoleName, Table};
 
 const NAME: &str = "org.example.Shell";
 

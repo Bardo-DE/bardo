@@ -1,12 +1,12 @@
 //! The Spaces bar's per-output rules: where it is up, where its cards lie and which targets that
 //! sends, when a picture is asked for (of every Space), and which tile a drag lights.
 
+use account_core::SpaceId;
 use desktop_protocols::vocab::{
     Emphasis, LeaseState, Modality, PlacementMark, Responsiveness, SensitivityLevel, Shown,
     SpaceKind, WindowRole, WindowStateKind,
 };
 use ui_core::vocab::DropState;
-use account_core::SpaceId;
 
 use super::{
     BarDrops, BarLayout, BarLayouts, BarOutputs, BarPictures, BarShow, BarTile, DesktopCommand,

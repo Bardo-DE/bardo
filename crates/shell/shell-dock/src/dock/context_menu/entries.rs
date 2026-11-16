@@ -1,8 +1,8 @@
 //! Rows as the ds menu's entries, each pick naming what it acts on.
 
-use ui_components::prelude::*;
 use shell_launcher::{AppId, WindowKey};
 use shell_model::windows::Toplevel;
+use ui_components::prelude::*;
 
 use super::{Checked, DockMenuRow};
 use crate::dock::pick::{DockPick, LoginChange};

@@ -17,7 +17,7 @@ use std::sync::{Arc, Mutex};
 use tokio::sync::{Mutex as AsyncMutex, Notify};
 
 /// The logout command of an agent's entry in the agent list, for an agent that has no sign-out of
-/// its own (`docket-launch` runs it, and reports only the outcome).
+/// its own (`agent-launch` runs it, and reports only the outcome).
 pub trait Logout: Send + Sync {
     /// Signs `program` out with its own command. True if it did.
     fn run<'a>(&'a self, program: &'a AgentProgram) -> AgentPending<'a, bool>;

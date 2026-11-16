@@ -4,7 +4,7 @@
 //!
 //! [`Notify`] is the seam. [`SocketNotify`] writes one datagram per [`Notice`] to the socket
 //! systemd names in `$NOTIFY_SOCKET` (the binary reads it and passes an [`Endpoint`]; the
-//! library reads no environment); with no socket nothing is sent. `casement-testkit` exports
+//! library reads no environment); with no socket nothing is sent. `compositor-testkit` exports
 //! `FakeNotify`. The watchdog period is read once by the binary ([`watchdog_period`]).
 //!
 //! ```

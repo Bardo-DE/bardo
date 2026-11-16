@@ -5,8 +5,8 @@
 //! sentence is written from its side: "that computer" is the one that lends, "this computer"
 //! the one that asked.
 
-use inference_tailnet::{DialError, Refusal};
 use account_tailscale::TailscaleError;
+use inference_tailnet::{DialError, Refusal};
 
 /// Why a request was refused, as a plain sentence ending in a full stop.
 pub fn refusal(refusal: &Refusal) -> &'static str {

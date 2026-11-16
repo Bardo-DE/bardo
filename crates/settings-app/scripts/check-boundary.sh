@@ -10,21 +10,21 @@ cd "$(dirname "$0")/.."
 # ARCHITECTURE.md section 1 is the crate map; this file is its mechanical form, in two parts.
 #
 # RULES: what a crate reaches through ANY path (`cargo tree -i`, transitive).
-# detent-model and detent-files are pure: no UI, no renderer, no runtime. They name ds-settings
-# for its schema types and its lenient-read types, and ds-settings builds zbus for its portal
-# watch, so zbus cannot be in the forbidden list until ds-settings splits its schema module out
-# (FINDINGS.md "ds-settings drags zbus into a pure crate"). detent-testkit is std only.
-# detent-intents answers the desktop's intents with no window: it reaches no UI crate.
-PURE="dioxus dioxus-core tokio blitz-dom ds ds-blitz ds-harness ds-lint"
+# settings-app-model and settings-app-files are pure: no UI, no renderer, no runtime. They name ui-settings
+# for its schema types and its lenient-read types, and ui-settings builds zbus for its portal
+# watch, so zbus cannot be in the forbidden list until ui-settings splits its schema module out
+# (FINDINGS.md "ui-settings drags zbus into a pure crate"). settings-app-testkit is std only.
+# settings-app-intents answers the desktop's intents with no window: it reaches no UI crate.
+PURE="dioxus dioxus-core tokio blitz-dom ds ui-blitz ui-harness ui-lint"
 RULES=(
-  "detent-model: $PURE"
-  "detent-files: $PURE"
-  "detent-callers: dioxus dioxus-core blitz-dom ds ds-blitz ds-harness ds-lint detent-model detent-files detent-intents detent-ui detent"
-  "detent-testkit: $PURE zbus ds-settings detent-model detent-files detent-ui detent"
-  "detent-system: dioxus dioxus-core blitz-dom ds ds-blitz ds-harness ds-lint detent-client detent-ui detent-intents detent"
-  "detent-client: dioxus dioxus-core blitz-dom ds ds-blitz ds-harness ds-lint detent-ui detent-intents detent"
-  "detent-ui: detent detent-intents"
-  "detent-intents: dioxus dioxus-core blitz-dom ds ds-blitz ds-harness ds-lint detent-ui detent"
+  "settings-app-model: $PURE"
+  "settings-app-files: $PURE"
+  "settings-app-callers: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-model settings-app-files settings-app-intents settings-app-ui detent"
+  "settings-app-testkit: $PURE zbus ui-settings settings-app-model settings-app-files settings-app-ui detent"
+  "settings-app-system: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-client settings-app-ui settings-app-intents detent"
+  "settings-app-client: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui settings-app-intents detent"
+  "settings-app-ui: detent settings-app-intents"
+  "settings-app-intents: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui detent"
 )
 fail=0
 
@@ -52,11 +52,11 @@ for rule in "${RULES[@]}"; do
 done
 
 # DIRECT: what a crate may not NAME in its own [dependencies], though it reaches them through the
-# crate under it. The window reaches the computer only through detent-client, so the compiler
+# crate under it. The window reaches the computer only through settings-app-client, so the compiler
 # refuses a use of the files, the services, porter, almanac, docket or the bus in a view
 # (ARCHITECTURE.md "The fence"). The EDGES row below is the exact list of what it may name.
 DIRECT=(
-  "detent-ui: detent-files detent-system ferry-bus porter-client porter-core porter-dbus porter-infer porter-provider almanac-core docket-core docket-settings docket-dbus docket-provider docket-agents agents-core porter-ids porter-capability porter-match porter-wire porter-sheet porter-tailnet porter-tailscale docket-vocab docket-manifest docket-wire docket-gate-wire docket-permissions-core companion-model zbus"
+  "settings-app-ui: settings-app-files settings-app-system sync-bus account-client account-core account-dbus inference-core account-provider memory-core action-core action-settings action-dbus action-provider docket-agents agent-registry account-ids account-capability account-match account-wire account-sheet inference-tailnet account-tailscale action-vocab action-manifest action-wire action-gate-wire permission-core companion-model zbus"
 )
 for rule in "${DIRECT[@]}"; do
   crate="${rule%%:*}"
@@ -80,15 +80,15 @@ done
 # dependency on a crate not listed is a leak; so is one the crate no longer has, so the table
 # stays exact. Dev dependencies are outside it (a test may reach further than the crate does).
 EDGES=(
-  "detent-testkit:"
-  "detent-callers: ds-settings"
-  "detent-model: almanac-core docket-core docket-manifest docket-settings docket-vocab ds-helpers ds-settings porter-capability porter-core porter-ids porter-infer porter-sheet porter-tailnet porter-tailscale"
-  "detent-files: agents-core detent-model docket-agents docket-settings ds-extensions ds-helpers ds-settings"
-  "detent-client: detent-files detent-model detent-system ds-settings porter-infer porter-provider"
-  "detent-intents: detent-callers detent-client detent-files detent-model docket-core docket-dbus docket-manifest docket-provider docket-vocab docket-wire ds-peer ds-settings porter-core porter-ids prov"
-  "detent-system: almanac-core anyview-core anyview-fs anyview-image anyview-platform casement-protocols desktop-client detent-callers detent-files detent-model ds-peer ds-settings engine-install engine-manifest engine-probe engine-spec inferd-client model-catalog porter-callers porter-client porter-client-dbus porter-core porter-dbus porter-tailnet porter-tailscale porter-wire steward-dbus ferry-bus"
-  "detent-ui: detent-client detent-model ds ds-blitz ds-helpers ds-lint ds-settings"
-  "detent: detent-callers detent-client detent-files detent-intents detent-model detent-ui ds-blitz ds-settings"
+  "settings-app-testkit:"
+  "settings-app-callers: ui-settings"
+  "settings-app-model: memory-core action-core action-manifest action-settings action-vocab ui-helpers ui-settings account-capability account-core account-ids inference-core account-sheet inference-tailnet account-tailscale"
+  "settings-app-files: agent-registry settings-app-model docket-agents action-settings ui-extensions ui-helpers ui-settings"
+  "settings-app-client: settings-app-files settings-app-model settings-app-system ui-settings inference-core account-provider"
+  "settings-app-intents: settings-app-callers settings-app-client settings-app-files settings-app-model action-core action-dbus action-manifest action-provider action-vocab action-wire ui-peer ui-settings account-core account-ids prov"
+  "settings-app-system: memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model ui-peer ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"
+  "settings-app-ui: settings-app-client settings-app-model ds ui-blitz ui-helpers ui-lint ui-settings"
+  "detent: settings-app-callers settings-app-client settings-app-files settings-app-intents settings-app-model settings-app-ui ui-blitz ui-settings"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"

@@ -107,7 +107,7 @@ for path in scripts:
         for match in re.finditer(r"dist/([A-Za-z0-9._-]+\.(?:rules|service))", text):
             named.add(match.group(1))
 for name in sorted(named):
-    where = [os.path.join(crates_dir, repo, "dist", name) for repo in ("turnstile", "keycap", "palmrest", "sill")] + [os.path.join(root, "dist", name)]
+    where = [os.path.join(crates_dir, repo, "dist", name) for repo in ("input/input-broker", "input/key-remap", "input/mouse-gestures", "shell")] + [os.path.join(root, "dist", name)]
     for path in where:
         if os.path.isfile(path):
             check_file(path, os.path.relpath(path, crates_dir) if path.startswith(crates_dir) else os.path.relpath(path, root))

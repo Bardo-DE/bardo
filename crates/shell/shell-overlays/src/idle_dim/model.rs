@@ -1,9 +1,9 @@
 //! What the scrim draws for a published dim, and whether the daemon maps the surface.
 
-use ui_components::prelude::*;
 use layer_shell_host::Visibility;
-use shell_model::idle::{DimLevel, DimShown};
 use shell_kit::idle_dim::IdleDimPhase;
+use shell_model::idle::{DimLevel, DimShown};
+use ui_components::prelude::*;
 
 /// What the scrim draws: its opacity and whether it is dimming.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -45,10 +45,10 @@ pub fn visibility_of(dim: DimShown) -> Visibility {
 
 #[cfg(test)]
 mod tests {
-    use ui_components::prelude::*;
     use layer_shell_host::Visibility;
-    use shell_model::idle::{DimLevel, DimShown};
     use shell_kit::idle_dim::IdleDimPhase;
+    use shell_model::idle::{DimLevel, DimShown};
+    use ui_components::prelude::*;
 
     use super::{DimScene, scene_of, scrim_of, visibility_of};
 

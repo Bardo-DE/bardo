@@ -1,13 +1,13 @@
 //! App icons for the gallery's launcher and dock specimens: coloured rounded squares, PNG-encoded,
 //! standing in for the icon files an icon theme lookup returns.
 
+use image::{ImageFormat, Rgba, RgbaImage};
+use std::io::Cursor;
 use ui_components::prelude::*;
 use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::icon::retint::retint;
 use ui_components::style::icon::url::IconUrl;
-use image::{ImageFormat, Rgba, RgbaImage};
-use std::io::Cursor;
 
 /// A 64 px app icon: a rounded square in `hue`'s colour, lighter at the top, with a white disc.
 pub fn app_icon(hue: [u8; 3], size: IconSize) -> Option<IconSource> {

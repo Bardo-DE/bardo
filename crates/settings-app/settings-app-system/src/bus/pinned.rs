@@ -4,11 +4,11 @@
 use super::activate::start_one;
 use super::io::{confirmed, connect};
 use super::source::BusSource;
-use settings_app_model::Absence;
-use ui_settings::live::SenderName;
-use inference_client::DbusTransport;
 use account_client::Porter;
 use account_client_dbus::Bus;
+use inference_client::DbusTransport;
+use settings_app_model::Absence;
+use ui_settings::live::SenderName;
 use zbus::Connection;
 use zbus::names::UniqueName;
 

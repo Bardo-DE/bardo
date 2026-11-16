@@ -4,12 +4,12 @@
 //! into "nvoicei".
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::menus::search::view::SearchField;
 use ui_components::focus::select::Select;
 use ui_components::focus::selector::focus_by_selector;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 800,

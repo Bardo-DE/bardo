@@ -1,10 +1,10 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use portal_core::{Appearance, Contrast, Scheme};
 use portal_daemon::settings::{
     AppearanceError, AppearanceSource, DesktopAppearance, PortalError, SettingsService,
     parse_appearance, read_namespaces, read_setting,
 };
-use portal_core::{Appearance, Contrast, Scheme};
 
 const DOCUMENT: &str = r#"
 # the desktop's look

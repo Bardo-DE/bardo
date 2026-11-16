@@ -1,11 +1,11 @@
 //! Wire shapes and words of the wire crate.
 
 use crate::support::*;
-use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
 use action_gate_wire::{CuaAsk, EffectBasis};
-use permission_core::Level;
 use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue};
 use action_wire::{GrantAsk, IntentsReply, IntentsRequest, Member};
+use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
+use permission_core::Level;
 use provenance::Effect;
 use serde::{Serialize, de::DeserializeOwned};
 

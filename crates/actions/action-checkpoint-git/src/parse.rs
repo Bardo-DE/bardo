@@ -1,8 +1,8 @@
 //! Reading what git prints. Pure.
 
+use account_ids::UnixSeconds;
 use action_checkpoint::{EntryId, Saved, TreeId, TreeListing};
 use action_core::{CheckpointId, WorkPath};
-use account_ids::UnixSeconds;
 use provenance::SessionId;
 use std::collections::BTreeMap;
 

@@ -4,10 +4,10 @@
 //! when they are missing, so a view without the handle lines ends the answer Failed.
 
 use crate::support::*;
-use companion_wire::{AnswerPhase, AnswerWire};
 use action_accept::drive::Launcher;
 use action_accept::world::{Cassette, Consent, World};
 use agent_session::SheetChoice;
+use companion_wire::{AnswerPhase, AnswerWire};
 
 fn settled(view: &AnswerWire) -> bool {
     matches!(

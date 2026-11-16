@@ -6,8 +6,8 @@ use crate::dock::machine::types::{
     Button, DockEffect, DockEvent, DockKey, DockState, Hit, Modifier, Point, TileApp, TileId,
 };
 use crate::dock::machine::{DockParams, step};
-use ui_components::base::time::stamp::Stamp;
 use shell_model::units::Cpx;
+use ui_components::base::time::stamp::Stamp;
 
 /// One scripted input sequence: `(ms, input)` pairs.
 type Script = Vec<(u64, DockEvent)>;

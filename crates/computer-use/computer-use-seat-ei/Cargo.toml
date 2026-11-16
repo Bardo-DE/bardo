@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-seat-ei"
-description = "The EI client of the agent's seat: an AgentSeat over reis, to the compositor's stock GetSenderSocket socket or the fork's lease socket. It does the input that seat-input plans."
+description = "The EI client of the agent's seat: an AgentSeat over reis, to the compositor's stock GetSenderSocket socket or the fork's lease socket. It does the input that computer-use-seat-input plans."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

@@ -1,6 +1,6 @@
 //! How far under its origin a relay may go: the paths of an endpoint's server that a relay
 //! planned for one grant may send requests to. The service decides this once, when it plans the
-//! relay (porter-service's `reach`); a relay only applies the value it is handed.
+//! relay (account-service's `reach`); a relay only applies the value it is handed.
 
 /// What a path of a [`Reach`] lets through.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

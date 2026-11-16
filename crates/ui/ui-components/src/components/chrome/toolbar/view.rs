@@ -25,13 +25,13 @@ use crate::host::measure::{Anchor, MountedRef, use_rect};
 use crate::keys::use_platform;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::collections::HashMap;
 use ui_core::command::holds_primary;
 use ui_core::geometry::units::Px;
 use ui_core::press::Press;
 use ui_core::vocab::Availability;
 use ui_style::icon::Icon;
 use ui_style::tokens::control_size::ControlSize;
-use std::collections::HashMap;
 
 /// The mounted buttons, by the item's place on the band (leading items first, then trailing).
 type Buttons = CopyValue<HashMap<usize, MountedRef>>;

@@ -1,7 +1,7 @@
-# inject LINE...: sends inject lines (11 section 4.1 grammar, a superset of shell-host's
+# inject LINE...: sends inject lines (11 section 4.1 grammar, a superset of layer-shell-host's
 # fake-input.sh: wheel value120 and axis_source explicit) through `casementctl debug inject`, and
 # prints the `ok <line>` each one is answered with. With no arguments the lines come from stdin,
-# so shell-host's `printf 'move 300 200\npress left\n' | fake-input.sh` becomes
+# so layer-shell-host's `printf 'move 300 200\npress left\n' | fake-input.sh` becomes
 # `printf ... | inject`. Exit 1 when casement refused a line (nothing was injected then).
 # The grammar is documented in crates/casement-ipc/src/inject.rs.
 #

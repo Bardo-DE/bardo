@@ -4,9 +4,9 @@
 use crate::backend::Backend;
 use crate::open::{Open, files_refusal};
 use memory_core::{Hunk, Refusal, TopicPath, UserText};
+use memory_files_format::render_topic;
 use memory_search::docs::fact_doc_id;
 use memory_tidy::InputTopic;
-use memory_files_format::render_topic;
 use std::collections::BTreeMap;
 
 impl<B: Backend> Open<B> {

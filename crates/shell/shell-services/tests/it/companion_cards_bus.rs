@@ -8,18 +8,18 @@ use crate::companion_support::{self, desk_or_return};
 
 use std::sync::{Arc, Mutex};
 
+use action_core::{CallRefusal, ConfirmEnd, ConfirmId, Reveal, UserTurn};
+use action_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
+use action_manifest::{Manifest, validate};
+use action_vocab::{
+    ActionRef, Args, CallRequest, CardActionId, Handle, LabelText, Origin, StepId, TargetValue,
+};
 use companion_support::stand_ins::{
     ActsAs, StandInCompanion, StandInMessage, StandInRegistry, StandInRun, StandInSession,
 };
 use companion_support::{Desk, app, ask_input, json, serve, task, wire};
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, CardWire, NeedsYou, PlanStepWire, PlanWire, StepWireState,
-};
-use action_core::{CallRefusal, ConfirmEnd, ConfirmId, Reveal, UserTurn};
-use action_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
-use action_manifest::{Manifest, validate};
-use action_vocab::{
-    ActionRef, Args, CallRequest, CardActionId, Handle, LabelText, Origin, StepId, TargetValue,
 };
 use provenance::{ActionName, AgentRef, AppName, Effect, EntityId, EntityKey, EntityKind, SpaceId};
 use shell_model::companion::{Busy, Companion, CompanionCommand, Opener, answer_line};

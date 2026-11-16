@@ -1,6 +1,6 @@
-use updater_core::{BundlePath, Export, ExportAction, Found, plan_exports};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
+use updater_core::{BundlePath, Export, ExportAction, Found, plan_exports};
 
 const ROOT: &str = "/opt/quire";
 const LINK: &str = "/usr/share/wayland-sessions/quire.desktop";

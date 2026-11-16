@@ -146,12 +146,12 @@ EVIDENCE=""
 
 # probe_frame: the probe window's frame as "x y w h" (the first one `windows.sh` lists).
 probe_frame() {
-  "$DEV/lib/windows.sh" --class shell-host.probe | head -n 1 \
+  "$DEV/lib/windows.sh" --class layer-shell-host.probe | head -n 1 \
     | sed -n 's/.*"frame":\[\([-0-9]*\),\([-0-9]*\),\([0-9]*\),\([0-9]*\)\].*/\1 \2 \3 \4/p'
 }
 
 # probe_active: whether the probe window is the compositor's active one.
-probe_active() { "$DEV/lib/windows.sh" --class shell-host.probe | head -n 1 | grep -q '"active":true'; }
+probe_active() { "$DEV/lib/windows.sh" --class layer-shell-host.probe | head -n 1 | grep -q '"active":true'; }
 
 # click_probe: a real click on the probe window's centre.
 click_probe() {

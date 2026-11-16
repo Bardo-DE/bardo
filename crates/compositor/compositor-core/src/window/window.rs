@@ -3,8 +3,8 @@
 use super::{SizeLimits, WindowHints, WindowOrigin, WindowState, WindowTitle};
 use crate::app::AppKey;
 use crate::ids::{ClientKey, OutputKey, WindowId};
-use desktop_protocols::vocab::{Emphasis, Modality, SensitivityLevel, WindowRole};
 use account_core::{ClaimedId, SpaceId};
+use desktop_protocols::vocab::{Emphasis, Modality, SensitivityLevel, WindowRole};
 
 /// One toplevel window the model knows.
 #[derive(Debug, Clone, PartialEq, Eq)]

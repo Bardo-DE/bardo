@@ -3,9 +3,9 @@
 use crate::accounts::expiry_text;
 use crate::helpers::spec;
 use crate::{AccountRow, At};
-use ui_settings::schema::{Exposure, KeyKind, KeySpec};
 use account_core::Account;
 use account_core::consent::Grant;
+use ui_settings::schema::{Exposure, KeyKind, KeySpec};
 
 /// A read-out of one line, in the section of the account.
 fn line(at: &At<'_>, tail: &str, label: &str, help: &str, text: String) -> KeySpec {

@@ -12,16 +12,16 @@
 mod probe;
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use probe::{keep, rect};
+use std::ops::Range;
+use std::time::Duration;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::style::icon::render::Glyph;
 use ui_components::style::icon::stroke::stroke_device_pixels;
 use ui_components::style::tokens::pixel::PixelToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use image::RgbaImage;
-use probe::{keep, rect};
-use std::ops::Range;
-use std::time::Duration;
 
 /// Test-only paint: black lines on a white ground, at odd logical coordinates. `.ds` is
 /// re-declared (doubled, to outrank the sheet's own `.ds`) only to ink the menu's separator black; a consumer never does this.

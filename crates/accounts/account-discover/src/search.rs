@@ -256,7 +256,7 @@ async fn fetch<H: Http>(http: &H, url: &WebUrl) -> Result<String, Miss> {
         .map_err(|_| Miss::Malformed)?;
     let response = http.send(asked).await.map_err(|e| match e {
         HttpError::TooLarge | HttpError::Malformed => Miss::Malformed,
-        // unreachable, TLS, timed out, not granted, and a failure a later porter-http adds
+        // unreachable, TLS, timed out, not granted, and a failure a later account-http adds
         _ => Miss::Unreachable,
     })?;
     match response.status().as_u16() {

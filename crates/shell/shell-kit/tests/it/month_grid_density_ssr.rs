@@ -7,12 +7,12 @@ use crate::support::month_sample;
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::*;
 use month_sample::{AUGUST, First, sample};
 use shell_kit::month_grid::data::MonthStep;
 use shell_kit::month_grid::density::MonthDensity;
 use shell_kit::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
 
 /// One specimen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

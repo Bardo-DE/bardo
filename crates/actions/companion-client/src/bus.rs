@@ -3,10 +3,10 @@
 //! a change between the two is not lost.
 
 use crate::{CompanionTransport, Follow};
-use companion_wire::{AnswerWire, AskWire};
 use action_client::TransportError;
 use action_dbus::{BusConnection, CompanionAnswerProxy, CompanionProxy, Details};
 use action_wire::{SessionOpen, SessionOpened};
+use companion_wire::{AnswerWire, AskWire};
 use futures_util::{Stream, StreamExt};
 use provenance::SessionId;
 use std::pin::Pin;

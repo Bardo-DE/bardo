@@ -2,12 +2,10 @@
 //! touches. What a tainted session does to an `Always` is the policy's (`tainted-always-asks`).
 
 use crate::companion_names::LIMIT_ADD;
-use action_manifest::ActionDecl;
-use permission_core::{
-    ActionGrant, ActionGrantKey, COMPANION_APP, GrantCaller, GrantTarget,
-};
 use account_core::consent::{GrantScope, Usage, Verdict, decide};
 use account_core::{DataClass, GrantId};
+use action_manifest::ActionDecl;
+use permission_core::{ActionGrant, ActionGrantKey, COMPANION_APP, GrantCaller, GrantTarget};
 use provenance::{ActionName, SpaceId, SpaceScope};
 
 /// Whether a call is the assistant's own `companion.limit.add`: the one action that needs no

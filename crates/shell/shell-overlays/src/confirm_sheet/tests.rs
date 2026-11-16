@@ -1,8 +1,8 @@
 //! The gate as a table: pure, on the machine's own stamps.
 
+use shell_model::intents::sheet::SheetChoice;
 use ui_components::base::machine::Machine;
 use ui_components::base::time::stamp::{Ms, Stamp};
-use shell_model::intents::sheet::SheetChoice;
 
 use super::gate::{AnswerGate, GateIn, GateOut, GateParams};
 

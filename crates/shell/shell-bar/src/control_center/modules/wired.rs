@@ -2,12 +2,12 @@
 //! Sound and Display dropdowns draw.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use shell_model::displays::{BrightnessTarget, Displays, DisplaysCommand, Following};
 use shell_model::ids::OutputName;
 use shell_model::units::{Percent, Presence};
 use shell_model::volume::{Volume, VolumeCommand};
 use shell_services::{DisplaysService, VolumeService};
+use ui_components::prelude::*;
 
 use super::{DisplayModule, SoundModule};
 use shell_ui_kit::hooks::{use_control, use_service};
@@ -120,13 +120,13 @@ pub(crate) fn percent_of(fraction: Fraction) -> Percent {
 #[cfg(test)]
 mod tests {
     use super::{brightness_of, fraction_of, percent_of, set_brightness, sound_of};
-    use ui_components::prelude::*;
     use shell_model::displays::{Displays, DisplaysCommand};
     use shell_model::volume::{Mute, Volume};
     use shell_model::{
         ids::OutputName,
         units::{Percent, Presence},
     };
+    use ui_components::prelude::*;
 
     #[test]
     fn levels_convert_both_ways() {

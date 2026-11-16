@@ -4,11 +4,11 @@
 
 use anyview_peek::Card;
 use dioxus::prelude::*;
+use files_model::Input;
 use ui_components::components::app::peek::Peek;
 use ui_components::components::content::label::LabelStyle;
 use ui_components::prelude::{Column, ColumnAlign, ColumnExtent, Label};
 use ui_components::style::appearance::peek::PeekMode;
-use files_model::Input;
 
 use crate::state::Browse;
 

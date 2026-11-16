@@ -13,13 +13,13 @@ use compositor_render::pass::{CapturedFrame, window_capture_size, window_tree};
 use compositor_render::{CasementElement, Compositor};
 use compositor_wayland::capture_source::ToplevelCaptureRequest;
 use compositor_wayland::image_capture::CaptureFailure;
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::gles::{GlesRenderer, GlesTexture};
 use smithay::backend::renderer::pixman::PixmanRenderer;
 #[cfg(feature = "testing")]
 use smithay::backend::renderer::test::DummyRenderer;
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
+use ui_core::geometry::scale::Scale;
 
 /// One window's surface tree, ready to be turned into elements for whichever renderer draws it.
 struct WindowSource {

@@ -4,10 +4,10 @@
 use super::{Drive, FreeSpace, Inner, NodeId, held};
 use crate::Reason;
 use crate::listing::Entry;
-use sync_core::{ItemKind, RemoteId};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
+use sync_core::{ItemKind, RemoteId};
 
 impl Inner {
     /// The files at or under `id` (a file: itself), from the listing.

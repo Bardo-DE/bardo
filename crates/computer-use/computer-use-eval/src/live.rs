@@ -6,25 +6,27 @@
 //! The entry is read from a file the caller names (stoker's catalogue); nothing here chooses a
 //! model, an engine or an address.
 
+use account_ids::Tokens;
 use computer_use_action::{CuaDialect, Size, WindowSpace};
-use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink, ThoughtText};
+use computer_use_run::{
+    CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink, ThoughtText,
+};
 use computer_use_session::{
     CuaProfile, CuaSession, CuaTaskText, FrameBudget, MaskedRegions, ObservationIn, RepairBudget,
     StepIndex, StepLines, StepNote as NoteLine, StepOutcome, TranscriptSink, TurnSettings,
 };
 use computer_use_vendors::StepResult;
+use inference_core::{
+    CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
+    ServedBy, StepNote, TokenUsage,
+};
 use model_catalog::{ModelEntry, parse_entry};
 use model_provider::{
     Batching, CuaSupport, EngineExtras, ImageBytes, ImageDetail, ImageInput, Limits, ModelName,
     Provider, ProviderError, Reasoning, Sampling, ToolCallId, ToolParallelism,
 };
-use account_ids::Tokens;
-use inference_core::{
-    CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
-    ServedBy, StepNote, TokenUsage,
-};
-use std::sync::Arc;
 use model_vision_prep::{Encoding, FrameMap, RawFrame, prepare};
+use std::sync::Arc;
 
 /// Why a model could not be set up.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

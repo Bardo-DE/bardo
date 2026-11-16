@@ -1,11 +1,11 @@
 //! What a toplevel's client declared, as our types: its app id (a claim, never a proof), its
 //! role and modality from the dialog hint, and its size limits.
 
+use account_core::ClaimedId;
 use compositor_core::ClientKey;
 use compositor_core::geometry::LogicalSize;
 use compositor_core::window::SizeLimits;
 use desktop_protocols::vocab::{Modality, WindowRole};
-use account_core::ClaimedId;
 use smithay::wayland::shell::xdg::dialog::ToplevelDialogHint;
 
 /// The id a client declared with `set_app_id`, or one of its own making when it declared none

@@ -3,7 +3,7 @@
 //!
 //! - [`FakeSeat`] records input; [`FakeEis`] is an EIS server in the test process (over reis);
 //! - [`FakeCapture`] returns scripted frames and damage; [`FakeDesktop`] has windows, events and
-//!   the capabilities of a backend; [`FakeA11y`] answers with the a11y-tree fixtures;
+//!   the capabilities of a backend; [`FakeA11y`] answers with the computer-use-a11y-tree fixtures;
 //! - [`ScriptedModel`] says what it was scripted to say;
 //! - [`FakePdp`] is the router's gate as a table; [`MemoryEvents`] keeps the event log and the
 //!   `provenance::Message` reports a run sends; [`FixedClock`] moves only when told;

@@ -6,12 +6,19 @@
 pub mod device;
 pub mod infer;
 
-use device::{Hand, ScriptedDevice};
-use action_dbus::callers::{Identity, Role};
-use action_testbus::PrivateBus;
-use infer::{ScriptedInfer, Seen};
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
+use action_dbus::callers::{Identity, Role};
+use action_testbus::PrivateBus;
+use agent_voice_daemon::{
+    FixedUse, FixedWarm, Running, Seams, Unframed, UtteranceProxy, VoiceProxy, VoicedConfig, seal,
+    unframe,
+};
+use agent_voice_wire::{
+    HeardText, UtteranceEnd, VoiceBegin, VoiceEvent, VoiceTarget, VoiceTrigger, VoiceUse,
+};
+use device::{Hand, ScriptedDevice};
+use infer::{ScriptedInfer, Seen};
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     AudioFrameOut, AudioRate, Base64Bytes, HeardDelta, InferEvent, InferReply, Readiness,
@@ -22,13 +29,6 @@ use std::sync::Arc;
 use tempfile::TempDir;
 use tokio::io::AsyncReadExt;
 use tokio::net::UnixStream;
-use agent_voice_wire::{
-    HeardText, UtteranceEnd, VoiceBegin, VoiceEvent, VoiceTarget, VoiceTrigger, VoiceUse,
-};
-use agent_voice_daemon::{
-    FixedUse, FixedWarm, Running, Seams, Unframed, UtteranceProxy, VoiceProxy, VoicedConfig, seal,
-    unframe,
-};
 use zbus::zvariant::OwnedFd;
 
 use action_wire::VoiceIntent;
@@ -201,7 +201,9 @@ pub async fn world_with(options: Options, config: VoicedConfig) -> World {
         usage: FixedUse(options.usage),
         callers: who.clone(),
     };
-    let running = agent_voice_daemon::start(daemon, config, seams).await.expect("serves");
+    let running = agent_voice_daemon::start(daemon, config, seams)
+        .await
+        .expect("serves");
     let shell = named(&bus, &who, SHELL, Role::SheetHost).await;
     let voice = VoiceProxy::new(&shell).await.expect("proxy");
     World {
@@ -462,7 +464,11 @@ pub fn speak_wire(text: &str, utterance: Option<&str>) -> String {
     speak_wire_as(text, utterance, account_core::DataClass::Mail)
 }
 
-pub fn speak_wire_as(text: &str, utterance: Option<&str>, class: account_core::DataClass) -> String {
+pub fn speak_wire_as(
+    text: &str,
+    utterance: Option<&str>,
+    class: account_core::DataClass,
+) -> String {
     seal(&agent_voice_wire::SpeakWire {
         utterance: utterance.map(|u| action_vocab::UtteranceId::parse(u).expect("utterance id")),
         text: agent_voice_wire::SpokenText(text.to_owned()),

@@ -3,11 +3,13 @@
 use crate::support::Sandbox;
 use crate::support::drive::{click, page_of, scroll_into_view, sidebar_page, title_of};
 use settings_app_model::{Notice, PageSlug};
-use settings_app_testkit::{install_file_icons, install_look, install_torn_look, install_your_changes};
+use settings_app_testkit::{
+    install_file_icons, install_look, install_torn_look, install_your_changes,
+};
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_harness::Harness;
 use ui_settings::target::SettingsTarget;
-use std::time::Duration;
 
 const PAPER: &str = "org.example.Paper";
 const LOOK_MENU: &str = "#key-appearance-look .ds-popup .ds-button";

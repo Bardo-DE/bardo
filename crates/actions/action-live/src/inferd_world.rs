@@ -14,8 +14,8 @@ use action_accept::world::{
 };
 use action_dbus::BusConnection;
 use action_testbus::{PrivateBus, Reaped};
-use model_provider::Money;
 use inference_core::ChargeTotal;
+use model_provider::Money;
 use rust_decimal::Decimal;
 use std::path::{Path, PathBuf};
 

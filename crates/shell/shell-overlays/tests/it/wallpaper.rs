@@ -1,6 +1,6 @@
 //! The wallpaper in a `ui_harness::Harness`, fed the frozen `wallpapers` channel: an entry for its
 //! own output shows that entry's light-scheme path as a `file://` URL (the pinned appearance
-//! resolves to the light scheme, `ds-settings`' own default), an entry for another output is
+//! resolves to the light scheme, `ui-settings`' own default), an entry for another output is
 //! ignored, and no entry paints no image at all (`--paper` shows through instead). Painted over
 //! nothing as a shell surface is, a known solid PNG covers the surface and the `--paper` ground
 //! does with no image, so neither leaves the surface transparent (the live capture that showed the
@@ -10,11 +10,11 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
-use ui_harness::Backdrop;
 use shell_model::ids::OutputName;
 use shell_model::wallpaper::{WallpaperImage, Wallpapers};
 use shell_overlays::Wallpaper;
 use shell_ui_kit::harness::SurfaceHarness;
+use ui_harness::Backdrop;
 
 /// The colour the fixture PNG is filled with.
 const IMAGE: [u8; 3] = [220, 40, 20];

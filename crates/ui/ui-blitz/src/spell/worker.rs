@@ -4,10 +4,10 @@
 
 use super::books::Books;
 use super::config::SpellConfig;
-use ui_components::spell::lang::Lang;
-use ui_components::spell::service::Learned;
 use std::sync::mpsc::{Sender, channel};
 use tokio::sync::oneshot;
+use ui_components::spell::lang::Lang;
+use ui_components::spell::service::Learned;
 
 /// One piece of work.
 pub(crate) enum Job {

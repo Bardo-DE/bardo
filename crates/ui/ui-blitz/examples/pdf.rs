@@ -5,8 +5,8 @@
 #[path = "../tests/it/support/print_fixture.rs"]
 mod print_fixture;
 
-use ui_blitz::{PageSpec, pdf};
 use std::time::Instant;
+use ui_blitz::{PageSpec, pdf};
 
 fn main() {
     let out = std::env::args()

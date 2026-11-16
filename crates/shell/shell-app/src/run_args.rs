@@ -76,7 +76,9 @@ fn idle_times(text: &str) -> Result<shell_model::idle::IdleTimes, String> {
 /// the person's own plain file, or does not parse, adds nothing (one line says why): the stand-ins
 /// are then refused like any stranger.
 #[cfg(feature = "debug")]
-fn dev_callers(path: &std::path::Path) -> std::sync::Arc<dyn shell_services::callers::CallerSource> {
+fn dev_callers(
+    path: &std::path::Path,
+) -> std::sync::Arc<dyn shell_services::callers::CallerSource> {
     use shell_services::callers::DesktopCallers;
 
     let shipped = DesktopCallers::from_system();

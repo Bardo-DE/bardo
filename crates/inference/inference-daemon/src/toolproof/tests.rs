@@ -6,8 +6,8 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_ids::{Count, Tokens};
 use account_match::LlmNeed;
-use std::sync::Mutex as StdMutex;
 use base_testkit::Scratch;
+use std::sync::Mutex as StdMutex;
 
 fn model(name: &str) -> ModelRef {
     ModelRef {

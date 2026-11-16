@@ -9,8 +9,6 @@
 
 use crate::Bus;
 use crate::failure::{accounts_error, link_error};
-use futures_util::StreamExt;
-use futures_util::stream::select;
 use account_client::{
     AccountChange, AccountRef, AccountView, AccountWatch, AccountsError, AccountsLink, Changes,
     LinkError, Malformed, NeedsReauth,
@@ -26,6 +24,8 @@ use account_dbus::{BusError, Details};
 use account_ids::word::from_word;
 use account_wire::names::ACCOUNTS_PATH;
 use account_wire::{AccountsReply, ParentWindow};
+use futures_util::StreamExt;
+use futures_util::stream::select;
 use std::future::Future;
 
 impl AccountsLink for Bus {

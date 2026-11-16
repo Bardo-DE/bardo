@@ -225,7 +225,7 @@ pub fn services_with_runner() -> (Services, LauncherFeeds, Runner) {
     (services, feeds, Runner { commands, answer })
 }
 
-/// What the real runner does with a chosen row (sill-services `results/effect.rs`): windows go
+/// What the real runner does with a chosen row (shell-services `results/effect.rs`): windows go
 /// to the compositor thread, launches to the launch service, the rest are
 /// the surface's.
 fn carry(

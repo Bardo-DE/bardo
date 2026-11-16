@@ -1,9 +1,9 @@
 //! Only offered actions become tools, names and hints follow the manifest, and every argument
 //! a client sends is untrusted.
 
-use action_tools::*;
-use action_manifest::{Manifest, ValidManifest, validate};
 use account_core::AppName;
+use action_manifest::{Manifest, ValidManifest, validate};
+use action_tools::*;
 use provenance::Effect;
 use std::path::PathBuf;
 
@@ -59,8 +59,9 @@ fn tool_names_are_the_app_slug_and_the_action_with_underscores() {
 fn a_name_over_sixty_four_characters_has_no_tool() {
     let memory = manifest("org.quire.Memory.toml");
     let mut action = memory.manifest().actions[0].clone();
-    action.name = provenance::ActionName::parse(&format!("memory.{}.{}", "a".repeat(30), "b".repeat(30)))
-        .expect("action");
+    action.name =
+        provenance::ActionName::parse(&format!("memory.{}.{}", "a".repeat(30), "b".repeat(30)))
+            .expect("action");
     assert_eq!(
         tool_name(&memory.manifest().app, &action),
         Err(ToolFault::TooLong)

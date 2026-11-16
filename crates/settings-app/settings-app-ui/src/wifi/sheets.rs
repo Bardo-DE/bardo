@@ -2,8 +2,8 @@
 //! one this computer is on.
 
 use crate::copy::wifi::{details_rows, password_help, password_title};
-use settings_app_model::{AskKind, Passphrase, PasswordAsk, WifiInput, WifiLogin, WifiNetwork};
 use dioxus::prelude::*;
+use settings_app_model::{AskKind, Passphrase, PasswordAsk, WifiInput, WifiLogin, WifiNetwork};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::sheet_width::SheetWidth;

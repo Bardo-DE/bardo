@@ -16,14 +16,14 @@ mod tests;
 
 use crate::dataset::{Dataset, DatasetError, Direction, replica_hash};
 use crate::journal::{Journal, JournalError, Op};
+use account_ids::UnixSeconds;
+use account_ids::clock::Clock;
+use std::sync::atomic::{AtomicBool, Ordering};
 use sync_core::{
     Acknowledgement, BaseVersion, Blob, ByteRange, Conflict, ItemState, JournalItem, LocalId,
     MassDelete, Quota, RemoteId, RemoteSide, RemoteVersion, Replica, ReplicaError, RetryAfter,
     StoredConflict, StoredTombstone, Tombstone, TombstoneOrigin,
 };
-use account_ids::UnixSeconds;
-use account_ids::clock::Clock;
-use std::sync::atomic::{AtomicBool, Ordering};
 
 /// Why a cycle stopped without finishing; the next cycle starts over from the journal.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -106,7 +106,7 @@ pub(crate) fn halt(error: ReplicaError) -> Halt {
         ReplicaError::Unauthorized => Outcome::Unauthorized,
         ReplicaError::NeedsConsent => Outcome::NeedsConsent,
         ReplicaError::Transient(after) => Outcome::Retry(after),
-        // anchor expired, gone, and a failure a later ferry-sync adds
+        // anchor expired, gone, and a failure a later sync-core adds
         _ => Outcome::Gone,
     })
 }

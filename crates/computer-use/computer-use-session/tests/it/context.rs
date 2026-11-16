@@ -3,7 +3,9 @@
 
 use crate::support;
 
-use computer_use_action::{CuaAction, CuaDialect, FinishOutcome, ModelSpace, ToolDialect, WireDialect};
+use computer_use_action::{
+    CuaAction, CuaDialect, FinishOutcome, ModelSpace, ToolDialect, WireDialect,
+};
 use computer_use_session::{
     FrameBudget, MaskedRegions, ObservationIn, StepIndex, StepNote, StepOutcome, TranscriptSink,
     TreeText, TurnTranscript,

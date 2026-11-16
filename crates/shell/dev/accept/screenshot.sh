@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Screenshot thumbnail acceptance (design/20 §1.13), on casement (brought up and ended by start_compositor), and with --real-input the drag of the thumbnail
-# out (shell-host's `SurfaceHandle::start_drag`) on shell-host's private headless KWin
+# out (layer-shell-host's `SurfaceHandle::start_drag`) on layer-shell-host's private headless KWin
 # (scripts/dev/kwin-virtual.sh) driven by ONE fake-input client (scripts/dev/fake-input.sh).
 #
 # Starts `sill run` from this checkout's debug build (`--features debug`) on a private bus
@@ -29,7 +29,7 @@
 #   2. A real press on the card's picture, a first step 12 px left (past quire's 8 px drag
 #      threshold, and not rightwards, which is the swipe's), a glide up-left over the bare
 #      desktop and a release there. With no foot terminal installed there is no drop target, so
-#      shell-host answers `Cancelled`: the daemon logs `screenshot drag: Cancelled`, the card is
+#      layer-shell-host answers `Cancelled`: the daemon logs `screenshot drag: Cancelled`, the card is
 #      still up 600 ms later and the file is still there.
 #   3. The hold resumes (the banners' 1500 ms rest): the thumbnail unmaps within the rest plus
 #      the exit and slack, and the file is kept.

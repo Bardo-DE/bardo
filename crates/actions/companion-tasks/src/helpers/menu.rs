@@ -7,8 +7,8 @@
 //! one fits its apps.
 
 use action_core::ActionCard;
-use permission_core::TaskPolicy;
 use agent_skills::Skill;
+use permission_core::TaskPolicy;
 use provenance::HelperId;
 
 /// The helper a companion runs a job for, and the reach the person set on its card.

@@ -6,10 +6,10 @@
 use account_fake::FakeAddress;
 use account_fake_servers::http::{Request, Response, serve};
 use account_fake_servers::net::{Bind, Listener};
+use base_testkit::Scratch;
 use serde_json::{Value, json};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, PoisonError};
-use base_testkit::Scratch;
 use tokio::task::JoinHandle;
 
 /// One request the lab answered.

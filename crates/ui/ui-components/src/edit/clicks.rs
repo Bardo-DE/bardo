@@ -2,9 +2,9 @@
 //! default action from running (it would start Blitz's own text selection), so it cannot use
 //! the renderer's click count and keeps its own: within 500 ms and 4 px of the last press.
 
+use std::time::Instant;
 use ui_core::geometry::units::Point;
 use ui_style::tokens::delay::DelayToken;
-use std::time::Instant;
 
 /// Which press of a quick run this is: 1, 2, 3, then 1 again. A consumer's test builds one
 /// with `Clicks(2)`, for an `EditPointer`.
@@ -39,8 +39,8 @@ pub(crate) fn clicks_after(last: Option<LastPress>, at: Point, when: Instant) ->
 #[cfg(test)]
 mod tests {
     use super::{Clicks, LastPress, clicks_after};
-    use ui_core::geometry::units::{Point, Px};
     use std::time::{Duration, Instant};
+    use ui_core::geometry::units::{Point, Px};
 
     fn at(x: f32, y: f32) -> Point {
         Point { x: Px(x), y: Px(y) }

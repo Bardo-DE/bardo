@@ -7,6 +7,9 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::rect;
+use std::rc::Rc;
+use std::time::Duration;
 use ui_components::components::overlays::hover_card::intent::{HoverAnchor, use_hover_intent};
 use ui_components::host::measure::MountedRef;
 use ui_components::host::no_host::NoHost;
@@ -15,9 +18,6 @@ use ui_components::prelude::*;
 use ui_components::stack::hover_hub::{HoverKey, HoverKind};
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use probe::rect;
-use std::rc::Rc;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

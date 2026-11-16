@@ -1,12 +1,12 @@
 //! What the daemon reads and writes on disk: the person's consent file, the installed manifests
 //! and the environment that says where they are.
 
-use action_fake::check_grant_file_contract;
-use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};
-use action_router::GrantStore;
-use action_daemon::{FileGrants, Setup, load_manifests};
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{AppName, DataClass, GrantId};
+use action_daemon::{FileGrants, Setup, load_manifests};
+use action_fake::check_grant_file_contract;
+use action_router::GrantStore;
+use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{ActionName, SpaceScope, UnixSeconds};
 use std::path::{Path, PathBuf};
 
@@ -280,8 +280,8 @@ fn the_consent_file_follows_the_shared_store_rules() {
 
 #[test]
 fn the_floor_file_is_none_when_missing_and_an_error_when_it_does_not_read() {
-    use permission_core::Strictness;
     use action_daemon::{FloorError, read_floor};
+    use permission_core::Strictness;
     let dir = tempfile::tempdir().expect("scratch");
     let path = dir.path().join("docket-floor.toml");
     assert_eq!(
@@ -316,9 +316,7 @@ fn the_floor_file_is_none_when_missing_and_an_error_when_it_does_not_read() {
 
 #[test]
 fn limits_are_kept_beside_the_grants_and_removed_by_the_one_revoke_path() {
-    use permission_core::{
-        Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope,
-    };
+    use permission_core::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
     let dir = tempfile::tempdir().expect("scratch");
     let path = dir.path().join("quire/grants.json");
     let store = FileGrants::at(path.clone());

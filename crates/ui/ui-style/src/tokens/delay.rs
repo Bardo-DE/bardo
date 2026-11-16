@@ -1,8 +1,8 @@
 //! The Rust-only timer lengths (design/30-CATALOGUE.md section 1.2): intent and reading time,
 //! never scaled by the motion level.
 
-use ui_core::word::Word;
 use std::time::Duration;
+use ui_core::word::Word;
 
 /// How long a tooltip waits before it opens cold (design/30-CATALOGUE.md section 1.2): an app-wide
 /// choice made on the `Ds` root; tips are instant unless the app asks for `Standard`. Warm hover (another hover UI open or closed within

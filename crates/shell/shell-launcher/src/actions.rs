@@ -7,8 +7,8 @@
 //!
 //! This is not [`crate::ActionId`] (that names an action of one launcher row, such as Reveal).
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 use crate::session::SessionAction;
 

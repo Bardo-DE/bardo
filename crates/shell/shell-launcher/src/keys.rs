@@ -5,8 +5,8 @@
 //! own: the keymap resolves the key and quire draws the shortcut. Pure.
 
 use keymap::{Action, AppAction, AppId, DefaultChord, Registration, StandardAction};
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 use crate::ids::ActionId;
 use crate::item::Item;

@@ -1,27 +1,27 @@
 //! The in-app host: one app, many tasks, the whole gate in process. The tasks are
-//! `docket-tasks`' (the same model companiond runs on the desktop): the host gives them the app's
+//! `companion-tasks`' (the same model companiond runs on the desktop): the host gives them the app's
 //! own router, model and clock, and a quiet surface.
 
 use crate::audit_file::{AuditFile, AuditFileError};
 use crate::kit::{AuditTo, InAppKit};
 use crate::link::ProviderLink;
 use crate::seams::{AuditBuffer, InAppSeams, NoMemory, NoReader, NoWriter, SessionGrants};
-use action_review::Reviewer;
 use action_client::{ClientError, InProcess, Intents};
 use action_host::{ConfirmSheet, SheetConfirmer};
+use action_review::Reviewer;
 
+use account_core::{AppId, AppName, Isolation};
 use action_context::registry::Registry;
 use action_core::MemoryLink;
 use action_core::{AgentConfig, AuditRecord, CallRefusal, PolicyWriter, Reader, StepLine};
-use companion_memory::AuditState;
-use agent_planner::{PlanFault, PlannerModel};
 use action_provider::{ContextSource, IntentProvider};
 use action_router::{GrantStore, Router};
-use companion_tasks::{Companion, Quiet, ServeFault};
 use action_vocab::{Clock, TurnId};
+use agent_planner::{PlanFault, PlannerModel};
+use companion_memory::AuditState;
+use companion_tasks::{Companion, Quiet, ServeFault};
 use inference_client::Transport as ModelTransport;
 use permission_policy::Presets;
-use account_core::{AppId, AppName, Isolation};
 use provenance::{SpaceId, TaskId};
 use std::collections::BTreeSet;
 use std::sync::Arc;

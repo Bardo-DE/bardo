@@ -1,15 +1,15 @@
 //! `open`: an AI session through inferd, the way an app opens one.
 
-use inference_client::{DbusTransport, InferSession, Inference, OpenOptions};
 use account_capability::{Access, Delta, StorageScope, Tier};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::{LlmNeed, MailNeed, Need, NotesNeed, PimNeed, StorageNeed};
+use inference_client::{DbusTransport, InferSession, Inference, OpenOptions};
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, MessagePart,
     Role, ToolParallelism,
 };
-use account_match::{LlmNeed, MailNeed, Need, NotesNeed, PimNeed, StorageNeed};
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
 
@@ -20,7 +20,7 @@ pub fn word<T: DeserializeOwned>(text: &str) -> Result<T, String> {
 }
 
 /// The need a command line names: a preset (`mail`, `storage`, `calendar`, `contacts`,
-/// `notes`, `llm`), each asking for the least that is useful, or a JSON `Need` (porter-match's
+/// `notes`, `llm`), each asking for the least that is useful, or a JSON `Need` (account-match's
 /// serde form, `{"kind":"storage","v":{...}}`).
 pub fn parse_need(text: &str) -> Result<Need, String> {
     if text.trim_start().starts_with('{') {

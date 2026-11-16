@@ -1,10 +1,10 @@
 //! `security_context` (P0-H8). Runs once the fixture and test client core land.
 
+use account_core::SandboxFacts;
 use compositor_core::policy::ConnectionRole;
 use compositor_testclient::TestClient;
 use compositor_testclient::misc::security_context::{EngineFacts, Listener};
 use compositor_testkit::{Fixture, FixtureSpec};
-use account_core::SandboxFacts;
 
 fn interfaces(client: &TestClient) -> Vec<String> {
     client

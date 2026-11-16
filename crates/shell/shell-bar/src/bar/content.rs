@@ -6,7 +6,6 @@
 //! Status lines are `MenuItem::Info` rows: an item's weight without the header's eyebrow,
 //! never a choice (quire's bar gaps).
 
-use ui_components::prelude::*;
 use shell_launcher::SessionAction;
 use shell_launcher::WindowKey;
 use shell_model::app_menu::{
@@ -17,6 +16,7 @@ use shell_model::ids::OutputName;
 use shell_model::session::{Offer, Session, words};
 use shell_model::tray::Tray;
 use shell_model::windows::{Toplevels, app_of};
+use ui_components::prelude::*;
 
 use shell_settings::{ControlCenterModule, ControlCenterSettings};
 
@@ -272,7 +272,6 @@ mod tests {
     use crate::bar::menus::BarMenu;
     use crate::bar::menus::TraySlot;
     use crate::bar::pick::BarPick;
-    use ui_components::prelude::*;
     use shell_launcher::SessionAction;
     use shell_launcher::WindowKey;
     use shell_model::app_menu::{AppMenus, MenuApp, MenuName, OwnItem, ServedMenu};
@@ -286,6 +285,7 @@ mod tests {
     use shell_model::units::Visibility;
     use shell_model::windows::{Sizing, Toplevel, Toplevels};
     use shell_settings::ControlCenterModule;
+    use ui_components::prelude::*;
 
     fn window(key: u64, app: &str, output: &str) -> Toplevel {
         Toplevel {

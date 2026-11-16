@@ -2,8 +2,8 @@
 //! provider reported, and whether inferd said the spend cap was reached. These are for the
 //! report and for stopping.
 
-use model_provider::Money;
 use inference_core::ChargeTotal;
+use model_provider::Money;
 use std::sync::Mutex;
 use std::sync::PoisonError;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};

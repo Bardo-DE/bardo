@@ -5,15 +5,15 @@
 //! play those roles (the sheet host for the sheet roles, an agent for a daemon's). The rest of the
 //! identification is intentd's own: its `Peers`, the configuration's roles, and the fake proc root.
 
+use account_core::{AppId, AppName, Isolation};
 use action_client::DbusTransport;
 use action_core::AgentConfig;
+use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
 use action_dbus::callers::Identity;
 use action_fake::{FakeSeams, fake_router};
 use action_router::Router;
 use action_vocab::CallerRole;
 use action_wire::CallerId;
-use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
-use account_core::{AppId, AppName, Isolation};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 

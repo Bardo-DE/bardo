@@ -7,9 +7,9 @@ use crate::support::hold;
 use std::time::Duration;
 
 use dioxus::prelude::*;
+use hold::{Hold, HoldIn, HoldOut, HoldParams, lock, outs, press, record, running, word, word_of};
 use ui_components::machine::use_machine;
 use ui_harness::Input;
-use hold::{Hold, HoldIn, HoldOut, HoldParams, lock, outs, press, record, running, word, word_of};
 
 fn app() -> Element {
     let machine = use_machine::<Hold>(

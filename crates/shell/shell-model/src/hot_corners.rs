@@ -1,7 +1,7 @@
 //! The screen corners that can run an action.
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// A screen corner.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

@@ -2,9 +2,9 @@
 //! directory, not a settings row (a settings row would be a key some schema must own, and the
 //! first run is not a preference).
 
-use ui_helpers::{NewFileMode, write_atomic};
 use std::io;
 use std::path::PathBuf;
+use ui_helpers::{NewFileMode, write_atomic};
 
 /// The file's name under `<state home>/detent/`.
 const FILE: &str = "first-run";

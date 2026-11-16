@@ -17,8 +17,10 @@ use account_client_dbus::{
 use account_core::{DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
 use account_dbus::BusConnection;
 use account_wire::LauncherFault;
+use inference_dbus::inference::{
+    AgentsProxy, MODELS_ANY, MODELS_LISTED, ROUTE_ACCOUNT, ROUTE_MODEL,
+};
 use std::collections::HashMap;
-use inference_dbus::inference::{AgentsProxy, MODELS_ANY, MODELS_LISTED, ROUTE_ACCOUNT, ROUTE_MODEL};
 use tokio::sync::Mutex;
 
 /// The launcher's link to accountd and inferd.

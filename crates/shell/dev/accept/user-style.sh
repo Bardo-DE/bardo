@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The person's style.css, live (quire ARCHITECTURE.md section 10, sill section 8). One daemon runs
-# from this checkout's debug build on shell-host's private headless KWin, on a private bus that is
+# from this checkout's debug build on layer-shell-host's private headless KWin, on a private bus that is
 # both its session and its system bus, with a scratch HOME and XDG tree, its own XDG_RUNTIME_DIR
 # and the fake DDC; nothing reaches the user's session. The daemon is started once and never
 # restarted: every step below changes the file under it.

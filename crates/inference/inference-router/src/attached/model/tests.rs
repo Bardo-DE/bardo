@@ -2,11 +2,11 @@ use super::*;
 use crate::attached::config::{Place, Reach};
 use crate::catalog::{CatalogDirs, local_claims, parse_entry_text, read_catalog};
 use crate::testkit::entries;
-use model_openai_compat::Flavor;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_capability::Subject;
 use base_testkit::Scratch;
+use model_openai_compat::Flavor;
 
 fn attached(id: &str, place: Place) -> Attached {
     Attached {

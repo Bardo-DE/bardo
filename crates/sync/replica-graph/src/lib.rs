@@ -1,5 +1,5 @@
 //! The Microsoft Graph replica (design/31 §6.1, porter PLAN W6c): [`GraphReplica`] implements
-//! ferry-sync's `Replica` over a folder of OneDrive's app folder (`/me/drive/special/approot`)
+//! sync-core's `Replica` over a folder of OneDrive's app folder (`/me/drive/special/approot`)
 //! or, given [`Root::Drive`], of the whole drive (`/me/drive/root`).
 //!
 //! - **Changes** are a delta query with the delta link as the anchor; a `410` (`resyncRequired`)
@@ -24,8 +24,8 @@
 //!   the Graph host, and over those of `Tokens.OpenLinked` (no credential) for the hosts of an
 //!   `uploadUrl` and of the redirect a download answers with.
 //!
-//! The crate is pure: no runtime and no socket. It keeps its own vendor error reasons and wire reading on top of ferry-sync's
-//! `status` and dates its tombstones with ferry-sync's `Clock`.
+//! The crate is pure: no runtime and no socket. It keeps its own vendor error reasons and wire reading on top of sync-core's
+//! `status` and dates its tombstones with sync-core's `Clock`.
 
 mod addr;
 mod drive;

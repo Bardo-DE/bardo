@@ -4,11 +4,11 @@
 # Linux-only or desktop-bus crate. Needs no network (cargo reads the lockfile and the cache).
 #
 # The portable core is the in-app agent: the vocabulary, the router and its Cedar policy point,
-# the reviewer, the agent loop, the planner over any inferd-client Transport, skills, the red
-# team's suite, the fakes, the model-backed reviewer and policy writer (`docket-models`), the
-# quarantined reader (`docket-reader`), the memory seam (`docket-memory`), and `docket-inapp`,
+# the reviewer, the agent loop, the planner over any inference-client Transport, skills, the red
+# team's suite, the fakes, the model-backed reviewer and policy writer (`agent-models`), the
+# quarantined reader (`agent-reader`), the memory seam (`companion-memory`), and `agent-inapp`,
 # which hosts them in one app. The desktop extras
-# (docket-dbus, intentd, companiond, readerd, voiced, quire-do, actions-mcp, the acceptance
+# (action-dbus, intentd, companiond, readerd, voiced, quire-do, actions-mcp, the acceptance
 # crate and everything that names a bus) are not on this list on purpose.
 #
 # Cross targets are checked when rustup already has them installed; this script never installs
@@ -17,9 +17,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PORTABLE=(
-  docket-vocab docket-manifest docket-permissions-core companion-model docket-core docket-gate-wire docket-wire docket-skills docket-skills-disk policy-point action-review docket-context docket-gate docket-router
-  actions-tools companion-wire companion-core agent-loop docket-planner docket-tasks docket-native docket-session docket-checkpoint docket-acp docket-client docket-fake docket-eval eval-core
-  docket-models docket-reader docket-memory-core docket-memory agents-core docket-host docket-inapp voice-wire voice-loop voice-audio
+  action-vocab action-manifest permission-core companion-model action-core action-gate-wire action-wire agent-skills agent-skills-disk permission-policy action-review action-context action-gate action-router
+  action-tools companion-wire companion-core agent-loop agent-planner companion-tasks agent-native agent-session action-checkpoint docket-acp action-client action-fake docket-eval action-eval-core
+  agent-models agent-reader companion-memory-core companion-memory agent-registry action-host agent-inapp agent-voice-wire agent-voice-loop agent-voice-audio
 )
 # What must never be in a portable crate's tree: a bus, or a Linux-only kernel interface.
 FORBIDDEN='zbus|zvariant|inotify|landlock|pipewire|notify|libspa'

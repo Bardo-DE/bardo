@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 
 # "<package> <test module>": every `#[ignore = "perf: ..."]` test in that module of the crate's `it` executable.
 PERF=(
-  "ds-blitz pdf_output"
+  "ui-blitz pdf_output"
 )
 
 profile=()

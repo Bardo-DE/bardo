@@ -4,11 +4,11 @@ use super::{Checked, DockMenuRow, OptionHeld, app, menu_entries, menu_windows};
 use crate::dock::items::{DockItem, ItemKind};
 use crate::dock::machine::{TileApp, TileId};
 use crate::dock::pick::{DockPick, LoginChange};
-use ui_components::prelude::*;
 use shell_launcher::{AppId, WindowKey};
 use shell_model::apps::{App, AppIcon, DbusActivation, DesktopActionEntry, Listing, Terminal};
 use shell_model::windows::{Sizing, Toplevel, Toplevels};
 use std::path::PathBuf;
+use ui_components::prelude::*;
 
 const TERM: &str = "foot";
 

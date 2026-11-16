@@ -1,12 +1,12 @@
-//! Finding a generic mail server from an address: the search of `porter-discover`. The servers a
-//! person types when it finds none, and the ones a provider file names, are generic-proto's.
+//! Finding a generic mail server from an address: the search of `account-discover`. The servers a
+//! person types when it finds none, and the ones a provider file names, are account-generic-proto's.
 
 use crate::dns::SharedDns;
-use account_generic_proto::mail::domain_of;
 use account_capability::Claim;
 use account_core::ServiceEndpoint;
 use account_discover::{Found, Outcome, Source, discover_mail};
 use account_family_kit::Io;
+use account_generic_proto::mail::domain_of;
 use account_provider::{DomainName, ProviderSet};
 
 /// What looking for a mail server came to.

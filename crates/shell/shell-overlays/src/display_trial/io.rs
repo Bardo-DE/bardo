@@ -5,12 +5,12 @@
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::base::time::clock::sleep;
-use ui_components::base::time::stamp::FrameClock;
 use layer_shell_host::{OutputInfo, use_watch};
 use shell_model::desktop::{TrialAnswer, TrialId, seconds_left, until_next_second};
 use shell_ui_kit::links::{DisplayTrialLink, TrialRun};
 use shell_ui_kit::sheet_stage::{SheetStage, use_sheet_stage};
+use ui_components::base::time::clock::sleep;
+use ui_components::base::time::stamp::FrameClock;
 
 /// The stage on `output`, following the open trial and the sheets' output.
 pub(super) fn use_stage(output: &OutputInfo) -> Signal<SheetStage<TrialRun>> {

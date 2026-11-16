@@ -6,7 +6,7 @@
 #   gate/check-callers-table.sh [--table FILE] [--peephole DIR] [--crates DIR]
 #
 #   --table FILE     the table (default dist/desktop-callers.toml of this repo)
-#   --peephole DIR   the peephole crate: its peephole-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then the
+#   --peephole DIR   the peephole crate: its caller-identity-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then the
 #                    peephole crate of this tree). Without one the check cannot say which roles are missing: exit 2
 #   --crates DIR   the component crate folders (crates/<name> of this tree), to compare each unit's ExecStart program with the row's `exe` list
 #                    (default: crates/ of this tree; a unit whose file is not found there is noted and skipped)
@@ -41,7 +41,7 @@ if [ -z "$peephole" ]; then
   done
 fi
 if [ -z "$peephole" ] || [ ! -f "$peephole/peephole-core/src/roles.rs" ]; then
-  echo "check-callers-table: no peephole crate (peephole-core/src/roles.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
+  echo "check-callers-table: no peephole crate (caller-identity-core/src/roles.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
   exit 2
 fi
 exec python3 -I - "$table" "$peephole/peephole-core/src/roles.rs" "$crates_dir" <<'PY'

@@ -14,12 +14,12 @@ use anyview_peek::{AnyPeeked, Body, Card, PageLook, PdfPeeked, STYLE, peek};
 use anyview_text::{TokenClass, TokenLine, TokenSpan};
 use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
+use std::sync::{Arc, OnceLock};
+use support::{Home, fixture, pane_budget};
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::{Appearance, Ds, Material, Word};
 use ui_harness::{Backdrop, Harness, HarnessConfig, Viewport};
 use ui_lint::{LintConfig, Profile, Rule, assert_clean, markup};
-use std::sync::{Arc, OnceLock};
-use support::{Home, fixture, pane_budget};
 
 fn peeked(home: Home, name: &str) -> Arc<AnyPeeked> {
     let (src, sniffed) = fixture(home, name);

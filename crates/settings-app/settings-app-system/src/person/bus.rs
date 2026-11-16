@@ -5,9 +5,9 @@ use super::PersonLink;
 use crate::bus::{BusSource, system_connection};
 use crate::deadline::{Deadline, peer};
 use settings_app_model::{Person, Work, passwd_name};
-use ui_peer::within;
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
+use ui_peer::within;
 use zbus::Proxy;
 use zbus::zvariant::OwnedObjectPath;
 

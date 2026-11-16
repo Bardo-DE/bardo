@@ -3,14 +3,14 @@
 use super::{Compared, Engine, Halt, Outcome, Report, conflict_of, halt, provisional};
 use crate::dataset::{Dataset, Direction, fingerprint};
 use crate::journal::Op;
+use account_ids::clock::Clock;
+use std::collections::BTreeSet;
+use std::sync::atomic::Ordering;
 use sync_core::{
     Acknowledgement, Anchor, BaseVersion, Blob, ByteRange, Change, Cursor, ItemState, JournalItem,
     More, RemoteId, RemoteItem, RemoteSide, Replica, ReplicaError, StoredAnchor, Tombstone,
     TombstoneOrigin, mass_delete, reconcile,
 };
-use account_ids::clock::Clock;
-use std::collections::BTreeSet;
-use std::sync::atomic::Ordering;
 
 impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
     /// Finishes what a crash (or a transient stop) left half done.

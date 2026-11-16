@@ -11,6 +11,11 @@
 //! screens come and go; what the person has picked is a `Picks`, changed only by `toggle`.
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputInfo;
+use shell_model::capture_pick::{
+    Asking, Picks, Plurality, Pointer, Source, Tab, can_allow, plan, toggle,
+};
+use shell_services::capture_pick::CaptureService;
 use ui_components::base::vocab::RowState;
 use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
@@ -22,11 +27,6 @@ use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::focus::soon::focus_soon;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use layer_shell_host::OutputInfo;
-use shell_model::capture_pick::{
-    Asking, Picks, Plurality, Pointer, Source, Tab, can_allow, plan, toggle,
-};
-use shell_services::capture_pick::CaptureService;
 
 use super::CAPTURE_SHEET_CSS;
 use super::io::use_end;

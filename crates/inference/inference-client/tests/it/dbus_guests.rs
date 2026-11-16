@@ -7,15 +7,15 @@
 
 use crate::common;
 
+use account_dbus::{BusStream, Details};
+use account_ids::UnixSeconds;
+use account_tailscale::NodeId;
 use common::bus::PrivateBus;
 use inference_client::{
     ClientError, ComputerReason, DbusTransport, GuestChange, Inference, TransportError,
 };
-use account_dbus::{BusStream, Details};
-use account_ids::UnixSeconds;
 use inference_tailnet::{Approval, CandidateModel, GuestAsk, RowState};
 use inference_tailnet::{GuestAnswer, GuestRow};
-use account_tailscale::NodeId;
 use std::sync::{Arc, Mutex};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -452,9 +452,9 @@ async fn candidates_decode_with_their_models_and_approval() {
 
 mod computers {
     use super::*;
-    use inference_client::{ComputerName, ComputerReach, NewComputer, NewComputerModel};
     use account_capability::ModelId;
     use account_core::SecretText;
+    use inference_client::{ComputerName, ComputerReach, NewComputer, NewComputerModel};
 
     fn place_row(id: &str, kind: &str, name: &str) -> (String, Details) {
         (

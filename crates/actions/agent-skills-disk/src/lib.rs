@@ -1,6 +1,6 @@
-//! Skill directories on the real disk, the client/IO side of `docket-skills`.
+//! Skill directories on the real disk, the client/IO side of `agent-skills`.
 //!
-//! `docket-skills` does no IO: it asks a [`SkillFolder`] to list and read. [`DiskFolder`] is that
+//! `agent-skills` does no IO: it asks a [`SkillFolder`] to list and read. [`DiskFolder`] is that
 //! folder over `std::fs`. It reads only the paths it is handed and names no environment variable.
 
 use agent_skills::{FolderError, SkillFolder};

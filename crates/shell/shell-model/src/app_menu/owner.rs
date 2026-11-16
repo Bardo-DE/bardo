@@ -3,7 +3,7 @@
 //! nothing; the system's account of the owner (peephole's standing: an image the system owns, a
 //! sandbox it attests, a desktop service) is compared with the window's client.
 //!
-//! Pure. `sill-services::callers` turns a standing into a [`MenuOwner`]; the services ask
+//! Pure. `shell-services::callers` turns a standing into a [`MenuOwner`]; the services ask
 //! [`menu_trust`] before they read a menu, show it or click it for an agent.
 //!
 //! **The seam.** The window's client is known by the app key the desktop names it by. The

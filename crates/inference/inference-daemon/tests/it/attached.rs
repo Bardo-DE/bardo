@@ -6,12 +6,6 @@
 
 use crate::hosting;
 
-use hosting::lab::Lab;
-use hosting::rig::{Plan, World};
-use hosting::{bus, entries};
-use inference_daemon::attached::{Attached, KeyFileProblem, NotReady, Place, Reach};
-use inference_daemon::settings::Settings;
-use inference_client::InferSession;
 use account_capability::LlmFeature;
 use account_capability::ModelId;
 use account_capability::{Locality, Tier};
@@ -19,12 +13,19 @@ use account_core::DataClass;
 use account_core::consent::Usage;
 use account_fake_servers::net::Bind;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use base_testkit::Scratch;
+use hosting::lab::Lab;
+use hosting::rig::{Plan, World};
+use hosting::{bus, entries};
+use inference_client::InferSession;
 use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
     MessagePart, ModelRef, Role as ChatRole,
 };
-use account_match::LlmNeed;
-use account_match::Need;
+use inference_daemon::attached::{Attached, KeyFileProblem, NotReady, Place, Reach};
+use inference_daemon::settings::Settings;
 use inference_router::seams::EngineHost;
 use inference_router::startup::Cause;
 use rustix::process::{Pid, Signal, kill_process};
@@ -32,7 +33,6 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::time::Duration;
-use base_testkit::Scratch;
 
 const ATTACHED: &str = entries::ATTACHED;
 

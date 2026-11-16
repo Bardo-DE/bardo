@@ -3,7 +3,7 @@
 # A token counts as a path when it ends in .rs/.css/.md/.sh or starts with `crates/`, `design/`,
 # `docs/`, `scripts/` or `examples/`. It resolves when it exists relative to the repo root or to
 # the doc's own directory, or when it is the tail of a tracked file's path (`root/ds.rs`,
-# `ds-style/tokens/colour.rs` for `crates/ds-style/src/tokens/colour.rs`), in this repo or a
+# `ui-style/tokens/colour.rs` for `crates/ds-style/src/tokens/colour.rs`), in this repo or a
 # sibling repo checked out beside it. Tokens with a glob, a placeholder, a space or a leading
 # `~` (files outside the repo) are skipped, as is anything between `<!-- paths: skip -->` and
 # `<!-- paths: end -->` (a table of old locations that no longer exist). Prints one `doc: token` line per miss; exits 1 on any.

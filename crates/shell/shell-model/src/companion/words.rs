@@ -1,9 +1,9 @@
 //! The words a companion row wears in the launcher: fixed words and the person's own, never a
 //! model's formatting. Each returns a title and a faint second line.
 
-use memory_core::{EntryBody, FactView, SourceView, TimelineEntry};
-use companion_wire::{AnswerBody, AnswerPhase, NeedsYou, RefusalWire, StepWireState};
 use action_core::{Reveal, UndoEntry, UndoState};
+use companion_wire::{AnswerBody, AnswerPhase, NeedsYou, RefusalWire, StepWireState};
+use memory_core::{EntryBody, FactView, SourceView, TimelineEntry};
 use permission_core::DenyCode;
 use provenance::{Actor, AgentRole, SystemPart};
 

@@ -4,6 +4,8 @@
 //! are counted, not waited for.
 
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::time::Duration;
 use ui_components::edit::handle::{EditHandle, use_edit_handle};
 use ui_components::edit::input::EditInput;
 use ui_components::edit::selection::use_selection_rects;
@@ -12,8 +14,6 @@ use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, PhaseOrder, Viewport};
-use std::cell::RefCell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

@@ -9,7 +9,6 @@ use std::time::Duration;
 
 use companion_model::helper::HelperModel;
 use companion_model::routine::RoutineId;
-use ui_harness::Input;
 use launcher_harness::launcher_support::companion::{RESEARCH, helpers};
 use launcher_harness::{Open, Press, open_in, selected_title, titles};
 use provenance::HelperId;
@@ -17,6 +16,7 @@ use shell_launcher::LauncherMode;
 use shell_model::companion::{
     CompanionCommand, HelpersMsg, ModelGroup, ModelOffer, RoutinesMsg, Takes,
 };
+use ui_harness::Input;
 
 fn research() -> HelperId {
     HelperId::parse("h-1").unwrap_or_else(|e| panic!("{e}"))
@@ -49,7 +49,8 @@ fn on_research(more: Vec<HelpersMsg>) -> Open {
     let mut open = open_in("", LauncherMode::Companion, |bar| {
         bar.companion.send_replace(helpers(more));
     });
-    open.harness.send(Input::key(ui_components::prelude::ShortcutKey::Tab));
+    open.harness
+        .send(Input::key(ui_components::prelude::ShortcutKey::Tab));
     settled(&mut open);
     open.press(Press::Down);
     settled(&mut open);
@@ -61,7 +62,8 @@ fn tab_reaches_the_helpers_and_the_new_helper_row_comes_first() {
     let mut open = open_in("", LauncherMode::Companion, |bar| {
         bar.companion.send_replace(helpers(Vec::new()));
     });
-    open.harness.send(Input::key(ui_components::prelude::ShortcutKey::Tab));
+    open.harness
+        .send(Input::key(ui_components::prelude::ShortcutKey::Tab));
     settled(&mut open);
     assert_eq!(
         titles(&open.harness),

@@ -3,9 +3,9 @@
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use ui_helpers::EntryLocale;
 use shell_model::apps::{AppIndex, AppsCommand, AppsEvent, step};
 use tokio::sync::{mpsc, watch};
+use ui_helpers::EntryLocale;
 
 use super::icons;
 use super::locales::session_locales;
@@ -97,7 +97,7 @@ fn watch_dirs(config: &Path, dirs: &[PathBuf]) -> Result<Debounced, ServiceError
         .cloned()
         .map(Place::Tree)
         .collect();
-    let theme_file = ui_icon_tool::icon_theme_path(config);
+    let theme_file = icons::icon_theme_path(config);
     if let Some(parent) = theme_file.parent()
         && parent.is_dir()
         && !places.contains(&Place::Tree(parent.to_path_buf()))

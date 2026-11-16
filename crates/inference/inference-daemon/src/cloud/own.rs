@@ -20,18 +20,18 @@ use super::models::{RemoteModel, card_of};
 use super::picker::{Availability, Choice};
 use super::wire::Door;
 use crate::probe::names::id_of;
-use model_catalog::{Locality, ModelEntry, Reach};
-use model_http::{
-    AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint, HttpStatus,
-    HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, TlsRoots, Transport,
-    UrlPath, Verb, WaitMs,
-};
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_core::{SecretText, ServiceEndpoint};
 use account_ids::{UnixSeconds, UrlScheme};
 use inference_core::Takes;
 use inference_router::catalog::{capabilities_of, parse_entry_text};
+use model_catalog::{Locality, ModelEntry, Reach};
+use model_http::{
+    AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint, HttpStatus,
+    HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, TlsRoots, Transport,
+    UrlPath, Verb, WaitMs,
+};
 use std::collections::BTreeMap;
 use std::ops::ControlFlow;
 use std::sync::{Arc, PoisonError, RwLock};

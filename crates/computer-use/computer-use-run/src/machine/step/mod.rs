@@ -25,13 +25,13 @@ use crate::machine::run::{Run, RunEnv};
 use crate::machine::track::RunTrack;
 use crate::mode::mode_support;
 use crate::stall::Repeats;
+use action_wire::GrantAnswer;
 use computer_use_bus::CuaTask;
 use computer_use_bus::{
     BlockedOn, CuaOutcome, CuaRecord, FailReason, ModeSupport, RunBudgetKind, TaskTarget,
 };
-use computer_use_desktop::{Stamp, ToplevelIdent};
-use action_wire::GrantAnswer;
 use computer_use_capture::{FrameWant, Settle};
+use computer_use_desktop::{Stamp, ToplevelIdent};
 use inference_core::StepIndex;
 use provenance::RunId;
 
@@ -169,12 +169,14 @@ fn granted(run: &mut Run, fx: &mut Vec<RunEffect>, answer: GrantAnswer) {
     match (answer, window_of(&run.task).cloned()) {
         (GrantAnswer::Granted, Some(window)) => {
             enter(run, fx, RunPhase::Leasing);
-            fx.push(RunEffect::AcquireLease(computer_use_desktop::LeaseRequest {
-                window,
-                mode: run.task.mode,
-                space: run.task.space.clone(),
-                placement: computer_use_desktop::ReleasePlacement::ReturnToUser,
-            }));
+            fx.push(RunEffect::AcquireLease(
+                computer_use_desktop::LeaseRequest {
+                    window,
+                    mode: run.task.mode,
+                    space: run.task.space.clone(),
+                    placement: computer_use_desktop::ReleasePlacement::ReturnToUser,
+                },
+            ));
         }
         (GrantAnswer::Granted, None) => {
             finish_no_window(run, fx);

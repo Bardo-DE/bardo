@@ -11,9 +11,9 @@ mod host;
 mod serve;
 mod service;
 
+pub use agent_reader::{answer_of, class_of, reader_request, reply_shape, task_instruction};
 pub use callers::{FILE as CALLERS_FILE, shipped as shipped_callers};
 pub use daemon::{HarnessSeams, run, run_with, start};
-pub use agent_reader::{answer_of, class_of, reader_request, reply_shape, task_instruction};
 pub use host::ReaderHost;
 pub use serve::{ServeFault, serve, serve_on};
 pub use service::ReaderService;

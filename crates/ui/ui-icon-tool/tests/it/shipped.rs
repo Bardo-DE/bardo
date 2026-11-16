@@ -4,8 +4,8 @@
 
 use std::path::PathBuf;
 
-use ui_icon_tool::{PlateGrid, Template, oklab, plate_mask};
 use image::Rgba32FImage;
+use ui_icon_tool::{PlateGrid, Template, oklab, plate_mask};
 
 const APPS: [&str; 6] = ["mail", "files", "terminal", "notes", "photos", "viewer"];
 

@@ -1,6 +1,6 @@
 //! `org.quire.IntentProvider1` served for one provider: each member decodes the JSON of its
 //! typed argument, calls the provider and answers the JSON of its typed result. The member
-//! list, its signatures and its signals are those of `docket-dbus`'s `IntentProviderSkeleton`
+//! list, its signatures and its signals are those of `action-dbus`'s `IntentProviderSkeleton`
 //! (a test holds the introspection to `dbus/org.quire.IntentProvider1.xml`).
 //!
 //! The gate lives in intentd: a provider answers nothing but intentd, so a process that calls

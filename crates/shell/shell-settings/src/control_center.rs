@@ -1,9 +1,9 @@
 //! `control_center.*` (design/22 §3.13; design/13
 //! §13.3.7). All Advanced (§5).
 
+use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// One control center module, in `control_center.modules` order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

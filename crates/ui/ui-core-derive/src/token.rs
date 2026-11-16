@@ -16,7 +16,7 @@ struct Member<'a> {
     values: Values,
 }
 
-/// `impl <ds-style>::tokens::token::Token for X`, or the reason `X` cannot have one.
+/// `impl <ui-style>::tokens::token::Token for X`, or the reason `X` cannot have one.
 pub(crate) fn expand(input: &DeriveInput) -> syn::Result<TokenStream> {
     let style = crate::paths::style();
     let Data::Enum(data) = &input.data else {

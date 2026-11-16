@@ -1,8 +1,8 @@
 //! A window's state and what it returns to.
 
 use crate::geometry::{LogicalRect, LogicalSize};
-use desktop_protocols::vocab::{PlacementMark, TileZone, WindowStateKind};
 use account_core::SpaceId;
+use desktop_protocols::vocab::{PlacementMark, TileZone, WindowStateKind};
 
 /// Where and how a window is shown. Each state carries what leaving it restores.
 #[derive(Debug, Clone, PartialEq, Eq)]

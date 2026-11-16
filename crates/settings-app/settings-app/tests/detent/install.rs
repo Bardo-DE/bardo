@@ -118,7 +118,7 @@ fn the_user_unit_is_the_one_the_service_file_names() {
     );
 }
 
-/// The variables peephole-core's `LOADER_VARIABLES` names: a unit that leaves any of them set is
+/// The variables caller-identity-core's `LOADER_VARIABLES` names: a unit that leaves any of them set is
 /// not given the Settings role in full proof.
 const LOADER_VARIABLES: [&str; 22] = [
     "LD_PRELOAD",

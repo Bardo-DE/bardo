@@ -29,11 +29,11 @@
 //!   place they live): `local_only` on drops every cloud engine, and a class whose floor is this
 //!   computer never reaches a cloud one, which is `InferRefusal::RequiresCloud(class)` (the
 //!   refusal inferd answers).
-//! - [`KeySource`]: the app's access to its keys. inferd-client stores none.
+//! - [`KeySource`]: the app's access to its keys. inference-client stores none.
 //!
-//! The wire mapping is `porter-bridge` (what inferd uses); the turn itself (events streamed as
+//! The wire mapping is `inference-bridge` (what inferd uses); the turn itself (events streamed as
 //! they come, the reply gathered) and the retry (three attempts, a quarter of a second doubling to
-//! four) are `porter-turns`' (`local::run_chat`, `local::RETRY`), the same code the daemon runs.
+//! four) are `inference-turns`' (`local::run_chat`, `local::RETRY`), the same code the daemon runs.
 //! Spend caps, the model picker and the audit trail are inferd's and are not here.
 
 mod engine;

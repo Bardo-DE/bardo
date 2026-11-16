@@ -8,7 +8,6 @@ use compositor_core::DeviceId;
 use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::input::{ButtonCode, DeviceClass, KeyCode};
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::surface::layer::{
     Anchor, KeyboardInteractivity, Layer, LayerAsk, LayerSurface,
@@ -17,6 +16,7 @@ use compositor_testclient::surface::popup::{Popup, PopupSpec};
 use compositor_testclient::surface::toplevel::{BoundPointer, WmBase, bind_pointer};
 use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use wayland_client::Proxy;
 use wayland_client::protocol::wl_surface::WlSurface;
 
@@ -90,7 +90,7 @@ fn keys_of(client: &TestClient) -> usize {
         .count()
 }
 
-/// The desk of the shell-host script: an app window with the keyboard, the shell's bar along the
+/// The desk of the layer-shell-host script: an app window with the keyboard, the shell's bar along the
 /// top, and a menu of the bar that holds the grab.
 struct Desk {
     fixture: Fixture,

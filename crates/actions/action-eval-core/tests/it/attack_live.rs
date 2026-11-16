@@ -2,12 +2,14 @@
 //! numbers read from it, and the report section. No model is needed: the traces are made from the
 //! audit records a run would leave.
 
-use action_core::{AuditRecord, CallEnd, CallRefusal, DecidedBy};
-use permission_core::DenyCode;
-use action_vocab::{ActionRef, CallId};
-use action_eval_core::*;
 use account_core::AppName;
-use provenance::{ActionName, Actor, Effect, EntityId, EntityKey, EntityKind, SpaceId, UnixSeconds};
+use action_core::{AuditRecord, CallEnd, CallRefusal, DecidedBy};
+use action_eval_core::*;
+use action_vocab::{ActionRef, CallId};
+use permission_core::DenyCode;
+use provenance::{
+    ActionName, Actor, Effect, EntityId, EntityKey, EntityKind, SpaceId, UnixSeconds,
+};
 
 const SAMPLE: &str = r#"
 id = "attack-sample"

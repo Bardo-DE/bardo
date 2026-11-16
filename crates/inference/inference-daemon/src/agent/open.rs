@@ -7,15 +7,15 @@ use super::session::{Agents, Ctx};
 use super::token::{Token, random_hex};
 use crate::cloud::models::{known_providers, provider_of};
 use crate::engines::Engines;
-use model_catalog::{ModelEntry, ProviderId, Wire};
 use account_capability::Locality;
 use account_capability::{AgentProgram, AgentProtocol};
 use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::{Usage, Verdict};
 use inference_core::ModelRef;
-use std::net::{IpAddr, Ipv4Addr};
 use inference_dbus::inference::EndpointArg;
+use model_catalog::{ModelEntry, ProviderId, Wire};
+use std::net::{IpAddr, Ipv4Addr};
 use tokio::net::TcpListener;
 
 /// The arguments of `OpenEndpoint`, as the bus carries them.

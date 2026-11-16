@@ -1,6 +1,6 @@
 [package]
 name = "inference-turns"
-description = "Running model turns: a routed session on a model of this computer (chat, embeddings, computer-use steps), structured replies validated and repaired, the audit trail of finished turns, and a pipeline's stages. A library over porter-router: no bus, no daemon."
+description = "Running model turns: a routed session on a model of this computer (chat, embeddings, computer-use steps), structured replies validated and repaired, the audit trail of finished turns, and a pipeline's stages. A library over inference-router: no bus, no daemon."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

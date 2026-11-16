@@ -1,19 +1,23 @@
 //! The end-to-end scripted run over the fakes: click, then done.
 
+use account_core::AppName;
+use account_ids::{Px, UnixSeconds};
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point, RunMode,
     Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
 };
-use computer_use_bus::{CuaOutcome, CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget};
+use computer_use_bus::{
+    CuaOutcome, CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget,
+};
+use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{BackendCaps, BackendKind, MaskWhere, Stamp, ToplevelIdent};
 use computer_use_fake::{
     DesktopCall, FakeA11y, FakeCapture, FakeDesktop, FakePdp, FakeSeat, FixedClock, Fixture,
     MemoryEvents, ScriptedModel, SeatEvent, World, run_harness_answering,
 };
-use computer_use_run::{AcquirePhase, CuaConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step};
-use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
-use account_core::AppName;
-use account_ids::{Px, UnixSeconds};
+use computer_use_run::{
+    AcquirePhase, CuaConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
+};
 use inference_core::CuaStepReply;
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, RunId, SessionId, Source,
@@ -170,7 +174,9 @@ fn a_stalled_step_of_taking_the_window_names_itself_and_gives_the_lease_back() {
         let (report, world) = stalled(phase);
         assert_eq!(
             report.run.phase,
-            RunPhase::Finished(CuaOutcome::Blocked(computer_use_bus::BlockedOn::LeaseRefused)),
+            RunPhase::Finished(CuaOutcome::Blocked(
+                computer_use_bus::BlockedOn::LeaseRefused
+            )),
             "{name}"
         );
         let sent: Vec<String> = world
@@ -219,7 +225,8 @@ fn on_an_unfocused_window(
     let mut unfocused = window();
     unfocused.state = BTreeSet::new();
     world.desktop = FakeDesktop::new(kind, vec![unfocused]);
-    world.seat = FakeSeat::new(computer_use_desktop::SeatIsolation::SharedSeat, Stamp(0)).with_us_keymap();
+    world.seat =
+        FakeSeat::new(computer_use_desktop::SeatIsolation::SharedSeat, Stamp(0)).with_us_keymap();
     world.clock = FixedClock::at(Stamp(0), UnixSeconds(1_700_000_000)).impatient();
     let report = block_on(run_harness_answering(
         new_run(),

@@ -2,9 +2,9 @@
 //! app password itself, deletes the one it authenticates with.
 
 use crate::{Error, authorized, web};
+use account_core::EndpointUrl;
 use http::header::ACCEPT;
 use http::{HeaderValue, Method, Request, Response};
-use account_core::EndpointUrl;
 
 /// What the server said to the revoke.
 #[derive(Debug, Clone, PartialEq, Eq)]

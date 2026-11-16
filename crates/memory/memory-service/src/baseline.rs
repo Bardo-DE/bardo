@@ -8,8 +8,8 @@
 //! edit is not absorbed by the service's own write.
 
 use memory_core::{FactId, TopicPath};
-use memory_store::{Vault, VaultError, VaultPath};
 use memory_files_format::{Block, parse_topic, render_topic};
+use memory_store::{Vault, VaultError, VaultPath};
 use std::collections::BTreeMap;
 
 fn path() -> Option<VaultPath> {

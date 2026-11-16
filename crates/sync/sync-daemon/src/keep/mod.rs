@@ -1,5 +1,5 @@
 //! What syncd keeps of the accounts the person has. The accounts are accountd's: syncd lists
-//! them, asks accountd for the grants it needs and reads its own, all through porter-client
+//! them, asks accountd for the grants it needs and reads its own, all through account-client
 //! (`Grants`, `Accounts`), over the bus in the daemon and in process in tests. syncd holds no
 //! account, no token and no sign-in of its own; what it keeps is a switch per account and class
 //! in the grants accountd holds for it.
@@ -147,7 +147,7 @@ fn drive_dir(account: &AccountId) -> Option<AccountDir> {
     AccountDir::parse(&account_ids::object_segment(account.as_str()))
 }
 
-/// What syncd keeps of the accounts, over accountd through porter-client.
+/// What syncd keeps of the accounts, over accountd through account-client.
 #[derive(Debug)]
 pub struct Keep<T> {
     grants: Arc<Grants<T>>,

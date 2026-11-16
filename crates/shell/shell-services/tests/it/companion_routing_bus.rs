@@ -9,10 +9,10 @@ use crate::companion_support;
 
 use std::sync::{Arc, Mutex};
 
+use action_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
 use companion_support::stand_ins::{ActsAs, StandInAnswer, StandInCompanion, StandInSession};
 use companion_support::{Desk, ask_input, haiku_notes, json, route_notes, serve, task, wire};
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, RefusalWire, RouteNote, footer_line};
-use action_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
 use shell_model::companion::CompanionCommand;
 use zbus::Connection;
 

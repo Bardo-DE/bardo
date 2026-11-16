@@ -1,12 +1,12 @@
 //! The output reducer, configuration validation and completion.
 
-use desktop_protocols::vocab::Transform;
 use desktop_client::output::{
     ConfigError, ConfigOutcome, ConfigPurpose, HeadChange, HeadChangeRequest, HeadConfig,
     HeadSettings, ModeChange, ModeChoice, OutputConfig, OutputEvent, RefreshMilliHz, ScaleMilli,
     complete,
 };
 use desktop_client::{ConfigId, DesktopState, OutputName, Point, Size};
+use desktop_protocols::vocab::Transform;
 
 use crate::support::{head_change, hk, mk, mode_change, out, run};
 

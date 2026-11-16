@@ -17,6 +17,7 @@ use crate::stack::host::{OverlayId, Overlays, use_overlays};
 use crate::stack::layer_stack::{Dismissal, LayerId, LayerStack};
 use dioxus::core::{current_scope_id, queue_effect};
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::{
     placement::{Placed, Placement, Side, opposite, place, room_on_side},
     units::{Point, Px, Rect, Size},
@@ -30,7 +31,6 @@ use ui_motion::presence::{
     use_presence::{Presented, use_presence},
 };
 use ui_style::tokens::layer::ZLayer;
-use std::rc::Rc;
 
 /// Whether a floating surface joins the layer stack: hover cards and tooltips never take
 /// Escape or a click, so they stay off it.

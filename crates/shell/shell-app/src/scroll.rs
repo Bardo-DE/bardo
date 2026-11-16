@@ -1,4 +1,4 @@
-//! `shell_settings::ShellFile`'s `scroll` and `scrollbar` sections, mapped to shell-host's
+//! `shell_settings::ShellFile`'s `scroll` and `scrollbar` sections, mapped to layer-shell-host's
 //! `ScrollConfig` (`HostCtx::set_scroll_config`). Both sides carry the same fields under the same
 //! serde spelling (design/22 §3.7 `scroll` / §3.8 `scrollbar`), but as two crates' own newtypes and
 //! enums, so the mapping is field by field rather than a shared type. Pure; `daemon.rs` calls it at
@@ -39,7 +39,7 @@ const WHEEL_BURST_WINDOW_MS: host::ScrollMs = host::ScrollMs(300);
 const MOMENTUM_BOOST_THRESHOLD_PX_S: host::ScrollScalar = host::ScrollScalar(350.0);
 /// The grace, in ms, before a second scroll counts as a double scroll.
 const DOUBLE_SCROLL_GRACE_MS: host::ScrollMs = host::ScrollMs(150);
-/// The track's width at rest, in px: a scroll bar's geometry is painted by shell-host on any
+/// The track's width at rest, in px: a scroll bar's geometry is painted by layer-shell-host on any
 /// surface and no sill document holds it, so it is a constant here (macOS's overlay scroller).
 const SCROLLBAR_TRACK_THICKNESS_PX: host::ScrollPx = host::ScrollPx(12);
 /// The track's width while the pointer is near, in px.

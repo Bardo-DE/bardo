@@ -3,8 +3,8 @@
 
 use crate::scene::OutputView;
 use compositor_core::geometry::{LogicalPoint, PhysicalRect, SubPoint, SubPx};
-use ui_core::geometry::scale::Scale;
 use smithay::utils::{Physical, Point, Rectangle};
+use ui_core::geometry::scale::Scale;
 
 /// Sub-pixels per logical pixel (`SubPx`'s unit).
 const SUB: i64 = 120;

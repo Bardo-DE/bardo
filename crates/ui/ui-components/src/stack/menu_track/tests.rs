@@ -6,11 +6,11 @@ use crate::stack::menu_track::types::{
     Branch, ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming,
     MenuTrack, MenuTrackEffect, MenuTrackEvent, SafeTriangle, Session, ShownBy, Submenu,
 };
+use std::time::Duration;
 use ui_core::geometry::units::{Point, Px};
 use ui_core::machine::Machine;
 use ui_core::time::stamp::Stamp;
 use ui_core::vocab::PressPhase;
-use std::time::Duration;
 
 /// A bar title, as the caller keys its menus.
 pub(super) type Key = u32;

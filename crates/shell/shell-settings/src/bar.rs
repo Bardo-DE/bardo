@@ -2,10 +2,10 @@
 //! beside the menu bar's other keys (the Mac's Control Centre pane has no page here); the rest
 //! are Advanced (§5).
 
+use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 use ui_settings::Percent;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// `bar.autohide`: when the menu bar hides and shows (macOS: System Settings, Control Centre,
 /// "Automatically hide and show the menu bar"). `FullScreenOnly` is macOS's default.

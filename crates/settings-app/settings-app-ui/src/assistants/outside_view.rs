@@ -8,6 +8,7 @@ use super::add_view::{AddSheet, RemoveAlert};
 use crate::accounts::{AccountLink, OpenButton};
 use crate::copy::{assistants, coding_agents};
 use crate::env::Env;
+use dioxus::prelude::*;
 use settings_app_client::{installed_agents, load_agents, remove_agent, save_agent_choice};
 use settings_app_model::external::ProviderGroup;
 use settings_app_model::external::{AgentChoice, AgentRow, Agents};
@@ -15,7 +16,6 @@ use settings_app_model::{
     AccountsPane, AddForm, Assistant, Entry, FoundAgent, RemoveQuestion, assistants_of,
     model_choice, model_menu, model_word, removal_of, unlisted_found, way_choice, way_menu,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::menus::pop_up_button::PopUpButton;

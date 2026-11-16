@@ -5,11 +5,11 @@
 
 use crate::support::infer::{call, words};
 use crate::support::world::*;
-use memory_core::MemoryReply;
-use companion_daemon::{RouterLog, stored_events};
 use action_core::*;
 use action_vocab::NoteSlug;
 use action_wire::{NoteAsk, SessionNote};
+use companion_daemon::{RouterLog, stored_events};
+use memory_core::MemoryReply;
 use provenance::{SpaceId, UnixSeconds};
 use serde_json::json;
 

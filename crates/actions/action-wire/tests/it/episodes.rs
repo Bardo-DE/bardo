@@ -1,11 +1,11 @@
 //! The episode skeleton a finished task leaves.
 
 use crate::support::*;
-use memory_core::{EpisodeKind, EpisodeOutcome, StepOutcome};
 use action_core::{CallEnd, CallRefusal, TurnVia, UserTurn};
-use permission_core::DenyCode;
 use action_vocab::{CallId, Caller, TurnId, UndoId};
 use action_wire::{LedgerStep, TaskLedger, close, skeleton_of};
+use memory_core::{EpisodeKind, EpisodeOutcome, StepOutcome};
+use permission_core::DenyCode;
 use provenance::{AgentRef, Effect, Integrity, TaskId};
 use std::collections::BTreeSet;
 

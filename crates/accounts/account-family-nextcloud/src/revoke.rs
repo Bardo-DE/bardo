@@ -1,12 +1,12 @@
 //! Taking an app password back, sent. The request and the reading of the answer are
-//! nextcloud-proto's.
+//! account-nextcloud-proto's.
 
-use account_nextcloud_proto::Error;
-use account_nextcloud_proto::revoke::{self, Revoked};
 use account_core::{EndpointUrl, LoginName, SecretText};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, sensitive};
 use account_http::Http;
+use account_nextcloud_proto::Error;
+use account_nextcloud_proto::revoke::{self, Revoked};
 use account_provider::{ProviderError, RevokeOutcome};
 
 /// Deletes the app password. A server that already refuses it has nothing left to revoke; one

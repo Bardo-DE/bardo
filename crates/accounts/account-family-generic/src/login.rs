@@ -85,7 +85,7 @@ fn fault_of(fault: RelayFault) -> SignInFault {
     match fault {
         RelayFault::Refused => SignInFault::Refused,
         RelayFault::Unreachable | RelayFault::Tls => SignInFault::Unreachable,
-        // protocol, a foreign origin, and a fault a later porter-proxy adds
+        // protocol, a foreign origin, and a fault a later account-proxy adds
         _ => SignInFault::Unreadable,
     }
 }

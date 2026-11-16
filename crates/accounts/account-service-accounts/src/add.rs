@@ -37,7 +37,7 @@ impl<E: Ports> Accounts<'_, E> {
             Ok(_) | Err(SecretsError::Missing | SecretsError::Unreadable) => {
                 Err(Refusal::NeedsReauth)
             }
-            // locked, unreachable, and a failure a later porter-secrets adds
+            // locked, unreachable, and a failure a later account-secrets adds
             Err(_) => Err(Refusal::Unavailable),
         }
     }

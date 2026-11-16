@@ -127,9 +127,9 @@ impl Intake {
 mod tests {
     use super::*;
     use crate::dbus::Proven;
+    use caller_identity_dbus::caller_identity_core::{AppKey, roles};
     use calloop::channel::sync_channel;
     use compositor_core::policy::ConnectionRole;
-    use caller_identity_dbus::caller_identity_core::{AppKey, roles};
 
     fn ask() -> ConnectAsk {
         let app = AppKey::new("org.quire.Shell").expect("an app");

@@ -4,11 +4,11 @@
 //! service says it is gone, the question loses its line and this one with it.
 
 use dioxus::prelude::*;
+use shell_model::intents::StandingGrantId;
+use shell_model::intents::sheet::SheetView;
 use ui_components::components::controls::button::Button;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use shell_model::intents::StandingGrantId;
-use shell_model::intents::sheet::SheetView;
 
 /// The Undo button's element id (the tests', and a person's stylesheet's, handle).
 pub(super) const UNDO_ID: &str = "confirm-undo";

@@ -9,13 +9,13 @@
 
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ui_components::focus::soon::focus_soon;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_model::capture_pick::{AskId, Rgb8, loupe_at, pick_at};
 use shell_model::desktop::OutputShot;
 use shell_ui_kit::links::EyedropperLink;
 use shell_ui_kit::root::SurfaceRoot;
+use ui_components::focus::soon::focus_soon;
+use ui_components::prelude::*;
 
 use super::io::use_sampler;
 use super::model::{cell_style, loupe_style, surface_of, zoom_style};

@@ -1,10 +1,10 @@
 //! What a store hands back and what names a place: the workspace root, a saved point, the opaque
 //! ids of a tree and of one file's content.
 
-use sandbox::{AbsPath, PathFault};
+use account_ids::UnixSeconds;
 use action_core::CheckpointId;
 use action_vocab::Workspace;
-use account_ids::UnixSeconds;
+use sandbox::{AbsPath, PathFault};
 
 /// The folder a session works in, absolute and normalised: where points are taken and restored.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]

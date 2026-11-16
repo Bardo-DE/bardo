@@ -4,9 +4,9 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::{distance, modal, pixels, rect};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use probe::{distance, modal, pixels, rect};
 
 const VIEW: Viewport = Viewport {
     width: 300,

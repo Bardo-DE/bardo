@@ -10,7 +10,7 @@
 # The address is a Fastmail one on purpose: the lookup runs offline in the jail, and a lookup that cannot reach anything
 # is answered `failed: unreachable` (no form) -- the typed form is offered only when the lookup MISSES. An address a shipped
 # provider claims (fastmail.com) is answered `Outcome::Provider` by the search without any network, which the generic
-# sign-in turns into "ask for the servers" (porter-families generic/mail.rs `look`).
+# sign-in turns into "ask for the servers" (account-families generic/mail.rs `look`).
 #
 # After a pop-up's value is chosen the sheet takes no keys until it is clicked again (Tab and typed text are lost), so each
 # field is focused with a click (positions are the sheet's, the output being 1920x1080).

@@ -4,11 +4,11 @@
 //! (`model`, `key`).
 
 use crate::startup::SUN_PATH;
-use model_http::Port;
 use account_capability::Locality;
 use account_capability::ModelId;
-use inference_core::ComputerName;
 use account_tailscale::NodeId;
+use inference_core::ComputerName;
+use model_http::Port;
 use serde::{Deserialize, Serialize};
 use std::net::Ipv4Addr;
 use std::os::unix::ffi::OsStrExt;

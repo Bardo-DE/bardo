@@ -11,7 +11,7 @@
 //!   the source's own ([`FeedCursor`]: a sync token, a delta link, a page token); the journal
 //!   stores it as the opaque anchor text.
 //!
-//! [`FeedReplica`] makes any feed a ferry-sync `Replica` for the engine, which is why nothing
+//! [`FeedReplica`] makes any feed a sync-core `Replica` for the engine, which is why nothing
 //! else in syncd changed. The source is chosen by the capability's transport
 //! ([`choose`]: `caldav` and `carddav` are [`dav`], `graph` is [`graph`], `google_api` is
 //! [`google`], one source per kind), never by provider.
@@ -32,10 +32,10 @@ pub use graph::{GraphCalendarFeed, GraphCalendarSource};
 
 use super::PimKind;
 use super::discover::{DiscoverError, Found};
-use sync_core::{More, RemoteItem, ReplicaError, Tombstone};
 use account_capability::{Capability, PimTransport};
 use account_core::{Candidate, ServiceEndpoint};
 use std::future::Future;
+use sync_core::{More, RemoteItem, ReplicaError, Tombstone};
 
 /// A position in a collection's change feed, in the source's own type.
 pub trait FeedCursor: Sized + Send + Sync {

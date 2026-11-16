@@ -1,6 +1,7 @@
 //! The helper's checks and the fd it hands back, over a socket pair.
 
 use crate::common::FakeMounts;
+use base_testkit::Scratch;
 use drive_mount_daemon::client;
 use drive_mount_daemon::server::{At, Helper, Refusal};
 use drive_mount_daemon::wire::{self, Access, Code, FolderName, Reply, Request};
@@ -8,7 +9,6 @@ use std::io::{Read, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
-use base_testkit::Scratch;
 
 fn name(text: &str) -> FolderName {
     FolderName::parse(text).expect("name")

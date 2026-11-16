@@ -4,10 +4,10 @@
 
 use crate::window_frame_controls::{BAR, Stub, VIEW, at, centre, drag, log, ms, start};
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_harness::Input;
-use std::rc::Rc;
 
 #[allow(non_snake_case)]
 fn Trailed() -> Element {

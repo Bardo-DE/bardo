@@ -3,19 +3,17 @@
 //! rig below swaps the link, the reviewer and the confirmer for ones that do.
 
 use crate::support::*;
-use action_review::{ReviewVerdict, Reviewer};
 use action_core::LinkFault;
 use action_core::*;
 use action_fake::{
     FakeMemory, FixedClock, MemoryGrants, RecordingSink, ScriptedReader, ScriptedWriter,
 };
 use action_manifest::Latency;
-use permission_core::{
-    ActionGrantKey, GrantCaller, GrantTarget, ReviewError, Stage, Strictness,
-};
+use action_review::{ReviewVerdict, Reviewer};
 use action_router::{AppLink, Router, Seams};
 use action_vocab::{CallRequest, EntityRef, UndoToken, Value};
 use action_wire::{IntentsReply, IntentsRequest, SessionOpen, SessionOpened};
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget, ReviewError, Stage, Strictness};
 use permission_policy::Presets;
 use provenance::{AgentRef, SpaceScope, UnixSeconds};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -245,8 +243,8 @@ async fn open_in(router: &Router<Rig>) -> SessionOpened {
         let record = st.sessions.get_mut(&opened.session).expect("session");
         record.policy = Some(wide_policy(&opened.task, "work"));
     }
-    use action_router::GrantStore;
     use account_core::consent::{Decision, Grant, GrantScope as Scope, Usage};
+    use action_router::GrantStore;
     for (n, class) in [provenance::DataClass::Mail, provenance::DataClass::Contacts]
         .into_iter()
         .enumerate()

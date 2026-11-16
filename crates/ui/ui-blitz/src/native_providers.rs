@@ -1,12 +1,12 @@
 //! The two providers dioxus-native gives a window's document and keeps private, rebuilt here
-//! because ds-blitz now builds the document itself (`crate::window_build`) so a running app can
+//! because ui-blitz now builds the document itself (`crate::window_build`) so a running app can
 //! open a second window. With dioxus-native's features as quire sets them (no `net`, no
 //! `data-uri`), its net provider serves the `dioxus:` asset scheme and nothing else, and its
 //! navigation provider hands a clicked `http:`, `https:` or `mailto:` link to the desktop's
 //! browser. These do the same.
 //!
-//! ds-blitz's own net policy wraps [`AssetNet`] once the document mounts (`crate::install`):
-//! under `NetPolicy::Local` it is the fallback for any scheme ds-blitz does not serve itself.
+//! ui-blitz's own net policy wraps [`AssetNet`] once the document mounts (`crate::install`):
+//! under `NetPolicy::Local` it is the fallback for any scheme ui-blitz does not serve itself.
 
 use blitz_traits::net::{NetHandler, NetProvider, Request};
 

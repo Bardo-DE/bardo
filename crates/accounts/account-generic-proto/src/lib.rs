@@ -4,7 +4,7 @@
 //!
 //! - [`mail`]: the mail servers a person typed, or a provider file names, as endpoints and claims.
 //! - [`dav`]: finding CalDAV and CardDAV at a server: `.well-known`, then a PROPFIND with the
-//!   password (dav-proto's walk).
+//!   password (account-dav-proto's walk).
 //! - [`jmap`]: the session request of a JMAP server typed by hand.
 //! - [`check`]: what the password is tried against at the incoming mail server.
 //!
@@ -18,12 +18,12 @@ pub mod dav;
 pub mod jmap;
 pub mod mail;
 
-use http::header::AUTHORIZATION;
-use http::{HeaderValue, Request};
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::EndpointUrl;
 use account_ids::{UrlScheme, WebUrl};
 use account_provider::ProviderSpec;
+use http::header::AUTHORIZATION;
+use http::{HeaderValue, Request};
 
 /// Why a request could not be built or a reply could not be used.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

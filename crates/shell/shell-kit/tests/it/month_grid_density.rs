@@ -9,12 +9,12 @@
 use crate::support::month_sample;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use month_sample::{AUGUST, First, SEPTEMBER, sample};
 use shell_kit::month_grid::data::MonthStep;
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 320,

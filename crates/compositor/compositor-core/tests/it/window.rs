@@ -1,7 +1,7 @@
 //! Space ids (the tables P0-F1-window makes pass).
 
-use compositor_core::space::mint_space_id;
 use account_core::SpaceId;
+use compositor_core::space::mint_space_id;
 
 #[test]
 fn minted_space_ids_are_porter_ids() {

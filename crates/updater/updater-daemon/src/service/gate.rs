@@ -17,8 +17,8 @@
 //! administrator's password.
 
 use crate::problem::Problem;
-use caller_identity_dbus::peephole::RealProc;
 use caller_identity_dbus::caller_identity_core::{Proof, Refused, Requirement, Table, roles};
+use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
 
 /// The bus identification the service uses: the system's `/proc`, probes run off the async threads.

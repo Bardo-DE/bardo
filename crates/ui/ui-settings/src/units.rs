@@ -52,7 +52,7 @@ pub struct Count(pub u16);
 /// unit here: an out-of-range or malformed value is caught by the field's own type at
 /// deserialization (a negative `Secs` fails to parse as `u16` and falls back to the field's
 /// default, `lenient.rs`), not clamped by the newtype the way [`Percent`] is — the schema's own
-/// `range` attribute is what draws the slider's floor and ceiling (`ds-settings-derive`).
+/// `range` attribute is what draws the slider's floor and ceiling (`ui-settings-derive`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Secs(pub u16);

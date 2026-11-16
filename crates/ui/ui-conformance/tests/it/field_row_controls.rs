@@ -2,11 +2,11 @@
 //! under the others when the row is too narrow.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::fields::field_row::{FieldRow, RowLayout};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

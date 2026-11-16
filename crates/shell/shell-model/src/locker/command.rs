@@ -38,7 +38,7 @@ pub enum LockerEffect {
     ReleaseInhibitor,
 }
 
-/// What the daemon reports about shell-host's session lock.
+/// What the daemon reports about layer-shell-host's session lock.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ShellLockEvent {
     /// The compositor granted the lock (`ext_session_lock_v1.locked`): the machine's `Reported`.

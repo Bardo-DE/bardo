@@ -7,11 +7,11 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
+use shell_model::desktop::{WindowEntries, WindowEntry};
+use shell_ui_kit::menu::{MenuPopup, PopupLook, PopupRoom};
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_model::desktop::{WindowEntries, WindowEntry};
-use shell_ui_kit::menu::{MenuPopup, PopupLook, PopupRoom};
 
 use super::model::WindowMenuModel;
 

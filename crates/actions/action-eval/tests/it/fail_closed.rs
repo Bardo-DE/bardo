@@ -1,14 +1,14 @@
 //! A harness fault never reads as the router's ruling: a world that cannot be built, an argument
 //! the case file misspells, and state a case leaves behind all fail the case.
 
+use account_core::AppName;
 use action_core::AgentConfig;
 use action_eval::{Harness, run_case};
+use action_eval_core::{Case, Judgement, StepEnding, judge};
 use action_fake::Answering;
-use permission_core::{GrantCaller, StandingGrant, StandingScope};
 use action_router::GrantStore;
 use action_vocab::ActionRef;
-use action_eval_core::{Case, Judgement, StepEnding, judge};
-use account_core::AppName;
+use permission_core::{GrantCaller, StandingGrant, StandingScope};
 use provenance::{ActionName, UnixSeconds};
 
 const HEAD: &str = r#"
@@ -128,8 +128,7 @@ fn reset_forgets_standing_grants_and_link_state() {
                 app: mail.clone(),
                 name: ActionName::parse("mail.message.send").expect("action"),
             },
-            to: permission_core::Recipient::address("accounting@example.test")
-                .expect("address"),
+            to: permission_core::Recipient::address("accounting@example.test").expect("address"),
         },
         UnixSeconds(1),
     ));

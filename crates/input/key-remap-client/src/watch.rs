@@ -2,8 +2,8 @@
 
 use crate::connection::Heard;
 use crate::fetch::subscribe;
-use keymap::ChangeCallback;
 use key_remap_proto::{KeymapState, ToClient};
+use keymap::ChangeCallback;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

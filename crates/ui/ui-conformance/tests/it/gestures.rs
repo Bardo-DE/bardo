@@ -4,12 +4,12 @@
 //! (Blitz would deliver them only to what is under the pointer).
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::host::captured::CapturedPointer;
 use ui_components::host::gesture::{Gesture, GesturePhase, Magnification, use_gestures};
 use ui_components::host::pointer_capture::{PointerHold, use_pointer_capture};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

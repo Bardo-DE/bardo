@@ -4,11 +4,11 @@
 //! Reduced motion shows the level at once. Every case ends at 0 frames (R3).
 
 use dioxus::prelude::*;
+use shell_kit::idle_dim::{IdleDim, IdleDimPhase};
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::harness::assert_settles_to_zero_frames;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use shell_kit::idle_dim::{IdleDim, IdleDimPhase};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 240,

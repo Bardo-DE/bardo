@@ -5,11 +5,11 @@
 //! no other time.
 
 use super::check::probe;
-use model_catalog::ModelEntry;
 use inference_core::{ComputerName, ModelRef, Readiness};
 use inference_router::attached::NotReady;
 use inference_router::local::LocalModel;
 use inference_router::startup::{Cause, Log};
+use model_catalog::ModelEntry;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, PoisonError, RwLock};

@@ -3,8 +3,8 @@
 use computer_use_action::{
     Coord, GridMax, GridSpace, ImageSpace, Length, ModelSpace, Point, Scale120, Size, WindowSpace,
 };
-use proptest::prelude::*;
 use model_vision_prep::{FitError, FrameMap, MapError, PatchFactor, PixelCount, ResizeRule};
+use proptest::prelude::*;
 
 fn size<S: computer_use_action::CoordSpace>(w: u32, h: u32) -> Size<S> {
     Size::new(Coord(w), Coord(h))

@@ -1,9 +1,9 @@
 //! The object companiond calls: `org.quire.AgentHost1`, open to that one caller.
 
 use super::Service;
-use companion_model::helper::AppsAsk;
 use action_core::HandOver;
 use action_dbus::callers::{COMPANIOND, Identity, require};
+use companion_model::helper::AppsAsk;
 use std::sync::Arc;
 use zbus::fdo;
 use zbus::message::Header;

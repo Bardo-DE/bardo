@@ -10,10 +10,10 @@ use super::unpack::{open_tree, unpack};
 use crate::fsutil::{remove_tree, switch_link, sync_dir, sync_tree, write_atomic_mode};
 use crate::layout::{Layout, RECORD_DIR, RECORD_RELEASE, RECORD_SIGNATURE};
 use semver::Version;
-use updater_core::{Authenticator, Step};
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use updater_core::{Authenticator, Step};
 
 /// What running the steps left to tell the person.
 #[derive(Debug, Default)]

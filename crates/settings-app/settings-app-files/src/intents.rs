@@ -1,9 +1,9 @@
 //! The intents manifests of the installed apps: one `<AppName>.toml` for each app in a
 //! `quire/intents` folder of a data directory. The Hot Corners sheet reads them to list the
-//! actions a corner can run; what they mean is `detent-model`'s.
+//! actions a corner can run; what they mean is `settings-app-model`'s.
 
-use ui_helpers::{ReadCap, read_text_capped};
 use std::path::{Path, PathBuf};
+use ui_helpers::{ReadCap, read_text_capped};
 
 /// The most a manifest may hold. An app's declaration is a few dozen KiB at most.
 const MANIFEST_CAP: ReadCap = ReadCap::mib(1);

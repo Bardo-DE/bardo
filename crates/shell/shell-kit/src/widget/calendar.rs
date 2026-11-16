@@ -11,9 +11,9 @@ use crate::month_grid::data::{MonthGridData, MonthStep};
 use crate::widget::contract::{Widget, WidgetContext, WidgetKind};
 use crate::widget::kind::WidgetSize;
 use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 use ui_components::base::word::Word;
 use ui_components::style::tokens::label_hue::LabelHue;
-use serde::{Deserialize, Serialize};
 
 /// The month widget.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

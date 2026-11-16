@@ -3,9 +3,9 @@
 //! Read once from the environment the program's `main` passes in, so nothing below `main` reads
 //! the environment.
 
-use agent_registry::dirs::AgentsDir;
-use agent_launch::login::VisibleLogin;
 use action_settings::Locator;
+use agent_launch::login::VisibleLogin;
+use agent_registry::dirs::AgentsDir;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 

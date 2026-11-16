@@ -1,6 +1,6 @@
 [package]
 name = "account-family-oauth"
-description = "OAuth: PKCE through a loopback redirect, one provider, sign-in and session for every issuer, with the rules of Google and Microsoft beside them. A driver: oauth-probe-proto reads what a token shows, porter-oauth does the exchanges, and this crate sends the reads."
+description = "OAuth: PKCE through a loopback redirect, one provider, sign-in and session for every issuer, with the rules of Google and Microsoft beside them. A driver: account-oauth-probe-proto reads what a token shows, account-oauth does the exchanges, and this crate sends the reads."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

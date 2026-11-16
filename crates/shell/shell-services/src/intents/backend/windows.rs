@@ -4,9 +4,9 @@
 //! The listings carry app-controlled titles, so they are labelled untrusted with the shell as the
 //! reader. An action answers in fixed words, never a title's.
 
+use account_core::{AppName, DataClass};
 use action_core::{AppRefusal, FailText, Follow, Invocation, Outcome, Preview, Undoable};
 use action_vocab::{LabelText, Value};
-use account_core::{AppName, DataClass};
 use provenance::{Label, Labelled, Source};
 use shell_model::intents::shell::{WindowAnswer, WindowAsk, WindowFault, plan};
 

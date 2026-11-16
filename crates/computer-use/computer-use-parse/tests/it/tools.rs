@@ -26,7 +26,10 @@ fn holo(name: &str, arguments: &str) -> computer_use_parse::Parsed {
 }
 
 fn fixture_calls(dir: &str, name: &str) -> Vec<model_provider::ToolCall> {
-    let path = format!("{}/../../models/fixtures/{dir}/{name}", env!("CARGO_MANIFEST_DIR"));
+    let path = format!(
+        "{}/../../models/fixtures/{dir}/{name}",
+        env!("CARGO_MANIFEST_DIR")
+    );
     let doc: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
     doc["calls"]
         .as_array()

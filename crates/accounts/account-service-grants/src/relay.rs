@@ -32,7 +32,7 @@ fn password_purposes(family: Family, kind: CapabilityKind) -> Vec<SecretPurpose>
 }
 
 /// The bearer inside a token a provider issued as `kind`: a bearer is the token itself; an
-/// XOAUTH2 string is `user=..^Aauth=Bearer <token>^A^A`, unencoded (porter-core `TokenKind`).
+/// XOAUTH2 string is `user=..^Aauth=Bearer <token>^A^A`, unencoded (account-core `TokenKind`).
 fn bearer_of(kind: TokenKind, value: &SecretText) -> Option<SecretText> {
     match kind {
         TokenKind::Bearer => Some(value.clone()),

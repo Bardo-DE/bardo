@@ -17,8 +17,8 @@ use crate::host::position::{TextPosition, TextRange};
 use crate::host::probe::Probe;
 use crate::host::reveal::Scrolled;
 use dioxus::prelude::{EventHandler, MountedData};
-use ui_core::geometry::units::{Point, Rect};
 use std::rc::Rc;
+use ui_core::geometry::units::{Point, Rect};
 
 /// Moving the keyboard focus into and out of an element, and where it goes when its holder leaves.
 pub trait FocusHost {

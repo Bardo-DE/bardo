@@ -3,8 +3,8 @@
 use crate::data_uri;
 use crate::registry;
 use crate::snapshot::Shot;
-use ui_components::prelude::*;
 use std::path::Path;
+use ui_components::prelude::*;
 
 /// The sheet for `shots`, read back from `dir`.
 pub fn html(dir: &Path, shots: &[Shot]) -> std::io::Result<String> {

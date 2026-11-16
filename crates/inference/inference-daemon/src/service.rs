@@ -29,17 +29,8 @@ use account_core::HelperId;
 use account_core::{DataClass, SecretText};
 use account_dbus::{Call, Details};
 use account_ids::clock::Clock;
-use inference_core::{InferRefusal, PlaceId, PlaceRow, PlaceState};
-use inference_router::router::placed::{Allowed, Unplaced};
-use inference_router::seams::Seams;
-use inference_router::session::SessionSpec;
 use account_tailscale::NodeId;
-use inference_turns::audit::{AuditOut, SessionAudit};
-use inference_turns::structured::Limits;
-use serde::Serialize;
-use serde::de::DeserializeOwned;
-use std::os::unix::net::UnixStream as StdStream;
-use std::sync::Arc;
+use inference_core::{InferRefusal, PlaceId, PlaceRow, PlaceState};
 use inference_dbus::inference::{
     AgentsServed, InferenceServed, InferenceServer, NeedArg, need_from_dbus,
 };
@@ -49,6 +40,15 @@ use inference_dbus::inference::{
     PLACE_KEY_KIND, PLACE_KEY_MODELS, PLACE_KEY_NAME, PLACE_KEY_PROVIDER, PLACE_KEY_READY,
     PLACE_KEY_TAKES,
 };
+use inference_router::router::placed::{Allowed, Unplaced};
+use inference_router::seams::Seams;
+use inference_router::session::SessionSpec;
+use inference_turns::audit::{AuditOut, SessionAudit};
+use inference_turns::structured::Limits;
+use serde::Serialize;
+use serde::de::DeserializeOwned;
+use std::os::unix::net::UnixStream as StdStream;
+use std::sync::Arc;
 use tokio::net::UnixStream;
 use zbus::fdo;
 use zbus::message::Header;

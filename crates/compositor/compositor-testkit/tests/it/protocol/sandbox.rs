@@ -1,10 +1,10 @@
-//! Globals a sandboxed client never sees (I7, `HIDDEN_FROM_SANDBOXES` in casement-core's
+//! Globals a sandboxed client never sees (I7, `HIDDEN_FROM_SANDBOXES` in compositor-core's
 //! `tests/input.rs`): one fixture, one public and one sandboxed client, a row per interface.
 //! The public client must see each, so a row cannot pass by the interface not existing.
 
+use account_core::SandboxFacts;
 use compositor_core::policy::ConnectionRole;
 use compositor_testkit::{Fixture, FixtureSpec};
-use account_core::SandboxFacts;
 
 /// The interface of each hidden global.
 const HIDDEN: &[&str] = &[

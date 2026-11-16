@@ -23,12 +23,6 @@ use crate::dataset::fingerprint;
 use crate::datasets::pim::PimKind;
 use crate::datasets::pim::discover::{DiscoverError, Found};
 use crate::datasets::pim::relay::pim_http;
-use sync_core::{Clock, DELETED};
-use sync_core::{
-    ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter,
-    Tombstone,
-};
-use json::{Calendar, CalendarPage, Event, EventPage};
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
@@ -36,8 +30,14 @@ use account_http::http::{Method, Response};
 use account_http::{HeaderText, Http, HttpError, request};
 use account_http_relay::{RelayDial, RelayHttp};
 use account_ids::{Bytes, UnixSeconds, WebUrl};
+use json::{Calendar, CalendarPage, Event, EventPage};
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
+use sync_core::{Clock, DELETED};
+use sync_core::{
+    ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter,
+    Tombstone,
+};
 
 /// How many events a delta page asks for.
 const PAGE: usize = 100;

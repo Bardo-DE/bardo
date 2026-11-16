@@ -3,7 +3,7 @@
 //! The machine decides; [`Exec`] does: it holds the lease, the capture session and the check in
 //! flight of one run, and turns each [`RunEffect`] into calls on the seams and the
 //! [`RunInput`]s they answer with. It is runtime-free (it only awaits seam futures), so the
-//! harness in `cua-fake` and the supervisor in `cuad` drive the very same code; what differs
+//! harness in `computer-use-fake` and the supervisor in `cuad` drive the very same code; what differs
 //! is how they wait (the supervisor races an effect against the person's controls and the
 //! clock, the harness has none of either).
 
@@ -22,13 +22,13 @@ use crate::screen::ScreenRead;
 use crate::seams::{
     Clock, GateCheck, GateEvent, GateLink, LinkError, MessageLink, Parts, RecordSink, Seams,
 };
-use computer_use_bus::{CuaRecord, CuaTask, ReportDelivery};
-pub use deadline::{Deadline, deadline_of};
+use account_ids::Count;
 use action_core::{Delivery, SendRefusal};
 use action_wire::{GrantAsk, WireRefusal};
+use computer_use_bus::{CuaRecord, CuaTask, ReportDelivery};
 use computer_use_capture::DamageAt;
+pub use deadline::{Deadline, deadline_of};
 pub use phase::{Progress, Step, StepNote};
-use account_ids::Count;
 use provenance::{MessageId, RunId};
 use session::Held;
 

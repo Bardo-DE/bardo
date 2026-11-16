@@ -7,6 +7,8 @@ use crate::companion_support::{self, Desk, desk_or_return};
 
 use std::sync::{Arc, Mutex};
 
+use account_ids::Count;
+use action_dbus::COMPANION_BUS;
 use companion_model::routine::RoutineId;
 use companion_model::{
     helper::HelperKind, helper::HelperModel, helper::HelperName, helper::HelperPhase,
@@ -16,8 +18,6 @@ use companion_wire::{
     Handover, HelperCardView, HelperLine, HelperNeeds, HelperReply, HelpersView, LoginShown,
     RoutineForm, RoutineReply, RoutinesView, RunsIn, ToldWire,
 };
-use action_dbus::COMPANION_BUS;
-use account_ids::Count;
 use provenance::{HelperId, SpaceId};
 use shell_model::companion::{
     CompanionCommand, GONE, HelpersMsg, Open, Removal, RoutinesMsg, WAITING_BADGE, badge_of,

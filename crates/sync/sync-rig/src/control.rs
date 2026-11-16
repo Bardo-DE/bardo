@@ -19,7 +19,6 @@
 //! | `POST /graph/event?calendar=C&id=I` (body: Graph event JSON), `POST /graph/event-remove?calendar=C&id=I` | a remote edit or delete of an event |
 //! | `POST /stop` | ends the rig as SIGTERM does |
 
-use sync_fake_graph::GraphHandle;
 use account_fake_servers::http::{Request, Response, post_form, serve};
 use account_fake_servers::net::{Bind, Listener};
 use account_fake_servers::{IssuerHandle, browser::split_loopback};
@@ -27,6 +26,7 @@ use account_rig::planted::OAUTH_REFRESH_TOKEN;
 use serde_json::{Value, json};
 use std::io;
 use std::sync::Arc;
+use sync_fake_graph::GraphHandle;
 use tokio::sync::Notify;
 
 /// What the levers act on.

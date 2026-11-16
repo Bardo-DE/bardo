@@ -1,6 +1,6 @@
 [package]
 name = "action-gate-wire"
-description = "The computer-use gate's wire: the ask `cuad` sends to `Intents1.Gate.Check` for each pixel step (`CuaAsk`, `NodeFacts`, `EffectBasis`) and the router's answer (`GateAnswer`). Sits above docket-core, whose `CallRefusal` the answer holds."
+description = "The computer-use gate's wire: the ask `cuad` sends to `Intents1.Gate.Check` for each pixel step (`CuaAsk`, `NodeFacts`, `EffectBasis`) and the router's answer (`GateAnswer`). Sits above action-core, whose `CallRefusal` the answer holds."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

@@ -1,6 +1,6 @@
 //! What a link clicked inside a frame does. Blitz reloads the frame with the
 //! link's target (its `IframeNavigationProvider` sends the parent a `NavigateIframe`), which for
-//! a mail body means fetching a stranger's page into the reader. ds-blitz gives every frame
+//! a mail body means fetching a stranger's page into the reader. ui-blitz gives every frame
 //! document its own navigation provider instead (through `crate::frames`, as the document is
 //! parsed): the frame never navigates, and the app either hears the click or nothing happens.
 //!

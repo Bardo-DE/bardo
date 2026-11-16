@@ -3,12 +3,12 @@
 //! `transition` uses table tokens, and the token blocks resolve, level by level, to the values
 //! the Rust table gives `settle()` (design/05-MOTION.md section 7.1).
 
+use std::collections::BTreeMap;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_components::stylesheet;
 use ui_style::tokens::easing::EasingToken;
 use ui_style::tokens::timing::DurationToken;
-use std::collections::BTreeMap;
-use std::time::Duration;
 
 fn strip_comments(css: &str) -> String {
     let mut out = String::with_capacity(css.len());

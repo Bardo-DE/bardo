@@ -1,13 +1,13 @@
 //! The computer-use gate: what `cuad` sends to `Intents1.Gate.Check` for every pixel step, and
 //! what the router answers. One decision point, one breaker, one audit.
 //!
-//! Pure and portable: serde only. Sits above `docket-core`, whose `CallRefusal` the answer holds,
-//! and names `cua-action` for the action and the window's trust and mode. `RunMode`,
-//! `WindowClass` and `WindowTrust` are `cua-action`'s: say `computer_use_action::` for them.
+//! Pure and portable: serde only. Sits above `action-core`, whose `CallRefusal` the answer holds,
+//! and names `computer-use-action` for the action and the window's trust and mode. `RunMode`,
+//! `WindowClass` and `WindowTrust` are `computer-use-action`'s: say `computer_use_action::` for them.
 
-use computer_use_action::{CuaAction, RunMode, WindowClass, WindowSpace, WindowTrust};
-use action_core::CallRefusal;
 use account_core::AppName;
+use action_core::CallRefusal;
+use computer_use_action::{CuaAction, RunMode, WindowClass, WindowSpace, WindowTrust};
 use provenance::{ActionName, Labelled};
 use provenance::{Effect, Label, RunId, SpaceId};
 use serde::{Deserialize, Serialize};

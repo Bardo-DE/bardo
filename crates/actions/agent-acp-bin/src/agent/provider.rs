@@ -1,10 +1,10 @@
 //! The host's side of the `org.quire.AcpAgent` pseudo-app on the bus: intentd calls
 //! `org.quire.IntentProvider1` here after the router allowed an agent's call, and the performer
-//! does it. Only intentd may call a provider (`docket-client` enforces it), so nothing reaches
+//! does it. Only intentd may call a provider (`action-client` enforces it), so nothing reaches
 //! the performer that the gate did not allow.
 
-use sandbox::Sandbox;
-use agent_acp_host::{Files, Performer};
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{
     AppRefusal, ContextSnapshot, Here, Hit, Invocation, Outcome, Preview, Selection, SuggestAsk,
     TextTarget, UndoFault, Visible, WindowPrivacy,
@@ -13,9 +13,9 @@ use action_manifest::ValidManifest;
 use action_provider::{ContextSource, IntentProvider, SummonTarget};
 use action_vocab::{EntityRef, UndoToken};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
-use account_core::AppName;
-use account_ids::Count;
+use agent_acp_host::{Files, Performer};
 use provenance::{Actor, Confidentiality, EntityId, Integrity, Label, Labelled, Source};
+use sandbox::Sandbox;
 use std::collections::BTreeSet;
 
 /// The performer, as an app's provider.

@@ -1,8 +1,8 @@
 use super::*;
 use crate::entries;
+use base_testkit::Scratch;
 use inference_router::catalog::parse_entry_text;
 use std::os::unix::fs::PermissionsExt;
-use base_testkit::Scratch;
 
 const KEY: &str = "sk-lab-S3CRET-0123456789";
 

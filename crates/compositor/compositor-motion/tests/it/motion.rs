@@ -6,9 +6,9 @@ use crate::support;
 use compositor_core::geometry::SubPx;
 use compositor_core::{Cause, WindowId};
 use compositor_motion::{MotionBook, retarget, sample};
-use ui_style::appearance::motion::MotionLevel;
 use std::time::Duration;
 use support::{arranged, at, committed, looks, placed, rect};
+use ui_style::appearance::motion::MotionLevel;
 
 /// Where window `n` is drawn at `t`, in sub-pixels.
 fn x_at(book: &MotionBook, n: u64, t: compositor_core::time::Mono) -> i64 {

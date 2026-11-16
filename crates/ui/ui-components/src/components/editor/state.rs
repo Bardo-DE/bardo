@@ -8,10 +8,10 @@ use crate::edit::composition::Composing;
 use crate::edit::pointer::EditFocus;
 use crate::host::ime::ImeListener;
 use dioxus::prelude::*;
-use ui_core::geometry::units::{Point, Rect};
-use ui_core::vocab::PressPhase;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
+use ui_core::geometry::units::{Point, Rect};
+use ui_core::vocab::PressPhase;
 
 /// The surface's memory.
 pub(crate) struct SurfaceState {

@@ -19,7 +19,7 @@ mod settings_watch;
 mod signals;
 mod xdg;
 
-pub use memory_watch::InotifyWatch as Watcher;
+pub use account_callers::ProcRoot;
 pub use backend::SystemBackend;
 pub use callers::{ROUTER_APP, SETTINGS_APP, SHELL_APP, caller_for};
 pub use consent::Consent;
@@ -27,8 +27,8 @@ pub use daemon::Daemon;
 pub use keyring::{LockChanges, is_lock_change};
 pub use keysel::KeysError;
 pub use ledger::FileLedger;
+pub use memory_watch::InotifyWatch as Watcher;
 pub use peers::{Peers, ProcPeers, TablePeers};
-pub use account_callers::ProcRoot;
 pub use registry::{REGISTRY_WAIT, SpaceRegistry};
 pub use run::{Env, HONOURS_PROC_ROOT, PROC_ROOT_VAR, SYSTEM_CALLERS_VAR, StartError, start};
 pub use sandbox::{Confinement, Policy, SandboxError, bus_socket, enforce, policy_for, prepare};
@@ -39,7 +39,7 @@ pub use xdg::{XdgError, dirs_from};
 use inference_client::DbusTransport;
 use std::sync::Arc;
 
-/// The link to inferd: the session bus connection `connection`, as inferd-client's D-Bus
+/// The link to inferd: the session bus connection `connection`, as inference-client's D-Bus
 /// transport. Nothing is called here: inferd is found (and started by activation) at the first
 /// `open`, so a daemon that starts before inferd, or without it, still starts and degrades as
 /// designed (lexical-only recall, no consolidation) until inferd answers.

@@ -19,25 +19,25 @@ more: the extras are additive, never a different program.
 4. **One client seam per service, two kinds of transport.** A service's client crate owns a
    `Transport` seam: D-Bus on our desktop (activation, portals, one instance per session,
    intentd routing), and elsewhere either in-process (the app hosts the service) or latchkey
-   (a per-user agent over a Unix socket / named pipe, connect-or-start). porter-client and
-   almanac-client already have this shape; it becomes the pattern for every service.
+   (a per-user agent over a Unix socket / named pipe, connect-or-start). account-client and
+   memory-client already have this shape; it becomes the pattern for every service.
    latchkey itself stays a byte-stream lifecycle library: it does not grow a D-Bus side.
 
 ## 2. Who is what
 
 | Piece | Portable core (everywhere) | Desktop extra (our DE only) |
 | --- | --- | --- |
-| quire | components, tokens, motion, ds-blitz windows, scrolling, ds-helpers (PackageKit is Linux; elsewhere `Unsupported`) | `ds-desktop` capability probe; appearance broadcast; compositor blur/materials; Space tint |
+| quire | components, tokens, motion, ui-blitz windows, scrolling, ui-helpers (PackageKit is Linux; elsewhere `Unsupported`) | `ui-desktop` capability probe; appearance broadcast; compositor blur/materials; Space tint |
 | mailo | mail, contacts, rules, keys, settings window; its own sign-in | system accounts and consent (accountd); intents for the companion; memory shared across apps |
 | anyview | viewing, thumbnails, plugins with the helper installer | Quick Look peek from the shell; intents; share sheet |
 | porter | accounts engine and providers, hosted in-process or as a latchkey agent | accountd as the session's one account store; system consent sheet; syncd |
 | almanac | memory files, event log, search, sealing, in-process `Memory` | memoryd: one memory for every app, file watching, consolidation on a timer |
 | docket | an in-app agent: router, policy point, reviewer, agent loop, skills over the app's own intents, confirm sheet drawn in-app | companiond and intentd: one companion across all apps; `quire do`; cua (computer use); voiced; readerd quarantine |
-| desktop only | | sill, shell-host, casement, detent, keycap, palmrest |
+| desktop only | | sill, layer-shell-host, casement, detent, keycap, palmrest |
 
 ## 3. In code
 
-- **Probe:** `ds_desktop::Desktop` (quire crate `ds-desktop`): `Desktop::probe()` answers per
+- **Probe:** `ds_desktop::Desktop` (quire crate `ui-desktop`): `Desktop::probe()` answers per
   capability (`Capability::{Intents, Accounts, Memory, Companion, Appearance, Materials, Peek,
   Share, Helpers}` → `Presence::{Here, Absent}`), cached and refreshed on the bus's
   NameOwnerChanged. `use_desktop()` gives components the answer as a signal. Off Linux, or

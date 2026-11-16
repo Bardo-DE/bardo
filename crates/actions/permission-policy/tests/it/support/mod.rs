@@ -1,15 +1,13 @@
 //! Shared rows and helpers of the policy grid tests.
 #![allow(dead_code)]
 
-use action_manifest::{AgentReach, Lasting};
-use permission_core::{
-    AskReason, Impact, Mode, ModeRows, Ruling, SessionSaw, SinkIntegrity,
-};
-use action_vocab::Origin;
-use permission_policy::*;
 use account_core::consent::Usage;
 use account_core::{AppName, DataClass, Isolation};
 use account_ids::Count;
+use action_manifest::{AgentReach, Lasting};
+use action_vocab::Origin;
+use permission_core::{AskReason, Impact, Mode, ModeRows, Ruling, SessionSaw, SinkIntegrity};
+use permission_policy::*;
 use provenance::{ActionName, ActorKind, Confidentiality, Effect, Integrity, SpaceId};
 use std::collections::BTreeSet;
 

@@ -1,4 +1,4 @@
-//! Fractional scale: [`Scale120`] (blitz-kit's 120ths type, the wire value of
+//! Fractional scale: [`Scale120`] (blitz-embed's 120ths type, the wire value of
 //! `wp_fractional_scale_v1.preferred_scale`) and the logical/physical conversions built on it.
 
 pub use blitz_embed::units::Scale120;

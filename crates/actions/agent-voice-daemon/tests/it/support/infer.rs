@@ -1,13 +1,13 @@
-//! inferd, scripted: a transport whose sessions are porter-fake's `FakeInferSession`, with the
+//! inferd, scripted: a transport whose sessions are account-fake's `FakeInferSession`, with the
 //! frames the daemon sent logged, and the `next` of an empty script waiting instead of closing
 //! (the fake closes when nothing is ready; a real session waits).
 
-use inference_client::{InferSession, OpenOptions, SessionError, Transport, TransportError};
 use account_capability::Tier;
 use account_core::DataClass;
+use account_match::Need;
+use inference_client::{InferSession, OpenOptions, SessionError, Transport, TransportError};
 use inference_core::testing::{FakeInferSession, Script};
 use inference_core::{ClientFrame, InferEvent, Readiness};
-use account_match::Need;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;

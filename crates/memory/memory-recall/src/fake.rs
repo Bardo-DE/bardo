@@ -1,4 +1,4 @@
-//! `FakeEmbedder`: a deterministic embedder for tests and almanac-fake.
+//! `FakeEmbedder`: a deterministic embedder for tests and memory-fake.
 
 use crate::embed::{EmbedError, Embedder};
 use memory_store::{EmbedRole, EmbedderCard, MaxBatch, Metric, PromptPrefixes, Urgency, Vector};

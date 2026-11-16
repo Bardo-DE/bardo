@@ -3,10 +3,10 @@
 //! neutral `@`.
 
 use settings_app_client::shipped_marks;
-use ui_components::components::content::mark_face::MarkFace;
-use ui_components::components::content::provider_mark::MarkProvider;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use ui_components::components::content::mark_face::MarkFace;
+use ui_components::components::content::provider_mark::MarkProvider;
 
 /// What a provider's mark is drawn from.
 #[derive(Debug, Clone, PartialEq, Eq)]

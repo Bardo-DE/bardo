@@ -4,7 +4,7 @@
 //! [`CalendarStore`] is the seam; each backend implements it over the transport its store
 //! speaks:
 //!
-//! - [`CalDav`]: CalDAV (RFC 4791) over the HTTP seam, through dav-proto and its discovery walk.
+//! - [`CalDav`]: CalDAV (RFC 4791) over the HTTP seam, through account-dav-proto and its discovery walk.
 //!   An event is a resource holding its iCalendar text; a write carries `If-Match` or
 //!   `If-None-Match: *`, so it never overwrites a change it has not seen.
 //! - [`Graph`]: Microsoft Graph's calendars. Graph takes JSON and keeps an `iCalUId` of its own,

@@ -1,10 +1,10 @@
 //! The corpus parses and the structural guarantees hold over the runner.
 
+use account_ids::Permille;
 use action_core::CallRefusal;
 use action_eval::*;
-use permission_core::{BreakerTrip, DenyCode};
 use action_eval_core::*;
-use account_ids::Permille;
+use permission_core::{BreakerTrip, DenyCode};
 use provenance::{Effect, Integrity, SpaceId, TaskId};
 use std::path::PathBuf;
 use std::sync::OnceLock;
@@ -82,10 +82,7 @@ fn the_maximal_policy_covers_every_app_up_to_destructive() {
     );
     assert_eq!(policy.ceiling, Effect::Destructive);
     assert_eq!(policy.actions.len(), 4);
-    assert_eq!(
-        policy.state,
-        permission_core::TaskPolicyState::Active
-    );
+    assert_eq!(policy.state, permission_core::TaskPolicyState::Active);
     assert!(
         policy.recipients.is_empty(),
         "no pattern can make an untrusted recipient trusted"

@@ -2,9 +2,9 @@
 //! task gets a fresh session.
 
 use crate::support::world::*;
+use action_core::{RosterDetail, RosterState};
 use agent_loop::{ReplayEvent, ReplayWhat, rebuild};
 use companion_wire::SessionRecord;
-use action_core::{RosterDetail, RosterState};
 use provenance::{AgentRef, UnixSeconds};
 
 fn opened(task_id: &str, in_space: &str, agent: AgentRef, at: i64) -> ReplayEvent {

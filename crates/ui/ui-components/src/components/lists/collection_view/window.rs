@@ -9,13 +9,13 @@ use crate::components::lists::list::list::node_key;
 use crate::components::lists::virtual_list::layout::Layout;
 use crate::components::lists::virtual_list::model::{Change, departed};
 use dioxus::prelude::*;
+use std::collections::HashMap;
+use std::hash::Hash;
+use std::ops::Range;
 use ui_core::word::Word;
 use ui_motion::presence::Presence;
 use ui_motion::roster::RosterEntry;
 use ui_motion::use_roster::Roster;
-use std::collections::HashMap;
-use std::hash::Hash;
-use std::ops::Range;
 
 /// What the view remembers between renders.
 pub(crate) struct Memory<K> {

@@ -7,9 +7,9 @@ use crate::keys::KeyError;
 use crate::layout::Layout;
 use crate::state::StateStore;
 use caller_identity_dbus::caller_identity_core::Table;
-use updater_core::{Authenticator, LoginSession};
 use std::path::PathBuf;
 use std::sync::Arc;
+use updater_core::{Authenticator, LoginSession};
 
 /// The trust anchor, or why there is none.
 pub type Anchor = Result<Arc<dyn Authenticator>, KeyError>;

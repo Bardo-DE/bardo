@@ -16,7 +16,7 @@
 //! message carries no authority and widens nothing.
 //!
 //! The machine is the phase table; [`Exec`] carries a run's effects out against the seams
-//! ([`Seams`]), and a driver (cuad's supervisor, `cua-fake`'s harness) feeds the answers back.
+//! ([`Seams`]), and a driver (cuad's supervisor, `computer-use-fake`'s harness) feeds the answers back.
 //! Before the model is shown a screen, the machine asks the screen check ([`PatternCheck`]) whether it holds text aimed at the assistant; a suspicious screen pauses the
 //! run and asks the person ([`ScreenVerdict`]).
 //!

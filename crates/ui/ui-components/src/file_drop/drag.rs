@@ -1,11 +1,11 @@
 //! The values a file drag is made of: what the host hears, what a target sees, what it is
 //! handed when the files are let go.
 
-use keymap::Platform;
 use dioxus::prelude::Modifiers;
+use keymap::Platform;
+use std::path::PathBuf;
 use ui_core::command::holds_primary;
 use ui_core::geometry::units::Point;
-use std::path::PathBuf;
 
 /// A drag of files from outside the window, as one drop target sees it.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -116,8 +116,8 @@ pub enum DropAcceptance {
 #[cfg(test)]
 mod tests {
     use super::DropOperation;
-    use keymap::Platform;
     use dioxus::prelude::Modifiers;
+    use keymap::Platform;
 
     #[test]
     fn option_copies_command_moves_both_link_and_neither_leaves_the_choice() {

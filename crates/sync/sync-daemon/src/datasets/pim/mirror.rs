@@ -14,12 +14,12 @@ use super::PimKind;
 use super::vdir::{self, Meta};
 use crate::dataset::{Dataset, DatasetError, DatasetId, Direction, fingerprint};
 use crate::journal::{Journal, Op};
-use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, ItemState, LocalId, Scanned};
 use account_ids::Bytes;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, ItemState, LocalId, Scanned};
 
 /// What the mirror stored for one file.
 #[derive(Debug, Clone, PartialEq, Eq)]

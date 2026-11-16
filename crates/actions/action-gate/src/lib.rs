@@ -8,7 +8,7 @@
 //! action names (`companion_names`) and the trace spans (`spans`).
 //!
 //! Pure: no clock, bus, file or runtime is reached here. It names nothing of `Router` or
-//! `Seams`; `docket-router` runs these steps over its seams.
+//! `Seams`; `action-router` runs these steps over its seams.
 
 pub mod argcheck;
 pub mod brief_sheet;

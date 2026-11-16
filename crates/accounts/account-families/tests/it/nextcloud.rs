@@ -4,7 +4,6 @@
 
 use crate::common;
 
-use common::{Fakes, all_on, plain};
 use account_capability::CapabilityKind;
 use account_capability::Offer;
 use account_core::{
@@ -24,6 +23,7 @@ use account_provider::{
     SignInStep, Signed,
 };
 use account_sheet::{FieldKind, SignInFault, SignInInput};
+use common::{Fakes, all_on, plain};
 use std::time::Duration;
 
 struct World {

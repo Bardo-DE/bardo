@@ -1,12 +1,12 @@
 //! The folder pane: the toolbar over what the folder holds.
 
 use dioxus::prelude::*;
+use files_core::{CloudDrive, DriveState, Location, ViewMode};
+use files_model::{Input, ListFailure, Listing};
 use ui_components::components::chrome::column::model::ColumnExtent;
 use ui_components::components::chrome::column::view::Column;
 use ui_components::components::overlays::empty_state::EmptyForm;
 use ui_components::prelude::EmptyState;
-use files_core::{CloudDrive, DriveState, Location, ViewMode};
-use files_model::{Input, ListFailure, Listing};
 
 use super::cloud::{DriveStatus, DriveTrouble};
 use super::icons::FolderIcons;

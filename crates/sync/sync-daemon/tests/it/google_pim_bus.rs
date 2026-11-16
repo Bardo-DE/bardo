@@ -9,9 +9,6 @@
 use crate::common;
 use account_ids::word::word as word_of;
 
-use common::bus::PrivateBus;
-use common::caller as caller_of;
-use common::hosted::host;
 use account_callers::CallerRole;
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
@@ -30,6 +27,9 @@ use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use common::bus::PrivateBus;
+use common::caller as caller_of;
+use common::hosted::host;
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -272,7 +272,9 @@ async fn rig(kinds: &[PimKind]) -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(account_ids::clock::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(1_700_000_000_000)),
+        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
+            1_700_000_000_000,
+        )),
     };
     let supervisor = PimSupervisor::new(
         wiring,

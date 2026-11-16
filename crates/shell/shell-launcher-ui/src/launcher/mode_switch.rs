@@ -6,12 +6,12 @@
 
 use dioxus::prelude::*;
 use permission_core::Mode;
+use shell_launcher::{ActionKeys, OwnAction};
+use shell_model::companion::{ModeView, SWITCH_NAME, TIP_NAME, mode_label};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use shell_launcher::{ActionKeys, OwnAction};
-use shell_model::companion::{ModeView, SWITCH_NAME, TIP_NAME, mode_label};
 
 use crate::launcher::action_keys::action_shortcut;
 

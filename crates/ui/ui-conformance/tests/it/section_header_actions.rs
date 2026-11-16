@@ -2,10 +2,10 @@
 //! and in order, and each press reaches its own handler.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::section_header::HeaderAction;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 320,

@@ -4,11 +4,11 @@
 use crate::support::specimens::{Checks, Specimen};
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::*;
 use shell_kit::date_picker::model::{DateValue, Elements, PickerStyle, TimeOfDay};
 use shell_kit::month_grid::data::DayKey;
 use shell_kit::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
 
 const PICKER_CSS: &str = include_str!("../../src/date_picker/style.css");
 

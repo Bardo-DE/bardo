@@ -24,10 +24,12 @@ use super::book::AttachedBook;
 use account_capability::ModelId;
 use account_core::SecretText;
 use account_fs::atomic::AtomicWrite;
-use inference_core::{ComputerName, PlaceId};
-use inference_router::attached::{Attached, AttachedEntry, AttachedError, Place, Reach, local_model};
-use inference_router::startup::SUN_PATH;
 use account_tailscale::NodeId;
+use inference_core::{ComputerName, PlaceId};
+use inference_router::attached::{
+    Attached, AttachedEntry, AttachedError, Place, Reach, local_model,
+};
+use inference_router::startup::SUN_PATH;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};

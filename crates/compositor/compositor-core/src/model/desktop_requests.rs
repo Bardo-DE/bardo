@@ -11,8 +11,8 @@ use crate::effect::{CoreNote, Effect};
 use crate::ids::WindowId;
 use crate::space::WorkspaceRequest;
 use crate::window::WlrToplevelRequest;
-use desktop_protocols::vocab::{ActorKind, Toggle};
 use account_core::SpaceId;
+use desktop_protocols::vocab::{ActorKind, Toggle};
 
 impl Model {
     /// The shell asked something of the desktop.

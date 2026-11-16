@@ -17,12 +17,12 @@ use crate::components::controls::progress::model::{Progress, ProgressStyle};
 use crate::components::controls::progress::view::ProgressIndicator;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::time::FRAME_SLACK;
 use ui_core::vocab::{Fraction, shown_word};
 use ui_motion::detail::operation::Operation;
 use ui_style::tokens::control_size::ControlSize;
 use ui_style::tokens::delay::DelayToken;
-use std::time::Duration;
 
 /// How long an undo-send countdown runs (proposed), the consumer's to count.
 pub const SEND_COUNTDOWN: Duration = Duration::from_secs(5);

@@ -11,10 +11,10 @@ use crate::{
     Arrangement, LayoutKnobs, OutputSpec, SceneMode, SpaceArrangement, SpaceSpec, SpaceTarget,
     WindowPlacement,
 };
+use account_core::SpaceId;
 use compositor_core::WindowId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::window::attach_rect;
-use account_core::SpaceId;
 use std::collections::BTreeMap;
 
 /// Adds `output`'s Space origins and window targets to `into`.

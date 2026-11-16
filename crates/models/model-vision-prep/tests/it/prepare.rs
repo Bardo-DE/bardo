@@ -1,7 +1,9 @@
 //! `prepare` resizes once and encodes once; compiled only with the `pixels` feature.
 #![cfg(feature = "pixels")]
 
-use computer_use_action::{Coord, DeviceSize, ImageSpace, ModelSpace, PixelFormat, Size, WindowSpace};
+use computer_use_action::{
+    Coord, DeviceSize, ImageSpace, ModelSpace, PixelFormat, Size, WindowSpace,
+};
 use model_vision_prep::{Encoding, FrameMap, JpegQuality, MediaType, PrepError, RawFrame, prepare};
 
 fn map(window: (u32, u32), image: (u32, u32)) -> FrameMap {

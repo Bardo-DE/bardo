@@ -4,11 +4,11 @@
 use crate::backend::LocalBackend;
 use memory_core::{ReplicaId, RuleSet, SpaceId, SpaceMeta, VaultKind};
 use memory_host::{read_config, write_private_atomic};
+use memory_recall::Embedder;
 use memory_service::{
     Backend, Clock, ConfigError, MemoryService, SpacesFile, spaces_from_toml, spaces_to_toml,
 };
 use memory_tidy::Consolidator;
-use memory_recall::Embedder;
 
 /// Why the root could not be opened or written.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

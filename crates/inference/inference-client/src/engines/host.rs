@@ -11,8 +11,8 @@ use crate::error::TransportError;
 use crate::transport::SessionHost;
 use account_capability::Tier;
 use account_core::{AppId, DataClass};
-use inference_core::{InferRefusal, OpenOptions, Policy, Readiness, ServedBy};
 use account_match::Need;
+use inference_core::{InferRefusal, OpenOptions, Policy, Readiness, ServedBy};
 use std::sync::Arc;
 
 #[derive(Debug)]

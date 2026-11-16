@@ -6,11 +6,11 @@
 //! the toast holds and its Undo takes the press.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::stack::toast_hub::UndoToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 900,

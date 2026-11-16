@@ -4,11 +4,13 @@
 //! that closes it (Move to, Create) yields and closes; Escape and an outside press close it.
 
 use dioxus::prelude::*;
-use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups, PaletteRow};
+use std::time::Duration;
+use ui_components::components::menus::palette::palette_group::{
+    PaletteGroup, PaletteGroups, PaletteRow,
+};
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

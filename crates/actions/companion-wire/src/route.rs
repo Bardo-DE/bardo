@@ -4,7 +4,9 @@
 //! turn's as [`RouteNote`]s and serves them on `Companion1.Answer.Routing`. [`footer_line`] turns
 //! the notes into the one line a card shows, so every surface prints the same words.
 
-use inference_core::{Declined, DeclinedBecause, Door, InferRefusal, ModelRef, ProviderId, ServedBy};
+use inference_core::{
+    Declined, DeclinedBecause, Door, InferRefusal, ModelRef, ProviderId, ServedBy,
+};
 use inference_core::{ModelLabel, StageRole, Why};
 use serde::{Deserialize, Serialize};
 

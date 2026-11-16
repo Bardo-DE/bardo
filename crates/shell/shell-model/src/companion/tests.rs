@@ -1,24 +1,24 @@
 use std::collections::BTreeMap;
 
-use companion_wire::{
-    AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, NeedsYou, PlanStepWire, PlanWire,
-    StepWireState,
-};
-use computer_use_action::RunMode;
-use computer_use_bus::{CuaOutcome, RunStateSlug};
 use action_core::{CallRefusal, ConfirmEnd, ConfirmId, ContextKeep, Hit, Keep, Reveal};
 use action_vocab::{
     ActionRef, Args, CallRequest, CardActionId, EntityRef, Handle, LabelText, Origin, StepId,
     TargetValue,
 };
 use action_wire::{SummonAnswer, SummonSerial};
-use ui_core::time::stamp::Stamp;
-use ui_core::vocab::CompanionPresence;
+use companion_wire::{
+    AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, NeedsYou, PlanStepWire, PlanWire,
+    StepWireState,
+};
+use computer_use_action::RunMode;
+use computer_use_bus::{CuaOutcome, RunStateSlug};
 use provenance::{
     ActionName, AppName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, RunId,
     SessionId, TaskId,
 };
 use shell_launcher::{Generation, LauncherMode, WindowKey};
+use ui_core::time::stamp::Stamp;
+use ui_core::vocab::CompanionPresence;
 
 use super::*;
 

@@ -13,8 +13,8 @@ use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::time::Mono;
 use compositor_core::{OutputKey, WindowId};
 use compositor_layout::Arrangement;
-use ui_style::appearance::motion::MotionLevel;
 use std::collections::{BTreeMap, BTreeSet};
+use ui_style::appearance::motion::MotionLevel;
 
 /// The book after the arrangement changed from `from` to `to` at `now` because of `cause`.
 /// A leg whose target changed starts a new leg from its state at `now` (position and velocity

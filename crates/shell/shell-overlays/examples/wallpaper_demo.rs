@@ -3,7 +3,7 @@
 //! prepared against whatever wallpaper config the environment has — the acceptance
 //! script writes one pointing at a marked test image before running this, so the real
 //! `shell_services::wallpaper::spawn` resizes and caches a real file the surface then shows.
-//! Driven by shell-host's `debug-inject` commands on stdin (`stats`, `<surface> capture PATH`,
+//! Driven by layer-shell-host's `debug-inject` commands on stdin (`stats`, `<surface> capture PATH`,
 //! `quit`; `sill-bar-demo`'s own convention, `bar_demo.rs`'s module doc).
 //!
 //! `cargo run -p shell-overlays --example wallpaper_demo`
@@ -31,7 +31,7 @@ fn main() {
 
 fn run() -> Result<(), String> {
     // The wallpaper service's own task needs an entered multi-thread runtime for its whole
-    // life, independent of whatever shell-host's `Host` enters for its own event loop (the same
+    // life, independent of whatever layer-shell-host's `Host` enters for its own event loop (the same
     // split the real daemon makes: `crates/sill/src/daemon.rs::run` builds its own runtime for
     // the daemon's `start` before `Host::connect`). Kept alive by staying in scope for the rest of
     // this function, which does not return until `host.run` does.

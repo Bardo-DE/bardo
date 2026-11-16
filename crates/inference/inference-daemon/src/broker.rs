@@ -1,6 +1,6 @@
 //! The AI accounts as inferd uses them: accountd keeps the keys, the accounts and the permits
 //! (`org.quire.Accounts1.Broker`), and inferd, the one daemon that sends a key to an AI company,
-//! asks it through `porter-client-dbus`'s [`AiAccounts`]. [`AccountdBroker`] is both seams the rest of
+//! asks it through `account-client-dbus`'s [`AiAccounts`]. [`AccountdBroker`] is both seams the rest of
 //! the daemon asks through: [`Accountd`] (which accounts an app holds a permit on, and the key
 //! behind a permit) and [`Reports`] (a probed runtime becoming an account).
 //!

@@ -11,11 +11,11 @@ mod keep {
     //! surface's own focus wins inside it.
 
     use dioxus::prelude::*;
+    use std::time::Duration;
+    use ui_blitz::FocusFallback;
     use ui_components::prelude::*;
     use ui_components::root::common::Common;
-    use ui_blitz::FocusFallback;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -140,16 +140,16 @@ mod kept_click {
     //! it. Under `FocusFallback::BlitzDefault` nothing changes: the negative control.
 
     use dioxus::prelude::*;
+    use std::time::Duration;
+    use ui_blitz::FocusFallback;
     use ui_components::base::press::Press;
     use ui_components::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
     use ui_components::components::controls::button_model::{Bezel, ImagePosition};
     use ui_components::components::lists::row::row::Outline;
     use ui_components::focus::request::use_focus_request;
     use ui_components::prelude::*;
-    use ui_blitz::FocusFallback;
     use ui_harness::harness::settle_until;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 480,
@@ -365,14 +365,14 @@ mod removed {
     //! to a mounted element gives the keyboard back to that element itself.
 
     use dioxus::prelude::*;
+    use std::time::Duration;
+    use ui_blitz::FocusFallback;
     use ui_components::base::press::Press;
     use ui_components::host::measure::{Anchor, MountedRef};
     use ui_components::prelude::*;
     use ui_components::root::common::Common;
-    use ui_blitz::FocusFallback;
     use ui_harness::harness::settle_until;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 480,
@@ -626,13 +626,13 @@ mod field_handle {
     //! a handle's blur is heard once too (Blitz clears the focus silently, so the handle tells it); an unknown or unreadable selector is a typed error.
 
     use dioxus::prelude::*;
+    use std::time::Duration;
     use ui_components::base::time::clock::sleep;
     use ui_components::focus::field::{FieldHandle, use_field_handle};
     use ui_components::focus::select::Select;
     use ui_components::focus::selector::{FocusError, focus_by_selector};
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 360,
@@ -837,10 +837,10 @@ mod click_restore {
     //! focuses, and falls to the next focusable ancestor (`.app[tabindex]`).
 
     use dioxus::prelude::*;
+    use std::time::Duration;
     use ui_components::base::press::Press;
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -932,12 +932,12 @@ mod select {
     //! its own element.
 
     use dioxus::prelude::*;
+    use std::rc::Rc;
+    use std::time::Duration;
     use ui_components::focus::request::use_focus_request;
     use ui_components::focus::soon::focus_soon;
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::rc::Rc;
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 360,

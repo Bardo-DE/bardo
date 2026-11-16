@@ -2,11 +2,11 @@
 //! quire's `AppKey` and the machine's indices. Pure.
 
 use super::apps::SwitcherApp;
-use ui_components::prelude::*;
-use shell_launcher::AppId;
-use shell_model::apps::AppIndex;
 use shell_kit::switcher::app_switcher::AppKey;
 use shell_kit::switcher::app_switcher::SwitcherApp as Tile;
+use shell_launcher::AppId;
+use shell_model::apps::AppIndex;
+use ui_components::prelude::*;
 
 /// One tile per app, in order: the key is the app id, the name the desktop entry's `Name` (the
 /// id when it has no entry), the icon from `icon` (the caller's resolver, at the cell's icon
@@ -68,10 +68,10 @@ pub fn output_width(width: i32) -> Option<Px> {
 #[cfg(test)]
 mod tests {
     use crate::switcher::apps::{AppShown, SwitcherApp};
-    use ui_components::prelude::*;
+    use shell_kit::switcher::app_switcher::AppKey;
     use shell_launcher::AppId;
     use shell_model::apps::AppIndex;
-    use shell_kit::switcher::app_switcher::AppKey;
+    use ui_components::prelude::*;
 
     use super::{index_of, key_of, output_width, tiles};
 

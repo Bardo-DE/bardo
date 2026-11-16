@@ -2,8 +2,8 @@
 //! administrator's floor.
 
 use crate::support::*;
-use permission_core::*;
 use action_vocab::ActionRef;
+use permission_core::*;
 use provenance::{ActionName, Effect, SpaceScope};
 
 fn name(text: &str) -> ActionName {

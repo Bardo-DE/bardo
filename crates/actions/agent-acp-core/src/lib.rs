@@ -1,6 +1,6 @@
 //! Our own rules for the Agent Client Protocol, and nothing else (design note `acp-sessions.md`).
 //! Pure: no connection, no tokio, no file system, no clock, no wording. The wire types are the
-//! official `agent-client-protocol` SDK's (`schema` only); the connections are docket-acp's and docket-acp-host's.
+//! official `agent-client-protocol` SDK's (`schema` only); the connections are docket-acp's and agent-acp-host's.
 //!
 //! - `confine`: file calls reach the session's working directory only, links and secrets included,
 //!   before any call exists.

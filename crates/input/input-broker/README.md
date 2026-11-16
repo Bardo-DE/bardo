@@ -20,8 +20,8 @@ not by anything the caller says. A kind of device is only made for the program i
 
 | Crate | What |
 |---|---|
-| `turnstile-wire` | Pure. The datagrams, their codec, the fixed list of device kinds and the per-event ceilings. |
-| `turnstile-client` | What palmrest and keycap link. Sync and small: connect, ask for a device, send events, get a descriptor. A `DeviceSource` trait with the real service and, under feature `fake`, a stand-in. Re-exports the wire types callers name. |
+| `input-broker-wire` | Pure. The datagrams, their codec, the fixed list of device kinds and the per-event ceilings. |
+| `input-broker-client` | What palmrest and keycap link. Sync and small: connect, ask for a device, send events, get a descriptor. A `DeviceSource` trait with the real service and, under feature `fake`, a stand-in. Re-exports the wire types callers name. |
 | `turnstile` | The root service: socket activation, caller identity, the device life cycle, exit after 60 s idle. |
 
 ```rust

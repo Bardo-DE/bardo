@@ -5,8 +5,8 @@
 use crate::env::{BusRoute, Env};
 use crate::error::PlatformError;
 use crate::settings::{OpenSettings, Opening};
-use ui_core::settings::SettingsTarget;
 use std::collections::HashMap;
+use ui_core::settings::SettingsTarget;
 use zbus::zvariant::Value;
 
 /// Settings' bus name, which is also its application id.

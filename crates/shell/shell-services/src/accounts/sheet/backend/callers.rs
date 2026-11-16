@@ -3,8 +3,8 @@
 //! A caller is let in when the system shows it to be the service whose well-known name it owns
 //! (`crate::callers`): a program that merely claimed an unowned name is a stranger.
 
-use caller_identity_dbus::caller_identity_core::roles;
 use account_wire::names::ACCOUNTS_BUS;
+use caller_identity_dbus::caller_identity_core::roles;
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::names::OwnedUniqueName;

@@ -5,10 +5,10 @@
 use crate::completion::{Attention, CompletionNote, completion_line};
 use crate::guard::{Guard, Verdict};
 use crate::tier::Tier;
-use companion_wire::{AnswerPhase, NeedsYou};
 use action_core::{CallRefusal, Held, ReaderAsk, ReplyFault, Reveal, StepEnd};
-use permission_core::BreakerTrip;
 use action_vocab::{CallId, CallRequest, TurnId, Value};
+use companion_wire::{AnswerPhase, NeedsYou};
+use permission_core::BreakerTrip;
 use provenance::Effect;
 use serde::{Deserialize, Serialize};
 

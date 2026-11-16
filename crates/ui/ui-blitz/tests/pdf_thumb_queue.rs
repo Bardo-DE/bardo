@@ -8,15 +8,15 @@
 mod worker;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_blitz::{PdfFileThumb, pdf_thumb_rasters};
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use pdfrum_common::Limits;
 use pdfrum_edit::{EditDoc, SaveOptions, blank_document, save};
 use peniko::Color;
 use peniko::kurbo::{Rect, Size as Sheet};
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_blitz::{PdfFileThumb, pdf_thumb_rasters};
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use worker::{give_worker_time, settle_on_worker};
 
 const FILES: usize = 20;

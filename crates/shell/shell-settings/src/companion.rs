@@ -4,10 +4,10 @@
 
 use std::time::Duration;
 
-use ui_core::word::Word;
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 use shell_model::companion::{CompanionParams, SummonParams};
+use ui_core::word::Word;
+use ui_settings::schema::Page;
 
 pub use shell_model::companion::InField;
 

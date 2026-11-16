@@ -1,12 +1,12 @@
 //! The selector and diff types survive serde, and the pinned JSON of a node is what other
 //! crates read.
 
+use account_core::AppName;
 use computer_use_a11y_tree::{
     A11yError, A11yTarget, NameMatch, NodeSelector, Resolution, Role, SelectorStep, TreeDiff,
 };
 use computer_use_action::{Coord, NodeId, Size};
 use computer_use_desktop::{Pid, WindowTitle};
-use account_core::AppName;
 
 fn round_trip<T: serde::Serialize + serde::de::DeserializeOwned + PartialEq + std::fmt::Debug>(
     value: &T,

@@ -16,7 +16,7 @@ serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1"}
 
 [features]
-# `fixtures`: the capabilities and claims the tests of this crate and of porter-match build from.
+# `fixtures`: the capabilities and claims the tests of this crate and of account-match build from.
 testing = []
 
 [lints.rust]

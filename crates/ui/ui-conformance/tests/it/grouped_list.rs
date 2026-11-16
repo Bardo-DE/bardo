@@ -6,6 +6,8 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::{distance, keep, modal, pixels, rect};
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
@@ -14,8 +16,6 @@ use ui_components::style::tokens::accent_table::accent_of;
 use ui_components::style::tokens::hex::Hex;
 use ui_components::style::tokens::row_scale::ROW_SCALE;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use probe::{distance, keep, modal, pixels, rect};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

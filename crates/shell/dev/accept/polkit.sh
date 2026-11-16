@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The own polkit agent's acceptance, on a private headless compositor: casement under
-# dev/accept.sh --compositor casement, else KWin (shell-host scripts/dev/kwin-virtual.sh), started and stopped by the script.
+# dev/accept.sh --compositor casement, else KWin (layer-shell-host scripts/dev/kwin-virtual.sh), started and stopped by the script.
 #
 # Nothing here reaches polkitd, the system bus, PAM or a real password. Every bus is KWin's
 # private one (start_compositor refuses to go on if it would be the real one): the daemon's session and
@@ -11,7 +11,7 @@
 # BeginAuthentication and CancelAuthentication on command, prints each call's result), and
 # crates/sill-services/src/bin/polkit_helper.rs plays polkit-agent-helper-1 (the helper protocol; accepts
 # `sill-fake`, refuses anything else, runs no PAM). The daemon gets its own XDG_RUNTIME_DIR and
-# a scratch XDG_CONFIG_HOME. Keys are `sill debug key SURFACE KEY`: shell-host's `Inject::Key`,
+# a scratch XDG_CONFIG_HOME. Keys are `sill debug key SURFACE KEY`: layer-shell-host's `Inject::Key`,
 # which enters the prompt where a real xkb key does, whether or not the compositor gave it the
 # keyboard.
 #

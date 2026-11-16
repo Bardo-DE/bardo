@@ -15,9 +15,9 @@
 //! entry) and a `-inf` is a mass of 0. This module only maps its answer onto porter's types, so
 //! the two `Permille` types meet in one place, and checks the result once more.
 
-use model_provider::{self as sp, FirstTokenLogprobs};
 use account_ids::Permille;
 use inference_core as pi;
+use model_provider::{self as sp, FirstTokenLogprobs};
 
 /// The widest top-k an engine is asked for (the OpenAI-compatible APIs stop at 20).
 const MOST: u32 = pi::MOST_CANDIDATES;

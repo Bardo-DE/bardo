@@ -1,12 +1,12 @@
 //! `sill debug ...`: the development probes' command line, and their pure mappings to requests.
-//! Each made-up input is built as the `sill-model` value the service would have received.
+//! Each made-up input is built as the `shell-model` value the service would have received.
 
 use std::path::PathBuf;
 
 use clap::Subcommand;
-use ui_core::word::Word;
 use shell_ipc::debug::{DebugRequest, KeyAction, KeySpec, Point, PointerButton, SurfaceName};
 use shell_ipc::request::Request;
+use ui_core::word::Word;
 
 use shell_launcher::AppId;
 use shell_model::auth::FakeVerdict;
@@ -69,7 +69,7 @@ pub enum DebugAction {
         corner: Corner,
     },
     /// `button` presses at X Y on SURFACE and stays down: the first half of a real drag
-    /// (shell-host's `Inject::PointerDown`). `sill debug pointer` moves while it
+    /// (layer-shell-host's `Inject::PointerDown`). `sill debug pointer` moves while it
     /// is held, and `pointer-release` lets go.
     PointerPress {
         surface: String,

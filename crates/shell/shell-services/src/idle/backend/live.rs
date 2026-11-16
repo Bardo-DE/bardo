@@ -12,7 +12,6 @@
 
 use std::time::{Duration, Instant};
 
-use ui_core::time::stamp::Stamp;
 use logind_zbus::manager::PrepareForSleepStream;
 use shell_model::auth::AuthCommand;
 use shell_model::idle::{
@@ -24,6 +23,7 @@ use shell_model::untrusted::for_log;
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinSet;
 use tokio::time::MissedTickBehavior;
+use ui_core::time::stamp::Stamp;
 use zbus::fdo::NameOwnerChangedStream;
 
 use super::links::{IdleLinks, Reach};
@@ -338,7 +338,7 @@ impl Live {
                 eprintln!("sill: idle: displays {power:?}");
                 self.order(Order::Displays(power));
             }
-            // The dim overlay (`sill-ui-kit` `idle_dim`, mapped by the daemon's
+            // The dim overlay (`shell-ui-kit` `idle_dim`, mapped by the daemon's
             // `idle_dim` follower) reads `Idle.dim`, published after the step.
             IdleEffect::Dim(level) => eprintln!("sill: idle: dim {level:?}"),
             IdleEffect::Undim => eprintln!("sill: idle: undim"),

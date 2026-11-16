@@ -1,5 +1,5 @@
 //! `org.quire.Voice1` and its two object interfaces, as skeletons for the daemon (voice.md §3.5);
-//! the callers' proxies are in `voice-dbus`. Bodies are JSON in `s` (`voice-wire` types in an `Envelope`); the
+//! the callers' proxies are in `agent-voice-dbus`. Bodies are JSON in `s` (`agent-voice-wire` types in an `Envelope`); the
 //! event stream is an fd of `VoiceEvent` frames. Caller identity comes from the connection,
 //! never an argument. A skeleton made with `Default` answers `NotSupported`: that is the one the
 //! introspection test reads. The serving ones hold the daemon's handle. Members carry no doc

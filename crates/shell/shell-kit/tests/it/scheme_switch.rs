@@ -6,12 +6,12 @@
 //! glyph painted in a stale one.
 
 use dioxus::prelude::*;
-use ui_components::components::controls::button_model::ImagePosition;
-use ui_components::prelude::*;
-use ui_harness::{Backdrop, Clock, Harness, HarnessConfig, Srgba, Viewport};
 use shell_kit::prelude::*;
 use std::collections::HashMap;
 use std::time::Duration;
+use ui_components::components::controls::button_model::ImagePosition;
+use ui_components::prelude::*;
+use ui_harness::{Backdrop, Clock, Harness, HarnessConfig, Srgba, Viewport};
 
 static THEME: GlobalSignal<Theme> = Signal::global(|| Theme::Light);
 

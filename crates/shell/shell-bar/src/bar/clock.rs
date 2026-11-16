@@ -3,10 +3,10 @@
 //! `MenuBarItem`, on while the center is open here.
 
 use dioxus::prelude::*;
-use ui_components::root::common::Common;
-use ui_components::root::pass_through::ExtraClass;
 use layer_shell_host::{OutputInfo, use_watch};
 use shell_kit::prelude::*;
+use ui_components::root::common::Common;
+use ui_components::root::pass_through::ExtraClass;
 
 use shell_model::clock::format_clock;
 use shell_services::ClockService;

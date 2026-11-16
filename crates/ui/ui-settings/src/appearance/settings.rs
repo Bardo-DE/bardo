@@ -5,13 +5,13 @@
 
 use crate::region::RegionSettings;
 use crate::schema::{Page, Provided};
+use serde::{Deserialize, Serialize};
 use ui_style::appearance::accent::Accent;
 use ui_style::appearance::appearance::Appearance;
 use ui_style::appearance::motion::Motion;
 use ui_style::appearance::theme::Theme;
 use ui_style::appearance::transparency::Transparency;
 pub use ui_style::icon::retint::IconStyle;
-use serde::{Deserialize, Serialize};
 
 /// `appearance.*`: what every surface resolves its look from.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]

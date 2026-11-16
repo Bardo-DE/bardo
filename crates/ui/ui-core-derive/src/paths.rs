@@ -5,26 +5,26 @@ use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::Ident;
 
-/// The crate a derive names, as a path: `::ui_core` where the caller depends on `ds-core` (or is
+/// The crate a derive names, as a path: `::ui_core` where the caller depends on `ui-core` (or is
 /// it), else `::ds::base`. Each crate declares `extern crate self` under its own name.
 pub(crate) fn base() -> TokenStream {
-    home("ds-core", "base")
+    home("ui-core", "base")
 }
 
-/// The path to `ds-style`: `::ui_style` where the caller depends on it (or is it), else
+/// The path to `ui-style`: `::ui_style` where the caller depends on it (or is it), else
 /// `::ds::style`.
 pub(crate) fn style() -> TokenStream {
-    home("ds-style", "style")
+    home("ui-style", "style")
 }
 
 fn home(krate: &str, facade: &str) -> TokenStream {
     if let Some(path) = named(krate) {
         return path;
     }
-    match named("ds") {
+    match named("ui-components") {
         Some(ds) => {
             let facade = Ident::new(facade, Span::call_site());
-            quote! { #ui_components::#facade }
+            quote! { #ds::#facade }
         }
         None => named_default(krate),
     }

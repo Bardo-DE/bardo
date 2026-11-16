@@ -1,23 +1,23 @@
 //! inferd with a replay engine: the real `Inference1` object on a private bus, a client opening
-//! a chat session through `porter-client`, and an engine that plays a cassette instead of
+//! a chat session through `account-client`, and an engine that plays a cassette instead of
 //! running a program. The cassette is the docket acceptance's flow (a): the policy writer's draft
 //! and the planner's four steps.
 
 use crate::hosting;
 
-use hosting::rig::{Plan, World};
-use inference_client::InferSession;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use hosting::rig::{Plan, World};
+use inference_client::InferSession;
 use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest, JsonText,
     MessagePart, Role as ChatRole, SchemaText, StopReason, ToolDecl, ToolName,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use std::path::PathBuf;
 
 fn cassette_file() -> PathBuf {

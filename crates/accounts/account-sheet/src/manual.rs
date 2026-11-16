@@ -11,7 +11,7 @@
 //!
 //! Security is TLS (from the first byte) or STARTTLS. `plain` is accepted for a host on this
 //! computer only, the one place `ServiceEndpoint::check` lets a connection stay plain (a fake
-//! server in a test); it is not a choice a host offers, and porter-discover's search never
+//! server in a test); it is not a choice a host offers, and account-discover's search never
 //! offers it either.
 //!
 //! The server guesses (`imap.<domain>`, `smtp.<domain>`) are prefills the person edits, as

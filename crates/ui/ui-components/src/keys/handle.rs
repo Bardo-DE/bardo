@@ -2,15 +2,15 @@
 
 use super::source::KeySource;
 use super::state::KeyState;
+use dioxus::prelude::*;
 use keymap::{
     Action, AppAction, AppId, Chord, Conflict, Context, DefaultChord, Keymap, Overrides, Platform,
     Registration,
 };
-use dioxus::prelude::*;
-use ui_core::command::{KeyCap, shortcut_caps, shortcut_text};
-use ui_core::vocab::Shortcut;
 use std::fmt;
 use std::sync::Arc;
+use ui_core::command::{KeyCap, shortcut_caps, shortcut_text};
+use ui_core::vocab::Shortcut;
 
 /// The keymap of the window, from its [`KeySource`]. `Copy`: hand it to any handler.
 ///

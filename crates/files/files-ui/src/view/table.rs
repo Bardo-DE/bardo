@@ -1,13 +1,13 @@
 //! The list view: quire's `VirtualTable` over the browser's rows.
 
 use dioxus::prelude::*;
+use files_core::{Entry, Location, Sort, SortKey};
+use files_model::{Browser, Input, Opens, Rename, opens};
 use ui_components::base::selection::Pick;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::table::model::{CellAlign, Sort as TableSort, TableColumn};
 use ui_components::components::lists::virtual_table::VirtualTable;
 use ui_components::prelude::{FileIcon, Label, Px, TableLook};
-use files_core::{Entry, Location, Sort, SortKey};
-use files_model::{Browser, Input, Opens, Rename, opens};
 
 use super::cloud::CloudBadge;
 use super::menu::ContextAt;

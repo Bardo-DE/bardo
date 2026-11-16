@@ -3,6 +3,7 @@
 //! exactly its four, each picker swatch is its accent's own colour, and every variable the
 //! stylesheet reads is declared by it or written inline by the root.
 
+use std::collections::{BTreeMap, BTreeSet};
 use ui_components::prelude::*;
 use ui_shell::stylesheet;
 use ui_style::space::frame_vars::FrameVars;
@@ -17,7 +18,6 @@ use ui_style::tokens::timing::DurationToken;
 use ui_style::tokens::token::{Token, TokenScope};
 use ui_style::tokens::type_scale::{Family, FontSize};
 use ui_style::tokens::widget_paint::WidgetPaint;
-use std::collections::{BTreeMap, BTreeSet};
 
 /// Every rule outside `@keyframes`, as its selector and its declarations in order.
 fn rules(css: &str) -> Vec<(String, Vec<(String, String)>)> {

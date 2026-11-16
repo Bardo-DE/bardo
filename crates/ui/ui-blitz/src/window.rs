@@ -7,7 +7,7 @@
 //! on X11 (and wherever winit can place a window).
 //!
 //! `launch` provides it as `ui_components::prelude::WindowHost` and refreshes the state on every resize and focus
-//! change. Another Blitz host (shell-host's surfaces, through sill) provides its own
+//! change. Another Blitz host (layer-shell-host's surfaces, through sill) provides its own
 //! `HostWindow` over its `SurfaceHandle` instead.
 
 use crate::window_place::{Area, placement};
@@ -17,12 +17,12 @@ use dioxus_native::winit::dpi::{PhysicalPosition, PhysicalSize};
 use dioxus_native::winit::icon::{Icon, RgbaIcon};
 use dioxus_native::winit::window::{ResizeDirection, Window};
 use dioxus_native_dom::NodeHandle;
-use ui_components::prelude::*;
-use ui_components::window::icon::WindowIcon;
-use ui_components::window::vocab::{PageZoom, TileError, WindowTile, Zoom};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
+use ui_components::prelude::*;
+use ui_components::window::icon::WindowIcon;
+use ui_components::window::vocab::{PageZoom, TileError, WindowTile, Zoom};
 
 /// The winit window, as the frame's host.
 pub struct WinitWindow {

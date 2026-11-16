@@ -6,6 +6,10 @@
 use crate::answers::Answers;
 use crate::job::{JobEnding, JobReport, JobSpec};
 use crate::refusal::Refusal;
+use account_core::AppName;
+use account_ids::Count;
+use action_core::{HelperRosterLine, LeadText};
+use action_manifest::Manifest;
 use companion_model::helper::{
     Board, BoardEffect, BoardEvent, CardDraft, Ceiling, GoalOrigin, GoalText, HelperBudget,
     HelperCard, HelperKind, HelperModel, HelperName, HelperState, JobFault, JobId, JobRefusal,
@@ -13,10 +17,6 @@ use companion_model::helper::{
 };
 use companion_model::routine::{JobEnd, Missed, Schedule};
 use companion_wire::{HelperForm, RoutineForm, WhenForm, line_of};
-use action_core::{HelperRosterLine, LeadText};
-use action_manifest::Manifest;
-use account_core::AppName;
-use account_ids::Count;
 use provenance::{EntityId, HelperId, SpaceId, TaskId};
 
 /// How many steps a helper the assistant proposed may take in one job, until the person says.

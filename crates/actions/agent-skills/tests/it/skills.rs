@@ -1,6 +1,7 @@
 //! Tables for the parser and the validator, discovery, reachability, preselection and the load
 //! cap.
 
+use account_core::AppName;
 use action_core::SkillId;
 use action_manifest::{AgentReach, ValidManifest};
 use agent_skills::{
@@ -9,7 +10,6 @@ use agent_skills::{
     uses_first,
 };
 use agent_skills::{FolderError, SkillFolder};
-use account_core::AppName;
 use provenance::EntityKind;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -271,7 +271,10 @@ fn an_own_skill_overrides_a_shipped_one_and_a_bad_directory_is_reported() {
     assert!(rejected[0].dir.ends_with("broken"));
     // The label follows the origin: the person's own is the person's, shipped is the owner's.
     let own = skills[0].text();
-    assert_eq!(own.label.sources, BTreeSet::from([provenance::Source::User]));
+    assert_eq!(
+        own.label.sources,
+        BTreeSet::from([provenance::Source::User])
+    );
     let shipped = skills[1].text();
     assert_eq!(
         shipped.label.sources,

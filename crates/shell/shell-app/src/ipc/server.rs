@@ -23,8 +23,8 @@ use std::sync::{Arc, mpsc};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
-use service_locator::{Agent, Stream};
 use layer_shell_host::HostHandle;
+use service_locator::{Agent, Stream};
 use shell_ipc::error::IpcError;
 use shell_ipc::line::{read_message, write_message};
 use shell_ipc::request::Request;

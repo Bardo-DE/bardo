@@ -76,9 +76,9 @@ mod links {
     //! default (inert) nothing happens. Either way no request is made for the link's target.
 
     use dioxus::prelude::*;
+    use std::sync::{Arc, Mutex, PoisonError};
     use ui_blitz::{AppNet, FrameLink, FrameLinks, NetDecision, NetPolicy, NetReply, NetRequest};
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::sync::{Arc, Mutex, PoisonError};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -194,11 +194,11 @@ mod link_text {
     //! once per crossing, at the pointer's point in the app's document.
 
     use dioxus::prelude::*;
-    use ui_components::prelude::*;
-    use ui_blitz::{FrameLink, FrameLinkHover, FrameLinks, FrameTag, HoverPhase};
-    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::sync::{Arc, Mutex, PoisonError};
     use std::time::Duration;
+    use ui_blitz::{FrameLink, FrameLinkHover, FrameLinks, FrameTag, HoverPhase};
+    use ui_components::prelude::*;
+    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -404,12 +404,12 @@ mod link_menu {
     //! frames' links are inert. The press still reaches the page's own `oncontextmenu`.
 
     use dioxus::prelude::*;
-    use ui_components::base::press::PointerButton;
-    use ui_components::prelude::*;
-    use ui_blitz::{FrameLink, FrameLinkMenu, FrameLinks, FrameTag};
-    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::sync::{Arc, Mutex, PoisonError};
     use std::time::Duration;
+    use ui_blitz::{FrameLink, FrameLinkMenu, FrameLinks, FrameTag};
+    use ui_components::base::press::PointerButton;
+    use ui_components::prelude::*;
+    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -533,12 +533,12 @@ mod image_click {
     //! secondary press, or when the frames' links are inert.
 
     use dioxus::prelude::*;
-    use ui_components::base::press::PointerButton;
-    use ui_components::prelude::*;
-    use ui_blitz::{FrameImageClick, FrameLink, FrameLinks, FrameTag};
-    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::sync::{Arc, Mutex, PoisonError};
     use std::time::Duration;
+    use ui_blitz::{FrameImageClick, FrameLink, FrameLinks, FrameTag};
+    use ui_components::base::press::PointerButton;
+    use ui_components::prelude::*;
+    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -676,9 +676,9 @@ mod tags {
     //! way, from the id to the tag and back.
 
     use dioxus::prelude::*;
+    use std::sync::{Arc, Mutex, PoisonError};
     use ui_blitz::{AppNet, FrameId, FrameTag, NetDecision, NetPolicy, NetReply, NetRequest};
     use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-    use std::sync::{Arc, Mutex, PoisonError};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -786,14 +786,14 @@ mod phase {
     //! here waits a frame or retries: the harness settles and the values are there.
 
     use dioxus::prelude::*;
+    use std::rc::Rc;
+    use std::time::Duration;
     use ui_components::base::geometry::scroll::Scroll;
     use ui_components::host::document::{DocumentHost, use_document_host};
     use ui_components::host::measure::MountedRef;
     use ui_components::host::phase::{Observe, Observed, PhaseWrite, Watch};
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::rc::Rc;
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 480,

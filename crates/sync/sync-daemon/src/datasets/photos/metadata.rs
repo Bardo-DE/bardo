@@ -11,9 +11,9 @@ use super::hlc::DeviceId;
 use super::library::{PhotoLibrary, manifest_dir};
 use super::originals::blocking;
 use crate::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
-use sync_core::{Blob, ConflictRule, ItemPath, LocalId, Scanned};
 use account_ids::Bytes;
 use std::io;
+use sync_core::{Blob, ConflictRule, ItemPath, LocalId, Scanned};
 
 fn fail(what: &str, why: impl std::fmt::Display) -> DatasetError {
     DatasetError(format!("{what}: {why}"))

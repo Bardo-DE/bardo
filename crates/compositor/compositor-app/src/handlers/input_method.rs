@@ -6,9 +6,9 @@
 use crate::core_loop;
 use crate::state::State;
 use compositor_core::Event;
-use desktop_protocols::vocab::Power;
 use compositor_wayland::convert::rect_to;
 use compositor_wayland::{consent, input_method, text_input};
+use desktop_protocols::vocab::Power;
 use smithay::reexports::wayland_server::Client;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::utils::{Logical, Rectangle};

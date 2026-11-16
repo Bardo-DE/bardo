@@ -1,8 +1,8 @@
 //! The installed apps' desktop entries, scanned once when a pane that names programs is shown.
 
 use crate::env::Env;
-use settings_app_model::ProgramBook;
 use dioxus::prelude::*;
+use settings_app_model::ProgramBook;
 
 /// The book of installed apps, empty until the scan has read the folders. A program is named from
 /// it only when a system entry vouches for it (`ProgramBook::look_of`).

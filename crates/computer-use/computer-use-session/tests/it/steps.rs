@@ -8,7 +8,9 @@ use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, CuaDialect, ModelSpace, Point, TextDialect, ToolDialect,
 };
 use computer_use_parse::{DropReason, ParseError};
-use computer_use_session::{MaskedRegions, StepIndex, StepLines, StepOutcome, TranscriptSink, TurnSettings};
+use computer_use_session::{
+    MaskedRegions, StepIndex, StepLines, StepOutcome, TranscriptSink, TurnSettings,
+};
 use computer_use_vendors::StepResult;
 use model_provider::{
     Knob, Milli, ModelName, Part, Provider, Role, Script, ScriptedProvider, StopReason, ToolCallId,

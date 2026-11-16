@@ -1,6 +1,6 @@
+use portal_core::{CursorMode, Extent, PwNode};
 use portal_daemon::capture::{CapturedFrame, FakeCapture, FrameData, PixelFormat};
 use portal_daemon::screencast::stream::{FakeSink, Pump, PumpOutcome};
-use portal_core::{CursorMode, Extent, PwNode};
 
 fn size(w: u32, h: u32) -> Extent {
     Extent {

@@ -5,7 +5,7 @@
 //! carries their effects out against a router link, a `Planner`, a clock and a surface.
 //!
 //! companiond is the bus adapter over it (the system clock, a surface that fans changes out on
-//! the bus); `docket-inapp` hosts it in one app with the app's own clock and a quiet surface. No
+//! the bus); `agent-inapp` hosts it in one app with the app's own clock and a quiet surface. No
 //! bus, no runtime: a crate that needs to wait gets a future from its surface.
 //!
 //! - [`Companion`]: the runtime and the entry points a host calls.
@@ -13,7 +13,7 @@
 //! - [`Shared`], [`Change`]: what a surface reads without waiting for the loop.
 //! - [`RecentSource`], [`recover`], [`replay_of`]: restart, from what the eventlog holds, read
 //!   through `Recent` with `BodyMode::Json`.
-//! - [`RouterLog`]: the stored sessions read through `Session.Stored` (`docket-native` is the
+//! - [`RouterLog`]: the stored sessions read through `Session.Stored` (`agent-native` is the
 //!   durable-session backend over them).
 //! - [`primer_of`], [`profile_of`], [`hits_of`], [`episodes_of`], [`answer_read`]: the router's
 //!   memory and reader, one step at a time, for any smaller agent built on the same machines.

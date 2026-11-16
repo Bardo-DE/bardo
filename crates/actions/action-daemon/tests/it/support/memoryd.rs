@@ -1,15 +1,15 @@
-//! A fake memoryd on a private bus: the real wire (`almanac-dbus`'s codec and served objects)
+//! A fake memoryd on a private bus: the real wire (`memory-dbus`'s codec and served objects)
 //! over a handler the test owns. It keeps what it is asked, admits records by the rules memoryd
-//! applies to the router's (`almanac-service::auth` and `docs::record_fault`, copied here:
+//! applies to the router's (`memory-service::auth` and `docs::record_fault`, copied here:
 //! the router may record anything but a `Memory` body, a message must be sent by its recording
 //! actor, an episode's skeleton must be trusted and in the record's Space, and a record's label
 //! must cover its documents'), and answers every caller as `Caller::Router`.
 #![allow(dead_code)]
 
+use account_ids::Count;
 use memory_core::{EventBody, EventRef, MemoryReply, MemoryRequest, Record, ReplicaId, Seq};
 use memory_dbus::{Call, MemoryError, decode_request, encode_reply};
 use memory_dbus_serve::{Serve, serve_on};
-use account_ids::Count;
 use provenance::{Integrity, Label};
 use std::future::Future;
 use std::os::fd::OwnedFd;

@@ -6,11 +6,11 @@ use crate::handles::HandleValue;
 use crate::session::SessionEvent;
 use crate::spoken::whole_in;
 use crate::state::SessionRecord;
+use account_core::AppName;
 use action_core::ArgFault;
 use action_manifest::{ActionDecl, ArgSink};
-use permission_core::{ArgLabels, SessionSaw, SinkIntegrity};
 use action_vocab::{Args, ParamName, TargetValue, Value};
-use account_core::AppName;
+use permission_core::{ArgLabels, SessionSaw, SinkIntegrity};
 use provenance::{ClientName, Confidentiality, Integrity, Label, Labelled, ModelRole, Source};
 use std::collections::BTreeSet;
 
@@ -294,7 +294,9 @@ pub fn absorb(session: &mut SessionRecord, label: &Label) {
 mod tests {
     use super::*;
     use action_vocab::Handle;
-    use provenance::{Actor, DataClass, EntityId, EntityKey, EntityKind, SpaceId, TaskId, UnixSeconds};
+    use provenance::{
+        Actor, DataClass, EntityId, EntityKey, EntityKind, SpaceId, TaskId, UnixSeconds,
+    };
 
     fn record() -> SessionRecord {
         SessionRecord::new(

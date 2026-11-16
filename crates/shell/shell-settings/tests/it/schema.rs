@@ -1,8 +1,8 @@
 //! design/22-SETTINGS.md §9.6 for sill's schema: it round-trips, every kind has a widget, it
 //! names sill's file, the Settings pages match §5, and the deep links resolve.
 
-use ui_settings::schema::{Exposure, Page, Schema, deep_link_path};
 use shell_settings::{schema, schemas};
+use ui_settings::schema::{Exposure, Page, Schema, deep_link_path};
 
 #[test]
 fn schema_round_trip() {
@@ -150,9 +150,9 @@ fn deep_links_resolve_through_the_schemas() {
 /// the labels System Settings shows; the Mac's default is the full-screen one.
 #[test]
 fn the_menu_bar_choices_are_the_macs() {
+    use shell_settings::MenuBarHiding;
     use ui_core::word::Word;
     use ui_settings::schema::KeyKind;
-    use shell_settings::MenuBarHiding;
     const WORDS: [(MenuBarHiding, &str, &str); 4] = [
         (MenuBarHiding::Always, "always", "Always"),
         (

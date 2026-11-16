@@ -1,5 +1,5 @@
 //! The wire samples: one value of every request and reply, shared by the wire tests and by
-//! almanac-dbus's codec tests (which include this directory by path).
+//! memory-dbus's codec tests (which include this directory by path).
 
 use super::*;
 use memory_core::*;

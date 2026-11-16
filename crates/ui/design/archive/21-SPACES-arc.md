@@ -219,15 +219,15 @@ repaint on every switch and would compete with the tint as the Space's colour cl
 - Mail's window frame does (settled design): it renders its own `.ds-layer` A/B and grain
   from a `SpaceLook`.
 - Opt-in API (proposed): `Ds { look: Some(look) , material: Window }` on the app root; a
-  running app learns the workspace's look through `ds-settings` (`use_environment`), keyed by
+  running app learns the workspace's look through `ui-settings` (`use_environment`), keyed by
   the workspace its toplevel is on.
 
 ## 10. Storage (settled path and schema)
 
-`$XDG_CONFIG_HOME/quire/spaces.json`, atomic write (the `ds-settings` writer), watched with
+`$XDG_CONFIG_HOME/quire/spaces.json`, atomic write (the `ui-settings` writer), watched with
 `notify` (rename replaces inode; debounce 30 ms). **Settled** (2026-09-24, sill gap Q3):
 `ds::style::space::store::SpaceStore` is this schema (`crates/ds-style/src/space/store.rs`); a consumer reads, writes and
-watches it through `ds-settings`'s generic settings file API (`Settings<SpaceStore>` with
+watches it through `ui-settings`'s generic settings file API (`Settings<SpaceStore>` with
 `Format::Json`). A `null` in `by_index` means "no look stored at this
 position".
 

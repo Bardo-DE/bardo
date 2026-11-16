@@ -124,7 +124,7 @@ loud frame fought the paper card and the Mac controls on it. The lightness steps
 the card inset and the contrast loop (4.3: ink >= 4.5, faint >= 3.0 on every stop) are unchanged,
 and so is the grain's opacity (8) and the Space-mode accent derivation (5). The verbatim script
 below keeps the prototype's `FRAME`; the port's constants are the quiet ones above
-(`ds-style/space/palette.rs`).
+(`ui-style/space/palette.rs`).
 
 The light hover is a solid colour darker than the frame; the dark hover is a white overlay. The
 pill is always a white overlay.

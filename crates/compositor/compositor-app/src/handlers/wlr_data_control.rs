@@ -2,8 +2,8 @@
 //! (`Power::Clipboard`), gated the same way.
 
 use crate::state::State;
-use desktop_protocols::vocab::Power;
 use compositor_wayland::consent;
+use desktop_protocols::vocab::Power;
 use smithay::reexports::wayland_server::Client;
 use smithay::wayland::Gate;
 use smithay::wayland::selection::wlr_data_control::{DataControlHandler, DataControlState};

@@ -4,10 +4,10 @@
 //! other still plays out and heals the rows below.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::virtual_list::{RowHeight, VirtualList};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

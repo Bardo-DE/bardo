@@ -4,8 +4,8 @@
 //! model decides and not how fast the disk is. The plan and the wait are pure: the bus is a
 //! [`Prepare`] seam, a test hands in a scripted one.
 
-use action_accept::world::ModelSource;
 use account_capability::Tier;
+use action_accept::world::ModelSource;
 use inference_core::Readiness;
 use std::future::Future;
 use std::time::Duration;

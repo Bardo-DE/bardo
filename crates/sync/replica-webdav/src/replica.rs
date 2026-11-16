@@ -1,21 +1,21 @@
-//! [`WebDavReplica`]: ferry-sync's [`Replica`] over one folder of a WebDAV server.
+//! [`WebDavReplica`]: sync-core's [`Replica`] over one folder of a WebDAV server.
 
 use crate::feed::{Known, Pending};
 use crate::path::Root;
 use crate::requests;
+use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_dav_proto::parse_multistatus;
+use account_http::http::header::RANGE;
+use account_http::http::{Method, Request, Response};
+use account_http::{Http, request};
+use account_ids::{Bytes, WebUrl};
+use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
 use sync_core::status::{read_error, unreached};
 use sync_core::{
     BaseVersion, Blob, ByteRange, ChangePage, Cursor, PutItem, PutRefused, Quota, RemoteId,
     RemoteVersion, Replica, ReplicaError,
 };
-use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_http::http::header::RANGE;
-use account_http::http::{Method, Request, Response};
-use account_http::{Http, request};
-use account_ids::{Bytes, WebUrl};
-use std::sync::{Mutex, MutexGuard, PoisonError};
 
 /// How many changes a page of the feed holds unless told otherwise.
 const PAGE: usize = 500;

@@ -24,7 +24,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 tempfile = {version = "3"}
 
 [features]
-# `MemoryKeys`, for tests and almanac-fake.
+# `MemoryKeys`, for tests and memory-fake.
 testing = []
 # `Oo7Keys`, the Secret Service key store.
 oo7 = ["dep:oo7"]

@@ -3,10 +3,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ui_helpers::DesktopId;
 use files_core::OnlineUrl;
 use files_desktop::{AppChoice, DesktopLauncher};
 use files_ui::{OpenAs, OpenFailure, Opener};
+use ui_helpers::DesktopId;
 
 use crate::clouds::Web;
 

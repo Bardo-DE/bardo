@@ -2,9 +2,9 @@
 //! the scroller beneath it keeps the whole container.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::cell::Cell;
 
 const VIEW: Viewport = Viewport {
     width: 400,

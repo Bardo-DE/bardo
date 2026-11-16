@@ -1,12 +1,12 @@
 //! The globals table: which global needs which consent, and who is shown what (I7). The golden
 //! `tests/golden/globals.txt` has one row per global; a new one is a row to review.
 
+use account_core::SandboxFacts;
 use compositor_core::policy::{
     ConnectionRole, GlobalKind, PowerSet, advertised, advertised_to, power_of, trusted_powers,
 };
 use compositor_core::privilege::ServiceRole;
 use desktop_protocols::vocab::{Power, WireCode};
-use account_core::SandboxFacts;
 
 const GOLDEN: &str = include_str!("../golden/globals.txt");
 

@@ -33,7 +33,7 @@
 //! use std::path::Path;
 //!
 //! use ui_extensions::Search;
-//! use ui_extensions::bayonet::manifest::{Entry, Provides, Refusal};
+//! use ui_extensions::plugin_host::manifest::{Entry, Provides, Refusal};
 //!
 //! #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 //! enum Word {
@@ -64,7 +64,7 @@
 //!
 //! let found = Search::new(Path::new("/nonexistent/data"), &[]).scan(&[]);
 //! for raw in found.candidates {
-//!     if let Ok(read) = ui_extensions::bayonet::reparse::<Thumbnail>(raw) {
+//!     if let Ok(read) = ui_extensions::plugin_host::reparse::<Thumbnail>(raw) {
 //!         // `read.candidate` is this owner's view of the Extension, if it has an entry of
 //!         // its words; `read.skipped` are the other owners' entries.
 //!         drop((read.candidate, read.skipped));
@@ -103,17 +103,17 @@ mod resolve;
 mod search;
 mod your_changes;
 
-pub use plugin_host;
 pub use capability::Capability;
 pub use choices::{Choices, Chosen, Stale, choices_for, chosen};
-pub use ui_core::settings::ExtensionId;
 pub use extensions_file::{ExtensionsFile, ExtensionsSettings, OffRow, Power, extensions_schema};
 pub use fault::Fault;
 pub use file_icons::{
     Built, FileFacts, FileIcons, FolderFacts, IconFolder, IconPick, PICTURE_CAP_BYTES, Pictures,
 };
 pub use look::{Look, LookSheet, STYLESHEET_CAP_BYTES};
+pub use plugin_host;
 pub use provision::Provision;
 pub use resolve::{Problem, Resolved, Trouble};
 pub use search::{Found, Off, PROTOCOL, Search};
+pub use ui_core::settings::ExtensionId;
 pub use your_changes::{ChangeError, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges};

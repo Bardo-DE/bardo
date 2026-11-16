@@ -1,13 +1,13 @@
 //! The made-up notification and polkit request `sill debug notify` and `sill debug polkit` send,
-//! as the `sill-model` values the services would have received from a real sender.
+//! as the `shell-model` values the services would have received from a real sender.
 
 use clap::{Args, ValueEnum};
-use ui_core::word::Word;
 use shell_model::notifications::{
     Action, ActionKey, AppRef, Expiry, Hints, IconRef, NotificationId, NotifyUrgency, Posting,
     parse_body,
 };
 use shell_model::polkit_agent::{ActionId, FakeRequest};
+use ui_core::word::Word;
 
 use super::word::word;
 

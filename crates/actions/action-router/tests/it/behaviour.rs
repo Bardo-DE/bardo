@@ -1,10 +1,10 @@
 //! The message checks, over the labels prov builds.
 
+use account_core::{AppName, DataClass};
 use action_context::handles::{HandleTable, HandleValue};
 use action_core::*;
 use action_router::{assemble, check_stamped, inbound_line, intake_label, report_status};
 use action_vocab::Handle;
-use account_core::{AppName, DataClass};
 use provenance::{
     Actor, Address, AgentRef, AgentRole, Confidentiality, Integrity, Label, Labelled, Message,
     MessageId, MessageKind, MessageText, Part, ReportStatus, SessionId, Source, SpaceId, TaskId,

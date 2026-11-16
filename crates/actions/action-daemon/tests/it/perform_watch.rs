@@ -5,8 +5,8 @@
 use crate::support::world::*;
 use action_client::{DbusTransport, Intents, PerformEvent};
 use action_core::*;
-use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue};
 use action_daemon::IntentdConfig;
+use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue};
 use provenance::{ActionName, EntityId, EntityKey, EntityKind};
 use std::collections::BTreeMap;
 

@@ -7,24 +7,24 @@ use crate::engines::Engines;
 use crate::peers::Role;
 use crate::supervise::{Ports, Supervised};
 use crate::testkit::{Recorder, models};
-use engine_supervisor::{FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig};
-use model_catalog::MiB;
 use account_capability::ModelId;
 use account_capability::{Billing, Locality, Tier};
 use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
 use account_core::AccountId;
 use account_core::DataClass;
 use account_ids::{Permille, Tokens, TurnCount};
+use account_match::LlmNeed;
+use account_match::Need;
+use base_testkit::Scratch;
+use engine_supervisor::{FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig};
 use inference_core::{
     AutoEvict, EngineLoad, InferRefusal, LicenceClass, ModelCard, ModelRef, Pick, PickRefusal,
     Policy, Readiness, Slot, SwapCost, Why,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use inference_router::router::{Decided, Listed, choose};
 use inference_router::session::SessionSpec;
+use model_catalog::MiB;
 use std::time::Duration;
-use base_testkit::Scratch;
 
 fn config(text: &str) -> InferdConfig {
     InferdConfig::from_toml(text).unwrap_or_else(|e| panic!("{text}: {e}"))
@@ -145,8 +145,14 @@ fn a_floor_refuses_the_cloud_until_the_row_widens_it() {
 #[test]
 fn every_class_has_its_own_floor_row_and_voice_and_prompt_default_to_this_computer() {
     let base = settings("").policy;
-    assert_eq!(base.floor(DataClass::Voice), inference_core::Floor::OnDevice);
-    assert_eq!(base.floor(DataClass::Prompt), inference_core::Floor::OnDevice);
+    assert_eq!(
+        base.floor(DataClass::Voice),
+        inference_core::Floor::OnDevice
+    );
+    assert_eq!(
+        base.floor(DataClass::Prompt),
+        inference_core::Floor::OnDevice
+    );
     for class in CLASSES {
         let path = format!("ai.floor.{}", keys_slug(class));
         let mut table = toml::Table::new();
@@ -411,8 +417,8 @@ fn the_warn_line_is_the_rows_permille() {
     }
 }
 
-use model_provider::Money;
 use inference_core::{ChargeTotal, SpendCap, SpendVerdict, spend_verdict};
+use model_provider::Money;
 use rust_decimal::Decimal;
 
 fn companion() -> account_core::AppId {
@@ -646,7 +652,11 @@ fn automatics_pool_is_read_per_slot_and_a_row_naming_no_model_is_dropped_and_sai
         ["ai.auto.pool.not_a_slot", "ai.auto.pool.text"]
     );
     assert_eq!(
-        resolved.settings.tiers.pool(inference_core::Slot::Text).len(),
+        resolved
+            .settings
+            .tiers
+            .pool(inference_core::Slot::Text)
+            .len(),
         1
     );
 }

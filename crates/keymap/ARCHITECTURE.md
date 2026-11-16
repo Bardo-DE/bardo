@@ -9,17 +9,17 @@ the resolver. `CONVENTIONS.md` points to the shared style guides,
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
 | `chordkit` | `crates/chordkit` | the pure core | `thiserror`; `serde` behind the `serde` feature |
-| `chordkit-kde` | `crates/chordkit-kde` | `KdeSource`, `parse_kdeglobals` | `chordkit` |
-| `chordkit-gnome` | `crates/chordkit-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `chordkit` |
-| `chordkit-macos` | `crates/chordkit-macos` | `parse_key_equivalent`, `ENGLISH` menu titles, `import_user_key_equivalents` | `chordkit` |
-| `chordkit-file` | `crates/chordkit-file` | `read_text`, `read_bytes`, `ReadError`, `ByteLimit`, `SETTINGS_FILE_LIMIT`: the one bounded reader for a foreign desktop's settings files | `thiserror`; `libc` (unix) |
+| `keymap-kde` | `crates/chordkit-kde` | `KdeSource`, `parse_kdeglobals` | `chordkit` |
+| `keymap-gnome` | `crates/chordkit-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `chordkit` |
+| `keymap-macos` | `crates/chordkit-macos` | `parse_key_equivalent`, `ENGLISH` menu titles, `import_user_key_equivalents` | `chordkit` |
+| `keymap-fs` | `crates/chordkit-file` | `read_text`, `read_bytes`, `ReadError`, `ByteLimit`, `SETTINGS_FILE_LIMIT`: the one bounded reader for a foreign desktop's settings files | `thiserror`; `libc` (unix) |
 
-Edges: every source crate depends on `chordkit` (and a file-reading one on `chordkit-file`); `chordkit` depends on no
-workspace crate; `chordkit-file` depends on none either, so a program that reads a settings file of its own
+Edges: every source crate depends on `chordkit` (and a file-reading one on `keymap-fs`); `chordkit` depends on no
+workspace crate; `keymap-fs` depends on none either, so a program that reads a settings file of its own
 (keycap, palmrest) can take it without taking the keymap core. It is its own crate because the core is I/O-free
 by design and the boundary script keeps it so.
-`scripts/check-boundary.sh` asserts the core and `chordkit-macos` reach no I/O, runtime, bus,
-file-watching or plist crate (nor `chordkit-file`). The only file reads are in `KdeSource::load` and
+`scripts/check-boundary.sh` asserts the core and `keymap-macos` reach no I/O, runtime, bus,
+file-watching or plist crate (nor `keymap-fs`). The only file reads are in `KdeSource::load` and
 `GnomeSource::load` (a path injected by the caller), and both go through `chordkit_file::read_text`. Our desktop's source is not here: keycap implements
 `KeymapSource` in its own repo.
 
@@ -52,7 +52,7 @@ Layers, lowest first; a module imports from its own layer or a lower one.
 | chord text and per-platform display | `chord_text/` |
 | the person's overrides format | `overrides.rs` |
 | `[group]`/`key=value` reading | `keyfile.rs` |
-| reading any file that belongs to someone else (open without blocking, regular files only, size limit, UTF-8) | `chordkit-file` (`read_text`) |
+| reading any file that belongs to someone else (open without blocking, regular files only, size limit, UTF-8) | `keymap-fs` (`read_text`) |
 
 ## 4. Recipes
 

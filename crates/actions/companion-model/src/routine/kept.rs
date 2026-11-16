@@ -2,8 +2,8 @@
 
 use super::trigger::Trigger;
 use crate::helper::{GoalText, JobFault, JobId, PauseWhy};
-use memory_core::EventRef;
 use account_ids::Count;
+use memory_core::EventRef;
 use provenance::{HelperId, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use std::fmt;

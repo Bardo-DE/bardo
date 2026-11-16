@@ -6,8 +6,8 @@
 //! rows in view.
 
 use crate::file_drop::drag::DropOperation;
-use keymap::Platform;
 use dioxus::prelude::Modifiers;
+use keymap::Platform;
 use ui_core::selection::RowSelection;
 
 /// What a row is as a place to drop on.
@@ -109,8 +109,8 @@ pub(crate) fn operation_of(platform: Platform, modifiers: Modifiers) -> DropOper
 mod tests {
     use super::{RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of};
     use crate::file_drop::drag::DropOperation;
-    use keymap::Platform;
     use dioxus::prelude::Modifiers;
+    use keymap::Platform;
     use ui_core::selection::RowSelection;
 
     /// Rows 1 and 3 are folders.

@@ -1,6 +1,6 @@
 //! Callers of `org.quire.Compositor1` as the bus thread proved them: the app and the role of
 //! the caller-table row they matched. A test says who is calling instead of building a process
-//! table; the proof itself (the process, its image, its unit) is `casement-ipc`'s tests.
+//! table; the proof itself (the process, its image, its unit) is `compositor-ipc`'s tests.
 
 use compositor_ipc::dbus::Proven;
 use compositor_ipc::dbus::peer::{AppKey, RoleName, roles};

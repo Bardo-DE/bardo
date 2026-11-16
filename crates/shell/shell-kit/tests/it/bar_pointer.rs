@@ -3,12 +3,12 @@
 //! reorders by a press on one pill released over another.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::bar::pointer::BarPointer;
 use shell_kit::prelude::*;
 use std::cell::RefCell;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 320,

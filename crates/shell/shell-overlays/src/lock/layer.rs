@@ -1,4 +1,4 @@
-//! How shell-host sets the lock surfaces up: their name prefix, `sill-lock`, so each is
+//! How layer-shell-host sets the lock surfaces up: their name prefix, `sill-lock`, so each is
 //! `sill-lock/<output>` (what `sill debug capture` and `debug stats` address).
 
 use layer_shell_host::LockConfig;

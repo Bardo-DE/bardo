@@ -4,8 +4,8 @@
 use super::agent::{AGENT_SESSION, Act, call, say, think};
 use super::rig::{Policy, Setup, ended_with, no, once, run_turn, selected, started, tool};
 use action_core::AuditRecord;
-use permission_core::{AlwaysOffer, Withheld};
 use agent_session::TurnEnd;
+use permission_core::{AlwaysOffer, Withheld};
 use serde_json::json;
 
 /// Why: an agent that asks for permission over and over is wearing the person down. The router's

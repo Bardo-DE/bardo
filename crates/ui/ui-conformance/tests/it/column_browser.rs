@@ -5,12 +5,14 @@
 //! is cut from the middle, and a divider drag resizes the columns.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
 use ui_components::base::selection::{Pick, PickHow, RowSelection};
 use ui_components::components::content::icon_source::IconSource;
-use ui_components::components::lists::column_browser::{BrowserColumn, BrowserRow, ColumnBrowser, ColumnPick};
+use ui_components::components::lists::column_browser::{
+    BrowserColumn, BrowserRow, ColumnBrowser, ColumnPick,
+};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
 
 const VIEW: Viewport = Viewport {
     width: 700,

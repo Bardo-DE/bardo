@@ -2,8 +2,8 @@
 
 use std::path::PathBuf;
 
-use ui_helpers::{EntryLocale, load_entries};
 use shell_model::apps::App;
+use ui_helpers::{EntryLocale, load_entries};
 
 use super::entry::parse_entry;
 use super::icon_roots::IconRoots;

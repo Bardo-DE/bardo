@@ -7,10 +7,10 @@
 use crate::exit::Failure;
 use crate::resolve::Apps;
 use crate::when;
+use account_core::AppName;
 use action_manifest::TargetKind;
 use action_manifest::{ActionDecl, ParamNeed};
 use action_vocab::{Args, CharCount, FileRef, Handle, ParamName, ParamType, TargetValue, Value};
-use account_core::AppName;
 use provenance::{Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label};
 use provenance::{Labelled, Source};
 use std::collections::{BTreeMap, BTreeSet};

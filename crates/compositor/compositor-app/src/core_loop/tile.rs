@@ -1,7 +1,7 @@
 //! Dragging a window to a screen edge, as the loop carries it: a move grab starts the machine
 //! (`compositor_core::window::TileDrag`), each pointer motion steps it with the modifiers held,
 //! the frame draws its preview, and the release tiles the window where the preview showed. The
-//! machine and the zones are `casement-core`'s and `casement-layout`'s; this is the glue to the
+//! machine and the zones are `compositor-core`'s and `compositor-layout`'s; this is the glue to the
 //! seat, the model and the renderer.
 //!
 //! A window tiles on its own output only: the pointer on another output arms nothing (a window
@@ -14,8 +14,8 @@ use compositor_core::geometry::{LogicalPoint, LogicalRect};
 use compositor_core::window::{TileDrag, TileDrop, TileKnobs, TileScene, TileTarget};
 use compositor_core::{Event, GrabSpec, InputSerial, OutputKey, ToplevelRequest};
 use compositor_layout::{LayoutKnobs, tile_preview_fill, zone_rect};
-use desktop_protocols::vocab::HeldMods;
 use compositor_render::{Rgba8, TilePreview};
+use desktop_protocols::vocab::HeldMods;
 
 /// The plate's corner radius, in logical pixels (a window's corner on the Mac).
 const PLATE_RADIUS: u32 = 10;

@@ -25,7 +25,6 @@ use crate::scene::convert::on_output;
 use compositor_core::geometry::{
     LogicalPoint, LogicalRect, LogicalSize, PhysicalSize, SubPoint, SubPx, buffer_size,
 };
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Buffer as AllocBuffer, Fourcc};
 use smithay::backend::renderer::damage::{Error as DamageError, OutputDamageTracker};
@@ -34,6 +33,7 @@ use smithay::backend::renderer::element::surface::render_elements_from_surface_t
 use smithay::backend::renderer::{Bind, Color32F, ExportMem};
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::utils::{Buffer, Physical, Rectangle, Size, Transform};
+use ui_core::geometry::scale::Scale;
 
 /// The size of the image a window with `content` logical pixels is drawn into at `scale`: each
 /// side `round(l x s)`, the same conversion every buffer uses.

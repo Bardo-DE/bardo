@@ -12,7 +12,6 @@ use compositor_core::input::{
 };
 use compositor_core::policy::ConnectionRole;
 use compositor_core::{DeviceId, OutputName};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::capture::{BufferAsk, CursorMode, OutputCapture};
 use compositor_testclient::manage::gamma::{ControlState as GammaState, GammaControls};
 use compositor_testclient::manage::output_power::{ControlState as PowerState, OutputPowers};
@@ -24,6 +23,7 @@ use compositor_testkit::gpu::{
 };
 use compositor_testkit::{Fixture, FixtureSpec, FrameCount, TtyWorld};
 use compositor_wayland::dmabuf::MainDevice;
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 const KEYBOARD: DeviceId = DeviceId(1);

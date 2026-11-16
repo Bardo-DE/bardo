@@ -8,10 +8,10 @@ use crate::support;
 use anyview_peek::{AnyPeeked, Card, Part, Parts, peek};
 use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::{Appearance, Ds, Material};
 use std::sync::Arc;
 use support::{Home, fixture, pane_budget};
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::{Appearance, Ds, Material};
 
 #[derive(Props, Clone, PartialEq)]
 struct Setup {

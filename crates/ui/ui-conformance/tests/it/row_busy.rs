@@ -6,13 +6,13 @@
 //! turning (R7).
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::content::status::battery_state::BatteryState;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
 use ui_harness::harness::assert_settles_to_zero_frames;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

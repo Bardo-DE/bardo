@@ -7,9 +7,6 @@
 use super::{
     HEIGHT, WIDTH, advance, commands, commands_until, fake, opened, settle, start, two_apps, until,
 };
-use ui_components::prelude::settle as settle_time;
-use ui_components::prelude::*;
-use ui_harness::Input;
 use shell_model::notifications::{
     AppKey, Clear, History, NameHolder, NameOwner, Notifications, NotificationsCommand, ServerMode,
     ServerStatus,
@@ -18,6 +15,9 @@ use shell_notify_ui::notification_center::PANEL_ID;
 use shell_settings::ShellFile;
 use shell_ui_kit::notification_card::NotificationTokens;
 use shell_ui_kit::panel::PANEL_PADDING;
+use ui_components::prelude::settle as settle_time;
+use ui_components::prelude::*;
+use ui_harness::Input;
 
 /// A group's toggle ("N more", "Show less") and Clear, in its header.
 const TOGGLE: &str = ".ds-group-header-actions .ds-button:first-child";

@@ -4,13 +4,13 @@ use crate::builtin::HostedLink;
 use crate::grants::FileGrants;
 use crate::infer::{InferdModel, InferdWriter, ReaderClient};
 use crate::sheet::SheetConfirmer;
-use action_review::InferReviewer;
 use action_checkpoint_git::GitStore;
+use action_review::InferReviewer;
+use action_router::{NoLog, Seams};
+use action_store::SystemClock;
+use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
 use companion_memory::{AlmanacMemory, AlmanacSessionLog};
 use companion_memory_core::QueuedSink;
-use action_router::{NoLog, Seams};
-use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
-use action_store::SystemClock;
 use provenance::SessionId;
 
 /// The sessions' log of the running daemon: memoryd's, or none. The daemon reads the log once at
@@ -60,7 +60,7 @@ impl<M: memory_client::Transport> SessionLog for DaemonLog<M> {
 
 /// The seams of the running daemon: apps and the sheet over the session bus, the built-in
 /// providers in process, models over
-/// inferd (`P` is inferd-client's transport), memory over memoryd (`M` is almanac-client's).
+/// inferd (`P` is inference-client's transport), memory over memoryd (`M` is memory-client's).
 #[derive(Debug)]
 pub struct SystemSeams<P: inference_client::Transport, M: memory_client::Transport> {
     /// The apps, and the two built-in providers answered in process.

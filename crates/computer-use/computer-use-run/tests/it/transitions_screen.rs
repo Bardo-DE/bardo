@@ -4,6 +4,8 @@
 //! a window of another app is refused; the optional reader's answer joins the same table.
 
 use crate::support::*;
+use account_core::AppName;
+use action_gate_wire::GateAnswer;
 use computer_use_a11y_tree::Role;
 use computer_use_action::{Chord, CuaAction, Modifier, Repeat, WindowSpace};
 use computer_use_bus::{
@@ -15,8 +17,6 @@ use computer_use_run::{
     CuaSignal, FORCED_NO, FORCED_YES, Held, ReaderMode, Run, RunEffect, RunInput, RunPhase,
     ScreenRead,
 };
-use action_gate_wire::GateAnswer;
-use account_core::AppName;
 use inference_core::StepIndex;
 use provenance::{Label, Labelled};
 use std::collections::BTreeSet;

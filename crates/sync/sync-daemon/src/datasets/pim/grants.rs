@@ -1,6 +1,6 @@
 //! Which accounts syncd may mirror: the ones it holds a Calendar, Contacts or Tasks grant for.
 //!
-//! The seam is [`PimGrants`]; [`ClientGrants`] answers it through porter-client's `find`, which
+//! The seam is [`PimGrants`]; [`ClientGrants`] answers it through account-client's `find`, which
 //! lists only grants syncd already holds. **No flow gives syncd such a grant yet**: a consent
 //! sheet needs a parent window and a host to draw it (the sheet host, W3e) and a daemon has
 //! neither, so today a grant exists when the person makes one in Settings (or when a test

@@ -3,23 +3,23 @@
 //! reviewer turns into asking the person, never a reply.
 
 use crate::support::inferd::*;
-use action_review::{ReviewVerdict, Reviewer};
-use action_core::ReviewTimeouts;
-use permission_core::{ReviewError, Stage};
-use action_vocab::{Caller, Millis};
-use action_daemon::InferdModel;
 use account_capability::Tier;
 use account_capability::{LlmFeature, Modality};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Dims;
+use account_match::Need;
+use account_match::{DimsNeed, EmbedNeed};
+use action_core::ReviewTimeouts;
+use action_daemon::InferdModel;
+use action_review::{ReviewVerdict, Reviewer};
+use action_vocab::{Caller, Millis};
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, ChatSink, EmbedRequest, EmbedRole, InferEvent,
     InferRefusal, InferReply, Knob, MessagePart, Model, ModelCard, ModelError, ReplyShape,
     RequestKind, Role, StopReason, ToolChoice, ToolDecl, ToolParallelism, TurnError,
 };
-use account_match::Need;
-use account_match::{DimsNeed, EmbedNeed};
+use permission_core::{ReviewError, Stage};
 use std::collections::BTreeSet;
 use std::ops::ControlFlow;
 
@@ -255,8 +255,8 @@ async fn embeddings_open_an_embedding_session_for_the_indexs_length() {
 fn review_request() -> action_review::ReviewRequest {
     use action_core::*;
     use action_manifest::Lasting;
-    use permission_core::{ArgLabels, SessionSaw, Strictness};
     use action_vocab::{LabelText, TurnId};
+    use permission_core::{ArgLabels, SessionSaw, Strictness};
     use std::collections::BTreeMap;
     action_review::ReviewRequest {
         space: provenance::SpaceId::parse("work").expect("space"),

@@ -47,7 +47,7 @@ impl PixelSize {
 /// snapshot test: it registers exactly the given faces and turns system font discovery off, so
 /// a render does not vary with whatever happens to be installed on the machine that runs it, and
 /// (unlike the old single-arbitrary-TTF path this replaced) uses the same face list a real
-/// surface would get from `HostConfig::fonts` — see [`bundled_faces`] for shell-host's own
+/// surface would get from `HostConfig::fonts` — see [`bundled_faces`] for layer-shell-host's own
 /// fixtures, which have no design system of their own to point at.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Fonts {
@@ -144,7 +144,7 @@ fn render_frame(doc: &mut DioxusDocument, t: f64, size: PixelSize, scale: Scale1
 
 /// One [`FontContext`] per call: `Fonts::Bundled` builds a collection without system fonts
 /// (`SharedFonts::bundled`), because blitz-dom's own default construction hard-codes
-/// `system_fonts` to its `system-fonts` *cargo* feature, which `shell-host`'s pinned dependency
+/// `system_fonts` to its `system-fonts` *cargo* feature, which `layer-shell-host`'s pinned dependency
 /// block always enables; supplying `font_ctx` ourselves is the only way to turn it off for a
 /// reproducible render.
 fn build_font_context(fonts: Fonts) -> FontContext {
@@ -155,7 +155,7 @@ fn build_font_context(fonts: Fonts) -> FontContext {
     .for_document()
 }
 
-/// A `Fonts::Bundled` face list for shell-host's own examples and tests, which (unlike a real
+/// A `Fonts::Bundled` face list for layer-shell-host's own examples and tests, which (unlike a real
 /// shell) bundle no design system of their own to pass through `HostConfig::fonts`.
 ///
 /// Prefers `~/quire/crates/ds/assets/fonts` (quire's own bundled faces); falls back to the first

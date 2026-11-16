@@ -7,8 +7,8 @@
 
 use crate::chord_scope::standard_actions_of;
 use computer_use_a11y_tree::{A11yNode, NodeState, Role};
-use keymap::StandardAction;
 use computer_use_action::{CuaAction, NodeId, WindowSpace};
+use keymap::StandardAction;
 
 /// The standard actions that make or open something in the window, which a control usually does
 /// too. Editing chords (copy, paste, undo) are not here: they act on the focus, not on a control.

@@ -199,7 +199,9 @@ pub fn keep(keeper: &mut FocusKeeper, doc: &DocRef) -> bool {
 
 /// The `ui_components::host::hand_back::HandBack` that records into `keeper`. A registration made while the keeper is
 /// busy looking is dropped; the keeper's own fallbacks still apply.
-pub(crate) fn hand_back_seam(keeper: Rc<RefCell<FocusKeeper>>) -> ui_components::host::hand_back::HandBack {
+pub(crate) fn hand_back_seam(
+    keeper: Rc<RefCell<FocusKeeper>>,
+) -> ui_components::host::hand_back::HandBack {
     ui_components::host::hand_back::HandBack::recording(Rc::new(
         move |surface: &MountedData, opener: &MountedData| {
             if let (Some(surface), Some(opener), Ok(mut keeper)) = (

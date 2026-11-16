@@ -1,4 +1,4 @@
-//! The daemon's half of launching: ask shell-host for an xdg-activation token on behalf of the
+//! The daemon's half of launching: ask layer-shell-host for an xdg-activation token on behalf of the
 //! surface the click came from, then hand the request to the launch service. `sill launch` goes
 //! through the same two steps ([`ask`] on the host thread, [`serve`] off it) and is answered with
 //! the launch's timing.

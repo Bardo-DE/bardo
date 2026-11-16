@@ -2,8 +2,8 @@
 
 use super::handle::Keys;
 use super::source::KeySource;
-use keymap::{AppAction, AppId, Conflict, DefaultChord, Platform, Registration};
 use dioxus::prelude::*;
+use keymap::{AppAction, AppId, Conflict, DefaultChord, Platform, Registration};
 
 /// The root's keymap: the enclosing root's when there is one, else a new one from the
 /// [`KeySource`] the launcher provided (our desktop's conventions without one). Reloads it when

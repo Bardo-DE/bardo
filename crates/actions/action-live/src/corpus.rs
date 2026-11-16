@@ -1,6 +1,6 @@
 //! A corpus run over a model: every case plays through the router with the real policy writer
-//! and the real reviewer cascade (`docket-models`' `TransportWriter` and `action-review`'s `InferReviewer`)
-//! asking a real inferd on a private bus, over docket-fake's apps. Each case is judged, traced
+//! and the real reviewer cascade (`agent-models`' `TransportWriter` and `action-review`'s `InferReviewer`)
+//! asking a real inferd on a private bus, over action-fake's apps. Each case is judged, traced
 //! and tallied; the run ends in a `RunReport` and a directory of traces.
 
 use crate::engine::{Engine, EngineError, scripted_cassette};
@@ -9,23 +9,23 @@ use crate::stage::{Asker, asker};
 use crate::trace_dir::{TraceDir, TraceDirError};
 use crate::warm::WarmFault;
 use crate::warm_bus::warm_up;
-use action_review::{InferReviewer, ReviewRequest, ReviewVerdict, Reviewer};
+use account_capability::{Billing, Locality, ModelId};
+use account_core::AccountId;
 use action_accept::world::{Binaries, Options};
 use action_core::{AgentConfig, ModelExchange, ReviewTimeouts};
 use action_dbus::Watched;
 use action_eval::{Harness, PolicyMode, run_case_traced};
+use action_eval_core::{Case, CaseTrace, Observed, RunNote, RunReport, Tallies};
 use action_fake::{FakeError, Forget, fake_router_with};
-use agent_models::{TransportModel, TransportWriter};
-use permission_core::{ReviewError, Stage};
+use action_review::{InferReviewer, ReviewRequest, ReviewVerdict, Reviewer};
 use action_store::SystemClock;
 use action_trace::{MemoryTap, Tap};
 use action_vocab::Millis;
-use action_eval_core::{Case, CaseTrace, Observed, RunNote, RunReport, Tallies};
+use agent_models::{TransportModel, TransportWriter};
 use inference_client::DbusTransport;
-use model_provider::Money;
-use account_capability::{Billing, Locality, ModelId};
-use account_core::AccountId;
 use inference_core::ModelCard;
+use model_provider::Money;
+use permission_core::{ReviewError, Stage};
 use rust_decimal::Decimal;
 use std::path::PathBuf;
 use std::time::Duration;

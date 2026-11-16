@@ -4,12 +4,12 @@
 
 use companion_wire::HelperCardView;
 use dioxus::prelude::*;
-use ui_components::components::content::label::LabelRole;
-use ui_components::components::controls::button_model::Bezel;
-use ui_components::prelude::*;
 use shell_model::companion::{
     BRING_BACK, HandoverShown, HelpersMsg, IN_TERMINAL, OPEN_IN_TERMINAL, handover_of,
 };
+use ui_components::components::content::label::LabelRole;
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::prelude::*;
 
 use super::say::use_say;
 

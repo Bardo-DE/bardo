@@ -791,7 +791,11 @@ fn every_rule_case_matches() {
     }
     for case in MARKUP_CASES {
         let got = has(
-            &markup(case.html, case.css, &LintConfig::new(&ui_components::kits())),
+            &markup(
+                case.html,
+                case.css,
+                &LintConfig::new(&ui_components::kits()),
+            ),
             case.rule,
         );
         if got != case.expect {

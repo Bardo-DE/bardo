@@ -3,9 +3,9 @@
 //! file on every hold (its `[voice]` table), so their forms are its contract
 //! ([`VoiceConsent`]'s serde). The service reads them through [`params`].
 
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 use shell_model::voice::VoiceParams;
+use ui_settings::schema::Page;
 
 pub use shell_model::voice::{HoldToTalk, VoiceConsent};
 

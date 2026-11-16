@@ -1,5 +1,5 @@
 //! `DbusTransport::call`: one match from a request to the member of `org.quire.Intents1` that
-//! carries it. Bodies are the JSON of the typed value named in `docket-dbus`; a request that
+//! carries it. Bodies are the JSON of the typed value named in `action-dbus`; a request that
 //! `intentd` refuses before it is a call arrives as a bus error (`IntentsError`) and comes back
 //! as `IntentsReply::Refused`, a refused call or message as part of its body.
 //!

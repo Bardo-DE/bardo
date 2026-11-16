@@ -1,16 +1,16 @@
 //! What the lock screen hands quire's `LockClock` and `LockPrompt`, from the auth service's
 //! state, the keyboard and the clock: pure.
 
+use shell_kit::lock::vocab::{CapsLock, LockUser, PromptState};
+use shell_kit::user_picture::picture::UserPicture;
+use shell_model::auth::{Account, AuthPhase, AvatarSource, UserName};
+use shell_model::clock::{ClockHours, time_digits};
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
 use ui_components::prelude::*;
-use shell_model::auth::{Account, AuthPhase, AvatarSource, UserName};
-use shell_model::clock::{ClockHours, time_digits};
-use shell_kit::lock::vocab::{CapsLock, LockUser, PromptState};
-use shell_kit::user_picture::picture::UserPicture;
 
-/// Caps Lock from shell-host's live modifiers (`use_modifiers()`, published on keyboard focus
+/// Caps Lock from layer-shell-host's live modifiers (`use_modifiers()`, published on keyboard focus
 /// and on every change, so it is known before the first key).
 pub fn caps_of(key: layer_shell_host::LockKey) -> CapsLock {
     match key {
@@ -95,12 +95,12 @@ pub fn clock_lines(now: &jiff::Zoned, hours: ClockHours) -> ClockLines {
 
 #[cfg(test)]
 mod tests {
-    use ui_components::prelude::*;
+    use shell_kit::lock::vocab::{CapsLock, PromptState};
+    use shell_kit::user_picture::picture::UserPicture;
     use shell_model::auth::AuthPhase;
     use shell_model::auth::{Account, AuthFault, AvatarSource, RealName, UserName};
     use shell_model::clock::ClockHours;
-    use shell_kit::lock::vocab::{CapsLock, PromptState};
-    use shell_kit::user_picture::picture::UserPicture;
+    use ui_components::prelude::*;
 
     use super::{ClockLines, caps_of, clock_lines, lock_user, prompt_state};
 

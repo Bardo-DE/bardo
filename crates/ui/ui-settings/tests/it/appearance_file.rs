@@ -7,11 +7,11 @@ use ui_style::appearance::accent::Accent;
 
 use ui_style::appearance::motion::Motion;
 
+use std::path::Path;
+use support::Scratch;
 use ui_settings::{AppearanceFile, IconStyle, Loaded};
 use ui_style::appearance::theme::Theme;
 use ui_style::appearance::transparency::Transparency;
-use std::path::Path;
-use support::Scratch;
 
 const FILE: &str = "appearance.toml";
 /// The file a save locks, beside the settings file.

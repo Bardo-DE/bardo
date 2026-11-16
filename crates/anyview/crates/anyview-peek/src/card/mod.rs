@@ -19,6 +19,7 @@ use crate::any::AnyPeeked;
 use crate::body::Body;
 use crate::unavailable::Unavailable;
 use dioxus::prelude::*;
+use std::sync::Arc;
 use ui_components::components::content::pdf_thumb::PdfThumb;
 use ui_components::components::fields::fact_list::{Fact, FactList};
 use ui_components::components::lists::preview::content::PANE_MEDIA;
@@ -28,7 +29,6 @@ use ui_components::prelude::{
 use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::render::IconPx;
-use std::sync::Arc;
 
 pub use parts::{Part, Parts};
 

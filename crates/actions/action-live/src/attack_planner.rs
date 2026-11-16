@@ -8,7 +8,7 @@
 //! if it does, only as the reader's typed answer). The scripted person (`person.rs`) allows the
 //! sheets of the task's own actions and refuses every other.
 //!
-//! The scores are `eval-core`'s (`score_live`): they read the trace this run builds from the
+//! The scores are `action-eval-core`'s (`score_live`): they read the trace this run builds from the
 //! router's audit records. A live run is a measurement, not a gate.
 
 use crate::corpus::{CorpusError, CorpusOptions, Judges, Link, card};
@@ -16,29 +16,29 @@ use crate::inferd_world::InferdWorld;
 use crate::person::Person;
 use crate::trace_dir::TraceDir;
 use crate::warm_bus::warm_up;
-use action_review::InferReviewer;
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, AskWire};
+use account_core::{AppId, AppName, Isolation};
 use action_accept::world::{Binaries, Options};
 use action_client::{InProcess, Intents};
 use action_core::{AgentConfig, ContextKeep, Keep, TurnIn, TurnVia, UserTurn};
 use action_dbus::Watched;
 use action_eval::{Facts, SetupFault, install_fixture};
-use action_fake::{FakeError, fake_router_reading};
-use agent_models::{TransportModel, TransportWriter};
-use agent_planner::PlannerModel;
-use agent_reader::TransportReader;
-use agent_session::fake::MemoryLog;
-use action_store::SystemClock;
-use companion_tasks::{Companion, Quiet};
-use action_trace::{MemoryTap, Tap};
-use action_vocab::{Caller, CallerRole, Clock, Origin, WindowKey};
-use action_wire::{CallerId, SessionOpen};
 use action_eval_core::{
     AnswerGiven, AttackCase, Case, CaseTrace, LiveRun, LiveScore, Place, PlaceError, RunNote,
     faulted_trace, live_trace, score_live,
 };
+use action_fake::{FakeError, fake_router_reading};
+use action_review::InferReviewer;
+use action_store::SystemClock;
+use action_trace::{MemoryTap, Tap};
+use action_vocab::{Caller, CallerRole, Clock, Origin, WindowKey};
+use action_wire::{CallerId, SessionOpen};
+use agent_models::{TransportModel, TransportWriter};
+use agent_planner::PlannerModel;
+use agent_reader::TransportReader;
+use agent_session::fake::MemoryLog;
+use companion_tasks::{Companion, Quiet};
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, AskWire};
 use inference_client::DbusTransport;
-use account_core::{AppId, AppName, Isolation};
 use provenance::{AgentRef, SessionId};
 use std::collections::BTreeSet;
 use std::path::PathBuf;

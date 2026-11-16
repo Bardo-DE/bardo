@@ -6,7 +6,6 @@ use compositor_core::Event;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{HELD_REQUESTS, UnixSeconds, Verdict};
 use compositor_core::time::Mono;
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::ime::virtual_keyboard::VirtualBoard;
 use compositor_testclient::misc::idle::{IdleKind, IdleLine, IdleSignal, IdleWatch};
 use compositor_testclient::seat::keyboard::Keyboard;
@@ -14,6 +13,7 @@ use compositor_testclient::surface::layer::{
     Anchor, KeyboardInteractivity, Layer, LayerAsk, LayerSurface,
 };
 use compositor_testkit::{ASKED_PROGRAM, Fixture, FixtureSpec};
+use desktop_protocols::vocab::{Answer, Power};
 use std::time::Duration;
 
 /// The smallest keymap libxkbcommon accepts: one key.

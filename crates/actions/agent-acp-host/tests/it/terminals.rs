@@ -2,11 +2,11 @@
 //! request and response is checked against the protocol schema.
 
 use agent_acp_core::command_deadline::CommandDeadline;
+use agent_acp_host::Terminals;
 use agent_client_protocol::schema::v1::Error;
 use sandbox::AbsPath;
 use sandbox::CannotSandbox;
 use sandbox::fake::{FakeSandbox, Script, Seen};
-use agent_acp_host::Terminals;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
@@ -29,8 +29,10 @@ fn with(sandbox: FakeSandbox, seen: Seen) -> Bench {
     Bench {
         terminals: Terminals::new(sandbox),
         seen,
-        schema: serde_json::from_str(include_str!("../../../agent-acp-server/tests/schema/schema.json"))
-            .expect("schema"),
+        schema: serde_json::from_str(include_str!(
+            "../../../agent-acp-server/tests/schema/schema.json"
+        ))
+        .expect("schema"),
     }
 }
 

@@ -1,15 +1,15 @@
 //! A JMAP server a person typed by hand, sent: the session resource at the URL they gave,
 //! fetched with HTTP Basic (the login name and the password) or, for an API token, a bearer,
 //! read the way discovery reads a session it found. The request and the reading of the answer
-//! are generic-proto's.
+//! are account-generic-proto's.
 
 use super::fault;
-use account_generic_proto::jmap;
 use account_capability::Claim;
 use account_core::{Credential, EndpointUrl, LoginName, ServiceEndpoint};
 use account_discover::parse_jmap_session;
 use account_family_kit::Io;
 use account_family_kit::password::{basic, fault_of, sensitive};
+use account_generic_proto::jmap;
 use account_http::Http;
 use account_sheet::SignInFault;
 

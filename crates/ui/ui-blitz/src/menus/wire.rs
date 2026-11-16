@@ -1,8 +1,8 @@
 //! The pure dbusmenu data as D-Bus values.
 
-use ui_components::components::menus::export::{DbusItem, DbusLayout, Prop};
 use serde::Serialize;
 use std::collections::HashMap;
+use ui_components::components::menus::export::{DbusItem, DbusLayout, Prop};
 use zbus::zvariant::{OwnedValue, Type, Value};
 
 /// `(ia{sv}av)`: an item, its properties and its rows (each a variant of the same shape).

@@ -1,12 +1,12 @@
 //! Completion notes reach only a live front task; restart rebuilds from a source.
 
+use action_core::RosterState;
 use agent_loop::*;
+use companion_daemon::*;
+use companion_wire::{AnswerPhase, NeedsYou, SessionRecord};
 use memory_core::{
     BodyMode, EventRef, EventSummary, JsonText, KindTag, RecentEntry, RecentQuery, ReplicaId, Seq,
 };
-use companion_wire::{AnswerPhase, NeedsYou, SessionRecord};
-use companion_daemon::*;
-use action_core::RosterState;
 use provenance::{Actor, AgentRef, ReportStatus, RunId, SpaceId, TaskId};
 use std::sync::Mutex;
 
@@ -194,7 +194,7 @@ fn replay_reads_oldest_first_skips_the_routers_log_and_refuses_a_body_it_cannot_
     assert_eq!(replay_of(&routers), Ok(vec![]));
 }
 
-/// A record of a run as cuad writes it (`cua-bus`'s `CuaRecord`: tag `kind`, content `v`).
+/// A record of a run as cuad writes it (`computer-use-bus`'s `CuaRecord`: tag `kind`, content `v`).
 fn run_record(kind: &str, v: serde_json::Value) -> String {
     serde_json::json!({ "kind": kind, "v": v }).to_string()
 }

@@ -5,8 +5,8 @@ use crate::engine_install::EngineSheetView;
 use crate::icons::tile_of;
 use crate::picker::{TierRow, TurnOnAlert, Unavailable};
 use crate::system::Absent;
-use settings_app_model::{Clearing, ModelRow, PageKind, PickerInput, PickerState, assistant_of};
 use dioxus::prelude::*;
+use settings_app_model::{Clearing, ModelRow, PageKind, PickerInput, PickerState, assistant_of};
 use ui_components::components::fields::field_row::FieldGroup;
 
 /// The row, or why it is not there. `state` is the picker's.

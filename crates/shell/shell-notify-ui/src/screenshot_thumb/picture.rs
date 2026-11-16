@@ -6,9 +6,9 @@
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
+use shell_model::screenshots::{Shot, ShotPreview};
 use ui_components::components::content::image_source::ImageSize;
 use ui_components::prelude::*;
-use shell_model::screenshots::{Shot, ShotPreview};
 
 /// The shape a picture is drawn in when its header says nothing: the surface's 16:10.
 const UNKNOWN: ImageSize = ImageSize {

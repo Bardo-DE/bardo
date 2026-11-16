@@ -1,4 +1,4 @@
-//! Opening a file in the viewer, over a private `dbus-daemon` (`sill-testkit`), never the session
+//! Opening a file in the viewer, over a private `dbus-daemon` (`shell-testkit`), never the session
 //! bus. The viewer is anyview's own `DbusInstance` owning `org.quire.Anyview1`, the real
 //! implementation of the other end, so the call is checked against what the viewer parses: the
 //! file, the place and the results the launcher chose it from arrive as the `Request` the
@@ -45,7 +45,10 @@ async fn viewer(bus: &PrivateBus, scratch: &TempDir) -> Primary {
 fn launcher(
     bus: &PrivateBus,
     scratch: &TempDir,
-) -> (shell_services::Control<LaunchCommand>, Arc<RecordedChildren>) {
+) -> (
+    shell_services::Control<LaunchCommand>,
+    Arc<RecordedChildren>,
+) {
     let children = RecordedChildren::shared();
     let mut env = Env::isolated(scratch.path());
     env.buses = Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone()));

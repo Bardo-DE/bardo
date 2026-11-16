@@ -2,9 +2,9 @@
 //! that goes from the hub to the dataset's driver (which owns the engine and settles it between
 //! cycles, so nothing races a cycle writing the journal).
 
+use std::str::FromStr;
 use sync_bus::{RESOLVE_KEEP_LOCAL, RESOLVE_KEEP_REMOTE};
 use sync_core::Resolution;
-use std::str::FromStr;
 use tokio::sync::oneshot;
 
 /// A stored conflict's number: the one `Sync1.Conflict` carries under `number`.

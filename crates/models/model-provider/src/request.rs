@@ -4,8 +4,8 @@ use core::fmt;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use model_vision_prep::MediaType;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::{
     ChoiceScores, EngineExtras, JsonText, ModelName, Sampling, SchemaText, ThoughtSeal, Tokens,

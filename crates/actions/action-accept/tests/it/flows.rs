@@ -2,14 +2,14 @@
 //! `dev/accept/README.md` for what is real and what is scripted).
 
 use crate::support::*;
-use companion_wire::{AnswerPhase, AnswerWire, NeedsYou};
 use action_accept::drive::{Launcher, recorded};
 use action_accept::provider::Sending;
 use action_accept::world::{Consent, World};
 use action_core::{ConfirmDetail, ConfirmOffer, Shown, TaintNote, UndoState};
-use agent_session::SheetChoice;
 use action_vocab::Handle;
 use action_wire::JournalFilter;
+use agent_session::SheetChoice;
+use companion_wire::{AnswerPhase, AnswerWire, NeedsYou};
 
 fn settled(view: &AnswerWire) -> bool {
     matches!(

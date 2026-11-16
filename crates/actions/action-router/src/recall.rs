@@ -6,16 +6,16 @@
 use crate::history::{without_failed_lines, without_failed_steps};
 use crate::router::Router;
 use crate::seams::Seams;
-use memory_core::{
-    BodyMode, Episode, FactFilter, FactQuery, KindPattern, MemoryReply, MemoryRequest, RecentEntry,
-    RecentQuery, SpaceState, TrustFilter,
-};
+use account_ids::Count;
 use action_context::handles::HandleValue;
 use action_context::labels::absorb;
 use action_core::MemoryLink;
 use action_core::{EpisodeLine, PrimerText, ProfileLine, RecalledLine, Reveal, SkeletonText};
 use action_wire::{IntentsReply, RecallAsk, RecallView, RecentLine, WireRefusal};
-use account_ids::Count;
+use memory_core::{
+    BodyMode, Episode, FactFilter, FactQuery, KindPattern, MemoryReply, MemoryRequest, RecentEntry,
+    RecentQuery, SpaceState, TrustFilter,
+};
 use provenance::{Actor, Integrity, Label, Labelled, SessionId, Source, SpaceId};
 use std::collections::BTreeSet;
 

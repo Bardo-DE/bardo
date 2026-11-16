@@ -7,13 +7,13 @@ pub mod host;
 #[path = "../../../../companion-daemon/tests/it/support/infer.rs"]
 pub mod infer;
 
+use account_ids::Count;
 use action_core::{
     ConfirmId, ConfirmRequest, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
 };
 use action_host::ConfirmSheet;
 use action_provider::ContextSource;
 use agent_session::SheetChoice;
-use account_ids::Count;
 use provenance::Labelled;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
@@ -73,9 +73,9 @@ impl ContextSource for Nowhere {
 /// Standing consent: the companion may use Mail in the `work` Space, always (what the person gave
 /// on an earlier day), so a policy-covered call is left to the reviewer and not asked on the sheet.
 pub fn standing_mail_consent() -> agent_inapp::SessionGrants {
-    use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
     use account_core::consent::{Decision, Grant, GrantScope, Usage};
     use account_core::{AppName, DataClass, GrantId};
+    use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
     use provenance::{SpaceId, SpaceScope, UnixSeconds};
     let grants = [DataClass::Mail, DataClass::Contacts]
         .into_iter()

@@ -1,14 +1,14 @@
 //! Every wire type survives JSON; the forms are pinned; the status holds no content.
 
-use action_vocab::UtteranceId;
-use action_wire::VoiceIntent;
 use account_capability::LanguageTag;
 use account_capability::{Locality, ModelId};
 use account_core::{AccountId, AppName, DataClass, SpaceId};
 use account_ids::{Permille, UnixSeconds};
+use action_vocab::UtteranceId;
+use action_wire::VoiceIntent;
+use agent_voice_wire::*;
 use inference_core::{InferRefusal, ModelError, Readiness, ServedBy};
 use serde::{Serialize, de::DeserializeOwned};
-use agent_voice_wire::*;
 
 fn round<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(v: &T) -> String {
     let json = serde_json::to_string(v).expect("json");

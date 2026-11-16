@@ -2,12 +2,12 @@
 //! talk to the thread.
 
 use crate::daemon::socket::SeatFile;
-use service_locator::guard::{Held, Origin, Vouch};
-use mouse_gestures_proto::{self as protocol, ToDaemon, ToHost};
-use caller_identity_linux::Pinned;
 use caller_identity_core::{Pid, Pin, Uid};
+use caller_identity_linux::Pinned;
+use mouse_gestures_proto::{self as protocol, ToDaemon, ToHost};
 use rustix::fd::OwnedFd;
 use rustix::net::{AddressFamily, RecvFlags, SendFlags, SocketAddrUnix, SocketType};
+use service_locator::guard::{Held, Origin, Vouch};
 use std::collections::VecDeque;
 use std::path::Path;
 use std::sync::{Arc, Mutex};

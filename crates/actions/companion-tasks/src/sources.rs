@@ -8,19 +8,19 @@ use crate::memory::{episodes_of, hits_of, primer_of, profile_of};
 use crate::runtime::Companion;
 use crate::seams::Surface;
 use crate::task::TaskRuntime;
-use agent_loop::Sources;
-use memory_core::{BodyMode, InjectQuery, RecallOver, RecentQuery, TrustFilter, UserText};
+use account_ids::{Count, UnixSeconds};
 use action_client::Transport as IntentsTransport;
 use action_core::{
     ActionCard, ContextView, EntityLine, EpisodeLine, HereView, PrimerText, ProfileLine,
     RecalledLine, Reveal, SelectionView, SkillCard, SkillText, TextTargetView, VisibleView,
 };
-use permission_core::SKILL_LOAD;
-use permission_core::offered_to;
+use action_vocab::Clock;
+use agent_loop::Sources;
 use agent_planner::Planner;
 use agent_skills::{BODY_BUDGET_BYTES, Situation, Skill, preselect, uses_first};
-use action_vocab::Clock;
-use account_ids::{Count, UnixSeconds};
+use memory_core::{BodyMode, InjectQuery, RecallOver, RecentQuery, TrustFilter, UserText};
+use permission_core::SKILL_LOAD;
+use permission_core::offered_to;
 use provenance::TaskId;
 
 /// How many hits the automatic recall asks for before the token budget cuts them.

@@ -3,9 +3,9 @@
 //! (I7). Hidden from sandboxed clients themselves.
 
 use crate::states::GlobalFilter;
+use account_core::{PeerIdentity, SandboxFacts};
 use compositor_core::Event;
 use compositor_core::policy::GlobalKind;
-use account_core::{PeerIdentity, SandboxFacts};
 use smithay::reexports::wayland_protocols::wp::security_context::v1::server::{
     wp_security_context_manager_v1::WpSecurityContextManagerV1,
     wp_security_context_v1::WpSecurityContextV1,

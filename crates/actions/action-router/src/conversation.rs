@@ -4,12 +4,12 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use companion_model::helper::{HelperSeat, SeatPlace};
+use account_ids::Count;
 use action_context::session::SessionState;
-use agent_session::{PageSize, Read, SessionEntry, SessionLog, Standing};
 use action_vocab::CallerRole;
 use action_wire::{IntentsReply, SessionOpen, SessionOpened};
-use account_ids::Count;
+use agent_session::{PageSize, Read, SessionEntry, SessionLog, Standing};
+use companion_model::helper::{HelperSeat, SeatPlace};
 use provenance::{HelperId, SessionId};
 
 /// Rows read from the head of a log to find its seat: the opening, then the seat.

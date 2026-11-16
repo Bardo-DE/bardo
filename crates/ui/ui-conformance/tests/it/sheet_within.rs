@@ -4,14 +4,14 @@
 //! named by its element or by its rect.
 
 use dioxus::prelude::*;
+use std::cell::{Cell, RefCell};
+use std::time::Duration;
 use ui_components::base::geometry::units::{Point, Px, Rect, Size};
 use ui_components::components::overlays::sheet_attach::Attach;
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::host::measure::{Anchor, use_rect};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::cell::{Cell, RefCell};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 1280,

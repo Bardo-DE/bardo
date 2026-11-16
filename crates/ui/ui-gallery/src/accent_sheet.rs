@@ -11,12 +11,12 @@ use crate::error::GalleryError;
 use crate::progress_copy::ProgressCopy;
 use crate::style;
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Harness, Viewport};
 use image::{RgbaImage, imageops};
 use std::cell::Cell;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Harness, Viewport};
 
 /// A column's width in logical pixels.
 const WIDTH: u32 = 380;

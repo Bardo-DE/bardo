@@ -1,5 +1,5 @@
 //! The Wi-Fi pane: the switch, the networks in range, and joining, signing in to, and forgetting
-//! one. The steps are `detent-model`'s `wifi_step`; this carries out what they ask over the link.
+//! one. The steps are `settings-app-model`'s `wifi_step`; this carries out what they ask over the link.
 
 use crate::live::Live;
 use crate::notice::Notice;

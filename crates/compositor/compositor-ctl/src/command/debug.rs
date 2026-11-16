@@ -14,7 +14,7 @@ const REFUSED: u8 = 1;
 /// Makes `call` and prints what it answered: exit 0 on success, 1 on a timed-out wait or a
 /// refused call. An `inject` that names no lines streams stdin: each line is sent and answered
 /// before the next is read, so a script can feed it through a fifo that never closes, as
-/// shell-host's fake-input.sh is fed.
+/// layer-shell-host's fake-input.sh is fed.
 pub fn run_call(call: Call) -> u8 {
     let runtime = match tokio::runtime::Builder::new_current_thread()
         .enable_all()

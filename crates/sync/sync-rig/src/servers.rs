@@ -1,10 +1,9 @@
-//! Starting the fakes: the OAuth issuer, with the tokens `porter-rig` plants in it, and the
+//! Starting the fakes: the OAuth issuer, with the tokens `account-rig` plants in it, and the
 //! Graph fake that accepts the tokens the issuer minted. Both listen on `127.0.0.1` on an
 //! ephemeral port (the OS gives ports from 32768 up, never below 1024), and everything of the rig
 //! lives in one scratch directory.
 
 use crate::rigfile::RigFile;
-use sync_fake_graph::{FakeGraph, GraphHandle};
 use account_fake_servers::{FakeIssuer, IssuerHandle, Running};
 use account_rig::planted::{
     ALL, MAIL_USER, OAUTH_ACCESS_TOKEN, OAUTH_CLIENT, OAUTH_REFRESH_TOKEN, OAUTH_SCOPE,
@@ -12,6 +11,7 @@ use account_rig::planted::{
 use account_rig::rigfile::{HttpAt, OauthAt};
 use std::io;
 use std::path::{Path, PathBuf};
+use sync_fake_graph::{FakeGraph, GraphHandle};
 
 /// How the fakes are started.
 #[derive(Debug, Clone, PartialEq, Eq)]

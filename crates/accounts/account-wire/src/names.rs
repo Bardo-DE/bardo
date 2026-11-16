@@ -1,6 +1,6 @@
 //! accountd's and the sheet host's bus names and object paths: the addresses an app, a shell or a
 //! test needs to find the daemon or its settings module. Plain strings; the interfaces are
-//! `porter-dbus`'s.
+//! `account-dbus`'s.
 
 /// accountd's bus name.
 pub const ACCOUNTS_BUS: &str = "org.quire.Accounts1";

@@ -1,15 +1,15 @@
 //! The shipped warmer asks `Transport::prepare` for the speech-to-text need and maps its outcomes.
 
 use crate::support::infer::{Opened, ScriptedInfer};
-use inference_client::TransportError;
 use account_capability::SpeechMode;
 use account_capability::Tier;
 use account_core::DataClass;
-use inference_core::Readiness;
 use account_match::Need;
 use account_match::SpeechNeed;
-use std::collections::BTreeSet;
 use agent_voice_daemon::{TransportWarm, Warm};
+use inference_client::TransportError;
+use inference_core::Readiness;
+use std::collections::BTreeSet;
 
 async fn warm_with(answer: Option<Result<Readiness, TransportError>>) -> (Readiness, Vec<Opened>) {
     let infer = match answer {

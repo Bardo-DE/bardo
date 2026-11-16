@@ -8,10 +8,10 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
+use layer_shell_host::{BlurSpec, RegionSpec, SurfaceHandle, use_watch};
 use ui_components::base::time::FRAME_SLACK;
 use ui_components::base::time::clock::sleep;
 use ui_components::prelude::*;
-use layer_shell_host::{BlurSpec, RegionSpec, SurfaceHandle, use_watch};
 
 use crate::launcher::hit::{ActionsShown, blur_region, hit_for, panel_input};
 use shell_ui_kit::links::PanelHit;

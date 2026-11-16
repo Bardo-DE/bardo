@@ -3,10 +3,10 @@
 
 use std::collections::HashMap;
 
-use ui_components::base::selection::{Pick, PickHow, RowSelection};
-use ui_components::components::lists::table::model::SortDirection;
 use files_core::{FileName, Location, SortKey, SortOrder};
 use files_model::{Browser, Input, Modifier};
+use ui_components::base::selection::{Pick, PickHow, RowSelection};
+use ui_components::components::lists::table::model::SortDirection;
 
 use crate::words;
 

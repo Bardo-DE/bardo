@@ -8,13 +8,13 @@ use crate::support::golden;
 use crate::support::hygiene;
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::voice_orb::model::{OrbColour, OrbColours};
 use ui_components::components::content::voice_orb::view::VoiceOrb;
 use ui_components::prelude::*;
 use ui_lint::LintConfig;
 use ui_style::tokens::hex::Hex;
-use std::time::Duration;
 
 fn root(body: Element) -> Element {
     rsx! {

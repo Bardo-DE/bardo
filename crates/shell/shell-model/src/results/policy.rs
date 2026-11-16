@@ -5,9 +5,9 @@
 
 use std::time::Duration;
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
 use shell_launcher::SkinTone;
+use ui_core::word::Word;
 
 /// Currency conversion in the calculator (`launcher.currency`). Off: no rates are fetched and
 /// currency units are not offered.

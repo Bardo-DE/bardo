@@ -12,8 +12,8 @@ use compositor_core::time::Mono;
 use compositor_core::window::FrameHint;
 use compositor_core::{OutputKey, WindowId};
 use desktop_protocols::vocab::{Emphasis, FrameMode};
-use ui_core::vocab::Fraction;
 use std::collections::BTreeMap;
+use ui_core::vocab::Fraction;
 
 /// Each window's committed buffer size: until a client commits its new size, the frame scales
 /// the old buffer over the moving rectangle. A window with no entry is taken to have committed

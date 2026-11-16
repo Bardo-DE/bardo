@@ -2,9 +2,9 @@
 //! disclosure its model and, for a cloud account, "Ask me each time".
 
 use crate::key_row::row_id;
+use dioxus::prelude::*;
 use settings_app_model::ModelOffer;
 use settings_app_model::external::ModelChoice;
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::disclosure::Disclosure;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};

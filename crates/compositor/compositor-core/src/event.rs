@@ -20,10 +20,10 @@ use crate::time::TimerKey;
 use crate::window::{
     A11yRoot, FrameHint, SizeLimits, WindowOrigin, WindowTitle, WlrToplevelRequest,
 };
+use account_core::{ClaimedId, PeerIdentity};
 use desktop_protocols::vocab::{
     Answer, AskId, Edited, Modality, PlaceTarget, Power, Toggle, TrialAnswer, TrialId, WindowRole,
 };
-use account_core::{ClaimedId, PeerIdentity};
 
 /// Something that happened, as the edge (a protocol handler, the backend, the clock) reports
 /// it.

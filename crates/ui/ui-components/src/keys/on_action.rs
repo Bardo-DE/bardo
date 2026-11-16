@@ -1,8 +1,8 @@
 //! A key handler that speaks actions: the one line an app puts on a surface.
 
 use super::handle::Keys;
-use keymap::{Action, Context};
 use dioxus::prelude::KeyboardEvent;
+use keymap::{Action, Context};
 
 /// An `onkeydown` handler that resolves each key in `context` and hands the action to `handle`.
 /// `handle` answers whether the app took the action: only a taken action consumes the key event;

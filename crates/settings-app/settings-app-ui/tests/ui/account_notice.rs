@@ -6,9 +6,9 @@ use crate::support::accountd::{Accountd, Held};
 use crate::support::drive::page_of;
 use settings_app_model::{AccountSegment, AccountTarget, Notice, PageSlug};
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_harness::Harness;
 use ui_settings::live::Verdict;
-use std::time::Duration;
 
 fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
     // The fake daemons answer on real threads; a loaded machine running every test at once can

@@ -15,7 +15,7 @@ use crate::region::RegionSpec;
 /// Everything `HostCtx::spawn_layer` needs besides the root component.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LayerConfig {
-    /// The layer-shell namespace (`sill-bar`, `sill-dock`); compositors key rules on it, and the
+    /// The layer-shell namespace (`shell-bar`, `shell-dock`); compositors key rules on it, and the
     /// debug commands address the surface by it.
     pub namespace: String,
     pub layer: LayerLevel,
@@ -106,7 +106,7 @@ pub enum ExclusiveZone {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum KeyboardMode {
     /// Never (bar, dock). A grabbing popup opened from such a surface switches it to `OnDemand`
-    /// until the popup closes (plan: shell-host input rule; design/13 §13.3.8), except on KWin,
+    /// until the popup closes (plan: layer-shell-host input rule; design/13 §13.3.8), except on KWin,
     /// which focuses the popup itself (`popup_keyboard`).
     None,
     /// Takes all keyboard input while mapped (launcher, switcher).

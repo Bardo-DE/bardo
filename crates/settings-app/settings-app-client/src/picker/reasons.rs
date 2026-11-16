@@ -1,7 +1,7 @@
 //! Where the reason footer's events come from.
 
-use settings_app_model::Reason;
 use inference_core::InferEvent;
+use settings_app_model::Reason;
 use std::fmt;
 use std::sync::{Arc, Mutex, PoisonError};
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};

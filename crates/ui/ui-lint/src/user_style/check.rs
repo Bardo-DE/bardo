@@ -5,8 +5,8 @@ use super::note::{UserStyleNote, UserStyleNoteKind};
 use crate::kind;
 use crate::selector::attribute_name;
 use crate::tokenize::Located;
-use ui_style::kit::KnownNames;
 use std::collections::HashSet;
+use ui_style::kit::KnownNames;
 
 /// URL schemes that stay on the machine.
 const LOCAL_SCHEMES: &[&str] = &["file:", "data:"];

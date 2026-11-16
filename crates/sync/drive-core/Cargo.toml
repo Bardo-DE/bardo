@@ -1,6 +1,6 @@
 [package]
 name = "drive-core"
-description = "Files on demand over a drive's listing, without a file system: the names a drive's items are shown by, the link files of online documents, the content cache (chunked fetches a read waits on, Keep Downloaded, Remove Download, eviction past a limit) and each item's state. The FUSE adapter (ferry-drive-fuse) and syncd's Storage1 are built over it."
+description = "Files on demand over a drive's listing, without a file system: the names a drive's items are shown by, the link files of online documents, the content cache (chunked fetches a read waits on, Keep Downloaded, Remove Download, eviction past a limit) and each item's state. The FUSE adapter (drive-fuse) and syncd's Storage1 are built over it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

@@ -31,7 +31,6 @@ pub use actions::{ActionLink, ActionSent, Asked, Origin};
 pub use banners::{BannerLink, BannerOutput, KeyEvent, KeyWhat, Transient};
 pub use control_center::{ControlCenterAsk, ControlCenterLink};
 pub use display_trial::{DisplayTrialLink, TrialAnswered, TrialReply, TrialRun, TrialSerial};
-pub use ui_behaviour::Dir;
 pub use edge::{EdgeFeed, EdgeLink, EdgeState, FullScreens, RevealEdge};
 pub use empty_trash::{
     EmptyTrashAnswered, EmptyTrashLink, EmptyTrashOpening, EmptyTrashShown, EmptyTrashYes,
@@ -59,6 +58,7 @@ pub use split_picker::{
     OfferSerial, SplitAnswer, SplitAnswered, SplitOffer, SplitPickerLink, SplitReply,
 };
 pub use switcher::{AskSerial, Asks, SwitcherAsk, SwitcherAsked, SwitcherLink};
+pub use ui_behaviour::Dir;
 pub use window_menu::{
     MenuSerial, WindowMenuLink, WindowMenuOpening, WindowMenuPick, WindowMenuPicked,
 };

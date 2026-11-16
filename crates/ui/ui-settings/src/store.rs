@@ -11,9 +11,9 @@ use crate::lenient::{FileText, Loaded, Read, SETTINGS_CAP, file_text, read, read
 use crate::preserve;
 use crate::root::{AppName, ConfigRoot};
 use crate::watch::Watch;
+use std::path::PathBuf;
 use ui_core::spawner::Spawner;
 use ui_helpers::{NewFileMode, UpdateError, update_atomic, write_atomic};
-use std::path::PathBuf;
 
 /// One program's settings directory.
 #[derive(Debug, Clone, PartialEq, Eq)]

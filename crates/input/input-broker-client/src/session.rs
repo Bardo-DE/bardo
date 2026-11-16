@@ -1,8 +1,8 @@
 //! The seam palmrest and keycap code against.
 
 use crate::error::ClientError;
-use std::os::fd::OwnedFd;
 use input_broker_wire::{Create, DeviceId, Event, Reason};
+use std::os::fd::OwnedFd;
 
 /// A device the service made.
 #[derive(Debug)]

@@ -6,15 +6,15 @@
 use super::agent::{AGENT_SESSION, Act, Auth, Offer, Resumes, View, agent_resuming, say};
 use super::rig::{CWD, Setup, opening, program, wired_over};
 use super::world::{Fakes, TheCourt};
-use companion_model::helper::HandFault;
-use companion_model::{AppSessionId, WatchedAgent};
-use agent_acp_host::fake::{FakeFiles, FakeSpawn};
-use agent_acp_host::{AcpBackend, AgentEnd, AgentHost, HelperAgent, Hosts, Parts, Start};
 use action_client::{InProcess, Intents};
 use action_host::EditorDesk;
-use agent_session::Opening;
 use action_vocab::CallerRole;
 use action_wire::CallerId;
+use agent_acp_host::fake::{FakeFiles, FakeSpawn};
+use agent_acp_host::{AcpBackend, AgentEnd, AgentHost, HelperAgent, Hosts, Parts, Start};
+use agent_session::Opening;
+use companion_model::helper::HandFault;
+use companion_model::{AppSessionId, WatchedAgent};
 use provenance::{SessionId, UnixSeconds};
 use std::collections::{BTreeSet, VecDeque};
 

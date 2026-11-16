@@ -5,8 +5,8 @@
 
 use crate::clipboard::ClipboardFiles;
 use blitz_traits::shell::{ClipboardError, ShellProvider};
-use ui_components::prelude::*;
 use std::sync::{Mutex, PoisonError};
+use ui_components::prelude::*;
 
 /// A shell whose clipboard and IME state are in memory.
 #[derive(Debug)]

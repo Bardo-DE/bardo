@@ -1,11 +1,13 @@
 //! What the masking, digest and settling functions must do.
 
-use computer_use_action::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace};
-use computer_use_desktop::{Ms, Stamp};
+use computer_use_action::{
+    Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
+};
 use computer_use_capture::{
     DamageAt, DamageSource, MaskReason, MaskRegion, PixelBuf, Settle, apply_masks, digest,
     pixel_diff, settle,
 };
+use computer_use_desktop::{Ms, Stamp};
 use std::sync::Arc;
 
 /// A `w` by `h` buffer of opaque white pixels (4 bytes each, no row padding).

@@ -3,9 +3,9 @@
 
 use super::picture::UserPicture;
 use crate::emoji::id::EmojiId;
+use serde::{Deserialize, Serialize};
 use ui_components::components::content::avatar::AvatarFace;
 use ui_components::components::content::image_source::ImageSource;
-use serde::{Deserialize, Serialize};
 
 /// Which kind of picture the user chose. Stored adjacently tagged (`{"kind":"emoji","v":
 /// "heart-eyes"}`); an emoji is stored by its stable slug, so reordering the set keeps it.

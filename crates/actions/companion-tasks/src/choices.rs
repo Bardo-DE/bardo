@@ -8,9 +8,9 @@ use crate::runtime::Companion;
 use crate::seams::Surface;
 use action_client::Transport as IntentsTransport;
 use action_core::{PlannerView, SuggestAsk};
+use action_vocab::{Clock, ParamType};
 use agent_planner::ParamChoices;
 use agent_planner::Planner;
-use action_vocab::{Clock, ParamType};
 use std::time::Duration;
 
 /// How long an app has to offer its options: the turn is waiting on it.

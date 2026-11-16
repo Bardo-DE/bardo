@@ -18,16 +18,16 @@ use crate::addr::{Root, item_path, literal};
 use crate::json::{Change as Wire, ChangeList, File, FileList, StartToken};
 use crate::refuse::read_error;
 use crate::replica::GdriveReplica;
+use account_http::http::header::CONTENT_TYPE;
+use account_http::http::{Method, Response};
+use account_http::{Http, request};
+use account_ids::{Bytes, UnixSeconds, WebUrl};
 use sync_core::DELETED;
 use sync_core::status::unreached;
 use sync_core::{
     Anchor, Change, ChangePage, Cursor, Folder, ItemKind, ItemPath, More, RemoteId, RemoteItem,
     RemoteVersion, ReplicaError, RetryAfter, Tombstone,
 };
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Response};
-use account_http::{Http, request};
-use account_ids::{Bytes, UnixSeconds, WebUrl};
 
 /// How many folders a path may have above a file before the walk gives up.
 const DEPTH: usize = 64;

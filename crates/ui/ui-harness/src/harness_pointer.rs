@@ -8,10 +8,10 @@ use crate::input::{KeyInput, PointerAction, PointerInput, RawKeyInput, RawKeyPha
 use blitz_embed::scroll::driver::KeyRepeat;
 use blitz_embed::scroll::keys::scroll_key;
 use blitz_traits::events::{BlitzKeyEvent, KeyState, MouseEventButton, UiEvent};
+use keyboard_types::{Location, Modifiers};
 use ui_components::prelude::*;
 use ui_core::press::PointerButton;
 use ui_core::time::clock::now;
-use keyboard_types::{Location, Modifiers};
 
 impl Harness {
     /// Deliver one pointer input.

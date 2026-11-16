@@ -27,7 +27,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 tmpdir: Some(dir.clone()),
                 local_app_data: Some(dir),
                 user: Some("demo".to_owned()),
-                ..latchkey::Environment::default()
+                ..service_locator::Environment::default()
             },
         )?,
         None => service_locator::Agent::new(&name)?,

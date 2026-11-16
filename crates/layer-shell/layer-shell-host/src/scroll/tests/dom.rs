@@ -393,7 +393,7 @@ fn a_wheel_detent_over_the_list_moves_it_60_px() {
     assert_eq!(bench.offset(Scroller::Viewport), 0.0);
 }
 
-/// Shapes of focus that must keep their keys, and ones that must scroll: a ds-style menu
+/// Shapes of focus that must keep their keys, and ones that must scroll: a ui-style menu
 /// (`role="menu"` with `onkeydown`) inside a scroller; sill's notification column (a focused
 /// scroller with its own `onkeydown`); sill's power menu (a focused root with `onkeydown` over
 /// a banded sheet); a focusable scroller with no listener; and a wheel-reading element that is

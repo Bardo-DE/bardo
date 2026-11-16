@@ -5,10 +5,10 @@ use crate::support::*;
 use action_context::handles::HandleValue;
 use action_context::tasks::TaskState;
 use action_core::*;
-use permission_core::{COMPANION_APP, PolicyChange, compare};
 use action_router::Router;
 use action_vocab::{Args, CallId, ChoiceId, Handle, Origin, TargetValue, Value};
 use action_wire::{IntentsReply, IntentsRequest};
+use permission_core::{COMPANION_APP, PolicyChange, compare};
 use provenance::{
     Actor, AgentRef, AgentRole, EntityId, EntityKey, EntityKind, Labelled, MessageKind, SessionId,
 };

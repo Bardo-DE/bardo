@@ -1,10 +1,10 @@
 //! The Quire state as the shell's [`DesktopView`]: apps from `quire_desktop_app_v1`, windows
 //! joined to their ext toplevels, Spaces in order, and what is active.
 
-use desktop_protocols::vocab::ProofKind;
+use account_core::SpaceId;
 use desktop_client::DesktopState;
 use desktop_client::quire::{Quire, QuireApp, QuireSpace, QuireWindow, SpacePlace};
-use account_core::SpaceId;
+use desktop_protocols::vocab::ProofKind;
 use shell_model::desktop::{
     ActiveView, AppView, DesktopView, SpacePlaceView, SpaceView, WindowView,
 };

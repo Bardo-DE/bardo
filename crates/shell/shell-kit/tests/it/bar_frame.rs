@@ -7,6 +7,10 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use probe::{distance, keep, modal, pixels, rect};
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::base::geometry::placement::Align;
 use ui_components::base::geometry::placement::Side;
 use ui_components::components::controls::button_model::ImagePosition;
@@ -20,10 +24,6 @@ use ui_components::style::tokens::easing::EasingToken;
 use ui_components::style::tokens::hex::Hex;
 use ui_components::style::tokens::timing::DurationToken;
 use ui_harness::{Backdrop, Clock, Harness, HarnessConfig, Input, Viewport};
-use image::RgbaImage;
-use probe::{distance, keep, modal, pixels, rect};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const BAR_VIEW: Viewport = Viewport {
     width: 400,

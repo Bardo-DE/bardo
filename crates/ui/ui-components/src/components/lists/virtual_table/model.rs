@@ -4,8 +4,8 @@ use crate::components::lists::list::keys::{ListKey, list_key};
 use crate::components::lists::virtual_list::model::roved;
 use crate::components::lists::virtual_table::outline::{ToggleReach, reach_of};
 use crate::stack::roving::{Rove, Step};
-use keymap::Platform;
 use dioxus::prelude::{Key, Modifiers};
+use keymap::Platform;
 use ui_core::command::holds_primary;
 use ui_core::selection::PickHow;
 
@@ -109,8 +109,8 @@ pub(crate) fn page_rows(height: f32, pitch: f32) -> usize {
 mod tests {
     use super::{TableKey, ToggleReach, held_columns, key_how, page_rows, table_key, target};
     use crate::stack::roving::{Edge, Rove, Step};
-    use keymap::Platform;
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::Platform;
     use ui_core::selection::PickHow;
 
     #[test]

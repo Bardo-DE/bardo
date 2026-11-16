@@ -4,9 +4,9 @@
 use super::agent::{Act, bridge_list};
 use super::edge::{offer, reached, thread, with_mail};
 use super::rig::{Rig, program, run_turn};
+use action_vocab::LabelText;
 use agent_acp_host::{EdgeMenu, ToolsEdge};
 use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
-use action_vocab::LabelText;
 use provenance::{Effect, SessionId, SpaceId, TaskId, UnixSeconds};
 use serde_json::{Value, json};
 

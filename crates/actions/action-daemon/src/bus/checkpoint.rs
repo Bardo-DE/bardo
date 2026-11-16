@@ -1,11 +1,11 @@
 //! `Checkpoint`: a session's restore points and what restoring one changes.
 
 use super::{Gateway, json, parsed};
-use companion_model::WatchedAgent;
 use action_core::CheckpointId;
 use action_dbus::IntentsError;
 use action_vocab::{TurnId, Workspace};
 use action_wire::{IntentsReply, IntentsRequest};
+use companion_model::WatchedAgent;
 use provenance::SessionId;
 use zbus::message::Header;
 

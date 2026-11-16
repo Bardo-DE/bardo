@@ -5,11 +5,11 @@
 use crate::clients::{self, Room, Vetting, accept, insert_client};
 use crate::core_loop;
 use crate::state::State;
+use account_core::{CgroupPath, PeerFacts, PeerIdentity, SandboxFacts, identity_of};
 use compositor_core::policy::ConnectionRole;
 use compositor_ipc::dbus::peer::Alive;
 use compositor_wayland::ClientState;
 use compositor_wayland::security_context::{Maker, identity_for_clients, on_create_listener};
-use account_core::{CgroupPath, PeerFacts, PeerIdentity, SandboxFacts, identity_of};
 use rustix::net::sockopt::socket_peercred;
 use smithay::wayland::security_context::{
     SecurityContext, SecurityContextHandler, SecurityContextListenerSource,

@@ -14,8 +14,8 @@ use crate::host::document::use_document_host;
 use crate::host::focused::Focused;
 use crate::host::measure::BUSY_ATTEMPTS;
 use dioxus::prelude::*;
-use ui_style::busy::wait_out_busy;
 use std::rc::Rc;
+use ui_style::busy::wait_out_busy;
 
 /// How many tries an owed caret waits for the field's first layout: a few frames, not forever.
 const LAYOUT_ATTEMPTS: usize = 40;

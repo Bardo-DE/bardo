@@ -2,16 +2,16 @@
 
 use crate::support::infer::{Opened, ScriptedInfer};
 use crate::support::*;
-use action_wire::VoiceIntent;
-use futures_util::{FutureExt, StreamExt};
 use account_capability::SpeechMode;
 use account_core::DataClass;
-use inference_core::{ClientFrame, InferRequest};
 use account_match::Need;
 use account_match::SpeechNeed;
-use std::collections::BTreeSet;
-use agent_voice_wire::{SpeechEnd, VoiceEvent, VoiceRefusal};
+use action_wire::VoiceIntent;
 use agent_voice_daemon::{SpeechProxy, VoiceProxy};
+use agent_voice_wire::{SpeechEnd, VoiceEvent, VoiceRefusal};
+use futures_util::{FutureExt, StreamExt};
+use inference_core::{ClientFrame, InferRequest};
+use std::collections::BTreeSet;
 
 fn tts_need() -> Need {
     Need::Speech(SpeechNeed::new(BTreeSet::from([SpeechMode::Tts])))
@@ -145,7 +145,8 @@ async fn a_begin_barges_in_on_speech_first() {
         SpeechEnd::BargedIn
     );
     assert_eq!(events.next().await, Some(VoiceEvent::Opened));
-    eventually(|| *world.hand.log.faded.lock().expect("faded") == [agent_voice_loop::FADE_MS]).await;
+    eventually(|| *world.hand.log.faded.lock().expect("faded") == [agent_voice_loop::FADE_MS])
+        .await;
     assert!(
         world.seen.frames_of(0).contains(&ClientFrame::Cancel),
         "synthesis was cancelled"
@@ -227,7 +228,10 @@ async fn synthesis_refused_ends_the_speech_failed() {
         .expect("speak");
     let end = speech_end_of(&next_text(&mut finished).await);
     assert!(
-        matches!(end, SpeechEnd::Failed(agent_voice_wire::VoiceFault::Refused(_))),
+        matches!(
+            end,
+            SpeechEnd::Failed(agent_voice_wire::VoiceFault::Refused(_))
+        ),
         "{end:?}"
     );
     let status = status_of(&world.voice.status().await.expect("status"));

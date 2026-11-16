@@ -1,10 +1,10 @@
 use super::*;
 use crate::step::{Effect, Input, RelayEnd, Relaying, Side};
 use crate::testing::{bytewise, sent, whole};
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD;
 use account_capability::CapabilityKind;
 use account_core::{EndpointUrl, Family, LoginName, RelayPlan, SecretText, ServiceEndpoint, Tls};
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 
 fn caps(lines: &[&str]) -> Vec<String> {
     lines.iter().map(|l| (*l).to_owned()).collect()

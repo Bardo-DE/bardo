@@ -2,9 +2,9 @@
 
 use crate::config::convert;
 use compositor_core::settings::{CasementSettings, FirstClick, MinimiseEffect, TitleDoubleClick};
+use serde::{Deserialize, Serialize};
 use ui_settings::Ms;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// `windows.*`: window management.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]

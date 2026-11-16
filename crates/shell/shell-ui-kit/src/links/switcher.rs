@@ -3,10 +3,10 @@
 //! asks, and kept so that a second Tab arriving before the surface has read the first is still
 //! a second step. Every output's switcher surface follows it and acts on asks for its own output.
 
-use ui_behaviour::Dir;
 use layer_shell_host::{KeyboardFocus, OutputId};
 use shell_launcher::AppId;
 use tokio::sync::watch;
+use ui_behaviour::Dir;
 
 use super::Shared;
 

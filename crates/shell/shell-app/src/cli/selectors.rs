@@ -5,9 +5,9 @@
 use std::io;
 use std::path::{Path, PathBuf};
 
+use shell_settings::APP;
 use ui_components::selectors::{AppSelectors, ComponentSelectors};
 use ui_settings::PublishedParts;
-use shell_settings::APP;
 
 /// The parts of the shell a stylesheet may name.
 pub const SILL_SELECTORS: AppSelectors = AppSelectors {

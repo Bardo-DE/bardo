@@ -6,24 +6,24 @@
 //!
 //! [`BannerLink`]: shell_ui_kit::links::BannerLink
 
-use ui_components::base::time::clock::sleep;
 use std::collections::BTreeMap;
 use std::time::Duration;
+use ui_components::base::time::clock::sleep;
 
 use dioxus::core::{Runtime, ScopeId, Task, current_scope_id};
 use dioxus::prelude::*;
-use ui_components::base::time::FRAME_SLACK;
-use ui_components::base::time::stamp::Stamp;
-use ui_components::focus::select::Select;
-use ui_components::focus::selector::{FocusError, focus_by_selector};
-use ui_components::prelude::*;
 use layer_shell_host::{KeyboardMode, SurfaceHandle};
+use shell_kit::notifications::parts::Hover;
 use shell_model::notifications::{
     ActionKey, Activation, ActivationToken, LiveBanner, Notification, NotificationId,
     NotificationsCommand,
 };
 use shell_services::Control;
-use shell_kit::notifications::parts::Hover;
+use ui_components::base::time::FRAME_SLACK;
+use ui_components::base::time::stamp::Stamp;
+use ui_components::focus::select::Select;
+use ui_components::focus::selector::{FocusError, focus_by_selector};
+use ui_components::prelude::*;
 
 use super::commands::action_command;
 use super::deck::{Deck, DeckIn, DeckOut, EntryKey, advance};
@@ -31,9 +31,9 @@ use super::deck_keys::KeysIn;
 use super::stack::Card;
 use super::step::{BannerIn, BannerParams};
 use crate::keyboard::seat_on_keyboard;
-use ui_components::base::time::stamp::FrameClock;
 use shell_ui_kit::links::{BannerLink, Transient};
 use shell_ui_kit::notification_card::{CardPart, CardPress, part_id};
+use ui_components::base::time::stamp::FrameClock;
 
 /// Everything the column's handlers share. Copy: signals and cells only.
 #[derive(Clone, Copy)]

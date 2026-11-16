@@ -1,9 +1,9 @@
 //! A list of tables: a line per row with a cell per column, a Remove button on each, and a line
 //! to add one. An edit that does not fit its column is not stored.
 
+use dioxus::prelude::*;
 use settings_app_model::external::toml;
 use settings_app_model::{Columns, humanize};
-use dioxus::prelude::*;
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;

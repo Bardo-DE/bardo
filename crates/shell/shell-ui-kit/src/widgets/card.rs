@@ -2,10 +2,10 @@
 //! provider's feed on quire's card, and the one match on the kind ([`with_provider`]).
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use shell_kit::prelude::*;
 use shell_kit::widget::timeline::Timeline;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
 
 use super::{
     CenterWidget, SIZE, calendar::CalendarProvider, up_next::UpNextProvider, use_widget_wake,

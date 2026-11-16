@@ -1,8 +1,8 @@
 //! What a key means to a pane stack, pure: the keys that go back one page.
 
 use crate::keys::pane_back_action;
-use keymap::{Action, Context, Keymap};
 use dioxus::prelude::{Key, Modifiers};
+use keymap::{Action, Context, Keymap};
 use ui_core::command::resolve;
 
 /// Whether `key` with `modifiers` asks to go back under `keymap`: Escape, Alt+Left, and the
@@ -21,8 +21,8 @@ pub(crate) fn goes_back(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> boo
 #[cfg(test)]
 mod tests {
     use super::goes_back;
-    use keymap::{AppAction, AppId, Desktop, Keymap, Platform};
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::{AppAction, AppId, Desktop, Keymap, Platform};
 
     fn registered(platform: Platform) -> Keymap {
         let mut keymap = Keymap::conventional(platform);

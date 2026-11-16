@@ -4,11 +4,11 @@
 //! changes; with no `least_rest`, the pane keeps its width as before.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::chrome::split_view::model::{PaneSpec, SplitPane};
 use ui_components::components::chrome::split_view::view::SplitView;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 /// The least the content beside the sidebar is drawn at.
 const LEAST_REST: f32 = 400.0;

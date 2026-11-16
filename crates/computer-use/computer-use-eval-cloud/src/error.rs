@@ -1,14 +1,14 @@
 //! Why the `cua-eval-cloud` program stops: a flag it cannot use, or a step of the set-up or the run
 //! that failed. The binary prints the error and exits with status 2.
 
+use account_capability::Tier;
+use account_ids::IdError;
 use computer_use_eval::corpus::CorpusError;
 use computer_use_eval::flags::FlagError;
 use computer_use_eval::live::LiveError;
 use computer_use_eval::run::SetupError;
 use inference_client::TransportError;
 use model_catalog::CatalogError;
-use account_capability::Tier;
-use account_ids::IdError;
 use std::path::PathBuf;
 
 /// A command-line flag that cannot be used.

@@ -6,10 +6,10 @@ use crate::support::drive::{click, page_of, search_for, segment, sidebar_page, t
 use settings_app_files::load;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_components::prelude::Word;
 use ui_components::prelude::{Point, Px};
 use ui_harness::Input;
-use std::time::Duration;
 
 mod controls;
 mod pages;

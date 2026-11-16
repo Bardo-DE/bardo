@@ -1,9 +1,9 @@
 //! `$XDG_CONFIG_HOME/quire/companiond.toml`: which bus name speaks for the person, which Spaces a
 //! restart reads, and the proposed values. Every key is optional.
 
+use account_core::AppName;
 use action_core::AgentConfig;
 use action_settings::{AgentSettings, Locator};
-use account_core::AppName;
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

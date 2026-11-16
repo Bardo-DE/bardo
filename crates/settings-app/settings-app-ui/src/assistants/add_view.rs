@@ -1,8 +1,8 @@
 //! The coding assistants' Add sheet, and the question before one is removed.
 
 use crate::copy::coding_agents as copy;
-use settings_app_model::{AddAction, AddForm, Candidate, Listing, RemoveQuestion};
 use dioxus::prelude::*;
+use settings_app_model::{AddAction, AddForm, Candidate, Listing, RemoveQuestion};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};

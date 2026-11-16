@@ -1,8 +1,8 @@
 //! One Space's thumbnail in Mission Control's Space row.
 
+use account_core::SpaceId;
 use compositor_core::OutputKey;
 use compositor_core::geometry::LogicalRect;
-use account_core::SpaceId;
 
 /// Where a Space's thumbnail sits in its output's Space row.
 #[derive(Debug, Clone, PartialEq, Eq)]

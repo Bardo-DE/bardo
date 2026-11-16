@@ -4,12 +4,12 @@
 
 use companion_wire::RoutineProposal;
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::prelude::*;
 use shell_model::companion::{
     HelpersMsg, MISSED_SKIPPED, PROPOSAL_ACCEPT, PROPOSAL_DECLINE, PROPOSAL_TITLE,
     PROPOSAL_WHY_LEAD, RoutinesMsg, proposal_what, proposal_when, proposal_why,
 };
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::prelude::*;
 
 use super::say::Say;
 

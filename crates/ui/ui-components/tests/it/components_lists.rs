@@ -27,11 +27,11 @@ mod thread_row;
 use cases::{CASES, Case};
 use css_scan::{classes, styles_class};
 use dioxus::prelude::*;
-use ui_motion::drag::{DragPhase, DragTracker, use_drag};
-use ui_motion::presence::Exit;
 use rows::ROW_CASES;
 use strip_press::STRIP_PRESS_CASES;
 use thread_row::THREAD_ROW_CASES;
+use ui_motion::drag::{DragPhase, DragTracker, use_drag};
+use ui_motion::presence::Exit;
 
 #[derive(Props, Clone)]
 struct HostProps {

@@ -3,8 +3,8 @@
 //! left to the apps), as the keymap binds it. The Space's colour then cross-fades over `--t-big`
 //! (the frame's own transition, not this file's).
 
-use keymap::{Action, Context, Keymap, StandardAction};
 use dioxus::prelude::{Key, Modifiers};
+use keymap::{Action, Context, Keymap, StandardAction};
 use ui_core::command::resolve;
 use ui_core::standard_action::SpaceNumber;
 use ui_core::vocab::Shortcut;
@@ -26,8 +26,8 @@ pub fn space_shortcut(space: SpaceNumber) -> Shortcut {
 #[cfg(test)]
 mod tests {
     use super::{space_pressed, space_shortcut};
-    use keymap::{Desktop, Keymap, Platform};
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::{Desktop, Keymap, Platform};
     use ui_core::standard_action::SpaceNumber;
 
     fn key(text: &str) -> Key {

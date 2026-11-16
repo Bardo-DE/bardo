@@ -3,7 +3,7 @@
 //! subsetted faces (selectable, searchable, taken from the layout rather than guessed from the
 //! font); a JPEG is embedded as it arrived.
 //!
-//! [`content_size`], [`print_viewport`] and [`print_document`] let `ds-harness` print a
+//! [`content_size`], [`print_viewport`] and [`print_document`] let `ui-harness` print a
 //! harness's document.
 //!
 //! The document is built as a snapshot's is (quire's faces, the HTML parser, sequential

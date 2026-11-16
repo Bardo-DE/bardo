@@ -1,7 +1,7 @@
 //! Compaction, the pure half: when a task has outgrown its budget, which of its oldest turns and
 //! steps a summary should stand for, and what the summariser may be shown. The model turn that
-//! writes the summary and the log entry that records it are the loop's (`docket-planner`,
-//! `docket-tasks`); nothing here asks a model or writes anything.
+//! writes the summary and the log entry that records it are the loop's (`agent-planner`,
+//! `companion-tasks`); nothing here asks a model or writes anything.
 //!
 //! Three rules keep a summary from becoming a way in for untrusted text:
 //! - the input is built only from what the planner already saw: the person's own turns, the
@@ -12,11 +12,11 @@
 //! - the summary is as untrusted as the task was when it was written, and never more trusted.
 
 use crate::assemble::{Sources, mask_history, task_cost, view_of};
+use account_ids::{Count, Tokens};
 use action_core::{
     AssemblerBudget, Covers, Reveal, StepEnd, StepLine, Summary, SummaryText, UserTurn,
 };
 use action_vocab::{Handle, Value};
-use account_ids::{Count, Tokens};
 use provenance::Integrity;
 use serde::{Deserialize, Serialize};
 

@@ -7,12 +7,12 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use companion_model::{HandNote, RunsIn, WatchedAgent, WatchedLine};
 use action_context::session::SessionState;
 use action_context::state::SessionKind;
 use action_core::{ExternalAgent, Rewind, SheetSurface, TurnState};
-use agent_session::SessionEntry;
 use action_wire::{CallerId, IntentsReply, WireRefusal};
+use agent_session::SessionEntry;
+use companion_model::{HandNote, RunsIn, WatchedAgent, WatchedLine};
 use provenance::SessionId;
 
 impl<S: Seams> Router<S> {

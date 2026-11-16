@@ -5,11 +5,11 @@
 //! the sender, and a [`Standing`] says what a caller must be. Only the system's file can give a
 //! fixed role; a scope is never more than a plain app.
 
-use computer_use_bus::CuaCaller;
 use action_dbus::callers::{
     Caller, CallerFileError, CallerTable, Callers, INTENTD, Identity, Role, SHELL, Standing,
     read_table, table_from_toml,
 };
+use computer_use_bus::CuaCaller;
 use std::path::PathBuf;
 
 /// The file name, under `/etc/quire` and the person's configuration directory.

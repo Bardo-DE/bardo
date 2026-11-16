@@ -1,6 +1,6 @@
 //! The summon seam: sill asks an app `IntentProvider1.Summon(serial, origin)`; ds answers
 //! through its companion port. This converts the plain values both ways and holds the target
-//! `docket-client` asks.
+//! `action-client` asks.
 
 use action_provider::SummonTarget;
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial, VoiceIntent};

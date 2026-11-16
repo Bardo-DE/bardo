@@ -3,15 +3,15 @@
 use crate::error::ClientError;
 use crate::link::Link;
 use crate::session::{DeviceSource, Made, Sent, Session};
+use input_broker_wire::limits::MAX_EVENTS_PER_DATAGRAM;
+use input_broker_wire::{
+    Create, Delivery, DeviceId, Event, Reason, Reply, Request, decode_reply, encode_request,
+};
 use rustix::io::Errno;
 use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType, connect, socket_with};
 use std::os::fd::OwnedFd;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
-use input_broker_wire::limits::MAX_EVENTS_PER_DATAGRAM;
-use input_broker_wire::{
-    Create, Delivery, DeviceId, Event, Reason, Reply, Request, decode_reply, encode_request,
-};
 
 /// Where the service's socket unit puts its socket.
 pub const DEFAULT_SOCKET: &str = "/run/turnstile/input.sock";

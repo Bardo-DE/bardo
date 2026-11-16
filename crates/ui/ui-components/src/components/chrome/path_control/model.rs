@@ -2,9 +2,9 @@
 //! band when the path is long.
 
 use crate::components::menus::item::item::{MenuImage, MenuItem};
+use std::ops::Range;
 use ui_core::vocab::{Availability, DropState};
 use ui_style::icon::Icon;
-use std::ops::Range;
 
 /// The most segments a band shows before the middle ones collapse, unless the caller says
 /// otherwise.

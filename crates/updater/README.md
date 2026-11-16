@@ -13,7 +13,7 @@ Keeps a desktop installed from signed, prebuilt release bundles up to date.
 - `slipway` (user): the daily check, download and verify, the session service and the command line.
   `slipway-apply` (privileged, started through polkit): re-verifies and switches; it trusts nothing the
   user side hands it except a path. It, `slipway-rollback` and `slipway-health` are built from the small
-  crate `slipway-root`, which does not link the network client, the bus or the async runtime.
+  crate `updater-root`, which does not link the network client, the bus or the async runtime.
 
 Install the system pieces (helper, polkit action, user unit, bus activation file and the system
 settings `/etc/slipway/config.toml` holding the root and the key path) in two steps: build the three

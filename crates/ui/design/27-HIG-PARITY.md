@@ -179,7 +179,7 @@ The page covers several settings; each has its own row.
 | Reduce Motion | "Tighten springs … or track 1:1", no z-axis depth animation, no animating into or out of blurs, "replace a slide with a fade" | Motion level `Reduced` (`appearance.motion`; the system preference resolves to it): slides, scales and springs become a cross-fade at `--t-quick`, springs critically damped with no overshoot, drags 1:1, the spinner keeps turning (design/30 §1.1) | Adopt | Every motion primitive declares its Reduced form (design/30 §1.3); a data test fails a primitive without one. Levels are Standard and Reduced only; a Look never sets the level. `ds::motion`; data test `every_primitive_has_a_reduced_form` |
 | Colour alone | "Avoid relying solely on color"; problem pairs: blue/orange, red/green, red/black, red or green with gray; example: red square for offline, green circle for online. Links may add an underline | 00 §3 "colour is a claim" says what a hue means, not that a second cue exists | Adopt | Every status carried by hue also carries a shape or a word: `StatusMark { hue, shape: Shape }` with no hue-only constructor; `appearance.differentiate_without_color = Off \| On` adds link underlines and the shapes in dots (unread dot, online dot). 03 §14; `ds::components::vocab`; type |
 | Text size | macOS has no Dynamic Type (typography page). The sidebar size setting (Small/Medium/Large, see 5.12) is the Mac's text-size lever; use Regular through Bold, avoid Light and thinner | `display.scale` only (22 §3.15); weights 400-800 already | Adapt | `appearance.sidebar_size = Small \| Medium \| Large` drives the 5.12 metrics; no free text scale (the Mac has none). 22 §3.1; `ds::tokens` |
-| VoiceOver (screen reader) | Every element reachable, labelled, grouped; decorative images hidden; announce layout and content changes; each page a unique title and headings | Components emit `role` and `aria-*` (04 shared vocabulary); Blitz's `accessibility` feature is on in the workspace; how shell surfaces (layer-shell through shell-host) reach AT-SPI is not specified | Adopt | Markup lint `UnnamedControl`; a live-region contract for toasts, banners, OSD and progress (`aria-live="polite"`, critical banners `assertive`); shell-host exports each surface's AccessKit tree over AT-SPI. 04 global rules; `ds::lint::markup`; shell-host; test: Orca reads the launcher and a banner (manual check, queued in sill/docs/manual-checks.md) |
+| VoiceOver (screen reader) | Every element reachable, labelled, grouped; decorative images hidden; announce layout and content changes; each page a unique title and headings | Components emit `role` and `aria-*` (04 shared vocabulary); Blitz's `accessibility` feature is on in the workspace; how shell surfaces (layer-shell through layer-shell-host) reach AT-SPI is not specified | Adopt | Markup lint `UnnamedControl`; a live-region contract for toasts, banners, OSD and progress (`aria-live="polite"`, critical banners `assertive`); layer-shell-host exports each surface's AccessKit tree over AT-SPI. 04 global rules; `ds::lint::markup`; layer-shell-host; test: Orca reads the launcher and a banner (manual check, queued in sill/docs/manual-checks.md) |
 | Full Keyboard Access | Keyboards page: with it on, every control is reachable; Ctrl+F1 toggles it; Ctrl+F2 menu bar, Ctrl+F3 Dock, Ctrl+F5 toolbar, Ctrl+F6 next panel, Ctrl+Tab next control group | Every control is in the Tab order (04 components, 13.3.11 "Tab reaches close, minimize, zoom") | Adapt | See 6.4: `appearance.keyboard_navigation = TextAndLists \| All` (default `All`, our Arc H5 stance); the Ctrl+F2/F3 shortcuts focus the bar and the dock. 06 §2; sill |
 | Hit targets | "Even when people use a pointer", too-small targets frustrate; 44 pt on touch | 22 px menu rows, 12 px traffic lights (the Mac's own) | Covered | Mac sizes are the Mac's; nothing to add |
 
@@ -270,7 +270,7 @@ Folded into 3.1 (colour alone) and 5.25 (charts).
 | | |
 | --- | --- |
 | **Apple** | "Add motion purposefully"; "make motion optional" (never the only carrier); feedback motion "follows people's gestures"; "brevity and precision"; avoid motion on frequent interactions; **"Let people cancel motion … don't make people wait for an animation to complete"**. [FLUID]: interruption and redirection at any moment; describe springs by damping and response, not duration; 100 % damping by default, 80 % when the gesture has momentum; carry the gesture's velocity into the animation; throw to the endpoint nearest the projected position (`p + v·r/(1-r)` with the scroll rate r = .998 per ms, about `p + 0.5 s × v`); track 1:1; rubber-band at limits |
-| **quire today** | design/30 §1.3: a motion a hand can touch or interrupt is a Rust `Spring` or tween, an arrival nobody touches a CSS transition or one keyframe; built exceptions: scroll physics (11, velocity and momentum), dock magnification (10, no easing), swipe-to-dismiss (`ds-motion/swipe.rs`: speed threshold 600 px/s, flies out "from where it is"), `PaneSwitcher` ("a switch mid-slide reverses"); `--e-spring` is deleted |
+| **quire today** | design/30 §1.3: a motion a hand can touch or interrupt is a Rust `Spring` or tween, an arrival nobody touches a CSS transition or one keyframe; built exceptions: scroll physics (11, velocity and momentum), dock magnification (10, no easing), swipe-to-dismiss (`ui-motion/swipe.rs`: speed threshold 600 px/s, flies out "from where it is"), `PaneSwitcher` ("a switch mid-slide reverses"); `--e-spring` is deleted |
 | **Verdict** | Adapt: keep CSS transitions and one keyframe for state moments no hand touches (Appear, Dismiss by timeout, a failed-entry shake); every motion a hand drives or can interrupt becomes a Rust spring |
 | **Rule** | (1) `Spring { damping: Ratio, response: Millis }` integrated per frame in Rust, writing a `--x`/`--f` custom property on an HTML wrapper; retargeting keeps position and velocity (no jump, no restart). (2) `Touch::Contact(Velocity)`: a release hands its velocity to the spring; `SpringSpec::for_touch` gives damping 1.0 for a tap or key, 0.8 for a gesture with momentum toward the target ([FLUID]); response Quick 300 ms and Move 450 ms (conf L; to be tuned beside macOS). (3) Throws pick the endpoint nearest `p + 0.5 s × v`, not nearest `p`: notification swipe, dock drag-out return, sheet and panel drag, workspace swipe (12 §12.3.7), the slider knob released with speed. (4) Any new target mid-motion retargets; nothing blocks input (26 R10 generalised). (5) Under Reduced: damping 1.0, no projection overshoot, 1:1 tracking kept. Where: 05 new §14 "Driven motion"; `ds::motion::spring`; 26 §4.1 `Touch`. Tests: interrupt at 40 % toward a new target, assert position continuous and velocity continuous within 5 %; a throw at 1500 px/s from 30 % lands on the far endpoint; idle after settle paints 0 frames (26 R3) |
 
@@ -335,7 +335,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | | |
 | --- | --- |
 | **Apple** | Show the drag image once the pointer moves **about three points**; translucent drag image; highlight a destination only if it accepts; on a failed drop the item returns to its source or "evaporates"; a count badge for multi-item drags; Option at drop time copies; auto-scroll near edges; keep the dropped content selected; drag from an inactive window without activating it; drag cursors (copy, link, not allowed, disappearing item); offer a menu alternative; undo a drop |
-| **quire today** | `DRAG_THRESHOLD` 8 px Manhattan (`ds-motion/drag.rs`, 04 §34); `DragGhost`, `DropLine`; dock drag-out (10 §10.3.8) |
+| **quire today** | `DRAG_THRESHOLD` 8 px Manhattan (`ui-motion/drag.rs`, 04 §34); `DragGhost`, `DropLine`; dock drag-out (10 §10.3.8) |
 | **Verdict** | Adapt |
 | **Rule** | Threshold 3 px Euclidean for content drags (keep 4 px for window move, 13.3.11); a failed drop springs the ghost back to its source with the release velocity (3.12); `DragGhost` shows a `Badge` with the count for a multi-item drag; drop outcome sets the cursor (6.3); Option held at release copies. 06 §6; `ds::motion::drag`; test: 3 px starts a drag, 2 px does not; a failed drop settles at the source rect |
 
@@ -510,7 +510,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | **Apple** | Leading side: system menu, then the active app's menus in order **App (name in bold), File, Edit, Format, View, app-specific, Window, Help**; trailing side: menu bar extras, which open a **menu, not a popover**, unless the content is too complex. App menu: About, Settings… (Cmd+,), Services, Hide (Cmd+H), Hide Others (Opt+Cmd+H), Show All, Quit (Cmd+Q). Edit: Undo, Redo, Cut, Copy, Paste, Paste and Match Style, Delete, Select All, Find, Spelling, Substitutions, Transformations, Speech, Dictation, Emoji & Symbols. View: toolbar, sidebar, tab bar, Enter Full Screen. Window: Minimize, Zoom, tabs, Bring All to Front, window list. Help: search and the app's help. Every toolbar command also lives in a menu. Dynamic items change with Option. One-word menu titles |
 | **quire today** | Bar left: app name and workspace indicator (00 §8.4, 20 §1.1); right: tray and status items; every status item opens a ds `Menu` or a popover (control center, calendar) |
 | **Verdict** | Adopt for our own apps; Adapt for foreign apps |
-| **Rule** | (a) `ds::commands::MenuModel`: the standard menus and items as data (`StandardMenu`, `StandardItem` with their reserved shortcuts, 6.2), plus app sections; ds-blitz apps export it over a session-bus interface (the `com.canonical.dbusmenu` format existing global-menu implementations read, so foreign Qt and GTK apps that export one also appear). (b) sill's bar renders the active window's model with the one menu machine (13.3.2 hover switch applies). (c) Foreign apps without a model show only the App menu (Hide, Quit, which sill performs through the toplevel protocol). (d) Status items open menus; the control center and calendar stay popovers (they are too complex for a menu, the page's exception). 13 new §13.3.13; `ds::commands`; sill bar; test: a harness app's Edit menu lists Undo with its title |
+| **Rule** | (a) `ds::commands::MenuModel`: the standard menus and items as data (`StandardMenu`, `StandardItem` with their reserved shortcuts, 6.2), plus app sections; ui-blitz apps export it over a session-bus interface (the `com.canonical.dbusmenu` format existing global-menu implementations read, so foreign Qt and GTK apps that export one also appear). (b) sill's bar renders the active window's model with the one menu machine (13.3.2 hover switch applies). (c) Foreign apps without a model show only the App menu (Hide, Quit, which sill performs through the toplevel protocol). (d) Status items open menus; the control center and calendar stay popovers (they are too complex for a menu, the page's exception). 13 new §13.3.13; `ds::commands`; sill bar; test: a harness app's Edit menu lists Undo with its title |
 
 **Status 2026-10-06 (rule a, the quire half).** Built. The model is `ds::components::menus::export`
 (pure: `MenuTree`, the `com.canonical.dbusmenu` layout and properties, an `Event` mapped back to a
@@ -538,11 +538,11 @@ window (the Mac's model); a second process with the same `app_id` is queued for 
 (`NameOutcome::Queued`), serves on its unique name meanwhile and inherits the name when the first
 exits, which suits single-instance apps and their restarts.
 
-**Compositor path (casement P3-MN, not built here).** `ds-blitz` can reach a toplevel's `wl_surface`
+**Compositor path (casement P3-MN, not built here).** `ui-blitz` can reach a toplevel's `wl_surface`
 without new unsafe (`wayland_surface::adopt`), but not keep an `org_kde_kwin_appmenu` object alive:
 the compositor drops the address when that object is destroyed, `adopt` is a borrow tied to one call,
 and an object on a one-shot queue would be orphaned. The client half therefore waits for a compositor
-that offers the global (casement P3-MN, wl/appmenu.rs): then ds-blitz holds a persistent adopted
+that offers the global (casement P3-MN, wl/appmenu.rs): then ui-blitz holds a persistent adopted
 connection per window, binds `org_kde_kwin_appmenu_manager` when it is advertised, and calls
 `create(surface)` and `set_address(service, path)` with the address above. Until then the
 `app_id` mapping is the only path, and it stays the fallback after.
@@ -590,7 +590,7 @@ connection per window, binds `org_kde_kwin_appmenu_manager` when it is advertise
 | **Apple** | Always modal on macOS; a card with rounded corners floating on its parent window, which dims; people may still use other windows of the app; reasonable default size, resizable when useful; dismiss buttons (Done, OK, Cancel) at the bottom, trailing corner; one sheet at a time; use a panel for repeated input |
 | **quire today** | `Sheet` with `Attach {Window, Centre}` (design/30 §2.5): `Centre` over the output for the power menu and polkit (20 §1.8, 1.10), dimming nothing |
 | **Verdict** | Adapt |
-| **Rule** | Two attachments: `Attach::Window` (at its parent window's top edge below the titlebar, other windows usable; for app dialogs) and `Attach::Centre` (centred over the output, for power and polkit where no parent window exists); neither dims (design/30 §2.5; click-outside is a shell-host concern). Buttons bottom-trailing, default rightmost (5.8). Enter by the spring, exit Slide(Top) `--t-move` (3.12, design/30 §1.3). 04 §24; type |
+| **Rule** | Two attachments: `Attach::Window` (at its parent window's top edge below the titlebar, other windows usable; for app dialogs) and `Attach::Centre` (centred over the output, for power and polkit where no parent window exists); neither dims (design/30 §2.5; click-outside is a layer-shell-host concern). Buttons bottom-trailing, default rightmost (5.8). Enter by the spring, exit Slide(Top) `--t-move` (3.12, design/30 §1.3). 04 §24; type |
 
 ### 5.8 Alerts (2024-03-25)
 
@@ -833,7 +833,7 @@ Doc: 05 new §14.
 **H2: Accessibility settings (quire + sill).** High-contrast token set (with the colour page's
 Accessible variants as the pattern) and its 7:1 gate; `appearance.transparency`; "differentiate
 without colour" with `StatusMark`; `appearance.sidebar_size`; `appearance.keyboard_navigation`;
-AccessKit names and live regions on every component; sill: shell-host exports surfaces over
+AccessKit names and live regions on every component; sill: layer-shell-host exports surfaces over
 AT-SPI, Ctrl+F2/F3 focus the bar and dock. Manual checks queued (Orca on the launcher and a
 banner).
 
@@ -844,7 +844,7 @@ hide unavailable items (and show shortcuts, owner override 5.4), the one-popover
 but links. Gallery contact sheet reviewed beside macOS screenshots.
 
 **H4: Commands, undo, modality (quire + sill).** `MenuModel` with the standard menus and items;
-ds-blitz apps export it; sill's bar renders the active app's menus (App, File, Edit, View,
+ui-blitz apps export it; sill's bar renders the active app's menus (App, File, Edit, View,
 Window, Help) and the App menu for foreign apps; toolbar items bound to commands; `UndoStack`
 in `ds::edit` with titled Undo/Redo and Cmd+Z / Shift+Cmd+Z; `ModalScope` focus trap;
 `Attach::{Window, Centre}` on `Sheet`; the `Alert` component and its button types; power menu buttons

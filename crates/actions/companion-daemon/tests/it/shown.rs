@@ -5,15 +5,15 @@
 use crate::support::bus::PrivateBus;
 use crate::support::infer::{Say, call, words};
 use crate::support::world::*;
-use companion_wire::{AnswerPhase, AnswerWire, AskWire};
-use companion_daemon::serve_on_rooted;
+use account_callers::ProcRoot;
 use action_core::*;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
 use action_vocab::{Caller, Clock, Handle, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened, WireRefusal};
+use companion_daemon::serve_on_rooted;
+use companion_wire::{AnswerPhase, AnswerWire, AskWire};
 use futures_util::StreamExt;
 use futures_util::lock::Mutex;
-use account_callers::ProcRoot;
 use provenance::{AgentRef, SessionId};
 use serde_json::json;
 use std::sync::Arc;
@@ -107,7 +107,10 @@ async fn progress_words_are_not_the_body_and_quire_answer_is_exactly_the_reply()
         (
             vec![
                 aside,
-                call(companion_daemon::TOOL_ANSWER, json!({ "text": "It is a bill." })),
+                call(
+                    companion_daemon::TOOL_ANSWER,
+                    json!({ "text": "It is a bill." }),
+                ),
             ],
             "It is a bill.",
         ),

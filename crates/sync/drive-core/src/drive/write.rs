@@ -31,13 +31,13 @@ use super::{
 };
 use crate::index::{Dirty, Edit, Index};
 use crate::naming;
-use sync_core::{ItemKind, RemoteId};
 use account_capability::HashKind;
 use std::os::unix::fs::{FileExt, OpenOptionsExt};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
+use sync_core::{ItemKind, RemoteId};
 
 /// How many times a change follows bytes that moved under it (sent, or taken into a copy)
 /// before it gives up.

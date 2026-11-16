@@ -81,8 +81,8 @@ impl VelocityMeter {
 #[cfg(test)]
 mod tests {
     use super::{Velocity, VelocityMeter};
-    use ui_core::geometry::units::Px;
     use std::time::{Duration, Instant};
+    use ui_core::geometry::units::Px;
 
     #[test]
     fn a_release_reads_the_last_two_moves_unless_the_pointer_stopped() {

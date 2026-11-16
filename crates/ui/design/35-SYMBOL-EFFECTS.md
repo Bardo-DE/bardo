@@ -13,13 +13,13 @@ ours.
 - **Brief and purposeful** (design/34 section 7): a `Once` effect lasts `--t-big` (400 ms) at
   most; a loop's period is `--t-turn` (1 s). A bounce is a response to something that happened
   (a trigger), never decoration.
-- **Reduced motion is central.** A whole-icon effect has a `ReducedForm` in `ds-motion/src/reduced.rs`:
+- **Reduced motion is central.** A whole-icon effect has a `ReducedForm` in `ui-motion/src/reduced.rs`:
   what moves holds (`hold`) or fades; what only dims (`Pulse`) plays as it is. A part effect
   plays nothing under Reduced (the pose stays at rest), and `Appear`, `Disappear`, `Draw On` and
   `Replace` snap or cross-fade. No state is carried by motion alone.
-- **One home.** `ds-motion::symbol` owns the vocabulary, the routing and the drivers; the keyframes
+- **One home.** `ui-motion::symbol` owns the vocabulary, the routing and the drivers; the keyframes
   are in `motion.css`, one `Anim` per whole-icon motion and one `recipe_symbol.rs` row each. Part
-  annotations are data beside the geometry: `ds-style::icon::parts`.
+  annotations are data beside the geometry: `ui-style::icon::parts`.
 
 ## 2. The vocabulary
 
@@ -58,13 +58,13 @@ what moves the whole icon is CSS.
 | Disappear | `Disappear` | `morph-out` (shared) | `--t-quick` `--e-exit`, held | fade out |
 
 A loop is the same keyframes at `Iteration::Infinite`; the details lint's loop rule is excepted
-for the motion sheet with that reason (`ds-shell/tests/it/details_lint.rs`), and Reduced runs every
+for the motion sheet with that reason (`ui-shell/tests/it/details_lint.rs`), and Reduced runs every
 animation once (`css.rs`).
 
 ### 2.2 Part effects and Draw On (Rust)
 
 What moves a piece of the SVG is written as attributes frame by frame, like MorphGlyph's slash:
-`PosedGlyph` (`ds-style::icon::posed`) draws each annotated part in a `g` carrying its pose
+`PosedGlyph` (`ui-style::icon::posed`) draws each annotated part in a `g` carrying its pose
 (`transform` about the part's pivot, `opacity`); the shapes are the solid ones of `Icon::solid_parts`, in the order of the table. The pose is `symbol::pose`, pure
 arithmetic over stops that a table pins; the clock is `timeline::cycle::Cycle` under
 `use_playback`, which asks for frames only while a cycle runs. Durations are the same tokens:
@@ -76,7 +76,7 @@ Draw On is `use_tween` over a wipe: a clip rectangle that grows from the left ed
 
 ## 3. Part annotations
 
-`Icon::parts()` (`ds-style/src/icon/parts.rs`): which of the icon's Lucide shapes form the moving
+`Icon::parts()` (`ui-style/src/icon/parts.rs`): which of the icon's Lucide shapes form the moving
 part, and the pivot (tenths of a grid unit). The test checks every named shape exists and no shape
 is in two parts. Layers are listed in the order they step.
 
@@ -108,13 +108,13 @@ timing table is copied, and the durations are the tokens above. Lucide's drawing
 
 ## 5. Tests
 
-- `ds-motion`: `symbol::attrs` (when each mode fires, as a table), `symbol::route`, `symbol::pose`
+- `ui-motion`: `symbol::attrs` (when each mode fires, as a table), `symbol::route`, `symbol::pose`
   (rest at both ends, the stops, layers in order), `timeline::cycle`, `css::tests` (Reduced forms and
   loops in the generated sheet), `reduced::tests` (every moving keyframe has a still form).
-- `ds-style`: `icon::parts` (every part names existing shapes), `icon::posed` (groups, pivots,
+- `ui-style`: `icon::parts` (every part names existing shapes), `icon::posed` (groups, pivots,
   the wipe), `icon::solid_parts` (one list per part), `icon::slash`.
 - `ds/tests/it/motion_drift.rs`: the CSS and the recipe table agree. `ds/tests/it/symbol_ssr.rs`: markup
   per effect. `ds/tests/it/button_busy_look_ssr.rs`: the Button wrapper's markup contract.
-- `ds-conformance/tests/it/symbol_effects.rs`: `Clock::Virtual`; Once fires on change and not on
+- `ui-conformance/tests/it/symbol_effects.rs`: `Clock::Virtual`; Once fires on change and not on
   re-render, While runs and stops, Reduced plays no part motion, each ends at 0 frames.
 - Gallery page `symbols`: every effect, a button per Once and a toggle per While.

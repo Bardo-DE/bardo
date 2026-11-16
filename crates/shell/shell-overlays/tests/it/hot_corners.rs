@@ -3,11 +3,9 @@
 //! leave and the re-arm. On the virtual clock, so the dwell and the re-arm
 //! are checked to the millisecond.
 
-use ui_components::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
 
-use ui_behaviour::hot_corner::CornerParams;
-use ui_harness::{Harness, Input, Viewport};
 use layer_shell_host::OutputId;
 use shell_overlays::HotCorners;
 use shell_settings::{
@@ -15,6 +13,8 @@ use shell_settings::{
 };
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{Corner, CornerLink};
+use ui_behaviour::hot_corner::CornerParams;
+use ui_harness::{Harness, Input, Viewport};
 
 /// quire's fixed corner timing.
 fn dwell() -> Duration {

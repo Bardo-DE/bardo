@@ -5,7 +5,6 @@ use compositor_core::geometry::PhysicalSize;
 use compositor_core::input::{DeviceClass, KeyCode};
 use compositor_core::lock::LockState;
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::surface::layer::{
     Anchor, KeyboardInteractivity, Layer, LayerAsk, LayerSurface,
@@ -13,6 +12,7 @@ use compositor_testclient::surface::layer::{
 use compositor_testclient::surface::lock::Locker;
 use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::{Fixture, FixtureSpec, FrameCount, ShotTarget, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 use crate::protocol::consent::{asked_world, kept, program};
@@ -20,10 +20,10 @@ use crate::protocol::text_input::Typing;
 use crate::protocol::xdg_shell::{map_toplevel, settle};
 use compositor_core::Event;
 use compositor_core::privilege::{UnixSeconds, Verdict};
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::ime::input_method::InputMethodEvent;
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testkit::ASKED_PROGRAM;
+use desktop_protocols::vocab::{Answer, Power};
 
 /// An opaque black pixel.
 const BLACK: [u8; 4] = [0, 0, 0, 255];

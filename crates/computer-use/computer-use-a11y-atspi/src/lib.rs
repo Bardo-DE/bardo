@@ -9,9 +9,9 @@ mod map;
 mod tree;
 mod walk;
 
+use bus::BusTree;
 use computer_use_a11y_tree::{A11yError, A11ySource, A11yTarget};
 use computer_use_a11y_tree::{A11ySnapshot, NodeBudget};
-use bus::BusTree;
 use std::time::Duration;
 use tokio::sync::OnceCell;
 

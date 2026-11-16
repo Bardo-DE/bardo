@@ -11,8 +11,8 @@
 
 use dioxus::core::SuperFrom;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// How one run is set.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

@@ -8,7 +8,9 @@ use ui_components::base::selection::{Pick, RowSelection};
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::table::look::TableLook;
 use ui_components::components::lists::table::model::TableColumn;
-use ui_components::components::lists::virtual_table::{RowDrop, RowDropKind, RowDropTarget, VirtualTable};
+use ui_components::components::lists::virtual_table::{
+    RowDrop, RowDropKind, RowDropTarget, VirtualTable,
+};
 use ui_components::file_drop::drag::DropOperation;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, PointerAction, PointerInput, Viewport};

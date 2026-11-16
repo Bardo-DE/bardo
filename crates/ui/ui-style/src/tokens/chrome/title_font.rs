@@ -38,7 +38,8 @@ pub fn title_font() -> TitleFont {
 mod tests {
     use super::title_font;
 
-    const CSS: &str = include_str!("../../../../ui-components/src/components/chrome/window_frame.css");
+    const CSS: &str =
+        include_str!("../../../../ui-components/src/components/chrome/window_frame.css");
 
     #[test]
     fn the_title_is_control_size_at_600_and_the_css_says_so() {

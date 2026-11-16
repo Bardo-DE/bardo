@@ -3,11 +3,11 @@
 //! close, on a failure, and when a credential is revoked.
 
 use super::support::{ALLOWLIST, ENDPOINT, HANDOFF, LOGIN, plan, rig};
-use sandbox::{Access, AgentNet, AgentRun, NetworkMode, Profile, agent_bwrap_args};
+use account_core::ProcessCredentialId;
 use agent_acp_host::{AgentChild, Spawn, SpawnFault};
 use agent_launch::fake::{Call, FakeAccounts, Mood};
 use agent_launch::{Heard, Supervisor};
-use account_core::ProcessCredentialId;
+use sandbox::{Access, AgentNet, AgentRun, NetworkMode, Profile, agent_bwrap_args};
 use std::os::unix::fs::PermissionsExt;
 
 fn env_of<'a>(run: &'a AgentRun, name: &str) -> Option<&'a str> {

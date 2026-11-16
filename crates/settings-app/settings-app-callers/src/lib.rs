@@ -4,7 +4,7 @@
 //! before it reads a service, or hands it a typed secret, it asks whether the owner of the name is
 //! the program that plays the service's role in the desktop's caller table ([`RoleCheck`], the
 //! `OwnerCheck` quire's live client asks). The same peers judge who may ask the running Settings to
-//! show itself (`detent-intents`). Everything here is peephole's: this crate names the roles and
+//! show itself (`settings-app-intents`). Everything here is peephole's: this crate names the roles and
 //! the proof each question needs, and decides nothing about a process itself.
 
 mod allow;
@@ -17,11 +17,13 @@ mod services;
 mod testing;
 
 pub use allow::allowing;
+pub use caller_identity_dbus::caller_identity_core::{
+    Proof, Refused, Requirement, RoleName, roles,
+};
+pub use caller_identity_dbus::{BusPeers, access_denied};
 pub use check::RoleCheck;
 #[cfg(feature = "dev-callers")]
 pub use dev::{DevRowsFault, load_dev_rows, use_dev_rows};
-pub use caller_identity_dbus::caller_identity_core::{Proof, Refused, Requirement, RoleName, roles};
-pub use caller_identity_dbus::{BusPeers, access_denied};
 pub use peers::desktop_peers;
 pub use services::{
     ACCOUNTS_BUS, COMPOSITOR_BUS, DISPLAYS_BUS, INFERENCE_BUS, MEMORY_BUS, PORTAL_BUS,

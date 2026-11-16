@@ -11,9 +11,9 @@ use compositor_icons::{
 use compositor_render::OverviewIcon;
 use compositor_render::pass::ArgbImage;
 use compositor_wayland::xdg_toplevel_icon::IconParts;
-use ui_core::geometry::scale::Scale;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
+use ui_core::geometry::scale::Scale;
 
 /// A question put to the icon thread whose answer has not come: the window shows its plate
 /// meanwhile.

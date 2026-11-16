@@ -1,8 +1,8 @@
 //! A bounded number: a slider with its value beside it.
 
+use dioxus::prelude::*;
 use settings_app_model::Range;
 use settings_app_model::external::toml;
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;

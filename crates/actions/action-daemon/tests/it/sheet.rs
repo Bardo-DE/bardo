@@ -6,12 +6,12 @@
 use crate::support::apps::{Answer, FakeSill};
 use crate::support::bus::PrivateBus;
 use crate::support::world::{app, introduce};
-use action_core::*;
-use action_dbus::callers::{Identity, Role};
-use permission_core::{ACP_AGENT_APP, AskReason};
-use action_vocab::{LabelText, Seconds};
-use action_daemon::{IntentdConfig, SheetConfirmer};
 use account_ids::Count;
+use action_core::*;
+use action_daemon::{IntentdConfig, SheetConfirmer};
+use action_dbus::callers::{Identity, Role};
+use action_vocab::{LabelText, Seconds};
+use permission_core::{ACP_AGENT_APP, AskReason};
 use provenance::{Actor, ConfirmId, ConfirmReceipt, Effect, InputProof, SpaceId, UnixSeconds};
 use std::sync::Arc;
 use std::time::Duration;
@@ -222,7 +222,10 @@ async fn gated_desk(agents: bool) -> Desk {
     gate.set_agents(agents);
     let who = identity(&dir, &daemon);
     let sheet = SheetConfirmer::trusting(daemon, Arc::new(config.clone()), who.clone())
-        .gated(gate, &action_daemon::ProcRoot::Honoured(dir.path().join("proc")))
+        .gated(
+            gate,
+            &action_daemon::ProcRoot::Honoured(dir.path().join("proc")),
+        )
         .waiting(Duration::from_millis(100));
     Desk {
         _dir: dir,

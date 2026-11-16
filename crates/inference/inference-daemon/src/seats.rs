@@ -6,11 +6,11 @@
 //! The lock is held for a few map operations and never across an await.
 
 use crate::admit::{Admission, Lane, Place, Priority, Promoted, Seats, Ticket};
+use account_ids::Count;
 use engine_spec::engine;
 use engine_supervisor::EngineId;
-use model_catalog::{EngineArg, EngineKind};
-use account_ids::Count;
 use inference_core::Asker;
+use model_catalog::{EngineArg, EngineKind};
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use tokio::sync::watch;

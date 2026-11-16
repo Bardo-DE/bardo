@@ -4,8 +4,8 @@ use super::{Change, ChangeFailure, ComputersLink};
 use crate::fake_kit::Kit;
 use crate::lock::locked;
 use crate::ticks::Ticks;
-use settings_app_model::{Absence, ComputersFound, ComputersReason, ServerModel, Work};
 use inference_tailnet::ComputerCandidate;
+use settings_app_model::{Absence, ComputersFound, ComputersReason, ServerModel, Work};
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Default)]

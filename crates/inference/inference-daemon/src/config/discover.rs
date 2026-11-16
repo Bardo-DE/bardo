@@ -6,10 +6,10 @@
 //! [`crate::hosts::LaunchGuard`]). An explicit path in `inferd.toml` always wins and is never
 //! checked here.
 
+use account_callers::root_held;
 use engine_probe::{Finder, Place, Roots};
 use engine_spec::engine;
 use model_catalog::EngineKind;
-use account_callers::root_held;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 

@@ -1,8 +1,8 @@
 use super::*;
+use base_testkit::Scratch;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Row};
 use engine_probe::{Record, Scope, seal_of};
 use std::os::unix::fs::PermissionsExt;
-use base_testkit::Scratch;
 
 static NO_FILES: [Artifact; 0] = [];
 

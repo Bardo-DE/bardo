@@ -6,13 +6,13 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use probe::rect;
+use std::time::Duration;
 use ui_components::components::menus::palette::palette_group::PaletteGroup;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Layout, Viewport};
-use image::RgbaImage;
-use probe::rect;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

@@ -48,9 +48,8 @@ use crate::limit::CacheLimit;
 use crate::listing::{Listing, ListingError};
 use crate::sink::Sink;
 use crate::source::Source;
-use sync_core::{ItemKind, RemoteId};
-use fetch::Transfer;
 use account_ids::UnixSeconds;
+use fetch::Transfer;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};
@@ -58,6 +57,7 @@ use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError, Weak};
 use std::time::{Duration, Instant};
+use sync_core::{ItemKind, RemoteId};
 use tokio::sync::{Notify, Semaphore, broadcast, watch};
 
 /// The inode number of the top of the drive.

@@ -6,6 +6,7 @@
 
 use crate::protocol::image_capture::settle as settle_capture;
 use crate::protocol::xdg_shell::{map_toplevel, pointer, windows};
+use account_core::SpaceId;
 use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::input::ButtonCode;
 use compositor_core::overview::Overview;
@@ -13,14 +14,13 @@ use compositor_core::policy::ConnectionRole;
 use compositor_core::window::SpacePlace;
 use compositor_core::{DeviceId, OutputKey, WindowId};
 use compositor_layout::{LayoutKnobs, OverviewSlot, RustScene, SceneLayout, spec_of};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::capture::{BufferAsk, OutputCapture, Size};
 use compositor_testclient::quire::desktop::DesktopWatch;
 use compositor_testclient::quire::shell::{BoundOutput, OverviewMode, ShellHandle, Shown, Toggle};
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testclient::{Pattern, shm_buffer};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec};
-use account_core::SpaceId;
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 /// The left button (`BTN_LEFT`).

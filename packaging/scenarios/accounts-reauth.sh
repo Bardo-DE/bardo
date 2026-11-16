@@ -91,7 +91,7 @@ step_refusal() {
   acc_wait 40 dataset_listed || { echo "syncd lists no storage_app_folder dataset with the files switch on: $(frigc org.quire.Files datasets)" >&2; tail -5 "$OUT_DIR/syncd.log" >&2; return 1; }
   frigctl POST "/issuer/refuse-refreshes?n=1000" >/dev/null
   # The rig's access tokens last 4 s; a cycle after that finds the token spent and the refresh refused (invalid_grant), which
-  # accountd turns into NeedsReauth when syncd's relay asks it for a token (porter-service-core credential.rs refused_refresh).
+  # accountd turns into NeedsReauth when syncd's relay asks it for a token (account-service-core credential.rs refused_refresh).
   sleep 6
   acc_wait 120 refused_after_sync_now || {
     echo "the issuer refuses refreshes but syncd's account is still '$(sync_state)' after SyncNow cycles on a listed dataset; sync-now.log: $(tail -3 "$OUT_DIR/sync-now.log" | tr '\n' ' '); Graph saw: $(frigctl GET /graph/hits | tail -c 400); syncd said:" >&2; tail -10 "$OUT_DIR/syncd.log" >&2

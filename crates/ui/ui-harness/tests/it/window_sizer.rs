@@ -3,12 +3,12 @@
 //! delay, or never. Every harness has a window sizer, so `use_window_sizer()` is `Some`.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_blitz::{
     Extent, Reserve, ScreenArea, ScreenOf, SizeOrigin, SizeRequest, WindowSizer, WorkBasis,
     use_window_sizer,
 };
 use ui_harness::{Clock, Harness, HarnessConfig, Input, SizerAck, Viewport, WindowScreen};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 800,
@@ -249,7 +249,11 @@ fn the_window_reports_the_output_the_test_chose() {
     };
     let at_2x = Harness::new(Sizing, HarnessConfig::new(hidpi));
     let scale = at_2x.window_sizer().screen().expect("output").scale;
-    assert_eq!(scale, ui_components::prelude::Scale(240), "the viewport's scale");
+    assert_eq!(
+        scale,
+        ui_components::prelude::Scale(240),
+        "the viewport's scale"
+    );
 
     let none = Harness::new(
         Sizing,

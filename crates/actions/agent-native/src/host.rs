@@ -5,9 +5,10 @@
 //! first entries of a fork, which the router then restores by name like any stored session.
 
 use crate::backend::{Core, NativeBackend};
-use companion_wire::NeedsYou;
 use action_client::Transport as IntentsTransport;
 use action_core::{ConfirmId, ConfirmRequest, ContextKeep, Keep, TurnIn, UserTurn};
+use action_vocab::{Clock, Origin};
+use action_wire::SessionOpen;
 use agent_planner::Planner;
 use agent_session::{
     BackendEvent, BackendFault, EndCause, HostFault, NoDesk, Opening, ResumePlan, Seq,
@@ -17,8 +18,7 @@ use agent_session::{
 use companion_tasks::Companion;
 use companion_tasks::Shared;
 use companion_tasks::Surface;
-use action_vocab::{Clock, Origin};
-use action_wire::SessionOpen;
+use companion_wire::NeedsYou;
 use futures_util::future::{Either, select};
 use futures_util::lock::Mutex;
 use provenance::{AgentRef, SessionId};

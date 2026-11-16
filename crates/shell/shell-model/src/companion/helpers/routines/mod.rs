@@ -1,6 +1,6 @@
 //! The routines of the helpers: what a helper does by itself when a time comes. The list, the
 //! sheet where the person confirms a new one, and the transition ([`update`]) that moves them.
-//! Pure: `sill-services` makes the calls [`RoutinesCommand`] asks for.
+//! Pure: `shell-services` makes the calls [`RoutinesCommand`] asks for.
 
 mod draft;
 mod model;

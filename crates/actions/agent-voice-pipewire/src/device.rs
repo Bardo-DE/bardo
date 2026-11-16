@@ -3,14 +3,14 @@
 use crate::capture::{CaptureData, FrameQueue, PipeWireCapture, run_capture};
 use crate::nodes::list_nodes;
 use crate::playback::{PipeWirePlayback, PlayShared, run_playback};
-use pipewire as pw;
-use std::sync::Arc;
-use std::time::Duration;
-use tokio::sync::oneshot;
 use agent_voice_audio::{
     AudioDevice, AudioNode, CaptureFormat, DeviceError, NodeKind, PlaybackFormat, SNAPSHOT_BUDGET,
     Snapshot,
 };
+use pipewire as pw;
+use std::sync::Arc;
+use std::time::Duration;
+use tokio::sync::oneshot;
 
 /// How long a stream may take to start before the device is called absent.
 const START_TIMEOUT: Duration = Duration::from_secs(2);

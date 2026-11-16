@@ -1,7 +1,7 @@
 //! `index.db`: FTS5 and the vectors in one SQLCipher file.
 
-use memory_seal::DbKey;
 use memory_recall::{Embedder, ExactScan, Fts5, Index, IndexError};
+use memory_seal::DbKey;
 use rusqlite::Connection;
 use std::path::Path;
 

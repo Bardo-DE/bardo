@@ -1,6 +1,6 @@
 [package]
 name = "agent-voice-daemon"
-description = "The voice daemon: the only process that opens the microphone, serves org.quire.Voice1, and runs the voice machines. The audio device is the voice-audio seam; the PipeWire backend is voice-pipewire."
+description = "The voice daemon: the only process that opens the microphone, serves org.quire.Voice1, and runs the voice machines. The audio device is the agent-voice-audio seam; the PipeWire backend is agent-voice-pipewire."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -39,7 +39,7 @@ zbus-ready = { path = "../../zbus-ready" }
 
 [features]
 default = ["pipewire"]
-# `voice-pipewire`, the shipped audio backend (needs libpipewire and libclang to build). The
+# `agent-voice-pipewire`, the shipped audio backend (needs libpipewire and libclang to build). The
 # daemon binary and the by-hand example need it; the library without it is the machines and
 # `dictate`, so a test or another backend builds with `--no-default-features`.
 pipewire = ["dep:agent-voice-pipewire"]

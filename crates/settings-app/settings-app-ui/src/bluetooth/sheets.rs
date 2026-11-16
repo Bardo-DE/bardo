@@ -2,8 +2,8 @@
 //! pairs.
 
 use crate::copy::bluetooth::{forget_body, forget_title, pairing_body, pairing_title};
-use settings_app_model::{BtInput, PairingAnswer, PairingQuestion};
 use dioxus::prelude::*;
+use settings_app_model::{BtInput, PairingAnswer, PairingQuestion};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::sheet_width::SheetWidth;

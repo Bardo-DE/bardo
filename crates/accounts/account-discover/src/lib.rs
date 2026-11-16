@@ -4,7 +4,7 @@
 //! SRV and MX records. A fake of each is how the tests run without a network. [`discover_mail`]
 //! is the mail search over all of them, in mailo's order.
 //!
-//! `HickoryDns` (feature `io`) is the system resolver; the HTTP client is porter-http's.
+//! `HickoryDns` (feature `io`) is the system resolver; the HTTP client is account-http's.
 
 mod autoconfig;
 mod config;

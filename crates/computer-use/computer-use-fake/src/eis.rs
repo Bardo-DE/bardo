@@ -2,11 +2,11 @@
 
 use crate::eis_keymap::US_KEYMAP;
 use computer_use_desktop::EiSocket;
+use computer_use_seat_input::Press;
 use reis::PendingRequestResult;
 use reis::eis::{self, device::DeviceType, keyboard::KeymapType};
 use reis::handshake::EisHandshaker;
 use reis::request::{DeviceCapability, EisRequest, EisRequestConverter};
-use computer_use_seat_input::Press;
 use std::io::{ErrorKind, Write};
 use std::ops::ControlFlow;
 use std::os::fd::{AsFd, OwnedFd};

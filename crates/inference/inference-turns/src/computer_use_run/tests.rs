@@ -1,21 +1,21 @@
 use super::*;
+use account_capability::CuaEnv;
+use base_testkit::Scratch;
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
 };
-use model_provider::{
-    ModelName, Part, Script, ScriptedProvider, StopReason, ToolCall, ToolCallId, TurnEnd,
-    TurnEvent, TurnUsage,
-};
-use account_capability::CuaEnv;
 use inference_core::{
     AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusal, MediaType, StepIndex,
     WindowGeometry,
 };
 use inference_router::testkit::models;
+use model_provider::{
+    ModelName, Part, Script, ScriptedProvider, StopReason, ToolCall, ToolCallId, TurnEnd,
+    TurnEvent, TurnUsage,
+};
 use std::io::Write;
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
-use base_testkit::Scratch;
 
 fn memfd(bytes: &[u8]) -> OwnedFd {
     let fd = rustix::fs::memfd_create("t", rustix::fs::MemfdFlags::CLOEXEC).expect("memfd");

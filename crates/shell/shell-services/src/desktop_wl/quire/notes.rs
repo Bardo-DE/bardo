@@ -1,7 +1,7 @@
 //! The shell protocol's events as [`ShellNote`]s.
 
-use desktop_client::quire::{RevealOutput, ShellEvent};
 use account_core::SpaceId;
+use desktop_client::quire::{RevealOutput, ShellEvent};
 use shell_model::desktop::{Consent, DisplayTrial, OverviewNote, ShellNote, SwitcherNote};
 
 /// `event` in the shell's words. `None` for what is state the desktop client keeps and a

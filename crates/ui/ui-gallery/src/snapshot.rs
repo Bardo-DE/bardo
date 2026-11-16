@@ -9,10 +9,10 @@ use crate::page::Page;
 use crate::progress_copy::ProgressCopy;
 use crate::registry;
 use crate::sheet;
-use ui_components::prelude::*;
-use ui_harness::{Viewport, snapshot_placed};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Viewport, snapshot_placed};
 
 /// The width every page is drawn at, in logical pixels.
 pub const WIDTH: u32 = 1280;
@@ -166,8 +166,8 @@ pub fn run(
 mod tests {
     use super::{ACCENTS, SCHEMES, shots};
     use crate::page::Page;
-    use ui_components::prelude::*;
     use std::collections::HashSet;
+    use ui_components::prelude::*;
 
     #[test]
     fn the_sheet_sweeps_every_page_in_both_schemes_and_two_accents() {

@@ -8,13 +8,13 @@ use crate::details_views::{NetView, ShakeView, SlashView};
 use crate::error::GalleryError;
 use crate::style;
 use dioxus::prelude::*;
+use image::{RgbaImage, imageops};
+use std::path::Path;
+use std::time::Duration;
 use ui_components::assembly::ds::Inject;
 use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::*;
 use ui_harness::{Harness, Viewport};
-use image::{RgbaImage, imageops};
-use std::path::Path;
-use std::time::Duration;
 
 /// Which strip a stage draws.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

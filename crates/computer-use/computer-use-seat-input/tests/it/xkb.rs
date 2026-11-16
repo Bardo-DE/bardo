@@ -1,8 +1,8 @@
 //! `Keymap::parse_xkb` over a keymap written out in full (no include files, so nothing of the
 //! host's xkb data is read): characters at both levels, named keys, and what is left out.
 
-use keyboard_types::Key;
 use computer_use_seat_input::{Keycode, Keymap, Produces, ShiftLevel};
+use keyboard_types::Key;
 
 const XKB: &str = r#"
 xkb_keymap {

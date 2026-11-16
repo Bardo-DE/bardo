@@ -6,6 +6,7 @@ use crate::host::measure::client_rect;
 use crate::root::common::Common;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::{Availability, aria_word, shown_word};
 use ui_core::word::Word;
@@ -14,7 +15,6 @@ use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
 use ui_style::task::spawn_in;
 use ui_style::tokens::control_size::ControlSize;
-use std::rc::Rc;
 
 /// The triangle, turned as `shown` says. A part: `Disclosure` and `Row` draw the same one.
 pub(crate) fn indicator(shown: bool) -> Element {

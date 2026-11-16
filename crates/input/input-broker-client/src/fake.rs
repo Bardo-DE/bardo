@@ -3,10 +3,10 @@
 
 use crate::error::ClientError;
 use crate::session::{DeviceSource, Made, Sent, Session};
+use input_broker_wire::{Create, Delivery, DeviceId, Event, Reason, plan};
 use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
-use input_broker_wire::{Create, Delivery, DeviceId, Event, Reason, plan};
 
 /// What the fake does with `send`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

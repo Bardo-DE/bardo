@@ -1,4 +1,4 @@
-//! The client crates against the real accountd: `porter-client` over `porter-client-dbus`'s `Bus`,
+//! The client crates against the real accountd: `account-client` over `account-client-dbus`'s `Bus`,
 //! on a private bus. They live here, not in the client crate, because a client crate must build
 //! and be semver-checked without building a daemon.
 

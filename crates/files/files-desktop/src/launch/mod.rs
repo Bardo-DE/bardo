@@ -16,14 +16,14 @@ pub use desktop::DesktopLauncher;
 pub use entry::{AppEntry, installed_check, load_apps};
 pub use error::{EntryError, ExecError, LaunchError, StartError};
 pub use exec::{ExecLine, Expand, Takes};
-pub use ui_icon_tool::{AppIcons, IconLookup, NoIcons};
+pub use icons::{AppIcons, IconLookup, NoIcons};
 pub use offer::AppOffer;
 pub use spawn::{Spawn, SpawnCommand, SystemSpawn};
 
 #[cfg(feature = "testing")]
 pub use activate::{ActivateCall, FakeActivate};
 #[cfg(feature = "testing")]
-pub use ui_icon_tool::FakeIcons;
+pub use icons::FakeIcons;
 #[cfg(feature = "testing")]
 pub use spawn::FakeSpawn;
 

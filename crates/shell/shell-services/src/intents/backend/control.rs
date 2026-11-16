@@ -3,8 +3,8 @@
 //! `control` role, so these members answer it and nobody else.
 
 use action_dbus::{ControlProxy, INTENTS_BUS};
-use permission_core::StandingGrantId;
 use action_vocab::ActionRef;
+use permission_core::StandingGrantId;
 use provenance::{SpaceId, SpaceScope};
 use tokio::sync::mpsc::UnboundedSender;
 use zbus::Connection;

@@ -3,7 +3,7 @@
 //! is on it); a click opens the file (`ShotLeave::Opened`, `xdg-open`), a swipe right keeps it and
 //! dismisses the thumbnail (`Kept`), the hold running out does the same, its Delete action trashes
 //! the file (`Trashed`), and a drag out hands the file to another app as `text/uri-list` through
-//! shell-host's drag source ([`drag`]): a copy dismisses it (`Dragged`), a move gives the file away
+//! layer-shell-host's drag source ([`drag`]): a copy dismisses it (`Dragged`), a move gives the file away
 //! (`Moved`), a cancel leaves it.
 //!
 //! The card never takes the keyboard on appear. `sill focus-latest` (the launcher's kind of

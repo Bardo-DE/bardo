@@ -10,8 +10,8 @@ use crate::support::drive::{click, scroll_into_view};
 use crate::support::engines::{Fake, serve};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const NOTE: &str = "[data-engine-note]";
 const COMMAND: &str = "[data-engine-note] .ds-command-line-text";

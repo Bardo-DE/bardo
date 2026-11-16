@@ -1,7 +1,7 @@
 //! The eight materials (design/03-COLOR.md sections 17.1 and 17.3).
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// What a surface is drawn in.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Word)]

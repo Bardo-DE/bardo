@@ -3,6 +3,7 @@
 
 use crate::support;
 
+use account_core::SpaceId;
 use compositor_core::focus::TokenCheck;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::{DesktopCommand, SpaceStep};
@@ -11,7 +12,6 @@ use compositor_core::window::{SpacePlace, WindowState};
 use compositor_core::{Cause, Effect, Event, ToplevelRequest, WindowId};
 use desktop_protocols::vocab::Toggle;
 use desktop_protocols::vocab::Transform;
-use account_core::SpaceId;
 use support::driver::{
     Op, Run, assert_same_world, last, map, plug, request, run, run_from, unmap, unplug,
 };

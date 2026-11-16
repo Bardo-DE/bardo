@@ -4,8 +4,8 @@
 
 use crate::sentencer::{Sentence, sentences};
 use account_core::DataClass;
-use serde::{Deserialize, Serialize};
 use agent_voice_wire::{SpeakWire, SpeechEnd};
+use serde::{Deserialize, Serialize};
 
 /// The fade-out on a stop, in milliseconds.
 pub const FADE_MS: u32 = 40;

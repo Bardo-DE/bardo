@@ -2,8 +2,8 @@
 //! per corner (`top_left = "lock"`, with `top_left_command` for `"command"`). The older forms are
 //! read and never written back.
 
-use ui_core::word::Word;
 use serde::Deserialize;
+use ui_core::word::Word;
 
 use super::behaviour::{CornerAction, HotCornerSettings};
 use super::corners::{CornerBinding, CornerBindings, CornerDo};

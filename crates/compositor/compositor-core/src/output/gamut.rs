@@ -1,6 +1,6 @@
 //! The colours an output's panel can show: its red, green and blue primaries as the EDID
 //! reports them (CIE 1931 xy), and whether that is wider than sRGB. Integers only (ten-thousandths);
-//! the maths that turns them into a matrix is in `casement-render`'s colour pass.
+//! the maths that turns them into a matrix is in `compositor-render`'s colour pass.
 
 /// A point on the CIE 1931 xy chromaticity diagram, in ten-thousandths (0.6400 is 6400).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -2,7 +2,9 @@
 //! value on one that only shows it, and the selection wash.
 
 use dioxus::prelude::*;
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;

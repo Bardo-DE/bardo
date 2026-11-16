@@ -13,11 +13,15 @@ use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::image_source::ImageSize;
 use ui_components::components::content::pdf_thumb::PdfPage;
-use ui_components::components::lists::emoji_grid::grid::{EMOJI_CELL, EMOJI_COLUMNS, EmojiCell, EmojiCells};
+use ui_components::components::lists::emoji_grid::grid::{
+    EMOJI_CELL, EMOJI_COLUMNS, EmojiCell, EmojiCells,
+};
 use ui_components::components::lists::preview::content::PaneContent;
 use ui_components::components::lists::preview::pane::PaneAction;
 use ui_components::components::lists::row::shape::{ClipBody, RowShape};
-use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups, PaletteRow};
+use ui_components::components::menus::palette::palette_group::{
+    PaletteGroup, PaletteGroups, PaletteRow,
+};
 use ui_components::prelude::*;
 use ui_lint::LintConfig;
 

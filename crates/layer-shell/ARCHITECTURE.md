@@ -1,12 +1,12 @@
 # Architecture
 
-shell-host runs Blitz / Dioxus Native documents on Wayland: layer-shell surfaces, xdg popups,
+layer-shell-host runs Blitz / Dioxus Native documents on Wayland: layer-shell surfaces, xdg popups,
 xdg toplevels and the session lock, on one GPU device and one renderer. `README.md` describes it
 and its demos, `FINDINGS.md` holds the facts about Blitz, the compositors and the protocols it
 relies on, and `CONVENTIONS.md` names the style guides every repo follows. This file is the map: where
 each thing lives, what may depend on what, and how to add the next thing.
 
-shell-host stands below quire and sill and is portable to any Wayland compositor with
+layer-shell-host stands below quire and sill and is portable to any Wayland compositor with
 layer-shell: no compositor-specific crate, no D-Bus, no PulseAudio, no design-system crate, no palmrest
 daemon.
 
@@ -14,39 +14,39 @@ daemon.
 
 | Crate | Repo | Purpose |
 |---|---|---|
-| `shell-host` | shell-host (`crates/shell-host`) | the host: Wayland plumbing, surfaces, frame loop, input, scroll, lock; the only crate in the workspace |
-| `blitz-kit` | sibling repo `blitz-kit` | portable Blitz repairs and helpers, no Wayland, no Dioxus, no design system (section 4) |
-| `palmrest-protocol` | sibling repo `palmrest` (`crates/palmrest-protocol`) | the palmrest socket's messages, `ToHost` / `ToDaemon`, `PROTOCOL_VERSION` |
+| `layer-shell-host` | layer-shell-host (`crates/shell-host`) | the host: Wayland plumbing, surfaces, frame loop, input, scroll, lock; the only crate in the workspace |
+| `blitz-embed` | sibling repo `blitz-embed` | portable Blitz repairs and helpers, no Wayland, no Dioxus, no design system (section 4) |
+| `mouse-gestures-proto` | sibling repo `palmrest` (`crates/palmrest-protocol`) | the palmrest socket's messages, `ToHost` / `ToDaemon`, `PROTOCOL_VERSION` |
 
 Allowed edges (everything else is forbidden):
 
 | From | May depend on |
 |---|---|
-| `shell-host` | `blitz-kit`, `palmrest-protocol`, `casement-protocols` (feature `client`: `quire_window_v1`'s bindings and the wire vocab, git rev pin), and the pinned third-party block (blitz-*, dioxus, sctk, wayland-*, calloop, wgpu, vello, parley, rustix, `nix` (`socket` only, for `SO_PEERPIDFD`), tokio, serde) |
-| `blitz-kit` | `blitz-dom`, `blitz-traits`, `parley`, `wgpu` (feature `adapter`), `thiserror` |
-| `palmrest-protocol` | `serde`, `serde_json`, `thiserror` |
+| `layer-shell-host` | `blitz-embed`, `mouse-gestures-proto`, `desktop-protocols` (feature `client`: `quire_window_v1`'s bindings and the wire vocab, git rev pin), and the pinned third-party block (blitz-*, dioxus, sctk, wayland-*, calloop, wgpu, vello, parley, rustix, `nix` (`socket` only, for `SO_PEERPIDFD`), tokio, serde) |
+| `blitz-embed` | `blitz-dom`, `blitz-traits`, `parley`, `wgpu` (feature `adapter`), `thiserror` |
+| `mouse-gestures-proto` | `serde`, `serde_json`, `thiserror` |
 
-Forbidden for `shell-host`: `zbus`,
+Forbidden for `layer-shell-host`: `zbus`,
 `libpulse-binding`, every quire crate, sill, and the `palmrest` daemon crate.
 `scripts/check-boundary.sh` checks this list, and that Blitz's own scrollbars stay off (the host
-paints the thumb). `blitz-kit` forbids `smithay-client-toolkit`, `wayland-*`, `dioxus*`, every
+paints the thumb). `blitz-embed` forbids `smithay-client-toolkit`, `wayland-*`, `dioxus*`, every
 quire crate and sill; its own repo carries the same script. Sibling repos are path
-dependencies, as sill's are on shell-host.
+dependencies, as sill's are on layer-shell-host.
 
 ### Moves into other crates
 
-| From (shell-host today) | To |
+| From (layer-shell-host today) | To |
 |---|---|
-| `dom/hover_sync.rs` (`LastMove`, `Shift`, `HoverSync`, `decide`, `probe_points`) | `blitz-kit::hover` |
-| `dom/painted.rs` (`Affine2`, `Placed`, `painted_bounds`) and the transform-chain walk in `dom/document.rs` (`transform_chain`, `bounds_of`, `element_at`) | `blitz-kit::paint_rect`, `blitz-kit::hit` |
-| `dom/net.rs` (`LocalNet`, `LocalSource`) | `blitz-kit::net` (with `FileRoots`, `MAX_RESOURCE_BYTES`) |
-| `scroll/{geom,latch,engine,animate,momentum,velocity,rubber,smooth,keys,cmd}` and the physics part of `scroll/config` | `blitz-kit::scroll` |
-| `dom/scroll.rs` (scrollers under a point, geometry, raw writes, `data-wheel` and key markers) | `blitz-kit::scroll::doc` |
-| `ElementId` (`region.rs`) | `blitz-kit::element_id` |
-| `dom/fonts.rs` (`SharedFonts`) | `blitz-kit::fonts` |
-| `gpu/adapter.rs` (`DeviceKind`, `GpuBackend`, `AdapterFacts`, `rank`, `validate`) | `blitz-kit::adapter` |
-| `input/palmrest/wire.rs` | `palmrest-protocol` (re-declaration deleted; shell-host imports the crate) |
-| the `Prepaint` hook's snapping helpers (in consumers today) | `blitz-kit::snap`; the `Prepaint` type stays here |
+| `dom/hover_sync.rs` (`LastMove`, `Shift`, `HoverSync`, `decide`, `probe_points`) | `blitz-embed::hover` |
+| `dom/painted.rs` (`Affine2`, `Placed`, `painted_bounds`) and the transform-chain walk in `dom/document.rs` (`transform_chain`, `bounds_of`, `element_at`) | `blitz-embed::paint_rect`, `blitz-embed::hit` |
+| `dom/net.rs` (`LocalNet`, `LocalSource`) | `blitz-embed::net` (with `FileRoots`, `MAX_RESOURCE_BYTES`) |
+| `scroll/{geom,latch,engine,animate,momentum,velocity,rubber,smooth,keys,cmd}` and the physics part of `scroll/config` | `blitz-embed::scroll` |
+| `dom/scroll.rs` (scrollers under a point, geometry, raw writes, `data-wheel` and key markers) | `blitz-embed::scroll::doc` |
+| `ElementId` (`region.rs`) | `blitz-embed::element_id` |
+| `dom/fonts.rs` (`SharedFonts`) | `blitz-embed::fonts` |
+| `gpu/adapter.rs` (`DeviceKind`, `GpuBackend`, `AdapterFacts`, `rank`, `validate`) | `blitz-embed::adapter` |
+| `input/palmrest/wire.rs` | `mouse-gestures-proto` (re-declaration deleted; layer-shell-host imports the crate) |
+| the `Prepaint` hook's snapping helpers (in consumers today) | `blitz-embed::snap`; the `Prepaint` type stays here |
 
 ## 2. Modules and layers
 
@@ -61,7 +61,7 @@ a higher one. When something needs a higher layer, move the shared piece down or
 | L1 role configs | `layer`, `toplevel`, `popup`, `region`, `placement`, `csd`, `drag/{spec,offer,serial,pipe,outcome}`, `prepaint`, `lock/{config,machine,retry}` | pure: configs, wire mappings, geometry |
 | L2 machines and physics | `frame`, `resolve`, `grab`, `popup_keyboard`, `timers`, `clock`, `tick` (pacing), `modality`, `paste`, `input/{pointer,keysym,keycode,modifiers,capability,focus}`, `input/palmrest/route`, `scroll/{config,indicator,source,suppress,wheel}` | pure, table-tested |
 | L3 shared cells and handles | `live`, `wake`, `handle`, `host_handle`, `bridge`, `root`, `lock/handle`, `scroll/{watch,wheel_feed}` | values shared with documents; no Wayland |
-| L4 documents | `dom/{document,head,shell_provider,stacking,scheme,scroll,ime_focus}`, `headless` | Blitz, through `blitz-kit` |
+| L4 documents | `dom/{document,head,shell_provider,stacking,scheme,scroll,ime_focus}`, `headless` | Blitz, through `blitz-embed` |
 | L5 GPU | `gpu/{context,context_proxy,presenter,swapchain,shm,render,probe,deadline,image_cache,rebuild,raw_handle}` | effects |
 | L6 Wayland effects | `state`, `surface`, `role`, `handlers/*` (`pipe_writes`, `surface_objects`, `text_input`, `surrounding` among them), `clipboard`, `cursor`, `ime` (`ime/surrounding`: what to send about the text around the caret), `input/{key,scroll,palmrest}` (socket), `scroll/{surface,paint,tuning}`, `lock/active` | effects |
 | L7 orchestration | `ctx/*`, `host`, `inject` | effects; the loop and the flush |
@@ -91,11 +91,11 @@ piece they test, never into a catch-all.
 
 ## 3. Public API
 
-The root of `shell-host` exports exactly these names, each from one `pub use` in `lib.rs`.
+The root of `layer-shell-host` exports exactly these names, each from one `pub use` in `lib.rs`.
 
 | Group | Names |
 |---|---|
-| Host | `Host`, `HostCtx`, `HostHandle`, `HostConfig` (its `file_roots`: where documents may read files, FINDINGS F21), `Backend`, `AdapterPref`, `FontFaces` and `FileRoots` (re-exported once from `blitz-kit`), `Ms`, `HostError`, `Recovery`, `Result`, `HostRoot`, `registered_families`, `WaylandRoute` (`Environment`, or `Handed(OwnedFd)` read only in `Host::connect`) |
+| Host | `Host`, `HostCtx`, `HostHandle`, `HostConfig` (its `file_roots`: where documents may read files, FINDINGS F21), `Backend`, `AdapterPref`, `FontFaces` and `FileRoots` (re-exported once from `blitz-embed`), `Ms`, `HostError`, `Recovery`, `Result`, `HostRoot`, `registered_families`, `WaylandRoute` (`Environment`, or `Handed(OwnedFd)` read only in `Host::connect`) |
 | Events | `HostEvent` (incl. `SurfaceMapped { id }` and `QuitAsked`), `CloseReason`, `KeyboardFocus`, `SurfaceOp` (`CommonOp`, `LayerOp`, `WindowOp` by role), `Visibility`, `OutputInfo`, `OutputId`, `SurfaceId`, `ColorScheme` |
 | Layer surface | `LayerConfig`, `LayerLevel`, `Anchor`, `LayerExtent`, `LayerSize`, `ExclusiveZone`, `KeyboardMode`, `OutputTarget` |
 | Popup | `PopupConfig`, `PopupAnchor`, `PopupSize`, `PopupEdge`, `PopupAdjust`, `PopupGrab`, `PopupOffset`, `PopupPlacement`, `offset_rect` |
@@ -106,7 +106,7 @@ The root of `shell-host` exports exactly these names, each from one `pub use` in
 | Input | `Modifiers`, `Modifier`, `LockKey`, `InputModality` |
 | Drag | `DragSpec`, `DragPayload`, `DragIcon`, `DragActions`, `DragAction`, `DragOutcome`, `DragRefused`, `Mime`, `BadMime` |
 | Scroll | `ScrollConfig`, `ScrollSettings`, `ScrollbarSettings`, `ScrollbarVisibility`, `ScrollMomentum`, `NaturalScroll`, `ScrollTrackClick`, `ScrollPx`, `ScrollMs`, `ScrollFraction`, `ScrollScalar` (the units of the settings), `ScrollCmd`, `ScrollAxis`, `ScrollAnimate`, `ScrollExtent`, `ScrollPhase`, `ScrollPoint`, `ScrollState`, `use_scroll`, `WheelEvent`, `WheelSource`, `WheelPhase`, `WheelMotion`, `use_wheel` |
-| Frames and stats | `FrameDrive`, `FrameTick`, `Elapsed` (blitz-kit's, the host clock), `FrameStats`, `Percentiles`, `SurfaceName`, `Prepaint`, `PrepaintFn` |
+| Frames and stats | `FrameDrive`, `FrameTick`, `Elapsed` (blitz-embed's, the host clock), `FrameStats`, `Percentiles`, `SurfaceName`, `Prepaint`, `PrepaintFn` |
 | Hooks | `use_surface`, `use_surface_scale`, `use_frame_tick`, `use_modifiers`, `use_input_modality`, `use_toplevel_state`, `use_wheel`, `use_watch`, and `SurfaceHandle` (what `use_surface` returns; `wl_surface() -> Option<WlSurface>`, `request_placement`, `placement_support`); `HostCtx::wl_surface(id)` |
 
 Feature-gated public modules:
@@ -127,10 +127,10 @@ after xkb translation, so focus, modality (`Stroke`), key repeat's first press, 
 and IME see it as they see a real key. The stdin grammar adds `<surface> key <name>[+mods]
 [down|up]`; without `down` or `up` it is `Tap`.
 
-## 4. blitz-kit (sibling repo)
+## 4. blitz-embed (sibling repo)
 
-Portable Blitz repairs shared by shell-host and quire's `ds-blitz`; each was written twice, and
-the copies in both are deleted. shell-host is its first consumer. It has no Wayland, no Dioxus,
+Portable Blitz repairs shared by layer-shell-host and quire's `ui-blitz`; each was written twice, and
+the copies in both are deleted. layer-shell-host is its first consumer. It has no Wayland, no Dioxus,
 no design-system type, and takes and returns CSS px `f64` in Blitz's own units.
 
 | Module | Public API | From |
@@ -138,14 +138,14 @@ no design-system type, and takes and returns CSS px `f64` in Blitz's own units.
 | `hover` | `LastMove::{Unknown, At(BlitzPointerEvent)}`, `remember(LastMove, &UiEvent) -> LastMove`, `Shift<N>`, `HoverSync::{Unchanged, Restore(PagePoint), Clear}`, `decide(shift, &LastMove, bounds, hit) -> HoverSync`, `probe_points(Bounds) -> [PagePoint; 5]`, `repair(&mut BaseDocument, &LastMove, Shift<NodeId>) -> Repaired::{Yes, No}` (restores the old hover without dispatch, feeds the last move again so Blitz dispatches the enter/leave diff) | `dom/hover_sync.rs`, `SurfaceDocument::sync_hover` |
 | `net` | `LocalNet::new(FileRoots)` (`NetProvider`: `data:` decoded, absolute `file:` read on the caller's blocking pool when it is a regular file inside the roots and at most 32 MiB, nothing else), `FileRoots`, `LocalSource::{Data, File, Unservable}`, `LocalSource::{of, read, read_within}` | `dom/net.rs` |
 | `fonts` | `SharedFonts::{system, system_with(&FontFaces), register(&'static [u8]) -> Vec<String>, for_document() -> FontContext}`, `FontFaces` | `dom/fonts.rs`, `HostConfig::fonts` |
-| `adapter` (feature `adapter`) | `DeviceKind`, `GpuBackend`, `AdapterFacts::of(&wgpu::Adapter)`, `AdapterPref` (`Device { vendor, device }` follows the compositor's GPU), `PciVendor`, `PciDevice`, `rank(&AdapterPref, &[AdapterFacts]) -> Vec<usize>`, `request_watched_device` (logs wgpu errors instead of panicking, reports a lost device through `DeviceHealth`, gives up after a deadline), `block_on_timeout`; the surface-based `validate` stays in shell-host (it needs the Wayland probe) | `gpu/adapter.rs` |
+| `adapter` (feature `adapter`) | `DeviceKind`, `GpuBackend`, `AdapterFacts::of(&wgpu::Adapter)`, `AdapterPref` (`Device { vendor, device }` follows the compositor's GPU), `PciVendor`, `PciDevice`, `rank(&AdapterPref, &[AdapterFacts]) -> Vec<usize>`, `request_watched_device` (logs wgpu errors instead of panicking, reports a lost device through `DeviceHealth`, gives up after a deadline), `block_on_timeout`; the surface-based `validate` stays in layer-shell-host (it needs the Wayland probe) | `gpu/adapter.rs` |
 | `hit` | `element_at(&BaseDocument, PagePoint) -> Option<NodeId>`, `element_of(&BaseDocument, NodeId) -> Option<NodeId>`, `is_content_element` (transform-aware: the point is carried back through each transformed ancestor) | `dom/document.rs` |
 | `paint_rect` | `Affine2`, `Placed`, `painted_bounds(Bounds, &[Placed]) -> Bounds`, `painted_rect(&BaseDocument, NodeId) -> Option<Bounds>` (layout box carried through its own and its ancestors' transforms) | `dom/painted.rs`, `dom/document.rs` |
 | `snap` | `snap_layout(&mut BaseDocument, Scale120)`: whole device pixels for every box after a resolve | consumers' prepaint hooks |
 | `after_resolve` | `AfterResolve::{watch, read}`, `Registration`, `publish`: components' readings of their node (quire's `use_resolved`), provided as a root context and run after every resolve, publishing only what changed | `SurfaceDocument::build`, `SurfaceDocument::resolve` |
 
-`Bounds`, `PagePoint`, `Scale120` (integer 120ths, the same type shell-host exports) are defined in
-`blitz-kit::units`. shell-host converts at its own boundary (`PointerPos`, `Rect`);
+`Bounds`, `PagePoint`, `Scale120` (integer 120ths, the same type layer-shell-host exports) are defined in
+`blitz-embed::units`. layer-shell-host converts at its own boundary (`PointerPos`, `Rect`);
 neither side names the other's types. Tests for each module live in the kit against a real
 `BaseDocument` built from HTML, so a repair is tested once for both consumers.
 
@@ -181,13 +181,13 @@ neither side names the other's types. Tests for each module live in the kit agai
 | Input modality (keyboard vs pointer) | `modality` |
 | Palmrest socket client (pointer, session lock, the person's gesture settings, the daemon's proof) | `input/palmrest` (socket, `peer_trust`: the peer held by `SO_PEERPIDFD` through `nix`, its cgroup read from `/proc`), `input/palmrest/user_config` (the settings file), `input/palmrest/route` (meaning); the lock is told from `ctx/lock`; the settings look is `ctx/palmrest` |
 | What palmrest asks of the session (`ToHost::Run`) | `HostEvent::Palmrest(PalmrestAction)`, from `input/scroll::palmrest_message`; the embedder carries it out |
-| Palmrest messages | `palmrest-protocol` |
-| Scroll physics, latching, document side, driver | `blitz_kit::scroll` (shared with `ds-blitz`) |
+| Palmrest messages | `mouse-gestures-proto` |
+| Scroll physics, latching, document side, driver | `blitz_kit::scroll` (shared with `ui-blitz`) |
 | Scroll settings (engine part) | `blitz_kit::scroll::config::ScrollSettings`; `scroll/config` holds `ScrollConfig` (it and the thumb's settings) |
 | Scroll thumb, palmrest and Wayland axis input, double-scroll rule | `scroll/{indicator,source,suppress,paint}`, `scroll/surface` (the surface's driver, thumb and palmrest tracker) |
 | What a component hears of a wheel or touchpad (source, phase, distance) | `scroll/wheel` (the meaning), `scroll/wheel_feed` (the queue), `use_wheel` |
 | Scroll view of Blitz (scroller chain, raw offsets) | `dom/scroll` |
-| Hover repair, net provider, fonts, adapter ranking, transform-aware hit and rect, pixel snap | `blitz-kit` |
+| Hover repair, net provider, fonts, adapter ranking, transform-aware hit and rect, pixel snap | `blitz-embed` |
 | One document per surface | `dom/document` |
 | The viewport's colour scheme follows the root's; a switch rebuilds every box (F81) | `dom/scheme` |
 | Shell provider (redraw flag, cursor, IME, clipboard hooks) | `dom/shell_provider` |
@@ -217,7 +217,7 @@ neither side names the other's types. Tests for each module live in the kit agai
 `Flush` is the only trait the crate defines. sctk's handler traits (`CompositorHandler`,
 `LayerShellHandler`, `KeyboardHandler`, ...) and wayland-client's `Dispatch` are implemented on
 `HostState`, one impl per file in `handlers/`; `NetProvider` and `ShellProvider` are Blitz's
-traits, implemented in `blitz-kit::net` and `dom/shell_provider`.
+traits, implemented in `blitz-embed::net` and `dom/shell_provider`.
 
 Add an implementor of `Flush` only for another loop driver. Add a new trait only when two real
 implementations are swapped at a boundary.
@@ -336,9 +336,9 @@ the compositor for the acceptance scripts. Handlers become table-testable by str
 | Handler decisions | table tests of `decide.rs` |
 | Hooks and documents | `handle/tests.rs` and `dom/*/tests.rs`: a real `SurfaceDocument` built from a component, driven with published values and `poll`, no compositor |
 | Rendering | `headless` feature (`render_png` through vello_cpu) and the golden PNGs in `tests/snapshots/` |
-| Blitz repairs | in `blitz-kit`, against a `BaseDocument` |
+| Blitz repairs | in `blitz-embed`, against a `BaseDocument` |
 | Synthetic input on a live host | `HostCtx::inject` on the headless KWin through the demos and `accept-*.sh` |
-| Palmrest messages | `palmrest-protocol` round-trip tests; `input/palmrest/route` table tests; `input/palmrest` fake-daemon tests (pointer and session lock sent on change and on connect) |
+| Palmrest messages | `mouse-gestures-proto` round-trip tests; `input/palmrest/route` table tests; `input/palmrest` fake-daemon tests (pointer and session lock sent on change and on connect) |
 
 Integration tests in `tests/` use only the public root, `headless` and `inject`; a test that
 needs an internal module is a unit test beside that module. The one harness is the headless
@@ -363,7 +363,7 @@ session. Goldens change only with a reason in the commit message.
   stays a `bool`; an enum is for a public `f(true, false)` argument, a realistic third state, or
   the bus (`Modifier::of`, `LockKey::of`, `Elastic`).
 - **`Serialize, Deserialize` only where the type is data all the way down** (FINDINGS F11);
-  the palmrest wire types are `palmrest-protocol`'s and are not re-declared.
+  the palmrest wire types are `mouse-gestures-proto`'s and are not re-declared.
 - **Compositor behaviour is cited with a trace.** Before branching on protocol text, use what
   the protocol already said: an event, a global's presence, an error code.
 - **Nothing reads the environment except `Host::connect`** (through `HostConfig` and the
@@ -385,12 +385,12 @@ session. Goldens change only with a reason in the commit message.
 Each step keeps master green (the gate above), and callers in sill and quire change in the same
 step as an API they use.
 
-1. `blitz-kit` repo (done): create it with `hover`, `net`, `fonts`, `paint_rect`, `hit` and their tests
-   moved from shell-host unchanged in behaviour; add `adapter` and `snap`. Gate in the kit.
-2. shell-host depends on `blitz-kit` (done); delete `dom/hover_sync.rs`, `dom/net.rs`, `dom/fonts.rs`,
+1. `blitz-embed` repo (done): create it with `hover`, `net`, `fonts`, `paint_rect`, `hit` and their tests
+   moved from layer-shell-host unchanged in behaviour; add `adapter` and `snap`. Gate in the kit.
+2. layer-shell-host depends on `blitz-embed` (done); delete `dom/hover_sync.rs`, `dom/net.rs`, `dom/fonts.rs`,
    `dom/painted.rs`, the ranking half of `gpu/adapter.rs`; `tests/hover_sync.rs` and
    `tests/host_fonts.rs` move to the kit.
-3. `palmrest-protocol` exists (palmrest step 1) (done); shell-host depends on it and deletes
+3. `mouse-gestures-proto` exists (palmrest step 1) (done); layer-shell-host depends on it and deletes
    `input/palmrest/wire.rs`; `tests/scroll_palmrest.rs` reads the crate's fixtures. Update
    `check-boundary.sh`.
 4. Bools to enums (done): `Modifier::of`, `LockKey::of`, `pick`, `elastic`, `requested`,

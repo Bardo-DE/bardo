@@ -7,14 +7,14 @@
 //! the grants again.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use shell_model::intents::terminal::{Breaker, Terminal, grant_words};
+use shell_model::intents::{ActionRef, IntentsCommand};
+use shell_services::IntentsService;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use shell_model::intents::terminal::{Breaker, Terminal, grant_words};
-use shell_model::intents::{ActionRef, IntentsCommand};
-use shell_services::IntentsService;
-use shell_kit::prelude::*;
 
 use super::cc_module::{CcCx, CcModule, Span};
 use crate::control_center::modules::use_plate;

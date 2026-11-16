@@ -271,7 +271,7 @@ pub(crate) fn exchange_fault(fault: ExchangeFault) -> SignInFault {
     match fault {
         ExchangeFault::Refused => SignInFault::Refused,
         ExchangeFault::Unreachable => SignInFault::Unreachable,
-        // unreadable, and a fault a later porter-oauth adds
+        // unreadable, and a fault a later account-oauth adds
         _ => SignInFault::Unreadable,
     }
 }
@@ -283,7 +283,7 @@ pub(crate) fn loopback_fault<R: BrowserIssuer>(rules: &R, fault: LoopbackFault) 
         LoopbackFault::TimedOut => SignInFault::TimedOut,
         LoopbackFault::Refused(error) => rules.refusal(&error),
         LoopbackFault::WrongState => SignInFault::Refused,
-        // oversized, no code, malformed, and a fault a later porter-oauth adds
+        // oversized, no code, malformed, and a fault a later account-oauth adds
         _ => SignInFault::Unreadable,
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "action-eval"
-description = "The red-team suite runner: reads the corpus and attack files, plays the cases over docket-fake, and checks an app against the conformance rules. The case format, judgement and scores are in eval-core."
+description = "The red-team suite runner: reads the corpus and attack files, plays the cases over action-fake, and checks an app against the conformance rules. The case format, judgement and scores are in action-eval-core."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

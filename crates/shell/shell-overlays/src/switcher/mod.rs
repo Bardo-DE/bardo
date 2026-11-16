@@ -2,7 +2,7 @@
 //! The window switcher shortcuts run `sill switcher next|prev`,
 //! which the daemon writes to the [`shell_ui_kit::links::SwitcherLink`]; the switcher surface on the chosen output takes
 //! the keyboard (`Exclusive`) at once, so it sees the chord's modifier go up (Alt's or Super's
-//! key-up, or shell-host's modifiers on focus: `hold.rs`, `watch.rs`), and runs
+//! key-up, or layer-shell-host's modifiers on focus: `hold.rs`, `watch.rs`), and runs
 //! [`Opening`](opening::Opening), quire's switcher machine (the one the compositor runs too): a quick tap
 //! switches to the previous app with no panel, a hold past `switcher.show_delay_ms` fades quire's `AppSwitcher` in (the apps from
 //! `apps::switcher_apps`), Tab and the arrows move, Q quits and H hides the selected app,

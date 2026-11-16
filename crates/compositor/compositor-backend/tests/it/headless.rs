@@ -9,8 +9,8 @@ use compositor_core::geometry::LogicalPoint;
 use compositor_core::output::OutputConfig;
 use compositor_core::{OutputKey, OutputName};
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 fn spec(text: &str) -> VirtualOutputSpec {
     VirtualOutputSpec::parse(text).expect(text)

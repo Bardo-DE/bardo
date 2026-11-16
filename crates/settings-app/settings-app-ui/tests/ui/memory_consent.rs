@@ -9,8 +9,8 @@ use crate::support::drive::{click, scroll_into_view};
 use crate::support::memory::{Fake, serve};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const PLAIN: &str =
     ".ds-segmented[aria-label=\"Memory files\"] .ds-segmented-segment:nth-of-type(2)";

@@ -1,10 +1,10 @@
 //! `KeycapSource`: this desktop's `keymap::KeymapSource`.
 
 use crate::{fallback, fetch, system, watch};
+use key_remap_proto::{CONFIG_DIR, KEYMAP_FILE, KeymapProblem, SOCKET_PATH};
 use keymap::{
     ChangeCallback, Desktop, Keymap, KeymapSource, Overrides, Platform, SourceError, Watch,
 };
-use key_remap_proto::{CONFIG_DIR, KEYMAP_FILE, KeymapProblem, SOCKET_PATH};
 use std::path::{Path, PathBuf};
 
 /// Where our desktop's keymap is the person's own: the platform keycap serves.

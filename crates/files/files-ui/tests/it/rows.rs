@@ -2,11 +2,11 @@
 
 use std::time::Duration;
 
-use ui_components::base::selection::PickHow;
-use ui_components::components::lists::table::model::SortDirection;
 use files_core::{ByteSize, Entry, EntryKind, FileName, FolderPath, Location, SortOrder};
 use files_model::{Browser, Input, Modifier, Now};
 use files_ui::rows::{Column, cursor_of, direction_of, modifier_of, order_of, selection_of};
+use ui_components::base::selection::PickHow;
+use ui_components::components::lists::table::model::SortDirection;
 
 fn name(text: &str) -> FileName {
     FileName::new(text).unwrap()

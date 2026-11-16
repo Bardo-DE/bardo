@@ -1,21 +1,23 @@
 //! The halt, the computer-use gate and callers that are not the person's own surfaces.
 
 use crate::support::*;
-use computer_use_action::{CuaAction, WindowSpace};
-use computer_use_action::{RunMode, WindowTrust};
 use action_core::*;
 use action_fake::ScriptedConfirmer;
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
-use permission_core::{
-    ActionGrantKey, DenyCode, GrantCaller, GrantTarget, Level, Limit, LimitCaller, LimitKey,
-    LimitLevel, LimitMaker, LimitScope,
-};
 use action_router::GrantStore;
 use action_vocab::CallerRole;
 use action_wire::{
     CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionOpen, WireRefusal,
 };
-use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SpaceScope, UnixSeconds};
+use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{RunMode, WindowTrust};
+use permission_core::{
+    ActionGrantKey, DenyCode, GrantCaller, GrantTarget, Level, Limit, LimitCaller, LimitKey,
+    LimitLevel, LimitMaker, LimitScope,
+};
+use provenance::{
+    AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SpaceScope, UnixSeconds,
+};
 
 fn cuad() -> CallerId {
     caller("org.quire.Cuad", CallerRole::Cua)
@@ -180,12 +182,10 @@ async fn a_step_of_a_run_nobody_opened_is_refused() {
 async fn a_halt_withdraws_every_sheet_in_scope_and_only_the_control_centre_resumes() {
     let router = router();
     let open_sheet = |id: &str, in_space: &str| {
-        router
-            .state
-            .lock()
-            .expect("lock")
-            .pending
-            .insert(provenance::ConfirmId::parse(id).expect("id"), space(in_space));
+        router.state.lock().expect("lock").pending.insert(
+            provenance::ConfirmId::parse(id).expect("id"),
+            space(in_space),
+        );
     };
     open_sheet("c-1", "work");
     open_sheet("c-2", "home");
@@ -425,7 +425,9 @@ async fn report(
         kind: provenance::MessageKind::Report {
             status: provenance::ReportStatus::Done,
         },
-        parts: vec![DraftPart::Text(provenance::MessageText::new("opened the page"))],
+        parts: vec![DraftPart::Text(provenance::MessageText::new(
+            "opened the page",
+        ))],
     };
     ask(
         router,

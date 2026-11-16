@@ -1,10 +1,10 @@
 //! The voiced binary: reads `voiced.toml`, then serves `org.quire.Voice1` on the session bus over
 //! PipeWire until the bus closes.
 
+use agent_voice_daemon::{ConfigError, FileUse, VoicedConfig};
+use agent_voice_pipewire::PipeWireDevice;
 use clap::Parser;
 use std::process::ExitCode;
-use agent_voice_pipewire::PipeWireDevice;
-use agent_voice_daemon::{ConfigError, FileUse, VoicedConfig};
 
 /// The voice daemon.
 #[derive(Debug, Parser)]
@@ -66,7 +66,12 @@ fn main() -> ExitCode {
     };
     let usage = FileUse::sill_default(|name| std::env::var(name).ok());
     tracing::info!("serving");
-    match runtime.block_on(agent_voice_daemon::serve(config, table, PipeWireDevice, usage)) {
+    match runtime.block_on(agent_voice_daemon::serve(
+        config,
+        table,
+        PipeWireDevice,
+        usage,
+    )) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
             tracing::error!("stopped: {why}");

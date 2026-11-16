@@ -15,17 +15,17 @@ use super::resolve::{model_text, parse_model, slot_value};
 use crate::cloud::picker::{Availability, Choice, NEEDS_ACCOUNT};
 use crate::peers::{Peers, Role};
 use crate::spend_rows::SpendRows;
+use account_capability::{Locality, Tier};
+use inference_core::{Chooser, ModelRef, Slot, tier_label};
+use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
+use inference_router::local::LocalModel;
+use inference_router::router::slots_of;
+use std::collections::BTreeMap;
 use ui_settings::live::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
 use ui_settings::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
     HostName, KeyKind, KeyPath, KeySpec, Label, Page, Section, UnavailableReason, WordLabels,
 };
-use account_capability::{Locality, Tier};
-use inference_core::{Chooser, ModelRef, Slot, tier_label};
-use inference_router::local::LocalModel;
-use inference_router::router::slots_of;
-use std::collections::BTreeMap;
-use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 
 /// The picker value that is Automatic.
 const AUTO: &str = "auto";

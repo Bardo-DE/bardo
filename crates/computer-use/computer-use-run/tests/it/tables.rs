@@ -1,6 +1,9 @@
-//! What the pure functions of cua-run must do.
+//! What the pure functions of computer-use-run must do.
 
 use crate::support::rules;
+use account_core::{AppName, DataClass};
+use account_ids::Count;
+use action_gate_wire::EffectBasis;
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
@@ -10,15 +13,12 @@ use computer_use_action::{
 };
 use computer_use_action::{WindowClass, WindowTrust};
 use computer_use_bus::WindowRef;
+use computer_use_capture::{Frame, FrameDigest, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{Digest32, Stamp, ToplevelIdent};
 use computer_use_run::{
     ContextObs, CursorObs, Focus, LeaseBook, Observation, Repeats, Stall, TreeObs, Visibility,
     WindowInfo, classify_effect, turn,
 };
-use action_gate_wire::EffectBasis;
-use computer_use_capture::{Frame, FrameDigest, FrameSeq, MaskReport, PixelBuf, WholeMask};
-use account_core::{AppName, DataClass};
-use account_ids::Count;
 use inference_core::{MaskedRegions, StepIndex, TreeText};
 use provenance::{
     ActionName, Confidentiality, Effect, Integrity, Label, Labelled, RunId, Source, SpaceId,
@@ -52,7 +52,10 @@ fn enter() -> CuaAction<WindowSpace> {
     }
 }
 
-fn chord_press(mods: &[computer_use_action::Modifier], key: keyboard_types::Key) -> CuaAction<WindowSpace> {
+fn chord_press(
+    mods: &[computer_use_action::Modifier],
+    key: keyboard_types::Key,
+) -> CuaAction<WindowSpace> {
     CuaAction::Key {
         chord: Chord::new(mods.iter().copied().collect(), key).unwrap(),
         repeat: Repeat::ONCE,
@@ -106,8 +109,8 @@ fn secret_node(id: u32, role: Role, name: &str, secret: bool, value: &str) -> A1
 #[test]
 fn effects_that_talk_to_a_neighbour_have_a_deadline_and_the_ones_that_wait_on_the_person_have_none()
 {
-    use computer_use_run::{HintSource, RunEffect, RunInput, deadline_of};
     use computer_use_capture::{CaptureError, FrameWant};
+    use computer_use_run::{HintSource, RunEffect, RunInput, deadline_of};
     let capture = RunEffect::Capture {
         want: FrameWant::Now,
         hints: HintSource::FromTree,
@@ -238,13 +241,19 @@ fn classify_effect_table() {
         },
         Row {
             name: "Command+Tab leaves the window, so the router asks",
-            action: chord_press(&[computer_use_action::Modifier::Super], keyboard_types::Key::Tab),
+            action: chord_press(
+                &[computer_use_action::Modifier::Super],
+                keyboard_types::Key::Tab,
+            ),
             class: Ordinary,
             want: (Effect::Outbound, EffectBasis::DefaultTable),
         },
         Row {
             name: "the desktop's chord is outbound in any window",
-            action: chord_press(&[computer_use_action::Modifier::Super], keyboard_types::Key::Tab),
+            action: chord_press(
+                &[computer_use_action::Modifier::Super],
+                keyboard_types::Key::Tab,
+            ),
             class: Terminal,
             want: (Effect::Outbound, EffectBasis::DefaultTable),
         },
@@ -326,7 +335,8 @@ fn a_pay_button_on_screen_makes_an_untitled_window_a_payment_form() {
     let app = AppName::parse("org.mozilla.firefox").unwrap();
     let pay = secret_node(1, Role::Button, "Pay now", false, "");
     let back = secret_node(2, Role::Button, "Back", false, "");
-    let class = |nodes: &[A11yNode]| computer_use_run::window_class_in(&rules(), &app, "Shop", nodes);
+    let class =
+        |nodes: &[A11yNode]| computer_use_run::window_class_in(&rules(), &app, "Shop", nodes);
     assert_eq!(class(&[back.clone(), pay]), WindowClass::Payments);
     assert_eq!(class(&[back]), WindowClass::Ordinary);
     assert_eq!(class(&[]), WindowClass::Ordinary);

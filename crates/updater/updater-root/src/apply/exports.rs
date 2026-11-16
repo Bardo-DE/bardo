@@ -7,12 +7,12 @@ use super::synced::Synced;
 use crate::fsutil::switch_link;
 use crate::layout::Layout;
 use semver::Version;
-use updater_core::release::MAX_INDEX_BYTES;
-use updater_core::{Authenticator, ExportAction, Found, Release, SignError, plan_exports};
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::path::Path;
+use updater_core::release::MAX_INDEX_BYTES;
+use updater_core::{Authenticator, ExportAction, Found, Release, SignError, plan_exports};
 
 /// The longest signature text read.
 const MAX_SIGNATURE_BYTES: usize = 4096;

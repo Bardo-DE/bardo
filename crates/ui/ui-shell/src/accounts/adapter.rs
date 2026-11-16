@@ -9,6 +9,7 @@
 use super::hidden::Hidden;
 use super::model::{Attempt, Choice, FieldText, PickerChoice};
 use dioxus::prelude::*;
+use std::hash::Hash;
 use ui_components::components::content::avatar::AvatarSize;
 use ui_components::components::content::icon_source::{ExternalIcon, IconSource};
 use ui_components::components::content::icon_view::IconView;
@@ -19,7 +20,9 @@ use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::text_field::TextField;
 use ui_components::components::fields::text_field_focus::FieldFocus;
-use ui_components::components::fields::text_field_model::{FieldKind, FieldText as HeldBy, Invalid, Validity};
+use ui_components::components::fields::text_field_model::{
+    FieldKind, FieldText as HeldBy, Invalid, Validity,
+};
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::components::menus::item::item::MenuItem;
@@ -30,7 +33,6 @@ use ui_core::vocab::Availability;
 use ui_motion::detail::stamp::EventStamp;
 use ui_style::icon::render::{IconPx, IconSize};
 use ui_style::icon::url::IconUrl;
-use std::hash::Hash;
 
 /// Where the keyboard starts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -236,8 +238,8 @@ pub(crate) fn Action(
     }
 }
 
-/// A button that copies `text`: the host does the copying (it hears `oncopy`; ds-shell may not
-/// depend on ds-blitz, so `ui_blitz::clipboard::write_text` is the host's call), and `state` is
+/// A button that copies `text`: the host does the copying (it hears `oncopy`; ui-shell may not
+/// depend on ui-blitz, so `ui_blitz::clipboard::write_text` is the host's call), and `state` is
 /// the host's word on whether it has, so the label can say "Copied".
 #[component]
 pub(crate) fn CopyAction(

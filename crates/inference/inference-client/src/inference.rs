@@ -4,12 +4,12 @@ use crate::error::{ClientError, TransportError};
 use crate::transport::Transport;
 use account_capability::Tier;
 use account_core::DataClass;
+use account_match::Need;
+use account_tailscale::NodeId;
 use inference_core::{
     ClientFrame, InferEvent, InferReply, InferRequest, InferSession, OpenOptions, Readiness,
 };
-use account_match::Need;
 use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
-use account_tailscale::NodeId;
 
 /// The app's connection to inferd.
 #[derive(Debug)]

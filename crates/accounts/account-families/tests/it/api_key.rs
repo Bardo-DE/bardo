@@ -172,7 +172,8 @@ async fn a_pasted_key_is_asked_for_hidden_checked_the_documented_way_and_reviewe
             panic!("{id}: a review: {review:?}");
         };
         assert_eq!(label.0, shipped::ai(id).label, "{id}");
-        let own = |c: &&account_capability::Claim| c.subject == account_capability::Subject::Account;
+        let own =
+            |c: &&account_capability::Claim| c.subject == account_capability::Subject::Account;
         assert_eq!(claims.iter().filter(own).count(), 1, "{id}");
         let signed = signed_of(signin.next(SignInInput::Confirm(Vec::new())).await);
         assert_eq!(key_of(&signed), PASTED, "{id}");
@@ -271,7 +272,8 @@ async fn discover_checks_the_key_and_a_dead_key_is_unauthorized() {
             .discover(&holder, &live("sk-seeded"))
             .await
             .expect("live");
-        let own = |c: &&account_capability::Claim| c.subject == account_capability::Subject::Account;
+        let own =
+            |c: &&account_capability::Claim| c.subject == account_capability::Subject::Account;
         assert_eq!(claims.iter().filter(own).count(), 1, "{id}");
         assert_eq!(claims[0].provenance, Provenance::Probed);
         assert_presented(&fake.calls()[0], *auth, "sk-seeded");

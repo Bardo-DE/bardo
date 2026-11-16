@@ -7,9 +7,9 @@ use crate::support::drive::{click, scroll_into_view};
 use keymap::{Chord, Desktop, Overrides, Platform};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_components::prelude::ShortcutKey;
 use ui_harness::{Harness, Input};
-use std::time::Duration;
 
 const KEYMAP: &str = "keycap/keymap";
 const ALERT: &str = ".ds-alert";

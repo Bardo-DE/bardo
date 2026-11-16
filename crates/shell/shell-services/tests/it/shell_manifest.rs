@@ -8,12 +8,12 @@ use std::collections::BTreeMap;
 use action_core::{AppRefusal, Invocation};
 use action_manifest::{ParamDecl, ParamNeed};
 use action_vocab::{CallId, ChoiceId, Origin, ParamType, Value};
-use ui_core::word::Word;
 use provenance::{ActionName, Actor, Label, Labelled, SpaceId};
 use shell_launcher::actions::ActionId;
 use shell_model::actions::intent_of;
 use shell_model::intents::shell::{action_of, menu_ask_of, window_ask_of};
 use shell_services::intents::manifest;
+use ui_core::word::Word;
 
 /// An invocation of `action` with the arguments `args`.
 fn invocation(action: &ActionName, args: BTreeMap<action_vocab::ParamName, Value>) -> Invocation {

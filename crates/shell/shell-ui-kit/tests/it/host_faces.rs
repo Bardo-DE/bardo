@@ -1,4 +1,4 @@
-//! Every sill process registers quire's faces with shell-host: a document under the host that
+//! Every sill process registers quire's faces with layer-shell-host: a document under the host that
 //! names Inter must find Inter, not the system face.
 
 use std::path::Path;

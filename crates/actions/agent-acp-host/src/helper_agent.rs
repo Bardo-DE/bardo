@@ -16,13 +16,13 @@
 use super::backend::Seams;
 use super::host::AgentHost;
 use super::spawn::SignIn;
-use companion_model::helper::{HandFault, SignInHow, SignInWay, TerminalLogin, UntrustedWords};
-use companion_model::{AppSessionId, WatchedAgent};
 use action_core::{Reveal, TurnVia, UserTurn};
+use action_vocab::{Caller, TurnId};
 use agent_session::{
     BackendEvent, BackendFault, BackendKind, HostFault, Opening, SessionHost, SheetDesk, TurnEnd,
 };
-use action_vocab::{Caller, TurnId};
+use companion_model::helper::{HandFault, SignInHow, SignInWay, TerminalLogin, UntrustedWords};
+use companion_model::{AppSessionId, WatchedAgent};
 use provenance::{SessionId, UnixSeconds};
 use std::future::Future;
 

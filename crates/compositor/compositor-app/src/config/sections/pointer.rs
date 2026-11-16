@@ -2,9 +2,9 @@
 
 use crate::config::convert;
 use compositor_core::settings::{AccelProfile, CasementSettings};
+use serde::{Deserialize, Serialize};
 use ui_settings::Fraction;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// `pointer.*`: how mice and trackballs behave.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]

@@ -7,8 +7,8 @@
 //! writes as `calc()`, is the shipped constant below. Those constants and the token defaults are
 //! the only two copies; a test compares them.
 
-use ui_components::prelude::Px;
 use shell_kit::tokens::dock::DockToken;
+use ui_components::prelude::Px;
 
 /// `--dock-gap`'s shipped value: between two tiles.
 pub const GAP: u16 = 8;

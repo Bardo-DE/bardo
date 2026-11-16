@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Launcher acceptance, on a private headless KWin (shell-host scripts/dev/kwin-virtual.sh) that
+# Launcher acceptance, on a private headless KWin (layer-shell-host scripts/dev/kwin-virtual.sh) that
 # the script starts and stops. The default mode runs four groups of steps with every key sent by
-# `sill debug key SURFACE KEY` (shell-host's `Inject::Key`: the key enters the panel where a real
+# `sill debug key SURFACE KEY` (layer-shell-host's `Inject::Key`: the key enters the panel where a real
 # xkb key does, whether or not KWin gave the panel the keyboard); --real-input types real Wayland
 # key events instead.
 #
@@ -34,7 +34,7 @@
 #     5. Stress: 20 toggles 150 ms apart (each close lands mid entrance), then 5 s idle; the
 #        daemon still answers `sill ping` and is still running.
 #     6. On `examples/launcher_demo.rs` (fake results, driven through its stdin): `open`, then
-#        the keys `f` and `i` (shell-host's `key` verb) show rows; Ctrl+K opens the selected
+#        the keys `f` and `i` (layer-shell-host's `key` verb) show rows; Ctrl+K opens the selected
 #        row's actions menu; Escape twice closes the menu, then the launcher. Captures of the
 #        panel: target/accept-launcher/ui/demo-{open,actions,closed}.png.
 #
@@ -60,7 +60,7 @@
 #     C. Home then →, End then →: the key claim reads the caret under sill.
 #     F. The same looks over the fakes' fixtures (`tests/launcher_support/m9.rs`: a PDF, a PNG, a
 #        Markdown file, five more PDFs, a clipboard entry, emoji), on `examples/launcher_demo.rs`
-#        (its keys are shell-host's `key` verb) after the daemon has quit, while the files and emoji providers answer nothing:
+#        (its keys are layer-shell-host's `key` verb) after the daemon has quit, while the files and emoji providers answer nothing:
 #        dev/out/launcher-v2-{preview-pdf,preview-image,preview-text,show-more,pane-focus,
 #        emoji}-fixtures.png.
 #     A step that needs rows from the files or emoji provider exits 2 (SKIP) while that provider
@@ -86,7 +86,7 @@
 #        stub only activatable (a service file on the private bus), the call starts it.
 #     4. Tracker end to end in localsearch's own sandbox (a private bus and a scratch index).
 #
-# --real-input: shell-host's scripts/dev/fake-input.sh drives the headless KWin: every key is a
+# --real-input: layer-shell-host's scripts/dev/fake-input.sh drives the headless KWin: every key is a
 # real Wayland key event with a real serial and keyboard focus, reaching the palette's field and
 # quire's key claim as a person's would. `sill debug launcher-rows` and `sill debug capture` only
 # look; no key goes through `sill debug key`. The bus is KWin's private bus, given to
@@ -328,7 +328,7 @@ key_spec() {
   esac
 }
 
-# A key (`key_spec`'s words) on the demo's panel (its stdin is fd 7), through shell-host's `key` verb.
+# A key (`key_spec`'s words) on the demo's panel (its stdin is fd 7), through layer-shell-host's `key` verb.
 demo_key() { echo "sill-launcher-$NAME key $(key_spec "$1")" >&7; sleep 0.3; }
 
 # ---------------------------------------------------------------- group toggle

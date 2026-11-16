@@ -171,12 +171,12 @@ Whether a swiped banner stays in the center is `notifications.swipe`, the caller
 
 | Rule | Specification | Status |
 | --- | --- | --- |
-| First click (our apps) | a pointer press that activates an inactive ds-blitz toplevel is consumed (not delivered to Blitz) unless the element under it or an ancestor carries `data-first-mouse` (ds opts in: window drag areas, scrollbar thumbs, the traffic-light buttons). "Activating" = the surface's `xdg_toplevel` `activated` state or `wl_keyboard.enter` arrived within 100 ms before the press | R10 (H), detection proposed |
+| First click (our apps) | a pointer press that activates an inactive ui-blitz toplevel is consumed (not delivered to Blitz) unless the element under it or an ancestor carries `data-first-mouse` (ds opts in: window drag areas, scrollbar thumbs, the traffic-light buttons). "Activating" = the surface's `xdg_toplevel` `activated` state or `wl_keyboard.enter` arrived within 100 ms before the press | R10 (H), detection proposed |
 | Hover and scroll | work in inactive windows without activating them (Wayland default); our scroll engine latches normally | proposed |
 | Foreign apps | toolkit and compositor behaviour; not controlled | limit |
 | Cmd-drag a background window | compositor feature; the compositor moves windows with Super+drag (activation behaviour is the compositor) | R11 (M); limit |
 | Raise | activating an app raises one toplevel (the toplevel client); macOS raises all of the app's windows; not reproducible | limit |
-| Layer surfaces | bar and dock never take keyboard focus; their popups switch the layer to `OnDemand` until closed (plan shell-host rule); launcher and switcher use `Exclusive` | settled (plan) |
+| Layer surfaces | bar and dock never take keyboard focus; their popups switch the layer to `OnDemand` until closed (plan layer-shell-host rule); launcher and switcher use `Exclusive` | settled (plan) |
 
 ### 13.3.9 Launcher appearance (Spotlight-like)
 
@@ -206,7 +206,7 @@ Whether a swiped banner stays in the center is `notifications.swipe`, the caller
 ### 13.3.10 UI sounds
 
 Played from the freedesktop sound theme (`sound.theme`, default `freedesktop`) by
-`sill-services` `sound` (libpulse-binding, already in the pinned block: samples uploaded once,
+`shell-services` `sound` (libpulse-binding, already in the pinned block: samples uploaded once,
 `play_sample` for low latency).
 
 | Event | macOS | Our sound name (freedesktop naming spec) | Status |
@@ -224,7 +224,7 @@ Played from the freedesktop sound theme (`sound.theme`, default `freedesktop`) b
 
 The frame quire draws for a window that asks for no server decorations
 (`Ds { window: WindowFrame::Titlebar }`, design/04 "Window frame"). It acts through the host seam
-`ds::prelude::HostWindow`: ds-blitz over winit, sill over shell-host's `SurfaceHandle`.
+`ds::prelude::HostWindow`: ui-blitz over winit, sill over layer-shell-host's `SurfaceHandle`.
 
 | Behaviour | Specification | Status |
 | --- | --- | --- |
@@ -282,7 +282,7 @@ Acceptance (sill `dev/accept/hot-corners.sh`, nested compositor, debug-inject or
 (3) rest 2 s → exactly once; (4) leave and return within 500 ms → nothing, after 500 ms → again;
 (5) with `size_px` 2, a pointer at (1, 1) of the corner is inside and (2, 2) is outside;
 (6) `Launcher` twice from the same corner opens then closes it. There is no modifier option: a
-keyboard-less surface cannot learn a held key portably (shell-host F61), so the reference
+keyboard-less surface cannot learn a held key portably (layer-shell-host F61), so the reference
 desktop's modifier gating was retired on 2026-09-26; it is a compositor-fork item in sill's
 compositor-gaps list (send modifier state to the surface under the pointer).
 
@@ -394,13 +394,13 @@ Banner duration is not a setting (R8: not user-changeable since Big Sur).
 | Concern | Owner |
 | --- | --- |
 | Menu tracking machine, safe triangle, `Menu` component | quire `ds/stack/menu_track/machine.rs` (settled, shipped), `ds/components/menus/menu/menu.rs` |
-| Popup surfaces, reposition, grabs | shell-host `popup` (`PopupConfig`, `xdg_positioner`, `xdg_popup.reposition`) |
+| Popup surfaces, reposition, grabs | layer-shell-host `popup` (`PopupConfig`, `xdg_positioner`, `xdg_popup.reposition`) |
 | Bar, switcher, notifications, control center, launcher surfaces | sill `surfaces/{bar,switcher,notifications,control_center,launcher}` |
-| Notification server | sill-services (pattern: the desktop notification daemon subscriptions/notifications.rs) |
-| Toplevel activation / close / minimize | sill-services `toplevel_wl` (the toplevel client) |
+| Notification server | shell-services (pattern: the desktop notification daemon subscriptions/notifications.rs) |
+| Toplevel activation / close / minimize | shell-services `toplevel_wl` (the toplevel client) |
 | Shortcuts | `dist/casement/.../system_actions` (Launcher, WindowSwitcher) |
-| Sounds | sill-services `sound` (libpulse-binding) |
-| First-mouse filter | shell-host shell-host's input/pointer.rs (activation-time tracking) + ds `data-first-mouse` |
+| Sounds | shell-services `sound` (libpulse-binding) |
+| First-mouse filter | layer-shell-host layer-shell-host's input/pointer.rs (activation-time tracking) + ds `data-first-mouse` |
 
 Platform limits:
 
@@ -451,7 +451,7 @@ Driven by `ds_harness::Harness` (pure menus) and `sill debug` in the nested comp
     slowly: springs back; horizontal scroll of 100 px on the banner: dismissed.
 11. **Grouping**: 3 notifications from one app within 2 s: one banner card with count 3; 5 from
     5 apps: 3 visible cards, newest on top.
-12. **First mouse**: clicking a button in an inactive ds-blitz window activates the window and
+12. **First mouse**: clicking a button in an inactive ui-blitz window activates the window and
     the button's handler does not run; a second click runs it; a `data-first-mouse` element
     runs on the first click.
 13. **Launcher**: rows 44 px, 8
@@ -477,7 +477,7 @@ Driven by `ds_harness::Harness` (pure menus) and `sill debug` in the nested comp
 ## 13.10 Sources
 
 - Plan Appendix C-D (all R rows), "Design: sill" (Bar, Launcher, notifications server,
-  shortcuts), "Design: shell-host" (popups, keyboard modes), "Findings: compositors" (shortcuts,
+  shortcuts), "Design: layer-shell-host" (popups, keyboard modes), "Findings: compositors" (shortcuts,
   the desktop notification daemon, ), M0 spike item a.
 - Sibling docs: `03-COLOR.md` materials, `05-MOTION.md`, `30-CATALOGUE.md` §1 and §2.4-2.5,
   `20-SURFACES.md` §1.1, `01-LAYOUT.md` §13.1 (bar height open decision).

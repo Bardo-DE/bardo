@@ -4,7 +4,7 @@
 //! `config`, `outputs`) takes bytes and instants and returns values; `recording` and `replay`
 //! feed recorded reads through it. The daemon owns every thread, socket, device and clock, and
 //! its `hidioc` holds the only `unsafe` (one hidraw ioctl); `command::run` is the one way in to it. The socket
-//! messages are the `palmrest-protocol` crate.
+//! messages are the `mouse-gestures-proto` crate.
 
 pub mod action;
 pub mod command;

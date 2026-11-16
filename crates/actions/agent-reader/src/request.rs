@@ -1,10 +1,10 @@
 //! What the reader model is asked. The instruction is fixed text per closed task: the
 //! planner's words never reach it, and the inputs are data fenced away from the instruction.
 
-use action_core::{ReaderAsk, ReaderTask, ValueSchema};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Permille, Tokens};
+use action_core::{ReaderAsk, ReaderTask, ValueSchema};
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, Reasoning, ReplyShape, Role,
     Sampling, ToolChoice, ToolParallelism,

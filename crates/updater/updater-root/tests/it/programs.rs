@@ -1,7 +1,7 @@
 //! The three privileged programs' command lines.
 
-use updater_root::helper::{HealthRequest, Parsed, parse_health, parse_install, parse_rollback};
 use std::path::PathBuf;
+use updater_root::helper::{HealthRequest, Parsed, parse_health, parse_install, parse_rollback};
 
 fn words(args: &[&str]) -> impl Iterator<Item = String> {
     args.iter()

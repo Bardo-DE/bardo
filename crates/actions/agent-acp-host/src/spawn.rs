@@ -1,12 +1,12 @@
 //! The seam that starts an external agent and hands back its stdio as a transport for the SDK's
-//! client role. The real one is `docket-launch`'s (accounts, sandbox, process); `fake::FakeSpawn`
+//! client role. The real one is `agent-launch`'s (accounts, sandbox, process); `fake::FakeSpawn`
 //! returns an in-memory pipe.
 
 use super::edge::EdgeBind;
 use super::models::ModelId;
 use agent_client_protocol::{Client, ConnectTo};
-use sandbox::AbsPath;
 use permission_core::ProgramName;
+use sandbox::AbsPath;
 
 use provenance::SessionId;
 use std::future::Future;

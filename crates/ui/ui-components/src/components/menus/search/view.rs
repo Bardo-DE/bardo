@@ -24,9 +24,9 @@ use crate::components::overlays::flow::Flow;
 use crate::host::measure::{Anchor, MountedRef};
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::Point;
 use ui_style::tokens::control_size::ControlSize;
-use std::rc::Rc;
 
 /// The key a suggestions panel takes, if `event` is one: a plain Up, Down, Enter or Escape.
 fn suggest_key(event: &KeyboardEvent) -> Option<SuggestKey> {

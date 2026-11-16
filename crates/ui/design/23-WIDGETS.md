@@ -254,7 +254,7 @@ low tone follows `BatteryState::is_low`; the arc follows its level with the prog
 | Part | Drawing | From |
 | --- | --- | --- |
 | Track | a full circle, stroke .093 of the ring (9.3 in the 100 box), round caps, `--battery-track`; while charging, the circle less the bolt's gap | M6, M8 |
-| Arc | clockwise from twelve as far as the level, the same stroke, round caps, `--battery-fill`; `--battery-low` at a fifth or less (`data-tone` `low` at 20 % or less, `critical` at 10 % or less, both red); charging is never low; the path is computed in Rust (`sill-shell-kit/battery/ring.rs`), no transition (O-20) | M7, M9, M10 |
+| Arc | clockwise from twelve as far as the level, the same stroke, round caps, `--battery-fill`; `--battery-low` at a fifth or less (`data-tone` `low` at 20 % or less, `critical` at 10 % or less, both red); charging is never low; the path is computed in Rust (`shell-kit/battery/ring.rs`), no transition (O-20) | M7, M9, M10 |
 | Device | the caller's glyph centred at .47 of the ring, `--ink` | M12 |
 | Bolt | while charging: a bolt .16 of the ring tall and .10 wide, `--ink`, centred on the stroke at twelve; the track and the arc leave a 29 degree gap between their ends' centres (17 between the caps) and the arc fills the rest | M11 |
 
@@ -398,7 +398,7 @@ slot), a unit of margin inside the 24 box like Lucide's own, no outline and no s
 and no traced copy of the reference's symbols (`08-ICONS.md` rules: abstract, not realistic).
 The set: `Laptop`, `Desktop`, `Phone`, `Tablet`, `Watch`, `Headphones`, `Earbuds`, `Mouse`,
 `Keyboard`, `Speaker`, `Gamepad`, `Other` (a cell with its terminal). The geometry is data
-(`sill-shell-kit/battery/device_forms.rs`) and a test keeps every piece on the grid. In a ring the glyph is
+(`shell-kit/battery/device_forms.rs`) and a test keeps every piece on the grid. In a ring the glyph is
 .47 of the ring, `--ink` (M12). Small glyphs elsewhere (16-24 px in lists) keep Lucide's stroke.
 
 ## 5. Calendar widget (research and specification only; queued)
@@ -683,7 +683,7 @@ pub struct WidgetContext<I> { pub size: WidgetSize, pub host: WidgetHost, pub wa
   with a timeline already due cannot spin the host. It wakes for nothing else: a pushed widget
   costs no frame between pushes (the idle-frame rule). A new timeline (by value) replaces the
   old at once; an equal one passed again changes nothing. Proven on the virtual clock
-  (sill's ds-conformance/tests/widget_timeline.rs).
+  (sill's ui-conformance/tests/widget_timeline.rs).
 - **A size a widget does not draw** is never asked of it: `fit::<W>(size)` holds it to the first
   of `W::sizes()`.
 
@@ -826,14 +826,14 @@ use, no frame-accurate recording found).
   (`--line` fill and hairline) in the card's corner, faded in (`a-fade`) as the drag reaches the
   cell, `aria-hidden`. The host places it at the snap cell; quire draws it.
 
-Both settle to zero frames (sill's ds-conformance/tests/widget_edit.rs, on the virtual clock).
+Both settle to zero frames (sill's ui-conformance/tests/widget_edit.rs, on the virtual clock).
 
 **Leaving (sill G423, 2026-09-28).** A desktop widget removed in Edit Widgets used to vanish in a
 frame. `WidgetCard { shown: Shown::Hidden, on_hidden }` (and `WidgetFrame`) plays the
 card's exit through `Presence` (design/30 section 1.3: a fade over `--t-quick`, `Exit::Fade`), takes no
 pointer (`data-presence="leaving"`), and calls `on_hidden` once at the exit's settle. The host keeps
 drawing the removed card until then and drops it there; passing `Shown::Visible` again before then takes
-the exit back and `on_hidden` never runs (sill's ds-conformance/tests/widget_card_presence.rs). `CardPresence` and
+the exit back and `on_hidden` never runs (sill's ui-conformance/tests/widget_card_presence.rs). `CardPresence` and
 the `widget-out` shrink are gone.
 
 ### 9.9 What sill changes

@@ -4,13 +4,13 @@
 //! hold machine (`step.rs`) only decides when the card is shown.
 
 use dioxus::prelude::*;
+use layer_shell_host::{OutputInfo, Visibility};
+use shell_kit::osd::OsdPosition;
+use shell_kit::prelude::*;
+use shell_model::ids::OutputName;
 use ui_components::components::controls::level_indicator::LevelStyle;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use layer_shell_host::{OutputInfo, Visibility};
-use shell_model::ids::OutputName;
-use shell_kit::osd::OsdPosition;
-use shell_kit::prelude::*;
 
 use super::io::{times, use_osd};
 use super::layer::{CARD_ID, layer};

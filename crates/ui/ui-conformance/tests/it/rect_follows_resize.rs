@@ -3,11 +3,11 @@
 //! was when it mounted.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::host::measure::use_rect;
 use ui_components::host::resized::WindowResized;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

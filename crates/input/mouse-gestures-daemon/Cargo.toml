@@ -1,6 +1,6 @@
 [package]
 name = "mouse-gestures-daemon"
-description = "Magic Mouse gesture daemon: hidraw decoder, scroll feel, gestures, a socket for shell-host and a virtual touchpad for everyone else"
+description = "Magic Mouse gesture daemon: hidraw decoder, scroll feel, gestures, a socket for layer-shell-host and a virtual touchpad for everyone else"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.92"

@@ -7,11 +7,11 @@ use crate::support;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_render::pass::render_window;
 use compositor_render::{CasementElement, Rgba8, solid_rect};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::pixman::PixmanRenderer;
 use smithay::backend::renderer::utils::CommitCounter;
 use support::{Offscreen1, pixman};
+use ui_core::geometry::scale::Scale;
 
 const SIZE: PhysicalSize = PhysicalSize { w: 8, h: 6 };
 

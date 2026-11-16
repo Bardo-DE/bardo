@@ -4,16 +4,16 @@
 
 use crate::support::*;
 
-use action_review::*;
-use permission_core::{AskReason, DenyCode, Impact, PolicyId, ReviewError, Ruling, Stage};
-use action_vocab::Millis;
 use account_capability::Tier;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use action_review::*;
+use action_vocab::Millis;
 use inference_core::{
     ChatReply, InferEvent, Knob, MessagePart, ModelError, Reasoning, ReplyShape, StopReason,
     ToolChoice,
 };
+use permission_core::{AskReason, DenyCode, Impact, PolicyId, ReviewError, Ruling, Stage};
 
 #[test]
 fn quick_asks_its_own_model_for_one_token() {

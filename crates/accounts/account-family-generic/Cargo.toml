@@ -1,6 +1,6 @@
 [package]
 name = "account-family-generic"
-description = "The generic family: a mail server or a DAV server with a password, found by autoconfig, SRV and MX, .well-known or the provider file. A driver: generic-proto holds the servers a person typed and the DAV and JMAP lookups, and this crate sends them and tries the password at the mail server."
+description = "The generic family: a mail server or a DAV server with a password, found by autoconfig, SRV and MX, .well-known or the provider file. A driver: account-generic-proto holds the servers a person typed and the DAV and JMAP lookups, and this crate sends them and tries the password at the mail server."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

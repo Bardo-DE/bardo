@@ -1,8 +1,8 @@
 //! The router's memory seam over memoryd.
 
+use action_core::{LinkFault, MemoryLink};
 use memory_client::{ClientError, Memory, Transport};
 use memory_core::{HistoryFate, MemoryFate, MemoryReply, MemoryRequest, Removal};
-use action_core::{LinkFault, MemoryLink};
 use provenance::SpaceId;
 
 /// Memory, as the router asks it (`Caller::Router`).

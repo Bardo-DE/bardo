@@ -4,11 +4,11 @@
 //! no typing and shows a spinner.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::fields::text_field_model::Invalid;
 use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

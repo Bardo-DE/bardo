@@ -13,7 +13,7 @@ surfaces with real devices: its own bar and dock over the desktop, BlueZ, MPRIS,
 at their defaults there; anything about those, or about displays and scale, is in the casement
 sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 
-- [ ] **CJK input in the launcher, a short real-keyboard spot check.** Automated by shell-host's
+- [ ] **CJK input in the launcher, a short real-keyboard spot check.** Automated by layer-shell-host's
   `SILL_DIR=~/sill ~/shell-host/scripts/dev/accept-ime.sh` (fcitx5 McBopomofo on a private headless
   KWin; the field reads 你好). By hand, once: `bash dev/manual/ime-live.sh start`, click into
   the search field, switch fcitx5 to McBopomofo, type `su3cl3` and press **Return** to commit
@@ -76,7 +76,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   Delete) clears the focused row, Escape closes.
 - [ ] **The capsule level look on the light scheme** (the fill reads faintly on its track) when
   picking the level look from quire's sheets.
-- [ ] **Drag icon follows the real pointer**: run shell-host's `examples/demo_drag.rs
+- [ ] **Drag icon follows the real pointer**: run layer-shell-host's `examples/demo_drag.rs
   --icon=root` and drag from its square: the icon follows the pointer the whole way (the
   headless KWin draws no cursor). The screenshot thumbnail's own drag is automated up to a drop
   with no target (`dev/accept/screenshot.sh --real-input`).
@@ -197,7 +197,7 @@ Toshy), then the session from the desktop repo. `docs/first-login.md` is the che
 first real login; the boxes below are what it proves. Then pick "sill (casement)" at the login
 screen.
 
-- [ ] **GPU choice**: the journal line `shell-host: adapter <name> ...` names the GPU the
+- [ ] **GPU choice**: the journal line `layer-shell-host: adapter <name> ...` names the GPU the
   compositor renders on, and `sill` is not at 100% CPU.
 - [ ] **Key repeat** is 400 ms / 10 per second at once (hold a key).
 - [ ] **Secrets**: `secret-tool search xdg:schema org.freedesktop.Secret.Generic` finds the
@@ -375,7 +375,7 @@ the real daemons or a real keyboard.
   same panel (no remount, no flash) becomes the prompt; the field is empty and the rows are the
   assistant's. Escape puts `mail` back in the search with its rows. Tap Cmd twice again from a fresh
   prompt: it closes.
-- [ ] **A summon over an app that serves the assistant** (mailo with docket-ds): with mailo focused,
+- [ ] **A summon over an app that serves the assistant** (mailo with action-ui-adapter): with mailo focused,
   tap Cmd twice: mailo's own search field becomes the prompt and the launcher stays shut; with a
   window that is not a quire app, the launcher opens instead, within a blink of `app_wait`.
 - [ ] **Ask from the launcher** (flows (a) and (b), real companiond): ask "what is on my calendar
@@ -423,7 +423,7 @@ the real daemons or a real keyboard.
 
 ## Owned by another repository
 
-- [ ] shell-host spike item f at a fractional output (1.5): run on casement at
+- [ ] layer-shell-host spike item f at a fractional output (1.5): run on casement at
   1.5x; the KWin run at 2.0 left `screen_row_equals_buffer_row` false.
 
 ## casement (tty session), first-login findings 2026-10-15
@@ -481,7 +481,7 @@ the real daemons or a real keyboard.
   a pick on the second monitor reads that monitor's pixel.
 - [ ] **A fractional scale** (150 %): the pixel picked is the one the middle of the magnifier shows, not a neighbour.
 - [ ] **No cursor over the magnifier**: the arrow is hidden while the magnifier is up (FINDINGS `wave-6/colour-picker`, if it is
-  drawn over the middle cell shell-host does not map `cursor: none`).
+  drawn over the middle cell layer-shell-host does not map `cursor: none`).
 - [ ] **On the tty session (KMS)**: casement reads the screen back on the tty backend, so on a real screen the picker opens. Start
   a colour request (a portal `PickColor` caller) with the pointer over a known colour: the loupe appears, and a click returns
   exactly the colour under the pointer (compare with the same spot on a screenshot). Only the region asked for is read back, not

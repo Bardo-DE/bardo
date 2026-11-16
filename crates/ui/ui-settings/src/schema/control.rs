@@ -2,8 +2,8 @@
 //! (design/22-SETTINGS.md section 9.1). Every program that draws settings reads this table; none
 //! keeps its own.
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 use super::key::{KeyKind, KeySpec};
 

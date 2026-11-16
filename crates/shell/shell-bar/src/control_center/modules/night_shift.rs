@@ -5,15 +5,15 @@
 //! Nothing is drawn while casement's settings cannot be reached.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::root::common::Common;
-use ui_components::root::pass_through::ExtraClass;
+use shell_kit::prelude::*;
 use shell_model::clock::{ClockHours, time_of_minute};
 use shell_model::night_shift::{
     NightShift, NightShiftCommand, Shown, shown, warmth_at, warmth_fraction,
 };
 use shell_services::NightShiftService;
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
+use ui_components::root::pass_through::ExtraClass;
 
 use super::use_plate;
 use shell_ui_kit::hooks::{use_control, use_hours, use_service};
@@ -115,9 +115,9 @@ pub(crate) fn NightShiftRow() -> Element {
 
 #[cfg(test)]
 mod tests {
-    use ui_components::prelude::*;
     use shell_model::displays::NightWarmthMode;
     use shell_model::night_shift::{Manual, NightLight, NightShift, Schedule, UnixSeconds};
+    use ui_components::prelude::*;
 
     use super::{ClockHours, Face, command_of, face_of};
     use shell_model::night_shift::NightShiftCommand;

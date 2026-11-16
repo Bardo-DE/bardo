@@ -1,6 +1,6 @@
 //! The four coherence rules (`CONSUMING.md` section 5), proven from outside the quire workspace
-//! the way a real consumer's own test suite would: this crate depends on `ds`, `ds-settings` and
-//! `ds-blitz` by path, and `ds-lint` and `ds-harness` as dev-dependencies, exactly as
+//! the way a real consumer's own test suite would: this crate depends on `ds`, `ui-settings` and
+//! `ui-blitz` by path, and `ui-lint` and `ui-harness` as dev-dependencies, exactly as
 //! `CONSUMING.md` tells a consumer to.
 //!
 //! One test per rule, so a failure names which rule broke:

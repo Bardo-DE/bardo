@@ -3,8 +3,8 @@
 //! daemon picks (the output under the pointer is not known to the daemon), which is the first with
 //! that surface.
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// How a panel changes: the shortcut that flips it, or the two that set it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

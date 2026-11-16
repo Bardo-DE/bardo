@@ -3,11 +3,11 @@
 //! least.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::table::model::{Sort, SortDirection, TableColumn, TableRow};
 use ui_components::components::lists::table::view::Table;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 500,

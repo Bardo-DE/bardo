@@ -1,11 +1,11 @@
 //! The probe against a private `dbus-daemon`: a fake service claims a name and releases it.
 //! Nothing here reaches the real session or system bus; the guard kills the daemon by PID.
 
-use ui_desktop::{Capability, Desktop, Outputs};
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::time::Duration;
+use ui_desktop::{Capability, Desktop, Outputs};
 
 struct PrivateBus {
     child: Child,

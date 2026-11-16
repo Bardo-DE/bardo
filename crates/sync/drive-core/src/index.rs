@@ -1,4 +1,4 @@
-//! The cache's index, `index.json` in the cache directory (written atomically through porter-fs,
+//! The cache's index, `index.json` in the cache directory (written atomically through account-fs,
 //! owner-only, with the copy from before its last change beside it): per item the version
 //! cached, its size, the ranges that are there and when it was last opened; the items kept
 //! downloaded; and the changes made on this computer that the drive does not have yet
@@ -8,11 +8,11 @@
 use crate::Reason;
 use crate::drive::NodeId;
 use crate::ranges::Ranges;
-use sync_core::Session;
 use account_fs::atomic::AtomicFile;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
+use sync_core::Session;
 
 /// The index file's name in the cache directory.
 const INDEX: &str = "index.json";

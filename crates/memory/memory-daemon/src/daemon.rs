@@ -10,6 +10,7 @@ use crate::ledger::FileLedger;
 use crate::peers::Peers;
 use crate::settings_watch::apply;
 use crate::signals::{Delivery, delivery_of};
+use account_core::SpaceChange;
 use memory_core::{
     DesktopSpace, Dirs, MemoryReply, MemoryRequest, PlanToken, Refusal, Removal, SpaceId, SpaceKind,
 };
@@ -22,7 +23,6 @@ use memory_service::{
     spaces_to_toml,
 };
 use memory_tidy::{LedgerError, Removals, changes};
-use account_core::SpaceChange;
 use std::collections::{BTreeMap, BTreeSet};
 use std::os::fd::OwnedFd;
 use std::sync::{Mutex, OnceLock, PoisonError};

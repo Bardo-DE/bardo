@@ -1,11 +1,11 @@
-//! The clock's conformance cases (ds-core's `time/tests.rs`, restated for a value clock) and
+//! The clock's conformance cases (ui-core's `time/tests.rs`, restated for a value clock) and
 //! the stop-order properties 11 §2.4 and SP3 rely on.
 
 use super::*;
 use crate::ids::{DeviceId, OutputKey, OutputName};
 use crate::output::{EdidFacts, EdidSerial};
-use ui_core::time::stamp::Stamp;
 use std::time::Duration;
+use ui_core::time::stamp::Stamp;
 
 fn ms(n: u64) -> Mono {
     Mono(Duration::from_millis(n))

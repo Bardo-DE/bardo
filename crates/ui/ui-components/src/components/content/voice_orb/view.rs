@@ -3,11 +3,11 @@
 use super::io::use_turn;
 use super::model::{OrbColour, OrbColours, OrbMask, OrbMetrics, Turn};
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::activity_word;
 use ui_style::tokens::colour::ColourToken;
 use ui_style::tokens::orb as vars;
-use std::time::Duration;
 
 /// How long the glows take to turn once, unless the caller says.
 pub const ORB_PERIOD: Duration = Duration::from_secs(20);

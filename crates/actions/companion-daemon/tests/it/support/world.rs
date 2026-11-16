@@ -1,20 +1,20 @@
-//! A companion over the fakes: docket-fake's router in process, the companion as one caller and
+//! A companion over the fakes: action-fake's router in process, the companion as one caller and
 //! the launcher as another, a scripted planner model, and a clock the test moves by hand.
 
 use super::infer::{Say, ScriptedInfer};
-use companion_model::helper::HelperCard;
-use companion_daemon::{Bell, Companiond, PlannerModel};
+use account_core::{AppId, AppName, Isolation};
 use action_client::{InProcess, Intents};
 use action_core::*;
 use action_dbus::BusConnection;
 use action_dbus::callers::{Identity, Role};
 use action_fake::{FakeSeams, FixedClock, MailContact, MailThread, fake_router};
-use companion_helpers::{Hub, TokioSpawn};
-use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use action_router::Router;
 use action_vocab::{Caller, CallerRole, Clock, Origin, Seconds, WindowKey, Workspace};
 use action_wire::{CallerId, SessionOpen, SessionOpened};
-use account_core::{AppId, AppName, Isolation};
+use companion_daemon::{Bell, Companiond, PlannerModel};
+use companion_helpers::{Hub, TokioSpawn};
+use companion_model::helper::HelperCard;
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{
     AgentRef, DataClass, EntityId, EntityKey, EntityKind, SessionId, SpaceId, TaskId, UnixSeconds,
 };
@@ -159,8 +159,8 @@ fn world_all(
 /// Standing consent: the companion may use Mail's classes and its own built-in provider
 /// (starting a task) in `in_space`, always.
 fn grant_mail(router: &Router<FakeSeams>, in_space: &str) {
-    use action_router::GrantStore;
     use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use action_router::GrantStore;
     let uses = [
         ("org.quire.Mail", DataClass::Mail),
         ("org.quire.Mail", DataClass::Contacts),

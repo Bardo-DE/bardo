@@ -10,11 +10,13 @@ use crate::support::hygiene;
 
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::assembly::ds::Inject;
-use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle, Suppression};
+use ui_components::components::overlays::alert_model::{
+    AlertButton, AlertRole, AlertStyle, Suppression,
+};
 use ui_components::prelude::*;
 use ui_lint::LintConfig;
-use std::time::Duration;
 
 const TITLE: &str = "Turn Bluetooth off?";
 const MESSAGE: &str = "Bluetooth devices such as keyboards and mice will be disconnected.";

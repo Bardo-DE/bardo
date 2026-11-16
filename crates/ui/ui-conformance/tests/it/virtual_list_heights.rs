@@ -3,12 +3,12 @@
 //! offset and height, follows the wheel by the sum of the heights above, and reports the end.
 
 use dioxus::prelude::*;
-use ui_components::components::lists::virtual_list::{RowHeight, VirtualList};
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use std::cell::RefCell;
 use std::collections::HashSet;
 use std::time::Duration;
+use ui_components::components::lists::virtual_list::{RowHeight, VirtualList};
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 400,

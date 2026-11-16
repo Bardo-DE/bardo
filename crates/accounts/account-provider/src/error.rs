@@ -1,4 +1,4 @@
-//! porter-provider's errors: a refused provider file, and a provider call that failed.
+//! account-provider's errors: a refused provider file, and a provider call that failed.
 
 use account_core::ProviderId;
 

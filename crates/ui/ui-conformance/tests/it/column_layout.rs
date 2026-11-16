@@ -2,13 +2,13 @@
 //! its parent, and a fixed column is as tall as a control of its size.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
 use ui_components::components::chrome::column::model::ColumnExtent;
 use ui_components::components::chrome::column::view::Column;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::spacing::SpacingToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::cell::Cell;
 
 const VIEW: Viewport = Viewport {
     width: 400,

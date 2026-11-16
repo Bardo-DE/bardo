@@ -1,6 +1,11 @@
 //! Every wire and stored type survives serde, the record kinds are stable slugs, and the bodies
 //! pin the JSON that sill and the D-Bus codec read.
 
+use account_capability::{Locality, ModelId};
+use account_core::{AccountId, AppName, DataClass};
+use account_ids::{Count, UnixSeconds};
+use action_core::CallRefusal;
+use action_gate_wire::EffectBasis;
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, DeviceSize, Point, Summary, Target, WindowSpace,
 };
@@ -8,11 +13,6 @@ use computer_use_action::{RunMode, WindowClass};
 use computer_use_bus::*;
 use computer_use_desktop::{BackendKind, Digest32, Ms, Stamp, ToplevelIdent, WindowTitle};
 use computer_use_types::{FrameDigest, InputOrigin, InputReceipt, SeatError, TextPath};
-use action_core::CallRefusal;
-use action_gate_wire::EffectBasis;
-use account_capability::{Locality, ModelId};
-use account_core::{AccountId, AppName, DataClass};
-use account_ids::{Count, UnixSeconds};
 use inference_core::{ChargeTotal, ServedBy, StepIndex};
 use provenance::{
     Address, AgentRef, Confidentiality, Effect, Integrity, Label, Labelled, MessageId, RunId,

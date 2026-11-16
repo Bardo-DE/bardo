@@ -1,5 +1,5 @@
-//! The client side of one `Open` fd: frames out, events in. `inferd-client` re-exports it and
-//! each transport supplies its own session; `porter-fake` supplies a scripted one.
+//! The client side of one `Open` fd: frames out, events in. `inference-client` re-exports it and
+//! each transport supplies its own session; `account-fake` supplies a scripted one.
 
 use crate::event::{ClientFrame, InferEvent};
 use std::future::Future;

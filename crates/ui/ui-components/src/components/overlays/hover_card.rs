@@ -21,6 +21,7 @@ use crate::root::common::Common;
 use crate::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 use dioxus::core::provide_root_context;
 use dioxus::prelude::*;
+use std::collections::BTreeMap;
 use ui_core::geometry::{
     placement::{Align, Placement, Side},
     units::{Point, Px, Rect},
@@ -29,7 +30,6 @@ use ui_motion::anim::Anim;
 use ui_motion::entrance::use_entrance;
 use ui_motion::hover_intent::HoverEvent;
 use ui_style::tokens::layer::ZLayer;
-use std::collections::BTreeMap;
 use {intent::HoverAnchor, parts::HoverCardPart};
 
 /// Where each hover target was when the pointer last came over it, shared by every target

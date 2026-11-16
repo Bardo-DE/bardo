@@ -4,8 +4,8 @@
 //! the same way.
 
 use crate::{Error, bodiless};
-use http::{HeaderValue, Method, Request, Response};
 use account_core::{EndpointUrl, LoginName, ServiceEndpoint};
+use http::{HeaderValue, Method, Request, Response};
 
 /// The session request, with the account's `authorization`.
 pub fn request(url: &EndpointUrl, authorization: HeaderValue) -> Result<Request<Vec<u8>>, Error> {

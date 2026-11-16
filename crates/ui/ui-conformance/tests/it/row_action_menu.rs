@@ -4,6 +4,7 @@
 //! itself, opened and closed by the button. Neither picks the row.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::menus::pop_up_button::{PopUpButton, PopUpKind};
 use ui_components::host::measure::{Anchor, MountedRef};
 use ui_components::prelude::*;
@@ -11,7 +12,6 @@ use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

@@ -2,7 +2,7 @@
 //! chooses it and it is not there: the engines as the picker lists them, the one offer that asks
 //! whether to download it and follows the download, and the facts it tells. Pure; the calls (what
 //! is installed, an install, a folder chosen, the assistant restarted) and the words are
-//! `detent-ui`'s.
+//! `settings-app-ui`'s.
 
 mod brief;
 mod offer;

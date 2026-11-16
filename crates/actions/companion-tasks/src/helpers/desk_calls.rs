@@ -8,14 +8,14 @@
 use crate::desk::{PostFromPlanner, Proposal, RoutineAsk, RoutineFor};
 use crate::runtime::Companion;
 use crate::seams::Surface;
-use companion_model::helper::{Ceiling, GoalOrigin, JobId};
-use companion_wire::HelperReply;
 use action_client::Transport as IntentsTransport;
 use action_core::{ActionCard, AppRefusal, CallRefusal, FailText, Outcome, from_checked_brief};
-use permission_core::{COMPANION_APP, HAND_ON_JOB, PROPOSE_ROUTINE};
-use agent_planner::Planner;
 use action_vocab::{CallRequest, Clock, LabelText, Value};
 use action_wire::NoteAsk;
+use agent_planner::Planner;
+use companion_model::helper::{Ceiling, GoalOrigin, JobId};
+use companion_wire::HelperReply;
+use permission_core::{COMPANION_APP, HAND_ON_JOB, PROPOSE_ROUTINE};
 use provenance::TaskId;
 
 /// Proposes a helper to the person.

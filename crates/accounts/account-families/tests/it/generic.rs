@@ -5,8 +5,6 @@
 
 use crate::common;
 
-use common::mail::{MailWorld, Wire};
-use common::{Fakes, Place, all_on, drive, plain, secret};
 use account_capability::CapabilityKind;
 use account_capability::Offer;
 use account_core::AccountId;
@@ -25,6 +23,8 @@ use account_provider::{
     SignInStep, Signed, parse_provider,
 };
 use account_sheet::{FieldAnswer, FieldKind, SignInFault, SignInInput};
+use common::mail::{MailWorld, Wire};
+use common::{Fakes, Place, all_on, drive, plain, secret};
 
 fn spec(text: &str) -> ProviderSpec {
     parse_provider(text).expect("the shipped file")

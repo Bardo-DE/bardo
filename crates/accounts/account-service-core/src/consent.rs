@@ -2,7 +2,9 @@
 
 use crate::registry::{Asker, Registry, candidate};
 use account_core::SessionToken;
-use account_core::consent::{AccountChoice, ConsentAnswer, ConsentAsk, Decision, Grant, GrantScope};
+use account_core::consent::{
+    AccountChoice, ConsentAnswer, ConsentAsk, Decision, Grant, GrantScope,
+};
 use account_core::{AccountId, GrantId};
 use account_ids::UnixSeconds;
 use account_match::Need;

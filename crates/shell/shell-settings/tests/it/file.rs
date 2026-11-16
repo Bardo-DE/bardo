@@ -4,13 +4,13 @@
 use crate::common;
 
 use common::TempDir;
-use ui_settings::{ConfigRoot, Px, Store};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use shell_settings::{
     APP, BarSettings, ControlCenterSettings, DockSettings, LauncherSettings, NotificationsSettings,
     Percent, ScrollSettings, ScrollbarSettings, ShellFile, TrackClick,
 };
+use ui_settings::{ConfigRoot, Px, Store};
 
 /// The store whose `sill` directory is inside `dir`.
 fn store(dir: &TempDir) -> Store {

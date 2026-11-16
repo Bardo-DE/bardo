@@ -1,5 +1,5 @@
 //! `quire-do`: every app we ship is drivable from a command line generated from its intents
-//! manifest. This crate is a thin client over `docket-client` with caller role `cli`: it lists
+//! manifest. This crate is a thin client over `action-client` with caller role `cli`: it lists
 //! the installed manifests, maps `--param value` words onto the manifest's declared types, and
 //! asks intentd to perform, dry-run, search, read context or undo. It never talks to an app, never
 //! decides, and has no way around the gate: a terminal cannot tell the person from an agent typing

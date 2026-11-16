@@ -10,11 +10,13 @@ use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
 use compositor_core::WindowId;
-use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalRect, buffer_size};
+use compositor_core::geometry::{
+    LogicalPoint, LogicalRect, LogicalSize, PhysicalRect, buffer_size,
+};
 use desktop_protocols::vocab::Corner;
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::utils::CommitCounter;
+use ui_core::geometry::scale::Scale;
 
 /// The preview of one tile drag.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

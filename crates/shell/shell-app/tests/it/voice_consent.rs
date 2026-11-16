@@ -4,7 +4,7 @@
 //! the next hold either begun (Allow) or never attempted (Not Now). Never the person's `~/.config`.
 
 use crate::voice_support::{BeginAnswer, Desk, desk_or_return};
-use ui_settings::{ConfigRoot, Store};
+use agent_voice_wire::{VoiceRefusal, VoiceTrigger};
 use shell_app::policy::Policy;
 use shell_app::policy::voice::VoiceBridge;
 use shell_app::voice::write_consent;
@@ -13,7 +13,7 @@ use shell_model::voice::{AskScope, ConsentAnswer, Notice, Phase, VoiceCommand, V
 use shell_settings::{APP, ShellFile};
 use shell_testkit::TempDir;
 use tokio::sync::watch;
-use agent_voice_wire::{VoiceRefusal, VoiceTrigger};
+use ui_settings::{ConfigRoot, Store};
 
 fn start() -> VoiceCommand {
     VoiceCommand::Start {

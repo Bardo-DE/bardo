@@ -50,7 +50,6 @@ pub mod time;
 pub mod window;
 
 pub use cause::{Cause, MinimiseTarget, SwipeRelease};
-pub use ui_behaviour::space_swipe::PageMilli;
 pub use effect::{
     ConfigureSize, ConfigureSpec, CoreNote, Effect, GrabSpec, KeyboardTarget, ProtocolFault,
     TiledEdges, ToplevelStates,
@@ -69,3 +68,4 @@ pub use model::{
     Leasable, LeaseFocusRefusal, MAX_DESKTOPS_PER_OUTPUT, Model, OpeningRoom, OutputBook,
     OutputState, OverviewPick, SpaceStrip,
 };
+pub use ui_behaviour::space_swipe::PageMilli;

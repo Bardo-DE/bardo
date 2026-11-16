@@ -2,19 +2,19 @@
 //! one-shot timer, the compositor's edge reveals and the bar's open popups feeding it. The only
 //! effectful part; every decision is `reveal::step`.
 //!
-//! Frames follow shell-host's frame hook as the dock's do: `RequestFrames` takes a `FrameDrive`,
+//! Frames follow layer-shell-host's frame hook as the dock's do: `RequestFrames` takes a `FrameDrive`,
 //! every frame tick of the surface feeds `Frame`, and `StopFrames` drops the drive, so an idle
 //! bar renders nothing. A `Redraw` stamps the time the next render draws the slide at.
 
 use dioxus::prelude::*;
-use ui_components::base::time::clock::sleep;
-use ui_components::base::time::stamp::{FrameClock, Stamp};
 use layer_shell_host::{FrameDrive, OutputId, SurfaceHandle};
 use shell_model::desktop::Shown;
 use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{Phase, Timing};
 use shell_ui_kit::hooks::use_edge_reveal;
 use shell_ui_kit::links::RevealEdge;
+use ui_components::base::time::clock::sleep;
+use ui_components::base::time::stamp::{FrameClock, Stamp};
 
 use super::io::MenuBar;
 use super::reveal::{BarReveal, RevealEffect, RevealEvent, rest_phase, step};

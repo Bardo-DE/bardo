@@ -6,13 +6,13 @@
 //! reaches its servers through an authenticated relay (`OpenAuthenticated`), which reads the
 //! credential itself.
 
-use base64::Engine;
 use account_core::{Credential, SecretText};
 use account_http::HttpError;
 use account_http::http::Request;
 use account_http::http::header::{AUTHORIZATION, HeaderValue};
 use account_provider::{Presented, ProviderError, ProviderSpec};
 use account_sheet::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SignInFault};
+use base64::Engine;
 
 /// A form field.
 pub fn field(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
@@ -56,7 +56,7 @@ pub fn fault_of(error: HttpError) -> SignInFault {
         HttpError::Unreachable | HttpError::Tls | HttpError::TimedOut | HttpError::NotGranted => {
             SignInFault::Unreachable
         }
-        // too large, malformed, and a failure a later porter-http adds
+        // too large, malformed, and a failure a later account-http adds
         _ => SignInFault::Unreadable,
     }
 }

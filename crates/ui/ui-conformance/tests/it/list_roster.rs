@@ -3,13 +3,13 @@
 //! below then heal by the heights the dropped rows above each one measured, starting where they
 //! stood and ending exactly in their new places; a row listed again while it leaves stays; and
 //! under Reduced motion a whole Clear settles at Reduced's length. The roster's own rules are
-//! `ds-motion`'s.
+//! `ui-motion`'s.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use std::cell::{Cell, RefCell};
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 360,

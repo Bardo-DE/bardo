@@ -1,7 +1,7 @@
 //! An app's key: its proven id, or the id it claimed (C39).
 
-use desktop_protocols::vocab::ProofKind;
 use account_core::{AppId, ClaimedId, Isolation, PeerIdentity};
+use desktop_protocols::vocab::ProofKind;
 use serde::{Deserialize, Serialize};
 
 /// Which app a window belongs to. A proven key comes from the peer's scope or sandbox

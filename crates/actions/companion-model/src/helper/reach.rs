@@ -3,11 +3,11 @@
 //! name apps and choose a ceiling, and the policy covers those apps' things up to it, trusting no
 //! recipient, destination or path (anything a job sends out or writes to a place still asks).
 
-use action_manifest::Manifest;
-use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
-use action_vocab::LabelText;
 use account_core::AppName;
 use account_ids::Count;
+use action_manifest::Manifest;
+use action_vocab::LabelText;
+use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
 use provenance::{Effect, SpaceId, TaskId, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;

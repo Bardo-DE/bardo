@@ -1,5 +1,5 @@
 //! The displays service's policy: the `display.*` settings as the service's [`DisplayPolicy`]
-//! (sill-services may not see sill-settings, which brings dioxus).
+//! (shell-services may not see shell-settings, which brings dioxus).
 
 use shell_model::displays::{DisplayPolicy, DisplaysCommand};
 

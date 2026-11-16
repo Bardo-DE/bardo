@@ -47,41 +47,41 @@ names_only() {
 }
 
 # The graph rows of B1: what the pure model may never reach.
-PURE_FORBIDDEN='smithay|wayland-[a-z-]+|calloop|calloop-[a-z-]+|zbus|tokio|drm|drm-[a-z-]+|gbm|gbm-[a-z-]+|input|input-sys|udev|libudev-sys|libseat|libseat-sys|dioxus|dioxus-[a-z-]+|blitz[a-z-]*|stylo|stylo_[a-z_]+|ds|ds-shell|ds-blitz|ds-settings|parley|fontique|vello[a-z_]*|wgpu|anyrender[a-z_]*'
+PURE_FORBIDDEN='smithay|wayland-[a-z-]+|calloop|calloop-[a-z-]+|zbus|tokio|drm|drm-[a-z-]+|gbm|gbm-[a-z-]+|input|input-sys|udev|libudev-sys|libseat|libseat-sys|dioxus|dioxus-[a-z-]+|blitz[a-z-]*|stylo|stylo_[a-z_]+|ds|ui-shell|ui-blitz|ui-settings|parley|fontique|vello[a-z_]*|wgpu|anyrender[a-z_]*'
 
-# B1 casement-core: the forbidden list, taffy included.
-reaches_none casement-core "B1 casement-core is pure" "$PURE_FORBIDDEN|taffy"
-# B1 (allowed ours): casement-core's direct dependencies of our own are only these.
+# B1 compositor-core: the forbidden list, taffy included.
+reaches_none compositor-core "B1 compositor-core is pure" "$PURE_FORBIDDEN|taffy"
+# B1 (allowed ours): compositor-core's direct dependencies of our own are only these.
 OURS='casement-[a-z-]+|ds-[a-z-]+|keycap-[a-z-]+|palmrest-[a-z-]+|porter-[a-z-]+|prov'
-ALLOWED_OURS='casement-protocols|ds-core|ds-style|ds-motion|ds-behaviour|keycap-core|palmrest-protocol|porter-core|prov'
+ALLOWED_OURS='desktop-protocols|ui-core|ui-style|ui-motion|ui-behaviour|key-remap-core|mouse-gestures-proto|account-core|prov'
 direct=$(cargo tree -p compositor-core -e normal --depth 1 --prefix none --format '{p}' 2>/dev/null \
   | awk 'NR > 1 {print $1}' | grep -E "^($OURS)$" | grep -vE "^($ALLOWED_OURS)$" | tr '\n' ' ')
-if [ -n "$direct" ]; then bad "B1 casement-core depends on ${direct% } (not in the allowed list)"; else ok "B1 casement-core's own dependencies are allowed ones"; fi
+if [ -n "$direct" ]; then bad "B1 compositor-core depends on ${direct% } (not in the allowed list)"; else ok "B1 compositor-core's own dependencies are allowed ones"; fi
 
-# B2 casement-layout: B1's list except taffy; only taffy_bridge/ names taffy.
-reaches_none casement-layout "B2 casement-layout is pure" "$PURE_FORBIDDEN"
-names_only "B2 only casement-layout/src/taffy_bridge/ names taffy" '\btaffy::|use taffy\b|extern crate taffy' \
+# B2 compositor-layout: B1's list except taffy; only taffy_bridge/ names taffy.
+reaches_none compositor-layout "B2 compositor-layout is pure" "$PURE_FORBIDDEN"
+names_only "B2 only compositor-layout/src/taffy_bridge/ names taffy" '\btaffy::|use taffy\b|extern crate taffy' \
   'crates/casement-layout/src/taffy_bridge/'
 
-# B3 casement-motion: B1's list (taffy arrives through layout, so the source never names it).
-reaches_none casement-motion "B3 casement-motion is pure" "$PURE_FORBIDDEN"
-names_only "B3 casement-motion names no taffy" '\btaffy::|use taffy\b' '$^' crates/casement-motion
+# B3 compositor-motion: B1's list (taffy arrives through layout, so the source never names it).
+reaches_none compositor-motion "B3 compositor-motion is pure" "$PURE_FORBIDDEN"
+names_only "B3 compositor-motion names no taffy" '\btaffy::|use taffy\b' '$^' crates/casement-motion
 
-# B4 casement-render: no session/device backends, no second graphics stack.
-names_only "B4 casement-render names no drm/udev/session/libinput backend" \
+# B4 compositor-render: no session/device backends, no second graphics stack.
+names_only "B4 compositor-render names no drm/udev/session/libinput backend" \
   'smithay::backend::(drm|udev|session|libinput)' '$^' crates/casement-render
-reaches_none casement-render "B4 casement-render reaches no second graphics stack" \
+reaches_none compositor-render "B4 compositor-render reaches no second graphics stack" \
   'wgpu|vello[a-z_]*|anyrender[a-z_]*|blitz[a-z-]*|stylo|parley|fontique'
 
-# B5 casement-backend names no casement_wayland and no smithay::wayland module but dmabuf.
-names_only "B5 casement-backend names no casement_wayland" '\bcasement_wayland\b' '$^' crates/casement-backend
+# B5 compositor-backend names no casement_wayland and no smithay::wayland module but dmabuf.
+names_only "B5 compositor-backend names no casement_wayland" '\bcasement_wayland\b' '$^' crates/casement-backend
 hits=$(grep -rnE --include='*.rs' 'smithay::wayland::[a-z_]+' crates/casement-backend 2>/dev/null \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*//' | grep -oE 'smithay::wayland::[a-z_]+' | grep -v 'smithay::wayland::dmabuf' || true)
-if [ -n "$hits" ]; then bad "B5 casement-backend names a smithay::wayland module"; printf '%s\n' "$hits"; else ok "B5 casement-backend names only smithay::wayland::dmabuf"; fi
+if [ -n "$hits" ]; then bad "B5 compositor-backend names a smithay::wayland module"; printf '%s\n' "$hits"; else ok "B5 compositor-backend names only smithay::wayland::dmabuf"; fi
 
-# B6 casement-wayland: no device backends.
-names_only "B6 casement-wayland names no device backend" 'smithay::backend::(drm|gbm|udev|libinput|session)' '$^' crates/casement-wayland
-reaches_none casement-wayland "B6 casement-wayland reaches neither drm nor gbm" 'drm|gbm'
+# B6 compositor-wayland: no device backends.
+names_only "B6 compositor-wayland names no device backend" 'smithay::backend::(drm|gbm|udev|libinput|session)' '$^' crates/casement-wayland
+reaches_none compositor-wayland "B6 compositor-wayland reaches neither drm nor gbm" 'drm|gbm'
 
 # B7 the thin-adapter allow-list (11 §5.3).
 ADAPTERS='crates/casement-backend/src/tty/(kms_real|surface_real|session_real|udev_real|direct_real|writeback_real|render_hub_real|bridge_real|soft_real|real)\.rs|crates/casement-backend/src/tty/kms_real/makers\.rs|crates/casement-backend/src/gpu/(render_nodes|formats)_real\.rs|crates/casement-backend/src/input/libinput_real\.rs'
@@ -103,7 +103,7 @@ names_only "B8 only casement/src/time/ reads a clock" \
 names_only "A4 nothing calls UdmabufAllocator::create_buffer" 'UdmabufAllocator::create_buffer' '$^'
 
 # B9 the test client reaches no smithay.
-reaches_none casement-testclient "B9 casement-testclient reaches no smithay" 'smithay'
+reaches_none compositor-testclient "B9 compositor-testclient reaches no smithay" 'smithay'
 
 # B10 test and debug-inject code never reaches the release binary.
 if is_member casement; then
@@ -113,38 +113,38 @@ else
   ok "B10 (casement is not a member yet)"
 fi
 
-# B11 the binary graph reaches no UI or second graphics stack (vello_cpu only via casement-chrome).
+# B11 the binary graph reaches no UI or second graphics stack (vello_cpu only via compositor-chrome).
 reaches_none casement "B11 the casement binary reaches no UI stack" \
   'blitz[a-z-]*|stylo|selectors|html5ever|dioxus|dioxus-[a-z-]+|wgpu|anyrender[a-z_]*|vello|vello_hybrid'
 
 # B12 no crate but casement-intents reaches the agent tier or the shell.
-TIERS='docket[a-z-]*|cua[a-z-]*|almanac[a-z-]*|sill[a-z-]*|shell-host|model-[a-z-]+|engine-supervisor|vision-prep|speech-provider'
+TIERS='docket[a-z-]*|cua[a-z-]*|almanac[a-z-]*|sill[a-z-]*|layer-shell-host|model-[a-z-]+|engine-supervisor|model-vision-prep|speech-provider'
 for crate in $members; do
   [ "$crate" = casement-intents ] && continue
   reaches_none "$crate" "B12 $crate reaches no agent tier or shell crate" "$TIERS"
 done
 
-# B13 ds-settings only in casement-ipc and casement (the test kit reaches it only through the
-# `casement` crate it drives; it names no ds-settings item itself, checked below).
+# B13 ui-settings only in compositor-ipc and casement (the test kit reaches it only through the
+# `casement` crate it drives; it names no ui-settings item itself, checked below).
 for crate in $members; do
-  case "$crate" in casement-ipc|casement|casement-testkit) continue ;; esac
-  reaches_none "$crate" "B13 $crate reaches no ds-settings" 'ds-settings'
+  case "$crate" in compositor-ipc|casement|compositor-testkit) continue ;; esac
+  reaches_none "$crate" "B13 $crate reaches no ui-settings" 'ui-settings'
 done
 
-names_only "B13 the test kit names no ds-settings" '\bds_settings::' '$^' crates/casement-testkit
+names_only "B13 the test kit names no ui-settings" '\bds_settings::' '$^' crates/casement-testkit
 
-# B14 only casement-agent names reis, the role hand-out or EIS fds.
-names_only "B14 only casement-agent names reis or the privileged hand-out" \
+# B14 only compositor-agent names reis, the role hand-out or EIS fds.
+names_only "B14 only compositor-agent names reis or the privileged hand-out" \
   '\breis::|ConnectionRole::(Shell|Agent)\b.*(hand_out|socket)|\bEisFd\b' 'crates/casement-agent/'
 
-# B15 only casement-chrome reaches the text stack. Its one consumer, `casement`, reaches it
+# B15 only compositor-chrome reaches the text stack. Its one consumer, `casement`, reaches it
 # through the crate's dependency (so does the test kit, which drives `casement`); no other crate
-# does, and no source outside casement-chrome names it.
+# does, and no source outside compositor-chrome names it.
 for crate in $members; do
-  case "$crate" in casement-chrome|casement|casement-testkit) continue ;; esac
+  case "$crate" in compositor-chrome|casement|compositor-testkit) continue ;; esac
   reaches_none "$crate" "B15 $crate reaches no text stack" 'parley|fontique|vello_cpu'
 done
-names_only "B15 only casement-chrome names the text stack" \
+names_only "B15 only compositor-chrome names the text stack" \
   '\b(parley|fontique|vello_cpu)::|extern crate (parley|fontique|vello_cpu)' 'crates/casement-chrome/'
 
 # B16 the excluded crates are never members.
@@ -157,7 +157,7 @@ names_only "B17 no HashMap/HashSet in wayland, render, layout, motion" '\bHash(M
   crates/casement-wayland crates/casement-render crates/casement-layout crates/casement-motion
 
 # B18 no unsafe outside the reserved module (the workspace also denies unsafe_code).
-names_only "B18 no unsafe outside casement-render/src/gl_raw.rs" '\bunsafe\b' 'crates/casement-render/src/gl_raw\.rs'
+names_only "B18 no unsafe outside compositor-render/src/gl_raw.rs" '\bunsafe\b' 'crates/casement-render/src/gl_raw\.rs'
 
 # B19 casement-intents reaches no compositor stack.
 reaches_none casement-intents "B19 casement-intents reaches no smithay, wayland or calloop" 'smithay|wayland-[a-z-]+|calloop'

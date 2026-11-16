@@ -6,10 +6,10 @@ use crate::common;
 
 use common::bus::PrivateBus;
 use common::error_name;
-use sync_bus::SYNC_BUS;
-use sync_bus::SyncProxy;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
+use sync_bus::SYNC_BUS;
+use sync_bus::SyncProxy;
 
 /// The daemon process, killed by its PID when the guard goes.
 struct Daemon {

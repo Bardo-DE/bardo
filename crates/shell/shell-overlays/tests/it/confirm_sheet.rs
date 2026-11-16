@@ -8,14 +8,14 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Harness, Input, Viewport};
 use layer_shell_host::OutputId;
 use shell_model::intents::sheet::{Pending, Serial, SheetChoice, Sheets};
 use shell_model::intents::{ConfirmId, Intents, IntentsCommand, IntentsLink};
 use shell_overlays::ConfirmSheet;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{SheetLink, SheetOutput};
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 pub(crate) type Running = SurfaceHarness<ConfirmSheet>;
 

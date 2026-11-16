@@ -12,8 +12,8 @@ use crate::machine::input::{CheckResult, RunInput};
 use crate::model::CuaModelError;
 use crate::screen::ScreenRead;
 use crate::seams::{LinkError, Seams};
-use computer_use_desktop::DesktopError;
 use computer_use_capture::CaptureError;
+use computer_use_desktop::DesktopError;
 use computer_use_seat_input::SeatError;
 use std::time::Duration;
 

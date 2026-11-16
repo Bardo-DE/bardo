@@ -3,7 +3,9 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::selectors::{AXES, COMPONENTS, ComponentSelectors, RENAMES, SURFACE, SURFACE_ATTRIBUTE};
+use ui_components::selectors::{
+    AXES, COMPONENTS, ComponentSelectors, RENAMES, SURFACE, SURFACE_ATTRIBUTE,
+};
 
 /// A frame that keeps an absolutely placed root (a popover, a sheet) inside its own box.
 const FRAME: &str = "position:relative;height:96px;overflow:hidden";

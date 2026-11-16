@@ -14,8 +14,8 @@ use anyview_fs::OnDisk;
 use anyview_image::{ImageError, RasterPeek, resized};
 use anyview_platform::portable::FreedesktopThumbnails;
 use anyview_platform::{Env, PlatformError, ThumbPixels, ThumbSize, ThumbnailCache, file_uri};
-use settings_app_files::CacheHome;
 use md5::{Digest, Md5};
+use settings_app_files::CacheHome;
 use std::path::{Path, PathBuf};
 
 /// The size kept: 256 pixels on the longer side.

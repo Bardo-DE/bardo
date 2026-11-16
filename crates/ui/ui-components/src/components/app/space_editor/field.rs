@@ -10,12 +10,12 @@
 //! ground with a round hole at its centre, tiled, so every dot stays round at any width and
 //! shows the colour of its own place on the field.
 
+use std::sync::LazyLock;
 use ui_core::base64;
 use ui_core::png::{self, Channels, Deflate, Raster};
 use ui_style::appearance::theme::Scheme;
 use ui_style::space::palette::{Dot, swatch};
 use ui_style::tokens::hex::Hex;
-use std::sync::LazyLock;
 
 /// The colour plane's size: one sample per grid cell of S's 540 x 352 drawing, stretched to the
 /// field.

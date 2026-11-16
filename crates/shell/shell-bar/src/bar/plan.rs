@@ -145,10 +145,10 @@ mod tests {
     use crate::bar::menus::{BarMenu, TraySlot};
     use crate::bar::pick::BarPick;
     use crate::bar::track::{Event, Target, Track, step, timing};
+    use shell_model::tray::TrayItemId;
     use ui_components::base::time::stamp::Stamp;
     use ui_components::prelude::*;
     use ui_components::stack::menu_track::types::MenuPhase;
-    use shell_model::tray::TrayItemId;
 
     /// A bar input: a pointer event on a title or the bar, or what the popup reported.
     enum Input {

@@ -4,14 +4,14 @@ use crate::bodies::{
     GrantAsk, JournalFilter, NoteAsk, ReadAsk, RecallAsk, SessionModeAsk, StoredAsk, WidenAsk,
 };
 use crate::task::SessionOpen;
-use companion_model::{RunsIn, WatchedAgent};
+use account_core::AppName;
 use action_core::{
     ActivationToken, CheckpointId, HaltCause, InboxAsk, IndexBatch, MessageDraft, Rewind,
     SearchAsk, SuggestAsk, TurnEnd, TurnIn, UndoScope, UserTurn,
 };
 use action_gate_wire::CuaAsk;
 use action_vocab::{ActionRef, CallRequest, Handle, TurnId, UndoId, WindowKey, Workspace};
-use account_core::AppName;
+use companion_model::{RunsIn, WatchedAgent};
 use provenance::{EntityId, SessionId, SpaceScope};
 use serde::{Deserialize, Serialize};
 

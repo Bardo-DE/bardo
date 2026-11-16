@@ -6,11 +6,11 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
+use shell_settings::ShellFile;
 use ui_components::prelude::*;
 use ui_components::style::kit::{Styles, UserStyle};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use ui_lint::{Exception, LintConfig, Profile, Rule, assert_clean};
-use shell_settings::ShellFile;
 
 use crate::settings::SettingsFeed;
 

@@ -7,11 +7,11 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
+use account_core::DataClass;
 use action_core::{AppRefusal, Outcome};
 use action_gate::prepared::Prepared;
 use action_manifest::{Cardinality, EntityDecl, Manifest, RELATION_ARG, RelationDecl, TitleTrust};
 use action_vocab::Value;
-use account_core::DataClass;
 use provenance::{EntityKind, Label, Labelled};
 
 /// The kind a related action resolves for and the relation it was asked for, if `p` is one.

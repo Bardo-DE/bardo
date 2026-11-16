@@ -3,8 +3,8 @@
 use std::path::Path;
 
 use plugin_host::manifest::{Entry, PathRole, Provides, Refusal};
-use ui_core::word::Word;
 use serde::Deserialize;
+use ui_core::word::Word;
 
 use crate::capability::Capability;
 use crate::fault::Fault;

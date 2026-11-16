@@ -4,8 +4,8 @@ use crate::support::Sandbox;
 use crate::support::drive::click;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const SWITCH: &str = ".section .ds-toggle[*|aria-label=\"Use my styles\"]";
 const LINE: &str = ".style-notes";

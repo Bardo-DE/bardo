@@ -7,10 +7,10 @@
 //! bezel's sixteen squares.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
 use ui_components::components::content::level_glyph::vocab::LevelSource;
 use ui_components::components::controls::slider_model::SliderLook;
 use ui_components::prelude::*;
-use shell_kit::prelude::*;
 
 use super::modules::use_plate;
 

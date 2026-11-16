@@ -411,7 +411,10 @@ fn a_browser_tree_is_clear_and_its_model_view_holds_only_what_is_seen() {
     // Ids are the source's, and the child of a dropped node moved up to the root.
     let ids: Vec<u32> = seen.nodes.iter().map(|n| n.id.0).collect();
     assert_eq!(ids, vec![0, 1, 3]);
-    assert_eq!(seen.nodes[2].parent, Parent::Node(computer_use_action::NodeId(0)));
+    assert_eq!(
+        seen.nodes[2].parent,
+        Parent::Node(computer_use_action::NodeId(0))
+    );
 }
 
 #[test]
@@ -544,7 +547,10 @@ fn a_clear_verdict_has_no_reasons_and_a_suspicious_one_is_never_empty() {
     assert_eq!(ScreenVerdict::of(vec![]), ScreenVerdict::Clear);
     assert!(ScreenVerdict::Clear.reasons().is_empty());
     let one = ScreenVerdict::of(vec![Reason::Reader]);
-    assert_eq!(one.kinds(), vec![computer_use_bus::ScreenKind::ReaderFlagged]);
+    assert_eq!(
+        one.kinds(),
+        vec![computer_use_bus::ScreenKind::ReaderFlagged]
+    );
 }
 
 #[test]

@@ -2,8 +2,8 @@
 //! button that adds a picture; under it, why the last add gave nothing, when it did not.
 
 use super::Smalls;
-use settings_app_model::PictureTile;
 use dioxus::prelude::*;
+use settings_app_model::PictureTile;
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::content::icon_view::IconView;
 use ui_components::components::content::label::{LabelRole, LabelStyle};

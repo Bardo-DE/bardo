@@ -10,9 +10,9 @@
 
 use super::Programs;
 use engine_supervisor::{EngineId, UnitSpec, Window};
+use inference_router::local::{EngineConfig, Lengths, LocalModel};
 use model_catalog::MiB;
 use model_provider::Tokens;
-use inference_router::local::{EngineConfig, Lengths, LocalModel};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 

@@ -1,4 +1,4 @@
-//! Output vocabulary: `wl_output.transform`, which `casement-wayland`, the desktop client and
+//! Output vocabulary: `wl_output.transform`, which `compositor-wayland`, the desktop client and
 //! the shell all name.
 
 use super::code::wire_enum;

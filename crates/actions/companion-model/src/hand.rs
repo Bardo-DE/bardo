@@ -4,8 +4,8 @@
 //! the conversation is brought back. These are the words for it that the router, the host of the
 //! agent apps and the terminal share.
 
-use permission_core::ProgramName;
 use action_vocab::Workspace;
+use permission_core::ProgramName;
 use provenance::SessionId;
 use serde::{Deserialize, Serialize};
 use std::fmt;

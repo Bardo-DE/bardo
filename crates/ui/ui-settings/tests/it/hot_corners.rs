@@ -3,11 +3,11 @@
 
 use crate::support::Scratch;
 
+use serde::{Deserialize, Serialize};
 use ui_settings::schema::{
     CornerAction, CornerBinding, CornerDo, CornerKey, HotCornerSettings, OpenItem,
 };
 use ui_settings::{FileName, Format, Loaded, SettingsDoc};
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]

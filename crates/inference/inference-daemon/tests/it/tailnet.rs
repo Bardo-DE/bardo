@@ -6,6 +6,9 @@
 
 use crate::hosting;
 
+use account_capability::ModelId;
+use account_core::{AppId, AppName, Isolation};
+use account_dbus::Details;
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::bus::within;
 use hosting::engine::{Chat, Script};
@@ -15,12 +18,9 @@ use hosting::rig::{Hosted, Plan, Trust, World};
 use hosting::tailnet::{Addresses, TailnetPlan, addresses, free_port, network};
 use inference_daemon::attached::{Attached, Place, Reach};
 use inference_daemon::peers::Role;
-use account_capability::ModelId;
-use account_core::{AppId, AppName, Isolation};
-use account_dbus::Details;
-use std::net::{IpAddr, SocketAddr};
 use inference_dbus::inference::GUEST_KEY_STATE;
 use inference_dbus::inference::InferenceProxy;
+use std::net::{IpAddr, SocketAddr};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpSocket;
 

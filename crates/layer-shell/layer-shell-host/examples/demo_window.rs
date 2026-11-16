@@ -17,11 +17,11 @@ use std::cell::RefCell;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use serde_json::json;
 use layer_shell_host::{
     Decorations, Fullscreen, GrabRefused, Host, HostEvent, HostRoot, Maximize, ResizeEdge, Size,
     SurfaceHandle, SurfaceId, ToplevelConfig, use_surface, use_toplevel_state,
 };
+use serde_json::json;
 
 /// The titlebar's colour, which the acceptance finds on screen to locate the frame.
 const CSS: &str = "html,body,#main{margin:0;padding:0;height:100%}\

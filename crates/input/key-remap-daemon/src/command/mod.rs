@@ -10,11 +10,11 @@ use crate::DEFAULTS_TOML;
 use crate::daemon::source::Source;
 use crate::daemon::uinput::{self, UINPUT};
 use crate::daemon::{self, Env};
+use input_broker_client::DeviceSource;
 use key_remap_proto::Keyboard;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
-use input_broker_client::DeviceSource;
 
 const USAGE: &str = "usage:
   keycap                       run the daemon

@@ -5,9 +5,9 @@
 use crate::acp_agent::{CLAUDE, host, world};
 use crate::support::*;
 use action_core::*;
-use permission_core::DenyCode;
 use action_vocab::{CallRequest, CallerRole};
 use action_wire::{IntentsReply, IntentsRequest, WireRefusal};
+use permission_core::DenyCode;
 use provenance::Actor;
 
 fn read_thread() -> CallRequest {

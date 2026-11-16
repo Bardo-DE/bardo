@@ -1,11 +1,10 @@
 //! `Grants` against the real accountd (`common::accountd`, over the fake providers and a scripted
 //! consent sheet): finding, asking, listing, revoking and opening a relayed stream over
-//! `porter-client-dbus`'s `Bus`. The consent sheet shows once and its answer is kept; a refusal
+//! `account-client-dbus`'s `Bus`. The consent sheet shows once and its answer is kept; a refusal
 //! sticks; a stream arrives as a descriptor; and only a porter daemon lists the accounts.
 
 use super::common;
 
-use common::accountd::{Daemon, named};
 use account_callers::{Caller, CallerRole};
 use account_capability::{Access, CapabilityKind, Delta, StorageScope};
 use account_client::{
@@ -17,6 +16,7 @@ use account_core::{AccountId, DataClass, ProviderId};
 use account_fake::Scripted;
 use account_match::{Need, StorageNeed};
 use account_wire::{ParentWindow, Refusal};
+use common::accountd::{Daemon, named};
 
 fn need() -> Need {
     Need::Storage(StorageNeed::new(

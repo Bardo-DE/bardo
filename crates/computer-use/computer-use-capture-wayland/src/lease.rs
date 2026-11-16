@@ -3,11 +3,11 @@
 
 use super::state::CapState;
 use crate::key::ObjectKey as Key;
+use computer_use_capture::{CaptureError, MaskRegion};
 use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::{
     self, QuireAgentLeaseV1, RevokeReason,
 };
 use desktop_protocols::client::quire_agent_v1::quire_agent_manager_v1::LeaseMode;
-use computer_use_capture::{CaptureError, MaskRegion};
 use wayland_client::{Connection, Dispatch, QueueHandle, WEnum};
 use wayland_protocols::ext::image_copy_capture::v1::client::ext_image_copy_capture_manager_v1::Options;
 

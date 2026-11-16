@@ -15,8 +15,6 @@ use crate::state::State;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_core::privilege::PowerOutcome;
 use compositor_core::{ClientKey, OutputKey};
-use desktop_protocols::vocab::Power;
-use desktop_protocols::vocab::Transform as CoreTransform;
 use compositor_render::pass::{ArgbImage, CapturedFrame, DrawnView, SourceRect};
 use compositor_render::{ChromeLayer, CursorDraw, CursorShape, cursor_face, cursor_pixels};
 use compositor_wayland::consent::{self, Admission};
@@ -24,7 +22,8 @@ use compositor_wayland::image_capture::{
     CaptureFailure, CaptureSourceId, CursorSessionId, CursorView, image_size, place,
     sent_image_size,
 };
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::Power;
+use desktop_protocols::vocab::Transform as CoreTransform;
 use smithay::backend::renderer::utils::RendererSurfaceStateUserData;
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
 use smithay::utils::{Buffer, Rectangle, Size, Transform};
@@ -33,6 +32,7 @@ use smithay::wayland::image_capture_source::ImageCaptureSource;
 use smithay::wayland::image_copy_capture::{
     BufferConstraints, CursorSession, CursorSessionRef, Frame,
 };
+use ui_core::geometry::scale::Scale;
 
 /// The output a source shows.
 fn output_of(state: &State, source: &ImageCaptureSource) -> Option<OutputKey> {

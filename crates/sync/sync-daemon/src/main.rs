@@ -14,7 +14,7 @@
 //!
 //! What stays here is the network: NetworkManager is not read yet, so the network is taken as
 //! unmetered and up.
-// peephole's caller types (porter-dbus ProcCallers) take the daemon's futures past the default
+// peephole's caller types (account-dbus ProcCallers) take the daemon's futures past the default
 // depth of 128.
 #![recursion_limit = "256"]
 

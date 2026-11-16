@@ -9,13 +9,15 @@
 //! Run on the virtual clock for exact timing. Every moment ends at 0 frames.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups};
-use ui_components::components::menus::palette::palette_motion::{PaletteHandle, use_palette_handle};
+use ui_components::components::menus::palette::palette_motion::{
+    PaletteHandle, use_palette_handle,
+};
 use ui_components::prelude::*;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

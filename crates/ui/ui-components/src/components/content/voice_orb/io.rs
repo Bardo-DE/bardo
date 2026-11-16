@@ -4,10 +4,10 @@
 use super::model::Turn;
 use super::step::{Glow, GlowIn};
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_motion::detail::level::use_level;
 use ui_motion::machine::use_machine;
 use ui_style::appearance::motion::MotionLevel;
-use std::time::Duration;
 
 /// Where the glows are now. While `activity` is `true` (and motion is not `Reduced`) they turn
 /// once per `period`, a frame every `FRAME_TICK`; the moment it is `false` they hold where they

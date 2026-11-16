@@ -4,10 +4,10 @@
 //! What the agent says of itself is printed as the agent's words; the sheet is the router's own
 //! request, with its words and typed arguments, never an agent's prose.
 
-use agent_acp_server::always_words;
 use action_core::{ConfirmRequest, Shown, StepEnd};
-use permission_core::AlwaysOffer;
+use agent_acp_server::always_words;
 use agent_session::{BackendEvent, CallEvent, SheetChoice};
+use permission_core::AlwaysOffer;
 
 /// A line for a sheet argument: somebody else's words are quoted with where they came from.
 fn shown(value: &Shown) -> String {

@@ -10,13 +10,13 @@ pub use bus::{OnBus, relay};
 pub use fake::FakeComputers;
 
 use crate::ticks::Ticks;
-use settings_app_model::{
-    Absence, ComputersFound, ComputersReason, ServerDraft, ServerFault, ServerModel, Work,
-};
+use account_tailscale::NodeId;
 use inference_client::ComputerName;
 use inference_tailnet::ComputerCandidate;
 use inference_tailnet::GuestAnswer;
-use account_tailscale::NodeId;
+use settings_app_model::{
+    Absence, ComputersFound, ComputersReason, ServerDraft, ServerFault, ServerModel, Work,
+};
 use std::fmt::Debug;
 
 /// One change to the computers.

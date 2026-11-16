@@ -8,19 +8,19 @@
 
 use crate::request::{RequestFault, SamplingFrom, chat};
 use crate::watch::Watch;
-use inference_client::{OpenOptions, Transport, TransportError};
-use model_provider as sp;
-use model_provider::{Provider, ProviderError, TurnEvent, TurnSink};
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use inference_client::{OpenOptions, Transport, TransportError};
 use inference_core::{
     ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, InferSession, ModelError,
 };
-use account_match::LlmNeed;
-use account_match::Need;
+use model_provider as sp;
+use model_provider::{Provider, ProviderError, TurnEvent, TurnSink};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

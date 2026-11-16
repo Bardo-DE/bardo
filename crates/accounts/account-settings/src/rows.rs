@@ -4,12 +4,12 @@ use crate::ai_rows::{Permits, Service, SignOut};
 use crate::helpers::{button, off, readout, refused};
 use crate::identity_rows::{Expires, UsedBy};
 use crate::{AccountRow, Acts, At, Boxed, Row};
-use ui_settings::live::LiveError;
-use ui_settings::schema::{ActionWeight, KeySpec};
 use account_core::{Account, AccountState, AuthKind};
 use account_ids::word::word as word_of;
 use account_sheet::ProviderGroup;
 use account_sheet::words::group_heading;
+use ui_settings::live::LiveError;
+use ui_settings::schema::{ActionWeight, KeySpec};
 
 /// Where an account lives, as the `place` row says it: a program on this computer (a probed
 /// runtime, which signs in with nothing) or anywhere else. Settings lists the first kind under

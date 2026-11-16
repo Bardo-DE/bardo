@@ -3,8 +3,8 @@
 //! does not know (a removed setting included) is reported in `Loaded::unknown` and kept in the
 //! file by the next save; `shell_app::daemon::settings` owns the reading, saving and watching.
 
-use ui_settings::{AppName, FileName, Format, SettingsDoc};
 use serde::{Deserialize, Serialize};
+use ui_settings::{AppName, FileName, Format, SettingsDoc};
 
 use crate::bar::BarSettings;
 use crate::calendar::CalendarSettings;

@@ -8,9 +8,13 @@ mod module;
 mod rows;
 
 use super::bus::PrivateBus;
+use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH, INFERENCE_BUS};
+use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use settings_app_model::ModuleId;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
+use std::sync::{Arc, Mutex};
+use sync_bus::SYNC_BUS;
 use ui_settings::live::{
     Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve,
 };
@@ -18,10 +22,6 @@ use ui_settings::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Page, Section,
 };
-use sync_bus::SYNC_BUS;
-use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH, INFERENCE_BUS};
-use std::sync::{Arc, Mutex};
-use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 
 /// Where each daemon's module is: its bus name, the daemon it is looked for as, and its path.
 pub trait ModuleAt {

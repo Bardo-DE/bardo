@@ -6,9 +6,9 @@ use crate::support;
 
 use compositor_core::time::Mono;
 use compositor_motion::{FrameScene, MotionBook, sample};
-use ui_style::appearance::motion::MotionLevel;
 use support::mc_entry::{INSTANTS_MS, committed_of_scene, entry, journeys, looks_of_scene};
 use support::{at, at_us};
+use ui_style::appearance::motion::MotionLevel;
 
 fn frame(book: &MotionBook, t: Mono) -> (FrameScene, bool) {
     sample(book, &committed_of_scene(), &looks_of_scene(), t)

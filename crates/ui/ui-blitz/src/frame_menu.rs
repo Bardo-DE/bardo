@@ -1,6 +1,6 @@
 //! The link under a context menu inside a frame, for the app's "Copy Link" (mailo's message
 //! body). Blitz delivers a frame's `contextmenu` to the `iframe` element and its ancestors, but
-//! the app's handler there cannot see inside the frame's document; ds-blitz hit-tests it
+//! the app's handler there cannot see inside the frame's document; ui-blitz hit-tests it
 //! (`crate::frame_hit`) and tells the app which link, if any, the secondary press ended on. The
 //! app hears it just before the page's own `oncontextmenu` for the same press.
 

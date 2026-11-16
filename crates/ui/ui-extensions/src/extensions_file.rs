@@ -5,10 +5,10 @@
 //! administrator can turn an Extension off and lock it. Turning one on or off is the person's:
 //! no key of it is agent-settable.
 
+use serde::{Deserialize, Serialize};
 use ui_core::settings::ExtensionId;
 use ui_settings::schema::{Page, Schema, SettingsSchema};
 use ui_settings::{FileName, Format, SettingsDoc, SettingsRow, SettingsSchema};
-use serde::{Deserialize, Serialize};
 
 /// One Extension that is turned off, by id.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, SettingsRow)]

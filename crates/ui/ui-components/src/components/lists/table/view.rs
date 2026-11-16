@@ -19,9 +19,9 @@ use crate::components::lists::table::head::{cells, use_resize};
 use crate::components::lists::table::model::{Sort, TableColumn, TableRow};
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::hash::Hash;
 use ui_core::vocab::RowState;
 use ui_core::word::Word;
-use std::hash::Hash;
 
 /// A table of `rows` in `columns`. `sort` is the sorted column; `on_sort` hears what a header
 /// press asks for. `selection` are the selected rows and `cursor` the one the keys rest on;

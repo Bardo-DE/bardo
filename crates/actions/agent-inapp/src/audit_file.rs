@@ -13,8 +13,8 @@
 //! this run.
 
 use action_core::AuditRecord;
-use companion_memory_core::QUEUE_LIMIT;
 use action_store::write_atomic;
+use companion_memory_core::QUEUE_LIMIT;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 

@@ -8,6 +8,11 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::rect;
+use shell_kit::osd::OsdLevel;
+use shell_kit::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::level_indicator::LevelStyle;
@@ -15,11 +20,6 @@ use ui_components::components::controls::slider_model::SliderLook;
 use ui_components::prelude::*;
 use ui_components::style::space::presets::PRESETS;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use probe::rect;
-use shell_kit::osd::OsdLevel;
-use shell_kit::prelude::*;
-use std::cell::Cell;
-use std::time::Duration;
 
 /// Where the level is drawn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -4,12 +4,12 @@
 //! when power-profiles-daemon is. Reads `use_service::<PowerProfileService>`.
 
 use dioxus::prelude::*;
-use ui_components::components::controls::segmented::Tracking;
-use ui_components::prelude::*;
-use ui_components::style::tokens::control_size::ControlSize;
 use shell_model::power_profile::{Profile, ProfileCommand, ProfileDegraded};
 use shell_model::units::Presence;
 use shell_services::PowerProfileService;
+use ui_components::components::controls::segmented::Tracking;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use crate::control_center::profile_label;
 use shell_ui_kit::hooks::{use_control, use_service};

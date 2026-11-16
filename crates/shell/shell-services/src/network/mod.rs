@@ -1,5 +1,5 @@
 //! The network: NetworkManager's primary connection over the system bus
-//! (the `airwaves-nm` proxies).
+//! (the `networkmanager-proxy` proxies).
 
 mod backend;
 

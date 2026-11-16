@@ -2,8 +2,8 @@
 
 use super::keys::{APPS_KEY, Rule, table};
 use super::*;
-use computer_use_run::DefaultMode;
 use account_core::AppName;
+use computer_use_run::DefaultMode;
 use std::collections::BTreeSet;
 
 fn schema() -> toml::Table {

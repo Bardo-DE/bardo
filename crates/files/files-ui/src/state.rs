@@ -5,11 +5,11 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use dioxus::prelude::*;
-use ui_components::prelude::use_toasts;
-use ui_components::stack::toast_hub::UndoToken;
-use ui_blitz::{WindowHandle, use_window_handle};
 use files_model::{Browser, Input, Rename, TabId, Tabs};
 use tokio::sync::mpsc::UnboundedReceiver;
+use ui_blitz::{WindowHandle, use_window_handle};
+use ui_components::prelude::use_toasts;
+use ui_components::stack::toast_hub::UndoToken;
 
 use crate::edge::{self, AppChoiceView, Edge, Heard};
 use crate::icons::Icons;

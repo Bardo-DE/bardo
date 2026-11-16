@@ -3,9 +3,9 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
+use account_core::SpaceId;
 use desktop_protocols::vocab::Shown;
 use ui_core::vocab::DropState;
-use account_core::SpaceId;
 
 /// The tile under the dragged window on each output that has one: a Space's, or the plus that
 /// makes a new Space; and the outputs where a window drag is under way, whose every tile accepts

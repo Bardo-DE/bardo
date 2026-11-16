@@ -1,8 +1,8 @@
 //! Where the dictionaries are: the system's Hunspell directories, and the user's own words
 //! under XDG data (`~/.local/share/quire/spelling/<lang>.dic`, one word per line).
 
-use ui_components::spell::lang::Lang;
 use std::path::PathBuf;
+use ui_components::spell::lang::Lang;
 
 /// The system's Hunspell directories, searched in order. Fedora installs `hunspell-*` packages
 /// into the first; Debian's `hunspell-*` and `myspell-*` use the others.

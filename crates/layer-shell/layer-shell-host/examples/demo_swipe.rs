@@ -15,12 +15,12 @@ mod harness;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use serde_json::json;
 use layer_shell_host::{
     Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, Host, HostEvent, HostRoot,
     KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget,
     RegionSpec,
 };
+use serde_json::json;
 
 const CSS: &str = "html,body{margin:0;padding:0}\
 .swipe{position:absolute;left:20px;top:20px}\

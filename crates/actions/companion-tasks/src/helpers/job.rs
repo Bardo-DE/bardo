@@ -9,17 +9,17 @@ use crate::helpers::view::role_text;
 use crate::runtime::Companion;
 use crate::seams::Surface;
 use crate::task::Failure;
+use account_ids::Count;
+use action_client::Transport as IntentsTransport;
+use action_core::{CallEnd, CallRefusal, DraftPart, MessageDraft, StepEnd, TurnVia, UserTurn};
+use action_vocab::{Caller, Clock, TurnId};
+use action_wire::SessionOpen;
 use agent_loop::{FinishedAs, LoopInput, LoopPhase};
+use agent_planner::Planner;
 use companion_core::{JobEnding, JobInput, JobReport, JobSpec, OpenedJob};
 use companion_model::helper::{CallVerdict, GoalSource, HelperSeat, JobFault, SeatPlace};
 use companion_wire::{AnswerPhase, NeedsYou, RefusalWire};
-use action_client::Transport as IntentsTransport;
-use action_core::{CallEnd, CallRefusal, DraftPart, MessageDraft, StepEnd, TurnVia, UserTurn};
 use permission_core::DenyCode;
-use agent_planner::Planner;
-use action_vocab::{Caller, Clock, TurnId};
-use action_wire::SessionOpen;
-use account_ids::Count;
 use provenance::{Address, AgentRef, MessageKind, MessageText, TaskId};
 
 /// The steps a job may take: a routine's run may be given fewer than the helper's own job, never

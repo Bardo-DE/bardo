@@ -1,6 +1,6 @@
 //! The Software Update page, as Settings meets it: what the update service says, what each action
 //! may ask of it, and the facts the page shows for every standing. Pure; the service, the clock and
-//! the log-out are the window's (`detent-ui`).
+//! the log-out are the window's (`settings-app-ui`).
 
 mod limits;
 mod model;

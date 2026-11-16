@@ -1,8 +1,8 @@
 //! Content-free status of the voice service.
 
 use crate::event::VoiceFault;
-use action_wire::VoiceIntent;
 use account_ids::UnixSeconds;
+use action_wire::VoiceIntent;
 use inference_core::Readiness;
 use serde::{Deserialize, Serialize};
 

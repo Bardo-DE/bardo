@@ -1,7 +1,7 @@
-# Where the sibling shell-host checkout and this repo are, and the two compositors a script runs
+# Where the sibling layer-shell-host checkout and this repo are, and the two compositors a script runs
 # on: casement (the sibling casement checkout's dev/up.sh, headless, INSIDE the jail: only
 # dev/accept.sh --compositor casement, or a script run under packaging/harness/jail.sh, can use
-# it) and shell-host's headless KWin (kwin-virtual.sh). The KWin harness belongs to shell-host;
+# it) and layer-shell-host's headless KWin (kwin-virtual.sh). The KWin harness belongs to layer-shell-host;
 # sill only wraps it.
 #
 # SILL_COMPOSITOR=casement|kwin picks the compositor for `start_compositor`; unset, each script
@@ -14,7 +14,7 @@ SILL_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../sill" && pwd)"
 SILL_TREE="$(cd "$SILL_REPO/../../../sill" && pwd)"   # the bardo tree
 SHELL_HOST_DEV="${SHELL_HOST_DEV:-$SILL_REPO/../shell-host/scripts/dev}"
 if [ ! -x "$SHELL_HOST_DEV/kwin-virtual.sh" ]; then
-  echo "dev: shell-host's harness not found at $SHELL_HOST_DEV (set SHELL_HOST_DEV)" >&2
+  echo "dev: layer-shell-host's harness not found at $SHELL_HOST_DEV (set SHELL_HOST_DEV)" >&2
   exit 1
 fi
 # The build every script runs: SILL_PROFILE=debug (the default) or release, from cargo's target
@@ -172,7 +172,7 @@ compositor_kind() {
 
 # start_compositor [--default casement|kwin] [SIZE]: brings the compositor up and sets WL (its
 # socket, absolute) and BUS (the private bus standing in for the session and the system bus).
-#   kwin      shell-host's headless KWin at SIZE (default $SIZE) on its private bus;
+#   kwin      layer-shell-host's headless KWin at SIZE (default $SIZE) on its private bus;
 #   casement  dev/up.sh of the casement checkout in this jail: a headless casement on the
 #             wall clock at SIZE, its private bus (also fake-logind's), WL and BUS from its env file.
 # Needs OUT_DIR. Fails (exit code 2 for "not here") when casement is asked for outside the jail.
@@ -236,7 +236,7 @@ CASEMENT_FLOOR_BUILT=(
 casement_floor_dir() { echo "$OUT_DIR/casement-floor"; }
 
 # Writes the session's floor (privacy.toml in an empty folder only this user can enter, the shape
-# casement-core's floor_codec reads) and prints the folder. A program that is not installed is left
+# compositor-core's floor_codec reads) and prints the folder. A program that is not installed is left
 # out: the script that needs it says so itself. Defaults stay "ask".
 write_casement_floor() {
   local dir row power tool path
@@ -413,7 +413,7 @@ shot() {
   esac
 }
 
-# The height of a window that asks to be maximised on the output. KWin: shell-host's
+# The height of a window that asks to be maximised on the output. KWin: layer-shell-host's
 # `probe_toplevel` (built on first use) stands in for foot, asks to be maximised and prints each
 # configure as JSON into $OUT_DIR/probe.log; prints the last maximised configure's height.
 # Casement: `casement-probe toplevel --maximised`, which prints the same facts as JSON lines;

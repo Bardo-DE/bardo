@@ -6,19 +6,19 @@
 //! Named apart from `action_context::state::SessionRecord` (the router's in-memory session) and
 //! `companion_wire::SessionRecord` (companiond's roster facts).
 
-use companion_model::HandNote;
-use companion_model::helper::HelperSeat;
+use account_capability::Tier;
+use account_core::AppName;
 use action_core::Ledger;
 use action_core::{
     CheckpointNote, Covers, HandleShape, Rewind, SkillId, StepLine, SummaryText, UserTurn,
 };
+use action_vocab::{ActionRef, CallId, Handle, Workspace};
+use action_wire::StartedFrom;
+use companion_model::HandNote;
+use companion_model::helper::HelperSeat;
 use permission_core::BreakerTrip;
 use permission_core::ProgramName;
 use permission_core::TaskPolicy;
-use action_vocab::{ActionRef, CallId, Handle, Workspace};
-use action_wire::StartedFrom;
-use account_capability::Tier;
-use account_core::AppName;
 use provenance::{AgentRef, Effect, Label, SessionId, Source, SpaceId, TaskId};
 use serde::{Deserialize, Serialize};
 
@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BackendKind {
-    /// The planner over inferd (`docket-tasks`).
+    /// The planner over inferd (`companion-tasks`).
     Native,
     /// An external agent program behind the ACP client edge.
     Acp(ProgramName),

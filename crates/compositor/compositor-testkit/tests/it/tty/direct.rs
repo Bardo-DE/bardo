@@ -15,14 +15,14 @@ use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::gpu::GpuChoice;
 use compositor_core::output::{Mode, OutputConfig};
 use compositor_core::time::Mono;
-use desktop_protocols::vocab::Transform;
 use compositor_testkit::fakes::{
     EmptyScene, FakeKms, FakeKmsOpener, FakeWriteback, SyntheticTopology,
 };
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::Transform;
 use std::path::PathBuf;
 use std::sync::mpsc::Sender;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
@@ -129,7 +129,9 @@ fn the_edge_pauses_and_activates_the_session_like_a_vt_switch() {
     let notes = rig.backend.dispatch();
     assert!(matches!(
         notes.as_slice(),
-        [compositor_backend::tty::TtyNote::Session(SessionNote::Paused)]
+        [compositor_backend::tty::TtyNote::Session(
+            SessionNote::Paused
+        )]
     ));
     assert_eq!(rig.backend.seat, SeatState::Lent);
     assert_eq!(rig.kms.seat_changes(), (1, 0));

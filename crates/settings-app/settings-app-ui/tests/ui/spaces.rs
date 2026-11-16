@@ -1,16 +1,16 @@
 //! The Spaces page's list over a registry that answers from memory: Remove asks on the sheet
 //! first, the choice reaches the registry as the person made it, and Cancel sends nothing. The
 //! real link's order (memory is told before the registry is asked, and a delete choice with no
-//! memory running goes no further) is tested over a private bus in detent-system.
+//! memory running goes no further) is tested over a private bus in settings-app-system.
 
 use crate::support::Sandbox;
 use crate::support::drive::click;
 use settings_app_model::{PageSlug, SpaceKey, SpaceRow};
 use settings_app_system::spaces::FakeSpaces;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::sync::Arc;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const TRIP: &str = "[aria-label=\"Remove Trip\"]";
 const SHEET: &str = ".space-sheet";

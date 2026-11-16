@@ -1,5 +1,5 @@
 //! The rules every backend keeps, run against the scripted `FakeBackend`. The native backend runs
-//! the same functions in `docket-tasks`.
+//! the same functions in `companion-tasks`.
 
 use crate::support::*;
 use action_core::{Reveal, UserTurn};

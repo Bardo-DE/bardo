@@ -6,17 +6,17 @@
 //! 5.2.10, G28-G30). Nothing playing: "Not Playing" and no buttons. The view reads no hook: a
 //! press is a [`Transport`] handed to its caller, which sends it to the player.
 
+use std::time::Duration;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::style::icon::url::IconUrl;
 use serde::{Deserialize, Serialize};
-use shell_model::now_playing::{Abilities, Art, MediaPlayer, MediaVerb, Micros, Timeline};
 use shell_kit::now_playing::kind::Playback;
 use shell_kit::prelude::*;
+use shell_model::now_playing::{Abilities, Art, MediaPlayer, MediaVerb, Micros, Timeline};
+use ui_components::style::icon::url::IconUrl;
 
 /// The Now Playing module's two lines: the title (the player's identity when there is none),
 /// and the artists joined with ", " then " — " and the album, leaving out whichever is empty.
@@ -171,9 +171,8 @@ pub fn MediaView(face: MediaFace, onpress: Option<EventHandler<Transport>>) -> E
 pub fn playback_of(playback: shell_model::now_playing::Playback) -> Playback {
     match playback {
         shell_model::now_playing::Playback::Playing => Playback::Playing,
-        shell_model::now_playing::Playback::Paused | shell_model::now_playing::Playback::Stopped => {
-            Playback::Paused
-        }
+        shell_model::now_playing::Playback::Paused
+        | shell_model::now_playing::Playback::Stopped => Playback::Paused,
     }
 }
 

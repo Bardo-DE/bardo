@@ -3,9 +3,9 @@
 
 use super::Timeline;
 use super::ease::Ease;
+use std::time::Duration;
 use ui_core::vocab::Fraction;
 use ui_style::tokens::easing::Easing;
-use std::time::Duration;
 
 /// A value gliding from `from` to `to` along `ease`. Values are in whatever unit the caller
 /// glides (thousandths of a share, a count); a spring curve may overshoot `to` on the way.
@@ -73,8 +73,8 @@ impl Timeline for Glide {
 #[cfg(test)]
 mod tests {
     use super::{Glide, Timeline};
-    use ui_style::tokens::easing::{Easing, EasingToken};
     use std::time::Duration;
+    use ui_style::tokens::easing::{Easing, EasingToken};
 
     const MS: fn(u64) -> Duration = Duration::from_millis;
 

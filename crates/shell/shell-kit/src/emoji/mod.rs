@@ -20,10 +20,10 @@ mod tests;
 
 use crate::user_picture::size::PictureSize;
 use dioxus::prelude::*;
+use sheet::{SheetPx, position, timing, uri};
 use ui_components::motion::epoch::Epoch;
 use ui_components::root::common::Common;
 use ui_components::style::scope::use_scope;
-use sheet::{SheetPx, position, timing, uri};
 
 /// The attribution a surface that shows these emoji carries in its credits (design/25
 /// section 2).

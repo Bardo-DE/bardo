@@ -38,7 +38,7 @@
 //! # Layering
 //!
 //! This crate may not name `ds` (the components), so [`FileIcons::of`] answers with its own small
-//! [`IconPick`], made of `ds-style`'s [`FileKind`], [`FolderKind`] and [`ExtLabel`] and a path.
+//! [`IconPick`], made of `ui-style`'s [`FileKind`], [`FolderKind`] and [`ExtLabel`] and a path.
 //! An app maps it to `ui_components::FileIconChoice` in three arms (CONSUMING.md, "File icons").
 
 mod folder;

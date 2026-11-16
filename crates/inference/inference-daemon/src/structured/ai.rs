@@ -1,5 +1,5 @@
 //! The `[ai]` table of `inferd.toml`: every settings row of the `ai` domain at its settings path.
-//! The structured-output rows inside it (`StructuredConfig`) are `porter-turns`'; the rest are
+//! The structured-output rows inside it (`StructuredConfig`) are `inference-turns`'; the rest are
 //! read by `settings`.
 
 use inference_turns::structured::StructuredConfig;

@@ -135,7 +135,10 @@ pub(crate) fn cursor_in_model(
     CursorAt { x, y }
 }
 
-fn cursor_text(map: &FrameMap, at: computer_use_action::Point<computer_use_action::WindowSpace>) -> String {
+fn cursor_text(
+    map: &FrameMap,
+    at: computer_use_action::Point<computer_use_action::WindowSpace>,
+) -> String {
     let CursorAt { x, y } = cursor_in_model(map, at);
     format!("The cursor is at [{x}, {y}].")
 }

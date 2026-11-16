@@ -11,11 +11,11 @@
 use crate::deadline::bounded;
 use crate::runtime::Companion;
 use crate::seams::Surface;
-use agent_loop::{Sources, compaction_due, summarised, summary_input};
 use action_client::Transport as IntentsTransport;
 use action_core::Summary;
-use agent_planner::Planner;
 use action_vocab::Clock;
+use agent_loop::{Sources, compaction_due, summarised, summary_input};
+use agent_planner::Planner;
 use provenance::TaskId;
 
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
@@ -51,22 +51,22 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 #[cfg(test)]
 mod tests {
     use crate::{Companion, Quiet};
-    use agent_loop::{Sources, assemble, compaction_due};
+    use account_capability::Tier;
+    use account_core::{AppId, AppName, Isolation};
+    use account_ids::{Count, Tokens};
     use action_client::{InProcess, Intents};
     use action_core::{
         AgentConfig, Covers, StepEnd, StepLine, StepShown, Summary, SummaryText, TurnVia, UserTurn,
     };
     use action_fake::{FixedClock, fake_router};
+    use action_vocab::{ActionRef, CallId, Caller, CallerRole, LabelText, TurnId};
+    use action_wire::{CallerId, SessionOpen};
+    use agent_loop::{Sources, assemble, compaction_due};
     use agent_planner::{ScriptedPlanner, Summarised};
     use agent_session::{
         BackendKind, Compacted, CompactedBy, Logged, Opening, Read, Seq, SessionEntry, TaintCause,
         TaintNote, resume_plan,
     };
-    use action_vocab::{ActionRef, CallId, Caller, CallerRole, LabelText, TurnId};
-    use action_wire::{CallerId, SessionOpen};
-    use account_capability::Tier;
-    use account_core::{AppId, AppName, Isolation};
-    use account_ids::{Count, Tokens};
     use provenance::{ActionName, AgentRef, Effect, Integrity, SpaceId, TaskId, UnixSeconds};
     use std::{collections::BTreeSet, sync::Arc};
 

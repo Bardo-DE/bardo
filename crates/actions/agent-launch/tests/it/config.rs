@@ -1,8 +1,8 @@
 //! `agents.toml`: what is accepted, and what is refused outright.
 
+use agent_launch::{AgentsFile, ConfigFault, Route};
 use sandbox::NetworkMode;
 use sandbox::egress::{Host, HostFault, Refusal};
-use agent_launch::{AgentsFile, ConfigFault, Route};
 
 use super::support::{HANDOFF, LOGIN};
 

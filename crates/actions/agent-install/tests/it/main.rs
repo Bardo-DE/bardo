@@ -1,17 +1,17 @@
 //! The registry reader and installer, over a fixture snapshot and archives built here. Nothing
 //! reaches the network or the real home.
 
+use agent_install::fetch::{Fetch, FetchFault};
+use agent_install::run::{Run, RunFault};
+use agent_install::store::{agents, read_record, versions};
+use agent_install::uv::PythonPackage;
+use agent_install::{InstallFault, Offer, Standing, Want, install, offers, standing};
 use agent_registry::dirs::AgentsDir;
 use agent_registry::hash::Sha256Hex;
 use agent_registry::platform::Platform;
 use agent_registry::record::{Check, Record, RecordFault};
 use agent_registry::slug::Slug;
 use agent_registry::snapshot::Snapshot;
-use agent_install::fetch::{Fetch, FetchFault};
-use agent_install::run::{Run, RunFault};
-use agent_install::store::{agents, read_record, versions};
-use agent_install::uv::PythonPackage;
-use agent_install::{InstallFault, Offer, Standing, Want, install, offers, standing};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::Write;

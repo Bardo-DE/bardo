@@ -5,18 +5,20 @@
 use crate::support;
 
 use compositor_core::geometry::SubPx;
-use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalRect, PhysicalSize};
+use compositor_core::geometry::{
+    LogicalPoint, LogicalRect, LogicalSize, PhysicalRect, PhysicalSize,
+};
 use compositor_motion::{OutputFrame, StripOffset};
 use compositor_render::{
     BlurV0Element, CasementElement, ChromeLayer, CursorDraw, CursorShape, LayerDraw,
     LockCoverElement, OutputView, RenderSync, Rgba8, TextureBook, output_elements, solid_rect,
 };
-use ui_core::geometry::scale::Scale;
 use proptest::prelude::*;
 use smithay::backend::renderer::element::{Element, Id};
 use smithay::backend::renderer::pixman::PixmanRenderer;
 use smithay::backend::renderer::utils::CommitCounter;
 use support::{Offscreen1, pixman, render_once, tracker};
+use ui_core::geometry::scale::Scale;
 
 /// The cover's colour (opaque black).
 const COVER: Rgba8 = Rgba8 {

@@ -1,4 +1,4 @@
-//! The adapter between a quire app's view marks and docket's wire. quire's `ds-intents` is
+//! The adapter between a quire app's view marks and docket's wire. quire's `ui-intents` is
 //! view-only and names no agent type; this crate, in docket's repo, is the one place that
 //! converts between the two. Each pair has a total conversion with a test, so a variant added
 //! on either side fails the build here and not at a user.
@@ -6,7 +6,7 @@
 //! - `chips_of`, `keep_of`: the chips a prompt carries and the context the person kept.
 //! - `thing_mark`, `entity_ref`: a thing as a row shows it and as the router names it.
 //! - [`summon_answer_mark`], [`summon_answer_of`], [`serial_of`], [`serial_mark`].
-//! - `DsContextSource`, `DsSummonTarget`: the seams `docket-provider` asks ds to answer.
+//! - `DsContextSource`, `DsSummonTarget`: the seams `action-provider` asks ds to answer.
 //! - [`summon_origin_mark`]: where a summon came from, as ds's `SummonOriginMark`.
 //! - `heard_of`, `DictationBridge`: the voice path from `Voice1.Utterance.Attach` to a field.
 

@@ -1,26 +1,26 @@
 //! A real intentd over the fake router on a private bus, and the records and asks the link tests send it.
 
 use crate::support::bus::PrivateBus;
-use computer_use_action::{CuaAction, WindowSpace};
-use computer_use_action::{RunMode, WindowTrust};
-use computer_use_bus::{
-    ActionResult, AuthorisedBy, CuaOutcome, CuaRecord, FrameNote, TargetedAction, ThoughtDigest,
-    WindowRef,
-};
-use computer_use_desktop::Digest32;
-use computer_use_run::{GateCheck, GateEvent, GateLink};
-use computer_use_daemon::IntentsGate;
+use account_core::AppName;
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, GrantScope};
+use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
 use action_dbus::callers::{CallerTable, Identity, Role};
 use action_fake::{ScriptedConfirmer, fake_router};
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use action_router::Router;
 use action_vocab::CallerRole;
 use action_wire::SessionOpen;
-use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
+use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{RunMode, WindowTrust};
+use computer_use_bus::{
+    ActionResult, AuthorisedBy, CuaOutcome, CuaRecord, FrameNote, TargetedAction, ThoughtDigest,
+    WindowRef,
+};
 use computer_use_capture::FrameDigest;
-use account_core::AppName;
+use computer_use_daemon::IntentsGate;
+use computer_use_desktop::Digest32;
+use computer_use_run::{GateCheck, GateEvent, GateLink};
 use provenance::{
     AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, Source, SpaceId,
     UnixSeconds,

@@ -2,7 +2,6 @@
 //! the credential added the way accountd's relay would add it. No network beyond loopback.
 #![allow(dead_code)]
 
-use sync_core::Clock;
 use account_fake_servers::dav::Behaviour;
 use account_fake_servers::{DavHandle, FakeDav, Running};
 use account_http::http::header::{AUTHORIZATION, HeaderValue};
@@ -10,8 +9,9 @@ use account_http::http::{Request, Response};
 use account_http::{Http, HttpError};
 use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use account_ids::{UnixSeconds, WebUrl};
-use std::future::Future;
 use replica_webdav::WebDavReplica;
+use std::future::Future;
+use sync_core::Clock;
 use tokio::net::TcpStream;
 
 pub const USER: &str = "ada";

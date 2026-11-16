@@ -3,11 +3,11 @@
 
 use super::hub::{DatasetName, StatusSnapshot};
 use crate::scheduler::Pausing;
-use sync_bus::{CONFLICT_KEY_NUMBER, STATUS_KEY_QUOTA};
-use sync_core::{BaseVersion, MassDelete, Quota, RemoteSide, StoredConflict};
 use account_dbus::{Details, to_vardict, zvariant};
 use account_wire::names::ACCOUNTS_PATH;
 use serde_json::json;
+use sync_bus::{CONFLICT_KEY_NUMBER, STATUS_KEY_QUOTA};
+use sync_core::{BaseVersion, MassDelete, Quota, RemoteSide, StoredConflict};
 use zvariant::{Dict, OwnedValue, Signature, Value};
 
 /// `Status` keys.
@@ -138,8 +138,8 @@ pub fn conflict_details(stored: &StoredConflict) -> Details {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sync_core::{Conflict, LocalId, RemoteId, RemoteVersion};
     use account_ids::{Bytes, UnixSeconds};
+    use sync_core::{Conflict, LocalId, RemoteId, RemoteVersion};
 
     fn text(details: &Details, key: &str) -> Option<String> {
         details

@@ -1,15 +1,15 @@
 //! Finding a generic DAV server from the name a person typed, sent: `.well-known/caldav` and
 //! `.well-known/carddav` on a bare server, or the address itself when it names a path, and a
 //! PROPFIND with the password at each to see that it is accepted. The requests and the verdicts
-//! are generic-proto's.
+//! are account-generic-proto's.
 
 use super::fault;
-use account_generic_proto::dav::{self, Root, SERVICES, Service};
 use account_capability::Claim;
 use account_core::{EndpointUrl, LoginName, SecretText, ServiceEndpoint};
 use account_discover::well_known_found;
 use account_family_kit::Io;
 use account_family_kit::password::{basic, fault_of, sensitive};
+use account_generic_proto::dav::{self, Root, SERVICES, Service};
 use account_http::Http;
 use account_provider::ProviderSpec;
 use account_sheet::SignInFault;

@@ -10,7 +10,7 @@
 // that the same derive output resolves whether a consumer crate invokes it or this crate does
 // (`appearance/settings.rs`'s own `AppearanceSettings`/`IconsSettings`). This self-referential
 // alias is what lets the second case resolve too, without a second, crate-relative code path in
-// `ds-settings-derive`.
+// `ui-settings-derive`.
 extern crate self as ui_settings;
 
 mod appearance;
@@ -44,8 +44,6 @@ pub mod xdg;
 pub use appearance::{AppearanceFile, AppearanceSettings, IconStyle, IconsSettings, quire_schema};
 pub use damaged::{DamagedFile, Saved};
 pub use doc::{FileName, Format, SettingsDoc};
-pub use ui_settings_derive::{SettingsRow, SettingsSchema};
-pub use ui_style::kit::UserStyle;
 #[cfg(feature = "dioxus")]
 pub use environment::{Environment, use_environment};
 pub use error::SettingsError;
@@ -60,6 +58,8 @@ pub use region::{HourCycle, RegionSettings, ResolvedHours, time_locale};
 pub use root::{AppName, ConfigRoot};
 pub use spaces_storage::{Fixup, Origin, SpacesLoad, SpacesStorage};
 pub use store::Store;
+pub use ui_settings_derive::{SettingsRow, SettingsSchema};
+pub use ui_style::kit::UserStyle;
 pub use units::{Count, Fraction, Mins, Ms, Percent, Px, Scalar, Secs, Units};
 pub use watch::{DEBOUNCE, Watch, WatchState};
 pub use when::{UnixSecs, UtcOffset, list_date};

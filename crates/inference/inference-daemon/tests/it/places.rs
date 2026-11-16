@@ -4,18 +4,18 @@
 
 use crate::hosting;
 
+use account_capability::ModelId;
+use account_capability::Tier;
+use account_core::{AppId, AppName, DataClass, Isolation};
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::lab::Lab;
 use hosting::rig::{Hosted, Plan, Trust, World};
+use inference_client::{ClientError, TransportError};
+use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, Takes};
 use inference_daemon::attached::{Attached, Place, Reach};
 use inference_daemon::peers::{Caller, Role};
-use inference_client::{ClientError, TransportError};
-use account_capability::ModelId;
-use account_capability::Tier;
-use account_core::{AppId, AppName, DataClass, Isolation};
-use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, Takes};
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -178,7 +178,8 @@ async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
     }
     // Nobody the table names is refused too.
     let stranger = world.bus.connect().await;
-    let accounts = inference_client::Inference::over(inference_client::DbusTransport::over(stranger));
+    let accounts =
+        inference_client::Inference::over(inference_client::DbusTransport::over(stranger));
     assert!(matches!(
         accounts.places().await,
         Err(ClientError::Transport(TransportError::Denied(_)))
@@ -247,7 +248,9 @@ async fn an_account_that_appears_makes_inferd_say_engines_changed() {
 }
 
 async fn within_generous(work: impl std::future::Future<Output = ()>) -> bool {
-    tokio::time::timeout(base_testkit::GENEROUS, work).await.is_ok()
+    tokio::time::timeout(base_testkit::GENEROUS, work)
+        .await
+        .is_ok()
 }
 
 // ---- routing inside the allowed set -------------------------------------------------------
@@ -256,9 +259,9 @@ mod routing {
     use super::*;
     use account_capability::LlmFeature;
     use account_ids::Tokens;
-    use inference_core::{OpenOptions, PlaceId, Policy};
     use account_match::LlmNeed;
     use account_match::Need;
+    use inference_core::{OpenOptions, PlaceId, Policy};
     use inference_dbus::inference::InferenceProxy;
 
     const COMPANION: &str = "org.quire.Companion";
@@ -547,18 +550,18 @@ mod refusals {
 mod computers {
     use super::routing::placed_world_with;
     use super::*;
-    use hosting::bus::within;
-    use inference_daemon::peers::Caller;
-    use inference_client::InferSession;
     use account_dbus::zvariant::{OwnedValue, Value};
     use account_dbus::{BusStream, Details};
+    use hosting::bus::within;
+    use inference_client::InferSession;
     use inference_core::{
         ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, MessagePart, OpenOptions,
         PlaceId, Policy, Role as ChatRole,
     };
-    use std::path::Path;
+    use inference_daemon::peers::Caller;
     use inference_dbus::inference::COMPUTER_ERROR_PREFIX;
     use inference_dbus::inference::InferenceProxy;
+    use std::path::Path;
 
     const KEY: &str = "sk-lab-S3CRET-0123456789";
     const COMPANION: &str = "org.quire.Companion";
@@ -679,7 +682,9 @@ mod computers {
         assert_eq!(placed, "computer:studio-pc");
         let told = std::future::poll_fn(|cx| std::pin::Pin::new(&mut changed).poll_next(cx));
         assert!(
-            tokio::time::timeout(base_testkit::GENEROUS, told).await.is_ok(),
+            tokio::time::timeout(base_testkit::GENEROUS, told)
+                .await
+                .is_ok(),
             "EnginesChanged after an addition"
         );
 
@@ -770,7 +775,9 @@ mod computers {
             .expect("removed");
         let told = std::future::poll_fn(|cx| std::pin::Pin::new(&mut changed).poll_next(cx));
         assert!(
-            tokio::time::timeout(base_testkit::GENEROUS, told).await.is_ok(),
+            tokio::time::timeout(base_testkit::GENEROUS, told)
+                .await
+                .is_ok(),
             "EnginesChanged after a removal"
         );
         let rows = world.accounts.places().await.expect("places");

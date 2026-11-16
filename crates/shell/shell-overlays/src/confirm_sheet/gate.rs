@@ -16,9 +16,9 @@
 //! The delays are not settings yet (`confirm.arm_ms`, `confirm.hold_ms` are the proposed keys,
 //! design/22 first); they are constants here with the proposed defaults.
 
+use shell_model::intents::sheet::SheetChoice;
 use ui_components::base::machine::{Elapsed, Machine};
 use ui_components::base::time::stamp::{Ms, Stamp};
-use shell_model::intents::sheet::SheetChoice;
 
 /// How long the buttons stay disabled after the sheet appears (`confirm.arm_ms`, proposed 500).
 pub const ARM_MS: Ms = Ms(500);

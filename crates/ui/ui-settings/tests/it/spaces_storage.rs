@@ -3,9 +3,9 @@
 
 use crate::support::Scratch;
 
+use serde::{Deserialize, Serialize};
 use ui_settings::{AppName, ConfigRoot, Fixup, Origin, SpacesLoad, SpacesStorage};
 use ui_style::space::list::{Epoch, IDLE, SpaceId, Spaces, Today};
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 struct Note {

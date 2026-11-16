@@ -3,10 +3,10 @@
 
 use crate::protocol::xdg_shell::{boot, map_toplevel, windows};
 use compositor_core::geometry::PhysicalSize;
-use desktop_protocols::vocab::{Modality, WindowRole};
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testclient::surface::toplevel::extras::{DialogError, WmDialog};
 use compositor_testclient::{Pattern, shm_buffer};
+use desktop_protocols::vocab::{Modality, WindowRole};
 
 /// Set_modal reaches the model as Modality::Modal on the dialog's window.
 #[test]

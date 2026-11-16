@@ -1,8 +1,8 @@
 //! The vault contract, and the path grammar.
 
 use memory_core::{FactId, TopicPath};
-use memory_store::{Vault, VaultError, VaultPath};
 use memory_files::*;
+use memory_store::{Vault, VaultError, VaultPath};
 
 fn p(text: &str) -> VaultPath {
     VaultPath::parse(text).expect("path")

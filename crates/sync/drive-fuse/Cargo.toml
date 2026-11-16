@@ -1,6 +1,6 @@
 [package]
 name = "drive-fuse"
-description = "A drive of ferry-drive at a real path: fuser's calls (lookup, getattr, readdir, open, read, release, statfs, and create, mkdir, write, setattr, rename, unlink, rmdir, fsync) mapped onto the core, read-write over a drive that takes changes, mounted through the system's fusermount3 run as a separate process (fuser with no default features: no libfuse is linked). Stale mounts are cleaned before mounting; a computer with no /dev/fuse or fusermount3 is told apart."
+description = "A drive of drive-core at a real path: fuser's calls (lookup, getattr, readdir, open, read, release, statfs, and create, mkdir, write, setattr, rename, unlink, rmdir, fsync) mapped onto the core, read-write over a drive that takes changes, mounted through the system's fusermount3 run as a separate process (fuser with no default features: no libfuse is linked). Stale mounts are cleaned before mounting; a computer with no /dev/fuse or fusermount3 is told apart."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

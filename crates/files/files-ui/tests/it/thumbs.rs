@@ -11,10 +11,10 @@ use anyview_fs::OnDisk;
 use anyview_image::{Rgba8, encode_png};
 use anyview_platform::testing::FakeThumbnails;
 use anyview_platform::{ThumbPixels, ThumbnailCache};
-use ui_components::prelude::ImageSource;
 use files_core::{FileName, FolderPath, ItemRef};
 use files_ui::edge::{Edge, Heard, Seams};
 use files_ui::thumbs::{Made, Maker, Queue, SIZE, ThumbKey, Thumbed, Thumbnailer, Thumbs, Version};
+use ui_components::prelude::ImageSource;
 
 use super::edge::next;
 use super::support::{RecordingOpener, scratch_folder};

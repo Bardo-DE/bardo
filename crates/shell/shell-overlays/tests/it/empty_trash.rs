@@ -5,12 +5,12 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Harness, Input, Viewport};
 use shell_overlays::EmptyTrashSheet;
 use shell_overlays::arming::QUESTION_ARM_AFTER;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::EmptyTrashLink;
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<EmptyTrashSheet>;
 

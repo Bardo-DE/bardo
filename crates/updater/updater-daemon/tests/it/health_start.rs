@@ -1,11 +1,11 @@
 use crate::support::{Accept, Recipe, Sandbox, build, v};
+use std::path::Path;
+use std::sync::Mutex;
+use updater_core::{LoginSession, Pending, PendingStage};
 use updater_daemon::elevate::{ApplyFailure, Elevate, Recovery};
 use updater_daemon::health::{Health, on_start};
 use updater_daemon::report::Report;
 use updater_daemon::state::StateStore;
-use updater_core::{LoginSession, Pending, PendingStage};
-use std::path::Path;
-use std::sync::Mutex;
 
 /// Stands in for the privileged helper: records the calls and rolls back in the sandbox.
 struct Recording<'a> {

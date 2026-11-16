@@ -1,4 +1,4 @@
-//! transom-core's tables: one test binary for the crate.
+//! portal-core's tables: one test binary for the crate.
 
 mod choice;
 mod inhibit;

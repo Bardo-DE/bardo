@@ -2,8 +2,10 @@
 //! dev/smart-resize-vectors.py from qwen-vl-utils) and tables for the other rules.
 
 use computer_use_action::{Coord, DeviceSize, ImageSpace, Size};
+use model_vision_prep::{
+    FitError, ImageTokens, PatchFactor, PixelCount, ResizeRule, fit, image_tokens,
+};
 use proptest::prelude::*;
-use model_vision_prep::{FitError, ImageTokens, PatchFactor, PixelCount, ResizeRule, fit, image_tokens};
 
 fn smart(factor: u32, min: u64, max: u64) -> ResizeRule {
     ResizeRule::SmartResize {
@@ -23,10 +25,7 @@ fn field(cell: &str) -> u64 {
 
 #[test]
 fn fit_matches_reference_smart_resize() {
-    let path = concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/../fixtures/smart_resize.csv"
-    );
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../fixtures/smart_resize.csv");
     let csv = std::fs::read_to_string(path).unwrap();
     let mut rows = 0;
     for line in csv.lines().skip(1) {

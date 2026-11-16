@@ -11,14 +11,14 @@
 //! key), Tab, Shift+Tab and ⌘K from its `onkey` (after).
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputInfo;
+use shell_launcher::{ActionId, ClipKey, Item, LauncherMode, Preview, Section, preview_for};
+use shell_search::preview::clip_image;
 use ui_components::components::menus::palette::palette_claim::FieldKey;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::style::tokens::shape::Corner;
-use layer_shell_host::OutputInfo;
-use shell_launcher::{ActionId, ClipKey, Item, LauncherMode, Preview, Section, preview_for};
-use shell_search::preview::clip_image;
 
 use crate::launcher::card::{CardKey, Foot, use_card_hit};
 use crate::launcher::contact::use_contacts;

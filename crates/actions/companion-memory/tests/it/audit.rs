@@ -2,11 +2,11 @@
 //! or a missing service: what was written and lost before the stop still counts, and a lock is
 //! memory answering while a missing service is the link down. Memory is a scripted fake.
 
-use memory_core::{MemoryReply, MemoryRequest, Refusal};
 use action_core::{AuditRecord, HaltCause};
 use action_core::{EventSink, LinkFault, MemoryLink};
 use companion_memory::{AuditState, Link};
 use companion_memory_core::QueuedSink;
+use memory_core::{MemoryReply, MemoryRequest, Refusal};
 use provenance::{SpaceId, SpaceScope, UnixSeconds};
 use std::collections::VecDeque;
 use std::sync::Mutex;

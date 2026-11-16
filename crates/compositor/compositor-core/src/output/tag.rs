@@ -1,5 +1,5 @@
 //! How a surface's colours are encoded, as a client tells it (`wp_color_manager_v1`): the
-//! primaries and the transfer curve. Integers only; the maths is in `casement-render`.
+//! primaries and the transfer curve. Integers only; the maths is in `compositor-render`.
 
 use super::gamut::{Primaries, SRGB};
 

@@ -6,11 +6,11 @@ use super::raster;
 use crate::scene::{ChromeLayer, CursorDraw, CursorShape};
 use crate::texture_book::TextureBook;
 use compositor_core::geometry::{LogicalPoint, LogicalSize};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::utils::RendererSurfaceStateUserData;
 use smithay::desktop::utils::bbox_from_surface_tree;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::wayland::compositor::with_states;
+use ui_core::geometry::scale::Scale;
 
 /// The largest a client's cursor surface may be drawn, per side, in logical pixels (CASW-08): a
 /// pointer is a few dozen pixels, so a bigger surface is a client drawing something else (a fake

@@ -1,6 +1,8 @@
 //! How long each stage of an inferd exchange may take, and the turn that runs within it.
 
-use inference_core::{ClientFrame, InferEvent, InferReply, InferRequest, InferSession, SessionError};
+use inference_core::{
+    ClientFrame, InferEvent, InferReply, InferRequest, InferSession, SessionError,
+};
 use std::future::Future;
 use std::time::Duration;
 

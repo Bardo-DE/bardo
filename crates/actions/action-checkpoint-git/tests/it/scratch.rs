@@ -1,9 +1,9 @@
 //! Scratch repositories: a temporary folder with its own HOME and git configuration, so the
 //! person's real configuration, repositories and index are never read or written.
 
-use sandbox::AbsPath;
 use action_checkpoint::WorkRoot;
 use action_checkpoint_git::GitStore;
+use sandbox::AbsPath;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 

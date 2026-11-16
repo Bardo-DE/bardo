@@ -6,7 +6,7 @@
 //! (`labels`), who is asking (`who`), the sheets open now (`asks`), what a session owns
 //! (`owned`), the relation between Spaces (`spacing`) and the shadow index machine (`index`).
 //!
-//! Pure: no clock, bus, file or runtime is reached here. `docket-router` ties these to its
+//! Pure: no clock, bus, file or runtime is reached here. `action-router` ties these to its
 //! seams.
 
 pub mod asks;

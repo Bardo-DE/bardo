@@ -84,7 +84,7 @@ prebuild() {
       && cargo build "${flags[@]}" -p shell-services --bins \
       && cargo build "${flags[@]}" -p shell-launcher-ui --example launcher_demo \
       && cargo build --release -p shell-bar --example bar_demo) || return 1
-    echo "== shell-host's probe_toplevel (the maximised-window probe)"
+    echo "== layer-shell-host's probe_toplevel (the maximised-window probe)"
     (cd "$SILL_TREE" && CARGO_TARGET_DIR="$SILL_TARGET" cargo build --release -p layer-shell-host \
       --features debug-inject --example probe_toplevel) || return 1
     echo "== docket (confirm.sh's accept-intentd and quire-do), into its own target dir"

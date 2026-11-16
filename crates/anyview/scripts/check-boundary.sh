@@ -19,11 +19,11 @@ cd "$(dirname "$0")/.."
 # when they exist; ARCHITECTURE.md section 1 lists the rule each will carry. anyview-store does
 # blocking file I/O and nothing else (the launcher links it): no runtime, no UI, no decoder.
 # anyview-machines holds the viewer's pure state machines (chrome, panel, palette, sheet, navigation,
-# presentation, loading, the stages, key routing, the root) over anyview-core, ds-core and chordkit alone:
-# no dioxus, no ds, no ds-blitz, no ds-shell, no runtime, no GPU, no decoder, no bus, no player. A host that
+# presentation, loading, the stages, key routing, the root) over anyview-core, ui-core and chordkit alone:
+# no dioxus, no ds, no ui-blitz, no ui-shell, no runtime, no GPU, no decoder, no bus, no player. A host that
 # is not the viewer's window (temor, a terminal) drives the same machines without compiling a window.
 # anyview-ui holds the views that draw those machines and the effects that feed them. The crate itself may name the
-# window (ds-blitz, which brings tokio and wgpu) and the three back ends (which bring image and
+# window (ui-blitz, which brings tokio and wgpu) and the three back ends (which bring image and
 # pdfrum); it never names a bus, a PDF library itself (the DIRECT table) or a player. The machines are
 # in anyview-machines, whose source is checked file by file below.
 # anyview-pane is the viewer as a pane another quire app hosts in its own process (temor, the terminal): a thin
@@ -54,8 +54,8 @@ cd "$(dirname "$0")/.."
 # anyview-platform is the edge: it alone names the bus and the freedesktop formats (checked for every
 # other crate further down), and it reaches no UI, GPU, decoder, player or highlighter. It runs on
 # the binary's tokio runtime (zbus's tokio feature) and spawns nothing itself.
-# anyview-peek is the light tier the launcher links: its `pane` feature draws with quire's `ds` and `ds-blitz` (so
-# Blitz, the renderer and, through `ds-blitz`, `wgpu` and pdfrum are in its tree) but never libmpv or
+# anyview-peek is the light tier the launcher links: its `pane` feature draws with quire's `ds` and `ui-blitz` (so
+# Blitz, the renderer and, through `ui-blitz`, `wgpu` and pdfrum are in its tree) but never libmpv or
 # D-Bus, and never libav or libmpv: its `media` feature reads a recording's facts and
 # cover art with pure-Rust parsers (symphonia, mp4parse, matroska-demuxer), and a video's frame comes
 # from a thumbnail source the host injects. `cargo tree -p` below names the features the crates used to have by default (`flags_of`), so
@@ -69,7 +69,7 @@ cd "$(dirname "$0")/.."
 # to CPU pixels and never encodes them: page images are encoded by anyview-image, so `image` and the
 # other codecs stay out (as does the GPU rasterizer, which would bring wgpu), and `rayon` stays out
 # because the binary owns every thread.
-# anyview (the binary) owns every thread and joins the crates: the window (anyview-ui, ds, ds-blitz),
+# anyview (the binary) owns every thread and joins the crates: the window (anyview-ui, ds, ui-blitz),
 # the platform edge, the plugin registry, the media crate, the light tier's readers, the store and the
 # core. Everything they bring comes along (the renderer, `wgpu`, the decoders, D-Bus), so it has no rule
 # of what it may reach; what it may not NAME in its own manifest is the DIRECT table below: the binary
@@ -84,7 +84,7 @@ cd "$(dirname "$0")/.."
 # no bus, no UI.
 # anyview-plugin-protocol is what a plugin author depends on, so it is pure and small: bayonet's wire
 # (bayonet without its `host` feature: `serde`, `serde_json` and `thiserror`), `serde` and `thiserror`
-# and nothing of the viewer's (no anyview-core, no ds-core, no `toml`), and no runtime, bus, GPU,
+# and nothing of the viewer's (no anyview-core, no ui-core, no `toml`), and no runtime, bus, GPU,
 # decoder or UI. anyview-plugin is the viewer's capabilities and the registry as values: it names
 # anyview-core, the protocol and bayonet (whose host half parses the manifest's TOML), and reaches no
 # runtime, bus, GPU, decoder, player or UI. anyview-plugin-fake is a plugin like any other: the protocol crate, and bayonet's testing fake for the wire faults
@@ -108,37 +108,37 @@ cd "$(dirname "$0")/.."
 FORBIDDEN_EVERYWHERE=(rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next libheif-rs libheif-sys libheif-rs-sys libraw-rs libraw-sys rsraw rsraw-sys rawloader rawler)
 
 RULES=(
-  "anyview-ffmpeg: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ds-core ds ds-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom anyrender syntect"
-  "anyview-plugin-common: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ds-core ds ds-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image serde blitz-dom anyrender syntect"
-  "anyview-tool-kit: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ds-core ds ds-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom anyrender syntect"
-  "anyview-heif: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ds-core ds ds-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom anyrender syntect"
-  "anyview-raw: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ds-core ds ds-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom anyrender syntect"
-  "anyview-plugin-protocol: anyview-core ds-core toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom anyrender syntect"
+  "anyview-ffmpeg: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ui-core ds ui-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom anyrender syntect"
+  "anyview-plugin-common: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ui-core ds ui-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image serde blitz-dom anyrender syntect"
+  "anyview-tool-kit: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ui-core ds ui-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom anyrender syntect"
+  "anyview-heif: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ui-core ds ui-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom anyrender syntect"
+  "anyview-raw: anyview-core anyview-media anyview-platform anyview-plugin anyview-ui anyview-peek ui-core ds ui-blitz toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom anyrender syntect"
+  "anyview-plugin-protocol: anyview-core ui-core toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom anyrender syntect"
   "anyview-plugin: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint anyrender syntect"
-  "anyview-plugin-fake: anyview-core ds-core toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom anyrender syntect"
+  "anyview-plugin-fake: anyview-core ui-core toml dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom anyrender syntect"
   "anyview-core: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image syntect blitz-dom anyrender serde_json"
   "anyview-store: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint anyrender"
-  "anyview-machines: dioxus ds ds-blitz ds-shell ds-motion ds-style tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender syntect"
+  "anyview-machines: dioxus ds ui-blitz ui-shell ui-motion ui-style tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender syntect"
   "anyview-ui: zbus mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next"
-  "anyview-runtime: dioxus ds ds-blitz tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint anyrender syntect"
-  "anyview-media-host: zbus ashpd docket-provider docket-core porter-core prov rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next cpal alsa alsa-sys symphonia"
-  "anyview-pane: zbus ashpd docket-provider docket-core porter-core mpv-wgpu-player rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next cpal alsa alsa-sys"
+  "anyview-runtime: dioxus ds ui-blitz tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint anyrender syntect"
+  "anyview-media-host: zbus ashpd action-provider action-core account-core prov rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next cpal alsa alsa-sys symphonia"
+  "anyview-pane: zbus ashpd action-provider action-core account-core mpv-wgpu-player rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next cpal alsa alsa-sys"
   "anyview-export: zbus mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next"
-  "anyview-image: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender syntect pulldown-cmark"
-  "anyview-platform: dioxus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender syntect pulldown-cmark resvg jxl-oxide"
-  "anyview-text: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender image resvg jxl-oxide"
-  "anyview-archive: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender image resvg jxl-oxide syntect pulldown-cmark skrifa"
-  "anyview-book: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender image resvg jxl-oxide syntect pulldown-cmark skrifa"
-  "anyview-font: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender image resvg jxl-oxide syntect pulldown-cmark zip tar sevenz-rust2 flate2 bzip2 ruzstd lzma-rs lzma-rust2"
+  "anyview-image: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender syntect pulldown-cmark"
+  "anyview-platform: dioxus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next image blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender syntect pulldown-cmark resvg jxl-oxide"
+  "anyview-text: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender image resvg jxl-oxide"
+  "anyview-archive: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender image resvg jxl-oxide syntect pulldown-cmark skrifa"
+  "anyview-book: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender image resvg jxl-oxide syntect pulldown-cmark skrifa"
+  "anyview-font: dioxus tokio zbus wgpu pdfrum mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender image resvg jxl-oxide syntect pulldown-cmark zip tar sevenz-rust2 flate2 bzip2 ruzstd lzma-rs lzma-rust2"
   "anyview-peek: mpv-wgpu-player rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next zbus ashpd cpal alsa alsa-sys"
-  "anyview-pdf: dioxus tokio zbus wgpu mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-kit anyrender image resvg jxl-oxide syntect pulldown-cmark rayon"
-  # blitz-kit without its default `blitz` feature is the GPU opening lock alone (std, wgpu, serde), which the player takes.
+  "anyview-pdf: dioxus tokio zbus wgpu mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next blitz-dom blitz-paint blitz-traits blitz-html blitz-shell blitz-embed anyrender image resvg jxl-oxide syntect pulldown-cmark rayon"
+  # blitz-embed without its default `blitz` feature is the GPU opening lock alone (std, wgpu, serde), which the player takes.
   "anyview-media: dioxus tokio zbus pdfrum image syntect pulldown-cmark resvg jxl-oxide blitz-dom blitz-paint blitz-traits blitz-html blitz-shell anyrender"
 )
 
 # Dependencies a crate may reach only THROUGH another, never name in its own manifest. anyview-peek
-# links `wgpu`, pdfrum and tokio because `ds-blitz` does; it must not depend on them itself, so a
-# texture is made through `ds-blitz`'s `TextureLayer`, a page through its `PdfFileThumb` cache, and
+# links `wgpu`, pdfrum and tokio because `ui-blitz` does; it must not depend on them itself, so a
+# texture is made through `ui-blitz`'s `TextureLayer`, a page through its `PdfFileThumb` cache, and
 # nothing here spawns.
 DIRECT=(
   "anyview: cpal symphonia zbus ashpd freedesktop-desktop-entry latchkey interprocess wgpu pdfrum pdfrum-edit mpv-wgpu-player rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next image anyrender anyrender_vello_hybrid vello_hybrid blitz-dom blitz-paint blitz-html blitz-shell dioxus-native"
@@ -153,7 +153,7 @@ DIRECT=(
 # budget in the change that adds the dependency, with the reason (FINDINGS). anyview-peek is 564 today (591
 # before anyview-image's AVIF encoder, ravif with rav1e and their 27 packages, moved behind its `encode` feature,
 # which the viewer and its exports turn on and the peek does not):
-# about 530 are `ds` and `ds-blitz`, which the launcher already links, and the rest the container codecs
+# about 530 are `ds` and `ui-blitz`, which the launcher already links, and the rest the container codecs
 # of anyview-archive, skrifa and the pure-Rust media parsers (symphonia and its format and codec
 # crates, mp4parse, matroska-demuxer) and the Photoshop, ICNS and OpenEXR readers of anyview-image
 # (psd, icns, exr and its inflate and SIMD helpers; the budgets rose by nine for them), and the
@@ -163,27 +163,27 @@ DIRECT=(
 # tree and the window, the platform edge and the plugin registry, with no libmpv or libav binding in
 # it, and the built-in audio player's sound card: cpal, with alsa and alsa-sys under it and dasp_sample
 # (four packages; the decoders are the symphonia crates the peek already links, and libasound is an audio
-# device library, not a codec). The missing-tool prompt adds two: ds-shell (the install sheet, drawn by the views) and
-# ds-helpers (the catalog and PackageKit install, named by the binary); everything else they use was already in the tree.
+# device library, not a codec). The missing-tool prompt adds two: ui-shell (the install sheet, drawn by the views) and
+# ui-helpers (the catalog and PackageKit install, named by the binary); everything else they use was already in the tree.
 # Single instance without D-Bus adds three: latchkey, interprocess (its Unix socket and named pipe
 # transport) and doctest-file (interprocess's proc macro), which the portable build needs and the Linux
-# desktop build links as well. Hiding what the platform cannot do adds one: ds-desktop (quire's capability
+# desktop build links as well. Hiding what the platform cannot do adds one: ui-desktop (quire's capability
 # probe: whether PackageKit answers, so an Install... is offered only where it can work; it has no
 # dependency of its own without its `dbus` feature, which `quire-desktop` turns on, and then only the
-# zbus already in the tree). anyview-peek is 591 since quire v0.2.22: `ds` itself now depends on `ds-desktop` (the capsule and menus ask which desktop services answer), so the
+# zbus already in the tree). anyview-peek is 591 since quire v0.2.22: `ds` itself now depends on `ui-desktop` (the capsule and menus ask which desktop services answer), so the
 # launcher links it too (one package, no dependency of its own without `dbus`); it never reaches cpal (its rule above).
 # Offering the viewer to docket (the agent layer, `quire-desktop` only) adds twelve to the viewer and nothing to
-# the peek: docket-provider, docket-core and docket-dbus; porter-core, porter-dbus and prov (docket's names and
-# labels); almanac-core, cua-action, model-provider, genai-names and vision-prep (pure vocabulary crates
-# docket-core names in its signatures: episodes, computer-use actions, model shapes); and base64 0.22.1 (the
-# older one docket-core's wire uses beside the 0.23 already in the tree). The viewer is 682.
+# the peek: action-provider, action-core and action-dbus; account-core, account-dbus and prov (docket's names and
+# labels); memory-core, computer-use-action, model-provider, model-genai-names and model-vision-prep (pure vocabulary crates
+# action-core names in its signatures: episodes, computer-use actions, model shapes); and base64 0.22.1 (the
+# older one action-core's wire uses beside the 0.23 already in the tree). The viewer is 682.
 # The plugin machinery moved out to bayonet (a library of its own, shared with other apps): the viewer is 683,
 # one package more, since bayonet is a package where the same code was three workspace crates' own, and its
 # dependencies (toml, rustix, serde, serde_json, thiserror) were all in the tree already.
 # quire v0.2.31 builds arboard with `wayland-data-control`, so copied text reaches a Wayland desktop and outlives
 # the call that set it: the viewer is 687, four packages more (wl-clipboard-rs, which serves the selection, and its
-# petgraph, os_pipe and tree_magic_mini). The pane links ds-blitz too, so anyview-peek is 569: the same four, and
-# fixedbitset, which the viewer already had. The headless peek links no ds-blitz and stays 248.
+# petgraph, os_pipe and tree_magic_mini). The pane links ui-blitz too, so anyview-peek is 569: the same four, and
+# fixedbitset, which the viewer already had. The headless peek links no ui-blitz and stays 248.
 # The person's own time zone adds two to all three: jiff and jiff-core, which anyview-core's `LocalZone` asks for
 # the system zone (std has no local time; every file, PDF and EXIF time is shown in the person's zone). The peek is
 # 571, the headless peek 250 and the viewer 689.
@@ -191,10 +191,10 @@ DIRECT=(
 # more in each: the peek is 572, the headless peek 193 and the viewer 690.
 # The desktop key system (batch 11: quire v0.3.6 resolves keys to actions through chordkit, and anyview-core
 # declares the viewer's own actions' default chords with it) adds chordkit to every tree, and quire's
-# chordkit-kde and chordkit-gnome (the system shortcut readers) to the windowed ones: the peek is 575, the
+# keymap-kde and keymap-gnome (the system shortcut readers) to the windowed ones: the peek is 575, the
 # headless peek 194 and the viewer 693.
 # Splitting the machines out of anyview-ui (layering audit F2) adds anyview-machines to the viewer's tree: 694.
-# anyview-machines is 34: anyview-core's tree (ds-core, chordkit, jiff, thiserror and the like) and nothing of
+# anyview-machines is 34: anyview-core's tree (ui-core, chordkit, jiff, thiserror and the like) and nothing of
 # the window.
 # The pane (anyview-pane) is 590: anyview-ui's tree (589) and the pane crate itself; its own dependencies
 # (anyview-core, anyview-peek, anyview-ui, dioxus, ds, futures-channel, futures-util) were all in that tree already.
@@ -215,39 +215,39 @@ DIRECT=(
 #
 # The headless peek (`--no-default-features`: no `pane`, no `media`) is what a mail client or a terminal
 # links to look at a file: 192 packages (250 while `ds` was a hard dependency and carried dioxus,
-# ds-motion and ds-style along; the PDF page and the pane's size now have headless types of the peek's
+# ui-motion and ui-style along; the PDF page and the pane's size now have headless types of the peek's
 # own and `ds` is the `pane` feature's), with no renderer, no window system, no dioxus and no encoder.
 # It reaches none of HEADLESS_FORBIDDEN, and CI builds it on macOS and Windows.
-# quire's ds-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
-# ds-helpers and ds-peer everywhere, and to the headless peek toml with serde_spanned and toml_writer
+# quire's ui-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
+# ui-helpers and ui-peer everywhere, and to the headless peek toml with serde_spanned and toml_writer
 # too (its catalog is TOML): the headless budget rose by five, the others by one or two.
-# porter 063e9db's porter-dbus checks callers through peephole (peephole, -core and -bus) instead of
-# porter-daemon, and reaches the viewer through docket-dbus: two more than before porter-daemon left.
+# porter 063e9db's account-dbus checks callers through peephole (peephole, -core and -bus) instead of
+# account-daemon-support, and reaches the viewer through action-dbus: two more than before account-daemon-support left.
 # The unused freedesktop-desktop-entry left anyview-platform, and with it gettext-rs and gettext-sys
 # (C, LGPL) and five others the viewer reached: 695.
 # peephole v0.1.6 reads a socket peer's pidfd through nix (the owner's choice where rustix has no safe
-# wrapper), which brings nix and memoffset, and docket's helpers reach porter-infer through docket-dbus: 698.
-# keycap-client 52c66c7 reads the shared key file through chordkit-file (chordkit's own file reader, MIT OR
+# wrapper), which brings nix and memoffset, and docket's helpers reach inference-core through action-dbus: 698.
+# key-remap-client 52c66c7 reads the shared key file through keymap-fs (chordkit's own file reader, MIT OR
 # Apache-2.0, its dependencies already in every tree): one more in each windowed tree: the peek 579, the viewer
 # 699, the pane 591, the media host 611 and the pane with its player 612.
-# quire v0.3.38 draws emoji through its own quire-emoji (the kit's, MIT OR Apache-2.0, over fontique,
+# quire v0.3.38 draws emoji through its own ui-emoji (the kit's, MIT OR Apache-2.0, over fontique,
 # already in every windowed tree): one more again: the peek 580, the viewer 700, the pane 592, the
 # media host 612 and the pane with its player 613.
 # docket ff9d1b73 (the desktop lockstep's wave 4) runs its commands through bulkhead (the owner's
 # bubblewrap sandbox, MIT OR Apache-2.0, its dependencies already in the tree): one more in the viewer
 # alone: 701.
-# quire v0.3.45's ds-extensions (the desktop's Extensions, MIT OR Apache-2.0, over bayonet, already in
+# quire v0.3.45's ui-extensions (the desktop's Extensions, MIT OR Apache-2.0, over bayonet, already in
 # the viewer's tree) finds the chosen look's sheet: one more in the viewer alone: 702.
-# The agent layer's Round A (porter f7e47a71, almanac 8d91de73, docket 01390d02): porter-core keeps its
-# secrets in secrecy (with subtle, const-hex and cpufeatures) and almanac-core names entries by ulid, all
-# pure Rust under licences deny.toml already allows; docket-provider takes docket-client's place: 706.
+# The agent layer's Round A (porter f7e47a71, almanac 8d91de73, docket 01390d02): account-core keeps its
+# secrets in secrecy (with subtle, const-hex and cpufeatures) and memory-core names entries by ulid, all
+# pure Rust under licences deny.toml already allows; action-provider takes action-client's place: 706.
 # Round B (porter 31799cfa, docket 77be9598) splits code the viewer already had into crates of its own:
-# docket-vocab, -manifest, -wire, -gate-wire and -permissions-core, companion-model, porter-ids,
+# action-vocab, -manifest, -wire, -gate-wire and -permissions-core, companion-model, account-ids,
 # -capability, -match, -tailscale and -wire (eleven); docket's spend is a Money, which brings rust_decimal,
 # iso_currency and iso_country: 720.
-# anyview-platform finds the plugins with ds-extensions' scan (the plugins are desktop Extensions), so the
-# media host and the pane with its player now reach it, ds-settings under it (the off list,
-# quire/extensions.toml) and that crate's file watch: ds-behaviour, ds-settings-derive, notify,
+# anyview-platform finds the plugins with ui-extensions' scan (the plugins are desktop Extensions), so the
+# media host and the pane with its player now reach it, ui-settings under it (the off list,
+# quire/extensions.toml) and that crate's file watch: ui-behaviour, ui-settings-derive, notify,
 # notify-types, inotify and inotify-sys, all already in every quire app that hosts the pane: eight
 # more in each: the media host 620 and the pane with its player 621.
 # zip 9 (RUSTSEC-2026-0429) sets file times through nix on macOS and the BSDs (MIT, already in the
@@ -265,9 +265,9 @@ BUDGETS=(
 )
 HEADLESS_BUDGET=202
 # The pane with its `player` feature: what a host that plays recordings in a pane links.
-PANE_PLAYER_FORBIDDEN=(zbus ashpd docket-provider docket-core porter-core prov rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next cpal alsa alsa-sys symphonia)
+PANE_PLAYER_FORBIDDEN=(zbus ashpd action-provider action-core account-core prov rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next cpal alsa alsa-sys symphonia)
 PANE_PLAYER_BUDGET=621
-HEADLESS_FORBIDDEN=(ds ds-motion ds-style dioxus dioxus-core ds-blitz wgpu pdfrum blitz-dom anyrender rav1e ravif img-parts zbus wayland-client)
+HEADLESS_FORBIDDEN=(ds ui-motion ui-style dioxus dioxus-core ui-blitz wgpu pdfrum blitz-dom anyrender rav1e ravif img-parts zbus wayland-client)
 fail=0
 
 # The features that were on by default before a crate's default became empty (the viewer and the other
@@ -368,7 +368,7 @@ for rule in "${DIRECT[@]}"; do
   named=0
   for dep in "${forbidden[@]}"; do
     if grep -qx "$dep" <<<"$direct"; then
-      echo "DIRECT: $crate names $dep itself; reach it through ds-blitz"
+      echo "DIRECT: $crate names $dep itself; reach it through ui-blitz"
       named=1
       fail=1
     fi
@@ -409,40 +409,40 @@ else
   echo "budget holds: anyview-pane --features player has $pane_player packages of $PANE_PLAYER_BUDGET"
 fi
 
-# docket-dbus reads callers from a fixture /proc only with `fixture-callers`, a test build's
+# action-dbus reads callers from a fixture /proc only with `fixture-callers`, a test build's
 # feature: the shipped viewer must never turn it on, or a fake /proc could name intentd.
-if cargo tree -p anyview -e features -i docket-dbus 2>/dev/null | grep -q 'fixture-callers'; then
-  echo "LEAK: the viewer builds docket-dbus with fixture-callers"
+if cargo tree -p anyview -e features -i action-dbus 2>/dev/null | grep -q 'fixture-callers'; then
+  echo "LEAK: the viewer builds action-dbus with fixture-callers"
   fail=1
 else
-  echo "fixture callers held: the viewer builds docket-dbus without fixture-callers"
+  echo "fixture callers held: the viewer builds action-dbus without fixture-callers"
 fi
 
 # The allowed edges between our own crates (ARCHITECTURE.md section 1): each crate's direct normal
 # and build dependencies that live in a path (this workspace and the sibling quire checkout), and
 # nothing else. A dependency on a crate not listed here is a leak; so is one the crate no longer
-# has, so the table stays exact. `ds-core`'s `#[derive(Word)]` is re-exported by `ds-core` itself,
-# so `ds-core-derive` is not an edge.
+# has, so the table stays exact. `ui-core`'s `#[derive(Word)]` is re-exported by `ui-core` itself,
+# so `ui-core-derive` is not an edge.
 EDGES=(
-  "anyview: anyview-core anyview-export anyview-fs anyview-image anyview-machines anyview-media anyview-media-host anyview-pdf anyview-peek anyview-platform anyview-plugin anyview-plugin-protocol anyview-runtime anyview-store anyview-ui ds ds-blitz ds-desktop ds-extensions ds-helpers ds-settings"
-  "anyview-core: ds-core"
-  "anyview-store: anyview-core ds-helpers"
-  "anyview-fs: anyview-core ds-helpers"
-  "anyview-machines: anyview-core ds-core"
-  "anyview-ui: anyview-archive anyview-book anyview-core anyview-font anyview-fs anyview-image anyview-machines anyview-pdf anyview-peek anyview-store anyview-text ds ds-blitz ds-core ds-shell"
+  "anyview: anyview-core anyview-export anyview-fs anyview-image anyview-machines anyview-media anyview-media-host anyview-pdf anyview-peek anyview-platform anyview-plugin anyview-plugin-protocol anyview-runtime anyview-store anyview-ui ds ui-blitz ui-desktop ui-extensions ui-helpers ui-settings"
+  "anyview-core: ui-core"
+  "anyview-store: anyview-core ui-helpers"
+  "anyview-fs: anyview-core ui-helpers"
+  "anyview-machines: anyview-core ui-core"
+  "anyview-ui: anyview-archive anyview-book anyview-core anyview-font anyview-fs anyview-image anyview-machines anyview-pdf anyview-peek anyview-store anyview-text ds ui-blitz ui-core ui-shell"
   "anyview-pane: anyview-core anyview-media anyview-media-host anyview-peek anyview-store anyview-ui ds"
-  "anyview-image: anyview-core ds-core"
-  "anyview-text: anyview-core anyview-fs ds-core"
-  "anyview-platform: anyview-core anyview-plugin anyview-plugin-protocol bayonet ds-core ds-extensions ds-helpers ds-settings docket-provider docket-core docket-dbus docket-manifest docket-vocab docket-wire porter-core porter-ids prov"
-  "anyview-peek: anyview-archive anyview-book anyview-core anyview-font anyview-fs anyview-image anyview-text ds ds-blitz ds-core"
-  "anyview-media: anyview-core ds-core"
-  "anyview-media-host: anyview-core anyview-media anyview-platform anyview-plugin anyview-runtime anyview-ui ds ds-blitz"
+  "anyview-image: anyview-core ui-core"
+  "anyview-text: anyview-core anyview-fs ui-core"
+  "anyview-platform: anyview-core anyview-plugin anyview-plugin-protocol bayonet ui-core ui-extensions ui-helpers ui-settings action-provider action-core action-dbus action-manifest action-vocab action-wire account-core account-ids prov"
+  "anyview-peek: anyview-archive anyview-book anyview-core anyview-font anyview-fs anyview-image anyview-text ds ui-blitz ui-core"
+  "anyview-media: anyview-core ui-core"
+  "anyview-media-host: anyview-core anyview-media anyview-platform anyview-plugin anyview-runtime anyview-ui ds ui-blitz"
   "anyview-runtime: anyview-core"
-  "anyview-archive: anyview-core ds-core"
+  "anyview-archive: anyview-core ui-core"
   "anyview-book: anyview-archive anyview-core"
   "anyview-font: anyview-core"
   "anyview-pdf: anyview-core"
-  "anyview-export: anyview-core anyview-image anyview-pdf anyview-store anyview-text ds-blitz ds-core"
+  "anyview-export: anyview-core anyview-image anyview-pdf anyview-store anyview-text ui-blitz ui-core"
   "anyview-plugin: anyview-core anyview-plugin-protocol bayonet"
   "anyview-plugin-protocol: bayonet"
   "anyview-plugin-fake: anyview-plugin-protocol bayonet"
@@ -496,7 +496,7 @@ for dir in crates/*/ plugins/*/; do
 done
 # anyview-platform reaches the bus and the freedesktop entry readers only through its opt-in `quire-desktop`
 # feature (ARCHITECTURE.md section 2e): with it off, none of them is in its tree. This is the
-# crate's own tree; quire's `ds-settings` still brings zbus into the binary's until quire's portable
+# crate's own tree; quire's `ui-settings` still brings zbus into the binary's until quire's portable
 # build lands, and that is not the platform crate's doing.
 for dep in zbus ashpd freedesktop-desktop-entry memfd; do
   if cargo tree -p anyview-platform --no-default-features -e normal,build -i "$dep" 2>/dev/null | grep -q .; then

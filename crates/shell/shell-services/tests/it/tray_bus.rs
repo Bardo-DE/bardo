@@ -1,4 +1,4 @@
-//! sill's tray service against `sill-testkit`'s fake status notifier item on a private bus,
+//! sill's tray service against `shell-testkit`'s fake status notifier item on a private bus,
 //! never the real session bus: the item's dbusmenu arrives with its submenu, a click on a row
 //! of the submenu reaches the item as `Event "clicked"`, the item is asked for its own menu
 //! (`ContextMenu`), told its menu is about to show, and a `LayoutUpdated` it emits is followed.

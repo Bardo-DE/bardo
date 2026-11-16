@@ -4,8 +4,8 @@
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
-use ui_helpers::{NewFileMode, ReadCap, ReadError, WriteError, read_capped, write_atomic};
 use shell_model::now_playing::{CacheLimits, CachedCover, evictions};
+use ui_helpers::{NewFileMode, ReadCap, ReadError, WriteError, read_capped, write_atomic};
 
 use super::ART_MAX_BYTES;
 

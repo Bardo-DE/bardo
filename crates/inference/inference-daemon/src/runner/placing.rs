@@ -9,7 +9,9 @@ use crate::failure::{EngineView, Retry, Spoke, Tried, explain, log_line, retry};
 use crate::seats::{Pass, Standing, seats_in};
 use engine_spec::engine;
 use engine_supervisor::EngineId;
-use inference_core::{InferEvent, InferReply, InferRequest, ModelError, QueueFact, ServedBy, answer};
+use inference_core::{
+    InferEvent, InferReply, InferRequest, ModelError, QueueFact, ServedBy, answer,
+};
 use inference_router::local::LocalModel;
 use inference_router::seams::TurnStep;
 use inference_turns::bridge::Frames;

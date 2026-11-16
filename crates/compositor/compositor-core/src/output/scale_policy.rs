@@ -3,8 +3,8 @@
 
 use super::density::{MilliPpi, density};
 use super::{ModeWish, OutputFacts, pick_mode};
-use ui_core::geometry::scale::Scale;
 use serde::{Deserialize, Serialize};
+use ui_core::geometry::scale::Scale;
 
 /// The Mac's 27-inch density (2560 x 1440 points on 27 inches), in pixels per inch.
 const TARGET_PPI: u64 = 109;

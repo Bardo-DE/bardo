@@ -45,7 +45,7 @@
 #      is the same).
 #
 # --real-input [ghost|clear|exit|repro]: real Wayland input for the banners and the notification
-# center, on shell-host's private headless KWin (scripts/dev/kwin-virtual.sh) driven by shell-host's
+# center, on layer-shell-host's private headless KWin (scripts/dev/kwin-virtual.sh) driven by layer-shell-host's
 # scripts/dev/fake-input.sh: every hover, press, drag and key is a real Wayland event with a real
 # serial and keyboard focus. The daemon is checked to hold
 # org.freedesktop.Notifications on the bus before anything is posted. ONE fake-input client
@@ -84,7 +84,7 @@
 #  11. 5 s idle: 0 frames on the banners and the center.
 #  12. `status` afterwards: holder still sill.
 #
-# In shell-host an enter moves the document's pointer and an unmap withdraws it, so a "move onto"
+# In layer-shell-host an enter moves the document's pointer and an unmap withdraws it, so a "move onto"
 # is one motion and the steps run in their natural order. `repro` keeps both as regression checks.
 # The wallpaper is a fine checkerboard (`seed_checks`) so blur shows as grey. KWIN_SCALE=2 runs
 # the output at 3840 x 2160 and scale 2, the user's KDE setup. ACCEPT_STEPS="step_a step_b" runs
@@ -96,7 +96,7 @@
 #        dev/accept/notifications.sh --bus                    (the server on the bus, nested)
 #        dev/accept/notifications.sh --real-input             (the real-input acceptance)
 #        dev/accept/notifications.sh --real-input ghost       (the blur left behind mid-drag; FAILS
-#                                                              while shell-host leaves it)
+#                                                              while layer-shell-host leaves it)
 #        dev/accept/notifications.sh --real-input clear       (9b alone)
 #        dev/accept/notifications.sh --real-input exit        (9c alone)
 #        dev/accept/notifications.sh --real-input repro       (the enter and unmap regression
@@ -802,7 +802,7 @@ step_real_center_delete() {
 }
 
 # A hash of a capture's top band: the whole column scrolls (the title along with the history,
-# notification_center.css's own comment), so wheeling it changes this band if shell-host's scroll
+# notification_center.css's own comment), so wheeling it changes this band if layer-shell-host's scroll
 # engine is wired to `.sill-nc-column`.
 column_signature() {
   python3 - "$1" <<'EOF'
@@ -856,10 +856,10 @@ step_real_idle() {
   [ "$((b1 - b0))" = 0 ] && [ "$((c1 - c0))" = 0 ]
 }
 
-# Repros of two shell-host gaps, `repro` mode: each step states what should happen and failed
+# Repros of two layer-shell-host gaps, `repro` mode: each step states what should happen and failed
 # while the gap stood.
 #
-# The enter: one motion onto a card from outside the column hovers it. Failed: shell-host took the
+# The enter: one motion onto a card from outside the column hovers it. Failed: layer-shell-host took the
 # wl_pointer.enter (with its position) without moving the document's pointer there, so nothing
 # was hovered until the next motion. The step also shows that a second motion hovers it.
 repro_enter_one_motion() {
@@ -876,7 +876,7 @@ repro_enter_one_motion() {
 }
 
 # The unmap: after a card left under the pointer and the column unmapped, the next card is hovered
-# by one motion onto it from the desktop. Failed: shell-host's unmap rebuilt the wl_surface
+# by one motion onto it from the desktop. Failed: layer-shell-host's unmap rebuilt the wl_surface
 # without `pointer_left` on its document, so the document kept a hover chain on the removed card
 # and the next card was never announced as entered (no pause, no close button) even after the
 # pointer went elsewhere while the column was unmapped.

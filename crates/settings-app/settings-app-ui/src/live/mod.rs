@@ -1,12 +1,12 @@
-//! The bridge from `detent-client` to Dioxus, and nothing else: a pane's live value becomes a
+//! The bridge from `settings-app-client` to Dioxus, and nothing else: a pane's live value becomes a
 //! signal, what the pane tells the person becomes a toast, and the work that keeps the pane
 //! current runs while the component is mounted. A view reads the signal, draws it, and gives the
 //! pane its inputs; it holds no follow loop, no deadline and no step.
 
 use crate::copy;
 use crate::env::Env;
-use settings_app_client::{Client, Heard, Live, Pane};
 use dioxus::prelude::*;
+use settings_app_client::{Client, Heard, Live, Pane};
 use ui_components::prelude::*;
 
 /// The client the window was started with, from the context the launcher provided.

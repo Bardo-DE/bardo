@@ -4,6 +4,8 @@
 //! keeps none of that.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::base::geometry::units::Point;
 use ui_components::base::geometry::units::Px;
 use ui_components::components::app::edge_peek::EdgePeek;
@@ -11,8 +13,6 @@ use ui_components::components::chrome::split_view::model::{PaneSpec, SplitPane};
 use ui_components::components::chrome::split_view::view::SplitView;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 800,

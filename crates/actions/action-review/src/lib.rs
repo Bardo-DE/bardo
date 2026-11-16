@@ -5,7 +5,7 @@
 //! stripped to the person's turns, the typed action and labels: no tool output, no agent prose,
 //! no quoted untrusted content. A breaker stops a session after repeated denials.
 //!
-//! Pure over its seams: the model-backed reviewer is generic over porter-infer's `Model`.
+//! Pure over its seams: the model-backed reviewer is generic over inference-core's `Model`.
 
 mod breaker;
 mod cascade;

@@ -1,13 +1,13 @@
 //! Callers, seats and contexts the tests share.
 
 use caller_identity_core::{CgroupPath, ExePath, Pid, Proof, RoleName, Uid};
-use std::sync::Arc;
 use input_broker_daemon::backend::fake::FakeBackend;
 use input_broker_daemon::clock::ManualClock;
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::seat::FixedSeat;
 use input_broker_daemon::identity::{ActiveUid, Caller, Credential};
 use input_broker_daemon::serve::Context;
+use std::sync::Arc;
 
 /// The user at the seat.
 pub(crate) const USER: Uid = Uid::new(1000);

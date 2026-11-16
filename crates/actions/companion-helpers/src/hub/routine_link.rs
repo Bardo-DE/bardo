@@ -2,15 +2,15 @@
 //! the person is told, and the records and events of the Spaces.
 
 use super::owner::Hub;
-use memory_core::{RecentEntry, RecentQuery};
+use action_client::Transport as IntentsTransport;
+use action_vocab::Clock;
+use action_wire::SessionOpen;
+use agent_planner::Planner;
 use companion_core::job_end;
 use companion_model::helper::{HelperName, HelperRecord, JobId};
 use companion_model::routine::JobEnd;
-use action_client::Transport as IntentsTransport;
-use agent_planner::Planner;
 use companion_tasks::{RecentSource, RouterRecent, Surface};
-use action_vocab::Clock;
-use action_wire::SessionOpen;
+use memory_core::{RecentEntry, RecentQuery};
 use provenance::{AgentRef, HelperId, SpaceId};
 
 impl<P, I, K, S> Hub<P, I, K, S>

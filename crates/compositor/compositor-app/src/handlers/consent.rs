@@ -12,12 +12,12 @@ use crate::core_loop;
 use crate::state::State;
 use compositor_core::privilege::{AskSubject, PowerOutcome};
 use compositor_core::{ClientKey, Event};
-use desktop_protocols::vocab::{AskId, Memory, Power};
 use compositor_wayland::consent::{ConsentHandler, Ledger, release_gate};
 use compositor_wayland::handler::EventSink;
 use compositor_wayland::quire::shell_permission;
 use compositor_wayland::{gamma, output_management, output_power, virtual_keyboard};
 use compositor_wayland::{wlr_toplevel, workspace};
+use desktop_protocols::vocab::{AskId, Memory, Power};
 use smithay::reexports::wayland_server::backend::ClientId;
 use smithay::wayland::input_method::InputMethodSeat;
 

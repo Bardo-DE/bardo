@@ -3,10 +3,10 @@
 
 use crate::common;
 
-use common::*;
 use account_callers::CallerRole;
 use account_dbus::accounts::AccountProxy;
 use account_dbus::accounts::account_path;
+use common::*;
 use zbus::zvariant::ObjectPath;
 
 async fn proxy_of(

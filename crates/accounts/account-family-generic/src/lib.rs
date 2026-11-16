@@ -16,7 +16,7 @@ mod lookup;
 mod mail;
 mod sign_in;
 
-/// What a generic-proto error means for a sign-in. Plain `http` to another computer is a
+/// What a account-generic-proto error means for a sign-in. Plain `http` to another computer is a
 /// server that cannot be reached safely.
 fn fault(error: account_generic_proto::Error) -> account_sheet::SignInFault {
     use account_sheet::SignInFault;
@@ -29,7 +29,6 @@ fn fault(error: account_generic_proto::Error) -> account_sheet::SignInFault {
     }
 }
 
-use account_generic_proto::declared;
 use account_capability::Claim;
 use account_core::AccountId;
 use account_core::{Account, Audience, Credential, IssuedToken};
@@ -37,6 +36,7 @@ use account_discover::Dns;
 use account_family_kit::Conversation;
 use account_family_kit::Io;
 use account_family_kit::password::secret_presented;
+use account_generic_proto::declared;
 use account_http::{NoSleep, SharedHttp};
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSet, ProviderSpec, RevokeOutcome,

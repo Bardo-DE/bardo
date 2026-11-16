@@ -18,7 +18,7 @@ memory-files = { path = ".", features = ["testing"] }
 tempfile = {version = "3"}
 
 [features]
-# `MemoryVault`, for tests and almanac-fake.
+# `MemoryVault`, for tests and memory-fake.
 testing = []
 
 [lints.rust]

@@ -1,5 +1,5 @@
 //! The seam to memory and to the event log, as the router asks them: traits and plain values
-//! only. Implementations live elsewhere (`docket-memory` over almanac, the fakes).
+//! only. Implementations live elsewhere (`companion-memory` over almanac, the fakes).
 
 use memory_core::{MemoryReply, MemoryRequest};
 use provenance::SpaceId;

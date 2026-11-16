@@ -2,7 +2,7 @@
 //! runs to its end says so itself (`disarm` follows the send). A flight dropped before that (the
 //! host was dropped, or the session was left) is cut off, and this guard's `Drop` sends
 //! `Session.TurnEnded` as `Cancelled` from the drop itself: the send is polled once, with no
-//! runtime. That finishes at once when the router is in this process (docket-inapp), and is
+//! runtime. That finishes at once when the router is in this process (agent-inapp), and is
 //! best effort over a bus. If it does not finish, or the companion is busy with another turn
 //! and cannot be locked, the router ends the turn by `Session.Close` or by time
 //! (`agent.checkpoints.turn_max_s`).
@@ -13,8 +13,8 @@
 use crate::backend::Core;
 use action_client::Transport as IntentsTransport;
 use action_core::TurnEnd;
-use agent_planner::Planner;
 use action_vocab::TurnId;
+use agent_planner::Planner;
 use futures_util::FutureExt;
 use provenance::SessionId;
 

@@ -170,9 +170,9 @@ impl SpacesBarLink {
 
 #[cfg(test)]
 mod tests {
-    use ui_core::vocab::DropState;
     use account_core::SpaceId;
     use shell_model::desktop::{BarLayout, BarPick, BarShow, Shown, SpacePicture};
+    use ui_core::vocab::DropState;
 
     use super::SpacesBarLink;
 

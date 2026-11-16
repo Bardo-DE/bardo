@@ -1,6 +1,6 @@
 //! Which link, or which image, in which frame is under a point of the app's document. Blitz
 //! forwards a pointer move into a frame's document itself, but tells the app nothing about it;
-//! ds-blitz hit-tests the same way (the frame's offset in its parent, its own scroll) so it can
+//! ui-blitz hit-tests the same way (the frame's offset in its parent, its own scroll) so it can
 //! say when the pointer comes onto and leaves a link, for the app's link pill, and which image a
 //! click ended on.
 

@@ -17,18 +17,18 @@
 //! `#[component]` prop at all: `TrayButton` reads it itself instead of receiving it).
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputInfo;
+use shell_kit::bar::pointer::BarPointer;
+use shell_kit::prelude::*;
+use shell_model::tray::{TrayCommand, TrayIcon, TrayItem, TrayStatus};
+use shell_services::TrayService;
+use shell_services::tray::icon_art;
 use ui_components::base::press::Press;
 use ui_components::components::controls::button_model::ImagePosition;
 use ui_components::host::measure::use_rect;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::style::icon::classify::ChromaLimit;
-use layer_shell_host::OutputInfo;
-use shell_model::tray::{TrayCommand, TrayIcon, TrayItem, TrayStatus};
-use shell_services::TrayService;
-use shell_services::tray::icon_art;
-use shell_kit::bar::pointer::BarPointer;
-use shell_kit::prelude::*;
 
 use super::dbusmenu::has_rows;
 use super::menus::{BarMenu, TraySlot};
@@ -148,7 +148,7 @@ fn TrayButtonView(
         ..common
     };
     rsx! {
-        // `data-wheel="capture"`: shell-host's scroll engine hands the raw wheel event only to
+        // `data-wheel="capture"`: layer-shell-host's scroll engine hands the raw wheel event only to
         // an element carrying it (design/11 §11.3.7), so a scroll over a tray icon still reaches
         // the item (TrayCommand::Scroll).
         span { "data-wheel": "capture", onwheel: move |event| onwheel.call(event),
@@ -171,11 +171,11 @@ mod tests {
     use super::TrayButtonView;
     use dioxus::core::VirtualDom;
     use dioxus::prelude::*;
+    use shell_kit::bar::pointer::BarPointer;
+    use shell_model::tray::{TrayIcon, TrayItem, TrayItemId, TrayStatus};
     use ui_components::prelude::*;
     use ui_components::root::common::Common;
     use ui_lint::{LintConfig, Profile, Rule, markup};
-    use shell_model::tray::{TrayIcon, TrayItem, TrayItemId, TrayStatus};
-    use shell_kit::bar::pointer::BarPointer;
 
     fn fake_item(name: &str) -> TrayItem {
         TrayItem {

@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
 use memory_core::*;
-use memory_seal::{Purpose, SpaceKey, SubKey, derive};
 use memory_eventlog::*;
+use memory_seal::{Purpose, SpaceKey, SubKey, derive};
 use std::collections::BTreeSet;
 
 pub const NOW: UnixSeconds = UnixSeconds(1_790_000_000);

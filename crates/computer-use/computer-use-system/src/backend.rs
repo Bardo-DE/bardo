@@ -1,9 +1,11 @@
 //! The capture backend the system seam chooses between: the stock toplevel source with masking
 //! in cuad, or the fork's masked source. Both open the same session type.
 
-use computer_use_desktop::{BackendCaps, BackendKind, LeaseGrant, MaskWhere};
 use computer_use_capture::{CaptureError, WindowCapture};
-use computer_use_capture_wayland::{QuireMaskedCapture, StampClock, StockToplevelCapture, WaylandSession};
+use computer_use_capture_wayland::{
+    QuireMaskedCapture, StampClock, StockToplevelCapture, WaylandSession,
+};
+use computer_use_desktop::{BackendCaps, BackendKind, LeaseGrant, MaskWhere};
 use std::sync::Arc;
 use wayland_client::Connection;
 

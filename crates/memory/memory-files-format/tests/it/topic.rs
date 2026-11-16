@@ -1,7 +1,7 @@
 //! The topic file format: golden bytes, round trips, strictness.
 
-use memory_core::*;
 use chrono::{FixedOffset, Offset, Utc};
+use memory_core::*;
 use memory_files_format::*;
 use std::collections::BTreeSet;
 

@@ -1,4 +1,4 @@
-//! The peek of a PDF with the `pane` feature: its first page, rasterised by `ds-blitz`'s thumbnail cache.
+//! The peek of a PDF with the `pane` feature: its first page, rasterised by `ui-blitz`'s thumbnail cache.
 //!
 //! pdfrum is reached only through `ui_blitz::pdf_thumb_blocking` (the `pdf` feature), the same
 //! worker-side call and the same cache the launcher's `PdfFileThumb` uses, so a page peeked here
@@ -18,7 +18,7 @@ use ui_core::word::Word;
 
 /// The peek of the kind `Pdf`.
 ///
-/// `ds-blitz` reads the whole file, so a file longer than the budget's bytes is refused with
+/// `ui-blitz` reads the whole file, so a file longer than the budget's bytes is refused with
 /// [`PeekError::OverBudget`] rather than read past it. The page is fitted into the box asked
 /// for (the pane's media box by default) at 2x, or at 1x when the budget's pixels do not cover
 /// that.

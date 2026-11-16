@@ -13,8 +13,6 @@ pub use shell_ui_kit::harness::fake;
 
 use std::time::Duration;
 
-use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Viewport};
 use shell_model::notifications::{
     AppGroup, AppKey, AppRef, Body, Expiry, Hints, History, IconRef, Notification, NotificationId,
     NotificationsCommand, UnixMs,
@@ -23,6 +21,8 @@ use shell_notify_ui::NotificationCenter;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::CenterLink;
+use ui_harness::harness::settle_until;
+use ui_harness::{Harness, Viewport};
 
 /// The viewport's size, as the rects report it.
 pub const WIDTH: f32 = 1280.0;

@@ -14,11 +14,11 @@ use anyrender::recording::{FillCommand, GlyphRunCommand, RenderCommand};
 use anyrender::{Paint, Scene};
 use peniko::kurbo::{Affine, Rect, Shape, Vec2};
 use peniko::{Blob, Fill, ImageAlphaType, ImageBrush, ImageData, ImageFormat};
-use ui_emoji::table_listed;
 use skrifa::bitmap::{BitmapData, BitmapFormat, BitmapStrikes, Origin};
 use skrifa::instance::{LocationRef, Size};
 use skrifa::{FontRef, GlyphId, MetadataProvider};
 use std::sync::Arc;
+use ui_emoji::table_listed;
 
 /// The tables a PDF font can be embedded from.
 const OUTLINES: [[u8; 4]; 3] = [*b"glyf", *b"CFF ", *b"CFF2"];

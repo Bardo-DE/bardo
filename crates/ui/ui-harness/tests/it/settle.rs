@@ -6,10 +6,10 @@
 //! check, reproduced directly against a minimal component instead of a whole check mark.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::time::clock::sleep;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 320,

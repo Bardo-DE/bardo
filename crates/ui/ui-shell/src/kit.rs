@@ -2,9 +2,9 @@
 //! after the sheet it follows. The parts add no tokens.
 
 use crate::sheets::SHEETS;
+use std::sync::LazyLock;
 use ui_style::css::document::placed;
 use ui_style::kit::{Kit, KitRank, Kits, Vocabulary};
-use std::sync::LazyLock;
 
 /// These parts' contribution to the stylesheet and the linter.
 pub static KIT: Kit = Kit {

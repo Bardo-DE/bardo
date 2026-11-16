@@ -2,7 +2,7 @@
 //! file, `$XDG_CONFIG_HOME/docket/settings.toml`, as `[agent.mcp] expose = true`. The schema the
 //! Settings app draws the row from is `dist/settings/docket.settings.toml`.
 //!
-//! The reading is `docket-settings`' (lenient as design/22 section 2 asks): a missing file, a
+//! The reading is `action-settings`' (lenient as design/22 section 2 asks): a missing file, a
 //! missing key or a value that is not `true` is off, never an error. A switch
 //! that cannot be read is a switch that is not on. This crate may not link a file watcher
 //! (`scripts/check-boundary.sh`), so the edge reads the file again whenever it is asked whether it

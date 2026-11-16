@@ -9,8 +9,8 @@ use settings_app_model::{
 };
 use settings_app_system::updates::{FakeUpdates, NOW, UpdatesAsked};
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const ROW: &str = ".updates .ds-field-row";
 const BUTTONS: &str = ".updates .ds-field-row .ds-button";

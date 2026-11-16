@@ -3,11 +3,6 @@
 //! its journal and read back by path and id, a pass cut short and resumed, a restart that keeps
 //! the tree, a folder moved, an anchor that expired, and access not given yet.
 
-use sync_fake_graph::FakeGraph;
-use sync_core::{
-    Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,
-    RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
-};
 use account_capability::StorageCap;
 use account_fake_servers::FakeGoogle;
 use account_http::http::header::{AUTHORIZATION, HeaderValue};
@@ -15,10 +10,15 @@ use account_http::http::{Request, Response};
 use account_http::{Http, HttpError};
 use account_http_reqwest::ReqwestHttp;
 use account_ids::{UnixSeconds, WebUrl};
+use base_testkit::Scratch;
 use std::future::Future;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use sync_core::{
+    Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,
+    RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
+};
 use sync_daemon::datasets::drive::{DriveJournal, DriveReplica, Listed, list_once};
-use base_testkit::Scratch;
+use sync_fake_graph::FakeGraph;
 
 const TOKEN: &str = "ey.fake-access-token";
 const NOW: UnixSeconds = UnixSeconds(1_000);

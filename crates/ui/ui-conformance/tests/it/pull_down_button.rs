@@ -3,10 +3,10 @@
 //! keyboard back to the button.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_blitz::FocusFallback;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use std::time::Duration;
+use ui_blitz::FocusFallback;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 420,

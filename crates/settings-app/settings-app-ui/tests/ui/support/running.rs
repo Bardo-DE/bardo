@@ -4,10 +4,10 @@
 
 use super::bus::PrivateBus;
 use account_dbus::Details;
-use std::sync::{Arc, Mutex};
 use inference_dbus::inference::{
     INFERENCE_BUS, INFERENCE_PATH, RunState, RunningModel, running_to_dbus,
 };
+use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;

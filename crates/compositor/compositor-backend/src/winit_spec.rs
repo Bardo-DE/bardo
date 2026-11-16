@@ -5,10 +5,10 @@
 use crate::headless::VirtualOutputSpec;
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::output::Mode;
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::gles::GlesRenderer;
 use smithay::backend::winit::WinitGraphicsBackend;
 use smithay::utils::{Physical, Size, Transform};
+use ui_core::geometry::scale::Scale;
 
 /// The transform the damage tracker draws a winit window with: smithay's GLES framebuffer on the
 /// window's surface is y-flipped, and the flip undoes it (what anvil's winit backend does). It is

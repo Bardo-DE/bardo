@@ -5,8 +5,8 @@
 
 use super::model::{ClientId, SocketEffect, SocketEvent, Subscribers};
 use super::seat::Peer;
-use service_locator::guard::{ACCEPT_PAUSE, AcceptFailure, Claim, accept_failure};
 use rustix::io::Errno;
+use service_locator::guard::{ACCEPT_PAUSE, AcceptFailure, Claim, accept_failure};
 use std::collections::BTreeMap;
 use std::time::Instant;
 

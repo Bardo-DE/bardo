@@ -1,17 +1,17 @@
 //! One companion over many tasks: each task its own session, the working set rebuilt for every
 //! planner turn, the episode a task leaves, and what the model is and is not shown. Everything
-//! here runs over docket-fake's router in process and a scripted planner model.
+//! here runs over action-fake's router in process and a scripted planner model.
 
 use crate::support::infer::{call, words};
 use crate::support::world::*;
+use action_core::*;
+use action_store::Waits;
+use action_vocab::{Caller, Millis, TurnId, WindowKey};
+use companion_wire::{AnswerBody, AnswerPhase};
 use memory_core::{
     EventRef, EventSummary, KindTag, MemoryItem, MemoryReply, RecallHit, RecallWhy, RecentEntry,
     ReplicaId, Seq, UserText,
 };
-use companion_wire::{AnswerBody, AnswerPhase};
-use action_core::*;
-use action_store::Waits;
-use action_vocab::{Caller, Millis, TurnId, WindowKey};
 use provenance::{Actor, Integrity, Label, Source, UnixSeconds};
 use serde_json::json;
 

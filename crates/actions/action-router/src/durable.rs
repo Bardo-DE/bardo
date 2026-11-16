@@ -15,9 +15,9 @@ use crate::router::Router;
 use crate::seams::Seams;
 use action_context::wal::{Lane, Writer};
 use action_core::CallRefusal;
-use agent_session::{LogFault, SessionEntry, TaintCause, TaintNote};
 use action_vocab::CallId;
 use action_wire::{IntentsReply, WireRefusal};
+use agent_session::{LogFault, SessionEntry, TaintCause, TaintNote};
 use provenance::SessionId;
 use std::sync::Arc;
 

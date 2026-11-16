@@ -15,10 +15,12 @@ use blitz_embed::scroll::geom::ViewPoint;
 use blitz_embed::scroll::keys::ScrollKey;
 use blitz_embed::scroll::time::Elapsed;
 use blitz_embed::scroll::tuning::Tuning;
-use keymap::Platform;
-use ui_components::host::gesture::{Gesture, GestureBus, GesturePhase, ScrollSource, WheelDelivery};
-use ui_components::prelude::*;
 use keyboard_types::Modifiers;
+use keymap::Platform;
+use ui_components::host::gesture::{
+    Gesture, GestureBus, GesturePhase, ScrollSource, WheelDelivery,
+};
+use ui_components::prelude::*;
 
 use super::coast::{Coast, Heard};
 use super::eased::Eased;

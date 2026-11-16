@@ -6,9 +6,9 @@
 
 use crate::commit::pays;
 use crate::rules::{ClassFragments, Rules, WindowRules};
+use account_core::AppName;
 use computer_use_a11y_tree::A11yNode;
 use computer_use_action::WindowClass;
-use account_core::AppName;
 
 /// The class of the first row of `rows` with a fragment `text` holds.
 fn class_in(rows: &[ClassFragments], text: &str) -> Option<WindowClass> {

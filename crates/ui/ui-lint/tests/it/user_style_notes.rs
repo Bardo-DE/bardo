@@ -159,15 +159,25 @@ const MAILO: AppSelectors = AppSelectors {
 fn an_app_part_listed_in_its_table_is_not_internal() {
     let tables = [MAILO.classes()];
     let css = ".mailo-thread-subject, .mailo-thread-title, .mailo-thread { color: red }";
-    assert_eq!(user_stylesheet_with(css, &ui_components::kits(), &tables), vec![]);
+    assert_eq!(
+        user_stylesheet_with(css, &ui_components::kits(), &tables),
+        vec![]
+    );
 }
 
 #[test]
 fn an_app_part_nobody_listed_is_still_internal() {
     let tables = [MAILO.classes()];
-    let notes = user_stylesheet_with(".mailo-thread-body { color: red }", &ui_components::kits(), &tables);
+    let notes = user_stylesheet_with(
+        ".mailo-thread-body { color: red }",
+        &ui_components::kits(),
+        &tables,
+    );
     assert_eq!(notes.len(), 1, "{notes:?}");
-    let notes = user_stylesheet(".mailo-thread-subject { color: red }", &ui_components::kits());
+    let notes = user_stylesheet(
+        ".mailo-thread-subject { color: red }",
+        &ui_components::kits(),
+    );
     assert_eq!(notes.len(), 1, "{notes:?}");
 }
 

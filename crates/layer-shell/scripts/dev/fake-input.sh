@@ -12,7 +12,7 @@
 #
 #   printf 'move 300 200\npress left\nmove 500 300\nrelease left\n' | scripts/dev/fake-input.sh
 #
-# Builds the tool (its own Cargo workspace, not shell-host's); a no-op once it is up to date, and
+# Builds the tool (its own Cargo workspace, not layer-shell-host's); a no-op once it is up to date, and
 # a stale binary never lacks a command the scripts use.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"

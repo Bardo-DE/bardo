@@ -3,6 +3,8 @@
 //! passed on only if it fits the schema.
 
 use crate::support::inferd::*;
+use account_capability::LlmFeature;
+use account_core::{AppId, AppName, DataClass, Isolation};
 use action_client::{InProcess, Intents};
 use action_context::handles::HandleValue;
 use action_core::*;
@@ -10,13 +12,11 @@ use action_fake::fake_router;
 use action_router::Router;
 use action_vocab::{CallerRole, ChoiceId, Handle, Value};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
-use account_capability::LlmFeature;
-use account_core::{AppId, AppName, DataClass, Isolation};
+use agent_reader_daemon::{ReaderHost, ReaderService};
 use inference_core::{
     ClientFrame, InferRefusal, InferReply, InferRequest, ModelError, RequestKind, StopReason,
 };
 use provenance::{AgentRef, Label, Labelled, Quarantined, SessionId, Source, SpaceId};
-use agent_reader_daemon::{ReaderHost, ReaderService};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

@@ -30,7 +30,7 @@
 //! is the renderer's own `DeviceHandle`; the widget passes it to the window's [`Gpu`]. `Host`
 //! mounts a one-pixel transparent layer (`GpuProbe`) so this happens on the first frame even
 //! before an app has a layer; `use_gpu` returns the `Gpu` and re-renders its caller when the
-//! device arrives. Only ds-blitz names wgpu: `ds` components never see a device, they take
+//! device arrives. Only ui-blitz names wgpu: `ds` components never see a device, they take
 //! whatever element the app renders around a `TextureLayer`. One `Gpu` per window: each window's
 //! renderer has its own device, and a texture made on one is not drawn in another.
 //!

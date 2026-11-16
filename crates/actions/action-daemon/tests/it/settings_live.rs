@@ -2,10 +2,10 @@
 //! applies to the next decision without a restart. The wait is the watch's own event, never a sleep.
 
 use action_core::AgentConfig;
-use action_fake::fake_router;
-use permission_core::{AskOrRun, Mode};
-use action_settings::{AgentSettings, Locator};
 use action_daemon::{SettingsWatch, WatchState, apply, apply_next};
+use action_fake::fake_router;
+use action_settings::{AgentSettings, Locator};
+use permission_core::{AskOrRun, Mode};
 use std::path::Path;
 
 /// What the Settings app does: a temp file, then a rename over the settings file.

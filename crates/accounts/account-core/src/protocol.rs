@@ -4,7 +4,7 @@
 use account_ids::UrlScheme;
 use serde::{Deserialize, Serialize};
 
-/// The wire protocol an authenticated relay speaks for an endpoint (`porter-proxy`).
+/// The wire protocol an authenticated relay speaks for an endpoint (`account-proxy`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum EndpointProtocol {

@@ -1,6 +1,8 @@
 //! The folder's toolbar: Back and Forward, the folder's name over the view switcher.
 
 use dioxus::prelude::*;
+use files_core::ViewMode;
+use files_model::Input;
 use ui_components::components::chrome::column::model::ColumnAlign;
 use ui_components::components::chrome::column::view::Column;
 use ui_components::components::chrome::toolbar::model::{Picked, ToolbarItem};
@@ -10,8 +12,6 @@ use ui_components::components::controls::choice::Choice;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::{Icon, Label, SegmentedControl};
 use ui_components::style::tokens::control_size::ControlSize;
-use files_core::ViewMode;
-use files_model::Input;
 
 use crate::menu::enabled;
 use crate::places::title_words;

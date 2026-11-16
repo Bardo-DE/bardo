@@ -2,8 +2,8 @@
 //! or an end makes of them.
 
 use action_core::{ContextKeep, Keep, TurnVia};
-use provenance::SpaceId;
 use agent_voice_wire::{CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal};
+use provenance::SpaceId;
 
 use super::command::{VoiceCommand, VoiceEffect, VoiceEvent};
 use super::model::{AskScope, Heard, HoldToTalk, Notice, Phase, Then, Voice, VoiceConsent, Words};

@@ -1,26 +1,26 @@
 //! inferd hosted: the real `Inference1` object on a private bus, a client opening sessions through
-//! `porter-client`, and fake OpenAI-compatible engines on Unix sockets behind the real router,
+//! `account-client`, and fake OpenAI-compatible engines on Unix sockets behind the real router,
 //! supervisor driver, runner and audit sink. Nothing here starts an engine or touches the GPU,
 //! the real bus or the user's files.
 
 use crate::hosting;
 
-use hosting::engine::{Chat, Script};
-use hosting::entries;
-use hosting::rig::{Plan, World, test_app};
-use inference_daemon::peers::Role;
-use inference_client::{ClientError, DbusTransport, InferSession, Inference, TransportError};
 use account_capability::Tier;
 use account_capability::{CuaEnv, LlmFeature, Modality};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Dims, Tokens};
+use account_match::Need;
+use account_match::{CuaNeed, DimsNeed, EmbedNeed, LlmNeed};
+use hosting::engine::{Chat, Script};
+use hosting::entries;
+use hosting::rig::{Plan, World, test_app};
+use inference_client::{ClientError, DbusTransport, InferSession, Inference, TransportError};
 use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, EmbedRequest, EmbedRole, InferEvent, InferReply,
     InferRequest, MessagePart, Readiness, ReplyShape, Role as ChatRole, StopReason,
 };
-use account_match::Need;
-use account_match::{CuaNeed, DimsNeed, EmbedNeed, LlmNeed};
+use inference_daemon::peers::Role;
 use serde_json::Value;
 
 fn llm() -> Need {

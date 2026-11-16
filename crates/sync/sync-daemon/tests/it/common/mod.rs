@@ -5,9 +5,9 @@
 pub mod bus;
 pub mod hosted;
 
-use bus::PrivateBus;
 use account_callers::{Caller, CallerRole, Callers};
 use account_core::{AppId, AppName, Isolation};
+use bus::PrivateBus;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 

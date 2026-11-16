@@ -12,9 +12,6 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Input};
 use launcher_support::{LauncherFeeds, Runner, fake};
 use shell_launcher::LauncherMode;
 use shell_launcher_ui::Launcher;
@@ -22,6 +19,9 @@ use shell_launcher_ui::launcher::LauncherProviders;
 use shell_launcher_ui::launcher::preview::load::{Look, Looking};
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::LauncherLink;
+use ui_components::prelude::*;
+use ui_harness::harness::settle_until;
+use ui_harness::{Harness, Input};
 
 /// What the test gives the root beside the surface's own contexts: the providers and the search
 /// runner, which runs as a task on the harness's thread once.

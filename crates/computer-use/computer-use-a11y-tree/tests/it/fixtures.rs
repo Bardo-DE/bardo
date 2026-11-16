@@ -38,7 +38,11 @@ fn fixture_files_load_and_equal_the_snapshots_built_beside_them() {
 #[test]
 fn every_fixture_node_is_labelled_untrusted_screen_text_and_the_root_is_first() {
     for (name, snapshot) in all() {
-        assert_eq!(snapshot.nodes[0].parent, computer_use_a11y_tree::Parent::Root, "{name}");
+        assert_eq!(
+            snapshot.nodes[0].parent,
+            computer_use_a11y_tree::Parent::Root,
+            "{name}"
+        );
         for node in &snapshot.nodes {
             assert_eq!(
                 node.name.label.integrity,

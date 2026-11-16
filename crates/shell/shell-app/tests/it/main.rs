@@ -6,7 +6,7 @@ mod ipc;
 mod lint;
 mod settings_patch;
 mod voice_consent;
-// The voice bench is sill-services' own test support, shared by path (its macro names `crate::voice_support`).
+// The voice bench is shell-services' own test support, shared by path (its macro names `crate::voice_support`).
 #[path = "../../../shell-services/tests/it/voice_support/mod.rs"]
 mod voice_support;
 

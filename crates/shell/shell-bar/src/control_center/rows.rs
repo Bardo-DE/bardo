@@ -5,12 +5,12 @@
 
 use crate::control_center::item_phase::{ItemPhase, RowDisc};
 use dioxus::prelude::*;
+use shell_model::units::Percent;
 use ui_components::base::vocab::RowState;
 use ui_components::components::content::status::battery_state::BatteryState;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
-use shell_model::units::Percent;
 
 /// What a row ends in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -4,7 +4,7 @@
 //! The pure half of the companion service. [`Tap`] and [`Summon`] are timed [`Machine`]s on
 //! quire's clock (the service owns and steps them); [`presence_of`] derives the one presence
 //! the orb and the glow show; [`run_state_of`] and [`run_controls`] read a run; [`step`] keeps
-//! the published [`Companion`]. `sill-services` does the bus.
+//! the published [`Companion`]. `shell-services` does the bus.
 //!
 //! [`Machine`]: ui_core::machine::Machine
 
@@ -46,8 +46,6 @@ pub use card::{card_call, cards_of, openers_of, promote_card, unresolved_handles
 pub use command::{
     AskInput, CompanionCommand, CompanionEffect, CompanionEvent, CompanionParams, FocusInput,
 };
-/// The conversation and mode words of the router, for the crates that name them without docket.
-pub use permission_core::Mode;
 pub use emphasis::{Emphasis, Span, plain_of, spans};
 pub use helpers::{
     ADD_MODEL, AUTOMATIC_HELP, Asked, Automatic, BRING_BACK, CEILINGS, Draft, GONE, HandoverShown,
@@ -67,6 +65,8 @@ pub use mode::{
 };
 pub use model::{AnswerFacts, Busy, Companion, Lookup, LookupPhase, Opener, RunFacts};
 pub use no_model::{CHOOSE_MODEL_LABEL, NO_MODEL_LINE, lacks_model};
+/// The conversation and mode words of the router, for the crates that name them without docket.
+pub use permission_core::Mode;
 pub use presence::presence_of;
 pub use program_labels::ProgramLabels;
 pub use progress::{ProgressShown, preview_progress};

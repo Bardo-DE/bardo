@@ -1,7 +1,11 @@
 //! The prober over fixture trees: every fact it reads and every way a read can fail.
 
-use caller_identity_linux::{Alive, FixtureImage, FixtureProc, FixtureProcess, Pinned, ProbeError, Prober};
-use caller_identity_core::{Exe, FileTrust, Pid, Pin, SandboxFacts, Standing, Table, Uid, WhyNot, Writer};
+use caller_identity_core::{
+    Exe, FileTrust, Pid, Pin, SandboxFacts, Standing, Table, Uid, WhyNot, Writer,
+};
+use caller_identity_linux::{
+    Alive, FixtureImage, FixtureProc, FixtureProcess, Pinned, ProbeError, Prober,
+};
 
 const PID: u32 = 4242;
 const SILL_CGROUP: &str =
@@ -271,7 +275,10 @@ fn stand_judges_without_the_manager_so_a_service_tops_out_at_exe() {
 
 #[test]
 fn a_very_deep_path_is_refused_rather_than_walked() {
-    let deep = format!("/{}/sill", vec!["d"; caller_identity_linux::WALK_MAX + 1].join("/"));
+    let deep = format!(
+        "/{}/sill",
+        vec!["d"; caller_identity_linux::WALK_MAX + 1].join("/")
+    );
     let tree = FixtureProc::new().process(process(
         SILL_CGROUP,
         FixtureImage::Present(&deep, FileTrust::RootOnly),

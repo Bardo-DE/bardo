@@ -2,13 +2,15 @@
 //! computer and the Trash, are the disks that are attached, each with its eject button.
 
 use dioxus::prelude::*;
+use files_core::{CloudDrive, Location, Volume, VolumeId, VolumeKind};
+use files_model::Input;
 use ui_components::base::press::Press;
 use ui_components::base::vocab::RowState;
 use ui_components::components::chrome::sidebar::Sidebar;
 use ui_components::components::chrome::sidebar_model::SidebarSection;
-use ui_components::prelude::{Accessory, Icon, ListItem, Row, RowAction, RowLeading, SectionHeader};
-use files_core::{CloudDrive, Location, Volume, VolumeId, VolumeKind};
-use files_model::Input;
+use ui_components::prelude::{
+    Accessory, Icon, ListItem, Row, RowAction, RowLeading, SectionHeader,
+};
 
 use crate::cloud::drive_mark;
 use crate::places::{Heading, PlaceKey, PlaceKind, Places, cloud_key, groups, volume_key};

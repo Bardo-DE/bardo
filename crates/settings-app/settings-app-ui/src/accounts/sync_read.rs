@@ -1,10 +1,10 @@
 //! What the sync service says of the datasets of the accounts shown: read again whenever the
 //! pane's rows change. A dataset the service does not answer for has no entry, and nothing is
-//! said of it. The reading is `detent-client`'s.
+//! said of it. The reading is `settings-app-client`'s.
 
+use dioxus::prelude::*;
 use settings_app_client::Datasets;
 use settings_app_model::AccountsState;
-use dioxus::prelude::*;
 
 /// Keeps the datasets' book current for the accounts of `state`.
 pub(super) fn use_sync_reading(datasets: Datasets, state: Signal<AccountsState>) {

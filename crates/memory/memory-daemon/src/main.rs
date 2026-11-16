@@ -1,4 +1,4 @@
-//! memoryd: serves `org.quire.Memory1` on the session bus over almanac-service. The start-up is
+//! memoryd: serves `org.quire.Memory1` on the session bus over memory-service. The start-up is
 //! `memory_daemon::start`; this binary reads the arguments and passes it the process environment.
 
 use clap::Parser;

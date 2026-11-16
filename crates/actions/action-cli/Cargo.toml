@@ -1,6 +1,6 @@
 [package]
 name = "action-cli"
-description = "quire-do: every app we ship, driven from a command line generated from its intents manifest. A thin client over docket-client with caller role cli; every call goes through intentd's full gate."
+description = "quire-do: every app we ship, driven from a command line generated from its intents manifest. A thin client over action-client with caller role cli; every call goes through intentd's full gate."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

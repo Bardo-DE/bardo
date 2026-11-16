@@ -1,5 +1,5 @@
 //! The Displays page over a compositor that answers from memory: the page without a compositor, and
-//! a display's rows. The changes the page sends are tested in `detent-model`.
+//! a display's rows. The changes the page sends are tested in `settings-app-model`.
 
 use crate::support::Sandbox;
 use crate::support::drive::{page_of, showing, sidebar_page, title_of};

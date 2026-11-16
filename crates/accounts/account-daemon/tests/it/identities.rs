@@ -5,20 +5,20 @@
 
 use crate::common;
 
-use account_daemon::Options;
-use common::*;
 use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_core::consent::{AskPurpose, ConsentAnswer, GrantScope};
 use account_core::{AccountId, ProviderId};
 use account_core::{Identity, IdentityAddress, IdentityId, IdentityKind, IdentityName};
+use account_daemon::Options;
 use account_dbus::accounts::{IdentitiesProxy, identity_from_dbus};
 use account_service_core::audit::AuditEvent;
 use account_sheet::{SheetInput, SheetView};
 use account_wire::Refusal;
+use base_testkit::Scratch;
+use common::*;
 use std::io::Read;
 use std::path::PathBuf;
-use base_testkit::Scratch;
 
 const INVALID_ARGS: &str = "org.freedesktop.DBus.Error.InvalidArgs";
 const LIMITS_EXCEEDED: &str = "org.freedesktop.DBus.Error.LimitsExceeded";

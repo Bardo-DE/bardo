@@ -5,7 +5,7 @@
 //! [`SpaceRegistry::register`] hands a batch to a background thread and returns at once, and
 //! [`SpaceRegistry::failures`] tells what the service answered later. The real implementation,
 //! [`ZbusSpaceRegistry`], calls `account_dbus::accounts::SpacesProxy::register` on the bus at an address it
-//! is given (the library reads no environment); `casement-testkit` exports `FakeSpaceRegistry`.
+//! is given (the library reads no environment); `compositor-testkit` exports `FakeSpaceRegistry`.
 //!
 //! The service registers a known id again without changing it, so the caller registers every
 //! Space at each start. A refusal means casement is not yet the unit the service gives the
@@ -27,8 +27,8 @@
 mod pace;
 mod worker;
 
-pub use pace::{PACE, PACE_WINDOW, Pace};
 use account_core::SpaceId;
+pub use pace::{PACE, PACE_WINDOW, Pace};
 use worker::Worker;
 
 /// The look sent with every registration: empty is the default look ("no look chosen").

@@ -1,4 +1,4 @@
-//! Capabilities and claims the tests of this crate and of porter-match build from (feature
+//! Capabilities and claims the tests of this crate and of account-match build from (feature
 //! `testing`; always there in this crate's own tests).
 
 use crate::offer::{Claim, Offer, Provenance, Subject};

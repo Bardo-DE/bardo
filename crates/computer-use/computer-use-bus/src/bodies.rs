@@ -1,8 +1,8 @@
 //! The JSON bodies of the `Cua1` properties and signals.
 
 use crate::budget::{BudgetUse, RunBudget};
-use computer_use_desktop::WindowTitle;
 use account_core::AppName;
+use computer_use_desktop::WindowTitle;
 use provenance::Labelled;
 use serde::{Deserialize, Serialize};
 

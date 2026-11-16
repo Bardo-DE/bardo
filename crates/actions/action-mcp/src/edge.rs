@@ -1,8 +1,8 @@
 //! The server: `rmcp` over stdio or a Unix socket, with the router behind it.
 
-use action_tools::{ToolFault, ToolHints, ToolRefusal, ToolSpec, listing, outcome_json, prepare};
 use action_client::{Intents, Transport};
 use action_manifest::ValidManifest;
+use action_tools::{ToolFault, ToolHints, ToolRefusal, ToolSpec, listing, outcome_json, prepare};
 use provenance::ClientName;
 use rmcp::model::{
     CacheScope, CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, ErrorData,

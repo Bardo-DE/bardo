@@ -4,11 +4,11 @@
 //! target under a release hears its `ondrop` with the paths, and a URL lights nothing.
 
 use dioxus::prelude::*;
+use std::path::PathBuf;
 use ui_components::file_drop::drag::{DropAcceptance, FileDrag, FileDragInput, FileDrop, Offer};
 use ui_components::file_drop::hook::use_file_drop;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::path::PathBuf;
 
 const VIEW: Viewport = Viewport {
     width: 400,

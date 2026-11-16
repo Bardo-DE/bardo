@@ -7,16 +7,16 @@ use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use account_dbus::Details;
 use account_ids::Tokens;
+use account_wire::names::{INFERENCE_BUS, INFERENCE_PATH};
+use account_wire::{decode_frame, encode_frame};
 use inference_core::{
     ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferRefusal, InferReply,
     InferRequest, ServedBy, StopReason, TokenUsage,
 };
-use account_wire::names::{INFERENCE_BUS, INFERENCE_PATH};
-use account_wire::{decode_frame, encode_frame};
+use inference_dbus::inference::NeedArg;
 use memory_recall::FakeEmbedder;
 use std::os::unix::net::UnixStream as StdStream;
 use std::sync::{Arc, Mutex};
-use inference_dbus::inference::NeedArg;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::UnixStream;
 use zbus::fdo;

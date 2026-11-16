@@ -5,11 +5,11 @@
 
 use crate::common;
 
+use account_fake_servers::HeldRuntime;
 use common::Known;
 use common::bus::PrivateBus;
-use sync_bus::SYNC_BUS;
-use account_fake_servers::HeldRuntime;
 use std::time::Duration;
+use sync_bus::SYNC_BUS;
 use sync_daemon::service::{Hub, serve};
 
 /// How long the start may show it is waiting for the held runtime, and how long a call has to

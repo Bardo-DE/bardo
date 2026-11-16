@@ -8,8 +8,8 @@ use crate::host::parts::EditHost;
 use crate::host::position::{TextPosition, TextRange};
 use crate::host::probe::Probe;
 use dioxus::prelude::*;
-use ui_core::geometry::units::{Point, Rect};
 use std::rc::Rc;
+use ui_core::geometry::units::{Point, Rect};
 
 /// A handle on one `EditSurface`: pass it as the surface's `handle`, then
 /// read geometry from a handler or a task. Each read answers [`Probe::Busy`] while the renderer

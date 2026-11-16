@@ -4,9 +4,9 @@
 
 use crate::Bell;
 use action_client::{PerformEvent, Transport as IntentsTransport};
+use action_vocab::Clock;
 use agent_planner::Planner;
 use companion_tasks::{Acting, Companion, refusal_of};
-use action_vocab::Clock;
 use futures_util::lock::Mutex;
 use std::sync::Arc;
 

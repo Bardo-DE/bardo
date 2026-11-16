@@ -1,5 +1,5 @@
 //! The router's gate over `Intents1`: `Gate.Grant`, `Session.Open` for the run's own session and
-//! the watched `Gate.Check` (docket-client's `Intents::gate_check_watched`).
+//! the watched `Gate.Check` (action-client's `Intents::gate_check_watched`).
 //!
 //! A step's check says `Confirming(id)` when the router is about to ask the person: cuad stops
 //! its own input (the run machine suspends the lease), calls `proceed`, and the router
@@ -7,12 +7,12 @@
 //! The verdict is the last event. A paused run takes its check back with `close`, and the question
 //! is withdrawn. A transport that cannot watch gives the verdict alone and the rest does nothing.
 
-use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
 use action_client::{
     ClientError, GateEvent as Heard, GateSteer, GateWatch, Intents, Transport, TransportError,
 };
 use action_gate_wire::CuaAsk;
 use action_wire::{GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionOpen};
+use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
 use provenance::{AgentRef, RunId, SessionId, SpaceId};
 use std::sync::Arc;
 
@@ -183,11 +183,11 @@ impl GateCheck for IntentsCheck {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
     use action_client::{Boxed, Events, Said, Steering, Watched};
     use action_core::{CallProgress, CallRefusal, ConfirmEnd};
     use action_gate_wire::{EffectBasis, GateAnswer};
     use action_wire::WireRefusal;
+    use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
     use provenance::ConfirmId;
     use provenance::{Effect, Label, RunId, SpaceId};
     use std::collections::VecDeque;

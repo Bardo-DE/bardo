@@ -9,56 +9,56 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
-# never reach a bus, a runtime, an HTTP client or a keyring; porter-client reaches zbus only
-# through its `dbus` feature; porter-dbus reaches tokio only through zbus's `tokio` feature.
-# porter-http is the pure seam and reaches none of them; porter-proxy and porter-oauth reach tokio
-# only through their named I/O feature (`io`). reqwest is named by one crate, porter-http-reqwest
-# (see ONE CLIENT below), and reached through it by the families that send directly. porter-families reaches none with default features;
+# never reach a bus, a runtime, an HTTP client or a keyring; account-client reaches zbus only
+# through its `dbus` feature; account-dbus reaches tokio only through zbus's `tokio` feature.
+# account-http is the pure seam and reaches none of them; account-proxy and account-oauth reach tokio
+# only through their named I/O feature (`io`). reqwest is named by one crate, account-http-reqwest
+# (see ONE CLIENT below), and reached through it by the families that send directly. account-families reaches none with default features;
 # each of its family features is checked on its own in FAMILY_FORBIDS below.
-# porter-calendar reaches zbus only through its `eds` feature.
-EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
+# account-calendar reaches zbus only through its `eds` feature.
+EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
 RULES=(
-  "porter-ids: $EFFECTS toml"
-  "porter-capability: $EFFECTS toml"
-  "porter-match: $EFFECTS toml"
-  "porter-core: $EFFECTS toml"
-  "porter-wire: $EFFECTS toml"
-  "porter-sheet: $EFFECTS toml"
-  "porter-fs: $EFFECTS"
-  "porter-provider: $EFFECTS"
-  "porter-secrets: $EFFECTS"
-  "porter-service-core: $EFFECTS"
-  "porter-service-accounts: $EFFECTS"
-  "porter-service-grants: $EFFECTS"
-  "porter-service: $EFFECTS"
-  "porter-identities: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-  "porter-spaces: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-  "porter-settings: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey"
-  "porter-store: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-  "porter-client: $EFFECTS porter-dbus porter-callers porter-service porter-service-core porter-service-accounts porter-service-grants porter-secrets porter-provider porter-fs"
-  "porter-client-dbus: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings porter-service porter-service-core porter-service-accounts porter-service-grants porter-secrets porter-provider porter-fs"
-  "porter-client-inproc: zbus zvariant hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings porter-dbus"
-  "porter-sheets: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-  "porter-fake: $EFFECTS"
-  "test-kit: $EFFECTS"
-  "porter-http: $EFFECTS"
-  "porter-proxy: $EFFECTS"
-  "porter-oauth: $EFFECTS"
-  "porter-discover: $EFFECTS"
-  "porter-daemon: $EFFECTS"
-  "porter-tailscale: $EFFECTS"
-  "dav-proto: $EFFECTS"
-  "porter-calendar: $EFFECTS"
-  "nextcloud-proto: $EFFECTS"
-  "generic-proto: $EFFECTS"
-  "oauth-probe-proto: $EFFECTS"
-  "porter-families: $EFFECTS"
-  "porter-family-kit: $EFFECTS"
-  "porter-family-nextcloud: $EFFECTS"
-  "porter-family-generic: zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-  "porter-family-oauth: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-  "porter-dbus: reqwest hyper ureq oo7 keyring secret-service ds-settings"
-  "porter-callers: reqwest hyper ureq oo7 keyring secret-service ds-settings"
+  "account-ids: $EFFECTS toml"
+  "account-capability: $EFFECTS toml"
+  "account-match: $EFFECTS toml"
+  "account-core: $EFFECTS toml"
+  "account-wire: $EFFECTS toml"
+  "account-sheet: $EFFECTS toml"
+  "account-fs: $EFFECTS"
+  "account-provider: $EFFECTS"
+  "account-secrets: $EFFECTS"
+  "account-service-core: $EFFECTS"
+  "account-service-accounts: $EFFECTS"
+  "account-service-grants: $EFFECTS"
+  "account-service: $EFFECTS"
+  "account-identities: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-spaces: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-settings: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey"
+  "account-store: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-client: $EFFECTS account-dbus account-callers account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider account-fs"
+  "account-client-dbus: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider account-fs"
+  "account-client-inproc: zbus zvariant hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-dbus"
+  "account-sheets: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-fake: $EFFECTS"
+  "base-testkit: $EFFECTS"
+  "account-http: $EFFECTS"
+  "account-proxy: $EFFECTS"
+  "account-oauth: $EFFECTS"
+  "account-discover: $EFFECTS"
+  "account-daemon-support: $EFFECTS"
+  "account-tailscale: $EFFECTS"
+  "account-dav-proto: $EFFECTS"
+  "account-calendar: $EFFECTS"
+  "account-nextcloud-proto: $EFFECTS"
+  "account-generic-proto: $EFFECTS"
+  "account-oauth-probe-proto: $EFFECTS"
+  "account-families: $EFFECTS"
+  "account-family-kit: $EFFECTS"
+  "account-family-nextcloud: $EFFECTS"
+  "account-family-generic: zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-family-oauth: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-dbus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
+  "account-callers: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
 fail=0
 
@@ -87,7 +87,7 @@ done
 
 # SANS-IO PROTOCOL CRATES: every `crates/*-proto` is sans-IO: request builders return
 # `http::Request<Vec<u8>>`, parsers take `&http::Response<Vec<u8>>`, and the caller sends and
-# reads the clock. So none reaches the HTTP seam (porter-http), a runtime (tokio) or an HTTP client
+# reads the clock. So none reaches the HTTP seam (account-http), a runtime (tokio) or an HTTP client
 # (reqwest), and none has an `async fn`. The crates are found by name, so a new one is checked
 # without a row here; the crates they may depend on are in EDGES.
 for dir in crates/*-proto; do
@@ -98,7 +98,7 @@ for dir in crates/*-proto; do
     continue
   fi
   clean=1
-  for dep in porter-http tokio reqwest; do
+  for dep in account-http tokio reqwest; do
     if cargo tree -p "$crate" -i "$dep" -e normal,build 2>/dev/null | grep -q .; then
       echo "LEAK: $crate (sans-IO) depends on $dep"
       cargo tree -p "$crate" -i "$dep" -e normal,build 2>/dev/null | head -20
@@ -112,27 +112,27 @@ for dir in crates/*-proto; do
     fail=1
   fi
   if [ "$clean" -eq 1 ]; then
-    echo "sans-IO holds: $crate reaches none of porter-http tokio reqwest and has no async fn"
+    echo "sans-IO holds: $crate reaches none of account-http tokio reqwest and has no async fn"
   fi
 done
 
-# FAMILY FEATURES: porter-families with each of its family features on, one at a time, and no
+# FAMILY FEATURES: account-families with each of its family features on, one at a time, and no
 # other. Its default build is checked by RULES above (it reaches none of EFFECTS). A family
 # reaches only what it really uses, so each feature forbids EFFECTS minus what it uses today:
-#   generic:            tokio (porter-proxy's `io`, for the relay's login)
-#   oauth:              tokio, hyper, reqwest (porter-oauth's `io`, porter-http-reqwest)
-#   api_key:            hyper, reqwest, tokio (porter-http-reqwest)
-#   tailnet:            hyper, tokio (porter-tailscale's `io`)
+#   generic:            tokio (account-proxy's `io`, for the relay's login)
+#   oauth:              tokio, hyper, reqwest (account-oauth's `io`, account-http-reqwest)
+#   api_key:            hyper, reqwest, tokio (account-http-reqwest)
+#   tailnet:            hyper, tokio (account-tailscale's `io`)
 #   nextcloud, agent_login: none
 #   set:                every family a daemon maps (what oauth, generic, api_key and tailnet
-#                       reach together), with the system resolver (porter-discover's `io`)
-# Every feature in porter-families' Cargo.toml must have a row, so a new family cannot slip in
+#                       reach together), with the system resolver (account-discover's `io`)
+# Every feature in account-families' Cargo.toml must have a row, so a new family cannot slip in
 # unchecked; the direct porter-* edges of each feature are exact too (FAMILY_EDGES).
-MS_FORBIDS="zbus zvariant reqwest ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-DIRECT_FORBIDS="zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ds-settings"
+MS_FORBIDS="zbus zvariant reqwest ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+DIRECT_FORBIDS="zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings"
 declare -A FAMILY_FORBIDS=(
   [nextcloud]="$EFFECTS"
-  [generic]="zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess latchkey ds-settings"
+  [generic]="zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess latchkey ui-settings"
   [oauth]="$DIRECT_FORBIDS"
   [api_key]="$DIRECT_FORBIDS"
   [agent_login]="$EFFECTS"
@@ -140,18 +140,18 @@ declare -A FAMILY_FORBIDS=(
   [set]="$DIRECT_FORBIDS"
 )
 declare -A FAMILY_EDGES=(
-  [nextcloud]="porter-family-kit porter-family-nextcloud porter-core porter-capability porter-sheet porter-ids porter-http porter-provider"
-  [generic]="porter-family-kit porter-family-generic porter-core porter-capability porter-sheet porter-ids porter-http porter-provider"
-  [oauth]="porter-family-kit porter-family-oauth porter-core porter-capability porter-sheet porter-ids porter-http porter-provider"
-  [api_key]="porter-family-kit porter-core porter-capability porter-sheet porter-ids porter-http porter-http-reqwest porter-provider"
-  [agent_login]="porter-family-kit porter-core porter-capability porter-sheet porter-ids porter-http porter-provider"
-  [tailnet]="porter-family-kit porter-core porter-capability porter-sheet porter-ids porter-http porter-provider porter-tailscale"
-  [set]="porter-family-kit porter-family-nextcloud porter-family-generic porter-family-oauth porter-core porter-capability porter-sheet porter-ids porter-discover porter-http porter-http-reqwest porter-provider porter-tailscale"
+  [nextcloud]="account-family-kit account-family-nextcloud account-core account-capability account-sheet account-ids account-http account-provider"
+  [generic]="account-family-kit account-family-generic account-core account-capability account-sheet account-ids account-http account-provider"
+  [oauth]="account-family-kit account-family-oauth account-core account-capability account-sheet account-ids account-http account-provider"
+  [api_key]="account-family-kit account-core account-capability account-sheet account-ids account-http account-http-reqwest account-provider"
+  [agent_login]="account-family-kit account-core account-capability account-sheet account-ids account-http account-provider"
+  [tailnet]="account-family-kit account-core account-capability account-sheet account-ids account-http account-provider account-tailscale"
+  [set]="account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover account-http account-http-reqwest account-provider account-tailscale"
 )
 family_features=$(awk '/^\[features\]/{f=1;next} /^\[/{f=0} f && /^[A-Za-z0-9_-]+ *=/{sub(/ *=.*/,""); if ($0!="default") print}' crates/porter-families/Cargo.toml)
 for feature in $family_features; do
   if [ -z "${FAMILY_FORBIDS[$feature]+set}" ] || [ -z "${FAMILY_EDGES[$feature]+set}" ]; then
-    echo "ERROR: porter-families feature $feature has no row in FAMILY_FORBIDS or FAMILY_EDGES; its boundary was not checked"
+    echo "ERROR: account-families feature $feature has no row in FAMILY_FORBIDS or FAMILY_EDGES; its boundary was not checked"
     fail=1
     continue
   fi
@@ -159,34 +159,34 @@ for feature in $family_features; do
   leaked=0
   for dep in "${forbidden[@]}"; do
     if cargo tree -p account-families --no-default-features --features "$feature" -i "$dep" -e normal,build 2>/dev/null | grep -q .; then
-      echo "LEAK: porter-families[$feature] depends on $dep"
+      echo "LEAK: account-families[$feature] depends on $dep"
       cargo tree -p account-families --no-default-features --features "$feature" -i "$dep" -e normal,build 2>/dev/null | head -20
       leaked=1
       fail=1
     fi
   done
   if [ "$leaked" -eq 0 ]; then
-    echo "boundary holds: porter-families[$feature] reaches none of ${forbidden[*]}"
+    echo "boundary holds: account-families[$feature] reaches none of ${forbidden[*]}"
   fi
   found=$(cargo tree -p account-families --no-default-features --features "$feature" --depth 1 -e normal,build --prefix none 2>/dev/null \
-    | grep -E '\((/|https://github.com/Bardo-DE/(stoker|quire))' | awk '{print $1}' | grep -vx porter-families | sort -u | tr '\n' ' ')
+    | grep -E '\((/|https://github.com/Bardo-DE/(stoker|quire))' | awk '{print $1}' | grep -vx account-families | sort -u | tr '\n' ' ')
   want=$(printf '%s\n' ${FAMILY_EDGES[$feature]} | sort -u | tr '\n' ' ')
   if [ "$found" != "$want" ]; then
-    echo "EDGE: porter-families[$feature] depends on [${found% }], the table allows [${want% }]"
+    echo "EDGE: account-families[$feature] depends on [${found% }], the table allows [${want% }]"
     fail=1
   else
-    echo "edges hold: porter-families[$feature] depends on [${found% }]"
+    echo "edges hold: account-families[$feature] depends on [${found% }]"
   fi
 done
 
-# ONE CLIENT: reqwest is named by porter-http-reqwest and by no other crate of this workspace. Every
+# ONE CLIENT: reqwest is named by account-http-reqwest and by no other crate of this workspace. Every
 # other crate that sends over a direct connection takes `ReqwestHttp` from it.
 named=$(grep -lE '^reqwest[ .=]' crates/*/Cargo.toml | grep -v '^crates/porter-http-reqwest/' || true)
 if [ -n "$named" ]; then
-  echo "LEAK: reqwest is named outside porter-http-reqwest: $named"
+  echo "LEAK: reqwest is named outside account-http-reqwest: $named"
   fail=1
 else
-  echo "boundary holds: only porter-http-reqwest names reqwest"
+  echo "boundary holds: only account-http-reqwest names reqwest"
 fi
 
 # PURE FILES: source that parses what an edge read and never reads it itself. A dependency rule
@@ -208,10 +208,10 @@ for file in "${PURE_FILES[@]}"; do
   fi
 done
 
-# porter-core's and porter-ids' source is pure: the file writer is porter-fs, so no file, process or
+# account-core's and account-ids' source is pure: the file writer is account-fs, so no file, process or
 # environment access is named anywhere in either crate (a dependency rule cannot see std's own
 # modules).
-for pure in porter-ids porter-core; do
+for pure in account-ids account-core; do
   if grep -rnE 'std::(fs|process|env)\b' "crates/$pure/src"; then
     echo "LEAK: $pure's source reaches std's file, process or environment access"
     fail=1
@@ -245,16 +245,16 @@ else
   echo "pure: accountd reads the environment only in from_env functions"
 fi
 
-# porter-daemon reads no environment variable at all: what a daemon or an app knows is passed in
-# (porter-daemon takes the lookup). Its test helpers are outside the rule, as above.
+# account-daemon-support reads no environment variable at all: what a daemon or an app knows is passed in
+# (account-daemon-support takes the lookup). Its test helpers are outside the rule, as above.
 lib_env_reads=$(find crates/porter-daemon/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
   | xargs -0 grep -nE 'env::(var|var_os|vars|vars_os|args|args_os|current_dir|home_dir)\b' | grep -vE '^[^:]*:[0-9]+:[[:space:]]*//' || true)
 if [ -n "$lib_env_reads" ]; then
   echo "$lib_env_reads"
-  echo "LEAK: porter-daemon reads the environment"
+  echo "LEAK: account-daemon-support reads the environment"
   fail=1
 else
-  echo "pure: porter-daemon reads no environment variable"
+  echo "pure: account-daemon-support reads no environment variable"
 fi
 
 # DELETED HELPERS: hand-rolled code that a crate or one shared function replaced must not come
@@ -281,55 +281,55 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # dependencies (all features), and nothing else. A dependency not listed is a leak; so is one
 # the crate no longer has, so the table stays exact. Dev dependencies are outside it.
 EDGES=(
-  "porter-ids:"
-  "porter-capability: porter-ids"
-  "porter-match: porter-capability porter-ids"
-  "porter-core: porter-ids porter-capability"
-  "porter-wire: porter-core porter-match porter-capability"
-  "porter-sheet: porter-core porter-tailscale porter-capability porter-ids porter-wire"
-  "porter-daemon:"
-  "porter-fs:"
-  "keyring-chunked:"
-  "porter-provider: porter-core porter-match porter-capability porter-sheet porter-ids"
-  "porter-secrets: keyring-chunked porter-core porter-capability porter-ids porter-fs"
-  "porter-service-core: porter-core porter-match porter-capability porter-sheet porter-wire porter-ids porter-provider porter-secrets"
-  "porter-service-accounts: porter-service-core porter-core porter-tailscale porter-match porter-capability porter-sheet porter-wire porter-ids porter-provider porter-secrets"
-  "porter-service-grants: porter-service-core porter-service-accounts porter-core porter-match porter-capability porter-wire porter-ids porter-provider porter-secrets porter-sheet"
-  "porter-service: porter-service-core porter-service-accounts porter-service-grants porter-core porter-match porter-capability porter-wire porter-ids porter-provider porter-secrets porter-sheet"
-  "porter-store: porter-core porter-capability porter-fs"
-  "porter-identities: porter-service-core porter-core porter-ids porter-fs porter-secrets porter-wire porter-sheet"
-  "porter-spaces: porter-core porter-ids porter-fs"
-  "porter-settings: ds-settings porter-service-core porter-capability porter-core porter-ids porter-provider porter-sheet"
-  "porter-dbus-macros:"
-  "porter-callers: porter-core"
-  "porter-dbus: porter-core porter-dbus-macros porter-tailscale porter-wire porter-ids"
-  "porter-sheets: porter-core porter-capability porter-sheet porter-wire porter-callers porter-dbus porter-provider porter-service-core"
-  "porter-client: porter-core porter-tailscale porter-match porter-capability porter-wire porter-ids porter-sheet"
-  "porter-client-dbus: porter-client porter-core porter-match porter-wire porter-capability porter-dbus porter-ids porter-tailscale"
-  "porter-client-inproc: porter-capability porter-client porter-core porter-ids porter-match porter-provider porter-proxy porter-secrets porter-service porter-service-accounts porter-service-core porter-service-grants porter-sheet porter-wire"
-  "porter-fake: porter-core porter-capability porter-sheet porter-wire porter-ids porter-provider porter-secrets porter-service porter-service-core"
-  "test-kit:"
-  "porter-fake-servers: dav-proto porter-core porter-ids porter-discover porter-fake porter-provider test-kit"
-  "porter-http: porter-core porter-ids"
-  "porter-http-reqwest: porter-ids porter-http"
-  "porter-http-relay: porter-client porter-core porter-wire porter-ids porter-http"
-  "porter-proxy: porter-core porter-capability porter-ids"
-  "porter-oauth: porter-core porter-ids porter-http porter-provider"
-  "porter-discover: porter-core porter-capability porter-ids porter-http porter-provider"
-  "porter-tailscale: porter-ids"
-  "dav-proto:"
-  "porter-calendar: dav-proto porter-http porter-ids"
-  "nextcloud-proto: porter-core porter-capability porter-ids"
-  "oauth-probe-proto: porter-capability porter-ids"
-  "generic-proto: dav-proto porter-core porter-capability porter-ids porter-provider porter-sheet"
-  "porter-families: porter-family-kit porter-family-nextcloud porter-family-generic porter-family-oauth porter-core porter-capability porter-sheet porter-ids porter-discover porter-http porter-http-reqwest porter-provider porter-tailscale"
-  "porter-family-kit: porter-core porter-provider porter-sheet porter-http"
-  "porter-family-nextcloud: porter-family-kit nextcloud-proto dav-proto porter-core porter-capability porter-sheet porter-provider porter-http"
-  "porter-family-generic: porter-family-kit generic-proto porter-core porter-capability porter-sheet porter-provider porter-http porter-discover porter-proxy"
-  "porter-family-oauth: porter-family-kit oauth-probe-proto porter-core porter-capability porter-sheet porter-ids porter-provider porter-http porter-http-reqwest porter-oauth"
-  "accountd: ds-settings porter-core porter-match porter-capability porter-sheet porter-wire porter-ids porter-daemon porter-callers porter-dbus porter-families porter-family-oauth porter-fs porter-identities porter-provider porter-proxy porter-secrets porter-service porter-service-accounts porter-service-core porter-settings porter-sheets porter-spaces porter-store porter-tailscale"
-  "porter-rig: fake-secret-service porter-client porter-core porter-capability porter-wire porter-ids porter-callers porter-fake porter-fake-servers test-kit porter-client-dbus"
-  "fake-secret-service:"
+  "account-ids:"
+  "account-capability: account-ids"
+  "account-match: account-capability account-ids"
+  "account-core: account-ids account-capability"
+  "account-wire: account-core account-match account-capability"
+  "account-sheet: account-core account-tailscale account-capability account-ids account-wire"
+  "account-daemon-support:"
+  "account-fs:"
+  "account-keyring-chunked:"
+  "account-provider: account-core account-match account-capability account-sheet account-ids"
+  "account-secrets: account-keyring-chunked account-core account-capability account-ids account-fs"
+  "account-service-core: account-core account-match account-capability account-sheet account-wire account-ids account-provider account-secrets"
+  "account-service-accounts: account-service-core account-core account-tailscale account-match account-capability account-sheet account-wire account-ids account-provider account-secrets"
+  "account-service-grants: account-service-core account-service-accounts account-core account-match account-capability account-wire account-ids account-provider account-secrets account-sheet"
+  "account-service: account-service-core account-service-accounts account-service-grants account-core account-match account-capability account-wire account-ids account-provider account-secrets account-sheet"
+  "account-store: account-core account-capability account-fs"
+  "account-identities: account-service-core account-core account-ids account-fs account-secrets account-wire account-sheet"
+  "account-spaces: account-core account-ids account-fs"
+  "account-settings: ui-settings account-service-core account-capability account-core account-ids account-provider account-sheet"
+  "account-dbus-macros:"
+  "account-callers: account-core"
+  "account-dbus: account-core account-dbus-macros account-tailscale account-wire account-ids"
+  "account-sheets: account-core account-capability account-sheet account-wire account-callers account-dbus account-provider account-service-core"
+  "account-client: account-core account-tailscale account-match account-capability account-wire account-ids account-sheet"
+  "account-client-dbus: account-client account-core account-match account-wire account-capability account-dbus account-ids account-tailscale"
+  "account-client-inproc: account-capability account-client account-core account-ids account-match account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-service-grants account-sheet account-wire"
+  "account-fake: account-core account-capability account-sheet account-wire account-ids account-provider account-secrets account-service account-service-core"
+  "base-testkit:"
+  "account-fake-servers: account-dav-proto account-core account-ids account-discover account-fake account-provider base-testkit"
+  "account-http: account-core account-ids"
+  "account-http-reqwest: account-ids account-http"
+  "account-http-relay: account-client account-core account-wire account-ids account-http"
+  "account-proxy: account-core account-capability account-ids"
+  "account-oauth: account-core account-ids account-http account-provider"
+  "account-discover: account-core account-capability account-ids account-http account-provider"
+  "account-tailscale: account-ids"
+  "account-dav-proto:"
+  "account-calendar: account-dav-proto account-http account-ids"
+  "account-nextcloud-proto: account-core account-capability account-ids"
+  "account-oauth-probe-proto: account-capability account-ids"
+  "account-generic-proto: account-dav-proto account-core account-capability account-ids account-provider account-sheet"
+  "account-families: account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover account-http account-http-reqwest account-provider account-tailscale"
+  "account-family-kit: account-core account-provider account-sheet account-http"
+  "account-family-nextcloud: account-family-kit account-nextcloud-proto account-dav-proto account-core account-capability account-sheet account-provider account-http"
+  "account-family-generic: account-family-kit account-generic-proto account-core account-capability account-sheet account-provider account-http account-discover account-proxy"
+  "account-family-oauth: account-family-kit account-oauth-probe-proto account-core account-capability account-sheet account-ids account-provider account-http account-http-reqwest account-oauth"
+  "accountd: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth account-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
+  "account-rig: account-fake-secret-service account-client account-core account-capability account-wire account-ids account-callers account-fake account-fake-servers base-testkit account-client-dbus"
+  "account-fake-secret-service:"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -347,22 +347,22 @@ done
 
 # HIDDEN CRATES: the bus and the service are a daemon's, and a client's transport's. Each crate
 # below may be depended on (normal or build edge) only by the crates named, so an app-facing
-# crate (porter-client, the families, the drive crates, ...) can never come to name one. The
-# transport crates are the only client-side names: porter-client-dbus holds the bus, and
-# porter-client-inproc the service. porter-rig (test tooling) uses porter-dbus's sync group; its
+# crate (account-client, the families, the drive crates, ...) can never come to name one. The
+# transport crates are the only client-side names: account-client-dbus holds the bus, and
+# account-client-inproc the service. account-rig (test tooling) uses account-dbus's sync group; its
 # row goes with it.
 HIDDEN=(
-  "porter-dbus: accountd porter-client-dbus porter-sheets"
-  "porter-callers: accountd porter-rig porter-sheets"
-  "porter-service-core: accountd porter-client-inproc porter-fake porter-identities porter-service porter-service-accounts porter-service-grants porter-settings porter-sheets"
-  "porter-service-accounts: accountd porter-client-inproc porter-service porter-service-grants"
-  "porter-service-grants: porter-client-inproc porter-service"
-  "porter-service: accountd porter-client-inproc porter-fake"
-  "porter-identities: accountd"
-  "porter-spaces: accountd"
-  "porter-settings: accountd"
-  "porter-store: accountd"
-  "porter-sheets: accountd"
+  "account-dbus: accountd account-client-dbus account-sheets"
+  "account-callers: accountd account-rig account-sheets"
+  "account-service-core: accountd account-client-inproc account-fake account-identities account-service account-service-accounts account-service-grants account-settings account-sheets"
+  "account-service-accounts: accountd account-client-inproc account-service account-service-grants"
+  "account-service-grants: account-client-inproc account-service"
+  "account-service: accountd account-client-inproc account-fake"
+  "account-identities: accountd"
+  "account-spaces: accountd"
+  "account-settings: accountd"
+  "account-store: accountd"
+  "account-sheets: accountd"
 )
 for row in "${HIDDEN[@]}"; do
   hidden="${row%%:*}"
@@ -379,27 +379,27 @@ for row in "${HIDDEN[@]}"; do
 done
 
 # CLIENT TESTS: a client crate builds, and is semver-checked, without building a daemon. No
-# `[dev-dependencies]` section (target-specific ones too) of a porter-client* crate names a daemon
+# `[dev-dependencies]` section (target-specific ones too) of a account-client* crate names a daemon
 # or a service crate; the tests that need accountd are accountd's (crates/accountd/tests/it/client).
 client_dev=""
 for manifest in crates/porter-client*/Cargo.toml; do
-  named=$(awk '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } dev && /^(accountd|syncd|ferry-[a-z-]*|porter-service[a-z-]*)[ .=]/ { print $1 }' "$manifest")
+  named=$(awk '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } dev && /^(accountd|syncd|ferry-[a-z-]*|account-service[a-z-]*)[ .=]/ { print $1 }' "$manifest")
   if [ -n "$named" ]; then
     client_dev="$client_dev$manifest: $(echo $named)"$'\n'
   fi
 done
 if [ -n "$client_dev" ]; then
   printf '%s' "$client_dev"
-  echo "LEAK: a porter-client* crate has a daemon or a service crate as a dev-dependency"
+  echo "LEAK: a account-client* crate has a daemon or a service crate as a dev-dependency"
   fail=1
 else
-  echo "boundary holds: no porter-client* crate has a daemon or a service crate as a dev-dependency"
+  echo "boundary holds: no account-client* crate has a daemon or a service crate as a dev-dependency"
 fi
 
 # `porter_dbus::accounts` is named only where accountd's interfaces are served or called: the
 # daemons, the sheet crate and the bus transport of the client.
 accounts_users=$(grep -rlE --include='*.rs' 'porter_dbus::(accounts|\{[^}]*accounts)' crates \
-  | grep -vE '^crates/(accountd|porter-sheets|porter-client-dbus|porter-dbus)/' || true)
+  | grep -vE '^crates/(accountd|account-sheets|account-client-dbus|account-dbus)/' || true)
 if [ -n "$accounts_users" ]; then
   echo "$accounts_users"
   echo "LEAK: porter_dbus::accounts is named outside the daemons and the client's bus transport"
@@ -417,10 +417,10 @@ else
   echo "test-only: accountd's default features do not include test-proc-root"
 fi
 
-# accountd's file key store (`ACCOUNTD_KEYS=file:`, feature `test-keys`, porter-secrets'
+# accountd's file key store (`ACCOUNTD_KEYS=file:`, feature `test-keys`, account-secrets'
 # `FileSecrets`) keeps credentials as plain text: neither crate's default build, nor accountd's
 # whole normal dependency tree, may have the feature on.
-for crate in accountd porter-secrets; do
+for crate in accountd account-secrets; do
   if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -q 'test-keys'; then
     echo "LEAK: $crate's default build enables test-keys"
     fail=1
@@ -429,11 +429,11 @@ for crate in accountd porter-secrets; do
   fi
 done
 
-# porter-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
+# account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
 # `fake`) are never in a daemon's normal dependency tree.
 for crate in accountd; do
-  if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(porter-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
-    echo "LEAK: $crate's default build enables porter-callers test-proc-root or peephole fake"
+  if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
+    echo "LEAK: $crate's default build enables account-callers test-proc-root or peephole fake"
     fail=1
   else
     echo "test-only: $crate's default build has no caller fixtures"
@@ -445,7 +445,7 @@ done
 # Sync1 and Storage1) are ferry's, in a repo of its own that pins porter by git rev. No manifest
 # here names one of ferry's crates, and no dependency tree of the workspace (normal, build or dev)
 # reaches one.
-FERRY_CRATES='syncd|syncd-fakes|storage-[a-z]+|ferry-[a-z-]+'
+FERRY_CRATES='syncd|sync-fakes|storage-[a-z]+|ferry-[a-z-]+'
 named=$(grep -lE "^($FERRY_CRATES)[ .=]" Cargo.toml crates/*/Cargo.toml || true)
 reached=$(cargo tree --workspace -e normal,build,dev --prefix none 2>/dev/null \
   | awk '{print $1}' | grep -xE "$FERRY_CRATES" | sort -u | tr '\n' ' ')
@@ -461,22 +461,22 @@ for member in $(sed -n 's#^  "crates/\(.*\)",$#\1#p' Cargo.toml); do
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 
-# porter-fake is built over porter-core, porter-provider, porter-secrets and porter-service, so none
+# account-fake is built over account-core, account-provider, account-secrets and account-service, so none
 # of them (nor anything below them) may take it, even as a dev dependency: a dev-dependency
-# cycle makes the crate's own tests compile it twice. Their tests use `test-kit`, which knows
-# nothing of porter; tests that need the fakes live in porter-fake's own tests.
-for below in porter-core porter-provider porter-secrets porter-service-core porter-service-accounts porter-service-grants porter-service; do
-  if cargo tree -p "$below" -e normal,build,dev --prefix none 2>/dev/null | grep -qx 'porter-fake v.*'; then
-    echo "LEAK: $below reaches porter-fake, which depends on it (a dev-dependency cycle)"
+# cycle makes the crate's own tests compile it twice. Their tests use `base-testkit`, which knows
+# nothing of porter; tests that need the fakes live in account-fake's own tests.
+for below in account-core account-provider account-secrets account-service-core account-service-accounts account-service-grants account-service; do
+  if cargo tree -p "$below" -e normal,build,dev --prefix none 2>/dev/null | grep -qx 'account-fake v.*'; then
+    echo "LEAK: $below reaches account-fake, which depends on it (a dev-dependency cycle)"
     fail=1
   else
-    echo "no cycle: $below does not reach porter-fake"
+    echo "no cycle: $below does not reach account-fake"
   fi
 done
 
 # A test-only crate is never a dependency (normal, build or dev) of another crate of ours:
 # `cargo tree -i` prints the crate itself on its first line and each dependent below it.
-for testonly in porter-fake-servers; do
+for testonly in account-fake-servers; do
   dependents=$(cargo tree -p "$testonly" -i "$testonly" -e normal,build,dev --prefix none 2>/dev/null \
     | grep '(/' | awk '{print $1}' | grep -vx "$testonly" | tr '\n' ' ')
   if [ -n "$dependents" ]; then
@@ -487,26 +487,26 @@ for testonly in porter-fake-servers; do
   fi
 done
 
-# porter-rig is test tooling (the rig a jailed scenario drives porter with): no other crate of
+# account-rig is test tooling (the rig a jailed scenario drives porter with): no other crate of
 # ours names it, not even as a dev dependency, it is never published, and nothing in dist/ (the
 # units, the packaging) mentions it, so it is never installed.
 for manifest in crates/*/Cargo.toml; do
   [ "$manifest" = "crates/porter-rig/Cargo.toml" ] && continue
-  if grep -q 'porter-rig' "$manifest"; then
-    echo "LEAK: $manifest names porter-rig"
+  if grep -q 'account-rig' "$manifest"; then
+    echo "LEAK: $manifest names account-rig"
     fail=1
   fi
 done
 if ! grep -q '^publish.workspace = true' crates/porter-rig/Cargo.toml \
   || ! grep -q '^publish = false' Cargo.toml; then
-  echo "LEAK: porter-rig is publishable"
+  echo "LEAK: account-rig is publishable"
   fail=1
 fi
-if grep -rq 'porter-rig' dist; then
-  echo "LEAK: dist/ names porter-rig"
+if grep -rq 'account-rig' dist; then
+  echo "LEAK: dist/ names account-rig"
   fail=1
 else
-  echo "test-only: nothing depends on porter-rig, and dist/ does not name it"
+  echo "test-only: nothing depends on account-rig, and dist/ does not name it"
 fi
 
 # LIBRARY ERRORS CAN GROW: every `pub enum` whose name ends in `Error`, in a library crate, is

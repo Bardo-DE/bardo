@@ -48,15 +48,15 @@ doc is the authority on where each key actually lives, and supersedes those inli
 
 | File | Owner | Domains |
 | --- | --- | --- |
-| `$XDG_CONFIG_HOME/quire/appearance.toml` | `ds-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
-| `$XDG_CONFIG_HOME/sill/settings.toml` | `sill` (crate `sill-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
+| `$XDG_CONFIG_HOME/quire/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
+| `$XDG_CONFIG_HOME/sill/settings.toml` | `sill` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
 | `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (almanac), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/docket/settings.toml` (schema `dist/settings/docket.settings.toml`); inferd's schema is porter's `dist/inferd.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
-| `$XDG_CONFIG_HOME/palmrest/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `sill`/`shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
+| `$XDG_CONFIG_HOME/palmrest/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `sill`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
 Rules, all three files:
 
-- **Atomic write**: temp file + `rename` (`ds-settings`'s `file::save`).
+- **Atomic write**: temp file + `rename` (`ui-settings`'s `file::save`).
 - **`version = 1`** top-level field. A future incompatible change bumps it and ships a
   migrator; today nothing reads it but its absence.
 - **A key nobody reads is retired**: its row's status says `RETIRING` and its field is deleted
@@ -74,7 +74,7 @@ Rules, all three files:
 - **Live reload**: a `notify` watch on the containing directory (not the file — editors and our
   own atomic writer both replace the inode via rename), **30 ms debounce**
   (`12-BEHAVIOUR-gestures.md#12-6-configuration`'s own daemon does the same for its config; PLAN
-  "Design: `<ds>`" `ds-settings`: "`notify` directory watch (rename replaces inode; debounce
+  "Design: `<ds>`" `ui-settings`: "`notify` directory watch (rename replaces inode; debounce
   30 ms)"). A change is diffed (section 4's `apply`) and applied without restart; no surface
   animates from a settings change (it just repaints with new values on its next frame).
 
@@ -226,7 +226,7 @@ Pinned items live in `[[dock]]` rows of `~/.config/sill/layout.toml` (design/28 
 
 `scroll.speed`, `scroll.lock_*` and the gain constants are **not** duplicated here: they are
 palmrest's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `palmrest/gestures.toml`, which
-`shell-host` reads read-only (`11-BEHAVIOUR-scroll.md#11-7-integration`).
+`layer-shell-host` reads read-only (`11-BEHAVIOUR-scroll.md#11-7-integration`).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -357,7 +357,7 @@ The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; sil
 
 ### 3.22 `screenshot` (sill/settings.toml)
 
-The floating thumbnail after a screenshot and the tool that takes one (design/20 §1.13; sill F406, F408): the thumbnail holds `ToastHold` (5200 ms) and pauses under the pointer; dragging it out is a file drag once shell-host has a drag source (G120). Page Keyboard and Shortcuts, all Advanced.
+The floating thumbnail after a screenshot and the tool that takes one (design/20 §1.13; sill F406, F408): the thumbnail holds `ToastHold` (5200 ms) and pauses under the pointer; dragging it out is a file drag once layer-shell-host has a drag source (G120). Page Keyboard and Shortcuts, all Advanced.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -403,13 +403,13 @@ The model layer: where data may go, which model fills each tier, how the engines
 | --- | --- | --- | --- | --- | --- |
 | `ai.local_only` | `LocalOnly::{Off,On}` | `Off` | `On` refuses every cloud backend whatever the per-class floor says | models.md section 3.8; ux.md section 3.7 | proposed (companion freeze, 2026-10-02) |
 | `ai.floor.<class>` | `Locality::{OnDevice,LocalNetwork,Cloud}`, one key per data class | porter's per-class floor (31 section 2.3) | `Screen` is always `OnDevice` and cannot be raised here | models.md section 3.8; actions.md | proposed (companion freeze, 2026-10-02) |
-| `ai.floor.voice` | `Locality::{OnDevice,LocalNetwork,Cloud}` | `OnDevice` | the person's own voice audio (speech in); speech out uses the class of the text it speaks | voice.md section 6; porter-infer policy.rs | proposed (agent stack, 2026-10-06) |
-| `ai.floor.prompt` | `Locality::{OnDevice,LocalNetwork,Cloud}` | `OnDevice` | what the person types or says to the companion | porter-infer policy.rs | proposed (agent stack, 2026-10-06) |
+| `ai.floor.voice` | `Locality::{OnDevice,LocalNetwork,Cloud}` | `OnDevice` | the person's own voice audio (speech in); speech out uses the class of the text it speaks | voice.md section 6; inference-core policy.rs | proposed (agent stack, 2026-10-06) |
+| `ai.floor.prompt` | `Locality::{OnDevice,LocalNetwork,Cloud}` | `OnDevice` | what the person types or says to the companion | inference-core policy.rs | proposed (agent stack, 2026-10-06) |
 | `ai.model.<kind>.<tier>` | text, `"<account>/<model>"`, one key per kind and tier | empty: the catalogue's own pick | written by the Intelligence page through inferd's settings module (22 section 9.4); also `"auto"` (Automatic: inferd picks per request, never written on the person's behalf; a named pick is never overridden and refuses with a reason when it cannot serve, QUESTIONS R1, R2); the named roles (Planner, Reader, Reviewer, Operator) map onto tiers (QUESTIONS M3) | models.md section 3.8 | proposed (companion freeze, 2026-10-02) |
 | `ai.auto.mode` | `AutoMode::{WarmFirst}` | `WarmFirst` | how Automatic chooses: prefer the model already loaded when it can serve, inside the floor; room for later modes | research-routing-fit.md section 4; QUESTIONS R1 | proposed (agent stack, 2026-10-06) |
 | `ai.auto.allow_evict` | `AutoEvict::{Never,IdleOnly}` | `IdleOnly` | whether Automatic may unload an idle model to load another; the swap is always shown ("Loading <model>, <why>"), and an engine mid-turn is never evicted (QUESTIONS R4) | research-routing-fit.md section 4 | proposed (agent stack, 2026-10-06) |
 | `ai.auto.show_reason` | `ShowReason::{Off,On}` | `On` | each answer names the model that served it and why ("already running", "needs images") | QUESTIONS R1 | proposed (agent stack, 2026-10-06) |
-| `ai.spend.warn_permille` | `Permille` | `800` | `0..=1000`; the share of a spend cap that warns (31 section 6, SpendCap.warn_at) | design/31; porter-infer spend.rs | proposed (agent stack, 2026-10-06) |
+| `ai.spend.warn_permille` | `Permille` | `800` | `0..=1000`; the share of a spend cap that warns (31 section 6, SpendCap.warn_at) | design/31; inference-core spend.rs | proposed (agent stack, 2026-10-06) |
 | `ai.engine.idle_unload_s` | `Secs` | `600` | `0..=86400`, 0 never; the model stays warm while the companion is open (QUESTIONS M4) | models.md section 3.7 | proposed (companion freeze, 2026-10-02) |
 | `ai.engine.start_timeout_s` | `Secs` | `180` | `10..=900`; vLLM's cold start | models.md section 3.7 | proposed (companion freeze, 2026-10-02) |
 | `ai.engine.probe_ms` | `Ms` | `500` | `50..=5000`; the readiness probe interval | models.md section 3.7 | proposed (companion freeze, 2026-10-02) |
@@ -571,7 +571,7 @@ shows a grid of pictures with "Add Picture...".
 
 ## 4. Rust shape
 
-Adds to `crates/ds-settings` (appearance/icons/motion) and a new `sill-settings` module
+Adds to `crates/ds-settings` (appearance/icons/motion) and a new `shell-settings` module
 (bar/dock/launcher/scroll/scrollbar/menus/notifications/control_center/spaces); `gestures`/
 `palm_rejection` live in `palmrest`'s own crate but follow the identical shape so the three
 loaders share one macro/derive story.
@@ -826,7 +826,7 @@ pub struct GesturesFile {            // palmrest/gestures.toml
     pub palm_rejection: PalmRejectionSettings,
 }
 
-/// Composes all three files; `ds-settings`, `sill-settings` and `palmrest` each own one
+/// Composes all three files; `ui-settings`, `shell-settings` and `palmrest` each own one
 /// field's I/O, but a surface that needs more than one file's values (the dock reading
 /// `spaces` for tint, `sill` reading `appearance.banner_material`) takes `&Settings`.
 pub struct Settings {
@@ -893,7 +893,7 @@ section 56): the help sits behind the row's ⓘ. It is one or two sentences and 
 3. **Watch-fires-on-rename**: a tempdir test writes `settings.toml`, starts `SettingsWatch`,
    then does the same atomic temp+rename the real writer does (not an in-place write), and
    asserts exactly one `ShellFile` is yielded within the 30 ms debounce + a slack margin — same
-   pattern PLAN "Design: `<ds>`" already names for `ds-settings`: "round-trip, watch-fires-on-rename
+   pattern PLAN "Design: `<ds>`" already names for `ui-settings`: "round-trip, watch-fires-on-rename
    tempdir, portal mapping tables".
 4. **Unknown-key report**: a file with a key no struct reads loads every other key as usual,
    lists the key in `Loaded::unknown`, and a save of the loaded value leaves it (and the file's comments) in place.
@@ -917,7 +917,7 @@ links the Settings app.
 ### 9.1 The derive
 
 Every domain struct in section 4 gains `#[derive(SettingsSchema)]` (a proc-macro in a new crate
-`ds-settings-derive`, re-exported by `ds-settings`). Field attributes carry what the type cannot:
+`ui-settings-derive`, re-exported by `ui-settings`). Field attributes carry what the type cannot:
 
 ```rust
 #[derive(Default, Serialize, Deserialize, SettingsSchema)]
@@ -994,7 +994,7 @@ pair when either is `off`, `hide`, `never`, `none` or `nothing` (the other is th
 when they are one of `natural`/`traditional` (natural on) or `reduced`/`standard` or `reduced`/`system` (reduced on: a
 switch labelled like macOS's "Reduce motion" or "Reduce transparency", on for the reduced value). Everything else is a
 choice between two things, not a switch. The rule and its table test live in detent's
-`detent-model` (`control.rs`). All widgets are from `04-COMPONENTS.md`; the Settings app has no
+`settings-app-model` (`control.rs`). All widgets are from `04-COMPONENTS.md`; the Settings app has no
 widgets of its own.
 
 A key that chooses among things somebody installed (a look, a set of file icons) is a field of
@@ -1003,7 +1003,7 @@ type `Provided` with `#[settings(provided = "<capability>")]`, kind `Provided { 
 word `standard` or the id of what was chosen. The schema lists no choices: the program that draws
 the key fills them in with `KeySpec::offering(words, labels)`, which turns the kind into a `Menu`
 (`standard` first, labels by id), so the `menu` control draws it and no widget is added.
-`ds-settings` knows nothing of what is installed. The reader of the key checks the stored id
+`ui-settings` knows nothing of what is installed. The reader of the key checks the stored id
 against what it found (`ds_extensions::chosen`): an id nobody installed, or one that is turned off,
 reads as `standard` and is reported once. A reader that predates the kind refuses the schema file
 it is in, as it does for any unknown kind (`Schema::discover` skips the file with a warning).
@@ -1043,7 +1043,7 @@ to `$XDG_DATA_DIRS/quire/settings/<app-id>.settings.toml`, next to the `.desktop
 GSettings ships schemas. The file is TOML, one `[[key]]` table per `KeySpec`, plus `app`,
 `file` and `version`. Developers run `cargo run -p <app> -- --write-schema <dir>` for a local
 install. quire's own schema (`quire.settings.toml`: the `appearance` and `icons` domains of
-`quire/appearance.toml`) has no app binary, so it is written by the `ds-settings` example
+`quire/appearance.toml`) has no app binary, so it is written by the `ui-settings` example
 `write_schema` (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`). A schema without a program (a stale file) is skipped with a warning.
 
 A settings file can hold tables the program owns that are not settings (inferd's `[engines]`,
@@ -1122,7 +1122,7 @@ The Settings app renders these modules in the same pages, with the same widgets;
 difference is that `Set` calls the service instead of writing a file. mailo, calendar and
 contacts register their account pages this way (`20-SURFACES.md`).
 
-The interface is frozen (quire `ds-settings`, feature `live`, 2026-10-06): `Describe() -> s`
+The interface is frozen (quire `ui-settings`, feature `live`, 2026-10-06): `Describe() -> s`
 (JSON `{version, key: [KeySpec]}`), `Get(s) -> v`, `Set(s, v)`, signal `Changed(s, v)`; values
 are `b`, `x`, `s` or `as` only. Value keys of a live module use the ordinary kinds; only action
 rows use `kind = Live{action}` (a label plus weight `plain` or `destructive`), are run by
@@ -1144,7 +1144,7 @@ them by unique name, and `Served::changed` the same. A peer `permit` refuses hea
 `LiveError::Timeout`; a client takes `Changed` only from the module's own unique name.
 
 Who owns the name (2026-10-16, production audit DETENT-05): a well-known name goes to whoever asks
-first, so `LiveClient::new` takes an `OwnerCheck` that the consumer supplies (ds-settings knows no
+first, so `LiveClient::new` takes an `OwnerCheck` that the consumer supplies (ui-settings knows no
 caller table). Before the first call, and whenever the name's owner is another connection, the
 client asks it whether that owner holds the module's role; a refusal is `LiveError::NotTheService`,
 nothing is sent (no secret), and calls that pass go to the owner's unique name, so the name cannot
@@ -1201,8 +1201,8 @@ reads one entry. `Describe`, `Get`, `Set` and `Changed` keep their signatures.
 - No program renders its own settings UI for keys the schema covers (mailo's appearance
   picker becomes the appearance picker component bound to `quire/appearance.toml`); an app
   may still embed the Settings app's rendering of its own schema in-app via the shared
-  `SettingsPage` component (built: crate `ds-settings-page`, moved whole from mailo's
-  settings_window/keys.rs). It is a crate of its own because it needs `ds` and `ds-settings`,
+  `SettingsPage` component (built: crate `ui-settings-page`, moved whole from mailo's
+  settings_window/keys.rs). It is a crate of its own because it needs `ds` and `ui-settings`,
   which may not name each other. API:
 
   ```rust,ignore
@@ -1291,7 +1291,7 @@ unchanged.
    table from kind to control, `TogglePair` the only on/off rule; an id this build does not know,
    or one that does not fit the kind, is ignored and the default control is drawn. `picture` is a
    grid of pictures with "Add Picture…" whose value is a path; it fits a text key. `corners` is the Hot Corners sheet: its value is the corner's list of bindings; it fits a text key.
-3. **A target for every entrance.** `SettingsTarget` (defined in `ds_core::settings`, pure, so a compositor holds it without `ds-settings`; re-exported as `ds_settings::target::SettingsTarget`) is `Page(PageId)`,
+3. **A target for every entrance.** `SettingsTarget` (defined in `ds_core::settings`, pure, so a compositor holds it without `ui-settings`; re-exported as `ds_settings::target::SettingsTarget`) is `Page(PageId)`,
    `Key(KeyPath)`, `Account(AccountRef)` or `Extension(ExtensionId)`, written `page:wallpaper`,
    `key:dock.tile_size_px`, `account:<id>`, `extension:<id>` (Settings > Extensions at that row). It is the payload of the `settings.page.show` intent. A page may say `listing = "hidden"`
    (`Listing::Hidden`): it resolves by id (`assistant-model-setup`, the model picker's first-run step)
@@ -1306,12 +1306,12 @@ unchanged.
    is `standard` or an id, the caller fills the choices (`KeySpec::offering`), and the `menu`
    control draws it. `appearance.look` is the first. The Extensions that supply the choices, and
    the `extensions.toml` file that turns them off (`extensions.off`, page `extensions`), are
-   `ds-extensions`' (the customization design, sections 4 and 5); this crate has no knowledge of
+   `ui-extensions`' (the customization design, sections 4 and 5); this crate has no knowledge of
    them, so it needs no dependency on that crate.
 
 The key tables of sections 3.1, 3.3 and 3.32 are generated from the schema between
 `<!-- keys:begin <domain> -->` and `<!-- keys:end <domain> -->` (`scripts/gen-doc-keys.sh`;
-`scripts/check-doc-keys.sh` and `ds-settings`' `doc_tables` test fail when the doc differs). A
+`scripts/check-doc-keys.sh` and `ui-settings`' `doc_tables` test fail when the doc differs). A
 program's own sections move onto the same markers when its schema is passed with `--schema`.
 
 ## 7. Open decisions
@@ -1322,7 +1322,7 @@ program's own sections move onto the same markers when its schema is passed with
    (`12-BEHAVIOUR-gestures.md#12-3-12-daemon-architecture`), and because `12.6`'s own doc text
    already assumes a `palmrest/config.toml`. A merged file would need `palmrest` to depend on
    `sill`'s schema or vice versa, which sill's crate boundaries (its ARCHITECTURE.md, "Crates":
-   `sill-launcher`/`sill-ipc` must not reach several crates) argue against generalizing.
+   `shell-launcher`/`shell-ipc` must not reach several crates) argue against generalizing.
    Kept separate; revisit only if the two are shown to drift out of sync in practice.
 2. **`appearance.accent`'s set is settled (2026-09-30)**: macOS's eight, Blue the default; the
    old Postmark/Amber/Violet words are not migrated.
@@ -1330,7 +1330,7 @@ program's own sections move onto the same markers when its schema is passed with
    (rev 31)** (`13-BEHAVIOUR-menus-windows.md#13-9-open-decisions` item 4) — the default above
    ships but is explicitly provisional.
 4. **Whether `notifications.banner_material`'s read crosses from `appearance.toml` into `sill`'s
-   process cleanly** — today `ds-settings::use_environment` is the only cross-file read path
+   process cleanly** — today `ui-settings::use_environment` is the only cross-file read path
    named in the plan (PLAN "Design: `<ds>`"); this doc assumes `sill` calls it for one field of
    `Appearance`, which is untested until `sill`'s `W1`/`M1` waves land.
 5. **(Removed 2026-10-27.)** `icons.plate_glyph_colour_policy` is no longer a setting.
@@ -1344,9 +1344,9 @@ program's own sections move onto the same markers when its schema is passed with
 - House rules the settings code follows: illegal states unrepresentable, no bool in a settings key,
   round-trip every stored type, never `deny_unknown_fields`, pure functions, and every value the
   design docs mark proposed is read from a settings key, never hard-coded.
-- PLAN `~/.claude/plans/vast-toasting-peach.md` "Design: `<ds>` design-system repo" (`ds-settings`
+- PLAN `~/.claude/plans/vast-toasting-peach.md` "Design: `<ds>` design-system repo" (`ui-settings`
   I/O: `appearance.json` atomic write, `notify` watch, 30 ms debounce, settings portal), "Design:
-  `<shell>` repo" (`sill-services`, `dock.json`, `frecency.json`, `Services` context pattern),
+  `<shell>` repo" (`shell-services`, `dock.json`, `frecency.json`, `Services` context pattern),
   "Cross-repo order", "Verification".
 - Every `#N.M Configuration` section this doc draws its base tables from:
   `10-BEHAVIOUR-dock.md#10-6-configuration`, `11-BEHAVIOUR-scroll.md#11-6-configuration`,

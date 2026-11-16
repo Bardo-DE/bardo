@@ -1,9 +1,9 @@
 //! A capture source for tests: serves frames it was given, with quiet spells where it was told
 //! to, then ends.
 
+use portal_core::Extent;
 use std::collections::VecDeque;
 use std::time::Duration;
-use portal_core::Extent;
 
 use super::{Arrival, CaptureError, CaptureSource, CapturedFrame, FrameData, PixelFormat};
 

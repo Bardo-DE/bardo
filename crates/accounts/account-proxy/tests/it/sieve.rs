@@ -2,10 +2,10 @@
 
 use crate::common;
 
-use common::sieve::FakeSieve;
-use common::*;
 use account_core::{Family, Tls};
 use account_proxy::{RelayEnd, RelayFault};
+use common::sieve::FakeSieve;
+use common::*;
 
 fn sieve_plan(port: u16, auth: account_core::RelayAuth) -> account_core::RelayPlan {
     plan(

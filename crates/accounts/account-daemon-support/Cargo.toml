@@ -10,7 +10,7 @@ publish = false
 
 [features]
 default = ["watch"]
-# The settings-file watch, the one part that needs a file watcher. porter-dbus takes this crate
+# The settings-file watch, the one part that needs a file watcher. account-dbus takes this crate
 # without it for `root_held`, so a bus client never pulls notify in.
 watch = ["dep:notify"]
 

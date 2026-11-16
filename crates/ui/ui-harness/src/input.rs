@@ -3,11 +3,11 @@
 //! knows how each reaches the document.
 
 use crate::harness_input::modifier;
+use keyboard_types::{Code, Key as DomKey, Location, Modifiers};
 use ui_components::file_drop::drag::FileDragInput;
 use ui_components::host::gesture::{Gesture, GesturePhase};
 use ui_components::prelude::*;
 use ui_core::press::PointerButton;
-use keyboard_types::{Code, Key as DomKey, Location, Modifiers};
 
 /// One thing done to the document under test.
 #[derive(Debug, Clone, PartialEq)]

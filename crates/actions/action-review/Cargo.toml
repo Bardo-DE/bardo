@@ -1,6 +1,6 @@
 [package]
 name = "action-review"
-description = "The reviewer that may only tighten: the stripped review request, the cascade and its plan, `tighten`, the denial breaker, and the model-backed reviewer over porter-infer."
+description = "The reviewer that may only tighten: the stripped review request, the cascade and its plan, `tighten`, the denial breaker, and the model-backed reviewer over inference-core."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

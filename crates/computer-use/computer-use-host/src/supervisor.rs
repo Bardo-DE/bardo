@@ -414,9 +414,9 @@ impl<S: Seams> Supervisor<S> {
         guard(caller, CuaMember::StopAll, self.settings().enabled)?;
         let state = self.shared.state();
         for live in state.live.values() {
-            let _ = live
-                .control
-                .send(RunInput::Desktop(computer_use_desktop::DesktopEvent::KillChord));
+            let _ = live.control.send(RunInput::Desktop(
+                computer_use_desktop::DesktopEvent::KillChord,
+            ));
         }
         Ok(())
     }

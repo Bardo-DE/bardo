@@ -13,12 +13,14 @@ use super::{
 };
 use crate::config::InferdConfig;
 use crate::structured::AiConfig;
-use model_provider::Tokens;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_ids::Permille;
-use inference_core::{AutoRow, ClassFloor, Floor, ModelRef, Policy, PoolRow, Slot, TierMap, TierRow};
+use inference_core::{
+    AutoRow, ClassFloor, Floor, ModelRef, Policy, PoolRow, Slot, TierMap, TierRow,
+};
 use inference_router::local::Lengths;
+use model_provider::Tokens;
 
 /// The settings in force, and the paths of the rows whose values were refused.
 #[derive(Debug, Clone, PartialEq, Eq)]

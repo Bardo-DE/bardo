@@ -6,8 +6,8 @@
 use super::model::BarSpaceKey;
 use crate::host::measure::{RectProbe, use_rect};
 use dioxus::prelude::*;
-use ui_core::geometry::units::Rect;
 use std::collections::HashMap;
+use ui_core::geometry::units::Rect;
 
 /// Where one Space is drawn.
 #[derive(Debug, Clone, PartialEq)]

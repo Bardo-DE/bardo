@@ -10,9 +10,9 @@ Licensed under either of MIT or Apache-2.0, at your option.
 
 | Crate | Layer | Contents |
 |---|---|---|
-| `peephole-core` | pure, no I/O | ids, the caller table (TOML), the facts read about a process, `judge`, `Requirement`, `Standing` |
+| `caller-identity-core` | pure, no I/O | ids, the caller table (TOML), the facts read about a process, `judge`, `Requirement`, `Standing` |
 | `peephole` | sync I/O | `Pinned` (pidfd), `Prober` over a `ProcFs` (real `/proc`, or a fixture tree under feature `fake`), the ownership walk, the table loader |
-| `peephole-bus` | async adapter | `BusPeers` over zbus: the sender's process, the unit manager's facts, `require`, `owner_of`, `watch_owner` |
+| `caller-identity-dbus` | async adapter | `BusPeers` over zbus: the sender's process, the unit manager's facts, `require`, `owner_of`, `watch_owner` |
 
 ```rust
 // In a bus method: who may call this?
@@ -50,7 +50,7 @@ Other limits, stated rather than hidden:
 
 Scripts that run a checkout-built stand-in (an accounts stand-in, a router stand-in, an app built in the working tree) cannot be a service in the table: the image is one the person can write and there is no real unit, so `judge` calls it `Unverified` before it looks at any row. Every privileged call to it from such a script is refused. Feature `dev-rows` gives those scripts a seam that cannot exist in a shipped build.
 
-**The risk, plainly: rows read from a file a person owns let that person's programs take a service's role. No shipped program may turn `dev-rows` on.** It is off by default in `peephole-core`, `peephole` and `peephole-bus` (each forwards it to the one below), and the desktop's gate greps `cargo tree -e features` for it in every release shape, as it does for `fake`.
+**The risk, plainly: rows read from a file a person owns let that person's programs take a service's role. No shipped program may turn `dev-rows` on.** It is off by default in `caller-identity-core`, `peephole` and `caller-identity-dbus` (each forwards it to the one below), and the desktop's gate greps `cargo tree -e features` for it in every release shape, as it does for `fake`.
 
 With the feature:
 
@@ -69,7 +69,7 @@ Without the feature nothing changes: `Proof` has `Cgroup`, `Exe` and `Full` only
 
 | Feature | Crate | What it does | Shipped? |
 |---|---|---|---|
-| `fake` | `peephole`, `peephole-bus` | `Pinned::introduced`, the fixture tree, `BusPeers::introduce` | never |
-| `desktop` | `peephole-core` | the `roles` module of this desktop's own roles | by the desktop |
+| `fake` | `peephole`, `caller-identity-dbus` | `Pinned::introduced`, the fixture tree, `BusPeers::introduce` | never |
+| `desktop` | `caller-identity-core` | the `roles` module of this desktop's own roles | by the desktop |
 | `dev-rows` | all three | developer rows, `Proof::Dev`, `TableFiles::load_dev` (see Developer rows) | never |
-| `tokio` | `peephole-bus` | `Offload::Tokio` and zbus on tokio | optional |
+| `tokio` | `caller-identity-dbus` | `Offload::Tokio` and zbus on tokio | optional |

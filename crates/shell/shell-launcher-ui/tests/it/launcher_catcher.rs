@@ -3,14 +3,14 @@
 
 use crate::launcher_harness;
 
-use ui_components::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
 
-use ui_harness::{Input, Viewport};
 use launcher_harness::launcher_support::fake;
 use shell_launcher_ui::LauncherCatcher;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::LauncherLink;
+use ui_harness::{Input, Viewport};
 
 #[test]
 fn a_press_on_the_catcher_closes_the_launcher() {

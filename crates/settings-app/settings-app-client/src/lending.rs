@@ -1,6 +1,6 @@
 //! The switch "Let my other computers use this computer's models": turning it on asks first, then
 //! sets sharing up through porter, and only when that worked is the setting written; turning it
-//! off takes sharing away and clears the setting. The steps are `detent-model`'s `sharing_step`.
+//! off takes sharing away and clears the setting. The steps are `settings-app-model`'s `sharing_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

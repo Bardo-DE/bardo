@@ -1,10 +1,10 @@
 use super::*;
 use action_settings::{AgentRow, Agents, Found, KNOWN, ModelState, Offers, SignInState, Source};
+use std::collections::BTreeMap;
+use std::path::PathBuf;
 use ui_settings::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };
-use std::collections::BTreeMap;
-use std::path::PathBuf;
 
 pub(super) fn path(text: &str) -> KeyPath {
     KeyPath(text.to_owned())

@@ -15,7 +15,6 @@ use compositor_core::privilege::PowerOutcome;
 use compositor_core::time::Millihertz;
 use compositor_core::{ClientKey, OutputKey};
 use desktop_protocols::vocab::Power;
-use ui_core::geometry::scale::Scale;
 use smithay::reexports::wayland_protocols_wlr::output_management::v1::server::{
     zwlr_output_configuration_head_v1::{self, ZwlrOutputConfigurationHeadV1},
     zwlr_output_configuration_v1::{self, ZwlrOutputConfigurationV1},
@@ -24,6 +23,7 @@ use smithay::reexports::wayland_protocols_wlr::output_management::v1::server::{
 use smithay::reexports::wayland_server::{Client, DataInit, Dispatch, DisplayHandle, Resource};
 use smithay::wayland::Dispatch2;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use ui_core::geometry::scale::Scale;
 
 /// An `apply` or a `test` that waits for the person's answer about the displays
 /// (`Power::Displays`).

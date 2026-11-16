@@ -3,8 +3,8 @@
 //! shell's own actions (lock, a screenshot, the dock's pins, the switcher's chord, the workspaces)
 //! are `Request::Do`.
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// A display key, or a slider standing in for one (`sill display ...`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

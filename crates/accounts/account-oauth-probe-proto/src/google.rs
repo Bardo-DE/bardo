@@ -8,10 +8,10 @@
 //! personal account that has no such service (`ProviderOffersNone`).
 
 use crate::Failure;
-use http::Response;
 use account_capability::{
     AbsentReason, Capability, CapabilityKind, Claim, Offer, Provenance, Subject,
 };
+use http::Response;
 
 /// Whether an address is a consumer's (no administrator to blame for a refusal).
 fn is_personal(address: &str) -> bool {

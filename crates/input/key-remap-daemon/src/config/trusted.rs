@@ -9,10 +9,10 @@
 use std::io::{self, ErrorKind};
 use std::path::Path;
 
+use caller_identity_core::FileTrust;
+use caller_identity_linux::{ProcFs, path_trust};
 use key_remap_core::{ConfigLayer, ConfigSource};
 use key_remap_proto::Warning;
-use caller_identity_linux::{ProcFs, path_trust};
-use caller_identity_core::FileTrust;
 
 use super::load::FILE_NAME;
 

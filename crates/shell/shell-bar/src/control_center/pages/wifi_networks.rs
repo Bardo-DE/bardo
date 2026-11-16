@@ -8,13 +8,13 @@
 //! `WifiCommand::Scan` when it opens. "Wi-Fi Settings…" at the foot.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
+use shell_kit::prelude::*;
 use shell_model::attempt::Attempts;
 use shell_model::units::Presence;
 use shell_model::wifi::{
     AccessPoint, Association, Radio, Saved, Security, Ssid, Wifi, WifiCommand, listed_networks,
 };
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
 
 use super::feature_switch::{FeatureSwitch, back_button};
 use super::foot::{SettingsFoot, page_link, use_settings_opener};
@@ -204,13 +204,13 @@ mod tests {
     use super::{WifiPick, empty_title, joining, network_row, network_rows};
     use crate::control_center::item_phase::{ItemPhase, RowDisc};
     use crate::control_center::rows::RowMark;
-    use ui_components::motion::detail::stamp::EventStamp;
-    use ui_components::prelude::*;
     use shell_model::wifi::{AccessPoint, Association, Radio, Saved, Security, Ssid, Wifi};
     use shell_model::{
         attempt::{Attempt, Attempts, OpStamp},
         units::{Percent, Presence},
     };
+    use ui_components::motion::detail::stamp::EventStamp;
+    use ui_components::prelude::*;
 
     fn ap(ssid: &str, strength: u16, association: Association, security: Security) -> AccessPoint {
         AccessPoint {

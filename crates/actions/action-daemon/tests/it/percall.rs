@@ -1,5 +1,5 @@
 //! Per-call effects over a real bus: the router's `Classify` and `Perform` reach a provider
-//! through intentd's `DbusLink` and the real `action_provider::serve_on`, with docket-fake's menu
+//! through intentd's `DbusLink` and the real `action_provider::serve_on`, with action-fake's menu
 //! app behind it. The seams that ask a person or a model are scripted; nothing else is.
 //!
 //! Covered: a Read item is not asked, a Destructive one is, a provider that classifies above its
@@ -9,14 +9,15 @@
 
 use crate::support::apps::Blank;
 use crate::support::bus::PrivateBus;
+use account_core::{AppId, AppName, Isolation};
 use action_core::*;
+use action_daemon::DbusLink;
 use action_dbus::INTENTS_BUS;
 use action_fake::{
     FakeMemory, FakeMenu, FixedClock, MemoryGrants, MenuItem, RecordingSink, ScriptedConfirmer,
     ScriptedReader, ScriptedReviewer, ScriptedWriter,
 };
 use action_manifest::ValidManifest;
-use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use action_provider::{IntentProvider, serve_on_with};
 use action_router::{Router, Seams};
 use action_vocab::{
@@ -24,9 +25,8 @@ use action_vocab::{
     EntityRef, Origin, ParamName, TargetValue, UndoToken, Value,
 };
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
-use action_daemon::DbusLink;
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use permission_policy::Presets;
-use account_core::{AppId, AppName, Isolation};
 use provenance::{ActionName, AgentRef, Effect, SpaceId, UnixSeconds};
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -197,8 +197,8 @@ async fn desk(answers: usize) -> Desk {
         reader: ScriptedReader::default(),
     };
     {
-        use action_router::GrantStore;
         use account_core::consent::{Decision, Grant, GrantScope, Usage};
+        use action_router::GrantStore;
         for (n, usage) in [Usage::Interactive, Usage::Background]
             .into_iter()
             .enumerate()

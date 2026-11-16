@@ -2,8 +2,8 @@
 
 use crate::accounts::{AccountStatus, AccountsPane, Place};
 use crate::computers::ComputerRow;
-use action_settings::{Known, KnownPlace, PlaceName};
 use account_sheet::ProviderGroup;
+use action_settings::{Known, KnownPlace, PlaceName};
 
 /// The cloud accounts accountd lists that are signed in: an account of the Intelligence group
 /// that is not a program on this computer, and does not need signing in again. Each carries its

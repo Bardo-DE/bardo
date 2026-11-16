@@ -10,6 +10,10 @@
 //! ([`super::gate`]). Nothing is styled under `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputInfo;
+use shell_model::intents::sheet::{SheetChoice, SheetFact, SheetView, sheet_view};
+use shell_model::intents::{ConfirmOffer, Gesture, NeverOffer};
+use shell_services::IntentsService;
 use ui_components::base::press::Press;
 use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::{Answers, Bezel};
@@ -19,10 +23,6 @@ use ui_components::focus::soon::focus_soon;
 use ui_components::machine::MachineRef;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use layer_shell_host::OutputInfo;
-use shell_model::intents::sheet::{SheetChoice, SheetFact, SheetView, sheet_view};
-use shell_model::intents::{ConfirmOffer, Gesture, NeverOffer};
-use shell_services::IntentsService;
 
 use super::CONFIRM_SHEET_CSS;
 use super::brief_view::{brief_body, use_brief};

@@ -1,16 +1,18 @@
 //! "Programs for local models": inferd's text rows, which name the program of an engine. A path
 //! is set through the module; the module's refusal, in its own words, stays with the row. The
-//! steps are `detent-model`'s `programs_step`.
+//! steps are `settings-app-model`'s `programs_step`.
 
 use crate::follow::{Followed, Slot, follow_with};
 use crate::live::Live;
 use crate::pane::{Machine, Pending, pane};
-use settings_app_model::{ProgramsEffect, ProgramsInput, ProgramsPane, program_rows, programs_step};
+use settings_app_model::{
+    ProgramsEffect, ProgramsInput, ProgramsPane, program_rows, programs_step,
+};
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::ModulesLink;
 use settings_app_system::picker::PickerLink;
-use ui_settings::schema::KeyKind;
 use std::sync::Arc;
+use ui_settings::schema::KeyKind;
 
 /// The rows of inferd's module whose value the program rows read: its text rows.
 fn is_text(kind: &KeyKind) -> bool {

@@ -1,8 +1,8 @@
 //! Test seams (feature `testing`): peers over an empty table that a test introduces owners to, so
 //! no test reads the real caller table or asks the real unit manager.
 
-use caller_identity_dbus::peephole::fake::introduced_service;
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, RoleName, Table};
+use caller_identity_dbus::caller_identity_linux::fake::introduced_service;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use zbus::Connection;
 

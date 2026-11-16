@@ -1,10 +1,10 @@
 //! The helpers' records reach memory as `Area { Helpers }` events of their own tags, in the Space
 //! of the helper.
 
-use memory_core::{AreaTag, EventBody, JsonText};
-use companion_model::helper::HelperRecordKind;
 use action_core::AuditRecord;
 use companion_memory_core::{kind_tag_of, record_of};
+use companion_model::helper::HelperRecordKind;
+use memory_core::{AreaTag, EventBody, JsonText};
 use provenance::{SpaceId, UnixSeconds};
 
 #[test]

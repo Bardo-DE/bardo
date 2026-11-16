@@ -1,8 +1,8 @@
 //! The battery item's state and what each change of it means (design/26-DETAILS.md 5.1.3).
 
+use serde::{Deserialize, Serialize};
 use ui_core::vocab::Fraction;
 use ui_motion::detail::{detailed::Detailed, moment::Moment};
-use serde::{Deserialize, Serialize};
 
 /// Where the power comes from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]

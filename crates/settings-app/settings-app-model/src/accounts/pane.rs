@@ -12,10 +12,10 @@ use super::rows::{CLIENTS, LLM, PREFIX, Row, SYNC_ADD, action_name, classify, si
 use super::sign_in_client::{SignInClient, wait_for_keys};
 use super::spend::{AccountSpend, Cents};
 use crate::picker::Described;
-use ui_settings::schema::{KeyKind, KeyPath};
 use account_core::SignInWay;
 use account_sheet::ProviderGroup;
 use std::collections::BTreeSet;
+use ui_settings::schema::{KeyKind, KeyPath};
 
 impl Account {
     /// Whether `path` is a row of this account that can be set or run.

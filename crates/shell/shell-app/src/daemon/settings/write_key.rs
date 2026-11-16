@@ -6,10 +6,10 @@
 //! key a concurrent edit changed back. The writer reads the file under the lock every atomic
 //! writer takes, sets only the keys it is given and renames the result into place.
 
-use ui_settings::schema::KeyPath;
-use ui_settings::{SettingsError, SettingsWriter, Store};
 use serde::Serialize;
 use shell_settings::ShellFile;
+use ui_settings::schema::KeyPath;
+use ui_settings::{SettingsError, SettingsWriter, Store};
 
 /// The key could not be written; the file was left as it was.
 #[derive(Debug, thiserror::Error)]

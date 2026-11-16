@@ -92,7 +92,7 @@ fn sandboxed(app: &str, cgroup: &CgroupPath) -> Option<AppId> {
 }
 
 /// Whether a component of `cgroup` is the scope Flatpak makes for a run of `app`
-/// (`app-flatpak-<id>-<n>.scope`, `n` decimal). The same rule as peephole-core's
+/// (`app-flatpak-<id>-<n>.scope`, `n` decimal). The same rule as caller-identity-core's
 /// `flatpak_scope_in`, here on the app id as the text the sandbox stated.
 fn in_flatpak_scope(cgroup: &CgroupPath, app: &str) -> bool {
     cgroup

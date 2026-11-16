@@ -3,14 +3,14 @@
 
 use crate::support::{SharedKeys, TestBackend, backend, dirs_in, service, space};
 use memory_core::*;
-use memory_fake::{mail_thread_archived, thing};
-use memory_service::Caller;
-use memory_service::{Backend, BackendError, MemoryService, rules_from_toml, spaces_from_toml};
-use memory_eventlog::LogError;
 use memory_daemon::{Daemon, TablePeers};
+use memory_eventlog::LogError;
+use memory_fake::{mail_thread_archived, thing};
 use memory_recall::{
     ClassTag, Doc, DocId, Embedder, Facets, FakeEmbedder, SearchQuery, TopK, VectorIndex,
 };
+use memory_service::Caller;
+use memory_service::{Backend, BackendError, MemoryService, rules_from_toml, spaces_from_toml};
 use std::path::{Path, PathBuf};
 
 async fn ask(

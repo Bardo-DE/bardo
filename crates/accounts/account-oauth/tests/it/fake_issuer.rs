@@ -1,4 +1,4 @@
-//! porter-oauth against porter-fake-servers' `FakeIssuer`, its scripted browser, and nothing
+//! account-oauth against account-fake-servers' `FakeIssuer`, its scripted browser, and nothing
 //! beyond loopback: a full PKCE sign-in, the redirect rules, rotation, `invalid_grant`, the
 //! revoke.
 

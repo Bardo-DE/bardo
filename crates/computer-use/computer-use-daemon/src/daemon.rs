@@ -109,7 +109,9 @@ pub async fn run(
     for problem in problems {
         eprintln!("cuad: {problem}");
     }
-    let hints: Vec<String> = computer_use_run::shortcut_hint(&keymap).into_iter().collect();
+    let hints: Vec<String> = computer_use_run::shortcut_hint(&keymap)
+        .into_iter()
+        .collect();
     let connection = zbus::Connection::session()
         .await
         .map_err(|e| Fatal::Bus(e.to_string()))?;

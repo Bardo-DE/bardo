@@ -10,12 +10,12 @@
 use crate::json::Session;
 use crate::replica::GraphReplica;
 use crate::write::Target;
-use sync_core::status::write_unreached;
-use sync_core::{PutRefused, RetryAfter};
 use account_http::http::header::CONTENT_TYPE;
 use account_http::http::{Method, Response};
 use account_http::{Http, request};
 use account_ids::WebUrl;
+use sync_core::status::write_unreached;
+use sync_core::{PutRefused, RetryAfter};
 
 impl<H: Http> GraphReplica<H> {
     /// Sends `bytes` in an upload session. A refusal at any step is returned as the response, for

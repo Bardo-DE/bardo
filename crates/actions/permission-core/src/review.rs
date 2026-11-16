@@ -1,11 +1,11 @@
 //! The vocabulary of gating that the wire, the audit and every crate above share: the rulings
 //! of policy, the reasons to ask, the stages of review, and the breaker's trips. The logic that
-//! produces them lives in `policy-point` and `action-review`; the words live here because the
+//! produces them lives in `permission-policy` and `action-review`; the words live here because the
 //! refusals and audit records of this crate name them.
 
-use action_vocab::Millis;
 use account_capability::ModelId;
 use account_ids::Count;
+use action_vocab::Millis;
 use provenance::Effect;
 use serde::{Deserialize, Serialize};
 use std::fmt;

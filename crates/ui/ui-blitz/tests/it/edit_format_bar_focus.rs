@@ -4,15 +4,15 @@
 //! no blur, reports no new pointer position, and a later command-I reaches its key handler.
 
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::time::Duration;
+use ui_blitz::FocusFallback;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::edit::handle::{EditHandle, use_edit_handle};
 use ui_components::edit::input::{EditInput, KeyInput};
 use ui_components::edit::pointer::{EditFocus, EditPointer};
 use ui_components::prelude::*;
-use ui_blitz::FocusFallback;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::RefCell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

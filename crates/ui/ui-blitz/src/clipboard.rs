@@ -2,7 +2,7 @@
 //! `read_text` behind a paste. Copy and paste inside a text field need nothing from the app:
 //! Blitz handles Ctrl+C/X/V there through the same shell provider.
 //!
-//! The clipboard is a [`Clipboard`], reached through a context every ds-blitz document
+//! The clipboard is a [`Clipboard`], reached through a context every ui-blitz document
 //! provides: [`System`], the window's winit shell (blitz-shell's `clipboard` feature, over
 //! `arboard`), or [`Memory`], the harness's, so a test copies and pastes without touching the
 //! desktop's clipboard.
@@ -31,16 +31,16 @@ use self::read::Reader;
 use crate::memory_shell::MemoryShell;
 use blitz_traits::shell::ShellProvider;
 use dioxus::prelude::*;
-use ui_components::host::pasted::Pasted;
 use std::cell::RefCell;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::rc::Rc;
 use std::sync::Arc;
+use ui_components::host::pasted::Pasted;
 
 /// Why the clipboard was not read or written.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
 pub enum ClipboardError {
-    /// Not called inside a ds-blitz document (`launch`, the harness): there is no clipboard to
+    /// Not called inside a ui-blitz document (`launch`, the harness): there is no clipboard to
     /// reach. Call it from a handler.
     #[error("no ds-blitz document to reach a clipboard through")]
     NoHost,
@@ -211,7 +211,7 @@ impl Clipboard for Memory {
     }
 }
 
-/// Put `text` on the clipboard. Call it from a handler inside a ds-blitz document.
+/// Put `text` on the clipboard. Call it from a handler inside a ui-blitz document.
 ///
 /// # Errors
 /// [`ClipboardError::NoShell`] in a root [`provide_host`](crate::provide_host) wired on its own
@@ -221,7 +221,7 @@ pub fn write_text(text: &str) -> Result<(), ClipboardError> {
     host()?.write_text(text)
 }
 
-/// Put `text` on `target`. Call it from a handler inside a ds-blitz document.
+/// Put `text` on `target`. Call it from a handler inside a ui-blitz document.
 ///
 /// # Errors
 /// As [`write_text`]; and [`ClipboardError::Unavailable`] for [`ClipboardTarget::Primary`] where
@@ -230,17 +230,17 @@ pub fn write_to(target: ClipboardTarget, text: &str) -> Result<(), ClipboardErro
     host()?.write_to(target, text)
 }
 
-/// The text on `target`. Call it from a handler inside a ds-blitz document.
+/// The text on `target`. Call it from a handler inside a ui-blitz document.
 pub fn read_from(target: ClipboardTarget) -> Result<String, ClipboardError> {
     host()?.read_from(target).ok_or(ClipboardError::Unavailable)
 }
 
-/// The text on the clipboard. Call it from a handler inside a ds-blitz document.
+/// The text on the clipboard. Call it from a handler inside a ui-blitz document.
 pub fn read_text() -> Result<String, ClipboardError> {
     host()?.read_text().ok_or(ClipboardError::Unavailable)
 }
 
-/// Put `files` on the clipboard. Call it from a handler inside a ds-blitz document. Another app
+/// Put `files` on the clipboard. Call it from a handler inside a ui-blitz document. Another app
 /// sees a copy of these files; a cut is the app's own state (see `CONSUMING.md`).
 ///
 /// # Errors
@@ -249,12 +249,12 @@ pub fn write_files(files: &ClipboardFiles) -> Result<(), ClipboardError> {
     host()?.write_files(files)
 }
 
-/// The files on the clipboard. Call it from a handler inside a ds-blitz document.
+/// The files on the clipboard. Call it from a handler inside a ui-blitz document.
 pub fn read_files() -> Result<ClipboardFiles, ClipboardError> {
     host()?.read_files().ok_or(ClipboardError::Unavailable)
 }
 
-/// The clipboard's `text/html`. Call it from a handler inside a ds-blitz document.
+/// The clipboard's `text/html`. Call it from a handler inside a ui-blitz document.
 pub fn read_html() -> Result<String, ClipboardError> {
     match host()?.read_html() {
         Some(Pasted::Html { html, .. }) => Ok(html),

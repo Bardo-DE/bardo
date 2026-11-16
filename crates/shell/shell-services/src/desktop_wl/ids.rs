@@ -1,10 +1,10 @@
 //! The keys and ids the wire client hands out, in sill's own types.
 
+use account_core::SpaceId;
 use desktop_client::workspace::Workspace as WireWorkspace;
 use desktop_client::{
     GroupKey as WireGroup, OutputName as WireOutput, ToplevelKey, WorkspaceKey as WireWorkspaceKey,
 };
-use account_core::SpaceId;
 use shell_launcher::WindowKey;
 use shell_model::ids::{GroupKey, OutputName, WorkspaceKey};
 

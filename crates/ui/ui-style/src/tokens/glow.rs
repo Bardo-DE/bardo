@@ -3,10 +3,10 @@
 //! is the one the design system describes; this module is plain data and names no renderer.
 
 use crate::appearance::theme::Scheme;
+use std::time::Duration;
 use ui_core::colour::srgb::Srgb;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::Fraction;
-use std::time::Duration;
 
 /// A spot inside the window the glow brightens, in logical pixels.
 #[derive(Debug, Clone, Copy, PartialEq)]

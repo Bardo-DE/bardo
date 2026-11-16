@@ -155,7 +155,10 @@ fn arg_hint(param: &str, why: ArgFault, handles: &[HandleCard]) -> String {
 }
 
 /// The kind of thing the action of `step` acts on, from its offered card.
-fn target_kind<'a>(step: &StepLine, actions: &'a [ActionCard]) -> Option<&'a provenance::EntityKind> {
+fn target_kind<'a>(
+    step: &StepLine,
+    actions: &'a [ActionCard],
+) -> Option<&'a provenance::EntityKind> {
     actions
         .iter()
         .find(|c| c.action == step.action)
@@ -608,7 +611,10 @@ mod tests {
                 kind: provenance::EntityKind::parse("desktop.app").expect("kind"),
                 key: provenance::EntityKey::parse(key).expect("key"),
             },
-            title: provenance::Labelled::new("secret title".to_owned(), provenance::Label::trusted_user()),
+            title: provenance::Labelled::new(
+                "secret title".to_owned(),
+                provenance::Label::trusted_user(),
+            ),
             subtitle: provenance::Labelled::new(String::new(), provenance::Label::trusted_user()),
         };
         let needs = |options| {
@@ -783,9 +789,7 @@ mod tests {
 
     #[test]
     fn a_coarse_denial_stays_a_bare_code() {
-        let end = StepEnd::Refused(CallRefusal::Denied(
-            permission_core::DenyCode::OutsideTask,
-        ));
+        let end = StepEnd::Refused(CallRefusal::Denied(permission_core::DenyCode::OutsideTask));
         let line = step_line(&step(end), &[]);
         assert!(line.ends_with("\"outside_task\"}"), "{line}");
     }

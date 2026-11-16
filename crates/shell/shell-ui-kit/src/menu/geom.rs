@@ -1,5 +1,5 @@
 //! Where a context menu's popup goes. Every menu popup is the menu plus transparent room for
-//! its shadow ([`PopupRoom::CONTEXT`]); shell-host's `PopupSize::FitContent` measures the
+//! its shadow ([`PopupRoom::CONTEXT`]); layer-shell-host's `PopupSize::FitContent` measures the
 //! popup's document, so only the anchor and the way the popup hangs off it differ: at a pointer
 //! or over a tile. The widest the popup grows is one number here, not one per surface.
 

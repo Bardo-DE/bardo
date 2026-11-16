@@ -3,7 +3,6 @@
 use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::input::{ButtonCode, DeviceClass};
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::seat::pointer::Pointer;
 use compositor_testclient::selection::data_device::DataDevice;
@@ -12,6 +11,7 @@ use compositor_testclient::surface::layer::{
 };
 use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 
 /// The evdev code of the left mouse button.
 const BTN_LEFT: ButtonCode = ButtonCode(0x110);

@@ -412,7 +412,7 @@ async fn a_large_secret_is_filed_in_numbered_parts_and_leaves_none_behind() {
     assert_eq!(store.get(&big).await, Ok(password("s")));
 }
 
-/// Entries as porter-secrets' own chunking wrote them before keyring-chunked: a head
+/// Entries as account-secrets' own chunking wrote them before account-keyring-chunked: a head
 /// `porter-parts:<count>` and the parts `#1`, `#2`, ... They still read, and deleting the key
 /// removes every one.
 #[tokio::test]

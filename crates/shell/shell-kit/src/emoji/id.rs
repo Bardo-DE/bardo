@@ -2,8 +2,8 @@
 //! (design/25-EMOJI.md section 3). The slugs are the sheet files' stems and the serde names.
 
 use super::sheet::SheetPx;
-use ui_components::base::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_components::base::word::Word;
 
 macro_rules! emoji_set {
     ($(($variant:ident, $slug:literal, $text:literal, $name:literal)),+ $(,)?) => {

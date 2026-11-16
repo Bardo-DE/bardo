@@ -1,4 +1,4 @@
-//! The seam each protocol family implements, and the fake porter-fake drives.
+//! The seam each protocol family implements, and the fake account-fake drives.
 
 use crate::error::ProviderError;
 use crate::sign_in::{RevokeOutcome, SignIn, SignInStart};

@@ -1,6 +1,7 @@
 //! The router's `AppLink` over the app's own provider: there is one app, so there is no name to
 //! find and no owner to check. A call for any other app is unavailable.
 
+use account_core::AppName;
 use action_core::LinkFault;
 use action_core::{
     AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
@@ -9,7 +10,6 @@ use action_manifest::Latency;
 use action_provider::{ContextSource, IntentProvider};
 use action_router::{AppFault, AppLink};
 use action_vocab::{ClassifyFault, EntityRef, UndoToken};
-use account_core::AppName;
 use provenance::{Actor, EntityId};
 
 /// One provider and the source of its window context, as the router's apps.

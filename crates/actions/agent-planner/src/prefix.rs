@@ -48,15 +48,15 @@ impl<P: Transport> PlannerModel<P> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use agent_loop::{Sources, assemble};
+    use account_core::AppName;
+    use account_ids::Count;
     use action_core::{
         AgentConfig, ContextView, Covers, HandleCard, HandleShape, HereView, Reveal, Roster,
         SelectionView, Summary, SummaryText, TextTargetView, TurnVia, UserTurn, VisibleView,
     };
     use action_fake::WordsModel;
     use action_vocab::{Caller, CharCount, Handle, TurnId};
-    use account_core::AppName;
-    use account_ids::Count;
+    use agent_loop::{Sources, assemble};
     use provenance::{Integrity, Source, UnixSeconds};
 
     fn sources(window: &str) -> Sources {

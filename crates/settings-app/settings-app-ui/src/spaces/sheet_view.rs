@@ -3,9 +3,9 @@
 use crate::copy::spaces::{
     HISTORY_CHOICES, HISTORY_NOTE, flip_label, history_label, removal_body, removal_title,
 };
+use dioxus::prelude::*;
 use settings_app_model::external::HistoryFate;
 use settings_app_model::{RemovalAsk, RemovalInput};
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::{Answers, Bezel};
 use ui_components::components::controls::choice::Choice;

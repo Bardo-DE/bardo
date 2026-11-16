@@ -1,4 +1,4 @@
-//! Readers: `Search` and `Inject` (ranked by `almanac-search`), `Recent`, `Related`, `Provenance`, `Facts`, `Primer`, and the
+//! Readers: `Search` and `Inject` (ranked by `memory-search`), `Recent`, `Related`, `Provenance`, `Facts`, `Primer`, and the
 //! `Memory.Read` audit of the router's reads.
 
 use crate::backend::Backend;
@@ -39,7 +39,7 @@ pub(crate) fn caller_actor(caller: &Caller) -> Actor {
 }
 
 impl<B: Backend> Open<B> {
-    /// Hits for a search; the query is embedded here and ranked in `almanac-search`.
+    /// Hits for a search; the query is embedded here and ranked in `memory-search`.
     pub(crate) async fn search(
         &mut self,
         cx: &Cx<'_, B>,
@@ -276,9 +276,7 @@ impl<B: Backend> Open<B> {
                     .map(|topic| {
                         let summary = stored
                             .iter()
-                            .find(|s| {
-                                s.topic == topic && s.state == memory_core::FactState::Active
-                            })
+                            .find(|s| s.topic == topic && s.state == memory_core::FactState::Active)
                             .map(|s| s.fact.text.as_str().to_owned())
                             .unwrap_or_default();
                         memory_files_format::PrimerEntry {

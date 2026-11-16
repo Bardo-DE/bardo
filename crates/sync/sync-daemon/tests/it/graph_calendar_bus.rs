@@ -8,10 +8,6 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use common::caller as caller_of;
-use common::hosted::host;
-use sync_fake_graph::{FakeGraph, GraphHandle};
 use account_callers::CallerRole;
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
@@ -30,6 +26,9 @@ use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use common::bus::PrivateBus;
+use common::caller as caller_of;
+use common::hosted::host;
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -42,6 +41,7 @@ use sync_daemon::keep::sync_app as syncd_app;
 use sync_daemon::paths::Paths;
 use sync_daemon::scheduler::{Network, Settings};
 use sync_daemon::service::{Access, Hub};
+use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::sync::watch;
 
 const ACCOUNT: &str = "ms-cal";
@@ -228,7 +228,9 @@ async fn rig(seed: bool) -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(account_ids::clock::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(1_700_000_000_000)),
+        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
+            1_700_000_000_000,
+        )),
     };
     let supervisor = PimSupervisor::new(
         wiring,

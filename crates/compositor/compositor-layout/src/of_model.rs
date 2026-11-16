@@ -1,15 +1,15 @@
-//! The spec of a model: the one place layout reads casement-core's model.
+//! The spec of a model: the one place layout reads compositor-core's model.
 
 use crate::{
     OutputSpec, OverviewKind, SceneMode, SceneSpec, SpaceArrangement, SpaceSpec, StackIndex,
     WindowPlacement, WindowSpec,
 };
+use account_core::SpaceId;
 use compositor_core::app::AppVisibility;
 use compositor_core::overview::Overview;
 use compositor_core::space::{Space, SpaceContent};
 use compositor_core::window::{SpacePlace, Window, WindowState, floats_above, sheet_parent};
 use compositor_core::{Model, OutputKey, OutputState, WindowId};
-use account_core::SpaceId;
 use std::collections::BTreeMap;
 
 /// What `model` asks layout to arrange: every plugged output with its usable area (after
@@ -195,13 +195,13 @@ fn placement_of(state: &WindowState) -> WindowPlacement {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use account_core::SpaceId;
     use compositor_core::WindowId;
     use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
     use compositor_core::space::SplitPair;
     use compositor_core::window::Restore;
     use desktop_protocols::vocab::TileZone;
     use ui_core::vocab::Fraction;
-    use account_core::SpaceId;
 
     fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
         LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

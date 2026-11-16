@@ -9,11 +9,11 @@ use super::rig::{
     tool, write,
 };
 use action_core::AuditRecord;
+use agent_session::{BackendEvent, CallEvent, TurnEnd};
 use permission_core::{
     AlwaysOffer, FILES_READ, GrantCaller, StandingGrant, StandingScope, TERMINAL_RUN, Withheld,
     acp_agent_action,
 };
-use agent_session::{BackendEvent, CallEvent, TurnEnd};
 use serde_json::json;
 
 /// Why: a write outside the session's directory is the first thing a hijacked agent tries. It is

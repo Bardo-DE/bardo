@@ -5,13 +5,13 @@
 //! refuses anyone else.
 
 use crate::bus::{fault_of, json};
+use action_client::TransportError;
+use action_dbus::{BusConnection, CompanionHelpers2Proxy, CompanionTerminalsProxy};
 use companion_model::routine::RoutineId;
 use companion_wire::{
     BroughtBack, HelperCardView, HelperForm, HelperReply, HelpersView, ProposalId, RoutineCardView,
     RoutineForm, RoutineProposal, RoutineReply, RoutinesView, SayReply, TerminalSession,
 };
-use action_client::TransportError;
-use action_dbus::{BusConnection, CompanionHelpers2Proxy, CompanionTerminalsProxy};
 use futures_util::{Stream, StreamExt};
 use provenance::{EntityId, HelperId, SessionId};
 use serde::de::DeserializeOwned;

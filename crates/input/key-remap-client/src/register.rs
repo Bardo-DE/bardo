@@ -3,8 +3,8 @@
 use crate::connection::{ClientError, Connection};
 use crate::fetch::WAIT;
 use crate::source::KeycapSource;
-use keymap::{AppAction, AppId, DefaultChord};
 use key_remap_proto::{KeymapCall, RegisteredAction, Registration, ToClient, ToDaemon};
+use keymap::{AppAction, AppId, DefaultChord};
 
 /// An app's registration. It lasts as long as this value: keycap forgets the actions when the
 /// connection closes, so an app that exits leaves nothing behind.

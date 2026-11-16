@@ -6,8 +6,6 @@ use crate::support::month_sample;
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
-use ui_components::assembly::ds::Inject;
-use ui_components::prelude::*;
 use month_sample::{First, SEPTEMBER, sample};
 use shell_kit::month_grid::data::DayMark;
 use shell_kit::month_grid::data::DayPlace;
@@ -15,6 +13,8 @@ use shell_kit::month_grid::data::IsoWeek;
 use shell_kit::month_grid::data::MonthKey;
 use shell_kit::month_grid::data::{DayKey, MonthStep};
 use shell_kit::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
 
 /// One specimen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

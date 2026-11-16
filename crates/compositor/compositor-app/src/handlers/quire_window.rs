@@ -3,9 +3,9 @@
 use crate::core_loop;
 use crate::state::State;
 use compositor_core::{Event, InputSerial, WindowId};
-use desktop_protocols::vocab::{Emphasis, PlacementMark};
 use compositor_wayland::quire_window::{QuireWindowHandler, QuireWindowPart, WindowFacts};
 use compositor_wayland::xdg_shell::{base_role, grab_proven};
+use desktop_protocols::vocab::{Emphasis, PlacementMark};
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::XdgToplevel;
 use smithay::reexports::wayland_server::Client;
 

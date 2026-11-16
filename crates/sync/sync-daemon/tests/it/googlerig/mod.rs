@@ -191,7 +191,9 @@ impl Rig {
             owners: Access::default(),
             clock: sync_core::Clock::new(account_ids::clock::SystemClock),
             nonce: "t1".to_owned(),
-            millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(1_700_000_000_000)),
+            millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
+                1_700_000_000_000,
+            )),
         };
         StorageSupervisor::new(
             wiring,
@@ -366,7 +368,9 @@ fn placeholder(
             owners: Access::default(),
             clock: sync_core::Clock::new(account_ids::clock::SystemClock),
             nonce: "t1".to_owned(),
-            millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(1_700_000_000_000)),
+            millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
+                1_700_000_000_000,
+            )),
         },
         Gate {
             real: ClientStorageGrants::new(Arc::clone(accounts)),
@@ -391,8 +395,10 @@ pub fn local(rig: &Rig, rel: &str) -> std::path::PathBuf {
 #[cfg(feature = "photos-picker")]
 pub async fn serve_picker(rig: &Rig) {
     let owners = sync_daemon::service::Access {
-        owners: [account_core::AppName::parse(sync_daemon::datasets::storage::PHOTOS_APP).expect("app")]
-            .into(),
+        owners: [
+            account_core::AppName::parse(sync_daemon::datasets::storage::PHOTOS_APP).expect("app"),
+        ]
+        .into(),
     };
     sync_daemon::service::serve_picker(
         &rig.server,

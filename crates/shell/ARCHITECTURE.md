@@ -1,7 +1,7 @@
 # Architecture
 
 sill is a desktop shell: the bar, dock, launcher, wallpaper, notifications, control
-center, lock screen and the rest, drawn with quire's design system on shell-host (Blitz on
+center, lock screen and the rest, drawn with quire's design system on layer-shell-host (Blitz on
 Wayland layer surfaces). casement is the compositor. KWin is a test compositor only.
 CONVENTIONS.md names the style guides every repo follows; this file is sill's map, its "one home" table,
 its traits, its recipes and its repo rules. Where they disagree, this file wins for sill.
@@ -10,15 +10,15 @@ its traits, its recipes and its repo rules. Where they disagree, this file wins 
 
 | Repo | What sill takes from it |
 | --- | --- |
-| quire (`../quire`, path deps) | `ds-core` (vocabulary, units, `Word`, colour, time), `ds-style` (appearance, tokens, materials), `ds-motion` (timelines, `Presence`, gestures), `ds` (components, `DocumentHost`, menus, `ds::prelude`), `ds-shell` (the app-facing parts: account sheets, consent alert, missing-helper sheet; sill takes the account sheets from it), `ds-lint`, `ds-behaviour` (the switcher and hot-corner machines), `ds-settings` (`SettingsDoc`, `Store`, schema derive, the switcher and hot-corner sections; dioxus behind a feature), `ds-blitz` (`provide_host()`, measure, focus, caret, snap), `ds-harness` (`Driver`, `DocQuery`; dev only) |
-| shell-host (`../shell-host`) | Host, layer surfaces and popups, input, frames, regions, session lock, scroll engine, `Visibility`, `Inject` (pointer and key, `debug-inject`) |
+| quire (`../quire`, path deps) | `ui-core` (vocabulary, units, `Word`, colour, time), `ui-style` (appearance, tokens, materials), `ui-motion` (timelines, `Presence`, gestures), `ds` (components, `DocumentHost`, menus, `ds::prelude`), `ui-shell` (the app-facing parts: account sheets, consent alert, missing-helper sheet; sill takes the account sheets from it), `ui-lint`, `ui-behaviour` (the switcher and hot-corner machines), `ui-settings` (`SettingsDoc`, `Store`, schema derive, the switcher and hot-corner sections; dioxus behind a feature), `ui-blitz` (`provide_host()`, measure, focus, caret, snap), `ui-harness` (`Driver`, `DocQuery`; dev only) |
+| layer-shell-host (`../shell-host`) | Host, layer surfaces and popups, input, frames, regions, session lock, scroll engine, `Visibility`, `Inject` (pointer and key, `debug-inject`) |
 | anyview (`../anyview`, path deps) | the viewer's format library and its desktop contract: `anyview-core` (kinds, sniffing, the shared file actions and their keys, `Resume`, `Sequence`), `anyview-peek` (every kind's light peek and the `Card` that draws it; the launcher's preview), `anyview-store` (the history the viewer keeps, read for file rows), `anyview-platform` (the viewer's D-Bus requests, `Handoff` and `Play`, which sill calls through `forward_over`; and its freedesktop thumbnail cache, read for a video's frame), `anyview-image` (`Rgba8`, the picture a cached thumbnail becomes). Taken by path until anyview is merged and its revision is pinned in quire's `docs/workspace-deps.toml` (FINDINGS) |
-| keycap (`../keycap`, path dep) | `keycap-protocol`: the socket messages, `ProfileName`, `Status`; `sill-model` and `sill-services` take it (serde, serde_json, thiserror only) |
-| docket (`../docket`, path deps) | `companion-wire` (the bodies of `org.quire.Companion1`: asks, answers, cards, plans, forms; serde only), `voice-wire` (the bodies of `org.quire.Voice1`: begin, the stream's events, ends, refusals, and the framing; serde only), `voice-dbus` (the caller's proxies and bus names of `org.quire.Voice1`; zbus only, no audio stack) and `docket-core` (the wire vocabulary: `ConfirmRequest`, `ConfirmAnswer`, `Invocation`, `Manifest`; serde data over porter, almanac and stoker types, no runtime), `docket-dbus` (`ControlProxy`, `ConfirmProxy`, the bus names), `docket-client` (calls to intentd) and `docket-provider` (`serve_on`, the `IntentProvider` trait), with the vocabulary split out of `docket-core` into `docket-vocab`, `docket-manifest`, `docket-permissions-core`, `docket-wire` and `companion-model`; `sill-model` takes the first (and `prov`), `sill-services` all four. Its `scripts/check-intents.sh` is copied into `scripts/`. Because docket's own path dependencies resolve beside it, a checkout of sill also needs `../porter`, `../steward`, `../stoker`, `../almanac` and `../cua` |
-| cua (`../cua`, path deps) | `cua-bus` (a run's state, outcome, budget and window as serde data, for `sill-model`'s run rows) and `cua-dbus` (the `org.quire.Cua1` proxies, `sill-services` only) |
-| airwaves (git, tag `v0.1.0`) | `airwaves-nm` and `airwaves-bluez`: the zbus proxies of NetworkManager and BlueZ with their wire enums (`DeviceType`, `DeviceState`, `Capability`, `AgentError`), shared with detent; `sill-services` only (`network`, `wifi`, `bluetooth` backends). sill keeps no proxy copy of either |
-| almanac (`../almanac`, path deps) | `almanac-core` (memoryd's vocabulary: `MemoryItem`, the timeline) and `almanac-dbus` (the `org.quire.Memory1` proxies, `sill-services` only) |
-| casement-protocols (`../wayland/desktop-protocols`, path deps) | `casement-protocols` (the desktop's private protocols; `sill-model` and `sill-services` take only its pure `vocab` enums: `WindowStateKind`, `ProofKind`, `PlaceTarget`, …, no Wayland) and `desktop-client` (one typed client for wlroots-style compositors: toplevels from the ext list and wlr management, workspaces from ext-workspace, outputs from wlr-output-management; `sill-services` takes it with the `client` feature, its tests with `fake`). Taken by path like the other siblings |
+| keycap (`../keycap`, path dep) | `key-remap-proto`: the socket messages, `ProfileName`, `Status`; `shell-model` and `shell-services` take it (serde, serde_json, thiserror only) |
+| docket (`../docket`, path deps) | `companion-wire` (the bodies of `org.quire.Companion1`: asks, answers, cards, plans, forms; serde only), `agent-voice-wire` (the bodies of `org.quire.Voice1`: begin, the stream's events, ends, refusals, and the framing; serde only), `agent-voice-dbus` (the caller's proxies and bus names of `org.quire.Voice1`; zbus only, no audio stack) and `action-core` (the wire vocabulary: `ConfirmRequest`, `ConfirmAnswer`, `Invocation`, `Manifest`; serde data over porter, almanac and stoker types, no runtime), `action-dbus` (`ControlProxy`, `ConfirmProxy`, the bus names), `action-client` (calls to intentd) and `action-provider` (`serve_on`, the `IntentProvider` trait), with the vocabulary split out of `action-core` into `action-vocab`, `action-manifest`, `permission-core`, `action-wire` and `companion-model`; `shell-model` takes the first (and `prov`), `shell-services` all four. Its `scripts/check-intents.sh` is copied into `scripts/`. Because docket's own path dependencies resolve beside it, a checkout of sill also needs `../porter`, `../steward`, `../stoker`, `../almanac` and `../cua` |
+| cua (`../cua`, path deps) | `computer-use-bus` (a run's state, outcome, budget and window as serde data, for `shell-model`'s run rows) and `computer-use-dbus` (the `org.quire.Cua1` proxies, `shell-services` only) |
+| airwaves (git, tag `v0.1.0`) | `networkmanager-proxy` and `bluez-proxy`: the zbus proxies of NetworkManager and BlueZ with their wire enums (`DeviceType`, `DeviceState`, `Capability`, `AgentError`), shared with detent; `shell-services` only (`network`, `wifi`, `bluetooth` backends). sill keeps no proxy copy of either |
+| almanac (`../almanac`, path deps) | `memory-core` (memoryd's vocabulary: `MemoryItem`, the timeline) and `memory-dbus` (the `org.quire.Memory1` proxies, `shell-services` only) |
+| desktop-protocols (`../wayland/desktop-protocols`, path deps) | `desktop-protocols` (the desktop's private protocols; `shell-model` and `shell-services` take only its pure `vocab` enums: `WindowStateKind`, `ProofKind`, `PlaceTarget`, …, no Wayland) and `desktop-client` (one typed client for wlroots-style compositors: toplevels from the ext list and wlr management, workspaces from ext-workspace, outputs from wlr-output-management; `shell-services` takes it with the `client` feature, its tests with `fake`). Taken by path like the other siblings |
 | latchkey (git) | the single-instance agent socket: the daemon holds `Agent::new("sill").listen()`, the command line `connect_or_start`. The agent's directory is private and checked (`Error::Unsafe` for a link or another user's), a socket whose peer is another user's process is `Error::WrongOwner`, and `is_running` knocks, so the IPC server sees an empty connection now and then and answers it with nothing |
 
 Consumers of quire import `ds::prelude::*` plus the named crate for anything outside it.
@@ -30,28 +30,28 @@ Consumers of quire import `ds::prelude::*` plus the named crate for anything out
 Layers, lowest first. A crate depends only on the crates listed for it; every other edge is
 forbidden and Cargo enforces it (a surface crate that does not list another cannot name it).
 `scripts/check-boundary.sh` keeps the table exact: its `EDGES` rows are each crate's direct normal
-and build path dependencies, sill and quire and shell-host alike; dev dependencies are not
+and build path dependencies, sill and quire and layer-shell-host alike; dev dependencies are not
 listed except where noted.
 
 | # | Crate | What it is | May depend on (sill crates, then key externals) |
 | --- | --- | --- | --- |
-| 0 | `sill-launcher` | Launcher core: `Provider`, `Query` (generation, cancel), `Item`, `Activation`, matching (nucleo), ranking, sections, frecency, the shared actions a row's keys are (`keys.rs`), preview facts. Pure; a future repo | `almanac-core`, `docket-core`, `docket-vocab`, `ds-core` (`MemoryVerb`), `prov`; nucleo-matcher, serde |
-| 0 | `sill-testkit` | Dev only: `PrivateBus`, `TempDir`, signal helpers, stand-in programs in `examples/` | none; std only (its dev dependencies, the crates it tests, are outside the table) |
-| 0 | `sill-shell-kit` | The shell-only parts over `ds`, moved here from quire's `ds-shell` (2026-10-07): bar, dock, control center, lock, switcher, OSD, idle dim, notifications, thumbnails, battery, clock, now playing, user picture, emoji, month grid, date picker, the widget contract and its two widgets (calendar, up next), with the shell's tokens (`tokens/`), sheets (`sheets.rs`), `KIT`, `kits()` and `stylesheet()` (the whole shell stylesheet: quire's plus these) and their SSR goldens and behaviour tests | none of ours; quire's `ds`, `ds-core`, `ds-shell` (its `KIT` and sheets). Dev: `ds-blitz`, `ds-harness`, `ds-lint`, `ds-settings` |
-| 1 | `sill-model` | Pure vocabulary: ids, units, `Attempt`, every service's `State`/`Command`/`Event`/`Effect` and its `step`, vocabulary enums shared by a settings key and a service, and the shell's actions (`actions/`: `ActionDef`, `Effect`, `Ask`) | `sill-launcher`, `chordkit` (`StandardAction`), `keycap-protocol`, `ds-core` (`Stamp`, `Machine`), `docket-core`, `companion-model`, `cua-action`, `docket-manifest`, `docket-permissions-core`, `docket-vocab`, `docket-wire`, `almanac-core`, `companion-wire`, `cua-bus`, `prov`, `porter-core`, `porter-capability`, `porter-ids`, `porter-sheet` (the accounts sheet's `SheetView`/`SheetInput`, serde data), `porter-infer` (`ModelRef`, `ServedBy`: serde data a helper's model is named by), `casement-protocols` (`vocab` only: the desktop views' enums), `ds-helpers` (no features: `match_app` and `AppKeys`, the one matcher of a window to its desktop entry); serde, jiff, thiserror |
-| 2 | `sill-settings` | `settings.toml` as data: one struct per domain, `ShellFile`, schema, typed values parsed at load. No I/O, no runtime, no dioxus | `sill-model`, `sill-launcher`, `keycap-protocol`, `ds-core`, `ds-settings` (no features) |
-| 2 | `sill-ipc` | The wire: `Request`/`Response`, one JSON line, 64 KiB cap. Serialises `sill-model` types | `sill-model`, `sill-launcher`; serde, serde_json, thiserror; clap (optional, `cli`: the request types are the command line's grammar) |
-| 3 | `sill-services` | Effects: `Env` seams, `Service` trait, runner, `Handle`, `Control`, one dir per service `{mod.rs, backend/}`. UI-free | `sill-model`, `sill-launcher`, `keycap-protocol`, `ds-core` (`Stamp`), `ds-settings` (`SettingsWriter`, for Night Shift's edits to casement's file), `docket-core`, `companion-model`, `cua-action`, `docket-manifest`, `docket-permissions-core`, `docket-vocab`, `docket-wire`, `docket-dbus`, `docket-client`, `docket-provider`, `companion-wire`, `cua-bus`, `cua-dbus`, `almanac-core`, `almanac-dbus`, `prov`, `porter-core`, `porter-ids`, `porter-sheet`, `porter-tailnet` (steward's), `porter-tailscale`, `porter-wire`, `ferry-bus` (syncd's bus name and proxy, for the sync-hold service), `porter-infer` (steward's; `Slot` and `ModelRef`, to keep a helper's pool), `porter-dbus` (who owns a bus name: caller identity; accountd's `Account` proxy, for the one `State` watch the client has no stream of), `porter-client` and `porter-client-dbus` (the accounts service's view of accountd: `Accounts<Bus>::{watch, needing_reauth, view, reauthenticate_shown}`), `inferd-client` (steward's, `dbus` feature only: the typed guest calls and change stream for the guest-asks service; the places and engines a helper's model is picked from), `voice-dbus`, `anyview-core`, `anyview-platform` (the viewer's D-Bus request, for the launch service), `casement-protocols` (`vocab`), `desktop-client` (`client` feature: the wire behind `desktop_wl` and the native displays route); tokio, zbus, rustix, libpulse, notify, nonstick, ddc, image, toml |
-| 4 | `sill-search` | The launcher's runner (`ResultsService`), `providers/` (the files provider reads the viewer's history and takes the shared file actions), clip images | `sill-services`, `sill-model`, `sill-launcher`, `anyview-core`, `anyview-store`, `ds-core`, `docket-core`, `companion-model`, `cua-action`, `docket-manifest`, `docket-permissions-core`, `docket-vocab`, `almanac-core`, `companion-wire`, `prov`, `ds-settings` (no features: the schema files the settings provider indexes); fend, emojis |
-| 5 | `sill-ui-kit` | What every surface shares: `Services` registry, `SettingsFeed`, `SurfaceRoot`, `Surface` and its `mount`, `links/`, hooks, `look`, `panel`, `shell_style`, `sheet_stage` (the enter / shown / leaving-with-exit stage of a sheet), `MenuPopup<M>`, `app_icons`, `status`, `notification_card`, `widgets/`, `harness` (feature: fake services, `SurfaceHarness`) | `sill-shell-kit`, `sill-search`, `sill-services`, `sill-settings`, `sill-model`, `sill-launcher`, `companion-wire`, `docket-core`, `cua-action`, `docket-manifest`, `docket-permissions-core`, `docket-vocab`, `porter-core`, `porter-capability`, `prov`, `ds-core`, `ds`, `ds-behaviour` (`Dir`, in the switcher link), `ds-settings` (dioxus), `ds-blitz`, `ds-harness` (optional: feature `harness`), `shell-host`; dioxus, resvg, image; dev: `ds-lint` |
-| 6 | `sill-bar` | Bar, its menus, tray, control center and its modules | `sill-ui-kit`, `sill-model`, `sill-settings`, `sill-launcher`, `sill-services`*; `sill-shell-kit`, `ds`, `ds-settings`, `ds-blitz`, `shell-host`; dev: `ds-lint` |
-| 6 | `sill-dock` | Dock, magnify, context menus (an app tile's, the Trash tile's, the dock's own) | `sill-ui-kit`, `sill-model`, `sill-settings`, `sill-launcher`, `sill-services`*; `sill-shell-kit`, `ds`, `ds-blitz`, `shell-host`; dev: `ds-lint` |
-| 6 | `sill-launcher-ui` | Launcher panel and catcher, rows, preview pane, actions | `sill-ui-kit`, `sill-model`, `sill-settings`, `sill-launcher`, `sill-search`*, `sill-services`*, `anyview-core`, `anyview-image`, `anyview-peek` (what a file's pane looks like), `anyview-platform` (the thumbnail cache behind a video's frame, `preview::frames`), `almanac-core`, `companion-wire`, `docket-core`, `companion-model`, `docket-permissions-core`, `docket-vocab`, `prov` (a companion row's pane and keys); `sill-shell-kit`, `ds`, `ds-behaviour` (`Dir`, in the companion filter), `ds-blitz`, `shell-host`; dev: `ds-lint`, `ds-shell` |
-| 6 | `sill-notify-ui` | Banners, notification center, screenshot thumbnail | `sill-ui-kit`, `sill-model`, `sill-settings`, `sill-services`*; `sill-shell-kit`, `ds`, `ds-settings`, `ds-blitz`, `shell-host` |
-| 6 | `sill-overlays` | OSD, power menu, polkit prompt, switcher, idle dim, hot corners, wallpaper, lock | `sill-ui-kit`, `sill-model`, `sill-settings`, `sill-launcher`, `sill-services`*; `ds`, `ds-behaviour` (the switcher and hot-corner machines), `ds-shell` (the accounts sheet), `sill-shell-kit`, `ds-settings`, `shell-host`, `porter-core`, `porter-capability`, `porter-ids`, `porter-sheet` (the accounts sheet's props) |
-| 7 | `sill` | Binary and library: `actions/`, `cli/`, `daemon/`, `ipc/`, `policy/` | every crate above except `sill-testkit`; `ds-blitz`, `ds-settings`, `shell-host`, `shell-verbs` (the verbs casement's keymap sends and the command line each spells); clap, latchkey, `ds-lint` and `sill-shell-kit` (`sill style check` lints against its `kits()`); dev: `sill-testkit`, `sill-ui-kit` (harness), `ds` |
+| 0 | `shell-launcher` | Launcher core: `Provider`, `Query` (generation, cancel), `Item`, `Activation`, matching (nucleo), ranking, sections, frecency, the shared actions a row's keys are (`keys.rs`), preview facts. Pure; a future repo | `memory-core`, `action-core`, `action-vocab`, `ui-core` (`MemoryVerb`), `prov`; nucleo-matcher, serde |
+| 0 | `shell-testkit` | Dev only: `PrivateBus`, `TempDir`, signal helpers, stand-in programs in `examples/` | none; std only (its dev dependencies, the crates it tests, are outside the table) |
+| 0 | `shell-kit` | The shell-only parts over `ds`, moved here from quire's `ui-shell` (2026-10-07): bar, dock, control center, lock, switcher, OSD, idle dim, notifications, thumbnails, battery, clock, now playing, user picture, emoji, month grid, date picker, the widget contract and its two widgets (calendar, up next), with the shell's tokens (`tokens/`), sheets (`sheets.rs`), `KIT`, `kits()` and `stylesheet()` (the whole shell stylesheet: quire's plus these) and their SSR goldens and behaviour tests | none of ours; quire's `ds`, `ui-core`, `ui-shell` (its `KIT` and sheets). Dev: `ui-blitz`, `ui-harness`, `ui-lint`, `ui-settings` |
+| 1 | `shell-model` | Pure vocabulary: ids, units, `Attempt`, every service's `State`/`Command`/`Event`/`Effect` and its `step`, vocabulary enums shared by a settings key and a service, and the shell's actions (`actions/`: `ActionDef`, `Effect`, `Ask`) | `shell-launcher`, `chordkit` (`StandardAction`), `key-remap-proto`, `ui-core` (`Stamp`, `Machine`), `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `action-wire`, `memory-core`, `companion-wire`, `computer-use-bus`, `prov`, `account-core`, `account-capability`, `account-ids`, `account-sheet` (the accounts sheet's `SheetView`/`SheetInput`, serde data), `inference-core` (`ModelRef`, `ServedBy`: serde data a helper's model is named by), `desktop-protocols` (`vocab` only: the desktop views' enums), `ui-helpers` (no features: `match_app` and `AppKeys`, the one matcher of a window to its desktop entry); serde, jiff, thiserror |
+| 2 | `shell-settings` | `settings.toml` as data: one struct per domain, `ShellFile`, schema, typed values parsed at load. No I/O, no runtime, no dioxus | `shell-model`, `shell-launcher`, `key-remap-proto`, `ui-core`, `ui-settings` (no features) |
+| 2 | `shell-ipc` | The wire: `Request`/`Response`, one JSON line, 64 KiB cap. Serialises `shell-model` types | `shell-model`, `shell-launcher`; serde, serde_json, thiserror; clap (optional, `cli`: the request types are the command line's grammar) |
+| 3 | `shell-services` | Effects: `Env` seams, `Service` trait, runner, `Handle`, `Control`, one dir per service `{mod.rs, backend/}`. UI-free | `shell-model`, `shell-launcher`, `key-remap-proto`, `ui-core` (`Stamp`), `ui-settings` (`SettingsWriter`, for Night Shift's edits to casement's file), `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `action-wire`, `action-dbus`, `action-client`, `action-provider`, `companion-wire`, `computer-use-bus`, `computer-use-dbus`, `memory-core`, `memory-dbus`, `prov`, `account-core`, `account-ids`, `account-sheet`, `inference-tailnet` (steward's), `account-tailscale`, `account-wire`, `sync-bus` (syncd's bus name and proxy, for the sync-hold service), `inference-core` (steward's; `Slot` and `ModelRef`, to keep a helper's pool), `account-dbus` (who owns a bus name: caller identity; accountd's `Account` proxy, for the one `State` watch the client has no stream of), `account-client` and `account-client-dbus` (the accounts service's view of accountd: `Accounts<Bus>::{watch, needing_reauth, view, reauthenticate_shown}`), `inference-client` (steward's, `dbus` feature only: the typed guest calls and change stream for the guest-asks service; the places and engines a helper's model is picked from), `agent-voice-dbus`, `anyview-core`, `anyview-platform` (the viewer's D-Bus request, for the launch service), `desktop-protocols` (`vocab`), `desktop-client` (`client` feature: the wire behind `desktop_wl` and the native displays route); tokio, zbus, rustix, libpulse, notify, nonstick, ddc, image, toml |
+| 4 | `shell-search` | The launcher's runner (`ResultsService`), `providers/` (the files provider reads the viewer's history and takes the shared file actions), clip images | `shell-services`, `shell-model`, `shell-launcher`, `anyview-core`, `anyview-store`, `ui-core`, `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `memory-core`, `companion-wire`, `prov`, `ui-settings` (no features: the schema files the settings provider indexes); fend, emojis |
+| 5 | `shell-ui-kit` | What every surface shares: `Services` registry, `SettingsFeed`, `SurfaceRoot`, `Surface` and its `mount`, `links/`, hooks, `look`, `panel`, `shell_style`, `sheet_stage` (the enter / shown / leaving-with-exit stage of a sheet), `MenuPopup<M>`, `app_icons`, `status`, `notification_card`, `widgets/`, `harness` (feature: fake services, `SurfaceHarness`) | `shell-kit`, `shell-search`, `shell-services`, `shell-settings`, `shell-model`, `shell-launcher`, `companion-wire`, `action-core`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `account-core`, `account-capability`, `prov`, `ui-core`, `ds`, `ui-behaviour` (`Dir`, in the switcher link), `ui-settings` (dioxus), `ui-blitz`, `ui-harness` (optional: feature `harness`), `layer-shell-host`; dioxus, resvg, image; dev: `ui-lint` |
+| 6 | `shell-bar` | Bar, its menus, tray, control center and its modules | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-services`*; `shell-kit`, `ds`, `ui-settings`, `ui-blitz`, `layer-shell-host`; dev: `ui-lint` |
+| 6 | `shell-dock` | Dock, magnify, context menus (an app tile's, the Trash tile's, the dock's own) | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-services`*; `shell-kit`, `ds`, `ui-blitz`, `layer-shell-host`; dev: `ui-lint` |
+| 6 | `shell-launcher-ui` | Launcher panel and catcher, rows, preview pane, actions | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-search`*, `shell-services`*, `anyview-core`, `anyview-image`, `anyview-peek` (what a file's pane looks like), `anyview-platform` (the thumbnail cache behind a video's frame, `preview::frames`), `memory-core`, `companion-wire`, `action-core`, `companion-model`, `permission-core`, `action-vocab`, `prov` (a companion row's pane and keys); `shell-kit`, `ds`, `ui-behaviour` (`Dir`, in the companion filter), `ui-blitz`, `layer-shell-host`; dev: `ui-lint`, `ui-shell` |
+| 6 | `shell-notify-ui` | Banners, notification center, screenshot thumbnail | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-services`*; `shell-kit`, `ds`, `ui-settings`, `ui-blitz`, `layer-shell-host` |
+| 6 | `shell-overlays` | OSD, power menu, polkit prompt, switcher, idle dim, hot corners, wallpaper, lock | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-services`*; `ds`, `ui-behaviour` (the switcher and hot-corner machines), `ui-shell` (the accounts sheet), `shell-kit`, `ui-settings`, `layer-shell-host`, `account-core`, `account-capability`, `account-ids`, `account-sheet` (the accounts sheet's props) |
+| 7 | `sill` | Binary and library: `actions/`, `cli/`, `daemon/`, `ipc/`, `policy/` | every crate above except `shell-testkit`; `ui-blitz`, `ui-settings`, `layer-shell-host`, `shell-verbs` (the verbs casement's keymap sends and the command line each spells); clap, latchkey, `ui-lint` and `shell-kit` (`sill style check` lints against its `kits()`); dev: `shell-testkit`, `shell-ui-kit` (harness), `ds` |
 
-`*` A surface crate names `sill-services` (and `sill-search` for the launcher) only for service
+`*` A surface crate names `shell-services` (and `shell-search` for the launcher) only for service
 marker types (`BatteryService`), `Control` and `Handle`, the type arguments of `use_service`.
 It never names `Env`, `Service::run`, `spawn` or a `backend`. Surface crates never depend on one
 another, and none depends on `sill`.
@@ -61,12 +61,12 @@ its status, and `EDGES` compare each crate's direct path dependencies with the t
 
 | Crates | Reach none of (through any path) |
 | --- | --- |
-| `sill-launcher`, `sill-model`, `sill-ipc` | dioxus, dioxus-core, zbus, wayland-client, tokio, libpulse-binding, shell-host, ds, ds-shell, sill-shell-kit, ds-blitz, blitz-dom |
-| `sill-settings`, `sill-search` | dioxus, dioxus-core, blitz-dom, shell-host, ds, ds-shell, sill-shell-kit, ds-blitz (`ds-settings` brings zbus and tokio to both) |
-| `sill-services` | the same, and `ds-settings` |
-| `sill-testkit` | every other sill crate |
-| `sill-shell-kit` | every other sill crate, zbus, tokio, wayland-client, libpulse-binding, shell-host, ds-blitz, blitz-dom |
-| `sill-ui-kit` | every surface crate, `sill` |
+| `shell-launcher`, `shell-model`, `shell-ipc` | dioxus, dioxus-core, zbus, wayland-client, tokio, libpulse-binding, layer-shell-host, ds, ui-shell, shell-kit, ui-blitz, blitz-dom |
+| `shell-settings`, `shell-search` | dioxus, dioxus-core, blitz-dom, layer-shell-host, ds, ui-shell, shell-kit, ui-blitz (`ui-settings` brings zbus and tokio to both) |
+| `shell-services` | the same, and `ui-settings` |
+| `shell-testkit` | every other sill crate |
+| `shell-kit` | every other sill crate, zbus, tokio, wayland-client, libpulse-binding, layer-shell-host, ui-blitz, blitz-dom |
+| `shell-ui-kit` | every surface crate, `sill` |
 | each surface crate | every other surface crate, `sill` |
 
 ## 2. Inside each crate: top-level modules, lowest layer first
@@ -76,13 +76,13 @@ re-export; the one type a module is named after may sit in its `mod.rs`.
 
 | Crate | Modules (layer order) |
 | --- | --- |
-| `sill-model` | `units`, `ids`, `attempt`, `vocab` (enums shared with settings), then one dir per service (`battery`, `clock`, ... 31 services, `companion` and `intents` among them: its `sheet/`, `terminal/` and `shell/` sub-dirs are the confirmation queue, the terminal's grants and the shell's own actions; `results` holds search state; `focus` holds the focus mode, which is not a service; `keyboard` holds the pure keyboard-profile choice, which is not a service either, and `keycap` the keycap service's state and its pure decisions: the focus to send, the notice to post, how to read the unit, how long to wait to reconnect). Each service dir: `mod.rs`, `model.rs` (State), `command.rs` (Command, Event, Effect), `step.rs`, `tests.rs`; a sub-concept gets a sub-dir with the same roles. Service dirs never import each other |
-| `sill-settings` | `section` (trait), one file per domain (`bar`, `dock`, ..., 22 domains), `file` (`ShellFile`, `SettingsDoc` impl), `schema`, `keys` (typed enums and unit newtypes that no service shares) |
-| `sill-ipc` | `line` (encode, decode, cap), `error`, `request` (the flat `Request`), `response`, `show`, `status`, `act`, `debug` (the words its variants carry, one file per group) |
-| `sill-services` | `error`, `control`, `stream`, `env/`, `service`, then `debounced` (a watch that reports a burst of events as one settled touch), then one dir per service (29, all but `results`) in dependency order of their `Deps`; a service dir never imports another service dir: cross-service data is `sill-model` types in `Deps` |
-| `sill-search` | `preview` (a clipboard image), `providers/<kind>/` (`files/`: `actions` (the shared file actions as a row's), `viewed` (the viewer's history as rows and uses)), `results/` (`registry`, `run`, `sink`, `history`, `frecency_file`, `effect`), `ResultsService` in `results/mod.rs` |
-| `sill-shell-kit` | `tokens`, then leaf parts `battery`, `clock`, `emoji`, `month_grid`, `now_playing`, `notifications`, `osd`, `idle_dim`, `dock`, `bar`, `control_center`, `switcher`, `date_picker` < `user_picture`, `thumbs` < `lock` < `widget` (`contract`, `card`, `frame`, `timeline`, `calendar`) < `sheets`, `kit` < `prelude` |
-| `sill-ui-kit` | `look`, `links/`, `settings`, `shell_style`, `sheet_stage/`, `services`, `hooks/`, `panel`, `root`, `surface/` (`mount`, `lock`, `start`, `place`, `naming`, `outputs`, `lifecycle`, `preset`), `menu/`, `status/`, `app_icons/`, `notification_card/`, `widgets/`, `harness/` (feature `harness`) |
+| `shell-model` | `units`, `ids`, `attempt`, `vocab` (enums shared with settings), then one dir per service (`battery`, `clock`, ... 31 services, `companion` and `intents` among them: its `sheet/`, `terminal/` and `shell/` sub-dirs are the confirmation queue, the terminal's grants and the shell's own actions; `results` holds search state; `focus` holds the focus mode, which is not a service; `keyboard` holds the pure keyboard-profile choice, which is not a service either, and `keycap` the keycap service's state and its pure decisions: the focus to send, the notice to post, how to read the unit, how long to wait to reconnect). Each service dir: `mod.rs`, `model.rs` (State), `command.rs` (Command, Event, Effect), `step.rs`, `tests.rs`; a sub-concept gets a sub-dir with the same roles. Service dirs never import each other |
+| `shell-settings` | `section` (trait), one file per domain (`bar`, `dock`, ..., 22 domains), `file` (`ShellFile`, `SettingsDoc` impl), `schema`, `keys` (typed enums and unit newtypes that no service shares) |
+| `shell-ipc` | `line` (encode, decode, cap), `error`, `request` (the flat `Request`), `response`, `show`, `status`, `act`, `debug` (the words its variants carry, one file per group) |
+| `shell-services` | `error`, `control`, `stream`, `env/`, `service`, then `debounced` (a watch that reports a burst of events as one settled touch), then one dir per service (29, all but `results`) in dependency order of their `Deps`; a service dir never imports another service dir: cross-service data is `shell-model` types in `Deps` |
+| `shell-search` | `preview` (a clipboard image), `providers/<kind>/` (`files/`: `actions` (the shared file actions as a row's), `viewed` (the viewer's history as rows and uses)), `results/` (`registry`, `run`, `sink`, `history`, `frecency_file`, `effect`), `ResultsService` in `results/mod.rs` |
+| `shell-kit` | `tokens`, then leaf parts `battery`, `clock`, `emoji`, `month_grid`, `now_playing`, `notifications`, `osd`, `idle_dim`, `dock`, `bar`, `control_center`, `switcher`, `date_picker` < `user_picture`, `thumbs` < `lock` < `widget` (`contract`, `card`, `frame`, `timeline`, `calendar`) < `sheets`, `kit` < `prelude` |
+| `shell-ui-kit` | `look`, `links/`, `settings`, `shell_style`, `sheet_stage/`, `services`, `hooks/`, `panel`, `root`, `surface/` (`mount`, `lock`, `start`, `place`, `naming`, `outputs`, `lifecycle`, `preset`), `menu/`, `status/`, `app_icons/`, `notification_card/`, `widgets/`, `harness/` (feature `harness`) |
 | each surface crate | one dir per surface, named after it (`osd/`, `dock/`, `banners/`); `lib.rs` re-exports each surface marker type and nothing else |
 | `sill` | `policy/`, `ipc/`, `cli/`, `daemon/` (`daemon` is the top: it names every crate) |
 
@@ -112,108 +112,108 @@ A concept over about 300 lines becomes a sub-directory with the same roles (`doc
 <!-- paths: skip -->
 The old locations of what moved, and where each landed.
 
-### `sill-services` (ends with 30 services and the seams)
+### `shell-services` (ends with 30 services and the seams)
 
 Rule for every service dir `X`: a file that names zbus, wayland, notify, `std::fs`, `Command`,
 libpulse, PAM or tokio is effect code; every other file is pure. Pure files go to
-`sill-model/src/X/` (state to `model.rs`, commands and events to `command.rs`, reducers to
-`step.rs`, the rest keeps its name); effect files go to `sill-services/src/X/backend/`; the
+`shell-model/src/X/` (state to `model.rs`, commands and events to `command.rs`, reducers to
+`step.rs`, the rest keeps its name); effect files go to `shell-services/src/X/backend/`; the
 `impl Service` stays in `X/mod.rs` and its `run` calls `backend::run`. `*_tests.rs` follow their
 code into `tests.rs`. Exceptions and renames:
 
 | From (`crates/sill-services/src/`) | To |
 | --- | --- |
-| `units.rs` | `sill-model/src/units.rs`; `Percent` becomes `ds_core`'s; `Presence` becomes `Found`, `Visibility` becomes `Revealed` (no clash with `ds-motion::Presence` or `shell_host::Visibility`) |
-| `attempt.rs` | `sill-model/src/attempt.rs` |
-| `apps/{exec,index}.rs` | `sill-model/src/apps/` |
+| `units.rs` | `shell-model/src/units.rs`; `Percent` becomes `ds_core`'s; `Presence` becomes `Found`, `Visibility` becomes `Revealed` (no clash with `ui-motion::Presence` or `shell_host::Visibility`) |
+| `attempt.rs` | `shell-model/src/attempt.rs` |
+| `apps/{exec,index}.rs` | `shell-model/src/apps/` |
 | `apps/{scan,icons}.rs` | `apps/backend/` (`scan.rs` the scan over `ds_helpers::load_entries`, `entry.rs` one loaded entry as an `App`, `locales.rs` the session's locales) |
-| `auth/{types,gate,protocol}.rs` | `sill-model/src/auth/` |
+| `auth/{types,gate,protocol}.rs` | `shell-model/src/auth/` |
 | `auth/{account,helper,pam,live}.rs` | `auth/backend/` (`pam.rs` is public: `sill auth-check` calls it) |
 | `auth/authenticator.rs` | `env/authenticator.rs` (the `Authenticator` seam and `FakeAuthenticator`) |
 | `auth` account lookup | `env/passwd.rs` (the `Passwd` seam: `SystemPasswd` over `nix`, `FakePasswd`) |
 | The polkit agent's user names (which polkit identity, named) | `polkit_agent/backend/names.rs` (the `Names` seam: `SystemNames` over `nix`'s `User::from_uid`, so directory-service accounts resolve; a fixed fake in its test; `user_for` is pure over the seam) |
-| `bluetooth/{model,kind}.rs` | `sill-model/src/bluetooth/` |
-| `bluetooth/{bluez,live}.rs` | `bluetooth/backend/{run,devices,pairing}.rs` (the proxies are `airwaves-bluez`) (`live.rs` is 569 lines) |
-| `network/{model}.rs`, `network/wifi/model.rs` | `sill-model/src/network/`, `sill-model/src/wifi/` |
+| `bluetooth/{model,kind}.rs` | `shell-model/src/bluetooth/` |
+| `bluetooth/{bluez,live}.rs` | `bluetooth/backend/{run,devices,pairing}.rs` (the proxies are `bluez-proxy`) (`live.rs` is 569 lines) |
+| `network/{model}.rs`, `network/wifi/model.rs` | `shell-model/src/network/`, `shell-model/src/wifi/` |
 | `network/live.rs`, `network/wifi/live.rs` | `network/backend/`, `wifi/backend/`; Wi-Fi is its own dir |
-| `clipboard/{model,reduce,content,offer}.rs` | `sill-model/src/clipboard/` |
+| `clipboard/{model,reduce,content,offer}.rs` | `shell-model/src/clipboard/` |
 | `clipboard/{pipes,wire,wire_state,wire_dispatch,wl,live}.rs` | `clipboard/backend/` |
-| `windows/{ids,caps,command,toplevels,workspaces}.rs` | `sill-model/src/windows/` |
-| `desktop/{backend,command,model,note}.rs` | `sill-model/src/desktop/` (the arm names and the globals offer, the desktop's views and commands, `supports`, and `ShellNote`, the compositor's shell protocol in the shell's words) |
-| `desktop_wl/{choose,ids,toplevels,workspaces,view,command,outputs,offer,run}.rs` | `sill-services/src/desktop_wl/` (the standard-protocol arm over `desktop-client`; its thread is `thread.rs`, which picks the arm with `desktop_client::backend_for` on the offered globals: Quire, else Wlr). On a Quire offer the same thread serves the toplevels and workspaces on the environment connection |
+| `windows/{ids,caps,command,toplevels,workspaces}.rs` | `shell-model/src/windows/` |
+| `desktop/{backend,command,model,note}.rs` | `shell-model/src/desktop/` (the arm names and the globals offer, the desktop's views and commands, `supports`, and `ShellNote`, the compositor's shell protocol in the shell's words) |
+| `desktop_wl/{choose,ids,toplevels,workspaces,view,command,outputs,offer,run}.rs` | `shell-services/src/desktop_wl/` (the standard-protocol arm over `desktop-client`; its thread is `thread.rs`, which picks the arm with `desktop_client::backend_for` on the offered globals: Quire, else Wlr). On a Quire offer the same thread serves the toplevels and workspaces on the environment connection |
 | `desktop_wl/quire/{handout,surfaces,view,command,notes,arm,queue_wake,shell}.rs` | the Quire arm (P2-SQ): `handout` is the seam for `org.quire.Compositor1.Connect("shell")` (`Handout`, `ZbusHandout`, `shell_connection`); `surfaces` records which registered surface has which `ShellRole` (a role is the surface's own `Surface::ROLE`); `view` and `command` are the pure mappings (`quire_view`, `quire_wire_of`) between `DesktopState::quire` and the shell's `DesktopView` and `DesktopCommand`; `notes` is `note_of` (the shell protocol's events as `ShellNote`s); `arm` is `QuireArm<D: Desktop, S: NoteSink>` (`drain_notes`: drain events, hand notes to the sink; `sync`: that and return the view; execute: a command as requests; assign: `SetShellRole`), tested over `FakeDesktop::with_config`; `shell` runs the arm on the shell host's connection (`spawn_shell_arm(&wl_surface)` takes the connection from the surface, binds a second queue with `DesktopConfig::holding_shell()`, publishes an mpsc of notes; it publishes no view, the windows service does); `queue_wake` is the `Waker` over a calloop ping that `DesktopClient::poll_dispatch_pending` leaves in the client's queue, so an event another thread's read queued wakes the arm's loop (no timer polls it). The daemon side is `sill/src/daemon/compositor.rs`: the host's route (`Handed(fd)` when the compositor handed one), the `ShellSeat` that starts the arm at the first mapped surface with a role and registers each mapped surface, and `apply`, which carries each `ShellNote` out (hot corner, the companion's tap, the kill chord) or names the P3 lane that will (`P3-SW`, `P3-MC`, `P3-MN`, `P3-SILL`) |
-| `displays/{model,policy,identity,scale,ppi,plan,brightness,hw_volume,gamut,warmth}*`, `displays/edid/`, `displays/ddc/{vcp,matching,retry,debounce}.rs` | `sill-model/src/displays/` (`edid/`, `ddc/`) |
+| `displays/{model,policy,identity,scale,ppi,plan,brightness,hw_volume,gamut,warmth}*`, `displays/edid/`, `displays/ddc/{vcp,matching,retry,debounce}.rs` | `shell-model/src/displays/` (`edid/`, `ddc/`) |
 | `displays/{backlight,drm,randr,output,outputs_route,font,fontconfig_file,run}.rs`, `displays/ddc/{bus,i2c,worker}.rs` | `displays/backend/` |
-| `displays/bus/{mod,object,run}.rs` | `sill-services/src/displays/bus/`: Settings' brightness sliders. `org.quire.Displays1` at `/org/quire/Displays1` on the session bus, claimed at start unless names are left passive: `Brightness() -> a(su)` (output, percent 0-100; only outputs whose brightness can be read, `sill_model::displays::levels`), `SetBrightness(s, u)` (only the program the table gives role `settings`, owning `org.quire.Settings`; an unlisted output or a percentage over 100 is `InvalidArgs`; it becomes `DisplaysCommand::SetBrightness`) and the signal `Changed(a(su))` whenever the list changes. Test: `displays_bus.rs` |
+| `displays/bus/{mod,object,run}.rs` | `shell-services/src/displays/bus/`: Settings' brightness sliders. `org.quire.Displays1` at `/org/quire/Displays1` on the session bus, claimed at start unless names are left passive: `Brightness() -> a(su)` (output, percent 0-100; only outputs whose brightness can be read, `sill_model::displays::levels`), `SetBrightness(s, u)` (only the program the table gives role `settings`, owning `org.quire.Settings`; an unlisted output or a percentage over 100 is `InvalidArgs`; it becomes `DisplaysCommand::SetBrightness`) and the signal `Changed(a(su))` whenever the list changes. Test: `displays_bus.rs` |
 | `displays/ddc/file_bus.rs`, `displays/ddc/fake.rs` | `env/ddc.rs` (`DdcBus`, `I2cBuses`, `FileBus`, `FakeBus`); `displays/kscreen*` is already gone |
-| `events/{model,agenda,occur,rule,rule_expand,ics,ics_line,ics_value}.rs` | `sill-model/src/events/` |
+| `events/{model,agenda,occur,rule,rule_expand,ics,ics_line,ics_value}.rs` | `shell-model/src/events/` |
 | `events/{read,live,live_watch,sources,provider}.rs` | `events/backend/` |
-| `idle/{model,policy,grace,reduce,reduce_rules}.rs` | `sill-model/src/idle/` (`reduce*` becomes `step.rs`) |
+| `idle/{model,policy,grace,reduce,reduce_rules}.rs` | `shell-model/src/idle/` (`reduce*` becomes `step.rs`) |
 | `idle/{inhibit,resolve,screensaver,logind,wl,wl_state,wl_dispatch,live}.rs` | `idle/backend/` |
-| `launch/{model,plan}.rs` | `sill-model/src/launch/` |
-| `launch/{dbus,open,run,terminal}.rs`, `launch/test_support.rs` | `launch/backend/`; `test_support.rs` goes to `sill-testkit::TempDir` |
-| `locker/{cause,machine,mode}.rs` | `sill-model/src/locker/` (`machine.rs` becomes `step.rs`) |
+| `launch/{model,plan}.rs` | `shell-model/src/launch/` |
+| `launch/{dbus,open,run,terminal}.rs`, `launch/test_support.rs` | `launch/backend/`; `test_support.rs` goes to `shell-testkit::TempDir` |
+| `locker/{cause,machine,mode}.rs` | `shell-model/src/locker/` (`machine.rs` becomes `step.rs`) |
 | `locker/{marker,logind,live}.rs` | `locker/backend/` |
-| `notifications/{state,reduce,rules,content,markup,markup_parse,ids,capabilities,policy,limits,origin,rate}.rs` | `sill-model/src/notifications/` |
+| `notifications/{state,reduce,rules,content,markup,markup_parse,ids,capabilities,policy,limits,origin,rate}.rs` | `shell-model/src/notifications/` |
 | `notifications/{dbus,guard,wire,picture,senders,live,history_file,name_watch}.rs` | `notifications/backend/` |
-| `pins/model.rs` | `sill-model/src/pins/` |
-| `pins/{fs_watch,run}.rs`, `pins/test_support.rs` | `pins/backend/run.rs`, and `fs_watch.rs` becomes the shared `debounced.rs` (`keycap` watches `keycap.toml` with it); `test_support.rs` goes to `sill-testkit` |
-| `polkit_agent/{types,machine,identity,helper}.rs` | `sill-model/src/polkit_agent/` |
+| `pins/model.rs` | `shell-model/src/pins/` |
+| `pins/{fs_watch,run}.rs`, `pins/test_support.rs` | `pins/backend/run.rs`, and `fs_watch.rs` becomes the shared `debounced.rs` (`keycap` watches `keycap.toml` with it); `test_support.rs` goes to `shell-testkit` |
+| `polkit_agent/{types,machine,identity,helper}.rs` | `shell-model/src/polkit_agent/` |
 | `polkit_agent/{bus,dbus,run,live}.rs` | `polkit_agent/backend/` |
-| `screenshots/{reduce,names}.rs`; `tool.rs` (the portal's command line per kind) | `sill-model/src/screenshots/`; there is no tool setting: the portal takes the shot |
+| `screenshots/{reduce,names}.rs`; `tool.rs` (the portal's command line per kind) | `shell-model/src/screenshots/`; there is no tool setting: the portal takes the shot |
 | `screenshots/{child,folder_watch,live,preview}.rs` | `screenshots/backend/` |
-| `wallpaper/{cache,geometry}.rs` | `sill-model/src/wallpaper/` |
+| `wallpaper/{cache,geometry}.rs` | `shell-model/src/wallpaper/` |
 | `wallpaper/{config,resize,watch,backdrop}.rs` (`config` also reads the old `wallpaper-source` file while the setting is empty), logic in `mod.rs` | `wallpaper/backend/` |
-| `tray/{model,icon}.rs`; `tray/host.rs` (498) | `sill-model/src/tray/`; `tray/backend/{host,items,menu}.rs` |
-| `now_playing/{model,art}.rs` (names); `mpris.rs`, `live.rs` (498) | `sill-model/src/now_playing/`; `now_playing/backend/{mpris,run}.rs`, `now_playing/backend/art/{mod,fetcher,curl,cache}.rs` |
-| `battery`, `kbd_backlight`, `power_profile`, `volume`, `session`, `badges`, `clock`: `model.rs`, `format.rs` | `sill-model/src/<x>/`; `live.rs`, `upower.rs`, `ppd.rs` -> `<x>/backend/` |
-| `providers/`, `results/{registry,run,sink,history,frecency_file,effect}.rs`, `preview.rs` | `sill-search/src/providers/`, `results/`, `preview.rs` |
-| `results/{model,arrange,policy}.rs` | `sill-model/src/results/` |
-| `services.rs` (`Services`, `Member`) | `sill-ui-kit/src/services/` (`registry.rs` declares every service; `Services::start` spawns them) |
-| `magnify/` | `sill-dock/src/magnify/` |
-| `switcher.rs` | `sill-overlays/src/switcher/apps.rs` |
-| `curve.rs` (unused) | deleted; easing is `ds-motion`'s |
+| `tray/{model,icon}.rs`; `tray/host.rs` (498) | `shell-model/src/tray/`; `tray/backend/{host,items,menu}.rs` |
+| `now_playing/{model,art}.rs` (names); `mpris.rs`, `live.rs` (498) | `shell-model/src/now_playing/`; `now_playing/backend/{mpris,run}.rs`, `now_playing/backend/art/{mod,fetcher,curl,cache}.rs` |
+| `battery`, `kbd_backlight`, `power_profile`, `volume`, `session`, `badges`, `clock`: `model.rs`, `format.rs` | `shell-model/src/<x>/`; `live.rs`, `upower.rs`, `ppd.rs` -> `<x>/backend/` |
+| `providers/`, `results/{registry,run,sink,history,frecency_file,effect}.rs`, `preview.rs` | `shell-search/src/providers/`, `results/`, `preview.rs` |
+| `results/{model,arrange,policy}.rs` | `shell-model/src/results/` |
+| `services.rs` (`Services`, `Member`) | `shell-ui-kit/src/services/` (`registry.rs` declares every service; `Services::start` spawns them) |
+| `magnify/` | `shell-dock/src/magnify/` |
+| `switcher.rs` | `shell-overlays/src/switcher/apps.rs` |
+| `curve.rs` (unused) | deleted; easing is `ui-motion`'s |
 | `programs.rs` | deleted; nothing read the process scan |
-| `env/scratch.rs`, `examples/*` (13 stand-ins), `tests/support/*` | `sill-testkit` (`TempDir`, `PrivateBus`, `signals`; stand-ins in its `examples/`) |
+| `env/scratch.rs`, `examples/*` (13 stand-ins), `tests/support/*` | `shell-testkit` (`TempDir`, `PrivateBus`, `signals`; stand-ins in its `examples/`) |
 | `tests/*_live.rs` | `crates/sill-services/tests/<service>_bus.rs` on `PrivateBus`; `#[ignore]` only when a compositor is needed |
 | `error.rs`, `control.rs`, `stream.rs`, `service.rs`, `env/` | stay |
 
-### `sill-settings`, `sill-ipc`, `sill-launcher`
+### `shell-settings`, `shell-ipc`, `shell-launcher`
 
 | From | To |
 | --- | --- |
-| `sill-settings/src/{bar,calendar,control_center,display,dock,hot_corners,idle,keyboard,launcher,notifications,screenshot,scroll,scrollbar,session,switcher}.rs` | stay; keys with no reader deleted; `flatten extra` and `version` deleted |
-| `dock_words.rs`, `launcher_kinds.rs`, enums a service reads | a plain `bool` for the on/off keys; an enum a service reads (`NightWarmthMode`) is in `sill-model` and the settings field uses that type |
+| `shell-settings/src/{bar,calendar,control_center,display,dock,hot_corners,idle,keyboard,launcher,notifications,screenshot,scroll,scrollbar,session,switcher}.rs` | stay; keys with no reader deleted; `flatten extra` and `version` deleted |
+| `dock_words.rs`, `launcher_kinds.rs`, enums a service reads | a plain `bool` for the on/off keys; an enum a service reads (`NightWarmthMode`) is in `shell-model` and the settings field uses that type |
 | `focus.rs` (`FocusMode`) | deleted: Do Not Disturb is `notifications.dnd`, a `bool` |
-| `focus_link.rs` | `sill-ui-kit/src/links/focus.rs` (the link) and `sill/src/daemon/settings/focus.rs` (the task that writes the file) |
+| `focus_link.rs` | `shell-ui-kit/src/links/focus.rs` (the link) and `sill/src/daemon/settings/focus.rs` (the task that writes the file) |
 | `watch.rs`, `file.rs` `load`/`save`/`try_load`/`unknown_keys` | `sill/src/daemon/settings/{watch,store}.rs` over `ds_settings::Store`; `file.rs` keeps `ShellFile` and `impl SettingsDoc` |
-| `feed.rs` (`SettingsFeed`) | `sill-ui-kit/src/settings.rs` |
-| `sill-ipc/src/{desktop,idle,launcher,session}.rs` | `show.rs`, `status.rs`, `act.rs`, `debug.rs`; the 28 `Report*`/`Fake*` mirrors go (a report is the `sill-model` type, serialised) |
-| `sill-launcher/src/{preview,preview_tests}.rs` | stay (pure facts); `sill-services/src/preview.rs` moves to `sill-search` |
+| `feed.rs` (`SettingsFeed`) | `shell-ui-kit/src/settings.rs` |
+| `shell-ipc/src/{desktop,idle,launcher,session}.rs` | `show.rs`, `status.rs`, `act.rs`, `debug.rs`; the 28 `Report*`/`Fake*` mirrors go (a report is the `shell-model` type, serialised) |
+| `shell-launcher/src/{preview,preview_tests}.rs` | stay (pure facts); `shell-services/src/preview.rs` moves to `shell-search` |
 
 ### `sill-surfaces` (ends deleted)
 
 | From (`crates/sill-surfaces/`) | To |
 | --- | --- |
-| `src/hooks/*`, `host_modality.rs`, `src/lib.rs` host config helpers | `sill-ui-kit/src/{hooks,root}`; `clock.rs` (`FrameClock`) is `ds::base::time::stamp::FrameClock` |
-| `src/app_icons/`, `surfaces/notification_card/`, `surfaces/user_picture.rs`, `surfaces/naming.rs` | `sill-ui-kit/src/{app_icons,notification_card,surface}`; `user_picture` is `sill-shell-kit`'s |
-| `src/widgets/` (providers, layout, wake) | `sill-ui-kit/src/widgets/<kind>/` |
+| `src/hooks/*`, `host_modality.rs`, `src/lib.rs` host config helpers | `shell-ui-kit/src/{hooks,root}`; `clock.rs` (`FrameClock`) is `ds::base::time::stamp::FrameClock` |
+| `src/app_icons/`, `surfaces/notification_card/`, `surfaces/user_picture.rs`, `surfaces/naming.rs` | `shell-ui-kit/src/{app_icons,notification_card,surface}`; `user_picture` is `shell-kit`'s |
+| `src/widgets/` (providers, layout, wake) | `shell-ui-kit/src/widgets/<kind>/` |
 | `bar/menu_track/` | deleted; `ds`'s `menu_track` |
-| `bar/{menu_popup,menus,dbusmenu}.rs`, `dock/{menu_popup,context_menu,menu_document,menu_geometry}.rs`, `launcher` actions menu | `impl MenuModel` in the owning surface; the popup is `sill-ui-kit::menu::MenuPopup` |
-| `bar/{glyph_state,status_item,status}.rs`, `low_battery.rs` | `sill-ui-kit/src/status/` (service state to `sill-shell-kit` glyph props) |
-| `bar/*` (rest), `control_center/*` | `sill-bar/src/bar/`, `sill-bar/src/control_center/` |
+| `bar/{menu_popup,menus,dbusmenu}.rs`, `dock/{menu_popup,context_menu,menu_document,menu_geometry}.rs`, `launcher` actions menu | `impl MenuModel` in the owning surface; the popup is `shell-ui-kit::menu::MenuPopup` |
+| `bar/{glyph_state,status_item,status}.rs`, `low_battery.rs` | `shell-ui-kit/src/status/` (service state to `shell-kit` glyph props) |
+| `bar/*` (rest), `control_center/*` | `shell-bar/src/bar/`, `shell-bar/src/control_center/` |
 | `control_center/{fit,sizes}.rs`, estimate half of `geometry.rs`, `bar/geometry.rs`, `menu_size_tests.rs`, `tests/cc_estimates.rs` | deleted (FitContent popups measure) |
-| `dock/*` | `sill-dock/src/dock/` |
-| `launcher/*` | `sill-launcher-ui/src/launcher/`; `OpenSerial`, `PanelFocus`, `LauncherShown` to `sill-ui-kit/src/links/launcher.rs`, `Visible` to `shell_host::Visibility` |
-| `banners/`, `notification_center/`, `screenshot_thumb/` | `sill-notify-ui/src/` |
+| `dock/*` | `shell-dock/src/dock/` |
+| `launcher/*` | `shell-launcher-ui/src/launcher/`; `OpenSerial`, `PanelFocus`, `LauncherShown` to `shell-ui-kit/src/links/launcher.rs`, `Visible` to `shell_host::Visibility` |
+| `banners/`, `notification_center/`, `screenshot_thumb/` | `shell-notify-ui/src/` |
 | `desktop_widgets/`, `edit_widgets/` | `sill-widgets-ui/src/{desktop,edit}/` |
-| `osd/`, `power_menu/`, `polkit_prompt/`, `confirm_sheet/`, `voice_consent/`, `accounts_sheet/`, `capture_sheet/`, `permission_sheet/`, `switcher/`, `idle_dim/`, `hot_corners/`, `wallpaper/`, `window_menu/`, `spaces_bar/`, `split_picker/`, `lock/` | `sill-overlays/src/<same>/` |
-| `power_menu/script.rs`, `launcher/script.rs`, `launcher/debug_link.rs` | deleted once shell-host has `Inject::Key` |
+| `osd/`, `power_menu/`, `polkit_prompt/`, `confirm_sheet/`, `voice_consent/`, `accounts_sheet/`, `capture_sheet/`, `permission_sheet/`, `switcher/`, `idle_dim/`, `hot_corners/`, `wallpaper/`, `window_menu/`, `spaces_bar/`, `split_picker/`, `lock/` | `shell-overlays/src/<same>/` |
+| `power_menu/script.rs`, `launcher/script.rs`, `launcher/debug_link.rs` | deleted once layer-shell-host has `Inject::Key` |
 | `src/style/*.css` | `<concept>/style.css` beside its `view.rs` (`bar_popup.css`, `dock_popup.css` become `menu/style.css`) |
 | `examples/*_demo.rs` | deleted; the acceptance scripts run the real daemon |
 | `tests/<surface>_{render,keys,motion,...}.rs` | `<surface crate>/tests/<surface>.rs` on `SurfaceHarness<S>` |
-| `tests/*_lint.rs` (15), `tests/*_support/`, `tests/support/fake.rs`, `tests/launcher_harness`, `tests/cc_support` | one table `crates/sill/tests/it/lint.rs`; `sill-ui-kit/src/harness/` |
-| `tests/{status_glyphs,host_faces,battery_snapshot,cancelled_animation,calendar_render,widgets_*}.rs` | `sill-ui-kit/tests/` |
+| `tests/*_lint.rs` (15), `tests/*_support/`, `tests/support/fake.rs`, `tests/launcher_harness`, `tests/cc_support` | one table `crates/sill/tests/it/lint.rs`; `shell-ui-kit/src/harness/` |
+| `tests/{status_glyphs,host_faces,battery_snapshot,cancelled_animation,calendar_render,widgets_*}.rs` | `shell-ui-kit/tests/` |
 
 ### `sill` (the binary)
 
@@ -276,10 +276,10 @@ Look a concept up here before writing it. If it has a home, extend it.
 | Limits on a tray item's menu and icon, on a layout, on a cover fetch, on an icon file | `sill_model::tray::{TRAY_ITEMS_MAX, MENU_ROWS_MAX, MENU_DEPTH_MAX, TRAY_ICON_NAME_MAX_BYTES, TRAY_ICON_FILE_MAX_BYTES, ..}` (read by `sill_services::tray::backend::menu` and `sill_model::app_menu::rows_of`); a tray icon name is a theme name (`sill_model::tray::theme_icon_name`: no slash, no `..`, bounded), checked where it enters and again before the lookup, and its file is read with `ds_helpers::read_capped`; `sill_services::now_playing::backend::art::ArtFetcher` (its pure rules are `sill_model::now_playing::{art_source, evictions, next_start}`); `sill_model::apps::{icon_file_fits, ICON_FILE_MAX_BYTES}` and `sill_services::apps::IconRoots` (an absolute `Icon=` must lie in `Dirs::icon_file_roots`, links resolved) (read by the apps scan and by `sill_ui_kit::app_icons::render::{ICON_MAX_BYTES, ICON_MAX_SIDE}`) and the cache's `prune` |
 | Notices about keycap (failed, conflict, paused) | `sill_model::keycap::{attention, notice_for, notice_text}`; posted by `sill_services::keycap::backend::notice` (no action: `sill keycap retry` and `resume` are the way out) |
 | Which accounts need signing in again, the notice that says so and its "Sign in again" button | `sill_model::accounts::{step, notice_text, sign_in_key, account_of, shown_for}` (the button's action key carries the account); `sill_services::accounts` follows accountd, posts and withdraws the notice, and answers the button (a `Said::Pressed` on `Answers`, from the notifications service itself) with the account's `Reauthenticate` |
-| Each output's work area (the output less the bar's and dock's exclusive zones) and scale, for apps | `sill_model::work_areas::{work_area, work_rect, Zone}` (pure reduction); `sill::work_areas` derives the zones from the bar's and dock's own layer configurations and publishes; `sill_services::work_areas` serves `org.quire.Outputs1` (property `WorkAreas`, `a(us(iiuu)(iiuu)u)`: id, name, frame, work, scale in 120ths; read-only; `PropertiesChanged` on change); quire's `ds-desktop::Outputs` reads it |
+| Each output's work area (the output less the bar's and dock's exclusive zones) and scale, for apps | `sill_model::work_areas::{work_area, work_rect, Zone}` (pure reduction); `sill::work_areas` derives the zones from the bar's and dock's own layer configurations and publishes; `sill_services::work_areas` serves `org.quire.Outputs1` (property `WorkAreas`, `a(us(iiuu)(iiuu)u)`: id, name, frame, work, scale in 120ths; read-only; `PropertiesChanged` on change); quire's `ui-desktop::Outputs` reads it |
 | Each workspace's id, name, output, `SpaceLook` and activity, for apps that keep their Spaces from the desktop (`SpacesSource::Desktop`) | `sill_model::workspace_looks::published` (pure: the compositor's workspaces with a look per position); `sill::workspace_looks` gives each the look every surface draws (`sill_ui_kit::look`) as quire's JSON and publishes; `sill_services::workspace_looks` serves `org.quire.Workspaces1` (property `Workspaces`, `a(ssssb)`: id, name, output, look JSON, active; read-only; `PropertiesChanged` on change) |
 | Where a minimised window flies to (the dock icon of its app, resting size, not magnified) | `sill_model::desktop::target::{OutputRects, MinimiseTargets}` (pure: `of` maps icons and windows to targets, `since` is the diff into `SetMinimiseTarget`/`ClearMinimiseTarget`); `sill_dock::dock::rest_rects::app_rects` computes the icons' rectangles; `sill_ui_kit::dock_rects::DockRects` carries them; `sill::daemon::compositor::ShellSeat::retarget` sends the diff, on the Quire arm only |
-| The accounts sheet (accountd's consent question and add-account steps): what is open, what is typed, what is sent back | `sill_model::accounts::sheet::{AccountsSheets, step, SheetAction}` (the draft holds a typed secret until the reply that carries it); `sill_services::accounts::sheet` serves `org.quire.AccountsSheet1` (only accountd, inferd or syncd, each as the owner of its own name, may open, update or close, by `sill_services::callers`; `Input` goes to the opener's unique name alone); `sill_overlays::accounts_sheet` draws it (`props.rs` maps `SheetView` to quire's `ds-shell::accounts` props) |
+| The accounts sheet (accountd's consent question and add-account steps): what is open, what is typed, what is sent back | `sill_model::accounts::sheet::{AccountsSheets, step, SheetAction}` (the draft holds a typed secret until the reply that carries it); `sill_services::accounts::sheet` serves `org.quire.AccountsSheet1` (only accountd, inferd or syncd, each as the owner of its own name, may open, update or close, by `sill_services::callers`; `Input` goes to the opener's unique name alone); `sill_overlays::accounts_sheet` draws it (`props.rs` maps `SheetView` to quire's `ui-shell::accounts` props) |
 | Where the double tap and a summon go: the two machines, the Ask, the answers, the runs, the journal, the lookups | `sill_model::companion::{Tap, Summon, step}` (quire's `Machine`, stepped by `sill_services::companion`, which publishes `Companion`); the daemon's half (what is focused, the launcher's open, switch and close, the four `sill companion` verbs) is `sill::companion` |
 | The mode of the conversation the assistant's input box types into (Auto or Manual), its lock and the "From the next step" note | `sill_model::companion::{ConversationMode, ModeMsg, mode_view, update_mode}` (pure, held in `Companion::mode`; it is set from `SessionOpened.mode`, follows `Intents1.Session.ModeChanged`, and a switch is the effect `CompanionEffect::SetMode`, carried out as `Session.SetMode` by `sill_services::companion` (`backend/intents.rs`); a turn carries `ConversationMode::turn_mode`, none until the router has said one, so a new conversation starts in what Settings says and sill keeps no default of its own; `Locked` from the router shows the control unavailable). The control is `sill_launcher_ui::launcher::mode_switch::ModeSwitch` (quire's `SegmentedControl` at the field's trailing edge, companion mode only) and the key is the launcher's own action `OwnAction::SwitchMode` (`sill.switch-mode`, ⇧⌘M) |
 | The companion's presence (the orb and the glow) | `sill_model::companion::presence_of`, the only derivation (`ds_core::vocab::CompanionPresence`) |
@@ -316,7 +316,7 @@ Look a concept up here before writing it. If it has a home, extend it.
 | A service's I/O | `sill_services::<service>::backend` |
 | Every running service's handle, `Member`, `use_service` | `sill_ui_kit::services`, `sill_ui_kit::hooks` |
 | Declaring a service, starting every service in `Deps` order, the fakes | `sill_ui_kit::services::registry` (`services!`; `Services::start`, `Services::fake`) |
-| Units and ids (`Cpx`, `Minutes`, `AppId`, `WorkspaceKey`) | `sill_model::{units, ids}` (`Percent`, `Fraction`, `Stamp`: `ds-core`) |
+| Units and ids (`Cpx`, `Minutes`, `AppId`, `WorkspaceKey`) | `sill_model::{units, ids}` (`Percent`, `Fraction`, `Stamp`: `ui-core`) |
 | Retry and stale-answer stamps | `sill_model::attempt` |
 | A closed vocabulary shared by a settings key and a service | `sill_model::vocab` or the service dir, implementing `ds_core::Word` |
 | A settings domain, its typed values | `sill_settings::<domain>` |
@@ -345,7 +345,7 @@ Look a concept up here before writing it. If it has a home, extend it.
 | Which actions a file's row has, and their keys | `anyview_core::actions_for`, `reach`, `shortcut`, through `sill_search::providers::files::actions::{carried, row_actions}` (`carried` is the one match on `FileAction`: what the launcher does for each) |
 | The files the viewer opened, as launcher rows and as frecency | `anyview_store::read_history` through `sill_search::providers::files::viewed` |
 | An app's icon in a tile or a row, for the surface on an output | `sill_ui_kit::app_icons::use_tile_icons` (the split picker and Force Quit use it) |
-| Opening a file in the viewer, playing audio | `OpenTarget::{Viewer, Play}` (`sill-launcher`), carried out by `sill_services::launch::backend::viewer` as one call on `anyview_platform::linux::forward_over`; the results the viewer walks are added by `sill_launcher_ui::launcher::activate::with_results` |
+| Opening a file in the viewer, playing audio | `OpenTarget::{Viewer, Play}` (`shell-launcher`), carried out by `sill_services::launch::backend::viewer` as one call on `anyview_platform::linux::forward_over`; the results the viewer walks are added by `sill_launcher_ui::launcher::activate::with_results` |
 | Surface root: services, feed, host seam, appearance, scale, frame clock | `sill_ui_kit::root::SurfaceRoot` (the host seam is `ds_blitz::provide_host()`, called by `mount`, `mount_lock` and each popup root; the seat's `HostSignals` (scale, modality) come from `use_host_signals()`, called by `mount`, `mount_lock` and `PopupFrame`, and a surface reads its scale with `use_host_scale()`) |
 | Active workspace look, space look | `sill_ui_kit::look` (`use_active_look`, `use_space_look`) |
 | Open/close a panel from outside it (serial, output) | `sill_ui_kit::links::Reveal<O>`; every link type is one file in `sill_ui_kit::links` |
@@ -361,9 +361,9 @@ Look a concept up here before writing it. If it has a home, extend it.
 | A surface's `LayerConfig` | `sill_ui_kit::surface::LayerPreset`; the blur radius is `sill_ui_kit::panel::PANEL_RADIUS` |
 | A panel's open, toggle, close and focus on its link | `sill_ui_kit::links::{PanelLink, Opening}` |
 | What a surface sends back for the desktop to carry out | `sill_ui_kit::links::{Outbox, Sent}` on the link; `sill::outgoing::{Outgoing, forward}` |
-| Popup sizing | shell-host `FitContent`; no estimation code |
+| Popup sizing | layer-shell-host `FitContent`; no estimation code |
 | App icons, look, cache | `sill_ui_kit::app_icons` |
-| Status glyph props from service state | `sill_ui_kit::status` over `sill-shell-kit` glyphs |
+| Status glyph props from service state | `sill_ui_kit::status` over `shell-kit` glyphs |
 | Notification card | `sill_ui_kit::notification_card` |
 | Widget provider, `Card<P>`, the center's two cards | `sill_ui_kit::widgets` |
 | The desktop's context menu (Change Wallpaper…) | `sill_overlays::wallpaper::menu`, on the wallpaper surface |
@@ -373,8 +373,8 @@ Look a concept up here before writing it. If it has a home, extend it.
 | Control-center module | `sill_bar::control_center::modules::<name>`, picked by `module(kind)` |
 | Dock magnification | `sill_dock::magnify` |
 | Switcher app derivation | `sill_overlays::switcher::apps` |
-| Easing and springs | `ds-motion` |
-| Colour, tint, material | `ds-core`, `ds-style`; sill never computes colour |
+| Easing and springs | `ui-motion` |
+| Colour, tint, material | `ui-core`, `ui-style`; sill never computes colour |
 | Keymaps | `<surface>/keys.rs` table; key claims are `ds`'s; a shortcut is a chordkit action resolved by quire's keymap (`sill_ui_kit::root::provide_keymap` gives every root keycap's source), never a modifier test or a chord type of our own |
 | Stylesheets | `<concept>/style.css` |
 | Session lock: service, surface, host half | `sill_services::locker`, `sill_overlays::lock`, `sill::daemon::followers::lock` |
@@ -383,7 +383,7 @@ Look a concept up here before writing it. If it has a home, extend it.
 | Surface test driver | `sill_ui_kit::harness::SurfaceHarness<S>` |
 | Lint of surface markup | `crates/sill/tests/it/lint.rs`, one table |
 | Dev script helpers | `dev/lib/*.sh` |
-| Which folders a document may read pictures from (the host serves a `file:` URL only inside them) | `sill_ui_kit::root::file_roots(&Dirs)`, passed to shell-host as `HostConfig::file_roots` by `host_config(&Dirs)`: `Dirs::icon_file_roots` (`Dirs::icon_dirs`: icons and pixmaps of the data directories, `~/.icons`, `/usr/share/pixmaps`; then `Dirs::app_stores`: `/opt`, `~/.local/opt` and each snap's `current` folder, where a desktop entry may name its icon by absolute path; the apps scan reads the same list, so what it keeps is what the host serves), sill's cache folder (tinted app icons, wallpaper and its blurred copy, now-playing covers, screenshot previews), the freedesktop thumbnail cache `Dirs::thumbnails` (a picture file's thumbnail in a launcher row, `sill_launcher_ui::launcher::row_thumb`), the Pictures folder, `~/.face` and AccountsService's icons folder. A new place that draws a file adds its folder to this list, never a second list; `Dirs::data_dirs` is `$XDG_DATA_DIRS` read once at the edge |
+| Which folders a document may read pictures from (the host serves a `file:` URL only inside them) | `sill_ui_kit::root::file_roots(&Dirs)`, passed to layer-shell-host as `HostConfig::file_roots` by `host_config(&Dirs)`: `Dirs::icon_file_roots` (`Dirs::icon_dirs`: icons and pixmaps of the data directories, `~/.icons`, `/usr/share/pixmaps`; then `Dirs::app_stores`: `/opt`, `~/.local/opt` and each snap's `current` folder, where a desktop entry may name its icon by absolute path; the apps scan reads the same list, so what it keeps is what the host serves), sill's cache folder (tinted app icons, wallpaper and its blurred copy, now-playing covers, screenshot previews), the freedesktop thumbnail cache `Dirs::thumbnails` (a picture file's thumbnail in a launcher row, `sill_launcher_ui::launcher::row_thumb`), the Pictures folder, `~/.face` and AccountsService's icons folder. A new place that draws a file adds its folder to this list, never a second list; `Dirs::data_dirs` is `$XDG_DATA_DIRS` read once at the edge |
 | A demo desktop (nested, scratch, left running) with a scripted tour, shots and a video | `dev/demo.sh start\|tour\|video\|shot\|stop` |
 
 ---
@@ -413,8 +413,8 @@ fresh channel halves; the keeper carries commands in and state out, so a restart
 last published state. A bus absent by choice and a compositor without the protocol are not
 restarted.
 
-Implementors: the 30 `<Module>Service` markers (`enum XService {}`), 29 in `sill-services`,
-`ResultsService` in `sill-search`. Add an implementor for a new long-lived backend that
+Implementors: the 30 `<Module>Service` markers (`enum XService {}`), 29 in `shell-services`,
+`ResultsService` in `shell-search`. Add an implementor for a new long-lived backend that
 publishes one state. Add nothing for a helper without a task. Not a `Service`: a one-shot call
 (`launch::open`), a pure derivation (`switcher::apps`), or a UI link.
 
@@ -433,7 +433,7 @@ pub fn follow<P: Policy>(rt: &Handle, settings: watch::Receiver<ShellFile>, poli
 
 Implementors: `calendar`, `companion`, `displays`, `idle`, `keyboard`, `notifications` (`changed` waits on the focus
 mode), `screenshots`, `search`, `clipboard`. One per service that is passive until told. A
-policy builds typed `sill-model` values; a service never sees a settings string.
+policy builds typed `shell-model` values; a service never sees a settings string.
 
 ### `Provider` (`sill_launcher::provider`)
 
@@ -445,7 +445,7 @@ pub trait Provider: Send + Sync {
 }
 ```
 
-Implementors in `sill-search/providers/`: apps, windows, system, calculator, settings, files,
+Implementors in `shell-search/providers/`: apps, windows, system, calculator, settings, files,
 clipboard, emoji, web, things, companion, runs, memory (the last four read the companion service's
 state; things and memory ask it for a lookup and wait for the answer under the query's generation). One per source of rows; `activate` is pure and returns an `Activation`.
 
@@ -469,7 +469,7 @@ pub trait Surface: 'static {
     fn root(output: OutputInfo, slot: Self::Slot) -> Element;
 }
 pub struct Place<'a> { pub output: &'a OutputInfo, pub rank: OutputRank, pub settings: &'a ShellFile }
-// The session lock is one surface, so `LockSurface` is a value (sill-overlays' `LOCK`), not a trait.
+// The session lock is one surface, so `LockSurface` is a value (shell-overlays' `LOCK`), not a trait.
 pub struct LockSurface {
     pub name: &'static str,
     pub config: fn(&ShellFile) -> LockConfig,
@@ -478,7 +478,7 @@ pub struct LockSurface {
 }
 ```
 
-Implementors of `Surface`: the 26 layer surfaces (26 `impl Surface for` sites, one per `surface.rs` in `sill-bar`, `sill-dock`, `sill-launcher-ui`, `sill-notify-ui` and `sill-overlays`); the lock is the `LOCK` value and is not on this path; `daemon::surfaces::lock_factory` gives each lock root `surface_root` plus `(LOCK.needs)(root, links)`, so the lock's links are declared beside `LOCK` and not listed by hand in the daemon. A new visible thing on its own layer surface
+Implementors of `Surface`: the 26 layer surfaces (26 `impl Surface for` sites, one per `surface.rs` in `shell-bar`, `shell-dock`, `shell-launcher-ui`, `shell-notify-ui` and `shell-overlays`); the lock is the `LOCK` value and is not on this path; `daemon::surfaces::lock_factory` gives each lock root `surface_root` plus `(LOCK.needs)(root, links)`, so the lock's links are declared beside `LOCK` and not listed by hand in the daemon. A new visible thing on its own layer surface
 is a new `Surface`. A popup of an existing surface is a `MenuPopup` or a component, not a
 `Surface`. `root` runs inside `surface::mount::<S>`, the one root component every spawned surface
 has, so a `root` may call hooks. `SurfaceRoot` stays a plain component that each view wraps its
@@ -566,20 +566,20 @@ pub trait MenuModel: 'static {
 #[component] pub fn MenuPopup<M: MenuModel>(model: M, on_pick: EventHandler<M::Pick>, on_close: EventHandler<()>, surface: &'static str) -> Element;
 ```
 
-Implementors: `DockMenu` (the dock's menus: an app tile's, the Trash tile's, and the dock's own on its separator or empty background), `DesktopMenu` (the wallpaper's), `WindowMenuModel` (the window menu). The bar's app menu, the tray and the control center are a different machine (menu tracking with hover and release semantics, `sill-bar/src/bar/menu_popup.rs`), and the launcher's actions menu is not a `MenuModel`. A context menu a layer surface opens is `use_context_menu::<M>` (below).
+Implementors: `DockMenu` (the dock's menus: an app tile's, the Trash tile's, and the dock's own on its separator or empty background), `DesktopMenu` (the wallpaper's), `WindowMenuModel` (the window menu). The bar's app menu, the tray and the control center are a different machine (menu tracking with hover and release semantics, `shell-bar/src/bar/menu_popup.rs`), and the launcher's actions menu is not a `MenuModel`. A context menu a layer surface opens is `use_context_menu::<M>` (below).
 
 ### Enums that stay enums
 
 | Enum | Home | Why |
 | --- | --- | --- |
-| IPC `Request` (flat: `Ping`, `Quit`, `Reload`, `Do`, the panel and companion verbs, `Status`, `Display`, `Keycap`, `Intents`, `Launch`, `Debug`, ...), `Response` | `sill-ipc` | closed wire set; one match in `ipc/dispatch/route.rs`, and `Do` is every action of the shell |
-| `ActionId`, `Effect`, `Subject` | `sill-launcher`, `sill-model` | closed; a new action is a compile error in `def` and in `perform` until it is described and done |
-| `Activation`, `ProviderKind`, `Item` rows | `sill-launcher` | closed; a variant must break the exhaustive `row` match |
+| IPC `Request` (flat: `Ping`, `Quit`, `Reload`, `Do`, the panel and companion verbs, `Status`, `Display`, `Keycap`, `Intents`, `Launch`, `Debug`, ...), `Response` | `shell-ipc` | closed wire set; one match in `ipc/dispatch/route.rs`, and `Do` is every action of the shell |
+| `ActionId`, `Effect`, `Subject` | `shell-launcher`, `shell-model` | closed; a new action is a compile error in `def` and in `perform` until it is described and done |
+| `Activation`, `ProviderKind`, `Item` rows | `shell-launcher` | closed; a variant must break the exhaustive `row` match |
 | `BusRoute` `{Usual, Address, Absent}`, `WaylandRoute` `{Environment, Socket}` | `sill_services::env` | route choices, not behaviours |
-| `Reveal<O>` `{Hidden{last}, Revealed(O)}` | `sill-ui-kit::links` | a link's value |
-| `Start`, `OutputRank`, `Insertion` | `sill-ui-kit::surface` | closed |
+| `Reveal<O>` `{Hidden{last}, Revealed(O)}` | `shell-ui-kit::links` | a link's value |
+| `Start`, `OutputRank`, `Insertion` | `shell-ui-kit::surface` | closed |
 | `ControlCenterModule`, `CenterWidget`, `ProviderKind` | settings and launcher | matched once, in `module` and `card` and `row` |
-| service `Command`, `Event`, `Effect` | `sill-model` | closed sets stepped by `match` |
+| service `Command`, `Event`, `Effect` | `shell-model` | closed sets stepped by `match` |
 
 ---
 
@@ -589,13 +589,13 @@ Each ends with its tests. Name the concept once and use it in every file name be
 
 ### Add a service
 
-1. `sill-model/src/<x>/{mod,model,command,step,tests}.rs`: `State` (default = absent), `Command`,
+1. `shell-model/src/<x>/{mod,model,command,step,tests}.rs`: `State` (default = absent), `Command`,
    `Event`, `Effect` if `step` returns effects, `pub fn step(state, event) -> State` (or `->
    (State, Vec<Effect>)`), a `CASES` table test. Derive serde only for what crosses IPC or a file.
-2. `pub mod <x>;` in `sill-model/src/lib.rs`.
+2. `pub mod <x>;` in `shell-model/src/lib.rs`.
 3. A new ambient thing (a bus, a directory, a program) is a field on `Env` in
-   `sill-services/src/env/`, set in `from_process` and `isolated`, with a stand-in.
-4. `sill-services/src/<x>/mod.rs`: `pub enum XService {}` and `impl Service` (`run` calls
+   `shell-services/src/env/`, set in `from_process` and `isolated`, with a stand-in.
+4. `shell-services/src/<x>/mod.rs`: `pub enum XService {}` and `impl Service` (`run` calls
    `backend::run`); `backend/run.rs` and its effect files. Never `Connection::system()`,
    `std::env`, `Command::new` or `Zoned::now` outside `Env`. Build the backend from the kit, and
    write only what is specific to the service:
@@ -611,24 +611,24 @@ Each ends with its tests. Name the concept once and use it in every file name be
      `Posting`, the action key and `shown_for`;
    - watch files and folders with `debounced::Debounced`, and a Wayland connection with
      `wayland_thread::Follow`.
-5. `pub mod <x>;` in `sill-services/src/lib.rs`; re-export the marker only.
-6. `sill-ui-kit/src/services/registry.rs`: one line in `services!`, after the services in its
+5. `pub mod <x>;` in `shell-services/src/lib.rs`; re-export the marker only.
+6. `shell-ui-kit/src/services/registry.rs`: one line in `services!`, after the services in its
    deps: `field: XService = <deps expression>;` (add `=> <fake state>` when its fake should not
    start at the default). That one line is the `Services` field, the `Member` impl, the spawn
    (declaration order is start order, and a deps expression can only name services above it) and
    the fake. If a test or demo needs to feed it, claim its halves in
-   `sill-ui-kit/src/harness/fake/feeds.rs` (`Feeds`); an unclaimed fake is kept alive for you.
+   `shell-ui-kit/src/harness/fake/feeds.rs` (`Feeds`); an unclaimed fake is kept alive for you.
    Anything the deps need from the daemon (a channel it reads) is a field of `Wiring`.
 7. A service that claims a bus name needs nothing to be told: `Env::claims` decides. If it must
    stay passive until the person's settings say what to do, add a `Policy` (recipe below).
-8. Tests: the `step` table in `sill-model`; `sill-services/tests/<x>_bus.rs` on `PrivateBus`
-   (stand-in in `sill-testkit/examples/` if a peer is needed); the `services_start` test in
-   `sill-ui-kit` gains an absent-default assertion.
+8. Tests: the `step` table in `shell-model`; `shell-services/tests/<x>_bus.rs` on `PrivateBus`
+   (stand-in in `shell-testkit/examples/` if a peer is needed); the `services_start` test in
+   `shell-ui-kit` gains an absent-default assertion.
 9. A surface reads it with `use_service::<XService>()`.
 
 ### Add a policy (a service told by settings)
 
-1. `sill-settings/src/<domain>.rs` holds typed fields (recipe: settings key).
+1. `shell-settings/src/<domain>.rs` holds typed fields (recipe: settings key).
 2. `sill/src/policy/<x>.rs`: `struct XBridge`, `impl Policy` (`of` builds typed values,
    `command` wraps them); add `mod`.
 3. `daemon/services.rs::follow_settings`: `follow(rt, settings(), XBridge, services.x.control.clone())`.
@@ -656,7 +656,7 @@ Each ends with its tests. Name the concept once and use it in every file name be
    `Ds` boilerplate: `SurfaceRoot` supplies services, feed, appearance, scale and the frame
    clock, and `mount` has already installed the host seam (`ds_blitz::provide_host()`) and the
    seat's `HostSignals`; a `Ds` root passes no `scale`.
-3. A link the daemon or another surface drives is one file in `sill-ui-kit/src/links/<name>.rs`
+3. A link the daemon or another surface drives is one file in `shell-ui-kit/src/links/<name>.rs`
    and a field of `Links` in `links/mod.rs`, built in `build_links` in `daemon/run.rs`. A panel
    is a `PanelLink<P>` (the payload is what an opening carries); an answer for the desktop is an
    `Outbox<T>`. A surface never imports another surface.
@@ -682,43 +682,43 @@ Each ends with its tests. Name the concept once and use it in every file name be
 
 ### Add a control-center module
 
-1. `ControlCenterModule` variant in `sill-settings/src/control_center.rs` (a `Word`; `ALL`
+1. `ControlCenterModule` variant in `shell-settings/src/control_center.rs` (a `Word`; `ALL`
    follows from the derive).
-2. `sill-bar/src/control_center/modules/<name>.rs`: the component over `use_service`, and `impl
+2. `shell-bar/src/control_center/modules/<name>.rs`: the component over `use_service`, and `impl
    CcModule for NameModule`; a detail page in `pages/<name>.rs` if it has one.
 3. The one arm in `modules/mod.rs::module`. No other `match` on the kind.
-4. Tests: a row in `sill-bar/tests/it/control_center_render.rs`, whose loop runs every `ControlCenterModule::ALL`
+4. Tests: a row in `shell-bar/tests/it/control_center_render.rs`, whose loop runs every `ControlCenterModule::ALL`
    through tile, dropdown and detail on `SurfaceHarness::<ControlCenter>`.
 
 ### Add a widget
 
-1. The `sill_shell_kit::prelude::Widget` (`sill-shell-kit`'s `widget/<kind>/{mod, model, view, style.css}`),
-   then a `CenterWidget` variant in `sill-ui-kit/src/widgets/kind.rs`.
-2. `sill-ui-kit/src/widgets/<kind>/{mod,io,tests}.rs` (+ `style.css` if it has one):
+1. The `sill_shell_kit::prelude::Widget` (`shell-kit`'s `widget/<kind>/{mod, model, view, style.css}`),
+   then a `CenterWidget` variant in `shell-ui-kit/src/widgets/kind.rs`.
+2. `shell-ui-kit/src/widgets/<kind>/{mod,io,tests}.rs` (+ `style.css` if it has one):
    `impl WidgetProvider` (`use_feed` over services) on a unit struct in `io.rs`.
 3. The one arm in `widgets/card.rs::with_provider`, and the kind in `CENTER`
-   (`sill-notify-ui/src/notification_center/widgets.rs`); the slug and element id follow.
-4. Tests: the entry table in the kind's `tests.rs`; `sill-notify-ui/tests/it/center_widgets.rs`
+   (`shell-notify-ui/src/notification_center/widgets.rs`); the slug and element id follow.
+4. Tests: the entry table in the kind's `tests.rs`; `shell-notify-ui/tests/it/center_widgets.rs`
    counts the center's tiles.
 
 ### Add a launcher provider
 
-1. `ProviderKind` variant, and an `Activation` variant only if none fits, in `sill-launcher`.
-2. `sill-search/src/providers/<kind>/mod.rs`: `impl Provider`; effects take `Env` values
+1. `ProviderKind` variant, and an `Activation` variant only if none fits, in `shell-launcher`.
+2. `shell-search/src/providers/<kind>/mod.rs`: `impl Provider`; effects take `Env` values
    (paths, buses) through the constructor.
-3. Register in `sill-search/src/results/registry.rs`, in rank order.
-4. The row's arm in `sill-launcher-ui/src/launcher/rows.rs::row` (exhaustive).
+3. Register in `shell-search/src/results/registry.rs`, in rank order.
+4. The row's arm in `shell-launcher-ui/src/launcher/rows.rs::row` (exhaustive).
 5. Tests: `query` and `activate` tables beside the provider with `VecSink`; a rank test row in
-   `sill-launcher`.
+   `shell-launcher`.
 
 ### Add a settings key
 
 1. The design/22 row in quire first (with `RETIRING` when removing one).
-2. `sill-settings/src/<domain>.rs`: a field of a typed value: a `Word` enum, a `ds-settings`
+2. `shell-settings/src/<domain>.rs`: a field of a typed value: a `Word` enum, a `ui-settings`
    unit newtype, or a `bool` for a yes/no key (stored as TOML `true`/`false`, drawn as a switch); a
    two-state key whose words differ (`natural`/`traditional`) is a named enum.
    The default is the design's, set in the struct's `Default`. A string that
-   names a closed set is an enum parsed at load; a shared enum lives in `sill-model`, and the
+   names a closed set is an enum parsed at load; a shared enum lives in `shell-model`, and the
    settings field uses that type, never a copy.
    A list of tables is a `Vec<Row>` with `#[derive(SettingsRow)]` on the row (quire design/22
    §9.1); the file keeps the person's text, a function in the domain file turns the rows into
@@ -727,7 +727,7 @@ Each ends with its tests. Name the concept once and use it in every file name be
 3. A new domain is a file, a `ShellFile` field and a `schema.rs` entry.
 4. The reader: a surface reads `use_section(|file| &file.domain)`; a service is told through its
    `Policy`. `sill --write-schema <dir>` regenerates the schema.
-5. Tests: `sill-settings/tests/it/keys.rs` cross-checks the key against quire's rows both ways;
+5. Tests: `shell-settings/tests/it/keys.rs` cross-checks the key against quire's rows both ways;
    a parse table for a new enum.
 
 ### Add an action
@@ -755,7 +755,7 @@ app-served menus, window-menu entries, sliders and a search row's own data are n
    - a hot corner: its row in `corners::corner_effect` (`corners/effect.rs`; the held keys pick the binding in `corners/keys.rs`);
    - the command line: the request is `Request::Do(Ask)`, built in `cli/request.rs` (or the verb
      group's file) and covered by its table test. A verb casement sends is a variant of
-     `shell_verbs::ShellVerb` (that crate, in casement-protocols, first), with its row in
+     `shell_verbs::ShellVerb` (that crate, in desktop-protocols, first), with its row in
      `cli/verbs.rs::action_of`; clap's grammar for the same words must agree, which
      `every_verb_the_compositor_sends_parses_and_reaches_its_action` checks. Never rename a
      spelling that casement already binds;
@@ -825,7 +825,7 @@ the appearance clones `settings_feed.appearance`.
 3. It starts the daemon with a private bus on both addresses, a fake DDC, scratch `HOME` and
    `XDG_*`, its own `XDG_RUNTIME_DIR`, on the compositor `start_compositor` brings up:
    `SILL_COMPOSITOR=casement|kwin` (a headless casement started in the jail through the casement
-   checkout's `dev/up.sh`, or shell-host's headless KWin); a
+   checkout's `dev/up.sh`, or layer-shell-host's headless KWin); a
    script without that variable keeps its own `--default`. Compositor-specific work goes
    through the lib's helpers (`set_scale`, `output_size`, `shot`, `maximised_height`,
    `surface_click`, `input`), never a compositor's own tool; a step the compositor cannot prove
@@ -849,25 +849,25 @@ the appearance clones `settings_feed.appearance`.
 
 | Surface | Crate | Layer | Notes |
 | --- | --- | --- | --- |
-| `bar` | `sill-bar` | Top | Menus (app, status items, tray) through one `MenuPopup`; menu tracking is `ds`'s |
-| `control_center` | `sill-bar` | bar popup | `CcModule` grid; hung from the output's right edge |
-| `dock` | `sill-dock` | Bottom | Magnify, machines, three context menus (`context_menu/{app,trash,divider}.rs`, rows first, then `entries.rs`), badges, running dots |
-| `launcher`, `launcher_catcher` | `sill-launcher-ui` | Overlay | Panel plus click catcher, one `Reveal` link |
-| `banners`, `notification_center`, `screenshot_thumb` | `sill-notify-ui` | Overlay | Cards from `sill-ui-kit::notification_card` |
-| `osd`, `power_menu`, `polkit_prompt`, `confirm`, `accounts_sheet`, `switcher`, `idle_dim`, `hot_corners`, `wallpaper`, `window_menu`, `spaces_bar`, `split_picker` | `sill-overlays` | Overlay (wallpaper Background; `spaces_bar` Top) | `spaces_bar` is Mission Control's Spaces bar: while the compositor's overview is Mission Control and entering, open or tracking (`ShellNote::Overview` -> `sill::spaces_bar::apply_note` -> `SpacesBarLink`, which `daemon/events.rs` also feeds the desktop's view) and `ShellNote::OverviewOutput` says it is up on that output, the surface on that output hangs quire's `SpacesBar` under the menu bar (one tile per Space of that output, `sill_model::desktop::bar_spaces`, over its picture from `ShellNote::SpacePicture` (every Space of the output, hidden ones too) and over that output's wallpaper (`wallpaper::url_for`, passed to each tile as `SpaceTile::backdrop`), lit by `ShellNote::DropTarget`, and the plus, lit by `ShellNote::DropTargetNew`). The surface is the menu bar's height plus `BAR_EXPANDED_PX` tall, taller than the 112 px strip (`STRIP_PX`) the compositor keeps free, and takes input on the bar's own element (`RegionSpec::Element`, id `spaces-bar`). It publishes where its cards and its plus lie (quire's `on_layout`, moved by the output's origin into `BarLayout` on the link's feed; no geometry is computed in sill) and `spaces_bar::spawn_outbox` turns the layouts into `DesktopCommand::SetSpaceTargets`, then `SetNewSpaceTarget` (the plus; `None` once the bar goes), and, per `thumbs_wanted`, one `CaptureSpace` request per Space (kept across switches, asked again only after an answer and a change in the Space's windows). The surface unmaps when quire's lift settles. A tile or the plus writes `BarPick` to the link and `sill::outgoing` sends `SwitchSpace` then `Overview(MissionControl, Off)`, or `CreateSpace`. `split_picker` is the Split View choice: when a window takes one half of the screen the compositor offers the windows that can fill the other (`ShellNote::SplitChoose`, `SplitCandidate`, `SplitChoiceEnd` -> `SplitPickerLink`, which `sill::split_picker::apply` writes with the desktop's titles and output), and the surface on that output dims the screen and shows quire's `AppSwitcher` (one tile per window: its app icon through `sill_ui_kit::app_icons::TileIcons`, its title) in the free half; a tile, Return, Escape or a press elsewhere writes the answer to the link and `sill::outgoing` sends `DesktopCommand::PickSplit` or `CancelSplit`. `window_menu` draws nothing and takes no input: it is the parent of the popup quire's `Menu` shows when the compositor asks for a window's menu (the pointer rested on its green light; `ShellNote::WindowMenu` -> `WindowMenuLink`), and a pick goes back through the link to `DesktopCommand::PickWindowMenu`. Hot corners: one slot per corner that has a binding; a firing carries out the binding whose keys equal the modifiers held then (`Shell::held_mods`, from `ShellNote::Modifiers`; no match, nothing), through the launcher's own `run_effect` for a launch, an open or an app's action. `confirm` is `confirm_sheet/`; `accounts_sheet` (`accounts-sheet`) is accountd's consent question and add-account steps, each a centred titled window on the sheets' output (`sill_services::accounts::sheet` serves `org.quire.AccountsSheet1`); `confirm` is `confirm_sheet/`: intentd's question on quire's `Sheet`, mapped on the sheets' output; `voice-consent` is `voice_consent/`, the first-use microphone question the same way |
-| `force_quit` | `sill-overlays` | Overlay | Force Quit Applications (`sill force-quit {open,close,toggle}`; Option+Command+Escape once casement runs that command for the chord): a quire `Sheet` centred on the output of the active window, a `List` of the apps the desktop lists (`sill_model::desktop::force_quit_rows` over the `DesktopView` that `ForceQuitLink` follows, the one channel `Services::desktop`) with "(not responding)" after a hung one's name and a hung app preselected, a Force Quit button that asks quire's `Alert` ("Do you want to force quit ...?", Cancel the default) before `sill::outgoing` sends `DesktopCommand::ForceQuitApp`. The selection and the question are `force_quit/step.rs`; Escape answers the question, then closes the panel; a press away closes it |
-| `display-trial` | `sill-overlays` | Overlay | `display_trial/`: "Keep these display settings?" after a program other than the shell changed the displays (`ShellNote::DisplaysTrial` -> `DisplayTrialLink`), on quire's `Alert`, centred on the sheets' output; the line under the headline counts the seconds down, Revert is the default and Escape, Keep Changes keeps; answers nothing for `QUESTION_ARM_AFTER` after it is drawn; answers through the link and `DesktopCommand::AnswerTrial` |
-| `empty-trash` | `sill-overlays` | Overlay | `empty_trash/`: "Are you sure you want to permanently erase the items in the Trash?" after the `EmptyTrash` action (the dock's Trash menu), on quire's `Alert`, centred on the focused window's output; Cancel is the default and Escape, Empty Trash is destructive; answers nothing for the arming time after it is drawn; a yes goes back on `EmptyTrashLink` and the daemon empties the Trash |
-| `permission` | `sill-overlays` | Overlay | `permission_sheet/`: an app's yes-or-no question (`org.quire.Shell1.AskPermission` from the portal backend) on quire's `Alert`, centred on the sheets' output; the app's icon, the headline, the app's name and explanation, the yes button (default) and the no button (Escape); answers nothing for `PERMISSION_ARM_AFTER` after it is drawn; answers through `CaptureCommand::PermissionAnswer` |
-| `capture` | `sill-overlays` | Overlay | `capture_sheet/`: the screen-sharing picker, on quire's `Sheet`, on the sheets' output (`OutputPolicy::FocusedWindow`, like every sheet that asks the person); answers through `CaptureCommand` |
-| `eyedropper` | `sill-overlays` | Overlay | `eyedropper/`: a still picture of each output while the colour picker asks for a colour (`EyedropperLink`); a click picks, Escape cancels |
-| `lock` | `sill-overlays` | session lock | `LOCK`, a `LockSurface`; one per output through shell-host |
+| `bar` | `shell-bar` | Top | Menus (app, status items, tray) through one `MenuPopup`; menu tracking is `ds`'s |
+| `control_center` | `shell-bar` | bar popup | `CcModule` grid; hung from the output's right edge |
+| `dock` | `shell-dock` | Bottom | Magnify, machines, three context menus (`context_menu/{app,trash,divider}.rs`, rows first, then `entries.rs`), badges, running dots |
+| `launcher`, `launcher_catcher` | `shell-launcher-ui` | Overlay | Panel plus click catcher, one `Reveal` link |
+| `banners`, `notification_center`, `screenshot_thumb` | `shell-notify-ui` | Overlay | Cards from `shell-ui-kit::notification_card` |
+| `osd`, `power_menu`, `polkit_prompt`, `confirm`, `accounts_sheet`, `switcher`, `idle_dim`, `hot_corners`, `wallpaper`, `window_menu`, `spaces_bar`, `split_picker` | `shell-overlays` | Overlay (wallpaper Background; `spaces_bar` Top) | `spaces_bar` is Mission Control's Spaces bar: while the compositor's overview is Mission Control and entering, open or tracking (`ShellNote::Overview` -> `sill::spaces_bar::apply_note` -> `SpacesBarLink`, which `daemon/events.rs` also feeds the desktop's view) and `ShellNote::OverviewOutput` says it is up on that output, the surface on that output hangs quire's `SpacesBar` under the menu bar (one tile per Space of that output, `sill_model::desktop::bar_spaces`, over its picture from `ShellNote::SpacePicture` (every Space of the output, hidden ones too) and over that output's wallpaper (`wallpaper::url_for`, passed to each tile as `SpaceTile::backdrop`), lit by `ShellNote::DropTarget`, and the plus, lit by `ShellNote::DropTargetNew`). The surface is the menu bar's height plus `BAR_EXPANDED_PX` tall, taller than the 112 px strip (`STRIP_PX`) the compositor keeps free, and takes input on the bar's own element (`RegionSpec::Element`, id `spaces-bar`). It publishes where its cards and its plus lie (quire's `on_layout`, moved by the output's origin into `BarLayout` on the link's feed; no geometry is computed in sill) and `spaces_bar::spawn_outbox` turns the layouts into `DesktopCommand::SetSpaceTargets`, then `SetNewSpaceTarget` (the plus; `None` once the bar goes), and, per `thumbs_wanted`, one `CaptureSpace` request per Space (kept across switches, asked again only after an answer and a change in the Space's windows). The surface unmaps when quire's lift settles. A tile or the plus writes `BarPick` to the link and `sill::outgoing` sends `SwitchSpace` then `Overview(MissionControl, Off)`, or `CreateSpace`. `split_picker` is the Split View choice: when a window takes one half of the screen the compositor offers the windows that can fill the other (`ShellNote::SplitChoose`, `SplitCandidate`, `SplitChoiceEnd` -> `SplitPickerLink`, which `sill::split_picker::apply` writes with the desktop's titles and output), and the surface on that output dims the screen and shows quire's `AppSwitcher` (one tile per window: its app icon through `sill_ui_kit::app_icons::TileIcons`, its title) in the free half; a tile, Return, Escape or a press elsewhere writes the answer to the link and `sill::outgoing` sends `DesktopCommand::PickSplit` or `CancelSplit`. `window_menu` draws nothing and takes no input: it is the parent of the popup quire's `Menu` shows when the compositor asks for a window's menu (the pointer rested on its green light; `ShellNote::WindowMenu` -> `WindowMenuLink`), and a pick goes back through the link to `DesktopCommand::PickWindowMenu`. Hot corners: one slot per corner that has a binding; a firing carries out the binding whose keys equal the modifiers held then (`Shell::held_mods`, from `ShellNote::Modifiers`; no match, nothing), through the launcher's own `run_effect` for a launch, an open or an app's action. `confirm` is `confirm_sheet/`; `accounts_sheet` (`accounts-sheet`) is accountd's consent question and add-account steps, each a centred titled window on the sheets' output (`sill_services::accounts::sheet` serves `org.quire.AccountsSheet1`); `confirm` is `confirm_sheet/`: intentd's question on quire's `Sheet`, mapped on the sheets' output; `voice-consent` is `voice_consent/`, the first-use microphone question the same way |
+| `force_quit` | `shell-overlays` | Overlay | Force Quit Applications (`sill force-quit {open,close,toggle}`; Option+Command+Escape once casement runs that command for the chord): a quire `Sheet` centred on the output of the active window, a `List` of the apps the desktop lists (`sill_model::desktop::force_quit_rows` over the `DesktopView` that `ForceQuitLink` follows, the one channel `Services::desktop`) with "(not responding)" after a hung one's name and a hung app preselected, a Force Quit button that asks quire's `Alert` ("Do you want to force quit ...?", Cancel the default) before `sill::outgoing` sends `DesktopCommand::ForceQuitApp`. The selection and the question are `force_quit/step.rs`; Escape answers the question, then closes the panel; a press away closes it |
+| `display-trial` | `shell-overlays` | Overlay | `display_trial/`: "Keep these display settings?" after a program other than the shell changed the displays (`ShellNote::DisplaysTrial` -> `DisplayTrialLink`), on quire's `Alert`, centred on the sheets' output; the line under the headline counts the seconds down, Revert is the default and Escape, Keep Changes keeps; answers nothing for `QUESTION_ARM_AFTER` after it is drawn; answers through the link and `DesktopCommand::AnswerTrial` |
+| `empty-trash` | `shell-overlays` | Overlay | `empty_trash/`: "Are you sure you want to permanently erase the items in the Trash?" after the `EmptyTrash` action (the dock's Trash menu), on quire's `Alert`, centred on the focused window's output; Cancel is the default and Escape, Empty Trash is destructive; answers nothing for the arming time after it is drawn; a yes goes back on `EmptyTrashLink` and the daemon empties the Trash |
+| `permission` | `shell-overlays` | Overlay | `permission_sheet/`: an app's yes-or-no question (`org.quire.Shell1.AskPermission` from the portal backend) on quire's `Alert`, centred on the sheets' output; the app's icon, the headline, the app's name and explanation, the yes button (default) and the no button (Escape); answers nothing for `PERMISSION_ARM_AFTER` after it is drawn; answers through `CaptureCommand::PermissionAnswer` |
+| `capture` | `shell-overlays` | Overlay | `capture_sheet/`: the screen-sharing picker, on quire's `Sheet`, on the sheets' output (`OutputPolicy::FocusedWindow`, like every sheet that asks the person); answers through `CaptureCommand` |
+| `eyedropper` | `shell-overlays` | Overlay | `eyedropper/`: a still picture of each output while the colour picker asks for a colour (`EyedropperLink`); a click picks, Escape cancels |
+| `lock` | `shell-overlays` | session lock | `LOCK`, a `LockSurface`; one per output through layer-shell-host |
 
 The wallpaper surface takes the pointer over the whole output (`RegionSpec::Whole`) and, on a
 secondary press, opens the desktop's context menu (`wallpaper/menu/`: a `MenuPopup` with
 Change Wallpaper…, which opens Settings at its Wallpaper page; the picture is the `wallpaper.picture` setting, which `sill::policy::wallpaper` sends the wallpaper service).
 The notification center is the only place widgets are drawn; their providers live in
-`sill-ui-kit::widgets`.
+`shell-ui-kit::widgets`.
 
 ## 8. The daemon
 
@@ -913,7 +913,7 @@ The daemon exits with a failure and one line when another program owns `org.quir
 `/etc/quire/desktop-callers.toml` (`Env::callers`, loaded once at start, an empty table when it
 cannot be read: every call is then refused). A build with the `debug` feature also takes
 `sill run --dev-callers FILE`: the person's own rows file (peephole's developer rows, `Proof::Dev`,
-`callers/dev.rs`, feature `sill-services/dev-callers`) names the stand-ins a checkout built, for that
+`callers/dev.rs`, feature `shell-services/dev-callers`) names the stand-ins a checkout built, for that
 daemon only; a release build has no flag and no `dev-rows` feature.
 
 The desktop's own compositor (`daemon/compositor.rs`, `daemon/targets.rs`): `ShellSeat` holds the
@@ -952,7 +952,7 @@ copy: the links are built with `SpacesBarLink::following(rx)` and `ForceQuitLink
 (the Spaces bar and the panel read `bar_spaces` and `force_quit_rows` over it; `new()` follows a
 desktop nobody writes, for a test), the capture service takes it in `CaptureLinks`, and
 `ShellSeat` borrows it for the minimise targets and the split picker's cards. The Quire arm on
-shell-host's connection (`desktop_wl::quire::shell`) is only the shell role: commands, surface
+layer-shell-host's connection (`desktop_wl::quire::shell`) is only the shell role: commands, surface
 registrations and the shell protocol's notes. `desktop_wl::view::desktop_view` (a `DesktopView`
 from the standard client's state plus `Toplevels` recency) is still unused by the windows thread,
 which publishes an empty view off the Quire arm; only a test calls it.
@@ -964,11 +964,11 @@ which publishes an empty view off the Quire arm; only a test calls it.
 
 | Kind of thing | How it is tested |
 | --- | --- |
-| Pure (`sill-model` steps, `sill-launcher`, `sill-settings` parse, `sill-ipc` words) | `CASES` tables beside the code; serde round trips against exact bytes |
-| Service backend | `sill-services/tests/<x>_bus.rs`: `Env::isolated(tmp)` with `Buses` set to a `PrivateBus` address; peers are `sill-testkit` stand-ins. Runs in the gate. Only a test that needs a compositor is `#[ignore]`d and run from a dev script |
+| Pure (`shell-model` steps, `shell-launcher`, `shell-settings` parse, `shell-ipc` words) | `CASES` tables beside the code; serde round trips against exact bytes |
+| Service backend | `shell-services/tests/<x>_bus.rs`: `Env::isolated(tmp)` with `Buses` set to a `PrivateBus` address; peers are `shell-testkit` stand-ins. Runs in the gate. Only a test that needs a compositor is `#[ignore]`d and run from a dev script |
 | Providers, runner | `VecSink` and a fake `Sources::Providers`; the runner's latency test |
-| Surface | `SurfaceHarness<S: Surface>` (`sill-ui-kit`, feature `harness`) over quire's `ds_harness::Harness`: `SurfaceHarness::<S>::setup(link, slot)` then `.settings(ShellFile)`, `.viewport(..)`, `.appearance(..)`, `.start()`. It mounts `surface::mount::<S>` on fake `Services` (`fake::services()`; state set through `run.feeds`, commands read), a `PinnedAppearance`, `Clock::Virtual`, the surface's link (`run.link`) and the settings; the viewport is the surface's layer size unless overridden. `run.harness` is the `Harness` (`advance`, `html`, `pointer_move`, `count`). One live harness per thread. Real-input checks are dev scripts on shell-host's headless KWin |
-| Machines | table tests of `step`; `use_machine` is tested once, in quire's `ds-conformance/tests/it/machine.rs` |
+| Surface | `SurfaceHarness<S: Surface>` (`shell-ui-kit`, feature `harness`) over quire's `ds_harness::Harness`: `SurfaceHarness::<S>::setup(link, slot)` then `.settings(ShellFile)`, `.viewport(..)`, `.appearance(..)`, `.start()`. It mounts `surface::mount::<S>` on fake `Services` (`fake::services()`; state set through `run.feeds`, commands read), a `PinnedAppearance`, `Clock::Virtual`, the surface's link (`run.link`) and the settings; the viewport is the surface's layer size unless overridden. `run.harness` is the `Harness` (`advance`, `html`, `pointer_move`, `count`). One live harness per thread. Real-input checks are dev scripts on layer-shell-host's headless KWin |
+| Machines | table tests of `step`; `use_machine` is tested once, in quire's `ui-conformance/tests/it/machine.rs` |
 | Markup lint | `crates/sill/tests/it/lint.rs`: `const SURFACES: &[SurfaceCase]`, one loop over all 17, each row names its surface |
 | IPC and CLI | `crates/sill/tests/it/ipc.rs` (fake dispatcher, cap, timeout), `cli/request.rs` table |
 | Daemon latency | `crates/sill/tests/it/latency.rs` |
@@ -977,7 +977,7 @@ which publishes an empty view off the Quire arm; only a test calls it.
 ## 10. Repo rules
 
 - **Crate boundaries** are the tables in section 1; UI reaches services only through
-  `sill-ui-kit`'s `use_service`, `use_service_part` and `use_control`.
+  `shell-ui-kit`'s `use_service`, `use_service_part` and `use_control`.
 - **A service** has the shape of `Service`; its seams come from `Env` and nothing else; other
   services it reads are its `Deps` (model types). A service whose system half is missing still
   yields its receiver, at its default (`Unavailable` in the state, never a silent `Default`). A
@@ -991,7 +991,7 @@ which publishes an empty view off the Quire arm; only a test calls it.
 - **Every time-based UI test runs on `Clock::Virtual`** and pins `PinnedAppearance`.
 - **A new settings key** is a design/22 row in quire first; an unknown key in a file is a load
   diagnostic, not preserved.
-- **Every IPC wire form is pinned** by a row in `sill-ipc/tests/it/serde.rs`.
+- **Every IPC wire form is pinned** by a row in `shell-ipc/tests/it/serde.rs`.
 - **No `unsafe`** anywhere in the workspace.
 - **Dependencies:** sill-only dependencies sit after the pinned block in the root `Cargo.toml`.
 - **Tests** sit in the concept's `tests.rs` or `tests/`; no sibling `*_tests.rs`.

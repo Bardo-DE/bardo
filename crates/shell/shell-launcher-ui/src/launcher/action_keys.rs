@@ -5,8 +5,8 @@
 //! keymap resolves the key to the action and the row that carries it runs (`pane_keys.rs`). Pure.
 
 use keymap::Action;
-use ui_components::prelude::*;
 use shell_launcher::{ActionKeys, OwnAction};
+use ui_components::prelude::*;
 
 /// `keys` as a shortcut, when the action is bound to one.
 pub fn action_shortcut(keys: &ActionKeys) -> Option<Shortcut> {

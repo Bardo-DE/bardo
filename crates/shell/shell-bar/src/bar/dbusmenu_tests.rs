@@ -1,14 +1,14 @@
 //! A dbusmenu layout as menu entries: nesting, rules, marks, flags, icons, and a layout that
 //! changes while its menu is open.
 
-use ui_components::components::menus::item::item::MenuImage;
-use ui_components::prelude::Check as DsCheck;
-use ui_components::prelude::*;
 use shell_model::tray::{
     Check, Tray, TrayEvent, TrayIcon, TrayItem, TrayItemId, TrayMenuEntry, TrayMenuIcon,
     TrayMenuKind, TrayStatus, step,
 };
 use shell_model::units::Visibility;
+use ui_components::components::menus::item::item::MenuImage;
+use ui_components::prelude::Check as DsCheck;
+use ui_components::prelude::*;
 
 use super::{has_rows, menu_items};
 use crate::bar::pick::BarPick;

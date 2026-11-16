@@ -22,10 +22,10 @@ use compositor_render::{
     Rgba8, TextureBook, TilePreview, cursor_elements, output_elements, solid_rect,
     tile_preview_elements,
 };
-use ui_core::geometry::scale::Scale;
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::utils::CommitCounter;
 use support::{Offscreen1, beside, check, gles, image_of, output_key, pixman, render_once};
+use ui_core::geometry::scale::Scale;
 
 const GREY: Rgba8 = Rgba8 {
     r: 128,

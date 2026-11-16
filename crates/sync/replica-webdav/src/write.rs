@@ -9,15 +9,15 @@ use crate::refuse::write_error;
 use crate::replica::WebDavReplica;
 use crate::requests;
 use account_dav_proto::parse_multistatus;
+use account_http::http::header::CONTENT_TYPE;
+use account_http::http::{Method, Request, Response};
+use account_http::{HeaderText, Http, request, webdav};
 use sync_core::DELETED;
 use sync_core::status::write_unreached;
 use sync_core::{
     BaseVersion, Conflict, PutItem, PutRefused, PutTarget, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter,
 };
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Request, Response};
-use account_http::{HeaderText, Http, request, webdav};
 
 impl<H: Http> WebDavReplica<H> {
     pub(crate) async fn write(

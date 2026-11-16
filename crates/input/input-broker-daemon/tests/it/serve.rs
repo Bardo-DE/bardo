@@ -2,22 +2,22 @@
 //! and a fixed authority on the other.
 
 use crate::support::{USER, context, keycap, palmrest};
-use rustix::net::{
-    AddressFamily, RecvFlags, SendFlags, SocketFlags, SocketType, recv, send, socketpair,
+use input_broker_client::{
+    ClientError, Connection, Create, DeviceId, Event, Made, Reason, Sent, Session,
 };
-use std::sync::Arc;
-use std::time::{Duration, Instant};
 use input_broker_daemon::backend::fake::Fate;
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::seat::FixedSeat;
 use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::serve::{Context, serve};
-use input_broker_client::{
-    ClientError, Connection, Create, DeviceId, Event, Made, Reason, Sent, Session,
-};
 use input_broker_wire::codes::{EV_REL, REL_WHEEL};
 use input_broker_wire::limits::MAX_DATAGRAM;
 use input_broker_wire::{Reply, decode_reply};
+use rustix::net::{
+    AddressFamily, RecvFlags, SendFlags, SocketFlags, SocketType, recv, send, socketpair,
+};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 type Ctx = crate::support::TestContext;
 

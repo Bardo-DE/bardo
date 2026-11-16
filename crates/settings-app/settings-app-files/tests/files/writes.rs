@@ -2,12 +2,12 @@
 //! take turns, and several keys arrive in one rename.
 
 use crate::round_trip::{home, read_file, save_key, spec, word, write_file};
-use settings_app_files::{ConfigHome, load_places, save_places};
 use action_settings::{ModelChoice, OwnComputer, PlaceName, Places};
-use ui_helpers::{NewFileMode, ReadCap, update_atomic};
+use settings_app_files::{ConfigHome, load_places, save_places};
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::sync::Arc;
 use std::time::Duration;
+use ui_helpers::{NewFileMode, ReadCap, update_atomic};
 
 #[test]
 fn a_private_file_stays_private() {
@@ -123,7 +123,8 @@ fn places() -> Places {
 
 #[test]
 fn the_places_are_refused_over_a_file_that_cannot_be_read() {
-    let scratch = settings_app_testkit::Scratch::under(env!("CARGO_TARGET_TMPDIR"), "writes-places");
+    let scratch =
+        settings_app_testkit::Scratch::under(env!("CARGO_TARGET_TMPDIR"), "writes-places");
     let home = ConfigHome(scratch.path().to_path_buf());
     let file = scratch.join("docket/settings.toml");
     std::fs::create_dir_all(file.parent().expect("parent")).expect("mkdir");
@@ -131,7 +132,10 @@ fn the_places_are_refused_over_a_file_that_cannot_be_read() {
     std::fs::write(&file, bytes).expect("seed");
     let refused = save_places(&home, &places());
     assert!(
-        matches!(refused, Err(settings_app_files::FilesError::Unreadable { .. })),
+        matches!(
+            refused,
+            Err(settings_app_files::FilesError::Unreadable { .. })
+        ),
         "{refused:?}"
     );
     assert_eq!(std::fs::read(&file).expect("still there"), bytes);
@@ -139,7 +143,8 @@ fn the_places_are_refused_over_a_file_that_cannot_be_read() {
 
 #[test]
 fn the_places_land_together_beside_the_keys_they_do_not_own() {
-    let scratch = settings_app_testkit::Scratch::under(env!("CARGO_TARGET_TMPDIR"), "writes-places-ok");
+    let scratch =
+        settings_app_testkit::Scratch::under(env!("CARGO_TARGET_TMPDIR"), "writes-places-ok");
     let home = ConfigHome(scratch.path().to_path_buf());
     let file = scratch.join("docket/settings.toml");
     std::fs::create_dir_all(file.parent().expect("parent")).expect("mkdir");

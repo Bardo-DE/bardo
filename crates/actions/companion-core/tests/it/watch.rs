@@ -1,7 +1,7 @@
 //! Watching the almanac: when to ask again, and which events were already acted on.
 
-use memory_core::{EventRef, ReplicaId, Seq};
 use companion_core::EventWatch;
+use memory_core::{EventRef, ReplicaId, Seq};
 use provenance::{SpaceId, UnixSeconds};
 
 fn event(seq: u64) -> EventRef {

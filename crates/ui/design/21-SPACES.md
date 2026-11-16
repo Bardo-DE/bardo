@@ -8,7 +8,7 @@ is `archive/21-SPACES-arc.md`.
 
 Status: **settled** = decided with the user (PLAN "UX decisions settled", 2026-09-23; the
 2026-10-02 decisions in 30 section 3.4) or copied from code; **target (clean-up phase)** = settled
-here, not yet in the code (`ds-style/space/palette.rs`, `SpaceEditor`, `SpaceStore`).
+here, not yet in the code (`ui-style/space/palette.rs`, `SpaceEditor`, `SpaceStore`).
 `palette.rs` = `crates/ds-style/src/space/palette.rs`.
 
 ## 1. The model (settled)
@@ -142,14 +142,14 @@ never reaches it.
 - A window that has a `Sidebar` takes the Space tint on its ground; mailo does too. Nothing else
   in an app changes with the Space.
 - API (proposed): `Ds { look: Some(look), .. }` on the app root; a running app learns the
-  workspace's look through `ds-settings` (`use_environment`), keyed by the workspace its toplevel
+  workspace's look through `ui-settings` (`use_environment`), keyed by the workspace its toplevel
   is on.
 
 ## 10. Storage (settled path; target (clean-up phase) schema)
 
-`$XDG_CONFIG_HOME/quire/spaces.json`, atomic write (the `ds-settings` writer), watched with
+`$XDG_CONFIG_HOME/quire/spaces.json`, atomic write (the `ui-settings` writer), watched with
 `notify` (rename replaces inode; debounce 30 ms). `ds::style::space::store::SpaceStore` is the
-schema (`crates/ds-style/src/space/store.rs`), read and written through `ds-settings`'s
+schema (`crates/ds-style/src/space/store.rs`), read and written through `ui-settings`'s
 `Settings<SpaceStore>` with `Format::Json`. A `null` in `by_index` means "no look stored at this
 position".
 

@@ -7,11 +7,11 @@
 use super::open::{Capped, open_regular, read_capped};
 use super::private::{free_bytes, open_vault};
 use crate::layout::{RECORD_RELEASE, RECORD_SIGNATURE};
-use updater_core::release::MAX_INDEX_BYTES;
-use updater_core::{Authenticator, Hasher, Release, ReleaseError, SignError};
 use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
+use updater_core::release::MAX_INDEX_BYTES;
+use updater_core::{Authenticator, Hasher, Release, ReleaseError, SignError};
 
 /// How many times the bundle's size must be free before it is copied and unpacked: the private copy,
 /// and the tree it unpacks to (a compressed tree rarely shrinks to under a third).

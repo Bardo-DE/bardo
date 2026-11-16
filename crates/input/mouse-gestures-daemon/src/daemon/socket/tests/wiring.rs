@@ -4,7 +4,9 @@
 
 use super::support::{connect, me, recv, seat_file, send};
 use crate::daemon::socket::{FromSocket, Steering, ToSocket, bind, spawn};
-use mouse_gestures_proto::{DeviceInfo, Filter, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic};
+use mouse_gestures_proto::{
+    DeviceInfo, Filter, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
+};
 use std::sync::mpsc;
 use std::time::Duration;
 

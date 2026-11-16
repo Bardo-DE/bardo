@@ -8,19 +8,19 @@ use crate::builtin_chain::{Builtins, Chain};
 use crate::builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
 use crate::builtin_companion::{CompanionPort, CompanionProvider};
 use crate::link::DbusLink;
-use memory_client::Transport as MemoryTransport;
+use account_core::AppName;
 use action_core::LinkFault;
 use action_core::{
     AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
 use action_manifest::{Latency, ValidManifest};
 use action_manifest::{ManifestFileError, parse};
-use companion_memory::{MEMORY_APP, MemoryProvider};
-use permission_core::ACP_AGENT_APP;
-use permission_core::COMPANION_APP;
 use action_router::{AppFault, AppLink, CHECKPOINTS_APP};
 use action_vocab::{EntityRef, UndoToken};
-use account_core::AppName;
+use companion_memory::{MEMORY_APP, MemoryProvider};
+use memory_client::Transport as MemoryTransport;
+use permission_core::ACP_AGENT_APP;
+use permission_core::COMPANION_APP;
 use provenance::{Actor, EntityId};
 
 const MEMORY: &str = include_str!("../../manifests/org.quire.Memory.toml");

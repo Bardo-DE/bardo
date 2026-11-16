@@ -4,11 +4,11 @@
 
 use crate::support::{SharedKeys, TestBackend, dirs_in, service, space};
 use memory_core::*;
+use memory_daemon::{Daemon, FileLedger, SHELL_APP, TablePeers};
 use memory_fake::mail_thread_archived;
 use memory_service::Caller;
 use memory_service::spaces_from_toml;
 use memory_tidy::{RemovalLedger, Removals};
-use memory_daemon::{Daemon, FileLedger, SHELL_APP, TablePeers};
 
 type TestDaemon = Daemon<TestBackend, TablePeers>;
 

@@ -5,11 +5,11 @@
 //! any other edit, the feed settles, and the mode follows. So the file stays the one truth, and a
 //! hand edit and a toggle cannot disagree.
 
-use ui_settings::Store;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::FocusLink;
 use tokio::runtime::Handle;
 use tokio::sync::{mpsc, watch};
+use ui_settings::Store;
 
 use super::write_key::write_key;
 

@@ -3,11 +3,13 @@
 //! whose it is.
 
 use dioxus::prelude::*;
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use std::time::Duration;
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 320,

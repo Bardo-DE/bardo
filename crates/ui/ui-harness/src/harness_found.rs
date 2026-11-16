@@ -2,10 +2,10 @@
 //! handle it got.
 
 use crate::harness::Harness;
+use std::rc::Rc;
+use ui_blitz::seam::{DocRef, focus_finder, measure_element};
 use ui_components::host::found::Found;
 use ui_components::host::measure::Measured;
-use ui_blitz::seam::{DocRef, focus_finder, measure_element};
-use std::rc::Rc;
 
 impl Harness {
     /// The border box of the first element matching `selector`, through the host's `find` and

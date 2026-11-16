@@ -2,10 +2,10 @@
 //! keyboard, the pointer only asks; a menu's own cursor is heard as it moves.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

@@ -70,7 +70,7 @@ fn outcome_of(end: RelayEnd) -> ProxyOutcome {
         RelayEnd::Failed(RelayFault::Unreachable) => ProxyOutcome::Unreachable,
         RelayEnd::Failed(RelayFault::Tls) => ProxyOutcome::Tls,
         RelayEnd::Failed(RelayFault::ForeignOrigin) => ProxyOutcome::ForeignOrigin,
-        // a fault a later porter-proxy adds is a protocol fault until it is told apart
+        // a fault a later account-proxy adds is a protocol fault until it is told apart
         RelayEnd::Failed(_) => ProxyOutcome::Protocol,
     }
 }

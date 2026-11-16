@@ -21,11 +21,11 @@
 
 use crate::bridge;
 use crate::tee::{Echo, Tee};
-use model_extract::{ExtractFailure, Extracted, ShapedSession, ToolsPresent, choose};
-use model_provider::{ChoiceText, JsonText, Provider, SchemaText, Shape, TurnRequest};
 use account_ids::Tokens;
 use inference_core::{self as pi, ChargeTotal, InferEvent, ModelError};
 use inference_router::local::LocalModel;
+use model_extract::{ExtractFailure, Extracted, ShapedSession, ToolsPresent, choose};
+use model_provider::{ChoiceText, JsonText, Provider, SchemaText, Shape, TurnRequest};
 use std::ops::ControlFlow;
 
 pub mod limits;

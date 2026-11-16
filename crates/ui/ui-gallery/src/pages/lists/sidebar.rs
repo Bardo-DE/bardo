@@ -4,7 +4,9 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::row::Outline;

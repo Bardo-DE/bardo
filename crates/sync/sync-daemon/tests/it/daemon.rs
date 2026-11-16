@@ -5,14 +5,14 @@
 
 use crate::common::bus::PrivateBus;
 
-use sync_bus::SYNC_BUS;
 use account_dbus::BusTarget;
+use base_testkit::{Deadline, GENEROUS};
 use std::path::Path;
 use std::time::Duration;
+use sync_bus::SYNC_BUS;
 use sync_daemon::paths::Paths;
 use sync_daemon::scheduler::Network;
 use sync_daemon::{Config, Daemon};
-use base_testkit::{Deadline, GENEROUS};
 
 /// The paths for a person whose whole home is `home`; every file is under it.
 fn paths(home: &Path) -> Paths {

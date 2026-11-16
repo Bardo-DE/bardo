@@ -1,6 +1,6 @@
 [package]
 name = "account-nextcloud-proto"
-description = "Nextcloud's own protocol with no IO: Login Flow v2, the OCS capabilities, the app-password revoke and the paths of a server, as requests (http::Request<Vec<u8>>) and parsers over the replies. The WebDAV walk is dav-proto's."
+description = "Nextcloud's own protocol with no IO: Login Flow v2, the OCS capabilities, the app-password revoke and the paths of a server, as requests (http::Request<Vec<u8>>) and parsers over the replies. The WebDAV walk is account-dav-proto's."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

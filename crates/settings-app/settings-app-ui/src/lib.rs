@@ -1,6 +1,6 @@
 //! The Settings window: a search field and the page list in a sidebar, the selected page on the
 //! right, drawn only with quire's components. Values are read and written through
-//! `detent-files`; the programs' own watches apply them.
+//! `settings-app-files`; the programs' own watches apply them.
 
 mod accounts;
 mod advanced_view;

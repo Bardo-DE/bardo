@@ -12,10 +12,6 @@ use super::accountd::AccountdFault;
 use super::models::RemoteModel;
 use super::wire::{BodyShape, Temperature, flavor_of};
 use crate::settings::SpendLine;
-use model_openai_compat::OpenAiCodec;
-use model_provider as sp;
-use model_provider::{Provider, Retrying};
-use model_wire::Driver;
 use account_core::AppId;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusal, Knob, Model,
@@ -23,6 +19,10 @@ use inference_core::{
 };
 use inference_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
 use inference_turns::local::{RETRY, TokioSleep};
+use model_openai_compat::OpenAiCodec;
+use model_provider as sp;
+use model_provider::{Provider, Retrying};
+use model_wire::Driver;
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 use std::sync::Arc;

@@ -1,6 +1,4 @@
 use crate::stand::{Stand, pair};
-use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
-use std::time::Duration;
 use input_broker_client::{
     Broker, ClientError, Connection, Create, DeviceId, DeviceSource, Event, Made, Reason, Sent,
     Session,
@@ -8,6 +6,8 @@ use input_broker_client::{
 use input_broker_wire::codes::{EV_REL, REL_WHEEL};
 use input_broker_wire::limits::MAX_EVENTS_PER_DATAGRAM;
 use input_broker_wire::{Delivery, Reply, Request};
+use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
+use std::time::Duration;
 
 fn connection(fd: std::os::fd::OwnedFd) -> Connection {
     Connection::over_with_timeout(fd, Duration::from_millis(150))

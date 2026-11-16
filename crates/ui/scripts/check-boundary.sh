@@ -10,54 +10,54 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-# ds-core is plain data and maths, so sill's pure crates can use it: not even dioxus. ds-style and
-# ds-motion name dioxus only through their `dioxus` feature (ds-style: scope, scale, task, busy,
-# `Glyph`; ds-motion: the hooks, timers and event conversions), which neither enables by default,
-# so a compositor or a crate that only reads settings links no Dioxus; ds-settings has the same
-# feature for the environment that provides them. ds-behaviour holds the input machines a
-# compositor runs too, so like ds-core it reaches no Dioxus and no renderer. ds is renderer-free
-# and effect-free; ds-settings does I/O but never renders, and takes a Spawner instead of naming a
-# runtime. ds-helpers (missing helpers: probe PATH, ask PackageKit) is I/O too: zbus only, no
-# renderer, no runtime, and no quire crate but ds-peer (the deadline on each call to a peer).
-# chordkit (the keymap core) is pure and ds-core and ds take it; its I/O sources (chordkit-kde, chordkit-gnome
-# read a settings file) are named by ds-blitz alone, which injects them as the launch's default KeySource.
-# ds-desktop (the capability probe) names zbus only through its opt-in `dbus` feature and dioxus
+# ui-core is plain data and maths, so sill's pure crates can use it: not even dioxus. ui-style and
+# ui-motion name dioxus only through their `dioxus` feature (ui-style: scope, scale, task, busy,
+# `Glyph`; ui-motion: the hooks, timers and event conversions), which neither enables by default,
+# so a compositor or a crate that only reads settings links no Dioxus; ui-settings has the same
+# feature for the environment that provides them. ui-behaviour holds the input machines a
+# compositor runs too, so like ui-core it reaches no Dioxus and no renderer. ds is renderer-free
+# and effect-free; ui-settings does I/O but never renders, and takes a Spawner instead of naming a
+# runtime. ui-helpers (missing helpers: probe PATH, ask PackageKit) is I/O too: zbus only, no
+# renderer, no runtime, and no quire crate but ui-peer (the deadline on each call to a peer).
+# chordkit (the keymap core) is pure and ui-core and ds take it; its I/O sources (keymap-kde, keymap-gnome
+# read a settings file) are named by ui-blitz alone, which injects them as the launch's default KeySource.
+# ui-desktop (the capability probe) names zbus only through its opt-in `dbus` feature and dioxus
 # only through `dioxus`, so a build without them links neither; the rule below checks the default
 # build. Its all-features edges are none of ours.
-# ds-settings-page draws a schema (ds-settings' types) with ds's rows and controls; neither of those
+# ui-settings-page draws a schema (ui-settings' types) with ds's rows and controls; neither of those
 # may name the other, so the page is a crate of its own, and no D-Bus client or runtime comes with it.
-# ds-blitz reaches D-Bus only through its opt-in `print` and `menus` features, so an app that
-# never prints or exports a menu builds no D-Bus client for it, and pdfrum only through `pdf`; ds-harness inherits both rules
+# ui-blitz reaches D-Bus only through its opt-in `print` and `menus` features, so an app that
+# never prints or exports a menu builds no D-Bus client for it, and pdfrum only through `pdf`; ui-harness inherits both rules
 # (it turns on `pdf` only for its own `pdf` feature). pdfrum-anyrender (a git dependency
 # from the pdfrum repo) is not an in-tree edge, so it is not listed there. wgpu is a renderer
-# dependency like anyrender: only ds-blitz (the texture layer's device) and ds-harness (the
+# dependency like anyrender: only ui-blitz (the texture layer's device) and ui-harness (the
 # hybrid painter) name it; every other crate stays device-free.
-# ds-extensions (Extensions: the folder scan, the checks, on and off, the data capabilities) is a library
-# with no UI, no runtime and no bus: it reads settings through ds-settings, files through ds-helpers'
-# capped reader, and manifests through bayonet (a git dependency, not an in-tree edge). ds-settings must
+# ui-extensions (Extensions: the folder scan, the checks, on and off, the data capabilities) is a library
+# with no UI, no runtime and no bus: it reads settings through ui-settings, files through ui-helpers'
+# capped reader, and manifests through bayonet (a git dependency, not an in-tree edge). ui-settings must
 # never name it back (the Provided key kind knows nothing of what is installed).
-# quire-emoji finds the colour emoji face in a fontique collection for ds-blitz and for temor's terminal,
+# ui-emoji finds the colour emoji face in a fontique collection for ui-blitz and for temor's terminal,
 # which has no toolkit: only fontique, so no renderer, no toolkit, no D-Bus and not even parley.
 RULES=(
-  "ds-core: chordkit-kde chordkit-gnome zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-behaviour: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-intents: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-style: dioxus zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-motion: dioxus zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-lint: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-shell: zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds: chordkit-kde chordkit-gnome zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-settings: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-settings-page: zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-extensions: dioxus zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-helpers: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-desktop: zbus dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "quire-emoji: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context parley"
-  "ds-blitz: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
-  "ds-harness: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
-  "ds-peer: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds-core-derive: dioxus zbus tokio"
-  "ds-settings-derive: dioxus zbus tokio"
+  "ui-core: keymap-kde keymap-gnome zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-behaviour: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-intents: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-style: dioxus zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-motion: dioxus zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-lint: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-shell: zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ds: keymap-kde keymap-gnome zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-settings: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-settings-page: zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-extensions: dioxus zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-helpers: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-desktop: zbus dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-emoji: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context parley"
+  "ui-blitz: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
+  "ui-harness: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
+  "ui-peer: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-core-derive: dioxus zbus tokio"
+  "ui-settings-derive: dioxus zbus tokio"
 )
 fail=0
 
@@ -88,27 +88,27 @@ done
 # and build dependencies that live in this workspace, and nothing else. A dependency on a crate
 # not listed here is a leak; so is one the crate no longer has, so the table stays exact.
 EDGES=(
-  "ds-core-derive:"
-  "ds-settings-derive:"
-  "ds-core: ds-core-derive"
-  "ds-style: ds-core ds-core-derive"
-  "ds-motion: ds-core ds-style"
-  "ds-lint: ds-core ds-style"
-  "ds-intents: ds-core"
-  "ds-behaviour: ds-core"
-  "ds: ds-core ds-intents ds-motion ds-style"
-  "ds-shell: ds ds-core ds-motion ds-style"
-  "ds-settings: ds-core ds-helpers ds-peer ds-style ds-settings-derive"
-  "ds-settings-page: ds ds-settings"
-  "ds-extensions: ds-core ds-helpers ds-settings ds-style"
-  "ds-peer:"
-  "ds-helpers: ds-peer"
-  "ds-desktop: ds-peer"
-  "ds-blitz: blitz-kit ds ds-desktop ds-helpers ds-peer quire-emoji"
-  "ds-harness: blitz-kit ds ds-blitz ds-core"
-  "ds-gallery: ds ds-core ds-harness ds-lint ds-blitz ds-settings ds-shell"
-  "ds-conformance:"
-  "icons: ds ds-style ds-settings"
+  "ui-core-derive:"
+  "ui-settings-derive:"
+  "ui-core: ui-core-derive"
+  "ui-style: ui-core ui-core-derive"
+  "ui-motion: ui-core ui-style"
+  "ui-lint: ui-core ui-style"
+  "ui-intents: ui-core"
+  "ui-behaviour: ui-core"
+  "ds: ui-core ui-intents ui-motion ui-style"
+  "ui-shell: ds ui-core ui-motion ui-style"
+  "ui-settings: ui-core ui-helpers ui-peer ui-style ui-settings-derive"
+  "ui-settings-page: ds ui-settings"
+  "ui-extensions: ui-core ui-helpers ui-settings ui-style"
+  "ui-peer:"
+  "ui-helpers: ui-peer"
+  "ui-desktop: ui-peer"
+  "ui-blitz: blitz-embed ds ui-desktop ui-helpers ui-peer ui-emoji"
+  "ui-harness: blitz-embed ds ui-blitz ui-core"
+  "ds-gallery: ds ui-core ui-harness ui-lint ui-blitz ui-settings ui-shell"
+  "ui-conformance:"
+  "icons: ds ui-style ui-settings"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -124,10 +124,10 @@ for edge in "${EDGES[@]}"; do
   fi
 done
 
-# ds-conformance is test-only: no normal or build edge at all (the EDGES row above), and its
+# ui-conformance is test-only: no normal or build edge at all (the EDGES row above), and its
 # dev-dependencies are the crates it tests through, never the lower crates directly.
 DEV_EDGES=(
-  "ds-conformance: ds ds-shell ds-lint ds-settings ds-blitz ds-harness"
+  "ui-conformance: ds ui-shell ui-lint ui-settings ui-blitz ui-harness"
 )
 for edge in "${DEV_EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -147,7 +147,7 @@ done
 # overlay stack, the root, the components and assembly on top. A file in a layer may name
 # (`crate::<module>`) only its own layer and the ones below it; mail's own components
 # (components::app) are named by nothing but themselves and assembly. Doc links count. The layers
-# that became crates (ds-core, ds-style, ds-motion, ds-lint, ds-shell) are kept by EDGES above and
+# that became crates (ui-core, ui-style, ui-motion, ui-lint, ui-shell) are kept by EDGES above and
 # by cargo itself: a `pub(crate)` item cannot be named across a crate boundary.
 DS=crates/ds/src
 LAYERS=(
@@ -198,14 +198,14 @@ if [ "$layered" -eq 0 ]; then
   echo "layers hold: host < hooks < stack < root < components < assembly; component groups in order"
 fi
 
-# The crate roots of ds and ds-shell hold declarations, `prelude` and the curated roots (the
+# The crate roots of ds and ui-shell hold declarations, `prelude` and the curated roots (the
 # stylesheet assembly) only: every other name has one path, its home module or the prelude. A new
 # `pub use` at either root introduces a name outside the allowed set below and fails here.
 # The three facades (`pub use ds_core as base;`, `ds_style as style`, `ds_motion as motion`) are the
 # only crate re-exports.
 ROOT_ALLOWED_DS="pub use crate assembly selectors kit KIT kits stylesheet component_sheets ds_core base ds_style style ds_motion motion as"
 ROOT_ALLOWED_DS_SHELL="pub use crate kit KIT kits stylesheet component_sheets"
-for root in "ds:$ROOT_ALLOWED_DS" "ds-shell:$ROOT_ALLOWED_DS_SHELL"; do
+for root in "ds:$ROOT_ALLOWED_DS" "ui-shell:$ROOT_ALLOWED_DS_SHELL"; do
   crate="${root%%:*}"
   read -r -a allowed <<<"${root#*:}"
   lib="crates/$crate/src/lib.rs"

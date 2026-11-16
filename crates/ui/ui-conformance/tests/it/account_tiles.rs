@@ -5,6 +5,8 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::rect;
+use std::time::Duration;
 use ui_components::components::app::pin_tile::{PinFace, PinStatus};
 use ui_components::components::app::pin_tiles::{PinAdd, PinItem, PinMenu, PinTiles};
 use ui_components::components::content::image_source::ImageSource;
@@ -12,8 +14,6 @@ use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle}
 use ui_components::prelude::*;
 use ui_components::style::tokens::hex::{Colour, Hex};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use probe::rect;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 320,
@@ -263,7 +263,8 @@ fn an_attention_mark_sits_top_left_named_by_its_reason() {
     let tile = rect(&harness, ".ds-pin-tile[*|data-status=attention]");
     let mark = rect(&harness, ATTENTION);
     let badge = rect(&harness, ".ds-pin-tile[*|data-status=attention] .ds-badge");
-    let centre = |r: ui_components::base::geometry::units::Rect| r.origin.x.0 + r.size.width.0 / 2.0;
+    let centre =
+        |r: ui_components::base::geometry::units::Rect| r.origin.x.0 + r.size.width.0 / 2.0;
     assert!(
         centre(mark) < tile.origin.x.0 + tile.size.width.0 / 2.0,
         "the mark is on the left half: {mark:?} {tile:?}"

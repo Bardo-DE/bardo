@@ -6,8 +6,8 @@ use crate::readiness::Readiness;
 use crate::reply::{InferReply, ServedBy, TokenUsage};
 use crate::request::{InferRequest, ToolCallPart};
 use crate::speech::{AudioFrame, AudioFrameOut, HeardDelta};
-use computer_use_action::{CuaAction, WindowSpace};
 use account_ids::Count;
+use computer_use_action::{CuaAction, WindowSpace};
 use serde::{Deserialize, Serialize};
 
 /// A frame from the client to inferd. Audio frames follow a `Transcribe` request.

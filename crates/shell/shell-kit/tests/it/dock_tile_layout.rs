@@ -6,13 +6,13 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::style::icon::family::PlateFamily;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use probe::rect;
 use shell_kit::prelude::*;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_components::style::icon::family::PlateFamily;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 320,

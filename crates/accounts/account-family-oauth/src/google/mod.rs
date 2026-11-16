@@ -517,9 +517,8 @@ mod tests {
 
     #[test]
     fn the_account_a_sign_in_makes_is_the_reads_and_nothing_else() {
-        let spec =
-            account_provider::parse_provider(include_str!("../../../providers/google.toml"))
-                .expect("the shipped Google file");
+        let spec = account_provider::parse_provider(include_str!("../../../providers/google.toml"))
+            .expect("the shipped Google file");
         let credential = || Credential::OAuth {
             expires_at: UnixSeconds(3_600),
             access: account_core::SecretText::new("access"),

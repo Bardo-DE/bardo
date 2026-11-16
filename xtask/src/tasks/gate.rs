@@ -112,7 +112,7 @@ fn steps(selection: &Selection) -> Vec<Vec<String>> {
 
 /// Tests that only build with a feature a plain workspace run must not unify on (it would
 /// change other crates' binaries). Moves to layers.toml's per-crate `features` in phase 2.
-const FEATURE_TESTS: [(&str, &str); 1] = [("porter-secrets", "test-keys")];
+const FEATURE_TESTS: [(&str, &str); 1] = [("account-secrets", "test-keys")];
 
 /// Files changed against `base`, committed, staged, unstaged or untracked, relative to `root`.
 fn changed_files(root: &Path, base: Option<&str>) -> Result<Vec<String>> {

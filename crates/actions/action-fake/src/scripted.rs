@@ -1,15 +1,15 @@
 //! Scripted stand-ins for the seams that ask a person or a model: each answers from a queue
 //! (or a fixed mode) and records what it was asked, so a test can assert call counts.
 
-use action_review::{ReviewReason, ReviewRequest, ReviewVerdict, Reviewer};
-use memory_core::{MemoryReply, MemoryRequest};
 use action_core::{
     ActionCard, ConfirmAnswer, ConfirmEnd, ConfirmId, ConfirmRequest, Confirmer, PolicyWriter,
     Reader, ReaderAsk, ReaderError, UserTurn,
 };
 use action_core::{LinkFault, MemoryLink};
-use permission_core::{ReasonCode, ReasonText, ReviewError, Stage, TaskPolicy};
+use action_review::{ReviewReason, ReviewRequest, ReviewVerdict, Reviewer};
 use action_vocab::Value;
+use memory_core::{MemoryReply, MemoryRequest};
+use permission_core::{ReasonCode, ReasonText, ReviewError, Stage, TaskPolicy};
 use provenance::{Quarantined, SessionId, SpaceId, TaskId};
 use std::collections::VecDeque;
 use std::sync::Mutex;

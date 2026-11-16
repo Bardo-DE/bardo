@@ -9,16 +9,15 @@ use crate::companion_support::{self, desk_or_return};
 
 use std::sync::{Arc, Mutex};
 
-use memory_core::{
-    Fact, FactId, FactState, FactText, FactView, MemoryItem, Settlement, TopicPath, UseCount,
-    Validity,
-};
-use companion_wire::{AnswerPhase, AskWire};
 use action_core::{ContextKeep, Keep, UndoScope, UndoState};
 use action_dbus::{COMPANION_BUS, INTENTS_BUS, PROVIDER_PATH, answer_path};
 use action_vocab::UndoId;
 use action_wire::SummonAnswer;
-use ui_core::vocab::MemoryVerb;
+use companion_wire::{AnswerPhase, AskWire};
+use memory_core::{
+    Fact, FactId, FactState, FactText, FactView, MemoryItem, Settlement, TopicPath, UseCount,
+    Validity,
+};
 use provenance::{Actor, InputProof, Label, RunId, SpaceId, UnixSeconds};
 use shell_launcher::{Generation, LauncherMode, RunControl, WindowKey};
 use shell_model::companion::{
@@ -26,6 +25,7 @@ use shell_model::companion::{
     SummonParams,
 };
 use shell_model::units::Ms;
+use ui_core::vocab::MemoryVerb;
 use zbus::zvariant::ObjectPath;
 
 use companion_support::stand_ins::{
@@ -520,7 +520,7 @@ async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
     desk.state(|c| (c.runs.len() == 2).then_some(())).await;
     desk.send(CompanionCommand::StopAll);
     // The run that was going took the call. That the paused one is never called is the pure
-    // `going_runs` table's claim (sill-model).
+    // `going_runs` table's claim (shell-model).
     desk.log_has("pause r_1").await;
 }
 

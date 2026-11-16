@@ -8,8 +8,8 @@
 //! (`super::directives`); the capability that would open the file would let a compromised service
 //! read every file, and reading the process's memory instead would let it read every process's.
 
-use caller_identity_linux::ProcFs;
 use caller_identity_core::Pid;
+use caller_identity_linux::ProcFs;
 /// The most of a process's status file that is read.
 pub const STATUS_CAP: u64 = 16 * 1024;
 

@@ -1,9 +1,9 @@
 //! intentd's library: everything the daemon is made of except `main`, so each part is tested
-//! without a bus. The router is pure (`docket-router`); this crate gives it its seams.
+//! without a bus. The router is pure (`action-router`); this crate gives it its seams.
 //!
 //! - `IntentdConfig`: which bus names play which role, and which reviewers are installed.
 //! - `builtin_manifests`, `CompanionProvider`, `CheckpointsProvider`, `HostedLink`: the providers
-//!   whose router-side half intentd hosts (`MemoryProvider` is `docket-memory`'s), and the `AppLink`
+//!   whose router-side half intentd hosts (`MemoryProvider` is `companion-memory`'s), and the `AppLink`
 //!   that answers them in process.
 //! - `AlmanacMemory`: the router's memory seam over memoryd; `AuditLog`: the way of the event
 //!   sink (`companion_memory_core::QueuedSink`) to memoryd.
@@ -48,15 +48,16 @@ mod space_watch;
 mod system;
 mod writer;
 
+pub use account_callers::ProcRoot;
 pub use acp_gate::{ACP_NAME, AcpGate};
 pub use audit::{AuditLog, Flushed};
 pub use builtin::{HostedLink, builtin_manifests, is_builtin};
 pub use builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
 pub use builtin_companion::{CompanionPort, CompanionProvider};
+pub use companion_memory::AlmanacMemory;
 pub use config::{ConfigError, IntentdConfig};
 pub use daemon::{DaemonFault, HarnessSeams, Running, Setup, data_dirs, run, run_with, start};
 pub use defaults::{DEFAULT_GRANTS_FILE, default_grants_file, revoking};
-pub use companion_memory::AlmanacMemory;
 pub use floor::{FLOOR_FILE, FloorError, read_floor};
 pub use grants::FileGrants;
 pub use index_files::{IndexFileFault, IndexStore};
@@ -69,7 +70,6 @@ pub use policies::{
     ADMIN_DIR, LoadedPolicies, PolicyDirs, PresetOrigin, load_policies, read_sources,
 };
 pub use policies_watch::{follow as follow_policies, reload as reload_policies};
-pub use account_callers::ProcRoot;
 pub use reach::{LiveReach, follow as follow_reach, parse_reach};
 pub use reviewers::{placeholder_set, reviewer};
 pub use search_files::{search_dir, ship_search_files};

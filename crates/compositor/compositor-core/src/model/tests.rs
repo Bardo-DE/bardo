@@ -16,10 +16,10 @@ use crate::space::{Space, SpaceContent, SpaceIndex, SplitPair};
 use crate::time::Millihertz;
 use crate::window::{SizeLimits, SpacePlace, StackRank, WindowOrigin, WindowState};
 use crate::{LayerKey, MappedToplevel};
-use desktop_protocols::vocab::{Emphasis, Modality, WindowRole};
-use ui_core::vocab::Fraction;
 use account_core::{AppId, AppName, ClaimedId, Isolation, SpaceId};
+use desktop_protocols::vocab::{Emphasis, Modality, WindowRole};
 use std::time::Duration;
+use ui_core::vocab::Fraction;
 
 fn at(ms: u64) -> Mono {
     Mono(Duration::from_millis(ms))

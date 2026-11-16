@@ -4,10 +4,10 @@
 
 use crate::support::infer::{call, words};
 use crate::support::world::*;
-use agent_loop::LoopPhase;
-use companion_wire::{AnswerBody, AnswerPhase, NeedsYou};
 use action_core::*;
 use action_wire::SessionOpen;
+use agent_loop::LoopPhase;
+use companion_wire::{AnswerBody, AnswerPhase, NeedsYou};
 use provenance::{
     Address, AgentRef, Integrity, MessageKind, MessageText, ReportStatus, RunId, SessionId, Source,
     UnixSeconds,

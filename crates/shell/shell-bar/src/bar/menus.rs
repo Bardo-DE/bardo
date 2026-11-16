@@ -1,8 +1,8 @@
 //! The bar's menus: one per title and status item (design/20 §1.1), each a [`MenuId`] for the
 //! tracking machine and a [`MenuSide`] for the popup configuration.
 
-use ui_components::base::word::Word;
 use shell_settings::ControlCenterModule;
+use ui_components::base::word::Word;
 
 use crate::control_center::modules::module;
 

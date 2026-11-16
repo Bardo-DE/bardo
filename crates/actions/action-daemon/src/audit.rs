@@ -1,11 +1,11 @@
 //! The audit log's way to memoryd. The mapping, the queue and the retry accounting are
-//! `docket-memory`'s (portable, over any memory link); this is the daemon's log: it owns the
+//! `companion-memory`'s (portable, over any memory link); this is the daemon's log: it owns the
 //! memoryd link and says on standard error when the link goes down and comes back, how many
 //! records it had to drop, and which Space memoryd refused.
 
-use memory_client::Transport;
 use action_core::AuditRecord;
 use companion_memory::{AlmanacMemory, AuditState, Link};
+use memory_client::Transport;
 use provenance::SpaceId;
 use std::collections::BTreeSet;
 

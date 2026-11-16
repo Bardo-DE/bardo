@@ -11,13 +11,13 @@
 //! `--registry-file FILE` reads the snapshot from a file instead of the registry. `install` says
 //! `installing ID VERSION` on its first line before it reaches the network.
 
-use agent_registry::dirs::AgentsDir;
-use agent_registry::snapshot::{Snapshot, SnapshotFault};
-use clap::{Parser, Subcommand};
 use agent_install::fetch::{Curl, Fetch, FetchFault};
 use agent_install::run::System;
 use agent_install::store::{agents, versions};
 use agent_install::{Standing, Want, install, offers, standing};
+use agent_registry::dirs::AgentsDir;
+use agent_registry::snapshot::{Snapshot, SnapshotFault};
+use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::process::ExitCode;
 

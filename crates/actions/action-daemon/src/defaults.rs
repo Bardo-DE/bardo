@@ -8,10 +8,10 @@
 //! Anything else in the file is skipped with a line on standard error, so a defaults file can
 //! never lend the companion mail, files or the screen.
 
-use permission_core::ActionGrant;
 use account_core::DataClass;
 use account_core::GrantId;
 use account_core::consent::{Decision, Grant, GrantScope};
+use permission_core::ActionGrant;
 use provenance::UnixSeconds;
 use std::path::{Path, PathBuf};
 

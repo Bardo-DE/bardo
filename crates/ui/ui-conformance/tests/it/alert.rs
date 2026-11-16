@@ -8,11 +8,11 @@
 //! the delay has run, then everything as above.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 800,

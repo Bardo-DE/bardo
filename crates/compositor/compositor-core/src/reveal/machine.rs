@@ -4,9 +4,9 @@
 use super::{Place, RevealTiming};
 use crate::time::Mono;
 use desktop_protocols::vocab::Shown;
+use std::time::Duration;
 use ui_core::vocab::Fraction;
 use ui_style::tokens::easing::EasingToken;
-use std::time::Duration;
 
 /// Where the reveal is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

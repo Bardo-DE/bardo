@@ -161,7 +161,7 @@ build_session() {
   put_system 644 "$ROOT/dist/desktop-callers.toml" /etc/quire/desktop-callers.toml
   # The colour emoji font (install.sh puts the same two files in <prefix>/share/fonts/quire/): ubuntu and arch ship
   # a bitmap build our renderer cannot draw. share/fonts is exported to /usr/share/fonts, where quire's search
-  # (ds-blitz emoji_file.rs: <data dir>/fonts/quire/Noto-COLRv1.ttf for each XDG data dir, /usr/share included) finds it.
+  # (ui-blitz emoji_file.rs: <data dir>/fonts/quire/Noto-COLRv1.ttf for each XDG data dir, /usr/share included) finds it.
   put 644 "$ROOT/fonts/Noto-COLRv1.ttf" share/fonts/quire/Noto-COLRv1.ttf
   put 644 "$ROOT/fonts/OFL.txt" share/fonts/quire/OFL-Noto-COLRv1.txt
   # quire's look Extensions (Editorial), from the quire crate of this tree (install.sh above is given no tree, so it stages none).
@@ -320,7 +320,7 @@ build_palmrest() {
 
 build_slipway() {
   local d; d=$(repo_dir slipway)
-  # slipway-root is the crate of the three programs that run as root (slipway-apply, slipway-rollback,
+  # updater-root is the crate of the three programs that run as root (slipway-apply, slipway-rollback,
   # slipway-health); they are built here, in the same target folder, so the workflow can hand them to the smoke job.
   cargo_in -p updater-daemon -p updater-root
   # INTERIM: slipway's scripts/install.sh installs the helpers, polkit action, unit and bus file on a machine

@@ -5,6 +5,7 @@
 use crate::support::specimens::{Checks, Specimen};
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::base::press::Press;
 use ui_components::components::controls::badge::BadgeContent;
@@ -18,7 +19,6 @@ use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint;
 use ui_components::style::space::presets::PRESETS;
 use ui_components::style::tokens::shape::Corner;
-use shell_kit::prelude::*;
 
 /// The Work Space's Monochrome plate tint.
 fn work() -> Option<PlateTint> {

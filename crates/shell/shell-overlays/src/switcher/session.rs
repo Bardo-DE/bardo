@@ -3,9 +3,9 @@
 //! leaving after a Q. Pure: `io.rs` holds it and carries out what it says.
 
 use super::apps::{AppShown, SwitcherApp, activate, hide, quit};
-use ui_behaviour::switcher::SwOut;
 use shell_launcher::AppId;
 use shell_model::windows::WlCommand;
+use ui_behaviour::switcher::SwOut;
 
 use shell_ui_kit::links::AskSerial;
 
@@ -114,9 +114,9 @@ impl Session {
 #[cfg(test)]
 mod tests {
     use crate::switcher::apps::{AppShown, SwitcherApp};
-    use ui_behaviour::switcher::SwOut;
     use shell_launcher::{AppId, WindowKey};
     use shell_model::windows::WlCommand;
+    use ui_behaviour::switcher::SwOut;
 
     use super::Session;
     use shell_ui_kit::links::AskSerial;

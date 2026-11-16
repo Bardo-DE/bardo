@@ -8,8 +8,8 @@
 use super::accountd::AccountVerdict;
 use super::models::{WIRES, known_providers, provider_of};
 use crate::engines::CLOUD_ACCOUNT;
-use model_catalog::{ModelEntry, reachable, slot_members};
 use inference_core::Takes;
+use model_catalog::{ModelEntry, reachable, slot_members};
 
 /// Why a model nobody can reach yet cannot be picked (the schema's `unavailable` reason; the
 /// Settings app shows it and greys the choice).

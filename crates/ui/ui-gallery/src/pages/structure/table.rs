@@ -3,7 +3,9 @@
 use crate::pages::Section;
 use dioxus::prelude::*;
 use ui_components::components::lists::row::size::RowSize;
-use ui_components::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn, TableRow};
+use ui_components::components::lists::table::model::{
+    CellAlign, Sort, SortDirection, TableColumn, TableRow,
+};
 use ui_components::components::lists::table::view::Table;
 use ui_components::prelude::*;
 

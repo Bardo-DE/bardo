@@ -2,8 +2,8 @@
 //! the one given. Skips, with a printed reason, where it does not. Scratch directories, an
 //! unreachable bus, a scratch home.
 
-use sandbox::{AgentNet, AgentRun, Argv, BwrapSandbox, Detected, EnvVar};
 use agent_launch::{BwrapProcs, Proc, Procs, StdioWire};
+use sandbox::{AgentNet, AgentRun, Argv, BwrapSandbox, Detected, EnvVar};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt};
 
 fn bwrap() -> Option<BwrapSandbox> {

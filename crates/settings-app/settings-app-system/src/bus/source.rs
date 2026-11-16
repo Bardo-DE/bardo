@@ -7,7 +7,7 @@ use super::vouch::Vouch;
 #[derive(Debug, Clone)]
 pub enum BusSource {
     /// The user's session bus. The owner of each service's name must hold that service's role in
-    /// the desktop's caller table (`detent-callers`), or the service is unavailable.
+    /// the desktop's caller table (`settings-app-callers`), or the service is unavailable.
     Session,
     /// A bus at this address, whose service owners `Vouch` judges (a test's private bus: it names
     /// its own check, since no caller table describes its stand-ins).

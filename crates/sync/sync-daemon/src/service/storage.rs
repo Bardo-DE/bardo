@@ -1,7 +1,7 @@
 //! `org.quire.Storage1` at `/org/quire/Storage1` on syncd's connection: the drives shown in
 //! Files and their items, served from each drive's files on demand ([`DriveSet`]).
 //!
-//! - The caller is the connection's, found by porter-dbus's `Callers` as for `Sync1`. The shell
+//! - The caller is the connection's, found by account-dbus's `Callers` as for `Sync1`. The shell
 //!   (`CallerRole::SheetHost`) and Settings (`CallerRole::Settings`) see every drive; an app sees
 //!   them when the person let it see their files (the apps of [`FilesApps`]); anyone else, and a
 //!   sender syncd does not know, is `AccessDenied`, for every method. `SetPaused` is the shell's
@@ -23,6 +23,15 @@ use super::errors::RefusedError;
 use crate::datasets::drive::{DriveEvent, DriveSet, LiveDrive};
 use crate::service::Access;
 use crate::words;
+use account_callers::{Caller, CallerRole, Callers};
+use account_dbus::Call;
+use account_dbus::Details;
+use drive_core::{Node, NodeId, NodeKind, Reason, Status};
+use std::collections::{BTreeMap, BTreeSet};
+use std::path::{Path, PathBuf};
+use std::pin::Pin;
+use std::sync::{Arc, Mutex, PoisonError};
+use std::time::Duration;
 use sync_bus::STORAGE_PATH;
 use sync_bus::{
     DRIVE_KEY_ACCOUNT, DRIVE_KEY_LABEL, DRIVE_KEY_LOCAL, DRIVE_KEY_PATH, DRIVE_KEY_PROVIDER,
@@ -30,15 +39,6 @@ use sync_bus::{
     ITEM_KEY_KEPT, ITEM_KEY_KIND, ITEM_KEY_OTHER, ITEM_KEY_STATE, ITEM_KEY_URL, ITEM_KEY_WORDS,
     ItemDetails, ItemKind, ItemState, Refused, Saved, StorageServed, StorageServer,
 };
-use drive_core::{Node, NodeId, NodeKind, Reason, Status};
-use account_callers::{Caller, CallerRole, Callers};
-use account_dbus::Call;
-use account_dbus::Details;
-use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Path, PathBuf};
-use std::pin::Pin;
-use std::sync::{Arc, Mutex, PoisonError};
-use std::time::Duration;
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;

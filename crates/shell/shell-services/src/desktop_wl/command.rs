@@ -1,11 +1,11 @@
 //! The shell's commands as the wire client's: a [`WlCommand`] first in the desktop's words
 //! ([`DesktopCommand`]), then in the protocols'.
 
-use desktop_protocols::vocab::ShellRole;
+use account_core::SpaceId;
 use desktop_client::toplevel::ToplevelFlag;
 use desktop_client::workspace::WorkspaceAbility;
 use desktop_client::{DesktopCommand as Wire, DesktopState};
-use account_core::SpaceId;
+use desktop_protocols::vocab::ShellRole;
 use shell_model::desktop::{DesktopBackend, DesktopCommand, supports};
 use shell_model::windows::WlCommand;
 

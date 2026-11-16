@@ -4,11 +4,11 @@ use crate::support::{Sandbox, TMP, VIEW};
 use settings_app_model::PageSlug;
 use settings_app_system::person::FakePerson;
 use settings_app_ui::Opening;
-use ui_components::prelude::Scheme;
-use ui_harness::snapshot_with;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_components::prelude::Scheme;
+use ui_harness::snapshot_with;
 
 fn shots_dir() -> PathBuf {
     std::env::var_os("DETENT_SHOTS")
@@ -26,8 +26,8 @@ fn shoot(page: &str, scheme: Scheme, name: &str) -> usize {
         query: String::new(),
     };
     let config = sandbox.config(opening, scheme);
-    let frames =
-        snapshot_with(settings_app_ui::App, config, &[Duration::from_millis(500)]).expect("a picture");
+    let frames = snapshot_with(settings_app_ui::App, config, &[Duration::from_millis(500)])
+        .expect("a picture");
     let image = frames.into_iter().next().expect("one frame");
     assert_eq!((image.width(), image.height()), (VIEW.width, VIEW.height));
     let dir = shots_dir();

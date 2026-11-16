@@ -6,17 +6,17 @@ use crate::bus::{BusSource, inferd};
 use crate::chooser::{OnPortal, Want, choose};
 use crate::deadline::{Deadline, answered, peer};
 use crate::engines::restart;
-use settings_app_model::{EngineFailure, EngineRow, EngineStanding, EngineWay, InstallScope, Work};
 use engine_install::{
     EngineInstalls, Fetcher, HelperProgram, InstallChoice, Parts, Standing, StartError,
 };
 use engine_manifest::{BackendChoice, Failure, Manifest, engine_from_slug};
 use engine_probe::{Roots, Scope, read_host};
+use inference_dbus::inference::{EngineState, LocalEngine};
 use model_catalog::EngineKind;
+use settings_app_model::{EngineFailure, EngineRow, EngineStanding, EngineWay, InstallScope, Work};
 use std::fmt;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use inference_dbus::inference::{EngineState, LocalEngine};
 
 /// The engines Settings offers, in the order the page lists them: the language-model engines. The
 /// speech engines are not downloaded from here.

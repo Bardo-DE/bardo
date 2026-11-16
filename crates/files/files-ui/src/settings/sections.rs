@@ -1,8 +1,8 @@
 //! The tables of `files/settings.toml`. Each is a settings domain with its own schema keys, in
 //! the order the Settings app lists them.
 
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
+use ui_settings::schema::Page;
 
 use super::APP;
 use super::words::NewWindowsShow;

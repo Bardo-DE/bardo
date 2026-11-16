@@ -1,4 +1,4 @@
-//! The D-Bus carrier to inferd: porter-dbus proxies on the session bus; the caller's identity is
+//! The D-Bus carrier to inferd: account-dbus proxies on the session bus; the caller's identity is
 //! what the bus says about the connection. `Inference1.Open` is built (a socket fd, framed with
 //! `account_wire`), and so are the calls about computers, guests and the models inferd runs.
 
@@ -10,10 +10,10 @@ use account_capability::Tier;
 use account_core::DataClass;
 use account_dbus::Destination;
 use account_dbus::{BusConnection, BusError, BusFailure, classify};
-use inference_core::{ComputerName, OpenOptions, PlaceId, PlaceRow, Readiness};
 use account_match::Need;
-use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
 use account_tailscale::NodeId;
+use inference_core::{ComputerName, OpenOptions, PlaceId, PlaceRow, Readiness};
+use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
 use serde::Serialize;
 use zbus::names::UniqueName;
 

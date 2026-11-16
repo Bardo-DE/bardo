@@ -3,8 +3,8 @@
 //! is JSON of `companion-wire`'s terminal types; a refusal is the companion's own sentence and
 //! the panel shows it as it is. This is the only file that names those calls.
 
-use companion_wire::{BroughtBack, TerminalSession};
 use action_dbus::{COMPANION_BUS, CompanionTerminalsProxy};
+use companion_wire::{BroughtBack, TerminalSession};
 use provenance::SessionId;
 use shell_model::companion::{CompanionEvent, NO_BRING_BACK, TerminalsCommand, TerminalsMsg};
 use tokio::sync::mpsc::UnboundedSender;

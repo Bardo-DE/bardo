@@ -1,8 +1,8 @@
 //! The module table: every kind is listed once, each answers for its span and its bar item, and
 //! the bar's items stand in the order the settings offer them.
 
-use ui_components::base::word::Word;
 use shell_settings::{ControlCenterModule, ControlCenterSettings};
+use ui_components::base::word::Word;
 
 use super::{Span, module};
 use crate::bar::BarMenu;

@@ -8,18 +8,18 @@ use super::rig::{
     CWD, Setup, Wired, abs, always, once, opening, program, read, tool, wired_over, write,
 };
 use super::world::{Fakes, World};
-use companion_model::helper::{
-    AgentApps, AgentOutcome, CardDraft, GoalSource, GoalText, HelperBudget, HelperCard, HelperKind,
-    HelperModel, HelperName, Job, JobId, JobStatus, Role, SignInHow, SignInWay,
-};
+use action_host::EditorDesk;
+use action_vocab::LabelText;
 use agent_acp_host::fake::{FakeFiles, SpawnSeen};
 use agent_acp_host::{
     AgentEnd, AgentHost, HelperAgent, HelperAgents, Hosts, SignInStep, SignOutStep, Start, Trouble,
 };
-use action_host::EditorDesk;
-use permission_core::{ActionMatch, GrantCaller, TaskPolicy, TaskPolicyState};
 use agent_session::Opening;
-use action_vocab::LabelText;
+use companion_model::helper::{
+    AgentApps, AgentOutcome, CardDraft, GoalSource, GoalText, HelperBudget, HelperCard, HelperKind,
+    HelperModel, HelperName, Job, JobId, JobStatus, Role, SignInHow, SignInWay,
+};
+use permission_core::{ActionMatch, GrantCaller, TaskPolicy, TaskPolicyState};
 use provenance::{HelperId, UnixSeconds};
 use serde_json::json;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
@@ -350,7 +350,9 @@ fn card(id: &str) -> HelperCard {
     let draft = CardDraft {
         name: HelperName::parse(id).expect("name"),
         role: Role::parse("Does the coding jobs.").expect("role"),
-        kind: HelperKind::AgentApp(provenance::AgentProgram::parse("claude-code").expect("program")),
+        kind: HelperKind::AgentApp(
+            provenance::AgentProgram::parse("claude-code").expect("program"),
+        ),
         space: provenance::SpaceId::parse("work").expect("space"),
         model: HelperModel::Unset,
         reach,

@@ -4,10 +4,10 @@ use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Permille;
 use account_match::DimsNeed;
+use base_testkit::Scratch;
 use inference_router::testkit::models;
 use std::io::Write;
 use std::os::fd::OwnedFd;
-use base_testkit::Scratch;
 
 fn chat_model() -> (Scratch, LocalModel) {
     let scratch = Scratch::new("bridge");

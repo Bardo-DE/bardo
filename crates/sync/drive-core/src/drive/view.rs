@@ -9,8 +9,8 @@ use crate::listing::Entry;
 use crate::local_only;
 use crate::naming;
 use crate::online;
-use sync_core::{ItemKind, RemoteId, RemoteVersion};
 use account_ids::{Bytes, UnixSeconds};
+use sync_core::{ItemKind, RemoteId, RemoteVersion};
 
 /// `listed` (the listing's entry of `id`, if it has one) as `edit` changed it here; `None` when
 /// it was removed here.

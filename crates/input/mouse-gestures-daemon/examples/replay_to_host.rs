@@ -2,7 +2,7 @@
 //! the `ToHost` JSON lines a subscriber receives, one packet per line.
 //!
 //! This is the stream casement subscribes to (it is written to
-//! `casement-testkit/fixtures/palmrest/*.jsonl` per fixture). With no arguments every Magic
+//! `compositor-testkit/fixtures/palmrest/*.jsonl` per fixture). With no arguments every Magic
 //! Mouse fixture in `tests/fixtures` is replayed in name order, each introduced by a `# name`
 //! line on stderr so stdout stays pure JSON lines. `--held` replays as if a host held the
 //! pointer, which is when taps are sent.

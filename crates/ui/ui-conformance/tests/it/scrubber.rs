@@ -4,12 +4,12 @@
 //! is a start and an end at one place, Escape abandons a drag, and the keys ask for places.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::scrubber::Scrubber;
 use ui_components::components::controls::scrubber_model::BufferedRange;
 use ui_components::motion::spring::Millis;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

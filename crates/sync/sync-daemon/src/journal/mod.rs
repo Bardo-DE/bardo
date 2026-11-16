@@ -3,20 +3,20 @@
 //!
 //! Every change is an [`Op`] list applied in one transaction (`apply`), so the engine's steps
 //! are the unit of a crash: either a step's rows are all there or none are. The rows are
-//! ferry-sync's values (`sync_core::journal`); this file only stores them.
+//! sync-core's values (`sync_core::journal`); this file only stores them.
 
 mod rows;
 mod schema;
 
 pub(crate) use schema::prepare_with;
 
-use sync_core::{
-    ItemPath, JournalItem, LocalId, RemoteId, StoredAnchor, StoredConflict, StoredTombstone,
-};
 use rusqlite::Connection;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Mutex, MutexGuard, PoisonError};
+use sync_core::{
+    ItemPath, JournalItem, LocalId, RemoteId, StoredAnchor, StoredConflict, StoredTombstone,
+};
 
 /// Why the journal could not be read or written.
 #[derive(Debug, thiserror::Error)]

@@ -1,4 +1,4 @@
-//! The daemon on a private bus, called through almanac-client's D-Bus transport: the whole path
+//! The daemon on a private bus, called through memory-client's D-Bus transport: the whole path
 //! from an app's `record` to the SQLCipher file and back, and the refusals, the signals and the
 //! export that cross the bus. Every bus, directory and key here is the test's own.
 

@@ -4,8 +4,8 @@
 use crate::support::infer::ScriptedInfer;
 use crate::support::*;
 use action_wire::VoiceIntent;
-use agent_voice_wire::{CancelCause, UtteranceEnd, VoiceEvent};
 use agent_voice_daemon::UtteranceProxy;
+use agent_voice_wire::{CancelCause, UtteranceEnd, VoiceEvent};
 
 const ALLOWED: [CancelCause; 4] = [
     CancelCause::Escape,
@@ -167,7 +167,9 @@ async fn a_begin_caller_that_leaves_the_bus_closes_the_mic() {
     )
     .await;
     let second = world.shell_named(SECOND_SHELL).await;
-    let voice = agent_voice_daemon::VoiceProxy::new(&second).await.expect("proxy");
+    let voice = agent_voice_daemon::VoiceProxy::new(&second)
+        .await
+        .expect("proxy");
     let (_path, fd) = voice.begin(&begin(VoiceIntent::Ask)).await.expect("begin");
     let mut events = Events::new(fd);
     assert_eq!(events.next().await, Some(VoiceEvent::Opened));

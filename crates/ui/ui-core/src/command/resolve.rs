@@ -2,8 +2,8 @@
 //! event, so a compositor or a test reads a key the way a window does.
 
 use super::key_input::{chord_key_of, key_input, modifiers_of};
-use keymap::{Action, Chord, Context, Key as ChordKey, KeyInput, Keymap, Platform};
 use keyboard_types::{Key, Modifiers};
+use keymap::{Action, Chord, Context, Key as ChordKey, KeyInput, Keymap, Platform};
 
 /// The action `key` with `modifiers` held triggers in `context`, if any.
 pub fn resolve(

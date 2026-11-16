@@ -4,7 +4,9 @@ use dioxus::prelude::*;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};
 use ui_components::components::app::send_mood::SendMood;
 use ui_components::components::app::send_pill::{PillAction, SendPill};
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::motion::detail::operation::Operation;

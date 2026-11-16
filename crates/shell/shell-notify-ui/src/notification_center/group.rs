@@ -6,11 +6,11 @@
 //! is the row's own padding (`.sill-nc-item`), never the list's.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use shell_model::notifications::{AppGroup, History, Notification, UnixMs};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
-use shell_model::notifications::{AppGroup, History, Notification, UnixMs};
-use shell_kit::prelude::*;
 
 use super::groups::Expanded;
 use super::io::CenterCtx;

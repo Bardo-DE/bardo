@@ -23,13 +23,13 @@ cargo build --release --locked
 target/release/anyview --version
 ```
 
-quire (the design system), blitz-kit, the Blitz, vello and anyrender forks are git dependencies
+quire (the design system), blitz-embed, the Blitz, vello and anyrender forks are git dependencies
 pinned by revision in `Cargo.toml` and `Cargo.lock`: cargo fetches them, and nothing needs to sit next to this
-checkout. The pins live in `[workspace.dependencies]`; the quire crates (`ds`, `ds-core`, `ds-blitz`,
-`ds-settings`, `ds-harness`, `ds-lint`) are the lines that name quire's rev.
+checkout. The pins live in `[workspace.dependencies]`; the quire crates (`ds`, `ui-core`, `ui-blitz`,
+`ui-settings`, `ui-harness`, `ui-lint`) are the lines that name quire's rev.
 
-To work on quire or blitz-kit at the same time, check them out beside this repository and add a
-`[patch."https://github.com/Bardo-DE/quire.git"]` (or blitz-kit) table pointing at the local path to
+To work on quire or blitz-embed at the same time, check them out beside this repository and add a
+`[patch."https://github.com/Bardo-DE/quire.git"]` (or blitz-embed) table pointing at the local path to
 your own copy of `Cargo.toml`; do not commit it.
 
 Checks: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`,

@@ -6,10 +6,10 @@ use crate::support::Sandbox;
 use crate::support::drive::{click, click_when_still, scroll_into_view};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const AGENTS: &str = "# mine\n[[agent]]\nprogram = \"claude-code\"\nlabel = \"Claude Code\"\nregistry = \"claude-code\"\nversion = \"1.0.0\"\n";
 const INSTALLED: &str =

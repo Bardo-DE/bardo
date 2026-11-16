@@ -2,8 +2,8 @@
 
 use crate::icons::tile_of;
 use crate::marked::marked;
-use settings_app_model::{Catalogue, PageModel, PageSlug, sidebar_groups};
 use dioxus::prelude::*;
+use settings_app_model::{Catalogue, PageModel, PageSlug, sidebar_groups};
 use ui_components::base::vocab::RowState;
 use ui_components::prelude::*;
 

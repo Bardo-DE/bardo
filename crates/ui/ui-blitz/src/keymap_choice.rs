@@ -2,9 +2,9 @@
 
 use crate::keymap_detect::{detected_key_source, platform_of};
 use keymap::{ChangeCallback, Keymap, KeymapSource, Platform, SourceError, Watch};
-use ui_components::keys::KeySource;
 use std::fmt;
 use std::sync::Arc;
+use ui_components::keys::KeySource;
 
 type SharedSource = Arc<dyn KeymapSource + Send + Sync>;
 

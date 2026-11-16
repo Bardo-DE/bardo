@@ -2,6 +2,9 @@
 //! rows follow `cua.md` section 4 as the router's gate changed it.
 
 use crate::support::*;
+use action_core::{CallRefusal, ConfirmEnd};
+use action_gate_wire::GateAnswer;
+use action_wire::GrantAnswer;
 use computer_use_action::{
     Choice, Coord, CuaAction, Extracted, ExtractedText, FieldName, FinishOutcome, Rect, Size,
     Summary,
@@ -10,20 +13,17 @@ use computer_use_bus::{
     ActionOutcome, ActionResult, BlockedOn, CuaOutcome, CuaRecord, FailReason, LocalRefusal,
     QuestionId, Refusal, RunBudgetKind, SuccessCheck,
 };
+use computer_use_capture::{CaptureError, DamageAt, DamageSource, FrameWant, Settle};
 use computer_use_desktop::{BackendKind, GlowState, LeaseId, Stamp, Suspend, ToplevelIdent};
 use computer_use_run::{
     CheckResult, CuaModelError, CuaSignal, RunEffect, RunInput, RunPhase, SettleWatch, StepEvent,
 };
-use action_core::{CallRefusal, ConfirmEnd};
-use action_gate_wire::GateAnswer;
-use permission_core::{BreakerTrip, DenyCode};
-use action_wire::GrantAnswer;
-use computer_use_capture::{CaptureError, DamageAt, DamageSource, FrameWant, Settle};
-use model_provider::Money;
+use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 use inference_core::StepIndex;
+use model_provider::Money;
+use permission_core::{BreakerTrip, DenyCode};
 use provenance::{ConfirmId, Labelled, MessageKind, ReportStatus, SpaceScope};
 use rust_decimal::Decimal;
-use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 
 const STOCK: BackendKind = BackendKind::KwinStock;
 
@@ -111,7 +111,10 @@ fn the_consent_row_leases_the_window_on_yes_and_blocks_on_no() {
     let lease = lease.expect("a lease request");
     assert_eq!(lease.window, ToplevelIdent::parse("w1").unwrap());
     assert_eq!(lease.mode, computer_use_action::RunMode::InPlace);
-    assert_eq!(states(&d.effects), vec![computer_use_bus::RunStateSlug::Leasing]);
+    assert_eq!(
+        states(&d.effects),
+        vec![computer_use_bus::RunStateSlug::Leasing]
+    );
 
     for (name, input) in [
         (
@@ -156,7 +159,9 @@ fn the_lease_row_starts_the_first_look_and_the_capture_comes_last() {
     );
     let mut refused = Drive::start(STOCK, task(model_says()));
     refused.feed(RunInput::Granted(GrantAnswer::Granted));
-    refused.feed(RunInput::LeaseRefused(computer_use_desktop::DesktopError::Busy));
+    refused.feed(RunInput::LeaseRefused(
+        computer_use_desktop::DesktopError::Busy,
+    ));
     assert_eq!(
         finished_with(&refused),
         Some(CuaOutcome::Blocked(BlockedOn::LeaseRefused))
@@ -259,8 +264,18 @@ fn what_the_model_says_while_thinking_is_announced_once() {
 #[test]
 fn a_click_is_authorised_with_the_facts_the_router_needs() {
     let nodes = vec![
-        node(0, computer_use_a11y_tree::Role::Window, "Sign in", (0, 0, 100, 80)),
-        node(1, computer_use_a11y_tree::Role::Button, "Sign in", (10, 10, 40, 20)),
+        node(
+            0,
+            computer_use_a11y_tree::Role::Window,
+            "Sign in",
+            (0, 0, 100, 80),
+        ),
+        node(
+            1,
+            computer_use_a11y_tree::Role::Button,
+            "Sign in",
+            (10, 10, 40, 20),
+        ),
     ];
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(nodes));
     d.feed(RunInput::ModelReplied(reply(vec![click_at(20, 15)])));
@@ -315,8 +330,18 @@ fn an_unknown_node_cannot_be_aimed() {
 #[test]
 fn a_verdict_to_run_injects_and_the_input_settles_before_the_next_look() {
     let nodes = vec![
-        node(0, computer_use_a11y_tree::Role::Window, "Sign in", (0, 0, 100, 80)),
-        node(1, computer_use_a11y_tree::Role::Button, "Go", (10, 10, 40, 20)),
+        node(
+            0,
+            computer_use_a11y_tree::Role::Window,
+            "Sign in",
+            (0, 0, 100, 80),
+        ),
+        node(
+            1,
+            computer_use_a11y_tree::Role::Button,
+            "Go",
+            (10, 10, 40, 20),
+        ),
     ];
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(nodes));
     d.feed(RunInput::ModelReplied(reply(vec![
@@ -332,7 +357,10 @@ fn a_verdict_to_run_injects_and_the_input_settles_before_the_next_look() {
     let planned = planned.expect("an injection");
     assert_eq!(
         planned.at,
-        computer_use_seat_input::ResolvedPoints::One(computer_use_action::Point::new(Coord(30), Coord(20))),
+        computer_use_seat_input::ResolvedPoints::One(computer_use_action::Point::new(
+            Coord(30),
+            Coord(20)
+        )),
         "a node is aimed at the centre of its bounds"
     );
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::Acting { .. }))));
@@ -638,7 +666,10 @@ fn a_question_waits_for_the_person_and_the_answer_goes_back_as_the_outcome() {
     let (id, body) = body.expect("an AskUser signal");
     assert_eq!(id, q);
     assert_eq!(body.question.value, "Which account?");
-    assert_eq!(body.question.label.integrity, provenance::Integrity::Untrusted);
+    assert_eq!(
+        body.question.label.integrity,
+        provenance::Integrity::Untrusted
+    );
     assert_eq!(body.choices.len(), 2);
     assert_eq!(kinds(&d.effects), ["cua.asked"]);
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::WaitingForYou))));
@@ -812,7 +843,9 @@ fn a_paused_session_blocks_the_run_and_a_halted_space_pauses_it() {
 #[test]
 fn a_router_that_cannot_be_asked_blocks_the_run() {
     let mut d = authorising();
-    d.feed(RunInput::GateFailed(computer_use_run::LinkError::Unavailable));
+    d.feed(RunInput::GateFailed(
+        computer_use_run::LinkError::Unavailable,
+    ));
     assert_eq!(
         finished_with(&d),
         Some(CuaOutcome::Blocked(BlockedOn::RouterUnreachable))
@@ -950,7 +983,9 @@ fn an_injection_receipt_with_no_action_waiting_fails_the_run_instead_of_panickin
     d.feed(RunInput::Observed(Box::new(observation(1, tree(vec![])))));
     d.run.phase = RunPhase::Acting(StepIndex(1));
     d.run.pending.actions.clear();
-    d.feed(RunInput::InjectFailed(computer_use_seat_input::SeatError::Refused));
+    d.feed(RunInput::InjectFailed(
+        computer_use_seat_input::SeatError::Refused,
+    ));
     assert_eq!(
         finished_with(&d),
         Some(CuaOutcome::Failed(computer_use_bus::FailReason::Input))
@@ -959,8 +994,16 @@ fn an_injection_receipt_with_no_action_waiting_fails_the_run_instead_of_panickin
 
 #[test]
 fn a_sensitive_window_asks_the_person_even_when_the_router_says_run() {
-    for (answer, goes_on) in [(computer_use_run::FORCED_YES, true), (computer_use_run::FORCED_NO, false)] {
-        let password = node(1, computer_use_a11y_tree::Role::PasswordText, "Password", (0, 0, 50, 20));
+    for (answer, goes_on) in [
+        (computer_use_run::FORCED_YES, true),
+        (computer_use_run::FORCED_NO, false),
+    ] {
+        let password = node(
+            1,
+            computer_use_a11y_tree::Role::PasswordText,
+            "Password",
+            (0, 0, 50, 20),
+        );
         let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![password]));
         d.feed(RunInput::ModelReplied(reply(vec![
             click_at(1, 1),

@@ -5,13 +5,13 @@
 
 use crate::common;
 
+use account_fake_servers::google::md5_hex;
 use common::{Server, TOKEN};
+use replica_gdrive::{CHUNK_UNIT, Uploads};
 use sync_core::{
     Anchor, BaseVersion, Blob, ByteRange, Change, Cursor, ItemPath, More, PutItem, PutRefused,
     PutTarget, Replica as _, ReplicaError, RetryAfter,
 };
-use account_fake_servers::google::md5_hex;
-use replica_gdrive::{CHUNK_UNIT, Uploads};
 
 fn new_item(path: &str, bytes: &[u8]) -> PutItem {
     PutItem {

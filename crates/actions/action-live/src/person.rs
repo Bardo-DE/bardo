@@ -4,9 +4,9 @@
 //! app and the label the manifest gives the action, which is all a sheet names. Every sheet shown
 //! is kept for the trace.
 
-use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmId, ConfirmRequest, Confirmer};
 use account_core::AppName;
 use account_core::consent::GrantScope;
+use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmId, ConfirmRequest, Confirmer};
 use provenance::{Confidentiality, ConfirmReceipt, InputProof, UnixSeconds};
 use std::collections::BTreeSet;
 use std::future::Future;

@@ -7,11 +7,11 @@
 //! asking for the run; a service that is not there, or a rate limit, takes the Space back out
 //! of the sent set so the next change asks again. Nothing here waits: the seam queues.
 
+use account_core::SpaceId;
 use compositor_core::space::{SpaceBook, SpaceContent};
 use compositor_ipc::space_registry::{
     NoSpaceRegistry, RegisterFault, SpaceRegistration, SpaceRegistry,
 };
-use account_core::SpaceId;
 use std::collections::BTreeSet;
 
 /// The Spaces sent, and the registry they were sent to.

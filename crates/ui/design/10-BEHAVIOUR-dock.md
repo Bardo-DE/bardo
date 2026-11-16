@@ -216,12 +216,12 @@ API as used by the desktop applets).
 | --- | --- | --- | --- |
 | Input (`RegionSpec::Element("dock-hit")`) | pill rect extended down to the output edge (includes the gutter, so the screen edge hits the dock) | union of the above with the bounding box of all magnified tiles | settled (plan, brief) |
 | Blur (`BlurSpec::Region` from `Element("dock-pill")`) | pill rect with `--m-radius` corners (`rounded_strips`) | the widened pill only; magnified tiles above the pill are not blurred | settled (plan) |
-| Update rate | recomputed on every frame whose pill rect changed; committed with that frame's buffer | settled (plan shell-host `RegionSpec::Element`) |
+| Update rate | recomputed on every frame whose pill rect changed; committed with that frame's buffer | settled (plan layer-shell-host `RegionSpec::Element`) |
 | Auto-hide hidden | trigger strip only; blur region Empty | proposed |
 
 ## 10.4 State machine
 
-Pure, in sill's `sill-dock/src/dock/machine/mod.rs`; the component feeds events and applies
+Pure, in sill's `shell-dock/src/dock/machine/mod.rs`; the component feeds events and applies
 effects. `now` is always an argument; no clocks inside.
 
 ```rust
@@ -400,10 +400,10 @@ leave 200 ms, hold-to-menu (the `LongPress` delay), remove threshold 64 px.
 
 | Concern | Owner | Notes |
 | --- | --- | --- |
-| Dock surface, machine, `magnify` | `sill-surfaces/src/surfaces/dock/**`, pure helpers table-tested (plan names `magnify(centers, pointer_x, Params)`) | Top layer, anchor BOTTOM, `KeyboardMode::None` (OnDemand while a menu is open, shell-host rule) |
-| Layer surface, regions, blur, popups, frame pacing | `shell-host` (`layer`, `region::rounded_strips`, `blur`, `popup`, `frame`) | input and blur regions via `RegionSpec::Element` resolved after layout each frame |
-| Toplevels, activation, minimize rects, workspaces | `sill-services` `toplevel_wl` thread (the toplevel client) | second Wayland connection (plan: orphan rule) |
-| Items, `match_app`, launch | `sill-services` apps + launch services | plan "Design: sill" |
+| Dock surface, machine, `magnify` | `sill-surfaces/src/surfaces/dock/**`, pure helpers table-tested (plan names `magnify(centers, pointer_x, Params)`) | Top layer, anchor BOTTOM, `KeyboardMode::None` (OnDemand while a menu is open, layer-shell-host rule) |
+| Layer surface, regions, blur, popups, frame pacing | `layer-shell-host` (`layer`, `region::rounded_strips`, `blur`, `popup`, `frame`) | input and blur regions via `RegionSpec::Element` resolved after layout each frame |
+| Toplevels, activation, minimize rects, workspaces | `shell-services` `toplevel_wl` thread (the toplevel client) | second Wayland connection (plan: orphan rule) |
+| Items, `match_app`, launch | `shell-services` apps + launch services | plan "Design: sill" |
 | Badges, progress, urgent | `use_launcher_entry` (zbus match on LauncherEntry) | |
 | Menu component | ds `Menu` (`Placement::Context`) | §13.3.2-13.3.4 behaviour |
 | Label | ds `DockLabel` over `HoverIntent` (Label profile) | |
@@ -481,7 +481,7 @@ headless renderer and pure table tests. Frame times refer to the output refresh 
 ## 10.10 Sources
 
 - Plan Appendix C-A (all R rows), "UX decisions settled with the user", "Design: sill" (Dock,
-  Launch), "Design: shell-host" (`RegionSpec::Element`, `rounded_strips`, frame machine),
+  Launch), "Design: layer-shell-host" (`RegionSpec::Element`, `rounded_strips`, frame machine),
   "Findings: compositors" (the toplevel client),
   M0 spike item c.
 - Plan Appendix A: A1 (card inset 8), A4 (fly), A5 (tokens), A6 (hover warm, drag threshold),

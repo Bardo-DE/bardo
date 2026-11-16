@@ -11,9 +11,9 @@ use crate::error::SettingsError;
 use crate::lenient::SETTINGS_CAP;
 use crate::schema::KeyPath;
 use crate::store::Store;
-use ui_helpers::{NewFileMode, UpdateError, update_atomic};
 use std::path::{Path, PathBuf};
 use toml_edit::{DocumentMut, InlineTable, Item, Table, TableLike, Value};
+use ui_helpers::{NewFileMode, UpdateError, update_atomic};
 
 /// One change to a settings file.
 #[derive(Debug, Clone, PartialEq)]

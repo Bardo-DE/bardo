@@ -1,6 +1,6 @@
 [package]
 name = "agent-planner"
-description = "The planner model: the working-set view rendered into a chat request, the catalogue of tools, and the reply read back into a ModelOutput, behind a `Planner` trait, implemented by `PlannerModel` over any inferd-client Transport. Portable: no bus, no runtime."
+description = "The planner model: the working-set view rendered into a chat request, the catalogue of tools, and the reply read back into a ModelOutput, behind a `Planner` trait, implemented by `PlannerModel` over any inference-client Transport. Portable: no bus, no runtime."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

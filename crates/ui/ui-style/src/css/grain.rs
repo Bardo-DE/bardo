@@ -9,9 +9,9 @@
 //! grey wherever the frame is darker than the middle in the black half, and wherever it is
 //! lighter in the white half; the element's opacity (`--f-grain`) then sets the strength.
 
+use std::sync::LazyLock;
 use ui_core::base64;
 use ui_core::png::{self, Channels, Deflate, Raster};
-use std::sync::LazyLock;
 
 const SIZE: usize = 128;
 const MODULUS: u64 = 2_147_483_647;

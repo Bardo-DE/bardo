@@ -3,9 +3,9 @@
 //! the geometry (gap, padding, corner, dot, separator) is stylesheet tokens (`DockToken`). Pinned
 //! apps are placements in `layout.toml`, not here.
 
+use serde::{Deserialize, Serialize};
 use ui_settings::Px;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// The dock's settings.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]

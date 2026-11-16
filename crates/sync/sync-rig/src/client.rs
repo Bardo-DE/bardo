@@ -6,11 +6,11 @@
 //! read one's status, settle a stored conflict, watch for conflicts. The app's identity is the
 //! daemons' to find (see `account_rig::fixture`).
 
-use clap::Subcommand;
-use sync_bus::SyncProxy;
 use account_dbus::from_vardict;
+use clap::Subcommand;
 use serde_json::{Value, json};
 use std::time::Duration;
+use sync_bus::SyncProxy;
 use zbus::export::futures_core::Stream;
 
 fn failure(why: impl std::fmt::Display) -> Value {

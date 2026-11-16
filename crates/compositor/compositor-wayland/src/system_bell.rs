@@ -49,6 +49,7 @@ pub fn app_to_ring(model: &Model, window: Option<WindowId>) -> Option<AppKey> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use account_core::{ClaimedId, PeerIdentity};
     use compositor_core::focus::TokenCheck;
     use compositor_core::geometry::LogicalSize;
     use compositor_core::policy::ConnectionRole;
@@ -58,7 +59,6 @@ mod tests {
     use compositor_core::window::{SizeLimits, WindowOrigin};
     use compositor_core::{ClientKey, MappedToplevel};
     use desktop_protocols::vocab::{Modality, WindowRole};
-    use account_core::{ClaimedId, PeerIdentity};
     use std::time::Duration;
 
     fn mapped(model: Model, id: u64, claimed: &str) -> Model {

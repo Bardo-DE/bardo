@@ -1,13 +1,13 @@
 //! A function key sent through the harness reaches an app as chordkit's action: F9 is
 //! `ToggleSidebar` in the CUA table, and a Mac table (Ctrl+Command+S) leaves it alone.
 
-use keymap::{Action, Context, Desktop, Platform, StandardAction};
 use dioxus::prelude::*;
+use keymap::{Action, Context, Desktop, Platform, StandardAction};
+use std::time::Duration;
+use ui_blitz::FocusFallback;
 use ui_components::keys::on_action;
 use ui_components::prelude::*;
-use ui_blitz::FocusFallback;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 300,

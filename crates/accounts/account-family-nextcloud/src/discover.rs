@@ -2,20 +2,22 @@
 //! (which apps are on), the DAV principal (who the user id is, where the calendar and address
 //! book homes are) and the files root with its quota. Every request carries the new app
 //! password, so a refused one is found here, before anything is stored. The requests and the
-//! reading of the answers are nextcloud-proto's and dav-proto's; this sends them.
+//! reading of the answers are account-nextcloud-proto's and account-dav-proto's; this sends them.
 
 use super::fault;
-use account_dav_proto::Depth;
-use account_dav_proto::discover::{Error as WalkError, Found as Walked, Home, Next, Reach, Scope, Walk};
-use account_dav_proto::http::bytes;
-use account_dav_proto::names::{QUOTA_AVAILABLE, QUOTA_USED};
-use account_nextcloud_proto::{endpoints, judged, ocs, paths};
 use account_capability::Claim;
 use account_core::{EndpointUrl, LoginName, SecretText, ServiceEndpoint};
+use account_dav_proto::Depth;
+use account_dav_proto::discover::{
+    Error as WalkError, Found as Walked, Home, Next, Reach, Scope, Walk,
+};
+use account_dav_proto::http::bytes;
+use account_dav_proto::names::{QUOTA_AVAILABLE, QUOTA_USED};
 use account_family_kit::Io;
 use account_family_kit::password::{authorize, basic, fault_of, sensitive};
 use account_http::http::{Request, Response, Uri};
 use account_http::{Http, uri, web_url};
+use account_nextcloud_proto::{endpoints, judged, ocs, paths};
 use account_sheet::SignInFault;
 
 /// Who is signed in, and where.

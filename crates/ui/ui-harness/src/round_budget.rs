@@ -51,11 +51,11 @@ impl RoundBudget {
 #[cfg(test)]
 mod tests {
     use super::{MAX_ROUNDS, MAX_TOTAL, RoundBudget};
-    use ui_core::time::clock::{install_wall, sleep};
     use std::future::Future;
     use std::pin::pin;
     use std::task::{Context, Waker};
     use std::time::Duration;
+    use ui_core::time::clock::{install_wall, sleep};
 
     /// A wall sleep that finishes now, counted on this thread.
     fn finish_a_sleep() {

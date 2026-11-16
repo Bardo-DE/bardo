@@ -1,6 +1,6 @@
 //! `quire_window_manager_v1` (C50): what an app says about its toplevel (first-mouse regions,
 //! frame, role, accessibility root, edited) and what it learns back (emphasis, placement).
-//! Advertised from P0 so shell-host can tell casement apart by this global; requests are
+//! Advertised from P0 so layer-shell-host can tell casement apart by this global; requests are
 //! stored in the model, `request_placement` is acted on from P2 (the model's `place`).
 //!
 //! smithay has no module for our protocol, so this one carries its own `GlobalDispatch2` and

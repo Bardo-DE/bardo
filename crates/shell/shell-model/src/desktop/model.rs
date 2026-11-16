@@ -1,11 +1,11 @@
 //! The desktop in the shell's words: apps, windows, Spaces and what is active. Built from a
 //! backend's state; nothing here knows which backend it came from.
 
+use account_core::SpaceId;
 use desktop_protocols::vocab::{
     AppLifeKind, AppVisibility, Attention, Emphasis, LeaseState, Modality, PlacementMark,
     ProofKind, Responsiveness, SensitivityLevel, Shown, SpaceKind, WindowRole, WindowStateKind,
 };
-use account_core::SpaceId;
 
 /// Everything the desktop shows about itself.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

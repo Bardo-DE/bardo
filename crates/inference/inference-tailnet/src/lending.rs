@@ -1,8 +1,8 @@
 //! The plain words and rows of one computer lending its models to the person's others, as
 //! `org.quire.Inference1` hands them to Settings and the shell: who is asking, what the person
 //! answered, and which computers could be added. Pure data, no files and no sockets: the one
-//! program that keeps the answers is `porter-tailnet`, and the client reads them through
-//! `inferd-client`. They live here so a client that only talks to the bus builds none of the
+//! program that keeps the answers is `inference-tailnet`, and the client reads them through
+//! `inference-client`. They live here so a client that only talks to the bus builds none of the
 //! lending computer's own dependencies.
 
 use account_ids::UnixSeconds;

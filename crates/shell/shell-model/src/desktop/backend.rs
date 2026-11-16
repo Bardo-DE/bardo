@@ -1,5 +1,5 @@
 //! Which desktop arm runs, and the globals a compositor offers. The choice itself is
-//! `sill-services`' (`desktop_wl::backend_of`): it asks `desktop-client` what the offer carries.
+//! `shell-services`' (`desktop_wl::backend_of`): it asks `desktop-client` what the offer carries.
 
 use std::collections::BTreeMap;
 

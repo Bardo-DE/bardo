@@ -6,10 +6,10 @@ use crate::support::accountd::{Accountd, Held};
 use crate::support::drive::click;
 use settings_app_model::PageSlug;
 use settings_app_ui::{Opening, STYLE};
+use std::time::Duration;
 use ui_harness::Harness;
 use ui_lint::{LintConfig, markup};
 use ui_settings::live::Verdict;
-use std::time::Duration;
 
 const BANNER: &str = "[data-accounts=\"attention\"]";
 const BANNER_BUTTON: &str = "[data-accounts=\"attention\"] .ds-button";
@@ -173,6 +173,10 @@ fn the_banner_is_only_quire_components_and_layout_only_css() {
     let w = world("banner-lint", rows, "work.example");
     assert_eq!(w.harness.count(BANNER), 1);
     let css = format!("{}\n{STYLE}", ui_components::stylesheet());
-    let offences = markup(&w.harness.html(), &css, &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &w.harness.html(),
+        &css,
+        &LintConfig::new(&ui_components::kits()),
+    );
     assert!(offences.is_empty(), "{offences:#?}");
 }

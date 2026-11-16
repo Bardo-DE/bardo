@@ -3,8 +3,8 @@
 
 use super::adapter::ActionButton;
 use crate::copy::accounts::{attention_words, reauth_help};
-use settings_app_model::{Account, Attention, ModuleRow};
 use dioxus::prelude::*;
+use settings_app_model::{Account, Attention, ModuleRow};
 use ui_components::components::overlays::inline_banner::InlineBanner;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;

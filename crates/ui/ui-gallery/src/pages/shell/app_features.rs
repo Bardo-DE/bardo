@@ -4,6 +4,7 @@
 
 use crate::pages::Section;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::time::clock::now;
 use ui_components::components::app::edge_peek::EdgePeek;
 use ui_components::components::app::link_pill::{LinkPill, LinkTarget};
@@ -13,14 +14,15 @@ use ui_components::components::app::space_switch::{space_pressed, space_shortcut
 use ui_components::components::app::today_tabs::{TodayTab, TodayTabs};
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_components::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
-use ui_components::components::menus::palette::palette_group::{GroupOrder, PaletteGroup, PaletteRow};
+use ui_components::components::menus::palette::palette_group::{
+    GroupOrder, PaletteGroup, PaletteRow,
+};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::hex::{Colour, Hex};
 use ui_components::style::tokens::shape::{Corner, Radius};
 use ui_core::standard_action::SpaceNumber;
-use std::time::Duration;
 
 /// The App features page.
 #[component]

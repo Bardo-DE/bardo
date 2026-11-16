@@ -11,14 +11,14 @@
 //! `@id` is the middle of the item of that id on the screen that shows when the move is made.
 
 use crate::stage::Stage;
+use account_ids::Tokens;
 use computer_use_action::{
     Button, Chord, ClickCount, Coord, CuaAction, FinishOutcome, Modifier, Notches, Point, Repeat,
     ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs, WindowSpace,
 };
 use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepSink};
-use keyboard_types::Key;
-use account_ids::Tokens;
 use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
+use keyboard_types::Key;
 use std::collections::{BTreeSet, VecDeque};
 use std::str::FromStr;
 use std::sync::Arc;

@@ -1,5 +1,5 @@
 //! `org.quire.Voice1` and its two object interfaces, as proxies for callers (voice.md section 3.5).
-//! Bodies are JSON in `s` (`voice-wire` types in an `Envelope`); the event stream is an fd of
+//! Bodies are JSON in `s` (`agent-voice-wire` types in an `Envelope`); the event stream is an fd of
 //! `VoiceEvent` frames. Caller identity comes from the connection, never an argument.
 
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};

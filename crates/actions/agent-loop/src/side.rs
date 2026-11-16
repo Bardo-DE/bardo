@@ -4,9 +4,9 @@
 //! goal change narrows the subagent's task policy through the normal writer path (widening
 //! confirms).
 
-use memory_core::{Episode, EpisodeKind, EpisodeOutcome, ResultLine};
 use action_core::{IdleRules, UserTurn};
 use action_wire::{LedgerStep, TaskLedger, close};
+use memory_core::{Episode, EpisodeKind, EpisodeOutcome, ResultLine};
 use provenance::{AgentRef, SpaceId, TaskId, UnixSeconds};
 use serde::{Deserialize, Serialize};
 

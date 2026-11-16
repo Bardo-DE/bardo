@@ -11,9 +11,11 @@
 //! top is full of them), a node whose bounds are unknown (a tree where no node has any extent has
 //! no geometry to judge), and a tree that sets no state bits at all. The window root stays.
 
-use computer_use_a11y_tree::{A11yNode, A11ySnapshot, NodeState, Parent, Truncation, secret_rects_of};
-use computer_use_action::{NodeId, Rect, Size, WindowSpace};
 use account_ids::Count;
+use computer_use_a11y_tree::{
+    A11yNode, A11ySnapshot, NodeState, Parent, Truncation, secret_rects_of,
+};
+use computer_use_action::{NodeId, Rect, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 

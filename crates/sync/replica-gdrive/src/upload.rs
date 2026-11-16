@@ -10,11 +10,11 @@
 use crate::addr::FILE_FIELDS;
 use crate::feed::link;
 use crate::replica::GdriveReplica;
-use sync_core::status::write_unreached;
-use sync_core::{PutRefused, RetryAfter};
 use account_http::http::header::CONTENT_TYPE;
 use account_http::http::{Method, Response};
 use account_http::{HeaderText, Http, request};
+use sync_core::status::write_unreached;
+use sync_core::{PutRefused, RetryAfter};
 
 impl<H: Http> GdriveReplica<H> {
     /// Sends `bytes` in a resumable session: a new file described by `meta`, or new content for

@@ -1,9 +1,6 @@
 //! The streaming session's frames, the computer-use step and the speech turn: every variant
 //! survives its serde form and the forms inferd and its clients read keep their JSON.
 
-use computer_use_action::{
-    Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target, WindowSpace,
-};
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_capability::{CuaEnv, LanguageTag};
@@ -11,6 +8,9 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Permille;
+use computer_use_action::{
+    Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target, WindowSpace,
+};
 use inference_core::*;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -299,7 +299,7 @@ fn every_data_class_has_a_floor_decision() {
 #[test]
 fn a_scroll_with_no_coordinate_and_a_bad_argument_cross_the_wire() {
     // Ask 67: the model named nowhere, so the executor resolves the centre of the frame; and a
-    // dropped action may say its argument was unusable. Both mirror stoker's cua-parse.
+    // dropped action may say its argument was unusable. Both mirror stoker's computer-use-parse.
     let scroll = CuaAction::Scroll {
         at: Target::Centre,
         dir: computer_use_action::ScrollDir::Down,

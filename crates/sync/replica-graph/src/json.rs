@@ -1,8 +1,8 @@
 //! What Graph's JSON says, read as far as the replica needs.
 
-use sync_core::ContentHash;
 use serde::Deserialize;
 use serde::de::IgnoredAny;
+use sync_core::ContentHash;
 
 /// A drive item, from a listing, a delta page or a write's answer.
 #[derive(Debug, Deserialize)]

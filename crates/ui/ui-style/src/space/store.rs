@@ -48,7 +48,7 @@ impl Default for SpaceDefaults {
 ///
 /// `by_index` holds `None` for a position with no stored look, so a look stored for workspace
 /// 3 does not invent looks for 0 to 2. A malformed entry there costs that position only; the
-/// lenient reader in ds-settings handles every other key. The `card_accent` key older files
+/// lenient reader in ui-settings handles every other key. The `card_accent` key older files
 /// carry in each look is a key the look does not know, so reading drops it and keeps the rest.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]

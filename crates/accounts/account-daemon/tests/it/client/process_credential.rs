@@ -1,4 +1,4 @@
-//! A key for a process the launcher spawns, through `porter-client`'s `Launcher`, against a
+//! A key for a process the launcher spawns, through `account-client`'s `Launcher`, against a
 //! hand-written accountd (`common::fake_accountd`) on a private bus: issue on a memfd, set a
 //! child up with it, end it, and hear accountd end it. What accountd checks before it issues one
 //! (the permit, the program, the caller) is in accountd's launcher tests.
@@ -6,9 +6,6 @@
 use super::common;
 use account_ids::word::word as word_of;
 
-use common::bus::PrivateBus;
-use common::eventually;
-use common::fake_accountd::{FakeAccountd, KEY, Sheets};
 use account_capability::{AgentProgram, EnvName};
 use account_client_dbus::{Bus, ChildKey, ChildKeyError, Delivery, Launcher, LauncherError};
 use account_core::GrantId;
@@ -16,6 +13,9 @@ use account_core::audit::CredentialEnd;
 use account_dbus::BusStream;
 use account_wire::LauncherFault;
 use account_wire::Refusal;
+use common::bus::PrivateBus;
+use common::eventually;
+use common::fake_accountd::{FakeAccountd, KEY, Sheets};
 use std::io::Read;
 use std::os::fd::AsFd;
 use std::os::unix::fs::FileExt;

@@ -1,5 +1,5 @@
 //! What the relay tests share: the app's end of a relay, the plans, and a minimal fake
-//! ManageSieve server (porter-fake-servers has none).
+//! ManageSieve server (account-fake-servers has none).
 
 #![allow(dead_code)]
 

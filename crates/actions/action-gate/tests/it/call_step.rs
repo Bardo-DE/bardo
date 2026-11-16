@@ -1,11 +1,11 @@
 //! The call lifecycle as a table: one row per transition of the lifecycle section 4.1.
 
-use action_review::{ReviewReason, ReviewVerdict};
 use action_core::*;
 use action_gate::call::{ArgsRefused, CallEffect, CallEvent, CallState, call_step};
 use action_gate::gate::Pending;
-use permission_core::{AskReason, DenyCode, ReasonCode, ReasonText, ReviewError, Stage};
+use action_review::{ReviewReason, ReviewVerdict};
 use action_vocab::{LabelText, ParamName, Seconds, UndoToken};
+use permission_core::{AskReason, DenyCode, ReasonCode, ReasonText, ReviewError, Stage};
 use provenance::{ConfirmReceipt, InputProof, SpaceScope, UnixSeconds};
 
 fn app() -> account_core::AppName {

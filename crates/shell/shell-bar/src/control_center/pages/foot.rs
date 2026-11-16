@@ -3,13 +3,13 @@
 //! the panel.
 
 use dioxus::prelude::*;
-use ui_components::components::controls::button_model::Bezel;
-use ui_components::prelude::*;
+use shell_kit::prelude::*;
 use shell_launcher::SettingsTarget;
 use shell_launcher::actions::ActionId;
 use shell_launcher::settings_target::page;
 use shell_model::actions::Subject;
-use shell_kit::prelude::*;
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::prelude::*;
 
 use shell_ui_kit::hooks::{Entrance, use_entrance, use_link};
 

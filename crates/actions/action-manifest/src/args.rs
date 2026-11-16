@@ -9,11 +9,11 @@
 //! does not declare is refused rather than ignored.
 
 use crate::manifest::{ActionDecl, ParamDecl, ParamNeed, TargetKind};
+use account_core::AppName;
 use action_vocab::{
     Args, CharCount, CivilDate, Decimal, FileRef, Handle, ParamName, ParamType, Scale, Seconds,
     TargetValue, Value,
 };
-use account_core::AppName;
 use provenance::{EntityId, EntityKey, EntityKind, Label, Labelled, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as Json};

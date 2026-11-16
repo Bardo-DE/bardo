@@ -1,5 +1,5 @@
 //! accountd, hosted in the test process over fakes and reached as syncd reaches it: through
-//! porter-client's in-process transport, as syncd (`org.quire.Sync`). What the real accountd is
+//! account-client's in-process transport, as syncd (`org.quire.Sync`). What the real accountd is
 //! on a bus, this is in memory: the registry, the secrets and the audit are memory, the sheet
 //! host is a person who allows the first account of every consent ask (Always) and whose
 //! conversations (a sign-in) are scripted, and the relays reach the fake servers. No bus for

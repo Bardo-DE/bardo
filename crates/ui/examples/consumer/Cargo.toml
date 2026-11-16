@@ -41,7 +41,7 @@ unsafe_code = "deny"
 # vello and anyrender come from our forks (github.com/Bardo-DE/vello and /anyrender, branch
 # quire-filters): the colour matrix filter, multi-threaded filter layers and CSS filter lists, so
 # every CSS `filter` function paints on both backends. Move back to crates.io once upstream has
-# them (blitz-kit docs/blitz-gaps.md tracks the PRs).
+# them (blitz-embed docs/blitz-gaps.md tracks the PRs).
 [patch.crates-io]
 vello_common = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
 vello_cpu = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }

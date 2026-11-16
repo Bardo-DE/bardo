@@ -6,10 +6,10 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::Input;
 use shell_model::intents::sheet::{Pending, Serial, SheetChoice};
 use shell_model::intents::{IntentsCommand, StandingGrantId};
+use ui_components::prelude::*;
+use ui_harness::Input;
 
 use crate::confirm_sheet::{ALLOW, DENY, OFFER, answer, armed, arming, ask, click, sent, wire};
 

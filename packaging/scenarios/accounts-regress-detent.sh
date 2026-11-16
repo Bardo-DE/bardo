@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Scenario `accounts-regress-detent`: detent's Accounts pane, as accounts-hunt found it wrong (probes 4, 5 and 6) and
-# detent 06f5829 fixed it. detent runs with ds-blitz's debug probe (QUIRE_DEBUG_PROBE), so its controls are read by role and
+# detent 06f5829 fixed it. detent runs with ui-blitz's debug probe (QUIRE_DEBUG_PROBE), so its controls are read by role and
 # name; what is only text (the line under a row) is measured in the capture. Real accountd, sill (the sheet host), detent at
 # its pin, the rigs' fake mail and Graph (porter's and ferry's).
 #

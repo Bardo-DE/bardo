@@ -2,10 +2,10 @@
 //! wave, as data (design/26-DETAILS.md section 4.2; CHECKLIST 5b): every transition, including
 //! the ones that must not move.
 
+use shell_kit::lock::vocab::PromptState;
 use ui_components::motion::detail::detailed::first_table;
 use ui_components::motion::detail::detailed::moment_table;
 use ui_components::prelude::*;
-use shell_kit::lock::vocab::PromptState;
 
 #[test]
 fn a_lock_prompts_moments() {

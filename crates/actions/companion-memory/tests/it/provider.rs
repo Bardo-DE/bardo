@@ -1,13 +1,15 @@
 //! `memory.propose` names the helper whose job asked, and only that: the person's own
 //! assistant proposes as before. Driven straight at the provider over a recording transport.
 
-use memory_client::{Transport, TransportError};
-use memory_core::{FactId, FactState, MemoryReply, MemoryRequest};
 use action_core::Invocation;
-use companion_memory::MemoryProvider;
 use action_provider::IntentProvider;
 use action_vocab::{Args, CallId, Origin, ParamName, TargetValue, Value};
-use provenance::{ActionName, Actor, AgentRole, HelperId, Label, Labelled, SessionId, SpaceId, TaskId};
+use companion_memory::MemoryProvider;
+use memory_client::{Transport, TransportError};
+use memory_core::{FactId, FactState, MemoryReply, MemoryRequest};
+use provenance::{
+    ActionName, Actor, AgentRole, HelperId, Label, Labelled, SessionId, SpaceId, TaskId,
+};
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Clone, Default)]
@@ -68,9 +70,8 @@ fn propose_as(actor: Actor) -> Invocation {
 }
 
 async fn proposed_for(actor: Actor) -> Vec<Option<Actor>> {
-    let memory =
-        action_manifest::parse(include_str!("../../../manifests/org.quire.Memory.toml"))
-            .expect("the memory manifest");
+    let memory = action_manifest::parse(include_str!("../../../manifests/org.quire.Memory.toml"))
+        .expect("the memory manifest");
     let transport = Recording::default();
     let provider = MemoryProvider::new(memory, transport.clone());
     provider

@@ -1,5 +1,5 @@
 //! The backend seam: everything the service needs that touches disk, keys, models or time.
-//! memoryd supplies the real one; almanac-fake supplies in-memory ones.
+//! memoryd supplies the real one; memory-fake supplies in-memory ones.
 
 use crate::clock::Clock;
 use crate::registry::{Listing, RegistryError};

@@ -44,7 +44,7 @@ pub enum ShotLeave {
     Kept,
     /// Its Delete action: the file goes to the trash.
     Trashed,
-    /// Dragged out and dropped as a copy (shell-host's drag source): the file stays.
+    /// Dragged out and dropped as a copy (layer-shell-host's drag source): the file stays.
     Dragged,
     /// Dragged out and dropped as a move: the target has taken the file, so nothing here
     /// touches it again.

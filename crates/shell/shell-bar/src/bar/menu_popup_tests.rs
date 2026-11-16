@@ -6,14 +6,14 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::stack::menu_track::types::MenuTiming;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use layer_shell_host::{PopupPlacement, Rect as HostRect, Size as HostSize};
 use shell_model::tray::{Check, TrayItemId, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
 use shell_model::units::Visibility;
 use shell_ui_kit::menu::PopupLook;
 use tokio::sync::{mpsc, watch};
+use ui_components::prelude::*;
+use ui_components::stack::menu_track::types::MenuTiming;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 use super::{PopupDocument, PopupLink, SUBMENU_ROOM, submenu_room};
 use crate::bar::content::PopupBody;

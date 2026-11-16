@@ -3,10 +3,10 @@
 //! toolbar title with a title menu opens nothing.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::chrome::toolbar::view::Toolbar;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 700,

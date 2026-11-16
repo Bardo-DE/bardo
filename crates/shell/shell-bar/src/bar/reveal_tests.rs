@@ -5,12 +5,12 @@ use super::{
     BarReveal, RevealEffect, RevealEvent, mode_on, rest_phase, shown_blur, shown_input, step,
     strip_input, timing,
 };
-use ui_components::base::time::stamp::Stamp;
-use ui_components::prelude::Motion;
 use layer_shell_host::BlurSpec;
 use shell_model::desktop::Shown;
 use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{Hold, Phase};
+use ui_components::base::time::stamp::Stamp;
+use ui_components::prelude::Motion;
 
 /// One scripted input: when, what, and whether a popup is open at that moment.
 type Script = Vec<(u64, RevealEvent, Hold)>;

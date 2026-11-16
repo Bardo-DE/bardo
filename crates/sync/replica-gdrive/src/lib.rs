@@ -1,5 +1,5 @@
 //! The Google Drive replica (design/31 §6.1, lane google-drive): [`GdriveReplica`] implements
-//! ferry-sync's `Replica` over a folder of Drive's app data folder (`spaces=appDataFolder`, the
+//! sync-core's `Replica` over a folder of Drive's app data folder (`spaces=appDataFolder`, the
 //! scope `drive.appdata`) or, given [`Root::Drive`], of My Drive (`spaces=drive`, the user's own
 //! corpus, no shared drives; the scope `drive`). In My Drive, folders are items too, and Google's
 //! own documents and shortcuts are items that open online (`ItemKind::Online`, with the Office
@@ -34,8 +34,8 @@
 //! - **Version** is Drive's `version`, which grows with every change to the file (a rename too).
 //!   There is no ETag to keep.
 //!
-//! The crate is pure: no runtime and no socket. It keeps its own vendor error reasons and wire reading on top of ferry-sync's
-//! `status` and dates its tombstones with ferry-sync's `Clock`. Every
+//! The crate is pure: no runtime and no socket. It keeps its own vendor error reasons and wire reading on top of sync-core's
+//! `status` and dates its tombstones with sync-core's `Clock`. Every
 //! endpoint, field and status is written from Google's documentation, without network access:
 //! unverified (porter's FINDINGS.md).
 

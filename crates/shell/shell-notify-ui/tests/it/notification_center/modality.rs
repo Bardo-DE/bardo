@@ -1,9 +1,9 @@
 //! The center's own quire controls (Clear All) show quire's focus ring
 //! under the keyboard. The center runs the real `NotificationCenter`, whose root wraps quire's
-//! `Ds` under the `HostSignals` that `mount` provides; with no shell-host `SurfaceHandle` (`ui_harness::Harness` has no
+//! `Ds` under the `HostSignals` that `mount` provides; with no layer-shell-host `SurfaceHandle` (`ui_harness::Harness` has no
 //! seat) the bridge provides nothing, and the harness's own root
 //! `HostSignals` (driven by its `key`/`click`, `ui_blitz::launch`'s own mechanism) is what
-//! `Ds` reads instead: the harness's way of driving modality, not shell-host's.
+//! `Ds` reads instead: the harness's way of driving modality, not layer-shell-host's.
 
 use super::{advance, opened, two_apps};
 use ui_components::prelude::*;

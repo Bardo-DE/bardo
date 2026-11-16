@@ -27,10 +27,10 @@ pub mod replayer;
 
 use engine_supervisor::{EngineId, SupervisorConfig};
 use host::{ReplayHost, Replaying};
-use model_catalog::MiB;
-use model_provider::Tokens;
 use inference_router::local::LocalModel;
 use inference_router::local::NamedEngine;
+use model_catalog::MiB;
+use model_provider::Tokens;
 use replayer::Replayer;
 use std::collections::BTreeMap;
 use std::path::Path;

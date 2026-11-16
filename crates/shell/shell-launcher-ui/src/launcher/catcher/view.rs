@@ -6,8 +6,8 @@
 //! whichever surface is on top and a press under a short card closes the launcher.
 
 use dioxus::prelude::*;
-use ui_components::prelude::AppStyle;
 use layer_shell_host::{OutputInfo, use_watch};
+use ui_components::prelude::AppStyle;
 
 use super::layer::input;
 use crate::launcher::card::follow_input;

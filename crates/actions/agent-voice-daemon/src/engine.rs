@@ -1,6 +1,6 @@
 //! The daemon's one loop. Everything that changes state happens here, in one task: bus commands,
 //! capture frames, inferd events and playback reports are all inputs to it, and the two pure
-//! machines of `voice-loop` decide what each input does. A command is answered as soon as it is
+//! machines of `agent-voice-loop` decide what each input does. A command is answered as soon as it is
 //! decided; slow things (opening the engine, warming it, playing) run in their own tasks and come
 //! back as events, so a cold engine never delays a `Begin`.
 
@@ -16,14 +16,14 @@ use crate::usage::UseSource;
 use crate::warm::Warm;
 use crate::watch::{Deadline, Leaving};
 use action_wire::VoiceIntent;
+use agent_voice_audio::{AudioDevice, AudioNode, CaptureStream};
+use agent_voice_loop::{PcmBuffer, UtteranceState};
+use agent_voice_wire::{CancelCause, HeardSegment, HeardTail, UtteranceEnd, VoiceTarget};
 use inference_client::Transport;
 use inference_core::Readiness;
 use std::future::pending;
 use std::sync::{Arc, Mutex};
 use tokio::sync::mpsc;
-use agent_voice_audio::{AudioDevice, AudioNode, CaptureStream};
-use agent_voice_loop::{PcmBuffer, UtteranceState};
-use agent_voice_wire::{CancelCause, HeardSegment, HeardTail, UtteranceEnd, VoiceTarget};
 
 /// The speech-to-text session of the utterance.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

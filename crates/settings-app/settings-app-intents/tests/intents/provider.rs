@@ -1,10 +1,10 @@
 //! Settings' three actions, called over a private bus the way intentd calls an app.
 
 use crate::support::{World, entity, key, text};
-use settings_app_model::{ASSISTANT_MODEL_SLUG, Notice, PageSlug};
 use action_core::{AppRefusal, Preview, UndoFault, Undoable};
 use action_vocab::Value;
 use provenance::Integrity;
+use settings_app_model::{ASSISTANT_MODEL_SLUG, Notice, PageSlug};
 
 const MAGNIFICATION: &str = "dock.magnification";
 const TILE_SIZE: &str = "dock.tile_size_px";

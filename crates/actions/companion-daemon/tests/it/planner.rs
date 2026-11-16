@@ -4,16 +4,16 @@
 
 use crate::support::infer::{Say, call, words};
 use crate::support::planner_view::{catalogue, planner, view};
-use agent_loop::ModelOutput;
-use companion_daemon::*;
+use account_core::AppName;
 use action_core::*;
 use action_manifest::{ArgSink, ArgsFault, ParamDecl, ParamNeed, Why};
-use agent_planner::Planner;
 use action_vocab::{
     CharCount, ChoiceDecl, ChoiceId, CivilDate, Handle, LabelText, Origin, ParamName, ParamType,
     Seconds, TargetValue, Value,
 };
-use account_core::AppName;
+use agent_loop::ModelOutput;
+use agent_planner::Planner;
+use companion_daemon::*;
 use provenance::{ActionName, EntityId, EntityKey, EntityKind, Integrity, Source};
 use serde_json::json;
 

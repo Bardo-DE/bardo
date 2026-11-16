@@ -11,8 +11,8 @@ use crate::link;
 use crate::pending::Ticket;
 use crate::serve::{Context, identify, serve_caller};
 use crate::slots::{Bucket, Slots};
-use std::os::fd::OwnedFd;
 use input_broker_wire::{Reason, Reply};
+use std::os::fd::OwnedFd;
 
 /// Identifies `conn`, gives it a slot of its pool, and serves it until it ends. A caller whose pool
 /// is full is answered `TooMany`.

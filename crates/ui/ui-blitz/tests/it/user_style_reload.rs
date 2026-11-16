@@ -4,9 +4,9 @@
 //! empty stylesheet; the probe's computed fill and its painted pixel follow each step.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Part, Srgba, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 200,

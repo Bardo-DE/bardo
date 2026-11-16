@@ -10,13 +10,6 @@
 mod worker;
 
 use dioxus::prelude::*;
-use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
-use ui_components::components::lists::preview::content::PANE_MEDIA;
-use ui_components::components::lists::preview::content::PaneContent;
-use ui_components::prelude::*;
-use ui_blitz::{DeviceBox, PdfFileThumb, ThumbRequest};
-use ui_blitz::{pdf_thumb_blocking, pdf_thumb_bytes, pdf_thumb_cached};
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use pdfrum_common::Limits;
 use pdfrum_edit::{EditDoc, Encryption, SaveOptions, blank_document, save};
 use peniko::Color;
@@ -24,6 +17,13 @@ use peniko::kurbo::{Rect, Size as Sheet};
 use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::time::Duration;
+use ui_blitz::{DeviceBox, PdfFileThumb, ThumbRequest};
+use ui_blitz::{pdf_thumb_blocking, pdf_thumb_bytes, pdf_thumb_cached};
+use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
+use ui_components::components::lists::preview::content::PANE_MEDIA;
+use ui_components::components::lists::preview::content::PaneContent;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use worker::settle_on_worker;
 
 const RED: [u8; 3] = [220, 30, 30];

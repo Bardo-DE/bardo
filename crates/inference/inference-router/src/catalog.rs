@@ -8,6 +8,13 @@
 //! the one place a model's details are written, and a user who needs other prefixes writes a
 //! catalog file of the same id in `$XDG_DATA_HOME/stoker/catalog`.
 
+use account_capability::ModelId;
+use account_capability::{
+    Capability, CuaBatching, CuaCap, CuaEnv, EmbedCap, EmbedPrompts, LanguageSet, LanguageTag,
+    LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
+};
+use account_capability::{Claim, Offer, Provenance, Subject};
+use account_ids::{Count, Dims, Px, Tokens};
 use computer_use_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
 use model_catalog::{
@@ -16,17 +23,10 @@ use model_catalog::{
 use model_provider::{
     Caps, Constraint, CuaSupport, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
 };
-use account_capability::ModelId;
-use account_capability::{
-    Capability, CuaBatching, CuaCap, CuaEnv, EmbedCap, EmbedPrompts, LanguageSet, LanguageTag,
-    LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
-};
-use account_capability::{Claim, Offer, Provenance, Subject};
-use account_ids::{Count, Dims, Px, Tokens};
+use model_vision_prep::ResizeRule;
 use speech_provider::{LangSet, SpeechDir};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
-use model_vision_prep::ResizeRule;
 
 /// Where the catalog files live.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -210,7 +210,7 @@ fn llm_cap(caps: &Caps, entry: &ModelEntry) -> LlmCap {
 }
 
 /// A computer-use claim needs a dialect an engine on this computer can speak (a tool call or the
-/// text of UI-TARS: `cua-session` builds the prompt and reads the reply of both; a vendor's wire
+/// text of UI-TARS: `computer-use-session` builds the prompt and reads the reply of both; a vendor's wire
 /// needs the vendor's backend) and a model that sees images.
 fn cua_cap(caps: &Caps) -> Option<CuaCap> {
     let CuaSupport::Dialect {

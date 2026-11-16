@@ -8,7 +8,7 @@ use crate::ids::WorkspaceKey;
 /// A request to the compositor, carried out on the thread's own connection.
 ///
 /// There is no minimize-rectangle command (`SetMinimizeRect`): `set_rectangle` needs the dock's
-/// `wl_surface`, which lives on shell-host's connection, not this one, so it is left out.
+/// `wl_surface`, which lives on layer-shell-host's connection, not this one, so it is left out.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum WlCommand {

@@ -3,26 +3,26 @@
 use crate::support::device::{OnOpen, ScriptedDevice, node};
 use crate::support::infer::ScriptedInfer;
 use crate::support::*;
-use action_dbus::callers::Role;
-use action_wire::VoiceIntent;
-use futures_util::FutureExt;
-use futures_util::StreamExt;
 use account_capability::SpeechMode;
 use account_capability::Tier;
 use account_core::DataClass;
+use account_match::Need;
+use account_match::SpeechNeed;
+use action_dbus::callers::Role;
+use action_wire::VoiceIntent;
+use agent_voice_audio::{DeviceError, NodeKind};
+use agent_voice_daemon::VoiceProxy;
+use agent_voice_wire::{
+    CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusal, VoiceUse,
+};
+use futures_util::FutureExt;
+use futures_util::StreamExt;
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, LangPick, ModelError,
     Readiness, RequestKind, TranscribeMode,
 };
-use account_match::Need;
-use account_match::SpeechNeed;
 use std::collections::BTreeSet;
-use agent_voice_audio::{DeviceError, NodeKind};
-use agent_voice_wire::{
-    CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusal, VoiceUse,
-};
-use agent_voice_daemon::VoiceProxy;
 
 fn stt_need() -> Need {
     Need::Speech(SpeechNeed::new(BTreeSet::from([SpeechMode::Stt])))
@@ -356,7 +356,8 @@ async fn the_engine_refusing_or_failing_ends_the_utterance_and_closes_the_mic() 
 
 #[tokio::test]
 async fn an_unreachable_inferd_fails_the_utterance_the_moment_it_is_known() {
-    let infer = ScriptedInfer::new(vec![]).unreachable(inference_client::TransportError::Unreachable);
+    let infer =
+        ScriptedInfer::new(vec![]).unreachable(inference_client::TransportError::Unreachable);
     let world = world(Options::new(infer)).await;
     let (_, mut events) = start_utterance(&world, VoiceIntent::Ask).await;
     assert_eq!(
@@ -558,7 +559,8 @@ async fn dictation_runs_in_process_over_the_device_seam_with_no_bus() {
     let (device, hand) = ScriptedDevice::with_a_microphone();
     let infer = ScriptedInfer::new(vec![transcript("hel", "hello", "hello world")]);
     let seen = infer.seen.clone();
-    let task = tokio::spawn(async move { agent_voice_daemon::dictate(&device, &infer, None).await });
+    let task =
+        tokio::spawn(async move { agent_voice_daemon::dictate(&device, &infer, None).await });
     while hand.feed(loud()) == 0 {
         tokio::task::yield_now().await;
     }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The confirmation sheet and the seat at intentd, end to end, with the REAL intentd and `quire-do`
 # from docket and the real sill daemon, on a private headless KWin started and stopped by the
-# script (a private copy of shell-host's scripts/dev, so nothing of another session's
+# script (a private copy of layer-shell-host's scripts/dev, so nothing of another session's
 # `.kwin-env` is read or written). The chain under test is the one a login has:
 #
 #   quire-do  ->  intentd (the gate)  ->  org.quire.Confirm1 (sill's sheet)  ->  the person's answer
@@ -12,7 +12,7 @@
 # intentd, quire-do and sill all run in a scratch HOME and scratch XDG directories, with an
 # XDG_DATA_DIRS that names nothing, so the only manifests are the two the script copies in
 # (`dist/intents/org.quire.Shell.toml`, and docket's `org.quire.Memory.toml` for a hidden action).
-# The person's answers are `sill debug key SURFACE KEY`: shell-host's Inject::Key, which enters
+# The person's answers are `sill debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
 # the sheet where an xkb key does, whether or not the compositor gave it the keyboard.
 #
 # docket is built from $DOCKET_DIR (default crates/docket of this tree) into its own target
@@ -62,7 +62,7 @@ mkdir -p "$CONFIG/sill" "$DATA/quire/intents"
 # intentd names a caller that owns no bus name by its cgroup, and only a terminal's child
 # (`vte-spawn-*.scope`) is the cli that `quire-do` must be; this script runs in whatever scope its
 # caller has (a gate, an agent's shell, a service), so it presents `quire-do` as a terminal's
-# child: it runs docket-accept's `accept-intentd` (the shipped intentd ignores INTENTD_PROC_ROOT),
+# child: it runs action-accept's `accept-intentd` (the shipped intentd ignores INTENTD_PROC_ROOT),
 # which reads its callers from a scratch proc root, where `as_terminal` writes the cgroup of the
 # process it then execs.
 PROC_ROOT="$OUT_DIR/proc"

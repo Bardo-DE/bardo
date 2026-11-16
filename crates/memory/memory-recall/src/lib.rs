@@ -13,7 +13,6 @@ mod fts;
 mod index;
 mod search_index;
 
-pub use memory_store::{IndexEvent, step};
 pub use doc::{Allow, Chunk, ClassTag, Doc, DocId, Facets, Ranked, StoredDoc, TopK};
 pub use embed::{Classed, EmbedError, Embedder, RetryClass};
 pub use exact::{ExactScan, VectorIndex};
@@ -21,3 +20,4 @@ pub use exact::{ExactScan, VectorIndex};
 pub use fake::{FAKE_DIMS, FakeEmbedder};
 pub use fts::{Fts5, SCHEMA_V1, match_expression};
 pub use index::{Index, IndexError, SearchQuery};
+pub use memory_store::{IndexEvent, step};

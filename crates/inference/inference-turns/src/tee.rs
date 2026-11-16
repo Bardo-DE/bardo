@@ -6,8 +6,8 @@
 //! only the thoughts stream; what the turn says is told when it has been checked.
 
 use computer_use_session::TranscriptSink;
-use model_provider::{TurnEnd, TurnEvent, TurnSink};
 use inference_core::InferEvent;
+use model_provider::{TurnEnd, TurnEvent, TurnSink};
 use std::ops::ControlFlow;
 
 /// What of the turn's text is shown as thinking while the turn runs.

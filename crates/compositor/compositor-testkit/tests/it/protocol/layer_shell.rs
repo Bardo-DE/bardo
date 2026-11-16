@@ -5,7 +5,6 @@ use compositor_core::OutputName;
 use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::input::{DeviceClass, KeyCode};
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::seat::pointer::Pointer;
 use compositor_testclient::surface::layer::{
@@ -15,6 +14,7 @@ use compositor_testclient::surface::subsurface::{Compositor, H1Data};
 use compositor_testclient::surface::toplevel::{State, WmBase};
 use compositor_testclient::{Pattern, TestClient, shm_buffer};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, FrameCount, ShotTarget, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use wayland_client::protocol::wl_output::WlOutput;
 
 use crate::protocol::xdg_shell::{make_key, map_toplevel, settle, windows};

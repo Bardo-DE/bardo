@@ -12,8 +12,9 @@ use crate::kit::Sheet;
 /// beats the layer whatever its specificity). The blocks are not indented, so the text diffs
 /// line by line.
 pub(crate) fn document(layered: &[(&str, String)], unlayered: &[(&str, String)]) -> String {
-    let mut css =
-        String::from("/* ui_components::stylesheet(), generated from the token table. Do not edit. */\n");
+    let mut css = String::from(
+        "/* ui_components::stylesheet(), generated from the token table. Do not edit. */\n",
+    );
     css.push_str(&format!("{}\n@layer {} {{\n", layers::ORDER, layers::DS));
     push_sections(&mut css, layered);
     css.push_str("}\n");

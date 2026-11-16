@@ -3,10 +3,10 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use tempfile::TempDir;
 use ui_components::prelude::ShortcutKey;
 use ui_harness::harness::settle_until;
 use ui_harness::{Harness, Input};
-use tempfile::TempDir;
 
 use super::support::{RecordingOpener, harness, launch, scratch_folder};
 

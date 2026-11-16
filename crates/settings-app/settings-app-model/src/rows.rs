@@ -1,9 +1,9 @@
 //! A list-of-tables key (design/22 section 9.1, `KeyKind::Rows`) as the rows editor holds it:
 //! every row a line of text per column, checked against the column's kind.
 
-use ui_settings::schema::{Column, ColumnKind};
 use regex::Regex;
 use std::sync::Arc;
+use ui_settings::schema::{Column, ColumnKind};
 
 /// The columns of a rows key, in the order the schema gives them, with each pattern compiled
 /// once here and not each time a cell is checked.

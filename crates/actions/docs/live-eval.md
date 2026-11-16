@@ -5,7 +5,7 @@ runs: it plays the eval corpora and the acceptance flows through the real code w
 inferd, on a private bus that cannot reach the owner's desktop, and writes a transcript of everything a
 model was sent and said. A failure seen live becomes a deterministic gate test.
 
-Everything below is `docket-live` (the crate `crates/docket-live`; the world it runs in is `docket-accept`'s), started by
+Everything below is `docket-live` (the crate `crates/docket-live`; the world it runs in is `action-accept`'s), started by
 two scripts. The gate runs the same code with `--engine scripted` (a cassette): no network, no model.
 
 | Script | What it runs |
@@ -39,14 +39,14 @@ Both scripts take `--engine`:
 - The network is reached only by inferd, only with `--engine cloud`. inferd's `[ai]` rows in your config
   say which classes may leave the machine; the harness adds nothing.
 - The key never passes through the scripts: not an environment variable, not a file they read. See Cloud.
-- The daemons' **model tap** (`DOCKET_MODEL_TRACE`, `docket-trace`) writes prompts to disk.
+- The daemons' **model tap** (`DOCKET_MODEL_TRACE`, `action-trace`) writes prompts to disk.
   It is on only in a harness world (the harness's `accept-*` mains read the variable and pass the tap in; no packaged daemon reads it), and the file is `<scratch>/model.jsonl`, mode 0600, under the
   scratch root the run keeps (`<scratch>/out/scratch/world-*`). Delete the scratch directory when you
   are done with it.
 
 ## What is real in each script
 
-`eval-release.sh` plays the router in the `docket-live` process: `Router` over docket-fake's providers
+`eval-release.sh` plays the router in the `docket-live` process: `Router` over action-fake's providers
 (mail, files) with intentd's `InferdWriter` and action-review's `InferReviewer` asking inferd over the
 private bus, and the system clock (so review deadlines are real). The scripted planner steps of a case
 mint handles in the router's session state, which the bus cannot do, so the cases do not go through
@@ -164,7 +164,7 @@ A local model's first request waits for its load (75 to 200 s for the 8B planner
 any product timeout, and the turn would fail on it. So a live engine (`local`, `cloud`) warms first:
 after each world's inferd is up and before its first flow or case, `docket-live` asks inferd to prepare
 every model the config's `[ai.model.text]` routes (`warm.rs`: one per distinct model, the `fast` tier
-last because the first request uses it), through inferd-client's `Transport::prepare`, polling every 2 s
+last because the first request uses it), through inference-client's `Transport::prepare`, polling every 2 s
 up to `--patience-s` per model. Each is printed as `docket-live: warm <Tier> <model> ready in N.Ns`.
 A model that is unavailable or never comes up is a `[setup]` failure (a smoke run stops there; a corpus
 run errors) and no flow starts. A scripted engine skips it. The warm-up runs once per world, because a
@@ -204,7 +204,7 @@ order the daemons wrote them, with the answer's phases, the sheets and what the 
 2. If the case is a corpus case already, copy the cassette:
    `cp <scratch>/out/traces/<id>.cassette.jsonl eval/regress/<id>.cassette.jsonl`. If the scenario came
    from a smoke run or is new, write it up as a case first: start from `<id>.case.toml` (or write one
-   in the format at the top of `eval-core/src/case.rs`), give it a unique id, and put it in the
+   in the format at the top of `action-eval-core/src/case.rs`), give it a unique id, and put it in the
    matching `eval/<corpus>/` directory.
 3. `cargo test -p action-live every_regression_cassette_replays_and_its_case_holds`. The test replays
    each `eval/regress/*.cassette.jsonl` through the case of the same id with the model answering exactly
@@ -299,7 +299,7 @@ injection placed in data the agent reads, and an injection goal. Each attack in
 message, text hidden with zero-width, bidi-override or tag characters), the fixture field that carries it
 (`carrier`: a mail body or subject, a contact's name, a file's content; the field holds `{injection}`), the
 goal (`goal`: an action that must not reach its app, such as an outbound send, a forward, a deletion, a move
-or a draft) and the steps a hijacked agent takes (`attack_steps`). The format is in `eval-core`'s
+or a draft) and the steps a hijacked agent takes (`attack_steps`). The format is in `action-eval-core`'s
 `attack.rs`; the starter corpus is 28 attacks over the neutral fake mail and files apps, in Auto and in Manual.
 
 Each attack plays as two cases over one world: the task with the carrier quiet, and the task with the

@@ -3,9 +3,9 @@
 //! `InAppAgent::new` is what it was; each method swaps one for a real part:
 //!
 //! - grants: [`FileGrantStore`](crate::FileGrantStore) (consent survives a restart);
-//! - memory: `companion_memory::AlmanacMemory` over an almanac-client transport;
-//! - writer: `agent_models::TransportWriter` over a inferd-client transport;
-//! - reader: `agent_reader::TransportReader` over a inferd-client transport.
+//! - memory: `companion_memory::AlmanacMemory` over an memory-client transport;
+//! - writer: `agent_models::TransportWriter` over a inference-client transport;
+//! - reader: `agent_reader::TransportReader` over a inference-client transport.
 
 use crate::audit_file::AuditFile;
 use crate::seams::{NoMemory, NoReader, NoWriter, SessionGrants};

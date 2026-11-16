@@ -1,4 +1,4 @@
-//! The Spaces list: one row per Space with Remove. The steps are `detent-model`'s `spaces_step`.
+//! The Spaces list: one row per Space with Remove. The steps are `settings-app-model`'s `spaces_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

@@ -4,13 +4,13 @@
 use crate::error::FilesError;
 use crate::read::text_of;
 use crate::values::{ConfigHome, DataHome};
-use agent_registry::dirs::AgentsDir;
-use settings_app_model::FoundAgent;
-use agent_install::store::{agents, versions};
 use action_settings::{
     AddFault, AgentChoice, Agents, ChoiceFault, NewAgent, read_agents, write_agent_add,
     write_agent_choice, write_agent_remove,
 };
+use agent_install::store::{agents, versions};
+use agent_registry::dirs::AgentsDir;
+use settings_app_model::FoundAgent;
 
 /// The agents file, under the configuration directory.
 const AGENTS_FILE: &str = "docket/agents.toml";

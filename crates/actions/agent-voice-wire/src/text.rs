@@ -1,8 +1,8 @@
 //! Envelope and the transcript text types.
 
-use action_vocab::UtteranceId;
 use account_capability::LanguageTag;
 use account_core::DataClass;
+use action_vocab::UtteranceId;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

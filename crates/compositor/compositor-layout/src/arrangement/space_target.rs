@@ -1,8 +1,8 @@
 //! One Space's origin.
 
+use account_core::SpaceId;
 use compositor_core::OutputKey;
 use compositor_core::geometry::LogicalPoint;
-use account_core::SpaceId;
 
 /// Where a Space's top-left sits: the shown Space at its output's usable origin, the others
 /// beside it in the output's strip.

@@ -8,8 +8,8 @@ use super::refusal::{Cause, Refusal};
 use super::session::Agents;
 use crate::peers::{Peers, Role};
 use account_dbus::{Call, Details};
-use std::sync::Arc;
 use inference_dbus::inference::{AgentsServer, EndpointArg, RouteArg};
+use std::sync::Arc;
 use zbus::message::Header;
 
 /// The bus object.

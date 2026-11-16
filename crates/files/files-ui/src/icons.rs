@@ -5,11 +5,11 @@
 
 use std::sync::Arc;
 
+use files_core::{Entry, EntryKind, FileName, FolderPath};
+use files_model::{Opens, opens};
 use ui_components::prelude::{FileIconChoice, FileKind, ImageSource};
 use ui_extensions::{FileFacts, FileIcons, FolderFacts, IconPick};
 use ui_helpers::mime::{MimeDb, MimeType, NameGuess};
-use files_core::{Entry, EntryKind, FileName, FolderPath};
-use files_model::{Opens, opens};
 
 use crate::places::Places;
 
@@ -118,9 +118,9 @@ fn other() -> FileIconChoice {
 
 #[cfg(test)]
 mod tests {
+    use files_core::ByteSize;
     use ui_components::prelude::FolderKind;
     use ui_helpers::mime::MimeLayer;
-    use files_core::ByteSize;
 
     use super::*;
     use crate::places::PlaceKind;

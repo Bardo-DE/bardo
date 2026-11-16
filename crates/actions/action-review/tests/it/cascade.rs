@@ -1,12 +1,12 @@
 //! The reviewer can only tighten. `tighten` is total, and nothing a reviewer says moves a
 //! ruling from Ask or Deny to Run.
 
+use account_capability::ModelId;
+use account_core::AccountId;
 use action_review::*;
 use permission_core::{
     AskReason, DenyCode, Impact, PolicyId, ReasonCode, ReasonText, ReviewError, Ruling, Stage,
 };
-use account_capability::ModelId;
-use account_core::AccountId;
 
 fn rulings() -> Vec<(&'static str, Ruling)> {
     vec![

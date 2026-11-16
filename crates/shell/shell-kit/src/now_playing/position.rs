@@ -4,9 +4,9 @@
 //! buffering) or ended, the machine has no wake and nothing runs.
 
 use crate::now_playing::kind::PositionClock;
+use std::time::Duration;
 use ui_components::base::machine::{Elapsed, Machine};
 use ui_components::base::time::stamp::Stamp;
-use std::time::Duration;
 
 /// A position report: where, out of how long, and whether it runs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -115,9 +115,9 @@ impl Machine for Ticker {
 mod tests {
     use super::{Report, TickIn, Ticker, position, to_next_second};
     use crate::now_playing::kind::PositionClock;
+    use std::time::Duration;
     use ui_components::base::machine::Machine;
     use ui_components::base::time::stamp::Stamp;
-    use std::time::Duration;
 
     fn ms(n: u64) -> Duration {
         Duration::from_millis(n)

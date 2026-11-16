@@ -5,8 +5,6 @@
 
 use super::common;
 
-use common::bus::PrivateBus;
-use common::fake_accountd::{FakeAccountd, Sheets};
 use account_capability::AgentProgram;
 use account_capability::LoginOutcome;
 use account_client_dbus::{AskKind, Bus, Launcher, LauncherError};
@@ -15,6 +13,8 @@ use account_core::SessionToken;
 use account_dbus::BusStream;
 use account_wire::LauncherFault;
 use account_wire::Refusal;
+use common::bus::PrivateBus;
+use common::fake_accountd::{FakeAccountd, Sheets};
 
 fn program(name: &str) -> AgentProgram {
     AgentProgram::parse(name).expect("program")

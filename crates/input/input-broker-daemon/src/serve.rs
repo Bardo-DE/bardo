@@ -8,11 +8,11 @@ use crate::journal::{self, kv};
 use crate::link::{self, Inbox, Incoming};
 use crate::policy::CallerAdmission;
 use crate::session::{Handled, Outgoing, Refused, Session};
+use input_broker_wire::limits::HANDSHAKE_TIMEOUT_MS;
+use input_broker_wire::{Reason, Reply, decode_request};
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 use std::time::Duration;
-use input_broker_wire::limits::HANDSHAKE_TIMEOUT_MS;
-use input_broker_wire::{Reason, Reply, decode_request};
 
 /// Everything a connection needs from outside, as seams.
 #[derive(Debug)]

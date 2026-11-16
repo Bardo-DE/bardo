@@ -3,12 +3,12 @@
 //! counts only on a sheet that offered it; anything else, an error or a cancel is a reject. The
 //! words of the options are not here.
 
+use action_core::ConfirmRequest;
 use agent_client_protocol::schema::v1::{
     Error, RequestPermissionOutcome, RequestPermissionResponse,
 };
-use action_core::ConfirmRequest;
-use permission_core::AlwaysOffer;
 use agent_session::SheetChoice;
+use permission_core::AlwaysOffer;
 
 /// The id of the one option that lets a call go on.
 pub const ALLOW_ONCE: &str = "allow_once";

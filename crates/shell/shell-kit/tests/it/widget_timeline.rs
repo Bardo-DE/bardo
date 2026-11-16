@@ -6,15 +6,15 @@
 //! the dates are exact whatever the machine's load.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::harness::assert_settles_to_zero_frames;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use shell_kit::prelude::*;
 use shell_kit::widget::REFRESH_FLOOR;
 use shell_kit::widget::contract::{NoIntent, Widget, WidgetContext, WidgetKind};
 use shell_kit::widget::timeline::{Dated, EntryDate, Refresh, RefreshAsk, Timeline};
 use std::cell::RefCell;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::harness::assert_settles_to_zero_frames;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 400,

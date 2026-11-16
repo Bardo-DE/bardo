@@ -3,16 +3,16 @@
 
 use crate::model::CuaModel;
 use crate::rules::Rules;
-use computer_use_a11y_tree::A11ySource;
-use computer_use_bus::{CuaRecord, CuaTask};
-use computer_use_desktop::{Desktop, LeaseControl, Stamp};
+use account_ids::UnixSeconds;
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use action_gate_wire::{CuaAsk, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk, WireRefusal};
+use computer_use_a11y_tree::A11ySource;
+use computer_use_bus::{CuaRecord, CuaTask};
 use computer_use_capture::WindowCapture;
-use account_ids::UnixSeconds;
-use provenance::{ConfirmId, RunId, SessionId, SpaceId};
+use computer_use_desktop::{Desktop, LeaseControl, Stamp};
 use computer_use_seat_input::AgentSeat;
+use provenance::{ConfirmId, RunId, SessionId, SpaceId};
 use serde::{Deserialize, Serialize};
 use std::future::Future;
 
@@ -124,8 +124,8 @@ pub trait MessageLink: Send + Sync {
     ) -> impl Future<Output = Result<Vec<InboundLine>, LinkError>> + Send;
 }
 
-/// Everything a run is carried out against, as types: the real set in cua-system (`SystemSeams`), the
-/// fakes in `cua-fake` (`FakeSeams`). Closed sets of implementations are generic parameters
+/// Everything a run is carried out against, as types: the real set in computer-use-system (`SystemSeams`), the
+/// fakes in `computer-use-fake` (`FakeSeams`). Closed sets of implementations are generic parameters
 /// bundled here, never `dyn`. Every seam outlives the tasks a run is driven from, so each is
 /// `'static`.
 pub trait Seams: Send + Sync + 'static {

@@ -3,10 +3,10 @@
 //! in lights the row under it, and the parent row of an open submenu stays lit.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

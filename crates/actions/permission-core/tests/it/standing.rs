@@ -1,8 +1,8 @@
 //! Standing grants: scope matching, the held list and its text.
 
-use sandbox::{AbsPath, PathFault};
-use permission_core::*;
 use action_vocab::ActionRef;
+use permission_core::*;
+use sandbox::{AbsPath, PathFault};
 
 pub(crate) fn path(t: &str) -> AbsPath {
     AbsPath::parse(t).expect("path")

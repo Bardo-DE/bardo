@@ -1,6 +1,6 @@
 //! The tree as `com.canonical.dbusmenu` (version 3) says it: the `(ia{sv}av)` layout of
 //! `GetLayout`, the property rows of `GetGroupProperties`, and an `Event` mapped back to the
-//! command it runs. Still plain data: ds-blitz turns these into D-Bus values.
+//! command it runs. Still plain data: ui-blitz turns these into D-Bus values.
 //!
 //! One property is ours: `x-quire-command-id`, the [`CommandId`] a command item runs, so an
 //! agent can list the menu and run an item by the id the app's manifest names it by. Clients

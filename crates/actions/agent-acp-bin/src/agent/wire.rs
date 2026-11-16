@@ -6,14 +6,14 @@ use super::fault::AgentFault;
 use super::host::Wiring;
 use super::places::Places;
 use super::sibling;
-use sandbox::Detected;
-use agent_acp_host::ToolsOffer;
 use action_dbus::BusConnection;
 use action_dbus::callers::Identity;
 use action_host::EditorDesk;
+use action_settings::AgentSettings;
+use agent_acp_host::ToolsOffer;
 use agent_launch::dbus::DbusAccounts;
 use agent_launch::{AgentsFile, ChildProc, Registry, Supervisor};
-use action_settings::AgentSettings;
+use sandbox::Detected;
 use std::sync::Arc;
 
 /// What `agents.toml` says, once `agent.acp.agents` is on and before anything starts: the programs
@@ -155,7 +155,7 @@ impl SandboxLimits {
             SandboxLimits::PerProcess => {
                 let hardening = sandbox::Hardening {
                     limits: sandbox::LimitPolicy::Rlimit(sandbox::Limits::default()),
-                    ..bulkhead::Hardening::default()
+                    ..sandbox::Hardening::default()
                 };
                 Detected::probe_with(path, &hardening, &sandbox::UserSession::from_env())
             }

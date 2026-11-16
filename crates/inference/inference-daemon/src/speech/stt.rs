@@ -10,8 +10,6 @@
 use super::SpeechRunner;
 use crate::engines::Engines;
 use crate::supervise::Supervised;
-use model_catalog::EngineKind;
-use model_provider::{ModelName, ProviderError};
 use account_capability::LanguageTag;
 use inference_core::{
     ChatSink, HeardDelta, InferEvent, LangPick, ModelError, ModelRef, ServedBy, Stage,
@@ -22,6 +20,8 @@ use inference_router::local::LocalModel;
 use inference_router::seams::EngineHost;
 use inference_turns::bridge;
 use inference_turns::pipeline::Transcriber;
+use model_catalog::EngineKind;
+use model_provider::{ModelName, ProviderError};
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::{
     AudioChunk, AudioFormat, AudioMs, AudioSource, Lang, LangChoice, PcmBytes, PcmFormat,

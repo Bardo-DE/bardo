@@ -53,7 +53,7 @@ impl Maker {
 mod tests {
     use super::*;
 
-    /// turnstile pins these same strings (its `maker` test in turnstile-wire): change one side and
+    /// turnstile pins these same strings (its `maker` test in input-broker-wire): change one side and
     /// the other must change with it.
     #[test]
     fn the_labels_are_the_strings_turnstile_writes() {

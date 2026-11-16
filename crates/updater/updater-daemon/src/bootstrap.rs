@@ -9,10 +9,10 @@ use crate::keys::load_key;
 use crate::layout::Layout;
 use crate::service::{Anchor, Context};
 use crate::state::StateStore;
-use caller_identity_dbus::peephole::{RealProc, TableFiles};
 use caller_identity_dbus::caller_identity_core::Table;
-use updater_core::Authenticator;
+use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use std::sync::Arc;
+use updater_core::Authenticator;
 
 const MACHINE_ID: &str = "/etc/machine-id";
 

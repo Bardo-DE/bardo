@@ -7,7 +7,9 @@ use dioxus::prelude::*;
 use ui_components::base::selection::RowSelection;
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::controls::scroller::handle::use_scroller;
-use ui_components::components::lists::collection_view::{CollectionItem, CollectionView, Flow, Thumbnail};
+use ui_components::components::lists::collection_view::{
+    CollectionItem, CollectionView, Flow, Thumbnail,
+};
 use ui_components::components::lists::table::look::TableLook;
 use ui_components::components::lists::table::model::TableColumn;
 use ui_components::components::lists::virtual_table::VirtualTable;

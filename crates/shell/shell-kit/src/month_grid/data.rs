@@ -3,9 +3,9 @@
 //! calendar library gives them (`i16` year, `i8` month and day), so its mapping is a plain
 //! `From` and quire needs no calendar of its own.
 
+use serde::{Deserialize, Serialize};
 use ui_components::base::word::Word;
 use ui_components::components::content::text_runs::TextLine;
-use serde::{Deserialize, Serialize};
 
 /// A calendar month: which month a grid shows. Ordered, so a change of month knows its way.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

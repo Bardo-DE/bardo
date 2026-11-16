@@ -1,7 +1,7 @@
 # Architecture
 
 palmrest is the Magic Mouse 2 gesture daemon: it reads touch reports, turns them into scroll and
-gesture streams, and delivers them over a socket to shell-host surfaces and, through virtual
+gesture streams, and delivers them over a socket to layer-shell-host surfaces and, through virtual
 input devices, to every other client. `README.md` has the data flow, the socket protocol and
 the safety rules; quire's `design/12-BEHAVIOUR-gestures.md` is the specification;
 `CONVENTIONS.md` points to the published Rust guides and gives three design directions (push IO to
@@ -13,12 +13,12 @@ the next thing. palmrest depends on no shell crate and runs on any Linux.
 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
-| `palmrest-protocol` | `crates/palmrest-protocol` | the socket contract with shell-host: `ToHost`, `ToDaemon`, their field types, `PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
-| `palmrest` | `crates/palmrest` | the pure core, the tools that replay recordings, and the daemon; library plus the `palmrest` binary | `palmrest-protocol`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `turnstile-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `peephole`, `peephole-core` (git, tag `v0.1.4`; the socket's shell check only; `peephole`'s `fake` feature only as a dev dependency) |
+| `mouse-gestures-proto` | `crates/palmrest-protocol` | the socket contract with layer-shell-host: `ToHost`, `ToDaemon`, their field types, `PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
+| `palmrest` | `crates/palmrest` | the pure core, the tools that replay recordings, and the daemon; library plus the `palmrest` binary | `mouse-gestures-proto`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `input-broker-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `peephole`, `caller-identity-core` (git, tag `v0.1.4`; the socket's shell check only; `peephole`'s `fake` feature only as a dev dependency) |
 
-Edges: `palmrest` -> `palmrest-protocol` only. `palmrest-protocol` depends on no other workspace
-crate, and has no `toml`, `notify` or `rustix`, so shell-host takes it without pulling the
-daemon. shell-host imports `palmrest-protocol` as a path dependency; nothing else of palmrest
+Edges: `palmrest` -> `mouse-gestures-proto` only. `mouse-gestures-proto` depends on no other workspace
+crate, and has no `toml`, `notify` or `rustix`, so layer-shell-host takes it without pulling the
+daemon. layer-shell-host imports `mouse-gestures-proto` as a path dependency; nothing else of palmrest
 leaves the repo. There is no boundary script; `cargo tree -p mouse-gestures-proto` showing only
 serde, serde_json and thiserror is the check, run in review.
 
@@ -91,7 +91,7 @@ out the effects it gets back.
 | The virtual touchpad session: landing, following, lifting, the libinput zones, and what may be down under a claim or a locked session | `outputs::pad` (`layout` for the geometry, `Policy` for what is allowed: the one place the pad's silence is decided) |
 | What the tracker asks for | `tracker::Out` |
 | Gesture to action table, what an action asks of the shell | `action`, `keys` |
-| Socket messages | `palmrest-protocol` |
+| Socket messages | `mouse-gestures-proto` |
 | The settings a person chooses (scroll speed, the gesture table), default, range | `config::sections` |
 | Every other tuning number | a named constant beside the code that uses it |
 | Lenient per-key reading | `config::lenient` |
@@ -144,8 +144,8 @@ environment (`daemon::Env`); it is a plain struct until a fake exists.
    one call in `step`, one arm turning its event into `Out`s (`tracker/out.rs`, or
    `tracker/strokes.rs` for what a stroke event causes). The gesture never talks to the socket
    directly.
-5. If the host must see it: a `ToHost` variant in `palmrest-protocol` (the protocol changes:
-   bump `PROTOCOL_VERSION`, update the round-trip test and shell-host in the same change).
+5. If the host must see it: a `ToHost` variant in `mouse-gestures-proto` (the protocol changes:
+   bump `PROTOCOL_VERSION`, update the round-trip test and layer-shell-host in the same change).
 6. Tests: a table test of the recogniser beside it; a scenario in `tests/support/scenarios.rs`
    (a synthesised stroke), its fixture written by `PALMREST_REGEN_FIXTURES=1 cargo test --test
    fixtures_current`, and a replay assertion in `tests/palmrest/gestures_replay.rs`; the same recording
@@ -240,8 +240,8 @@ node for writing, or reads a real config directory or a running daemon.
   26 units/mm across, 70 along), in newtypes (`Um`, `Ms`, `Fraction`, `GestureId`), so every
   sensor feels the same per millimetre. The only floats in public types are the socket's px.
 - **The protocol is a crate:** a change to `ToHost` or `ToDaemon` is a change to
-  `palmrest-protocol`, its round-trip tests, `PROTOCOL_VERSION` when incompatible, and
-  shell-host, in one change.
+  `mouse-gestures-proto`, its round-trip tests, `PROTOCOL_VERSION` when incompatible, and
+  layer-shell-host, in one change.
 - **Device ids are parsed, never searched:** `HID_ID` is read as `bus:vendor:product`.
 - **No `bool` in a field, parameter or key.** A key is an enum.
 - **The decoder is pinned by frozen goldens**; nothing regenerates them.
@@ -270,15 +270,15 @@ it was on. It is live while both two-finger rows of
 per 7.7 mm of travel (500 ms cooldown) from the same intent (`gestures::swipe`). The swipe runs
 whoever holds the pointer, and not while the session is locked: the lock screen lifts a running
 swipe at once (`Tracker::with_session_lock` returns the lift). `ToHost::Swipe` is not sent; its
-variant stays in the protocol until shell-host drops it in lockstep.
+variant stays in the protocol until layer-shell-host drops it in lockstep.
 
 ## 9. Migration order
 
 Each step keeps master green (the gate above).
 
-1. (done) `palmrest-protocol` crate: create it, move `protocol.rs` into it (split as in section 1), add
+1. (done) `mouse-gestures-proto` crate: create it, move `protocol.rs` into it (split as in section 1), add
    it to the workspace, switch `palmrest` to import it, delete the re-export in `lib.rs`. The
-   shell-host session then deletes its copy.
+   layer-shell-host session then deletes its copy.
 2. (done) Delete `gestures/live.rs`, the seven `live_workspace_*` keys, their `README` and default
    config text.
 3. (done) Move `sys.rs` and `outputs/uinput.rs` into `daemon/`; make `daemon` and its `sys` `pub(crate)`.
@@ -305,11 +305,11 @@ device failed; rebuilt) and `Cut` (the service closed the connection, refused pa
 out; counted). After a cut the devices are rebuilt with the 1 s, 2 s, 4 s, 5 s backoff, three
 times; a fourth cut in a row, with no frame going through between, ends the virtual devices with
 one line in the log that carries the service's reason. A change of settings that changes what the
-devices must be tries again. The socket stream to shell-host is unaffected throughout.
+devices must be tries again. The socket stream to layer-shell-host is unaffected throughout.
 
 A key combination the service denies (a key that types text with no ctrl, alt or super) is
 reported when the settings are read (`Action::read`, `Key::needs_a_shortcut_modifier`). That
-predicate mirrors the service's key classes (`turnstile-wire`'s `keytable`); a test here pins
+predicate mirrors the service's key classes (`input-broker-wire`'s `keytable`); a test here pins
 which names are free, and the service's tests fail when `keys::NAMES` has a code it lacks.
 
 `Origin::Service` is the service alone (no fallback to the node); `--direct-uinput` (`Route::Node`) is for development.

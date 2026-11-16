@@ -1,12 +1,12 @@
 //! What a Graph token shows, asked: who the account is, and one small read per service (the
 //! paths are Microsoft's `probe` rows of `issuers.toml`). What each answer means is
-//! oauth-probe-proto's.
+//! account-oauth-probe-proto's.
 
 use crate::oauth::{failure, get};
-use account_oauth_probe_proto::microsoft::{self, ME, is_personal};
 use account_capability::Claim;
 use account_core::EndpointUrl;
 use account_http::Http;
+use account_oauth_probe_proto::microsoft::{self, ME, is_personal};
 use account_provider::{Issuer, ProviderError, ProviderSpec};
 
 /// What probing an account found.

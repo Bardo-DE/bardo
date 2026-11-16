@@ -10,13 +10,13 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::Need;
+use account_match::{CuaNeed, LlmNeed, SpeechNeed};
 use inference_core::{
     AudioFrame, AudioRate, Base64Bytes, ClientFrame, CuaBegin, CuaStepReply, InferEvent,
     InferRefusal, InferReply, InferRequest, LangPick, ModelError, ModelRef, Readiness, RequestKind,
     ServedBy, SpeakRequest, Task, TaskRequest, TranscribeBegin, TranscribeMode, Why,
 };
-use account_match::Need;
-use account_match::{CuaNeed, LlmNeed, SpeechNeed};
 
 pub(super) fn model() -> ModelRef {
     ModelRef {
@@ -152,7 +152,10 @@ pub(super) fn waiting(queued: Option<InferRequest>) -> Phase {
 }
 
 /// Waiting on a model routed with this note.
-pub(super) fn waiting_for(answer: inference_core::StageNote, queued: Option<InferRequest>) -> Phase {
+pub(super) fn waiting_for(
+    answer: inference_core::StageNote,
+    queued: Option<InferRequest>,
+) -> Phase {
     Phase::Waiting {
         served: served(),
         answer,
@@ -214,7 +217,10 @@ pub(super) fn cua_step() -> InferRequest {
     InferRequest::CuaStep(inference_core::CuaStepRequest::new(
         inference_core::StepIndex(0),
         inference_core::WindowGeometry {
-            logical: computer_use_action::Size::new(computer_use_action::Coord(1), computer_use_action::Coord(1)),
+            logical: computer_use_action::Size::new(
+                computer_use_action::Coord(1),
+                computer_use_action::Coord(1),
+            ),
             scale: computer_use_action::Scale120(120),
         },
         inference_core::FrameImage {

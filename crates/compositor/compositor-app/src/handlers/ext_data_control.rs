@@ -3,8 +3,8 @@
 //! creates and settles the ones it held when the answer comes (`consent::release_gate`).
 
 use crate::state::State;
-use desktop_protocols::vocab::Power;
 use compositor_wayland::consent;
+use desktop_protocols::vocab::Power;
 use smithay::reexports::wayland_server::Client;
 use smithay::wayland::Gate;
 use smithay::wayland::selection::ext_data_control::{DataControlHandler, DataControlState};

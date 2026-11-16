@@ -1,7 +1,7 @@
 //! The red-team and eval suite that ships with the gate (addendum A9): the reading of the
-//! corpus and the attack files, the conformance checks, and the runner over `docket-fake`. The
+//! corpus and the attack files, the conformance checks, and the runner over `action-fake`. The
 //! case and report types, the judgement of a finished case, the Wilson interval, the scores and
-//! the summaries are `eval-core`'s.
+//! the summaries are `action-eval-core`'s.
 //!
 //! `cargo test -p action-eval` runs every corpus except `UiSpoofing` through the deterministic
 //! layers; the release run with real models is `scripts/eval-release.sh`.

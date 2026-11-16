@@ -5,6 +5,9 @@
 //! at once anchors to that row.
 
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::time::{Duration, Instant};
+use tokio::sync::watch;
 use ui_components::components::menus::palette::palette_group::PaletteGroup;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::focus::request::use_focus_request;
@@ -12,9 +15,6 @@ use ui_components::focus::soon::focus_soon;
 use ui_components::prelude::*;
 use ui_core::time::clock::sleep;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::RefCell;
-use std::time::{Duration, Instant};
-use tokio::sync::watch;
 
 const VIEW: Viewport = Viewport {
     width: 720,

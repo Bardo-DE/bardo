@@ -1,17 +1,17 @@
 //! Many tasks in one app: two tasks and the front pointer between them, a side conversation that
 //! ends as an episode, and restart recovery from what memory holds. The model is scripted, the
-//! memory is almanac-fake's backend, the clock is virtual.
+//! memory is memory-fake's backend, the clock is virtual.
 
 use crate::support::TestSheet;
 use crate::support::host::{clock, parts};
 use crate::support::infer::{ScriptedInfer, call, words};
+use account_ids::Count;
+use action_core::RosterState;
+use agent_inapp::{AlmanacMemory, AuditTo, Ending, InAppAgent, InAppKit};
 use memory_client::InProcess;
 use memory_core::{BodyMode, MemoryReply, MemoryRequest, RecentQuery, TrustFilter};
 use memory_fake::{ScriptedConsolidator, fake_service};
 use memory_service::Caller;
-use action_core::RosterState;
-use agent_inapp::{AlmanacMemory, AuditTo, Ending, InAppAgent, InAppKit};
-use account_ids::Count;
 use provenance::{AgentRef, TaskId, UnixSeconds};
 use std::sync::Arc;
 

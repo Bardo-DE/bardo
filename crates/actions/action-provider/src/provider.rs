@@ -10,7 +10,7 @@ use provenance::{Actor, EntityId};
 use std::future::Future;
 
 /// What an app implements to take part. `context` and `summon` have no method here: ds answers
-/// them through [`ContextSource`] and [`SummonTarget`], which `docket-ds` implements.
+/// them through [`ContextSource`] and [`SummonTarget`], which `action-ui-adapter` implements.
 pub trait IntentProvider: Send + Sync {
     /// The app's manifest.
     fn manifest(&self) -> &ValidManifest;
@@ -67,13 +67,13 @@ pub trait IntentProvider: Send + Sync {
     fn suggest(&self, ask: SuggestAsk) -> impl Future<Output = Vec<EntityRef>> + Send;
 }
 
-/// Reports what the person is looking at. `docket-ds` implements it over ds's context model.
+/// Reports what the person is looking at. `action-ui-adapter` implements it over ds's context model.
 pub trait ContextSource: Send + Sync {
     /// The context of the active window, taken now.
     fn snapshot(&self) -> ContextSnapshot;
 }
 
-/// Takes a summon. `docket-ds` implements it over ds's companion port.
+/// Takes a summon. `action-ui-adapter` implements it over ds's companion port.
 pub trait SummonTarget: Send + Sync {
     /// Answers a summon: the field became the prompt, an anchored prompt appeared, the previous
     /// prompt returned, or not here.

@@ -9,10 +9,10 @@ use compositor_core::overview::Overview;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::{DeviceId, WindowId};
 use compositor_layout::{LayoutKnobs, OverviewSlot, RustScene, SceneLayout, spec_of};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::quire::shell::{OverviewMode, OverviewState, ShellHandle, Toggle};
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testkit::{Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 /// The Escape key (`KEY_ESC`).

@@ -3,10 +3,10 @@
 
 use crate::support;
 
+use support::Scratch;
 use ui_style::appearance::theme::Theme;
 use ui_style::space::look::Grain;
 use ui_style::space::store::{SpaceStore, WorkspaceId};
-use support::Scratch;
 
 const TEXT: &str = r#"{
   "version": 1,

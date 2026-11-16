@@ -26,9 +26,9 @@ use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::{InputEvent, InputKind, Origin};
 use compositor_core::layer::LayerLevel;
 use compositor_core::{LeaseId, WindowId};
-use desktop_protocols::vocab::PressEdge;
 use compositor_wayland::compositor::root_of;
 use compositor_wayland::seat::Pressed;
+use desktop_protocols::vocab::PressEdge;
 use smithay::desktop::{PopupKind, find_popup_root_surface};
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 

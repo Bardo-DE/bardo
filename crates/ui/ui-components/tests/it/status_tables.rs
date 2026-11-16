@@ -1,7 +1,9 @@
 //! design/26: the status glyphs' moment tables as data, and the quantising each compares on
 //! (R2). Every (from, to) row of the catalogue's section 5.1 is here.
 
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
 use ui_components::components::content::status::bluetooth_state::BluetoothState;
 use ui_components::components::content::status::volume::{VolumeState, VolumeWaves};
 use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};

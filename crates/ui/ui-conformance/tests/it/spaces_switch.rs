@@ -3,9 +3,9 @@
 //! is exposed, and a dot click does not switch while a part of a Space's menu is open.
 
 use crate::support::spaces_page::Three;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 420,
@@ -66,8 +66,12 @@ fn command_two_switches_and_the_frame_takes_that_spaces_look() {
     );
     let second = frame_style(&harness);
     assert_ne!(first, second, "the root's frame variables follow the Space");
-    let look = ui_components::style::space::presets::default_look(1, ui_components::style::space::look::Grain(0));
-    let solid = |scheme| ui_components::style::space::frame_vars::FrameVars::of(&look, scheme).solid;
+    let look = ui_components::style::space::presets::default_look(
+        1,
+        ui_components::style::space::look::Grain(0),
+    );
+    let solid =
+        |scheme| ui_components::style::space::frame_vars::FrameVars::of(&look, scheme).solid;
     let (light, dark) = (solid(Scheme::Light), solid(Scheme::Dark));
     assert!(
         second.contains(&light) || second.contains(&dark),

@@ -5,10 +5,10 @@
 //! who is calling. Stubs behind frozen interfaces (`speech`) are listed in
 //! `FINDINGS.md`.
 //!
-//! The logic of routing and the session machine is not here: it is the library `porter-router`
+//! The logic of routing and the session machine is not here: it is the library `inference-router`
 //! (the router, the plan, the catalogue, the local model book, the attached engines as values, the
 //! session machine and the seams). Running turns is not here either: it is the library
-//! `porter-turns` (a local model's chat, embedding and computer-use turns, the structured-reply
+//! `inference-turns` (a local model's chat, embedding and computer-use turns, the structured-reply
 //! check, the audit trail, the stages of a pipeline). inferd keeps the bus objects, the process
 //! hosts, the settings wiring and the start-up.
 //!

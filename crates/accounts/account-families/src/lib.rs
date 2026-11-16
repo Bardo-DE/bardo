@@ -4,10 +4,10 @@
 //! process (mailo) both build it, so a family is written once.
 //!
 //! This crate is the registry. The families that have a protocol of their own live in crates of
-//! their own, each a driver over a sans-IO `*-proto` crate: `porter-family-oauth` (over
-//! `oauth-probe-proto`), `porter-family-generic` (over `generic-proto`) and
-//! `porter-family-nextcloud` (over `nextcloud-proto`); what they are written with is
-//! `porter-family-kit`. Here are the small families (an API key, a coding agent that signs
+//! their own, each a driver over a sans-IO `*-proto` crate: `account-family-oauth` (over
+//! `account-oauth-probe-proto`), `account-family-generic` (over `account-generic-proto`) and
+//! `account-family-nextcloud` (over `account-nextcloud-proto`); what they are written with is
+//! `account-family-kit`. Here are the small families (an API key, a coding agent that signs
 //! itself in, Tailscale) and, with the `set` feature (every family a daemon maps), `set`: which
 //! provider files a daemon serves and the family of each, shared by accountd, inferd and syncd.
 

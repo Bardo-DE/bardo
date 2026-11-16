@@ -1,9 +1,9 @@
 //! The reach rule (customization design section 7.6): a sheet's `url()` and `@import` may name
 //! `data:` or a file inside the sheet's own folder, and the rewrite cuts the rest.
 
+use std::path::{Path, PathBuf};
 use ui_style::kit::reach::within;
 use ui_style::kit::{LookStyle, Slot, StyleHomes, Styles, UserStyle};
-use std::path::{Path, PathBuf};
 
 const HOME: &str = "/home/ada/.config/quire";
 

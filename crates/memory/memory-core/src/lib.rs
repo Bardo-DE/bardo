@@ -90,7 +90,7 @@ pub use views::{
 /// The wire version of `org.quire.Memory1` (its `Version` property).
 pub const MEMORY_WIRE_VERSION: u32 = 1;
 
-/// The other crates of this repo reach porter and `prov` through almanac-core, so the allowed
+/// The other crates of this repo reach porter and `prov` through memory-core, so the allowed
 /// edges stay exactly the crate map's.
 pub use account_core::{
     AppId, AppName, DataClass, DesktopSpace, Isolation, LocalSpace, SpaceId, SpaceKind, SpaceScope,

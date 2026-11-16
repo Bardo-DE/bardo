@@ -31,14 +31,14 @@ mod capability;
 mod error;
 mod message;
 
-pub use plugin_host::wire::{
-    Frame, FrameDecoder, MAX_JSON_BYTES, MAX_PAYLOAD_BYTES, WireError, encode_frame, read_frame,
-    write_frame,
-};
 pub use capability::Capability;
 pub use error::ImageSizeError;
 pub use message::{
     DecodeRequest, Done, ErrorCode, ExportRequest, FactRow, FactsReply, Failure, Hello,
     HostMessage, ImageHeader, MicroRange, PROTOCOL_VERSION, PluginMessage, ProbeRequest, Progress,
     ThumbnailRequest,
+};
+pub use plugin_host::wire::{
+    Frame, FrameDecoder, MAX_JSON_BYTES, MAX_PAYLOAD_BYTES, WireError, encode_frame, read_frame,
+    write_frame,
 };

@@ -2,9 +2,9 @@
 //! compares the charges the providers reported, never an estimate: it can stop the next turn and
 //! never the current one.
 
-use model_provider::Money;
 use account_core::{AccountId, AppId};
 use account_ids::{Permille, TurnCount};
+use model_provider::Money;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -125,8 +125,8 @@ pub fn spend_verdict(cap: &SpendCap, spent: &ChargeTotal) -> SpendVerdict {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use iso_currency::Currency;
     use account_core::AccountId;
+    use iso_currency::Currency;
 
     fn usd(cents: i64) -> Money {
         Money::usd(Decimal::new(cents, 2))

@@ -1,6 +1,8 @@
 //! Cgroup paths, unit-name escapes and the names a scope claims.
 
-use caller_identity_core::{AppKey, CgroupPath, escape_unit, flatpak_scope_in, scope_app, unescape_unit};
+use caller_identity_core::{
+    AppKey, CgroupPath, escape_unit, flatpak_scope_in, scope_app, unescape_unit,
+};
 
 fn cg(text: &str) -> CgroupPath {
     CgroupPath::new(text).expect("a cgroup path")

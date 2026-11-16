@@ -5,29 +5,27 @@
 
 use super::agent::{Act, Auth, Offer, View};
 use crate::support::app;
-use sandbox::AbsPath;
-use sandbox::fake::{FakeSandbox, Script, Seen};
-use sandbox::{Network, NetworkMode};
-use agent_acp_host::fake::{FakeFiles, FakeSpawn, SpawnSeen};
-use agent_acp_host::{AcpBackend, AgentHost, IntentsCourt, Parts, Performer, Seams, ToolsOffer};
+use account_core::{AppId, Isolation};
+use account_ids::Count;
 use action_client::InProcess;
 use action_core::{AgentConfig, ConfirmAnswer, ConfirmEnd, ConfirmRequest, TurnVia, UserTurn};
 use action_fake::{
     FixedClock, ScriptedConfirmer, ScriptedReviewer, ScriptedWriter, fake_router_over,
 };
 use action_host::{EditorDesk, SheetConfirmer};
-use permission_core::ProgramName;
-use permission_core::{
-    ActionMatch, StandingGrant, TaskPolicy, TaskPolicyState, acp_agent_app,
-};
 use action_router::GrantStore;
-use agent_session::fake::MemoryLog;
-use agent_session::{BackendEvent, BackendKind, Opening, SessionHost, SheetChoice, TurnEnd};
 use action_vocab::{Caller, CallerRole, LabelText, TurnId, Workspace};
 use action_wire::CallerId;
-use account_core::{AppId, Isolation};
-use account_ids::Count;
+use agent_acp_host::fake::{FakeFiles, FakeSpawn, SpawnSeen};
+use agent_acp_host::{AcpBackend, AgentHost, IntentsCourt, Parts, Performer, Seams, ToolsOffer};
+use agent_session::fake::MemoryLog;
+use agent_session::{BackendEvent, BackendKind, Opening, SessionHost, SheetChoice, TurnEnd};
+use permission_core::ProgramName;
+use permission_core::{ActionMatch, StandingGrant, TaskPolicy, TaskPolicyState, acp_agent_app};
 use provenance::{AgentRef, Effect, SessionId, SpaceId, TaskId, UnixSeconds};
+use sandbox::AbsPath;
+use sandbox::fake::{FakeSandbox, Script, Seen};
+use sandbox::{Network, NetworkMode};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

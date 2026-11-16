@@ -11,14 +11,14 @@
 //! wrapper that hears the keys' modifiers, since quire's sheet floats in the root's overlay host.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use layer_shell_host::OutputInfo;
+use shell_kit::lock::vocab::CapsLock;
+use shell_kit::prelude::*;
 use shell_model::auth::Secret;
 use shell_model::polkit_agent::{Cookie, PolkitCommand};
 use shell_services::{Control, PolkitAgentService};
-use shell_kit::lock::vocab::CapsLock;
-use shell_kit::prelude::*;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
 
 use super::model::{PolkitPromptView, prompt_view};
 use super::surface::PANEL_ID;
@@ -46,7 +46,7 @@ pub(super) fn polkit_prompt(output: OutputInfo) -> Element {
     }
 }
 
-/// Caps Lock from a key event's modifiers (xkb's locked state, through shell-host).
+/// Caps Lock from a key event's modifiers (xkb's locked state, through layer-shell-host).
 fn caps_of(modifiers: Modifiers) -> CapsLock {
     if modifiers.contains(Modifiers::CAPS_LOCK) {
         CapsLock::On

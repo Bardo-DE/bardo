@@ -70,13 +70,13 @@ use dioxus_native::winit::keyboard::{Key as WinitKey, NamedKey};
 use dioxus_native::winit::window::Theme;
 use dioxus_native::{use_window, use_window_event};
 use dioxus_native_dom::NodeHandle;
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::Arc;
 use ui_components::file_drop::board::FileDropBoard;
 use ui_components::host::resized::WindowResized;
 use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::sync::Arc;
 
 /// What `Host` wraps, and what the app gave its document.
 #[derive(Props, Clone)]

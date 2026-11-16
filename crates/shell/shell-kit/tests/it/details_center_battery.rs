@@ -3,15 +3,17 @@
 //! keyboard-brightness level's glyph. Each ends at 0 frames; Reduced shows the level at once.
 
 use dioxus::prelude::*;
+use shell_kit::battery::ring::Readout;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
 use ui_components::components::controls::slider_model::SliderLook;
 use ui_components::prelude::*;
 use ui_harness::harness::assert_settles_to_zero_frames;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use shell_kit::battery::ring::Readout;
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

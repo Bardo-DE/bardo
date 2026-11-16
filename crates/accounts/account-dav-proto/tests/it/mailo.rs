@@ -5,7 +5,9 @@
 
 use account_dav_proto::carddav::{Props, Resource};
 use account_dav_proto::names::{CARDDAV, DAV};
-use account_dav_proto::{Multiget, SyncLevel, multiget, parse_multistatus, propfind, sync_collection};
+use account_dav_proto::{
+    Multiget, SyncLevel, multiget, parse_multistatus, propfind, sync_collection,
+};
 
 fn well_formed(xml: &str) -> roxmltree::Document<'_> {
     roxmltree::Document::parse(xml).unwrap_or_else(|e| panic!("{e}: {xml}"))

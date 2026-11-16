@@ -7,7 +7,7 @@
 //! author): the store opened once and kept, and the entry-per-credential layout.
 //!
 //! A value too long for one entry of the Windows credential manager is cut into parts by the
-//! keyring-chunked crate, whose heads begin `porter-parts:`.
+//! account-keyring-chunked crate, whose heads begin `porter-parts:`.
 //!
 //! Blocking keyring calls run on a dedicated thread and resolve a oneshot, because this crate
 //! may not reach a runtime and a blocking call on an async executor once panicked mailo.
@@ -24,11 +24,11 @@ use crate::attributes::attributes;
 use crate::error::SecretsError;
 use crate::namespace::Namespace;
 use crate::secrets::Secrets;
+use account_core::AccountId;
+use account_core::{Credential, SecretKey};
 use account_keyring_chunked::{ChunkedStore, Limit};
 use keyring_core::api::CredentialStoreApi;
 use keyring_core::{CredentialStore, Error};
-use account_core::AccountId;
-use account_core::{Credential, SecretKey};
 use std::sync::Arc;
 use thread::off_thread;
 

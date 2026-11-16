@@ -2,10 +2,10 @@
 //! give them: which slots each serves and whether its program is there.
 
 use engine_spec::engine;
-use model_catalog::EngineKind;
 use inference_core::Slot;
-use inference_router::local::EngineConfig;
 use inference_dbus::inference::EngineState;
+use inference_router::local::EngineConfig;
+use model_catalog::EngineKind;
 
 /// What the person calls the engine of `kind` in the picker (copy text, so it is not the engine
 /// spec's: the spec holds no words a person reads).

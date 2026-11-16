@@ -3,9 +3,9 @@
 
 use super::{SystemPrefs, contrast_from_portal, reduced_motion_from_portal, scheme_from_portal};
 use crate::latest::{self, Receiver, Sender};
+use std::collections::HashMap;
 use ui_core::spawner::Spawner;
 use ui_peer::{Deadline, within};
-use std::collections::HashMap;
 use zbus::export::ordered_stream::OrderedStreamExt;
 use zbus::proxy;
 use zbus::zvariant::OwnedValue;
@@ -13,7 +13,7 @@ use zbus::zvariant::OwnedValue;
 /// Who a screen says is not answering when the portal runs out of time.
 const PEER: &str = "The desktop's appearance service";
 
-/// The one namespace `ds-settings` reads; the portal groups every key by namespace, and
+/// The one namespace `ui-settings` reads; the portal groups every key by namespace, and
 /// appearance is the only one this crate resolves (design/22-SETTINGS.md section 4.4).
 const NAMESPACE: &str = "org.freedesktop.appearance";
 const KEY_COLOR_SCHEME: &str = "color-scheme";

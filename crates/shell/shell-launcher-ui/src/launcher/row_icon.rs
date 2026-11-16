@@ -7,9 +7,9 @@
 
 use std::path::Path;
 
+use shell_launcher::{IconRef, Item};
 use ui_components::prelude::*;
 use ui_components::style::icon::url::IconUrl;
-use shell_launcher::{IconRef, Item};
 
 use crate::launcher::entries::glyph;
 use shell_ui_kit::app_icons::{IconContext, IconFile, LogicalPx, pick, theme_art};
@@ -52,13 +52,13 @@ fn external(path: &Path) -> Option<ExternalIcon> {
 #[cfg(test)]
 mod tests {
     use super::{row_art, row_tile};
-    use ui_components::prelude::*;
-    use ui_components::style::icon::retint::IconStyle;
-    use ui_components::style::icon::retint::Tint;
     use shell_launcher::{IconRef, Item, ItemId, ProviderKind, Score};
     use shell_ui_kit::app_icons::cache::Generation;
     use shell_ui_kit::app_icons::{IconContext, IconFile, IconLook, IconResolver};
     use std::path::PathBuf;
+    use ui_components::prelude::*;
+    use ui_components::style::icon::retint::IconStyle;
+    use ui_components::style::icon::retint::Tint;
 
     fn row(provider: ProviderKind, id: &str, icon: IconRef) -> Item {
         Item {

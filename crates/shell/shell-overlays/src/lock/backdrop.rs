@@ -1,8 +1,8 @@
 //! The lock screen's backdrop: the blurred copy the wallpaper service writes beside each
 //! prepared image (`shell_model::wallpaper::backdrop_file`). Pure.
 
-use ui_components::prelude::*;
 use std::path::PathBuf;
+use ui_components::prelude::*;
 
 use shell_model::ids::OutputName;
 use shell_model::wallpaper::{Wallpapers, backdrop_file};
@@ -26,8 +26,8 @@ pub fn backdrop_for(
 
 #[cfg(test)]
 mod tests {
-    use ui_components::prelude::*;
     use std::path::PathBuf;
+    use ui_components::prelude::*;
 
     use shell_model::ids::OutputName;
     use shell_model::wallpaper::{WallpaperImage, Wallpapers};

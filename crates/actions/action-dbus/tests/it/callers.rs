@@ -2,8 +2,8 @@
 //! connection. Rows: the right unit, a scope that claims the role, a user's row that claims it, a
 //! process that is not the unit's main process, and a process nothing names.
 
-use action_dbus::callers::{INTENTD, SHELL, Standing, config_home, load_callers, table_from_toml};
 use account_callers::{CallerTable, ProcCallers};
+use action_dbus::callers::{INTENTD, SHELL, Standing, config_home, load_callers, table_from_toml};
 use std::path::Path;
 
 const SYSTEM: &str = r#"

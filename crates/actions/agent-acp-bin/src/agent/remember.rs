@@ -2,10 +2,10 @@
 //! it offered, the ways of signing in it listed, and whether it let the session open. Best
 //! effort: a record that cannot be written changes nothing about the session.
 
-use agent_registry::dirs::AgentsDir;
-use agent_registry::offered::{Named, Offered, Start};
 use agent_acp_host::{AcpBackend, Models, Seams};
 use agent_install::store::write_offered;
+use agent_registry::dirs::AgentsDir;
+use agent_registry::offered::{Named, Offered, Start};
 use agent_session::{BackendFault, Choice, Choices, HostFault};
 
 fn named(choices: &[Choice]) -> Vec<Named> {

@@ -2,8 +2,10 @@
 //! a paste with HTML, and the geometry an app draws its own caret and selection from, all
 //! through a real Blitz document.
 
-use keymap::Platform;
 use dioxus::prelude::*;
+use keymap::Platform;
+use std::cell::RefCell;
+use std::time::Duration;
 use ui_components::edit::handle::{EditHandle, use_edit_handle};
 use ui_components::edit::input::PreeditCursor;
 use ui_components::edit::input::{Composition, EditInput, KeyInput};
@@ -15,8 +17,6 @@ use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::RefCell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

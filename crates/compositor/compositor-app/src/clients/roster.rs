@@ -6,8 +6,8 @@
 //! before anything is read from the program behind it. The last few connections of the session
 //! are kept for apps and services whose name is proven ([`RESERVED_FOR_PROVEN`]).
 
-use compositor_core::ClientKey;
 use account_core::{AppId, PeerIdentity};
+use compositor_core::ClientKey;
 use rustix::process::RawPid;
 use std::collections::BTreeMap;
 use std::os::unix::net::UnixStream;

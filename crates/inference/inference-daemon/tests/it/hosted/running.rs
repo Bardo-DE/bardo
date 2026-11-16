@@ -3,13 +3,13 @@
 
 use super::*;
 use crate::hosting::bus::within;
-use inference_daemon::attached::{Attached, Place, Reach};
 use account_capability::ModelId;
 use account_dbus::Details;
-use std::time::{Duration, SystemTime};
+use inference_daemon::attached::{Attached, Place, Reach};
 use inference_dbus::inference::{
     InferenceProxy, RunState, RunningModel, RunningRowError, running_from_dbus,
 };
+use std::time::{Duration, SystemTime};
 use zbus::export::futures_core::Stream;
 
 const CHAT: &str = "local/tiny-chat";

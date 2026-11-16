@@ -1,8 +1,8 @@
 //! A link from another page to one account in the Accounts pane: the page switches and the pane
 //! opens that account when it has read its rows.
 
-use settings_app_model::{AccountKey, AccountTarget, AccountsInput, AccountsPane, PageSlug};
 use dioxus::prelude::*;
+use settings_app_model::{AccountKey, AccountTarget, AccountsInput, AccountsPane, PageSlug};
 use ui_settings::schema::Page;
 
 /// What the pane is asked to show.

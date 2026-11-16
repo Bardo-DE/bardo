@@ -7,13 +7,13 @@
 use crate::support::month_sample;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::harness::settle_until;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use month_sample::{First, SEPTEMBER, sample, shift};
 use shell_kit::month_grid::data::{DayKey, MonthStep};
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::harness::settle_until;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 // `a_step_slides_the_new_month_in_once` runs on `Clock::Virtual`, so the "still
 // sliding" check within a millisecond of the press and the settle bound below (via

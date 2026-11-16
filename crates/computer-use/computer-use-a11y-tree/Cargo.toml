@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-a11y-tree"
-description = "The accessibility tree of a leased window: snapshot model, prune, render to model text, diff, secret rectangles, selectors and the A11ySource seam. The AT-SPI backend is `a11y-atspi`."
+description = "The accessibility tree of a leased window: snapshot model, prune, render to model text, diff, secret rectangles, selectors and the A11ySource seam. The AT-SPI backend is `computer-use-a11y-atspi`."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

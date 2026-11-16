@@ -4,6 +4,8 @@
 use std::time::Duration;
 
 use dioxus::prelude::*;
+use files_core::{Progress, Summary};
+use files_model::{Input, Work};
 use ui_components::base::time::clock;
 use ui_components::components::chrome::column::model::ColumnAlign;
 use ui_components::components::chrome::column::view::Column;
@@ -12,8 +14,6 @@ use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::{
     Button, Fraction, Label, Progress as Share, ProgressIndicator, ProgressStyle, Sheet,
 };
-use files_core::{Progress, Summary};
-use files_model::{Input, Work};
 
 use crate::state::Browse;
 use crate::words::busy_words;

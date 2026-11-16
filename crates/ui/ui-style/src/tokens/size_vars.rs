@@ -8,8 +8,8 @@ use super::control_size::ControlSize;
 use super::name::VarName;
 use super::size_scale::{KNOB_INSET, SizeScale};
 use super::token::{CssValue, Token, TokenKind, TokenScope};
-use ui_core::word::Word;
 use std::sync::OnceLock;
+use ui_core::word::Word;
 
 /// One quantity every size has.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

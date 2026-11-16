@@ -2,9 +2,9 @@
 //! standing "always" for the companion to use an app's data in one Space.
 
 use crate::things::App;
-use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{AppName, GrantId};
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{SpaceId, SpaceScope, UnixSeconds};
 
 /// The grants of the companion for `app`'s classes (mail's are `mail` and `contacts`) in `space`, for
@@ -12,7 +12,8 @@ use provenance::{SpaceId, SpaceScope, UnixSeconds};
 pub fn standing_json(space: &str, app: App) -> String {
     // An editor's session asks under the editor's own name (the app behind its connection), and
     // opens in the desktop Space: the same consent, given to it.
-    let editor = GrantCaller::Editor(provenance::ClientName::parse("org.quire.Acp").expect("client"));
+    let editor =
+        GrantCaller::Editor(provenance::ClientName::parse("org.quire.Acp").expect("client"));
     let holders = [
         (GrantCaller::Companion, space),
         (editor.clone(), space),

@@ -67,10 +67,10 @@ mod live {
     use crate::Desktop;
     use crate::capability::Bus;
     use crate::probe::bus::{PEER, Side, capabilities_named, fill};
-    use ui_peer::{Deadline, within};
     use std::future::{Future, poll_fn};
     use std::pin::pin;
     use std::task::Poll;
+    use ui_peer::{Deadline, within};
     use zbus::export::ordered_stream::OrderedStreamExt;
     use zbus::fdo::NameOwnerChangedStream;
 

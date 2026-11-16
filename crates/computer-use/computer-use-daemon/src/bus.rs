@@ -1,5 +1,5 @@
 //! `org.quire.Cua1` served: the Manager at `/org/quire/Cua1` and one Run per live run. The member
-//! list, its signatures and its signals are those of `cua-dbus`'s skeletons (a test holds the
+//! list, its signatures and its signals are those of `computer-use-dbus`'s skeletons (a test holds the
 //! introspection of these objects to `dbus/org.quire.Cua1.xml`).
 //!
 //! Bodies are JSON in an `s` argument, in the `CuaEnvelope` where a body is sent. Who is calling
@@ -7,6 +7,7 @@
 //! owns and never from anything in a body.
 
 use crate::callers;
+use action_dbus::callers::Callers;
 use computer_use_bus::{
     CuaCaller, CuaEnvelope, CuaMember, CuaTask, CuaVocab, QuestionId, WindowBody, backend_wire,
     modes_wire, slug_of,
@@ -15,7 +16,6 @@ use computer_use_dbus::{CUA_PATH, CuaError, run_path};
 use computer_use_desktop::{Desktop, RunMode, WindowTitle};
 use computer_use_host::Supervisor;
 use computer_use_run::{Seams, mode_support};
-use action_dbus::callers::Callers;
 use provenance::{Label, Labelled, RunId};
 use serde::Serialize;
 use std::collections::HashMap;
@@ -265,9 +265,9 @@ pub(crate) const MANAGER_PATH: &str = CUA_PATH;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use action_dbus::callers::Caller;
     use computer_use_desktop::BackendKind;
     use computer_use_fake::{FakePdp, scene::world};
-    use action_dbus::callers::Caller;
     use zbus::object_server::Interface;
 
     /// Identifies nobody: the introspection needs the types, not a bus.

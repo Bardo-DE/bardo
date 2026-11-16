@@ -12,8 +12,8 @@ use networkmanager_proxy::{NetworkManagerProxy, SERVICE};
 use settings_app_model::{
     Absence, HiddenNetwork, JoinFailure, Passphrase, Ssid, WifiLogin, WifiRadio, WifiStatus, Work,
 };
-use ui_peer::within;
 use std::collections::HashMap;
+use ui_peer::within;
 
 const NOT_AVAILABLE: &str = "Wi-Fi isn\u{2019}t available right now. Try again in a moment.";
 const COULD_NOT_SWITCH: &str = "Wi-Fi couldn\u{2019}t be switched. Try again in a moment.";

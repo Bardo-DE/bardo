@@ -5,8 +5,8 @@ use crate::components::lists::column_browser::item::{BrowserColumn, BrowserRowKi
 use crate::components::lists::list::keys::{ListKey, list_key};
 use crate::components::lists::virtual_list::model::roved;
 use crate::stack::roving::Rove;
-use keymap::Platform;
 use dioxus::prelude::{Key, Modifiers};
+use keymap::Platform;
 use ui_core::command::holds_primary;
 use ui_core::geometry::units::Px;
 use ui_core::selection::{Pick, PickHow};
@@ -131,8 +131,8 @@ mod tests {
     use crate::components::content::icon_source::IconSource;
     use crate::components::lists::column_browser::item::{BrowserColumn, BrowserRow};
     use crate::stack::roving::{Edge, Rove, Step};
-    use keymap::Platform;
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::Platform;
     use ui_core::selection::{PickHow, RowSelection};
     use ui_style::icon::Icon;
 

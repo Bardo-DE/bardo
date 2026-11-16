@@ -7,8 +7,8 @@
 //! its tip is terse ("Star  S").
 
 use crate::keys::Keys;
-use ui_core::vocab::Shortcut;
 use std::fmt;
+use ui_core::vocab::Shortcut;
 
 /// What stands between a tip's name and its key: two spaces.
 pub const TIP_SEPARATOR: &str = "  ";

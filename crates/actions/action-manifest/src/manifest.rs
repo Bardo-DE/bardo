@@ -3,10 +3,10 @@
 //! written (porter's provider-file rule). TOML is read by `parse`, behind the `manifest-file`
 //! feature.
 
+use account_core::DataClass;
 use action_vocab::{
     ChoiceDecl, IconName, IntentsVocab, LabelText, ParamName, ParamType, RelationName, Value,
 };
-use account_core::DataClass;
 use provenance::{ActionName, Effect, EntityKind, Source};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;

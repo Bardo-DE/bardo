@@ -1,5 +1,5 @@
 //! Blitz documents as the host runs them: one `DioxusDocument` per surface, with the host's UA
-//! stylesheet, head-element shim and shell provider, with `blitz-kit`'s shared fonts and local
+//! stylesheet, head-element shim and shell provider, with `blitz-embed`'s shared fonts and local
 //! (`data:` and `file:`) loader.
 
 pub(crate) mod document;

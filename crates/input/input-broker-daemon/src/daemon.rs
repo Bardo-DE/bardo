@@ -17,13 +17,13 @@ use crate::link;
 use crate::pending::{Caps, Pending};
 use crate::serve::Context;
 use crate::slots::Slots;
+use input_broker_wire::{Reason, Reply};
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::io::Errno;
 use rustix::net::{SocketFlags, accept_with};
 use std::os::fd::OwnedFd;
 use std::sync::Arc;
 use std::time::Duration;
-use input_broker_wire::{Reason, Reply};
 
 /// How long the service waits with no one connected before it exits: socket activation starts it
 /// again on the next connection, so an idle minute costs nothing.

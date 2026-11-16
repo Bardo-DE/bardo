@@ -13,21 +13,21 @@ mod theme;
 mod theme_picture;
 mod toggle;
 
-use settings_app_model::external::toml;
-use settings_app_model::{Control as Kind, KeyEntry};
 use dioxus::prelude::*;
-use ui_components::components::content::label::LabelRole;
-use ui_components::prelude::*;
 pub(crate) use file_only::FileOnlyControl;
 use menu::MenuControl;
 use picture::PictureControl;
 use rows::RowsControl;
 use segmented::SegmentedKey;
+use settings_app_model::external::toml;
+use settings_app_model::{Control as Kind, KeyEntry};
 use slider::SliderControl;
 use swatches::{SwatchControl, swatch_words};
 use text::TextControl;
 use theme::{ThemeControl, theme_words};
 use toggle::ToggleControl;
+use ui_components::components::content::label::LabelRole;
+use ui_components::prelude::*;
 
 /// The control for `entry`, showing `value`; a change is sent to `onchange` as the value to
 /// store.

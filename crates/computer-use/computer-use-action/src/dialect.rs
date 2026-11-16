@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::GridMax;
 
-/// A vendor's own computer-use tool protocol (encoded by `cua-vendors`).
+/// A vendor's own computer-use tool protocol (encoded by `computer-use-vendors`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum WireDialect {
@@ -27,7 +27,7 @@ pub enum TextDialect {
     UiTars15,
 }
 
-/// A local model whose engine parses tool calls server-side; `cua-parse` reads the calls.
+/// A local model whose engine parses tool calls server-side; `computer-use-parse` reads the calls.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ToolDialect {

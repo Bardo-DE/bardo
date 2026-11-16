@@ -2,10 +2,10 @@
 //! at once, then one more each `DelayToken::ScrollArrowStep` until the pointer leaves the arrow.
 //! The next step's time is in the state, so leaving needs nothing cancelled.
 
+use std::time::Duration;
 use ui_core::geometry::units::Px;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
-use std::time::Duration;
 
 /// How far the list scrolls at each step of a held arrow.
 pub(crate) const SCROLL_ARROW_STEP: Px = Px(6.0);
@@ -103,9 +103,9 @@ impl Machine for Drift {
 #[cfg(test)]
 mod tests {
     use super::{Drift, DriftIn, Edge};
+    use std::time::Duration;
     use ui_core::machine::Machine;
     use ui_core::time::stamp::Stamp;
-    use std::time::Duration;
 
     const EVERY: Duration = Duration::from_millis(16);
 

@@ -6,6 +6,10 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::{ImageFormat, Rgba, RgbaImage};
+use probe::{distance, keep, modal, pixels, rect};
+use std::io::Cursor;
+use std::time::Duration;
 use ui_components::base::press::{PointerButton, Press};
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::host::measure::Anchor;
@@ -16,10 +20,6 @@ use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::delay::DelayToken;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use image::{ImageFormat, Rgba, RgbaImage};
-use probe::{distance, keep, modal, pixels, rect};
-use std::io::Cursor;
-use std::time::Duration;
 
 /// Wide enough for a menu and its submenu side by side.
 const VIEW: Viewport = Viewport {

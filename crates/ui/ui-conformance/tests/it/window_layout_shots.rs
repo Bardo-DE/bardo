@@ -4,6 +4,8 @@
 //! a sheet hanging from the card. Each render must paint.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::base::geometry::units::{Point, Px};
 use ui_components::base::vocab::RowState;
 use ui_components::components::app::edge_peek::EdgePeek;
@@ -23,8 +25,6 @@ use ui_components::style::space::frame_vars::FrameVars;
 use ui_components::style::space::presets::PRESETS;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 1000,

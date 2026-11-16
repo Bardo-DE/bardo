@@ -3,9 +3,9 @@
 //! back into what it stands for.
 
 use crate::surface::Stroke;
-use keymap::keyboard_types::Modifiers;
-use keyboard_types::Key;
 use computer_use_seat_input::{Keycode, Keymap, KeymapEntry, Produces, ShiftLevel};
+use keyboard_types::Key;
+use keymap::keyboard_types::Modifiers;
 
 /// The named keys, each with its code.
 const NAMED: &[(Key, u32)] = &[

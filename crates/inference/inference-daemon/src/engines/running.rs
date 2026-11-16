@@ -6,8 +6,8 @@
 use super::*;
 use engine_spec::engine;
 use engine_supervisor::EngineFailure;
-use model_catalog::MiB;
 use inference_dbus::inference::{RunState, RunningModel};
+use model_catalog::MiB;
 use zbus::fdo;
 
 /// Why a model could not be started or stopped.

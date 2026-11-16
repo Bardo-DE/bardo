@@ -1,15 +1,15 @@
 //! Finding a generic DAV server from the name a person typed: `.well-known/caldav` and
 //! `.well-known/carddav` on a bare server, or the address itself when it names a path, and a
-//! PROPFIND with the password at each to see that it is accepted (dav-proto's walk to the
+//! PROPFIND with the password at each to see that it is accepted (account-dav-proto's walk to the
 //! principal).
 
 use crate::{Error, bodiless, web};
-use account_dav_proto::discover::{Error as WalkError, Reach, Scope, Walk};
-use http::header::AUTHORIZATION;
-use http::{HeaderValue, Method, Request, Response, Uri};
 use account_capability::{AbsentReason, CapabilityKind, Claim, Offer, Provenance, Subject};
 use account_core::{EndpointUrl, Family};
+use account_dav_proto::discover::{Error as WalkError, Reach, Scope, Walk};
 use account_provider::ProviderSpec;
+use http::header::AUTHORIZATION;
+use http::{HeaderValue, Method, Request, Response, Uri};
 
 /// One DAV service a generic server may offer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

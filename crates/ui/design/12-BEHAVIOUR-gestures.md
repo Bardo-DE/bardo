@@ -193,7 +193,7 @@ in the Wheel output (12.3.9); the socket carries f32 px.
 
 | Output | For | Specification | Status |
 | --- | --- | --- | --- |
-| O1 Socket | our Blitz surfaces (every shell-host process) | `$XDG_RUNTIME_DIR/palmrest/events.sock`, `SOCK_SEQPACKET`, mode 0600, many subscribers; messages 12.3.10 | settled (plan B), protocol proposed |
+| O1 Socket | our Blitz surfaces (every layer-shell-host process) | `$XDG_RUNTIME_DIR/palmrest/events.sock`, `SOCK_SEQPACKET`, mode 0600, many subscribers; messages 12.3.10 | settled (plan B), protocol proposed |
 | O2 Virtual touchpad | every other client, via the compositor and libinput | uinput device "palmrest touchpad", `BUS_VIRTUAL`, vendor 0x0001 product 0x0002; `INPUT_PROP_POINTER`; `EV_KEY` BTN_LEFT (never pressed), BTN_TOUCH, BTN_TOOL_FINGER / DOUBLETAP / TRIPLETAP / QUADTAP; `EV_ABS` ABS_X/Y, ABS_MT_SLOT 0..4, ABS_MT_TRACKING_ID, ABS_MT_POSITION_X 0..4000 and Y 0..2800 with resolution 40 units/mm (100 x 70 mm) | settled (plan B), fields proposed |
 | O2 contact rules | never exactly one contact (a 1-finger touchpad contact would move the pointer); scroll = 2 contacts 20 mm apart moved by the identical delta (no pinch); contacts land at Began (never at MayBegin) and lift at Ended/Cancelled; if the stroke lasted < 200 ms or moved < 2 mm, the lift is delayed to 200 ms after landing (defeats libinput tap-to-click, tap timeout 180 ms); live swipe = 4 contacts | proposed (M: libinput behaviour) |
 | O2 scale | virtual mm per px chosen so that a libinput 2-finger scroll in GTK4 moves the same px as the O1 path for the same stroke; start value 0.25 mm/px, calibrated by acceptance test 9 | proposed (L) |
@@ -223,7 +223,7 @@ socket write <= 2 ms p95.
 
 ### 12.3.11 Interaction with 11-BEHAVIOUR-scroll (exact)
 
-| palmrest | shell-host engine (11) |
+| palmrest | layer-shell-host engine (11) |
 | --- | --- |
 | `Touches{Down}` / MayBegin | stop momentum and rebound (touch to stop); start the double-scroll drop window |
 | `Scroll{Began}` | latch (11 §11.3.3) on `axis`; or swipe decision (12.3.6) |
@@ -355,8 +355,8 @@ pub enum Action {
 | Concern | Owner |
 | --- | --- |
 | Decoder, tracker, feel, gestures, outputs, service | `magic-gestures` repo, `palmrest` binary |
-| Host client, double-scroll rule, swipe decision on our surfaces | `shell-host/src/input/palmrest.rs` + `scroll/**` (11) |
-| Workspace / overview actions on the compositor | `sill-ipc` gains `Workspace{Prev, Next, Overview}` (proposed addition); `sill-services` `toplevel_wl` performs them |
+| Host client, double-scroll rule, swipe decision on our surfaces | `layer-shell-host/src/input/palmrest.rs` + `scroll/**` (11) |
+| Workspace / overview actions on the compositor | `shell-ipc` gains `Workspace{Prev, Next, Overview}` (proposed addition); `shell-services` `toplevel_wl` performs them |
 | Settings page | Settings app, writes `config.toml` and the compositor's natural-scroll value for "palmrest touchpad" |
 
 Platform limits:

@@ -14,7 +14,7 @@ pub enum Call {
     Inject(Vec<String>),
     /// `Wait(predicate, timeout_ms)`.
     Wait {
-        /// The predicate text (casement-ipc's wait grammar).
+        /// The predicate text (compositor-ipc's wait grammar).
         predicate: String,
         /// The bound, in session time.
         timeout: Duration,

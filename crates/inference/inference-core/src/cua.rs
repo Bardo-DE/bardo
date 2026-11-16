@@ -1,11 +1,11 @@
 //! The computer-use step: the contract between cuad and inferd. Every point is in
-//! `WindowSpace` (logical window pixels); inferd's `cua-session` maps to and from the model's
+//! `WindowSpace` (logical window pixels); inferd's `computer-use-session` maps to and from the model's
 //! own space and drops anything out of frame.
 
 use crate::error::ModelError;
 use crate::request::ImageSource;
-use computer_use_action::{CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use account_capability::CuaEnv;
+use computer_use_action::{CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -125,7 +125,7 @@ impl CuaStepRequest {
 }
 
 /// One message that reached a running computer-use task mid-run. A note is input, never
-/// authority (the rule of `provenance::Message`): cua-session fences an agent's note as untrusted
+/// authority (the rule of `provenance::Message`): computer-use-session fences an agent's note as untrusted
 /// text, and inferd only forwards it. `Debug` shows the length only.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StepNote {

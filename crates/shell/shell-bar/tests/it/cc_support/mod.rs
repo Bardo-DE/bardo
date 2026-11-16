@@ -6,7 +6,6 @@ pub use shell_ui_kit::harness::fake;
 pub mod live;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use shell_bar::control_center::{ControlCenter, ModuleDropdown};
 use shell_model::ids::OutputName;
 use shell_settings::ControlCenterModule;
@@ -14,6 +13,7 @@ use shell_settings::ShellFile;
 use shell_ui_kit::links::FocusLink;
 use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
+use ui_components::prelude::*;
 
 /// The panel's root: a Popover `Ds`, the control center on the bar output `DP-1`.
 #[component]

@@ -47,17 +47,17 @@ use crate::journal::Journal;
 use crate::paths::AccountDir;
 use crate::scheduler::next_look;
 use crate::service::{Access, DatasetName};
-use sync_bus::DriveState;
-use drive_core::{CacheLimit, Drive, DriveConfig, FreeSpace, ReplicaSource};
-use drive_fuse::{DriveFs, Mounter, Now};
-use sync_core::{DriveWrite, Replica};
 use account_client::GrantsLink;
 use account_core::{AppName, Candidate, EndpointUrl};
 use account_ids::WebUrl;
+use drive_core::{CacheLimit, Drive, DriveConfig, FreeSpace, ReplicaSource};
+use drive_fuse::{DriveFs, Mounter, Now};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 use std::time::Duration;
+use sync_bus::DriveState;
+use sync_core::{DriveWrite, Replica};
 use tokio::sync::{Notify, watch};
 use tokio::task::JoinHandle;
 
@@ -867,8 +867,8 @@ fn drive_folders(candidates: &[Candidate]) -> BTreeMap<account_core::AccountId, 
 }
 
 /// The folder name of each `(account, provider, label)`: the provider's name, with the label
-/// after it when a provider has two, a `/` shown as ferry-drive shows it, and two that would
-/// still be one name told apart as ferry-drive tells a folder's items apart ("OneDrive (Work)",
+/// after it when a provider has two, a `/` shown as drive-core shows it, and two that would
+/// still be one name told apart as drive-core tells a folder's items apart ("OneDrive (Work)",
 /// "OneDrive (Work) 2"), the account first by id keeping it, so a folder is never shared and
 /// keeps its name across restarts.
 fn folder_names<'a>(

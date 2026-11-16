@@ -2,10 +2,12 @@
 //! quire's `Alert`, with Finder's words.
 
 use dioxus::prelude::*;
-use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle, Suppression};
-use ui_components::prelude::{Alert, Check, TextLine};
 use files_core::{Answer, Conflict, Resolution};
 use files_model::{BusyDisk, ExtensionChange, Input, Question};
+use ui_components::components::overlays::alert_model::{
+    AlertButton, AlertRole, AlertStyle, Suppression,
+};
+use ui_components::prelude::{Alert, Check, TextLine};
 
 use crate::state::Browse;
 use crate::words::{CANNOT_UNDO, conflict_words, erase_words, extension_words, force_eject_words};

@@ -4,8 +4,8 @@
 use crate::Companiond;
 use action_client::Transport as IntentsTransport;
 use action_dbus::{BusConnection, INTENTS_BUS, MessageProxy};
-use agent_planner::Planner;
 use action_vocab::Clock;
+use agent_planner::Planner;
 use futures_util::lock::Mutex;
 use std::sync::Arc;
 use std::time::Duration;

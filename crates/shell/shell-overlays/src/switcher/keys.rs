@@ -3,17 +3,17 @@
 //! Which modifier holds the chord: The desktop binds `Alt+Tab` and `Super+Tab` to the switcher, and
 //! Toshy turns a physical Cmd+Tab into `Alt+Tab` with Alt held for as long as Cmd is
 //! (`C("RC-Tab"): [bind, C("Alt-Tab")]` in its config), so the chord is held while `ALT` or
-//! `META` is. A key-up event's modifiers are the state before it (shell-host applies
+//! `META` is. A key-up event's modifiers are the state before it (layer-shell-host applies
 //! `wl_keyboard.modifiers`, which the compositor sends after the key), so the release of Alt
 //! arrives as a key-up of `Alt` whose modifiers still hold `ALT`: [`chord_after_keyup`] reads the
 //! key, not only the modifiers. A release before the surface has the keyboard is never seen as
-//! a key; that needs shell-host's modifiers on focus.
+//! a key; that needs layer-shell-host's modifiers on focus.
 
-use keymap::keyboard_types::Modifiers as ChordModifiers;
 use dioxus::prelude::{Key, Modifiers};
+use keymap::keyboard_types::Modifiers as ChordModifiers;
 
-use ui_components::base::command::modifiers_of;
 use ui_behaviour::switcher::SwKey;
+use ui_components::base::command::modifiers_of;
 
 /// Whether the chord's modifier is still down.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

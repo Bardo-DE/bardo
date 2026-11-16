@@ -8,8 +8,8 @@
 
 use crate::scene::OutputView;
 use compositor_core::geometry::LogicalPoint;
-use ui_core::geometry::scale::Scale;
 use smithay::utils::{Physical, Point};
+use ui_core::geometry::scale::Scale;
 
 /// Where global `point` is on `view`, in physical pixels and not rounded.
 pub(super) fn exact(point: LogicalPoint, view: &OutputView) -> Point<f64, Physical> {

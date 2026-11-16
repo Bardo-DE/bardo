@@ -5,14 +5,14 @@
 
 use crate::support::{Scratch, make_fifo, make_readable, make_unreadable, names};
 
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
+use std::sync::{Arc, Barrier};
 use ui_settings::schema::Provided;
 use ui_settings::{
     AppName, AppearanceFile, ConfigRoot, Fixup, Origin, Saved, SpacesLoad, SpacesStorage,
 };
 use ui_style::space::list::{Epoch, NoPark, Spaces, Today};
-use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
-use std::sync::{Arc, Barrier};
 
 const FILE: &str = "appearance.toml";
 

@@ -7,8 +7,8 @@
 //! summary that names a handle the planner never held. The integrity of a summary is never above
 //! that of the task when it was written.
 
-use action_vocab::Handle;
 use account_ids::Count;
+use action_vocab::Handle;
 use provenance::Integrity;
 use serde::{Deserialize, Serialize};
 

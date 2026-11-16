@@ -1,8 +1,8 @@
-use ui_core::word::Word;
 use shell_launcher::actions::ActionId;
 use shell_launcher::{
     AppId, Confirm, DesktopAction, SessionAction, WindowKey, settings_target::page,
 };
+use ui_core::word::Word;
 
 use super::{Ask, Effect, Needs, Panel, Start, Subject, def, panel_action, screenshot_action};
 use crate::screenshots::ShotKind;

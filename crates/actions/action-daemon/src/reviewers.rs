@@ -1,10 +1,10 @@
 //! The reviewer cascade over inferd, from the configured set or the placeholder one. The set,
-//! its cards and the placeholder are `docket-models`'; this makes each stage's link on the bus.
+//! its cards and the placeholder are `agent-models`'; this makes each stage's link on the bus.
 
-use action_review::{InferReviewer, ModelChoice, ReviewerSet};
 use action_core::ReviewTimeouts;
 use action_dbus::InferWatch;
 use action_dbus::{BusConnection, InferLink};
+use action_review::{InferReviewer, ModelChoice, ReviewerSet};
 
 use crate::infer::InferdModel;
 

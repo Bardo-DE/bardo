@@ -21,9 +21,9 @@
 //! task is asked again when the run reports, or when the person sends it a message.
 
 use crate::task::TaskRuntime;
-use agent_loop::CompletionNote;
 use action_core::{Held, InboundLine, StepEnd};
 use action_vocab::ActionRef;
+use agent_loop::CompletionNote;
 use provenance::{AgentRef, MessageKind, ReportStatus};
 
 /// The app whose runs are on screen.

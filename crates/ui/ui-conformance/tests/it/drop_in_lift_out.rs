@@ -4,6 +4,7 @@
 //! before; under Reduced motion both are the shorter cross-fade.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::motion::presence::{
     Exit,
     spec::PresenceSpec,
@@ -12,7 +13,6 @@ use ui_components::motion::presence::{
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

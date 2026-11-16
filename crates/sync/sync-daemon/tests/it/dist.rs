@@ -196,11 +196,7 @@ fn syncd_is_one_app_id_in_every_test_and_doc() {
     // /etc/porter/callers.toml.)
     let stray = ["org.quire.", "Syncd"].concat();
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let mut pending = vec![
-        root.join("src"),
-        root.join("tests"),
-        root.join("../docs"),
-    ];
+    let mut pending = vec![root.join("src"), root.join("tests"), root.join("../docs")];
     while let Some(path) = pending.pop() {
         if path.is_dir() {
             pending.extend(

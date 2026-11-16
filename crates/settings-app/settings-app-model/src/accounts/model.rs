@@ -7,9 +7,9 @@ use super::module::{ModuleId, ModuleRow, Sources};
 use super::sign_in_client::SignInClient;
 use super::spend::AccountSpend;
 use crate::Absence;
-use ui_settings::schema::KeyPath;
 use account_core::SignInWay;
 use account_sheet::ProviderGroup;
+use ui_settings::schema::KeyPath;
 
 /// Before an id in the key of an account that is syncd's: an id never holds a `/`, so the same
 /// id in two modules is two accounts.

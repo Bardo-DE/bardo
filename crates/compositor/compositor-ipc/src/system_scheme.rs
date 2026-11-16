@@ -25,13 +25,13 @@
 //! ```
 
 use crate::stop_on_drop::StopOnDrop;
-use ui_core::spawner::Spawner;
-use ui_settings::{SystemPrefsSource, SystemPrefsWatch};
-use ui_style::appearance::theme::Scheme;
 use std::future::Future;
 use std::ops::ControlFlow;
 use std::pin::Pin;
 use tokio::sync::oneshot;
+use ui_core::spawner::Spawner;
+use ui_settings::{SystemPrefsSource, SystemPrefsWatch};
+use ui_style::appearance::theme::Scheme;
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
@@ -108,8 +108,8 @@ async fn follow(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ui_settings::scheme_from_portal;
     use std::sync::mpsc;
+    use ui_settings::scheme_from_portal;
 
     /// A fixed source preferring the portal's `color-scheme` `code`.
     fn fixed(code: u32) -> SystemPrefsSource {

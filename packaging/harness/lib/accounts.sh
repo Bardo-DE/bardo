@@ -206,7 +206,7 @@ acc_providers_only() {
 # Keys interface), and the local runtimes inferd's probe reports to it (Broker.ReportLocal, a call only the `ai_broker`
 # role may make: inferd.service in dist/callers.toml). inferd (org.quire.Inference1) holds no key; it serves the models
 # and the spend rows (`accounts.<id>.spend.*`) of the accounts accountd lists. syncd (ferry's) has no accounts of
-# its own: it uses accountd's through porter-client over org.quire.Grants1. A page that reads a daemon never starts it (detent's live/io.rs answers NotRunning), so a scenario
+# its own: it uses accountd's through account-client over org.quire.Grants1. A page that reads a daemon never starts it (detent's live/io.rs answers NotRunning), so a scenario
 # starts every daemon its page reads before opening the page.
 # Each daemon reads its caller table at startup only: acc_config installs callers.toml before accountd and syncd start,
 # inferd_write_config writes inferd's own system table ($INFERD_SYSTEM_CALLERS) before inferd starts.
@@ -283,7 +283,7 @@ EOF
   chmod +x "$BIN_DIR/xdg-open"
   mkdir -p "$CONFIG/sill"; : >"$CONFIG/sill/settings.toml"
   backdrop_seed "$CONFIG" || return 1
-  # sill is built with ds-blitz's debug-probe (scenario-build.sh): every window of it lists its controls in $SPROBE.
+  # sill is built with ui-blitz's debug-probe (scenario-build.sh): every window of it lists its controls in $SPROBE.
   SPROBE="$SCRATCH/sill-probe"; mkdir -p "$SPROBE"
   IN_ENV_EXTRA=("PATH=$BIN_DIR:$PATH" "QUIRE_DEBUG_PROBE=$SPROBE")
   # sill names itself to accountd within its first moments (its accounts service asks NeedingReauth as it connects, and a
@@ -346,7 +346,7 @@ sheet_settle() {
   done
   echo "the sheet kept changing" >&2
 }
-# sheet_type TEXT: one `sill debug key` per character (shell-host e411b25 types the US shifted symbols, `@` among them, with
+# sheet_type TEXT: one `sill debug key` per character (layer-shell-host e411b25 types the US shifted symbols, `@` among them, with
 # Shift held; the pin has it).
 sheet_type() {
   local text=$1 i c
@@ -616,7 +616,7 @@ sync_files_turn_on() {
 }
 # sync_consent_keys: accountd's consent sheet for syncd's grant is up: Tab moves to Always Allow (Allow Once is first) and Return
 # presses it, so the answer is kept as an `always` permit. Return alone is Allow Once, a permit accountd spends on its first use
-# (porter-service-grants relay.rs open_authenticated -> spend_once): syncd's first relay to Graph would take it back and the mirror
+# (account-service-grants relay.rs open_authenticated -> spend_once): syncd's first relay to Graph would take it back and the mirror
 # would stop at the supervisor's next look.
 sync_consent_keys() {
   sheet_settled; sleep 1
@@ -729,8 +729,8 @@ detent_click() {
 }
 
 # --- detent's controls by role and name ----------------------------------------------------------------------------
-# detent runs with QUIRE_DEBUG_PROBE (detent_start), built with ds-blitz's `debug-probe` feature (scenario-build.sh):
-# its window lists every control by ARIA role and accessible name with its box (quire's ds-blitz probe). A scenario
+# detent runs with QUIRE_DEBUG_PROBE (detent_start), built with ui-blitz's `debug-probe` feature (scenario-build.sh):
+# its window lists every control by ARIA role and accessible name with its box (quire's ui-blitz probe). A scenario
 # presses "button Manage", never a place. The roles are the ones the markup has: button, switch, option (a sidebar row),
 # checkbox, textbox ...; the name is the aria-label, else the visible text.
 

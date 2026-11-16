@@ -214,8 +214,8 @@ pub fn power_profiles() -> PowerProfiles {
 
 /// One player, playing "So What" (no art file), every button live.
 pub fn media() -> Media {
-    use ui_components::base::time::stamp::Stamp;
     use shell_model::now_playing::{Abilities, MediaPlayer, Playback, PlayerId, Timeline, Track};
+    use ui_components::base::time::stamp::Stamp;
     Media {
         players: vec![MediaPlayer {
             id: PlayerId("org.mpris.MediaPlayer2.fake".to_owned()),

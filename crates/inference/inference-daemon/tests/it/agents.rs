@@ -6,18 +6,18 @@
 
 use crate::hosting;
 
+use account_dbus::Details;
+use account_ids::TurnCount;
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::agent::*;
 use hosting::engine::Chat;
 use hosting::rig::{AgentsPlan, World};
-use inference_daemon::peers::{Caller, Role};
-use model_provider::Money;
-use account_dbus::Details;
-use account_ids::TurnCount;
 use inference_core::{ChargeTotal, Period, SpendScope};
+use inference_daemon::peers::{Caller, Role};
+use inference_dbus::inference::AgentsProxy;
+use model_provider::Money;
 use rust_decimal::Decimal;
 use serde_json::json;
-use inference_dbus::inference::AgentsProxy;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 

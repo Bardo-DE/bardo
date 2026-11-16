@@ -3,8 +3,8 @@
 //! `acp-` and the id when that fits, else `acp-` and a 16-digit hex digest of the id. The same
 //! id always maps to the same name, and accountd never sees the original.
 
-use fnv::FnvHasher;
 use account_core::SessionToken;
+use fnv::FnvHasher;
 use provenance::SessionId;
 use std::hash::Hasher;
 

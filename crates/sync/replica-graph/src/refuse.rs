@@ -4,10 +4,10 @@
 //! (open in an Office app there, or checked out).
 
 use crate::json::ErrorBody;
-use sync_core::PutRefused;
-use sync_core::status::retry_after;
 use account_http::http::Response;
 use account_ids::UnixSeconds;
+use sync_core::PutRefused;
+use sync_core::status::retry_after;
 
 /// The code an error's answer gives (`nameAlreadyExists`, `invalidRequest`).
 pub fn error_code(response: &Response<Vec<u8>>) -> Option<String> {

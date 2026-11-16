@@ -1,14 +1,14 @@
 //! ShortcutField on a real Blitz document: a click makes it listen, a combination is offered, Escape
 //! cancels, Backspace clears, and while it listens no key reaches the window's actions.
 
+use dioxus::prelude::*;
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey};
-use dioxus::prelude::*;
+use std::time::Duration;
+use ui_blitz::FocusFallback;
 use ui_components::keys::on_action;
 use ui_components::prelude::*;
-use ui_blitz::FocusFallback;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 420,

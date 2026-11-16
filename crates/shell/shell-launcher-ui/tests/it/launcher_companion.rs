@@ -293,8 +293,9 @@ fn tab_in_a_prompt_goes_round_the_companions_rows_helpers_runs_and_memory() {
     });
     let mut seen = Vec::new();
     for _ in 0..5 {
-        open.harness
-            .send(ui_harness::Input::key(ui_components::prelude::ShortcutKey::Tab));
+        open.harness.send(ui_harness::Input::key(
+            ui_components::prelude::ShortcutKey::Tab,
+        ));
         settled(&mut open);
         seen.push(last_search(&open));
     }
@@ -316,8 +317,8 @@ fn tab_in_a_prompt_goes_round_the_companions_rows_helpers_runs_and_memory() {
 }
 
 fn taipei() -> shell_model::companion::AnswerFacts {
-    use companion_wire::{AnswerBody, AnswerPhase};
     use action_core::Reveal;
+    use companion_wire::{AnswerBody, AnswerPhase};
     let lines = [
         "I'll check my memory to see what I've remembered about this question.",
         "The capital of Taiwan is **Taipei**.",

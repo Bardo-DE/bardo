@@ -4,7 +4,7 @@
 //! its fill; the types are complete.
 //!
 //! The presentational marks an app reports (`ThingMark`, `ContextChip`, `FieldMode`, the summon
-//! values and the voice marks) live in `ds-intents` and are re-exported here, once.
+//! values and the voice marks) live in `ui-intents` and are re-exported here, once.
 
 pub mod activity;
 pub mod answer;

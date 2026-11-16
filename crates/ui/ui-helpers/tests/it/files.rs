@@ -2,15 +2,15 @@
 //! and unreadable input, a write that fails or is cut short never tearing the target, and
 //! writers racing for one path.
 
-use ui_helpers::{
-    NewFileMode, ReadCap, ReadError, UnixSeconds, UpdateError, move_aside, read_capped,
-    read_text_capped, update_atomic, write_atomic,
-};
 use std::convert::Infallible;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Barrier};
+use ui_helpers::{
+    NewFileMode, ReadCap, ReadError, UnixSeconds, UpdateError, move_aside, read_capped,
+    read_text_capped, update_atomic, write_atomic,
+};
 
 /// One test's own directory under the system temp dir, removed on drop.
 struct Scratch(PathBuf);

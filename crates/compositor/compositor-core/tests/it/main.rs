@@ -1,4 +1,4 @@
-//! casement-core's integration tests: ids, kinds, the model and its machines, focus, input, output and the wire round trips.
+//! compositor-core's integration tests: ids, kinds, the model and its machines, focus, input, output and the wire round trips.
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 

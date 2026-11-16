@@ -1,10 +1,10 @@
 //! The helpers on the wire: the list the shell shows, a card, and the words in them.
 
+use account_ids::Count;
+use action_vocab::LabelText;
 use companion_model::helper::*;
 use companion_wire::*;
 use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
-use action_vocab::LabelText;
-use account_ids::Count;
 use provenance::{AgentRef, Effect, HelperId, SpaceId, TaskId};
 use std::collections::BTreeSet;
 
@@ -398,7 +398,8 @@ fn a_line_without_a_conversation_reads_from_an_older_list_and_is_not_written_wit
 fn a_helper_that_runs_a_known_app_carries_the_name_people_call_it() {
     let app = |program: &str| {
         let mut draft = draft("Coder", HelperModel::Unset);
-        draft.kind = HelperKind::AgentApp(provenance::AgentProgram::parse(program).expect("program"));
+        draft.kind =
+            HelperKind::AgentApp(provenance::AgentProgram::parse(program).expect("program"));
         let (board, effects) = step(Board::new(), BoardEvent::Create(Box::new(draft)));
         let id = effects
             .iter()

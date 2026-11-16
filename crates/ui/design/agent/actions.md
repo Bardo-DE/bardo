@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/actions.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "actions": the typed action layer and its safety core
 
-Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, quire design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, quire CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `porter-core` consent/app_id/data_class/wire, `porter-dbus`, `check-boundary.sh`), sill-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, quire `ds` host seams and `toast_hub::UndoToken`.
+Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, quire design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, quire CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, quire `ds` host seams and `toast_hub::UndoToken`.
 
 This version includes the coordinator's scope addition, the **auto-mode action reviewer** (§3.9, §4.4, §5.6).
 
@@ -16,7 +16,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 - The Context call. It reports where the user is, the selection as typed things, what is visible, and the editable text target. The quire layer answers it on the app's behalf.
 - The shared undo history, labelled by actor: app stacks plus the router's journal.
 - `prov`: the provenance and taint label lattice (FIDES-style integrity × confidentiality).
-- `policy-point`: a Cedar wrapper. It holds the entity schema, the request shape and a decision of Deny, Allow, Review or Ask.
+- `permission-policy`: a Cedar wrapper. It holds the entity schema, the request shape and a decision of Deny, Allow, Review or Ask.
 - `action-review`: the auto-mode reviewer that judges grey-zone actions.
 - Consent grants for actions. This extends porter's `GrantKey` with a Space dimension and makes porter's `decide` generic over its key.
 - The planner/reader split contract. It says what the planner may see, and that the reader returns typed values only. The router owns the handle table, so nobody can forge taint.
@@ -45,13 +45,13 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
 | `prov` | `Label`, `Integrity`, `Confidentiality`, `Source`, `Labelled<T>`, `join`, `Quarantined<T>`, `Witness` | none | yes; reusable by cua, memory and eventlog |
-| `docket-core` | the vocabulary (ids, manifest, effect, params and values, context, preview, invocation, outcome, refusal, undo, confirm, budget, halt, planner/reader contract, authorization), `validate`, `tool_schema`, the wire enums and frames | none | yes |
-| `policy-point` | Cedar schema, default policies, `Pdp::decide`, policy tests | none (cedar-policy only) | yes |
-| `action-review` | `ReviewRequest`, `Verdict`, prompt rendering with quoted data, verdict parsing, the `Reviewer` trait, `combine`; `InferReviewer` (stub) over porter-infer's `Model` | none | yes |
-| `docket-router` | the pure router: registry, `gate`, session and handle table, undo journal, budgets and halt, index model, authorizations. Seams: `AppLink`, `Confirmer`, `Reviewer`, `GrantStore`, `EventSink`, `Clock` | none (seams passed in) | yes |
-| `docket-dbus` | zbus proxies and skeletons for `org.quire.Intents1`, `org.quire.IntentProvider1`, `org.quire.Confirm1`; `dbus/*.xml` | zbus | Linux |
-| `docket-client` | the app side (the `IntentProvider` trait, `serve`) and the caller side (`Intents` over a `Transport`: `InProcess`, and `DbusTransport` behind feature `dbus`) | per transport | yes |
-| `docket-fake` | test only: FakeMail and FakeFiles providers from real manifest files, `ScriptedConfirmer`, `ScriptedReviewer`, `FixedClock`, `RecordingSink`, `fake_router` | none | yes |
+| `action-core` | the vocabulary (ids, manifest, effect, params and values, context, preview, invocation, outcome, refusal, undo, confirm, budget, halt, planner/reader contract, authorization), `validate`, `tool_schema`, the wire enums and frames | none | yes |
+| `permission-policy` | Cedar schema, default policies, `Pdp::decide`, policy tests | none (cedar-policy only) | yes |
+| `action-review` | `ReviewRequest`, `Verdict`, prompt rendering with quoted data, verdict parsing, the `Reviewer` trait, `combine`; `InferReviewer` (stub) over inference-core's `Model` | none | yes |
+| `action-router` | the pure router: registry, `gate`, session and handle table, undo journal, budgets and halt, index model, authorizations. Seams: `AppLink`, `Confirmer`, `Reviewer`, `GrantStore`, `EventSink`, `Clock` | none (seams passed in) | yes |
+| `action-dbus` | zbus proxies and skeletons for `org.quire.Intents1`, `org.quire.IntentProvider1`, `org.quire.Confirm1`; `dbus/*.xml` | zbus | Linux |
+| `action-client` | the app side (the `IntentProvider` trait, `serve`) and the caller side (`Intents` over a `Transport`: `InProcess`, and `DbusTransport` behind feature `dbus`) | per transport | yes |
+| `action-fake` | test only: FakeMail and FakeFiles providers from real manifest files, `ScriptedConfirmer`, `ScriptedReviewer`, `FixedClock`, `RecordingSink`, `fake_router` | none | yes |
 | `actions-mcp` | an rmcp server generated from the registry. Every call goes through the router as `Actor::Mcp`. Importing third-party MCP tools comes later. | rmcp, its own binary | yes |
 | `intentd` | the daemon: builds the router over its seams and serves the bus. Until then it is a skeleton that exits 2 with "not implemented". | everything | Linux first |
 
@@ -59,24 +59,24 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 
 | Crate | May depend on |
 |---|---|
-| `prov` | `porter-core` |
-| `docket-core` | `prov`, `porter-core` |
-| `policy-point` | `docket-core`, `prov` (+ `cedar-policy`) |
-| `action-review` | `docket-core`, `prov`, `porter-infer` |
-| `docket-router` | `docket-core`, `prov`, `policy-point`, `action-review`, `porter-core` |
-| `docket-dbus` | `docket-core` |
-| `docket-client` | `docket-core`, `docket-router` (for InProcess), `docket-dbus` (feature `dbus`) |
-| `docket-fake` | `docket-core`, `docket-router`, `docket-client`, `policy-point`, `action-review`, `porter-core` |
-| `actions-mcp` | `docket-core`, `docket-client` (+ `rmcp`) |
-| `intentd` | `docket-core`, `docket-router`, `docket-dbus`, `policy-point`, `action-review`, `porter-core` |
+| `prov` | `account-core` |
+| `action-core` | `prov`, `account-core` |
+| `permission-policy` | `action-core`, `prov` (+ `cedar-policy`) |
+| `action-review` | `action-core`, `prov`, `inference-core` |
+| `action-router` | `action-core`, `prov`, `permission-policy`, `action-review`, `account-core` |
+| `action-dbus` | `action-core` |
+| `action-client` | `action-core`, `action-router` (for InProcess), `action-dbus` (feature `dbus`) |
+| `action-fake` | `action-core`, `action-router`, `action-client`, `permission-policy`, `action-review`, `account-core` |
+| `actions-mcp` | `action-core`, `action-client` (+ `rmcp`) |
+| `intentd` | `action-core`, `action-router`, `action-dbus`, `permission-policy`, `action-review`, `account-core` |
 
 **External boundaries**
-- No crate except `docket-dbus`, `intentd` and `actions-mcp` ever reaches `zbus`, `zvariant`, `tokio`, `reqwest` or `hyper`.
-- Only `policy-point` (and the crates above it) reaches `cedar-policy`.
+- No crate except `action-dbus`, `intentd` and `actions-mcp` ever reaches `zbus`, `zvariant`, `tokio`, `reqwest` or `hyper`.
+- Only `permission-policy` (and the crates above it) reaches `cedar-policy`.
 - Only `actions-mcp` reaches `rmcp`.
-- `prov` and `docket-core` never reach `toml`. Manifest TOML is parsed in `docket-router::registry::parse`.
+- `prov` and `action-core` never reach `toml`. Manifest TOML is parsed in `action-router::registry::parse`.
 
-**Sibling path dependencies:** `porter-core` and `porter-infer` (`../porter/crates/...`).
+**Sibling path dependencies:** `account-core` and `inference-core` (`../porter/crates/...`).
 
 **Third-party, joining quire's `docs/workspace-deps.toml` first**:
 - `cedar-policy = "4.13"` (4.13.0, 2026-09-15, Apache-2.0)
@@ -88,13 +88,13 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 
 | Repo | Change | Wave |
 |---|---|---|
-| porter | `porter-core`: new `space.rs` (`SpaceId`, `SpaceScope`); `GrantKey.space: SpaceScope`; consent generic over its key (`Grant<K = GrantKey>`, `decide<K: Eq>`). A design/31 §4.5 edit in step. | freeze |
+| porter | `account-core`: new `space.rs` (`SpaceId`, `SpaceScope`); `GrantKey.space: SpaceScope`; consent generic over its key (`Grant<K = GrantKey>`, `decide<K: Eq>`). A design/31 §4.5 edit in step. | freeze |
 | quire | Add `cedar-policy` and `rmcp` to `docs/workspace-deps.toml`. Write `design/33-ACTIONS.md` from this file. Edit 31 §4.5 (Space in the key) and §5.5 (inferd is no longer the MCP host, see C4). | freeze |
-| quire | New crate `ds-intents`: the `ContextModel` gathered from components (`thing` prop on `Row`/`List`, edit surfaces as text targets), answered through `docker-client`. Blocked on question U6 (30 §3.4 defers companion work). | fill 2 |
-| sill | `sill-launcher` gains `ProviderKind::Things`, `Subject::Entity`, `Activation::Intent`, `Preview::Intent`. `sill-search`/`sill-services` gain a `ThingsProvider` over the router. sill serves `IntentProvider1` as `org.quire.Shell` (launch, focus window, open file) by reusing its `Activation` executor. | fill 2 |
+| quire | New crate `ui-intents`: the `ContextModel` gathered from components (`thing` prop on `Row`/`List`, edit surfaces as text targets), answered through `docker-client`. Blocked on question U6 (30 §3.4 defers companion work). | fill 2 |
+| sill | `shell-launcher` gains `ProviderKind::Things`, `Subject::Entity`, `Activation::Intent`, `Preview::Intent`. `shell-search`/`shell-services` gain a `ThingsProvider` over the router. sill serves `IntentProvider1` as `org.quire.Shell` (launch, focus window, open file) by reusing its `Activation` executor. | fill 2 |
 | mailo | First real provider (archive, move, label, draft, send). `UndoStack` entries gain `actor: Actor`. | fill 2 (mailo session) |
 
-Correction to the table above: the crate `ds-intents` uses `docket-client`, not "docker-client".
+Correction to the table above: the crate `ui-intents` uses `action-client`, not "docker-client".
 
 ---
 
@@ -151,14 +151,14 @@ impl<T> Quarantined<T> { pub fn new(v: Labelled<T>) -> Self; pub fn label(&self)
 pub struct ReaderKey(());                                // minted by the reader host only
 
 /// Raising integrity or lowering confidentiality needs a witness.
-pub enum Witness { UserConfirmed(ConfirmReceipt) }      // docket-core re-exports ConfirmReceipt's home here
+pub enum Witness { UserConfirmed(ConfirmReceipt) }      // action-core re-exports ConfirmReceipt's home here
 pub fn endorse<T>(v: Labelled<T>, w: &Witness) -> Labelled<T>;     // integrity -> Trusted, sources += User
 pub fn declassify<T>(v: Labelled<T>, to: Confidentiality, w: &Witness) -> Labelled<T>;
 ```
 
-`ConfirmReceipt` lives in `prov` because `Witness` needs it and `prov` sits below docket-core. Its fields are listed in §3.7.
+`ConfirmReceipt` lives in `prov` because `Witness` needs it and `prov` sits below action-core. Its fields are listed in §3.7.
 
-### 3.2 `porter-core` additions (freeze now; a porter change)
+### 3.2 `account-core` additions (freeze now; a porter change)
 
 ```rust
 /// A Space's stable id, minted by quire when the Space is made (not the workspace id,
@@ -173,7 +173,7 @@ pub struct Grant<K = GrantKey> { pub id: GrantId, pub key: K, pub decision: Deci
 pub fn decide<K: Eq>(grants: &[Grant<K>], key: &K) -> Verdict;   // body unchanged
 ```
 
-### 3.3 `docket-core`: identities and the manifest (freeze now)
+### 3.3 `action-core`: identities and the manifest (freeze now)
 
 ```rust
 pub struct EntityKind(String);   // "mail.thread": 2+ dotted [a-z][a-z0-9_]*; parse() -> Result
@@ -269,7 +269,7 @@ pub struct ToolSchema(pub serde_json::Value);
 pub fn tool_schema(a: &ActionDecl) -> ToolSchema;
 ```
 
-### 3.4 `docket-core`: values, context, preview (freeze now; preview shapes partly later)
+### 3.4 `action-core`: values, context, preview (freeze now; preview shapes partly later)
 
 ```rust
 pub enum Value {
@@ -321,7 +321,7 @@ pub enum Preview {
 // later (vocab bump): Plan (P4 rows), DraftReply, ProposedEvent cards.
 ```
 
-### 3.5 `docket-core`: calls, outcomes, refusals, undo (freeze now)
+### 3.5 `action-core`: calls, outcomes, refusals, undo (freeze now)
 
 ```rust
 /// Who acts. Set by the router from the caller's derived identity, never self-asserted.
@@ -372,7 +372,7 @@ pub enum UndoState { Available, Undoing, Undone { by: Actor }, Failed(UndoFault)
 pub enum UndoFault { Gone, Conflict, AppUnavailable }
 ```
 
-### 3.6 `docket-core`: consent for actions (freeze now)
+### 3.6 `action-core`: consent for actions (freeze now)
 
 ```rust
 pub struct ActionGrantKey {
@@ -393,7 +393,7 @@ Defaults:
 - An `Always` grant never covers `Destructive`.
 - Taint voids `Always` for `Outbound` (enforced in Cedar).
 
-### 3.7 `docket-core`: confirmation, budgets, halt (freeze now)
+### 3.7 `action-core`: confirmation, budgets, halt (freeze now)
 
 ```rust
 /// What the compositor draws. Every word comes from the manifest or the router's own
@@ -448,7 +448,7 @@ pub struct KillSwitch { pub all: Halt, pub spaces: BTreeMap<SpaceId, Halt> }
 pub fn halted(k: &KillSwitch, space: &SpaceId) -> Option<HaltCause>;   // all overrides spaces
 ```
 
-### 3.8 `docket-core`: the planner/reader contract (freeze now)
+### 3.8 `action-core`: the planner/reader contract (freeze now)
 
 Rules:
 - The router owns a per-session `HandleTable`. When the router hands anything to a companion session (context, search hits, Read outcomes, previews), every `Labelled<String>` whose integrity is `Untrusted` is replaced by a `Handle`. Plain text reaches only the **reader identity**.
@@ -493,7 +493,7 @@ Notes on the contract:
 - Closed-set, numeric, date and entity-among results reach the planner as plain values. This taints the planner context (the residual CaMeL channel, stated honestly).
 - Naming: `Shown2<T>` above is a placeholder. In code it is `Visibility<T> { Plain(T), Handle(Handle) }`, to avoid clashing with `Shown`.
 
-### 3.9 `docket-core` + `action-review`: auto mode (freeze now)
+### 3.9 `action-core` + `action-review`: auto mode (freeze now)
 
 ```rust
 /// Per Space, setting `agent.strictness` (proposed default: Default).
@@ -572,7 +572,7 @@ pub fn combine(hard: Decision, verdict: Result<Verdict, ReviewError>) -> Gate;
 
 A failed or slow reviewer is never an Allow. The reviewer timeout is setting `agent.review.timeout_ms`, proposed 2000.
 
-### 3.10 `policy-point` (freeze now: schema, request shape, decision; policy text: fill)
+### 3.10 `permission-policy` (freeze now: schema, request shape, decision; policy text: fill)
 
 ```rust
 pub struct PolicyRequest {
@@ -617,7 +617,7 @@ Files:
 - `crates/policy-point/policies/default.cedar`. Each policy carries `@id`. Its content is the table in §4.4.
 - A user override directory `$XDG_CONFIG_HOME/quire/policy/*.cedar` comes later and is forbid-only (it may only tighten).
 
-### 3.11 `docket-router` seams (freeze now; bodies `todo!()`)
+### 3.11 `action-router` seams (freeze now; bodies `todo!()`)
 
 ```rust
 pub trait AppLink: Send + Sync {          // calls IntentProvider1 on the app's bus name
@@ -657,7 +657,7 @@ Note: `DecidedBy::Reviewer` carries `{ code: ReasonCode, under: Option<AuthId> }
 
 ### 3.12 Wire and D-Bus (freeze now)
 
-There is one protocol with two carriers, as in porter. `IntentsRequest`/`IntentsReply` are serde enums in `docket-core::wire`. The socket frame reuses porter's `{ vocab, body }` frame. Over D-Bus, bodies travel as JSON in `s`. The caller's identity is derived from the connection (porter `AppId`) and is never sent.
+There is one protocol with two carriers, as in porter. `IntentsRequest`/`IntentsReply` are serde enums in `action-core::wire`. The socket frame reuses porter's `{ vocab, body }` frame. Over D-Bus, bodies travel as JSON in `s`. The caller's identity is derived from the connection (porter `AppId`) and is never sent.
 
 Caller roles are configured in `intentd`'s config:
 - `launcher`: sill. Gets Actor::User when `Origin::Launcher`/`InWindowField`.
@@ -690,7 +690,7 @@ Caller roles are configured in `intentd`'s config:
 |---|---|
 | `Perform(invocation s) -> s` | `Outcome` or `AppRefusal`; the app labels its undo entry with `invocation.actor` |
 | `Undo(token s, actor s) -> s` | `()` or `UndoFault` |
-| `Context(scope s) -> s` | `ContextSnapshot`; answered by `ds-intents` without app code |
+| `Context(scope s) -> s` | `ContextSnapshot`; answered by `ui-intents` without app code |
 | `Search(text s, gen t) -> s` | non-indexed kinds only |
 | `Preview(entity s) -> s`, `Suggest(ask s) -> s`, `Resolve(keys s) -> s` | the two-phase ids-then-metas split |
 | signal `UndoChanged(token s, state s)` | Cmd+Z in the app keeps the router's journal true |
@@ -703,10 +703,10 @@ Caller roles are configured in `intentd`'s config:
 
 **Daemon config**, `$XDG_CONFIG_HOME/quire/intentd.toml`, the serde form of `IntentdConfig { roles: BTreeMap<Role, Vec<AppName>>, reviewer: ReviewerChoice, … }`. Freeze later; budgets and strictness come from settings keys.
 
-### 3.13 `docket-client` (freeze now)
+### 3.13 `action-client` (freeze now)
 
 ```rust
-/// What an app implements. Context has a default answered by ds-intents.
+/// What an app implements. Context has a default answered by ui-intents.
 pub trait IntentProvider: Send + Sync {
     fn manifest(&self) -> &ValidManifest;
     fn perform(&self, inv: Invocation) -> impl Future<Output = Result<Outcome, AppRefusal>> + Send;
@@ -742,7 +742,7 @@ How `actions-mcp` behaves:
 
 ## 4. State machines
 
-### 4.1 Call lifecycle (`docket-router::call`, a pure step)
+### 4.1 Call lifecycle (`action-router::call`, a pure step)
 
 | State | Event | Next | Effects |
 |---|---|---|---|
@@ -833,7 +833,7 @@ On app uninstall the entries are dropped. Deleting a Space drops its index.
 
 ## 5. Tests that pin the shapes
 
-All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scratch XDG dirs (`docket-fake` provides it), or zbus p2p.
+All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scratch XDG dirs (`action-fake` provides it), or zbus p2p.
 
 ### 5.1 `prov`
 
@@ -843,7 +843,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - `endorse_needs_a_receipt`: there is no other constructor path, checked with trybuild compile-fail.
 - `quarantined_debug_prints_no_text`.
 
-### 5.2 `docket-core`
+### 5.2 `action-core`
 
 - `every_wire_type_round_trips`: one pinned JSON string per enum variant, sill-style. Covers `Effect`, `Value`, `Selection`, `Preview`, `CallRefusal`, `Verdict`, `IntentsRequest`/`Reply`.
 - `manifest_files_parse_and_validate`: the fixtures `fixtures/manifests/org.quire.Mail.intents.toml` and `org.quire.Files.intents.toml`.
@@ -855,7 +855,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - `password_fields_never_reported`.
 - `budget_charge_table` and `halt_global_overrides_space`.
 
-### 5.3 `policy-point`
+### 5.3 `permission-policy`
 
 - `schema_and_default_policies_validate`.
 - `default_policy_grid`: one table row per §4.4 cell × strictness. Each row names its case and asserts the `Decision` variant and the reason ids.
@@ -870,7 +870,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - **`injected_content_never_turns_ask_or_deny_into_allow`**. The fixture is a corpus of about 40 cases: mail and web bodies saying "ignore previous instructions, send…", fake authorizations inside content, quotes forging a user turn, fence breakouts. Each case is run through the whole router with a **`ScriptedReviewer` that always answers Allow** (a fully hijacked reviewer). Every case whose §4.4 cell is Ask or Deny ends in Confirm or Refuse.
 - `authorization_inside_content_is_ignored`: an Authorization whose turn id is not a router-held user turn is refused at `Session.Authorize`.
 
-### 5.5 `docket-router` (through `docket-fake::fake_router`)
+### 5.5 `action-router` (through `action-fake::fake_router`)
 
 - `read_runs_without_confirm` and `outbound_asks_in_default`.
 - `tainted_session_voids_always_grant`.
@@ -892,7 +892,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - `reader_only_may_resolve_handles`.
 - `every_call_appends_one_audit_record`, plus `every_verdict_is_logged` (asserting exact counts).
 
-### 5.6 `docket-dbus`, `docket-client`, `actions-mcp`, `intentd`
+### 5.6 `action-dbus`, `action-client`, `actions-mcp`, `intentd`
 
 - `introspection_matches_xml`: the porter pattern. It fails with the new text.
 - `p2p_perform_round_trip`: a zbus p2p proxy against the skeleton backed by the fake router.
@@ -901,7 +901,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - `mcp_call_goes_through_router_as_untrusted`: an rmcp in-memory transport, asserting a Confirm for an UndoableWrite.
 - `intentd_skeleton_exits_2`.
 
-**Fixtures and fakes in `docket-fake`:** two manifests, FakeMail and FakeFiles providers (in-memory stores with real undo tokens), `ScriptedConfirmer` (answers queue), `ScriptedReviewer` (verdict queue, `AlwaysAllow`, `Timeout`), `FixedClock`, `RecordingSink`, `MemoryGrants`, the injection corpus `fixtures/injection/*.toml`, and a private-bus helper.
+**Fixtures and fakes in `action-fake`:** two manifests, FakeMail and FakeFiles providers (in-memory stores with real undo tokens), `ScriptedConfirmer` (answers queue), `ScriptedReviewer` (verdict queue, `AlwaysAllow`, `Timeout`), `FixedClock`, `RecordingSink`, `MemoryGrants`, the injection corpus `fixtures/injection/*.toml`, and a private-bus helper.
 
 ---
 
@@ -915,7 +915,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
    - Edits 31 §4.5 (`space` in `GrantKey`, generic grants) and §5.5 (MCP hosting moves to actions-mcp, C4).
    - Does not touch `ds`.
    - Verify: `scripts/check-doc-paths.sh`.
-2. **porter agent.** Owns `crates/porter-core/src/{space.rs, consent/*, lib.rs}` and `tests/round_trip.rs` rows. Updates every caller of `GrantKey`/`Grant` in the same change (porter-service, porter-fake). Verify with porter's gate:
+2. **porter agent.** Owns `crates/porter-core/src/{space.rs, consent/*, lib.rs}` and `tests/round_trip.rs` rows. Updates every caller of `GrantKey`/`Grant` in the same change (account-service, account-fake). Verify with porter's gate:
    ```bash
    cargo fmt --all --check
    cargo clippy --workspace --all-targets --all-features -- -D warnings
@@ -932,19 +932,19 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### Fill wave 1 (docket, parallel by file ownership)
 
-- **F1a**: `prov` + `policy-point` (Cedar evaluation, `default.cedar`, the grid test). Owns `crates/prov/**` and `crates/policy-point/**`.
+- **F1a**: `prov` + `permission-policy` (Cedar evaluation, `default.cedar`, the grid test). Owns `crates/prov/**` and `crates/policy-point/**`.
 - **F1b**: `action-review` (render, parse, `InferReviewer` over `porter_infer::Model` with `FakeModel`, the injection corpus). Owns `crates/action-review/**` and `crates/docket-fake/fixtures/injection/**`.
-- **F1c**: `docket-router` (call step, gate wiring, session and handles, journal, authorizations, index model). Owns `crates/docket-router/**`.
-- **F1d**: `docket-dbus` codec and p2p tests, and `docket-client` `InProcess`/`DbusTransport`. Owns `crates/docket-dbus/**`, `crates/docket-client/**` and `dbus/**`.
-- `docket-fake` belongs to F1c. Others request additions through it.
+- **F1c**: `action-router` (call step, gate wiring, session and handles, journal, authorizations, index model). Owns `crates/docket-router/**`.
+- **F1d**: `action-dbus` codec and p2p tests, and `action-client` `InProcess`/`DbusTransport`. Owns `crates/docket-dbus/**`, `crates/docket-client/**` and `dbus/**`.
+- `action-fake` belongs to F1c. Others request additions through it.
 - Verify per agent: `cargo test -p <crate>`, then the full gate.
 
 ### Fill wave 2 (cross-repo)
 
 - **docket F2a**: `intentd` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
 - **docket F2b**: `actions-mcp` over rmcp.
-- **sill agent**: the `sill-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `sill-search` over `docket-client`. `org.quire.Shell` provider in `sill-services`. Verify with sill's gate.
-- **quire agent**: `ds-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
+- **sill agent**: the `shell-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `shell-search` over `action-client`. `org.quire.Shell` provider in `shell-services`. Verify with sill's gate.
+- **quire agent**: `ui-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
 - **mailo session**: the manifest, `IntentProvider`, and `actor` on `UndoStack`.
 
 ### Fill wave 3 (other areas join)
@@ -962,7 +962,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 | Area | What we need from it | What it needs from us |
 |---|---|---|
-| **cua** | Draws `org.quire.Confirm1` and the acting-here glow; kill chord → `Control.Halt`; effect classification for pixel actions | `policy-point::Decision`, `gate`, `Actor::Cua`, `Effect`, `ConfirmRequest`, `prov::Source::Screen` |
+| **cua** | Draws `org.quire.Confirm1` and the acting-here glow; kill chord → `Control.Halt`; effect classification for pixel actions | `permission-policy::Decision`, `gate`, `Actor::Cua`, `Effect`, `ConfirmRequest`, `prov::Source::Screen` |
 | **ux** | Look of the confirmation and companion strip, Activity/"Undo all" UI, launcher companion mode | `Preview`, `UndoEntry`, `Journal`, `Control` signals, sill variants |
 | **models** | inferd serving the reviewer and reader models (small local, no tools, grammar-constrained JSON), model latency | `ReviewRequest`/`render`/`parse_verdict`, `ValueSchema` → grammar, `tool_schema` |
 | **memory** | `eventlog` crate taking `AuditRecord`; `Actor` shared; memfiles' write action declared `Lasting::AgentMemory` | `AuditRecord`, `Actor`, `prov::Label`, `EntityId` |

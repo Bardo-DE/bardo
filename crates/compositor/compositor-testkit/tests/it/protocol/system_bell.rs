@@ -1,5 +1,5 @@
 //! `system_bell` (P0-H2). The bell becomes `Effect::Bell` inside the handler (`app_to_ring` is
-//! unit-tested in casement-wayland); the fixture has no effect log, so these tests prove the
+//! unit-tested in compositor-wayland); the fixture has no effect log, so these tests prove the
 //! wire: rings are accepted with and without a surface and change nothing in the model. Ignored
 //! until the fixture and the core loop are filled.
 

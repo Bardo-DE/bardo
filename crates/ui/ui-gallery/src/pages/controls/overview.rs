@@ -4,12 +4,14 @@ use crate::pages::content::external_icons::ExternalIcons;
 use crate::pages::content::glyphs::Glyphs;
 use crate::pages::content::plate_tints::PlateTints;
 use crate::pages::{Section, Specimen};
+use dioxus::prelude::*;
 use keymap::keyboard_types::{Modifiers as ChordModifiers, NamedKey};
 use keymap::{Chord, Key as ChordKey};
-use dioxus::prelude::*;
 use ui_components::components::app::command_pill::CommandPill;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};
-use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_components::components::controls::badge::{Badge, BadgeContent, BadgeTone};
 use ui_components::components::controls::chip::{Chip, ChipVariant};

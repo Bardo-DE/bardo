@@ -2,7 +2,7 @@
 //! Spaces under the fingers, the vertical one opens and closes Mission Control.
 //!
 //! `input::gesture_route` says whose each swipe step is and which axis it drives. The Space
-//! swipe is ds-behaviour's machine (`space_swipe::Swipe`), stepped here at the model's time: its
+//! swipe is ui-behaviour's machine (`space_swipe::Swipe`), stepped here at the model's time: its
 //! offsets become the [`SpaceStrip`] the renderer draws, its commit shows the Space it chose at
 //! the lift (focus and windows follow at once, as on the Mac) while the strip finishes sliding,
 //! and a timer at the finish's end settles it. The vertical swipe is `input::lift`: its
@@ -25,11 +25,11 @@ use crate::input::{InputEvent, InputKind, Origin};
 use crate::lock::LockState;
 use crate::overview::Overview;
 use crate::time::{Due, Mono, TimerKey};
+use std::time::Duration;
 use ui_behaviour::space_swipe::{
     PageMilli, Swipe, SwipeIn, SwipeOut, SwipeParams, SwipeSource, finish_duration,
 };
 use ui_core::machine::Machine;
-use std::time::Duration;
 
 /// Where the row of Spaces is drawn while a swipe moves it.
 #[derive(Debug, Clone, PartialEq, Eq)]

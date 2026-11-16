@@ -8,13 +8,13 @@ use crate::snapshot::Viewport;
 use blitz_dom::{BaseDocument, NodeData};
 use blitz_traits::shell::ShellProvider;
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::style::icon::render::Glyph;
-use ui_blitz::seam::Setup;
-use ui_blitz::snap_to_device;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
+use ui_blitz::seam::Setup;
+use ui_blitz::snap_to_device;
+use ui_components::prelude::*;
+use ui_components::style::icon::render::Glyph;
 
 /// Odd logical coordinates, a sub-pixel border, a `translateX(-50%)` of an odd width, a
 /// sub-pixel translation, a fractional height and a glyph: everything the snap rewrites at 1.5.

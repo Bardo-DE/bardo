@@ -2,9 +2,9 @@
 //! every interface the test client can build.
 
 use super::ops::{FuzzOp, FuzzRequest, ObjectRef};
+use account_core::SandboxFacts;
 use compositor_core::policy::ConnectionRole;
 use compositor_testclient::TestClient;
-use account_core::SandboxFacts;
 use proptest::prelude::*;
 
 /// An integer argument: the boundaries more often than chance would pick them.

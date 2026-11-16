@@ -13,9 +13,9 @@ use crate::host::probe::Probe;
 use crate::spell::marks::{Misspelt, SpellReplace};
 use crate::spell::service::Learned;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Rect};
 use ui_style::task::{spawn_in, try_set};
-use std::rc::Rc;
 
 /// How many suggestions the menu lists, at most (the reference's count).
 pub const SPELL_SUGGESTIONS: usize = 5;

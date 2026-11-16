@@ -1,13 +1,13 @@
 //! A tip over a button on the wall clock (real `futures-timer` sleeps, as in a window), at the
 //! scales a desktop runs at, and placed below its button, not only shown on the virtual clock at
 //! 100%. (The tip that never showed in a real window was a missing anchor: see
-//! `ds-blitz/tests/it/provide_host.rs`; the harness wires its host on the root, a window did not.)
+//! `ui-blitz/tests/it/provide_host.rs`; the harness wires its host on the root, a window did not.)
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 #[allow(non_snake_case)]
 fn Page() -> Element {

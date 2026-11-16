@@ -3,12 +3,12 @@
 //! the header steps months.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::date_picker::model::{DateValue, Elements, PickerStyle, TimeOfDay};
 use shell_kit::month_grid::data::DayKey;
 use shell_kit::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 400,

@@ -4,10 +4,10 @@
 //! to the [`CornerLink`].
 
 use dioxus::prelude::*;
-use ui_components::machine::{MachineRef, use_machine};
-use ui_behaviour::hot_corner::{Corner, CornerIn, CornerOut, CornerParams};
 use layer_shell_host::OutputId;
 use shell_ui_kit::links::{Corner as WhichCorner, CornerLink};
+use ui_behaviour::hot_corner::{Corner, CornerIn, CornerOut, CornerParams};
+use ui_components::machine::{MachineRef, use_machine};
 
 /// One corner's machine. Cheap to clone: a ref to quire's machine hook.
 #[derive(Clone, Copy)]

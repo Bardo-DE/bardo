@@ -56,7 +56,7 @@ scale, so a `1px` line would be 1.25-1.75 device pixels and blur into two half-i
   nothing drawn at 1x changes.
 - Positions are snapped by the host: Blitz rounds boxes to whole logical pixels, which at a
   fractional scale starts a box half-way through a device pixel. `ds_blitz::snap_to_device`
-  re-rounds the laid-out document on the device grid after every resolve (ds-blitz's snapshots
+  re-rounds the laid-out document on the device grid after every resolve (ui-blitz's snapshots
   and harness do; a host that resolves its own documents calls it).
 - A glyph's stroke is an even number of device pixels at a fractional scale (08-ICONS §1.4.1).
 - No consumer stylesheet writes a literal `1px`/`.5px` line width: `Rule::RawHairline`.

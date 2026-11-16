@@ -3,16 +3,16 @@
 //! test hands in scratch folders and a manager that only writes down what it was asked.
 
 use crate::deadline::{Deadline, peer};
-use settings_app_files::ConfigHome;
-use settings_app_model::{Existing, LendFailure, Work};
-use ui_peer::within;
 use inference_client::{
     LendingConfig, LendingError, LendingState, SessionUnits, TailnetLending, UnitFailure,
     UnitManager,
 };
+use settings_app_files::ConfigHome;
+use settings_app_model::{Existing, LendFailure, Work};
 use std::fmt::Debug;
 use std::path::Path;
 use std::sync::Arc;
+use ui_peer::within;
 
 /// What the log says when the computer's own services cannot be reached.
 const NO_SERVICES: &str = "the session's service manager could not be reached";

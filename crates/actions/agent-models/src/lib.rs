@@ -1,7 +1,7 @@
-//! The models docket asks, portable: a porter-infer `Model` over any `inference_client::Transport`
+//! The models docket asks, portable: a inference-core `Model` over any `inference_client::Transport`
 //! (inferd over D-Bus on the desktop, the latchkey socket or `InProcess` elsewhere), the
 //! task-policy writer and the reviewer cascade's construction. Moved out of intentd as
-//! `docket-planner` was moved out of companiond, so an app-hosted agent builds the same model-backed
+//! `agent-planner` was moved out of companiond, so an app-hosted agent builds the same model-backed
 //! reviewer and writer with the transport it has; intentd's `InferdModel` and `InferdWriter` are
 //! thin adapters that add the bus constructor.
 //!

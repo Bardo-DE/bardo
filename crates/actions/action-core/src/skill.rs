@@ -1,5 +1,5 @@
 //! What a skill is to the planner: a catalogue line and, once expanded or loaded, a body of
-//! trusted text. The files, their parsing and their validation are `docket-skills`; the planner
+//! trusted text. The files, their parsing and their validation are `agent-skills`; the planner
 //! contract only needs these shapes. A skill adds words to the view and grants nothing.
 
 use provenance::{Confidentiality, Integrity, Label, Source};

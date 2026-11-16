@@ -11,10 +11,10 @@
 
 use std::path::PathBuf;
 
-use ui_components::prelude::Availability;
 use shell_launcher::AppId;
 use shell_model::apps::{App, AppIndex};
 use shell_model::windows::{Toplevel, Toplevels, app_of};
+use ui_components::prelude::Availability;
 
 use crate::dock::items::{DockItem, ItemKind};
 

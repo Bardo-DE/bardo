@@ -8,14 +8,14 @@ use desktop_client::toplevel::{ToplevelChange, ToplevelEvent, ToplevelFlag, Topl
 use desktop_client::{
     Desktop, DesktopEvent, Protocol, ProtocolSet, ToplevelIdentifier, ToplevelKey,
 };
-use ui_behaviour::Dir;
-use ui_harness::Viewport;
 use shell_model::windows::Toplevels;
 use shell_overlays::Switcher;
 use shell_services::desktop_wl::project_toplevels;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{SwitcherAsk, SwitcherLink};
+use ui_behaviour::Dir;
+use ui_harness::Viewport;
 
 fn tk(n: u64) -> ToplevelKey {
     ToplevelKey::new(n)

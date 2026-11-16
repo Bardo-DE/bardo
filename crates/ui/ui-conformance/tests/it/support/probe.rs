@@ -23,9 +23,9 @@
 //! they stand out from their own ground. Each test crate uses some of them.
 #![allow(dead_code, reason = "each includer uses its own part of this module")]
 
+use image::RgbaImage;
 use ui_components::prelude::*;
 use ui_harness::Harness;
-use image::RgbaImage;
 
 pub fn rect(harness: &Harness, selector: &str) -> Rect {
     harness

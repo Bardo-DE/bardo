@@ -1,13 +1,13 @@
 //! PaneSwitcher's specimens: at rest on each pane, a grid of tiles and a list of networks.
 
 use dioxus::prelude::*;
+use shell_kit::control_center::module_tile_kind::TileSpan;
+use shell_kit::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::lists::preview::switcher::PaneSwitcher;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::motion::pane_slide::Pane;
 use ui_components::prelude::*;
-use shell_kit::control_center::module_tile_kind::TileSpan;
-use shell_kit::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct PaneProps {

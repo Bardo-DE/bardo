@@ -1,7 +1,7 @@
 //! An answer as the card draws it.
 
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou, RefusalWire};
 use action_vocab::EntityRef;
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou, RefusalWire};
 use ui_components::components::companion::answer::action::{ActionRole, CardAction, CardActionId};
 use ui_components::components::companion::answer::footer::CardFooter;
 use ui_components::components::companion::answer::model::{AnswerView, TextAnswer};

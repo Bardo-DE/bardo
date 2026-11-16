@@ -17,11 +17,11 @@ pub struct DmabufFormat {
 use super::output_source::NamedOutput;
 use crate::misc::idle::{pump_queue, side_queue};
 use crate::{ClientError, GlobalList};
-use desktop_protocols::vocab::{Transform, WireCode};
 use desktop_client::capture::{
     CaptureEvent, CaptureFailure, CaptureSession, CursorMode, ShmFormat,
 };
 use desktop_client::{CaptureId, DesktopEvent, DesktopState, Frame, Rect, Size, reduce};
+use desktop_protocols::vocab::{Transform, WireCode};
 use rustix::fs::{MemfdFlags, ftruncate, memfd_create};
 use std::fs::File;
 use std::os::fd::AsFd;

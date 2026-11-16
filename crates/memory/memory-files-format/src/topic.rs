@@ -20,8 +20,8 @@
 //! `render_topic` produced.
 
 use crate::trailer::{TrailerFault, parse_trailer, render_trailer, timestamp};
-use memory_core::{Fact, FactText, TopicPath};
 use chrono::FixedOffset;
+use memory_core::{Fact, FactText, TopicPath};
 
 /// What the first front matter line must say.
 pub const FORMAT_LINE: &str = "quire-memory 1";

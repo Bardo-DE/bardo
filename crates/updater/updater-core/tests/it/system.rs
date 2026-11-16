@@ -1,10 +1,10 @@
 use crate::support::{Doc, f};
+use std::collections::BTreeMap;
 use updater_core::release::{ALLOWED_SYSTEM_FILES, NameRule, is_allowed_system_path};
 use updater_core::{
     Placement, Release, ReleaseError, Sha256Hex, SystemAction, SystemFound, placements,
     plan_system, vendor_copies,
 };
-use std::collections::BTreeMap;
 
 const UDEV: &str = "/etc/udev/rules.d/70-keycap.rules";
 

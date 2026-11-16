@@ -13,10 +13,10 @@ use crate::screen_area::ScreenArea;
 use crate::window_requests::Root;
 use crate::window_size::Extent;
 use dioxus::prelude::*;
-use ui_desktop::Outputs;
 use std::collections::VecDeque;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use ui_desktop::Outputs;
 
 /// The app's event loop has ended (or is ending), so the request was not taken.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

@@ -3,12 +3,12 @@
 //! double-click returns it to its preferred width.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::base::vocab::shown_word;
 use ui_components::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
 use ui_components::components::chrome::split_view::view::SplitView;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 700,

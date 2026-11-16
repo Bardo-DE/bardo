@@ -6,9 +6,9 @@
 //! The book is plain data and the functions are pure; [`SpaceShotPart`] adds the smithay
 //! objects whose drop is a protocol event (a session's `stopped`, a held frame's `failed`).
 
+use account_core::SpaceId;
 use compositor_core::OutputKey;
 use compositor_core::geometry::PhysicalSize;
-use account_core::SpaceId;
 use smithay::wayland::image_copy_capture::{Frame, Session};
 use std::collections::{BTreeMap, BTreeSet};
 

@@ -4,8 +4,8 @@
 //! `Actor::Companion { role: Planner }` or the person as the actor.
 
 use crate::answer::AnswerPhase;
-use memory_core::Skeleton;
 use action_core::{SkillId, UserTurn};
+use memory_core::Skeleton;
 use provenance::{AgentRef, SpaceId, TaskId};
 use serde::{Deserialize, Serialize};
 

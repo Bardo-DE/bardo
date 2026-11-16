@@ -7,13 +7,13 @@
 //! A monitor's own speakers follow the software volume (`display.hardware_volume`), so the
 //! volume shown is the sink's level whichever of the two is playing.
 
-use ui_components::components::content::level_glyph::vocab::LevelGlyph;
-use ui_components::prelude::*;
+use shell_kit::osd::OsdLevel;
 use shell_model::displays::{BrightnessTarget, Displays};
 use shell_model::ids::OutputName;
 use shell_model::units::{Percent, Presence};
 use shell_model::volume::{Mute, Volume};
-use shell_kit::osd::OsdLevel;
+use ui_components::components::content::level_glyph::vocab::LevelGlyph;
+use ui_components::prelude::*;
 
 use shell_ui_kit::links::{Level, OsdKind};
 
@@ -120,8 +120,6 @@ fn monitor_name(displays: &Displays, target: &BrightnessTarget) -> Option<String
 #[cfg(test)]
 mod tests {
     use super::{card_level, level_of, title};
-    use ui_components::components::content::level_glyph::vocab::LevelGlyph;
-    use ui_components::prelude::*;
     use shell_model::displays::Displays;
     use shell_model::displays::ddc::Endpoint;
     use shell_model::displays::{Controls, DdcDisplay, Level as DdcLevel};
@@ -132,6 +130,8 @@ mod tests {
         units::{Percent, Presence},
     };
     use shell_ui_kit::links::{Level, OsdKind};
+    use ui_components::components::content::level_glyph::vocab::LevelGlyph;
+    use ui_components::prelude::*;
 
     fn level(percent: u16, mute: Mute) -> Option<Level> {
         Some(Level {

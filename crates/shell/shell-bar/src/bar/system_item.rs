@@ -2,8 +2,8 @@
 //! `BarMenu::System` whichever app is in front, so the session's actions are always one click away.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
+use ui_components::prelude::*;
 
 use super::menus::BarMenu;
 use super::status_item::StatusIcon;

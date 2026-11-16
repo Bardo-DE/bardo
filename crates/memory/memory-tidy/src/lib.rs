@@ -4,8 +4,8 @@
 //! what a reply changed ([`changes`]) and the Space removal notes ([`RemovalLedger`]).
 //!
 //! Nothing here reads a file, a clock or the environment, and nothing names a store: the
-//! service (`almanac-service`) drives these machines over its seams, and an app that only wants
-//! to draft a consolidation (the inferd-backed `almanac-infer`) depends on this crate alone.
+//! service (`memory-service`) drives these machines over its seams, and an app that only wants
+//! to draft a consolidation (the inferd-backed `memory-infer`) depends on this crate alone.
 //!
 //! ```
 //! use memory_tidy::fact::{self, FactEffect, FactEvent, FactLife};

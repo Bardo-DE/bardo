@@ -1,18 +1,18 @@
-//! The window in ds-harness: a real Blitz document with the app's root over a scratch folder,
+//! The window in ui-harness: a real Blitz document with the app's root over a scratch folder,
 //! driven by the events a window would deliver. The disk is a scratch folder's, the look is read
 //! from a scratch config folder, and nothing opens a real program.
 
 use std::sync::Arc;
 use std::time::Duration;
 
-use ui_components::base::press::PointerButton;
-use ui_components::prelude::{Point, ShortcutKey};
-use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Input};
 use files_core::{FileName, FolderPath, ItemRef};
 use files_trash::{FakeTrash, Trash};
 use files_ui::{PlaceKind, Places};
 use tempfile::TempDir;
+use ui_components::base::press::PointerButton;
+use ui_components::prelude::{Point, ShortcutKey};
+use ui_harness::harness::settle_until;
+use ui_harness::{Harness, Input};
 
 use super::support::{RecordingOpener, harness, launch, launch_with, scratch_folder};
 

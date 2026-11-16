@@ -1,5 +1,5 @@
 //! casement's settings as typed values. The stored document and its schema live in the
-//! composition root (`casement/src/config/`, ds-settings); this is what it converts into.
+//! composition root (`casement/src/config/`, ui-settings); this is what it converts into.
 
 mod bindings;
 mod gestures;

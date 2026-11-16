@@ -1,14 +1,14 @@
 //! Nextcloud's `/ocs/v2.php/cloud/capabilities`: the request, and the answer read as claims.
 
 use crate::{Error, authorized, judged, web};
-use http::header::ACCEPT;
-use http::{HeaderValue, Method, Request, Response};
 use account_capability::{AbsentReason, Claim, Offer, Provenance, Subject};
 use account_capability::{
     Access, Capability, CapabilityKind, Delta, HashKind, NotesCap, NotesTransport, PimCap,
     PimTransport, StorageCap, StorageScope,
 };
 use account_core::EndpointUrl;
+use http::header::ACCEPT;
+use http::{HeaderValue, Method, Request, Response};
 use serde_json::{Map, Value};
 
 /// The capabilities request, with the account's `authorization`.

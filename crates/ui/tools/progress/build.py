@@ -203,7 +203,7 @@ h2{font:700 20px/1.15 var(--font-display);letter-spacing:-.015em;margin:0;order:
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">quire · shell-host · sill</div>
+  <div class="eyebrow">quire · layer-shell-host · sill</div>
   <h1>Desktop shell progress</h1>
   {{ARCHIVE_LINK}}
   <p class="intro">Screenshots and results as they land, newest first. Each entry is one milestone gate or spike result; the design docs and code are in the repos.</p>

@@ -1,17 +1,17 @@
 //! A scripted inferd: a transport whose one session plays given events and remembers what was
 //! opened and sent, and the replies the tests feed it.
 
-use memory_core::DataClass;
-use memory_store::{Embedder, EmbedderCard};
-use inference_client::{Transport, TransportError};
 use account_capability::{Locality, ModelId, Tier};
 use account_core::AccountId;
+use account_match::Need;
+use inference_client::{Transport, TransportError};
 use inference_core::{
     ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferReply, InferSession,
     OpenOptions, ServedBy, SessionError, StopReason, TokenUsage,
 };
-use account_match::Need;
+use memory_core::DataClass;
 use memory_recall::FakeEmbedder;
+use memory_store::{Embedder, EmbedderCard};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 

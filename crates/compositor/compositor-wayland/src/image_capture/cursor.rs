@@ -10,10 +10,10 @@ use compositor_core::geometry::{
 };
 use compositor_core::{ClientKey, OutputKey};
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use smithay::utils::IsAlive;
 use smithay::wayland::image_copy_capture::{CursorSession, Frame};
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
 
 /// One cursor capture session.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

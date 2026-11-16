@@ -6,14 +6,14 @@
 //! files' actions with portable chords written with `Primary` and answers the ones the window
 //! offers. Standard actions are handled, never declared.
 
-use keymap::{Action, AppAction, AppId, Context, DefaultChord, Registration, StandardAction};
 use dioxus::prelude::{
     Key, KeyboardEvent, ModifiersInteraction, ReadableExt, Signal, WritableExt, use_hook,
 };
-use ui_components::base::command::types_text;
-use ui_components::prelude::{Keys, use_keys};
 use files_core::ViewMode;
 use files_model::{Browser, GoTo, InfoView, Input};
+use keymap::{Action, AppAction, AppId, Context, DefaultChord, Registration, StandardAction};
+use ui_components::base::command::types_text;
+use ui_components::prelude::{Keys, use_keys};
 
 use crate::state::Browse;
 

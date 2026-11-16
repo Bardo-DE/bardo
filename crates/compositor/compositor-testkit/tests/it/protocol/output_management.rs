@@ -9,14 +9,14 @@ use compositor_core::output::{Mode, OutputConfig};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{HELD_REQUESTS, Verdict};
 use compositor_core::time::Millihertz;
-use desktop_protocols::vocab::{Answer as Reply, Power};
 use compositor_testclient::manage::output_management::{
     ConfigId, ConfigOutcome, ConfigPurpose, HeadPlan, ModeChoice, OutputManager, Properties,
     Setting,
 };
 use compositor_testkit::{ASKED_PROGRAM, Fixture, FixtureSpec};
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::{Answer as Reply, Power};
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 use wayland_client::protocol::wl_output::Transform;
 
 const TWO: [&str; 2] = [

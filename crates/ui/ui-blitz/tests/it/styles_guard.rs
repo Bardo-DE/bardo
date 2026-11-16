@@ -1,10 +1,10 @@
 //! The crash guard for styles (customization design section 7.4): the pure decision as a table,
 //! and the record file's life in a scratch state directory (tests never touch the real system).
 
-use ui_components::style::kit::{Fingerprint, LookStyle, Styles, UserStyle};
+use std::path::PathBuf;
 use ui_blitz::StylesGuard;
 use ui_blitz::styles_guard::{Record, decide, parse, render};
-use std::path::PathBuf;
+use ui_components::style::kit::{Fingerprint, LookStyle, Styles, UserStyle};
 
 const A: Fingerprint = Fingerprint(0xa);
 const B: Fingerprint = Fingerprint(0xb);

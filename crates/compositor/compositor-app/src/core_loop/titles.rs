@@ -1,6 +1,6 @@
 //! The titles of the server-side frames: which windows have one to draw, with what ink, and the
-//! pixels `casement-chrome` makes for them. The raster is the titlebar's size at the output's
-//! native scale; `casement-render` lays it over the titlebar.
+//! pixels `compositor-chrome` makes for them. The raster is the titlebar's size at the output's
+//! native scale; `compositor-render` lays it over the titlebar.
 
 use super::frames::activity_of;
 use crate::state::{RenderState, State};

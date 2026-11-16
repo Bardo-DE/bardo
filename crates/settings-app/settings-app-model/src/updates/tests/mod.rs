@@ -1,5 +1,5 @@
 //! The Software Update page: the service's words parsed, what an action may ask, and what each
-//! standing shows. The words themselves are `detent-ui`'s copy and are tested there.
+//! standing shows. The words themselves are `settings-app-ui`'s copy and are tested there.
 
 mod changed_offer;
 mod parse;

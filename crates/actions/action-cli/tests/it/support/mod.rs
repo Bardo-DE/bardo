@@ -3,6 +3,7 @@
 //! touched.
 #![allow(dead_code)]
 
+use account_core::{AppId, AppName, Isolation};
 use action_cli::{Invocation, Report, Stdin, Stdout, run};
 use action_client::{InProcess, Intents};
 use action_core::{AgentConfig, ConfirmAnswer, GrantScope, IndexBatch, IndexEntry};
@@ -10,7 +11,6 @@ use action_fake::{FakeSeams, MailContact, MailThread, ScriptedConfirmer, fake_ro
 use action_router::Router;
 use action_vocab::CallerRole;
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
-use account_core::{AppId, AppName, Isolation};
 use provenance::{ConfirmId, ConfirmReceipt, InputProof, SpaceScope, UnixSeconds};
 use std::collections::BTreeSet;
 use std::sync::Arc;

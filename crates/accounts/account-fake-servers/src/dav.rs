@@ -402,7 +402,10 @@ impl Tree {
                 .and_then(|m| m.displayname.as_deref())
                 .unwrap_or_else(|| path.rsplit('/').next().unwrap_or(""));
             out.push_str(&if wants("displayname") {
-                format!("<d:displayname>{}</d:displayname>", account_dav_proto::escape(name))
+                format!(
+                    "<d:displayname>{}</d:displayname>",
+                    account_dav_proto::escape(name)
+                )
             } else {
                 String::new()
             });

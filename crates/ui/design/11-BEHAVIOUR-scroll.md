@@ -9,7 +9,7 @@ or code, **M** reliable secondary source or imitation code, **L** observed or in
 
 ## 11.1 What this governs
 
-Every scroll in every surface rendered by `shell-host` and every window `ds-blitz` opens (Blitz
+Every scroll in every surface rendered by `layer-shell-host` and every window `ui-blitz` opens (Blitz
 documents, one engine: `blitz_kit::scroll`): which node
 scrolls (latching), the phases, tracking, momentum, rubber band, axis lock, conversion from
 device units to pixels, keyboard scrolling, wheel mice, touchpads, the overlay scrollbar,
@@ -49,7 +49,7 @@ clients scroll with their own toolkit physics; for them we only shape the input 
 ### 11.3.1 Ownership (settled)
 
 The host owns scroll physics for every Blitz document (plan B "Ownership decision"); the engine
-is `blitz_kit::scroll`, which `shell-host` runs for a shell's surfaces and `ds-blitz` for an app's
+is `blitz_kit::scroll`, which `layer-shell-host` runs for a shell's surfaces and `ui-blitz` for an app's
 windows:
 
 1. The host does not forward wheel/axis input to Blitz's default scroll action. It runs its
@@ -307,7 +307,7 @@ ever re-enabled). Wayland does not identify the device, so (settled rule, plan B
 
 ## 11.4 State machine
 
-Pure, `blitz-kit/crates/blitz-kit/src/scroll/engine/`. Geometry is passed in as values; the host reads it
+Pure, `blitz-embed/crates/blitz-kit/src/scroll/engine/`. Geometry is passed in as values; the host reads it
 from Blitz before calling `step` and applies effects after.
 
 ```rust
@@ -440,7 +440,7 @@ opacity(t) = 1 for t < 0.5 s after the last change; 1 - (t - 0.5)/0.24 until 0
 
 ## 11.6 Configuration
 
-Settings app keys (host config `~/.config/quire/scroll.json`, read by every shell-host
+Settings app keys (host config `~/.config/quire/scroll.json`, read by every layer-shell-host
 process; palmrest keys in 12 §12.6):
 
 | Key | Type | Default | Range | Status |
@@ -462,11 +462,11 @@ fade 240 ms, double-scroll grace 150 ms.
 
 | Concern | Owner |
 | --- | --- |
-| Engine, latching, rubber band, keyboard, the document side | `blitz-kit/src/scroll/{engine,latch,rubber,keys,doc,driver}` (pure except `doc` and `driver`) |
-| Thumb painting, frame requests, device input | `shell-host/src/scroll/{indicator,paint}` + shell-host's input/scroll.rs (axis -> engine), shell-host's handlers (source, `axis_stop`, `axis_relative_direction`); `ds-blitz/src/window_scroll` (winit's `MouseWheel` and keys -> engine, the window's frame requests, the gestures `use_gestures` hears; a `ds-blitz` window paints no thumb, FINDINGS "Scrolling") |
-| palmrest client | `shell-host/src/input/palmrest.rs`: connects to the palmrest socket if present, sends `PointerOver`, feeds Gesture inputs; absent daemon = no-op |
+| Engine, latching, rubber band, keyboard, the document side | `blitz-embed/src/scroll/{engine,latch,rubber,keys,doc,driver}` (pure except `doc` and `driver`) |
+| Thumb painting, frame requests, device input | `layer-shell-host/src/scroll/{indicator,paint}` + layer-shell-host's input/scroll.rs (axis -> engine), layer-shell-host's handlers (source, `axis_stop`, `axis_relative_direction`); `ui-blitz/src/window_scroll` (winit's `MouseWheel` and keys -> engine, the window's frame requests, the gestures `use_gestures` hears; a `ui-blitz` window paints no thumb, FINDINGS "Scrolling") |
+| palmrest client | `layer-shell-host/src/input/palmrest.rs`: connects to the palmrest socket if present, sends `PointerOver`, feeds Gesture inputs; absent daemon = no-op |
 | Units to px, axis lock, gains | palmrest `feel` module (12 §12.3.8) |
-| Scroll notification hook | shell-host's `use_scroll` (beside `use_surface`: the host owns the engine, so the hook lives on its side, not `ds-blitz`'s) |
+| Scroll notification hook | layer-shell-host's `use_scroll` (beside `use_surface`: the host owns the engine, so the hook lives on its side, not `ui-blitz`'s) |
 | `scrollbar-width: none`, `scroll-behavior` ban, `--scroll-thumb` token, `data-wheel="capture"`, `data-overscroll="band"` | quire (component CSS, `lint::Rule::BlitzUnsupported`, tokens, component markup — §11.3.7's table, §11.3.1 item 2) |
 | Settings UI | Settings app; writes both our keys and the compositor's natural-scroll keys |
 

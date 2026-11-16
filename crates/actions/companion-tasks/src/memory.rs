@@ -3,10 +3,10 @@
 //! less, never with a guess. The companion fills every section; a smaller agent
 //! fills only those it was given.
 
-use memory_core::{InjectQuery, RecentQuery};
 use action_client::{Intents, Transport as IntentsTransport};
 use action_core::{EpisodeLine, PrimerText, ProfileLine, RecalledLine};
 use action_wire::{RecallAsk, RecallView};
+use memory_core::{InjectQuery, RecentQuery};
 use provenance::SessionId;
 
 /// The Space's primer, if it has one.

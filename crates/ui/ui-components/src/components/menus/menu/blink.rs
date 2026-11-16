@@ -2,8 +2,8 @@
 //! highlight goes out and comes back twice, each flash `MenuBlink` long, and only then does the
 //! menu act on the pick. Pure: the phases and what each one draws.
 
-use ui_style::tokens::delay::DelayToken;
 use std::time::Duration;
+use ui_style::tokens::delay::DelayToken;
 
 /// Where a menu's blink stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

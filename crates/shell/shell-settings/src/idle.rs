@@ -3,10 +3,10 @@
 //! `Mins`, plain integers in the file; every key is on the Power page, Advanced, with
 //! `session.lock_grace_s` (`crate::schema` moves that one key).
 
-use ui_settings::Mins;
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 use shell_model::idle::IdleLock;
+use ui_settings::Mins;
+use ui_settings::schema::Page;
 
 /// sill's idle service.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]

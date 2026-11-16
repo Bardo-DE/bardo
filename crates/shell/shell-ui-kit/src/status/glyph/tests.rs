@@ -1,12 +1,6 @@
 //! Table tests for the glyph states: every row of quire's status glyph table.
 
 use super::{NetworkGlyph, battery_glyph, bluetooth_glyph_state, network_glyph, volume_glyph};
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
-use ui_components::components::content::status::bluetooth_state::BluetoothState;
-use ui_components::components::content::status::volume::{VolumeState, VolumeWaves};
-use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
-use ui_components::motion::detail::stamp::EventStamp;
-use ui_components::prelude::*;
 use shell_model::attempt::{Attempt, Attempts, OpStamp};
 use shell_model::battery::{Battery, Charge};
 use shell_model::bluetooth::{
@@ -17,6 +11,14 @@ use shell_model::units::{Percent, Presence, Seconds};
 use shell_model::volume::{Mute, Volume};
 use shell_model::wifi::Radio;
 use shell_settings::Percent as KeyPercent;
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
+use ui_components::components::content::status::bluetooth_state::BluetoothState;
+use ui_components::components::content::status::volume::{VolumeState, VolumeWaves};
+use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
+use ui_components::motion::detail::stamp::EventStamp;
+use ui_components::prelude::*;
 
 fn net(link: Link, connectivity: Connectivity, now: Attempt) -> Network {
     Network {

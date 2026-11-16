@@ -2,11 +2,11 @@
 //! link asks) gives it the keyboard, pauses the hold, and then Enter and Space open it, Delete
 //! and Backspace trash it, Escape dismisses it and Tab moves between its buttons.
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
-use ui_components::prelude::*;
 use shell_model::screenshots::ShotLeave;
+use ui_components::prelude::*;
 
 use super::{
     Done, HOLD_MS, REST_MS, Running, commands, file, leave, leaving, one_up, start, until,

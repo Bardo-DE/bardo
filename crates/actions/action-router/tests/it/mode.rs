@@ -3,18 +3,20 @@
 //! the person is not.
 
 use crate::support::*;
-use computer_use_action::{CuaAction, WindowSpace};
-use computer_use_action::{RunMode, WindowTrust};
 use action_core::*;
 use action_fake::ScriptedConfirmer;
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
-use permission_core::{AskOrRun, Floor, FloorFile, Level, LockedRow, Mode, Strictness};
 use action_vocab::{CallRequest, CallerRole, Origin};
 use action_wire::{
     CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen,
     SessionOpened, WireRefusal,
 };
-use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, UnixSeconds};
+use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{RunMode, WindowTrust};
+use permission_core::{AskOrRun, Floor, FloorFile, Level, LockedRow, Mode, Strictness};
+use provenance::{
+    AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, UnixSeconds,
+};
 
 fn yes() -> ConfirmAnswer {
     ConfirmAnswer::Allowed {

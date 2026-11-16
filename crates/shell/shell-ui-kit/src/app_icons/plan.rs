@@ -58,10 +58,10 @@ mod tests {
     use super::{Art, theme_art};
     use crate::app_icons::look::IconLook;
     use crate::app_icons::size::AssetPx;
+    use std::path::Path;
     use ui_components::prelude::*;
     use ui_components::style::icon::retint::IconStyle;
     use ui_components::style::icon::retint::Tint;
-    use std::path::Path;
 
     fn look(style: IconStyle) -> IconLook {
         IconLook {

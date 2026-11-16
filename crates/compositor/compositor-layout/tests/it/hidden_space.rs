@@ -9,8 +9,8 @@ use compositor_layout::{
     Arrangement, LayoutKnobs, OutputSpec, RustScene, SceneLayout, SceneMode, SceneSpec,
     SpaceArrangement, SpaceSpec, WindowPlacement,
 };
-use ui_core::geometry::scale::Scale;
 use support::scene::{ANY_SIZE, knobs, output_key, rect, size, space_id, window};
+use ui_core::geometry::scale::Scale;
 
 /// One output with two desktops: `s-1` with window 1, `s-2` with the windows 2, 3 and 4; the
 /// Space `shown` is the one the output shows.

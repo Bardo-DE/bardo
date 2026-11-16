@@ -5,19 +5,19 @@
 use crate::support::bus::PrivateBus;
 use crate::support::infer::{Say, served, words};
 use crate::support::world::*;
-use companion_wire::{
-    AnswerBody, AnswerPhase, AnswerWire, AskWire, RefusalWire, RouteNote, WhyWord, footer_line,
-};
-use companion_daemon::serve_on_rooted;
+use account_callers::ProcRoot;
+use account_capability::ModelId;
+use account_core::AccountId;
 use action_core::*;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
 use action_vocab::{Caller, Clock, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened};
+use companion_daemon::serve_on_rooted;
+use companion_wire::{
+    AnswerBody, AnswerPhase, AnswerWire, AskWire, RefusalWire, RouteNote, WhyWord, footer_line,
+};
 use futures_util::StreamExt;
 use futures_util::lock::Mutex;
-use account_callers::ProcRoot;
-use account_capability::ModelId;
-use account_core::AccountId;
 use inference_core::{
     Declined, DeclinedBecause, Door, InferEvent, InferRefusal, ModelLabel, ModelRef, ProviderId,
     StageNote, StageRole, Why,

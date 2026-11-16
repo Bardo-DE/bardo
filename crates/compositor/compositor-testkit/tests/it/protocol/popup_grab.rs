@@ -6,12 +6,12 @@ use super::xdg_shell::{click, map_toplevel, pointer, settle, windows};
 use compositor_core::DeviceId;
 use compositor_core::input::ButtonCode;
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::surface::popup::{Popup, PopupSpec};
 use compositor_testclient::surface::toplevel::{BoundPointer, Toplevel, WmBase, bind_pointer};
 use compositor_testclient::{Pattern, shm_buffer};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec};
+use desktop_protocols::vocab::PressEdge;
 use smithay::reexports::wayland_server::Resource;
 use wayland_client::Proxy;
 
@@ -313,8 +313,10 @@ fn a_reactive_popup_follows_its_parent_and_another_does_not() {
     let (before_f, before_s) = (follows.geometry(), stays.geometry());
     let window = windows(&desk.fixture)[0];
     // Far to the left: the popup's room, the output, now cuts it where it hung before.
-    desk.fixture
-        .place_window(window, compositor_core::geometry::LogicalPoint { x: 5, y: 5 });
+    desk.fixture.place_window(
+        window,
+        compositor_core::geometry::LogicalPoint { x: 5, y: 5 },
+    );
     assert_ne!(
         follows.geometry(),
         before_f,

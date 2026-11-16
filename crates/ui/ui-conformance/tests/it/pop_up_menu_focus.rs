@@ -4,11 +4,11 @@
 //! button has been measured for the menu, still lands on the item that settles under it.
 
 use dioxus::prelude::*;
+use std::time::Duration;
+use ui_blitz::FocusFallback;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
-use ui_blitz::FocusFallback;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 560,

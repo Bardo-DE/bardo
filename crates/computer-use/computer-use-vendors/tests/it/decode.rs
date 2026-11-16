@@ -302,7 +302,8 @@ fn gemini_points_are_a_grid_of_one_thousand() {
         panic!("grid space")
     };
     assert_eq!(max, GridMax(1000));
-    let at: Target<GridSpace> = Target::Point(computer_use_action::Point::new(Coord(500), Coord(250)));
+    let at: Target<GridSpace> =
+        Target::Point(computer_use_action::Point::new(Coord(500), Coord(250)));
     assert!(matches!(&actions[0], CuaAction::Click { at: a, .. } if *a == at));
     let CuaAction::Type { text } = &actions[1] else {
         unreachable!()

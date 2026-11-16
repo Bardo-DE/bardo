@@ -18,9 +18,9 @@ pub use packagekit::PackageKit;
 use crate::capability::PackageName;
 use crate::family::Family;
 use crate::outcome::{Missing, Outcome};
-use ui_peer::Deadline;
 use std::future::Future;
 use std::pin::Pin;
+use ui_peer::Deadline;
 
 /// What to install: the alternatives for one tool, best first. The first that exists wins.
 #[derive(Debug, Clone, PartialEq, Eq)]

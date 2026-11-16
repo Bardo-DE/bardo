@@ -3,13 +3,6 @@
 
 use std::collections::BTreeSet;
 
-use desktop_protocols::vocab::{
-    ActorKind, AppLifeKind, AppVisibility, AskId, Attention, Corner, DragOutcome, Emphasis,
-    GlowCode, HeldMods, KeyGesture, LeaseState, Memory, MenuSourceKind, Modality, OverviewMode,
-    OverviewState, PlacementMark, Power, ProofKind, Responsiveness, ScreenEdge, SensitivityLevel,
-    Shown, SpaceActivity, SpaceKind, SplitSide, SubjectKind, TrialId, WindowEntries, WindowRole,
-    WindowStateKind,
-};
 use desktop_client::quire::{
     AppChange, AppEvent, DisplayTrial, Lease, Linker, MenuSource, PermissionAsk, RevealOutput,
     ShellEvent, SpaceChange, SpaceEvent, SpacePlace, WindowChange, WindowEvent, WindowGeometry,
@@ -20,6 +13,13 @@ use desktop_client::workspace::{WorkspaceChange, WorkspaceEvent, WorkspaceFlag};
 use desktop_client::{
     AppId, AppSubject, DesktopEvent, DesktopState, OutputName, Rect, SpaceId, SurfaceKey,
     ToplevelIdentifier, reduce,
+};
+use desktop_protocols::vocab::{
+    ActorKind, AppLifeKind, AppVisibility, AskId, Attention, Corner, DragOutcome, Emphasis,
+    GlowCode, HeldMods, KeyGesture, LeaseState, Memory, MenuSourceKind, Modality, OverviewMode,
+    OverviewState, PlacementMark, Power, ProofKind, Responsiveness, ScreenEdge, SensitivityLevel,
+    Shown, SpaceActivity, SpaceKind, SplitSide, SubjectKind, TrialId, WindowEntries, WindowRole,
+    WindowStateKind,
 };
 
 use crate::support::{ak, run, sk, tk, top, top_change, window_change, wk, ws, ws_change};

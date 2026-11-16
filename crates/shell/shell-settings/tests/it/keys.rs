@@ -23,7 +23,7 @@ const SECTIONS: &[(&str, &str)] = &[
     ("### 3.33 `wallpaper`", "## 4. Rust shape"),
 ];
 
-/// §3.1 rows that are sill's, not `AppearanceSettings`': the mirror image of ds-settings'
+/// §3.1 rows that are sill's, not `AppearanceSettings`': the mirror image of ui-settings'
 /// `SILL_OWNED` list (its `tests/keys.rs`).
 const FROM_APPEARANCE: &[&str] = &[];
 

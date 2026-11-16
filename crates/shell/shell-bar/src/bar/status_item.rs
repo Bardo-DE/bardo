@@ -2,11 +2,11 @@
 //! open (design/20 §1.1), sized by the stylesheet's `--bar-status-box` and `--bar-status-glyph`.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
 use ui_components::components::controls::button_model::ImagePosition;
 use ui_components::host::measure::use_rect;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use shell_kit::prelude::*;
 
 use super::menus::BarMenu;
 use super::title::{shown_of, use_title_pointer};

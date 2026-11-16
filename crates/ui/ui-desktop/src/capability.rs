@@ -74,7 +74,7 @@ impl Capability {
             // design/33-AGENT.md section 5 (intentd, docket repo).
             Capability::Intents => Some(session("org.quire.Intents1")),
             // accountd, porter repo (porter/crates/accountd/src/lib.rs:2); also named by
-            // ds-settings' live client docs.
+            // ui-settings' live client docs.
             Capability::Accounts => Some(session("org.quire.Accounts1")),
             // memoryd, design/33-AGENT.md section 5 (almanac repo).
             Capability::Memory => Some(session("org.quire.Memory1")),
@@ -92,7 +92,7 @@ impl Capability {
             // TODO: blur is a Wayland protocol (ext-background-effect-v1), not a bus service.
             Capability::Materials => None,
             // TODO: anyview serves `org.quire.Anyview1.Peek`, but the shell's peek endpoint has
-            // no name in sill or shell-host yet.
+            // no name in sill or layer-shell-host yet.
             Capability::Peek => None,
             // TODO: no share sheet service is specified in any repo yet.
             Capability::Share => None,

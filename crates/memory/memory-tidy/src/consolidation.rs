@@ -78,7 +78,7 @@ impl From<ConsolidateError> for ConsolidateFailure {
 }
 
 /// The model that drafts a consolidation. Implementations: `ScriptedConsolidator`
-/// (almanac-fake), `InferdConsolidator` (memoryd: inferd chat, `Task::Extract`, background).
+/// (memory-fake), `InferdConsolidator` (memoryd: inferd chat, `Task::Extract`, background).
 pub trait Consolidator: Send + Sync {
     /// Drafts hunks for `input`.
     fn draft(

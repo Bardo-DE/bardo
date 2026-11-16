@@ -1,4 +1,4 @@
-//! The session lock's surface: one document per output, made by shell-host's session lock.
+//! The session lock's surface: one document per output, made by layer-shell-host's session lock.
 
 use dioxus::prelude::{Element, use_context_provider};
 use layer_shell_host::{HostRoot, LockConfig, OutputInfo};
@@ -13,7 +13,7 @@ use crate::root::{SurfaceName, use_host_signals};
 pub struct LockSurface {
     /// The surface's name, as [`super::Surface::NAME`].
     pub name: &'static str,
-    /// How shell-host sets its surfaces up.
+    /// How layer-shell-host sets its surfaces up.
     pub config: fn(&ShellFile) -> LockConfig,
     /// The links its document reads by type, given to each root (the lock's `Surface::needs`).
     pub needs: fn(HostRoot, &Links) -> HostRoot,

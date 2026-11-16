@@ -1,8 +1,8 @@
 //! `xwayland.*`.
 
+use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 use ui_settings::schema::Page;
-use serde::{Deserialize, Serialize};
 
 /// Whether older X11 apps run (`xwayland.mode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

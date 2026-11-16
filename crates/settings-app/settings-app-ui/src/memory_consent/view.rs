@@ -3,8 +3,8 @@
 
 use super::drive::MemoryConsent;
 use crate::copy::memory::{CONFIRM, confinement_line, trouble_line, waiting_note};
-use settings_app_model::{KeyEntry, kept_value};
 use dioxus::prelude::*;
+use settings_app_model::{KeyEntry, kept_value};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;

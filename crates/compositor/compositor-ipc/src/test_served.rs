@@ -8,10 +8,10 @@ use crate::dbus::{
 };
 use crate::privacy::PrivacyLink;
 use crate::test_bus::{PrivateBus, name_of};
-use calloop::channel::Channel;
-use caller_identity_dbus::peephole::fake::introduced_service;
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table};
+use caller_identity_dbus::caller_identity_linux::fake::introduced_service;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
+use calloop::channel::Channel;
 use std::os::unix::net::UnixStream;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::thread::JoinHandle;

@@ -44,7 +44,7 @@ pub(crate) enum Shape {
 /// Why a field's type cannot be given a shape.
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum ShapeError {
-    /// A number (a primitive or one of ds-settings' unit newtypes) with no `range`: a slider
+    /// A number (a primitive or one of ui-settings' unit newtypes) with no `range`: a slider
     /// needs both ends.
     MissingRange {
         /// The field's name.
@@ -64,7 +64,7 @@ impl fmt::Display for ShapeError {
     }
 }
 
-/// The numeric types a field is recognised by: the primitives and ds-settings' own units
+/// The numeric types a field is recognised by: the primitives and ui-settings' own units
 /// (`crates/ds-settings/src/units.rs`). A caller's own numeric newtype is caught at compile
 /// time instead: it is not a `Word`, and `kind_of` asks for one.
 const NUMBERS: &[&str] = &[

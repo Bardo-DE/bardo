@@ -4,16 +4,6 @@
 
 use crate::hosting;
 
-use ui_settings::live::{AnyOwner, LiveClient, LiveError, LiveSchema};
-use ui_settings::schema::{
-    AgentSetting, ChoicePlace, ChoiceWord, Exposure, KeyKind, KeyPath, Page,
-};
-use hosting::bus::{PrivateBus, within};
-use inference_daemon::engines::Engines;
-use inference_daemon::peers::{Caller, Role, TablePeers};
-use inference_daemon::service::{Inference, serve_with_settings};
-use inference_daemon::settings::{ConfigFile, InferdSettings, Reload};
-use inference_daemon::supervise::Supervised;
 use account_capability::ModelId;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
@@ -21,12 +11,22 @@ use account_core::AccountId;
 use account_core::{AppId, AppName, Isolation};
 use account_ids::clock::FixedClock;
 use account_ids::{Tokens, UnixSeconds};
+use hosting::bus::{PrivateBus, within};
 use inference_core::{Pick, Policy, Slot, TierMap};
+use inference_daemon::engines::Engines;
+use inference_daemon::peers::{Caller, Role, TablePeers};
+use inference_daemon::service::{Inference, serve_with_settings};
+use inference_daemon::settings::{ConfigFile, InferdSettings, Reload};
+use inference_daemon::supervise::Supervised;
+use inference_dbus::inference::InferenceProxy;
+use inference_dbus::inference::{INFERENCE_BUS, INFERENCE_PATH, INFERENCE_SETTINGS_PATH};
 use inference_turns::audit::Memory;
 use std::path::PathBuf;
 use std::sync::Arc;
-use inference_dbus::inference::InferenceProxy;
-use inference_dbus::inference::{INFERENCE_BUS, INFERENCE_PATH, INFERENCE_SETTINGS_PATH};
+use ui_settings::live::{AnyOwner, LiveClient, LiveError, LiveSchema};
+use ui_settings::schema::{
+    AgentSetting, ChoicePlace, ChoiceWord, Exposure, KeyKind, KeyPath, Page,
+};
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 
@@ -341,11 +341,11 @@ async fn a_model_on_the_persons_network_with_no_computer_of_its_own_is_listed_wi
 #[tokio::test(flavor = "multi_thread")]
 async fn a_model_of_a_probed_runtime_is_listed_under_this_computer_and_stays_listed_when_it_stops()
 {
-    use inference_daemon::probe::{Found, Probed, Runtime};
-    use inference_daemon::probed::Standing;
     use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
     use account_capability::{Claim, Offer, Provenance, Subject};
     use account_ids::Tokens;
+    use inference_daemon::probe::{Found, Probed, Runtime};
+    use inference_daemon::probed::Standing;
     let id = ModelId::parse("llama3.2-3b").expect("id");
     let found = Found {
         runtime: Runtime::Ollama,

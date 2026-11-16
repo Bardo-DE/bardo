@@ -1,8 +1,8 @@
 use super::id::EmojiId;
 use super::play::animation;
 use super::sheet::{MANIFEST_JSON, SheetPx, durations, position, timing};
-use ui_components::base::word::Word;
 use std::time::Duration;
+use ui_components::base::word::Word;
 
 #[test]
 fn the_manifest_lists_every_emoji_in_order() {

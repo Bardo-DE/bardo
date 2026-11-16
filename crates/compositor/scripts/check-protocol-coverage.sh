@@ -13,7 +13,7 @@ globals=crates/casement-testkit/tests/golden/globals.txt
 fail=0
 
 if [ ! -d "$src" ]; then
-  echo "holds: casement-wayland is not a member yet, nothing to cover"
+  echo "holds: compositor-wayland is not a member yet, nothing to cover"
   exit 0
 fi
 

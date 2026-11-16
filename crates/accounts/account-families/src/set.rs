@@ -341,9 +341,9 @@ mod tests {
                 shipped: PathBuf::from("/nonexistent/clients.toml"),
                 own: PathBuf::from("/nonexistent/own-clients.toml"),
             },
-            Arc::new(account_ids::clock::FixedClock::new(account_ids::UnixSeconds(
-                0,
-            ))),
+            Arc::new(account_ids::clock::FixedClock::new(
+                account_ids::UnixSeconds(0),
+            )),
         )
         .with_clients(
             SharedHttp::new(ReqwestHttp::new()),

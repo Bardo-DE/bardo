@@ -1,6 +1,6 @@
 //! `quire-do` end to end: the real binary, intentd's real `start` (the router over `DbusLink`,
 //! `SheetConfirmer` and `FileGrants`, serving `org.quire.Intents1`), a mail app that is
-//! docket-fake's `FakeMail` behind `action_provider::serve_on`, and sill's `Confirm1` as a fake
+//! action-fake's `FakeMail` behind `action_provider::serve_on`, and sill's `Confirm1` as a fake
 //! that answers from a script. All of it on a private `dbus-daemon`, with a scratch HOME and
 //! XDG directories (the app's manifest is installed under the scratch `XDG_DATA_DIRS`): the
 //! person's real session bus and `~/.config` are never named.
@@ -18,15 +18,15 @@ mod bus;
 #[path = "../../../action-daemon/tests/it/support/memoryd.rs"]
 mod memoryd;
 
-use apps::{Answer, FakeSill, SharedMail, answering_intentd, introduce, serve_mail};
-use bus::PrivateBus;
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmOffer, GrantScope};
-use action_dbus::callers::Identity;
-use permission_core::AskReason;
-use action_vocab::ActionRef;
 use action_daemon::{IntentdConfig, ProcRoot, Running, Setup, start};
-use memory_daemon::FakeMemoryd;
+use action_dbus::callers::Identity;
+use action_vocab::ActionRef;
+use apps::{Answer, FakeSill, SharedMail, answering_intentd, introduce, serve_mail};
+use bus::PrivateBus;
+use memoryd::FakeMemoryd;
+use permission_core::AskReason;
 use provenance::{Actor, ConfirmId, ConfirmReceipt, InputProof, SpaceScope, UnixSeconds};
 use std::path::Path;
 use std::process::Output;

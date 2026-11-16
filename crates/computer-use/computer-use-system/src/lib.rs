@@ -12,7 +12,7 @@
 //! - [`InferdCuaModel`] is the computer-use model over an inferd session, and [`frame_fd`] the
 //!   sealed memfd a frame rides in.
 //!
-//! The backends themselves are in `seat-ei`, `maskcap-wayland` and `a11y-atspi`.
+//! The backends themselves are in `computer-use-seat-ei`, `computer-use-capture-wayland` and `computer-use-a11y-atspi`.
 
 mod a11y;
 mod backend;
@@ -24,7 +24,7 @@ mod system;
 
 pub use a11y::LoggedAtspi;
 pub use backend::CaptureBackend;
-pub use compositor_app::{CasementDesktop, Door};
+pub use casement::{CasementDesktop, Door};
 pub use connect::Links;
 pub use frame_fd::{FrameFdError, frame_fd};
 pub use model::InferdCuaModel;

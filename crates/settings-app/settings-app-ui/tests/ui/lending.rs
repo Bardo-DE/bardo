@@ -8,8 +8,8 @@ use crate::support::drive::{click, scroll_into_view};
 use crate::support::lending::SHIPPED;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
 use std::time::Duration;
+use ui_harness::Harness;
 
 const LABEL: &str = "Let my other computers use this computer's models";
 const ALLOW: &str = ".ds-alert .ds-button[data-answers=\"return\"]";

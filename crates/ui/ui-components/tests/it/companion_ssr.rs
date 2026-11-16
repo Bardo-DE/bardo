@@ -5,7 +5,9 @@
 
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
-use ui_components::components::companion::activity::model::{ActivityEntry, ActivityState, UndoOffer};
+use ui_components::components::companion::activity::model::{
+    ActivityEntry, ActivityState, UndoOffer,
+};
 use ui_components::components::companion::activity::view::ActivityStrip;
 use ui_components::components::companion::answer::action::{ActionRole, CardAction, CardActionId};
 use ui_components::components::companion::answer::footer::{
@@ -191,7 +193,11 @@ fn every_placeholder_lints_clean() {
     let sheet = ui_components::stylesheet();
     let mut failures = Vec::new();
     for (class, make) in SPECIMENS {
-        for offence in markup(&render(*make), sheet, &LintConfig::new(&ui_components::kits())) {
+        for offence in markup(
+            &render(*make),
+            sheet,
+            &LintConfig::new(&ui_components::kits()),
+        ) {
             failures.push(format!("{class}: {:?} {}", offence.rule, offence.text));
         }
     }
@@ -292,7 +298,11 @@ fn render_card(view: AnswerView) -> String {
     let mut dom = VirtualDom::new_with_props(CardStage, Card { view });
     dom.rebuild_in_place();
     let html = dioxus_ssr::render(&dom);
-    let offences = markup(&html, ui_components::stylesheet(), &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &html,
+        ui_components::stylesheet(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     assert!(offences.is_empty(), "{offences:?}\n{html}");
     html
 }

@@ -6,7 +6,9 @@ use super::{BluetoothLink, BtSession, PairingReply, PairingRequest};
 use crate::fake_kit::Kit;
 use crate::lock::locked;
 use crate::ticks::Ticks;
-use settings_app_model::{Absence, BtAddress, BtLink, BtStatus, PairingAnswer, PairingQuestion, Work};
+use settings_app_model::{
+    Absence, BtAddress, BtLink, BtStatus, PairingAnswer, PairingQuestion, Work,
+};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::{mpsc, oneshot};

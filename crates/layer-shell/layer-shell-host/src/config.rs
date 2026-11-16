@@ -32,7 +32,7 @@ pub struct HostConfig {
     /// at startup (`Host::connect`) so every surface, popup and toplevel document resolves them —
     /// otherwise a `font-family` naming one falls back past every real face to `system-ui`
     /// (FINDINGS, "HostConfig::fonts"). A shell passes its own faces, e.g. quire's
-    /// `ui_components::FACES` bytes; shell-host bundles none of its own, so the default is empty. Code, not
+    /// `ui_components::FACES` bytes; layer-shell-host bundles none of its own, so the default is empty. Code, not
     /// settings — a face is compiled into the shell binary, not read from a settings file — so
     /// it is never serialized, exactly like `prepaint`.
     #[serde(skip)]

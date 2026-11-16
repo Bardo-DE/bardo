@@ -1,4 +1,4 @@
-//! casement-backend's integration tests: the headless backend and virtual input.
+//! compositor-backend's integration tests: the headless backend and virtual input.
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 

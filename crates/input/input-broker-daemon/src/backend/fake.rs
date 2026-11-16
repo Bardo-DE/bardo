@@ -2,11 +2,11 @@
 //! no device.
 
 use super::{Backend, BackendError, Device};
+use input_broker_wire::{DeviceSpec, Event};
 use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
 use std::io;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
-use input_broker_wire::{DeviceSpec, Event};
 
 /// What happened to a fake device.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

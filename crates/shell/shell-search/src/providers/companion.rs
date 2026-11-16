@@ -5,9 +5,9 @@
 //! The Ask row is in every search; answers and activity show only when the filter is the
 //! companion's own (`Scope::Only`), which is what the panel's companion mode asks.
 
-use companion_wire::{Handover, TerminalSession};
 use action_core::UndoState;
 use action_vocab::CardActionId;
+use companion_wire::{Handover, TerminalSession};
 use shell_launcher::{
     Action, ActionId, Activation, Choice, CompanionAct, IconRef, Item, ItemId, LauncherMode,
     Provider, ProviderKind, Query, ResultSink, Scope, Score, Subject,
@@ -286,11 +286,11 @@ fn activity_row(entry: &action_core::UndoEntry, at: usize) -> Item {
 
 #[cfg(test)]
 mod tests {
-    use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire};
     use action_core::{ContextKeep, Keep, UndoEntry, UndoScope, UndoState};
     use action_vocab::{
         ActionRef, Args, CallRequest, CardActionId, LabelText, Origin, TargetValue, UndoId,
     };
+    use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire};
     use provenance::{ActionName, Actor, AppName, Effect, TaskId, UnixSeconds};
     use shell_launcher::{Cancel, Query, VecSink};
     use shell_model::companion::{AnswerFacts, Busy};
@@ -582,7 +582,8 @@ mod tests {
     fn in_terminal(session: &str, handover: Handover) -> TerminalSession {
         TerminalSession {
             session: provenance::SessionId::parse(session).unwrap_or_else(|e| panic!("{e}")),
-            program: provenance::AgentProgram::parse("claude-code").unwrap_or_else(|e| panic!("{e}")),
+            program: provenance::AgentProgram::parse("claude-code")
+                .unwrap_or_else(|e| panic!("{e}")),
             app_name: Some("Claude Code".to_owned()),
             folder: Some("/home/me/notes".to_owned()),
             handover,

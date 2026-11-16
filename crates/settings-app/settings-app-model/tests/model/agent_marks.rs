@@ -1,10 +1,12 @@
 //! Which keys an agent may set: the ones a schema marks `agent = "settable"`, and no other.
 
-use settings_app_model::{AgentSetting, Catalogue, OriginRule, SchemaOrigin, discover, discover_under};
+use settings_app_model::{
+    AgentSetting, Catalogue, OriginRule, SchemaOrigin, discover, discover_under,
+};
 use settings_app_testkit::{Scratch, fixture_dir};
-use ui_settings::schema::KeyPath;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
+use ui_settings::schema::KeyPath;
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const MAGNIFICATION: &str = "dock.magnification";

@@ -4,14 +4,14 @@
 
 use crate::common;
 
-use account_daemon::Options;
-use common::*;
 use account_callers::CallerRole;
 use account_core::DesktopSpace;
+use account_daemon::Options;
 use account_dbus::accounts::{SpaceChangedStream, SpacesProxy};
 use account_service_core::audit::AuditEvent;
 use account_spaces::CREATES_PER_WINDOW;
 use base_testkit::Scratch;
+use common::*;
 
 /// Options whose Spaces are kept in a directory of `scratch`.
 fn options(scratch: &Scratch) -> Options {

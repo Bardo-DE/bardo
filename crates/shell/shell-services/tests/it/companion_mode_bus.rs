@@ -7,10 +7,10 @@ use crate::companion_support;
 
 use std::sync::{Arc, Mutex};
 
+use action_dbus::{COMPANION_BUS, INTENTS_BUS};
 use companion_support::stand_ins::{ActsAs, StandInCompanion, StandInModeSession, SwitchAnswer};
 use companion_support::{Desk, ask_input, json, serve, wire};
 use companion_wire::AnswerPhase;
-use action_dbus::{COMPANION_BUS, INTENTS_BUS};
 use permission_core::Mode;
 use shell_model::companion::{CompanionCommand, ModeMsg, mode_view};
 use zbus::Connection;

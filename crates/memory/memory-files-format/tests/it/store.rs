@@ -1,11 +1,11 @@
 //! The fact store over a vault: add-only appends, the pending area, settling, the strict
 //! cascade and journal rollups. Every test runs over memory and over a scratch directory.
 
-use memory_core::*;
-use memory_store::{Vault, VaultError, VaultPath};
 use chrono::{Offset, Utc};
+use memory_core::*;
 use memory_files::{MemoryVault, PlainDir};
 use memory_files_format::*;
+use memory_store::{Vault, VaultError, VaultPath};
 use std::collections::BTreeSet;
 
 fn id(n: u32) -> FactId {

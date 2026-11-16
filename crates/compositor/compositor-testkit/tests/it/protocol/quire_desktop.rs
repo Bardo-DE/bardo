@@ -5,6 +5,7 @@
 
 use crate::protocol::wlr_toplevel::flow;
 use crate::protocol::xdg_shell::{boot, check_golden, golden, map_named, windows};
+use account_core::{SandboxFacts, SpaceId};
 use compositor_core::app::AppVisibility as Held;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{ClientStanding, Engine, ProgramPath, SandboxAppId, ServiceRole};
@@ -18,7 +19,6 @@ use compositor_testclient::quire::desktop::{
 use compositor_testclient::quire::window::WindowManager;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, program_standing};
-use account_core::{SandboxFacts, SpaceId};
 
 const INTERFACE: &str = "quire_desktop_manager_v1";
 const APP: &str = "org.example.Mail";

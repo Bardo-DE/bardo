@@ -53,7 +53,9 @@ mod tests {
     use shell_settings::ShellFile;
 
     use super::{ROOM, THUMB_CARD, THUMB_WIDTH, layer};
-    use layer_shell_host::{Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel};
+    use layer_shell_host::{
+        Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
+    };
     use shell_ui_kit::harness::fake::output_named as output;
 
     #[test]

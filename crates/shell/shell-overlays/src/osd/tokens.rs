@@ -6,8 +6,8 @@
 //! changes) and a token a sheet does not write, or writes as `calc()`, is [`MARGIN`]. The
 //! constant and the token's default are the only two copies; a test compares them.
 
-use ui_components::prelude::Px;
 use shell_kit::tokens::osd::OsdToken;
+use ui_components::prelude::Px;
 
 /// `--osd-margin`'s shipped value.
 pub const MARGIN: u16 = 24;
@@ -45,9 +45,9 @@ impl shell_ui_kit::hooks::ReadTokens for OsdTokens {
 #[cfg(test)]
 mod tests {
     use super::{MARGIN, OsdTokens};
+    use shell_kit::tokens::osd::OsdToken;
     use ui_components::prelude::Px;
     use ui_components::style::tokens::token::TokenScope;
-    use shell_kit::tokens::osd::OsdToken;
 
     #[test]
     fn the_constant_is_the_tokens_default() {

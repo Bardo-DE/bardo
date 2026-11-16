@@ -31,7 +31,7 @@ pub enum Actor {
     /// was audited as `Mcp { client: "acp:<program>" }` before this variant; those records still
     /// read as `Mcp`.
     Acp {
-        /// The agent's program, in porter-core's grammar (`claude-code`).
+        /// The agent's program, in account-core's grammar (`claude-code`).
         program: AgentProgram,
         /// The name the person gave it in agents.toml (`label = "Claude Code"`), passed on by the
         /// host. Never the agent's own handshake title: an agent could call itself "System".

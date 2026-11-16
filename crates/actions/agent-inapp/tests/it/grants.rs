@@ -3,13 +3,13 @@
 //! error the app decides about, a failed write is kept for the app to ask for, and the file is
 //! the one intentd's `FileGrants` reads. Every file is in a scratch directory the test makes.
 
-use action_fake::check_grant_file_contract;
-use agent_inapp::FileGrantStore;
-use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};
-use action_router::GrantStore;
-use action_store::GrantFileError;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{AppName, DataClass, GrantId};
+use action_fake::check_grant_file_contract;
+use action_router::GrantStore;
+use action_store::GrantFileError;
+use agent_inapp::FileGrantStore;
+use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{ActionName, SpaceScope, UnixSeconds};
 use std::os::unix::fs::PermissionsExt;
 
@@ -101,9 +101,7 @@ fn the_file_is_a_json_list_of_grants_the_desktop_store_format() {
 
 fn standing_grant(prefix: &str) -> permission_core::StandingGrant {
     permission_core::StandingGrant::new(
-        GrantCaller::AcpAgent(
-            permission_core::ProgramName::parse("claude-code").expect("program"),
-        ),
+        GrantCaller::AcpAgent(permission_core::ProgramName::parse("claude-code").expect("program")),
         permission_core::StandingScope::Files {
             action: action_vocab::ActionRef {
                 app: AppName::parse("org.quire.Files").expect("app"),
@@ -117,9 +115,7 @@ fn standing_grant(prefix: &str) -> permission_core::StandingGrant {
 
 fn read_grant() -> permission_core::StandingGrant {
     permission_core::StandingGrant::new(
-        GrantCaller::AcpAgent(
-            permission_core::ProgramName::parse("claude-code").expect("program"),
-        ),
+        GrantCaller::AcpAgent(permission_core::ProgramName::parse("claude-code").expect("program")),
         permission_core::StandingScope::Reads {
             action: action_vocab::ActionRef {
                 app: AppName::parse("org.quire.Mail").expect("app"),

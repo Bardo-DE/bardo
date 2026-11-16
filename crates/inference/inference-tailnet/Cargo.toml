@@ -30,7 +30,7 @@ account-fake-servers = {path = "../../accounts/account-fake-servers"}
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 
 [features]
-# `Guests::open`: the records kept in a file the owner reads, written with porter-fs. Off by default,
+# `Guests::open`: the records kept in a file the owner reads, written with account-fs. Off by default,
 # so a client that only reads the rows of a lending computer builds no file writer and no toml.
 persist = ["dep:account-fs", "dep:toml"]
 # The listeners, the dial, the relay and the hello client: sockets, tokio and hyper. Off by

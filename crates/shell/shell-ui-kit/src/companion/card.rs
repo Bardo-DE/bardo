@@ -1,9 +1,9 @@
 //! A card's buttons.
 
 use companion_wire::CardWire;
+use provenance::Effect;
 use ui_components::components::companion::answer::action::{ActionRole, CardAction, CardActionId};
 use ui_core::vocab::Availability;
-use provenance::Effect;
 
 use super::marks::effect_mark;
 

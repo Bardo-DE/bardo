@@ -8,13 +8,13 @@ use crate::protocol::xdg_shell::{
 };
 use compositor_core::policy::ConnectionRole;
 use compositor_core::window::{A11yRoot, FrameHint};
-use desktop_protocols::vocab::{Edited as ModelEdited, FrameMode as ModelFrame};
 use compositor_testclient::quire::window::{
     Edited, Emphasis, FrameMode, ManagerError, PlaceTarget, PlacementMark, WindowError,
     WindowManager, WindowRole,
 };
 use compositor_testclient::surface::toplevel::{WmBase, bind_pointer};
 use compositor_testclient::{Pattern, shm_buffer};
+use desktop_protocols::vocab::{Edited as ModelEdited, FrameMode as ModelFrame};
 
 /// The key window receives emphasis(key), the others inactive.
 #[test]

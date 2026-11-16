@@ -4,8 +4,8 @@ use account_capability::ModelId;
 use account_capability::{Capability, CuaBatching, CuaCap, CuaEnv, LlmCap, LlmFeature, LlmWire};
 use account_core::AccountId;
 use account_ids::{Px, Tokens};
-use inference_core::{AutoMode, AutoRow, Declined, DeclinedBecause, TierRow};
 use account_match::{CuaNeed, LlmNeed};
+use inference_core::{AutoMode, AutoRow, Declined, DeclinedBecause, TierRow};
 
 fn llm_cap() -> Capability {
     Capability::Llm(LlmCap {

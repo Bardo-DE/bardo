@@ -1,4 +1,4 @@
-//! `IntentsCourt`: the router as `Intents1`, over any `docket-client` transport (the session bus
+//! `IntentsCourt`: the router as `Intents1`, over any `action-client` transport (the session bus
 //! in the process, an in-process router in a test). The host's role is `acp_agent`: it opens the
 //! agent's session, records the person's turns, and performs the agent's calls.
 //!
@@ -6,14 +6,14 @@
 //! the same number waits for that one task: the backend's pull is cancel-safe (see `Court`), and a
 //! second router call would put a second sheet in front of the person.
 
+use action_client::{Intents, Transport};
+use action_core::{CallRefusal, ContextKeep, Keep, TurnEnd, TurnIn, TurnVia};
+use action_vocab::{Origin, TurnId};
+use action_wire::SessionOpen;
 use agent_acp_core::call::AgentCall;
 use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
 use companion_model::{RunsIn, WatchedAgent};
-use action_client::{Intents, Transport};
-use action_core::{CallRefusal, ContextKeep, Keep, TurnEnd, TurnIn, TurnVia};
 use permission_core::DenyCode;
-use action_vocab::{Origin, TurnId};
-use action_wire::SessionOpen;
 use provenance::{AgentRef, SessionId};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard};

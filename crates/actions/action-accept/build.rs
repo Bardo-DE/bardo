@@ -1,4 +1,4 @@
-//! Builds the three daemons the acceptance runs as the packaged binaries: porter's `accountd` (it
+//! Builds the three daemons the acceptance runs as the packaged binaries: the accounts daemon (`accountd` (it
 //! holds the AI keys), steward's `inferd` and almanac's `memoryd`. `accountd` and `memoryd` are built with
 //! `test-keys`, because the private bus has no Secret Service, and all three with `test-proc-root`,
 //! so callers are named from a fake proc root. Each is built from its own folder, into a target
@@ -16,25 +16,27 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 struct Sibling {
-    repo: &'static str,
-    package: &'static str,
+    /// The package's folder under `crates/`.
+    dir: &'static str,
+    /// Its binary, which the acceptance runs.
+    bin: &'static str,
     features: &'static [&'static str],
 }
 
 const SIBLINGS: [Sibling; 3] = [
     Sibling {
-        repo: "porter",
-        package: "accountd",
+        dir: "accounts/account-daemon",
+        bin: "accountd",
         features: &["test-proc-root", "test-keys"],
     },
     Sibling {
-        repo: "steward",
-        package: "inferd",
+        dir: "inference/inference-daemon",
+        bin: "inferd",
         features: &["test-proc-root"],
     },
     Sibling {
-        repo: "almanac",
-        package: "memoryd",
+        dir: "memory/memory-daemon",
+        bin: "memoryd",
         features: &["test-keys", "test-proc-root"],
     },
 ];
@@ -57,18 +59,14 @@ fn workspace_root(start: &Path) -> PathBuf {
 }
 
 fn build(sibling: &Sibling, root: &Path, target: &Path) -> PathBuf {
-    let env = format!("ACCEPT_{}_DIR", sibling.repo.to_uppercase());
-    println!("cargo:rerun-if-env-changed={env}");
-    let dir = std::env::var_os(&env)
-        .map_or_else(|| root.join("crates").join(sibling.repo), PathBuf::from);
-    let source = dir.join("crates");
+    let source = root.join("crates").join(sibling.dir);
     println!("cargo:rerun-if-changed={}", source.display());
     let mut command = Command::new(var("CARGO"));
     command.args(["install", "--locked", "--quiet", "--force", "--debug"]);
     command.args(["--root"]).arg(target);
     command.args(["--target-dir"]).arg(target.join("build"));
-    command.args(["--path"]).arg(source.join(sibling.package));
-    command.args(["--bin", sibling.package]);
+    command.args(["--path"]).arg(&source);
+    command.args(["--bin", sibling.bin]);
     if !sibling.features.is_empty() {
         command.args(["--features", &sibling.features.join(",")]);
     }
@@ -82,14 +80,13 @@ fn build(sibling: &Sibling, root: &Path, target: &Path) -> PathBuf {
     command.env("CARGO_TARGET_DIR", target);
     let status = command
         .status()
-        .unwrap_or_else(|e| panic!("cargo for {}: {e}", sibling.repo));
+        .unwrap_or_else(|e| panic!("cargo for {}: {e}", sibling.dir));
     assert!(
         status.success(),
-        "building {} of {} failed ({status})",
-        sibling.package,
-        sibling.repo
+        "building {} failed ({status})",
+        sibling.dir
     );
-    target.join("bin").join(sibling.package)
+    target.join("bin").join(sibling.bin)
 }
 
 fn main() {
@@ -103,8 +100,8 @@ fn main() {
         .join("accept-siblings");
     let root = workspace_root(Path::new(&var("CARGO_MANIFEST_DIR")));
     for sibling in &SIBLINGS {
-        let binary = build(sibling, &root, &target.join(sibling.repo));
-        let name = sibling.package.to_uppercase();
+        let binary = build(sibling, &root, &target.join(sibling.bin));
+        let name = sibling.bin.to_uppercase();
         println!("cargo:rustc-env=ACCEPT_{name}={}", binary.display());
     }
 }

@@ -3,11 +3,11 @@
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use ui_blitz::TokioSpawner;
-use ui_settings::{ConfigRoot, WatchState};
 use files_trash::{THIRTY_DAYS, Trash, sweep};
 use tokio::runtime::Handle;
 use tokio::sync::watch;
+use ui_blitz::TokioSpawner;
+use ui_settings::{ConfigRoot, WatchState};
 
 use super::{FilesDoc, store};
 use crate::preferences::Preferences;

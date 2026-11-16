@@ -123,7 +123,7 @@ pub(crate) struct Core<H, C> {
     pub(crate) settings: OnceLock<ui_settings::live::Served>,
     /// The sheets open now, one per app and kind (rel-11).
     pub(crate) open_sheets: crate::open_sheets::OpenSheets,
-    /// The Request objects of the sheet methods (porter-sheets), at `Accounts1`'s root.
+    /// The Request objects of the sheet methods (account-sheets), at `Accounts1`'s root.
     pub(crate) requests: RequestObjects,
     /// The desktop-wide Spaces (`org.quire.Spaces1`).
     pub(crate) spaces: tokio::sync::Mutex<account_spaces::SpaceBook>,

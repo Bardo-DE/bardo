@@ -1,9 +1,9 @@
 //! Where an external icon's pixels come from: a `data:` or `file:` URL the document loads,
 //! written so it can always sit inside a quoted CSS `url("…")`.
 
+use std::path::Path;
 use ui_core::base64;
 use ui_core::error::DsError;
-use std::path::Path;
 
 /// Where an external icon's pixels come from: a `data:` or `file:` URL, the two schemes a
 /// quire document's net provider answers. Parsed once, so what reaches the stylesheet can
@@ -99,8 +99,8 @@ fn escape_for_css(url: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::IconUrl;
-    use ui_core::error::DsError;
     use std::path::Path;
+    use ui_core::error::DsError;
 
     #[test]
     fn only_data_and_file_urls_are_icons() {

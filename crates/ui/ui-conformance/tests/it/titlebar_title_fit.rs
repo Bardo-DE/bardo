@@ -2,9 +2,9 @@
 //! as Finder shows a long file name, on a real Blitz document.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const LONG: &str = "a-very-long-holiday-picture-name-that-keeps-on-going-and-going-2026.png";
 

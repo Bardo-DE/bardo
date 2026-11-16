@@ -3,10 +3,9 @@
 //! against quire's classes and its own stylesheet. A surface's row names it; a failure names the
 //! row and the state.
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
-use ui_lint::{LintConfig, Profile, markup, stylesheet};
 use shell_bar::Bar;
 use shell_dock::Dock;
 use shell_launcher::WindowKey;
@@ -40,6 +39,7 @@ use shell_ui_kit::links::{
     SpacesBarLink, SplitPickerLink, SwitcherAsk, SwitcherLink,
 };
 use shell_ui_kit::surface::Surface;
+use ui_lint::{LintConfig, Profile, markup, stylesheet};
 
 /// One surface's row: its stylesheet and a way to draw each state to lint.
 struct SurfaceCase {
@@ -258,7 +258,7 @@ fn dock_states() -> Vec<(&'static str, String)> {
 }
 
 /// The panel shut, then opened on the empty query (results over fake providers are
-/// `sill-ui-kit`'s `launcher_lint`).
+/// `shell-ui-kit`'s `launcher_lint`).
 fn launcher_states() -> Vec<(&'static str, String)> {
     let mut panel = SurfaceHarness::<Launcher>::setup(LauncherLink::new(), ()).start();
     panel.harness.advance(Duration::from_millis(40));
@@ -991,11 +991,9 @@ const POPUP_NAMES: &[&str] = &[
 
 #[test]
 fn docs_selectors_lists_every_surface_and_popup_name() {
-    let page = std::fs::read_to_string(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/../docs/selectors.md"
-    ))
-    .expect("docs/selectors.md is in the repository"); // test-only
+    let page =
+        std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../docs/selectors.md"))
+            .expect("docs/selectors.md is in the repository"); // test-only
     let mut missing: Vec<&str> = SURFACES
         .iter()
         .map(|case| case.surface)

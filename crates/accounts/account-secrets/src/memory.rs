@@ -1,4 +1,4 @@
-//! An in-memory store: never the user's keyring, never on disk. Tests and porter-fake.
+//! An in-memory store: never the user's keyring, never on disk. Tests and account-fake.
 
 use crate::error::SecretsError;
 use crate::secrets::Secrets;

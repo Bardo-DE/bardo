@@ -9,12 +9,12 @@ use crate::copy::hot_corners::{
 };
 use crate::files::{Edit, Files, value_of, written_value};
 use crate::key_row::row_id;
+use dioxus::prelude::*;
 use settings_app_model::{
     Corner, CornerChoice, CornerMenuLine, HotBinding, HotKeys, HotKnown, HotModifier, HotPicked,
     KeyEntry, add_row, binding_for, bindings_of, corner_menu, corner_picked, corner_shown,
     corner_value, remove_row, shown_rows, with_binding,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::LabelRole;
 use ui_components::components::controls::checkbox::Checkbox;
 use ui_components::components::menus::pop_up_button::PopUpButton;

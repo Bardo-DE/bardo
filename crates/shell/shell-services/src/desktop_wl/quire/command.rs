@@ -1,12 +1,12 @@
 //! The shell's commands as Quire requests: windows by identifier, apps by key, Spaces by id.
 
-use desktop_protocols::vocab::ShellRole;
+use account_core::SpaceId;
 use desktop_client::toplevel::ToplevelFlag;
 use desktop_client::{
     AppId, AppKey, CaptureRequest, DesktopCommand as Wire, DesktopState, OutputName, Rect, Size,
     SpaceId as WireSpaceId, SpaceKey, SpaceTarget, ToplevelIdentifier, ToplevelKey,
 };
-use account_core::SpaceId;
+use desktop_protocols::vocab::ShellRole;
 use shell_model::desktop::DesktopCommand;
 
 use super::surfaces::ShellSurfaces;

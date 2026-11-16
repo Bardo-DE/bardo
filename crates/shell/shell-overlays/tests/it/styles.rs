@@ -5,12 +5,12 @@
 
 use std::time::Duration;
 
-use ui_components::style::kit::UserStyle;
-use ui_settings::Environment;
 use shell_overlays::Osd;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::OsdLink;
 use shell_ui_kit::surface::Surface;
+use ui_components::style::kit::UserStyle;
+use ui_settings::Environment;
 
 const RED: &str = ".ds { --accent: red }";
 const BLUE: &str = ".ds { --accent: blue }";

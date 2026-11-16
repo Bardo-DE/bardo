@@ -1,5 +1,6 @@
 //! The service's side of a socket, by hand.
 
+use input_broker_wire::{Reply, Request, decode_request, encode_reply};
 use rustix::net::{
     AddressFamily, RecvFlags, SendAncillaryBuffer, SendAncillaryMessage, SendFlags, SocketFlags,
     SocketType, recv, sendmsg, socketpair,
@@ -7,7 +8,6 @@ use rustix::net::{
 use std::io::IoSlice;
 use std::mem::MaybeUninit;
 use std::os::fd::{AsFd, OwnedFd};
-use input_broker_wire::{Reply, Request, decode_request, encode_reply};
 
 /// A blocking socket pair: the client's end (it only ever sends with `DONTWAIT`) and ours.
 pub(crate) fn pair() -> (OwnedFd, Stand) {

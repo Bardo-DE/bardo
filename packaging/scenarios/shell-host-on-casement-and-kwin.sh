@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Scenario `shell-host-on-casement-and-kwin` (plan §4.14): shell-host's accept scripts pass on casement.
+# Scenario `shell-host-on-casement-and-kwin` (plan §4.14): layer-shell-host's accept scripts pass on casement.
 #
-# The casement half: shell-host's eight real-input scripts (scripts/dev/accept-*.sh) run one after the
+# The casement half: layer-shell-host's eight real-input scripts (scripts/dev/accept-*.sh) run one after the
 # other, each as `COMPOSITOR=casement`, in this jail. The scripts start their own headless casement
 # through casement's dev/up.sh and drive it through `casementctl debug inject`; this scenario only
 # supplies the artefacts (built outside by harness/scenario-build.sh, A7), the casement tools, foot
@@ -10,7 +10,7 @@
 #
 # There is no KWin half: plan 11 §3.4 and Q-T4 keep KWin differential runs a tool "never in a gate",
 # and KWin left the harness at P2 (FINDINGS FD-07: the skipped `shell-host-on-kwin` row and scenario
-# are gone). shell-host's own scripts/dev/kwin-virtual.sh stays a developer tool.
+# are gone). layer-shell-host's own scripts/dev/kwin-virtual.sh stays a developer tool.
 #
 # budget: 300
 # Exit: 0 pass | 1 a script failed | 2 outside the jail | 3 artefacts missing (harness/scenario-build.sh).
@@ -49,7 +49,7 @@ accept() {
 # A script that fails is run again, up to twice, and says so: accept-ime types after fixed sleeps (not on
 # an event from fcitx5) and accept-scroll reads its list after one, so on a host past 100 load they act
 # before the demo or the engine is ready (ime: the field reads 'su3cl3'; scroll: offset 0, stats empty).
-# A real regression fails every run. The ask for shell-host: wait on those events, not on sleeps.
+# A real regression fails every run. The ask for layer-shell-host: wait on those events, not on sleeps.
 STATUS=0
 for name in "${SCRIPTS[@]}"; do
   start=$(date +%s)

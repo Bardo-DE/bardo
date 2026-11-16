@@ -1,11 +1,11 @@
-//! The setting of the hot-corner machine in `ds-behaviour`: `hot_corners.*` (design/13
+//! The setting of the hot-corner machine in `ui-behaviour`: `hot_corners.*` (design/13
 //! §13.3.12). It lives here, beside the schema, so the shell and the compositor read one
 //! definition of each key; the keys stay in `sill/settings.toml`. The four corners are one custom
 //! control; the timing and the hot spot's size are constants of the machine
 //! (`ui_behaviour::hot_corner::CornerParams`).
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 use crate::schema::Page;
 use crate::schema::corners::CornerBindings;

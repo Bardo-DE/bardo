@@ -1,5 +1,5 @@
 //! The Displays pane: following the compositor and asking it, and the brightness of the displays
-//! the shell lists. The steps are `detent-model`'s `displays_step`.
+//! the shell lists. The steps are `settings-app-model`'s `displays_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

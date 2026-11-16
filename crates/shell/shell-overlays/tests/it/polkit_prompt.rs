@@ -6,8 +6,6 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Harness, Input, Viewport};
 use layer_shell_host::OutputId;
 use shell_model::auth::UserName;
 use shell_model::polkit_agent::{
@@ -16,6 +14,8 @@ use shell_model::polkit_agent::{
 use shell_overlays::PolkitPrompt;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{SheetLink, SheetOutput};
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<PolkitPrompt>;
 

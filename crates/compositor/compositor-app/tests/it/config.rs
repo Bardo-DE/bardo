@@ -13,12 +13,12 @@ use compositor_core::settings::{
     AccelProfile, CasementSettings, FirstClick, MinimiseEffect, RepeatRate, TitleDoubleClick,
 };
 use desktop_protocols::vocab::{PlaceTarget, SplitSide};
-use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
+use ui_core::vocab::Fraction;
 
 /// A scratch config home holding `text` as `casement/settings.toml`.
 fn home_with(text: &str) -> (tempfile::TempDir, PathBuf) {

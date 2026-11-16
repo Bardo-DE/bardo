@@ -1,11 +1,11 @@
 //! Reads the rows from `agents.toml` text and the records beside the agents.
 
 use super::model::{AgentRow, Agents, Availability, ModelState, Offers, SignInState, Source};
+use action_core::Rewind;
 use agent_registry::dirs::AgentsDir;
 use agent_registry::offered::{Offered, Start};
 use agent_registry::record::{FILE, Record};
 use agent_registry::slug::Slug;
-use action_core::Rewind;
 
 fn text(t: &toml::Table, key: &str) -> Option<String> {
     t.get(key)?

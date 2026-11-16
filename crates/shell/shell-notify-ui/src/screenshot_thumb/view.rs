@@ -6,13 +6,13 @@
 //! `BannerLink` through [`super::follow`] and [`super::step::step`].
 
 use dioxus::prelude::*;
-use ui_components::motion::swipe::SwipeMetrics;
-use ui_components::prelude::*;
 use layer_shell_host::{OutputId, OutputInfo, use_watch};
-use shell_model::screenshots::ShotId;
-use shell_services::ScreenshotsService;
 use shell_kit::notifications::banner_stack::{Banner, BannerKey, BannerPosition};
 use shell_kit::prelude::*;
+use shell_model::screenshots::ShotId;
+use shell_services::ScreenshotsService;
+use ui_components::motion::swipe::SwipeMetrics;
+use ui_components::prelude::*;
 
 use super::card::ThumbCard;
 use super::follow::follow;

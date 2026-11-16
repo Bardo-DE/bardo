@@ -2,16 +2,16 @@
 //! the vault is sealed or plain per Space, the models are inferd's.
 
 use crate::registry::SpaceRegistry;
+use inference_client::DbusTransport;
 use memory_core::{Dirs, ReplicaId, SpaceId, SpaceMeta, VaultKind};
+use memory_eventlog::SqliteLog;
+use memory_files::{PlainDir, SealedDir, SpaceVault};
 use memory_infer::{InferdConsolidator, InferdEmbedder};
 use memory_local::SystemClock;
+use memory_recall::{Embedder, ExactScan, Fts5, Index, IndexError};
 use memory_seal::{DbKey, KeyStore, Oo7Keys, Purpose, SpaceKey, derive};
 use memory_service::{Backend, BackendError, Clock, Listing, RegistryError};
 use memory_tidy::Consolidator;
-use memory_eventlog::SqliteLog;
-use inference_client::DbusTransport;
-use memory_files::{PlainDir, SealedDir, SpaceVault};
-use memory_recall::{Embedder, ExactScan, Fts5, Index, IndexError};
 use rusqlite::Connection;
 use std::future::Future;
 use std::path::Path;

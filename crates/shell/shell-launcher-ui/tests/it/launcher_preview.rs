@@ -5,16 +5,16 @@
 
 use crate::launcher_harness;
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
-use ui_components::prelude::*;
 use launcher_harness::launcher_support::m9;
 use launcher_harness::{Open, Press, Seen, await_off_thread, is_open, open, settle};
 use shell_launcher::{OpenTarget, PreviewKind};
 use shell_model::launch::LaunchCommand;
 use shell_model::results::SearchCommand;
 use shell_ui_kit::links::ShownRows;
+use ui_components::prelude::*;
 
 fn rows(open: &Open) -> ShownRows {
     open.link.rows().expect("the open panel publishes its rows")

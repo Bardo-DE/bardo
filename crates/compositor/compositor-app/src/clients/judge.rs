@@ -6,12 +6,12 @@ use super::Vetting;
 use super::image::PinnedImage;
 use super::standing::{client_standing, maker_of, peer_of};
 use crate::privacy::{SystemDir, writable_image};
+use account_core::PeerIdentity;
 use compositor_core::privilege::{ClientStanding, Floor};
 use compositor_ipc::dbus::peer::{Pinned, Prober, Table, judge};
 use compositor_ipc::dbus::{RealProc, TableFiles};
 use compositor_wayland::consent::Unwatched;
 use compositor_wayland::security_context::Maker;
-use account_core::PeerIdentity;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 

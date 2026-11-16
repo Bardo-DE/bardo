@@ -25,16 +25,16 @@ use crate::json::{File, GeneratedIds};
 use crate::refuse::write_error;
 use crate::replica::GdriveReplica;
 use crate::write::Target;
-use sync_core::status::{refused, write_unreached};
-use sync_core::{
-    BaseVersion, Conflict, DriveWrite, Found, Place, PutRefused, RemoteId, RemoteSide,
-    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
-};
 use account_http::http::header::CONTENT_TYPE;
 use account_http::http::{Method, Response};
 use account_http::{HeaderText, Http, request};
 use account_ids::WebUrl;
 use account_ids::percent::encode_unreserved;
+use sync_core::status::{refused, write_unreached};
+use sync_core::{
+    BaseVersion, Conflict, DriveWrite, Found, Place, PutRefused, RemoteId, RemoteSide,
+    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
+};
 
 fn again() -> PutRefused {
     PutRefused::Transient(RetryAfter(30))

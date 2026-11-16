@@ -21,8 +21,8 @@
 //! one spot are always a double click, however far apart the test advanced them.
 
 use crate::harness::Harness;
-use ui_core::time::clock::{ClockGuard, VirtualClock, install_wall};
 use std::time::{Duration, Instant};
+use ui_core::time::clock::{ClockGuard, VirtualClock, install_wall};
 
 /// The clock a harness's timers run on; pass it to
 /// [`HarnessConfig::with_clock`](crate::HarnessConfig::with_clock).

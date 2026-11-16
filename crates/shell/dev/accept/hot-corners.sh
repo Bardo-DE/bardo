@@ -13,7 +13,7 @@
 #   1. `sill debug stats` lists the three active corners and not `bottom_left`'s.
 #   2. `sill debug corner top-left` opens the launcher; `top-right` opens the notification
 #      center; `bottom-right` runs the command, touching the temp file.
-#   3. A real pointer dwell on the top-left corner's own surface (shell-host's debug-inject, the
+#   3. A real pointer dwell on the top-left corner's own surface (layer-shell-host's debug-inject, the
 #      same path a real pointer takes): entering fires the launcher only after the dwell (checked
 #      at 50 ms, too early, and 400 ms, after it); a second pointer with no leave between does
 #      not fire again (Toggle needs a fresh dwell: the launcher stays open); a leave and 600 ms

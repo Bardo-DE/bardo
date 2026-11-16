@@ -7,9 +7,9 @@ use crate::support;
 use compositor_core::WindowId;
 use compositor_core::geometry::LogicalRect;
 use compositor_layout::{LayoutReport, RustScene, SceneLayout, SlotKind, WindowPlacement};
-use ui_core::vocab::Fraction;
 use proptest::prelude::*;
 use support::scene::{ANY_SIZE, knobs, one_desktop, rect, window};
+use ui_core::vocab::Fraction;
 
 /// The distance between two rectangles' nearest edges (0 when they touch or overlap).
 fn gap(a: &LogicalRect, b: &LogicalRect) -> i64 {

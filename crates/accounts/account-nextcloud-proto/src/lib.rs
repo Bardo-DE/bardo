@@ -7,7 +7,7 @@
 //! - [`revoke`]: taking the app password back.
 //! - [`paths`]: where a server keeps things, and the account's endpoints ([`endpoints`]).
 //!
-//! The WebDAV walk (the principal, the home sets) is dav-proto's. The credential is the caller's:
+//! The WebDAV walk (the principal, the home sets) is account-dav-proto's. The credential is the caller's:
 //! each request takes the `Authorization` value it carries, already marked sensitive.
 
 #![warn(missing_docs)]
@@ -17,11 +17,11 @@ pub mod ocs;
 pub mod paths;
 pub mod revoke;
 
-use http::header::AUTHORIZATION;
-use http::{HeaderValue, Request, Response};
 use account_capability::{CapabilityKind, Claim, offers};
 use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint};
 use account_ids::{UrlScheme, WebUrl};
+use http::header::AUTHORIZATION;
+use http::{HeaderValue, Request, Response};
 
 /// Why a request could not be built or a reply could not be used.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

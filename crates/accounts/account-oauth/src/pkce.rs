@@ -1,9 +1,9 @@
 //! PKCE (RFC 7636) and the `state` of one sign-in. The randomness is an argument, so a test
 //! pins it and the daemon draws it from the system.
 
+use account_core::SecretText;
 use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use account_core::SecretText;
 use sha2::{Digest, Sha256};
 use subtle::ConstantTimeEq;
 

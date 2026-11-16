@@ -3,10 +3,10 @@
 //! pressed; a row with no field in it still answers every one of those.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 320,

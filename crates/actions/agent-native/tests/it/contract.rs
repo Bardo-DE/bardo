@@ -1,5 +1,5 @@
 //! The native backend against the rules every backend keeps (`agent_session::contract`), the
-//! ones the fake passes in `docket-session`. Every planner answer is late, so a pull is pending on
+//! ones the fake passes in `agent-session`. Every planner answer is late, so a pull is pending on
 //! its first poll and a dropped pull drops a loop that is in the middle of something.
 
 use crate::support::infer::{Say, ScriptedInfer, call, words};
@@ -7,13 +7,13 @@ use crate::support::*;
 use action_client::InProcess;
 use action_core::{TurnVia, UserTurn};
 use action_fake::{FakeSeams, FixedClock};
+use action_vocab::{Caller, TurnId};
+use action_wire::SessionOpen;
 use agent_native::NativeBackend;
 use agent_planner::PlannerModel;
 use agent_session::contract::{self, Harness};
 use agent_session::{Opening, SessionBackend, StartSession};
 use companion_tasks::Quiet;
-use action_vocab::{Caller, TurnId};
-use action_wire::SessionOpen;
 use futures_util::lock::Mutex;
 use provenance::{AgentRef, UnixSeconds};
 use serde_json::json;

@@ -1,7 +1,7 @@
 //! The desktop's buses: intentd and the assistant, both on the session bus.
 
-use companion_client::DbusCompanion;
 use action_client::{DbusTransport, Intents, TransportError};
+use companion_client::DbusCompanion;
 
 /// The session bus.
 #[derive(Debug, Clone, Copy)]

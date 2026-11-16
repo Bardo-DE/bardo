@@ -1,5 +1,5 @@
 //! The apps provider's query table against the real fixture tree `tests/scan.rs` already
-//! exercises (`sill-services/tests/fixtures/applications`): name, generic name and keyword matches, a
+//! exercises (`shell-services/tests/fixtures/applications`): name, generic name and keyword matches, a
 //! matching desktop action surfacing as its own row, and the visibility rules (`Hidden`,
 //! `NoDisplay`, an unresolvable `TryExec`) keeping entries out of the launcher the same way
 //! they keep them out of the dock.

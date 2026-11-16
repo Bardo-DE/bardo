@@ -158,11 +158,11 @@ mod tests {
     use compositor_core::OutputName;
     use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
     use compositor_core::time::Mono;
+    use std::time::Duration;
     use ui_core::press::Press;
     use ui_motion::detail::touch::{Contact, Touch};
     use ui_motion::spring_spec::SpringResponse;
     use ui_motion::velocity::Velocity;
-    use std::time::Duration;
 
     fn ms(n: u64) -> Mono {
         Mono(Duration::from_millis(n))

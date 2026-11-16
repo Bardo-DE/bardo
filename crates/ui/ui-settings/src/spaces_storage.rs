@@ -12,11 +12,11 @@ use crate::damaged::{DamagedFile, Saved, keep_damaged};
 use crate::error::SettingsError;
 use crate::lenient::{FileText, file_text};
 use crate::root::{AppName, ConfigRoot};
-use ui_helpers::{NewFileMode, ReadCap, write_atomic};
-use ui_style::space::list::{Epoch, Spaces, Today};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
+use ui_helpers::{NewFileMode, ReadCap, write_atomic};
+use ui_style::space::list::{Epoch, Spaces, Today};
 
 const SPACES_FILE: &str = "spaces.json";
 const TODAY_FILE: &str = "today.json";

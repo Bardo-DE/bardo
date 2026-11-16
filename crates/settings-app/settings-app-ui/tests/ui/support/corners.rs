@@ -1,4 +1,4 @@
 //! The Hot Corners sheet's helpers for a test: the manifests of the apps "installed", and a file
-//! chooser that answers what it is told. It is `detent-system`'s fake.
+//! chooser that answers what it is told. It is `settings-app-system`'s fake.
 
 pub use settings_app_system::hot_corners::FakeCorners as Fake;

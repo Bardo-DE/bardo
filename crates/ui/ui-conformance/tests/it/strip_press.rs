@@ -3,14 +3,14 @@
 //! acts; where the rect resolves, the measured `onclick` follows it.
 
 use dioxus::prelude::*;
+use std::rc::Rc;
+use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
 use ui_components::components::app::thread_row::ThreadRow;
 use ui_components::host::no_host::NoHost;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::rc::Rc;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

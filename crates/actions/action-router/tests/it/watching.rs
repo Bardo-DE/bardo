@@ -3,14 +3,14 @@
 //! decides when the sheet may be drawn (`Proceed`) and may take the request back (`Close`).
 
 use crate::support::*;
-use computer_use_action::{CuaAction, WindowSpace};
-use computer_use_action::{RunMode, WindowTrust};
 use action_core::*;
 use action_fake::ScriptedConfirmer;
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use action_router::{Flag, Queue, Watch};
 use action_vocab::{CallRequest, CallerRole, Millis, Origin, TargetValue, Value};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen, WireRefusal};
+use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{RunMode, WindowTrust};
 use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, UnixSeconds};
 use std::sync::Arc;
 

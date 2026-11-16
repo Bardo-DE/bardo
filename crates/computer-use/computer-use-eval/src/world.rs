@@ -3,8 +3,14 @@
 
 use crate::keys;
 use crate::stage::{ScreenChange, Stage};
+use account_core::{AppName, DataClass};
+use account_ids::{Count, Px, UnixSeconds};
 use computer_use_a11y_tree::{A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget};
 use computer_use_action::{Coord, DeviceSize, Point, Rect, Scale120, Size};
+use computer_use_capture::{
+    CaptureError, CaptureSession, DamageAt, DamageSource, Frame, FrameSeq, FrameWant, MaskRegion,
+    MaskReport, WholeMask, WindowCapture,
+};
 use computer_use_desktop::{
     BackendCaps, BackendKind, Desktop, DesktopError, DesktopEvent, EiSocket, GlowState,
     LeaseControl, LeaseGrant, LeaseId, LeaseRequest, Leased, SeatIsolation, Stamp, Suspend,
@@ -12,16 +18,10 @@ use computer_use_desktop::{
 };
 use computer_use_fake::{FakeDesktop, MemoryEvents};
 use computer_use_run::{Clock, CuaModel, Seams};
-use computer_use_capture::{
-    CaptureError, CaptureSession, DamageAt, DamageSource, Frame, FrameSeq, FrameWant, MaskRegion,
-    MaskReport, WholeMask, WindowCapture,
-};
-use account_core::{AppName, DataClass};
-use account_ids::{Count, Px, UnixSeconds};
-use provenance::{Label, Source, SpaceId};
 use computer_use_seat_input::{
     AgentSeat, Emulation, InputOp, InputOrigin, InputReceipt, Keymap, SeatCaps, SeatError,
 };
+use provenance::{Label, Source, SpaceId};
 use std::marker::PhantomData;
 use std::sync::{Arc, Mutex};
 

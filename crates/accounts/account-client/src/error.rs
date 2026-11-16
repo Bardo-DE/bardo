@@ -1,4 +1,4 @@
-//! porter-client's failures that belong to no one domain: why a call to a service did not
+//! account-client's failures that belong to no one domain: why a call to a service did not
 //! complete. Each domain's error holds one beside the reasons it gives of its own. Nothing here
 //! carries a sentence for a person; the apps word them.
 

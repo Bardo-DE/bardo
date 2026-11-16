@@ -5,18 +5,18 @@
 //! lists into [`CatalogueModel`]s (what each takes and gives, the slots it is in, the provider that
 //! reaches it), [`granted_of`] is the set of providers the person's accounts reach through accountd
 //! (the planner discovers none), and [`decide_text`] is the language slot's route: a text-only
-//! request is one stage. Running a plan is `porter-turns`'s `pipeline` module.
+//! request is one stage. Running a plan is `inference-turns`'s `pipeline` module.
 
 use crate::router::{Decided, Listed, fits, plain, slots_of};
 use account_capability::Capability;
 use account_capability::Tier;
 use account_capability::{LlmFeature, SpeechMode};
 use account_core::DataClass;
+use account_match::Need;
 use inference_core::{
     Answer, AutoPolicy, CatalogueModel, Modality, PickCandidate, Pipeline, PlanRules, Policy,
     ProviderId, Refusal, RequestShape, RouteCandidate, Slot, TierMap, picks_for, plan_pipeline,
 };
-use account_match::Need;
 use std::collections::BTreeSet;
 
 /// What a listed model takes in and gives out, from its capabilities.

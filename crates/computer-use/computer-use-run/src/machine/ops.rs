@@ -9,17 +9,19 @@ use crate::machine::run::Run;
 use crate::observation::{Observation, TreeObs};
 use crate::screen::ReaderWait;
 use crate::window_class::window_class_in;
-use computer_use_a11y_tree::{A11yNode, role_word};
-use computer_use_action::{Coord, CuaAction, Point, Rect, Size, Target, WindowSpace};
-use computer_use_bus::{ActionOutcome, ActionResult, CuaRecord, FrameNote, TargetedAction, ThoughtDigest};
-use computer_use_desktop::{Digest32, GlowState, Stamp};
+use account_core::DataClass;
 use action_gate_wire::CuaAsk;
 use action_gate_wire::NodeFacts;
+use computer_use_a11y_tree::{A11yNode, role_word};
+use computer_use_action::{Coord, CuaAction, Point, Rect, Size, Target, WindowSpace};
+use computer_use_bus::{
+    ActionOutcome, ActionResult, CuaRecord, FrameNote, TargetedAction, ThoughtDigest,
+};
 use computer_use_capture::FrameWant;
-use account_core::DataClass;
+use computer_use_desktop::{Digest32, GlowState, Stamp};
+use computer_use_seat_input::{InputReceipt, PlannedAction, ResolvedPoints, centre_of};
 use inference_core::StepIndex;
 use provenance::{Label, Source};
-use computer_use_seat_input::{InputReceipt, PlannedAction, ResolvedPoints, centre_of};
 
 /// Enters `phase`, telling watchers when the slug changes.
 pub(crate) fn enter(run: &mut Run, fx: &mut Vec<RunEffect>, phase: RunPhase) {

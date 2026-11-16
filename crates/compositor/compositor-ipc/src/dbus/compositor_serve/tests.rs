@@ -6,9 +6,11 @@
 
 use crate::dbus::{CALLS_PER_WINDOW, CONNECT_QUEUE, NOT_THE_CALLER};
 use crate::test_served::{BAD_ARGS, DENIED, Served, TOO_MANY, WHOLE_TEST, outcome, service};
-use compositor_core::policy::ConnectionRole;
-use caller_identity_dbus::peephole::fake::{introduced_program, introduced_unverified};
 use caller_identity_dbus::caller_identity_core::{Proof, WhyNot};
+use caller_identity_dbus::caller_identity_linux::fake::{
+    introduced_program, introduced_unverified,
+};
+use compositor_core::policy::ConnectionRole;
 use std::time::Duration;
 
 async fn connect_as(proxy: &zbus::Proxy<'_>, role: &str) -> String {

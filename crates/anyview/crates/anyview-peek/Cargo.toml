@@ -5,7 +5,7 @@ description = "The viewer's light tier: one peek per kind of file, the registry 
 # `media` (on by default) is the recording's peek: pure-Rust parsers read its facts and, for audio,
 # its cover (symphonia, mp4parse, matroska-demuxer). Off, a recording is peeked as a file of a kind with no back end: its type, size and date.
 # `pane` (on by default) is everything that draws or rasterises: the `Card` component (dioxus) and a
-# PDF's first page (ds-blitz, which brings the renderer). Off, a headless caller (a mail client
+# PDF's first page (ui-blitz, which brings the renderer). Off, a headless caller (a mail client
 # peeking at attachments, a terminal) builds none of that, and a PDF is peeked as facts only.
 version = "0.1.0-beta.1"
 edition = "2024"

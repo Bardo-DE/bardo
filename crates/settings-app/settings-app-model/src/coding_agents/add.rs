@@ -1,6 +1,6 @@
 //! Adding and removing a coding assistant: the installed ones that are not offered yet, the form
 //! the Add sheet shows, the question before one is removed, and the facts behind every refusal
-//! (the window words them). Pure; the files are read and written by `detent-files`.
+//! (the window words them). Pure; the files are read and written by `settings-app-files`.
 
 use super::add_choice::{AddAction, Candidate, Listing, Presence, Step, said_line};
 use crate::outside::Assistant;

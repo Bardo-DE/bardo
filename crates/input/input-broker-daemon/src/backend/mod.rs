@@ -6,9 +6,9 @@
 pub mod fake;
 pub mod real;
 
+use input_broker_wire::{DeviceSpec, Event};
 use std::io;
 use std::os::fd::OwnedFd;
-use input_broker_wire::{DeviceSpec, Event};
 
 /// Why the kernel side failed.
 #[derive(Debug, thiserror::Error)]

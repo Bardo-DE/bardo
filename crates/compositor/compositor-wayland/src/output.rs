@@ -7,7 +7,6 @@ use compositor_core::geometry::LogicalPoint;
 use compositor_core::output::{EdidFacts, EdidSerial, Mode, PhysicalMm};
 use compositor_core::{OutputKey, OutputName};
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use smithay::output::{Mode as WireMode, Output, PhysicalProperties, Scale as WireScale, Subpixel};
 use smithay::reexports::wayland_protocols::xdg::xdg_output::zv1::server::zxdg_output_manager_v1::ZxdgOutputManagerV1;
 use smithay::reexports::wayland_server::backend::GlobalId;
@@ -17,6 +16,7 @@ use smithay::utils::Transform as WireTransform;
 use smithay::wayland::GlobalData;
 use smithay::wayland::output::{OutputManagerState, WlOutputData};
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
 
 /// `wl_output` globals and the xdg-output manager.
 #[derive(Debug)]

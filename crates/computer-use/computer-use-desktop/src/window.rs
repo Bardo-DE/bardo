@@ -1,8 +1,8 @@
 //! A window as the compositor reports it.
 
 use crate::units::{GlobalRect, Pid};
-use computer_use_action::WindowTrust;
 use account_core::AppName;
+use computer_use_action::WindowTrust;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 use std::fmt;

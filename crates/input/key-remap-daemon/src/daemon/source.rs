@@ -5,10 +5,10 @@
 use super::pointer::PointerCaps;
 use super::twin;
 use super::uinput::{self, OutputError};
-use rustix::fd::OwnedFd;
-use std::path::Path;
 use input_broker_client::{AbsAxis, PointerCaps as ServiceCaps};
 use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Session};
+use rustix::fd::OwnedFd;
+use std::path::Path;
 
 /// Where the service listens when nothing overrides it.
 pub(crate) const DEFAULT_SERVICE_SOCKET: &str = input_broker_client::DEFAULT_SOCKET;
@@ -129,11 +129,11 @@ mod tests {
     use crate::daemon::pointer::AbsAxis as TwinAxis;
     use crate::daemon::twin::PointerTwin;
     use crate::daemon::uinput::{Device, Emitter, PointerSink};
+    use input_broker_client::Reason;
+    use input_broker_client::fake::{FakeSource, OpenMode};
     use key_remap_devtest::Scratch;
     use key_remap_evdev::AbsInfo;
     use rustix::net::{AddressFamily, RecvFlags, SocketFlags, SocketType, socketpair};
-    use input_broker_client::Reason;
-    use input_broker_client::fake::{FakeSource, OpenMode};
 
     const BTN_LEFT: u16 = 0x110;
 

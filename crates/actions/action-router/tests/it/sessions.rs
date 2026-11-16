@@ -4,12 +4,12 @@
 use crate::support::*;
 use action_core::*;
 use action_fake::{ScriptedConfirmer, ScriptedReader, ScriptedWriter};
-use permission_core::{ActionMatch, PolicyChange, TaskPolicy, compare};
 use action_vocab::{CallerRole, CharCount, ChoiceId, Handle, Origin, TurnId, Value};
 use action_wire::{
     Displayed, IntentsReply, IntentsRequest, ReadAsk, Resolved, SessionOpen, WidenAnswer, WidenAsk,
     WireRefusal,
 };
+use permission_core::{ActionMatch, PolicyChange, TaskPolicy, compare};
 use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, UnixSeconds};
 use std::collections::BTreeSet;
 
@@ -395,7 +395,12 @@ async fn the_screen_gets_each_shown_handle_with_its_own_label_and_a_planner_gets
     let router = router();
     let s = ready(&router).await;
     let outside = hold(&router, &s.session, "from outside", mail_label("work"));
-    let own = hold(&router, &s.session, "my words", provenance::Label::trusted_user());
+    let own = hold(
+        &router,
+        &s.session,
+        "my words",
+        provenance::Label::trusted_user(),
+    );
     let labelled = |handle| IntentsRequest::SessionDisplayLabelled {
         session: s.session.clone(),
         handle,

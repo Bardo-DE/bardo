@@ -24,13 +24,13 @@ use compositor_core::geometry::{LogicalSize, PhysicalSize, buffer_size};
 use compositor_core::policy::GlobalKind;
 use compositor_core::time::Mono;
 use compositor_core::{ClientKey, WindowId};
-use ui_core::geometry::scale::Scale;
 use smithay::reexports::wayland_server::{Client, DisplayHandle};
 use smithay::wayland::image_capture_source::{
     ToplevelCaptureSourceHandler, ToplevelCaptureSourceState,
 };
 use smithay::wayland::image_copy_capture::{Frame, Session};
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
 
 /// One toplevel capture source.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

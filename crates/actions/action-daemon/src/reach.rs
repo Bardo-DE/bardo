@@ -10,12 +10,12 @@
 use crate::builtin::is_builtin;
 use crate::link::owned_by_us;
 use crate::signals::rescan_with;
+use account_core::AppName;
 use action_dbus::{BusConnection, IntentReachProxy, ReachNow};
 use action_manifest::{AgentReach, Manifest, ValidManifest};
 use action_router::{Router, Seams};
 use futures_util::StreamExt;
 use futures_util::future::join_all;
-use account_core::AppName;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};

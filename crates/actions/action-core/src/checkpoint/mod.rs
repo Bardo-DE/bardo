@@ -1,6 +1,6 @@
 //! Agent checkpoints, as data: the restore points of a session, what the log says about them,
 //! what restoring would change, and why a turn has none. Pure and portable (serde only); the
-//! store that keeps the points is `docket-checkpoint`'s seam.
+//! store that keeps the points is `action-checkpoint`'s seam.
 //!
 //! None of the person-facing wording is here: callers draw it from the typed enums, so no free
 //! text crosses the wire.

@@ -23,7 +23,6 @@ use compositor_wayland::capture_source::{
 };
 use compositor_wayland::foreign_toplevel_list::window_of_identifier;
 use compositor_wayland::image_capture::CaptureFailure;
-use ui_core::geometry::scale::Scale;
 use render::draw_window;
 pub(crate) use render::{body_on_gpu, window_rgba, window_texture};
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
@@ -34,6 +33,7 @@ use smithay::wayland::image_capture_source::{
     ImageCaptureSource, ToplevelCaptureSourceHandler, ToplevelCaptureSourceState,
 };
 use smithay::wayland::image_copy_capture::{BufferConstraints, Frame, Session, SessionRef};
+use ui_core::geometry::scale::Scale;
 
 impl ToplevelCaptureSourceHandler for State {
     fn toplevel_capture_source_state(&mut self) -> &mut ToplevelCaptureSourceState {

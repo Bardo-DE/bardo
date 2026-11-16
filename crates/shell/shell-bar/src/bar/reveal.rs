@@ -11,14 +11,14 @@
 //! `DesktopOnly` rests fixed on an output showing a full-screen Space ([`mode_on`]).
 
 use super::tokens::BarTokens;
-use ui_components::base::time::stamp::Stamp;
-use ui_components::prelude::Motion;
-use ui_components::style::tokens::easing::EasingToken;
 use layer_shell_host::{BlurSpec, ElementId, RegionSpec};
 use shell_model::desktop::Shown;
 use shell_model::units::Cpx;
 use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{self, Change, Hold, Input, Phase, Timing, advance};
+use ui_components::base::time::stamp::Stamp;
+use ui_components::prelude::Motion;
+use ui_components::style::tokens::easing::EasingToken;
 
 /// The element the bar's content is drawn in; it slides, and the shown regions follow it.
 pub(super) const BODY_ID: &str = "bar-body";

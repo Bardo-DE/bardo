@@ -1,14 +1,5 @@
 //! The `SheetView` to props table, and the events' way back. Pure: no renderer.
 
-use ui_components::components::content::provider_mark::MarkProvider;
-use ui_components::prelude::Check;
-use ui_shell::accounts::hidden::Hidden;
-use ui_shell::accounts::model::{
-    AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, FieldProblem, FieldRole,
-    FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey, ProviderPick,
-    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
-};
-use ui_shell::prelude::{Recovery, WorkingFor};
 use account_capability::{AbsentReason, CapabilityKind};
 use account_core::consent::{AccountChoice as AskChoice, ConsentAsk, GrantScope, Usage};
 use account_core::{
@@ -24,6 +15,15 @@ use account_sheet::{
 use shell_model::accounts::sheet::{
     AccountsSheets, CopyMark, ListKey, SheetAction, SheetEvent, SheetHandle, step,
 };
+use ui_components::components::content::provider_mark::MarkProvider;
+use ui_components::prelude::Check;
+use ui_shell::accounts::hidden::Hidden;
+use ui_shell::accounts::model::{
+    AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, FieldProblem, FieldRole,
+    FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey, ProviderPick,
+    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+};
+use ui_shell::prelude::{Recovery, WorkingFor};
 
 mod long_text;
 
@@ -628,8 +628,8 @@ fn the_words_follow_the_table() {
 
 #[test]
 fn the_server_form_becomes_choices_hints_and_parts() {
-    use ui_shell::accounts::model::{Choice, FormPart};
     use account_sheet::{Protocol, manual_form};
+    use ui_shell::accounts::model::{Choice, FormPart};
     let view = |protocol| {
         SheetView::SignIn(SignInView {
             provider: provider("generic-imap"),

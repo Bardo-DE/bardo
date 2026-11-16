@@ -2,6 +2,8 @@
 //! Name and extension are read-only for now.
 
 use dioxus::prelude::*;
+use files_core::{ByteSize, EntryKind, Info, ItemRef};
+use files_model::{Browser, InfoView, Input};
 use ui_components::components::content::label::LabelStyle;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::prelude::{
@@ -9,8 +11,6 @@ use ui_components::prelude::{
     IconSize, Label, Sheet,
 };
 use ui_components::style::icon::render::IconPx;
-use files_core::{ByteSize, EntryKind, Info, ItemRef};
-use files_model::{Browser, InfoView, Input};
 
 use crate::edge::Zone;
 use crate::icons::Icons;

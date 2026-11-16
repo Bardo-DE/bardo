@@ -3,12 +3,12 @@
 //! drops the rows at once and plays nothing.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::components::lists::virtual_list::{Change, RowHeight, VirtualList};
 use ui_components::motion::presence::Exit;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

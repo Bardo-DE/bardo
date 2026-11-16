@@ -2,14 +2,14 @@
 //! The root side runs against a temporary install root; the helper's answers are faked.
 
 use crate::support::{Accept, Recipe, Sandbox, build, v};
+use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::sync::Mutex;
 use updater_daemon::cli::{Exit, confirm, recover, vouch};
 use updater_daemon::elevate::{ApplyFailure, Elevate, Recovery};
 use updater_daemon::report::Report;
 use updater_daemon::state::StateStore;
 use updater_root::apply::{NoRelabel, Started, note_confirmed, note_start};
-use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
-use std::sync::Mutex;
 
 fn two_releases() -> Sandbox {
     let sandbox = Sandbox::new();

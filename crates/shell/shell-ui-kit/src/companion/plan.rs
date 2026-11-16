@@ -1,7 +1,7 @@
 //! A plan as the card draws it: the steps grouped by effect, and where the plan stands.
 
-use companion_wire::{AnswerPhase, PlanStepWire, PlanWire, StepWireState};
 use action_vocab::StepId as WireStep;
+use companion_wire::{AnswerPhase, PlanStepWire, PlanWire, StepWireState};
 use ui_components::components::companion::answer::footer::CardFooter;
 use ui_components::components::companion::plan::model::{
     PlanFinish, PlanGroup, PlanPhase, PlanStep, PlanStepState, PlanView, StepId, StopWhy,

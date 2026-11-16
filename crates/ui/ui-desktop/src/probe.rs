@@ -22,9 +22,9 @@ impl Desktop {
 pub(crate) mod bus {
     use crate::Desktop;
     use crate::capability::{Bus, Capability};
-    use ui_peer::{Deadline, within};
     use std::collections::HashSet;
     use std::future::Future;
+    use ui_peer::{Deadline, within};
     use zbus::Connection;
     use zbus::fdo::DBusProxy;
 

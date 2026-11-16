@@ -7,17 +7,17 @@
 //! `settle(PanelOut)`, never a drag out), while a drag to the left still starts a drag out.
 
 use dioxus::prelude::*;
-use ui_components::components::content::image_source::ImageSize;
-use ui_components::motion::drag::DRAG_THRESHOLD;
-use ui_components::prelude::*;
-use ui_harness::harness::{SETTLE_BOUND, settle_until};
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::notifications::parts::Hover;
 use shell_kit::notifications::swipe::NotificationSwipe;
 use shell_kit::prelude::*;
 use shell_kit::thumbs::shot_press::DragStart;
 use shell_kit::thumbs::shot_thumbnail::ThumbAction;
 use std::time::{Duration, Instant};
+use ui_components::components::content::image_source::ImageSize;
+use ui_components::motion::drag::DRAG_THRESHOLD;
+use ui_components::prelude::*;
+use ui_harness::harness::{SETTLE_BOUND, settle_until};
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 static HIDDEN: GlobalSignal<u32> = Signal::global(|| 0);

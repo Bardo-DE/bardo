@@ -2,7 +2,7 @@
 # Pointer cost: how many frames each surface renders while the pointer only MOVES (no click) over
 # the wallpaper, over the bar, over the dock, and while it is still. A surface that repaints at the
 # pointer rate on a still desktop is the iGPU cost seen on a real 4K machine (a full-surface
-# re-raster per pointer event, shell-host handlers/band invalidate).
+# re-raster per pointer event, layer-shell-host handlers/band invalidate).
 #
 # Prints one line per region: the seconds it ran and, per surface, the frames and callbacks it
 # gained. This script only measures (it passes whatever it sees); the verdict is read from the table.

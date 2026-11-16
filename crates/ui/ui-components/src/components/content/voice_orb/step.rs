@@ -2,10 +2,10 @@
 //! glows turn and nothing while they stand.
 
 use super::model::Turn;
+use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::FRAME_TICK;
 use ui_core::time::stamp::Stamp;
-use std::time::Duration;
 
 /// Where the glows are `elapsed` after they stood at `from`, turning once per `period`. A
 /// period of nothing holds them where they are.
@@ -96,9 +96,9 @@ impl Machine for Glow {
 #[cfg(test)]
 mod tests {
     use super::{Glow, GlowIn, Run, Turn};
+    use std::time::Duration;
     use ui_core::machine::Machine;
     use ui_core::time::stamp::Stamp;
-    use std::time::Duration;
 
     const PERIOD: Duration = Duration::from_secs(20);
 

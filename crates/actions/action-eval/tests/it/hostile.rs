@@ -1,12 +1,12 @@
 //! The hostile-model corpus through the deterministic layers: a reviewer's raw words read by the
 //! real `parse_verdict`, a hijacked planner's calls through the real router. (The writer's words
-//! and the planner cases need the daemons: `docket-accept` plays those.)
+//! and the planner cases need the daemons: `action-accept` plays those.)
 
 use action_core::AgentConfig;
 use action_eval::{Harness, load_all, run_case};
+use action_eval_core::{Case, Corpus, Judgement, StepEnding, judge};
 use action_fake::{FakeSeams, FixedClock, ParsedReviewer, ScriptedWriter, fake_router_with};
 use permission_core::Stage;
-use action_eval_core::{Case, Corpus, Judgement, StepEnding, judge};
 use provenance::UnixSeconds;
 use std::path::PathBuf;
 
@@ -164,7 +164,10 @@ fn the_unspoiled_base_runs_so_the_asks_above_are_the_replies_doing() {
     };
     harness.router.seams.reviewer.reset();
     let got = run_case(&plain, &harness);
-    assert_eq!(got.steps, [StepEnding::Ran(provenance::Effect::UndoableWrite)]);
+    assert_eq!(
+        got.steps,
+        [StepEnding::Ran(provenance::Effect::UndoableWrite)]
+    );
     assert_eq!(
         harness.router.seams.reviewer.asked(),
         [Stage::Quick, Stage::Deliberate, Stage::SecondOpinion]

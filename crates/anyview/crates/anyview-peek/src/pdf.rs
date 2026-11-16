@@ -1,4 +1,4 @@
-//! The peek of a PDF: its first page. With the `pane` feature it is rasterised by `ds-blitz`'s
+//! The peek of a PDF: its first page. With the `pane` feature it is rasterised by `ui-blitz`'s
 //! thumbnail cache (see `raster`); without it a PDF is peeked as facts only, since a headless
 //! build links no renderer.
 

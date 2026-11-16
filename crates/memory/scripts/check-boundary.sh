@@ -23,26 +23,26 @@ cd "$(dirname "$0")/.."
 
 # LAYERS: crate -> tier. Every workspace member has exactly one row.
 LAYERS=(
-  "almanac-core: P"
-  "almanac-store: P"
-  "memfiles-format: P"
-  "almanac-settings: P"
-  "almanac-tidy: P"
-  "almanac-search: P"
-  "almanac-service: P"
-  "almanac-seal: P"
-  "almanac-keyfile: C"
-  "almanac-host: C"
+  "memory-core: P"
+  "memory-store: P"
+  "memory-files-format: P"
+  "memory-settings: P"
+  "memory-tidy: P"
+  "memory-search: P"
+  "memory-service: P"
+  "memory-seal: P"
+  "memory-keyfile: C"
+  "memory-host: C"
   "eventlog: C"
   "memfiles: C"
   "recall: C"
-  "almanac-watch: C"
-  "almanac-infer: C"
-  "almanac-dbus: C"
-  "almanac-dbus-serve: C"
-  "almanac-client: C"
-  "almanac-fake: C"
-  "almanac-local: C"
+  "memory-watch: C"
+  "memory-infer: C"
+  "memory-dbus: C"
+  "memory-dbus-serve: C"
+  "memory-client: C"
+  "memory-fake: C"
+  "memory-local: C"
   "memoryd: A"
 )
 
@@ -73,15 +73,15 @@ BANS=(
 # RULES: what a crate reaches through ANY path (transitive, default features). The portable
 # crates never reach a bus, a runtime, an HTTP client, a keyring, an ONNX runtime or an
 # embedding library. rusqlite is allowed to eventlog, recall and everything above them (it is
-# their storage), but never to almanac-core, almanac-seal, memfiles or memfiles-format; notify only to
-# almanac-watch (the Space roots) and memoryd (the directory watch on the person's settings file). almanac-seal reaches oo7 only through its `oo7` feature, almanac-client reaches
+# their storage), but never to memory-core, memory-seal, memfiles or memory-files-format; notify only to
+# memory-watch (the Space roots) and memoryd (the directory watch on the person's settings file). memory-seal reaches oo7 only through its `oo7` feature, memory-client reaches
 # zbus only through its `dbus` feature, and links no rusqlite or openssl-sys (SQLCipher, vendored
-# OpenSSL) even with its `in_process` feature (the service is generic over the store seams), and almanac-dbus and almanac-dbus-serve reach tokio only through zbus's
-# `tokio` feature. almanac-store (the seam traits and types the service stands on) and
-# almanac-service reach no storage at all: no rusqlite, no SQLCipher (libsqlite3-sys), no OpenSSL,
+# OpenSSL) even with its `in_process` feature (the service is generic over the store seams), and memory-dbus and memory-dbus-serve reach tokio only through zbus's
+# `tokio` feature. memory-store (the seam traits and types the service stands on) and
+# memory-service reach no storage at all: no rusqlite, no SQLCipher (libsqlite3-sys), no OpenSSL,
 # no runtime, no bus. memoryd is the place that reaches the daemon's runtime, so it has no rule.
 EFFECTS="zbus zvariant tokio reqwest hyper oo7 ort fastembed"
-# almanac-core is also light enough for cua-bus to depend on (interface ask 26: `HandedBack`
+# memory-core is also light enough for computer-use-bus to depend on (interface ask 26: `HandedBack`
 # carries `almanac_core::EventRef`; cua's own EFFECTS list adds these to ours), so it reaches none
 # of them either.
 CUA_EFFECTS="hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi rmcp cedar-policy"
@@ -90,28 +90,28 @@ CUA_EFFECTS="hyper-util rustls pipewire wayland-client wayland-backend wayland-s
 # removal notes behind a seam instead (RemovalLedger), so it never reaches a file writer.
 STORAGE="rusqlite libsqlite3-sys openssl-sys openssl atomic-write-file"
 RULES=(
-  "almanac-core: $EFFECTS rusqlite notify toml $CUA_EFFECTS"
-  "almanac-seal: $EFFECTS rusqlite notify"
-  "almanac-keyfile: $EFFECTS rusqlite notify"
-  "almanac-store: $EFFECTS $STORAGE notify"
+  "memory-core: $EFFECTS rusqlite notify toml $CUA_EFFECTS"
+  "memory-seal: $EFFECTS rusqlite notify"
+  "memory-keyfile: $EFFECTS rusqlite notify"
+  "memory-store: $EFFECTS $STORAGE notify"
   "eventlog: $EFFECTS notify"
   "memfiles: $EFFECTS rusqlite notify"
-  "memfiles-format: $EFFECTS $STORAGE notify"
+  "memory-files-format: $EFFECTS $STORAGE notify"
   "recall: $EFFECTS notify"
-  "almanac-settings: $EFFECTS $STORAGE notify"
-  "almanac-tidy: $EFFECTS $STORAGE notify"
-  "almanac-search: $EFFECTS $STORAGE notify"
-  "almanac-service: $EFFECTS $STORAGE notify"
-  "almanac-host: $EFFECTS $STORAGE notify"
-  "almanac-watch: $EFFECTS rusqlite"
-  # The inferd adapters reach inferd through inferd-client's Transport only: no bus, no HTTP, no
+  "memory-settings: $EFFECTS $STORAGE notify"
+  "memory-tidy: $EFFECTS $STORAGE notify"
+  "memory-search: $EFFECTS $STORAGE notify"
+  "memory-service: $EFFECTS $STORAGE notify"
+  "memory-host: $EFFECTS $STORAGE notify"
+  "memory-watch: $EFFECTS rusqlite"
+  # The inferd adapters reach inferd through inference-client's Transport only: no bus, no HTTP, no
   # keyring, no embedding runtime and no storage, so an app other than memoryd can use them.
-  "almanac-infer: zbus zvariant reqwest hyper oo7 ort fastembed $STORAGE notify"
-  "almanac-dbus: reqwest hyper oo7 ort fastembed rusqlite notify"
-  "almanac-dbus-serve: reqwest hyper oo7 ort fastembed rusqlite notify"
-  "almanac-client: $EFFECTS rusqlite openssl-sys notify"
-  "almanac-fake: $EFFECTS notify"
-  "almanac-local: $EFFECTS notify"
+  "memory-infer: zbus zvariant reqwest hyper oo7 ort fastembed $STORAGE notify"
+  "memory-dbus: reqwest hyper oo7 ort fastembed rusqlite notify"
+  "memory-dbus-serve: reqwest hyper oo7 ort fastembed rusqlite notify"
+  "memory-client: $EFFECTS rusqlite openssl-sys notify"
+  "memory-fake: $EFFECTS notify"
+  "memory-local: $EFFECTS notify"
   # The daemon reaches the bus, a runtime, the keyring and the file watch. It never reaches HTTP,
   # an embedding runtime, the MCP SDK or the policy engine (inferd is the model, over the bus).
   "memoryd: reqwest hyper ort fastembed rmcp cedar-policy"
@@ -198,7 +198,7 @@ for row in "${LAYERS[@]}"; do
 done
 
 # Dependencies point down only: a crate's DIRECT normal and build path dependencies (all
-# features, so almanac-client's `in_process` and `dbus` both count) are of its own tier or a
+# features, so memory-client's `in_process` and `dbus` both count) are of its own tier or a
 # lower one. Dev dependencies are outside it. A dependency from another repo (porter, prov) has
 # no row here.
 for row in "${LAYERS[@]}"; do
@@ -257,11 +257,11 @@ for rule in "${RULES[@]}"; do
     fail=1
     continue
   fi
-  # almanac-client's default feature (`quire-desktop`, the app-level desktop switch) turns `dbus` on;
+  # memory-client's default feature (`quire-desktop`, the app-level desktop switch) turns `dbus` on;
   # the rule is about what an app without it links, hosting the service in process, so that crate is
   # checked without defaults and with `in_process`.
   defaults=()
-  [ "$crate" = almanac-client ] && defaults=(--no-default-features --features in_process)
+  [ "$crate" = memory-client ] && defaults=(--no-default-features --features in_process)
   leaked=0
   for dep in "${forbidden[@]}"; do
     if cargo tree -p "$crate" "${defaults[@]}" -i "$dep" -e normal,build 2>/dev/null | grep -q .; then
@@ -277,13 +277,13 @@ for rule in "${RULES[@]}"; do
 done
 
 # Nothing of almanac's reaches another area's repo.
-for banned in docket-core docket-router intentd cua-run cua-bus cuad companion-wire; do
+for banned in action-core action-router intentd computer-use-run computer-use-bus cuad companion-wire; do
   if cargo tree --workspace -i "$banned" -e normal,build,dev 2>/dev/null | grep -q .; then
     echo "LEAK: the workspace depends on $banned (almanac stores other areas' payloads opaquely)"
     fail=1
   fi
 done
-# model-provider comes in under porter-infer (a reply's `charge` is its `Money`; owner 2026-10-28),
+# model-provider comes in under inference-core (a reply's `charge` is its `Money`; owner 2026-10-28),
 # so only a direct edge from one of almanac's own crates is a leak: almanac never names a model payload.
 if cargo tree --workspace -i model-provider -e normal,build,dev --depth 1 2>/dev/null | grep -q "($PWD/"; then
   echo "LEAK: an almanac crate depends on model-provider directly (almanac stores model payloads opaquely)"
@@ -295,7 +295,7 @@ fi
 ./scripts/check-portable.sh || fail=1
 
 # The test-only features are never on in a default build (a dist build uses default features):
-# memoryd's `test-keys` and `test-proc-root`; `test-keys` is what brings almanac-keyfile in.
+# memoryd's `test-keys` and `test-proc-root`; `test-keys` is what brings memory-keyfile in.
 enabled=$(cargo tree -p memory-daemon -e normal,build -f '{p} [{f}]' --prefix none 2>/dev/null \
   | grep -E '^memoryd ' | grep -oE '\[[^]]*\]' | tr ',[]' '\n\n\n')
 if printf '%s\n' "$enabled" | grep -qE '^test-'; then
@@ -305,8 +305,8 @@ else
   echo "test features (test-keys, test-proc-root) are off in a default build of memoryd"
 fi
 
-if cargo tree -p memory-daemon -e normal,build --prefix none 2>/dev/null | grep -q '^almanac-keyfile '; then
-  echo "TEST FEATURE: a default build of memoryd links almanac-keyfile (FileKeys, TEST ONLY)"
+if cargo tree -p memory-daemon -e normal,build --prefix none 2>/dev/null | grep -q '^memory-keyfile '; then
+  echo "TEST FEATURE: a default build of memoryd links memory-keyfile (FileKeys, TEST ONLY)"
   fail=1
 fi
 

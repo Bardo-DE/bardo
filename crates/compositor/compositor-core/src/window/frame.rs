@@ -1,7 +1,7 @@
 //! The frame casement draws round a window whose client asked for a server-side one: where the
 //! titlebar, the three lights and the resize zones are, and which of them a point is on.
 //!
-//! The lengths are an argument ([`FrameMetrics`]): `casement-layout` fills them from quire's
+//! The lengths are an argument ([`FrameMetrics`]): `compositor-layout` fills them from quire's
 //! chrome tokens, so this crate stays free of the style crates and a test can use round
 //! numbers. Everything is in global logical pixels. The titlebar sits just above the client's
 //! content rectangle (the window's place in the model), so the content keeps its size.

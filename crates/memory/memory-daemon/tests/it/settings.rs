@@ -6,12 +6,12 @@ use crate::support::{SharedKeys, World, dirs_in};
 use memory_core::{
     AppId, DayCount, Isolation, MemoryReply, MemoryRequest, Refusal, VaultKind, WaitingSetting,
 };
+use memory_daemon::{Consent, SettingsWatch, WatchState, apply, apply_next};
 use memory_dbus::{decode_reply, encode_request, invoke};
 use memory_fake::{ScriptedConsolidator, fake_service, mail};
 use memory_host::Locator;
 use memory_service::Caller;
 use memory_settings::{ConsolidateWhen, MemorySettings};
-use memory_daemon::{Consent, SettingsWatch, WatchState, apply, apply_next};
 use std::collections::BTreeMap;
 use std::path::Path;
 

@@ -16,10 +16,10 @@ use crate::support::scoped;
 use cases::{CASES, Case, MOTION_CASES};
 use css_scan::{STYLES, classes, styles_class, token_violations};
 use dioxus::prelude::*;
+use scoped::Scoped;
 use ui_components::prelude::*;
 use ui_style::icon::render::Glyph;
 use ui_style::icon::shape::Shape;
-use scoped::Scoped;
 
 #[derive(Props, Clone)]
 struct HostProps {
@@ -199,7 +199,7 @@ fn a_shortcut_is_glyphs_without_separators() {
 }
 
 /// The slider consumes wheel input itself (11-BEHAVIOUR-scroll.md section 11.3.1 item 2:
-/// "sliders, zoomable canvases"): shell-host's scroll engine hands `data-wheel="capture"`
+/// "sliders, zoomable canvases"): layer-shell-host's scroll engine hands `data-wheel="capture"`
 /// elements the raw `BlitzWheelEvent` instead of scrolling the page under them. Every slider
 /// case carries the marker, not just the default one, so a state that later drops it (a variant,
 /// a disabled slider) is caught here rather than only in a golden diff.

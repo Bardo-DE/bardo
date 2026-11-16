@@ -16,7 +16,7 @@ Ids match the references in SPEC.md.
 | P4 | File capture | (a) inotify on Space roots for v1; (b) a small privileged fanotify helper | (a) |
 | P5 | sqlite-vec needs one `unsafe` crate | (a) exact scan now, usearch only if scale demands; (b) allow one exemption crate | (a) |
 | P6 | Space identity | where `SpaceId` is minted (rec: sill's Space store beside SpaceLook) and whether a `desktop` scope exists for memory outside any Space | sill mints; `desktop` exists |
-| P7 | design/30 §3.4 defers companion work | (a) lift it for types now (freeze wave adds ds vocab, ds-intents, companion components as "proposed"); (b) types only outside `ds` | (a) |
+| P7 | design/30 §3.4 defers companion work | (a) lift it for types now (freeze wave adds ds vocab, ui-intents, companion components as "proposed"); (b) types only outside `ds` | (a) |
 | P8 | Engine confinement | (a) engines only as confined systemd transient units without network (unconfined child processes on other OSes); (b) also allow unconfined on Linux | (a) |
 | P9 | The fork | who owns it (rec: the cua repo's agent, shared branch with double-tap ⌘ later); which hardware kill chord it reserves; is KWin a product target or only the nested host | cua owns; chord: user picks; KWin = nested host + reference only |
 | P10 | Toshy route for double-tap ⌘ | (A) Toshy detects the double tap and emits one chord; (B) Toshy maps a lone ⌘ tap and sill's tested `Tap` machine decides | B if Spike T shows ⌘-click/⌘-drag unharmed, else A |

@@ -28,11 +28,11 @@ pub use machines::{BusMachines, Machines, NoMachines};
 use crate::attached::relay_socket;
 use crate::engines::Engines;
 use account_ids::clock::Clock;
+use account_tailscale::LocalApi;
+use account_tailscale::NodeId;
 use inference_tailnet::{
     Config, Dialer, GuestEvent, Guests, Lending, Listening, Observer, OnFault, Relay, Timing, lend,
 };
-use account_tailscale::LocalApi;
-use account_tailscale::NodeId;
 use inference_turns::audit::AuditOut;
 use std::collections::BTreeMap;
 use std::path::PathBuf;

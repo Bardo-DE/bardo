@@ -1,13 +1,13 @@
-//! The drag icon: quire's `ShotGhost` (the card at 120 wide, .8 opaque) on shell-host's
+//! The drag icon: quire's `ShotGhost` (the card at 120 wide, .8 opaque) on layer-shell-host's
 //! drag-icon surface. That surface is a document of its own, with none of the thumbnail's root
 //! contexts, so the appearance it is drawn in travels as its props ([`GhostLook`]).
 
 use dioxus::prelude::*;
+use layer_shell_host::{DragIcon, HostRoot, Size};
+use shell_kit::prelude::*;
 use ui_components::components::content::image_source::ImageSize;
 use ui_components::prelude::*;
 use ui_settings::Environment;
-use layer_shell_host::{DragIcon, HostRoot, Size};
-use shell_kit::prelude::*;
 
 use super::picture::ThumbPicture;
 

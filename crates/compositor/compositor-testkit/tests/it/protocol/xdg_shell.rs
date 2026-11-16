@@ -13,12 +13,12 @@ use compositor_core::policy::ConnectionRole;
 use compositor_core::window::WindowState;
 use compositor_core::{DeviceId, WindowId};
 use compositor_layout::{LayoutKnobs, RustScene, SceneLayout, spec_of};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::surface::popup::{Popup, PopupSpec};
 use compositor_testclient::surface::toplevel::shell::{xdg_surface, xdg_wm_base};
 use compositor_testclient::surface::toplevel::{Pings, State, Toplevel, WmBase, bind_pointer};
 use compositor_testclient::{ClientError, ClientState, Pattern, shm_buffer};
 use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use std::path::PathBuf;
 use std::time::Duration;
 

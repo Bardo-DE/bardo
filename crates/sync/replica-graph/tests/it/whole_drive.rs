@@ -4,12 +4,12 @@
 
 use crate::common;
 
+use account_capability::StorageScope;
 use common::{Replica, Server};
+use replica_graph::{Root, Uploads};
 use sync_core::{
     Anchor, Change, Cursor, Folders, ItemKind, More, RemoteId, Replica as _, ReplicaError,
 };
-use account_capability::StorageScope;
-use replica_graph::{Root, Uploads};
 
 /// Every page from `from` until the feed is caught up: the changes, the last anchor, and how
 /// many pages it took.

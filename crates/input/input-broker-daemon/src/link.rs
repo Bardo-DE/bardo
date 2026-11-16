@@ -1,6 +1,8 @@
 //! The service's end of one `SOCK_SEQPACKET` connection: whole datagrams in, whole datagrams out,
 //! and the descriptor that rides with a `Created` of a handed device.
 
+use input_broker_wire::limits::MAX_DATAGRAM;
+use input_broker_wire::{Reply, WireError, encode_reply};
 use rustix::io::Errno;
 use rustix::net::sockopt::{Timeout, set_socket_timeout};
 use rustix::net::{
@@ -10,8 +12,6 @@ use std::io::IoSlice;
 use std::mem::MaybeUninit;
 use std::os::fd::{AsFd, OwnedFd};
 use std::time::Duration;
-use input_broker_wire::limits::MAX_DATAGRAM;
-use input_broker_wire::{Reply, WireError, encode_reply};
 
 /// What the next read of the connection gave.
 #[derive(Debug, PartialEq, Eq)]

@@ -8,8 +8,8 @@ use compositor_app::environment::run_config;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    let filter =
-        std::env::var("CASEMENT_LOG").unwrap_or_else(|_| compositor_app::log::DEFAULT_FILTER.to_owned());
+    let filter = std::env::var("CASEMENT_LOG")
+        .unwrap_or_else(|_| compositor_app::log::DEFAULT_FILTER.to_owned());
     compositor_app::log::init(&filter);
     let args: Vec<String> = std::env::args().skip(1).collect();
     match cli::parse_args(&args) {

@@ -8,7 +8,7 @@ mod ink;
 mod lock;
 mod surface;
 
-pub use ui_blitz::FocusFallback;
 pub use ink::{GRAPHIC_CONTRAST, assert_inks_read_in_each_scheme, ink_contrast};
 pub use lock::{LockHarness, LockSetup};
 pub use surface::{SurfaceHarness, SurfaceSetup};
+pub use ui_blitz::FocusFallback;

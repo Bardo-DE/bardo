@@ -1,7 +1,7 @@
 //! The offer and the support table.
 
-use desktop_protocols::vocab::{Assign, OverviewMode, PlaceTarget, Toggle, WindowEntry};
 use account_core::SpaceId;
+use desktop_protocols::vocab::{Assign, OverviewMode, PlaceTarget, Toggle, WindowEntry};
 
 use super::{DesktopBackend, DesktopCommand, GlobalOffer, supports};
 

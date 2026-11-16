@@ -1,10 +1,10 @@
 //! The footer line, the route log over scripted events, and the refusal text.
 
+use account_capability::{Locality, ModelId};
+use account_core::AccountId;
 use companion_wire::{
     Reached, RouteLog, RouteNote, WhyWord, declined_text, footer_line, model_name, provider_name,
 };
-use account_capability::{Locality, ModelId};
-use account_core::AccountId;
 use inference_core::{
     Declined, DeclinedBecause, Door, InferEvent, InferRefusal, ModelLabel, ModelRef, ProviderId,
     ServedBy, StageNote, StageRole, Why,

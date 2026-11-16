@@ -1,8 +1,8 @@
 //! A clock that says what it was told.
 
+use account_ids::UnixSeconds;
 use computer_use_desktop::Stamp;
 use computer_use_run::Clock;
-use account_ids::UnixSeconds;
 use std::sync::atomic::{AtomicBool, AtomicI64, AtomicU64, Ordering};
 
 /// A clock set by hand; it never moves on its own.

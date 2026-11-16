@@ -3,11 +3,11 @@
 
 use crate::call::{CallEvent, CallState};
 use crate::prepared::Prepared;
-use action_review::{DecisionMark, DenialMark, DeniedBy, ReviewVerdict};
-use action_core::{CallEnd, CallRefusal, ConfirmId, DecidedBy, Outcome, Preview, StepEnd};
-use permission_core::{AskReason, PolicyId, ReasonCode, ReviewError, Ruling, Stage};
-use action_vocab::UndoId;
 use account_capability::ModelId;
+use action_core::{CallEnd, CallRefusal, ConfirmId, DecidedBy, Outcome, Preview, StepEnd};
+use action_review::{DecisionMark, DenialMark, DeniedBy, ReviewVerdict};
+use action_vocab::UndoId;
+use permission_core::{AskReason, PolicyId, ReasonCode, ReviewError, Ruling, Stage};
 
 /// How a call ended, with what the audit and the caller need of it.
 #[derive(Debug, Clone)]
@@ -120,7 +120,11 @@ pub fn reviewer_model(stage: Stage) -> ModelId {
 
 /// The breaker's mark for a call that ended: allowed if it ran, denied if policy, a reviewer or
 /// the person said no, and nothing for a halt, a budget or an app that failed.
-pub fn decision_of(driven: &Driven, p: &Prepared, at: provenance::UnixSeconds) -> Option<DecisionMark> {
+pub fn decision_of(
+    driven: &Driven,
+    p: &Prepared,
+    at: provenance::UnixSeconds,
+) -> Option<DecisionMark> {
     match (&driven.end, driven.denied_by) {
         (CallEnd::Done, _) => Some(DecisionMark::Allowed),
         (CallEnd::Refused(CallRefusal::Denied(_) | CallRefusal::Unconfirmed(_)), Some(by)) => {

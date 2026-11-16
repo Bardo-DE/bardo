@@ -3,8 +3,8 @@
 
 use crate::error::PlatformError;
 use anyview_core::FilePath;
-use ui_core::word::Word;
 use std::future::Future;
+use ui_core::word::Word;
 
 /// Where a file can be sent.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

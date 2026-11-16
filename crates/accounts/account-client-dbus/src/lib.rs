@@ -1,7 +1,7 @@
-//! accountd on the session bus, as a transport for `porter-client`: `Porter::over(Bus::over(c))`.
+//! accountd on the session bus, as a transport for `account-client`: `Porter::over(Bus::over(c))`.
 //! The caller's identity is what the bus says about the connection. This is the one crate of the
 //! client side that names zbus, because an app that already runs zbus hands over its own
-//! connection; `porter-client`'s own API names none.
+//! connection; `account-client`'s own API names none.
 //!
 //! What accountd serves over the bus is the sheets that add an account and sign one in again, the
 //! shell's view of the accounts, the identities, the Spaces, the person's computers, the AI keys
@@ -21,13 +21,13 @@ mod launcher;
 mod spaces;
 mod tailnet;
 
+use account_client::{LinkError, Porter};
+pub use account_wire::AskKind;
 pub use ai_accounts::AiAccounts;
 pub use ai_keys::AiKeys;
 pub use credential::{ChildKey, ChildKeyError, Delivery, Inherit, ProcessCredential, Revoked};
 pub use identities::Identities;
 pub use launcher::{Launcher, LauncherError, LauncherRequest};
-use account_client::{LinkError, Porter};
-pub use account_wire::AskKind;
 pub use spaces::Spaces;
 pub use tailnet::Tailnet;
 

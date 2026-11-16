@@ -31,7 +31,7 @@ const MAX_WIRE_120THS: u32 = 1200;
 const MAX_INTEGER_FACTOR: i32 = 10;
 
 /// A fractional scale in 120ths (`180` is 1.5), the unit Wayland's `wp_fractional_scale` uses.
-/// The one type for it below the design system: shell-host's surface scale and the kit's pixel
+/// The one type for it below the design system: layer-shell-host's surface scale and the kit's pixel
 /// snap are this value, so a host passes it straight through.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Scale120(pub u32);

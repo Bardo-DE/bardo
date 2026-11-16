@@ -71,7 +71,7 @@ terminal/notes focus would move it further). The 35B's remaining capability fail
 `notes-new`, `notes-pin` and `article-scroll-answer` (greedy: pressed `End` twice, the page did not
 change, stall), which are the surface and stall-rule classes above.
 
-## Holo4 and cua-parse
+## Holo4 and computer-use-parse
 
 No parser change was needed. Holo4 35B-A3B uses the Holo 3.1 tool format: its chat template
 renders tools as qwen3_coder XML and vLLM's `qwen3_coder` tool parser returns them as tool calls; the

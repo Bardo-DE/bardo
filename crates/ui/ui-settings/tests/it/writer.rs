@@ -1,9 +1,9 @@
 //! `SettingsWriter::patch`: one key set in place, everything else in the file as it was.
 
 use crate::support::{Scratch, names};
+use serde::{Deserialize, Serialize};
 use ui_settings::schema::KeyPath;
 use ui_settings::{Edit, FileName, Format, SettingsDoc, SettingsError, SettingsWriter};
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(default)]

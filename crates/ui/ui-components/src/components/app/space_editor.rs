@@ -17,13 +17,13 @@ use crate::components::controls::segmented::Tracking;
 use crate::components::lists::section_header::SectionHeader;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ui_core::word::Word;
-use ui_style::appearance::theme::{Scheme, Theme};
-use ui_style::space::look::SpaceLook;
 use handles::Field;
 use parts::{Checks, GrainRow, Presets, Stops};
 use rows::{EachScheme, MotionRow, Title};
 use rows::{EditorFrame, MeasuredIn, MotionChoice};
+use ui_core::word::Word;
+use ui_style::appearance::theme::{Scheme, Theme};
+use ui_style::space::look::SpaceLook;
 
 /// Which of a Space's dots is being edited: 0, 1 or 2.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]

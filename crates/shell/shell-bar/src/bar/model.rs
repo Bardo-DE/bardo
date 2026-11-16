@@ -1,22 +1,22 @@
 //! The bar's menu session as data: what its popup shows, what it is fed, what it needs from the
 //! bar each render, and the notification-center handoff it waits on.
 
-use ui_components::prelude::*;
-use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 use layer_shell_host::{OutputId, PopupPlacement, SurfaceHandle};
 use shell_model::ids::OutputName;
 use shell_ui_kit::links::FocusLink;
 use shell_ui_kit::settings::SettingsFeed;
+use ui_components::prelude::*;
+use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 
 use super::content::{BarState, PopupBody};
 use super::menus::BarMenu;
 use super::plan::PopupReport;
 use super::tokens::BarTokens;
 use super::track::Event;
-use ui_components::stack::menu_track::types::MenuTiming;
 use shell_ui_kit::links::{ActionLink, CenterLink};
 use shell_ui_kit::menu::PopupLook;
 use shell_ui_kit::services::Services;
+use ui_components::stack::menu_track::types::MenuTiming;
 
 /// What the popup shows: one menu's contents, where, and in which appearance.
 #[derive(Debug, Clone, PartialEq)]

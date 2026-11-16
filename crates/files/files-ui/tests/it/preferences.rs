@@ -2,10 +2,10 @@
 
 use std::sync::Arc;
 
-use ui_harness::harness::settle_until;
 use files_core::{Behaviour, FolderPath};
 use files_ui::{PlaceKind, Places, Preferences, Sidebar};
 use tokio::sync::watch;
+use ui_harness::harness::settle_until;
 
 use super::support::{RecordingOpener, harness, launch, scratch_folder};
 

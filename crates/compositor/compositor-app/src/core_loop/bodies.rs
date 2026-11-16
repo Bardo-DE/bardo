@@ -13,10 +13,10 @@ use crate::state::State;
 use compositor_core::WindowId;
 use compositor_core::geometry::LogicalSize;
 use compositor_render::ClosingBody;
-use ui_core::geometry::scale::Scale;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::wayland::compositor::{BufferAssignment, SurfaceAttributes, with_states};
 use std::collections::VecDeque;
+use ui_core::geometry::scale::Scale;
 
 /// Most images kept at once (windows closing together, e.g. an app quitting).
 const MAX_KEPT: usize = 6;

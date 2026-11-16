@@ -7,9 +7,9 @@ use super::notify::{self, RESTORED_TEXT};
 use super::object::{BUS_NAME, PATH, Updates};
 use crate::clock::now;
 use crate::health::{Health, on_start};
-use updater_core::{Attempt, Due, Outcome, next_check};
 use std::sync::Arc;
 use std::time::Duration;
+use updater_core::{Attempt, Due, Outcome, next_check};
 
 /// The longest the scheduler sleeps before looking at the clock again.
 const LONGEST_SLEEP: Duration = Duration::from_secs(3600);

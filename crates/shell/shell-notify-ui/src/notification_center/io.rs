@@ -3,8 +3,8 @@
 //! a row's [`RowAct`] to the notifications service. Once hidden nothing runs and nothing asks
 //! for a frame.
 
-use ui_components::focus::soon::focus_soon;
 use std::rc::Rc;
+use ui_components::focus::soon::focus_soon;
 
 use dioxus::prelude::*;
 use layer_shell_host::{OutputId, SurfaceHandle, Visibility, use_watch};

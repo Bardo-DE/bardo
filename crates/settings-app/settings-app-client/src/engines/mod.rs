@@ -1,6 +1,6 @@
 //! The llama.cpp note under "Models on this computer": looked for when the pane appears and again
 //! each time the assistant's name changes hands, never starting it, and the assistant's restart.
-//! The steps are `detent-model`'s `engines_step`.
+//! The steps are `settings-app-model`'s `engines_step`.
 
 mod programs;
 

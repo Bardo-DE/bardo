@@ -24,11 +24,11 @@
 mod directives;
 mod process;
 
-use directives::ServiceSettings;
-use caller_identity_linux::{ProcFs, path_trust};
 use caller_identity_core::{
     CgroupPath, DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
+use caller_identity_linux::{ProcFs, path_trust};
+use directives::ServiceSettings;
 pub use process::ProcessFault;
 use std::io;
 use std::path::{Path, PathBuf};

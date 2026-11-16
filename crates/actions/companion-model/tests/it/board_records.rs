@@ -213,7 +213,9 @@ fn a_job_about_an_event_carries_the_event_as_a_handle_and_keeps_the_goal_the_per
 
 fn create_app(board: Board, name: &str) -> (Board, HelperId) {
     let draft = CardDraft {
-        kind: HelperKind::AgentApp(provenance::AgentProgram::parse("claude-code").expect("program")),
+        kind: HelperKind::AgentApp(
+            provenance::AgentProgram::parse("claude-code").expect("program"),
+        ),
         ..draft(name, HelperModel::Unset)
     };
     let (board, fx) = step(board, BoardEvent::Create(Box::new(draft)));
@@ -300,7 +302,8 @@ fn signing_in_opens_the_blocked_job_and_the_helper_takes_it() {
 fn a_stored_card_and_its_new_kind_read_back() {
     let old = serde_json::to_string(&HelperKind::Native).expect("json");
     assert_eq!(old, r#""native""#);
-    let app = HelperKind::AgentApp(provenance::AgentProgram::parse("claude-code").expect("program"));
+    let app =
+        HelperKind::AgentApp(provenance::AgentProgram::parse("claude-code").expect("program"));
     let text = serde_json::to_string(&app).expect("json");
     assert_eq!(text, r#"{"agent_app":"claude-code"}"#);
     assert_eq!(

@@ -1,10 +1,10 @@
 //! The menu tracker's vocabulary: what it remembers, what it is told, what it asks for.
 
+use std::time::Duration;
 use ui_core::geometry::units::Point;
 use ui_core::machine::Elapsed;
 use ui_core::time::stamp::Stamp;
 use ui_core::vocab::PressPhase;
-use std::time::Duration;
 
 /// An item, by its index at each nesting level: `[2, 0]` is the first item of the third
 /// item's submenu.

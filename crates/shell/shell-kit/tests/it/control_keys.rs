@@ -5,14 +5,14 @@
 //! a segment; the arrows check the neighbouring radio button and move the focus with it.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ui_components::components::controls::checkbox::Checkbox;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

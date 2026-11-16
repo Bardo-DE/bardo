@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use ui_core::time::stamp::Stamp;
 use shell_model::now_playing::{
     ARTISTS_MAX, Abilities, Art, Media, MediaCommand, MediaEvent, MediaPlayer, MediaVerb, Micros,
     PLAYERS_MAX, Playback, PlayerId, TEXT_MAX_CHARS, Timeline, Track, step,
@@ -14,6 +13,7 @@ use shell_model::now_playing::{
 use shell_model::untrusted::for_display;
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinSet;
+use ui_core::time::stamp::Stamp;
 use zbus::fdo::{DBusProxy, NameOwnerChanged};
 use zbus::message::{Message, Type as MessageType};
 use zbus::names::{BusName, OwnedUniqueName};

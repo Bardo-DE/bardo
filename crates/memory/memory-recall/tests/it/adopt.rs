@@ -3,8 +3,8 @@
 
 use memory_core::Integrity;
 use memory_core::{DegradedWhy, IndexView, RecallWhy};
-use memory_store::{EmbedRole, EmbedderCard, SpaceCheck, Urgency, Vector};
 use memory_recall::*;
+use memory_store::{EmbedRole, EmbedderCard, SpaceCheck, Urgency, Vector};
 use std::collections::BTreeSet;
 use std::path::Path;
 use std::sync::Mutex;

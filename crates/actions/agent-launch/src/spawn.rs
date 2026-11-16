@@ -23,12 +23,12 @@ use crate::managed::claude_code_meta;
 use crate::names::launcher_session;
 use crate::procs::{Proc, Procs};
 use crate::protect;
+use account_core::SessionToken;
+use agent_acp_host::{EdgeBind, LaunchPlan, SandboxStep, Spawn, SpawnFault, Spawned};
 use sandbox::AbsPath;
 use sandbox::egress::{Resolver, SystemResolver};
 use sandbox::forward::{Bridge, Loopback};
 use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, NetworkMode};
-use agent_acp_host::{EdgeBind, LaunchPlan, SandboxStep, Spawn, SpawnFault, Spawned};
-use account_core::SessionToken;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 

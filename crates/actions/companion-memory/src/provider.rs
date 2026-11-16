@@ -3,11 +3,8 @@
 //! `Caller` for the Space of the invocation, and `memory.propose` always lands in the pending
 //! queue (memoryd labels the router's proposals untrusted).
 
-use memory_client::{ClientError, Memory, Transport};
-use memory_core::{
-    FactDraft, FactFilter, FactQuery, FactState, FactText, MemoryItem, RecallHit, RecallOver,
-    RecallQuery, TopicPath,
-};
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{
     AppRefusal, FactLine, FailText, Follow, Hit, Invocation, Outcome, Preview, SuggestAsk,
     UndoFault, Undoable,
@@ -15,8 +12,11 @@ use action_core::{
 use action_manifest::ValidManifest;
 use action_provider::IntentProvider;
 use action_vocab::{EntityRef, LabelText, ParamName, UndoToken, Value};
-use account_core::AppName;
-use account_ids::Count;
+use memory_client::{ClientError, Memory, Transport};
+use memory_core::{
+    FactDraft, FactFilter, FactQuery, FactState, FactText, MemoryItem, RecallHit, RecallOver,
+    RecallQuery, TopicPath,
+};
 use provenance::{
     Actor, AgentRole, Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled,
     Source, SpaceId,

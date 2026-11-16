@@ -1,5 +1,5 @@
 //! The host that runs relays for an app hosting porter in process: the app owns the runtime and
-//! the network, so it spawns the relay (`porter-proxy`'s `relay` over a TLS connector it
+//! the network, so it spawns the relay (`account-proxy`'s `relay` over a TLS connector it
 //! chooses) and the client only hands it the plan and the relay's end of an in-memory duplex.
 //!
 //! With the feature `relays` the crate brings that host ready made: [`PorterRelays`], which runs
@@ -30,7 +30,7 @@ impl RelayHost for NoRelays {
 #[cfg(feature = "relays")]
 pub use porter_relays::PorterRelays;
 
-/// The relay host over `porter-proxy` (feature `relays`).
+/// The relay host over `account-proxy` (feature `relays`).
 #[cfg(feature = "relays")]
 mod porter_relays {
     use super::RelayHost;

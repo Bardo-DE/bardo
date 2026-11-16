@@ -4,7 +4,7 @@
 # running on the jailed headless casement.
 #
 # The app is detent (the Settings app, built from this tree by harness/scenario-build.sh): a quire ds
-# root that follows `quire/appearance.toml` through ds-settings' watch. The change is made the way a
+# root that follows `quire/appearance.toml` through ui-settings' watch. The change is made the way a
 # settings app makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one). The proof is
 # pixels: `casementctl shot --output` (P1-C1: the output's last frame through the debug bus), cropped to the
 # window's frame from `casementctl debug windows`, its mean luminance compared. Nothing is read from the app.

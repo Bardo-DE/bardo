@@ -7,15 +7,15 @@
 //! surface's input and blur region.
 
 use dioxus::prelude::*;
-use ui_components::motion::swipe::SwipeMetrics;
-use ui_components::prelude::*;
-use ui_components::root::common::Common;
-use shell_model::screenshots::ShotId;
 use shell_kit::notifications::parts::Hover;
 use shell_kit::notifications::swipe::NotificationSwipe;
 use shell_kit::prelude::*;
 use shell_kit::thumbs::shot_press::DragStart;
 use shell_kit::thumbs::shot_thumbnail::ThumbAction;
+use shell_model::screenshots::ShotId;
+use ui_components::motion::swipe::SwipeMetrics;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
 
 use super::ghost::GhostLook;
 use super::io::Thumb;

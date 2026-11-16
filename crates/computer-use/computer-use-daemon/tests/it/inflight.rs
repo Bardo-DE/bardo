@@ -3,11 +3,13 @@
 
 use crate::support::*;
 use computer_use_bus::{CancelledBy, CuaCaller, CuaMember, CuaOutcome};
+use computer_use_daemon::Supervisor;
 use computer_use_desktop::BackendKind;
 use computer_use_fake::scene::{click, reply, task, world};
 use computer_use_fake::{FakePdp, FakeSeams};
-use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, Parts, RunPhase, Seams, StepSink};
-use computer_use_daemon::Supervisor;
+use computer_use_run::{
+    CuaModel, CuaModelError, FrameAttachment, Parts, RunPhase, Seams, StepSink,
+};
 use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
 
 /// A model that never answers, and counts the sessions it was begun for.

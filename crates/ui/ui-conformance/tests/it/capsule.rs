@@ -3,13 +3,13 @@
 //! can keep it up), and a hide fades it out, calls `on_hidden` once and takes the pointer away.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::chrome::capsule::model::{CapsuleSlot, LevelSlot, ScrubSlot};
 use ui_components::components::chrome::capsule::priority::essentials;
 use ui_components::components::chrome::capsule::view::Capsule;
 use ui_components::motion::spring::Millis;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

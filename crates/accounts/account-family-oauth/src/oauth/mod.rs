@@ -187,7 +187,7 @@ impl<R: BrowserIssuer, H: Http + 'static> Provider for OAuthProvider<R, H> {
         match revoke(&*self.env.http, &endpoints_of(client), refresh).await {
             Ok(()) | Err(ExchangeFault::Refused) => Ok(RevokeOutcome::Revoked),
             Err(ExchangeFault::Unreachable) => Err(ProviderError::Unreachable),
-            // unreadable, and a fault a later porter-oauth adds
+            // unreadable, and a fault a later account-oauth adds
             Err(_) => Ok(RevokeOutcome::Unsupported),
         }
     }

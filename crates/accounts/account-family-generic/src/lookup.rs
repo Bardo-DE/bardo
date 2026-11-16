@@ -4,10 +4,10 @@
 use super::mail::{self, Looked};
 use super::sign_in::{Located, Lookup, Outcome, Seams};
 use super::{dav, jmap};
-use account_generic_proto::mail as proto_mail;
 use account_capability::Claim;
 use account_core::{Credential, EndpointUrl, Family, LoginName, SecretText, ServiceEndpoint};
 use account_family_kit::password::{password_for, plain, text_of, typed_password};
+use account_generic_proto::mail as proto_mail;
 use account_provider::{ProviderSpec, SignInMode, SignInStep};
 use account_sheet::{
     FieldAnswer, FieldKind, FieldSpec, Manual, Protocol, SignInFault, manual_form, parse_manual,

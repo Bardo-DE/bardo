@@ -1,5 +1,5 @@
 //! What the privileged helper tells the update service when it succeeds. The type and its text
-//! format live in `slipway-root` (the helper prints it); the service logs it here.
+//! format live in `updater-root` (the helper prints it); the service logs it here.
 
 pub use updater_root::report::Report;
 

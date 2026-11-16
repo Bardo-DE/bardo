@@ -4,12 +4,12 @@ use crate::application::APP_NAME;
 use crate::application::export_application;
 use crate::context::SettingsContext;
 use crate::provider::SettingsProvider;
-use settings_app_callers::{BusPeers, desktop_peers};
 use action_dbus::BusConnection;
 use action_dbus::callers::Callers;
 use action_provider::{ServeError, serve_on, serve_on_with};
-use ui_peer::{Deadline, within};
+use settings_app_callers::{BusPeers, desktop_peers};
 use std::sync::Arc;
+use ui_peer::{Deadline, within};
 
 /// Exports `provider` at `/org/quire/IntentProvider1` on `connection` and claims the bus name
 /// `org.quire.Settings`. Returns once the name is ours; the connection keeps serving.

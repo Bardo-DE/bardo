@@ -3,8 +3,8 @@
 //! `contents/images_dark/` the same for a dark desktop, and `contents/screenshot.<ending>` a
 //! small picture of it. The package is one picture to the person, not one per size.
 
-use settings_app_model::{Picture, is_picture};
 use serde_json::Value;
+use settings_app_model::{Picture, is_picture};
 use std::path::{Path, PathBuf};
 
 /// The file that marks a folder as a package.

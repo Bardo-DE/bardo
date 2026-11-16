@@ -13,7 +13,9 @@ use compositor_backend::gpu::{
 use compositor_core::gpu::{
     ByPathId, DrmNodeId, GpuChoice, PlanRefusal, RenderPlan, TrancheUse, feedback_for, plan_for,
 };
-use compositor_testkit::gpu::{ARGB8888, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888};
+use compositor_testkit::gpu::{
+    ARGB8888, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888,
+};
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::drm::DrmNode;
 use smithay::backend::renderer::multigpu::GpuManager;

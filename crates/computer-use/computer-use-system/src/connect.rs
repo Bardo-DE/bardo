@@ -3,11 +3,11 @@
 //! inferd (`Inference1`) for the model.
 
 use crate::model::InferdCuaModel;
-use memory_client::Memory;
+use account_capability::Tier;
+use action_client::Intents;
 use computer_use_host::DaemonLinks;
 use computer_use_host::IntentsGate;
-use action_client::Intents;
-use account_capability::Tier;
+use memory_client::Memory;
 use zbus::Connection;
 
 /// The links of the running daemon, as `SystemSeams` names their types.

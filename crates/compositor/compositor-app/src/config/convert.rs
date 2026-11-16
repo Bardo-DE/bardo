@@ -1,6 +1,6 @@
 //! The one conversion between the stored document and the model's settings: `to_core` reads the
 //! document, and the `*_doc` functions are its inverse, which is how each section's `Default`
-//! is the model's own default (a default is written once, in `casement-core`).
+//! is the model's own default (a default is written once, in `compositor-core`).
 
 use super::action::ActionWords;
 use super::doc::CasementDoc;
@@ -18,9 +18,9 @@ use compositor_core::settings::{
     OutputSettings, PointerProfile, PointerSettings, RepeatRate, SpaceSettings, WindowSettings,
     XkbNames,
 };
+use std::time::Duration;
 use ui_core::geometry::scale::Scale;
 use ui_settings::{Count, Ms};
-use std::time::Duration;
 
 /// The smallest and largest `outputs.fixed_scale`, in percent (the schema's range).
 const FIXED_SCALE: (u16, u16) = (100, 400);

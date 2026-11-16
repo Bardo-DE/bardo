@@ -8,13 +8,13 @@ use crate::fault::ServeFault;
 use crate::linger::{LINGER, finished};
 use crate::runtime::{Companion, Narration, REMEMBERED};
 use crate::seams::Surface;
-use agent_loop::{EpisodeJob, FinishedAs, FrontEvent, IdleInput, LoopPhase, front_step};
-use memory_core::{Episode, EpisodeId, EpisodeKind, EpisodeOutcome};
 use action_client::Transport as IntentsTransport;
 use action_core::{DraftPart, EpisodeLine, SkeletonText};
-use agent_planner::Planner;
 use action_vocab::Clock;
 use action_wire::{NoteAsk, TaskLedger, close};
+use agent_loop::{EpisodeJob, FinishedAs, FrontEvent, IdleInput, LoopPhase, front_step};
+use agent_planner::Planner;
+use memory_core::{Episode, EpisodeId, EpisodeKind, EpisodeOutcome};
 use provenance::{Address, AgentRef, MessageKind, MessageText, ReportStatus, TaskId};
 
 /// Why a task failed, for the daemon's log: the kind of failure, never the person's words.

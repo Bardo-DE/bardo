@@ -21,7 +21,7 @@ this lane. Claims marked "unverified" are what the acceptance scripts must settl
 - **smithay XWM** (`smithay::xwayland`, MIT). A library inside casement's process. casement itself
   would run Xwayland, speak X11 (x11rb) to it, and manage X11 windows as a window manager: map and
   configure requests, `_NET_*` properties, selections, focus. Each X11 window is a special kind of
-  surface that casement-core has to model.
+  surface that compositor-core has to model.
 
 ## Comparison
 
@@ -31,11 +31,11 @@ this lane. Claims marked "unverified" are what the acceptance scripts must settl
 | Clipboard | Satellite bridges `CLIPBOARD`, and `PRIMARY` as far as Wayland offers it. Large pastes (INCR) and text-versus-image choice are satellite's code (unverified: `xwayland-clipboard.sh` covers plain text only). | smithay has selection helpers (`SelectionHandler`); we write the bridge to `wl_data_device` ourselves, including INCR, target conversion and ownership races. |
 | Drag and drop | Between X11 and Wayland windows it is limited upstream; we cannot patch it. | smithay has DnD pieces for XWM; still ours to wire, and X11 Xdnd is a long protocol. |
 | Focus and activation | Satellite turns `_NET_ACTIVE_WINDOW` and X11 focus requests into `xdg_activation_v1`; casement's existing activation rules (no token, no focus steal) apply as for any app. Unverified: what `xwayland-activation.sh` records. | We would handle X11 focus (`WM_TAKE_FOCUS`, input hint, override-redirect) ourselves, in the compositor loop, next to Wayland focus. More control and more cases (focus fights, never-focus windows). |
-| Window model | X11 windows are plain Wayland windows: Spaces, window capture, `quire_window` placement, the Mac window model all work with no X11 special case. | casement-core needs an X11 window kind, X11 geometry in the arrangement, stacking sync with the X server, and every protocol handler (toplevel list, capture, placement) must know it. |
+| Window model | X11 windows are plain Wayland windows: Spaces, window capture, `quire_window` placement, the Mac window model all work with no X11 special case. | compositor-core needs an X11 window kind, X11 geometry in the arrangement, stacking sync with the X server, and every protocol handler (toplevel list, capture, placement) must know it. |
 | Crash isolation | Satellite or Xwayland dying loses only X11 windows; casement restarts it (P1-X1, now with a crash-loop guard, P2-XW). | An X11 protocol bug or Xwayland death is inside the compositor's loop; no isolation. |
 | Maintenance | One maintainer, active; pinned by git revision (not on crates.io, SP6). A stall is a risk; we can fork a separate process without a licence problem beyond MPL file-level rules. | smithay is widely used, the XWM part moderately; every smithay bump may move it. The code is ours to maintain once adopted. |
 | Licence | MPL-2.0. Fine as a separate process; we never link or copy it (no-GPL-linking rule keeps MPL out of our crates, too). | MIT, fits the permissive stack. |
-| Effort | Done (P1-X1); hardening is small. | Estimated 2 to 3 weeks of Sonnet lanes plus a model change in casement-core, and a long tail of X11 quirks. A guess from the size of smithay's `xwm` module and anvil's use of it (about 1.5 to 2.5 k lines of our glue), not a measurement. |
+| Effort | Done (P1-X1); hardening is small. | Estimated 2 to 3 weeks of Sonnet lanes plus a model change in compositor-core, and a long tail of X11 quirks. A guess from the size of smithay's `xwm` module and anvil's use of it (about 1.5 to 2.5 k lines of our glue), not a measurement. |
 
 ## Why satellite wins now
 

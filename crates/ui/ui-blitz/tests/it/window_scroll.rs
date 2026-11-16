@@ -14,12 +14,12 @@ mod eased {
     use blitz_embed::scroll::doc::{geom, scroller_by_id};
     use blitz_embed::scroll::geom::ScrollAxis;
     use dioxus::prelude::*;
-    use ui_components::host::gesture::{Gesture, WheelDelivery, use_gestures, use_gestures_with};
-    use ui_components::prelude::*;
-    use ui_blitz::{ScrollAnimate, ScrollCmd, use_scroll_handle};
-    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::cell::RefCell;
     use std::time::Duration;
+    use ui_blitz::{ScrollAnimate, ScrollCmd, use_scroll_handle};
+    use ui_components::host::gesture::{Gesture, WheelDelivery, use_gestures, use_gestures_with};
+    use ui_components::prelude::*;
+    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -266,10 +266,10 @@ mod same_frame {
     //! order, and each `advance` of one frame here is one frame of the window.
 
     use dioxus::prelude::*;
-    use ui_components::host::gesture::{Gesture, WheelDelivery, use_gestures_with};
-    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::cell::RefCell;
     use std::time::Duration;
+    use ui_components::host::gesture::{Gesture, WheelDelivery, use_gestures_with};
+    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -342,11 +342,11 @@ mod frames {
     use blitz_embed::scroll::doc::{geom, scroller_by_id};
     use blitz_embed::scroll::geom::ScrollAxis;
     use dioxus::prelude::*;
+    use std::cell::RefCell;
+    use std::time::Duration;
     use ui_components::host::gesture::GesturePhase;
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::cell::RefCell;
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -491,16 +491,16 @@ mod fingers {
     //! after a fast lift for a listener that asked for the ease, and a zoom wheel delivered whole.
     //! The harness runs the window's scroll step on its virtual clock, as the window loop does.
 
-    use keymap::Platform;
     use dioxus::prelude::*;
+    use keyboard_types::Modifiers;
+    use keymap::Platform;
+    use std::cell::RefCell;
+    use std::time::Duration;
     use ui_components::host::gesture::{
         Gesture, GesturePhase, ScrollSource, WheelDelivery, use_gestures, use_gestures_with,
     };
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use keyboard_types::Modifiers;
-    use std::cell::RefCell;
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -754,16 +754,16 @@ mod native {
     use blitz_embed::element_id::ElementId;
     use blitz_embed::scroll::doc::{geom, scroller_by_id};
     use blitz_embed::scroll::geom::ScrollAxis;
-    use keymap::Platform;
     use dioxus::prelude::*;
+    use keymap::Platform;
+    use std::time::Duration;
+    use ui_blitz::{ScrollAnimate, ScrollCmd, use_scroll_handle};
     use ui_components::base::geometry::scroll::Scroll;
     use ui_components::host::document::use_document_host;
     use ui_components::host::gesture::GesturePhase;
     use ui_components::host::phase::Observe;
     use ui_components::prelude::*;
-    use ui_blitz::{ScrollAnimate, ScrollCmd, use_scroll_handle};
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-    use std::time::Duration;
 
     const VIEW: Viewport = Viewport {
         width: 400,

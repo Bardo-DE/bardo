@@ -45,12 +45,17 @@ fn diff_reports_added_removed_changed() {
     let before = crate::support::gtk4_dialog();
     let mut after = before.clone();
     let removed = after.nodes.pop().expect("a node");
-    after.nodes[2].states.insert(computer_use_a11y_tree::NodeState::Focused);
+    after.nodes[2]
+        .states
+        .insert(computer_use_a11y_tree::NodeState::Focused);
     let d = diff(&before, &after);
     assert_eq!(d.removed, vec![removed.id]);
     assert_eq!(d.changed, vec![NodeId(2)]);
     assert!(d.added.is_empty());
-    assert_eq!(diff(&before, &before), computer_use_a11y_tree::TreeDiff::default());
+    assert_eq!(
+        diff(&before, &before),
+        computer_use_a11y_tree::TreeDiff::default()
+    );
 }
 
 #[test]

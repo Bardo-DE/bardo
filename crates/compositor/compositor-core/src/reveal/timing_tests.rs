@@ -3,9 +3,9 @@
 use super::{
     BAR_DWELL, BAR_SLIDE, DOCK_DWELL, DOCK_SLIDE, Look, REDUCED_FADE, RevealEdge, RevealTiming,
 };
+use std::time::Duration;
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::tokens::timing::DurationToken;
-use std::time::Duration;
 
 fn ms(n: u64) -> Duration {
     Duration::from_millis(n)

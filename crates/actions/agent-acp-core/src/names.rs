@@ -3,9 +3,9 @@
 //! agent_app`); what the agent only reports having done itself is recorded for display under
 //! `acpagent.reported.<kind>` and is never dispatched.
 
+use action_vocab::ActionRef;
 use agent_client_protocol::schema::v1::ToolKind;
 use permission_core::{PermissionKind, acp_agent_action};
-use action_vocab::ActionRef;
 use provenance::Effect;
 
 /// The permission kind an ACP tool kind is. Anything the protocol adds later is `other`.

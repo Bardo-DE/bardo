@@ -2,8 +2,8 @@
 //! about which kinds, which events were already acted on, and which routines an event is for.
 //! Asking is the host's; this is what is asked and what the answers mean.
 
-use memory_core::{EventRef, KindPattern};
 use companion_model::routine::{EventMatch, RoutineBook, RoutineId};
+use memory_core::{EventRef, KindPattern};
 use provenance::{HelperId, SpaceId, UnixSeconds};
 use std::collections::VecDeque;
 

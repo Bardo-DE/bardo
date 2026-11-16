@@ -1,5 +1,5 @@
 //! The launcher surfaces: the panel (rows, preview pane, actions menu) and its click catcher,
-//! over `sill-launcher`'s core and `sill-search`'s results.
+//! over `shell-launcher`'s core and `shell-search`'s results.
 
 pub mod launcher;
 

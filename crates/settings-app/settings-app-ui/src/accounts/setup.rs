@@ -10,8 +10,11 @@ use crate::env::Env;
 use crate::key_row::row_id;
 use crate::live::use_client;
 use crate::marks::ProviderMarks;
-use settings_app_model::{SetupAction, SetupAvailability, SignedIn, accounts_setup_offer, signed_in};
 use dioxus::prelude::*;
+use settings_app_model::{
+    SetupAction, SetupAvailability, SignedIn, accounts_setup_offer, signed_in,
+};
+use ui_blitz::{AppHandle, use_app_handle};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
@@ -21,7 +24,6 @@ use ui_components::root::common::Common;
 use ui_components::root::pass_through::ExtraClass;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_blitz::{AppHandle, use_app_handle};
 
 /// The line under an account that needs a new sign-in.
 fn standing_line(row: &SignedIn) -> String {

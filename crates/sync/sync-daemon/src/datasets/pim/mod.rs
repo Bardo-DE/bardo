@@ -10,9 +10,9 @@
 //!   engine never uploads or removes anything for it, so a file edited or deleted locally never
 //!   reaches the server.
 //! - `vdir`: the file rules (names, atomic writes, metadata).
-//! - `discover`: the collections of an account, from the principal and home sets (dav-proto's walk).
+//! - `discover`: the collections of an account, from the principal and home sets (account-dav-proto's walk).
 //! - `plan`: collection names as directories and dataset slugs.
-//! - `grants`: which granted accounts there are to mirror (a seam over porter-client).
+//! - `grants`: which granted accounts there are to mirror (a seam over account-client).
 //! - `source`: where the items come from (CalDAV/CardDAV, Graph calendars, Google's Calendar,
 //!   People and Tasks APIs), by the capability's
 //!   transport; see its module docs for the seam.

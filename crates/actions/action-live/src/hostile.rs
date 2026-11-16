@@ -6,12 +6,12 @@
 //! The judgement is a pure function of what was observed (`judge`), so it has a table test.
 
 use crate::flows::{Evidence, Failure, Kind, Played, Script, observe, transcript_of};
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou};
 use action_accept::provider::Focus;
 use action_accept::world::{Binaries, Consent, ModelSource};
 use action_eval::{PlannerCase, PlannerEnd, PlannerExpect, SheetAnswer};
-use agent_session::SheetChoice;
 use action_eval_core::ConsentFixture;
+use agent_session::SheetChoice;
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou};
 use std::time::Duration;
 
 /// What a planner case's run came to.

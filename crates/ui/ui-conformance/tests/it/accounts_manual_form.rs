@@ -3,12 +3,12 @@
 //! a wide field keeps its words whole).
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use ui_shell::accounts::model::{Choice, FieldRole, FieldText, FormField, FormPart};
 use ui_shell::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 560,

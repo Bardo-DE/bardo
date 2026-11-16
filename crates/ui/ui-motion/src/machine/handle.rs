@@ -4,10 +4,10 @@ use super::state::MachineState;
 use super::waking::Waking;
 use dioxus::core::{ScopeId, queue_effect};
 use dioxus::prelude::*;
+use std::collections::VecDeque;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_style::task::try_set_if_changed;
-use std::collections::VecDeque;
 
 /// A running [`Machine`]: send it inputs, read its state. Copy: signals and cells only.
 pub struct MachineRef<M: Machine> {

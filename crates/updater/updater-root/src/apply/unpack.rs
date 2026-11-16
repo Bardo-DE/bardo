@@ -10,12 +10,12 @@
 
 use super::error::ApplyError;
 use crate::fsutil::{create_dirs, open_dirs, sync_tree};
-use updater_core::{Audit, EntryKind, Hasher, Release};
 use std::fs::{self, DirBuilder, OpenOptions};
 use std::io::{Read, Write};
 use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt, PermissionsExt};
 use std::path::Path;
 use tar::EntryType;
+use updater_core::{Audit, EntryKind, Hasher, Release};
 
 /// The most bytes one unpack may write, whatever the archive claims.
 pub const MAX_UNPACKED_BYTES: u64 = 16 << 30;

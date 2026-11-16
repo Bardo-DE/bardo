@@ -82,9 +82,9 @@ fn entry_of(op: Op, n: u64) -> SessionEntry {
         Op::Taint => taint(),
         Op::Untrusted => untrusted_handle(n),
         Op::Trusted => trusted_handle(n),
-        Op::Trip => SessionEntry::Breaker(BreakerNote::Tripped(
-            permission_core::BreakerTrip::Recent,
-        )),
+        Op::Trip => {
+            SessionEntry::Breaker(BreakerNote::Tripped(permission_core::BreakerTrip::Recent))
+        }
         Op::Reset => SessionEntry::Breaker(BreakerNote::Reset),
         Op::Budget => SessionEntry::Budget(ledger(n as u32)),
         Op::Close => SessionEntry::Closed(EndCause::Closed),

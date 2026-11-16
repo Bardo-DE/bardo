@@ -22,23 +22,23 @@ use crate::seam::Planner;
 use crate::show::finish_output;
 use crate::summarise::{SummariseFault, Summarised};
 use crate::voice::Voice;
-use agent_loop::{Availability, ModelOutput, PlannedCall, SummaryInput, choose_tier, leaked_call};
-use companion_wire::{RouteLog, RouteNote};
-use action_core::{OneOf, PlannerView, ReplyFault};
-use action_vocab::{ActionRef, CallRequest, Handle, Origin};
-use inference_client::Transport;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use action_core::{OneOf, PlannerView, ReplyFault};
+use action_vocab::{ActionRef, CallRequest, Handle, Origin};
+use agent_loop::{Availability, ModelOutput, PlannedCall, SummaryInput, choose_tier, leaked_call};
+use companion_wire::{RouteLog, RouteNote};
+use inference_client::Transport;
 use inference_core::{
     ChatReply, ChatRequest, ClientFrame, Declined, InferEvent, InferRefusal, InferReply,
     InferRequest, InferSession, OpenOptions, ReplyShape, ServedBy, StopReason, ToolCallPart,
     ToolDecl,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use serde_json::Value as Json;
 use std::collections::BTreeSet;
 

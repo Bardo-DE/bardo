@@ -1,5 +1,5 @@
 //! The one door the Settings window uses to reach the computer. A [`Client`] holds every service
-//! (the links of `detent-system`) and the bus they are looked for on; the window asks it for a
+//! (the links of `settings-app-system`) and the bus they are looked for on; the window asks it for a
 //! pane and gets a live value to draw and the commands to give it. Every follow loop, deadline and
 //! error mapping lives here, so a view holds none: it reads a [`Live`] state, draws it, and sends
 //! the pane an input.

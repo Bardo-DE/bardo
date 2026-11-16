@@ -5,10 +5,10 @@ use super::request::ThumbRequest;
 use super::worker::{Slot, ask};
 use dioxus::core::Task;
 use dioxus::prelude::*;
+use std::path::PathBuf;
 use ui_components::components::content::pdf_thumb::PdfPage;
 use ui_components::prelude::*;
 use ui_components::style::scale::use_scale;
-use std::path::PathBuf;
 
 /// A page that came back from the worker, for the request it answers.
 #[derive(Debug, Clone, PartialEq)]

@@ -1,4 +1,4 @@
-//! A session's durable log over almanac: `docket-session`'s `SessionLog` through `RecordDurable`
+//! A session's durable log over almanac: `agent-session`'s `SessionLog` through `RecordDurable`
 //! (an append answers only when the event is on disk) and `Entries` (one session's events in
 //! append order, found by the session thing they name as their `Subject`).
 //!
@@ -8,18 +8,18 @@
 //! in one Space, named when it is built.
 
 use crate::cursor_cache::CursorCache;
+use account_core::AppName;
+use account_ids::Count;
+use action_vocab::Clock;
+use agent_session::{
+    Appended, LogFault, LogPage, PageSize, SESSION_KIND, Seq, SessionEntry, SessionLog, decode,
+    encode, session_thing,
+};
 use memory_client::{ClientError, Memory, Transport};
 use memory_core::{
     AreaPayload, AreaTag, BodyMode, Cause, Cursor, EntriesQuery, EventBody, JsonText, KindPattern,
     KindTag, Record, Refusal, ThingRole, ThingView, UserText,
 };
-use agent_session::{
-    Appended, LogFault, LogPage, PageSize, SESSION_KIND, Seq, SessionEntry, SessionLog, decode,
-    encode, session_thing,
-};
-use action_vocab::Clock;
-use account_core::AppName;
-use account_ids::Count;
 use provenance::{
     Actor, Confidentiality, EntityId, Integrity, Label, SessionId, Source, SpaceId, SystemPart,
 };

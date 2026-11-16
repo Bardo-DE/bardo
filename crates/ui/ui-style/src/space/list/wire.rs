@@ -14,11 +14,11 @@ use crate::appearance::theme::Theme;
 use crate::space::look::{Grain, SpaceLook};
 use crate::space::palette::{Dot, NEUTRAL_DOT};
 use crate::space::presets::default_look;
-use ui_core::word::Word;
 use serde::de::{DeserializeOwned, Error, IgnoredAny};
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
+use ui_core::word::Word;
 
 /// The most dots a Space holds. The gradient reads as a gradient up to three.
 pub const MOST_DOTS: usize = 3;

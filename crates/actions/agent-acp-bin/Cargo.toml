@@ -1,6 +1,6 @@
 [package]
 name = "agent-acp-bin"
-description = "The docket-acp process: the ACP server edge on stdio, hosting its own companion (docket-native NativeHost) over the session bus. Refuses to serve unless agent.acp.expose is on. The lib is what the acceptance harness runs under its own name."
+description = "The docket-acp process: the ACP server edge on stdio, hosting its own companion (agent-native NativeHost) over the session bus. Refuses to serve unless agent.acp.expose is on. The lib is what the acceptance harness runs under its own name."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

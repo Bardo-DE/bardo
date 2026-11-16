@@ -6,9 +6,9 @@
 //! surface.
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputId;
 use ui_components::motion::epoch::Epoch;
 use ui_components::prelude::*;
-use layer_shell_host::OutputId;
 
 use super::contents::Contents;
 use super::io::{use_center_ctx, use_phase};

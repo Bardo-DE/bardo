@@ -278,7 +278,11 @@ fn the_centre_target_is_the_centre_of_the_window_it_is_planned_for() {
         )
     };
     for (window, centre) in table {
-        assert_eq!(computer_use_seat_input::centre_of(window), centre, "{window:?}");
+        assert_eq!(
+            computer_use_seat_input::centre_of(window),
+            centre,
+            "{window:?}"
+        );
         let ops = plan(&scroll(window), &us_keymap(), &caps()).expect("a scroll");
         assert_eq!(
             ops,
@@ -434,7 +438,9 @@ fn typing_goes_by_the_seats_text_path() {
     let whole = plan(&typed("你好"), &us_keymap(), &fork).expect("text");
     assert_eq!(
         whole,
-        vec![InputOp::Text(computer_use_action::TypedText::new("你好").unwrap())]
+        vec![InputOp::Text(
+            computer_use_action::TypedText::new("你好").unwrap()
+        )]
     );
     // A shifted level brackets the stroke with Shift; one unmappable character refuses the lot.
     let mut keymap = us_keymap();

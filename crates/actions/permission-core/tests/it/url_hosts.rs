@@ -2,8 +2,8 @@
 //! that only looks like it in the raw text (user information, backslashes, lookalike suffixes).
 
 use crate::task_policy::{call, declared, edit, labels, policy};
-use permission_core::*;
 use action_vocab::Value;
+use permission_core::*;
 use provenance::{Effect, Integrity};
 
 fn trusts(domain: &str, url: &str) -> bool {

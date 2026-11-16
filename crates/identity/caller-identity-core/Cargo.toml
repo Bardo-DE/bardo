@@ -15,7 +15,7 @@ toml = {version = "1", optional = true}
 
 [features]
 # `toml`: `Table::from_toml`, the caller table's text format. On by default; a vocabulary crate that
-# only names the types (porter-core re-exports `CgroupPath`) turns default features off.
+# only names the types (account-core re-exports `CgroupPath`) turns default features off.
 default = ["toml"]
 toml = ["dep:toml"]
 # `roles`: the role names of this desktop's own processes, so nobody types the strings twice.

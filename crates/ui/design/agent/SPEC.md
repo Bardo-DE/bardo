@@ -15,10 +15,10 @@ How to read this file:
 
 | Name used in a spec | Where it lives now |
 |---|---|
-| "context" | docket (`docket-core::context`, `IntentProvider1.Context/Summon`), quire `ds-intents` (view shapes, seams), docket `docket-ds` (the adapter) |
+| "context" | docket (`action-core::context`, `IntentProvider1.Context/Summon`), quire `ui-intents` (view shapes, seams), docket `action-ui-adapter` (the adapter) |
 | "agent", "planner", "agent-loop", "companion daemon" | docket: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
 | "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (stoker `model-http` already takes a proxy `HttpTarget`) |
-| "compositor" | the casement (cua repo owns the protocol crate; the casement branch is shared with double-tap ⌘ later) and sill (`sill-overlays` phase A) |
+| "compositor" | the casement (cua repo owns the protocol crate; the casement branch is shared with double-tap ⌘ later) and sill (`shell-overlays` phase A) |
 | "launcher", "presence", "settings" | ux (sill, quire ds, detent; design/22 rows by the quire agent) |
 | "intents" | docket |
 
@@ -41,7 +41,7 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 | `~/docket` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
 | `~/cua` | new (name: Q-P1) | computer-use runtime: a11y tree, agent seat, masked capture, desktop leases, run machine, cuad, `quire-agent-v1` protocol | core yes; cuad Linux |
 | `~/casement` | new fork, GPL-3.0-only | `src/quire/**` only (agent seat, masked source, trusted surface, glow, kill chord, later double-tap) | no; nothing of ours depends on it |
-| `~/quire` | existing | + `ds-intents` crate; companion components and vocab; design docs | yes |
+| `~/quire` | existing | + `ui-intents` crate; companion components and vocab; design docs | yes |
 | `~/sill` | existing | launcher companion mode, companion service, providers, overlays (confirm and glow phase A), settings domain | no |
 | `~/detent` | existing | `Page::Intelligence` row and icon | no |
 | `~/mailo` | existing | first real provider (fill wave only) | no |
@@ -59,7 +59,7 @@ the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`
 
 ```
 stoker  ←  porter  ←  almanac  ←  docket  ←  cua  ←  sill
-   ↑          ↑          ↑          ↑   ↖quire(ds-intents only)
+   ↑          ↑          ↑          ↑   ↖quire(ui-intents only)
    └──────────┴──────────┴──────────┴── mailo, detent (clients only)
 quire depends on none of them.  casement → cua's quire-agent-protocol only.
 ```
@@ -68,89 +68,89 @@ quire depends on none of them.  casement → cua's quire-agent-protocol only.
 
 | # | Crate | Repo | Kind | Depends on (ours, cross-repo in **bold**) |
 |---|---|---|---|---|
-| 1 | `cua-action` | stoker | pure | — |
-| 2 | `vision-prep` | stoker | pure (`pixels` feature: CPU) | cua-action |
-| 3 | `model-provider` | stoker | pure | cua-action, vision-prep |
-| 4 | `cua-parse` | stoker | pure, fuzzed | cua-action, model-provider |
-| 5 | `cua-vendors` (was models' `cua-wire`) | stoker | pure | cua-action, model-provider, vision-prep |
-| 6 | `cua-session` | stoker | pure | 1-5 |
+| 1 | `computer-use-action` | stoker | pure | — |
+| 2 | `model-vision-prep` | stoker | pure (`pixels` feature: CPU) | computer-use-action |
+| 3 | `model-provider` | stoker | pure | computer-use-action, model-vision-prep |
+| 4 | `computer-use-parse` | stoker | pure, fuzzed | computer-use-action, model-provider |
+| 5 | `computer-use-vendors` (was models' `cua-wire`) | stoker | pure | computer-use-action, model-provider, model-vision-prep |
+| 6 | `computer-use-session` | stoker | pure | 1-5 |
 | 7 | `model-replay` | stoker | pure (+ injected sink) | model-provider |
-| 8 | `model-catalog` | stoker | pure | model-provider, vision-prep, cua-action |
+| 8 | `model-catalog` | stoker | pure | model-provider, model-vision-prep, computer-use-action |
 | 9 | `engine-supervisor` | stoker | pure core; io features | model-catalog |
 | 10 | `model-http` | stoker | io | — |
 | 11 | `model-openai-compat` | stoker | io | model-provider, model-http |
-| 12 | `prov` | porter | pure | porter-core |
-| — | porter-core, porter-provider, porter-infer, porter-dbus, porter-client, porter-fake, inferd | porter | existing, changed (§3.2) | porter-infer → **cua-action**; inferd → **stoker 1-3, 6, 8-11** |
-| 13 | `almanac-core` | almanac | pure, serde-only | **porter-core, prov** |
-| 14 | `almanac-seal` | almanac | pure | almanac-core |
-| 15 | `eventlog` | almanac | sqlite | almanac-core, almanac-seal |
-| 16 | `memfiles` | almanac | fs via `Vault` | almanac-core, almanac-seal |
+| 12 | `prov` | porter | pure | account-core |
+| — | account-core, account-provider, inference-core, account-dbus, account-client, account-fake, inferd | porter | existing, changed (§3.2) | inference-core → **computer-use-action**; inferd → **stoker 1-3, 6, 8-11** |
+| 13 | `memory-core` | almanac | pure, serde-only | **account-core, prov** |
+| 14 | `memory-seal` | almanac | pure | memory-core |
+| 15 | `eventlog` | almanac | sqlite | memory-core, memory-seal |
+| 16 | `memfiles` | almanac | fs via `Vault` | memory-core, memory-seal |
 | 17 | `recall` | almanac | sqlite; generic | — |
 | 18 | `recall-fastembed` | almanac | ort (excluded from gate) | recall |
-| 19 | `almanac-service` | almanac | pure over seams | 13-17 |
-| 20 | `almanac-watch` | almanac | inotify | almanac-core |
-| 21 | `almanac-dbus` | almanac | zbus | almanac-core |
-| 22 | `almanac-client` | almanac | per transport | almanac-core, almanac-service, almanac-dbus (feature) |
-| 23 | `almanac-fake` | almanac | test | 13-19 |
-| 24 | `memoryd` | almanac | daemon | all almanac, **porter-client** |
-| 25 | `docket-core` | docket | pure, serde-only | **porter-core, prov, cua-action** |
-| 26 | `policy-point` | docket | pure (+ cedar-policy) | docket-core, **prov** |
-| 27 | `action-review` | docket | pure (+ an `InferReviewer` over a seam) | docket-core, **prov, porter-infer** |
-| 28 | `docket-router` | docket | pure over seams | docket-core, policy-point, action-review, **prov, porter-core** |
-| 29 | `docket-dbus` | docket | zbus | docket-core |
-| 30 | `docket-client` | docket | per transport | docket-core, docket-router (InProcess), docket-dbus (feature) |
-| 31 | `docket-fake` | docket | test | 25-30 |
-| 32 | `docket-eval` | docket | test + release script | docket-fake and its deps, **porter-infer** |
-| 33 | `actions-mcp` | docket | rmcp edge binary, off by default | docket-core, docket-client |
-| 34 | `intentd` | docket | daemon (also hosts the built-in `org.quire.Memory` provider) | 25-30, **almanac-core, almanac-client, porter-core** |
-| 35 | `companion-wire` | docket | pure, serde-only | docket-core, **prov, porter-infer** (`ServedBy`) |
-| 36 | `agent-loop` | docket | pure step machine | docket-core, companion-wire, **prov** |
-| 37 | `companiond` | docket | daemon | agent-loop, companion-wire, docket-client, **porter-client** |
-| 38 | `readerd` | docket | daemon, separate process | docket-core, docket-client, **porter-client** |
-| 39 | `docket-ds` | docket | adapter used by quire apps | docket-client, companion-wire, **ds-intents** |
-| 40 | `a11y-tree` | cua | pure; `atspi` feature | **cua-action, prov** |
-| 41 | `seat-input` | cua | pure; `ei` feature | **cua-action** |
-| 42 | `maskcap` | cua | pure; `wayland` feature | **cua-action** |
-| 43 | `cua-desktop` | cua | pure; `wayland` feature | **cua-action, docket-core** (`RunMode`, `WindowTrust`), quire-agent-protocol (feature) |
+| 19 | `memory-service` | almanac | pure over seams | 13-17 |
+| 20 | `memory-watch` | almanac | inotify | memory-core |
+| 21 | `memory-dbus` | almanac | zbus | memory-core |
+| 22 | `memory-client` | almanac | per transport | memory-core, memory-service, memory-dbus (feature) |
+| 23 | `memory-fake` | almanac | test | 13-19 |
+| 24 | `memoryd` | almanac | daemon | all almanac, **account-client** |
+| 25 | `action-core` | docket | pure, serde-only | **account-core, prov, computer-use-action** |
+| 26 | `permission-policy` | docket | pure (+ cedar-policy) | action-core, **prov** |
+| 27 | `action-review` | docket | pure (+ an `InferReviewer` over a seam) | action-core, **prov, inference-core** |
+| 28 | `action-router` | docket | pure over seams | action-core, permission-policy, action-review, **prov, account-core** |
+| 29 | `action-dbus` | docket | zbus | action-core |
+| 30 | `action-client` | docket | per transport | action-core, action-router (InProcess), action-dbus (feature) |
+| 31 | `action-fake` | docket | test | 25-30 |
+| 32 | `docket-eval` | docket | test + release script | action-fake and its deps, **inference-core** |
+| 33 | `actions-mcp` | docket | rmcp edge binary, off by default | action-core, action-client |
+| 34 | `intentd` | docket | daemon (also hosts the built-in `org.quire.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
+| 35 | `companion-wire` | docket | pure, serde-only | action-core, **prov, inference-core** (`ServedBy`) |
+| 36 | `agent-loop` | docket | pure step machine | action-core, companion-wire, **prov** |
+| 37 | `companiond` | docket | daemon | agent-loop, companion-wire, action-client, **account-client** |
+| 38 | `readerd` | docket | daemon, separate process | action-core, action-client, **account-client** |
+| 39 | `action-ui-adapter` | docket | adapter used by quire apps | action-client, companion-wire, **ui-intents** |
+| 40 | `computer-use-a11y-tree` | cua | pure; `atspi` feature | **computer-use-action, prov** |
+| 41 | `computer-use-seat-input` | cua | pure; `ei` feature | **computer-use-action** |
+| 42 | `maskcap` | cua | pure; `wayland` feature | **computer-use-action** |
+| 43 | `computer-use-desktop` | cua | pure; `wayland` feature | **computer-use-action, action-core** (`RunMode`, `WindowTrust`), quire-agent-protocol (feature) |
 | 44 | `quire-agent-protocol` | cua | wayland-scanner | — |
-| 45 | `cua-bus` (new split) | cua | pure, serde-only (`Cua1` bodies, `CuaRecord`) | **prov, docket-core, porter-infer** |
-| 46 | `cua-run` | cua | pure run machine | 40-43, 45, **docket-core, prov, porter-core, porter-infer** |
-| 47 | `cua-dbus` | cua | zbus | cua-bus |
-| 48 | `cua-fake` | cua | test | 40-47 default features, reis, **model-replay** |
-| 49 | `cuad` | cua | daemon | all cua, **porter-client, docket-client, almanac-client** |
-| 50 | `ds-intents` | quire | pure view shapes + seams | ds-core |
-| — | ds-core, ds, ds-shell, ds-style, ds-settings | quire | existing, gain types (§3.7) | — |
-| — | sill-launcher, sill-ipc, sill-model, sill-services, sill-search, sill-ui-kit, sill-launcher-ui, sill-bar, sill-settings, sill-overlays, sill-notify-ui | sill | existing, gain variants/modules (§3.8) | **docket-core, prov, almanac-core, companion-wire, cua-bus**; sill-services also **docket-dbus, almanac-dbus, cua-dbus, porter-dbus** |
+| 45 | `computer-use-bus` (new split) | cua | pure, serde-only (`Cua1` bodies, `CuaRecord`) | **prov, action-core, inference-core** |
+| 46 | `computer-use-run` | cua | pure run machine | 40-43, 45, **action-core, prov, account-core, inference-core** |
+| 47 | `computer-use-dbus` | cua | zbus | computer-use-bus |
+| 48 | `computer-use-fake` | cua | test | 40-47 default features, reis, **model-replay** |
+| 49 | `cuad` | cua | daemon | all cua, **account-client, action-client, memory-client** |
+| 50 | `ui-intents` | quire | pure view shapes + seams | ui-core |
+| — | ui-core, ds, ui-shell, ui-style, ui-settings | quire | existing, gain types (§3.7) | — |
+| — | shell-launcher, shell-ipc, shell-model, shell-services, shell-search, shell-ui-kit, shell-launcher-ui, shell-bar, shell-settings, shell-overlays, shell-notify-ui | sill | existing, gain variants/modules (§3.8) | **action-core, prov, memory-core, companion-wire, computer-use-bus**; shell-services also **action-dbus, memory-dbus, computer-use-dbus, account-dbus** |
 
 Later (named now, not frozen): `model-anthropic`, `model-openai-responses`, `model-gemini`,
-`recall-sqlite-vec` (Q-P5), `egress`, `secret-cell`, procedures in `cua-run`.
+`recall-sqlite-vec` (Q-P5), `egress`, `secret-cell`, procedures in `computer-use-run`.
 
 Boundary rules per repo (each repo's `check-boundary.sh`): pure crates never reach `tokio hyper
 hyper-util rustls zbus zvariant reqwest wayland-client wayland-backend reis atspi oo7 ort fastembed
-rusqlite notify cedar-policy rmcp` except where the table says so (`policy-point`→cedar;
+rusqlite notify cedar-policy rmcp` except where the table says so (`permission-policy`→cedar;
 `actions-mcp`→rmcp; `eventlog`/`recall`→rusqlite; `*-dbus`, daemons, feature backends → io).
 
 ### 1.4 Adopted external crates (join `quire/docs/workspace-deps.toml` in wave 0)
 
 | Crate | Version | For | Note |
 |---|---|---|---|
-| cedar-policy | 4.13 | policy-point | `cargo deny` against its lalrpop tree first |
+| cedar-policy | 4.13 | permission-policy | `cargo deny` against its lalrpop tree first |
 | rmcp | 3.5, `default-features=false, ["server","transport-io"]` | actions-mcp | pin the minor |
 | hyper / hyper-util / http-body-util | 1 / 0.1.21 / 0.1 | model-http | one HTTP stack, Unix sockets |
 | hyper-rustls + rustls | 0.27 / 0.23 | model-http cloud (later) | no OpenSSL |
-| base64 | 0.22 | porter-infer inline images | |
-| fast_image_resize | 6.1.0 | vision-prep `pixels` | |
-| blake3 | 1 | model-replay, eventlog, almanac-seal | |
-| chacha20poly1305 / zeroize / getrandom | 0.10 / 1 / 0.3 | almanac-seal | |
+| base64 | 0.22 | inference-core inline images | |
+| fast_image_resize | 6.1.0 | model-vision-prep `pixels` | |
+| blake3 | 1 | model-replay, eventlog, memory-seal | |
+| chacha20poly1305 / zeroize / getrandom | 0.10 / 1 / 0.3 | memory-seal | |
 | rusqlite | 0.40, `bundled-sqlcipher-vendored-openssl` | eventlog, recall | after spike S-SQL (FTS5 + deny) |
-| tar | 0.4 | almanac-service export | |
-| oo7 | 0.6 | almanac-seal `Oo7Keys`, porter secrets | |
+| tar | 0.4 | memory-service export | |
+| oo7 | 0.6 | memory-seal `Oo7Keys`, porter secrets | |
 | fastembed | 7.1 (ort 2.0.0-rc.13) | recall-fastembed only | excluded from gate |
-| reis | 0.7 (the minor the compositor lock resolves) | seat-input `ei`, cua-fake | |
-| atspi | 0.30 | a11y-tree `atspi` | |
-| proptest | 1 (dev) | cua-parse, vision-prep, model-http | |
+| reis | 0.7 (the minor the compositor lock resolves) | computer-use-seat-input `ei`, computer-use-fake | |
+| atspi | 0.30 | computer-use-a11y-tree `atspi` | |
+| proptest | 1 (dev) | computer-use-parse, model-vision-prep, model-http | |
 | tempfile | 3 (dev) | almanac | |
-| keyboard-types | 0.7 + **`serde` feature** | cua-action `Chord` | pinned line changes |
+| keyboard-types | 0.7 + **`serde` feature** | computer-use-action `Chord` | pinned line changes |
 | tokio | 1 + **`net`, `io-util`, `process`** | io crates and daemons | pinned line changes |
 | already pinned, unchanged | serde, serde_json, thiserror 2, toml 1, zbus 5.19, image 0.25.6, jiff 0.2, notify 8.2, wayland-* 0.31/0.3/0.32.13, the Wayland client toolkit, xkbcommon 0.8, memfd 0.6, rustix 1.1 | | |
 | later | ashpd 0.13, pipewire, nix 0.30 (fanotify), sqlite-vec | | |
@@ -163,50 +163,50 @@ smaller), llguidance/tokenizers (server flags suffice until an in-process engine
 ## 2. One home per type (every duplicate found, and its resolution)
 
 "View" types are allowed beside a wire type only in quire/sill, where quire may not name agent
-crates; each pair gets a `*_total` conversion test in `sill-ui-kit::companion`.
+crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 
 | Concept | Was defined in | Single owner | Others |
 |---|---|---|---|
-| `Effect {Read, UndoableWrite, Outbound, Destructive}` | docket-core, almanac-core (re-export), cua `EffectClass`, ux `EffectMark` | **prov** | cua uses `prov::Effect` (EffectClass deleted); ds-core `EffectMark` is the view |
-| `SpaceId`, `SpaceScope` | porter-core (actions), prov (memory), almanac | **porter-core** | prov re-exports |
-| Coordinate-space trait `Space` | cua-action | **cua-action**, renamed `CoordSpace` | frees "Space" for desktop Spaces |
-| `Actor` | docket-core, almanac-core, cua (`Companion(CuaRun)`), ux view `Actor{You,Companion}` | **prov** (merged, §3.1) | ds-core `ActorMark` view; docket `GrantCaller` for grant keys |
-| `AppName`, `AppId` | porter-core | **porter-core** | ux `AppMark` is a view (icon + name) |
-| `EntityKind/Key/Id`, `ActionName` | docket-core; almanac `ThingRef/ThingKind/ThingKey/ActionName` | **prov** | almanac `pub type ThingRef = prov::EntityId` (and ThingKind/Key aliases) |
+| `Effect {Read, UndoableWrite, Outbound, Destructive}` | action-core, memory-core (re-export), cua `EffectClass`, ux `EffectMark` | **prov** | cua uses `prov::Effect` (EffectClass deleted); ui-core `EffectMark` is the view |
+| `SpaceId`, `SpaceScope` | account-core (actions), prov (memory), almanac | **account-core** | prov re-exports |
+| Coordinate-space trait `Space` | computer-use-action | **computer-use-action**, renamed `CoordSpace` | frees "Space" for desktop Spaces |
+| `Actor` | action-core, memory-core, cua (`Companion(CuaRun)`), ux view `Actor{You,Companion}` | **prov** (merged, §3.1) | ui-core `ActorMark` view; docket `GrantCaller` for grant keys |
+| `AppName`, `AppId` | account-core | **account-core** | ux `AppMark` is a view (icon + name) |
+| `EntityKind/Key/Id`, `ActionName` | action-core; almanac `ThingRef/ThingKind/ThingKey/ActionName` | **prov** | almanac `pub type ThingRef = prov::EntityId` (and ThingKind/Key aliases) |
 | `SessionId`, `RunId` | docket (String), almanac (String), cua `RunId(u64)` | **prov**, String slugs | cuad mints `r-<n>` |
-| `TaskId`, `TurnId`, `UndoId`, `Handle`, `CallId` | docket-core | **docket-core** | ux `AnswerId`, sill `AnswerKey`→ `TaskId`; `RunKey`→`RunId`; `ActivityKey`→`UndoId`; `MemoryKey`→`almanac_core::MemoryItem` |
-| Tool-call id | model-provider `CallId(String)`, porter-infer `CallId` | **model-provider** `ToolCallId` | porter-infer wire mirrors (`ToolCallId`, bridged in `inferd::bridge`) |
+| `TaskId`, `TurnId`, `UndoId`, `Handle`, `CallId` | action-core | **action-core** | ux `AnswerId`, sill `AnswerKey`→ `TaskId`; `RunKey`→`RunId`; `ActivityKey`→`UndoId`; `MemoryKey`→`almanac_core::MemoryItem` |
+| Tool-call id | model-provider `CallId(String)`, inference-core `CallId` | **model-provider** `ToolCallId` | inference-core wire mirrors (`ToolCallId`, bridged in `inferd::bridge`) |
 | `Label`, `Integrity`, `Confidentiality`, `Source`, `Labelled`, `Quarantined` | prov (actions), almanac uses | **prov** | |
 | `ConfirmReceipt`, `ConfirmId`, `InputProof`, `Witness` | prov/docket-core; almanac `Confirmation` | **prov** | almanac `Settlement::Keep(ConfirmReceipt)` |
-| `ConfirmRequest`, `ConfirmAnswer`, `TaintNote`, `ConfirmOffer`, `Gesture` | docket-core; ds-shell `ConfirmView/ConfirmAnswer/TaintNote/ScopeOffer` | **docket-core** (wire) | ds-shell: `ConfirmView`, `ConfirmChoice` (renamed), `TaintLine` (renamed), `ScopeOffer`, + `gesture: GestureMark` |
-| `Preview` (content vocabulary) | docket-core; sill-launcher `Preview` (pane selector) | **docket-core** for content | sill `Preview::Intent(docket_core::Preview)`; ux `AnswerView` is a view |
-| `Fact` (label line) vs memory `Fact` | docket-core `Fact`, almanac `Fact`, ds `FactList` | almanac `Fact` = a memory fact; docket's renamed **`FactLine`** | ds-shell `ConfirmView.facts` uses quire's FactList items |
-| `Count` | porter-core `Count(u32)`; ds-settings `Count(u16)` | **porter-core** on wires | ds-core gains view `Tally(u32)`; ds-settings Count stays settings-only |
-| `Fraction` | ds-core | **ds-core** (view) | |
-| `ServedBy` | porter-infer; ux `ServedByView`; cua `ServedByNote` | **porter-infer** | cua records `ServedBy`; ux view `ServedByView` |
-| Undo journal | docket `UndoEntry/UndoToken/UndoId`; ux `UndoKey`, Companion1 `Undo`, `ActivityAppended`; ds `toast_hub::UndoToken(u64)` | **docket-core** journal + `Intents1.Run.Undo/UndoAll`, `Control.Journal/JournalChanged` | ux `UndoKey` deleted: views use ds `UndoToken(u64)` = `UndoId.0`; Companion1 has no undo or activity members |
-| Run state | cua `RunPhase`/`RunStateSlug`; ux `RunState`, `RunPlace` | **cua-bus** `RunStateSlug`, `CuaOutcome`; **docket-core** `RunMode` | ux `RunState`/`RunPlace` are views; `sill-model::run_state_of(slug, outcome)` total |
-| `RunMode`, `WindowTrust` | cua-desktop | **docket-core** (the gate contract needs them) | cua-desktop re-exports |
-| `GlowState` | cua-desktop, ds-shell, ux protocol sketch | **cua-desktop** (protocol values) | ds-shell renames to `GlowLook` (view input to `glow_spec`) |
-| Presence | ux `CompanionPresence`; Companion1 `Presence` property | **ds-core::vocab::CompanionPresence**, derived only by `sill-model::companion::presence_of` | Companion1 has no Presence property; apps derive in-field presence from their own `PromptState` |
-| `MemoryVerb` | ds and sill-launcher (twice) | **ds-core::vocab::MemoryVerb** | sill-launcher uses it |
-| `CuaAction` | cua-action (models), cua.md §3.0 | **cua-action** (merged, §3.3) | `TargetedAction`, `WindowRef` → cua-run |
-| Frame types | vision-prep `RawFrame`, cua `RawFrame/PixelBuf/PxSize`, porter-infer `FrameLayout` | `PixelFormat`, `DeviceSize`, `Scale120` → **cua-action**; `PixelBuf` → maskcap; `RawFrame<'a>` → vision-prep | `PxSize` deleted (= `DeviceSize`) |
-| CUA model step | cua `CuaTurn/StepReply/StepEvent`, models `CuaStepRequest/Reply` | **porter-infer::cua** | cua-run `turn(obs) -> CuaStepRequest` |
-| Event payloads (policy, consent, CUA, session) | almanac re-declared each | **their owners** (`docket-core::AuditRecord`, `cua-bus::CuaRecord`, `companion-wire::SessionRecord`) | almanac stores them as `EventBody::Area` (§3.4) |
-| Budgets | docket `Budget/BudgetKind`, cua `Budget/BudgetKind` | session budget **docket-core**; per-run budget **cua-run `RunBudget/RunBudgetKind`** | cua `denials` field removed: the router's breaker counts |
-| Denial reasons | docket `DenyReason` (internal), `DenyCode` (to agent); cua `DenyReason` | **docket-core** `DenyCode`; `DenyReason` internal to policy-point/audit | cua keeps only local pre-checks `LocalRefusal {OutsideLease, SecretField}` |
+| `ConfirmRequest`, `ConfirmAnswer`, `TaintNote`, `ConfirmOffer`, `Gesture` | action-core; ui-shell `ConfirmView/ConfirmAnswer/TaintNote/ScopeOffer` | **action-core** (wire) | ui-shell: `ConfirmView`, `ConfirmChoice` (renamed), `TaintLine` (renamed), `ScopeOffer`, + `gesture: GestureMark` |
+| `Preview` (content vocabulary) | action-core; shell-launcher `Preview` (pane selector) | **action-core** for content | sill `Preview::Intent(docket_core::Preview)`; ux `AnswerView` is a view |
+| `Fact` (label line) vs memory `Fact` | action-core `Fact`, almanac `Fact`, ds `FactList` | almanac `Fact` = a memory fact; docket's renamed **`FactLine`** | ui-shell `ConfirmView.facts` uses quire's FactList items |
+| `Count` | account-core `Count(u32)`; ui-settings `Count(u16)` | **account-core** on wires | ui-core gains view `Tally(u32)`; ui-settings Count stays settings-only |
+| `Fraction` | ui-core | **ui-core** (view) | |
+| `ServedBy` | inference-core; ux `ServedByView`; cua `ServedByNote` | **inference-core** | cua records `ServedBy`; ux view `ServedByView` |
+| Undo journal | docket `UndoEntry/UndoToken/UndoId`; ux `UndoKey`, Companion1 `Undo`, `ActivityAppended`; ds `toast_hub::UndoToken(u64)` | **action-core** journal + `Intents1.Run.Undo/UndoAll`, `Control.Journal/JournalChanged` | ux `UndoKey` deleted: views use ds `UndoToken(u64)` = `UndoId.0`; Companion1 has no undo or activity members |
+| Run state | cua `RunPhase`/`RunStateSlug`; ux `RunState`, `RunPlace` | **computer-use-bus** `RunStateSlug`, `CuaOutcome`; **action-core** `RunMode` | ux `RunState`/`RunPlace` are views; `shell-model::run_state_of(slug, outcome)` total |
+| `RunMode`, `WindowTrust` | computer-use-desktop | **action-core** (the gate contract needs them) | computer-use-desktop re-exports |
+| `GlowState` | computer-use-desktop, ui-shell, ux protocol sketch | **computer-use-desktop** (protocol values) | ui-shell renames to `GlowLook` (view input to `glow_spec`) |
+| Presence | ux `CompanionPresence`; Companion1 `Presence` property | **ui-core::vocab::CompanionPresence**, derived only by `shell-model::companion::presence_of` | Companion1 has no Presence property; apps derive in-field presence from their own `PromptState` |
+| `MemoryVerb` | ds and shell-launcher (twice) | **ui-core::vocab::MemoryVerb** | shell-launcher uses it |
+| `CuaAction` | computer-use-action (models), cua.md §3.0 | **computer-use-action** (merged, §3.3) | `TargetedAction`, `WindowRef` → computer-use-run |
+| Frame types | model-vision-prep `RawFrame`, cua `RawFrame/PixelBuf/PxSize`, inference-core `FrameLayout` | `PixelFormat`, `DeviceSize`, `Scale120` → **computer-use-action**; `PixelBuf` → maskcap; `RawFrame<'a>` → model-vision-prep | `PxSize` deleted (= `DeviceSize`) |
+| CUA model step | cua `CuaTurn/StepReply/StepEvent`, models `CuaStepRequest/Reply` | **inference-core::cua** | computer-use-run `turn(obs) -> CuaStepRequest` |
+| Event payloads (policy, consent, CUA, session) | almanac re-declared each | **their owners** (`action-core::AuditRecord`, `computer-use-bus::CuaRecord`, `companion-wire::SessionRecord`) | almanac stores them as `EventBody::Area` (§3.4) |
+| Budgets | docket `Budget/BudgetKind`, cua `Budget/BudgetKind` | session budget **action-core**; per-run budget **computer-use-run `RunBudget/RunBudgetKind`** | cua `denials` field removed: the router's breaker counts |
+| Denial reasons | docket `DenyReason` (internal), `DenyCode` (to agent); cua `DenyReason` | **action-core** `DenyCode`; `DenyReason` internal to permission-policy/audit | cua keeps only local pre-checks `LocalRefusal {OutsideLease, SecretField}` |
 | Verdict names | porter consent `Verdict`, action-review `Verdict`, almanac `Verdict` | porter keeps `Verdict` | action-review → `ReviewVerdict`; almanac → `Settlement {Keep(ConfirmReceipt), Discard}` |
-| Decision names | porter consent `Decision`; policy-point `Decision` | porter keeps `Decision` | policy-point → `Ruling {Deny, Ask, AllowJudged, AllowFinal}` |
-| `Need` | porter-core `Need`; docket `Need` (param); ds `Need` (form) | porter-core | docket → `ParamNeed`; ds → `FieldNeed` |
-| `Visibility<T>` (plain or handle) | docket | docket-core, renamed **`Reveal<T>`** | cua-run's window `Visibility` keeps its name |
-| `Usage` | porter consent `Usage`; model-provider `Usage` (tokens) | porter keeps `Usage` | model-provider → `TurnUsage`; porter-infer `TokenUsage` unchanged |
+| Decision names | porter consent `Decision`; permission-policy `Decision` | porter keeps `Decision` | permission-policy → `Ruling {Deny, Ask, AllowJudged, AllowFinal}` |
+| `Need` | account-core `Need`; docket `Need` (param); ds `Need` (form) | account-core | docket → `ParamNeed`; ds → `FieldNeed` |
+| `Visibility<T>` (plain or handle) | docket | action-core, renamed **`Reveal<T>`** | computer-use-run's window `Visibility` keeps its name |
+| `Usage` | porter consent `Usage`; model-provider `Usage` (tokens) | porter keeps `Usage` | model-provider → `TurnUsage`; inference-core `TokenUsage` unchanged |
 | `Role` | model-provider message `Role`; catalog `roles`; intentd caller roles | model-provider `Role` | catalog `roles: BTreeSet<AiKind>`; intentd `CallerRole` |
 | `Latency` | docket `Latency` (decl), addendum `Latency2` | docket `Latency` | → `StageLatency` |
-| `Repeat` | cua-action `Repeat` (key repeat), docket gate param | cua-action | docket gate → `RepeatState` |
-| `Need::Cua` vs `Need::ComputerUse` | cua.md, models.md | **porter-core `Need::ComputerUse(CuaNeed)`** | |
-| Authorization | actions §3.9 | **deleted** → docket-core `TaskPolicy` (addendum A1) | |
-| `Summon` app method | ux ("context area") | **`IntentProvider1.Summon`**, answered by ds via `docket-ds` | |
+| `Repeat` | computer-use-action `Repeat` (key repeat), docket gate param | computer-use-action | docket gate → `RepeatState` |
+| `Need::Cua` vs `Need::ComputerUse` | cua.md, models.md | **account-core `Need::ComputerUse(CuaNeed)`** | |
+| Authorization | actions §3.9 | **deleted** → action-core `TaskPolicy` (addendum A1) | |
+| `Summon` app method | ux ("context area") | **`IntentProvider1.Summon`**, answered by ds via `action-ui-adapter` | |
 | Settings keys | `companion.undo_keep_h` vs `agent.undo.keep_h`; `companion.touch` vs `cua.autopause`; `companion.run_place` vs `cua.default_mode` | `agent.undo.keep_h`, `cua.autopause`, `cua.default_mode {auto, in_place, agent_workspace}` | sill's Intelligence page shows them; `CompanionSettings` drops those three fields |
 
 ---
@@ -219,14 +219,14 @@ enums; standard derive order; redacting `Debug` on user text; async seams `-> im
 closed implementation sets are enums, never `dyn`. Derives and doc comments are omitted below.
 Everything here is **freeze now** unless marked later. Area-internal types stay in the area specs.
 
-### 3.1 porter `prov` (new crate) and porter-core additions
+### 3.1 porter `prov` (new crate) and account-core additions
 
 ```rust
-// porter-core/src/space.rs
+// account-core/src/space.rs
 pub struct SpaceId(String);                       // slug grammar of porter ids; minted by sill's Space store (Q-P6); reserved "desktop"
 pub enum SpaceScope { Any, Only(SpaceId) }
-// porter-core consent: GrantKey gains `space: SpaceScope`; Grant<K = GrantKey>; decide<K: Eq>(&[Grant<K>], &K) -> Verdict
-// porter-core vocabulary: VocabVersion(2); Capability::ComputerUse(CuaCap); CapabilityKind::ComputerUse;
+// account-core consent: GrantKey gains `space: SpaceScope`; Grant<K = GrantKey>; decide<K: Eq>(&[Grant<K>], &K) -> Verdict
+// account-core vocabulary: VocabVersion(2); Capability::ComputerUse(CuaCap); CapabilityKind::ComputerUse;
 //   Need::ComputerUse(CuaNeed); CuaCap { environments: BTreeSet<CuaEnv>, batching: CuaBatching, zoom: Offered, max_image: Px, wire: LlmWire }
 //   CuaEnv { Desktop, Browser, Mobile }; CuaBatching { One, Many }; CuaNeed { environments: BTreeSet<CuaEnv> }
 
@@ -280,7 +280,7 @@ pub fn endorse<T>(v: Labelled<T>, w: &Witness) -> Labelled<T>;
 pub fn declassify<T>(v: Labelled<T>, to: Confidentiality, w: &Witness) -> Labelled<T>;
 ```
 
-### 3.2 porter-infer, porter-client, Inference1 (models.md §3.8, with these renames)
+### 3.2 inference-core, account-client, Inference1 (models.md §3.8, with these renames)
 
 ```rust
 // request.rs (changes a frozen type; design/31 edited in step)
@@ -298,7 +298,7 @@ pub struct CuaBegin { pub goal: String, pub hints: Vec<String>, pub env: CuaEnv 
 pub struct CuaStepRequest { pub step: StepIndex, pub window: WindowGeometry, pub frame: FrameImage,
     pub cursor: Option<Point<WindowSpace>>, pub prev: Vec<PrevResult>, pub masked: MaskedRegions,
     pub tree: TreeText }                                              // + tree (cua.md: a11y text to the model)
-pub enum TreeText { Absent, Present(String) }                         // untrusted screen text; cua-run renders it
+pub enum TreeText { Absent, Present(String) }                         // untrusted screen text; computer-use-run renders it
 pub struct WindowGeometry { pub logical: Size<WindowSpace>, pub scale: Scale120 }
 pub struct FrameImage { pub source: ImageSource, pub layout: FrameLayout }
 pub enum FrameLayout { Raw { format: PixelFormat, size: DeviceSize, stride: u32 }, Encoded(MediaKind) }
@@ -324,11 +324,11 @@ pub enum AiKind { Llm, ComputerUse, Embeddings, Speech, ImageGen, Rerank }
 pub struct TierMap { pub rows: Vec<TierRow> }   pub struct PickerRow { /* models.md */ }
 
 // model.rs: Model::chat(&self, &ChatRequest, &mut impl ChatSink) -> impl Future<Output = Result<ChatReply, ModelError>> + Send
-// porter-client: Transport::open(&self, need: &Need, class: DataClass, tier: Tier) -> Future<Result<Self::Session, TransportError>>;
+// account-client: Transport::open(&self, need: &Need, class: DataClass, tier: Tier) -> Future<Result<Self::Session, TransportError>>;
 //   trait InferSession { send(ClientFrame); next() -> InferEvent }; Transport::infer removed; Accounts::session added.
 ```
 
-### 3.3 stoker `cua-action` (merged models.md §3.1 + cua.md §3.0)
+### 3.3 stoker `computer-use-action` (merged models.md §3.1 + cua.md §3.0)
 
 ```rust
 pub trait CoordSpace: Copy + Eq + core::fmt::Debug + 'static {}
@@ -354,10 +354,10 @@ pub enum CuaAction<S: CoordSpace> {
     Finish { outcome: FinishOutcome, summary: Summary, extracted: Vec<Extracted> },  // + extracted (cua)
     Ask    { question: Summary, choices: Vec<Choice> },
 }
-pub struct Extracted { pub name: FieldName, pub value: ExtractedText }        // cua-run labels Untrusted(Screen)
+pub struct Extracted { pub name: FieldName, pub value: ExtractedText }        // computer-use-run labels Untrusted(Screen)
 pub enum Button { Left, Right, Middle }  pub enum ClickCount { One, Two, Three }
 pub enum Modifier { Ctrl, Alt, Shift, Super }
-pub struct Chord { pub mods: BTreeSet<Modifier>, pub key: keyboard_types::Key }  // seat-input maps Key -> keysym
+pub struct Chord { pub mods: BTreeSet<Modifier>, pub key: keyboard_types::Key }  // computer-use-seat-input maps Key -> keysym
 pub struct Repeat(u8);  pub enum ScrollDir { Up, Down, Left, Right }
 pub enum ScrollBy<S> { Notches(Notches), Distance(Length<S>) }
 pub struct WaitMs(u32); pub struct TypedText(String); pub struct Summary(String); pub struct Choice(String);
@@ -373,7 +373,7 @@ pub enum ModelSpace { Image, Grid(GridMax) }
 ### 3.4 almanac (memory.md §3, with these changes)
 
 ```rust
-// almanac-core
+// memory-core
 pub type ThingRef = prov::EntityId;  pub type ThingKind = prov::EntityKind;  pub type ThingKey = prov::EntityKey;
 pub struct ThingView { pub thing: ThingRef, pub title: String, pub subtitle: String }
 pub struct Record { pub space: SpaceId, pub occurred: UnixSeconds, pub actor: prov::Actor,
@@ -402,7 +402,7 @@ Caller matrix change (memory.md §3.9): the `Companion` column moves to `Router`
 `Actor::Companion`, Space from the Invocation); `Cuad` may `Record` only `Area(Cua)` bodies with an
 `Actor::Companion{role: Cua}` actor. Untrusted-labelled `Propose` always lands in `pending/`.
 
-### 3.5 docket-core (actions.md §3.3-§3.13 with the addendum applied; renames from §2)
+### 3.5 action-core (actions.md §3.3-§3.13 with the addendum applied; renames from §2)
 
 ```rust
 // ids
@@ -510,7 +510,7 @@ pub enum GateAnswer { Run, Refused(CallRefusal) }   // confirmations are resolve
 pub enum AuditRecord { /* actions.md §3.11 + addendum: Review{stage}, Call{decided}, Confirm, Undo, Halt, TaskPolicy, Breaker */ }
 pub enum HaltCause { KillChord, ControlCentre, StopKey, Budget(BudgetKind), Breaker(BreakerTrip) }   // Esc -> StopKey (⌘.)
 
-// app side (docket-client)
+// app side (action-client)
 pub trait IntentProvider: Send + Sync {
     fn manifest(&self) -> &ValidManifest;
     fn perform(&self, inv: Invocation) -> impl Future<Output = Result<Outcome, AppRefusal>> + Send;
@@ -520,8 +520,8 @@ pub trait IntentProvider: Send + Sync {
     fn preview(&self, id: &EntityId) -> impl Future<Output = Preview> + Send;
     fn suggest(&self, ask: SuggestAsk) -> impl Future<Output = Vec<EntityRef>> + Send;
 }
-pub trait ContextSource: Send + Sync { fn snapshot(&self, scope: ContextScope) -> ContextSnapshot; }   // docket-ds implements over ds-intents
-pub trait SummonTarget: Send + Sync { fn summon(&self, serial: SummonSerial, origin: SummonOrigin) -> SummonAnswer; } // docket-ds over ds CompanionPort
+pub trait ContextSource: Send + Sync { fn snapshot(&self, scope: ContextScope) -> ContextSnapshot; }   // action-ui-adapter implements over ui-intents
+pub trait SummonTarget: Send + Sync { fn summon(&self, serial: SummonSerial, origin: SummonOrigin) -> SummonAnswer; } // action-ui-adapter over ds CompanionPort
 pub enum SummonAnswer { TookField, TookAnchored, Restored, Declined }
 ```
 
@@ -553,14 +553,14 @@ pub enum SessionRecord { Opened { space: SpaceId }, Asked { turn: TurnId, task: 
 ### 3.7 quire (ux.md §3.1-§3.6 frozen as written, with these changes)
 
 ```rust
-// ds-core::vocab — one home for companion view vocabulary
+// ui-core::vocab — one home for companion view vocabulary
 pub enum CompanionPresence { Idle, Listening, Working, Acting, Waiting }     // ux §3.1
-pub enum MemoryVerb { Forget, Keep, Discard, OpenSource, Export }            // was in ds and sill-launcher
+pub enum MemoryVerb { Forget, Keep, Discard, OpenSource, Export }            // was in ds and shell-launcher
 pub enum EffectMark { Read, UndoableWrite, Outbound, Destructive }           // view of prov::Effect
 pub enum ActorMark { You, Companion }                                         // was ds Actor
 pub struct Tally(pub u32);                                                    // view count
 
-// ds-intents (new crate): presentational context + the two app seams; no docket types
+// ui-intents (new crate): presentational context + the two app seams; no docket types
 pub struct ThingMark { pub kind: String, pub key: String, pub title: String, pub subtitle: String }
 pub trait ContextModel { /* thing props on Row/List, text targets on edit surfaces; ux/actions fill */ }
 pub trait CompanionPort: 'static { fn on_summon(&self, h: Callback<SummonSerial, SummonAnswerMark>);
@@ -571,15 +571,15 @@ pub struct SummonSerial(pub u64);
 
 // ds companion components: as ux §3.2-§3.5 except: UndoKey deleted (ReplacePhase::Applied{undo: ds::stack::UndoToken});
 // AnswerId deleted; Need -> FieldNeed; Actor -> ActorMark; counts are Tally; run_controls takes `undoable: Tally`.
-// ds-shell: ConfirmView { .., gesture: GestureMark { Press, Hold } }, ConfirmChoice { Allow { always: AlwaysChoice }, Deny },
+// ui-shell: ConfirmView { .., gesture: GestureMark { Press, Hold } }, ConfirmChoice { Allow { always: AlwaysChoice }, Deny },
 //           TaintLine (was TaintNote), GlowLook (was GlowState), glow_spec(&GlowLook, Scheme) -> GlowSpec.
-// ds-settings: Page::Intelligence (label per Q-U8).
+// ui-settings: Page::Intelligence (label per Q-U8).
 ```
 
 ### 3.8 sill (ux.md §3.7 with the merges)
 
 ```rust
-// sill-launcher (closed enums gain variants; warn the sill session before landing)
+// shell-launcher (closed enums gain variants; warn the sill session before landing)
 ProviderKind:  ... , Things, Companion, Runs, Memory            // ALL: [_; 13], this order
 Subject:  Entity(docket_core::EntityRef), Answer(TaskId), Run(RunId), Activity(UndoId), Memory(almanac_core::MemoryItem)
 Preview:  Intent(docket_core::Preview), Answer(TaskId), Run(RunId), Memory(almanac_core::MemoryItem)
@@ -587,23 +587,23 @@ Activation: Intent(docket_core::CallRequest), Companion(CompanionAct)       // n
 pub enum CompanionAct { Ask { prompt: String }, Card { task: TaskId, action: CardActionId }, Promote { task: TaskId },
     Run { run: RunId, control: RunControl }, Undo { scope: UndoScope }, Memory { item: MemoryItem, verb: MemoryVerb }, Mode(LauncherMode) }
 pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll }    // Replay: later (procedures)
-// sill-ipc: ShowRequest::Companion(CompanionRequest { Tap, Summon, Dismiss, StopAll })
-// sill-model::companion: Tap, Summon machines (ux §4.1-4.2); presence_of; run_state_of; run_controls(state, place, undoable)
+// shell-ipc: ShowRequest::Companion(CompanionRequest { Tap, Summon, Dismiss, StopAll })
+// shell-model::companion: Tap, Summon machines (ux §4.1-4.2); presence_of; run_state_of; run_controls(state, place, undoable)
 ```
 
 ### 3.9 cua (cua.md §3.1-§3.9 with these changes)
 
-- `cua-action` types come from §3.3; `Lpx/WinPoint/WinSize/WinRect` are deleted (`Point/Size/Rect<WindowSpace>`); `GlobalPoint(i32,i32)` stays private to `seat-input::region`.
-- `cua-run`: `TargetedAction { window: WindowRef, action: CuaAction<WindowSpace> }`, `WindowRef(u32)`;
+- `computer-use-action` types come from §3.3; `Lpx/WinPoint/WinSize/WinRect` are deleted (`Point/Size/Rect<WindowSpace>`); `GlobalPoint(i32,i32)` stays private to `computer-use-seat-input::region`.
+- `computer-use-run`: `TargetedAction { window: WindowRef, action: CuaAction<WindowSpace> }`, `WindowRef(u32)`;
   `turn(&Observation) -> (CuaStepRequest, FrameAttachment)`; seam
   `trait CuaModel { fn begin(&mut self, b: CuaBegin) -> Future<Result<(), CuaModelError>>; fn step(&mut self, r: CuaStepRequest, a: FrameAttachment, sink: &mut impl StepSink) -> Future<Result<CuaStepReply, CuaModelError>>; }`
-  with `CuaModelError { Transient, Parse, Fatal }`, impls `InferdCuaModel` (cuad, over porter-client) and `ScriptedModel` (cua-fake, over model-replay).
+  with `CuaModelError { Transient, Parse, Fatal }`, impls `InferdCuaModel` (cuad, over account-client) and `ScriptedModel` (computer-use-fake, over model-replay).
 - `classify_effect(..) -> (prov::Effect, docket_core::EffectBasis)`; `EffectClass`, `CuaVerdict`, `ConfirmText`, `DenyReason` deleted.
   Authorising sends `docket_core::CuaAsk` through `Intents1.Gate.Check`; `RunInput::Verdict(GateAnswer)`;
   `RunInput::ConfirmPending(ConfirmId)` (from Request `Progress(Confirming)`) drives `SuspendLease(Consent)` on stock, then `Request.Proceed`.
   `Granting` calls `Intents1.Gate.Grant(app, space)`.
 - `RunBudget { steps, active, stall_frames, actions_per_min, model_failures, spend }` (no `denials`); `GateAnswer::Refused(Paused(_))` → `Finished(Blocked(PolicyDenials))`; `Refused(Halted(_))` → `Paused`.
-- `cua-bus` (new, serde-only): `RunStateSlug`, `CuaTask` (the `Start` body), `CuaResult`, `CuaOutcome`, `CuaRecord` (actor `prov::Actor::Companion{role: Cua{run}}`, served_by `porter_infer::ServedBy`), `ControlRefusal`, plus the `Cua1` XML (cua.md §3.8, unchanged; ux's `Replay`/`UndoAll` additions rejected: undo is `Intents1.Run.UndoAll(Run(id))`).
+- `computer-use-bus` (new, serde-only): `RunStateSlug`, `CuaTask` (the `Start` body), `CuaResult`, `CuaOutcome`, `CuaRecord` (actor `prov::Actor::Companion{role: Cua{run}}`, served_by `porter_infer::ServedBy`), `ControlRefusal`, plus the `Cua1` XML (cua.md §3.8, unchanged; ux's `Replay`/`UndoAll` additions rejected: undo is `Intents1.Run.UndoAll(Run(id))`).
 - cuad also serves `IntentProvider1` as app **`org.quire.Cua`** with one action
   `cua.run.start { goal: Text(sink Body), target: Entity(desktop.window) | app: Text, mode: Choice }`,
   `effect: Read`, `latency: Long`, `reach: Hidden` while `cua.enabled = off`. Each pixel step is gated on its own.
@@ -647,11 +647,11 @@ actions-mcp; `confirm` = sill (the only Confirm1 server it trusts); `compositor`
 
 **`org.quire.IntentProvider1`** (every provider: apps, `org.quire.Shell`, `org.quire.Cua`; `org.quire.Memory` is built into intentd)
 `Perform(inv s)->s`, **`DryRun(inv s)->s`**, `Undo(token s, actor s)->s`, `Context(scope s)->s`,
-**`Summon(serial t, origin s)->s`** (`SummonAnswer`; ds answers via docket-ds), `Search(text s, gen t)->s`,
+**`Summon(serial t, origin s)->s`** (`SummonAnswer`; ds answers via action-ui-adapter), `Search(text s, gen t)->s`,
 `Preview(entity s)->s`, `Suggest(ask s)->s`, `Resolve(keys s)->s`; sigs `UndoChanged(token s, state s)`, `IndexStale(epoch t)`.
 
 **`org.quire.Confirm1`** (sill): `Confirm(request s) -> o` (Request carries `Response(u, answer s)`),
-`Cancel(id s)`. Phase A: a `sill-overlays` sheet, receipts `SheetFallback`. Phase B: the same sill
+`Cancel(id s)`. Phase A: a `shell-overlays` sheet, receipts `SheetFallback`. Phase B: the same sill
 surface placed on the fork's `quire_trusted_surface_v1` (hardware input only, nothing can draw over
 it, the agent seat cannot focus it), receipts `HardwareSeat`.
 
@@ -672,7 +672,7 @@ it, the agent seat cannot focus it), receipts `HardwareSeat`.
 **`org.quire.Reader1`**: `Extract(session s, ask s) -> s`.
 **Wayland** (cua repo `quire-agent-protocol`): `quire-agent-v1` (manager, lease: `set_glow(state, rect)`
 replaces ux's `quire_agent_glow_v1`), later `quire_trusted_surface_v1` (sill client) and
-`quire_sensitive_v1` (shell-host client). Stock: `the compositor's input service`.
+`quire_sensitive_v1` (layer-shell-host client). Stock: `the compositor's input service`.
 
 Name rule: every interface we own is `org.quire.<Name>1`; objects at `/org/quire/<Name>1`; errors
 `org.quire.<Name>1.Error.<Variant>` mapped 1:1 from the refusal enum.
@@ -687,8 +687,8 @@ Name rule: every interface we own is `org.quire.<Name>1`; objects at `/org/quire
 |---|---|---|
 | 1 | Toshy emits the chord → `sill companion tap` (route B) or `summon` (route A) → `ShowRequest::Companion` | ux (sill), Toshy spike |
 | 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.quire.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; sill calls `Companion1.Prepare()` in parallel | ux (sill), docket (method) |
-| 3 | In mailo, docket-ds asks ds's `CompanionPort`: the search field answers `TookField`; **ds-intents freezes the context at this moment** (query "lisbon receipts", 12 visible results, selection) before the field turns into a prompt; chips Query, Results(12) | quire ds-intents, docket-ds |
-| 4 | User types and sends. docket-ds: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.quire.Mail)`) → `Companion1.Ask` | docket |
+| 3 | In mailo, action-ui-adapter asks ds's `CompanionPort`: the search field answers `TookField`; **ui-intents freezes the context at this moment** (query "lisbon receipts", 12 visible results, selection) before the field turns into a prompt; chips Query, Results(12) | quire ui-intents, action-ui-adapter |
+| 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.quire.Mail)`) → `Companion1.Ask` | docket |
 | 5 | intentd: PolicyWriter derives a TaskPolicy from the turn only (Mail actions up to Outbound, kind mail.message, max 12; recipients unresolved); Field turns are capped to Mail + Read elsewhere | docket |
 | 6 | companiond/agent-loop: `PlannerView` (result titles are third-party → handles); planner calls `contacts.search("accounting")` (Read, AllowFinal; Contacts is a trusted store → the contact is a Trusted sink); if it must pick which results are receipts, `Session.Read(ReaderAsk{Classify, EntitiesAmong})` → plain entity ids, planner taint becomes Untrusted | docket (+ models for the planner/reader models) |
 | 7 | Plan card `Plan[forward 12 → Accounting]` streams to mailo's prompt (answer `Updated`); plans run at once, confirmations happen per call (C40) | docket, ux |
@@ -749,7 +749,7 @@ Rules for every agent: commits as Po Hsuan Lai <pohsuanlai0208@gmail.com> (autho
 quire/sill merges go through the `~/X-wt/gate` worktree and fast-forward master only on GATE GREEN;
 the gate runs each command with its exit code checked (`set -euo pipefail`, never `cargo test | tail`);
 tests never touch the real system (private buses, scratch XDG/HOME, no GPU, no real engine). Warn the
-sill session before any sill-launcher closed-enum change lands. Behaviour is `todo!()` behind frozen
+sill session before any shell-launcher closed-enum change lands. Behaviour is `todo!()` behind frozen
 signatures, each listed in FINDINGS.md; shape tests (round trips, introspection, compile-fail, pinned
 JSON, step tables of the pure parts) pass.
 
@@ -757,10 +757,10 @@ JSON, step tables of the pure parts) pass.
 
 | Spike | Where | Blocks | Does not block |
 |---|---|---|---|
-| **S0 Holo-3.1-4B chat template** (read `chat_template.jinja`, `preprocessor_config.json`, `config.json` via WebFetch; read-only) | stoker agent, step 0 | `ToolDialect` variants, `GridMax`/`PatchFactor` values, `catalog/holo-3.1-4b.toml`, cua-parse fixtures (W1b) | geometry and every other stoker type |
+| **S0 Holo-3.1-4B chat template** (read `chat_template.jinja`, `preprocessor_config.json`, `config.json` via WebFetch; read-only) | stoker agent, step 0 | `ToolDialect` variants, `GridMax`/`PatchFactor` values, `catalog/holo-3.1-4b.toml`, computer-use-parse fixtures (W1b) | geometry and every other stoker type |
 | **S-SQL** SQLCipher bundled build with FTS5 + `cargo deny` | scratch crate `~/rs-wt/spikes/sqlcipher` | wave 0's rusqlite line → almanac freeze (eventlog/recall hold rusqlite types) | — |
 | **S-Cedar** `cargo deny` for cedar-policy 4.13 | wave 0 agent | wave 0 line → docket freeze | — |
-| **Spike A** a stock compositor nested: capture + EI inject (cua.md §6) | `~/rs-wt/spikes/cua-a/`, then moved to `~/cua/spike/` | cua fill 2 (seat-input `ei`, maskcap `wayland`, cua-desktop `desktop`), stock `mode_support` values, Q-P2 | the cua freeze |
+| **Spike A** a stock compositor nested: capture + EI inject (cua.md §6) | `~/rs-wt/spikes/cua-a/`, then moved to `~/cua/spike/` | cua fill 2 (computer-use-seat-input `ei`, maskcap `wayland`, computer-use-desktop `desktop`), stock `mode_support` values, Q-P2 | the cua freeze |
 | **Spike T** Toshy double-tap route (does a tap-vs-hold remap on ⌘ disturb ⌘-click/⌘-drag?) | manual check queued in `sill/docs/manual-checks.md` (needs the real keyboard) | sill W4 wiring of `Tap` vs `Summon`, `dist/toshy/companion_tap.py`; default route A until it runs | the sill freeze (both variants frozen) |
 | models S1 (engines on Unix sockets under `PrivateNetwork`) | dev script, scratch user unit | stoker W2b, inferd W3 | freeze |
 | memory S1 (embedding throughput), S3 (fscrypt), S4 (fanotify), S5 (sqlite-vec), S6 (xattr) | dev scripts | memoryd embedder default, Q-Me1, Q-P4, Q-P5 | freeze |
@@ -771,15 +771,15 @@ JSON, step tables of the pure parts) pass.
 | Stage | Agent (repo) | Owns | Verify |
 |---|---|---|---|
 | 0 | **deps** (quire) | `docs/workspace-deps.toml` only (§1.4 lines, after S-SQL and S-Cedar) | quire gate |
-| 1 | **stoker** (new) | everything in `~/stoker`; S0 first; commits `cua-action` first so porter can path-patch it | porter-style gate |
-| 1 | **quire** | `ds-core/src/vocab.rs`, `ds-intents/**` (new), `ds/src/components/companion/**` + its `mod.rs` line, `ds/src/assembly/sheets.rs`, `ds-shell/src/{confirm,tokens/glow.rs}`, `ds-style` orb tokens (proposed values, marked), `ds-settings/src/schema/key.rs`; docs: `design/22` rows (all `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*` keys), `design/32-COMPANION.md` (from COMPANION.md), `design/33-AGENT.md` (this spec); **not** design/31, TextField or CommandPalette | quire gate incl. `check-consumer.sh`, `check-doc-paths.sh` |
-| 2 | **porter** | `crates/prov/**` (new), porter-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), porter-provider (`Discovery::Supervised`, `providers/local.toml`), porter-infer (§3.2), porter-dbus + `dbus/org.quire.Inference1.xml`, porter-client, porter-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/quire/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
+| 1 | **stoker** (new) | everything in `~/stoker`; S0 first; commits `computer-use-action` first so porter can path-patch it | porter-style gate |
+| 1 | **quire** | `ui-core/src/vocab.rs`, `ui-intents/**` (new), `ds/src/components/companion/**` + its `mod.rs` line, `ds/src/assembly/sheets.rs`, `ui-shell/src/{confirm,tokens/glow.rs}`, `ui-style` orb tokens (proposed values, marked), `ui-settings/src/schema/key.rs`; docs: `design/22` rows (all `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*` keys), `design/32-COMPANION.md` (from COMPANION.md), `design/33-AGENT.md` (this spec); **not** design/31, TextField or CommandPalette | quire gate incl. `check-consumer.sh`, `check-doc-paths.sh` |
+| 2 | **porter** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.quire.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/quire/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
 | 3 | **almanac** (new) | everything in `~/almanac` | porter-style gate, `--exclude recall-fastembed` |
-| 3 | **docket** (new) | everything in `~/docket` (including companion crates, `docket-ds`, `manifests/org.quire.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
-| 4 | **cua** (new) | everything in `~/cua` (incl. `cua-bus`, both XML/protocol files); joins nothing to quire (reis/atspi landed in stage 0) | porter-style gate |
+| 3 | **docket** (new) | everything in `~/docket` (including companion crates, `action-ui-adapter`, `manifests/org.quire.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
+| 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to quire (reis/atspi landed in stage 0) | porter-style gate |
 | 4 | **fork-setup** | `~/casement` at the 1.8 tag, branch `quire`, `src/quire/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **sill** | ux.md §6 F2 file list with §3.8 here; design/22 is the quire agent's | sill gate |
-| 5 | **detent** | `detent-model/src/page.rs`, `detent-ui/src/icons.rs`, fixtures | detent gate + `scripts/gen-fixtures.sh` |
+| 5 | **detent** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | detent gate + `scripts/gen-fixtures.sh` |
 
 Porter-style gate (stoker, porter, almanac, docket, cua):
 
@@ -803,11 +803,11 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
-| F1 pure | stoker: vision-prep; cua-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. almanac: eventlog; memfiles; recall (+fastembed); seal + watch. docket: policy-point (Cedar, grid); action-review (cascade, breaker); docket-router (call step, covers/compare, SessionSaw, journal, Previewing; owns docket-fake); docket-dbus + docket-client; docket-eval; agent-loop. cua: cua-run; a11y-tree; seat-input; maskcap. quire W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
-| F2 io/backends | stoker: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); cua-session. almanac: almanac-service + almanac-fake. docket: intentd (private bus, seams wired to almanac-client); actions-mcp; readerd; companiond. cua (after Spike A/E): seat-input `ei`; maskcap `wayland`; a11y-tree `atspi`; cua-desktop `desktop`. quire W2/W3: cards, plan, replace, form, rows, ds-shell views; ds-intents ContextModel (after Q-P7). | same |
-| F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. almanac: almanac-dbus, almanac-client, memoryd + unit. cua: cuad, cua-dbus codec, cua-fake harness, `dist/`. docket: docket-ds against quire. sill W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
+| F1 pure | stoker: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. almanac: eventlog; memfiles; recall (+fastembed); seal + watch. docket: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; docket-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. quire W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
+| F2 io/backends | stoker: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. almanac: memory-service + memory-fake. docket: intentd (private bus, seams wired to memory-client); actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. quire W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
+| F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. almanac: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. docket: action-ui-adapter against quire. sill W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); sill W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/cua-step-holo.sh` (GPU, by hand) | — |
-| Later | cloud backends + cua-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `quire_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
+| Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `quire_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
 
 ---
 
@@ -815,16 +815,16 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | # | Conflict | Resolution |
 |---|---|---|
-| C1 | Specs guessed crate/repo names (`docket-*`, `almanac-*`, `quire-intents`, two crates named `cua-wire`) | §1.3 names; models' `cua-wire` → `cua-vendors`; `quire-intents` → `docket-core` |
+| C1 | Specs guessed crate/repo names (`docket-*`, `almanac-*`, `quire-intents`, two crates named `cua-wire`) | §1.3 names; models' `cua-wire` → `computer-use-vendors`; `quire-intents` → `action-core` |
 | C2 | `prov` home: docket (actions) vs prov/almanac (memory); docket↔almanac repo cycle | `prov` in porter; almanac stores other areas' payloads opaquely |
 | C3 | `Effect` four homes | `prov::Effect`; ds `EffectMark` view |
 | C4 | Two `Actor` enums + cua's `Companion(CuaRun)` + ux view | merged `prov::Actor` (§3.1) |
 | C5 | `RunId(u64)` vs `RunId(String)` | String slugs in prov |
 | C6 | `ThingRef` vs `EntityId` | aliases of `prov::EntityId` |
-| C7 | Two `cua-action` definitions (typed spaces vs `Lpx`, Node targets, `Done{extracted}`) | merged §3.3; `TargetedAction` in cua-run |
+| C7 | Two `computer-use-action` definitions (typed spaces vs `Lpx`, Node targets, `Done{extracted}`) | merged §3.3; `TargetedAction` in computer-use-run |
 | C8 | Float / i32 / physical-pixel coordinates (cua-integration, cua.md, research) | `Coord(u32)` window logical px + `Scale120` |
-| C9 | cua wanted `CuaModel` in model-provider with `dyn FnMut`; models runs the session in inferd | inferd hosts `cua-session`; cuad's `CuaModel` seam is in cua-run over `Inference1` |
-| C10 | cuad links `policy-point` vs COMPANION "one decision point in the router" | `Intents1.Gate`; one PDP, one breaker, one audit |
+| C9 | cua wanted `CuaModel` in model-provider with `dyn FnMut`; models runs the session in inferd | inferd hosts `computer-use-session`; cuad's `CuaModel` seam is in computer-use-run over `Inference1` |
+| C10 | cuad links `permission-policy` vs COMPANION "one decision point in the router" | `Intents1.Gate`; one PDP, one breaker, one audit |
 | C11 | CUA grant home | docket `ActionGrant` with caller Cua (both specs agreed) |
 | C12 | cua per-run `denials` budget vs router breaker | breaker only |
 | C13 | Confirm1 served by the fork (actions) vs sill sheet + trusted surface (ux) | sill serves Confirm1 in both phases; the fork supplies `quire_trusted_surface_v1` |
@@ -837,13 +837,13 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C20 | "Lasting from untrusted → Ask" (actions) vs pending facts (memory) | `Lasting::Staged`: pending queue is the confirmation |
 | C21 | Undo/activity duplicated in Companion1 and Cua1 (ux) | router journal and `Run.Undo/UndoAll`; `Replay` later |
 | C22 | UndoAll offered for every CUA run (ux) | only when the journal holds typed entries for the run |
-| C23 | Companion1 `Presence` property vs sill derivation | sill-model `presence_of` only |
-| C24 | Three `GlowState`s and two glow protocols | cua-desktop wire + `quire-agent-v1.set_glow`; ds-shell `GlowLook`; style push later |
+| C23 | Companion1 `Presence` property vs sill derivation | shell-model `presence_of` only |
+| C24 | Three `GlowState`s and two glow protocols | computer-use-desktop wire + `quire-agent-v1.set_glow`; ui-shell `GlowLook`; style push later |
 | C25 | `Activation::Intent{action,args}` (ux) vs `Intent(CallRequest)`; `Activation::Cua` (cua) vs `Companion(Run)` (ux); `CuaRunProvider` vs `RunsProvider` | `Intent(CallRequest)`; `CompanionAct::Run`; `RunsProvider`; ProviderKind order Things, Companion, Runs, Memory |
 | C26 | Esc halts/pauses (actions, cua-integration) vs Esc closes one level (ux) | ux: ⌘. and Stop stop; `HaltCause::StopKey` |
 | C27 | ux's memory method names vs memory.md | memory.md: `PlanForget`/`Forget(token)`/`Settle`/`Consolidation`/`Export(options, h)` |
 | C28 | "context area" `Summon` method | `IntentProvider1.Summon` |
-| C29 | `ds-intents` using docket-client (actions) vs "quire never names daemon crates" (ux) | quire `ds-intents` is view-only; `docket-ds` adapter in docket |
+| C29 | `ui-intents` using action-client (actions) vs "quire never names daemon crates" (ux) | quire `ui-intents` is view-only; `action-ui-adapter` adapter in docket |
 | C30 | design/30 §3.4 defers companion work; new catalogue rows need the user | freeze types now; fills wait on Q-P7 |
 | C31 | Settings key duplicates | §2 last row |
 | C32 | Name collisions (Verdict, Decision, Need, Fact, Visibility, Usage, Role, Latency2, CallId, Repeat, Space, Budget, TaintNote, ConfirmAnswer, MemoryVerb, Actor) | §2 renames |
@@ -861,7 +861,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C44 | sqlite-vec needs `unsafe` | ExactScan default; Q-P5 |
 | C45 | notify 9-rc (survey) vs 8.2 (pinned) | 8.2 |
 | C46 | `HandBack` two meanings | `Run.HandBack` resumes; handover is `Start` with `origin = Handover` |
-| C47 | cuad inside shell-host vs own daemon | own daemon |
+| C47 | cuad inside layer-shell-host vs own daemon | own daemon |
 | C48 | second `wl_seat` vs reis | EI via reis always |
 | C49 | masking in compositor vs capturer | both by backend, `MaskWhere` recorded |
 | C50 | P1 inline replace runs at once (item 9) vs waits for Apply (agent-ux P1, ux `ReplacePhase::Proposed`) | user decides (Q-U9); both phases frozen |

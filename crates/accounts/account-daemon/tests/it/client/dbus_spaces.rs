@@ -4,10 +4,10 @@
 
 use super::common;
 
-use common::accountd::{Daemon, named, photos};
 use account_client::{LinkError, SpacesError};
 use account_client_dbus::Bus;
 use account_core::{SpaceChange, SpaceLook, SpaceName};
+use common::accountd::{Daemon, named, photos};
 
 fn name(text: &str) -> SpaceName {
     SpaceName::parse(text).expect("name")

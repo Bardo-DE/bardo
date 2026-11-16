@@ -7,13 +7,13 @@ use crate::best_effort::best_effort;
 use crate::recover::{RecentSource, RouterRecent, owner_form};
 use crate::runtime::Companion;
 use crate::seams::Surface;
-use memory_core::{BodyMode, JsonText, KindPattern, RecentEntry, RecentQuery, TrustFilter};
-use companion_model::helper::{HelperRecord, HelperRecordKind};
+use account_ids::Count;
 use action_client::Transport as IntentsTransport;
-use agent_planner::Planner;
 use action_vocab::Clock;
 use action_wire::{HelperNote, NoteAsk, SessionOpen};
-use account_ids::Count;
+use agent_planner::Planner;
+use companion_model::helper::{HelperRecord, HelperRecordKind};
+use memory_core::{BodyMode, JsonText, KindPattern, RecentEntry, RecentQuery, TrustFilter};
 use provenance::{AgentRef, SpaceId, UnixSeconds};
 
 /// The most records one Space's read returns.

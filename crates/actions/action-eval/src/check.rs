@@ -17,10 +17,10 @@
 //! `testdata`), build output and hidden directories are not part of the app.
 
 use crate::ui::{UiFile, check_ui};
+use account_core::AppName;
 use action_core::tool_schema;
 use action_manifest::ValidManifest;
 use action_manifest::parse;
-use account_core::AppName;
 use std::path::{Path, PathBuf};
 
 /// How serious a finding is.

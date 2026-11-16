@@ -5,9 +5,9 @@ use crate::copy::absence::{Subject, absence as absence_words};
 use crate::live::{use_client, use_live};
 use crate::privacy::use_program_book;
 use crate::system::Absent;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{ScreenSharingInput, ScreenSharingState};
-use dioxus::prelude::*;
 
 /// The apps the portal lets share the screen without asking again, with a Remove on each and a way to allow another.
 #[component]

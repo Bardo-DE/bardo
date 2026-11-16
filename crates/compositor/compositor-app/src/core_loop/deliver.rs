@@ -26,14 +26,14 @@ use compositor_core::lock::LockState;
 use compositor_core::shell::ShellNote;
 use compositor_core::time::{Due, Mono, TimerKey};
 use compositor_core::{Effect, InputSerial, KeyboardTarget, Model};
-use desktop_protocols::vocab::HeldMods;
-use desktop_protocols::vocab::PressEdge;
 use compositor_wayland::seat::{
     self, GestureDelivery, KeyDelivery, PointerDelivery, Pressed, SurfaceAt,
 };
 use compositor_wayland::serial::{PressKind, PressRecord};
 use compositor_wayland::shortcuts_inhibit;
 use compositor_wayland::{ClientState, text_input};
+use desktop_protocols::vocab::HeldMods;
+use desktop_protocols::vocab::PressEdge;
 use smithay::input::keyboard::{FilterResult, ModifiersState};
 use smithay::input::{Seat, pointer::PointerHandle};
 use smithay::reexports::wayland_server::Resource;

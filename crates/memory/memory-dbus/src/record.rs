@@ -1,4 +1,4 @@
-//! `org.quire.Memory1.Record`: writers. Bodies are the serde JSON of the `almanac-core` types
+//! `org.quire.Memory1.Record`: writers. Bodies are the serde JSON of the `memory-core` types
 //! in `s` arguments.
 
 /// The caller's side.

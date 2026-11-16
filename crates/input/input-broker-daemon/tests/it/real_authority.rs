@@ -2,17 +2,17 @@
 //! the `/proc` and the table are a tree in memory.
 
 use crate::support::{PALMREST_UID, USER};
-use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Prober, TableFiles};
 use caller_identity_core::{FileTrust, LOADER_VARIABLES, Pid, Proof, RoleName, Uid, Writer};
-use rustix::net::sockopt::socket_peercred;
-use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
-use std::os::fd::OwnedFd;
-use std::path::PathBuf;
+use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Prober, TableFiles};
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::peephole_authority::PeepholeAuthority;
 use input_broker_daemon::identity::{ActiveUid, Authority, Credential, IdentifyError};
 use input_broker_daemon::policy::{Refusal, authorise};
 use input_broker_wire::Kind;
+use rustix::net::sockopt::socket_peercred;
+use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
+use std::os::fd::OwnedFd;
+use std::path::PathBuf;
 
 const MAIN: &str = "/etc/quire/desktop-callers.toml";
 const DIR: &str = "/etc/quire/desktop-callers.d";

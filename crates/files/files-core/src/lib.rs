@@ -43,7 +43,6 @@ pub use cloud::{
     DriveState, OnlineUrl, ProviderName, Refused, Saved, SavedCopies, Share, UrlError, Usage,
 };
 pub use conflict::{Answer, Bring, Conflict, Resolution};
-pub use ui_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use entry::{Entry, EntryKind, LinkTo, Special};
 pub use error::{ItemError, PathError};
 pub use failure::OpFailure;
@@ -56,6 +55,7 @@ pub use progress::Progress;
 pub use report::{Finish, OpEvent, Outcome};
 pub use size::ByteSize;
 pub use trashed::{TrashId, TrashedItem};
+pub use ui_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use view::{FolderPrefs, Sort, SortKey, SortOrder, ViewMode};
 pub use volume::{
     EjectFailure, MountFailure, ProgramName, Volume, VolumeId, VolumeKind, VolumeName,

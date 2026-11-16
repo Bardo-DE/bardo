@@ -1,5 +1,5 @@
 //! The helpers' runner. companion-core decides over values (how a job's end is told to the board,
-//! the kept answers, the desk's refusals, the routines' due and event rules); `docket-tasks` is
+//! the kept answers, the desk's refusals, the routines' due and event rules); `companion-tasks` is
 //! the task model a job runs on. This crate owns the state and carries the effects out, with no
 //! bus of its own:
 //!

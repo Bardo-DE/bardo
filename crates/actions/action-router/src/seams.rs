@@ -1,10 +1,10 @@
 //! What the router is handed instead of reaching for it: the apps, the person's consent store,
 //! the event log, the clock and memory. The seams that draw (`Confirmer`), review (`Reviewer`),
 //! derive a policy (`PolicyWriter`) and read untrusted text (`Reader`) are traits of
-//! `docket-core` and `action-review`; `Seams` bundles all of them so the router is generic over
+//! `action-core` and `action-review`; `Seams` bundles all of them so the router is generic over
 //! one parameter and the implementations stay closed sets, not `dyn`.
 
-use action_review::Reviewer;
+use account_core::AppName;
 use action_checkpoint::CheckpointStore;
 use action_core::{
     AppRefusal, Confirmer, ContextSnapshot, Invocation, Outcome, PolicyWriter, Preview, Reader,
@@ -12,12 +12,12 @@ use action_core::{
 };
 use action_core::{EventSink, LinkFault, MemoryLink};
 use action_manifest::Latency;
+use action_review::Reviewer;
+use action_vocab::{EntityRef, UndoToken};
+use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
 use permission_core::Limit;
 use permission_core::{ActionGrant, StandingGrant, StandingGrantId};
-use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
-use action_vocab::{EntityRef, UndoToken};
 use permission_policy::Presets;
-use account_core::AppName;
 use provenance::{Actor, EntityId, SessionId};
 use std::future::Future;
 
@@ -158,7 +158,7 @@ pub trait GrantStore: Send + Sync {
 
 /// The seam to a session's durable record when there is none: every entry is accepted and
 /// nothing is kept, so a session cannot be restored. What an app that hosts its own agent
-/// without memory runs with; the daemon passes `docket-memory`'s log over almanac.
+/// without memory runs with; the daemon passes `companion-memory`'s log over almanac.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct NoLog;
 

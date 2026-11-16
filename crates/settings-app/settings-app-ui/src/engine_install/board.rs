@@ -1,11 +1,11 @@
 //! Following the engines and carrying out what the offer asks. Every page that draws the picker
 //! calls [`use_board`] through `use_picker`, so its Local row and the sheet agree; the follow loop
-//! and the desk are `detent-client`'s.
+//! and the desk are `settings-app-client`'s.
 
 use crate::live::use_live;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{EngineOfferInput, EngineOfferState};
-use dioxus::prelude::*;
 
 /// What an engine's menu word starts with when picking it asks to get the engine, so it is never
 /// mistaken for the name of one that is there.

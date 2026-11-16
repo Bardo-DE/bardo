@@ -1,5 +1,5 @@
 //! The Displays page, as Settings meets it: each display with its resolution, refresh rate,
-//! rotation and place beside the others. Pure; the compositor is the window's (`detent-ui`).
+//! rotation and place beside the others. Pure; the compositor is the window's (`settings-app-ui`).
 
 mod arrange;
 mod brightness;

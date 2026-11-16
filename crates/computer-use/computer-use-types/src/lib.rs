@@ -1,4 +1,4 @@
-//! The leaf types that cua-bus carries inside its bodies and that the capability crates produce.
+//! The leaf types that computer-use-bus carries inside its bodies and that the capability crates produce.
 //!
 //! They live here so a consumer that only reads the bus bodies links serde and the desktop
 //! vocabulary, not the accessibility, input or capture crates. Each capability crate re-exports

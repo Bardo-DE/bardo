@@ -10,8 +10,8 @@ publish = false
 
 [dependencies]
 # The compiler is the fence: the window names only the client (its one door to the computer), the
-# model (its facts, and the other crates' types they are made of) and quire. Never detent-files,
-# detent-system, porter-*, almanac-*, docket-* or zbus.
+# model (its facts, and the other crates' types they are made of) and quire. Never settings-app-files,
+# settings-app-system, porter-*, almanac-*, docket-* or zbus.
 settings-app-client = {path = "../settings-app-client"}
 settings-app-model = {path = "../settings-app-model"}
 dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}

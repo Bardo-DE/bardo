@@ -10,7 +10,9 @@
 use crate::eis::RemoteInput;
 use compositor_core::DeviceId;
 use compositor_core::LeaseId;
-use compositor_core::input::{ButtonCode, DeviceClass, InputKind, KeyCode, Origin, PortalSessionId};
+use compositor_core::input::{
+    ButtonCode, DeviceClass, InputKind, KeyCode, Origin, PortalSessionId,
+};
 use desktop_protocols::vocab::PressEdge;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex, PoisonError};

@@ -6,12 +6,12 @@ use std::cmp::Ordering;
 use jiff::ToSpan;
 use jiff::civil::{Date, Weekday};
 use jiff::tz::TimeZone;
-use shell_model::events::{CalEvent, EventTime};
-use shell_settings::FirstWeekday;
 use shell_kit::month_grid::data::{
     DayKey, DayMark, DayPlace, Eventful, IsoWeek, MonthDay, MonthGridData, MonthKey, MonthStep,
     MonthWeek,
 };
+use shell_model::events::{CalEvent, EventTime};
+use shell_settings::FirstWeekday;
 
 use super::shown::{initial, month_title};
 
@@ -164,12 +164,12 @@ fn local_days(event: &CalEvent, zone: &TimeZone) -> Option<(Date, Date)> {
 
 #[cfg(test)]
 mod tests {
-    use ui_components::prelude::*;
     use jiff::civil::date;
-    use shell_settings::FirstWeekday;
     use shell_kit::month_grid::data::{
         DayKey, DayMark, DayPlace, Eventful, IsoWeek, MonthKey, MonthStep,
     };
+    use shell_settings::FirstWeekday;
+    use ui_components::prelude::*;
 
     use super::{month_grid, month_of, shift_month};
 

@@ -21,6 +21,7 @@ use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
 use ::pipewire as pw;
+use portal_core::{CursorMode, Extent, FrameRate, Held, PwNode, Step, decide};
 use pw::properties::properties;
 use pw::spa::param::ParamType;
 use pw::spa::param::format::{FormatProperties, MediaSubtype, MediaType};
@@ -29,7 +30,6 @@ use pw::spa::pod::serialize::PodSerializer;
 use pw::spa::pod::{ChoiceValue, Object, Pod, Property, Value};
 use pw::spa::utils::{Choice, ChoiceEnum, ChoiceFlags, Direction, Fraction, Rectangle, SpaTypes};
 use pw::stream::{StreamFlags, StreamRc, StreamState};
-use portal_core::{CursorMode, Extent, FrameRate, Held, PwNode, Step, decide};
 
 use super::pixels::{self, Layout};
 use super::stream::{FrameSink, SinkError};

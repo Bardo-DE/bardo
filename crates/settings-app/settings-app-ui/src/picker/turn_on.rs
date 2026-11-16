@@ -1,7 +1,7 @@
 //! The question asked when a coding agent is picked while coding agents are switched off.
 
-use settings_app_model::{PickerInput, Ready};
 use dioxus::prelude::*;
+use settings_app_model::{PickerInput, Ready};
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ui_components::prelude::*;
 

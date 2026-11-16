@@ -49,11 +49,11 @@ BINARIES=(
   "companiond|companiond|libexec"
   "readerd|readerd|libexec"
   "actions-mcp|actions-mcp|libexec"
-  "quire-do|docket-cli|bin"
-  "docket-acp|docket-acp-bin|bin"
-  "docket-agent|docket-acp-bin|bin"
-  "docket-net-forward|docket-acp-bin|bin"
-  "docket-net-enter|docket-acp-bin|bin"
+  "quire-do|action-cli|bin"
+  "docket-acp|agent-acp-bin|bin"
+  "docket-agent|agent-acp-bin|bin"
+  "docket-net-forward|agent-acp-bin|bin"
+  "docket-net-enter|agent-acp-bin|bin"
 )
 UNITS=(intentd companiond readerd actions-mcp docket-agent)
 DBUS_NAMES=(Companion1 Intents1 Reader1 AcpAgent)

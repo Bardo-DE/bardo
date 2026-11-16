@@ -7,13 +7,13 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-# RULES: what a crate reaches through ANY path (transitive, default features). keycap-core is
+# RULES: what a crate reaches through ANY path (transitive, default features). key-remap-core is
 # the pure remap core a compositor links: no device, socket, runtime, bus or file-watching
 # crate, so no evdev, uinput, tokio, zbus, notify or rustix.
 EFFECTS="evdev input-linux uinput tokio zbus zvariant notify rustix libc nix mio async-std smol"
 RULES=(
-  "keycap-core: $EFFECTS"
-  "keycap-protocol: $EFFECTS toml"
+  "key-remap-core: $EFFECTS"
+  "key-remap-proto: $EFFECTS toml"
 )
 fail=0
 
@@ -41,23 +41,23 @@ for rule in "${RULES[@]}"; do
 done
 
 # The allowed edges: each crate's DIRECT normal and build dependencies (all features), ours and
-# third-party, and nothing else, so the table stays exact. keycap-core reaches serde, toml and
-# thiserror, plus keycap-protocol for the two vocabulary types the config speaks (`ProfileName`,
+# third-party, and nothing else, so the table stays exact. key-remap-core reaches serde, toml and
+# thiserror, plus key-remap-proto for the two vocabulary types the config speaks (`ProfileName`,
 # `Warning`), which brings serde_json with it. Dev dependencies are outside the table.
 EDGES=(
-  "keycap-core: keycap-protocol thiserror toml"
-  "keycap-protocol: serde serde_json thiserror"
-  # keycap also links peephole (who the socket's peer is) and turnstile-client (the root service
+  "key-remap-core: key-remap-proto thiserror toml"
+  "key-remap-proto: serde serde_json thiserror"
+  # keycap also links peephole (who the socket's peer is) and input-broker-client (the root service
   # that makes its virtual devices), both by tag; neither brings a bus or an async runtime. latchkey
   # (feature guard) holds the socket guard keycap shares with palmrest.
-  "keycap: chordkit keycap-client keycap-core keycap-protocol keycap-sys latchkey notify peephole peephole-core rustix thiserror turnstile-client"
-  # keycap-sys: the evdev and uinput ioctls and the node drain that keycap and keycap-devtest
+  "keycap: chordkit key-remap-client key-remap-core key-remap-proto key-remap-evdev latchkey notify peephole caller-identity-core rustix thiserror input-broker-client"
+  # key-remap-evdev: the evdev and uinput ioctls and the node drain that keycap and key-remap-devtest
   # share; the safe input-linux handles and rustix reads, nothing of keycap's own.
-  "keycap-sys: input-linux rustix thiserror"
-  # keycap-client: what an app links to read the desktop keymap. The protocol, chordkit's pure core
-  # and its bounded file reader (chordkit-file), and rustix for the SOCK_SEQPACKET socket std
+  "key-remap-evdev: input-linux rustix thiserror"
+  # key-remap-client: what an app links to read the desktop keymap. The protocol, chordkit's pure core
+  # and its bounded file reader (keymap-fs), and rustix for the SOCK_SEQPACKET socket std
   # lacks; no runtime, no file watcher. shell-verbs names the shell's verbs in the handled table.
-  "keycap-client: chordkit chordkit-file keycap-protocol rustix shell-verbs"
+  "key-remap-client: chordkit keymap-fs key-remap-proto rustix shell-verbs"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -73,10 +73,10 @@ for edge in "${EDGES[@]}"; do
   fi
 done
 
-# Every workspace member has a row above, so a new crate cannot slip in unchecked. keycap-devtest
+# Every workspace member has a row above, so a new crate cannot slip in unchecked. key-remap-devtest
 # is a test-only harness and outside the table.
 for member in $(sed -n 's#^members = \[\(.*\)\]#\1#p' Cargo.toml | tr -d '", ' | sed 's#crates/#\n#g' | grep .); do
-  [ "$member" = keycap-devtest ] && continue
+  [ "$member" = key-remap-devtest ] && continue
   grep -q "^$member:" <<<"$(printf '%s\n' "${EDGES[@]}")" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 

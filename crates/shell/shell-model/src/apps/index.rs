@@ -2,10 +2,10 @@
 
 use std::path::PathBuf;
 
-use ui_helpers::{AppKeys, match_app};
 use key_remap_proto::ProfileName;
 use serde::{Deserialize, Serialize};
 use shell_launcher::{AppId, Mime};
+use ui_helpers::{AppKeys, match_app};
 
 /// The registered category of a file manager (Nautilus, Dolphin, Thunar, Nemo...).
 const FILE_MANAGER: &str = "FileManager";

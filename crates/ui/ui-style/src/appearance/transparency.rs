@@ -4,8 +4,8 @@
 //! The settings portal has no key for it, so it is ours: `appearance.transparency`, one
 //! desktop-wide setting that the compositor reads from the same appearance file as `theme`.
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
+use ui_core::word::Word;
 
 /// Whether materials may show what is behind them, as a person chooses it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default, Word)]

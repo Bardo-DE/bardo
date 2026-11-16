@@ -38,7 +38,7 @@ pub enum ForgetScope {
     Space,
 }
 
-/// A request to memoryd. Who may send which is `almanac-service::allowed`.
+/// A request to memoryd. Who may send which is `memory-service::allowed`.
 // One request is built and sent per call, and the wire form is the serde of this enum as it
 // stands: boxing `Record` would only complicate every match for no saving.
 #[allow(clippy::large_enum_variant)]

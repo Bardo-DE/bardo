@@ -1,6 +1,6 @@
 //! The coding-agent sessions the person started in a terminal: the list the companion keeps of
 //! them, the words a row wears in the panel, and the one transition ([`update`]) that takes the
-//! list and the person's Bring Back. Pure: `sill-services` makes the calls [`TerminalsCommand`]
+//! list and the person's Bring Back. Pure: `shell-services` makes the calls [`TerminalsCommand`]
 //! asks for and feeds back what they came to.
 
 mod model;

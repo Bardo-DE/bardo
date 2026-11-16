@@ -7,10 +7,10 @@
 //! halfway through `panel-out`; neither may leave the panel off its resting box.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const CSS: &str = "@keyframes slide{ from{ transform:translateX(400px); } to{ transform:none; } }
 .box{ position:absolute; left:0; top:0; width:100px; height:100px; background:red; }

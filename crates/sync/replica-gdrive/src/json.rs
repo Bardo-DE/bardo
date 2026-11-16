@@ -1,8 +1,8 @@
 //! What Drive's JSON says, read as far as the replica needs.
 
-use sync_core::{ContentHash, ItemKind};
 use account_ids::WebUrl;
 use serde::Deserialize;
+use sync_core::{ContentHash, ItemKind};
 
 /// The mime type of a folder.
 pub const FOLDER: &str = "application/vnd.google-apps.folder";

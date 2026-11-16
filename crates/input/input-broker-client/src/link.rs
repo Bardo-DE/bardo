@@ -3,6 +3,8 @@
 
 use crate::error::ClientError;
 use crate::session::Sent;
+use input_broker_wire::WireError;
+use input_broker_wire::limits::MAX_DATAGRAM;
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::io::Errno;
 use rustix::net::{
@@ -12,8 +14,6 @@ use std::io::IoSliceMut;
 use std::mem::MaybeUninit;
 use std::os::fd::OwnedFd;
 use std::time::{Duration, Instant};
-use input_broker_wire::WireError;
-use input_broker_wire::limits::MAX_DATAGRAM;
 
 /// A datagram and the descriptor that came with it.
 #[derive(Debug)]

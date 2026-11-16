@@ -5,7 +5,9 @@
 
 use crate::audio::audio_ms;
 use account_ids::Count;
-use inference_core::{AudioFrame, AudioRate, InferReply, InferRequest, MessagePart, ToolResultPart};
+use inference_core::{
+    AudioFrame, AudioRate, InferReply, InferRequest, MessagePart, ToolResultPart,
+};
 
 /// What one finished turn carried.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

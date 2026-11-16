@@ -1,11 +1,11 @@
 //! The Spaces bar's pure rules: when it is up, how the Spaces are named and marked per output,
 //! and what a click sends.
 
+use account_core::SpaceId;
 use desktop_protocols::vocab::{
     Emphasis, LeaseState, Modality, OverviewMode, OverviewState, PlacementMark, Responsiveness,
     SensitivityLevel, Shown, SpaceKind, Toggle, WindowRole, WindowStateKind,
 };
-use account_core::SpaceId;
 
 use super::{
     BarPick, BarShow, DesktopCommand, DesktopView, SpacePlaceView, SpaceView, WindowView, bar_show,

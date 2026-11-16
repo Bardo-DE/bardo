@@ -1,9 +1,9 @@
-//! Bridges shell-host's raw seat modality and surface scale into quire's `ui_components::prelude::HostSignals`, the
+//! Bridges layer-shell-host's raw seat modality and surface scale into quire's `ui_components::prelude::HostSignals`, the
 //! root context `Ds` reads to stamp `data-modality` (and so decide whether the focus ring shows)
-//! and to size the pixel tokens. shell-host cannot name quire's `ds` crate
-//! (`scripts/check-boundary.sh`), so sill republishes: [`use_host_signals`] reads shell-host's
+//! and to size the pixel tokens. layer-shell-host cannot name quire's `ds` crate
+//! (`scripts/check-boundary.sh`), so sill republishes: [`use_host_signals`] reads layer-shell-host's
 //! `use_input_modality()` (one value per seat, shared by every surface) and `use_surface_scale()`
-//! and provides them as `ui_components::prelude::HostSignals` with a `use_effect` (shell-host README, "Consuming:
+//! and provides them as `ui_components::prelude::HostSignals` with a `use_effect` (layer-shell-host README, "Consuming:
 //! input modality (focus rings)"). It runs once per document root: in `mount` and `mount_lock`
 //! for a surface and in `PopupFrame` for a popup, so every `Ds` root has the same keyboard-only
 //! focus ring and one scale, and no surface calls it by hand. The seat's window activity is not
@@ -16,16 +16,16 @@
 //! the hooks run in the same order on every render.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::{InputModality as SeatModality, Scale120, SurfaceHandle};
+use ui_components::prelude::*;
 
-/// shell-host's raw modality, as quire's own: whether the person last used the keyboard.
+/// layer-shell-host's raw modality, as quire's own: whether the person last used the keyboard.
 fn to_ds(modality: SeatModality) -> bool {
     matches!(modality, SeatModality::Keyboard)
 }
 
 /// Provides `ui_components::prelude::HostSignals` to this component and everything under it, kept live from
-/// shell-host's per-seat [`layer_shell_host::use_input_modality`] and the surface's
+/// layer-shell-host's per-seat [`layer_shell_host::use_input_modality`] and the surface's
 /// [`layer_shell_host::use_surface_scale`]. Nothing is provided on a component with no `SurfaceHandle`.
 pub fn use_host_signals() {
     let hosted = use_hook(try_consume_context::<SurfaceHandle>);

@@ -1,7 +1,7 @@
 //! Cases for a planner that misbehaves. The corpus cases script the planner's calls and judge what
 //! the router did; these play the real companion over a cassette of what the model said (a call
 //! written as words, an invented tool, the same call forever) and judge what the person saw and
-//! what the apps were made to do. They need the daemons, so `docket-accept` plays them: in the
+//! what the apps were made to do. They need the daemons, so `action-accept` plays them: in the
 //! gate over their own cassettes, and in `dev/live-smoke.sh` over any engine.
 //!
 //! A case is `eval/hostile-model/planner/<id>.toml` beside `<id>.cassette.jsonl`, inferd's replay

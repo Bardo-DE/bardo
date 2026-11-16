@@ -10,8 +10,8 @@ use crate::geometry::LogicalRect;
 use crate::ids::{OutputKey, WindowId};
 use crate::space::{Space, SpaceContent, SpaceIndex};
 use crate::window::{SpacePlace, WindowState};
-use desktop_protocols::vocab::Assign;
 use account_core::SpaceId;
+use desktop_protocols::vocab::Assign;
 use std::collections::BTreeSet;
 
 impl Model {

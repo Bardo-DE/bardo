@@ -4,7 +4,7 @@
 //! dioxus-native at this rev has no public way for a running app to open a window: its
 //! application sets up only the window it was built with (`DioxusNativeApplication::add_window`
 //! skips the dioxus contexts and waits for a resume that never comes on a desktop), and
-//! `launch_cfg_with_props` runs the loop itself. So ds-blitz builds the loop and each window's
+//! `launch_cfg_with_props` runs the loop itself. So ui-blitz builds the loop and each window's
 //! document itself (`crate::window_build`, as `launch_cfg_with_props` does) and runs a
 //! `DioxusNativeApplication` per window under this handler, which routes each winit event to the
 //! application whose window it is and forwards everything else to all of them.
@@ -55,10 +55,10 @@ use dioxus_native::winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoopPr
 use dioxus_native::winit::window::WindowId;
 use dioxus_native::winit::window::{Window, WindowAttributes};
 use dioxus_native::{DioxusNativeApplication, DioxusNativeWindowRenderer};
-use ui_components::host::gesture::GestureBus;
 use std::sync::Arc;
 use std::sync::mpsc::{Receiver, Sender, channel};
 use std::time::Instant;
+use ui_components::host::gesture::GestureBus;
 
 /// One window's dioxus-native application and its relay.
 struct Sub {

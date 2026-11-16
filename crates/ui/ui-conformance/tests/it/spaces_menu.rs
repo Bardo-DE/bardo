@@ -5,10 +5,10 @@
 
 use crate::support::spaces_page::{EditedOnAPage, One, Three, WithAccounts};
 use dioxus::prelude::Element;
+use std::time::Duration;
 use ui_components::base::press::PointerButton;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 420,

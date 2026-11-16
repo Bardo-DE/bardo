@@ -3,11 +3,11 @@
 use super::handle::MachineRef;
 use dioxus::core::Task;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::machine::Machine;
 use ui_core::time::clock::sleep;
 use ui_core::time::stamp::Stamp;
 use ui_style::task::spawn_in;
-use std::time::Duration;
 
 /// The sleep that is running: the time it was set for and its task. None at rest.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

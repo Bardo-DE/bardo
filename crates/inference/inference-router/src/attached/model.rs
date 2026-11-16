@@ -6,15 +6,15 @@ use super::config::{Attached, AttachedError};
 use super::target::Target;
 use crate::catalog::claims_of;
 use crate::local::{LOCAL_ACCOUNT, LocalModel, flavor_of};
-use engine_spec::{EnginePaths, ProgramPath};
-use engine_supervisor::{EngineId, EngineSpec, SocketPath, command};
-use model_catalog::{EngineKind, EngineProfile, MiB, ModelEntry, Serving, WeightFiles};
-use model_openai_compat::Flavor;
-use model_provider::ModelName;
 use account_capability::Billing;
 use account_capability::{Capability, Offer};
 use account_core::AccountId;
+use engine_spec::{EnginePaths, ProgramPath};
+use engine_supervisor::{EngineId, EngineSpec, SocketPath, command};
 use inference_core::ModelCard;
+use model_catalog::{EngineKind, EngineProfile, MiB, ModelEntry, Serving, WeightFiles};
+use model_openai_compat::Flavor;
+use model_provider::ModelName;
 use std::path::{Path, PathBuf};
 
 /// The engine id of an attached model: it names no process.

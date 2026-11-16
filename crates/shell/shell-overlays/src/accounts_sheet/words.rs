@@ -2,11 +2,6 @@
 //! app, a provider, a kind of service and a reason a service is limited. Pure, table-tested in
 //! `props.rs`'s tests.
 
-use ui_components::base::text::clip::clip_chars;
-use ui_components::components::content::mark_face::MarkFace;
-use ui_components::components::content::provider_mark::MarkProvider;
-use ui_shell::accounts::model::{Limitation, SignInFault};
-use ui_shell::prelude::{Recovery, WorkingFor};
 use account_capability::{AbsentReason, CapabilityKind};
 use account_core::LimitReason;
 use account_core::consent::Usage;
@@ -14,6 +9,11 @@ use account_core::{AppId, DataClass, ProviderId};
 use account_ids::WebUrl;
 use account_sheet::SignInFault as PorterFault;
 use account_sheet::{ProviderKind, ProviderRow, RowKind};
+use ui_components::base::text::clip::clip_chars;
+use ui_components::components::content::mark_face::MarkFace;
+use ui_components::components::content::provider_mark::MarkProvider;
+use ui_shell::accounts::model::{Limitation, SignInFault};
+use ui_shell::prelude::{Recovery, WorkingFor};
 
 /// What the person reads for an app. `resolved` is the label the app's own entry gives it (porter
 /// will send one with the ask: this is where it plugs in); without one the last element of its
@@ -227,7 +227,7 @@ pub(super) fn choice_label(slug: &str) -> &str {
 }
 
 /// The port a server usually listens on, the hint in an empty port entry. porter keeps its own
-/// table private (`usual_port` in `porter-core/src/sheet/manual.rs`); this one repeats it, and
+/// table private (`usual_port` in `account-core/src/sheet/manual.rs`); this one repeats it, and
 /// a test pins the two together through `refit`'s prefill: outgoing 465 for TLS and 587 for
 /// STARTTLS; POP3 995 for TLS and 110 for STARTTLS; IMAP (and JMAP, which has no port) 993 and 143.
 pub(super) fn usual_port(protocol: &str, outgoing: bool, security: &str) -> u16 {

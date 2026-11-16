@@ -4,9 +4,9 @@
 
 use crate::support::infer::{Say, call, words};
 use crate::support::world::*;
+use account_core::consent::Usage;
 use agent_loop::IdlePhase;
 use memory_core::EpisodeKind;
-use account_core::consent::Usage;
 use provenance::{Confidentiality, Integrity, ModelRole, Source, UnixSeconds};
 use serde_json::json;
 

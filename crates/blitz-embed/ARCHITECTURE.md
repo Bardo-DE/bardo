@@ -1,15 +1,15 @@
 # Architecture
 
-blitz-kit holds the portable repairs and helpers that every Blitz consumer needs: hover sync,
+blitz-embed holds the portable repairs and helpers that every Blitz consumer needs: hover sync,
 the local net provider, shared fonts, GPU adapter choice, transform-aware hit testing and painted
-rectangles, pixel snap, and the scroll engine of design/11. shell-host (Wayland) and quire's `ds-blitz` (design system) both
+rectangles, pixel snap, and the scroll engine of design/11. layer-shell-host (Wayland) and quire's `ui-blitz` (design system) both
 consume it; each of these was once written twice. It knows no Wayland, no Dioxus and no design
 system, and takes and returns CSS px `f64` in Blitz's own units. `CONVENTIONS.md` names the style guides
 every repo follows; where the two disagree, this file wins for this repo.
 
 ## 1. Crate map
 
-One crate, `blitz-kit` (`crates/blitz-kit`). Allowed dependencies, behind the default feature
+One crate, `blitz-embed` (`crates/blitz-kit`). Allowed dependencies, behind the default feature
 `blitz` (every module that works on a Blitz document): `blitz-dom`, `blitz-traits`,
 `parley`, `keyboard-types` (`scroll::keys` names the keys a scroll answers to), `tokio` (`net` reads
 files on the caller's blocking pool), and, behind feature `adapter`, `wgpu` and `serde`
@@ -19,7 +19,7 @@ settings read as a settings file's `[scroll]` table). Without `blitz` the crate 
 `default-features = false, features = ["adapter"]` for the ranking and `adapter::opening` with only
 std, `wgpu` and `serde`.
 `scripts/check-boundary.sh` forbids every `ds*`, `dioxus*`, `wayland*` and `smithay*`
-crate, quire, sill, shell-host and palmrest. Consumers depend on it by path.
+crate, quire, sill, layer-shell-host and palmrest. Consumers depend on it by path.
 
 | Module | Holds |
 |---|---|
@@ -55,7 +55,7 @@ crate, quire, sill, shell-host and palmrest. Consumers depend on it by path.
 
 ### `scroll`
 
-One engine for every Blitz host: shell-host's surfaces and the app windows of quire's `ds-blitz`
+One engine for every Blitz host: layer-shell-host's surfaces and the app windows of quire's `ui-blitz`
 both run it, so a wheel detent, a touchpad flick and an arrow key move the same way everywhere
 (design/11-BEHAVIOUR-scroll.md). A host adds only the translation from its own device events, its
 clock and its frame requests.
@@ -81,7 +81,7 @@ consumer.
 - Gate: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D
   warnings`, `cargo test --workspace --all-features`, `./scripts/check-boundary.sh`,
   `cargo deny check licenses`.
-- The pinned dependency block in the root `Cargo.toml` is copied verbatim from shell-host's
+- The pinned dependency block in the root `Cargo.toml` is copied verbatim from layer-shell-host's
   (source of truth: quire's `docs/workspace-deps.toml`); the kit never bumps it alone.
 - No `unsafe`, no global state, no reading the environment: every function takes what it needs.
 - A helper that needs Wayland, Dioxus or a design-system type does not belong here; a repair a

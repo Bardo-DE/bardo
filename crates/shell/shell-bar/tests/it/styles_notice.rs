@@ -4,13 +4,13 @@
 
 use std::time::Duration;
 
-use ui_components::style::kit::{Styles, UserStyle};
-use ui_blitz::StylesGuard;
-use ui_harness::Input;
 use shell_bar::Bar;
 use shell_testkit::TempDir;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::ControlCenterLink;
+use ui_blitz::StylesGuard;
+use ui_components::style::kit::{Styles, UserStyle};
+use ui_harness::Input;
 
 const CSS: &str = ".ds { --accent: red }";
 const SENTENCE: &str = "Your styles were turned off because sill could not start with them.";

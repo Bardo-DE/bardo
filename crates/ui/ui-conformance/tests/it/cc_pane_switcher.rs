@@ -5,6 +5,7 @@
 //! never lands, and the switcher rests on the last pane asked for.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::preview::switcher::PaneSwitcher;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::motion::pane_slide::Pane;
@@ -13,7 +14,6 @@ use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 // Every harness here runs on `Clock::Virtual`: `advance` fires each ds timer at its exact due
 // instant, and `settle_until` returns the instant a timer ended the state, so the tests assert

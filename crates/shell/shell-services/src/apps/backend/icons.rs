@@ -127,7 +127,7 @@ mod tests {
     // file's doc comment.
 
     /// A fresh directory under the system temp dir, removed on drop (no `tempfile`: not in the
-    /// pinned block; same pattern as `sill-settings/tests/common`).
+    /// pinned block; same pattern as `shell-settings/tests/common`).
     struct TempDir(std::path::PathBuf);
 
     impl TempDir {

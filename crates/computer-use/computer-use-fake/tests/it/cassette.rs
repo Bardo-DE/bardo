@@ -5,6 +5,7 @@ use computer_use_action::{
 };
 use computer_use_fake::{ScriptError, ScriptedModel};
 use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink};
+use inference_core::{DropReason, SafetyHint, StepIndex};
 use model_provider::{
     ChoiceScores, EngineExtras, JsonText, Knob, Limits, Message, Milli, ModelName, OutputShape,
     Part, ProviderError, Reasoning, Role, SafetySignal, Sampling, StopReason, Tokens, ToolCall,
@@ -14,7 +15,6 @@ use model_replay::{
     BuildLabel, Cassette, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp,
     Interaction, InteractionId, RecordedAt, RequestPrint,
 };
-use inference_core::{DropReason, SafetyHint, StepIndex};
 use std::collections::BTreeSet;
 
 fn request() -> TurnRequest {

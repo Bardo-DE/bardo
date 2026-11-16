@@ -3,7 +3,7 @@
 //! `org.quire.Sync1`, and [`Daemon::run`] keeps it going until told to stop. The binary reads
 //! its arguments, asks [`Config::from_env`] for the environment's answers and calls these.
 //!
-//! syncd reaches accounts only through porter-client: over the bus, accountd's `Grants1`, in the
+//! syncd reaches accounts only through account-client: over the bus, accountd's `Grants1`, in the
 //! daemon ([`Daemon::build`]), and over whatever transport a test hands to
 //! [`Daemon::build_over`].
 //!
@@ -21,7 +21,6 @@ use crate::scheduler::{Network, Settings};
 use crate::service;
 use crate::service::{Access, Hub};
 use crate::settings::{SyncSettings, read_cache_limit, serve_settings};
-use drive_fuse::Mounter;
 use account_callers::choose_proc_root;
 use account_callers::{CallerFileError, ProcCallers};
 use account_client::{AccountsLink, GrantsLink, Porter};
@@ -29,6 +28,7 @@ use account_client_dbus::Bus;
 use account_daemon_support::xdg::PathError;
 use account_dbus::BusTarget;
 use account_ids::clock::SystemClock;
+use drive_fuse::Mounter;
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -116,8 +116,9 @@ impl Config {
     pub fn from_env() -> Result<Self, StartError> {
         let mut paths = Paths::resolve(|name| std::env::var(name).ok())?;
         // A test build may read another system caller table (a jail cannot write /etc).
-        let system =
-            account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| std::env::var_os(name));
+        let system = account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| {
+            std::env::var_os(name)
+        });
         if let Some(line) = system.notice("syncd") {
             eprintln!("{line}");
         }

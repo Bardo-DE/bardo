@@ -13,8 +13,8 @@ use super::space_persist::stored_file;
 use crate::effect::Effect;
 use crate::ids::{OutputKey, WindowId};
 use crate::space::{SpaceBook, SpaceFile};
-use desktop_protocols::vocab::{Emphasis, PlacementMark, WindowStateKind};
 use account_core::ClaimedId;
+use desktop_protocols::vocab::{Emphasis, PlacementMark, WindowStateKind};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// What one window shows a window-list client.

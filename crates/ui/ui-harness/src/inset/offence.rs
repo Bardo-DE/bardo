@@ -1,9 +1,9 @@
 //! What the check reports: one [`Offence`] per box side whose content sits too close.
 
 use crate::inset::scene::Paint;
-use ui_components::prelude::Px;
 use std::collections::BTreeMap;
 use std::fmt;
+use ui_components::prelude::Px;
 
 /// Which edge of the box.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

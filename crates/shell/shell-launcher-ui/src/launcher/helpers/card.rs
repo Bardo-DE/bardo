@@ -4,14 +4,14 @@
 //! Remove asks here, in the card, before anything goes.
 
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::prelude::*;
 use provenance::{HelperId, SpaceId};
 use shell_model::companion::{
     Draft, HelpersModel, HelpersMsg, Open, Removal, WAITING_BADGE, remove_question,
 };
 use shell_services::CompanionService;
 use shell_ui_kit::hooks::use_service;
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::prelude::*;
 
 use super::agent::AppLine;
 use super::form::Fields;

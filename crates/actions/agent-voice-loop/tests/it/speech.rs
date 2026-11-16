@@ -1,8 +1,8 @@
 //! The speech table, barge-in order, the sentencer and the buffer.
 
-use action_wire::VoiceIntent;
 use account_capability::LanguageTag;
 use account_core::DataClass;
+use action_wire::VoiceIntent;
 use agent_voice_loop::*;
 use agent_voice_wire::{SpeakWire, SpeechEnd, SpokenText, VoiceUse};
 

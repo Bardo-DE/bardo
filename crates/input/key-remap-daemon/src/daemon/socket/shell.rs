@@ -9,9 +9,9 @@
 //! pidfd so the name cannot belong to a process that has since been replaced. The check itself is
 //! `service_locator::guard`; this file is keycap's table and its choice of who is believed.
 
-use service_locator::guard::{SeatUser, ShellCheck, Vouch};
 use caller_identity_core::roles::SHELL;
 use caller_identity_core::{RoleName, Table};
+use service_locator::guard::{SeatUser, ShellCheck, Vouch};
 
 /// The programs allowed to steer, as the rows of a caller table: the shell, and the Plasma focus
 /// feed that the standalone install can run instead. The paths only matter when the image can
@@ -71,9 +71,9 @@ fn steering_check() -> ShellCheck {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use service_locator::guard::Claim;
-    use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned, Prober};
     use caller_identity_core::{FileTrust, Pid, Pin, Uid, Writer};
+    use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned, Prober};
+    use service_locator::guard::Claim;
 
     const PID: u32 = 4242;
     const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";

@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/cua.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: cua — the computer-use runtime and its desktop plumbing
 
-Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, quire design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), quire CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), sill-launcher (`Provider`, `Activation`), and shell-host's nested-compositor harness (`scripts/dev/`).
+Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, quire design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), quire CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
 
 I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
 
@@ -19,17 +19,17 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 **In scope**
 - **`cuad`**: the daemon that owns the step loop (observe → model step → policy check → act → settle). It also owns budgets, the CUA consent gate, masking policy, audit records, the per-window lease, and the `org.quire.Cua1` control plane.
 - **The run state machine**: pure, with every state, input, effect and transition (§4).
-- **Observations**: masked window frame, an optional a11y tree, typed context, the agent cursor and the outcomes of the previous step. Also the `a11y-tree` model (snapshot, prune, render to text, diff, selectors).
-- **`seat-input`**: the agent seat over reis/libei against the compositor's EIS server, plus pure action→input planning and keymap/text handling.
+- **Observations**: masked window frame, an optional a11y tree, typed context, the agent cursor and the outcomes of the previous step. Also the `computer-use-a11y-tree` model (snapshot, prune, render to text, diff, selectors).
+- **`computer-use-seat-input`**: the agent seat over reis/libei against the compositor's EIS server, plus pure action→input planning and keymap/text handling.
 - **`maskcap`**: masked per-window capture over ext-image-copy-capture (stock) or the fork's masked source, plus damage-based settling and stall digests.
-- **`cua-desktop`**: windows, geometry, leases, workspaces, glow, the kill chord, and the stock consent guard.
+- **`computer-use-desktop`**: windows, geometry, leases, workspaces, glow, the kill chord, and the stock consent guard.
 - **Run modes**: in place, agent workspace, nested session; which backend supports which.
 - **The casement**: what must change, against what works on stock protocols.
 - **Event-log records and procedures**: the run → event-log record types (written through the memory area's `eventlog`), and the learned-procedure file format (later).
 - **Spikes first**, each with acceptance criteria.
 
 **Non-goals**
-- Model choice, the model wire formats, action parsing, image resize/encode, and inferd routing. These belong to the **models** area. cua consumes `cua-action` and the `CuaModel` seam.
+- Model choice, the model wire formats, action parsing, image resize/encode, and inferd routing. These belong to the **models** area. cua consumes `computer-use-action` and the `CuaModel` seam.
 - Cedar policy text, the typed-action registry, `prov` labels, and the confirmation wording. These belong to the **actions** area. cua builds the request and executes the verdict.
 - Event-log storage, hash chain, memfiles and recall. These belong to the **memory** area. cua defines its record payloads only.
 - The launcher's run strip and orb drawing. These belong to whoever owns sill's launcher and companion UX; cua provides the `Cua1` bus they subscribe to.
@@ -39,9 +39,9 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 **Conflicts with the docs, and the resolution I propose**
 1. **COMPANION settled item 4 ("No screen clicking") against the CUA tier.** cua-integration proposes replacing item 4. Until the user confirms, `cuad` ships with `cua.enabled = off` and nothing else depends on it. *User question Q1.*
 2. **Floating-point coordinates.** cua-integration uses `f32` `LogicalPoint`; porter's rule allows floats only in `EmbedVector`. Resolution: integer `Lpx(i32)` window-local logical px. Model-frame coordinate types (normalised 0-999 grid, model-pixel space) stay inside the models area's adapters.
-3. **"Second wl_seat" (cua-integration §4.2) against "seat-input over reis" (COMPANION build map).** Resolution: one client path. Injection is always EI through reis. On the fork, the EI sender context is bound to a compositor-side agent seat; on stock, it lands on the user's seat (`SeatIsolation::SharedSeat`).
+3. **"Second wl_seat" (cua-integration §4.2) against "computer-use-seat-input over reis" (COMPANION build map).** Resolution: one client path. Injection is always EI through reis. On the fork, the EI sender context is bound to a compositor-side agent seat; on stock, it lands on the user's seat (`SeatIsolation::SharedSeat`).
 4. **Where masking happens.** cua-integration masks in the compositor; the infra survey masks in the capturing process. Resolution: both, chosen by backend. `MaskReport.applied_by: MaskWhere {Compositor, Cuad}` records which one ran, and pixels never leave `cuad` unmasked in either case.
-5. **Where `cuad` runs.** cua-integration offers "a daemon, or a module inside the shell host". Resolution: its own daemon. It holds a privileged Wayland connection and an EIS fd, needs its own systemd sandbox, and must not share a process with GPU UI. shell-host stays a UI host.
+5. **Where `cuad` runs.** cua-integration offers "a daemon, or a module inside the shell host". Resolution: its own daemon. It holds a privileged Wayland connection and an EIS fd, needs its own systemd sandbox, and must not share a process with GPU UI. layer-shell-host stays a UI host.
 6. **`HandBack` has two meanings in cua-integration** (user→agent at the start, and resuming after a takeover). Resolution: `Run.HandBack` only resumes a taken-over run. Starting from the user's manual work is `Manager.Start` with `origin = Handover`.
 7. **No CUA need or CUA grant in porter.** porter's `Need` has no `cua` kind and `GrantKey` has no Space. Resolution: the models area adds `Need::Cua` (a 31-ACCOUNTS edit). The CUA grant `(app, Space) → Once/Always` lives in the actions area's action-grant store, not in porter's account grants (§7).
 
@@ -55,30 +55,30 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, q
 
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
-| `a11y-tree` | snapshot model (`A11ySnapshot`, `A11yNode`, `Role`), prune, render to model text, diff, `NodeSelector`; trait `A11ySource`; feature `atspi` = AT-SPI backend | none by default; zbus behind `atspi` | core yes |
-| `seat-input` | `InputOp`, `plan(action) -> Vec<InputOp>`, chord/keymap mapping, `InputReceipt`; trait `AgentSeat`; feature `ei` = reis client backend | none by default; reis behind `ei` | core yes |
+| `computer-use-a11y-tree` | snapshot model (`A11ySnapshot`, `A11yNode`, `Role`), prune, render to model text, diff, `NodeSelector`; trait `A11ySource`; feature `atspi` = AT-SPI backend | none by default; zbus behind `atspi` | core yes |
+| `computer-use-seat-input` | `InputOp`, `plan(action) -> Vec<InputOp>`, chord/keymap mapping, `InputReceipt`; trait `AgentSeat`; feature `ei` = reis client backend | none by default; reis behind `ei` | core yes |
 | `maskcap` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus the quire masked source | none by default | core yes |
-| `cua-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the quire-agent protocol | none by default | core yes |
+| `computer-use-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the quire-agent protocol | none by default | core yes |
 | `quire-agent-protocol` | `protocols/quire-agent-v1.xml` plus wayland-scanner bindings; features `client` and `server` (the fork uses `server`) | none | yes |
-| `cua-run` | pure core: ids, `CuaTask`, `CuaResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `CuaRecord` (event-log payloads), `Procedure` types, the `Cua1` wire bodies, `mode_support` | none | yes |
-| `cua-dbus` | `org.quire.Cua1` zbus proxies and skeletons, `dbus/org.quire.Cua1.xml`, codec, introspection test | zbus | Linux |
-| `cua-fake` | test-only: `FakeSeat`, `FakeEis` (an in-process reis EIS server on a socketpair), `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel` (over models' replay provider), `FakePdp`, `MemoryEvents`, `FixedClock`, `run_harness` | none | yes |
+| `computer-use-run` | pure core: ids, `CuaTask`, `CuaResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `CuaRecord` (event-log payloads), `Procedure` types, the `Cua1` wire bodies, `mode_support` | none | yes |
+| `computer-use-dbus` | `org.quire.Cua1` zbus proxies and skeletons, `dbus/org.quire.Cua1.xml`, codec, introspection test | zbus | Linux |
+| `computer-use-fake` | test-only: `FakeSeat`, `FakeEis` (an in-process reis EIS server on a socketpair), `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel` (over models' replay provider), `FakePdp`, `MemoryEvents`, `FixedClock`, `run_harness` | none | yes |
 | `cuad` | the daemon: env and settings, effect executor, zbus server, caller checks, backend selection; `dist/cuad.service` and the D-Bus activation file | everything | Linux |
 
 **Allowed edges** (checked by `scripts/check-boundary.sh`, copied from porter's script and adapted):
 
 | Crate | May depend on (ours and other areas') |
 |---|---|
-| `a11y-tree` | `cua-action` (models), `prov` (actions) |
-| `seat-input` | `cua-action` |
-| `maskcap` | `cua-action` |
-| `cua-desktop` | `cua-action`; `quire-agent-protocol` (feature `wayland`) |
-| `cua-run` | `cua-action`, `a11y-tree`, `seat-input`, `maskcap`, `cua-desktop` (all default features), `prov`, `quire-intents` (types), `porter-core` (`DataClass`, `AppId`, `Locality`) |
-| `cua-dbus` | `cua-run` |
-| `cua-fake` | everything above with default features, plus `reis` (for `FakeEis`), plus models' `model-provider` (replay) |
-| `cuad` | all of the above with their I/O features, plus `model-provider` (models), `policy-point` (actions), `eventlog` (memory), `porter-client` (`DbusTransport`) |
+| `computer-use-a11y-tree` | `computer-use-action` (models), `prov` (actions) |
+| `computer-use-seat-input` | `computer-use-action` |
+| `maskcap` | `computer-use-action` |
+| `computer-use-desktop` | `computer-use-action`; `quire-agent-protocol` (feature `wayland`) |
+| `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `maskcap`, `computer-use-desktop` (all default features), `prov`, `quire-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
+| `computer-use-dbus` | `computer-use-run` |
+| `computer-use-fake` | everything above with default features, plus `reis` (for `FakeEis`), plus models' `model-provider` (replay) |
+| `cuad` | all of the above with their I/O features, plus `model-provider` (models), `permission-policy` (actions), `eventlog` (memory), `account-client` (`DbusTransport`) |
 
-**External boundary.** Every crate except `cua-dbus`, `cuad` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `cua-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
+**External boundary.** Every crate except `computer-use-dbus`, `cuad` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `computer-use-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
 
 ### Fork repo `~/casement` (GPL-3.0-only, branch `quire`, rebased on upstream release tags)
 
@@ -89,18 +89,18 @@ All quire code goes in `src/quire/` (agent seat, masked source, lease and glow g
 - **Already pinned:** `wayland-client 0.31`, `wayland-backend 0.3`, `wayland-protocols 0.32.13` (staging), `the Wayland client toolkit` (pinned rev), `xkbcommon 0.8` (text → keysym → keycode on the EIS keymap), `zbus 5.19` (tokio), `tokio 1`, `serde`/`serde_json`, `thiserror 2`, `image 0.25.6` (PNG for thumbnails only), `memfd 0.6` (shm buffers for capture), `rustix 1.1`.
 - **Joins the block:** `reis 0.7` (MIT; pin the minor that the fork's the compositor `Cargo.lock` resolves; the README says its API may change) and `atspi 0.30` (Apache-2.0 OR MIT).
 - **Later, joins the block:** `ashpd 0.13` (RemoteDesktop/ScreenCast portal fallback if `GetSenderSocket` is owner-restricted) and `pipewire` (KWin window capture; [unverified] version and licence).
-- **From other areas:** `cua-action`, `model-provider` (models); `prov`, `policy-point`, `quire-intents` (actions); `eventlog`, `memfiles` (memory); `porter-core` (`DataClass::Screen`, `AppId`, `Locality`).
+- **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `quire-intents` (actions); `eventlog`, `memfiles` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
 
-Image resize and encoding are models' `vision-prep`. cua hands over raw masked pixels.
+Image resize and encoding are models' `model-vision-prep`. cua hands over raw masked pixels.
 
 ---
 
 ## 3. Frozen interfaces
 
-### 3.0 What cua needs from `cua-action` (owned by **models**; listed so both specs agree) — freeze now
+### 3.0 What cua needs from `computer-use-action` (owned by **models**; listed so both specs agree) — freeze now
 
 ```rust
-// cua-action: types only, serde (kind/v adjacently tagged), no floats.
+// computer-use-action: types only, serde (kind/v adjacently tagged), no floats.
 pub struct WindowRef(pub u32);                 // per-run handle; cuad maps it to a ToplevelIdent
 pub struct Lpx(pub i32);                       // logical px, window-local
 pub struct WinPoint { pub x: Lpx, pub y: Lpx } // origin = top-left of the window geometry (the cropped frame)
@@ -127,10 +127,10 @@ pub enum CuaAction {
     Done   { summary: String, extracted: Vec<Extracted> },
     Ask    { question: String, choices: Vec<String> },
 }
-pub struct Extracted { pub name: String, pub value: String }   // cua-run labels these Untrusted(Screen)
+pub struct Extracted { pub name: String, pub value: String }   // computer-use-run labels these Untrusted(Screen)
 pub struct TargetedAction { pub window: WindowRef, pub action: CuaAction }
 
-// The model turn, built by cua-run from an Observation; adapters resize/encode it.
+// The model turn, built by computer-use-run from an Observation; adapters resize/encode it.
 pub struct CuaTurn { pub step: u32, pub frame: RawFrame, pub geometry: TurnGeometry,
                      pub tree_text: TreeText, pub prev: Vec<PrevNote>, pub notes: Vec<String> }
 pub enum TreeText { Absent, Present(String) }
@@ -152,7 +152,7 @@ fn usage(&self) -> Usage;
 
 `CuaModelError` must let cua tell retryable from fatal: `Transient`, `Parse` (counted as a step) and `Fatal` kinds.
 
-### 3.1 `a11y-tree` — freeze now (the `atspi` backend body later)
+### 3.1 `computer-use-a11y-tree` — freeze now (the `atspi` backend body later)
 
 ```rust
 pub struct A11ySnapshot {
@@ -202,7 +202,7 @@ pub struct A11yTarget { pub pid: Pid, pub app: AppName, pub title: String, pub g
 pub enum A11yError { NoBus, NotExposed, NoMatchingWindow, Timeout, Gone, Protocol(String) }
 ```
 
-### 3.2 `seat-input` — freeze now (the `ei` backend body fill)
+### 3.2 `computer-use-seat-input` — freeze now (the `ei` backend body fill)
 
 ```rust
 pub enum InputOp {
@@ -241,7 +241,7 @@ pub trait AgentSeat: Send + Sync {
 pub enum SeatError { NotConnected, Refused, OutsideLease, TargetGone, Suspended, Keymap(String), Protocol(String) }
 ```
 
-Backend enum in `cuad`: `SeatBackend { Ei(EiSeat) }`; tests use `FakeSeat` and `EiSeat` over `FakeEis`. Mapping from the window to the EI region: on the fork, the lease's EI region *is* the window (identity). On stock, `GlobalPoint = window_origin + WinPoint`, taken from `cua-desktop` geometry. That transform lives in `seat-input::region` (pure).
+Backend enum in `cuad`: `SeatBackend { Ei(EiSeat) }`; tests use `FakeSeat` and `EiSeat` over `FakeEis`. Mapping from the window to the EI region: on the fork, the lease's EI region *is* the window (identity). On stock, `GlobalPoint = window_origin + WinPoint`, taken from `computer-use-desktop` geometry. That transform lives in `computer-use-seat-input::region` (pure).
 
 ### 3.3 `maskcap` — freeze now
 
@@ -280,9 +280,9 @@ pub enum FrameWant { Now, AfterDamage }
 pub enum CaptureError { SourceGone, Refused, Withheld /* hidden window not rendered */, Format, Protocol(String) }
 ```
 
-Backends: `CaptureBackend { StockToplevel(..), QuireMasked(..) }`. On stock, `hints` (from `a11y-tree::secret_rects`, sensitive-window rules and the text-input heuristic) are applied by `apply_masks` in `cuad` (`applied_by = Cuad`). On the fork, hints are sent to the compositor and the buffer arrives masked (`applied_by = Compositor`).
+Backends: `CaptureBackend { StockToplevel(..), QuireMasked(..) }`. On stock, `hints` (from `computer-use-a11y-tree::secret_rects`, sensitive-window rules and the text-input heuristic) are applied by `apply_masks` in `cuad` (`applied_by = Cuad`). On the fork, hints are sent to the compositor and the buffer arrives masked (`applied_by = Compositor`).
 
-### 3.4 `cua-desktop` — freeze now
+### 3.4 `computer-use-desktop` — freeze now
 
 ```rust
 pub struct ToplevelIdent(pub String);    // ext_foreign_toplevel_handle_v1.identifier
@@ -327,7 +327,7 @@ pub trait LeaseControl: Send + Sync {
 pub enum DesktopError { NoSuchWindow, NotLeasable(WindowTrust), ModeUnsupported(RunMode), Busy, Protocol(String) }
 ```
 
-### 3.5 `cua-run` (pure core) — freeze now
+### 3.5 `computer-use-run` (pure core) — freeze now
 
 ```rust
 pub struct RunId(pub u64);
@@ -394,7 +394,7 @@ pub fn stalled(history: &[FrameDigest], limit: u8) -> Stall;
 pub enum Stall { Moving, Stalled }
 ```
 
-The run machine has the same shape as `ds_core::Machine`, but is not tied to it: `cua-run` is portable and sits below the design system, like porter.
+The run machine has the same shape as `ds_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like porter.
 
 ```rust
 pub struct Run { pub id: RunId, pub task: CuaTask, pub phase: RunPhase, pub used: BudgetUse, pub taint: Label,
@@ -480,7 +480,7 @@ act  = { click = { node = [{ role = "link", name = "Billing" }] } }
 post = { node = [{ role = "heading", name = "Invoices" }] }
 ```
 
-### 3.8 D-Bus `org.quire.Cua1` (`cua-dbus`, served by `cuad`) — freeze now
+### 3.8 D-Bus `org.quire.Cua1` (`computer-use-dbus`, served by `cuad`) — freeze now
 
 Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is one protocol with two carriers, as in 31 §4.3. Caller identity comes from the connection (porter `AppId`) and is never sent.
 
@@ -540,7 +540,7 @@ CUA consent and effect confirmations never come through `Answer`. They are drawn
 - **`quire_agent_lease_v1`**
   - Events: `granted`, `revoked(reason: uint)`, `ei_socket(fd)` (an EIS sender context bound to this lease's agent seat; absolute region = window geometry, window-local), `physical_input`, `geometry(w, h, scale120)`.
   - Requests: `get_capture_source(new_id ext_image_capture_source_v1)` (window content with compositor masks; used with stock `ext_image_copy_capture_manager_v1`), `set_mask_hints(array of rects+reason)`, `set_glow(state: uint, x, y, w, h)`, `suspend(why: uint)`, `resume`, `destroy`.
-- **`quire_sensitive_v1`**: for clients (quire apps through shell-host/blitz) to declare sensitive surface regions or a whole surface. Later.
+- **`quire_sensitive_v1`**: for clients (quire apps through layer-shell-host/blitz) to declare sensitive surface regions or a whole surface. Later.
 
 ---
 
@@ -607,7 +607,7 @@ CUA consent and effect confirmations never come through `Answer`. They are drawn
 
 Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests run only against fakes. Live checks are dev scripts.
 
-**`cua-run`**
+**`computer-use-run`**
 - `wire_bodies_round_trip`: every `Cua1` body and every `CuaRecord` variant survives serde, with `kind`/`v` tags and the vocab envelope.
 - `record_kind_slugs_are_stable`: a table of variant → `cua.run.started` and the rest.
 - `run_transitions_table`: one row per §4 line; asserts the next phase and the exact effects list.
@@ -624,14 +624,14 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 - `lease_book_one_run_per_window`.
 - `extracted_values_are_untrusted_screen`.
 
-**`a11y-tree`**
+**`computer-use-a11y-tree`**
 - `prune_keeps_actionable_visible_first_within_budget`
 - `render_is_stable_golden` (fixtures `fixtures/a11y/{gtk4_dialog,firefox_form,quire_mail}.json`)
 - `secret_rects_cover_password_text`
 - `diff_reports_added_removed_changed`
 - `selector_resolution_table` (later)
 
-**`seat-input`**
+**`computer-use-seat-input`**
 - `plan_click_double_right_mods_table`
 - `plan_drag_emits_down_moves_up`
 - `plan_rejects_point_outside_window`
@@ -642,26 +642,26 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 - `ei_seat_against_fake_eis`, under feature `ei`: handshake, bind, start_emulating, pointer_absolute and button frames received in order by `FakeEis`, detach sends stop_emulating.
 
 **`maskcap`**
-- `apply_masks_blacks_exact_device_pixels_at_scale_150`: a 2-lpx rect becomes exactly 3 device px, the same rounding as shell-host F-f.
+- `apply_masks_blacks_exact_device_pixels_at_scale_150`: a 2-lpx rect becomes exactly 3 device px, the same rounding as layer-shell-host F-f.
 - `whole_window_mask_blacks_all`
 - `digest_differs_on_one_pixel`
 - `settle_quiet_waiting_timeout_table`
 
-**`cua-desktop`**
+**`computer-use-desktop`**
 - `glow_state_and_revoke_reason_wire_values` (these map to protocol uints)
 - `lease_request_refuses_shell_trust` (pure validation)
 
-**`cua-dbus`**
+**`computer-use-dbus`**
 - `introspection_matches_xml`: fails until `dbus/org.quire.Cua1.xml` equals the skeleton's introspection, as in porter.
 - `error_names_cover_control_refusal`.
 
 **`cuad`**
-- `end_to_end_scripted_run_done`, over `cua-fake::run_harness` with a zbus p2p connection on a socketpair, `ScriptedModel` replaying a click-then-done cassette, `FakeSeat`, `FakeCapture` and `FakePdp`. It asserts the signals in order, two records, and that the lease is released.
+- `end_to_end_scripted_run_done`, over `computer-use-fake::run_harness` with a zbus p2p connection on a socketpair, `ScriptedModel` replaying a click-then-done cassette, `FakeSeat`, `FakeCapture` and `FakePdp`. It asserts the signals in order, two records, and that the lease is released.
 - `start_refused_for_non_planner_caller`.
 - `kill_chord_finishes_all_runs`.
 - `stock_consent_guard_injects_nothing_while_prompt_shown`.
 
-**Fakes needed (`cua-fake`):**
+**Fakes needed (`computer-use-fake`):**
 - `FakeEis`: a reis `eis` server in-process.
 - `FakeCapture`: scripted frames and damage.
 - `FakeDesktop`: windows, events and caps per `BackendKind`.
@@ -675,7 +675,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 
 ## 6. Spikes, then work breakdown
 
-Spikes run on throwaway compositors only, with a private runtime dir and a private D-Bus bus (shell-host's `accept-lock.sh` pattern). The person's `wayland-0` is never touched. Spike code lives in `cua/spike/` and `scripts/dev/spike-*.sh` and writes `scripts/dev/out/spike-*.json`. The scripts reuse `~/shell-host/scripts/dev/{nested.sh,kwin-virtual.sh}` through `SHELL_HOST_DIR`.
+Spikes run on throwaway compositors only, with a private runtime dir and a private D-Bus bus (layer-shell-host's `accept-lock.sh` pattern). The person's `wayland-0` is never touched. Spike code lives in `cua/spike/` and `scripts/dev/spike-*.sh` and writes `scripts/dev/out/spike-*.json`. The scripts reuse `~/shell-host/scripts/dev/{nested.sh,kwin-virtual.sh}` through `SHELL_HOST_DIR`.
 
 **Spike A: a stock compositor, nested (3 days)**
 1. **Capture.** Capture one toplevel through `ext_foreign_toplevel_image_capture_source` plus ext-image-copy-capture, at scale 1.0 and 1.5. Pass if:
@@ -711,7 +711,7 @@ Also check whether accesskit can carry `TypedHint` (a custom property or `author
 
 ### Freeze wave (one agent per repo)
 
-Prerequisite: models' `cua-action`, actions' `prov` and `quire-intents` types, and memory's `eventlog` record seam are frozen first, or in the same wave with this spec's §3.0 as the contract. Spikes A, B and E run in parallel; they need no types.
+Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents` types, and memory's `eventlog` record seam are frozen first, or in the same wave with this spec's §3.0 as the contract. Spikes A, B and E run in parallel; they need no types.
 
 - **Agent `cua-freeze`** owns all of `~/cua`:
   - the workspace, CONVENTIONS, ARCHITECTURE (crate map, one-home table, traits, recipes), FINDINGS (every `todo!()`);
@@ -736,7 +736,7 @@ Prerequisite: models' `cua-action`, actions' `prov` and `quire-intents` types, a
   4. `crates/cua-desktop/src/wayland/**`
 - **Fill 3 (1 agent):** `crates/cuad/**`, `crates/cua-dbus/src/codec.rs`, `crates/cua-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
 - **Fill 4 (1 agent, `~/casement` `src/quire/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/casement/target/release/the compositor`).
-- **Fill 5 (later):** procedures (`cua-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `quire_sensitive_v1` client in shell-host.
+- **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `quire_sensitive_v1` client in layer-shell-host.
 
 ### Fork changes (the compositor) against stock
 
@@ -771,7 +771,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 ## 7. Dependencies on other areas, and questions for the user
 
 **models**
-- `cua-action` exactly as §3.0: integer `Lpx`, `ActionTarget::Node`, `CuaTurn`, `StepReply`, `StepEvent`.
+- `computer-use-action` exactly as §3.0: integer `Lpx`, `ActionTarget::Node`, `CuaTurn`, `StepReply`, `StepEvent`.
 - `CuaModel`/`CuaSession` with cooperative cancel, and the `Transient`/`Parse`/`Fatal` error split.
 - The replay provider for `ScriptedModel`.
 - `Need::Cua` added to porter and 31-ACCOUNTS, with `DataClass::Screen` keeping the OnDevice floor.
@@ -779,7 +779,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 
 **actions**
 - `prov`: `Labelled<T>`, `Label`, `Source::Screen{app, window}`, join.
-- `policy-point`: `decide(AuthAsk-shaped request) -> Allow | Ask(ConfirmText) | Deny`, with Cedar context fields `effect`, `taint`, `window_trust`, `app_id`, `mode`, `space`, `data_class = screen`.
+- `permission-policy`: `decide(AuthAsk-shaped request) -> Allow | Ask(ConfirmText) | Deny`, with Cedar context fields `effect`, `taint`, `window_trust`, `app_id`, `mode`, `space`, `data_class = screen`.
 - The CUA grant store keyed by `(AppName, SpaceId)` with Once/Always, denial wins, and a "sensitive classes never Always" list.
 - `quire-intents` `Context`, `Value`, `ActionName`, `Effect` (with a `From` mapping to `EffectClass`).
 - The router's tier decision that calls `Start`.
@@ -791,7 +791,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 - Supplying the user's recent events for `HandedBack.user_events` and Handover starts.
 
 **launcher / companion UX (sill)**
-- `CuaRunProvider` in sill-launcher; a new `Activation::Cua(RunControl)` variant (following the warn-before-lint-rules practice).
+- `CuaRunProvider` in shell-launcher; a new `Activation::Cua(RunControl)` variant (following the warn-before-lint-rules practice).
 - The orb presence mapping from §4.
 - The Ask form calls `Run.Answer`.
 
@@ -823,7 +823,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 **Questions only the user can answer**
 1. Confirm replacing COMPANION item 4 with: "typed actions and hooks first; a CUA tier, off by default per app, inside the lease and consent stack."
 2. Ship v1 on a stock compositor (shared seat, HandsOff in place, masking inside cuad, consent guard by suspending input), with the fork as phase 2? Or require the fork before any release? My recommendation is stock first; the fork is required before "keep working while it acts".
-3. The repo name (`cua` is a placeholder), and confirmation that `cuad` is its own daemon rather than part of shell-host.
+3. The repo name (`cua` is a placeholder), and confirmation that `cuad` is its own daemon rather than part of layer-shell-host.
 4. Should actions target a11y nodes (`ActionTarget::Node`) when a tree exists? My recommendation is yes, and to freeze both forms now.
 5. Default run mode: agent workspace (out of sight, glow plus peek) or in place?
 6. The budget defaults above, and who may raise them.

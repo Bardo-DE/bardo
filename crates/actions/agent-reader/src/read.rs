@@ -1,19 +1,19 @@
-//! One read: the ask and the opened inputs go to the reader model through a inferd-client
+//! One read: the ask and the opened inputs go to the reader model through a inference-client
 //! session (structured output, no tools), and the reply comes back as a value that fits the
 //! ask's schema or as a typed error. `TransportReader` is the in-process `Reader`: it opens the
 //! quarantined text itself, so an app that hosts the agent needs no second process.
 
 use crate::answer::answer_of;
 use crate::request::reader_request;
-use action_core::{Reader, ReaderAsk, ReaderError};
-use agent_models::{Discard, turn};
-use action_vocab::Value;
-use inference_client::Transport;
 use account_capability::LlmFeature;
 use account_ids::Tokens;
-use inference_core::{InferReply, InferRequest, ModelError, StopReason};
 use account_match::LlmNeed;
 use account_match::Need;
+use action_core::{Reader, ReaderAsk, ReaderError};
+use action_vocab::Value;
+use agent_models::{Discard, turn};
+use inference_client::Transport;
+use inference_core::{InferReply, InferRequest, ModelError, StopReason};
 use provenance::{Labelled, Quarantined, ReaderKey, SessionId};
 use std::collections::BTreeSet;
 

@@ -3,10 +3,10 @@
 //! which rows the viewport shows, where a row starts and how tall it is, how long the whole
 //! list is and how far from its end counts as near.
 
-use ui_core::geometry::scroll::{Scroll, ScrollSpan};
-use ui_core::geometry::units::Px;
 use std::ops::Range;
 use std::rc::Rc;
+use ui_core::geometry::scroll::{Scroll, ScrollSpan};
+use ui_core::geometry::units::Px;
 
 /// The tops of `len` rows, then the list's length: `len + 1` entries, each the sum of the heights
 /// before it.

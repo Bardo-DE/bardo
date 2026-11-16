@@ -1,5 +1,5 @@
 //! The companion's pure logic: what companiond decides, with no runtime, bus, file or clock. A
-//! runner (`docket-helpers`) owns the state and the tasks, carries the
+//! runner (`companion-helpers`) owns the state and the tasks, carries the
 //! decisions out, and gives this crate the time as a value.
 //!
 //! - [`Speaker`], [`Call`], [`permits`]: who may make which call.

@@ -1,4 +1,4 @@
-//! The one place sill names shell-host's session lock: `HostCtx::lock_session(LockConfig, factory)
+//! The one place sill names layer-shell-host's session lock: `HostCtx::lock_session(LockConfig, factory)
 //! -> Result<LockId, LockError::{Unsupported, InProgress}>`, `unlock_session(LockId)`,
 //! `lock_surfaces(LockId)`, and `HostEvent::Lock { id, state: Locked | Unlocked | Finished }`.
 //! Lock surfaces are made on request, one per output (and for outputs added while locked); a
@@ -18,7 +18,7 @@ use layer_shell_host::{
 
 use crate::daemon::msg::ShellMsg;
 
-/// How a session lock is taken: shell-host's setup (from `LOCK.config`) and what builds each
+/// How a session lock is taken: layer-shell-host's setup (from `LOCK.config`) and what builds each
 /// output's lock surface root (the daemon's `surface_root` around `mount_lock`).
 pub struct LockFactory {
     pub config: LockConfig,
@@ -69,7 +69,7 @@ impl SessionLockHost for HostCtx<ShellMsg> {
     }
 }
 
-/// shell-host's error as sill's refusal.
+/// layer-shell-host's error as sill's refusal.
 pub fn refusal_of(error: LockError) -> LockRefusal {
     match error {
         LockError::Unsupported => LockRefusal::Unsupported,

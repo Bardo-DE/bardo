@@ -2,12 +2,12 @@
 //! (no easing follows the motion level). Built once per settings change, never hard-coded.
 
 use crate::dock::tokens::DockTokens;
+use shell_model::units::Cpx;
+use shell_settings::DockSettings;
 use ui_components::base::time::stamp::Ms;
 use ui_components::motion::hover_intent::HoverProfile;
 use ui_components::style::tokens::delay::TipDelay;
 use ui_components::style::tokens::easing::{CubicBezier, EasingToken};
-use shell_model::units::Cpx;
-use shell_settings::DockSettings;
 // `eased` is quire's one curve evaluator, which the dock's magnification shares with the reveal.
 pub(super) use shell_ui_kit::autohide::eased;
 use shell_ui_kit::autohide::{self, Timing};
@@ -97,9 +97,9 @@ impl DockParams {
 pub(crate) mod tests {
     use super::{DockParams, eased};
     use crate::dock::tokens::DockTokens;
-    use ui_components::style::tokens::easing::CubicBezier;
     use shell_model::units::Permille;
     use shell_settings::DockSettings;
+    use ui_components::style::tokens::easing::CubicBezier;
 
     /// The design defaults at the standard level: what every machine test runs on.
     pub(crate) fn params() -> DockParams {

@@ -8,14 +8,14 @@ use super::consent::ScriptedShell;
 use super::output_management::{boot, config_of, plan, settle};
 use compositor_core::output::DISPLAY_CONFIRM_WITHIN;
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::client::quire_shell_v1::quire_shell_v1 as wire;
-use desktop_protocols::vocab::TrialAnswer;
 use compositor_testclient::manage::output_management::{
     ConfigOutcome, ConfigPurpose, OutputManager, Properties,
 };
 use compositor_testkit::Fixture;
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::client::quire_shell_v1::quire_shell_v1 as wire;
+use desktop_protocols::vocab::TrialAnswer;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 const ONE: [&str; 1] = ["HEADLESS-1:1920x1080@60000:120:0,0"];
 

@@ -1,9 +1,9 @@
 //! The words a `WidgetFrame` is described in: its footprint on the grid and its title row.
 
+use serde::{Deserialize, Serialize};
 use ui_components::base::word::Word;
 use ui_components::components::content::text_runs::TextLine;
 use ui_components::style::icon::Icon;
-use serde::{Deserialize, Serialize};
 
 /// A widget's footprint on the grid unit (`--widget-cell`, `--widget-gap`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

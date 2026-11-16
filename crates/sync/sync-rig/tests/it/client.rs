@@ -5,17 +5,17 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use sync_core::{BaseVersion, Conflict, RemoteId, RemoteSide, RemoteVersion, StoredConflict};
 use account_callers::{CallerTable, ProcCallers};
 use account_core::AppName;
 use account_ids::UnixSeconds;
+use base_testkit::Scratch;
+use common::bus::PrivateBus;
 use serde_json::Value;
 use std::collections::BTreeSet;
 use std::process::Stdio;
 use std::sync::{Arc, Mutex};
+use sync_core::{BaseVersion, Conflict, RemoteId, RemoteSide, RemoteVersion, StoredConflict};
 use sync_daemon::service::{Access, DatasetName, Event, Hub, Nudge, serve};
-use base_testkit::Scratch;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 

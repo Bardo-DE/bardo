@@ -6,16 +6,16 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use probe::{distance, keep, rect};
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::slider_model::SliderLook;
 use ui_components::prelude::*;
 use ui_components::style::tokens::easing::EasingToken;
 use ui_components::style::tokens::timing::DurationToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use image::RgbaImage;
-use probe::{distance, keep, rect};
-use std::cell::Cell;
-use std::time::Duration;
 
 static VALUE: GlobalSignal<Fraction> = Signal::global(|| Fraction(200));
 

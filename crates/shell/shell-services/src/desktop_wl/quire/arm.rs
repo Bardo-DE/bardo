@@ -4,12 +4,12 @@
 
 use std::collections::BTreeMap;
 
-use desktop_protocols::vocab::ShellRole;
+use account_core::SpaceId;
 use desktop_client::capture::CaptureFailure;
 use desktop_client::{
     CaptureId, Desktop, DesktopCommand as Wire, DesktopEvent, Frame, SurfaceKey, Ticket,
 };
-use account_core::SpaceId;
+use desktop_protocols::vocab::ShellRole;
 use shell_model::desktop::{DesktopCommand, DesktopView, OutputPicture, ShellNote, SpacePicture};
 
 use super::command::quire_wire_of;

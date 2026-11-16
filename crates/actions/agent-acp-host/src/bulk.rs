@@ -1,11 +1,11 @@
-//! Where bulkhead's types meet docket-core's: bulkhead owns its sandbox-state and network types
+//! Where bulkhead's types meet action-core's: bulkhead owns its sandbox-state and network types
 //! (it depends on no docket crate; the path is its own, shared), and these are the conversions at
 //! the edge.
 
-use sandbox::{CannotSandbox as ShellCannot, Network, NetworkMode, SandboxState as ShellState};
 use permission_core::{CannotSandbox, SandboxState};
+use sandbox::{CannotSandbox as ShellCannot, Network, NetworkMode, SandboxState as ShellState};
 
-/// Why bulkhead cannot confine, as docket-core words it.
+/// Why bulkhead cannot confine, as action-core words it.
 pub const fn cannot(why: ShellCannot) -> CannotSandbox {
     match why {
         ShellCannot::NotInstalled => CannotSandbox::NotInstalled,
@@ -19,7 +19,7 @@ pub const fn cannot(why: ShellCannot) -> CannotSandbox {
     }
 }
 
-/// bulkhead's sandbox state as docket-core's.
+/// bulkhead's sandbox state as action-core's.
 pub const fn state(state: ShellState) -> SandboxState {
     match state {
         ShellState::Ready => SandboxState::Ready,

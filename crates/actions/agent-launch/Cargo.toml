@@ -1,6 +1,6 @@
 [package]
 name = "agent-launch"
-description = "Starts the external coding agents (Claude Code, Gemini CLI) that docket-acp-host drives: the agents.toml config, the sandboxed process behind the Spawn seam, the model endpoint (inferd, P4) or the key handoff (P2) from porter, the login the agent runs itself, and the duties of a launcher (register, sessions, revocations, give back what was lent). The `dbus` feature adds the real accountd and inferd link."
+description = "Starts the external coding agents (Claude Code, Gemini CLI) that agent-acp-host drives: the agents.toml config, the sandboxed process behind the Spawn seam, the model endpoint (inferd, P4) or the key handoff (P2) from porter, the login the agent runs itself, and the duties of a launcher (register, sessions, revocations, give back what was lent). The `dbus` feature adds the real accountd and inferd link."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

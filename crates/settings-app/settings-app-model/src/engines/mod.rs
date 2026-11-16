@@ -1,7 +1,7 @@
 //! llama.cpp, the engine that runs models on this computer, as the Intelligence page meets it:
 //! whether the assistant found its program, how to get it when it did not, and
 //! the restart that makes the assistant look again. Pure; the calls and the words are
-//! `detent-ui`'s.
+//! `settings-app-ui`'s.
 
 mod advice;
 mod programs;

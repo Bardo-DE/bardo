@@ -6,14 +6,14 @@
 //! and reaches that endpoint's origin only. [`webdav_replica`] builds the replica of a dataset's
 //! folder under that endpoint over them.
 
-use sync_core::Clock;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http_relay::{RelayDial, RelayHttp, RelayLimits};
 use account_ids::WebUrl;
-use std::sync::Arc;
 use replica_webdav::WebDavReplica;
+use std::sync::Arc;
+use sync_core::Clock;
 
 /// Why a replica could not be built.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

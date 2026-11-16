@@ -1,6 +1,6 @@
 //! The Extensions installed on this computer: what the Look menu offers, what the Extensions
 //! page lists, and the switch that turns one off in `quire/extensions.toml`. The folder scan, the
-//! checks and the on and off state are quire's (`ds-extensions`); this reads them for the window
+//! checks and the on and off state are quire's (`ui-extensions`); this reads them for the window
 //! and writes the one file.
 
 use crate::error::FilesError;
@@ -11,15 +11,15 @@ use settings_app_model::{
     ConfigFile, ExtensionList, ExtensionRow, ExtensionStanding, ExtensionTrouble,
     InstalledExtensions, Offer, Offers,
 };
-use ui_extensions::bayonet::manifest::Raw;
-use ui_extensions::bayonet::registry::Candidate;
+use std::collections::BTreeSet;
+use std::path::PathBuf;
+use ui_extensions::plugin_host::manifest::Raw;
+use ui_extensions::plugin_host::registry::Candidate;
 use ui_extensions::{
     Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search, YOUR_CHANGES_ID,
     YourChanges, choices_for,
 };
 use ui_settings::schema::{FilePath, KeyPath};
-use std::collections::BTreeSet;
-use std::path::PathBuf;
 
 /// The file that lists the Extensions turned off, under the config home.
 const FILE: &str = "quire/extensions.toml";

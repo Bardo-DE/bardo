@@ -13,12 +13,12 @@
 
 use std::path::Path;
 
+use shell_kit::dock::tile::plate_side;
+use shell_model::apps::{App, AppIcon};
+use shell_settings::DockSettings;
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
 use ui_components::style::icon::url::IconUrl;
-use shell_model::apps::{App, AppIcon};
-use shell_settings::DockSettings;
-use shell_kit::dock::tile::plate_side;
 
 use crate::dock::items::ItemKind;
 pub use shell_ui_kit::app_icons::IconContext;

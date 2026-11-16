@@ -1,9 +1,9 @@
-//! The stored form of a [`Scale`]: its 120ths as a bare number. ds-core's `Scale` has no serde
+//! The stored form of a [`Scale`]: its 120ths as a bare number. ui-core's `Scale` has no serde
 //! of its own (FINDINGS: interface ask), so stored types name this with `#[serde(with)]`.
 
-use ui_core::geometry::scale::Scale;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer, Serializer};
+use ui_core::geometry::scale::Scale;
 
 /// Writes `scale` as its numerator.
 pub(crate) fn serialize<S: Serializer>(scale: &Scale, serializer: S) -> Result<S::Ok, S::Error> {

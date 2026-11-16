@@ -2,11 +2,11 @@
 //! `journal/2026-w40`) are ordinary topics, so nothing here treats them specially (Q10).
 
 use crate::topic::{Block, ParseError, TopicFile, parse_topic, render_topic};
+use chrono::FixedOffset;
 use memory_core::{
     Count, Fact, FactId, Integrity, Settlement, Source, SpaceId, TopicPath, UserText,
 };
 use memory_store::{FACTS_DIR, Vault, VaultError, VaultPath};
-use chrono::FixedOffset;
 use std::collections::BTreeSet;
 
 /// Why a store operation failed.
@@ -256,7 +256,7 @@ fn new_file(topic: &TopicPath) -> TopicFile {
 }
 
 /// The fact as the person's confirmation leaves it: trusted, with the person among its sources.
-/// What `provenance::endorse` does; memfiles-format may not depend on `prov`, so it is spelled out here.
+/// What `provenance::endorse` does; memory-files-format may not depend on `prov`, so it is spelled out here.
 fn endorsed(mut fact: Fact) -> Fact {
     fact.label.integrity = Integrity::Trusted;
     fact.label.sources.insert(Source::User);

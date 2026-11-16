@@ -10,11 +10,11 @@
 
 use dioxus::core::{ScopeId, Task, current_scope_id};
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::time::clock::sleep;
 use ui_motion::detail::level::{Level, use_level};
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::task::{spawn_in, try_set_if_changed};
-use std::time::Duration;
 
 /// How long the caret shows in each blink.
 pub(crate) const BLINK_ON: Duration = Duration::from_millis(500);

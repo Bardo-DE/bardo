@@ -4,8 +4,8 @@ use super::{FreezeCause, Hover, displayed, freeze, linear};
 use crate::dock::machine::params::tests::params;
 use crate::dock::machine::types::{DockEffect, DockEvent, DockState, Hit, Point};
 use crate::dock::machine::{DropZone, step};
-use ui_components::base::time::stamp::Stamp;
 use shell_model::units::{Cpx, Permille};
+use ui_components::base::time::stamp::Stamp;
 
 /// One scripted input sequence: `(ms, input)` pairs.
 type Script = Vec<(u64, DockEvent)>;

@@ -36,9 +36,9 @@
 //! know.
 
 use dioxus::prelude::*;
-use ui_core::geometry::units::Point;
 use std::cell::RefCell;
 use std::rc::Rc;
+use ui_core::geometry::units::Point;
 
 /// Where in its run a gesture is. A gesture's state is cleared by `Ended` and by `Cancelled`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

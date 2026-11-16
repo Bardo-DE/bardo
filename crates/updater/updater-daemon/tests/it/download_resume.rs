@@ -3,13 +3,13 @@
 
 use crate::feed_stage::{Memory, served};
 use crate::support::{Accept, v};
+use std::io::{self, Cursor, Read};
+use std::sync::Mutex;
+use std::time::Duration;
 use updater_daemon::fetch::{
     Download, Fetch, FetchError, Patience, Source, StageError, prune_cache, stage_with,
 };
 use updater_root::apply::Staged;
-use std::io::{self, Cursor, Read};
-use std::sync::Mutex;
-use std::time::Duration;
 
 /// Serves like a site that honours byte ranges, but each connection dies after the number of bytes
 /// listed for it (the last listed number repeats; `None` means it never dies). Remembers the offsets asked for.

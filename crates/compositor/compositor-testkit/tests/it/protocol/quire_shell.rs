@@ -10,8 +10,6 @@ use compositor_core::space::SpaceContent;
 use compositor_core::window::{Light, WindowState, menu_point};
 use compositor_ipc::dbus::ConnectRefusal;
 use compositor_layout::{GroupHover, Scheme, frame_style};
-use desktop_protocols::vocab::PressEdge;
-use desktop_protocols::vocab::{ShellRole as ModelRole, WindowEntry as ModelEntry, WireCode};
 use compositor_testclient::misc::decoration::DecorationManager;
 use compositor_testclient::quire::shell::{
     ShellError, ShellHandle, ShellRole, SplitChoiceSeen, SplitSide, WindowEntry,
@@ -24,6 +22,8 @@ use compositor_testclient::{Pattern, shm_buffer};
 use compositor_testkit::fakes::callers;
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use compositor_wayland::foreign_toplevel_list::identifier_of;
+use desktop_protocols::vocab::PressEdge;
+use desktop_protocols::vocab::{ShellRole as ModelRole, WindowEntry as ModelEntry, WireCode};
 
 use account_core::SandboxFacts;
 use std::time::Duration;

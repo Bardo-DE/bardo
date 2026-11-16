@@ -13,12 +13,12 @@ use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_core::time::{Mono, VblankSeq};
 use compositor_render::pass::{ArgbImage, CapturedFrame};
 use compositor_render::{CasementElement, Compositor, Rgba8, solid_rect};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Allocator, Format, Fourcc, Modifier};
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::utils::CommitCounter;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 const SIDE: u32 = 64;
 

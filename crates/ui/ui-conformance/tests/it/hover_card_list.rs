@@ -5,13 +5,13 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use probe::rect;
+use std::time::Duration;
 use ui_components::components::overlays::hover_card::target::{HoverTarget, TargetElement};
 use ui_components::prelude::*;
 use ui_components::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use probe::rect;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

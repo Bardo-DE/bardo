@@ -1,7 +1,8 @@
-//! Builders shared by casement-core's tests (not API).
+//! Builders shared by compositor-core's tests (not API).
 
 pub mod driver;
 
+use account_core::{AppId, AppName, ClaimedId, Isolation, SpaceId};
 use compositor_core::app::AppKey;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
 use compositor_core::output::{EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm};
@@ -12,7 +13,6 @@ use compositor_core::window::{
 };
 use compositor_core::{ClientKey, OutputKey, OutputName, WindowId};
 use desktop_protocols::vocab::{Emphasis, Modality, SensitivityLevel, WindowRole};
-use account_core::{AppId, AppName, ClaimedId, Isolation, SpaceId};
 use std::time::Duration;
 
 pub fn ms(n: u64) -> Mono {

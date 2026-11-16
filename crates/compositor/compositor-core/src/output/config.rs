@@ -4,9 +4,9 @@ use super::Mode;
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
 use crate::ids::OutputKey;
 use desktop_protocols::vocab::Transform;
-use ui_core::geometry::scale::Scale;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use ui_core::geometry::scale::Scale;
 
 /// One output's configuration.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

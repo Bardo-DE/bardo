@@ -10,8 +10,8 @@
 
 use super::{Authority, Caller, Credential, IdentifyError, unit_files};
 use crate::journal::{self, kv};
-use caller_identity_linux::{Pinned, Prober, ProcFs, RealProc, TableFiles};
 use caller_identity_core::{Exe, Facts, Proof, Standing, Table, judge};
+use caller_identity_linux::{Pinned, Prober, ProcFs, RealProc, TableFiles};
 use std::os::fd::OwnedFd;
 
 /// Judges callers against the table on disk, through a view of `/proc` and the file system.

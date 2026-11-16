@@ -10,8 +10,8 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
 
-use std::time::Duration;
 use base_testkit::Scratch;
+use std::time::Duration;
 
 /// How long any one wait of a test may take. A wait ends in milliseconds, in seconds on a loaded
 /// machine, in tens of seconds on one with its swap full; the harness ends a whole test after

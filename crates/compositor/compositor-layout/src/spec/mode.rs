@@ -1,7 +1,7 @@
 //! What an output shows.
 
-use compositor_core::app::AppKey;
 use account_core::SpaceId;
+use compositor_core::app::AppKey;
 
 /// What an output shows.
 #[derive(Debug, Clone, PartialEq, Eq)]

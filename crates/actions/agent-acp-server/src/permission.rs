@@ -8,14 +8,14 @@
 
 use crate::calls;
 use crate::scope_words::always_words;
+use action_core::ConfirmRequest;
 use agent_acp_core::permission::{ALLOW_ALWAYS, ALLOW_ONCE, REJECT_ONCE};
 use agent_client_protocol::schema::v1::{
     PermissionOption, PermissionOptionKind, RequestPermissionRequest, SessionId, ToolCallStatus,
     ToolCallUpdate, ToolCallUpdateFields,
 };
-use action_core::ConfirmRequest;
-use permission_core::AlwaysOffer;
 use agent_session::CallOpen;
+use permission_core::AlwaysOffer;
 
 /// The options offered: two, always.
 pub fn options() -> Vec<PermissionOption> {

@@ -5,11 +5,11 @@
 
 use crate::components::lists::row::row::relay;
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_motion::machine::{MachineRef, use_machine};
 use ui_style::tokens::delay::DelayToken;
-use std::time::Duration;
 
 /// A part's pointer entering and leaving, as the events themselves (a caller reads the point to
 /// place its card, or the element to anchor it).
@@ -198,9 +198,9 @@ fn leave(hooks: Option<PartHooks>) -> impl FnMut(PointerEvent) + 'static {
 #[cfg(test)]
 mod tests {
     use super::{RowIn, RowPointer};
+    use std::time::Duration;
     use ui_core::machine::Machine;
     use ui_core::time::stamp::Stamp;
-    use std::time::Duration;
 
     fn pointer(on_row: bool, wait: Option<u64>) -> RowPointer {
         RowPointer {

@@ -4,13 +4,13 @@
 
 use crate::common;
 
-use common::*;
 use account_core::{Family, RelayAuth, RelayPlan, SecretText, Tls};
 use account_fake_servers::net::Bind;
 use account_fake_servers::{
     Accounts, FakeImap, FakePop3, FakeSmtp, MailHandle, Mechanism, Running, Secret, mailbox,
 };
 use account_proxy::{RelayEnd, RelayFault, RustlsConnect};
+use common::*;
 
 #[derive(Clone, Copy, Debug)]
 enum Proto {

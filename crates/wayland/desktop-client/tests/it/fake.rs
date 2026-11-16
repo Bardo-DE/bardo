@@ -142,8 +142,8 @@ fn populate(desktop: &mut FakeDesktop) {
 
 #[test]
 fn the_quire_commands_are_recorded_when_their_targets_exist() {
-    use desktop_protocols::vocab::{Assign, PlaceTarget};
     use desktop_client::{AppKey, SpaceKey};
+    use desktop_protocols::vocab::{Assign, PlaceTarget};
     let mut desktop = quire_fake();
     populate(&mut desktop);
     let commands = [
@@ -174,8 +174,8 @@ fn the_quire_commands_are_recorded_when_their_targets_exist() {
 
 #[test]
 fn a_quire_command_naming_nothing_is_refused_and_not_recorded() {
-    use desktop_protocols::vocab::PlaceTarget;
     use desktop_client::{AppKey, SpaceKey};
+    use desktop_protocols::vocab::PlaceTarget;
     let mut desktop = quire_fake();
     populate(&mut desktop);
     assert_eq!(

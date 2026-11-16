@@ -12,9 +12,9 @@
 use std::io;
 use std::task::{Context, Waker};
 
-use desktop_protocols::vocab::ShellRole;
 use desktop_client::DesktopConfig;
 use desktop_client::client::DesktopClient;
+use desktop_protocols::vocab::ShellRole;
 use shell_model::desktop::{DesktopCommand, ShellNote};
 use smithay_client_toolkit::reexports::calloop::generic::Generic;
 use smithay_client_toolkit::reexports::calloop::ping::PingSource;

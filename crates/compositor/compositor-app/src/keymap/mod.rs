@@ -1,6 +1,6 @@
 //! The compositor's own shell bindings, read from the desktop's keymap (chordkit's layers:
 //! the conventions for our desktop, the machine's keymap, the person's keymap, through
-//! keycap-client's `KeycapSource`).
+//! key-remap-client's `KeycapSource`).
 //!
 //! - [`chord`]: a chordkit chord as casement's own (pure).
 //! - [`shell`]: which standard actions the compositor carries out, and the bindings a keymap

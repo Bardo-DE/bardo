@@ -9,9 +9,9 @@ use action_core::{
     CheckpointEvent, CheckpointFault, CheckpointId, CheckpointList, CheckpointNote, CheckpointRow,
     RestorePlan, Retention, SavedState,
 };
-use agent_session::{Claimant, may_restore, note_rows};
 use action_vocab::{CallerRole, Workspace};
 use action_wire::{CallerId, IntentsReply, WireRefusal};
+use agent_session::{Claimant, may_restore, note_rows};
 use provenance::SessionId;
 
 /// What a surface may know of one session's restore points.

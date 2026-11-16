@@ -7,10 +7,6 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_behaviour::Dir;
-use ui_behaviour::switcher::SwitcherParams;
-use ui_harness::{Harness, Input, Viewport};
 use shell_launcher::{AppId, WindowKey};
 use shell_model::ids::{OutputName, WorkspaceKey};
 use shell_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
@@ -18,6 +14,10 @@ use shell_overlays::Switcher;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::{SurfaceHarness, fake};
 use shell_ui_kit::links::{SwitcherAsk, SwitcherLink};
+use ui_behaviour::Dir;
+use ui_behaviour::switcher::SwitcherParams;
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<Switcher>;
 

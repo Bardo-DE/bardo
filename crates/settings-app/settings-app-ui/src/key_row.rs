@@ -3,8 +3,8 @@
 use crate::controls::{Control, FileOnlyControl};
 use crate::files::{Edit, Files, value_of, written_value};
 use crate::memory_consent::ConsentNote;
-use settings_app_model::{KeyEntry, is_memory_setting};
 use dioxus::prelude::*;
+use settings_app_model::{KeyEntry, is_memory_setting};
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::prelude::*;
 use ui_components::root::common::Common;

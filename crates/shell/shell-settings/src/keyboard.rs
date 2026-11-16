@@ -2,13 +2,13 @@
 //! tables: the keycap profile each app's keys are drawn with. The file keeps the person's text;
 //! [`overrides`] turns it into the typed values the keycap service reads, once per load.
 
-use ui_settings::InvalidKey;
-use ui_settings::schema::Page;
 use key_remap_proto::ProfileName;
 use serde::{Deserialize, Serialize};
 use shell_launcher::AppId;
 use shell_model::keyboard::UserOverrides;
 use std::collections::BTreeMap;
+use ui_settings::InvalidKey;
+use ui_settings::schema::Page;
 
 /// One row of `keyboard.overrides`: an app and the keycap profile its windows get.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsRow)]

@@ -1,4 +1,4 @@
-//! porter-core's one error: values from outside that are not values of ours.
+//! account-core's one error: values from outside that are not values of ours.
 
 /// Why a value from outside (a file, the bus, a socket) was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

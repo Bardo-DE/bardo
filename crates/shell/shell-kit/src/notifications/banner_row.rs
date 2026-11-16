@@ -16,6 +16,7 @@ use crate::notifications::banner_stack::{BannerKey, BannerPosition};
 use crate::notifications::swipe::Carried;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::base::geometry::units::Px;
 use ui_components::base::word::Word;
 use ui_components::host::measure::client_rect;
@@ -23,7 +24,6 @@ use ui_components::motion::presence::Presence;
 use ui_components::motion::roster::{Heal, RowPitch, presence_slug};
 use ui_components::motion::use_roster::Pitches;
 use ui_components::style::task::spawn_in;
-use std::rc::Rc;
 
 /// One banner in the stack.
 #[component]

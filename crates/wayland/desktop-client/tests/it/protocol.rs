@@ -1,9 +1,5 @@
 //! Offered protocols and `supports`.
 
-use desktop_protocols::vocab::{
-    Answer, AskId, Assign, OverviewMode, PlaceTarget, ShellRole, Toggle, TrialAnswer, TrialId,
-    WindowEntry,
-};
 use desktop_client::capture::CaptureRequest;
 use desktop_client::output::OutputConfig;
 use desktop_client::{
@@ -12,6 +8,10 @@ use desktop_client::{
 use desktop_client::{
     DesktopCommand, GroupKey, OutputName, Protocol, ProtocolSet, SurfaceKey, ToplevelKey,
     WorkspaceKey, missing, requires, supports,
+};
+use desktop_protocols::vocab::{
+    Answer, AskId, Assign, OverviewMode, PlaceTarget, ShellRole, Toggle, TrialAnswer, TrialId,
+    WindowEntry,
 };
 
 fn toplevel_commands() -> Vec<DesktopCommand> {

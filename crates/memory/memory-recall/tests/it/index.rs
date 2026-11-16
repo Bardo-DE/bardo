@@ -2,8 +2,8 @@
 
 use memory_core::Integrity;
 use memory_core::{DegradedWhy, IndexView, RecallWhy};
-use memory_store::Urgency;
 use memory_recall::*;
+use memory_store::Urgency;
 
 fn id(s: &str) -> DocId {
     DocId(s.to_owned())

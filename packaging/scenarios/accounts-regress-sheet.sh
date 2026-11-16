@@ -24,8 +24,8 @@
 #   scan      the secret scan
 #
 # Not asserted, screenshot only (kept in the run's output): S3's address on the review card. The rig's mail login is fixed
-# at ada@rig.test (porter-rig MAIL_USER), so no account has an address longer than the 48-character cut; the consent
-# window's app name goes through the same `clipped` (sill-overlays accounts_sheet/words.rs) and is asserted instead.
+# at ada@rig.test (account-rig MAIL_USER), so no account has an address longer than the 48-character cut; the consent
+# window's app name goes through the same `clipped` (shell-overlays accounts_sheet/words.rs) and is asserted instead.
 #
 # budget: 200
 # Exit: 0 pass | 1 a step failed | 2 outside the jail | 3 artefacts missing (harness/scenario-build.sh --accounts).

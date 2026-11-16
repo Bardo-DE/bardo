@@ -4,9 +4,9 @@
 
 use crate::agents::AGENTS_DIR;
 use crate::values::DataHome;
-use settings_app_model::{Candidate, Presence};
 use action_settings::dirs_of;
 use serde_json::Value;
+use settings_app_model::{Candidate, Presence};
 use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};

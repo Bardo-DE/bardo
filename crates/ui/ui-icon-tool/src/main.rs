@@ -6,8 +6,8 @@ use clap::{Parser, Subcommand};
 mod install;
 mod ship_set;
 
-use ui_icon_tool::IconsError;
 use image::{DynamicImage, Rgba32FImage};
+use ui_icon_tool::IconsError;
 
 #[derive(Debug, Parser)]
 #[command(about = "Export and install the shipped app-icon set (design/08-ICONS.md 2.11)")]

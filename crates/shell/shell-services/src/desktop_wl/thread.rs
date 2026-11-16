@@ -1,5 +1,5 @@
 //! The windows thread's start: its own Wayland connection (a protocol object cannot cross
-//! connections, and shell-host's connection is the host's), then the arm the compositor's
+//! connections, and layer-shell-host's connection is the host's), then the arm the compositor's
 //! globals select (`backend_of`). On a compositor with no window protocols it parks on the
 //! command channel instead, dropping commands, until every `Control` is gone.
 

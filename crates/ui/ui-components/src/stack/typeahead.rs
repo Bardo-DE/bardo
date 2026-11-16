@@ -3,8 +3,8 @@
 //! forgotten once `TypeaheadReset` has passed since the last letter. A single letter typed again
 //! and again steps through the items that start with it.
 
-use ui_style::tokens::delay::DelayToken;
 use std::time::Instant;
+use ui_style::tokens::delay::DelayToken;
 
 /// The letters typed so far and when the last one came.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -64,8 +64,8 @@ impl Typeahead {
 #[cfg(test)]
 mod tests {
     use super::Typeahead;
-    use ui_style::tokens::delay::DelayToken;
     use std::time::{Duration, Instant};
+    use ui_style::tokens::delay::DelayToken;
 
     const LABELS: &[&str] = &["Archive", "Move", "Mute", "Music", "Reply"];
 

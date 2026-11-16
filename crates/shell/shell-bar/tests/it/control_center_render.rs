@@ -6,16 +6,16 @@
 
 use crate::cc_support;
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
 use cc_support::live::{self, Report};
 use cc_support::{count, fake, render, render_dropdown};
-use ui_components::prelude::*;
 use shell_bar::control_center::{CcPage, Detail};
 use shell_model::bluetooth::Bluetooth;
 use shell_model::wifi::{Radio, Ssid, Wifi, WifiCommand};
 use shell_settings::{ControlCenterModule, ControlCenterSettings, ShellFile};
+use ui_components::prelude::*;
 
 #[test]
 fn the_grid_shows_what_the_services_hold() {

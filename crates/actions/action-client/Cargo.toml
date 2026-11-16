@@ -40,7 +40,7 @@ quire-desktop = ["dbus"]
 # The D-Bus transport (Linux, the desktop's intentd).
 dbus = ["dep:action-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus"]
 # `InProcess`: the router in the caller's own process. Off by default so a client (cuad, an app)
-# never links the router, and with it cedar and policy-point.
+# never links the router, and with it cedar and permission-policy.
 in_process = ["dep:action-router"]
 
 [lints.rust]

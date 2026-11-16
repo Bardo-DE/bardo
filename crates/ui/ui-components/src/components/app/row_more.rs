@@ -6,11 +6,11 @@ use crate::components::content::title_tip::use_tip;
 use crate::focus::click::kept_click;
 use crate::host::measure::client_rect;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::Rect;
 use ui_core::vocab::{Shortcut, aria_word, shown_word};
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
-use std::rc::Rc;
 
 /// The default `aria-label`.
 const LABEL: &str = "More actions";

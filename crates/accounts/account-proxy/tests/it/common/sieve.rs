@@ -2,12 +2,12 @@
 //! of LISTSCRIPTS and LOGOUT to see a session work. It records every login it was shown.
 
 use super::{PASSWORD, USER};
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD;
 use account_fake::FakeAddress;
 use account_fake_servers::mail::Lines;
 use account_fake_servers::net::{Bind, Conn, Listener};
 use account_fake_servers::tls;
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use std::sync::{Arc, Mutex};
 use tokio::task::JoinHandle;
 

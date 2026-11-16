@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Synthetic pointer and keyboard input into the compositor of lib/compositor.sh, commands on
 # stdin, each answered `ok ...` on stdout once it reached the compositor: fake-input.sh's grammar
-# on KWin, `casementctl debug inject` (a superset, casement-ipc/src/inject.rs) on casement.
+# on KWin, `casementctl debug inject` (a superset, compositor-ipc/src/inject.rs) on casement.
 # Needs COMP_ENV, which comp_start exports.
 set -euo pipefail
 LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

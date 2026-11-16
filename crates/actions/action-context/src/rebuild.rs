@@ -13,15 +13,15 @@ use crate::state::{SessionKind, SessionRecord};
 use crate::tasks::{TaskRecord, TaskState};
 use crate::wal::Wal;
 use crate::who::actor_of;
-use memory_core::EpisodeId;
-use companion_model::RunsIn;
+use account_core::AppName;
+use account_ids::Count;
 use action_core::{
     ExternalAgent, Ledger, Reveal, SheetSurface, StepEnd, StepLine, StepShown, UserTurn,
 };
-use agent_session::{ResumeFault, ResumePlan, SessionEntry, Standing, TaintCause, TaintNote};
 use action_wire::TaskLedger;
-use account_core::AppName;
-use account_ids::Count;
+use agent_session::{ResumeFault, ResumePlan, SessionEntry, Standing, TaintCause, TaintNote};
+use companion_model::RunsIn;
+use memory_core::EpisodeId;
 use provenance::{Actor, AgentRef, AgentRole, Label, SessionId, UnixSeconds};
 
 /// The app a session is attributed to when its log never said who opened it (a record from
@@ -172,9 +172,7 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
     // A watch session is a terminal's, whatever agent its opening names; so is a conversation
     // that went to a terminal and has not come back.
     let (kind, actor) = match (&opening.backend, in_terminal) {
-        (agent_session::BackendKind::Watch(rewind), _) => {
-            (SessionKind::Watch(*rewind), Actor::Cli)
-        }
+        (agent_session::BackendKind::Watch(rewind), _) => (SessionKind::Watch(*rewind), Actor::Cli),
         (_, Some(_)) => (SessionKind::Watch(rewind), Actor::Cli),
         _ => (
             SessionKind::Agent,
@@ -282,11 +280,11 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
 mod tests {
     use super::*;
     use action_core::Rewind;
-    use permission_core::BreakerTrip;
+    use action_vocab::CallId;
     use agent_session::{
         BackendKind, CallOpen, EndCause, Interrupted, Opening, ResumedBudget, TaintCause,
     };
-    use action_vocab::CallId;
+    use permission_core::BreakerTrip;
     use provenance::{ActionName, Effect, SpaceId, TaskId};
 
     fn plan(standing: Standing) -> ResumePlan {
@@ -330,9 +328,8 @@ mod tests {
     #[test]
     fn an_external_agents_label_survives_a_rebuild() {
         let mut p = plan(Standing::Open);
-        p.opening.backend = BackendKind::Acp(
-            permission_core::ProgramName::parse("claude-code").expect("program"),
-        );
+        p.opening.backend =
+            BackendKind::Acp(permission_core::ProgramName::parse("claude-code").expect("program"));
         p.opening.label = Some("Claude Code".to_owned());
         p.opening.rewind = Rewind::Agent;
         let record = rebuild(&id(), &p, UnixSeconds(1)).record;

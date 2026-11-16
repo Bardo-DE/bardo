@@ -6,9 +6,9 @@ use crate::protocol::cut_past_cap;
 use compositor_core::input::{DeviceClass, KeyCode};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::time::Mono;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::misc::idle::{IdleKind, IdleLine, IdleSignal, IdleWatch};
 use compositor_testkit::{Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
 
 /// Moves virtual time by `by` and reads what the watch received.

@@ -5,8 +5,8 @@
 //! order holds whichever sheet the renderer parses first.
 
 use dioxus::prelude::*;
-use ui_style::css::layers;
 use std::borrow::Cow;
+use ui_style::css::layers;
 
 /// A `<style>` holding `css` in the `app` layer. Draw it where the sheet used to be written
 /// (`style { {CSS} }`); the sheet must not open `@layer ds` (`ui_lint::Rule::LayerDs`).

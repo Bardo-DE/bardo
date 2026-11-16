@@ -9,7 +9,6 @@ pub(super) mod popups;
 use crate::core_loop;
 use crate::state::State;
 use compositor_core::{ClientKey, InputSerial, OutputKey, WindowId};
-use desktop_protocols::vocab::Toggle;
 use compositor_wayland::convert::{point_of, serial_of};
 use compositor_wayland::limits::{self, Limit};
 use compositor_wayland::serial::PressRecord;
@@ -19,6 +18,7 @@ use compositor_wayland::xdg_shell::{
     on_toplevel_destroyed, on_window_menu,
 };
 use compositor_wayland::{ClientState, xdg_foreign, xdg_toplevel_tag};
+use desktop_protocols::vocab::Toggle;
 use smithay::desktop::{PopupKind, find_popup_root_surface};
 use smithay::output::Output;
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::ResizeEdge;

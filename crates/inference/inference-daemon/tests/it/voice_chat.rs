@@ -1,27 +1,27 @@
 //! A voice chat on a live session: the real `Inference1` object on a private bus, a client
-//! opening a language session through `porter-client` and sending a `Transcribe` request, the
+//! opening a language session through `account-client` and sending a `Transcribe` request, the
 //! audio, `EndOfAudio` and then the chat. The router, the supervisor, the planner, `Ears` over the
 //! fake speech host and the text model's fake engine are the real ones; no real binary, model,
 //! library, microphone or network is touched.
 
 use crate::hosting;
 
-use engine_supervisor::SupervisorConfig;
-use hosting::engine::{Chat, Script};
-use hosting::entries;
-use hosting::rig::{Plan, SpeechPlan, World};
-use inference_client::{DbusSession, InferSession};
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use engine_supervisor::SupervisorConfig;
+use hosting::engine::{Chat, Script};
+use hosting::entries;
+use hosting::rig::{Plan, SpeechPlan, World};
+use inference_client::{DbusSession, InferSession};
 use inference_core::{
     AudioFrame, AudioRate, Base64Bytes, ChatMessage, ChatRequest, ClientFrame, InferEvent,
     InferReply, InferRequest, LangPick, Role, StageRole, TranscribeBegin, TranscribeMode,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 use std::time::Duration;

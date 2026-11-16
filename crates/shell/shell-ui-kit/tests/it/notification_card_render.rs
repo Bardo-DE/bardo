@@ -7,7 +7,6 @@
 use shell_ui_kit::harness::fake;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use shell_model::notifications::{
     Action, ActionKey, AppRef, Expiry, Hints, IconRef, Notification, NotificationId, UnixMs,
     parse_body,
@@ -15,6 +14,7 @@ use shell_model::notifications::{
 use shell_settings::ShellFile;
 use shell_ui_kit::notification_card::{CardPlace, CardPress, NoteCard};
 use shell_ui_kit::settings::SettingsFeed;
+use ui_components::prelude::*;
 
 const NOW: UnixMs = UnixMs(1_000_000_000);
 

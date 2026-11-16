@@ -2,8 +2,8 @@
 
 use crate::components::menus::ui_manifest::model::{UI_VOCAB, UiCommand, UiManifest, UiOnlyRow};
 use crate::components::menus::ui_manifest::rows::CommandRow;
-use ui_core::command::{CommandFace, CommandId, IntentsApp};
 use std::collections::HashMap;
+use ui_core::command::{CommandFace, CommandId, IntentsApp};
 
 /// Why the file cannot be written.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]

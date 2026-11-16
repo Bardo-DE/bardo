@@ -5,12 +5,12 @@
 use crate::best_effort::best_effort;
 use crate::runtime::{Companion, Notes};
 use crate::seams::Surface;
-use memory_core::JsonText;
-use companion_wire::SessionRecord;
 use action_client::Transport as IntentsTransport;
-use agent_planner::Planner;
 use action_vocab::{Clock, NoteSlug};
 use action_wire::{NoteAsk, SessionNote, TaskLedger, skeleton_of};
+use agent_planner::Planner;
+use companion_wire::SessionRecord;
+use memory_core::JsonText;
 use provenance::{SessionId, TaskId};
 
 /// The record as the router stores it: its slug and its serde JSON.

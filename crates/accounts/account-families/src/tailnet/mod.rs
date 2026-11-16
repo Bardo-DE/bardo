@@ -1,7 +1,7 @@
 //! The Tailnet family: Tailscale on this computer (any file with `kind = "own_program"`). The
 //! account holds NO credential of any kind: Tailscale's own program keeps the login and porter
 //! only asks it, over the socket it serves, whether it is running and who is signed in
-//! (`porter-tailscale`). Adding the account is asking: it is added when Tailscale answers and
+//! (`account-tailscale`). Adding the account is asking: it is added when Tailscale answers and
 //! somebody is signed in, and when nobody is, the sign-in hands the person Tailscale's own page
 //! to open. porter never takes a Tailscale password or key.
 //!

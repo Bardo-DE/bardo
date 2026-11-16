@@ -38,38 +38,38 @@ A **new repo `~/almanac`** (github.com/Bardo-DE/almanac). It is shaped like port
 Why a separate repo: memory is not accounts. The three owned crates (`eventlog`, `memfiles`, `recall`) are meant to be reusable. memoryd also has its own confinement unit.
 
 **Portability boundary.**
-- Builds on macOS and Windows, with no zbus, tokio, oo7 or inotify: `almanac-core`, `almanac-seal`, `eventlog`, `memfiles`, `recall`, `almanac-service`, `almanac-client` (without its `dbus` feature).
-- Linux only: `almanac-watch`, `almanac-dbus`, `memoryd`.
+- Builds on macOS and Windows, with no zbus, tokio, oo7 or inotify: `memory-core`, `memory-seal`, `eventlog`, `memfiles`, `recall`, `memory-service`, `memory-client` (without its `dbus` feature).
+- Linux only: `memory-watch`, `memory-dbus`, `memoryd`.
 
 ### 2.2 Crates
 
 | Crate | Purpose | Direct deps (ours) | External |
 |---|---|---|---|
-| `almanac-core` | Vocabulary: `ThingRef`, `ThingKind`, `KindPattern`, `Verb`, `EventBody`, `EventHeader` fields, `EventRef`, `FactId`, `Fact`, `Link`, `RememberRule`, `Retention`, `ForgetScope`, the wire `MemoryRequest`/`MemoryReply`, timeline, export manifest, `Caller` | porter-core, prov | serde, serde_json, thiserror |
-| `almanac-seal` | `SpaceKey`, subkey derivation, `DbKey`, `seal`/`unseal` for files, the `KeyStore` trait, `MemoryKeys` (feature `testing`), `Oo7Keys` (stub) | almanac-core | blake3, chacha20poly1305, zeroize, getrandom; oo7 behind feature `oo7` |
-| `eventlog` | Canonical header bytes, the chain (`link`, `verify_chain`), the `LogRead`/`LogWrite` traits, `SqliteLog` (SQLCipher), `MemoryLog` (feature `testing`), checkpoints | almanac-core, almanac-seal | rusqlite, blake3 |
-| `memfiles` | Topic file format (`parse_topic`/`render_topic`), `Store`, the `Vault` trait, `PlainDir`, `SealedDir`, `MemoryVault` (testing), pending, procedures folder, cascade lookup | almanac-core, almanac-seal | jiff |
-| `recall` | Traits `Embedder` and `VectorIndex`; `Fts5` lexical; `ExactScan` vectors; `chunk`; `fuse_rrf`; `Index` (rebuild/upsert/search); `FakeEmbedder` (testing). Generic: knows nothing of almanac-core. | none | rusqlite |
+| `memory-core` | Vocabulary: `ThingRef`, `ThingKind`, `KindPattern`, `Verb`, `EventBody`, `EventHeader` fields, `EventRef`, `FactId`, `Fact`, `Link`, `RememberRule`, `Retention`, `ForgetScope`, the wire `MemoryRequest`/`MemoryReply`, timeline, export manifest, `Caller` | account-core, prov | serde, serde_json, thiserror |
+| `memory-seal` | `SpaceKey`, subkey derivation, `DbKey`, `seal`/`unseal` for files, the `KeyStore` trait, `MemoryKeys` (feature `testing`), `Oo7Keys` (stub) | memory-core | blake3, chacha20poly1305, zeroize, getrandom; oo7 behind feature `oo7` |
+| `eventlog` | Canonical header bytes, the chain (`link`, `verify_chain`), the `LogRead`/`LogWrite` traits, `SqliteLog` (SQLCipher), `MemoryLog` (feature `testing`), checkpoints | memory-core, memory-seal | rusqlite, blake3 |
+| `memfiles` | Topic file format (`parse_topic`/`render_topic`), `Store`, the `Vault` trait, `PlainDir`, `SealedDir`, `MemoryVault` (testing), pending, procedures folder, cascade lookup | memory-core, memory-seal | jiff |
+| `recall` | Traits `Embedder` and `VectorIndex`; `Fts5` lexical; `ExactScan` vectors; `chunk`; `fuse_rrf`; `Index` (rebuild/upsert/search); `FakeEmbedder` (testing). Generic: knows nothing of memory-core. | none | rusqlite |
 | `recall-fastembed` | `FastembedEmbedder` (in-process CPU/CUDA ONNX). Kept out of `recall` so ort's binary download never enters the gate. | recall | fastembed 7.1, ort 2.0.0-rc.13 (via fastembed) |
 | `recall-sqlite-vec` [later, Q6] | `SqliteVec: VectorIndex` | recall | sqlite-vec 0.1.10-alpha.4 |
-| `almanac-service` | memoryd's core over seams: admission, forget planner, fact pipeline, consolidation machine, retention sweep, timeline assembly, export writer, Space lifecycle; traits `Consolidator` and `Clock` | core, seal, eventlog, memfiles, recall | tar |
-| `almanac-watch` | `FileWatch` trait, `InotifyWatch` (notify 8.2), `FanotifyWatch` [later], the pure `join` of observed changes and app-supplied reasons | almanac-core | notify, nix [later] |
-| `almanac-dbus` | `org.quire.Memory1` proxies and skeletons, introspection, the codec (stub) | almanac-core | zbus |
-| `almanac-client` | App-facing `Memory` API with a `Transport` trait: `InProcess`, `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`) | core, service; dbus (feature) | — |
-| `almanac-fake` | Test harness: `fake_service`, `FixedClock`, `ScriptedConsolidator`, fixtures, golden files | core, seal, eventlog, memfiles, recall, service | — |
-| `memoryd` | The daemon. Wiring, the system clock, `InferdEmbedder` and `InferdConsolidator` (through porter-client), the systemd unit | all of the above + porter-client | tokio, zbus, oo7 |
+| `memory-service` | memoryd's core over seams: admission, forget planner, fact pipeline, consolidation machine, retention sweep, timeline assembly, export writer, Space lifecycle; traits `Consolidator` and `Clock` | core, seal, eventlog, memfiles, recall | tar |
+| `memory-watch` | `FileWatch` trait, `InotifyWatch` (notify 8.2), `FanotifyWatch` [later], the pure `join` of observed changes and app-supplied reasons | memory-core | notify, nix [later] |
+| `memory-dbus` | `org.quire.Memory1` proxies and skeletons, introspection, the codec (stub) | memory-core | zbus |
+| `memory-client` | App-facing `Memory` API with a `Transport` trait: `InProcess`, `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`) | core, service; dbus (feature) | — |
+| `memory-fake` | Test harness: `fake_service`, `FixedClock`, `ScriptedConsolidator`, fixtures, golden files | core, seal, eventlog, memfiles, recall, service | — |
+| `memoryd` | The daemon. Wiring, the system clock, `InferdEmbedder` and `InferdConsolidator` (through account-client), the systemd unit | all of the above + account-client | tokio, zbus, oo7 |
 
 **Allowed edges** (in `check-boundary.sh`, porter style):
-- `almanac-core` → `porter-core`, `prov`.
-- `almanac-seal` → `almanac-core`.
-- `eventlog` and `memfiles` → `almanac-core`, `almanac-seal`.
+- `memory-core` → `account-core`, `prov`.
+- `memory-seal` → `memory-core`.
+- `eventlog` and `memfiles` → `memory-core`, `memory-seal`.
 - `recall` → nothing of ours.
-- `almanac-service` → `core`, `seal`, `eventlog`, `memfiles`, `recall`.
-- `almanac-watch` and `almanac-dbus` → `almanac-core`.
-- `almanac-client` → `core`, `service`, and `dbus` only behind its feature.
-- `memoryd` → everything, plus `porter-client`.
+- `memory-service` → `core`, `seal`, `eventlog`, `memfiles`, `recall`.
+- `memory-watch` and `memory-dbus` → `memory-core`.
+- `memory-client` → `core`, `service`, and `dbus` only behind its feature.
+- `memoryd` → everything, plus `account-client`.
 
-**Forbidden reach** (any path, default features): every crate except `almanac-dbus`, `almanac-client[dbus]` and `memoryd` must never reach `zbus zvariant tokio reqwest hyper oo7 ort fastembed`. `almanac-core` must also never reach `rusqlite` or `notify`.
+**Forbidden reach** (any path, default features): every crate except `memory-dbus`, `memory-client[dbus]` and `memoryd` must never reach `zbus zvariant tokio reqwest hyper oo7 ort fastembed`. `memory-core` must also never reach `rusqlite` or `notify`.
 
 ### 2.3 Adopted externals (versions as surveyed 2026-10-02; re-check at freeze)
 
@@ -80,18 +80,18 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
   - `oo7 = "0.6"`. porter is also waiting for this line.
   - `fastembed = "7.1"`, used only by `recall-fastembed`.
   - `nix = "0.30"` for fanotify [later].
-- **porter-core** (git dependency at the frozen rev): `AppName`, `AppId`, `DataClass`, `Usage`, `UnixSeconds`, `Count`, `Bytes`, `ModelId`, `Dims`. porter-core is pure and portable, so there is one home per concept.
+- **account-core** (git dependency at the frozen rev): `AppName`, `AppId`, `DataClass`, `Usage`, `UnixSeconds`, `Count`, `Bytes`, `ModelId`, `Dims`. account-core is pure and portable, so there is one home per concept.
 - **prov** (actions area): `Label`, `Integrity`, `Confidentiality`, the `Confirmation` witness, and probably `SpaceId` and `Actor` (§7).
 
 ---
 
 ## 3. Frozen interfaces
 
-### 3.1 Shared identity (home: `prov` if the actions area agrees, else `almanac-core`) [freeze now]
+### 3.1 Shared identity (home: `prov` if the actions area agrees, else `memory-core`) [freeze now]
 
 ```rust
 /// One Space: a hard wall for memory. Stable across sessions (unlike workspace ids,
-/// design/21 §11.3); minted once, slug grammar of porter-core::id.
+/// design/21 §11.3); minted once, slug grammar of account-core::id.
 pub struct SpaceId(String);                 // "work", "home", "s-01j9zk..."; reserved: "desktop" [Q2]
 
 /// Who did it. Shared-undo labels (COMPANION item 10) use the same type.
@@ -110,7 +110,7 @@ pub enum SystemPart { Memory, Router, Watcher, Consolidation, Retention }
 pub struct SessionId(String);  pub struct RunId(String);   // slug grammar
 ```
 
-### 3.2 almanac-core vocabulary [freeze now]
+### 3.2 memory-core vocabulary [freeze now]
 
 ```rust
 /// A typed thing an app owns. Same identity as the intents EntityId; if actions freezes
@@ -141,7 +141,7 @@ pub enum EventBody {
     Search  { app: AppName, text: String, scope: ThingKind, results: Count },
     Session { session: SessionId, step: SessionStep },          // companion session start/prompt/end
     Cua     { run: RunId, step: CuaStep },                      // cua.* (cua-integration §6.1), opaque to us
-    Policy  { request: PolicyRequestView, decision: Decision }, // audit from policy-point
+    Policy  { request: PolicyRequestView, decision: Decision }, // audit from permission-policy
     Consent { grant: GrantView, answer: ConsentAnswerView },
     Memory  { op: MemoryOp },                                   // memoryd's own audit
 }
@@ -300,7 +300,7 @@ rules.toml
 ```
 The index and the keys are never exported. `events.jsonl` can be verified by third parties for the chain. Bodies can only be checked against their digests by someone holding the digest subkey, which is exported only if the user ticks "include verification key" [Q10].
 
-### 3.5 almanac-seal [freeze now]
+### 3.5 memory-seal [freeze now]
 
 ```rust
 pub struct SpaceKey(/* [u8;32], zeroize, redacted Debug, no serde */);
@@ -437,7 +437,7 @@ memoryd's documents:
 - `DocId = "e:<replica>:<seq>"` for event bodies that carry searchable text (titles, search text). Text comes from `ThingView`.
 - `DocId = "t:..."` [later], for app-donated thing content.
 
-### 3.9 almanac-service: seams, requests, caller classes [freeze now]
+### 3.9 memory-service: seams, requests, caller classes [freeze now]
 
 ```rust
 pub trait Clock: Send + Sync { fn now(&self) -> UnixSeconds; }
@@ -565,7 +565,7 @@ The UI renders the sentence ("You archived *Q4 budget*") from `actor`, `kind` an
 
 ---
 
-## 4. State machines (pure `step` functions in almanac-service; effects returned as values)
+## 4. State machines (pure `step` functions in memory-service; effects returned as values)
 
 **4.1 Space lifecycle** (`SpaceState`)
 
@@ -633,7 +633,7 @@ A deleted source automatically creates an internal `Thing` plan, applied without
 - Ready → LexicalOnly when the embedder becomes unavailable.
 - Stale or LexicalOnly → Building when it returns.
 
-**4.6 File-why join** (`almanac-watch::join`, pure)
+**4.6 File-why join** (`memory-watch::join`, pure)
 
 | Input | Within ±2 s (proposed) on the same path, same inode or content digest | Outcome |
 |---|---|---|
@@ -646,7 +646,7 @@ A deleted source automatically creates an internal `Thing` plan, applied without
 
 ## 5. Tests that pin the shapes
 
-Harness: `almanac-fake` provides:
+Harness: `memory-fake` provides:
 - `fake_service(ScriptedConsolidator)` → a `MemoryService` over `MemoryKeys`, `MemoryLog`, `MemoryVault`, `Index<ExactScan>` (in-memory SQLite) and `FakeEmbedder`;
 - `FixedClock(NOW)`, three Spaces (`work`, `home`, `desktop`), and a scratch `Dirs` from `tempfile`;
 - fixtures: `mail_thread_archived`, `file_saved_from_attachment`, `companion_forwarded`, `cua_run_step`, `policy_ask`;
@@ -725,12 +725,12 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 - A: `eventlog` (SqliteLog, MemoryLog, prune, verify).
 - B: `memfiles` (Store, PlainDir, SealedDir, pending, derived_from).
 - C: `recall` (Fts5, ExactScan, Index, FakeEmbedder) and `recall-fastembed`.
-- D: `almanac-seal` and `almanac-watch` (InotifyWatch). `Oo7Keys` stays a stub until oo7 is pinned.
+- D: `memory-seal` and `memory-watch` (InotifyWatch). `Oo7Keys` stays a stub until oo7 is pinned.
 
-**Fill wave 2 (one agent; owns `almanac-service`, `almanac-fake`)**
+**Fill wave 2 (one agent; owns `memory-service`, `memory-fake`)**
 - Admission, the forget planner and apply, the fact pipeline, the consolidation machine and `check_draft`, the retention sweep, timeline assembly, the export writer, Space lifecycle.
 
-**Fill wave 3 (one agent; owns `almanac-dbus`, `almanac-client`, `memoryd`, `dist/`)**
+**Fill wave 3 (one agent; owns `memory-dbus`, `memory-client`, `memoryd`, `dist/`)**
 - The codec, the serving skeletons, Dbus/InProcess transports, memoryd wiring, `InferdEmbedder` and `InferdConsolidator` (blocked on porter's `Broker::infer` and `DbusTransport` fills).
 - A systemd user unit with sandboxing: `PrivateNetwork=yes`, `ProtectSystem=strict`, `ReadWritePaths=` for the memory dirs only, `ProtectHome=read-only` for watching, and a Landlock ruleset in main.
 
@@ -763,7 +763,7 @@ cargo deny check licenses
   - Proposed homes in `prov`: `SpaceId`, `Actor` (shared-undo labels use the same type), `Effect`.
   - `EntityId`/`EntityKind`/`ActionName` in a light crate, which ThingRef re-exports.
   - The router is the only `Router` caller. It records `Action` events write-ahead (`outcome: Pending`, then `Done`) and policy decisions. Proposal: the router refuses outbound and destructive actions when memoryd cannot give a receipt (fail-closed audit). That is the router's call.
-- **policy-point:** the `Decision` and request-view serde forms, re-declared in `EventBody::Policy`.
+- **permission-policy:** the `Decision` and request-view serde forms, re-declared in `EventBody::Policy`.
 - **porter/inferd:**
   - `InferRequest::Embed` with `Usage::Background` and the doc's `DataClass`, so mail text keeps its on-device floor.
   - Chat for consolidation.

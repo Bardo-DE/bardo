@@ -1,6 +1,6 @@
 //! The key an account's consent decision is stored under: this app, this account, this kind,
 //! this data class, this use, which Spaces, and for Storage how far into the store. It is the
-//! accounts' key for porter-core's consent, which is generic over the key it decides on and
+//! accounts' key for account-core's consent, which is generic over the key it decides on and
 //! names no Space; the Space ownership rule is decided here.
 
 use crate::AccountId;

@@ -7,29 +7,29 @@
 
 use crate::hosting;
 
-use hosting::entries;
-use hosting::rig::{Plan, Processes, World};
-use inference_client::InferSession;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_dbus::Details;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use base_testkit::Scratch;
+use hosting::entries;
+use hosting::rig::{Plan, Processes, World};
+use inference_client::InferSession;
 use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest, MessagePart,
     ModelError, Role as ChatRole,
 };
-use account_match::LlmNeed;
-use account_match::Need;
+use inference_dbus::inference::{InferenceProxy, need_to_dbus};
 use inference_router::startup::{Cause, Level};
 use std::io::{Read, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixListener;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
-use inference_dbus::inference::{InferenceProxy, need_to_dbus};
-use base_testkit::Scratch;
 
 /// What "at once" means for a failure the daemon already knows (an exit, a taken socket path, a
 /// pause after giving up): well under the readiness timeouts (30 s and up) and the 30 s pause

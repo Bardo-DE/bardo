@@ -1,8 +1,8 @@
-//! inferd-client's guest rows and asks, as questions; the verdict as its answer.
+//! inference-client's guest rows and asks, as questions; the verdict as its answer.
 
+use account_tailscale::NodeId;
 use inference_tailnet::{GuestAnswer, GuestRow};
 use inference_tailnet::{GuestAsk, RowState};
-use account_tailscale::NodeId;
 use shell_model::guest_asks::{Ask, Computer, Verdict};
 
 /// inferd's well-known name.
@@ -25,7 +25,7 @@ pub(crate) fn waiting(rows: Vec<GuestRow>) -> Vec<Ask> {
         .collect()
 }
 
-/// The answer inferd-client takes for `verdict`.
+/// The answer inference-client takes for `verdict`.
 pub(crate) fn answer(verdict: Verdict) -> GuestAnswer {
     match verdict {
         Verdict::Allow => GuestAnswer::Allow,

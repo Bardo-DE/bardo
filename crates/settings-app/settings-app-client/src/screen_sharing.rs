@@ -1,5 +1,5 @@
 //! Screen sharing: the apps the portal lets share the screen without asking again, with a Remove
-//! on each. The steps are `detent-model`'s `screen_sharing_step`.
+//! on each. The steps are `settings-app-model`'s `screen_sharing_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;

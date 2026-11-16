@@ -13,7 +13,6 @@ use compositor_core::input::{
 use compositor_core::settings::XkbNames;
 use compositor_core::time::Mono;
 use desktop_protocols::vocab::PressEdge;
-use ui_core::vocab::Fraction;
 use smithay::backend::input::{
     AbsolutePositionEvent, Axis, AxisRelativeDirection, AxisSource, ButtonState, Device,
     DeviceCapability, Event, GestureBeginEvent, GestureEndEvent, GesturePinchUpdateEvent,
@@ -21,6 +20,7 @@ use smithay::backend::input::{
     PointerButtonEvent, PointerMotionEvent, Switch, SwitchState, SwitchToggleEvent, TouchEvent,
 };
 use std::time::Duration;
+use ui_core::vocab::Fraction;
 
 fn xkb() -> XkbNames {
     XkbNames {

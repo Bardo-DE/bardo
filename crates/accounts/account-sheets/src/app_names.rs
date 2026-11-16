@@ -119,8 +119,8 @@ fn entry_name(text: &str) -> Option<AppTitle> {
 mod tests {
     use super::*;
     use account_callers::{CallerRole, CallerRow};
-    use std::path::Path;
     use base_testkit::Scratch;
+    use std::path::Path;
 
     fn app(text: &str) -> AppName {
         AppName::parse(text).expect("name")

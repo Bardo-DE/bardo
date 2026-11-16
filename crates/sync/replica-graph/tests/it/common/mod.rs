@@ -2,16 +2,16 @@
 //! the bearer added the way accountd's relay would add it. No network beyond loopback.
 #![allow(dead_code)]
 
-use sync_fake_graph::{FakeGraph, GraphHandle};
-use sync_core::Clock;
 use account_fake_servers::Running;
 use account_http::http::header::{AUTHORIZATION, HeaderValue};
 use account_http::http::{Request, Response};
 use account_http::{Http, HttpError};
 use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use account_ids::{UnixSeconds, WebUrl};
-use std::future::Future;
 use replica_graph::{GraphReplica, Root, Uploads};
+use std::future::Future;
+use sync_core::Clock;
+use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::net::TcpStream;
 
 pub const TOKEN: &str = "ey.fake-access-token";

@@ -1,8 +1,8 @@
 //! The queue's transition.
 
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmId, ConfirmRequest, GrantScope};
-use permission_core::StandingGrantId;
 use action_vocab::Seconds;
+use permission_core::StandingGrantId;
 use provenance::{Confidentiality, ConfirmReceipt, InputProof, UnixSeconds};
 
 use super::brief::BRIEF_MAX_BYTES;

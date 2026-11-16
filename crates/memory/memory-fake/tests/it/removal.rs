@@ -3,12 +3,12 @@
 //! either is deleted when the person chose that; a move that stopped half way finishes when
 //! asked again. Scratch Spaces, no clock, no bus.
 
+use chrono::{Offset, Utc};
 use memory_core::*;
 use memory_fake::*;
+use memory_files_format::Store;
 use memory_service::Caller;
 use memory_service::MemoryService;
-use chrono::{Offset, Utc};
-use memory_files_format::Store;
 use std::collections::BTreeSet;
 
 type Service = MemoryService<FakeBackend>;

@@ -7,15 +7,15 @@
 use crate::common;
 use crate::googlerig as google_rig;
 
+use account_fake_servers::google::Pick;
 use common::PhotosGrant;
-use sync_bus::SyncProxy;
-use sync_core::ItemState;
 use google_rig::{
     FILES_DATASET, Media, PICKER_BEARER, Rig, SECRET_ACCESS, SECRET_REFRESH, UPLOAD_BEARER,
     UPLOAD_DATASET, client_of, eventually, rig, rig_picker_only, rig_with,
 };
-use account_fake_servers::google::Pick;
 use std::sync::atomic::Ordering;
+use sync_bus::SyncProxy;
+use sync_core::ItemState;
 use sync_daemon::datasets::photos::google::{
     ALBUM_TITLE, PickerError, PickerState, SLUG, SessionEnd, SessionId,
 };

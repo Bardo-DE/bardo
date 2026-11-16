@@ -4,11 +4,13 @@
 //! caller table. A cgroup name alone proves nothing, so none is read here.
 
 use super::connect_ask::{NOT_THE_CALLER, Proven};
-use compositor_core::policy::ConnectionRole;
-use caller_identity_dbus::peephole::ProcFs;
-use caller_identity_dbus::peephole::RealProc;
-use caller_identity_dbus::caller_identity_core::{Proof, Refused, Requirement, RoleName, Standing, roles};
+use caller_identity_dbus::caller_identity_core::{
+    Proof, Refused, Requirement, RoleName, Standing, roles,
+};
+use caller_identity_dbus::caller_identity_linux::ProcFs;
+use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerLink, UnitSource, WhoError};
+use compositor_core::policy::ConnectionRole;
 use std::fmt::Debug;
 use std::future::Future;
 use std::pin::Pin;

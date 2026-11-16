@@ -4,8 +4,12 @@
 //! reading the bar's `VolumeState`. Each motion ends at 0 frames.
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
 use ui_components::components::content::status::volume::{VolumeState, VolumeWaves};
 use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
 use ui_components::components::controls::button_model::ImagePosition;
@@ -14,8 +18,6 @@ use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::*;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

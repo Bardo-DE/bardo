@@ -2,8 +2,8 @@
 
 use crate::copy::heroes;
 use crate::icons::tile_of;
-use settings_app_model::PageKind;
 use dioxus::prelude::*;
+use settings_app_model::PageKind;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::forms::icon_tile::tile;
 use ui_components::prelude::*;

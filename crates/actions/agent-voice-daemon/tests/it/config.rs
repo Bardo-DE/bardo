@@ -1,8 +1,8 @@
 //! The configuration.
 
 use account_core::AppName;
-use std::path::PathBuf;
 use agent_voice_daemon::*;
+use std::path::PathBuf;
 
 #[test]
 fn the_shipped_voiced_toml_parses_and_round_trips() {

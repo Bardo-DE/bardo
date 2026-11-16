@@ -1,9 +1,9 @@
 //! The socket guards: who has the seat, and which process is the shell.
 
-use service_locator::guard::{AcceptFailure, Claim, ShellCheck, accept_failure, active_uid};
-use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned, Prober};
 use caller_identity_core::{FileTrust, Pid, Pin, RoleName, Table, Uid, Writer};
+use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Pinned, Prober};
 use rustix::io::Errno;
+use service_locator::guard::{AcceptFailure, Claim, ShellCheck, accept_failure, active_uid};
 
 const PID: u32 = 4242;
 const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";

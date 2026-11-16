@@ -1,9 +1,9 @@
 //! One Space's part of the scene.
 
 use super::WindowSpec;
+use account_core::SpaceId;
 use compositor_core::WindowId;
 use compositor_core::space::SplitPair;
-use account_core::SpaceId;
 
 /// One Space and its windows.
 #[derive(Debug, Clone, PartialEq, Eq)]

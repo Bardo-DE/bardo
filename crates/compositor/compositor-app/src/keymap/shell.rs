@@ -262,7 +262,9 @@ mod tests {
             };
             assert_eq!(key_remap_client::handler(action), want, "{}", action.slug());
         }
-        assert!(key_remap_client::handled_actions().all(|(action, _)| shell_action(action).is_some()));
+        assert!(
+            key_remap_client::handled_actions().all(|(action, _)| shell_action(action).is_some())
+        );
     }
 
     #[test]

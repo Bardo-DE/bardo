@@ -31,12 +31,12 @@ use compositor_core::output::{EdidFacts, EdidSerial, Mode, OutputConfig, OutputF
 use compositor_core::time::{Mono, VblankSeq};
 use compositor_core::{OutputKey, OutputName};
 use compositor_render::{CasementElement, Compositor};
-use ui_core::geometry::scale::Scale;
 use renderer::{Canvas, Drawn, HeadlessRenderer};
 use smithay::backend::renderer::gles::GlesRenderer;
 use smithay::backend::renderer::pixman::PixmanRenderer;
 #[cfg(feature = "testing")]
 use smithay::backend::renderer::test::DummyRenderer;
+use ui_core::geometry::scale::Scale;
 
 /// How the headless backend starts.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -47,7 +47,7 @@ pub struct HeadlessConfig {
     pub renderer: SoftRenderer,
     /// Whether clients are offered dma-buf (`--dmabuf none|soft`): a fake main device over
     /// `/dev/udmabuf`; without it there is no `zwp_linux_dmabuf_v1` global and clients fall back
-    /// to shm (shell-host F80).
+    /// to shm (layer-shell-host F80).
     pub dmabuf: bool,
     /// What a frame costs.
     pub cost: RenderCostModel,

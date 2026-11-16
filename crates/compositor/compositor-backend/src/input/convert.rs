@@ -9,13 +9,13 @@ use compositor_core::input::{
     SwipeDelta, SwitchStep, TouchStep,
 };
 use desktop_protocols::vocab::PressEdge;
-use ui_core::vocab::Fraction;
 use smithay::backend::input::{
     AbsolutePositionEvent, Axis, AxisSource, ButtonState, GestureBeginEvent, GestureEndEvent,
     GesturePinchUpdateEvent, GestureSwipeUpdateEvent, InputBackend, InputEvent, KeyState,
     KeyboardKeyEvent, PointerAxisEvent, PointerButtonEvent, PointerMotionEvent, Switch,
     SwitchState, SwitchToggleEvent, TouchEvent, UnusedEvent,
 };
+use ui_core::vocab::Fraction;
 
 /// Sub-pixels per logical pixel.
 const SUB_PER_LOGICAL: f64 = 120.0;

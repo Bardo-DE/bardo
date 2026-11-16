@@ -30,10 +30,10 @@ use crate::snapshot::Viewport;
 use blitz_dom::{BaseDocument, Document as _};
 use blitz_traits::events::UiEvent;
 use dioxus::prelude::*;
+use std::time::{Duration, Instant};
 use ui_components::file_drop::drag::DropAcceptance;
 use ui_components::prelude::*;
 use ui_core::time::clock::VirtualClock;
-use std::time::{Duration, Instant};
 
 /// A headless document under test.
 pub struct Harness {

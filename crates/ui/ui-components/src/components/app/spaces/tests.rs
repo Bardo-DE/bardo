@@ -3,8 +3,8 @@ use super::menu_link::{DesktopSpace, LinkChange, Linking};
 use super::menu_pick::{SpacePick, Then, apply, delete_words, rows};
 use super::open_menu::Showing;
 use crate::components::menus::item::item::MenuItem;
-use keymap::{Desktop, Platform};
 use dioxus::prelude::{Key, Modifiers};
+use keymap::{Desktop, Platform};
 use ui_style::appearance::theme::Theme;
 use ui_style::space::look::SpaceLook;
 

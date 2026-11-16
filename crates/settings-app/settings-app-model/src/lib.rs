@@ -108,8 +108,6 @@ pub use displays::{
     RefreshMilliHz, ScaleMilli, default_scale, displays_page, displays_step, looks_like, mode_at,
     mode_sizes, native_size, place_beside, side_of,
 };
-/// Whether an agent may set a key: quire's own type, carried by each `KeySpec`.
-pub use ui_settings::schema::AgentSetting;
 pub use engine_install::{
     EngineAction, EngineBrief, EngineFailure, EngineMatter, EngineOffer, EngineOfferEffect,
     EngineOfferInput, EngineOfferState, EngineRef, EngineRow, EngineStanding, EngineWay,
@@ -193,6 +191,8 @@ pub use spaces::{
 };
 pub use style_notes::{NoteRow, StyleFile, StyleNote, StyleNotes, StyleOwner};
 pub use text_form::{TextFault, show_value};
+/// Whether an agent may set a key: quire's own type, carried by each `KeySpec`.
+pub use ui_settings::schema::AgentSetting;
 pub use updates::{
     ByteCount, Checked, Downloaded, Permille, ProblemKind, ReleaseNotes, UnixSeconds, UpdateAction,
     UpdateMeter, UpdateOffer, UpdatePhase, UpdateStanding, UpdateStatus, UpdateVersion, UpdateWire,

@@ -1,6 +1,6 @@
 [package]
 name = "agent-acp-server"
-description = "The ACP server edge: an editor (Zed, JetBrains, Neovim) drives the companion over the Agent Client Protocol on stdio. The JSON-RPC connection is the official agent-client-protocol SDK's; this lib is the server over the SessionHost and SessionLog seams, and the capped line source both edges hand the SDK. Our own ACP rules (confinement, the permission ruling, taint, strikes, tool-request mapping, the protocol errors) are `acp-core`; an external agent as a session backend is `docket-acp-host`. The process is docket-acp-bin, which refuses to serve unless `agent.acp.expose` is on. The editor's permission prompt is an extra gate, never a replacement for ours."
+description = "The ACP server edge: an editor (Zed, JetBrains, Neovim) drives the companion over the Agent Client Protocol on stdio. The JSON-RPC connection is the official agent-client-protocol SDK's; this lib is the server over the SessionHost and SessionLog seams, and the capped line source both edges hand the SDK. Our own ACP rules (confinement, the permission ruling, taint, strikes, tool-request mapping, the protocol errors) are `agent-acp-core`; an external agent as a session backend is `agent-acp-host`. The process is agent-acp-bin, which refuses to serve unless `agent.acp.expose` is on. The editor's permission prompt is an extra gate, never a replacement for ours."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

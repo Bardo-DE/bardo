@@ -53,7 +53,6 @@ mod timeouts;
 pub mod value;
 
 pub use client::{Change, Changes, LiveClient, SettingsModule1Proxy};
-pub use ui_peer::Deadline;
 pub use error::LiveError;
 pub use module::{Access, Caller, LiveModule, SenderName, Verdict};
 #[cfg(feature = "testing")]
@@ -63,6 +62,7 @@ pub use schema::{LiveSchema, LiveSchemaError};
 pub use skeleton::{Served, serve};
 pub use snapshot::Snapshot;
 pub use timeouts::Timeouts;
+pub use ui_peer::Deadline;
 
 /// The D-Bus interface name.
 pub const INTERFACE: &str = "org.quire.SettingsModule1";

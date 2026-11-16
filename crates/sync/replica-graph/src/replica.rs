@@ -1,20 +1,20 @@
-//! [`GraphReplica`]: ferry-sync's [`Replica`] over a folder of OneDrive's app folder, or of the
+//! [`GraphReplica`]: sync-core's [`Replica`] over a folder of OneDrive's app folder, or of the
 //! whole drive.
 
 use crate::addr::{Addr, Root};
 use crate::json::{DriveInfo, DriveItem};
-use sync_core::Clock;
-use sync_core::status::{read_error, unreached};
-use sync_core::{
-    BaseVersion, Blob, ByteRange, ChangePage, Cursor, Folders, PutItem, PutRefused, Quota,
-    RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
-};
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_http::http::header::{ACCEPT, HeaderValue, RANGE};
 use account_http::http::{Method, Request, Response};
 use account_http::{HeaderText, Http, request};
 use account_ids::{Bytes, WebUrl};
 use std::sync::{Mutex, MutexGuard, PoisonError};
+use sync_core::Clock;
+use sync_core::status::{read_error, unreached};
+use sync_core::{
+    BaseVersion, Blob, ByteRange, ChangePage, Cursor, Folders, PutItem, PutRefused, Quota,
+    RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
+};
 
 /// How many delta items a page asks for unless told otherwise.
 const PAGE: usize = 200;

@@ -8,8 +8,8 @@ use crate::net_policy::NetPolicy;
 use crate::pdf::spec::ContentBox;
 use crate::wake::Wakeup;
 use blitz_dom::{DocumentConfig, MediaType, StyleThreading};
-use blitz_html::{HtmlDocument, HtmlProvider};
 use blitz_embed::net::FileRoots;
+use blitz_html::{HtmlDocument, HtmlProvider};
 use blitz_traits::net::NetWaker;
 use std::sync::Arc;
 

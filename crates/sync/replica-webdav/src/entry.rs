@@ -3,8 +3,8 @@
 
 use crate::path::Root;
 use account_dav_proto::{Multistatus, names};
-use sync_core::{ItemKind, RemoteId, RemoteItem, RemoteVersion};
 use account_ids::Bytes;
+use sync_core::{ItemKind, RemoteId, RemoteItem, RemoteVersion};
 
 /// `DAV:getcontentlength`.
 pub const CONTENT_LENGTH: &str = "DAV:getcontentlength";

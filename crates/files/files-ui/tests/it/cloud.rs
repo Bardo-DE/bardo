@@ -6,10 +6,6 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
-use ui_components::base::press::PointerButton;
-use ui_components::prelude::{Point, ShortcutKey};
-use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Input as Click};
 use files_core::{
     AccountLabel, ByteSize, CloudDrive, CloudItem, CloudKind, CloudState, CloudWords, DriveId,
     DriveState, FileName, FolderPath, ItemRef, OnlineUrl, ProviderName, Share, Usage,
@@ -18,6 +14,10 @@ use files_fs::{CloudCall, FakeClouds};
 use files_model::{Effect, Input, TabId};
 use files_ui::edge::{Edge, Heard, Seams};
 use tempfile::TempDir;
+use ui_components::base::press::PointerButton;
+use ui_components::prelude::{Point, ShortcutKey};
+use ui_harness::harness::settle_until;
+use ui_harness::{Harness, Input as Click};
 
 use super::edge::next;
 use super::support::{RecordingOpener, harness, launch, scratch_folder};

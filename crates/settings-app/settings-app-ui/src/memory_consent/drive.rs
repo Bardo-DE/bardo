@@ -1,12 +1,12 @@
 //! The looser memory settings the window follows: what waits, what a save confirms, and what the
 //! Confirm button sends. What counts as looser is memory's to say; the asking is
-//! `detent-client`'s, and this holds its state as a signal.
+//! `settings-app-client`'s, and this holds its state as a signal.
 
 use crate::files::Edit;
 use crate::live::{use_client, use_events};
+use dioxus::prelude::*;
 use settings_app_client::{MemoryConsent as Consent, Pane};
 use settings_app_model::ConsentState;
-use dioxus::prelude::*;
 
 /// The window's hold on the looser memory settings.
 #[derive(Clone)]

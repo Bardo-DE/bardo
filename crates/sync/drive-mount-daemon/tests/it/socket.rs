@@ -1,11 +1,11 @@
 //! The client against a helper listening on a socket path, and the fallback when none listens.
 
 use crate::common::FakeMounts;
+use base_testkit::Scratch;
 use drive_mount_daemon::client::{self, AskError};
 use drive_mount_daemon::server::{self, Helper};
 use drive_mount_daemon::wire::{self, Access, Code, FolderName};
 use std::os::unix::fs::PermissionsExt;
-use base_testkit::Scratch;
 
 #[test]
 fn the_client_reaches_a_helper_at_its_socket_and_gets_its_code() {

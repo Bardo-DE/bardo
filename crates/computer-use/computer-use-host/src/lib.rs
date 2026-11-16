@@ -1,10 +1,10 @@
-//! cua-host: the run executor as a library.
+//! computer-use-host: the run executor as a library.
 //!
 //! The pure machine ([`computer_use_run::Run`]) says what to do; the [`Supervisor`] does it against the
 //! seams ([`computer_use_run::Seams`]) and feeds the answers back: a task per run over [`computer_use_run::Exec`],
 //! with the person's controls, the desktop's events and the clock racing whatever the run waits
 //! on. An app that wants to run a computer-use task in its own process builds the seams (the
-//! backends are its own, `cua-fake` in tests) and a [`Supervisor`] over them.
+//! backends are its own, `computer-use-fake` in tests) and a [`Supervisor`] over them.
 //!
 //! Nothing here opens a connection or starts a backend: this crate links no wayland, EIS,
 //! accessibility or bus crate, and no file watcher. What is here:

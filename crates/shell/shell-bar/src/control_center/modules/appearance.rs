@@ -4,9 +4,9 @@
 //! in Settings (cleanup DECISIONS: the control center keeps the dark-mode switch only).
 
 use dioxus::prelude::*;
+use shell_kit::prelude::*;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
-use shell_kit::prelude::*;
 
 use super::cc_module::{CcCx, CcModule, Span};
 use crate::control_center::modules::use_plate;

@@ -4,8 +4,8 @@
 use super::model::{AccountKey, ON};
 use super::module::ModuleId;
 use crate::picker::Described;
-use ui_settings::schema::{KeyKind, KeyPath, KeySpec};
 use account_core::SignInWay;
+use ui_settings::schema::{KeyKind, KeyPath, KeySpec};
 
 /// The prefix of every row's path.
 pub(super) const PREFIX: &str = "accounts.";

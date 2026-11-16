@@ -2,9 +2,9 @@
 
 use std::time::Duration;
 
-use desktop_protocols::vocab::Transform;
 use desktop_client::capture::{CaptureEvent, CaptureFailure, CapturePhase, Captures, ShmFormat};
 use desktop_client::{DesktopState, Rect, Size};
+use desktop_protocols::vocab::Transform;
 
 use crate::support::{cap, cid, run};
 

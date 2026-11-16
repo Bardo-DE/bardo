@@ -1,17 +1,17 @@
-//! One request of a session, run on its engine: the request as stoker's turn (porter-bridge, the
+//! One request of a session, run on its engine: the request as stoker's turn (inference-bridge, the
 //! mapping inferd uses), the key for this turn only, the events streamed to the session as they
 //! come, the reply at the end.
 
 use super::engine::{Engine, KeyUse};
 use super::keys::KeySource;
 use super::wire::provider;
-use model_provider as sp;
-use inference_bridge::{DefaultSampling, Frames, JsonReply, Target, chat_turn_for, task_turn_for};
 use account_capability::Tier;
+use inference_bridge::{DefaultSampling, Frames, JsonReply, Target, chat_turn_for, task_turn_for};
 use inference_core::{
     InferEvent, InferRefusal, InferReply, InferRequest, Knob, ModelError, ServedBy,
 };
 use inference_turns::local::run_chat;
+use model_provider as sp;
 use std::ops::ControlFlow;
 use tokio::sync::mpsc::UnboundedSender;
 

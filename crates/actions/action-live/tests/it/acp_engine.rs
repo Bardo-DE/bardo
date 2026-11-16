@@ -6,10 +6,10 @@
 //! namespaces are not available.
 
 use crate::support::{accept_bin, binaries};
-use sandbox::{Detected, NetworkMode};
 use action_accept::world::ModelSource;
 use action_live::acp::{AcpSpec, CredentialsSource, agent_cassette, run_flow_acp};
 use action_live::flows::{Flow, Kind};
+use sandbox::{Detected, NetworkMode};
 use std::path::Path;
 use std::time::Duration;
 

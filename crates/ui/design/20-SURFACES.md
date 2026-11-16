@@ -7,7 +7,7 @@ names), behaviours (06, 10-13), keyboard, blur and input regions, and the milest
 Status: **S** = settled (PLAN, SPEC or prototypes), **P** = proposed.
 Material enum (design/30 §3.2): `Window, Bar, Dock, Menu, Popover, Sheet, Sidebar, Toast, Osd, Widget`.
 Layer names are wlr-layer-shell layers; `KeyboardMode` and `RegionSpec`/`BlurSpec` are
-shell-host types (PLAN "Design: `shell-host`"). Milestones are SPEC "Milestones" 0-13.
+layer-shell-host types (PLAN "Design: `layer-shell-host`"). Milestones are SPEC "Milestones" 0-13.
 One quiet Look (design/30 §3). Shell chrome is the Mac material alone and takes no Space tint; the Space tint reaches only a window's sidebar ground (21-SPACES §3). Where a row below still says "over the SpaceLook's colour", that is the code the clean-up phase changes: **target (clean-up phase)** is the material alone.
 
 ## 1. Shell surfaces
@@ -271,7 +271,7 @@ Photos, Files/Drive, Notes, Contacts) uses that account; several accounts side b
 
 ## 2. Apps
 
-All apps are xdg toplevels through shell-host (`spawn_toplevel`), `Material::Window`, on
+All apps are xdg toplevels through layer-shell-host (`spawn_toplevel`), `Material::Window`, on
 paper (`--paper`), flush with their sidebar (no inset card, 30 §3.4). A window's sidebar ground shows the Space tint (21-SPACES §9); nothing else does.
 
 ### 2.1 Mail (first; exists)
@@ -413,7 +413,7 @@ recorder. The M10 screenshot thumbnail (1.13) becomes the shared after-capture s
 ## 4. Sources
 
 - PLAN "Design: `<shell>` repo (sill)" (bar, wallpaper, dock, launcher layer configs, regions,
-  keyboard modes), "Design: `shell-host`" (`LayerConfig`, `KeyboardMode`, `RegionSpec`,
+  keyboard modes), "Design: `layer-shell-host`" (`LayerConfig`, `KeyboardMode`, `RegionSpec`,
   `BlurSpec`, popups), "Design: `<ds>`" (Material enum, components, Anim), "UX decisions
   settled" (dock, gestures, Spaces), Appendix A4-A6.
 - SPEC "Shell surfaces" (Tier 1-3), "Integrated experiences", "Bundled native apps",

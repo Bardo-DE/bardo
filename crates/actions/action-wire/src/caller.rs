@@ -1,9 +1,9 @@
 //! Who is calling the router, as the transport derived it. Roles ([`CallerRole`], in
-//! `docket-vocab`) come from `intentd.toml` and the connection's identity; they are never sent
+//! `action-vocab`) come from `intentd.toml` and the connection's identity; they are never sent
 //! in a body.
 
-use action_vocab::CallerRole;
 use account_core::AppId;
+use action_vocab::CallerRole;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 

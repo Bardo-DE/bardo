@@ -9,11 +9,11 @@
 //! sitting as plain text; it protects nothing from anyone who can read the file and this code.
 //! A production daemon must use the Secret Service (`Oo7Keys`).
 
+use atomic_write_file::AtomicWriteFile;
 use memory_core::{SpaceId, decode_lower_hex};
 use memory_seal::{
     Aad, KeyError, KeyStore, Nonce, Purpose, SpaceKey, SubKey, derive, seal, unseal,
 };
-use atomic_write_file::AtomicWriteFile;
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};

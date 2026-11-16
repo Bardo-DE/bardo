@@ -10,15 +10,15 @@ use crate::talk::Say;
 use crate::usage::{FileUse, UseSource};
 use crate::warm::{BusWarm, Warm};
 use crate::watch::{Deadline, Leaving};
+use account_capability::Tier;
 use action_dbus::callers::{CallerTable, Identity};
+use agent_voice_audio::AudioDevice;
+use agent_voice_dbus::{VOICE_BUS, VOICE_PATH};
 use futures_util::StreamExt;
 use inference_client::{DbusTransport, Transport};
-use account_capability::Tier;
 use inference_core::Readiness;
 use std::sync::{Arc, Mutex};
 use tokio::sync::mpsc;
-use agent_voice_audio::AudioDevice;
-use agent_voice_dbus::{VOICE_BUS, VOICE_PATH};
 use zbus::fdo::RequestNameFlags;
 
 /// Everything outside the bus that voiced leans on, as seams: the audio device, inferd, the
@@ -167,8 +167,8 @@ where
 }
 
 /// Serves `org.quire.Voice1` on the session bus over a device: registers the three
-/// interfaces, derives each caller's role from the connection, runs `voice-loop` and talks to
-/// inferd through inferd-client. `usage` is where the person's voice settings are read. Returns
+/// interfaces, derives each caller's role from the connection, runs `agent-voice-loop` and talks to
+/// inferd through inference-client. `usage` is where the person's voice settings are read. Returns
 /// when the bus closes, or with an error if the loop dies first.
 pub async fn serve<D: AudioDevice + 'static>(
     config: VoicedConfig,

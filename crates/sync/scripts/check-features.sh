@@ -20,11 +20,11 @@ BUILDS=(
   "syncd (default) :: -p sync-daemon"
   "syncd (photos-picker) :: -p sync-daemon --features photos-picker"
   # The bus interfaces, alone and with the Photos Picker.
-  "ferry-bus (default) :: -p sync-bus"
-  "ferry-bus (photos-picker) :: -p sync-bus --features photos-picker"
+  "sync-bus (default) :: -p sync-bus"
+  "sync-bus (photos-picker) :: -p sync-bus --features photos-picker"
   # The helper and the libraries it is built from, alone.
-  "ferry-mountd (default) :: -p drive-mount-daemon"
-  "ferry-drive-fuse (default) :: -p drive-fuse"
+  "drive-mount-daemon (default) :: -p drive-mount-daemon"
+  "drive-fuse (default) :: -p drive-fuse"
 )
 
 logs="${CARGO_TARGET_DIR:-target}/check-features"

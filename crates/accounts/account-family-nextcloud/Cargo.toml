@@ -1,6 +1,6 @@
 [package]
 name = "account-family-nextcloud"
-description = "The Nextcloud family: Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV and the Notes API over one app password. A driver: nextcloud-proto builds the requests and reads the answers, dav-proto walks the principal, and this crate sends them."
+description = "The Nextcloud family: Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV and the Notes API over one app password. A driver: account-nextcloud-proto builds the requests and reads the answers, account-dav-proto walks the principal, and this crate sends them."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

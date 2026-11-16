@@ -3,10 +3,10 @@
 //! document, and the sheet it hosts has that area to be placed in.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::chrome::split_view::view::SplitView;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 640,

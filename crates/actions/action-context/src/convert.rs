@@ -1,4 +1,4 @@
-//! The `CloseCause` of the session machine and the durable record's `EndCause` (`docket-session`
+//! The `CloseCause` of the session machine and the durable record's `EndCause` (`agent-session`
 //! does not depend on the router, so each side has its type and these are the only crossings).
 //! Each match names every variant, so adding one to either side stops the build here.
 

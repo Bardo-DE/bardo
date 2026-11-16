@@ -1,11 +1,11 @@
-//! Every wire or stored type of porter-infer survives its serde form.
+//! Every wire or stored type of inference-core survives its serde form.
 
-use model_provider::Money;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_ids::{Permille, Tokens, TurnCount};
 use inference_core::*;
+use model_provider::Money;
 use rust_decimal::Decimal;
 use serde::Serialize;
 use serde::de::DeserializeOwned;

@@ -3,15 +3,15 @@
 
 use std::path::Path;
 
+use image::{DynamicImage, Rgba32FImage};
 use ui_components::style::icon::retint::IconStyle;
 use ui_components::style::icon::retint::Tint as DsTint;
 use ui_components::style::icon::retint::retint as ds_retint;
-use ui_style::space::presets::PRESETS;
 use ui_icon_tool::{
     Cell, IconsError, Manifest, Prepared, SHIP_PX, Sheet, SheetStyle, Source, Style, Template,
     build_sheet, grain_tile, klein_face, parse_spec, ship_icon, strip, style_look,
 };
-use image::{DynamicImage, Rgba32FImage};
+use ui_style::space::presets::PRESETS;
 
 use crate::{load, save};
 

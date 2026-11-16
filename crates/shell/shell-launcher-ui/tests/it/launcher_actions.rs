@@ -8,13 +8,13 @@
 
 use crate::launcher_harness;
 
-use ui_components::prelude::*;
-use ui_harness::Input;
 use launcher_harness::launcher_support::{self, FIREFOX_WINDOW};
 use launcher_harness::{Press, is_open, open, selected_title, settle};
 use shell_launcher::WindowKey;
 use shell_model::launch::LaunchCommand;
 use shell_model::windows::WlCommand;
+use ui_components::prelude::*;
+use ui_harness::Input;
 
 /// The selected row (attribute selectors need the namespace wildcard on Blitz).
 const SELECTED: &str = ".ds-row[*|aria-selected=true]";

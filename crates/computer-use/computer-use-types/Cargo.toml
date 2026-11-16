@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-types"
-description = "The leaf types cua-bus carries and the capability crates (a11y-tree, seat-input, maskcap) re-export: Role, the node selector, the input receipt and seat error, the frame digest. Serde only."
+description = "The leaf types computer-use-bus carries and the capability crates (computer-use-a11y-tree, computer-use-seat-input, maskcap) re-export: Role, the node selector, the input receipt and seat error, the frame digest. Serde only."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

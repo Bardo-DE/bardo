@@ -1,6 +1,6 @@
 [package]
 name = "account-rig"
-description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives porter with. porter-rig-servers starts porter-fake-servers' fakes on loopback and plants known secrets, porter-rig-client acts as an app over the session bus, porter-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives porter with. porter-rig-servers starts account-fake-servers' fakes on loopback and plants known secrets, porter-rig-client acts as an app over the session bus, porter-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

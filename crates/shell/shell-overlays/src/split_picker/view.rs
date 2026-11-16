@@ -7,15 +7,15 @@
 //! [`super::io`] follows the link and writes the answer; this file only draws.
 
 use dioxus::prelude::*;
-use ui_components::focus::soon::focus_soon;
-use ui_components::prelude::*;
-use ui_behaviour::Dir;
 use layer_shell_host::OutputInfo;
-use shell_launcher::AppId;
-use shell_model::desktop::SplitCard;
 use shell_kit::prelude::*;
 use shell_kit::switcher::app_switcher::AppKey;
 use shell_kit::switcher::app_switcher::SwitcherApp as Tile;
+use shell_launcher::AppId;
+use shell_model::desktop::SplitCard;
+use ui_behaviour::Dir;
+use ui_components::focus::soon::focus_soon;
+use ui_components::prelude::*;
 
 use super::io::use_picker;
 use super::model::{index_of, moved, other_half};

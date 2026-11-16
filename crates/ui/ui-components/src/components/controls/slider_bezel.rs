@@ -12,11 +12,11 @@ use crate::components::controls::slider_model::SliderLook;
 use crate::host::measure::client_rect;
 use crate::root::common::Common;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px, Rect, Size};
 use ui_core::vocab::{Availability, Fraction};
 use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
-use std::rc::Rc;
 
 /// A level: the glyph that follows it and the capsule that shows it.
 /// `Availability::Disabled` draws it plainly unavailable: the capsule and glyph at the disabled

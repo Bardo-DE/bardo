@@ -3,9 +3,9 @@
 //! `position:absolute; bottom:0` with a real size, in a footer behind it.
 
 use dioxus::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use std::cell::Cell;
 use std::time::Duration;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 300,

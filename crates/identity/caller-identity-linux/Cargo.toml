@@ -18,9 +18,9 @@ thiserror = {version = "2"}
 # Test seams: a pinned process that is only a claim (`Pinned::introduced`) and ready-made
 # standings. A shipped binary never enables it; the desktop gate greps `cargo tree -e features`.
 fake = []
-# Forwarded to peephole-core.
+# Forwarded to caller-identity-core.
 desktop = ["caller-identity-core/desktop"]
-# Forwarded to peephole-core (developer rows) and adds `TableFiles::load_dev`. Never shipped.
+# Forwarded to caller-identity-core (developer rows) and adds `TableFiles::load_dev`. Never shipped.
 dev-rows = ["caller-identity-core/dev-rows"]
 
 [[test]]

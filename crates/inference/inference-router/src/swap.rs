@@ -7,8 +7,8 @@
 use engine_supervisor::{
     BudgetVerdict, EngineId, EngineSpec, EngineState, GpuMemory, MonoMs, budget,
 };
-use model_catalog::MiB;
 use inference_core::{EngineLoad, ModelRef, SwapCost};
+use model_catalog::MiB;
 use std::time::Duration;
 
 /// The engines that hold memory now: their id, what they hold and when they were last used.

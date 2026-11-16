@@ -2,8 +2,8 @@
 
 use super::sheet::HotCornersSheet;
 use crate::files::{Edit, Files};
-use settings_app_model::KeyEntry;
 use dioxus::prelude::*;
+use settings_app_model::KeyEntry;
 use ui_components::components::fields::field_row::FieldGroup;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;

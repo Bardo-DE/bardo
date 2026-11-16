@@ -2,11 +2,11 @@
 //! choosing, the models to tick and the two answers. Nothing is ticked for them.
 
 use dioxus::prelude::*;
+use shell_model::companion::{AUTOMATIC_HELP, Automatic, HelpersMsg, ModelGroup, ModelOffer};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::controls::checkbox::Checkbox;
 use ui_components::prelude::*;
-use shell_model::companion::{AUTOMATIC_HELP, Automatic, HelpersMsg, ModelGroup, ModelOffer};
 
 use super::say::{Say, use_say};
 

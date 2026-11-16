@@ -7,11 +7,11 @@
 //! is `FrameError::Unsupported`, and the window is drawn as it always was.
 
 use crate::wayland_surface::{AdoptError, Adopted};
-use ui_components::style::tokens::shape::Radius;
 use proto::client::quire_window_manager_v1::QuireWindowManagerV1;
 use proto::client::quire_window_v1::{FrameMode, QuireWindowV1};
 use std::ffi::c_void;
 use std::ptr::NonNull;
+use ui_components::style::tokens::shape::Radius;
 use wayland_client::globals::{BindError, GlobalError, GlobalListContents, registry_queue_init};
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::{Connection, Dispatch, EventQueue, Proxy, QueueHandle};

@@ -5,14 +5,14 @@
 
 use crate::common;
 
+use base_testkit::Scratch;
 use common::{Replica, Server};
+use replica_gdrive::{CHUNK_UNIT, Root, Uploads};
+use std::sync::Mutex;
 use sync_core::{
     BaseVersion, Content, DriveWrite, Place, Progress, PutRefused, RemoteSide, Session, Unheard,
     Upload, UploadTo, Written,
 };
-use std::sync::Mutex;
-use replica_gdrive::{CHUNK_UNIT, Root, Uploads};
-use base_testkit::Scratch;
 
 fn drive(server: &Server, uploads: Uploads) -> Replica {
     server.replica_at(Root::Drive, "", 50, uploads)

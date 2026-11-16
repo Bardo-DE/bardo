@@ -4,12 +4,12 @@
 
 use companion_wire::HelperCardView;
 use dioxus::prelude::*;
-use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::components::controls::button_model::Bezel;
-use ui_components::prelude::*;
 use shell_model::companion::{
     HelpersMsg, SignInButton, kind_line, login_line, offers_sign_out, sign_in_buttons,
 };
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::prelude::*;
 
 use super::handover::HandoverRow;
 use super::say::{Say, use_say};

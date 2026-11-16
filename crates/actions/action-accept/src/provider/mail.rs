@@ -1,6 +1,7 @@
 //! The acceptance run's mail app: `IntentProvider1` over the scratch mailbox.
 
 use super::{AppLog, Focus, Message, Sending, contacts, threads, words_match};
+use account_core::{AppName, DataClass};
 use action_core::{
     AppRefusal, Follow, Hit, Invocation, MessageSnip, Outcome, Preview, SuggestAsk, UndoFault,
     Undoable,
@@ -8,7 +9,6 @@ use action_core::{
 use action_manifest::ValidManifest;
 use action_provider::IntentProvider;
 use action_vocab::{EntityRef, LabelText, ParamName, TargetValue, UndoToken, Value};
-use account_core::{AppName, DataClass};
 use provenance::{
     Actor, Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled, Source,
     SpaceId, UnixSeconds,

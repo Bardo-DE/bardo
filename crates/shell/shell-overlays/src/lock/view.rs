@@ -7,7 +7,7 @@
 //! (`use_service::<ClockService>()` wakes it) and `use_hours()`; the prompt, only on the
 //! output the [`shell_ui_kit::links::LockLink`] names, is `shell_kit::prelude::LockPrompt` with [`super::model::lock_user`] over
 //! `use_service::<AuthService>().account`, [`super::model::prompt_state`] over
-//! `use_service::<AuthService>().phase`, the Caps Lock mark from shell-host's `use_modifiers()`
+//! `use_service::<AuthService>().phase`, the Caps Lock mark from layer-shell-host's `use_modifiers()`
 //! (published on keyboard focus, so a Caps Lock toggled before the lock shows from the first frame;
 //! [`super::model::caps_of`]), and `onsubmit` sending `AuthCommand::Submit(Secret::new(text))` on
 //! the auth service's control (the text is moved into the `Secret` there, never stored or logged).
@@ -21,9 +21,11 @@
 //! the same and the unlock is the daemon's backstop alone.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use layer_shell_host::{LockHandle, LockPhase, OutputInfo, use_lock, use_lock_phase, use_modifiers};
+use layer_shell_host::{
+    LockHandle, LockPhase, OutputInfo, use_lock, use_lock_phase, use_modifiers,
+};
 use shell_kit::lock::vocab::CapsLock;
+use ui_components::prelude::*;
 
 use super::body::{HostLock, LockBody};
 use super::model::caps_of;

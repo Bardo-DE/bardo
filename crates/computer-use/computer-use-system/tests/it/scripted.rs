@@ -3,23 +3,23 @@
 
 use std::io::Read;
 
-use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
-    WindowSpace,
-};
-use computer_use_run::{FrameAttachment, StepEvent, StepSink};
-use inference_client::{Transport, TransportError};
-use computer_use_capture::PixelBuf;
 use account_capability::CuaEnv;
 use account_capability::{Locality, ModelId, Tier};
 use account_core::{AccountId, DataClass};
 use account_ids::Tokens;
+use account_match::Need;
+use computer_use_action::{
+    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
+    WindowSpace,
+};
+use computer_use_capture::PixelBuf;
+use computer_use_run::{FrameAttachment, StepEvent, StepSink};
+use inference_client::{Transport, TransportError};
 use inference_core::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepReply, CuaStepRequest, FrameImage, FrameLayout,
     ImageSource, InferEvent, InferReply, InferSession, MaskedRegions, NoteFrom, OpenOptions,
     PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TokenUsage, WindowGeometry,
 };
-use account_match::Need;
 use rustix::fs::{SealFlags, fcntl_get_seals};
 use std::collections::{BTreeSet, VecDeque};
 use std::os::fd::OwnedFd;

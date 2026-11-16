@@ -1,5 +1,5 @@
 //! The screen rules cua ships: the phrases, window classes, commit words and sensitive titles
-//! `cua-run` checks a screen against. The pure crate takes them as a [`Rules`] value; this is the
+//! `computer-use-run` checks a screen against. The pure crate takes them as a [`Rules`] value; this is the
 //! edge that parses the file text. The program embeds `dist/screen-rules.toml`, the installer
 //! also puts a copy in the shared files as a reference, and an administrator's own
 //! `screen-rules.toml` replaces the shipped one whole (the daemon reads it).

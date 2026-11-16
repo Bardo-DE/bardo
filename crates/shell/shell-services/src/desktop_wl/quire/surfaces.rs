@@ -1,7 +1,7 @@
 //! Which of the shell's surfaces plays which role to the compositor.
 
-use desktop_protocols::vocab::ShellRole;
 use desktop_client::SurfaceKey;
+use desktop_protocols::vocab::ShellRole;
 
 /// One registered surface: its role, the output it is on and the client's key for it.
 #[derive(Debug, Clone, PartialEq, Eq)]

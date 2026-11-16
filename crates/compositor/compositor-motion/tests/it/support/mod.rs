@@ -7,7 +7,9 @@ use compositor_core::window::FrameHint;
 use compositor_core::{OutputKey, OutputName, WindowId};
 use compositor_layout::{Arrangement, ConfigureNeed, OverviewSlot, SlotKind, WindowTarget};
 use compositor_motion::MotionBook;
-use compositor_motion::{CommittedSizes, FrameScene, PlacedWindow, WindowLook, WindowLooks, sample};
+use compositor_motion::{
+    CommittedSizes, FrameScene, PlacedWindow, WindowLook, WindowLooks, sample,
+};
 use desktop_protocols::vocab::{Emphasis, FrameMode};
 use std::time::Duration;
 

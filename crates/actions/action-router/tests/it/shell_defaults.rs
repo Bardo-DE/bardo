@@ -4,13 +4,13 @@
 //! data class to `app_own`, so `menu.item.activate` is `shell.menu.activate`'s twin.
 
 use crate::support::*;
+use account_core::consent::{Decision, Grant, GrantScope};
 use action_core::*;
 use action_fake::{FakeMenu, MENU_MANIFEST, MenuItem, ScriptedConfirmer};
 use action_manifest::parse;
-use permission_core::{ActionGrant, GrantCaller, GrantTarget, Strictness};
 use action_router::{GrantStore, Router};
 use action_vocab::{ActionRef, CallRequest, Origin, TargetValue, Value};
-use account_core::consent::{Decision, Grant, GrantScope};
+use permission_core::{ActionGrant, GrantCaller, GrantTarget, Strictness};
 use provenance::{ActionName, AgentRef, Effect};
 
 const SHIPPED: &str = include_str!("../../../dist/intents/default-grants.json");

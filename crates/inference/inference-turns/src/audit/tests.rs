@@ -5,8 +5,8 @@ use account_core::AccountId;
 use account_core::{AppName, Isolation};
 use account_ids::clock::FixedClock;
 use account_ids::{Count, UnixSeconds};
-use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason, Why};
 use base_testkit::Scratch;
+use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason, Why};
 
 fn app() -> AppId {
     AppId {

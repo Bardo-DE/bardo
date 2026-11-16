@@ -2,11 +2,11 @@
 //! pointer is, which rows or tiles it touches, the selection that results and how far the edge of
 //! the view scrolls the content under a pointer held near it.
 
-use keymap::Platform;
 use dioxus::prelude::Modifiers;
+use keymap::Platform;
+use std::ops::Range;
 use ui_core::geometry::units::{Point, Px, Rect, Size};
 use ui_core::selection::{PickHow, RowSelection};
-use std::ops::Range;
 
 /// Whether a band replaces the selection or adds to it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -147,11 +147,11 @@ pub(crate) fn edge_scroll(y: f32, height: f32) -> f32 {
 #[allow(clippy::single_range_in_vec_init)] // The tables spell expected selections as lists of ranges.
 mod tests {
     use super::{GridShape, MarqueeHow, band, edge_scroll, rows_in, selected, tiles_in};
-    use keymap::Platform;
     use dioxus::prelude::Modifiers;
+    use keymap::Platform;
+    use std::ops::Range;
     use ui_core::geometry::units::{Point, Px, Rect, Size};
     use ui_core::selection::RowSelection;
-    use std::ops::Range;
 
     fn at(x: f32, y: f32) -> Point {
         Point { x: Px(x), y: Px(y) }

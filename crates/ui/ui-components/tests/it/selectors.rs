@@ -1,9 +1,9 @@
 //! The public selector table: every class it lists is in the stylesheet, its names are unique,
 //! and `docs/selectors.md` is the table (`DS_BLESS=1` rewrites the page; read the diff).
 
-use ui_components::selectors::{AXES, COMPONENTS, markdown};
 use std::collections::HashSet;
 use std::path::PathBuf;
+use ui_components::selectors::{AXES, COMPONENTS, markdown};
 
 fn page() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../docs/selectors.md")

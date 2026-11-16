@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prints whether the headless KWin (started by kwin-virtual.sh) advertises the
-# Wayland protocols shell-host depends on, and at what version.
+# Wayland protocols layer-shell-host depends on, and at what version.
 #
 # Usage: scripts/dev/globals.sh
 set -euo pipefail
@@ -28,7 +28,7 @@ fi
 
 dump="$(WAYLAND_DISPLAY="$WAYLAND_DISPLAY" wayland-info 2>&1)"
 
-# interfaces shell-host and the shell care about.
+# interfaces layer-shell-host and the shell care about.
 INTERFACES=(
   zwlr_layer_shell_v1
   ext_background_effect_manager_v1

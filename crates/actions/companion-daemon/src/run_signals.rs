@@ -7,9 +7,9 @@
 use crate::Companiond;
 use action_client::Transport as IntentsTransport;
 use action_dbus::BusConnection;
+use action_vocab::Clock;
 use agent_planner::Planner;
 use companion_tasks::report_end;
-use action_vocab::Clock;
 use futures_util::StreamExt;
 use futures_util::lock::Mutex;
 use std::sync::Arc;

@@ -71,7 +71,7 @@ impl AppEntry {
         })
     }
 
-    /// The app of an entry that `ds-helpers` found on disk; `None` when it is not an app.
+    /// The app of an entry that `ui-helpers` found on disk; `None` when it is not an app.
     pub fn from_installed(entry: &ApplicationEntry) -> Option<AppEntry> {
         let id = DesktopId::new(entry.id.as_str()).ok()?;
         AppEntry::from_file(id, &entry.path, &entry.file).ok()

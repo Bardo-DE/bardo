@@ -7,10 +7,10 @@
 //! than this surface: the lower part of the expanded bar lies over the top of the windows, as on
 //! the Mac (FINDINGS `mc2`).
 
-use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 use layer_shell_host::{LayerConfig, OutputInfo};
 use shell_model::desktop::BAR_EXPANDED_PX;
 use shell_settings::ShellFile;
+use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 
 use shell_ui_kit::surface::{LayerPreset, PanelBlur};
 
@@ -41,7 +41,6 @@ pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerConfig {
 #[cfg(test)]
 mod tests {
     use super::{BAR_ID, STRIP_PX, layer as bar_layer, surface_px};
-    use ui_components::style::tokens::shell_scale::SHELL_SCALE;
     use layer_shell_host::{
         Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
         RegionSpec,
@@ -49,6 +48,7 @@ mod tests {
     use shell_model::desktop::BAR_EXPANDED_PX;
     use shell_settings::ShellFile;
     use shell_ui_kit::harness::fake::output_named as output;
+    use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 
     #[test]
     fn the_bar_is_a_top_strip_that_reserves_nothing_takes_no_keys_and_takes_input_on_its_own_box() {

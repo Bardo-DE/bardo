@@ -1,8 +1,8 @@
-use std::fmt::Display;
 use input_broker_daemon::activation::{ActivationError, listener};
 use input_broker_daemon::idle::Idle;
 use input_broker_daemon::journal::{kv, line};
 use input_broker_wire::Millis;
+use std::fmt::Display;
 
 #[test]
 fn the_service_leaves_after_the_limit_with_no_connection_and_not_before() {

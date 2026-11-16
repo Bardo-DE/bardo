@@ -11,9 +11,9 @@ use memory_core::{
     Fact, FactId, FactState, FactText, FlagNote, Hunk, Label, MemoryOp, Refusal, RunId, TidyHunk,
     TopicPath, UnixSeconds, UserText, Validity,
 };
+use memory_files_format::{Block, TopicFile, parse_topic, render_topic};
 use memory_search::docs::{fact_doc, fact_doc_id};
 use memory_store::{Vault, VaultPath};
-use memory_files_format::{Block, TopicFile, parse_topic, render_topic};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 

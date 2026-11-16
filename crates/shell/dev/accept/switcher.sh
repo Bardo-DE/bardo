@@ -5,7 +5,7 @@
 # (WAYLAND_DISPLAY as an absolute socket path) and a scratch XDG_CONFIG_HOME, and three windows of
 # its own inside the nested compositor, never the user's:
 #   term    `foot`;
-#   demo    shell-host's `demo_window` (app id `demo_window`), which prints its own activated
+#   demo    layer-shell-host's `demo_window` (app id `demo_window`), which prints its own activated
 #           state: the script's view of the nested toplevel state;
 #   calc    `kcalc` (org.kde.kcalc), the one Q closes.
 # Started term, demo, calc, so the most recently used order is calc, demo, term. Every window
@@ -13,7 +13,7 @@
 #
 # The chord is `sill switcher next|prev`, as the compositor's window-switch shortcut runs it.
 # Its modifier is Alt, injected with `sill debug key SURFACE Alt --action press|release`
-# (shell-host's `Inject::Key`, which moves the seat modifiers the switcher reads through
+# (layer-shell-host's `Inject::Key`, which moves the seat modifiers the switcher reads through
 # `use_modifiers`); its release is the release. The keys pressed while Alt is held are `sill debug
 # key SURFACE KEY` too, and nothing reaches the user's session: every key goes to the switcher
 # surface of this run's own daemon. The show delay is 400 ms (`switcher.show_delay_ms`). Right and
@@ -51,7 +51,7 @@ SHOW_DELAY_MS=400
 
 start_compositor || exit 1
 if [ "$COMPOSITOR" = casement ]; then
-  # The switcher lists real toplevels (foot, shell-host's demo_window, kcalc) through the
+  # The switcher lists real toplevels (foot, layer-shell-host's demo_window, kcalc) through the
   # compositor's toplevel protocols and a held Alt; casement's window management (activation, the
   # toplevel list, a focused app's modifiers) is P1/P2 work, and the apps themselves are not in
   # the jail's tools. Nothing here can be proven before that.
@@ -137,8 +137,8 @@ wait_demo() {
   return 1
 }
 
-# The debug daemon (the lib's build) and shell-host's demo_window, built in this checkout's own
-# target directory so shell-host's is left alone.
+# The debug daemon (the lib's build) and layer-shell-host's demo_window, built in this checkout's own
+# target directory so layer-shell-host's is left alone.
 build_switcher() {
   build || return 1
   CARGO_TARGET_DIR="$HOST_TARGET" cargo build --manifest-path "$HOST_REPO/Cargo.toml" \

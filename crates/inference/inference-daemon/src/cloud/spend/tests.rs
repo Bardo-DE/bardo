@@ -2,8 +2,8 @@ use super::*;
 use crate::settings::{ScopeLimits, SpendLimits};
 use account_core::{AppName, Isolation};
 use account_ids::{Tokens, TurnCount};
-use rust_decimal::Decimal;
 use base_testkit::Scratch;
+use rust_decimal::Decimal;
 
 fn app(name: &str) -> AppId {
     AppId {

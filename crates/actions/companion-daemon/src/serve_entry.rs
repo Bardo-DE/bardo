@@ -3,14 +3,14 @@
 
 use crate::Companiond;
 use crate::serve::serve_with_routines;
+use account_callers::ProcRoot;
 use action_client::Transport as IntentsTransport;
 use action_dbus::BusConnection;
 use action_dbus::callers::Identity;
+use action_vocab::Clock;
 use agent_planner::Planner;
 use companion_tasks::ServeFault;
-use action_vocab::Clock;
 use futures_util::lock::Mutex;
-use account_callers::ProcRoot;
 use std::sync::Arc;
 
 /// Claims `org.quire.Companion1` on `connection`, serves the root object and one answer object

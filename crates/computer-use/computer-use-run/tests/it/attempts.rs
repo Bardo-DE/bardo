@@ -1,6 +1,9 @@
 //! Earlier attempts in the model's words: grouped by run, filtered by app, the newest few, the
 //! current run left out, repeats collapsed, and never a coordinate or typed text.
 
+use account_core::AppName;
+use account_ids::Count;
+use action_gate_wire::EffectBasis;
 use computer_use_action::RunMode;
 use computer_use_action::{
     Button, Chord, ClickCount, Coord, CuaAction, DeviceSize, Point, Repeat, Target, TypedText,
@@ -11,10 +14,9 @@ use computer_use_bus::{
     RunBudget, RunBudgetKind, TargetedAction, ThoughtDigest, WindowRef,
 };
 use computer_use_desktop::{BackendKind, Digest32};
-use computer_use_run::{Limits, Mark, Tried, Verb, digest, digest_within, stall_words, steps_words};
-use action_gate_wire::EffectBasis;
-use account_core::AppName;
-use account_ids::Count;
+use computer_use_run::{
+    Limits, Mark, Tried, Verb, digest, digest_within, stall_words, steps_words,
+};
 use inference_core::{ChargeTotal, StepIndex};
 use provenance::{Effect, RunId, SessionId};
 use std::collections::BTreeSet;

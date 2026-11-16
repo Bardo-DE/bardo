@@ -3,11 +3,11 @@
 //! measured in both schemes.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::app::space_editor::DotIndex;
 use ui_components::components::app::space_editor::rows::{MeasuredIn, MotionChoice};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 420,

@@ -7,8 +7,8 @@ use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::parts::EditHost;
 use crate::host::probe::Probe;
 use dioxus::prelude::*;
-use ui_core::time::{FRAME_SLACK, clock::sleep};
 use std::rc::Rc;
+use ui_core::time::{FRAME_SLACK, clock::sleep};
 
 /// Run a host write against `element` from a task of the calling scope, a frame later whenever
 /// the document is busy (the same wait `crate::focus::soon::focus_soon` makes), up to

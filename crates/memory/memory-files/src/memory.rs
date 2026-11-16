@@ -1,4 +1,4 @@
-//! `MemoryVault`: files in a map, for tests and almanac-fake.
+//! `MemoryVault`: files in a map, for tests and memory-fake.
 
 use memory_store::{Vault, VaultError, VaultPath};
 use std::collections::BTreeMap;

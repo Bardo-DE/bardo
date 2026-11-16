@@ -12,15 +12,15 @@ use super::edit::applied;
 use super::keys::{changes, listed};
 use super::write::{EditFault, edit_of};
 use crate::dbus::{CallerCheck, require};
+use caller_identity_dbus::caller_identity_core::roles;
 use calloop::channel::SyncSender;
 use compositor_core::privilege::Edit;
+use std::sync::Arc;
+use std::sync::mpsc::TrySendError;
 use ui_settings::live::{
     Access, Caller, LiveError, LiveModule, LiveSchema, Served, Snapshot, Verdict, serve,
 };
 use ui_settings::schema::KeyPath;
-use caller_identity_dbus::caller_identity_core::roles;
-use std::sync::Arc;
-use std::sync::mpsc::TrySendError;
 use zbus::Connection;
 
 /// Where the module is served.

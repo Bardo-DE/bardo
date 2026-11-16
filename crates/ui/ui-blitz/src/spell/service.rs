@@ -6,13 +6,13 @@ use super::paragraphs::paragraphs;
 use super::worker::{Job, start};
 use dioxus::prelude::MountedData;
 use dioxus_native_dom::NodeHandle;
+use std::sync::mpsc::Sender;
+use std::sync::{LazyLock, Mutex, PoisonError};
+use tokio::sync::oneshot;
 use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
 use ui_components::spell::lang::Lang;
 use ui_components::spell::service::{Learned, Paragraph, SpellFuture};
-use std::sync::mpsc::Sender;
-use std::sync::{LazyLock, Mutex, PoisonError};
-use tokio::sync::oneshot;
 
 /// The process's one worker over the system's dictionaries, shared by every surface, so each
 /// dictionary loads once and "Ignore Spelling" holds for the whole session.

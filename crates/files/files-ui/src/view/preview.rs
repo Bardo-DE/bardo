@@ -5,11 +5,13 @@
 use anyview_core::FactLabel;
 use anyview_peek::{AnyPeeked, Card, Part, Parts};
 use dioxus::prelude::*;
-use ui_components::components::content::label::LabelStyle;
-use ui_components::components::lists::preview::content::PaneContent;
-use ui_components::prelude::{Column, ColumnAlign, Fact, FactList, Icon, IconSource, Label, PreviewPane};
 use files_core::{Entry, Info, ItemRef};
 use files_model::Preview;
+use ui_components::components::content::label::LabelStyle;
+use ui_components::components::lists::preview::content::PaneContent;
+use ui_components::prelude::{
+    Column, ColumnAlign, Fact, FactList, Icon, IconSource, Label, PreviewPane,
+};
 
 use crate::edge::Zone;
 use crate::state::Browse;

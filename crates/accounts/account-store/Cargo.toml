@@ -1,6 +1,6 @@
 [package]
 name = "account-store"
-description = "The registry file store an app or a daemon keeps its own account registry in: registry.json in a directory the host chooses, saved atomically with a .bak, behind porter-core's RegistryStore seam."
+description = "The registry file store an app or a daemon keeps its own account registry in: registry.json in a directory the host chooses, saved atomically with a .bak, behind account-core's RegistryStore seam."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

@@ -1,10 +1,10 @@
 //! What the shell asks of the desktop, and which backend can carry it.
 
+use account_core::SpaceId;
 use desktop_protocols::vocab::{
     Answer, AskId, Assign, FullScreenBar, Motion, OverviewMode, PlaceTarget, Toggle, TrialAnswer,
     TrialId, WindowEntry,
 };
-use account_core::SpaceId;
 
 use super::DesktopBackend;
 

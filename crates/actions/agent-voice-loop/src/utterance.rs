@@ -2,12 +2,12 @@
 //! end of the tail. The invariant is a property of this table alone.
 
 use action_wire::VoiceIntent;
-use inference_core::{Readiness, ServedBy};
-use serde::{Deserialize, Serialize};
 use agent_voice_wire::{
     CancelCause, HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent, VoiceFault,
     VoiceRefusal, VoiceTarget, VoiceUse,
 };
+use inference_core::{Readiness, ServedBy};
+use serde::{Deserialize, Serialize};
 
 /// How long the mic stays open after release, so the last syllable is not clipped.
 pub const TAIL_MS: u32 = 250;

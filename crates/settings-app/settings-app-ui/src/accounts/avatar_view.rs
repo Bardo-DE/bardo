@@ -2,8 +2,8 @@
 //! provider; a ring turns round it while the sync service is moving data for the account.
 
 use crate::marks::ProviderMarks;
-use settings_app_model::AccountProvider;
 use dioxus::prelude::*;
+use settings_app_model::AccountProvider;
 use ui_components::components::content::avatar::{AvatarSize, AvatarTone, person_hue};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;

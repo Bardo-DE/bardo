@@ -6,12 +6,12 @@ use crate::copy::absence::Subject;
 use crate::icons::tile_of;
 use crate::live::use_live;
 use crate::system::Absent;
+use dioxus::prelude::*;
 use settings_app_client::Client;
 use settings_app_model::{
     PageKind, ReleaseNotes, UpdateAction, UpdateMeter, UpdatesInput, UpdatesPage, UpdatesShown,
     updates_shown,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::{Answers, Bezel};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};

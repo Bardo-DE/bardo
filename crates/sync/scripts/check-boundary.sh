@@ -14,25 +14,25 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
-# never reach a bus, a runtime, an HTTP client or a keyring. ferry-drive and ferry-drive-fuse reach
-# tokio (a drive fetches in the background) but never a bus or a client. ferry-mountd, the mount
+# never reach a bus, a runtime, an HTTP client or a keyring. drive-core and drive-fuse reach
+# tokio (a drive fetches in the background) but never a bus or a client. drive-mount-daemon, the mount
 # helper outside syncd's sandbox, reaches no effect crate and none of porter's or ferry's own:
-# std, rustix and listenfd only (no network, keyring or account data). ferry-bus is the interface
-# definitions: zbus and tokio (through porter-dbus), nothing that shows or fetches.
-EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-NO_BUS="zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ds-settings"
-PORTER_HIDDEN="porter-dbus porter-callers porter-service porter-service-core porter-service-accounts porter-secrets porter-store porter-sheets porter-client porter-client-dbus porter-client-inproc"
+# std, rustix and listenfd only (no network, keyring or account data). sync-bus is the interface
+# definitions: zbus and tokio (through account-dbus), nothing that shows or fetches.
+EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+NO_BUS="zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+PORTER_HIDDEN="account-dbus account-callers account-service account-service-core account-service-accounts account-secrets account-store account-sheets account-client account-client-dbus account-client-inproc"
 RULES=(
   "quickxorhash: $EFFECTS"
   "windows-zones: $EFFECTS"
-  "ferry-sync: $EFFECTS $PORTER_HIDDEN"
-  "storage-webdav: $EFFECTS $PORTER_HIDDEN"
-  "storage-graph: $EFFECTS $PORTER_HIDDEN"
-  "storage-gdrive: $EFFECTS $PORTER_HIDDEN"
-  "ferry-drive: $NO_BUS $PORTER_HIDDEN"
-  "ferry-drive-fuse: $NO_BUS $PORTER_HIDDEN"
-  "ferry-mountd: $EFFECTS fuser porter-ids porter-core porter-fs porter-http porter-secrets porter-service porter-client ferry-sync ferry-drive ferry-drive-fuse"
-  "ferry-bus: reqwest hyper ureq oo7 keyring secret-service ds-settings"
+  "sync-core: $EFFECTS $PORTER_HIDDEN"
+  "replica-webdav: $EFFECTS $PORTER_HIDDEN"
+  "replica-graph: $EFFECTS $PORTER_HIDDEN"
+  "replica-gdrive: $EFFECTS $PORTER_HIDDEN"
+  "drive-core: $NO_BUS $PORTER_HIDDEN"
+  "drive-fuse: $NO_BUS $PORTER_HIDDEN"
+  "drive-mount-daemon: $EFFECTS fuser account-ids account-core account-fs account-http account-secrets account-service account-client sync-core drive-core drive-fuse"
+  "sync-bus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
 fail=0
 
@@ -60,7 +60,7 @@ for rule in "${RULES[@]}"; do
 done
 
 # ONE CLIENT: reqwest is named by no crate of this workspace. A program that sends over a direct
-# connection takes porter-http-reqwest's `ReqwestHttp`, and the sync crates send through the
+# connection takes account-http-reqwest's `ReqwestHttp`, and the sync crates send through the
 # `Http` seam they are handed.
 named=$(grep -lE '^reqwest[ .=]' crates/*/Cargo.toml || true)
 if [ -n "$named" ]; then
@@ -93,11 +93,11 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # ACCOUNTS ONLY THROUGH PORTER-CLIENT: accounts, grants, tokens and relays are accountd's. No crate
 # of this workspace has porter's account stack as a normal or build dependency (the service, the
 # secret stores, the registry store, the sheets, the provider families and the in-process transport
-# are what accountd is built from); a program here reaches accountd through porter-client over
-# porter-client-dbus. A test may host the stack in process: dev dependencies, and the test tooling
-# (ferry-rig, ferry-fake-graph, syncd-fakes, which nothing ships), are outside the rule.
-ACCOUNT_STACK="porter-service porter-service-core porter-service-accounts porter-service-grants porter-secrets porter-store porter-sheets porter-families porter-family-oauth porter-provider porter-client-inproc porter-identities porter-settings"
-TOOLING="ferry-rig ferry-fake-graph syncd-fakes"
+# are what accountd is built from); a program here reaches accountd through account-client over
+# account-client-dbus. A test may host the stack in process: dev dependencies, and the test tooling
+# (sync-rig, sync-fake-graph, sync-fakes, which nothing ships), are outside the rule.
+ACCOUNT_STACK="account-service account-service-core account-service-accounts account-service-grants account-secrets account-store account-sheets account-families account-family-oauth account-provider account-client-inproc account-identities account-settings"
+TOOLING="sync-rig sync-fake-graph sync-fakes"
 stack_leaks=""
 for manifest in crates/*/Cargo.toml; do
   crate=$(basename "$(dirname "$manifest")")
@@ -110,10 +110,10 @@ for manifest in crates/*/Cargo.toml; do
   done
 done
 if [ -n "$stack_leaks" ]; then
-  echo "LEAK: a crate here builds on porter's account stack, not on porter-client: $stack_leaks"
+  echo "LEAK: a crate here builds on porter's account stack, not on account-client: $stack_leaks"
   fail=1
 else
-  echo "boundary holds: accounts are reached only through porter-client"
+  echo "boundary holds: accounts are reached only through account-client"
 fi
 
 # The allowed edges between our own crates (ferry's, and porter's by git): each crate's DIRECT
@@ -123,18 +123,18 @@ fi
 EDGES=(
   "quickxorhash:"
   "windows-zones:"
-  "ferry-sync: porter-capability porter-ids porter-http"
-  "storage-webdav: dav-proto porter-capability porter-ids porter-http ferry-sync"
-  "storage-graph: porter-capability porter-ids porter-http ferry-sync"
-  "storage-gdrive: porter-capability porter-ids porter-http ferry-sync"
-  "ferry-drive: porter-capability porter-ids porter-fs ferry-sync quickxorhash"
-  "ferry-drive-fuse: ferry-drive ferry-mountd"
-  "ferry-mountd:"
-  "ferry-bus: porter-dbus porter-dbus-macros porter-ids"
-  "ferry-fake-graph: porter-core porter-fake porter-fake-servers porter-ids porter-provider quickxorhash"
-  "ferry-rig: ferry-bus ferry-fake-graph porter-dbus porter-fake-servers porter-rig"
-  "syncd-fakes: ferry-bus porter-dbus"
-  "syncd: ds-settings dav-proto porter-client porter-client-dbus porter-core porter-match porter-capability porter-wire porter-ids porter-daemon porter-callers porter-dbus porter-fs porter-http porter-http-relay ferry-bus ferry-drive ferry-drive-fuse ferry-sync storage-gdrive storage-graph storage-webdav windows-zones"
+  "sync-core: account-capability account-ids account-http"
+  "replica-webdav: account-dav-proto account-capability account-ids account-http sync-core"
+  "replica-graph: account-capability account-ids account-http sync-core"
+  "replica-gdrive: account-capability account-ids account-http sync-core"
+  "drive-core: account-capability account-ids account-fs sync-core quickxorhash"
+  "drive-fuse: drive-core drive-mount-daemon"
+  "drive-mount-daemon:"
+  "sync-bus: account-dbus account-dbus-macros account-ids"
+  "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
+  "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
+  "sync-fakes: sync-bus account-dbus"
+  "syncd: ui-settings account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus account-fs account-http account-http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -188,43 +188,43 @@ if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | 
 else
   echo "test-only: syncd's default build does not include test-proc-root"
 fi
-# porter-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
+# account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
 # `fake`) are never in syncd's normal dependency tree.
-if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(porter-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
-  echo "LEAK: syncd's default build enables porter-callers test-proc-root or peephole fake"
+if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
+  echo "LEAK: syncd's default build enables account-callers test-proc-root or peephole fake"
   fail=1
 else
   echo "test-only: syncd's default build has no caller fixtures"
 fi
 
-# Test tooling is never a dependency (normal or build) of a program: nothing names ferry-rig at
-# all, it is never published, and nothing in dist/ mentions it. The fakes (ferry-fake-graph,
-# syncd-fakes) are named only as dev dependencies, or by ferry-rig, which is test tooling itself.
+# Test tooling is never a dependency (normal or build) of a program: nothing names sync-rig at
+# all, it is never published, and nothing in dist/ mentions it. The fakes (sync-fake-graph,
+# sync-fakes) are named only as dev dependencies, or by sync-rig, which is test tooling itself.
 for manifest in crates/*/Cargo.toml; do
   [ "$manifest" = "crates/ferry-rig/Cargo.toml" ] && continue
-  if grep -q 'ferry-rig' "$manifest"; then
-    echo "LEAK: $manifest names ferry-rig"
+  if grep -q 'sync-rig' "$manifest"; then
+    echo "LEAK: $manifest names sync-rig"
     fail=1
   fi
 done
-for fake in ferry-fake-graph syncd-fakes; do
+for fake in sync-fake-graph sync-fakes; do
   named=$(awk -v fake="$fake" '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } !dev && $1 == fake && FILENAME != "crates/ferry-rig/Cargo.toml" { print FILENAME }' crates/*/Cargo.toml)
   if [ -n "$named" ]; then
     echo "LEAK: $fake is a normal dependency of: $named"
     fail=1
   else
-    echo "test-only: $fake is a dev dependency at most, outside ferry-rig"
+    echo "test-only: $fake is a dev dependency at most, outside sync-rig"
   fi
 done
 if ! grep -q '^publish.workspace = true' crates/ferry-rig/Cargo.toml || ! grep -q '^publish = false' Cargo.toml; then
-  echo "LEAK: ferry-rig is publishable"
+  echo "LEAK: sync-rig is publishable"
   fail=1
 fi
-if grep -rq 'ferry-rig' dist; then
-  echo "LEAK: dist/ names ferry-rig"
+if grep -rq 'sync-rig' dist; then
+  echo "LEAK: dist/ names sync-rig"
   fail=1
 else
-  echo "test-only: nothing depends on ferry-rig, and dist/ does not name it"
+  echo "test-only: nothing depends on sync-rig, and dist/ does not name it"
 fi
 
 # LIBRARY ERRORS CAN GROW: every `pub enum` whose name ends in `Error`, in a library crate, is

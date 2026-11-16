@@ -8,16 +8,16 @@ use crate::{
     SettingsWatch, SpaceRegistry, SystemBackend, WatchState, XdgError, apply, apply_next,
     default_card, dirs_from, enforce, inferd_link, policy_for, prepare,
 };
+use account_callers::{
+    CallerFileError, CallerTable, ProcRoot, choose_proc_root, load_callers, proc_notice,
+};
+use account_client_dbus::Bus;
 use memory_core::{Dirs, RuleSet};
 use memory_dbus_serve::serve_on;
 use memory_host::{Locator, read_config};
 use memory_infer::{InferdConsolidator, InferdEmbedder};
 use memory_service::{ConfigError, MemoryService, rules_from_toml, spaces_from_toml};
 use memory_settings::{ConsolidateWhen, MemorySettings};
-use account_callers::{
-    CallerFileError, CallerTable, ProcRoot, choose_proc_root, load_callers, proc_notice,
-};
-use account_client_dbus::Bus;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

@@ -1,21 +1,23 @@
-//! cuad's seams over the real daemons: the router's gate and message path through docket-client's
+//! cuad's seams over the real daemons: the router's gate and message path through action-client's
 //! `DbusTransport` against a real intentd (over docket's fakes) on a private bus, and the event
-//! log through almanac-client against a real memory service (over almanac's fakes). Each caller is
+//! log through memory-client against a real memory service (over almanac's fakes). Each caller is
 //! a connection that owns the well-known name its role is configured to have.
 
 use crate::desk::*;
+use action_client::{DbusTransport, Intents};
+use action_core::{CallRefusal, ConfirmEnd, DraftPart, InboundPart, InboxAsk, MessageDraft};
+use action_gate_wire::GateAnswer;
+use action_wire::{GrantAnswer, GrantAsk, IntentsRequest};
+use computer_use_daemon::{DaemonLinks, IntentsGate};
+use computer_use_run::{GateCheck, GateEvent, GateLink, MessageLink, RecordSink};
 use memory_client::{InProcess, Memory};
 use memory_core::{
     ActorFilter, Count, SpaceId as MemSpace, TimelineFilter, TimelineQuery, TrustFilter,
 };
 use memory_service::Caller;
-use computer_use_run::{GateCheck, GateEvent, GateLink, MessageLink, RecordSink};
-use computer_use_daemon::{DaemonLinks, IntentsGate};
-use action_client::{DbusTransport, Intents};
-use action_core::{CallRefusal, ConfirmEnd, DraftPart, InboundPart, InboxAsk, MessageDraft};
-use action_gate_wire::GateAnswer;
-use action_wire::{GrantAnswer, GrantAsk, IntentsRequest};
-use provenance::{Address, AgentRef, Effect, MessageKind, MessageText, RunId, SessionId, SpaceScope};
+use provenance::{
+    Address, AgentRef, Effect, MessageKind, MessageText, RunId, SessionId, SpaceScope,
+};
 use std::sync::Arc;
 use zbus::Connection;
 

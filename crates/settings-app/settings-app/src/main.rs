@@ -14,13 +14,13 @@ use settings_app_intents::{
 };
 use settings_app_model::{Catalogue, PageKind, PageSlug, discover, inbox};
 use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
+use std::path::{Path, PathBuf};
+use std::process::ExitCode;
+use std::sync::Arc;
 use ui_blitz::{
     AppConfig, AppId, Decorations, FileRoots, LaunchError, WindowSize, enter_runtime, launch,
 };
 use ui_settings::SystemPrefsSource;
-use std::path::{Path, PathBuf};
-use std::process::ExitCode;
-use std::sync::Arc;
 
 /// The window's size in logical pixels.
 const WIDTH: u32 = 900;

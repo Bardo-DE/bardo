@@ -9,11 +9,11 @@
 use crate::support::golden;
 
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_components::window::vocab::{TileError, WindowTile, Zoom};
-use std::rc::Rc;
 
 /// A host that does nothing and reports `maximized`.
 struct Still(bool);

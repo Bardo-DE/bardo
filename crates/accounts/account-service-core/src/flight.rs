@@ -81,7 +81,7 @@ impl Flight {
             .issued
             .iter()
             .find(|i| i.audience == *audience && i.grant == grant)
-            // The margin porter-oauth renews with, so a caller is never handed a token about to stop.
+            // The margin account-oauth renews with, so a caller is never handed a token about to stop.
             .filter(|i| !account_core::token::is_due(i.token.expires, now))
             .map(|i| i.token.clone())
     }

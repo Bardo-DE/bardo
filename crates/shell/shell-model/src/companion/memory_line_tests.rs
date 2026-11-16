@@ -1,8 +1,8 @@
 //! How a timeline row names a coding agent: its label, else its provider row, else its program.
 
-use memory_core::{Count, EntryBody, EventRef, KindTag, ReplicaId, Seq, TimelineEntry, UndoRef};
 use account_core::ProviderId;
 use account_sheet::{ProviderKind, ProviderRow, RowKind};
+use memory_core::{Count, EntryBody, EventRef, KindTag, ReplicaId, Seq, TimelineEntry, UndoRef};
 use provenance::{Actor, AgentProgram, ClientName};
 
 use super::{ProgramLabels, memory_line};

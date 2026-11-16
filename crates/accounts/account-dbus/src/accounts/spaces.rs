@@ -1,5 +1,5 @@
 //! `org.quire.Spaces1` at `/org/quire/Spaces1`, on accountd's connection: the registry of
-//! desktop-wide Spaces, the ones an app's own Space can link to (porter-core `space`).
+//! desktop-wide Spaces, the ones an app's own Space can link to (account-core `space`).
 //!
 //! Who may call: any identified app may `List`; `Create` an app, Settings or the shell (never an
 //! assistant, computer use or an agent launcher); `Register` the compositor, Settings or the shell

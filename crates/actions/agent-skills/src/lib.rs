@@ -4,7 +4,7 @@
 //! grant, a Ruling or a widened policy. This crate owns the format (`skill.toml` and `SKILL.md`),
 //! discovery from directories the daemon hands in (read through a [`SkillFolder`] the caller supplies), validation against the registered manifests
 //! and the choice of which skills to show. The planner-facing shapes (`SkillCard`, `SkillText`)
-//! live in `docket-core`, which stays serde-only.
+//! live in `action-core`, which stays serde-only.
 //!
 //! The only way skill text enters is [`discover`] over [`Roots`] and a folder, and `Roots` holds directory
 //! paths from configuration. There is no constructor from a string of skill text outside the two

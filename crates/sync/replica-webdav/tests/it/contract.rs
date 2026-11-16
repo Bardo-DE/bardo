@@ -1,17 +1,17 @@
-//! ferry-sync's contract tests (`ferry-sync/tests/contract.rs`), the same cases, run against the
+//! sync-core's contract tests (`sync-core/tests/contract.rs`), the same cases, run against the
 //! reference `MemoryReplica` (so the suite is the reference's) and against `WebDavReplica` over the
 //! fake server, in both of its feeds: sync-collection, and the etag tree walk of a server that has
 //! none. A rule the memory replica passes, the WebDAV replica passes.
 
 use crate::common;
 
+use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
+use account_ids::{Bytes, UnixSeconds};
 use common::{Flavor, Replica, Server};
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, MemoryReplica, More, PutItem,
     PutRefused, PutTarget, Quota, RemoteId, RemoteSide, Replica as _, ReplicaError, Tombstone,
 };
-use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_ids::{Bytes, UnixSeconds};
 
 /// A replica under test, its server, and the two knobs the contract needs from a server: an
 /// expired feed and a size limit.

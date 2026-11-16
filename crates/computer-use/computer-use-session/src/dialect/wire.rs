@@ -1,7 +1,9 @@
 //! The vendor protocols: the tool declaration carries the prompt and the reply is decoded by
-//! `cua-vendors`.
+//! `computer-use-vendors`.
 
-use computer_use_action::{ActionProfile, CuaAction, FinishOutcome, ModelSpace, Summary, WireDialect};
+use computer_use_action::{
+    ActionProfile, CuaAction, FinishOutcome, ModelSpace, Summary, WireDialect,
+};
 use computer_use_parse::{ByteOffset, InSpace, ParseError, ParseLimits, Parsed, ToolContext};
 use computer_use_vendors::WireCodec;
 use model_provider::ToolSpec;

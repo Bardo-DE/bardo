@@ -1,4 +1,4 @@
-//! The privacy files behind consent (`casement-privacy`, `compositor_app::privacy`): an answer the
+//! The privacy files behind consent (`compositor-privacy`, `compositor_app::privacy`): an answer the
 //! person gives is written to their book and remembered across a restart, the administrator's
 //! floor decides first and cannot be overruled, a damaged book is kept aside and the program
 //! is asked again, a floor file that is not the administrator's is ignored, and a program that
@@ -10,8 +10,8 @@ use compositor_app::privacy::{FloorFiles, Owner, PrivacyFiles};
 use compositor_app::time::WallClock;
 use compositor_core::Event;
 use compositor_core::privilege::{ClientStanding, UnixSeconds, Verdict};
-use desktop_protocols::vocab::{Answer, Memory, Power};
 use compositor_testkit::{ASKED_PROGRAM, Fixture, FixtureSpec, program_standing};
+use desktop_protocols::vocab::{Answer, Memory, Power};
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 

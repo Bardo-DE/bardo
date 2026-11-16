@@ -10,13 +10,13 @@ use compositor_core::geometry::LogicalPoint;
 use compositor_core::gpu::GpuChoice;
 use compositor_core::output::OutputConfig;
 use compositor_core::time::{Mono, VblankSeq};
-use desktop_protocols::vocab::Transform;
 use compositor_testkit::fakes::{
     EmptyScene, FakeKms, FakeKmsOpener, FakeSession, FakeUdev, SharedSession, SyntheticTopology,
 };
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::Transform;
 use std::path::PathBuf;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 fn card() -> DevicePath {
     DevicePath(PathBuf::from("/dev/dri/card0"))

@@ -2,8 +2,8 @@
 //! answers.
 
 use crate::bounded::{FileText, read_text};
-use keymap::Overrides;
 use key_remap_proto::KEYMAP_MAX_BYTES;
+use keymap::Overrides;
 use std::path::Path;
 
 /// The overrides in `path` and what was wrong with them, in plain words. A missing file is no

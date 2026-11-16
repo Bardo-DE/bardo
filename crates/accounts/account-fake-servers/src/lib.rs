@@ -1,6 +1,6 @@
 //! Test-only fake servers for the accounts program (PLAN §6 row W2e, §8): an OAuth issuer with a
 //! scripted browser, IMAP, POP3 and SMTP with a scratch CA, a Nextcloud, a plain DAV server, autoconfig
-//! and well-known answers, a DNS answer table behind `porter-discover`'s `Dns` seam, and Ollama
+//! and well-known answers, a DNS answer table behind `account-discover`'s `Dns` seam, and Ollama
 //! and OpenAI-compatible model lists.
 //!
 //! Each server listens on a loopback port (or a Unix socket in a scratch directory where the

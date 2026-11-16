@@ -1,4 +1,4 @@
-//! The small helpers `inference::codec` needs that porter-dbus keeps to itself.
+//! The small helpers `inference::codec` needs that account-dbus keeps to itself.
 
 use account_core::CoreError;
 use serde_json::{Map, Value as Json};

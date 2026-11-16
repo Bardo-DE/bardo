@@ -16,7 +16,6 @@
 
 mod cli_error;
 
-use keymap::Platform;
 use cli_error::{ArgError, PlayError};
 use computer_use_eval::corpus::Corpus;
 use computer_use_eval::eval::{Cassette, run_cassette, run_live, run_scripted};
@@ -24,6 +23,7 @@ use computer_use_eval::flags::FlagError;
 use computer_use_eval::live::{Plan, Thinking};
 use computer_use_eval::report::{Check, Report, render};
 use computer_use_eval::run::RunRecord;
+use keymap::Platform;
 use model_http::{
     AuthHeader, HostName, HttpClient, HttpEndpoint, HttpTarget, Port, Proxy, Secret, Timeouts,
     UrlPath, WaitMs,

@@ -1,11 +1,11 @@
 //! The utterance table and the mic invariant.
 
-use action_wire::VoiceIntent;
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
-use inference_core::{ModelError, Readiness, ServedBy};
+use action_wire::VoiceIntent;
 use agent_voice_loop::*;
 use agent_voice_wire::*;
+use inference_core::{ModelError, Readiness, ServedBy};
 
 fn served() -> ServedBy {
     ServedBy {

@@ -7,7 +7,7 @@
 #   template states Holo's coordinate convention, so a recorded step confirms it.
 # - tools: the chat template renders tools as JSON and expects Qwen3-coder XML calls, which
 #   vLLM's qwen3_coder parser turns into tool calls. The template names no computer-use
-#   function, so the action schema is the one cua-session's prompt declares (dialect holo31).
+#   function, so the action schema is the one computer-use-session's prompt declares (dialect holo31).
 # - sampling: proposals, not read from the card (it gives none). reasoning_on is the Qwen3 family's
 #   published thinking setting (0.6, top_p 0.95, top_k 20); reasoning_off is greedy, so the same
 #   screen gives the same click. A recorded step (dev/cua-step-holo.sh) confirms or corrects them.

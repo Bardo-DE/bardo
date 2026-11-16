@@ -1,7 +1,7 @@
 //! The person's computers on their Tailscale network, as `org.quire.Tailnet1` hands them to the
 //! shell, Settings and temor: a machine is keyed by its Tailscale node id, which Tailscale keeps
 //! across renames and address changes. Pure data; the one program that reads Tailscale is
-//! `porter-tailscale`.
+//! `account-tailscale`.
 
 use account_ids::IdError;
 use account_ids::UnixSeconds;

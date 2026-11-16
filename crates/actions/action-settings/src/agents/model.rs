@@ -1,8 +1,8 @@
 //! The rows' types. An invalid state has no value: an agent that never started has no offers, a
 //! model is chosen or it is the agent's own, and only one that needs signing in lists ways.
 
-use agent_registry::offered::Named;
 use action_core::Rewind;
+use agent_registry::offered::Named;
 
 /// Where an agent's program came from.
 #[derive(Debug, Clone, PartialEq, Eq)]

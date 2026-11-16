@@ -4,12 +4,12 @@ use crate::control::StopReason;
 use crate::cua::CuaStepReply;
 use crate::error::{InferRefusal, ModelError};
 use crate::scores::OptionScores;
-pub use model_provider::EmbedVector;
-use model_provider::Money;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_ids::Tokens;
+pub use model_provider::EmbedVector;
+use model_provider::Money;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

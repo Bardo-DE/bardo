@@ -25,23 +25,23 @@ use crate::supervise::{Ports, Programs, Sizing, Supervised};
 use crate::tailnet::{BusMachines, Parts, Tailnet};
 use crate::toolproof::ToolProofs;
 use crate::watch::Watch;
-use engine_supervisor::EngineId;
-use model_catalog::EngineKind;
 use account_callers::{ProcRoot, choose_proc_root, proc_notice};
 use account_client_dbus::Bus;
 use account_dbus::BusTarget;
 use account_http_reqwest::{Limits, ReqwestHttp};
 use account_ids::{clock::Clock, clock::SystemClock};
+use account_tailscale::LocalApi;
+use engine_supervisor::EngineId;
+use inference_dbus::inference::INFERENCE_BUS;
 use inference_router::catalog::read_catalog;
 use inference_router::local::{Lengths, LocalModel, build};
 use inference_tailnet::{Config as TailnetConfig, Guests, Timing};
-use account_tailscale::LocalApi;
 use inference_turns::audit::JsonLines;
+use model_catalog::EngineKind;
 use std::os::unix::fs::DirBuilderExt;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
-use inference_dbus::inference::INFERENCE_BUS;
 use zbus::Connection;
 
 /// How often the daemon looks at its file for a change by someone else.

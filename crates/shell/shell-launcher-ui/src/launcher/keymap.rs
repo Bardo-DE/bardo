@@ -3,8 +3,8 @@
 //! ⌘K). The keymap resolves a key to an action first (`PanelCtx::resolved`); these read the
 //! action, never a modifier that means Command. Pure.
 
-use keymap::{Action, StandardAction};
 use dioxus::prelude::{Key, Modifiers};
+use keymap::{Action, StandardAction};
 use shell_launcher::OwnAction;
 
 use crate::launcher::companion::CompanionKey;
@@ -56,8 +56,8 @@ pub fn companion_key(
 mod tests {
     use super::{companion_key, launcher_key};
     use crate::launcher::keys::LauncherKey;
-    use keymap::{Action, StandardAction};
     use dioxus::prelude::{Key, Modifiers};
+    use keymap::{Action, StandardAction};
     use shell_launcher::OwnAction;
 
     type LauncherCase = (Key, Modifiers, Option<Action>, Option<LauncherKey>);

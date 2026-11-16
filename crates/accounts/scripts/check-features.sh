@@ -6,7 +6,7 @@
 # feature and no other once left two methods unused, and the gate passed (porter 5bdda62; fixed
 # in b12886e). Each set below is checked here, alone, so the same break fails this script.
 #
-# The sets come from the consumers' manifests at origin/master (porter-client and the other
+# The sets come from the consumers' manifests at origin/master (account-client and the other
 # porter crates each consumer takes with default-features = false). The comment above each set
 # names the consumer it comes from. Keep the list as data: add a set when a consumer adds one.
 #
@@ -25,26 +25,26 @@ BUILDS=(
   # unified in.
   "accountd (default) :: -p account-daemon"
 
-  # porter-client and its two transports, in the sets their consumers name. No feature is on by
+  # account-client and its two transports, in the sets their consumers name. No feature is on by
   # default: mailo takes the hosted transport alone, ferry's syncd the hosted transport with its relays,
   # detent, sill, docket and almanac the bus transport.
-  "porter-client :: -p account-client"
-  "porter-client-dbus :: -p account-client-dbus"
-  "porter-client-inproc (no features: mailo) :: -p account-client-inproc --no-default-features"
-  "porter-client-inproc (relays: ferry syncd) :: -p account-client-inproc --features relays"
+  "account-client :: -p account-client"
+  "account-client-dbus :: -p account-client-dbus"
+  "account-client-inproc (no features: mailo) :: -p account-client-inproc --no-default-features"
+  "account-client-inproc (relays: ferry syncd) :: -p account-client-inproc --features relays"
 
   # The other porter crates a consumer takes with default-features = false (mailo's workspace
   # block, which mail-core, mail-app and mail-runtime name), in the features each one turns on.
-  "porter-secrets (testing: mailo mail-core, mail-app) :: -p account-secrets --no-default-features --features testing"
-  "porter-secrets (oo7: mailo mail-runtime, Linux) :: -p account-secrets --no-default-features --features oo7"
-  "porter-secrets (keyring: mailo mail-runtime, macOS and Windows) :: -p account-secrets --no-default-features --features keyring"
-  "porter-discover (no features: mailo mail-core, mail-runtime) :: -p account-discover --no-default-features"
-  "porter-http (no features: mailo mail-core, mail-runtime) :: -p account-http --no-default-features"
-  "porter-oauth (no features: mailo) :: -p account-oauth --no-default-features"
-  "porter-oauth (io: mailo mail-runtime) :: -p account-oauth --no-default-features --features io"
-  "porter-proxy (io: mailo mail-runtime, its link tests) :: -p account-proxy --no-default-features --features io"
-  "porter-calendar (no features: mailo) :: -p account-calendar"
-  "porter-calendar (eds: the Linux desktops) :: -p account-calendar --features eds"
+  "account-secrets (testing: mailo mail-core, mail-app) :: -p account-secrets --no-default-features --features testing"
+  "account-secrets (oo7: mailo mail-runtime, Linux) :: -p account-secrets --no-default-features --features oo7"
+  "account-secrets (keyring: mailo mail-runtime, macOS and Windows) :: -p account-secrets --no-default-features --features keyring"
+  "account-discover (no features: mailo mail-core, mail-runtime) :: -p account-discover --no-default-features"
+  "account-http (no features: mailo mail-core, mail-runtime) :: -p account-http --no-default-features"
+  "account-oauth (no features: mailo) :: -p account-oauth --no-default-features"
+  "account-oauth (io: mailo mail-runtime) :: -p account-oauth --no-default-features --features io"
+  "account-proxy (io: mailo mail-runtime, its link tests) :: -p account-proxy --no-default-features --features io"
+  "account-calendar (no features: mailo) :: -p account-calendar"
+  "account-calendar (eds: the Linux desktops) :: -p account-calendar --features eds"
 )
 
 logs="${CARGO_TARGET_DIR:-target}/check-features"

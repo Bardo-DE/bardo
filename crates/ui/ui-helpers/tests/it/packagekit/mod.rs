@@ -6,12 +6,12 @@ mod bus;
 mod fake_pk;
 
 use bus::PrivateBus;
+use fake_pk::{Behaviour, Calls, serve};
+use std::time::Duration;
 use ui_helpers::{
     CapabilityName, Deadline, Executable, Family, Install, Missing, Outcome, PackageKit,
     PackageName, Request, Timeouts,
 };
-use fake_pk::{Behaviour, Calls, serve};
-use std::time::Duration;
 
 fn request(names: &[&str]) -> Request {
     Request {

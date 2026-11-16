@@ -100,8 +100,9 @@ impl Config {
     pub fn from_env(provider_dirs: &[PathBuf]) -> Result<Self, StartError> {
         let mut paths = Paths::resolve(|name| std::env::var(name).ok(), provider_dirs)?;
         // A test build may read another system caller table (a jail cannot write /etc).
-        let system =
-            account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| std::env::var_os(name));
+        let system = account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| {
+            std::env::var_os(name)
+        });
         if let Some(line) = system.notice("accountd") {
             eprintln!("{line}");
         }
@@ -243,7 +244,7 @@ impl Daemon {
             names: provider_names,
             ..
         } = families_of(&paths, Arc::clone(&clock));
-        // The families read the clients files themselves (porter-oauth's registry); this names a
+        // The families read the clients files themselves (account-oauth's registry); this names a
         // row of the person's own that tried to send a sign-in elsewhere (sec-4), whose endpoints
         // the registry sets aside.
         let own_clients = std::fs::read_to_string(&paths.clients_user)

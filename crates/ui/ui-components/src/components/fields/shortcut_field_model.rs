@@ -1,9 +1,9 @@
 //! What the shortcut field decides from a key while it records: the pure step, apart from the
 //! view that carries it out.
 
+use dioxus::prelude::{Key, Modifiers};
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey, Platform};
-use dioxus::prelude::{Key, Modifiers};
 use ui_core::command::{chord_of, modifiers_of};
 
 /// What one recording ended with.
@@ -86,9 +86,9 @@ fn is_shortcut(single_keys: bool, chord: &Chord) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{Heard, hear};
+    use dioxus::prelude::{Key, Modifiers};
     use keymap::keyboard_types::{Modifiers as ChordModifiers, NamedKey};
     use keymap::{Chord, Desktop, Key as ChordKey, Platform};
-    use dioxus::prelude::{Key, Modifiers};
 
     fn ours() -> Platform {
         Platform::Linux {

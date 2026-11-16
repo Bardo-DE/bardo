@@ -14,7 +14,7 @@ use super::super::reply::unsupported;
 use crate::daemon::msg::ShellMsg;
 
 /// What [`inject`] was asked to do, independent of `layer_shell_host::inject::Inject` (only defined under
-/// shell-host's `debug-inject` feature) so both builds compile.
+/// layer-shell-host's `debug-inject` feature) so both builds compile.
 pub enum Injection {
     Pointer(Point),
     Leave,
@@ -25,8 +25,8 @@ pub enum Injection {
     Key(KeySpec, KeyAction),
 }
 
-/// Find `surface` by shell-host's own naming (`HostCtx::surface_named`, unconditional: it needs
-/// neither `debug` nor shell-host's `debug-inject`) and deliver `injection` to it.
+/// Find `surface` by layer-shell-host's own naming (`HostCtx::surface_named`, unconditional: it needs
+/// neither `debug` nor layer-shell-host's `debug-inject`) and deliver `injection` to it.
 pub fn inject(ctx: &mut HostCtx<ShellMsg>, surface: SurfaceName, injection: Injection) -> Response {
     let Some(id) = ctx.surface_named(&layer_shell_host::SurfaceName(surface.0.clone())) else {
         return failed(
@@ -37,7 +37,7 @@ pub fn inject(ctx: &mut HostCtx<ShellMsg>, surface: SurfaceName, injection: Inje
     apply(ctx, id, injection)
 }
 
-/// The key `spec` names as shell-host's `Inject::Key`: a name it does not know is the caller's
+/// The key `spec` names as layer-shell-host's `Inject::Key`: a name it does not know is the caller's
 /// mistake.
 #[cfg(feature = "debug")]
 fn host_key(spec: &KeySpec, action: KeyAction) -> Result<layer_shell_host::inject::Inject, String> {
@@ -50,7 +50,7 @@ fn host_key(spec: &KeySpec, action: KeyAction) -> Result<layer_shell_host::injec
     Ok(layer_shell_host::inject::Inject::Key { stroke, action })
 }
 
-/// Through shell-host's typed `HostCtx::inject` (a capture's success and size come back directly
+/// Through layer-shell-host's typed `HostCtx::inject` (a capture's success and size come back directly
 /// through `Injected`, no bridging over stdout).
 #[cfg(feature = "debug")]
 fn apply(ctx: &mut HostCtx<ShellMsg>, id: SurfaceId, injection: Injection) -> Response {
@@ -64,7 +64,7 @@ fn apply(ctx: &mut HostCtx<ShellMsg>, id: SurfaceId, injection: Injection) -> Re
     }
 }
 
-/// `injection` as shell-host's; every pointer button maps through, and a key is parsed here, at
+/// `injection` as layer-shell-host's; every pointer button maps through, and a key is parsed here, at
 /// the boundary.
 #[cfg(feature = "debug")]
 fn to_host(injection: Injection) -> Result<layer_shell_host::inject::Inject, String> {

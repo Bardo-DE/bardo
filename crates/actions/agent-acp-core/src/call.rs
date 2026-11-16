@@ -4,13 +4,13 @@
 //! write or a command's argument vector stays with the host behind a `StageId`.
 
 use crate::confine::Care;
-use sandbox::AbsPath;
+use action_vocab::{CallRequest, ChoiceId, FileRef, Origin, TargetValue, Value};
 use permission_core::{
     DERIVES_PARAM, Derivation, FILES_READ, FILES_SENSITIVE, FILES_WRITE, NETWORK_PARAM,
     PermissionKind, REPORTED, TERMINAL_RUN, acp_agent_action, derives_choice, network_choice,
 };
-use action_vocab::{CallRequest, ChoiceId, FileRef, Origin, TargetValue, Value};
 use provenance::{Integrity, Label, Labelled, ModelRole, Source};
+use sandbox::AbsPath;
 use std::collections::BTreeSet;
 
 /// A handle the host holds for what is too big or too private for a sheet or a reviewer (the

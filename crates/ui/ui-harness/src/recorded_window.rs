@@ -4,11 +4,13 @@
 //! (`WindowHost::page_zoom`). It draws nothing and places nothing:
 //! the frame's requests (move, resize, zoom, tile) are ignored and the state is the default.
 
-use ui_components::window::host::HostWindow;
-use ui_components::window::icon::WindowIcon;
-use ui_components::window::vocab::{PageZoom, ResizeEdge, TileError, WindowState, WindowTile, Zoom};
 use std::cell::RefCell;
 use std::rc::Rc;
+use ui_components::window::host::HostWindow;
+use ui_components::window::icon::WindowIcon;
+use ui_components::window::vocab::{
+    PageZoom, ResizeEdge, TileError, WindowState, WindowTile, Zoom,
+};
 
 /// Whether the harness gives the app a window host (`ui_components::prelude::WindowHost`) at the root.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

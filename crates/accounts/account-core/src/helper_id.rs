@@ -1,6 +1,6 @@
 //! The id of one of the person's helpers (a persistent named agent). It lives here, not in prov,
-//! because both prov (`AgentRole::Helper`) and porter-infer (`Asker::Helper`) name it, and
-//! porter-infer may depend only on porter-core and cua-action.
+//! because both prov (`AgentRole::Helper`) and inference-core (`Asker::Helper`) name it, and
+//! inference-core may depend only on account-core and computer-use-action.
 
 use account_ids::IdError;
 use serde::{Deserialize, Serialize};

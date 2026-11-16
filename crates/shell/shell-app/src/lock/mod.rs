@@ -1,5 +1,5 @@
 //! sill's own lock screen on the daemon's side: the follower that turns the locker's and the auth service's state into a wish to hold the
-//! session lock or not, the host-thread half that takes and drops shell-host's session lock
+//! session lock or not, the host-thread half that takes and drops layer-shell-host's session lock
 //! through [`host::SessionLockHost`], and the prompt's output.
 //!
 //! The flow: `sill lock` (or logind's Lock in a sill session, or a lock marker left by a sill
@@ -9,7 +9,7 @@
 //! [`host::LockFactory`] of `Lock` surfaces; `HostEvent::Lock(Locked)` becomes
 //! `LockerCommand::Shell(Locked)` ([`on_host_event`]). A right password makes the auth service
 //! `Accepted`: every lock surface plays its fade, and the prompt's surface calls
-//! `layer_shell_host::use_lock().unlock()` when its fade settles (shell-host sends `unlock_and_destroy`
+//! `layer_shell_host::use_lock().unlock()` when its fade settles (layer-shell-host sends `unlock_and_destroy`
 //! at the next flush). The wish turns `Released` at the same moment; the follower sends it only
 //! after [`UNLOCK_BACKSTOP_MS`] and only if the lock is still held, so [`apply`]'s
 //! `unlock_session` is a backstop for a surface that never finished its fade (its output gone).
@@ -42,7 +42,7 @@ use host::{LockFactory, LockRefusal, SessionLockHost};
 /// `--t-move`, well under this).
 pub const UNLOCK_BACKSTOP_MS: u64 = 1_500;
 
-/// Whether the daemon should hold shell-host's session lock.
+/// Whether the daemon should hold layer-shell-host's session lock.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum LockWish {
     Held,

@@ -2,14 +2,14 @@
 //! ([`EntityRef`], with labels). An app never writes a label: the kind's declared title trust
 //! does, so a mail subject is somebody else's words the moment it crosses.
 
+use account_core::{AppName, DataClass};
 use action_manifest::TitleTrust;
 use action_vocab::EntityRef;
-use ui_intents::ThingMark;
-use account_core::{AppName, DataClass};
 use provenance::{
     Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label, Labelled, Source, SpaceId,
 };
 use std::collections::BTreeSet;
+use ui_intents::ThingMark;
 
 /// Why a mark is not a thing.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

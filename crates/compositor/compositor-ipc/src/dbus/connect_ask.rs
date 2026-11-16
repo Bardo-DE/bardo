@@ -2,8 +2,8 @@
 //! question ([`ConnectAsk`], with the caller already proven), where the answer goes
 //! ([`ConnectCall`]) and the answer ([`ConnectReply`], [`ConnectRefusal`]).
 
-use compositor_core::policy::ConnectionRole;
 use caller_identity_dbus::caller_identity_core::{AppKey, RoleName, Standing};
+use compositor_core::policy::ConnectionRole;
 use std::os::fd::OwnedFd;
 use zbus::fdo;
 

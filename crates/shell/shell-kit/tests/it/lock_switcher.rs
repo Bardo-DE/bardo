@@ -6,6 +6,11 @@
 //! animation once as the prompt appears and then rests.
 
 use dioxus::prelude::*;
+use shell_kit::emoji::id::EmojiId;
+use shell_kit::lock::vocab::{LockUser, PromptState};
+use shell_kit::prelude::*;
+use shell_kit::switcher::app_switcher::{AppKey, SwitcherApp};
+use std::time::Duration;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
@@ -13,11 +18,6 @@ use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_kit::emoji::id::EmojiId;
-use shell_kit::lock::vocab::{LockUser, PromptState};
-use shell_kit::prelude::*;
-use shell_kit::switcher::app_switcher::{AppKey, SwitcherApp};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 900,

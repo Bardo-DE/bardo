@@ -36,11 +36,11 @@ pub(super) fn front_of<'a>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use account_core::AppName;
+    use account_ids::Px;
     use computer_use_desktop::{
         GlobalCoord, GlobalRect, Pid, ToplevelState, WindowTitle, WindowTrust, WorkspaceRef,
     };
-    use account_core::AppName;
-    use account_ids::Px;
     use std::collections::BTreeSet;
 
     fn window(ident: &str, app: &str, parent: Option<&str>) -> ToplevelInfo {

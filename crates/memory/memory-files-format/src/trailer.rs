@@ -11,8 +11,8 @@
 //! comment or a field. The keys `valid` and `origin` are reserved: a trailer carrying them is
 //! refused, not interpreted. Parsing is strict.
 
-use memory_core::{Actor, Fact, FactId, FactText, Label, Link, UnixSeconds, Validity};
 use chrono::{DateTime, SecondsFormat, Utc};
+use memory_core::{Actor, Fact, FactId, FactText, Label, Link, UnixSeconds, Validity};
 
 const OPEN: &str = "  <!-- ";
 const CLOSE: &str = " -->";

@@ -3,7 +3,7 @@
 //! ("Turn On Until Tomorrow", the warmth) and sees it, and it keeps the manual turn-on's end
 //! beside casement's own schedule. Where sill already warms a monitor over DDC/CI, casement is
 //! told to leave that one alone (`skip_outputs`) so the two do not double, and warms the rest.
-//! Pure; `sill-services` reads and writes the files.
+//! Pure; `shell-services` reads and writes the files.
 
 mod command;
 mod model;

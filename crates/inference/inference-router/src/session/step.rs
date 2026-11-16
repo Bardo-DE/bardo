@@ -5,11 +5,11 @@ use super::{
     SessionIn, SessionOut, SessionSpec, fits, model_of,
 };
 use crate::audio::{audio_ms, check_audio};
+use account_match::Need;
 use inference_core::{
     AudioRate, ClientFrame, Declined, InferEvent, InferRefusal, InferReply, InferRequest,
     ModelError, Readiness, RequestKind, ServedBy, StageNote, TranscribeBegin, Why,
 };
-use account_match::Need;
 
 /// The next state and effects for `input` in `phase` (models §4.2, voice §3.4).
 ///

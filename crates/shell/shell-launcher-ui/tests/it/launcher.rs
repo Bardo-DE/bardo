@@ -4,11 +4,11 @@
 
 use crate::launcher_harness;
 
-use ui_harness::Input;
 use std::time::Duration;
+use ui_harness::Input;
 
-use ui_components::prelude::*;
 use launcher_harness::{open, selected_title, titles};
+use ui_components::prelude::*;
 
 fn headings(html: &str) -> Vec<String> {
     [

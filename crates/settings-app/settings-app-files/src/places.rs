@@ -6,10 +6,10 @@ use crate::error::FilesError;
 use crate::read::text_of;
 use crate::save::save_keys;
 use crate::values::ConfigHome;
-use settings_app_model::ConfigFile;
 use action_settings::{
     PLACES_PATH, Places, PlacesLoaded, SETTINGS_FILE, read_places, write_places,
 };
+use settings_app_model::ConfigFile;
 use ui_settings::schema::{FilePath, KeyPath};
 
 fn file() -> Result<ConfigFile, FilesError> {

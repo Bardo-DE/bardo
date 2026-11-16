@@ -1,6 +1,6 @@
 [package]
 name = "agent-skills-disk"
-description = "Skill directories on the real disk: the one SkillFolder that lists and reads them with std::fs, for the daemons and tools that hand docket-skills a folder."
+description = "Skill directories on the real disk: the one SkillFolder that lists and reads them with std::fs, for the daemons and tools that hand agent-skills a folder."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

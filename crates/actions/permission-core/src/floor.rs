@@ -4,14 +4,14 @@
 //! cannot loosen either, and nothing here touches the person's own launcher acts.
 //!
 //! This module holds the shapes and the rules. The daemon that reads the file owns the path and
-//! the TOML (`docket-core` never reaches `toml`); a file that exists and does not read is an
+//! the TOML (`action-core` never reaches `toml`); a file that exists and does not read is an
 //! error there, never a silent skip.
 
 use crate::limit::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
 use crate::mode::{AskOrRun, Mode, ModeRows, OtherRow, ScreenRow};
 use crate::review::Strictness;
-use action_vocab::ActionRef;
 use account_core::AppName;
+use action_vocab::ActionRef;
 use provenance::{ActionName, Effect, SpaceScope, UnixSeconds};
 use serde::{Deserialize, Serialize};
 

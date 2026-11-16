@@ -7,9 +7,6 @@ use super::dbus::{DbusTransport, Rows, bus_error};
 use crate::error::TransportError;
 use account_dbus::Details;
 use account_ids::UnixSeconds;
-use inference_tailnet::{
-    Approval, CandidateModel, ComputerCandidate, GuestAnswer, GuestRow, RowState,
-};
 use account_tailscale::NodeId;
 use inference_dbus::inference::{
     CANDIDATE_KEY_MODELS, CANDIDATE_KEY_NAME, CANDIDATE_KEY_NEEDS_APPROVAL, GUEST_KEY_NAME,
@@ -17,6 +14,9 @@ use inference_dbus::inference::{
 };
 use inference_dbus::inference::{
     InferenceProxy, LocalEngine, RunningModel, local_engine_from_dbus, running_from_dbus,
+};
+use inference_tailnet::{
+    Approval, CandidateModel, ComputerCandidate, GuestAnswer, GuestRow, RowState,
 };
 
 impl DbusTransport {

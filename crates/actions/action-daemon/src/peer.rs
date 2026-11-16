@@ -23,13 +23,13 @@
 
 use crate::acp_gate::AcpGate;
 use crate::config::IntentdConfig;
+use account_callers::ProcRoot;
+use account_core::{AppId, AppName, Isolation};
 use action_dbus::BusConnection;
 use action_dbus::callers::{Caller, Callers, Identity, Role};
 use action_procroot::{own_uid, terminal_scope};
 use action_vocab::CallerRole;
 use action_wire::CallerId;
-use account_callers::ProcRoot;
-use account_core::{AppId, AppName, Isolation};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use zbus::fdo::DBusProxy;

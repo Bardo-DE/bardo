@@ -9,9 +9,9 @@ use crate::region::ResolvedHours;
 use crate::store::Store;
 use crate::watch::Watch;
 use dioxus::prelude::*;
+use std::sync::Arc;
 use ui_core::spawner::Spawner;
 use ui_style::appearance::system::SystemPrefs;
-use std::sync::Arc;
 
 /// The inputs to [`ui_components::prelude::resolve`], as they are now.
 ///

@@ -1,6 +1,6 @@
 use crate::support::*;
-use permission_core::BreakerTrip;
 use agent_session::*;
+use permission_core::BreakerTrip;
 
 fn parent_rows() -> Vec<Logged> {
     rows(&canonical())

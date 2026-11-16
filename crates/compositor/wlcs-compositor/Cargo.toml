@@ -4,7 +4,7 @@
 # P0-T-wlcs), outside the jail; run inside it.
 [package]
 name = "wlcs-compositor"
-description = "wlcs integration shim: wlcs_server_integration over casement's own test-kit Fixture (the real State on the headless backend), behind the Compositor seam."
+description = "wlcs integration shim: wlcs_server_integration over casement's own base-testkit Fixture (the real State on the headless backend), behind the Compositor seam."
 version = "0.1.0"
 edition = "2024"
 license = "MIT"

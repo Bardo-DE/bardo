@@ -7,14 +7,14 @@
 //! [`gdrive_replica`] builds the replica of a dataset's folder in the account's app data folder.
 
 use crate::webdav::BuildError;
-use sync_core::Clock;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http_relay::{RelayDial, RelayHttp, RelayLimits};
 use account_ids::WebUrl;
-use std::sync::Arc;
 use replica_gdrive::GdriveReplica;
+use std::sync::Arc;
+use sync_core::Clock;
 
 /// The replica of `folder` (a path in the app data folder, `Photos/Originals`; empty for the
 /// folder itself) of the account the grant covers, over relays accountd opens to `endpoint`

@@ -6,10 +6,10 @@
 //! reads its first state from this thread rather than from props.
 
 use crate::page::Page;
+use std::cell::RefCell;
 use ui_components::prelude::*;
 use ui_components::style::space::presets::default_look;
 use ui_settings::AppearanceSettings;
-use std::cell::RefCell;
 
 /// One of the eight preset Spaces, by its place in `ui_components::style::space::presets::PRESETS`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -18,7 +18,7 @@ pub struct PresetIndex(pub u8);
 impl PresetIndex {
     /// Every preset, in the editor's order.
     pub fn all() -> impl Iterator<Item = PresetIndex> {
-        (0..ds::style::space::presets::PRESETS.len())
+        (0..ui_components::style::space::presets::PRESETS.len())
             .map(|index| PresetIndex(u8::try_from(index).unwrap_or(u8::MAX)))
     }
 

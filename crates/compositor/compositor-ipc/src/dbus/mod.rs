@@ -8,6 +8,10 @@ mod connect_ask;
 mod intake;
 mod portal_watch;
 
+pub use caller_identity_dbus::caller_identity_core::Table as CallerTable;
+/// The caller table and the files it is read from (the caller-identity library's), so the
+/// composition root names no second crate for them.
+pub use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
 pub use callers::{CallerCheck, DesktopCallers, WhoFuture, require, role_for_connection};
 pub use compositor_serve::{CallerSetup, serve_compositor_at};
 pub use compositor1::{
@@ -21,18 +25,16 @@ pub use connect_ask::{
 pub use intake::{
     ANSWER_WAIT, CALLS_PER_WINDOW, CONNECT_QUEUE, Intake, RATE_WINDOW, RateLimit, TRACKED_CALLERS,
 };
-/// The caller table and the files it is read from (the caller-identity library's), so the
-/// composition root names no second crate for them.
-pub use caller_identity_dbus::peephole::{LoadError, RealProc, TableFiles};
-pub use caller_identity_dbus::caller_identity_core::Table as CallerTable;
 
 /// What the composition root needs to say who the program on a Wayland socket is (the same
 /// library's, for the same reason): hold the peer, read its facts, judge them against the table.
 pub mod peer {
-    pub use caller_identity_dbus::peephole::{Alive, PinError, Pinned, ProbeError, Prober};
     pub use caller_identity_dbus::caller_identity_core::{
         AppKey, Engine, Exe, ExePath, Facts, FileTrust, Pin, Proof, RoleName, Standing, Table, Uid,
         WhyNot, judge, roles,
+    };
+    pub use caller_identity_dbus::caller_identity_linux::{
+        Alive, PinError, Pinned, ProbeError, Prober,
     };
 }
 

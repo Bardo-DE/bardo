@@ -2,7 +2,7 @@
 //! Display (the interface's faces), Space Mono (the code face), Noto Serif, and Bricolage
 //! Grotesque and Karla (the faces the Editorial look Extension names, with Space Mono).
 //!
-//! On Blitz the bytes are registered with the renderer's font context once (`ds-blitz`'s
+//! On Blitz the bytes are registered with the renderer's font context once (`ui-blitz`'s
 //! `register_fonts`); nothing about fonts is in the stylesheet.
 //!
 //! The files are subset TTFs (latin and latin-ext, Google Fonts' own split), made from mailo's
@@ -315,8 +315,8 @@ mod tests {
     /// shipped face, so a `KeyEquivalent` never depends on the system's fallback.
     #[test]
     fn every_key_cap_glyph_is_in_a_shipped_face() {
-        use ui_core::vocab::ShortcutKey;
         use skrifa::{FontRef, MetadataProvider};
+        use ui_core::vocab::ShortcutKey;
         let keys = [
             ShortcutKey::Ctrl,
             ShortcutKey::Shift,

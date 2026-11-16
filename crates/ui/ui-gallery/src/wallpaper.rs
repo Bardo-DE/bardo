@@ -4,9 +4,9 @@
 //! behind a panel is blurred (spike S15: Blitz paints no `backdrop-filter`).
 
 use crate::data_uri;
-use ui_components::prelude::*;
 use image::{ImageEncoder, Rgb, RgbImage, codecs::png::PngEncoder};
 use std::sync::LazyLock;
+use ui_components::prelude::*;
 
 const WIDTH: u32 = 360;
 const HEIGHT: u32 = 200;

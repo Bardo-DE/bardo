@@ -20,7 +20,7 @@ pub fn provider_refusal(error: ProviderError) -> Refusal {
 pub fn secrets_refusal(error: SecretsError) -> Refusal {
     match error {
         SecretsError::Missing | SecretsError::Unreadable => Refusal::NeedsReauth,
-        // locked, unreachable, and a failure a later porter-secrets adds
+        // locked, unreachable, and a failure a later account-secrets adds
         _ => Refusal::Unavailable,
     }
 }

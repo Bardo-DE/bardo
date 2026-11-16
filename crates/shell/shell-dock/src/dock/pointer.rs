@@ -1,14 +1,14 @@
 //! Pointer input as the dock's handlers see it, and its resolution into machine events against
 //! the frame on screen: the hit test, and the drop zone while a tile is pressed or dragged.
 
-use keymap::Platform;
 use dioxus::html::input_data::MouseButton;
 use dioxus::html::point_interaction::{
     InteractionLocation, ModifiersInteraction, PointerInteraction,
 };
 use dioxus::prelude::{Modifiers, MouseData};
-use ui_components::base::command::holds_primary;
+use keymap::Platform;
 use shell_model::units::Cpx;
+use ui_components::base::command::holds_primary;
 
 use crate::dock::frame::Frame;
 use crate::dock::hit::{drop_zone, hit};

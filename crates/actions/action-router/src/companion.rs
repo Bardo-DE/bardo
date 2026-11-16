@@ -9,7 +9,7 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use companion_model::helper::{GoalOrigin, JobRefusal};
+use account_core::{AppId, AppName, Isolation};
 use action_context::handles::HandleValue;
 use action_context::labels::{app_label, model_label};
 use action_context::spoken::whole_in;
@@ -21,10 +21,10 @@ use action_core::{
 use action_gate::companion_names::{
     HELPER_POST_JOB, HELPER_PROPOSE, LIMIT_ADD, ROUTINE_PROPOSE, task_entity, task_of,
 };
-use permission_core::COMPANION_APP;
 use action_vocab::{CallerRole, ChoiceId, Clock, LabelText, ParamName, TargetValue, Value};
 use action_wire::{CallerId, IntentsReply, SessionOpen, SessionOpened, TaskStart, WireRefusal};
-use account_core::{AppId, AppName, Isolation};
+use companion_model::helper::{GoalOrigin, JobRefusal};
+use permission_core::COMPANION_APP;
 use provenance::{
     Actor, Address, AgentRef, AgentRole, Integrity, Labelled, MessageKind, MessageText, ModelRole,
     SessionId, Source, TaskId,

@@ -4,17 +4,17 @@
 //! own ledger is the audit.
 
 use crate::plan::Plan;
-use agent_loop::LoopState;
-use companion_wire::{
-    AnswerBody, AnswerPhase, AnswerWire, FooterWire, NeedsYou, RefusalWire, RouteNote,
-};
+use account_core::AppName;
 use action_core::{
     CallEnd, CallRefusal, ContextKeep, HandleCard, HandleShape, InboundLine, InboundPart, Keep,
     Outcome, Reveal, StepEnd, StepLine, StepShown, Summary, Undoable, UserTurn,
 };
 use action_vocab::{CallId, CallRequest, CharCount, Handle, Origin, TargetValue, Value, WindowKey};
 use action_wire::LedgerStep;
-use account_core::AppName;
+use agent_loop::LoopState;
+use companion_wire::{
+    AnswerBody, AnswerPhase, AnswerWire, FooterWire, NeedsYou, RefusalWire, RouteNote,
+};
 use inference_core::ServedBy;
 use provenance::{
     AgentRef, Effect, EntityId, Integrity, Labelled, SessionId, Source, SpaceId, TaskId,
@@ -373,8 +373,8 @@ fn targets_of(call: &CallRequest) -> Vec<EntityId> {
 
 /// The phase a task's roster line shows.
 pub fn roster_state(state: Option<&LoopState>, phase: &AnswerPhase) -> action_core::RosterState {
-    use agent_loop::{FinishedAs, LoopPhase};
     use action_core::RosterState;
+    use agent_loop::{FinishedAs, LoopPhase};
     match state.map(|s| s.phase) {
         None => RosterState::Starting,
         Some(LoopPhase::Finished(FinishedAs::Done)) => RosterState::Done,

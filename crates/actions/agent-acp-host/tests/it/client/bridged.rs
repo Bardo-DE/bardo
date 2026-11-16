@@ -8,14 +8,14 @@ use super::rig::{
     Policy, Rig, Setup, abs, always, host_caller, no, once, program, read, run_turn,
     run_turn_answering, started, write,
 };
-use action_review::{ReviewReason, ReviewVerdict};
+use account_core::{AppId, AppName, Isolation};
 use action_core::AuditRecord;
 use action_fake::{ReviewMode, ScriptedReviewer};
-use permission_core::{GrantCaller, ReasonCode, ReasonText, StandingScope};
-use agent_session::{BackendEvent, SheetChoice};
+use action_review::{ReviewReason, ReviewVerdict};
 use action_vocab::{Caller, CallerRole};
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
-use account_core::{AppId, AppName, Isolation};
+use agent_session::{BackendEvent, SheetChoice};
+use permission_core::{GrantCaller, ReasonCode, ReasonText, StandingScope};
 use std::collections::BTreeSet;
 
 fn control() -> CallerId {
@@ -108,9 +108,7 @@ async fn a_grant_is_the_programs_and_not_another_hosts_or_programs() {
     // Another program (or an editor of the same app name) holds none of it.
     assert_ne!(
         held[0].caller,
-        GrantCaller::AcpAgent(
-            permission_core::ProgramName::parse("gemini-cli").expect("program")
-        )
+        GrantCaller::AcpAgent(permission_core::ProgramName::parse("gemini-cli").expect("program"))
     );
     assert_ne!(
         held[0].caller,

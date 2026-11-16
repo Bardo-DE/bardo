@@ -3,9 +3,9 @@
 //! schemes a quire document's net provider answers. ProviderMark's favicon and the screenshot
 //! thumbnail both take one.
 
+use std::path::Path;
 use ui_core::error::DsError;
 use ui_style::icon::url::IconUrl;
-use std::path::Path;
 
 /// An image the app supplies, as a `data:` URI or a `file:` URL, written as an `<img>`'s `src`.
 /// The caller decides which: a screenshot already on disk is cheaper as its path than

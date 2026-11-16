@@ -5,12 +5,12 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use memory_core::{Episode, EpisodeId, EpisodeKind, EpisodeOutcome, Narrative};
 use action_context::tasks::{TaskRecord, TaskState};
 use action_core::EventSink;
 use action_core::{AuditRecord, CallEnd};
 use action_vocab::Clock;
 use action_wire::{IntentsReply, NoteAsk, WireRefusal, close};
+use memory_core::{Episode, EpisodeId, EpisodeKind, EpisodeOutcome, Narrative};
 use provenance::{Integrity, ReportStatus, SessionId};
 
 fn refuse(why: WireRefusal) -> IntentsReply {

@@ -2,6 +2,9 @@
 //! a message that reaches the model, a masked secret, a run that ends the way a fake says.
 
 use crate::support::*;
+use action_core::{CallRefusal, ConfirmEnd, InboundLine};
+use action_gate_wire::GateAnswer;
+use action_wire::GrantAnswer;
 use computer_use_action::CuaAction;
 use computer_use_bus::{BlockedOn, CuaOutcome, CuaRecord, FailReason, ScreenKind};
 use computer_use_desktop::{BackendKind, Suspend};
@@ -10,13 +13,10 @@ use computer_use_fake::{
     run_harness_answering,
 };
 use computer_use_run::{CuaModelError, CuaSignal, FORCED_NO, FORCED_YES, RunPhase};
-use action_core::{CallRefusal, ConfirmEnd, InboundLine};
-use action_gate_wire::GateAnswer;
-use permission_core::DenyCode;
-use action_wire::GrantAnswer;
-use inference_core::{NoteFrom, PrevResult, StepNote};
-use provenance::{Address, AgentRef, MessageId, MessageKind, ReportStatus, ThreadId};
 use computer_use_seat_input::Emulation;
+use inference_core::{NoteFrom, PrevResult, StepNote};
+use permission_core::DenyCode;
+use provenance::{Address, AgentRef, MessageId, MessageKind, ReportStatus, ThreadId};
 
 fn outcome_of(report: &computer_use_fake::HarnessReport) -> CuaOutcome {
     match report.run.phase {
@@ -104,7 +104,8 @@ fn input_goes_only_to_the_window_that_is_focused_and_visible() {
     let cases: [(&str, Action, Change); 3] = [
         ("keys after the focus is lost", ctrl_a, |w| w.state.clear()),
         ("minimized", click, |w| {
-            w.state.insert(computer_use_desktop::ToplevelState::Minimized);
+            w.state
+                .insert(computer_use_desktop::ToplevelState::Minimized);
         }),
         ("on a hidden workspace", click, |w| {
             w.workspace.shown = false;
@@ -121,8 +122,11 @@ fn input_goes_only_to_the_window_that_is_focused_and_visible() {
         change(&mut window);
         w.desktop = FakeDesktop::new(BackendKind::KwinStock, vec![window]);
         // The keys wait a moment for the focus: a clock that answers at once.
-        w.clock =
-            computer_use_fake::FixedClock::at(computer_use_desktop::Stamp(0), account_ids::UnixSeconds(0)).impatient();
+        w.clock = computer_use_fake::FixedClock::at(
+            computer_use_desktop::Stamp(0),
+            account_ids::UnixSeconds(0),
+        )
+        .impatient();
         let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
         assert_eq!(outcome_of(&report), CuaOutcome::Done, "{name}");
         assert!(
@@ -158,7 +162,10 @@ fn the_seat_is_told_where_the_window_is_before_each_injection() {
     );
     block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
     assert_eq!(w.seat.rebinds().len(), 1);
-    assert_eq!(w.seat.rebinds()[0].1, computer_use_fake::scene::window().geometry);
+    assert_eq!(
+        w.seat.rebinds()[0].1,
+        computer_use_fake::scene::window().geometry
+    );
 }
 
 #[test]

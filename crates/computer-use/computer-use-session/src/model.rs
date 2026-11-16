@@ -7,8 +7,8 @@ use model_provider::{
     EngineExtras, ImageCount, ImageLimits, Knob, Limits, Milli, Reasoning, SafetySignal, Sampling,
     Tokens, ToolCall, ToolParallelism, TurnEnd, TurnRequest,
 };
-use serde::{Deserialize, Serialize};
 use model_vision_prep::{Encoding, ResizeRule};
+use serde::{Deserialize, Serialize};
 
 /// The index of a step within one run, from 0.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

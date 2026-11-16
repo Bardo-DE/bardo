@@ -61,7 +61,10 @@ fn anything_the_manager_cannot_confirm_stops_at_exe() {
     assert_eq!(with_unit(|u| u.transient = Transient::Yes), exe);
     // Someone else is the unit's main process.
     assert_eq!(with_unit(|u| u.main_pid = None), exe);
-    assert_eq!(with_unit(|u| u.main_pid = caller_identity_core::Pid::new(1)), exe);
+    assert_eq!(
+        with_unit(|u| u.main_pid = caller_identity_core::Pid::new(1)),
+        exe
+    );
     // The unit starts some other program than the table's.
     assert_eq!(with_unit(|u| u.exec = None), exe);
     assert_eq!(
@@ -70,7 +73,9 @@ fn anything_the_manager_cannot_confirm_stops_at_exe() {
     );
     // The manager answered for a different unit.
     assert_eq!(
-        with_unit(|u| u.name = caller_identity_core::UnitName::new("other.service").expect("a unit")),
+        with_unit(
+            |u| u.name = caller_identity_core::UnitName::new("other.service").expect("a unit")
+        ),
         exe
     );
 }
@@ -187,9 +192,9 @@ fn a_hidden_image_in_a_real_unit_is_proved_by_the_unit() {
             u.exec = caller_identity_core::ExePath::new("/home/p/bin/sill").ok();
         }),
         ("a program the person can write", |u| {
-            u.exec_trust = Some(FileTrust::Writable(Writer::Owner(caller_identity_core::Uid::new(
-                1000,
-            ))));
+            u.exec_trust = Some(FileTrust::Writable(Writer::Owner(
+                caller_identity_core::Uid::new(1000),
+            )));
         }),
         ("a program not read", |u| u.exec_trust = None),
         ("another unit", |u| {

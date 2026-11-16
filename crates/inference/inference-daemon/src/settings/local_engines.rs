@@ -8,10 +8,10 @@ use crate::installed::{Installed, Standing};
 use crate::supervise::Programs;
 use engine_probe::Place;
 use engine_spec::{ENGINES, engine};
-use model_catalog::EngineKind;
 use inference_core::Slot;
-use inference_router::local::EngineConfig;
 use inference_dbus::inference::{EnginePlace, EngineState, LocalEngine};
+use inference_router::local::EngineConfig;
+use model_catalog::EngineKind;
 
 /// The engines of one daemon.
 #[derive(Debug, Clone, Default)]

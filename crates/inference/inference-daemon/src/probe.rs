@@ -15,13 +15,13 @@
 pub mod entry;
 pub mod names;
 
-use inference_probe::probe_ports;
-use names::{Listing, pair};
 use account_capability::ModelId;
 use account_capability::{Claim, Offer, Subject};
 use account_http::Http;
 use account_provider::Port;
+use inference_probe::probe_ports;
 use inference_router::local::LocalModel;
+use names::{Listing, pair};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::time::Duration;

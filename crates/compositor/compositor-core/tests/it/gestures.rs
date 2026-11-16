@@ -16,8 +16,8 @@ use compositor_core::settings::{CasementSettings, GestureSettings, SwipeFingers}
 use compositor_core::space::{SpaceSeed, WorkspaceRequest};
 use compositor_core::time::TimerKey;
 use compositor_core::{Cause, DeviceId, Effect, Event, Model, PageMilli};
-use ui_core::time::stamp::Stamp;
 use support::{headless, ms};
+use ui_core::time::stamp::Stamp;
 
 fn by(dx: i32, dy: i32) -> GestureStep<SubPoint> {
     GestureStep::Update(SubPoint {

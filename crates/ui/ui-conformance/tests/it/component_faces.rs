@@ -6,6 +6,9 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
+use image::RgbaImage;
+use probe::{distance, keep, modal, pixels, rect};
+use std::time::Duration;
 use ui_components::components::app::space_editor::DotIndex;
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::lists::section_header::HeaderAction;
@@ -13,9 +16,6 @@ use ui_components::prelude::*;
 use ui_components::style::space::presets::PRESETS;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use image::RgbaImage;
-use probe::{distance, keep, modal, pixels, rect};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 480,

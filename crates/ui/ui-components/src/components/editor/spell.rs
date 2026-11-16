@@ -16,13 +16,13 @@ use crate::spell::service::{Paragraph, SpellService};
 use crate::spell::words::words;
 use dioxus::core::{ScopeId, Task, current_scope_id};
 use dioxus::prelude::*;
+use std::cell::{Cell, RefCell};
+use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Rect};
 use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_style::task::{spawn_in, try_set_if_changed};
 use ui_style::tokens::delay::DelayToken;
-use std::cell::{Cell, RefCell};
-use std::collections::{HashMap, HashSet};
-use std::rc::Rc;
 
 /// What the checker remembers between rounds, none of it drawn.
 #[derive(Default)]

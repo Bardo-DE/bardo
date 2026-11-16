@@ -1,4 +1,4 @@
-# Real Wayland input into the compositor: on the headless KWin through shell-host's fake-input.sh
+# Real Wayland input into the compositor: on the headless KWin through layer-shell-host's fake-input.sh
 # (ONE client for the whole run, since each client is a new fake input device and KWin
 # re-announces the seat's pointer for each, so a press would reach the bar once per pointer and a
 # click toggled a popup open and shut); on casement through `casementctl debug inject` reading the

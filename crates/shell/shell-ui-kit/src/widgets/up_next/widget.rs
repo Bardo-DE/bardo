@@ -5,12 +5,12 @@
 //! builds it); it has no controls.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_components::style::tokens::label_hue::LabelHue;
 use serde::{Deserialize, Serialize};
 use shell_kit::prelude::*;
 use shell_kit::widget::contract::NoIntent;
 use shell_kit::widget::kind::WidgetTitle;
+use ui_components::prelude::*;
+use ui_components::style::tokens::label_hue::LabelHue;
 
 use super::provider::EVENT_ROWS;
 

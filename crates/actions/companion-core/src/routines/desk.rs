@@ -1,11 +1,11 @@
 //! The routine desk's decisions: what the person filled in, as the routine the book would make.
 
 use crate::refusal::Refusal;
-use memory_core::KindPattern;
+use account_ids::Count;
 use companion_model::helper::GoalText;
 use companion_model::routine::{EventMatch, NewRoutine, RunBudget, Schedule, Trigger};
 use companion_wire::{EventForm, RoutineForm, WhenForm};
-use account_ids::Count;
+use memory_core::KindPattern;
 
 fn event_of(form: EventForm) -> Result<EventMatch, Refusal> {
     let kind = KindPattern::parse(&form.kind).map_err(|_| Refusal::WatchKind)?;

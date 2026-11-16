@@ -4,11 +4,11 @@
 
 use crate::common;
 
-use common::*;
 use account_callers::CallerRole;
 use account_core::AccountState;
 use account_dbus::Details;
 use account_dbus::accounts::{AccountProxy, ManagerProxy};
+use common::*;
 use std::time::Duration;
 
 #[tokio::test(flavor = "multi_thread")]

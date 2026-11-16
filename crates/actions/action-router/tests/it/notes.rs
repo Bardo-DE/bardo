@@ -3,17 +3,15 @@
 //! narrowing of a subagent's policy from the person's words.
 
 use crate::support::*;
-use memory_core::{
-    Episode, EpisodeId, EpisodeKind, EpisodeOutcome, JsonText, Narrative, Skeleton,
-};
-use memory_core::{Succession, UserText};
 use action_core::*;
 use action_fake::ScriptedWriter;
-use permission_core::{ActionMatch, PolicyChange, TaskPolicy, compare};
 use action_vocab::{ActionRef, CallId, Caller, CharCount, NoteSlug, TurnId};
 use action_wire::{
     HelperNote, IntentsReply, IntentsRequest, LedgerStep, NoteAsk, SessionNote, WireRefusal,
 };
+use memory_core::{Episode, EpisodeId, EpisodeKind, EpisodeOutcome, JsonText, Narrative, Skeleton};
+use memory_core::{Succession, UserText};
+use permission_core::{ActionMatch, PolicyChange, TaskPolicy, compare};
 use provenance::{AgentRef, Label, MessageKind, ReportStatus, SessionId, Source, UnixSeconds};
 
 fn note(session: &SessionId, note: NoteAsk) -> IntentsRequest {
@@ -248,7 +246,9 @@ async fn a_final_report_leaves_the_workers_episode_at_once_and_closing_leaves_no
             kind: MessageKind::Report {
                 status: ReportStatus::Done,
             },
-            parts: vec![DraftPart::Text(provenance::MessageText::new("2 steps taken"))],
+            parts: vec![DraftPart::Text(provenance::MessageText::new(
+                "2 steps taken",
+            ))],
         },
     };
     assert!(matches!(
@@ -325,8 +325,10 @@ async fn a_session_says_what_it_holds_by_handle_in_shape_and_size_only() {
 fn read_only(task: &provenance::TaskId) -> TaskPolicy {
     let mut policy = wide_policy(task, "work");
     policy.ceiling = provenance::Effect::Read;
-    policy.actions =
-        std::collections::BTreeSet::from([ActionMatch::AppUpTo(mail_app(), provenance::Effect::Read)]);
+    policy.actions = std::collections::BTreeSet::from([ActionMatch::AppUpTo(
+        mail_app(),
+        provenance::Effect::Read,
+    )]);
     policy
 }
 

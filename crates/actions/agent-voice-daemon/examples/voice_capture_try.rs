@@ -8,13 +8,13 @@
 //!   live while it runs. It also shows that a monitor node is refused.
 //! - `play`: plays half a second of a 440 Hz tone at 24 kHz on the default output.
 
-use std::process::ExitCode;
-use std::time::{Duration, Instant};
 use agent_voice_audio::{
     AudioDevice, CaptureFormat, CaptureStream, NodeKind, PlaybackFormat, PlaybackStream,
     choose_capture,
 };
 use agent_voice_pipewire::PipeWireDevice;
+use std::process::ExitCode;
+use std::time::{Duration, Instant};
 
 /// The override to try: `VOICED_INPUT`, standing in for `input = "..."` in voiced.toml.
 fn configured_input() -> Option<String> {

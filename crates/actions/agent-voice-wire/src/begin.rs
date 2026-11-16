@@ -1,8 +1,8 @@
 //! Opening an utterance.
 
-use action_wire::VoiceIntent;
 use account_core::AppName;
 use account_core::SpaceId;
+use action_wire::VoiceIntent;
 use serde::{Deserialize, Serialize};
 
 /// What started the utterance.

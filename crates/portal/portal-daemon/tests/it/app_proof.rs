@@ -5,15 +5,15 @@
 
 use std::sync::Arc;
 
-use caller_identity_dbus::peephole::fake::{introduced_program, introduced_service};
 use caller_identity_dbus::caller_identity_core::{AppKey, Engine, Pin, Proof, Standing, WhyNot};
+use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};
+use portal_core::{CastSource, Keep};
 use portal_daemon::app_proof::{
     AppProof, AppProver, PeerProver, RootHeld, TrustAll, Why, judge_app, sender_of,
 };
 use portal_daemon::keeper::{Keeper, Kept, unix_now};
 use portal_daemon::names::{AppNames, exec_program, listed};
 use portal_daemon::screencast::restore::MemoryStore;
-use portal_core::{CastSource, Keep};
 
 use crate::guard::start_portal;
 

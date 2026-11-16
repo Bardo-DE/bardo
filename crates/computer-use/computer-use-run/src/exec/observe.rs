@@ -15,15 +15,17 @@ use crate::screen::{Withheld, secret_masks, split_unseen};
 use crate::seams::{Clock, MessageLink, Seams};
 use crate::sensitivity::window_sensitivity;
 use crate::turn::note_of;
+use action_core::InboxAsk;
 use computer_use_a11y_tree::{
     A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget, NodeSelector, Resolution, prune,
     resolve,
 };
 use computer_use_action::{Coord, Point, Rect, Size, WindowSpace};
 use computer_use_bus::WindowRef;
+use computer_use_capture::{
+    CaptureError, CaptureSession, Frame, FrameWant, MaskReason, MaskRegion, WholeMask,
+};
 use computer_use_desktop::{Desktop, LeaseControl, ToplevelInfo, ToplevelState};
-use action_core::InboxAsk;
-use computer_use_capture::{CaptureError, CaptureSession, Frame, FrameWant, MaskReason, MaskRegion, WholeMask};
 use inference_core::StepIndex;
 use provenance::{AgentRef, Label, Labelled, Source};
 

@@ -1,5 +1,5 @@
 //! companiond: the companion as one identity over many tasks, on the session bus. The task model
-//! is `docket-tasks`' (the front pointer, the roster, the side-conversation tracker, the idle
+//! is `companion-tasks`' (the front pointer, the roster, the side-conversation tracker, the idle
 //! pass, restart, each task its own docket session); this crate is its adapter for the desktop:
 //! the system clock, a [`Bell`] surface that fans changes out to the bus, `Companion1` served,
 //! the speaker (who is on the other end of a call) and the daemon. What is decided over values,
@@ -13,7 +13,7 @@
 //!   episodes, runs); `stored_events`, `events_of`: the sessions, from `Session.Stored`.
 //! - `completion_effects`: how a finished worker or run reaches the front task.
 //! - `serve`, `serve_on`: `org.quire.Companion1`.
-//! - The helpers' hub and the routines are `docket-helpers`'; `daemon` builds them over the bus and
+//! - The helpers' hub and the routines are `companion-helpers`'; `daemon` builds them over the bus and
 //!   `helpers_bus` serves them.
 //! - `HostLink`: a turn handed to the coding agent the person chose, through the agent host.
 //! - `AppsLink`: the agent apps that are helpers, through the same host (`AgentApps` over the bus).
@@ -32,21 +32,21 @@ mod serve;
 mod serve_entry;
 mod speaker;
 
-pub use apps_link::AppsLink;
-pub use bell::Bell;
-pub use callers::{FILE as CALLERS_FILE, shipped as shipped_callers};
-pub use config::{CompaniondConfig, ConfigError};
-pub use daemon::{Daemon, HarnessSeams, run, run_with, start, start_with, start_with_agents};
 pub use agent_planner::{
     Catalogue, CatalogueTool, PlanFault, PlannerModel, PlannerReply, RULES, ReadCall, TARGET,
     TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED, messages, planner_label,
     read_call, system_text, user_text,
 };
+pub use apps_link::AppsLink;
+pub use bell::Bell;
+pub use callers::{FILE as CALLERS_FILE, shipped as shipped_callers};
 pub use companion_tasks::{
     Begun, Change, RecentSource, ReplayFault, RouterLog, RouterRecent, ServeFault, TaskRuntime,
     completion_effects, events_of, rebuild_from, recent_events, recover, replay_of, restart_query,
     stored_events,
 };
+pub use config::{CompaniondConfig, ConfigError};
+pub use daemon::{Daemon, HarnessSeams, run, run_with, start, start_with, start_with_agents};
 pub use handoff::HostLink;
 pub use serve::serve_with_routines;
 pub use serve_entry::{serve, serve_on, serve_on_rooted};
@@ -57,4 +57,5 @@ pub type Shared = companion_tasks::Shared<Bell>;
 
 /// The companion as the daemon and its tests run it: the task model over the system clock (or a
 /// test's hand) and the bell.
-pub type Companiond<P, I, K = action_store::SystemClock> = companion_tasks::Companion<P, I, K, Bell>;
+pub type Companiond<P, I, K = action_store::SystemClock> =
+    companion_tasks::Companion<P, I, K, Bell>;

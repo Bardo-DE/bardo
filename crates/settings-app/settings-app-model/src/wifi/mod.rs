@@ -1,5 +1,5 @@
 //! The Wi-Fi page, as Settings meets it: the radio switch, the network the computer is on and the
-//! ones it can see, and joining one. Pure; the network service is the window's (`detent-ui`).
+//! ones it can see, and joining one. Pure; the network service is the window's (`settings-app-ui`).
 
 mod account;
 mod hidden;

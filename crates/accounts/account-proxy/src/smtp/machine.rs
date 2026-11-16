@@ -7,9 +7,9 @@ use super::{EhloReply, SmtpAuth, SmtpPhase, SmtpRelay, app_greeting};
 use crate::fault::RelayFault;
 use crate::lines::{MAX_EARLY, closes, fail, finished, overlong, send, send_line, take_line, text};
 use crate::step::{Effect, Input, Relaying, Side};
+use account_core::{RelayAuth, Tls};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use account_core::{RelayAuth, Tls};
 
 /// The name the relay gives the server in `EHLO`.
 const EHLO_NAME: &str = "localhost";

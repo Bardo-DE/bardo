@@ -1,19 +1,19 @@
 //! Dragging the thumbnail out as a file: quire's card says when a press crossed its drag
-//! threshold (`ondrag`), and the thumbnail hands the file to shell-host's drag source
+//! threshold (`ondrag`), and the thumbnail hands the file to layer-shell-host's drag source
 //! (`SurfaceHandle::start_drag`) while that press is still down: a `text/uri-list` of the
 //! screenshot's `file://` URI, copy or move as the target chooses, with quire's `ShotGhost` as
 //! the icon. The outcome comes back as a [`DragEnd`] for the machine: a copy keeps the file and
 //! dismisses the card, a move counts the file as the target's, a cancel or a refusal leaves the
 //! card and resumes the hold.
 
-use ui_components::prelude::*;
 use layer_shell_host::{DragAction, DragActions, DragOutcome, DragPayload, DragSpec};
+use ui_components::prelude::*;
 
 use super::ghost::{GhostLook, ghost_icon};
 use super::picture::ThumbPicture;
 use super::step::DragEnd;
 
-/// What the machine makes of shell-host's outcome.
+/// What the machine makes of layer-shell-host's outcome.
 pub fn drag_end(outcome: &DragOutcome) -> DragEnd {
     match outcome {
         DragOutcome::Dropped {
@@ -42,9 +42,9 @@ pub fn file_drag(picture: &ThumbPicture, look: GhostLook) -> Option<DragSpec> {
 mod tests {
     use std::path::PathBuf;
 
+    use layer_shell_host::{DragAction, DragActions, DragOutcome, DragPayload, DragRefused};
     use ui_components::components::content::image_source::ImageSize;
     use ui_components::prelude::*;
-    use layer_shell_host::{DragAction, DragActions, DragOutcome, DragPayload, DragRefused};
 
     use super::{drag_end, file_drag};
     use crate::screenshot_thumb::ghost::GhostLook;

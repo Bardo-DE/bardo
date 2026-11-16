@@ -5,17 +5,19 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
-use common::inferd::{Behaviour, FakeInferd, Seen, slugs};
-use inference_client::{
-    ClientError, DbusSession, DbusTransport, InferSession, Inference, SessionError, TransportError,
-};
 use account_capability::ModelId;
 use account_capability::Tier;
 use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_ids::{Permille, Tokens};
+use account_match::LlmNeed;
+use account_match::Need;
+use common::bus::PrivateBus;
+use common::inferd::{Behaviour, FakeInferd, Seen, slugs};
+use inference_client::{
+    ClientError, DbusSession, DbusTransport, InferSession, Inference, SessionError, TransportError,
+};
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     AttachIndex, ChatControl, ChatMessage, ChatReply, ChatRequest, ClientFrame, ImagePart,
@@ -23,8 +25,6 @@ use inference_core::{
     OpenOptions, OptionScore, OptionScores, ReplyShape, RequestKind, Role, ScoreOptions, ServedBy,
     StopReason, TokenUsage, ToolParallelism, Traceparent,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;

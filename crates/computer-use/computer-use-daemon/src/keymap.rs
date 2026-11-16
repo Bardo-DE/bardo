@@ -10,7 +10,7 @@
 
 use keymap::{Keymap, Platform};
 
-/// What keycap-client says of a keymap file it could not open (`couldn't be used`) and the
+/// What key-remap-client says of a keymap file it could not open (`couldn't be used`) and the
 /// operating system's own reason (`os error`). Under the sandbox every closed source says it.
 #[cfg(feature = "keycap")]
 fn is_closed_source(problem: &str) -> bool {

@@ -2,7 +2,7 @@
 # Scenario `accounts-sync` (design 31 §6, porter 5fdeafa Sync1.Resolve): syncd mirrors a OneDrive app folder from the
 # rig's fake Graph, a two-sided edit makes a Conflict signal with its number, and the owning app settles it with
 # Sync1.Resolve keep_remote: the next cycle takes the remote. syncd (ferry's) has no accounts of
-# its own: it uses the accountd account the person signed in with, through porter-client over org.quire.Grants1, and keeps
+# its own: it uses the accountd account the person signed in with, through account-client over org.quire.Grants1, and keeps
 # only its own sync switches and mirrors. Real accountd and syncd (syncd runs Storage over Graph), ferry's rig (issuer and
 # Graph), sill as sheet host, detent for the Sync row. No network.
 #

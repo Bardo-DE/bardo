@@ -1,5 +1,5 @@
 //! Autoconfig and well-known answers over HTTP, and a fake DNS answer table behind the `Dns`
-//! seam `porter-discover` froze. The HTTP side serves a table of routes (a body or a redirect),
+//! seam `account-discover` froze. The HTTP side serves a table of routes (a body or a redirect),
 //! so a test says exactly which discovery URLs exist; any other path is a 404.
 
 use crate::http::{Hit, Request, Response, serve};

@@ -1,7 +1,7 @@
 //! The desktop as the shell sees it, whichever compositor protocol carries it: which backend
 //! the compositor's globals select, the views of its apps, windows and Spaces, the commands
 //! the shell sends and whether a backend can carry each, and the notes the compositor's shell
-//! protocol sends the shell. Pure; `sill-services` fills the views
+//! protocol sends the shell. Pure; `shell-services` fills the views
 //! from the wire.
 
 mod backend;
@@ -40,14 +40,14 @@ pub use bar_outputs::BarOutputs;
 pub use bar_thumbs::{
     BarPicture, BarPictures, SpacePicture, ThumbAsks, ThumbRequest, thumbs_wanted,
 };
+pub use command::{DesktopCommand, supports};
+pub use consent::{Consent, ConsentSubject, SUBJECT_MAX_CHARS};
 pub use desktop_protocols::vocab::{
     Answer, AppLifeKind, AppVisibility, AskId as ConsentId, Attention, Corner, DragOutcome,
     FullScreenBar, HeldMods, KeyGesture, Memory, Motion, OverviewMode, OverviewState, Power,
     ProofKind, ScreenEdge, ShellRole, Shown, SpaceKind, SplitSide, SubjectKind, TrialAnswer,
     TrialId, WindowEntries, WindowEntry, WireCode,
 };
-pub use command::{DesktopCommand, supports};
-pub use consent::{Consent, ConsentSubject, SUBJECT_MAX_CHARS};
 pub use force_quit::{ForceQuitRow, Standing, force_quit_rows, hung_first};
 pub use model::{ActiveView, AppView, DesktopView, SpacePlaceView, SpaceView, WindowView};
 pub use note::{OverviewNote, ShellNote, SwitcherNote};

@@ -6,9 +6,9 @@
 use super::limits::Complaints;
 use super::seat::{Peer, peer_of};
 use super::{FromSocket, ToSocket};
-use service_locator::guard::Claim;
 use mouse_gestures_proto::{DeviceInfo, Filter, ToDaemon, ToHost};
 use rustix::io::Errno;
+use service_locator::guard::Claim;
 use std::collections::BTreeMap;
 use std::time::Instant;
 

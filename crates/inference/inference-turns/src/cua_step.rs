@@ -22,17 +22,17 @@ use computer_use_session::{
     StepNote as NoteLine, StepOutcome, TurnSettings,
 };
 use computer_use_vendors::StepResult;
-use model_provider::{
-    Batching, CuaSupport, ImageInput, Limits, Provider, Reasoning, Tokens, ToolCallId,
-    ToolParallelism,
-};
 use inference_core::{
     CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DroppedAction, FrameLayout, InferEvent,
     ModelError, NoteFrom, PrevResult, StepNote,
 };
 use inference_router::local::LocalModel;
-use std::ops::ControlFlow;
+use model_provider::{
+    Batching, CuaSupport, ImageInput, Limits, Provider, Reasoning, Tokens, ToolCallId,
+    ToolParallelism,
+};
 use model_vision_prep::{Encoding, FrameMap, RawFrame, prepare};
+use std::ops::ControlFlow;
 
 /// A step that gave no actions: why the app is told. A reply that never parsed is a step the model
 /// took, which the session (changed in place) already lists; any other failure leaves it as it was.

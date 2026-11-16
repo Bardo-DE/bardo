@@ -5,10 +5,10 @@
 use crate::support::*;
 use action_core::*;
 use action_fake::ScriptedConfirmer;
-use permission_core::{ActionGrantKey, DenyCode, GrantCaller, GrantTarget};
 use action_router::Router;
 use action_vocab::{ActionRef, CallRequest, Origin, TargetValue, Value};
 use action_wire::{IntentsReply, IntentsRequest, JournalFilter, WireRefusal};
+use permission_core::{ActionGrantKey, DenyCode, GrantCaller, GrantTarget};
 use provenance::{Actor, UnixSeconds};
 
 fn answering(router: &mut Router<action_fake::FakeSeams>, answers: Vec<ConfirmAnswer>) {
@@ -227,8 +227,8 @@ async fn the_control_centre_lists_and_revokes_the_grants() {
 
 #[tokio::test]
 async fn a_denial_the_person_recorded_for_the_terminal_stands() {
-    use action_router::GrantStore;
     use account_core::consent::{Decision, Grant, Usage};
+    use action_router::GrantStore;
     let router = router();
     for (n, class) in [provenance::DataClass::Mail].into_iter().enumerate() {
         router.seams.grants.record(Grant {

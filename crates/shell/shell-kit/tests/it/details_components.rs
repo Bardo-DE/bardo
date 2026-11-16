@@ -4,15 +4,15 @@
 //! operation is derived from the state's own Pending moment).
 
 use dioxus::prelude::*;
+use shell_kit::lock::vocab::{LockUser, PromptState};
+use shell_kit::prelude::*;
+use std::time::Duration;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
 use ui_components::prelude::*;
 use ui_harness::harness::assert_settles_to_zero_frames;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use shell_kit::lock::vocab::{LockUser, PromptState};
-use shell_kit::prelude::*;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 360,

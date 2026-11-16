@@ -17,8 +17,8 @@ use crate::window::Decorations;
 use crate::window_requests::{Requests, Root, WindowKey, WindowLife};
 use crate::window_size::WindowSize;
 use dioxus::prelude::*;
-use ui_components::window::icon::WindowIcon;
 use std::rc::Rc;
+use ui_components::window::icon::WindowIcon;
 
 /// How a window starts: the first one `launch` opens (inside its `AppConfig`) and any opened
 /// later with [`open_window`].

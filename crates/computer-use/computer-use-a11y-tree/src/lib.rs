@@ -6,7 +6,7 @@
 //! sensitive controls) are never rendered and their rectangles ([`secret_rects`]) become mask
 //! hints for `maskcap`.
 //!
-//! Pure: the AT-SPI backend is `a11y-atspi`. A missing bus, an app with no tree and a slow bus
+//! Pure: the AT-SPI backend is `computer-use-a11y-atspi`. A missing bus, an app with no tree and a slow bus
 //! are [`A11yError`] values, and a run goes on from pixels alone.
 
 mod model;

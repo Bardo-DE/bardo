@@ -5,9 +5,9 @@
 
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ui_components::host::measure::RectProbe;
 use layer_shell_host::Point;
 use shell_kit::bar::pointer::BarPointer;
+use ui_components::host::measure::RectProbe;
 
 use super::io::MenuBar;
 use super::menus::BarMenu;

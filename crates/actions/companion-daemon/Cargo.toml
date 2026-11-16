@@ -1,6 +1,6 @@
 [package]
 name = "companion-daemon"
-description = "The companion daemon: one identity over many tasks, each its own docket session. Serves org.quire.Companion1; the binary serves it on the session bus. It is the bus adapter and the daemon over docket-helpers (the helpers' hub and the routine timer); the decisions over values are companion-core's."
+description = "The companion daemon: one identity over many tasks, each its own docket session. Serves org.quire.Companion1; the binary serves it on the session bus. It is the bus adapter and the daemon over companion-helpers (the helpers' hub and the routine timer); the decisions over values are companion-core's."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -48,7 +48,7 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [features]
-# Span export over OTLP (docket-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
+# Span export over OTLP (action-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
 otlp = ["action-log/otlp"]
 
 [dev-dependencies]

@@ -10,9 +10,9 @@ use crate::texture_book::TextureBook;
 use compositor_core::LayerKey;
 use compositor_core::geometry::LogicalRect;
 use compositor_core::layer::BlurStrength;
-use ui_core::vocab::Fraction;
 use smithay::backend::renderer::element::Kind;
 use smithay::backend::renderer::element::surface::render_elements_from_surface_tree;
+use ui_core::vocab::Fraction;
 
 /// `layer`'s surface tree at `area` (global logical) on `view`, front first, with its blur v0
 /// behind it when it asked for one, as strong as `strength` says. Empty when the book has no

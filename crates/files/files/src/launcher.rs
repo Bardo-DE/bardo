@@ -3,10 +3,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ui_helpers::mime::{Associations, MimeDb, XdgDirs};
 use files_desktop::{
     Activate, ActivationToken, Catalog, DesktopLauncher, StartError, installed_check, load_apps,
 };
+use ui_helpers::mime::{Associations, MimeDb, XdgDirs};
 
 use crate::icons::ThemeIcons;
 

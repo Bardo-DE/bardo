@@ -9,11 +9,11 @@ use crate::host::measure::client_rect;
 use crate::root::common::Common;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px};
 use ui_core::press::{PointerButton, Press};
 use ui_core::vocab::DropState;
 use ui_motion::drag::{DRAG_THRESHOLD, DragPhase, use_drag};
-use std::rc::Rc;
 
 /// One pinned tile: its identity (an account's id), what it shows, its unread count and its
 /// problem mark. Build it with [`PinItem::new`] and the setters, so a field added later does not

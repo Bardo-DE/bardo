@@ -4,12 +4,12 @@
 
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
-use ui_core::time::clock::{ClockGuard, VirtualClock};
 use std::future::Future;
 use std::ops::{Deref, DerefMut};
 use std::pin::pin;
 use std::task::{Context, Waker};
 use std::time::Duration;
+use ui_core::time::clock::{ClockGuard, VirtualClock};
 
 /// A dom whose `ui_core::time` clock is virtual, from before its first render until it drops.
 pub struct TimedDom {

@@ -10,10 +10,10 @@ use crate::keys::KeyCombo;
 use crate::outputs::pad::PadFrame;
 use crate::outputs::{Emitter, OutputError, RecordingEmitter};
 use crate::time::Mono;
-use std::cell::Cell;
-use std::rc::Rc;
 use input_broker_client::Reason;
 use input_broker_client::fake::{FakeSource, SendMode};
+use std::cell::Cell;
+use std::rc::Rc;
 
 #[test]
 fn waits_then_becomes_ready_and_rebuilds_on_a_shape_change() {

@@ -34,7 +34,7 @@ pub use logind::{
     FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, PrivateBus, SleepPhase,
 };
 pub use notify::FakeNotify;
-pub use mouse_gestures_daemon::FakePalmrest;
+pub use palmrest::FakePalmrest;
 pub use scanout::{FakeScanout, GlassHandle, Pacing};
 pub use session::{FakeSession, SessionFixture, SharedSession};
 pub use shell_calls::FakeShellCalls;

@@ -11,7 +11,9 @@
 use crate::cli::AttackArgs;
 use action_core::AgentConfig;
 use action_eval::{Harness, load_attacks, read_summary, run_attacks, short_commit, write_summary};
-use action_eval_core::{AttackMetrics, AttackSummary, Comparison, FAKE_ENGINE, SummaryError, Verdict};
+use action_eval_core::{
+    AttackMetrics, AttackSummary, Comparison, FAKE_ENGINE, SummaryError, Verdict,
+};
 use std::path::Path;
 use std::process::ExitCode;
 

@@ -6,8 +6,8 @@
 use super::params::tests::params;
 use super::step;
 use super::{Button, DockEffect, DockEvent, DockState, DropZone, Hit, Point, TileApp, TileId};
-use ui_components::base::time::stamp::Stamp;
 use shell_model::units::Cpx;
+use ui_components::base::time::stamp::Stamp;
 
 /// The tick rates: 1 ms, and 16.7 ms as alternating 17 and 16 ms frames.
 const RATES: &[(&str, &[u64])] = &[("1 ms", &[1]), ("16.7 ms", &[17, 17, 16])];

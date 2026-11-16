@@ -6,10 +6,10 @@
 //! layer.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
 use ui_components::prelude::*;
 use ui_components::style::kit::{LookStyle, Styles, UserStyle};
 use ui_harness::{Clock, Harness, HarnessConfig, Part, Srgba, Viewport};
-use std::cell::Cell;
 
 const VIEW: Viewport = Viewport {
     width: 200,

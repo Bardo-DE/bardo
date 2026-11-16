@@ -4,7 +4,7 @@
 //! `$XDG_STATE_HOME/casement/spaces.toml` is this seam. The path comes from an injected
 //! [`StateDirs`] that `main` resolves from the environment; the library reads none. A write is
 //! atomic (a temporary file in the same directory, then a rename), so a crash never leaves half
-//! a file. `casement-testkit` exports `MemorySpaceStore`.
+//! a file. `compositor-testkit` exports `MemorySpaceStore`.
 //!
 //! ```no_run
 //! use compositor_app::space_store::{FileSpaceStore, StateDirs, load_spaces};
@@ -21,8 +21,8 @@ mod writer;
 pub use writer::BackgroundSpaceStore;
 
 use compositor_core::space::{SpaceFile, SpaceFileError};
-use ui_helpers::{NewFileMode, ReadCap, read_text_capped};
 use std::path::{Path, PathBuf};
+use ui_helpers::{NewFileMode, ReadCap, read_text_capped};
 
 /// The largest Spaces file read: a few hundred Spaces are tens of kilobytes, and a file past this
 /// is not ours (a FIFO or a device at the path is refused too, so start-up cannot hang on it).

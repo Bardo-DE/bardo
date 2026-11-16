@@ -19,12 +19,12 @@ use key_remap_client::FileText;
 use key_remap_proto::{
     self as protocol, KeymapCall, PROTOCOL_VERSION, ProfileName, Status, ToClient, ToDaemon,
 };
-use service_locator::guard::{AcceptFailure, Voice, Vouch, accept_failure};
 use rustix::event::{PollFd, PollFlags, poll};
 use rustix::fd::OwnedFd;
 use rustix::io::Errno;
 use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
 use rustix::time::Timespec;
+use service_locator::guard::{AcceptFailure, Voice, Vouch, accept_failure};
 use std::io;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};

@@ -14,11 +14,11 @@ use compositor_backend::capture_path::direct;
 use compositor_backend::{BackendError, BackendKind};
 use compositor_core::OutputName;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Buffer as AllocBuffer, Format};
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::wayland::dmabuf::get_dmabuf;
+use ui_core::geometry::scale::Scale;
 
 /// What a path is chosen for.
 #[derive(Debug, Clone, Copy)]

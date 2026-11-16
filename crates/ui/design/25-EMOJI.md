@@ -139,7 +139,7 @@ would have played, then the pick's.
 - **Idle rule** (design/CHECKLIST "Idle surface paints 0 frames"): the script plays whole loops
   only while they fit inside the 20 s window (`--t-awake`), so it ends on frame 0 with no jump,
   and then the task has ended: nothing is scheduled, no CSS animation or transition exists, and
-  the document asks for no frame. Tested in sill's ds-conformance/tests/emoji_animation.rs: frames advance
+  the document asks for no frame. Tested in sill's ui-conformance/tests/emoji_animation.rs: frames advance
   within 2 s of the wake and (Attentive) are still advancing at 9 s; at 21 s the frame is 0,
   stays 0 for a further second, and `Harness::is_animating()` is false; Idle rests at least
   3.8 s between loops; as a `UserPortrait`, each mood shows its emoji and is at rest with no

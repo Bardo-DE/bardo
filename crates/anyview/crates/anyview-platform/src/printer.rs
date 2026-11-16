@@ -1,8 +1,8 @@
 //! Printing a PDF through the desktop's own dialog.
 
 use crate::error::PlatformError;
-use ui_core::word::Word;
 use std::future::Future;
+use ui_core::word::Word;
 
 /// How a print request ended.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

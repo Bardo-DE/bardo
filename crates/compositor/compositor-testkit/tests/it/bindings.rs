@@ -5,12 +5,12 @@ use compositor_core::input::{
     Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DeviceClass, KeyCode,
 };
 use compositor_core::policy::ConnectionRole;
-use desktop_protocols::vocab::PressEdge;
 use compositor_testclient::seat::keyboard::Keyboard;
 use compositor_testclient::surface::layer::{
     Anchor, KeyboardInteractivity, Layer, LayerAsk, LayerSurface,
 };
 use compositor_testkit::{Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 
 const KEY_LEFTMETA: KeyCode = KeyCode(125);
 const KEY_SPACE: KeyCode = KeyCode(57);

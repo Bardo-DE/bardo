@@ -11,9 +11,9 @@ use crate::size_ledger::SizeOrigin;
 use crate::window_size::Extent;
 use crate::window_sizer::use_window_sizer;
 use dioxus::prelude::*;
-use ui_components::host::measure::{RectProbe, use_rect};
 use std::cell::Cell;
 use std::rc::Rc;
+use ui_components::host::measure::{RectProbe, use_rect};
 
 /// The element a window is sized to: hand [`on_mounted`](ContentFit::on_mounted) its `onmounted`.
 ///

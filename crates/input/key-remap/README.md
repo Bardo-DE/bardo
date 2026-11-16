@@ -162,7 +162,7 @@ yours win. keycap watches the machine file, keeps its last good copy if an edit 
 tells running apps when anything changes. A line it cannot read is skipped and reported; a chord
 the desktop keeps for itself (Command+Space, Ctrl+1 to Ctrl+9) is refused with the reason.
 
-`keycap-client` is what a program links: `KeycapSource::standard()` is a `chordkit::KeymapSource`
+`key-remap-client` is what a program links: `KeycapSource::standard()` is a `chordkit::KeymapSource`
 that works with or without the daemon.
 
 ## Safety

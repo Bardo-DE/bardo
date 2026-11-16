@@ -3,15 +3,15 @@
 //! socket. Nothing of the real session is named: the bus, HOME and every XDG directory are scratch,
 //! the daemon's environment is cleared, and the child is killed when the test ends.
 
-use action_mcp::McpConfig;
-use action_core::*;
-use action_fake::{MailThread, fake_router};
-use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
-use action_router::GrantStore;
-use action_testbus::PrivateBus;
-use action_daemon::{IntentdConfig, ProcRoot, serve_on_with};
 use account_core::AppName;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use action_core::*;
+use action_daemon::{IntentdConfig, ProcRoot, serve_on_with};
+use action_fake::{MailThread, fake_router};
+use action_mcp::McpConfig;
+use action_router::GrantStore;
+use action_testbus::PrivateBus;
+use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{ClientName, DataClass, SpaceId, SpaceScope, UnixSeconds};
 use rmcp::model::{CallToolRequestParams, CallToolResult};
 use rmcp::{RoleClient, ServiceExt, service::RunningService};

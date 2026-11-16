@@ -1,4 +1,4 @@
-//! `SessionLog`: the seam to the durable store. docket-memory implements it over almanac in S1;
+//! `SessionLog`: the seam to the durable store. companion-memory implements it over almanac in S1;
 //! until almanac's session-log asks land (FINDINGS: kind-prefix `Recent` with a cursor, a durable
 //! append ack, not-for-recall) this crate asks nothing of it but two calls.
 //!

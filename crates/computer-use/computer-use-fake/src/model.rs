@@ -1,15 +1,17 @@
 //! A model that says what it was scripted to say.
 
+use account_ids::Tokens;
 use computer_use_action::{CuaAction, ImageSpace, ModelSpace, ToolDialect, WindowSpace};
 use computer_use_parse::{InSpace, ParseLimits, Parsed, parse_text, parse_tool_calls};
-use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, ModelReach, ModelSight, StepSink};
-use model_provider::{ProviderError, SafetySignal, ToolCall, TurnEvent};
-use model_replay::{Cassette, Interaction};
-use account_ids::Tokens;
+use computer_use_run::{
+    CuaModel, CuaModelError, FrameAttachment, ModelReach, ModelSight, StepSink,
+};
 use inference_core::{
     CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, SafetyHint, ServedBy,
     TokenUsage,
 };
+use model_provider::{ProviderError, SafetySignal, ToolCall, TurnEvent};
+use model_replay::{Cassette, Interaction};
 use std::collections::VecDeque;
 
 /// Why a cassette could not become a script.
@@ -64,7 +66,7 @@ impl ScriptedModel {
     }
 
     /// A script from a recorded cassette: each interaction's reply, parsed by stoker's
-    /// `cua-parse` into window space.
+    /// `computer-use-parse` into window space.
     ///
     /// A cassette does not say how its model writes actions, so each reply is read as Qwen's
     /// tool call, then Holo 3.1's, then UI-TARS text, and the first reading that yields an

@@ -1,10 +1,10 @@
 //! A model that cannot read images, and a place list that is blind to the screen.
 
 use crate::scripted::*;
-use computer_use_run::{CuaModel, CuaModelError, ModelSight};
-use computer_use_system::InferdCuaModel;
 use account_capability::ModelId;
 use account_core::AccountId;
+use computer_use_run::{CuaModel, CuaModelError, ModelSight};
+use computer_use_system::InferdCuaModel;
 use inference_core::{
     Declined, DeclinedBecause, InferEvent, InferRefusal, InferReply, ModelRef, PlaceId, PlaceModel,
     PlaceRow, PlaceState, Takes,

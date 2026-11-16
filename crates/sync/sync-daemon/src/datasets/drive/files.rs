@@ -13,12 +13,12 @@
 //! opened for this; a cache that cannot be read stops the removal.
 
 use crate::paths::{AccountDir, Paths};
-use sync_bus::DriveState;
 use drive_core::{Changed, Drive, DriveConfig, NodeId};
 use drive_fuse::Mounted;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
+use sync_bus::DriveState;
 use tokio::sync::{broadcast, watch};
 use tokio::task::JoinHandle;
 
@@ -221,7 +221,7 @@ impl LiveDrive {
     }
 
     /// Notes that its folder could not be shown on this computer, and the words Files shows
-    /// (ferry-drive's `NO_FILES_HERE`, or porter-mountd's when it refused).
+    /// (drive-core's `NO_FILES_HERE`, or porter-mountd's when it refused).
     pub fn set_unshown(&self, words: &str) {
         held(&self.standing).unshown = Some(words.to_owned());
     }

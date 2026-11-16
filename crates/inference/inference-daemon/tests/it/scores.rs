@@ -1,28 +1,28 @@
 //! How likely each option of a `Choice` was, end to end on a private bus: the real
-//! `Inference1` object, a client opening sessions through `porter-client`, and a fake
+//! `Inference1` object, a client opening sessions through `account-client`, and a fake
 //! OpenAI-compatible engine that sends (or does not send) the first token's log-probabilities as
 //! vLLM and llama-server do. The reply is the same reply whatever the engine gives: its scores are
 //! there when it gave usable ones and `None` when it did not, never a failed turn.
 
 use crate::hosting;
 
+use account_capability::LlmFeature;
+use account_capability::Tier;
+use account_core::DataClass;
+use account_core::consent::Usage;
+use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
 use hosting::agent::{completions, model_route, open, plan, say};
 use hosting::bus::within;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Plan, World};
 use inference_client::InferSession;
-use account_capability::LlmFeature;
-use account_capability::Tier;
-use account_core::DataClass;
-use account_core::consent::Usage;
-use account_ids::Tokens;
 use inference_core::{
     ChatControl, ChatMessage, ChatReply, ChatRequest, ClientFrame, InferEvent, InferReply,
     InferRequest, Knob, MessagePart, Reasoning, ReplyShape, Role as ChatRole, ScoreOptions,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use serde_json::json;
 
 fn llm() -> Need {

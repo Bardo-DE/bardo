@@ -5,13 +5,13 @@
 //! Enter on a run is "Watch" where there is a window to watch, and nothing else: stopping or
 //! taking over is always a deliberate pick from the row's actions.
 
-use ui_core::word::Word;
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, Choice, CompanionAct, IconRef, Item, ItemId,
     Provider, ProviderKind, Query, ResultSink, RunControl, Scope, Score, Subject,
 };
 use shell_model::companion::{Companion, RunFacts, run_controls, run_state_of};
 use tokio::sync::watch;
+use ui_core::word::Word;
 
 /// Rows from cuad's runs.
 #[derive(Debug, Clone)]

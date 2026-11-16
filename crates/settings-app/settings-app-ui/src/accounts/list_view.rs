@@ -5,12 +5,12 @@ use super::avatar_view::{AccountAvatar, AvatarPlace};
 use crate::copy::accounts::{attention_badge, status_label};
 use crate::key_row::row_id;
 use crate::marks::ProviderMarks;
+use dioxus::prelude::*;
 use settings_app_model::external::ProviderGroup;
 use settings_app_model::{
     Account, AccountKey, AccountStatus, AccountsPane as Pane, Attention, ClientText, ClientValue,
     ModuleId, ModuleRow, SyncBook,
 };
-use dioxus::prelude::*;
 use ui_components::base::vocab::RowState;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::badge::{Badge, BadgeContent, BadgeTone};

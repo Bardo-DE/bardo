@@ -2,8 +2,8 @@
 //! root pins one.
 
 use dioxus::prelude::{ReadSignal, Signal, try_consume_context, use_hook, use_signal};
-use ui_settings::Environment;
 use layer_shell_host::use_watch;
+use ui_settings::Environment;
 
 use crate::settings::SettingsFeed;
 

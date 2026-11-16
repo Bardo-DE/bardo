@@ -28,10 +28,10 @@ use dioxus::prelude::*;
 use dioxus_native::winit::window::{ActivationToken, Window};
 use dioxus_native::{DioxusNativeWindowRenderer, WindowAttributes};
 use dioxus_native_dom::{DioxusDocument, DocumentConfig};
-use ui_components::window::icon::WindowIcon;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
+use ui_components::window::icon::WindowIcon;
 
 /// What every window of the app shares: what the app gave `launch`, the request queue and the
 /// app's handle.

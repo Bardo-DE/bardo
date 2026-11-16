@@ -3,7 +3,9 @@
 
 use super::engine_install::size_words;
 use super::updates::elapsed_words;
-use settings_app_model::{Cents, HoldCounts, SpendLine, StorageQuota, SyncHold, SyncNowEnd, SyncStatus};
+use settings_app_model::{
+    Cents, HoldCounts, SpendLine, StorageQuota, SyncHold, SyncNowEnd, SyncStatus,
+};
 
 /// What the banner's Keep button carries as its help.
 pub(crate) const KEEP_HELP: &str =

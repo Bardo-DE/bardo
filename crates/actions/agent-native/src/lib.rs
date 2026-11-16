@@ -1,4 +1,4 @@
-//! The native session backend and host: the planner loop of a `docket-tasks` `Companion` behind
+//! The native session backend and host: the planner loop of a `companion-tasks` `Companion` behind
 //! `agent_session`'s `SessionBackend` and `SessionHost`, the durable-session backend of the ACP
 //! edge. See `backend` for the two rules a backend keeps (a cancel-safe `next_event`, and no call
 //! before its announcement is read).

@@ -1,5 +1,5 @@
 //! What the offer to get an engine tells the person, as facts: which matter it is about, what can
-//! be done, and how far a download has come. The window words them (`detent-ui`'s copy).
+//! be done, and how far a download has come. The window words them (`settings-app-ui`'s copy).
 
 use super::offer::{EngineOffer, EngineOfferInput, EngineRef};
 use super::rows::{EngineFailure, EngineWay, InstallScope};

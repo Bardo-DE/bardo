@@ -1,7 +1,7 @@
 use super::*;
 use crate::replay::cassette::{TEST_HEADER, Uses};
-use serde_json::json;
 use base_testkit::Scratch;
+use serde_json::json;
 
 fn scratch(dir: &Scratch, name: &str, text: &str) -> std::path::PathBuf {
     let path = dir.path().join(name);

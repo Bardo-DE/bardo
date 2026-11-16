@@ -3,11 +3,11 @@
 //! weekday, the neighbours' padding days, today, the busy days, and each row's ISO week (the
 //! week of its Thursday). quire itself never computes a month; this stands in for the caller.
 
-use ui_components::prelude::*;
 use shell_kit::month_grid::data::{
     DayKey, DayMark, DayPlace, Eventful, IsoWeek, MonthDay, MonthGridData, MonthKey, MonthStep,
     MonthWeek,
 };
+use ui_components::prelude::*;
 
 /// Which weekday the rows start on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

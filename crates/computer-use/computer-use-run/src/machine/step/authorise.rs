@@ -14,18 +14,18 @@ use crate::machine::phase::RunPhase;
 use crate::machine::run::Run;
 use crate::machine::track::{Held, SettleWatch};
 use crate::sensitivity::{FORCED_NO, FORCED_YES, WindowSensitivity, window_sensitivity};
+use action_core::CallRefusal;
+use action_gate_wire::GateAnswer;
 use computer_use_action::{ActionClass, CuaAction, FinishOutcome};
 use computer_use_bus::{
     ActionOutcome, ActionResult, AskBody, AuthorisedBy, BlockedOn, ConfirmBy, CuaOutcome,
     CuaRecord, FailReason, LocalRefusal, QuestionId, Refusal, SuccessCheck, TargetedAction,
 };
-use computer_use_desktop::{ConsentGuard, Ms, Stamp, Suspend};
-use action_core::CallRefusal;
-use action_gate_wire::GateAnswer;
 use computer_use_capture::{FrameWant, Settle};
+use computer_use_desktop::{ConsentGuard, Ms, Stamp, Suspend};
+use computer_use_seat_input::SeatError;
 use inference_core::StepIndex;
 use provenance::{Label, Labelled};
-use computer_use_seat_input::SeatError;
 
 pub(super) fn authorise(
     run: &mut Run,
@@ -189,7 +189,9 @@ pub(super) fn raise(
         question_id: id,
         question: body.question,
     })));
-    fx.push(RunEffect::Glow(computer_use_desktop::GlowState::WaitingForYou));
+    fx.push(RunEffect::Glow(
+        computer_use_desktop::GlowState::WaitingForYou,
+    ));
     control::progress(run, fx, question);
     enter(run, fx, RunPhase::WaitingForUser(n, id));
 }
@@ -310,7 +312,9 @@ pub(super) fn confirming(run: &mut Run, fx: &mut Vec<RunEffect>, id: provenance:
         fx.push(RunEffect::SuspendLease(lease, Suspend::Consent));
     }
     fx.push(RunEffect::Proceed);
-    fx.push(RunEffect::Glow(computer_use_desktop::GlowState::WaitingForYou));
+    fx.push(RunEffect::Glow(
+        computer_use_desktop::GlowState::WaitingForYou,
+    ));
     enter(run, fx, RunPhase::Confirming(n, id));
 }
 

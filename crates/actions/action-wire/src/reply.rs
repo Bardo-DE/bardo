@@ -4,14 +4,14 @@ use crate::bodies::{
     Displayed, GrantAnswer, RecallView, Resolved, StoredView, UndoReport, WidenAnswer, WireRefusal,
 };
 use crate::task::SessionOpened;
-use companion_model::{WatchedAgent, WatchedLine, Watching};
 use action_core::{
     CallRefusal, CheckpointFault, CheckpointList, ContextView, Delivery, HandleCard, Hit,
     InboundLine, KillSwitch, Outcome, Preview, RestorePlan, Reveal, UndoEntry, UndoFault,
 };
 use action_gate_wire::GateAnswer;
-use permission_core::TaskPolicy;
 use action_vocab::{ActionRef, EntityRef, TurnId, Value};
+use companion_model::{WatchedAgent, WatchedLine, Watching};
+use permission_core::TaskPolicy;
 use provenance::SessionId;
 use serde::{Deserialize, Serialize};
 

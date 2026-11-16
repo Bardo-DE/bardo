@@ -10,9 +10,9 @@
 use crate::end::end_of;
 use crate::ending::Ending;
 use crate::flight::Flight;
-use companion_wire::AskWire;
 use action_client::Transport as IntentsTransport;
 use action_core::{ContextKeep, Keep, TurnIn, UserTurn};
+use action_vocab::{Clock, WindowKey};
 use agent_planner::Planner;
 use agent_session::{
     BackendEvent, BackendFault, BackendKind, ResumePlan, Resumed, SessionBackend, Standing,
@@ -21,7 +21,7 @@ use agent_session::{
 use companion_tasks::Companion;
 use companion_tasks::Shared;
 use companion_tasks::Surface;
-use action_vocab::{Clock, WindowKey};
+use companion_wire::AskWire;
 use futures_util::FutureExt;
 use futures_util::lock::Mutex;
 use provenance::{SessionId, TaskId};

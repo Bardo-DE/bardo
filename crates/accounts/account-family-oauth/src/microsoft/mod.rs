@@ -12,7 +12,6 @@ mod graph;
 
 use crate::extend::{answered_as, asked_claims};
 use crate::oauth::{BrowserIssuer, Cx, Grant, OAuthSession, exchange_fault};
-use graph::{Found, probe, whoami};
 use account_capability::{Ask, Capability, CapabilityKind, Claim, Offer, StorageScope};
 use account_core::{
     AccountLabel, Audience, Credential, EndpointUrl, Family, GrantedScopes, LoginName, Restriction,
@@ -23,6 +22,7 @@ use account_ids::UrlScheme;
 use account_oauth::{TokenResponse, refresh_scoped};
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;
+use graph::{Found, probe, whoami};
 
 /// Microsoft's rules.
 #[derive(Debug, Clone, Copy, Default)]

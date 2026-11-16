@@ -53,7 +53,7 @@ shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 keyboard-types = {version = "0.7"}
 # A Space's id in the full-screen rows (edge_reveal.rs tests).
 account-core = {path = "../../accounts/account-core"}
-# The voice bench shared with sill-services' tests names who its stand-in voiced is.
+# The voice bench shared with shell-services' tests names who its stand-in voiced is.
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 
 [features]
@@ -61,7 +61,7 @@ default = ["media"]
 # The launcher's preview pane reads a recording's facts and an audio cover (anyview-peek's `media`,
 # pure-Rust header parsers). `--no-default-features` leaves them out of the daemon.
 media = ["shell-launcher-ui/media"]
-# `sill debug pointer|leave|capture|key` act on surfaces (shell-host's per-surface injection).
+# `sill debug pointer|leave|capture|key` act on surfaces (layer-shell-host's per-surface injection).
 # Without it those requests answer `Failed(Unsupported)`; `debug stats` always works. It also gives
 # `sill run` the stand-in flags (`--fake-ddc`, `--dev-callers`, ...); a release build has none.
 debug = ["layer-shell-host/debug-inject", "shell-services/dev-callers"]

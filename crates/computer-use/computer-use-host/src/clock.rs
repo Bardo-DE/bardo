@@ -1,8 +1,8 @@
 //! The system clock: read here, in the daemon, and nowhere below it.
 
+use account_ids::UnixSeconds;
 use computer_use_desktop::Stamp;
 use computer_use_run::Clock;
-use account_ids::UnixSeconds;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 /// The system's clock, with its origin at construction. Copies share the origin: capture

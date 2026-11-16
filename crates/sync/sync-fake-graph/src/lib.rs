@@ -5,7 +5,7 @@
 //! HTTP on loopback. The bearer is what accountd's relay adds, so a test asserts that the app
 //! side never sent one.
 //!
-//! Test-only: it is built over `porter-fake-servers` (the HTTP server, the issuer whose tokens it
+//! Test-only: it is built over `account-fake-servers` (the HTTP server, the issuer whose tokens it
 //! accepts) and is never a dependency of a non-test crate.
 
 mod calendar;
@@ -16,13 +16,13 @@ pub use calendar::Calendars;
 pub use drive::{CHUNK_UNIT, Drive};
 pub use routes::{DEFAULT_MAIL, Knobs};
 
-use drive::Body;
 use account_fake::{FakeAddress, FakeServer};
 use account_fake_servers::http::{Hit, Request, Response, serve};
 use account_fake_servers::net::{Bind, Listener};
 use account_fake_servers::oauth::IssuerHandle;
 use account_fake_servers::seen::{Running, Seen, lock};
 use account_provider::ProviderSpec;
+use drive::Body;
 use routes::{Origins, State, answer, answer_link};
 use std::future::Future;
 use std::io;

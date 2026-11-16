@@ -9,7 +9,7 @@
 //! `SealedDir`), `recall` (`Index`), plus the in-memory ones behind their `testing` features.
 //! The service depends on this crate and on none of them, so a build of the service links no
 //! SQLite, SQLCipher or OpenSSL; whoever builds a service picks the concrete stores
-//! (`almanac-local`, `almanac-fake`, `memoryd`). Every name here is re-exported from the crate
+//! (`memory-local`, `memory-fake`, `memoryd`). Every name here is re-exported from the crate
 //! it used to live in, so old paths keep working.
 //!
 //! ```

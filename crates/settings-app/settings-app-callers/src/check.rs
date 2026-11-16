@@ -2,10 +2,10 @@
 
 use crate::allow::allowing;
 use crate::services::{SERVICE_PROOF, required_role};
-use ui_settings::live::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 use caller_identity_dbus::BusPeers;
 use std::fmt;
 use std::sync::Arc;
+use ui_settings::live::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 
 /// Whether the owner of a service's bus name holds the role of that service, at the proof a unit
 /// gives. A name that is not one of the eight services, an owner that cannot be identified and an

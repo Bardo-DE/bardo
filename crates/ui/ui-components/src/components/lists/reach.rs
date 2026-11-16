@@ -1,8 +1,8 @@
 //! How the owner of a list of pickable rows hears a row being reached, by a click or a key
 //! (`VirtualTable`, `CollectionView`).
 
-use keymap::Platform;
 use dioxus::prelude::EventHandler;
+use keymap::Platform;
 use ui_core::press::Press;
 use ui_core::selection::{Pick, PickHow};
 

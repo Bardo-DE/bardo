@@ -10,11 +10,11 @@ use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
 use compositor_core::window::WindowState;
 use compositor_core::{Event, WindowId};
-use desktop_protocols::vocab::{Answer, Emphasis, Power};
 use compositor_testclient::manage::wlr_toplevel::{ToplevelWatch, WlrListed, WlrState};
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testclient::{Pattern, ShmBuffer, shm_buffer};
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
+use desktop_protocols::vocab::{Answer, Emphasis, Power};
 
 /// Maps a titled window of `app_id` (the buffer must outlive the window).
 pub(super) fn map_titled(

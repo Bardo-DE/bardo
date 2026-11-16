@@ -4,13 +4,13 @@
 //! `Updated`. A card button is `Answer.Act`, which answers at once: what the call comes to is the
 //! answer's own plan, which `Updated` carries.
 
-use companion_wire::{AnswerWire, AskWire, RouteNote};
 use action_client::{DbusTransport, Intents};
 use action_core::{TurnIn, UserTurn};
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details, answer_path};
-use permission_core::Mode;
 use action_vocab::{Caller, CardActionId, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened};
+use companion_wire::{AnswerWire, AskWire, RouteNote};
+use permission_core::Mode;
 use provenance::{AgentRef, SessionId, TaskId, UnixSeconds};
 use shell_launcher::WindowKey as ShellWindow;
 use shell_model::companion::{AskInput, CompanionEvent, ModeMsg};

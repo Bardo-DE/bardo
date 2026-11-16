@@ -5,12 +5,12 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Harness, Input, Viewport};
 use shell_model::desktop::{SplitCard, SplitSide};
 use shell_overlays::SplitPicker;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::{SplitAnswer, SplitPickerLink};
+use ui_components::prelude::*;
+use ui_harness::{Harness, Input, Viewport};
 
 type Running = SurfaceHarness<SplitPicker>;
 

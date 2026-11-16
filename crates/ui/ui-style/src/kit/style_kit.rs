@@ -47,8 +47,8 @@ use crate::tokens::{
     type_voice::VoiceToken,
     widget_paint::WidgetPaint,
 };
-use ui_core::word::Word;
 use std::borrow::Cow;
+use ui_core::word::Word;
 
 /// The style layer's contribution to the stylesheet and the linter.
 pub static KIT: Kit = Kit {

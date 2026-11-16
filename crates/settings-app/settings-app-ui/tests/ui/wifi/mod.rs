@@ -1,5 +1,5 @@
 //! The Wi-Fi page over a network service that answers from memory: the page without a service, the
-//! networks listed, and joining a new secured one. The page's states are tested in `detent-model`.
+//! networks listed, and joining a new secured one. The page's states are tested in `settings-app-model`.
 
 use crate::support::Sandbox;
 use crate::support::drive::{page_of, showing, sidebar_page, title_of};

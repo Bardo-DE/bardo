@@ -3,13 +3,13 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
+use image::{ImageFormat, Rgba, RgbaImage};
+use std::io::Cursor;
+use std::path::Path;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
 use ui_components::style::icon::url::IconUrl;
 use ui_components::style::tokens::control_size::ControlSize;
-use image::{ImageFormat, Rgba, RgbaImage};
-use std::io::Cursor;
-use std::path::Path;
 
 /// A freedesktop-style symbolic bell, filled in the theme's grey as such icons are: only its
 /// alpha counts once it is drawn as a mask.

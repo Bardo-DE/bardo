@@ -89,7 +89,7 @@ toml = {version = "1"}
 action-gate-wire = {path = "../action-gate-wire"}
 
 [features]
-# Span export over OTLP (docket-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
+# Span export over OTLP (action-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
 otlp = ["action-log/otlp"]
 
 [lints.rust]

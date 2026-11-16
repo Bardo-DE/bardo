@@ -1,4 +1,4 @@
-//! The router's trace spans, named by the OpenTelemetry GenAI conventions (`genai-names`): one
+//! The router's trace spans, named by the OpenTelemetry GenAI conventions (`model-genai-names`): one
 //! `execute_tool` span for each action call and one `invoke_agent` span for each model turn.
 //!
 //! A span carries ids, action names, the effect class, the ruling, token counts and the reported charge, and
@@ -9,9 +9,9 @@
 
 use crate::prepared::Prepared;
 use action_core::TurnReport;
-use permission_core::Ruling;
 use model_genai_names::Operation;
 use model_provider::Money;
+use permission_core::Ruling;
 use provenance::{SessionId, TaskId};
 use tracing::Span;
 
@@ -70,8 +70,8 @@ pub fn invoke_agent(session: &SessionId, task: &TaskId, report: &TurnReport) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use action_core::TokenTotals;
     use account_ids::Tokens;
+    use action_core::TokenTotals;
     use rust_decimal::Decimal;
     use std::sync::{Arc, Mutex};
     use tracing::span::{Attributes, Id, Record};
@@ -121,8 +121,8 @@ mod tests {
         let names = seen.0.lock().expect("lock").clone();
         assert!(!names.is_empty(), "the span was made");
         for name in &names {
-            let known =
-                model_genai_names::attr::ALL.contains(&name.as_str()) || name.starts_with("docket.");
+            let known = model_genai_names::attr::ALL.contains(&name.as_str())
+                || name.starts_with("docket.");
             assert!(known, "{name} is neither a GenAI name nor a docket count");
             assert!(
                 !name.contains("message") && !name.contains("content"),

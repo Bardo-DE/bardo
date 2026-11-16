@@ -10,15 +10,15 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
-use ui_components::style::kit::LookStyle;
-use ui_blitz::TokioSpawner;
-use ui_extensions::{Capability, ExtensionsFile, Search, look};
-use ui_settings::{AppearanceFile, Store, WatchState};
-use notify::{RecursiveMode, Watcher};
 use layer_shell_host::HostHandle;
+use notify::{RecursiveMode, Watcher};
 use shell_services::env::Dirs;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
+use ui_blitz::TokioSpawner;
+use ui_components::style::kit::LookStyle;
+use ui_extensions::{Capability, ExtensionsFile, Search, look};
+use ui_settings::{AppearanceFile, Store, WatchState};
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;

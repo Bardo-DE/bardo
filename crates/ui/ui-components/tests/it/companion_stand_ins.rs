@@ -3,10 +3,12 @@
 //! nothing.
 
 use dioxus::prelude::*;
-use ui_components::components::companion::port::{CompanionPort, DictationPort, NoDictation, NoPort};
-use ui_intents::{DictateSerial, SummonSerial};
 use std::cell::RefCell;
 use std::rc::Rc;
+use ui_components::components::companion::port::{
+    CompanionPort, DictationPort, NoDictation, NoPort,
+};
+use ui_intents::{DictateSerial, SummonSerial};
 
 /// What the stand-ins answered inside a render: whether each signal held nothing.
 #[derive(Clone, Default)]

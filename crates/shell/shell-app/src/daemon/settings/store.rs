@@ -9,10 +9,10 @@
 
 use std::path::Path;
 
+use shell_settings::{APP, ShellFile};
 #[cfg(test)]
 use ui_settings::SettingsError;
 use ui_settings::{AppName, ConfigRoot, Loaded, SettingsDoc, Store};
-use shell_settings::{APP, ShellFile};
 
 /// The store of `sill/settings.toml` under `config`, `$XDG_CONFIG_HOME` as `Env` resolved it (a
 /// scratch directory in a test or a dev script).

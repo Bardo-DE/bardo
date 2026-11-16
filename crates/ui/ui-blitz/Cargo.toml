@@ -15,7 +15,7 @@ ui-components = {path = "../ui-components"}
 ui-desktop = {path = "../ui-desktop"}
 # The colour emoji face's detection, shared with temor's terminal (no renderer, only fontique).
 ui-emoji = {path = "../ui-emoji"}
-# Portable Blitz repairs shared with shell-host: `data:` decoding, the local file read, hover sync,
+# Portable Blitz repairs shared with layer-shell-host: `data:` decoding, the local file read, hover sync,
 # fonts, pixel snap, adapter choice. `adapter`: `AdapterPref`, the GPU ranking.
 blitz-embed = {features = ["adapter"], path = "../../blitz-embed/blitz-embed"}
 dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
@@ -111,7 +111,7 @@ menus = ["quire-desktop", "dep:zbus", "dep:serde", "dep:ui-peer"]
 # its own `MenuPermit` to `MenuExport::start`, because there is no default permit.
 peephole = ["menus", "dep:caller-identity-dbus"]
 # `AppHandle::follow_desktop_outputs`: the shell's work area and scale from `org.quire.Outputs1`
-# (ds-desktop's `Outputs`), fed to `AppHandle::screen_area`. Off by default, so an app that never asks
+# (ui-desktop's `Outputs`), fed to `AppHandle::screen_area`. Off by default, so an app that never asks
 # builds no D-Bus client for it.
 desktop-outputs = ["ui-desktop/dbus"]
 # PDF output (`pdf`, `PageSpec`) and `PdfFileThumb`: a PDF's first page rasterised off the UI
@@ -126,9 +126,9 @@ spell = ["dep:spellbook", "dep:dirs", "dep:ui-helpers"]
 # `QUIRE_DEBUG_PROBE=<dir>`: each window writes its controls, by role and name, with their boxes,
 # to a file there after every frame (`crate::probe`), so a scenario presses a control by name.
 # Off by default and never in a release build: a scenario build turns it on with
-# `--features ds-blitz/debug-probe`.
+# `--features ui-blitz/debug-probe`.
 debug-probe = []
-# `ds_blitz::seam`: the parts a headless host wires a document from. For `ds-harness` and tests
+# `ds_blitz::seam`: the parts a headless host wires a document from. For `ui-harness` and tests
 # only; an app has no use for them, so they are off by default and carry no stability promise.
 testing = []
 

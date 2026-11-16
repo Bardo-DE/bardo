@@ -6,12 +6,12 @@
 use crate::calls;
 use crate::covered::Covered;
 use crate::mode::{Mode, Say};
-use agent_client_protocol::schema::v1::{SessionUpdate, StopReason};
-use companion_wire::NeedsYou;
 use action_core::{ConfirmRequest, Reveal};
-use permission_core::AlwaysOffer;
+use agent_client_protocol::schema::v1::{SessionUpdate, StopReason};
 use agent_session::SheetChoice;
 use agent_session::{BackendEvent, CallEvent, CallOpen, TurnEnd};
+use companion_wire::NeedsYou;
+use permission_core::AlwaysOffer;
 
 /// Why the turn is being stopped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

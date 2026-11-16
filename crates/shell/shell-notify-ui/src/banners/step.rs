@@ -8,8 +8,8 @@
 //! design/13 §13.3.6 says a 5000 ms lifetime; design/20 §1.6 (`ToastHold`) says
 //! 5200. That wins.
 
-use ui_components::base::time::stamp::{Ms, Stamp};
 use shell_model::notifications::BannerLife;
+use ui_components::base::time::stamp::{Ms, Stamp};
 
 /// When a shown banner leaves by itself.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,8 +1,8 @@
 //! What a cloud drive and its items look like: the pure mapping from the model's states to the
 //! small marks quire draws (glyphs only, no words in the row).
 
-use ui_components::prelude::Icon;
 use files_core::{CloudItem, CloudKind, CloudState, DriveState, Share};
+use ui_components::prelude::Icon;
 
 use crate::words;
 

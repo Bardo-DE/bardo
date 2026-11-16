@@ -16,20 +16,18 @@ use crate::seats::Gate;
 use crate::settings::{Live, Settings};
 use crate::supervise::{Snapshot, Supervised};
 use crate::toolproof::{ToolProofs, asks_for_tools};
-use engine_supervisor::{EngineId, EngineState, MonoMs};
-use model_catalog::Licence;
-use model_provider::Money;
 use account_capability::SpeechMode;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::consent::{Availability, Usage};
 use account_core::{AppId, DataClass};
+use account_match::Need;
+use engine_supervisor::{EngineId, EngineState, MonoMs};
 use inference_core::{
     Asker, ChargeTotal, InferRefusal, LicenceClass, ModelCard, ModelRef, Period, Permit,
     PickRefusal, PlaceRefusal, Policy, Readiness, ServedBy, Slot, SpendScope, SpendVerdict,
     SwapCost, TierMap, Why,
 };
-use account_match::Need;
 use inference_router::local::{LocalModel, Weights};
 use inference_router::router::placed::{Allowed, Placed, Rules, Serving, Unplaced, choose_in};
 use inference_router::router::{Listed, Unchosen, choose, chosen_for};
@@ -37,6 +35,8 @@ use inference_router::seams::{EngineFailed, EngineHost};
 use inference_router::session::{RouteDecision, Routing, SessionSpec};
 use inference_router::startup::Cause;
 use inference_router::swap::{Budget, running_of, swap_cost};
+use model_catalog::Licence;
+use model_provider::Money;
 use std::sync::Arc;
 use std::time::Duration;
 

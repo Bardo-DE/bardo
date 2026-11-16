@@ -2,12 +2,14 @@
 //! shares of the view, a split inside a split, and the dim of the panes without the focus.
 
 use dioxus::prelude::*;
-use ui_components::components::chrome::split_view::model::{PaneSize, PaneSpec, Share, SplitAxis, SplitPane};
+use std::cell::Cell;
+use std::time::Duration;
+use ui_components::components::chrome::split_view::model::{
+    PaneSize, PaneSpec, Share, SplitAxis, SplitPane,
+};
 use ui_components::components::chrome::split_view::view::SplitView;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 800,

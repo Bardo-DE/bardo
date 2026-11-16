@@ -1,9 +1,9 @@
 //! One look at the registry: the audio nodes now present and the default source.
 
 use crate::default_source::DefaultSources;
+use agent_voice_audio::{AudioNode, NodeId, NodeKind};
 use pipewire as pw;
 use std::time::Duration;
-use agent_voice_audio::{AudioNode, NodeId, NodeKind};
 
 /// The node kind PipeWire's `media.class` and name say.
 fn kind_of(class: &str, name: &str) -> Option<NodeKind> {

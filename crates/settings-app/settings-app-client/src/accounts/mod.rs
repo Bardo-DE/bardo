@@ -1,6 +1,6 @@
 //! The account service, as the Accounts page meets it: the list of accounts, one account's
 //! services, permissions and actions, and the sign-in keys, all over its live settings modules;
-//! and the sync service's held deletions. The steps are `detent-model`'s `accounts_step`; an
+//! and the sync service's held deletions. The steps are `settings-app-model`'s `accounts_step`; an
 //! effect of a row goes to the module the row came from.
 
 mod feeds;
@@ -16,6 +16,7 @@ use crate::follow::{Followed, follow_with};
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use feeds::Feeds;
 use settings_app_model::{
     AccountsEffect, AccountsInput, AccountsState, AddEnd, ModuleId, ModuleRow,
     accounts_row_is_valued, accounts_step,
@@ -24,9 +25,8 @@ use settings_app_system::accounts::AccountsLink;
 use settings_app_system::bus::{BusSource, Daemon, plain};
 use settings_app_system::modules::ModulesLink;
 use settings_app_system::sync::SyncLink;
-use ui_settings::live::LiveError;
-use feeds::Feeds;
 use std::sync::Arc;
+use ui_settings::live::LiveError;
 
 /// The Accounts pane's handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]

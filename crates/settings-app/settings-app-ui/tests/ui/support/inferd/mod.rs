@@ -7,17 +7,17 @@ mod data;
 mod module;
 
 use data::{POOL_KEY, PROGRAMS, WORDS, places_of, tier_word};
+use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
+use std::collections::BTreeMap;
+use std::sync::{Arc, Mutex};
+use tokio::sync::Notify;
 use ui_settings::live::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
 use ui_settings::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
     KeyKind, KeyPath, KeySpec, Label, Note, Page, Section, UnavailableReason, WordLabels,
 };
-use std::collections::BTreeMap;
-use std::sync::{Arc, Mutex};
-use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
-use tokio::sync::Notify;
 
 /// What the module refuses a path that is not whole with, as the real one words it.
 pub const NOT_WHOLE: &str = "Give the whole path of the program, starting with a slash.";

@@ -2,12 +2,6 @@
 //! battery, Bluetooth and volume state each item hands its glyph. The glyph decides the moment
 //! from its own table; these only say what is true.
 
-use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
-use ui_components::components::content::status::bluetooth_state::BluetoothState;
-use ui_components::components::content::status::volume::{VolumeState, VolumeWaves};
-use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
-use ui_components::motion::detail::stamp::EventStamp;
-use ui_components::prelude::*;
 use shell_model::attempt::{Attempt, OpStamp};
 use shell_model::battery::{Battery, Charge};
 use shell_model::bluetooth::{Bluetooth, BtConnection, BtPower};
@@ -16,6 +10,14 @@ use shell_model::units::Presence;
 use shell_model::volume::{Mute, Volume};
 use shell_model::wifi::Radio;
 use shell_settings::Percent as KeyPercent;
+use ui_components::components::content::status::battery_state::{
+    BatteryPower, BatteryState, LowAt,
+};
+use ui_components::components::content::status::bluetooth_state::BluetoothState;
+use ui_components::components::content::status::volume::{VolumeState, VolumeWaves};
+use ui_components::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
+use ui_components::motion::detail::stamp::EventStamp;
+use ui_components::prelude::*;
 
 /// What the network item draws: the Wi-Fi glyph, or a plain glyph for a link that is not Wi-Fi.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

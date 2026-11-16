@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-capture"
-description = "Masked per-window capture: frames, masks, digests, settling and the capture seams. The ext-image-copy-capture backend is `maskcap-wayland`."
+description = "Masked per-window capture: frames, masks, digests, settling and the capture seams. The ext-image-copy-capture backend is `computer-use-capture-wayland`."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

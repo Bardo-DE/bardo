@@ -6,10 +6,10 @@ use super::chord::Chord;
 use super::ids::{Minter, NodeId};
 use crate::components::menus::item::item::MenuItem;
 use crate::components::menus::menu_bar::{BarSection, MenuBarModel};
+use serde::{Deserialize, Serialize};
 use ui_core::command::{AppCommand, CommandId};
 use ui_core::vocab::{Availability, Check};
 use ui_core::word::Word;
-use serde::{Deserialize, Serialize};
 
 /// Why a bar cannot be exported.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

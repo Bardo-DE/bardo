@@ -2,8 +2,8 @@
 //! copy, registrations ending with their connection.
 
 use crate::support::Scene;
-use keymap::{AppAction, AppId, ChangeCallback, DefaultChord, KeymapSource};
 use key_remap_client::{KeycapSource, Origin};
+use keymap::{AppAction, AppId, ChangeCallback, DefaultChord, KeymapSource};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, Instant};

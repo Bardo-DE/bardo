@@ -2,15 +2,15 @@
 //! held over its surfaces, the key gestures, the switcher, the overview, the hot corners, the
 //! edge reveals and the moments (a menu flash, a bell, a reopen, the kill chord).
 //!
-//! Pure data. `sill-services` turns the wire's events into these and hands them to whatever
+//! Pure data. `shell-services` turns the wire's events into these and hands them to whatever
 //! draws or acts; the desktop's picture itself (Spaces, windows, the overview's layout) is the
 //! [`super::DesktopView`], not a note.
 
+use account_core::SpaceId;
 use desktop_protocols::vocab::{
     Corner, DragOutcome, HeldMods, KeyGesture, OverviewMode, OverviewState, ScreenEdge, Shown,
     SplitSide, WindowEntries,
 };
-use account_core::SpaceId;
 
 use super::{Consent, ConsentId, DisplayTrial, OutputPicture, SpacePicture, TrialId};
 

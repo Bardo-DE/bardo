@@ -2,10 +2,10 @@
 //! the Dock use: [`ClientStanding`] for consent, [`PeerIdentity`] for the app a window belongs
 //! to. Pure; `judge.rs` does the looking.
 
+use account_core::{AppId, AppName, Isolation, PeerIdentity};
 use compositor_core::privilege::{ClientStanding, Engine, ProgramPath, SandboxAppId, ServiceRole};
 use compositor_ipc::dbus::peer::{self, Exe, Proof, Standing, roles};
 use compositor_wayland::security_context::Maker;
-use account_core::{AppId, AppName, Isolation, PeerIdentity};
 
 /// The path of the image a process runs, when it could be read.
 fn image_path(exe: &Exe) -> Option<ProgramPath> {

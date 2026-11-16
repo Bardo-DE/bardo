@@ -65,7 +65,7 @@ note() { printf '%s\n' "$*"; }
 
 # print_build: the builds this scenario needs. They are the test builds the other scenarios use (scenario-build.sh),
 # not the plain builds of the W1 rig: casement with its test features, sill with --features debug, cuad with the
-# fixture caller table, and the assistant's services as docket-accept builds (fixture identities from a fake /proc).
+# fixture caller table, and the assistant's services as action-accept builds (fixture identities from a fake /proc).
 print_build() {
   cat <<EOF
 # W2 runs in the test jail, so it needs the TEST builds. Run this outside the jail, from $SCEN_ROOT (it nices itself):
@@ -79,7 +79,7 @@ harness/scenario-build.sh --w2
 (cd $SCEN_SIB/sill && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p shell-app --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
 (cd $SCEN_SIB/cua && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
-# 5. the assistant's services, the bring-up tool and the terminal command (docket-accept: test builds)
+# 5. the assistant's services, the bring-up tool and the terminal command (action-accept: test builds)
 (cd $SCEN_SIB/docket && CARGO_TARGET_DIR=$SCEN_BUILD/docket-target nice cargo build -p action-accept --bins)
 # and, once, the offline drawing app (needs node and npm; changes nothing outside its folder):
 $WF/fixtures/w2/build-excalidraw.sh

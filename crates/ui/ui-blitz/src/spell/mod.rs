@@ -18,9 +18,9 @@ pub use config::{SYSTEM_DICTIONARIES, SpellConfig};
 pub use service::NativeSpell;
 
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_components::prelude::*;
 use ui_components::spell::lang::Lang;
-use std::rc::Rc;
 
 /// Provide the system's spellchecker to the calling component's subtree.
 pub fn provide() -> Rc<dyn SpellService> {

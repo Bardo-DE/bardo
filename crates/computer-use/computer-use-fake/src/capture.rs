@@ -1,9 +1,9 @@
 //! Capture that returns the frames it was given.
 
-use computer_use_desktop::{LeaseGrant, ToplevelIdent};
 use computer_use_capture::{
     CaptureError, CaptureSession, DamageAt, Frame, FrameWant, MaskRegion, WindowCapture,
 };
+use computer_use_desktop::{LeaseGrant, ToplevelIdent};
 use std::collections::VecDeque;
 use std::sync::Mutex;
 

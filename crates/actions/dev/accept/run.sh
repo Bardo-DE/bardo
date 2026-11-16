@@ -20,4 +20,4 @@ archive=$target.accept.tar.zst
 cargo nextest archive -p action-accept --all-features --archive-file "$archive"
 "$jail" --bind "$here" --bind "$target" -- \
   cargo-nextest nextest run --archive-file "$archive" --workspace-remap "$here" \
-  --no-capture -E 'package(docket-accept)' "$@"
+  --no-capture -E 'package(action-accept)' "$@"

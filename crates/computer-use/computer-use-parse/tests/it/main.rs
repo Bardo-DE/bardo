@@ -1,4 +1,4 @@
-//! The integration tests of `cua-parse`, one binary (one link) for all of them.
+//! The integration tests of `computer-use-parse`, one binary (one link) for all of them.
 
 mod common;
 mod limits;

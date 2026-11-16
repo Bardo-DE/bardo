@@ -7,10 +7,10 @@ use crate::support;
 
 use anyview_peek::{AnyPeeked, Body, Card, peek};
 use dioxus::prelude::*;
-use ui_components::prelude::{Appearance, Ds, Material};
-use ui_harness::{Backdrop, Backend, Harness, HarnessConfig, Viewport};
 use std::sync::Arc;
 use support::{Home, fixture, pane_budget};
+use ui_components::prelude::{Appearance, Ds, Material};
+use ui_harness::{Backdrop, Backend, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 360,

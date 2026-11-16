@@ -5,7 +5,7 @@
 //! [`InputReceipt`]. Window-local points map to the EI region in the `region` module (its `GlobalPoint` is named nowhere else):
 //! the identity on the fork, the window origin plus the point on stock.
 //!
-//! Pure: the reis client that delivers the operations is `seat-ei`.
+//! Pure: the reis client that delivers the operations is `computer-use-seat-ei`.
 
 mod caps;
 mod keymap;

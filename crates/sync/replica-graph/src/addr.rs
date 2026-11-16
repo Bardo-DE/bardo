@@ -2,9 +2,9 @@
 //! the check that a link the server handed back (a delta link) is still this server's. Paths
 //! start at the root the replica was given: the app folder or the drive's own root.
 
-use sync_core::ItemPath;
 use account_ids::WebUrl;
 use account_ids::percent::encode_unreserved;
+use sync_core::ItemPath;
 
 /// Graph's version prefix and the signed-in user's drive.
 const DRIVE: &str = "/v1.0/me/drive";

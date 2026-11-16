@@ -30,8 +30,8 @@ use crate::root::common::Common;
 use crate::spell::lang::Spell;
 use crate::spell::marks::SpellReplace;
 use dioxus::prelude::*;
-use ui_core::geometry::units::Rect;
 use std::rc::Rc;
+use ui_core::geometry::units::Rect;
 
 /// An editing surface over the app's own content.
 ///

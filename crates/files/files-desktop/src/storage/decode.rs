@@ -1,18 +1,18 @@
 //! The service's rows as files-core's vocabulary. An unknown word is an error, except a drive's
 //! state, which the service says a caller shows as it shows an error.
 
+use account_dbus::Details;
+use files_core::{
+    AccountLabel, ByteSize, CloudDrive, CloudItem, CloudKind, CloudState, CloudWords, DriveId,
+    DriveState, FolderPath, ItemRef, OnlineUrl, ProviderName, Refused, Saved, SavedCopies, Share,
+    Usage,
+};
 use sync_bus::{
     DRIVE_KEY_LABEL, DRIVE_KEY_LOCAL, DRIVE_KEY_PATH, DRIVE_KEY_PROVIDER, DRIVE_KEY_STATE,
     DRIVE_KEY_TOTAL, DRIVE_KEY_USED, DRIVE_KEY_WORDS, ITEM_KEY_FRACTION, ITEM_KEY_KEPT,
     ITEM_KEY_KIND, ITEM_KEY_OTHER, ITEM_KEY_STATE, ITEM_KEY_URL, ITEM_KEY_WORDS, ItemKind,
     ItemState, Refused as WireRefused, Saved as WireSaved,
 };
-use files_core::{
-    AccountLabel, ByteSize, CloudDrive, CloudItem, CloudKind, CloudState, CloudWords, DriveId,
-    DriveState, FolderPath, ItemRef, OnlineUrl, ProviderName, Refused, Saved, SavedCopies, Share,
-    Usage,
-};
-use account_dbus::Details;
 
 use super::error::StorageError;
 

@@ -4,12 +4,12 @@ use crate::index::open_index_file;
 use crate::none::{NoConsolidator, NoEmbedder};
 use crate::root::Root;
 use memory_core::{Dirs, ReplicaId, SpaceId, SpaceMeta, VaultKind};
-use memory_seal::{DbKey, ProvidedKeys, Purpose, SpaceKey, derive};
-use memory_service::{Backend, BackendError, Clock, Listing, RegistryError};
-use memory_tidy::Consolidator;
 use memory_eventlog::SqliteLog;
 use memory_files::{PlainDir, SealedDir, SpaceVault};
 use memory_recall::{Embedder, ExactScan, Index};
+use memory_seal::{DbKey, ProvidedKeys, Purpose, SpaceKey, derive};
+use memory_service::{Backend, BackendError, Clock, Listing, RegistryError};
+use memory_tidy::Consolidator;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 /// An app's own memory on disk: SQLCipher log and index, sealed or plain files, keys derived from

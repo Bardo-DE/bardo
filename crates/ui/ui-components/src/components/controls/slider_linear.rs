@@ -13,6 +13,7 @@ use crate::root::common::Common;
 use dioxus::core::queue_effect;
 use dioxus::html::geometry::ClientPoint;
 use dioxus::prelude::*;
+use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::vocab::{Availability, Fraction, PressPhase};
 use ui_core::word::Word;
@@ -26,7 +27,6 @@ use ui_motion::{
     velocity::{Velocity, VelocityMeter},
 };
 use ui_style::tokens::control_size::ControlSize;
-use std::rc::Rc;
 
 /// A release slower than this, in pixels per second, sets the value where the thumb was let go;
 /// faster, it throws (the swipe's fling speed, `notifications.swipe_dismiss_velocity_px_s`).

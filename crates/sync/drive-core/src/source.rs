@@ -1,12 +1,12 @@
 //! Where a drive's bytes come from: a span of one item at a time, and an online document's
 //! copy as a file.
 
-use sync_core::{ByteRange, ExportError, RemoteId, Replica, ReplicaError};
 use account_capability::HashKind;
 use account_ids::Bytes;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
+use sync_core::{ByteRange, ExportError, RemoteId, Replica, ReplicaError};
 
 /// Why the bytes did not come.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
@@ -25,7 +25,7 @@ impl From<ReplicaError> for SourceError {
         match error {
             ReplicaError::Transient(_) => SourceError::Offline,
             // anchor expired, unauthorized, gone, needs consent, and a failure a later
-            // ferry-sync adds
+            // sync-core adds
             _ => SourceError::Refused,
         }
     }
@@ -50,7 +50,7 @@ impl From<ExportError> for CopyError {
         match error {
             ExportError::Unsupported => CopyError::NoFormat,
             ExportError::TooLarge => CopyError::TooLarge,
-            // a read that failed, and a failure a later ferry-sync adds
+            // a read that failed, and a failure a later sync-core adds
             _ => CopyError::Failed,
         }
     }
@@ -81,7 +81,7 @@ pub trait Source: Send + Sync {
     }
 }
 
-/// A [`Source`] over a ferry-sync replica's `fetch`, a span at a time. The replica is shared,
+/// A [`Source`] over a sync-core replica's `fetch`, a span at a time. The replica is shared,
 /// so its owner asks it for the quota too.
 #[derive(Debug)]
 pub struct ReplicaSource<R>(pub Arc<R>);

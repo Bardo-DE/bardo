@@ -1,13 +1,13 @@
 //! The planner loop table: phases, effects, and the guarantees around refusals and halts.
 
 use crate::support::*;
-use agent_loop::*;
-use companion_wire::{AnswerPhase, NeedsYou};
-use action_core::*;
-use permission_core::{BreakerTrip, DenyCode};
-use action_vocab::{ActionRef, CallId, CallRequest, Handle, Origin, TargetValue, TurnId};
 use account_core::AppName;
 use account_ids::Count;
+use action_core::*;
+use action_vocab::{ActionRef, CallId, CallRequest, Handle, Origin, TargetValue, TurnId};
+use agent_loop::*;
+use companion_wire::{AnswerPhase, NeedsYou};
+use permission_core::{BreakerTrip, DenyCode};
 use provenance::{ActionName, ReportStatus, SpaceScope};
 use std::collections::BTreeMap;
 

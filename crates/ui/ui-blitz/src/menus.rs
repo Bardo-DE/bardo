@@ -36,13 +36,13 @@ pub use permit::{Caller, MenuPermit, SenderName, Verdict};
 pub use shell_only::ShellOnly;
 
 use crate::app_id::AppId;
+use service::{DbusMenu, Shared};
+use std::sync::Arc;
 use ui_components::base::command::{AppCommand, CommandId};
 use ui_components::components::menus::export::{
     AddressError, AppMenuAddress, Change, MenuState, MenuTree, Revision, TreeError,
 };
 use ui_components::components::menus::menu_bar::MenuBarModel;
-use service::{DbusMenu, Shared};
-use std::sync::Arc;
 use zbus::blocking::connection::Builder;
 use zbus::fdo::{RequestNameFlags, RequestNameReply};
 

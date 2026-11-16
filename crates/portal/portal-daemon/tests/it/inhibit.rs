@@ -1,10 +1,10 @@
+use portal_core::{InhibitFlags, RequestHandle};
 use portal_daemon::BoxFuture;
 use portal_daemon::inhibit::{
     EffectError, FakeEffect, HoldError, InhibitEffect, InhibitHub, MAX_MONITORS, MonitorAdded,
     MonitorKnown, QueryEnd, logind_what,
 };
 use portal_daemon::peers::{HOLD_LIMITS, Tether};
-use portal_core::{InhibitFlags, RequestHandle};
 
 /// A caller `n`, relayed by the frontend `:1.2`.
 fn tether(n: u32) -> Tether {

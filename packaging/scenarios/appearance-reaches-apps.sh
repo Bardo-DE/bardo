@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Scenario `appearance-reaches-apps` (plan §4.14): an appearance change through ds-settings reaches
+# Scenario `appearance-reaches-apps` (plan §4.14): an appearance change through ui-settings reaches
 # every running app, live, on a headless casement in the jail.
 #
 # The apps are the sill daemon's surfaces (bar and Dock): each is a quire ds root that follows
-# `quire/appearance.toml` through ds-settings' watch. The change is made the way a settings app
+# `quire/appearance.toml` through ui-settings' watch. The change is made the way a settings app
 # makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one); the proof is each
 # surface's own capture (`sill debug capture`), compared by pixels. Quire apps outside sill need
 # a screenshot of casement (P1-C1): that is the scenario `appearance-reaches-quire-apps`.

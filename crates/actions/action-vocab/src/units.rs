@@ -1,5 +1,5 @@
 //! Units: every number that means something has a type. Instants and counts are
-//! porter-core's (`UnixSeconds`, `Count`, `Permille`); these are the ones docket adds.
+//! account-core's (`UnixSeconds`, `Count`, `Permille`); these are the ones docket adds.
 
 use serde::{Deserialize, Serialize};
 

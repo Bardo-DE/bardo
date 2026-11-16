@@ -5,15 +5,15 @@
 
 use crate::common;
 
-use common::*;
-use ui_settings::live::{AnyOwner, LiveClient, LiveError, Snapshot};
-use ui_settings::schema::KeyPath;
 use account_callers::CallerRole;
 use account_core::{AccountState, SecretKey, SecretPurpose};
 use account_dbus::accounts::IdentitiesProxy;
 use account_secrets::{Secrets, SecretsError};
 use account_service_core::audit::AuditEvent;
 use base_testkit::Scratch;
+use common::*;
+use ui_settings::live::{AnyOwner, LiveClient, LiveError, Snapshot};
+use ui_settings::schema::KeyPath;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_the_settings_role_may_read_or_set_anything() {

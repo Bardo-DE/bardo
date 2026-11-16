@@ -11,8 +11,8 @@
 #![allow(clippy::single_range_in_vec_init)]
 
 use crate::command::holds_primary;
-use keymap::Platform;
 use keyboard_types::Modifiers;
+use keymap::Platform;
 use std::ops::Range;
 
 /// How a row was reached.
@@ -268,8 +268,8 @@ impl RowSelection {
 #[cfg(test)]
 mod tests {
     use super::{Pick, PickHow, RowSelection};
-    use keymap::Platform;
     use keyboard_types::Modifiers;
+    use keymap::Platform;
 
     fn pick(row: usize, how: PickHow) -> Pick {
         Pick { row, how }

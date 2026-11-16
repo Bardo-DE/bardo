@@ -16,7 +16,7 @@
 //!   error name (a client reports that as `TransportError::Denied`).
 //! - A refusal is the error `org.quire.Accounts1.Error.<Refusal>` (`errors`), as the in-process
 //!   carrier's `AccountsReply::Refused`.
-//! - The two sheet methods return a Request object at once (`request`, over porter-sheets'
+//! - The two sheet methods return a Request object at once (`request`, over account-sheets'
 //!   `RequestObjects`): the answer is its `Response` signal, sent to the caller alone, and the
 //!   object goes when it has been sent. A `Close` from the caller, or the caller leaving the
 //!   bus, ends the sheet and no `Response` follows.
@@ -31,7 +31,7 @@
 //!   (`Refusal::Denied`); the agent launcher may call `Launcher` and nothing else; the AI broker
 //!   may call `Broker` and read the computers on the tailnet, and nothing else.
 //! - `BusSheets` is the sheet link to the host over `org.quire.AccountsSheet1`
-//!   (porter-sheets).
+//!   (account-sheets).
 //!
 //! - `org.quire.Grants1` at `/org/quire/Grants1`: `Candidates`, `Availability` and `Grants` for the
 //!   caller's own grants, `RequestGrant` (a Request object; the sheet is drawn each time, and the
@@ -102,16 +102,16 @@ mod tailnet;
 mod tailnet_follow;
 mod tailnet_object;
 
+#[doc(inline)]
+pub use account_families::set::ProviderNames;
+#[doc(inline)]
+pub use account_sheets::{AppNames, BusLink, BusSheets};
 pub use audit::FileAudit;
 pub use callers::{Callers, TableCallers};
 pub use core::{Options, serve, serve_with};
 pub use daemon::{Config, Daemon, StartError};
 pub use errors::RefusedError;
 pub use host::Host;
-#[doc(inline)]
-pub use account_families::set::ProviderNames;
-#[doc(inline)]
-pub use account_sheets::{AppNames, BusLink, BusSheets};
 pub use relay::Relays;
 pub use settings::settings_path;
 pub use store::EXIT_REGISTRY_REFUSED;

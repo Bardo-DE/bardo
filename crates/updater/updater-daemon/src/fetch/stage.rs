@@ -10,11 +10,11 @@
 use super::{Fetch, FetchError, Fetched, Source};
 use crate::fsutil::{sync_dir, write_atomic};
 use crate::layout::{RECORD_RELEASE, RECORD_SIGNATURE};
-use updater_core::Hasher;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::Path;
 use std::time::Duration;
+use updater_core::Hasher;
 
 /// Why staging failed.
 #[derive(Debug, thiserror::Error)]

@@ -4,12 +4,12 @@
 
 use crate::support::{SharedKeys, dirs_in, listed_spaces, space};
 use memory_core::*;
+use memory_daemon::SystemBackend;
 use memory_fake::{ScriptedConsolidator, mail_thread_archived};
+use memory_recall::{EmbedError, Embedder, FakeEmbedder};
 use memory_service::Caller;
 use memory_service::MemoryService;
 use memory_store::{EmbedRole, EmbedderCard, Urgency, Vector};
-use memory_daemon::SystemBackend;
-use memory_recall::{EmbedError, Embedder, FakeEmbedder};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 

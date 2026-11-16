@@ -5,10 +5,10 @@
 //! Requests carry no query string: each path answers with its default page.
 
 use crate::Failure;
-use http::Response;
 use account_capability::{
     AbsentReason, Capability, CapabilityKind, Claim, Offer, Provenance, StorageCap, Subject,
 };
+use http::Response;
 use serde::Deserialize;
 
 /// The path of Graph's `/me`, which says who the account is.

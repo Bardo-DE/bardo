@@ -4,12 +4,12 @@
 use std::cell::RefCell;
 use std::time::Duration;
 
-use ui_harness::Harness;
-use ui_harness::harness::settle_until;
 use files_core::{FileName, FolderPath};
 use files_model::Input;
 use files_ui::{Query, Reading, Request, RequestSender, channel};
 use tempfile::TempDir;
+use ui_harness::Harness;
+use ui_harness::harness::settle_until;
 
 use super::support::{RecordingOpener, harness, launch, scratch_folder};
 

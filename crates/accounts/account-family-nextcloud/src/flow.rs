@@ -1,12 +1,12 @@
 //! Login Flow v2's two calls, sent: start a flow, and poll it. The requests and the reading of
-//! the answers are nextcloud-proto's.
+//! the answers are account-nextcloud-proto's.
 
 use super::fault;
-use account_nextcloud_proto::flow::{self, Polled, Started};
 use account_core::EndpointUrl;
 use account_family_kit::Io;
 use account_family_kit::password::fault_of;
 use account_http::Http;
+use account_nextcloud_proto::flow::{self, Polled, Started};
 use account_sheet::SignInFault;
 
 /// Starts a flow at `server`.

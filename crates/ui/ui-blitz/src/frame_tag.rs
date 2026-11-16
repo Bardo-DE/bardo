@@ -1,6 +1,6 @@
-//! What the app calls a frame. A `FrameId` names a Blitz document, which only ds-blitz sees
+//! What the app calls a frame. A `FrameId` names a Blitz document, which only ui-blitz sees
 //! being born; the app knows its `iframe` element (which message it shows). The app writes
-//! `data-frame-tag="<text>"` on the element, and ds-blitz reads it as the frame's document is
+//! `data-frame-tag="<text>"` on the element, and ui-blitz reads it as the frame's document is
 //! attached, so every request and link click from that document carries the app's own name.
 
 use std::fmt;

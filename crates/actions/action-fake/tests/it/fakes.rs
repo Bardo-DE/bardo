@@ -1,22 +1,22 @@
 //! The fixtures validate and the fakes behave.
 
-use action_review::{ReviewVerdict, Reviewer};
-use computer_use_action::{RunMode, WindowTrust};
 use action_core::*;
 use action_fake::*;
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use action_manifest::{Lasting, TitleTrust, ValidManifest};
-use permission_core::{
-    ArgLabels, GrantCaller, Recipient, ReviewError, SessionSaw, Stage, StandingGrant,
-    StandingScope, Strictness,
-};
 use action_provider::IntentProvider;
+use action_review::{ReviewVerdict, Reviewer};
 use action_router::GrantStore;
 use action_vocab::{
     ActionRef, Args, CallId, CallRequest, CallerRole, Clock, FileRef, LabelText, Millis, Origin,
     ParamName, Seconds, TargetValue, UndoToken, Value,
 };
 use action_wire::{CallerId, SessionOpen};
+use computer_use_action::{RunMode, WindowTrust};
+use permission_core::{
+    ArgLabels, GrantCaller, Recipient, ReviewError, SessionSaw, Stage, StandingGrant,
+    StandingScope, Strictness,
+};
 use provenance::{ActionName, Actor, AppName, SpaceId, UnixSeconds};
 use std::collections::BTreeSet;
 
@@ -74,8 +74,12 @@ fn the_fixture_manifests_parse_and_validate() {
             .collect()
     };
     assert!(effects(&mail).contains(&("mail.message.send".into(), provenance::Effect::Outbound)));
-    assert!(effects(&mail).contains(&("mail.thread.delete".into(), provenance::Effect::Destructive)));
-    assert!(effects(&files).contains(&("files.file.move".into(), provenance::Effect::UndoableWrite)));
+    assert!(
+        effects(&mail).contains(&("mail.thread.delete".into(), provenance::Effect::Destructive))
+    );
+    assert!(
+        effects(&files).contains(&("files.file.move".into(), provenance::Effect::UndoableWrite))
+    );
     let titles = &mail.manifest().entities[0].titles;
     assert_eq!(*titles, TitleTrust::ThirdParty(provenance::Source::Mail));
 }

@@ -7,13 +7,13 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use shell_settings::ShellFile;
 use shell_ui_kit::hooks::PinnedAppearance;
 use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::widgets::{CenterWidget, Widget, widgets_css};
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 /// What the harness's root provides.
 #[derive(Clone)]

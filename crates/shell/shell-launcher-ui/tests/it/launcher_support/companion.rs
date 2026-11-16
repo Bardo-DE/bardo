@@ -1,9 +1,9 @@
 //! The companion's state as the launcher's tests seed it: a finished draft with a button, an
 //! answer still being made, the summons a panel can be in.
 
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire};
 use action_core::{ContextKeep, Keep, Reveal};
 use action_vocab::{ActionRef, Args, CallRequest, CardActionId, LabelText, Origin, TargetValue};
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire};
 use provenance::{ActionName, AppName, Effect, TaskId};
 use shell_model::companion::{
     AnswerFacts, Busy, Companion, HelpersModel, HelpersMsg, LauncherOrigin, Summon, update_helpers,

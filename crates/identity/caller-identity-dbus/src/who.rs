@@ -6,12 +6,12 @@ use crate::error::{WhoError, access_denied};
 use crate::manager::{ManagerLink, SYSTEMD, UnitSource};
 use crate::offload::Offload;
 use crate::timeout::bounded;
-use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
 use caller_identity_core::procinfo::parse_security_label;
 use caller_identity_core::{
     Facts, Pid, Proof, Refused, Requirement, SandboxFacts, Standing, Table, Uid, UnitFacts,
     UnitName, WhyNot, judge,
 };
+use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
 use std::os::fd::AsFd;
 use std::sync::Arc;
 use zbus::Connection;

@@ -1,11 +1,11 @@
 //! What the polkit prompt hands quire's `PolkitPrompt`: pure.
 
+use shell_kit::lock::vocab::{LockUser, PromptState};
+use shell_model::polkit_agent::{Cookie, LastTry, Polkit, PromptPhase, PromptView};
+use shell_model::untrusted::for_display;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
-use shell_model::polkit_agent::{Cookie, LastTry, Polkit, PromptPhase, PromptView};
-use shell_model::untrusted::for_display;
-use shell_kit::lock::vocab::{LockUser, PromptState};
 
 /// quire's `PolkitPrompt` props that follow the request (the rest are the surface's handlers).
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -88,12 +88,12 @@ fn user_of(name: &str) -> LockUser {
 
 #[cfg(test)]
 mod tests {
+    use shell_kit::lock::vocab::PromptState;
     use shell_model::auth::UserName;
     use shell_model::polkit_agent::Polkit;
     use shell_model::polkit_agent::{
         ActionId, Cookie, Echo, LastTry, PromptPhase, PromptView, Registration,
     };
-    use shell_kit::lock::vocab::PromptState;
 
     use super::{detail_of, prompt_view};
     use crate::user_picture::initial_of;

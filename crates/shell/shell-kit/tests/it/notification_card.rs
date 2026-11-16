@@ -4,13 +4,13 @@
 //! opens from two lines to six, measured, and closes again when the pointer leaves.
 
 use dioxus::prelude::*;
+use shell_kit::notifications::parts::{AppMark, CardAction, Hover};
+use shell_kit::prelude::*;
 use ui_components::components::content::rich_text::{Rich, RichRun};
 use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use shell_kit::notifications::parts::{AppMark, CardAction, Hover};
-use shell_kit::prelude::*;
 
 const VIEW: Viewport = Viewport {
     width: 480,

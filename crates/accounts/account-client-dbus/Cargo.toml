@@ -1,6 +1,6 @@
 [package]
 name = "account-client-dbus"
-description = "The bus transport of porter-client: accountd on the session bus, for an app that lets accountd hold its accounts."
+description = "The bus transport of account-client: accountd on the session bus, for an app that lets accountd hold its accounts."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

@@ -6,8 +6,8 @@ use account_core::AccountId;
 use account_ids::object_segment;
 
 /// The object path every account lives under (`org.quire.Accounts1`'s `account/<segment>`).
-/// accountd's `account_dbus::accounts::account_path` is the writer of this; detent-model may not depend
-/// on porter-dbus, so the prefix is repeated here and nowhere else.
+/// accountd's `account_dbus::accounts::account_path` is the writer of this; settings-app-model may not depend
+/// on account-dbus, so the prefix is repeated here and nowhere else.
 const ACCOUNT_PREFIX: &str = "/org/quire/Accounts1/account/";
 
 /// The last part of an account's object path: its id with every character that is not a letter

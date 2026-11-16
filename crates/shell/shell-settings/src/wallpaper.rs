@@ -1,8 +1,8 @@
 //! `wallpaper.*`: the picture on the desktop. One key, drawn on the Wallpaper page as a grid of
 //! pictures with "Add Picture..." (`control = "picture"`).
 
-use ui_settings::schema::Page;
 use serde::{Deserialize, Serialize};
+use ui_settings::schema::Page;
 
 /// The desktop's picture.
 #[derive(

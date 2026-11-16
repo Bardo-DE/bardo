@@ -1,5 +1,5 @@
 //! The Extensions page: what is installed, grouped by what it provides, with a switch on each.
-//! The folders and the list of the ones turned off are `detent-files::ExtensionHome`'s.
+//! The folders and the list of the ones turned off are `settings-app-files::ExtensionHome`'s.
 
 mod link;
 mod pane;

@@ -9,8 +9,8 @@ use crate::planner::{PlanFault, PlannerReply};
 use crate::role::RoleText;
 use crate::summarise::{SummariseFault, Summarised};
 use crate::voice::Voice;
-use agent_loop::SummaryInput;
 use action_core::PlannerView;
+use agent_loop::SummaryInput;
 use inference_core::{ChatReply, ChatRequest};
 use std::future::Future;
 

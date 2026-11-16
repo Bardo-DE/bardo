@@ -5,9 +5,9 @@
 use std::fmt;
 use std::sync::Arc;
 
-use ui_core::word::Word;
 use serde::{Deserialize, Serialize};
 use shell_launcher::{ClipKey, Mime, UnixTime};
+use ui_core::word::Word;
 
 /// What the launcher and `sill clipboard status` read.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

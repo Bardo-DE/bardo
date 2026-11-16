@@ -15,14 +15,14 @@ use compositor_core::geometry::LogicalPoint;
 use compositor_core::gpu::GpuChoice;
 use compositor_core::output::{GammaRamp, Mode, OutputConfig};
 use compositor_core::time::{Millihertz, Mono, VblankClock, VblankSeq};
-use desktop_protocols::vocab::Transform;
 use compositor_testkit::fakes::{EmptyScene, FakeKms, FakeScanout, FakeUdev, SyntheticTopology};
-use ui_core::geometry::scale::Scale;
+use desktop_protocols::vocab::Transform;
 use std::cell::{Cell, RefCell};
 use std::os::fd::OwnedFd;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 fn at(ms: u64) -> Mono {
     Mono(Duration::from_millis(ms))

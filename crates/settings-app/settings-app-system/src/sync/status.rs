@@ -6,8 +6,8 @@ use super::holds::{sync_of, syncd_running};
 use crate::bus::BusSource;
 use crate::deadline::{Deadline, answered, peer};
 use settings_app_model::{DatasetName, StorageQuota, SyncStatus};
-use sync_bus::STATUS_KEY_QUOTA;
 use std::collections::HashMap;
+use sync_bus::STATUS_KEY_QUOTA;
 use zbus::zvariant::OwnedValue;
 
 /// `Status`' keys other than the quota's.

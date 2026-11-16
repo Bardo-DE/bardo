@@ -1,11 +1,11 @@
 //! The list's state and what carries its effects out: the files are read and written here, the
-//! decisions are `detent-model`'s `shortcuts_step`.
+//! decisions are `settings-app-model`'s `shortcuts_step`.
 
 use crate::copy::shortcuts::{chord_reserved, file_left_alone};
 use crate::env::Env;
+use dioxus::prelude::*;
 use settings_app_client::FilesError;
 use settings_app_model::{ShortcutsEffect, ShortcutsInput, ShortcutsState, shortcuts_step};
-use dioxus::prelude::*;
 use ui_components::prelude::*;
 use ui_components::stack::toast_hub::ToastHub;
 

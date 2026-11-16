@@ -2,7 +2,7 @@
 //!
 //! - `CheckpointStore`: the seam. All file and history effects (save the folder as a point,
 //!   list the points, plan and apply a restore, forget points) are its methods; the git store is
-//!   `docket-checkpoint-git`, and `MemoryStore` and `NoStore` are here.
+//!   `action-checkpoint-git`, and `MemoryStore` and `NoStore` are here.
 //! - `decide`, `next_id`, `retention`: the per-turn decision, the next point number and the
 //!   points to forget, from the log's notes and the store's list alone.
 //! - `plan_restore`: two tree listings in, a `RestorePlan` with its digest out.

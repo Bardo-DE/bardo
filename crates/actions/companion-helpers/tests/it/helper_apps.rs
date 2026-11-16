@@ -8,8 +8,8 @@ use crate::support::apps::{
 };
 use crate::support::world::*;
 use companion_model::helper::*;
-use companion_wire::{HelperNeeds, HelperReply, JobShown, LoginShown};
 use companion_tasks::HelperDesk;
+use companion_wire::{HelperNeeds, HelperReply, JobShown, LoginShown};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 

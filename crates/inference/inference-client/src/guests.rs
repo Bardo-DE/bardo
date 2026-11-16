@@ -23,12 +23,12 @@ use crate::error::TransportError;
 use crate::transport::bus_error;
 use account_dbus::{BusConnection, BusStream, Details};
 use account_ids::UnixSeconds;
-use inference_tailnet::GuestAsk;
 use account_tailscale::NodeId;
-use std::pin::Pin;
-use std::task::{Context, Poll};
 use inference_dbus::inference::{GUEST_KEY_NAME, GUEST_KEY_SINCE};
 use inference_dbus::inference::{GuestAsksStream, GuestsChangedStream, InferenceProxy};
+use inference_tailnet::GuestAsk;
+use std::pin::Pin;
+use std::task::{Context, Poll};
 
 /// One thing heard about the computers that ask. More may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -7,8 +7,6 @@
 //! two actions: Keep and Don't Keep. Enter on such a row does nothing, so a key never keeps one.
 
 use memory_core::{FactView, MemoryItem, TimelineEntry};
-use ui_core::vocab::MemoryVerb;
-use ui_core::word::Word;
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, Choice, CompanionAct, IconRef, Item, ItemId,
     Provider, ProviderKind, Query, ResultSink, Scope, Score, Subject,
@@ -19,6 +17,8 @@ use shell_model::companion::{
 };
 use shell_services::control::Control;
 use tokio::sync::watch;
+use ui_core::vocab::MemoryVerb;
+use ui_core::word::Word;
 
 use super::lookup::block_on;
 
@@ -202,9 +202,7 @@ mod tests {
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     use memory_core::Count;
-    use memory_core::{
-        EntryBody, EventRef, KindTag, ReplicaId, Seq, ThingView, UndoRef, UserText,
-    };
+    use memory_core::{EntryBody, EventRef, KindTag, ReplicaId, Seq, ThingView, UndoRef, UserText};
     use shell_launcher::{Cancel, VecSink};
     use shell_model::companion::Lookup;
     use shell_services::control::Control;
@@ -225,8 +223,10 @@ mod tests {
             label: provenance::Label::trusted_user(),
             things: vec![ThingView {
                 thing: provenance::EntityId {
-                    app: provenance::AppName::parse("org.quire.Mail").unwrap_or_else(|e| panic!("{e}")),
-                    kind: provenance::EntityKind::parse("mail.thread").unwrap_or_else(|e| panic!("{e}")),
+                    app: provenance::AppName::parse("org.quire.Mail")
+                        .unwrap_or_else(|e| panic!("{e}")),
+                    kind: provenance::EntityKind::parse("mail.thread")
+                        .unwrap_or_else(|e| panic!("{e}")),
                     key: provenance::EntityKey::parse("q4").unwrap_or_else(|e| panic!("{e}")),
                 },
                 title: UserText::new(title),

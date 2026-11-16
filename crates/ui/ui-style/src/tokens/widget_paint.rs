@@ -42,8 +42,8 @@ mod tests {
     use super::WidgetPaint;
     use crate::appearance::theme::Scheme;
     use crate::tokens::token::{Token, TokenScope};
-    use ui_core::word::Word;
     use std::collections::HashSet;
+    use ui_core::word::Word;
 
     #[test]
     fn every_paint_has_its_own_name_and_a_value_in_both_schemes() {

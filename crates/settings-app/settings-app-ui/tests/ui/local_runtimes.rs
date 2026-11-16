@@ -8,10 +8,10 @@ use settings_app_model::PageSlug;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_components::prelude::Scheme;
 use ui_harness::Harness;
 use ui_settings::live::Verdict;
-use std::time::Duration;
 
 const ROWS: &str = ".runtimes .ds-field-row";
 const OLLAMA: &str = ".runtimes [aria-label=\"Ollama\"] .ds-field-row-control .ds-button";

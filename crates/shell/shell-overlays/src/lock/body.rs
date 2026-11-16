@@ -2,12 +2,12 @@
 //! prompt's output, and the unlock fade (the module doc of `screen.rs` has the rules).
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use layer_shell_host::OutputInfo;
-use shell_model::auth::{Auth, AuthCommand, AuthFault, AuthPhase, PamNote, Secret};
-use shell_model::ids::OutputName;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
+use shell_model::auth::{Auth, AuthCommand, AuthFault, AuthPhase, PamNote, Secret};
+use shell_model::ids::OutputName;
+use ui_components::prelude::*;
 
 use super::backdrop::backdrop_for;
 use super::model::{clock_lines, lock_user, prompt_state};
@@ -15,7 +15,7 @@ use shell_services::{AuthService, ClockService, WallpaperService};
 use shell_ui_kit::hooks::{use_hours, use_service, use_services};
 use shell_ui_kit::links::{LockLink, PromptOutput};
 
-/// Where shell-host's session lock is, as the surface needs it.
+/// Where layer-shell-host's session lock is, as the surface needs it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(super) enum HostLock {
     /// Requested or locked: the surface fades and unlocks on `Accepted`.
@@ -117,7 +117,7 @@ pub(super) fn LockBody(
     }
 }
 
-/// On `Accepted` while the host holds the lock, asks shell-host to unlock at once (quire's
+/// On `Accepted` while the host holds the lock, asks layer-shell-host to unlock at once (quire's
 /// picture accept beat is gone); the others do nothing.
 fn use_unlock_fade(
     auth: ReadSignal<Auth>,

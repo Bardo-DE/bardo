@@ -7,9 +7,6 @@
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_harness::{Input, Viewport};
-use ui_settings::Environment;
 use account_core::SecretText;
 use account_sheet::{FieldKind, FieldValue, SheetInput, SheetView};
 use layer_shell_host::OutputId;
@@ -20,6 +17,9 @@ use shell_overlays::AccountsSheet;
 use shell_ui_kit::harness::{FocusFallback, SurfaceHarness, fake};
 use shell_ui_kit::hooks::PinnedAppearance;
 use shell_ui_kit::links::SheetOutput;
+use ui_components::prelude::*;
+use ui_harness::{Input, Viewport};
+use ui_settings::Environment;
 
 const VIEWPORT: Viewport = Viewport {
     width: 1280,
@@ -463,7 +463,7 @@ fn after_a_pop_up_choice_by_keys_tab_and_typing_go_to_the_next_field() {
     tab_and_type_after_choosing(start());
 }
 
-/// A shell-host document has no focus keeper (`ui_blitz::provide_host` wires none): on
+/// A layer-shell-host document has no focus keeper (`ui_blitz::provide_host` wires none): on
 /// `BlitzDefault` quire's pop-up gives the keyboard back to its button itself, so Tab and typing
 /// reach the next field.
 #[test]

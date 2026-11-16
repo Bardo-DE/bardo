@@ -4,8 +4,8 @@
 use crate::companion_names::BRIEF_CONFIRM;
 use crate::prepared::Prepared;
 use action_core::{BriefSheet, BriefText, ConfirmAnswer, ConfirmEnd, GrantScope};
-use permission_core::COMPANION_APP;
 use action_vocab::{ActionRef, LabelText, ParamName, Value};
+use permission_core::COMPANION_APP;
 
 /// The most pieces a sheet lists.
 const PIECES_SHOWN: usize = 12;

@@ -6,6 +6,8 @@
 //! between them; a neutral family tile turns dark with the scheme and its glyph shows on it.
 
 use dioxus::prelude::*;
+use std::time::Duration;
+use ui_blitz::Extent;
 use ui_components::base::geometry::units::{Point, Px};
 use ui_components::base::vocab::RowState;
 use ui_components::components::app::row_more::RowMore;
@@ -21,9 +23,7 @@ use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::{ControlSize, SidebarSize};
 use ui_components::style::tokens::hex::Hex;
-use ui_blitz::Extent;
 use ui_harness::{Backdrop, Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const WIDE: Viewport = Viewport {
     width: 600,

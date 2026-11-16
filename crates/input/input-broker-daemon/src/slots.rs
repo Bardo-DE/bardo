@@ -10,12 +10,12 @@ use crate::identity::{ActiveUid, Caller};
 use crate::policy::authorise;
 use crate::tally::Tally;
 use caller_identity_core::Uid;
-use std::sync::{Arc, Mutex, PoisonError};
 use input_broker_wire::limits::{
     HANDSHAKE_TIMEOUT_MS, MAX_CONNECTIONS, MAX_CONNECTIONS_PER_USER, MAX_RESERVED_PER_CLIENT,
     STRANGER_HANDSHAKE_TIMEOUT_MS,
 };
 use input_broker_wire::{Kind, Maker};
+use std::sync::{Arc, Mutex, PoisonError};
 
 /// Which pool of slots a connection counts against.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

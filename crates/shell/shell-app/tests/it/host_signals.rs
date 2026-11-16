@@ -1,20 +1,20 @@
 //! Every surface root reads the host's signals the same way: a key turns the focus ring on
 //! (`data-modality="keyboard"`), a press turns it off, and the host's scale reaches the root's
-//! pixel tokens. Driven through `SurfaceHarness`, whose own seat stands in for shell-host's (the
-//! bridge that republishes shell-host's is tested in `root/signals_tests.rs`). The surfaces here
+//! pixel tokens. Driven through `SurfaceHarness`, whose own seat stands in for layer-shell-host's (the
+//! bridge that republishes layer-shell-host's is tested in `root/signals_tests.rs`). The surfaces here
 //! are the ones that once drew their `Ds` outside the bridge.
 
 use std::time::Duration;
 
-use ui_components::prelude::*;
-use ui_components::style::tokens::pixel::PixelToken;
-use ui_harness::{Input, Viewport};
 use shell_bar::Bar;
 use shell_dock::Dock;
 use shell_overlays::{IdleDim, Wallpaper};
 use shell_ui_kit::harness::{SurfaceHarness, SurfaceSetup};
 use shell_ui_kit::links::ControlCenterLink;
 use shell_ui_kit::surface::Surface;
+use ui_components::prelude::*;
+use ui_components::style::tokens::pixel::PixelToken;
+use ui_harness::{Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 480,

@@ -7,7 +7,7 @@
 //! the surface's effect handler.
 //!
 //! Time is [`Stamp`], the one "when" of the design system (milliseconds from an origin the
-//! caller keeps); every timed machine in the pure crates (`ds-behaviour`, `ds-motion`) takes it.
+//! caller keeps); every timed machine in the pure crates (`ui-behaviour`, `ui-motion`) takes it.
 
 use crate::time::stamp::Stamp;
 

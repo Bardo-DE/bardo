@@ -4,6 +4,11 @@
 //! and look (`style.css`, tokens only) and where each event goes (`io.rs`).
 
 use dioxus::prelude::*;
+use layer_shell_host::OutputInfo;
+use shell_model::accounts::sheet::{AccountsSheets, SheetAction};
+use shell_services::accounts::sheet::AccountsSheetService;
+use shell_ui_kit::hooks::{use_follow_visibility, use_service, use_sheet_output};
+use shell_ui_kit::root::SurfaceRoot;
 use ui_components::components::chrome::window_frame::WindowTitlebar;
 use ui_components::prelude::*;
 use ui_shell::accounts::model::StepTitle;
@@ -11,11 +16,6 @@ use ui_shell::prelude::{
     BrowserWait, ConsentBody, ProviderList, ReviewServices, ShowCode, SignInFailed, SignInForm,
     SignInWorking,
 };
-use layer_shell_host::OutputInfo;
-use shell_model::accounts::sheet::{AccountsSheets, SheetAction};
-use shell_services::accounts::sheet::AccountsSheetService;
-use shell_ui_kit::hooks::{use_follow_visibility, use_service, use_sheet_output};
-use shell_ui_kit::root::SurfaceRoot;
 
 use super::ACCOUNTS_SHEET_CSS;
 use super::continue_as::ContinueBody;

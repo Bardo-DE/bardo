@@ -6,11 +6,11 @@ use crate::protocol::xdg_shell::windows;
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::Verdict;
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::manage::foreign_toplevel_list::{Listed, ToplevelList};
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testclient::{Pattern, ShmBuffer, shm_buffer};
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
+use desktop_protocols::vocab::{Answer, Power};
 
 /// Each mapped window appears with title and app id; a new title is a second `done`; closing it
 /// sends closed.

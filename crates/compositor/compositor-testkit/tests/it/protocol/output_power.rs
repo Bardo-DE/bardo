@@ -4,9 +4,9 @@ use super::consent::{ScriptedShell, kept, program};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{HELD_REQUESTS, UnixSeconds, Verdict};
 use compositor_core::{Event, OutputName};
-use desktop_protocols::vocab::{Answer, Power};
 use compositor_testclient::manage::output_power::{ControlId, ControlState, OutputPowers};
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
+use desktop_protocols::vocab::{Answer, Power};
 use std::time::Duration;
 
 const TWO: [&str; 2] = [

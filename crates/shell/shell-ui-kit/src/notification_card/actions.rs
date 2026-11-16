@@ -3,9 +3,9 @@
 //! keep their press.
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use shell_model::notifications::{Action, Notification};
 use shell_kit::notifications::parts::CardAction;
+use shell_model::notifications::{Action, Notification};
+use ui_components::prelude::*;
 
 use super::CardPress;
 

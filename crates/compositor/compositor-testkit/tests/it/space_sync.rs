@@ -2,13 +2,13 @@
 //! a Space made later goes alone, a refusal ends the asking, and a Space the service was not
 //! ready for is asked again at the next change.
 
+use account_core::SpaceId;
 use compositor_app::space_sync::SpaceSync;
 use compositor_core::output::{EdidFacts, EdidSerial};
 use compositor_core::space::{Space, SpaceBook, SpaceContent, SpaceIndex, TaskToken};
 use compositor_core::{OutputKey, OutputName};
 use compositor_ipc::space_registry::RegisterFault;
 use compositor_testkit::fakes::FakeSpaceRegistry;
-use account_core::SpaceId;
 
 fn output() -> OutputKey {
     let edid = EdidFacts {

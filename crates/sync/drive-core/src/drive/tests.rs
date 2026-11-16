@@ -1,9 +1,9 @@
 use super::*;
 use crate::Reason;
 use crate::testing::{MemoryListing, MemorySource};
-use sync_core::ItemKind;
-use std::time::Duration;
 use base_testkit::Scratch;
+use std::time::Duration;
+use sync_core::ItemKind;
 
 struct Rig {
     dir: Scratch,

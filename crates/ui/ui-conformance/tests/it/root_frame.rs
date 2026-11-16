@@ -11,11 +11,11 @@
 //! heights, which are what the rule is about, and check the press only where the frame is sound.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 /// How the page places the frame around its `Ds` root.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

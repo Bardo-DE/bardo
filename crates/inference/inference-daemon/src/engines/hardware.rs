@@ -7,15 +7,15 @@ use super::{Engines, Offered};
 use crate::failure::{EngineView, Moment};
 use crate::peers::Caller;
 use crate::seats::Gate;
-use engine_supervisor::{EngineId, EngineState};
-use model_catalog::{GpuNeed, MiB};
 use account_ids::Bytes;
+use engine_supervisor::{EngineId, EngineState};
 use inference_core::{HardwareFacts, HardwareNote, MemoryFacts, ModelRef, hardware_notes};
 use inference_router::local::LocalModel;
 use inference_router::router::Unchosen;
 use inference_router::router::placed::Allowed;
 use inference_router::session::SessionSpec;
 use inference_router::swap::running_of;
+use model_catalog::{GpuNeed, MiB};
 
 use std::sync::Arc;
 use std::time::Duration;

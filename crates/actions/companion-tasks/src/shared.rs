@@ -4,9 +4,9 @@
 //! sit on a confirmation for minutes; `Roster()` and `Front()` must not.
 
 use crate::seams::Surface;
-use companion_wire::{AnswerPhase, AnswerWire, FrontTask, RouteNote};
 use action_core::Roster;
 use action_store::Cancel;
+use companion_wire::{AnswerPhase, AnswerWire, FrontTask, RouteNote};
 use provenance::{SessionId, TaskId};
 use std::collections::BTreeMap;
 use std::sync::Mutex;

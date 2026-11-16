@@ -1,7 +1,7 @@
 //! The checked-in introspection is the interface the skeletons declare.
 
-use std::path::PathBuf;
 use agent_voice_daemon::{VOICE1_FILE, introspection};
+use std::path::PathBuf;
 
 fn checked_in() -> String {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))

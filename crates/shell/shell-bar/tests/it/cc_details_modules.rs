@@ -9,11 +9,11 @@ use crate::cc_support;
 use cc_support::details::{center, figure, ms, press};
 use cc_support::{fake, live};
 
-use ui_components::base::time::stamp::Stamp;
-use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use shell_model::kbd_backlight::{KbdBacklight, KbdCommand, KbdLevel};
 use shell_model::now_playing::{MediaCommand, MediaVerb, Micros, Playback, Timeline};
 use shell_model::units::{Percent, Presence};
+use ui_components::base::time::stamp::Stamp;
+use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 
 // ---- Now Playing ----------------------------------------------------------------------------
 

@@ -113,7 +113,7 @@ text_id!(
 
 text_id!(
     /// One task: a docket `Session` for one prompt, worker or side conversation. A slug minted
-    /// by the companion service. It moved here from docket-core so [`AgentRole::Worker`] and
+    /// by the companion service. It moved here from action-core so [`AgentRole::Worker`] and
     /// [`AgentRef::Worker`] can name it.
     ///
     /// [`AgentRole::Worker`]: crate::AgentRole::Worker
@@ -150,8 +150,8 @@ text_id!(
     opaque
 );
 
-/// One of the person's helpers: a persistent named agent (porter-core owns the type, because
-/// porter-infer names it too).
+/// One of the person's helpers: a persistent named agent (account-core owns the type, because
+/// inference-core names it too).
 pub use account_core::HelperId;
 
 /// One thing an app owns, as the router, memory and the confirmation sheet name it.

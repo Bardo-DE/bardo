@@ -5,9 +5,9 @@
 
 use crate::support::infer::{Say, words};
 use crate::support::world::*;
-use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, RefusalWire, footer_line};
 use action_core::{HandOver, HandRefusal, HandReply, Handed, Reveal};
 use companion_tasks::Handoff;
+use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, RefusalWire, footer_line};
 use inference_core::{Declined, DeclinedBecause, InferEvent, InferRefusal, ModelRef};
 use std::future::Future;
 use std::pin::Pin;

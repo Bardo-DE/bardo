@@ -3,7 +3,7 @@
 //! metrics, the attack scores and the per-commit summary, and the run trace and its rendering.
 //!
 //! Nothing here reads a file, the clock or the environment, and nothing here links the router,
-//! Cedar or the fakes: `docket-eval` reads the corpus and plays the cases over `docket-fake`,
+//! Cedar or the fakes: `docket-eval` reads the corpus and plays the cases over `action-fake`,
 //! then hands the endings to this crate. The facts about actions a score needs (the effect of a
 //! call, the label of a sheet) come in as closures.
 

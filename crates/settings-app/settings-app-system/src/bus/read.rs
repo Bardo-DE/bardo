@@ -2,9 +2,9 @@
 
 use super::io::absence_of;
 use settings_app_model::{Absence, Described};
+use std::collections::BTreeMap;
 use ui_settings::live::{LiveClient, LiveError};
 use ui_settings::schema::{KeyKind, KeyPath, KeySpec};
-use std::collections::BTreeMap;
 
 /// How many times a reading is made over when the module's rows move under it.
 const ATTEMPTS: usize = 4;

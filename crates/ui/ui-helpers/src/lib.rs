@@ -17,7 +17,7 @@
 //!
 //! An app runs distro tools (mpv, ffmpeg, heif-dec) that may not be installed. This crate lets
 //! it say so declaratively, notice at the moment of use, and have the system install the tool,
-//! like Totem's codec prompt: the person is asked first (the `HelperSheet` in `ds-shell`), then
+//! like Totem's codec prompt: the person is asked first (the `HelperSheet` in `ui-shell`), then
 //! [`Helpers::provide`] asks PackageKit, which asks polkit for the password itself. The app
 //! hears of the new tool through [`Helpers::subscribe`] and retries without restarting.
 //!
@@ -95,7 +95,6 @@ pub use desktop_entries::{
 pub use desktop_file::{
     DESKTOP_ENTRY_CAP, DesktopFile, DesktopFileError, DesktopGroup, EntryLocale,
 };
-pub use ui_peer::Deadline;
 pub use family::Family;
 pub use files::{
     NewFileMode, ReadCap, ReadError, UnixSeconds, UpdateError, WriteError, move_aside, read_capped,
@@ -107,4 +106,5 @@ pub use installer::{BoxFuture, FakeInstaller, Install, PackageKit, Request, Stan
 pub use os_release::OsRelease;
 pub use outcome::{Missing, Outcome};
 pub use probe::Environment;
+pub use ui_peer::Deadline;
 pub use watch::{Availability, Subscription};

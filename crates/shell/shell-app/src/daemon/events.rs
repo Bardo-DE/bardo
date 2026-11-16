@@ -5,7 +5,6 @@
 use std::cell::RefCell;
 use std::time::Instant;
 
-use ui_settings::{Environment, Store};
 use layer_shell_host::{
     CloseReason, HostCtx, HostEvent, KeyboardFocus, LayerOp, PalmrestAction, SurfaceId,
 };
@@ -24,6 +23,7 @@ use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{OutputPolicy, Surface};
 use tokio::sync::watch;
+use ui_settings::{Environment, Store};
 
 use super::msg::ShellMsg;
 use super::palmrest::{self, Plan};
@@ -149,13 +149,13 @@ fn palmrest_ask(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, ask: &PalmrestAc
     if shell.shell_lock.id.is_some() {
         return;
     }
-    match mouse_gestures_daemon::plan(ask) {
+    match palmrest::plan(ask) {
         Plan::Request(request) => {
             if let Response::Failed(failure) = answer(shell, ctx, request) {
                 eprintln!("sill: palmrest: {}", failure.message);
             }
         }
-        Plan::Program { program, args } => mouse_gestures_daemon::run(&program, &args),
+        Plan::Program { program, args } => palmrest::run(&program, &args),
         Plan::Refused(why) => eprintln!("sill: palmrest: {ask:?}: {why}"),
     }
 }

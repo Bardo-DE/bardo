@@ -1,6 +1,6 @@
 //! The audio device seam, pure. Capture reads only a physical source node, never a sink monitor,
 //! so a daemon built on it cannot transcribe other apps' audio. The traits here are what the
-//! voice daemon plays against; `voice-pipewire` is the shipped backend and [`FakeAudioDevice`]
+//! voice daemon plays against; `agent-voice-pipewire` is the shipped backend and [`FakeAudioDevice`]
 //! (feature `testing`) the scripted one.
 
 mod choose;

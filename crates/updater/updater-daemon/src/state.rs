@@ -3,9 +3,9 @@
 use crate::fsutil::write_atomic;
 use semver::Version;
 use serde::{Deserialize, Serialize};
-use updater_core::{Attempt, Outcome, Pending, UnixSeconds};
 use std::io;
 use std::path::PathBuf;
+use updater_core::{Attempt, Outcome, Pending, UnixSeconds};
 
 /// What is remembered between runs.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]

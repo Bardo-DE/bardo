@@ -3,6 +3,7 @@
 //! between a shaped row's time and its shortcut.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::lists::row::shape::RowShape;
 use ui_components::components::menus::palette::palette_claim::FieldKey;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
@@ -10,7 +11,6 @@ use ui_components::components::menus::palette::palette_group::{PaletteGroup, Pal
 use ui_components::host::caret::{Caret, InitialCaret};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 1000,

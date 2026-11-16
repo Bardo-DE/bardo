@@ -10,20 +10,20 @@ updater, a root input service) then say which roles a method accepts.
 
 | Crate | Layer | Contents | Depends on |
 | --- | --- | --- | --- |
-| `peephole-core` | pure | ids, `Table` (TOML codec), `Facts`, `Standing`, `judge`, `Requirement`, `Refused`, the text parsers of `procinfo`, the `roles` constants (feature `desktop`) | serde, toml, thiserror |
-| `peephole` | sync I/O | `Pinned` (pidfd), `ProcFs` (`RealProc`; the fixture tree under `fake`), `Prober`, the ownership walk, `TableFiles` (the loader), `fake` | peephole-core, rustix, nix (`SO_PEERPIDFD` only), thiserror |
-| `peephole-bus` | async adapter | `BusPeers`: credentials, the manager's unit facts (`UnitSource`, `ManagerLink`), `require`, `owner_of`, `watch_owner`, `Offload` | peephole, peephole-core, zbus 5, futures-timer, thiserror |
+| `caller-identity-core` | pure | ids, `Table` (TOML codec), `Facts`, `Standing`, `judge`, `Requirement`, `Refused`, the text parsers of `procinfo`, the `roles` constants (feature `desktop`) | serde, toml, thiserror |
+| `peephole` | sync I/O | `Pinned` (pidfd), `ProcFs` (`RealProc`; the fixture tree under `fake`), `Prober`, the ownership walk, `TableFiles` (the loader), `fake` | caller-identity-core, rustix, nix (`SO_PEERPIDFD` only), thiserror |
+| `caller-identity-dbus` | async adapter | `BusPeers`: credentials, the manager's unit facts (`UnitSource`, `ManagerLink`), `require`, `owner_of`, `watch_owner`, `Offload` | peephole, caller-identity-core, zbus 5, futures-timer, thiserror |
 
-`peephole-core` reaches no bus, system-call layer, runtime or executor; `peephole` reaches no bus or
+`caller-identity-core` reaches no bus, system-call layer, runtime or executor; `peephole` reaches no bus or
 executor (`scripts/check-boundary.sh`). Every crate sets `unsafe_code = "forbid"`: the pidfd comes
 from rustix.
 
 ## 2. Layout
 
 ```
-peephole-core/src/{lib, ids, cgroup, procinfo, facts, standing, requirement, table, judge, error, roles}.rs
+caller-identity-core/src/{lib, ids, cgroup, procinfo, facts, standing, requirement, table, judge, error, roles}.rs
 peephole/src/{lib, pin, unix, procfs, probe, walk, tablefile, error, fixture, fake}.rs
-peephole-bus/src/{lib, who, owner, manager, offload, timeout, error}.rs
+caller-identity-dbus/src/{lib, who, owner, manager, offload, timeout, error}.rs
 dist/desktop-callers.toml   scripts/check-boundary.sh   deny.toml   .github/workflows/ci.yml
 ```
 
@@ -40,8 +40,8 @@ How the pin is obtained:
 
 | Source | Pin | Strength | Made by |
 |---|---|---|---|
-| bus, the daemon offers `ProcessFD` in `GetConnectionCredentials` | that fd, checked against the reported pid by its `fdinfo` | `AtConnect` | `peephole-bus` |
-| bus, no `ProcessFD` | `pidfd_open(ProcessID)` at once, then the credentials are asked again: same pid and user | `Reopened` | `peephole-bus` |
+| bus, the daemon offers `ProcessFD` in `GetConnectionCredentials` | that fd, checked against the reported pid by its `fdinfo` | `AtConnect` | `caller-identity-dbus` |
+| bus, no `ProcessFD` | `pidfd_open(ProcessID)` at once, then the credentials are asked again: same pid and user | `Reopened` | `caller-identity-dbus` |
 | unix socket | `SO_PEERPIDFD`: the kernel's pidfd of the connector, checked against `SO_PEERCRED`'s pid by its `fdinfo` | `AtConnect` | `Pinned::of_stream` |
 | unix socket, kernel before 6.5 | `SO_PEERCRED` pid, `pidfd_open`, `SO_PEERCRED` again | `Reopened` | `Pinned::of_stream` |
 | a descriptor the caller holds | the fd, checked against the offered pid by its `fdinfo` | `AtConnect` | `Pinned::from_fd` |
@@ -91,12 +91,12 @@ malformed id, two rows for one unit, more than 256 rows or 256 KiB. **peephole r
 
 ## 5. API shape
 
-- `peephole-core`: `Pid`, `Uid`, `UnitName`, `AppKey`, `RoleName`, `ExePath`, `ExePattern`,
+- `caller-identity-core`: `Pid`, `Uid`, `UnitName`, `AppKey`, `RoleName`, `ExePath`, `ExePattern`,
   `CgroupPath`, `Facts`, `Table`, `Row`, `Standing`, `Proof`, `Requirement`, `Refused`,
   `judge(&Facts, &Table) -> Standing`, `Standing::holds(&[Requirement])`.
 - `peephole`: `Pinned::{of_stream, from_pid, from_pid_with_uid, from_fd, alive, pidfd}`,
   `Prober::{probe, stand, stand_stream}`, `ProcFs`, `RealProc`, `TableFiles`.
-- `peephole-bus`: `BusPeers::{who, require, require_or_deny, owner_of, watch_owner}`,
+- `caller-identity-dbus`: `BusPeers::{who, require, require_or_deny, owner_of, watch_owner}`,
   `ManagerCheck`, `UnitSource`, `ManagerLink`, `Offload` (an enum: `Inline`, `Tokio`), `access_denied`,
   `BUS_TIMEOUT` (2 s on every bus call).
 
@@ -128,17 +128,17 @@ library function reads no environment and no fixed path.
 
 A checkout-built stand-in has a user-writable image and no real unit, so it is `Unverified` by rule 3
 and tops out below `Full`. The desktop's developer and acceptance scripts need a seam, and it must
-not exist in a shipped build. Feature `dev-rows` (`peephole-core`, forwarded by `peephole` and
-`peephole-bus`; off by default; the desktop gate greps `cargo tree -e features` for it) adds:
+not exist in a shipped build. Feature `dev-rows` (`caller-identity-core`, forwarded by `peephole` and
+`caller-identity-dbus`; off by default; the desktop gate greps `cargo tree -e features` for it) adds:
 
 | Piece | Where | What |
 |---|---|---|
-| `RowOrigin::{Shipped, Dev}`, `Row::origin` | `peephole-core` (`dev.rs`, `table.rs`) | where a row came from |
-| `Table::from_toml_dev(text)` | `peephole-core` | the same format, rows marked `Dev` |
-| `Table::merge` | `peephole-core` | developer rows after shipped ones; a shipped unit is never taken, in either merge order |
-| `Proof::Dev` | `peephole-core` | lowest proof, below `Cgroup` |
-| `Requirement::dev(role)` | `peephole-core` | what a consumer lists in its debug builds to accept `Dev` |
-| `judge` rule 2b | `peephole-core` | a native process whose image matches a developer row (and whose cgroup leaf is the row's unit, when it has one), and that no shipped row claims by image, is that service at `Dev`; before rule 3 |
+| `RowOrigin::{Shipped, Dev}`, `Row::origin` | `caller-identity-core` (`dev.rs`, `table.rs`) | where a row came from |
+| `Table::from_toml_dev(text)` | `caller-identity-core` | the same format, rows marked `Dev` |
+| `Table::merge` | `caller-identity-core` | developer rows after shipped ones; a shipped unit is never taken, in either merge order |
+| `Proof::Dev` | `caller-identity-core` | lowest proof, below `Cgroup` |
+| `Requirement::dev(role)` | `caller-identity-core` | what a consumer lists in its debug builds to accept `Dev` |
+| `judge` rule 2b | `caller-identity-core` | a native process whose image matches a developer row (and whose cgroup leaf is the row's unit, when it has one), and that no shipped row claims by image, is that service at `Dev`; before rule 3 |
 | `TableFiles::load_dev(fs, path, person)`, `NodeInfo`, `NodeKind`, `ProcFs::info_of`, `LoadError::{NotAFile, NotTheirs}` | `peephole` | a plain file (no link), owned by `person` or root, not group- or world-writable, within `TABLE_FILE_CAP` |
 
 Rules that keep the seam from widening: only shipped rows are consulted for `Cgroup`, `Exe` and

@@ -1,6 +1,6 @@
 use super::*;
-use std::os::unix::net::UnixListener;
 use base_testkit::Scratch;
+use std::os::unix::net::UnixListener;
 
 fn tail_of(chunks: &[&[u8]]) -> Tail {
     let mut buf = TailBuf::default();

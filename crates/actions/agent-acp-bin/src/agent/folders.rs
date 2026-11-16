@@ -2,9 +2,9 @@
 //! home or a project.
 
 use super::places::Places;
-use sandbox::AbsPath;
 use agent_acp_host::Workdir;
 use permission_core::ProgramName;
+use sandbox::AbsPath;
 
 use std::path::PathBuf;
 

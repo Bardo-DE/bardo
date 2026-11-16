@@ -1,4 +1,4 @@
-//! The account service hosted in the app, as a transport for `porter-client`: the app brings its
+//! The account service hosted in the app, as a transport for `account-client`: the app brings its
 //! providers, its secret store and its sheet host, and [`hosted`] gives the [`Porter`] over a
 //! service built from them. A daemon with seams of its own (syncd's bus sheets, file store and audit
 //! file) builds an `AccountService` itself and uses [`Hosted::new`].

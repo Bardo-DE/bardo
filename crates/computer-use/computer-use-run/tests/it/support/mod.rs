@@ -2,6 +2,8 @@
 //! Builders for driving the run machine: tasks, observations, replies and a small harness that
 //! feeds inputs one at a time and keeps the effects of the last one.
 
+use account_core::{AppName, DataClass};
+use account_ids::{Count, Px, Tokens};
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
@@ -10,7 +12,10 @@ use computer_use_action::{
     Scale120, Size, Summary, Target, WaitMs, WindowSpace,
 };
 use computer_use_action::{RunMode, WindowTrust};
-use computer_use_bus::{CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget, WindowRef};
+use computer_use_bus::{
+    CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget, WindowRef,
+};
+use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{
     BackendCaps, BackendKind, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, MaskWhere, Pid, Stamp,
     ToplevelIdent, ToplevelInfo, WindowTitle, WorkspaceRef,
@@ -19,9 +24,6 @@ use computer_use_run::{
     ContextObs, CuaConfig, CursorObs, Focus, ModelReply, Observation, Rules, Run, RunEffect,
     RunEnv, RunInput, RunPhase, TreeObs, Visibility, WindowInfo,
 };
-use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
-use account_core::{AppName, DataClass};
-use account_ids::{Count, Px, Tokens};
 use inference_core::{CuaStepReply, StepIndex, TokenUsage};
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, RunId, SessionId, Source,

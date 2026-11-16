@@ -1,13 +1,13 @@
 use super::*;
+use account_capability::Tier;
+use account_core::{DataClass, consent::Usage};
+use base_testkit::Scratch;
+use inference_router::testkit::models;
 use model_provider::{
     ModelName, OutputShape, Part, ProviderError, Role, Script, ScriptedProvider, StopReason,
     TurnEnd, TurnEvent, TurnUsage,
 };
-use account_capability::Tier;
-use account_core::{DataClass, consent::Usage};
-use inference_router::testkit::models;
 use std::ops::ControlFlow;
-use base_testkit::Scratch;
 
 const SCORE: &str = r#"{"type":"object","additionalProperties":false,
     "properties":{"score":{"type":"integer","minimum":0,"maximum":10}},

@@ -142,8 +142,8 @@ fn the_planner_may_never_have_been_shown_the_injected_body() {
 }
 
 fn resting_as(phase: companion_wire::AnswerPhase) -> Evidence {
-    use companion_wire::{AnswerBody, AnswerWire, FooterWire};
     use action_core::{ContextKeep, Keep};
+    use companion_wire::{AnswerBody, AnswerWire, FooterWire};
     let mut e = evidence();
     e.answer = Ok(vec![AnswerWire {
         task: provenance::TaskId::parse("t-1").expect("task"),

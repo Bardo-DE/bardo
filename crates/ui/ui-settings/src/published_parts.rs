@@ -3,15 +3,15 @@
 //! as `$XDG_DATA_DIRS/quire/selectors/<app>.toml`, so Settings can check a stylesheet against
 //! every app's parts without linking any app (customization design section 7.3).
 //!
-//! The file is two keys: `app = "sill"` and `classes = ["sill-bar", "sill-bar-item", ...]`. A
+//! The file is two keys: `app = "sill"` and `classes = ["shell-bar", "sill-bar-item", ...]`. A
 //! class outside the app's own `<app>-` prefix is dropped on both write and read, so a file cannot
 //! claim a `ds-` name or another app's.
 
 use std::io;
 use std::path::{Path, PathBuf};
 
-use ui_helpers::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 use serde::{Deserialize, Serialize};
+use ui_helpers::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 
 use crate::xdg;
 

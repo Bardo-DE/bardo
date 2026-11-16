@@ -3,11 +3,11 @@
 //! [`crate::hooks::use_section`], [`crate::hooks::use_styles`] and
 //! [`crate::hooks::use_appearance`].
 
-use ui_components::style::kit::Styles;
-use ui_blitz::StylesGuard;
-use ui_settings::Environment;
 use shell_settings::ShellFile;
 use tokio::sync::watch;
+use ui_blitz::StylesGuard;
+use ui_components::style::kit::Styles;
+use ui_settings::Environment;
 
 use crate::links::Outbox;
 

@@ -4,7 +4,6 @@
 use crate::router::Router;
 use crate::seams::Seams;
 use crate::shield::shield;
-use action_review::note;
 use action_context::handles::HandleLimit;
 use action_context::labels::{Voice, absorb};
 use action_context::session::{SessionEffect, SessionEvent};
@@ -17,10 +16,11 @@ use action_core::{
 };
 use action_gate::driven::{Driven, decision_of, step_end};
 use action_gate::prepared::{Early, Prepared};
-use permission_core::approves;
-use agent_session::{BreakerNote, SessionEntry};
+use action_review::note;
 use action_vocab::{Clock, Origin, Value};
 use action_wire::LedgerStep;
+use agent_session::{BreakerNote, SessionEntry};
+use permission_core::approves;
 use provenance::{Integrity, Labelled, Source};
 
 /// An outcome as the caller named by `voice` may read it: a planner gets untrusted text, and

@@ -4,11 +4,11 @@
 //! [`AgentConfig`].
 
 use crate::budget::Budget;
-use permission_core::{Mode, RowSets};
+use account_ids::{Count, Tokens};
 use action_vocab::{Days, Depth, Millis, Seconds};
 use iso_currency::Currency;
 use model_provider::Money;
-use account_ids::{Count, Tokens};
+use permission_core::{Mode, RowSets};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 

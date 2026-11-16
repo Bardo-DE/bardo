@@ -5,9 +5,9 @@ use crate::seams::Seams;
 use crate::watch::Watch;
 use action_context::state::RouterState;
 use action_core::AgentConfig;
-use permission_core::Floor;
 use action_vocab::{CallerRole, Clock};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, WidenAnswer, WidenAsk, WireRefusal};
+use permission_core::Floor;
 use permission_policy::Presets;
 use std::future::Future;
 use std::sync::{Arc, Mutex, MutexGuard, RwLock};
@@ -277,7 +277,11 @@ impl<S: Seams> Router<S> {
         }
     }
 
-    async fn session_widen(&self, session: &provenance::SessionId, widen: WidenAsk) -> IntentsReply {
+    async fn session_widen(
+        &self,
+        session: &provenance::SessionId,
+        widen: WidenAsk,
+    ) -> IntentsReply {
         let said = self
             .locked()
             .sessions

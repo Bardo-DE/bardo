@@ -2,13 +2,13 @@
 //! Hand-built snapshots that the fixture files must equal. Each is a small, honest tree of the
 //! kind of window the specs name; the JSON under `fixtures/a11y/` is their serde form.
 
+use account_core::{AppName, DataClass};
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role, TreeSource, Truncation,
     TypedHint,
 };
 use computer_use_action::{Coord, NodeId, Point, Rect, Size};
 use computer_use_desktop::Stamp;
-use account_core::{AppName, DataClass};
 use provenance::{ActionName, Confidentiality, Integrity, Label, Labelled, Source, SpaceId};
 use std::collections::BTreeSet;
 

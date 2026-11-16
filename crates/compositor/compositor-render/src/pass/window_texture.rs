@@ -6,12 +6,12 @@
 use crate::damage::RenderError;
 use crate::element::{CasementElement, ClipShape, bake_corners};
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::damage::{Error as DamageError, OutputDamageTracker};
 use smithay::backend::renderer::gles::{GlesRenderer, GlesTexture};
 use smithay::backend::renderer::{Bind, Color32F, Frame, Offscreen, Renderer};
 use smithay::utils::{Buffer, Physical, Rectangle, Size, Transform};
+use ui_core::geometry::scale::Scale;
 
 /// Draws `elements` (front first, a window's tree as `window_tree` builds it) into a new texture
 /// of `size` at `scale`, transparent where nothing draws, its bottom corners cut by `radius`

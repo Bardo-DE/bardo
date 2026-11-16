@@ -1,9 +1,11 @@
 //! `Inference::session` and `Inference::infer` over a transport whose sessions are scripted.
 
-use inference_client::{ClientError, InferSession, Inference, Transport, TransportError};
 use account_capability::Tier;
 use account_core::DataClass;
 use account_ids::Tokens;
+use account_match::LlmNeed;
+use account_match::Need;
+use inference_client::{ClientError, InferSession, Inference, Transport, TransportError};
 use inference_core::OpenOptions;
 use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{ChatControl, ToolParallelism};
@@ -11,8 +13,6 @@ use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, RequestKind,
     ServedBy, StopReason, TokenUsage,
 };
-use account_match::LlmNeed;
-use account_match::Need;
 use std::sync::Mutex;
 
 #[derive(Debug)]

@@ -1,8 +1,8 @@
 //! Holding real processes: the test's own, a socket's peer and a child that exits. No fixtures
 //! here, but nothing leaves the process: a socketpair, and a `sleep` child killed by handle.
 
-use caller_identity_linux::{Alive, PinError, Pinned};
 use caller_identity_core::{Pid, Pin, Uid};
+use caller_identity_linux::{Alive, PinError, Pinned};
 use std::os::fd::AsRawFd;
 use std::os::unix::net::UnixStream;
 use std::process::{Command, Stdio};

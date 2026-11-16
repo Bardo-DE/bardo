@@ -5,9 +5,9 @@
 //! card's primary button), and Tab moves through the card's buttons as it does through any
 //! row's actions. What is new is Escape's two meanings, command-Enter and command-period.
 
-use ui_behaviour::Dir;
 use provenance::{RunId, TaskId};
 use shell_launcher::ProviderKind;
+use ui_behaviour::Dir;
 
 use super::pane::Pane;
 use crate::launcher::keys::Filter;

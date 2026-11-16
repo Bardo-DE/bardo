@@ -10,10 +10,10 @@ use compositor_core::frame::{CursorPlaneCaps, CursorPlaneChoice, FrameOutcome};
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::time::{Millihertz, Mono, VblankClock, VblankSeq};
 use compositor_testkit::fakes::{EmptyScene, FakeScanout};
-use ui_core::geometry::scale::Scale;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
+use ui_core::geometry::scale::Scale;
 
 /// The fake, shared so the test can feed its script while the `Scanout` owns the handle.
 #[derive(Debug, Clone)]

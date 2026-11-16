@@ -1,10 +1,10 @@
 //! The undo entries of settings changes: for each token, the key, the value it had and the
 //! value the change gave it. In memory only: an undo after the app restarted is `Gone`.
 
-use settings_app_model::ConfigFile;
 use action_vocab::UndoToken;
-use ui_settings::schema::KeyPath;
+use settings_app_model::ConfigFile;
 use std::collections::BTreeMap;
+use ui_settings::schema::KeyPath;
 
 /// How many changes can be taken back; the oldest is forgotten first.
 const KEPT: usize = 256;

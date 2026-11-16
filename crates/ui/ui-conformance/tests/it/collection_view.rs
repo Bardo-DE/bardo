@@ -7,6 +7,8 @@
 //! release, where one that does not stays silent; a badge sits under the caption without moving it.
 
 use dioxus::prelude::*;
+use std::cell::Cell;
+use std::time::Duration;
 use ui_components::base::press::PointerButton;
 use ui_components::base::selection::{Pick, PickHow};
 use ui_components::components::content::file_icon::FileIconChoice;
@@ -16,8 +18,6 @@ use ui_components::components::lists::collection_view::{
 };
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::Cell;
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 400,

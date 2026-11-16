@@ -1,4 +1,4 @@
-//! A Space on disk through `Memory::over(InProcess)` with almanac-local's backend: every
+//! A Space on disk through `Memory::over(InProcess)` with memory-local's backend: every
 //! operation, then a restart over the same root and master key.
 
 use crate::support::*;

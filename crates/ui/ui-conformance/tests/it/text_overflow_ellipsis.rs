@@ -4,9 +4,9 @@
 //! Blitz records each line's cut; the text itself stays whole for selection and hit testing.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use std::time::Duration;
 
 const CUT: &str = "white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 120px;";
 const LONG: &str = "Quarterly report for the board meeting, final revised version three";

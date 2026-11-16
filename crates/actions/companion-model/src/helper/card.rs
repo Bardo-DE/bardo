@@ -1,9 +1,9 @@
 //! The helper's card: what the person confirmed when they made it, and where it stands now.
 
 use super::job::JobId;
-use permission_core::TaskPolicy;
 use account_ids::Count;
 use inference_core::ModelRef;
+use permission_core::TaskPolicy;
 use provenance::{AgentProgram, HelperId, SpaceId, TaskId};
 use serde::{Deserialize, Serialize};
 

@@ -8,11 +8,11 @@ use super::widget::{LayerProps, LayerWidget};
 use crate::node_ref::NodeRef;
 use dioxus::prelude::*;
 use dioxus_native::CustomWidgetAttr;
-use ui_components::prelude::Word;
-use ui_components::root::common::Common;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
+use ui_components::prelude::Word;
+use ui_components::root::common::Common;
 
 /// The GPU of the window this component is in: the one device its renderer draws with, found
 /// where the renderer made it. The window provides one at its root; under a root that did not

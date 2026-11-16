@@ -33,14 +33,14 @@ use compositor_core::WindowId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, buffer_size};
 use compositor_core::raster::RasterImage;
 use compositor_core::window::{FrameGeometry, FrameLook, FrameMetrics, FrameStyle};
-use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::element::Kind;
 use smithay::backend::renderer::element::memory::{
     MemoryRenderBuffer, MemoryRenderBufferRenderElement,
 };
 use smithay::utils::{Logical, Physical, Point, Rectangle, Size, Transform};
+use ui_core::geometry::scale::Scale;
+use ui_core::vocab::Fraction;
 
 /// One window's frame as it is drawn this frame.
 #[derive(Debug, Clone, Copy)]

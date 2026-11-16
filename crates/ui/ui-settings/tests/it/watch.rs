@@ -3,13 +3,13 @@
 
 use crate::support;
 
-use ui_core::spawner::Spawner;
-use ui_settings::{AppearanceFile, DEBOUNCE, WatchState};
-use ui_style::appearance::theme::Theme;
 use std::future::Future;
 use std::pin::Pin;
 use std::time::Duration;
 use support::Scratch;
+use ui_core::spawner::Spawner;
+use ui_settings::{AppearanceFile, DEBOUNCE, WatchState};
+use ui_style::appearance::theme::Theme;
 
 /// Generous slack over the 30 ms debounce for a test runner under load, without being so long
 /// the test hangs if the watch is broken.

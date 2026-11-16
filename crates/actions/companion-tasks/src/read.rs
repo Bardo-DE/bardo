@@ -3,11 +3,11 @@
 //! companion and any smaller agent carry out the reader's effect the same way.
 
 use crate::task::{Failure, TaskRuntime};
-use agent_loop::LoopInput;
 use action_client::{ClientError, Intents, Transport as IntentsTransport};
 use action_core::{Follow, Outcome, Preview, ReadFault, ReaderAsk, ReplyFault, Reveal, Undoable};
 use action_vocab::{ActionRef, Args, CallRequest, Origin, TargetValue, Value};
 use action_wire::{ReadAsk, WireRefusal};
+use agent_loop::LoopInput;
 use provenance::{ActionName, Effect, Labelled};
 
 use permission_core::COMPANION_APP;

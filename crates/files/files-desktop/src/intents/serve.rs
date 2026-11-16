@@ -2,10 +2,10 @@
 
 use std::sync::Arc;
 
+use account_core::AppName;
 use action_dbus::callers::{Identity, intentd_only};
 use action_manifest::{Manifest, ValidManifest, validate};
 use action_provider::serve_on_with;
-use account_core::AppName;
 use zbus::Connection;
 
 use super::ask::Window;

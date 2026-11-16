@@ -1,7 +1,7 @@
 //! almanac's agent memory as plain markdown files on disk: the vaults `PlainDir` and `SealedDir`,
 //! `SpaceVault` (one or the other, by the Space's choice; the `Vault` seam itself is in
-//! `almanac-store`), and `MemoryVault` for tests. The topic file format and the fact `Store` are
-//! in `memfiles-format`.
+//! `memory-store`), and `MemoryVault` for tests. The topic file format and the fact `Store` are
+//! in `memory-files-format`.
 
 mod dirs;
 #[cfg(feature = "testing")]

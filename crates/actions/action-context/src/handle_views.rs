@@ -7,8 +7,8 @@ use action_core::{
     PlannerView, PrimerText, ProfileLine, RecalledLine, Reveal, RollupLine, Roster, Selection,
     SelectionView, StepLine, TextTarget, TextTargetView, UserTurn, VisibleView, WindowPrivacy,
 };
-use permission_core::TaskPolicy;
 use action_vocab::EntityRef;
+use permission_core::TaskPolicy;
 use provenance::{Integrity, Label, Source};
 
 fn source_of(label: &Label, fallback: &Source) -> Source {

@@ -11,13 +11,13 @@ use engine_supervisor::{
     EngineHost, EngineId, ExitCode, GpuError, GpuMemory, GpuProbe, HostError, Probe, ReadyProbe,
     UnitSpec,
 };
+use inference_router::local::unix_endpoint;
+use inference_router::startup::{Cause, Diagnostics, TailBuf, clear_socket};
 use model_catalog::MiB;
 use model_http::{
     BodySink, Exchange, Framing, HttpClient, ResponseHead, RouteRoot, Timeouts, Transport, UrlPath,
     Verb, WaitMs,
 };
-use inference_router::local::unix_endpoint;
-use inference_router::startup::{Cause, Diagnostics, TailBuf, clear_socket};
 use rustix::process::Pid;
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::SpeechToText;

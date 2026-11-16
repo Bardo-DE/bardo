@@ -3,8 +3,8 @@
 //! the inode by rename), a 30 ms debounce, then the whole file is read again through the lenient
 //! reader.
 
-use computer_use_host::{CuaSettings, Loaded, Locator, ReadFailure, ReadText, SETTINGS_FILE};
 use account_daemon_support::Watch;
+use computer_use_host::{CuaSettings, Loaded, Locator, ReadFailure, ReadText, SETTINGS_FILE};
 use std::path::Path;
 use std::time::Duration;
 use tokio::sync::{mpsc, watch};

@@ -1,11 +1,11 @@
 //! `tablet` (P0-H4).
 
+use account_core::SandboxFacts;
 use compositor_core::policy::ConnectionRole;
 use compositor_testclient::TestClient;
 use compositor_testclient::seat::pointer::Pointer;
 use compositor_testclient::seat::tablet::TabletSeat;
 use compositor_testkit::{Fixture, FixtureSpec};
-use account_core::SandboxFacts;
 
 /// The version of `interface` the registry the client saw lists, if it lists it.
 fn version_of(client: &mut TestClient, interface: &str) -> Option<u32> {

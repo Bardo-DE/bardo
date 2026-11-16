@@ -2,11 +2,11 @@
 //! service its row names, at `Proof::Dev`, only in a build with the feature, and only as that role.
 //! Scratch folders and made-up process facts only; nothing reads the desktop's table or `/proc`.
 
-use settings_app_callers::{Proof, SERVICE_PROOF, allowing, roles};
 use caller_identity_dbus::caller_identity_core::{
     CgroupPath, Exe, ExePath, Facts, FileTrust, Pid, Pin, SandboxFacts, Standing, Table, Uid,
     Writer, judge,
 };
+use settings_app_callers::{Proof, SERVICE_PROOF, allowing, roles};
 
 /// Where a checkout builds accountd's stand-in: an image the person can write.
 const STAND_IN: &str = "/home/p/proj/target/debug/accountd_standin";

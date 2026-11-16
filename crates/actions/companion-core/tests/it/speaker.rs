@@ -1,7 +1,7 @@
 //! Who may make which call.
 
-use companion_core::{Call, Speaker, permits};
 use action_wire::TerminalScope;
+use companion_core::{Call, Speaker, permits};
 
 fn scope() -> TerminalScope {
     TerminalScope::from_cgroup("vte-spawn-1.scope").expect("scope")

@@ -1,5 +1,5 @@
 //! The apps over a real bus: `DbusLink` on intentd's side, the real `action_provider::serve_on` on
-//! the app's, with docket-fake's mail app behind it. A provider answers nothing but intentd, an
+//! the app's, with action-fake's mail app behind it. A provider answers nothing but intentd, an
 //! app that is away is "unavailable" rather than a panic, and a slow one is cut at its latency.
 
 use crate::support::apps::{Blank, answering_intentd, serve_mail};
@@ -7,6 +7,7 @@ use crate::support::bus::PrivateBus;
 use crate::support::world::app;
 use action_core::LinkFault;
 use action_core::*;
+use action_daemon::DbusLink;
 use action_dbus::{INTENTS_BUS, IntentProviderProxy};
 use action_manifest::{Latency, Manifest, ValidManifest, Visibility, validate};
 use action_provider::{ContextSource, IntentProvider, SummonTarget, serve_on_with};
@@ -15,7 +16,6 @@ use action_vocab::{
     ActionRef, Args, CallId, EntityRef, IntentsVocab, Origin, ParamName, TargetValue, UndoToken,
     Value,
 };
-use action_daemon::DbusLink;
 use provenance::{Actor, EntityId, EntityKey, EntityKind, SpaceId};
 use std::time::Duration;
 

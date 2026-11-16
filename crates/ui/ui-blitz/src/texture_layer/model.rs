@@ -2,9 +2,9 @@
 //! is sampled, when it repaints, and the CPU pixels an app uploads. Data only; the arithmetic is
 //! `fit`, the conversion `convert`, the GPU work `gpu`.
 
-use ui_components::prelude::Word;
 use peniko::ImageQuality;
 use std::fmt;
+use ui_components::prelude::Word;
 
 /// A count of texture pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]

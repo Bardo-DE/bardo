@@ -5,9 +5,9 @@
 //! names it by hand is sent on: the router is the one that refuses it.
 
 use crate::exit::Failure;
+use account_core::AppName;
 use action_manifest::{ActionDecl, AgentReach, Manifest, ValidManifest};
 use action_vocab::action_prefix;
-use account_core::AppName;
 use provenance::{ActionName, EntityKind};
 
 /// The installed apps, as the registry listed them.

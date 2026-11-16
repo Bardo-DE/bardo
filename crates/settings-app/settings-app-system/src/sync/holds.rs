@@ -3,11 +3,11 @@
 
 use crate::bus::{BusSource, Daemon, Pinned, connect, next_owner, owner_changes, pinned};
 use crate::deadline::{Deadline, answered, peer};
+use account_dbus::BusError;
 use settings_app_model::{DatasetName, HoldCounts, HoldInput, SyncNowEnd};
+use std::collections::HashMap;
 use sync_bus::SyncProxy;
 use sync_bus::{SYNC_ERROR_NOTHING_HELD, SYNC_ERROR_PAUSED};
-use account_dbus::BusError;
-use std::collections::HashMap;
 use zbus::zvariant::OwnedValue;
 
 /// The key of `Status`'s hold, and of the signal's counts.

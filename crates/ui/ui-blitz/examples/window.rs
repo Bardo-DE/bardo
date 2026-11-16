@@ -7,13 +7,13 @@ use dioxus::prelude::*;
 use dioxus_native::use_window_event;
 use dioxus_native::winit::event::{ElementState, WindowEvent};
 use dioxus_native::winit::keyboard::{Key, NamedKey};
+use std::time::Duration;
+use ui_blitz::{AppConfig, AppId, WindowSize, launch};
 use ui_components::base::time::clock::sleep;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::stack::toast_hub::use_toast_hub;
-use ui_blitz::{AppConfig, AppId, WindowSize, launch};
-use std::time::Duration;
 
 /// How long the window stays up on its own.
 const LIFETIME: Duration = Duration::from_secs(3);

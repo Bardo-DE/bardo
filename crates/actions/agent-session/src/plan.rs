@@ -4,12 +4,12 @@
 
 use crate::codec::Unreadable;
 use crate::entry::{CallOpen, EndCause, HandleLabel, Opening, Seq};
+use account_ids::Count;
+use action_core::{Ledger, SkillId, StepLine, Summary, UserTurn};
+use action_vocab::CallId;
 use companion_model::HandNote;
 use companion_model::helper::HelperSeat;
-use action_core::{Ledger, SkillId, StepLine, Summary, UserTurn};
 use permission_core::{BreakerTrip, TaskPolicy};
-use action_vocab::CallId;
-use account_ids::Count;
 use serde::{Deserialize, Serialize};
 
 /// Why a session takes no new turn.

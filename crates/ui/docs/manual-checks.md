@@ -2,7 +2,7 @@
 
 Things only a person at the machine can verify. While the user is away they are assumed to
 work; each is ticked off with the date and what was seen. sill keeps its own queue at
-sill's `docs/manual-checks.md`; shell-host's item f at 1.5 is listed there.
+sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there.
 
 ## Keys as actions (queued 2026-10-10)
 
@@ -38,7 +38,7 @@ sill's `docs/manual-checks.md`; shell-host's item f at 1.5 is listed there.
   does), drag-to-move desktop widgets.
 - [ ] **A real sill login** (`dist/sill-session`): the first run of the whole desktop on real
   hardware; sill's queue lists what to look at (M7 login, M11 lock screen and polkit agent).
-- [ ] **Real-mouse and real-keyboard re-runs**: every live-input result before shell-host F47
+- [ ] **Real-mouse and real-keyboard re-runs**: every live-input result before layer-shell-host F47
   used injected input; sill's queue lists them.
 
 ## quire

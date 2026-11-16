@@ -1,5 +1,5 @@
 //! What the Software Update page shows for a state, as facts: the standing, the bar, the actions
-//! on offer and the notes. The window words them (`detent-ui`'s copy).
+//! on offer and the notes. The window words them (`settings-app-ui`'s copy).
 
 use super::model::{ByteCount, Permille, UnixSeconds, UpdateOffer, UpdatePhase, UpdateStatus};
 use super::step::{UpdatesInput, UpdatesNotice, UpdatesReady, UpdatesState};

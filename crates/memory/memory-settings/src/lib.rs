@@ -2,7 +2,7 @@
 //! writes to `$XDG_CONFIG_HOME/almanac/settings.toml`, the schema it draws them from
 //! (`schema/almanac.settings.toml`, [`SCHEMA`]) and the lenient reader (a bad value falls back,
 //! per key, and is reported). Everything here is a pure function of text: finding and reading the
-//! files is `almanac-host`, the live watch is memoryd's.
+//! files is `memory-host`, the live watch is memoryd's.
 //!
 //! A value looser than the shipped default takes effect only once the person confirmed it
 //! (ALM-16): [`gate`] puts back the shipped value of each one the confirmations do not hold

@@ -6,7 +6,6 @@ use crate::removal::wipe;
 use crate::scheduler::{Network, Settings};
 use crate::service::{Access, DatasetName, Hub};
 use crate::testing::scratch;
-use sync_core::MemoryReplica;
 use account_callers::{Caller, CallerRole};
 use account_capability::{Access as Rights, Delta, HashKind, StorageCap, StorageScope};
 use account_core::{AppId, AppName, Isolation};
@@ -14,6 +13,7 @@ use account_ids::UnixSeconds;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
+use sync_core::MemoryReplica;
 
 fn replica() -> MemoryReplica {
     MemoryReplica::new(

@@ -2,10 +2,10 @@
 //! the card and a pick that closes are three different `PaletteClose` values.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 720,

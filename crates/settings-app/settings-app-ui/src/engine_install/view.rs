@@ -3,10 +3,10 @@
 
 use super::board::Board;
 use crate::copy;
+use dioxus::prelude::*;
 use settings_app_model::{
     EngineAction, EngineBrief, EngineOffer, EngineOfferInput, InstallScope, engine_brief,
 };
-use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};

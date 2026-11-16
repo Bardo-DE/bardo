@@ -6,8 +6,8 @@ use super::dom_time::TimedDom;
 use super::rows::listed_thread;
 use super::scoped::scope;
 use dioxus::prelude::*;
-use ui_components::prelude::*;
 use std::time::Duration;
+use ui_components::prelude::*;
 
 fn app() -> Element {
     use_context_provider(|| Signal::new(scope()));

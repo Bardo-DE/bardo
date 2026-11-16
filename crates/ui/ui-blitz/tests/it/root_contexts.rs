@@ -2,10 +2,10 @@
 //! snapshot, as `AppConfig::with_context` gives them to the window.
 
 use dioxus::prelude::*;
-use ui_blitz::RootContexts;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport, snapshot_with};
 use std::sync::Arc;
 use std::time::Duration;
+use ui_blitz::RootContexts;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport, snapshot_with};
 
 const VIEW: Viewport = Viewport {
     width: 240,

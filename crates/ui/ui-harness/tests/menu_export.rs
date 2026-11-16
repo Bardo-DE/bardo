@@ -2,7 +2,7 @@
 //! its title and ⌘Z, a click on Undo runs the app's Undo, and disabling an item announces a new
 //! layout. The bus is a scratch `dbus-daemon`; the real session bus is never reached.
 //!
-//! It drives `ds-blitz`'s Linux menu export, so it is built on Linux only.
+//! It drives `ui-blitz`'s Linux menu export, so it is built on Linux only.
 
 #![cfg(target_os = "linux")]
 
@@ -11,22 +11,22 @@ mod bus;
 
 use bus::PrivateBus;
 use dioxus::prelude::*;
-use ui_components::components::menus::export::{AppMenuAddress, Change, MenuTree};
-use ui_components::components::menus::item::item::MenuItem;
-use ui_components::components::menus::menu_bar::{BarCommand, BarSection, MenuBarModel};
-use ui_blitz::AppId;
-use ui_blitz::menus::{
-    AllowAnyCaller, Bus, Caller, MenuExport, MenuExportConfig, MenuExportError, MenuPermit, Verdict,
-};
-use ui_core::command::{AppCommand, CommandFace, CommandId, UiOnlyReason};
-use ui_core::standard_action::StandardAction;
-use ui_core::vocab::Availability;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};
+use ui_blitz::AppId;
+use ui_blitz::menus::{
+    AllowAnyCaller, Bus, Caller, MenuExport, MenuExportConfig, MenuExportError, MenuPermit, Verdict,
+};
+use ui_components::components::menus::export::{AppMenuAddress, Change, MenuTree};
+use ui_components::components::menus::item::item::MenuItem;
+use ui_components::components::menus::menu_bar::{BarCommand, BarSection, MenuBarModel};
+use ui_core::command::{AppCommand, CommandFace, CommandId, UiOnlyReason};
+use ui_core::standard_action::StandardAction;
+use ui_core::vocab::Availability;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use zbus::blocking::{Connection, Proxy};
 use zbus::zvariant::{OwnedValue, Type, Value};
 

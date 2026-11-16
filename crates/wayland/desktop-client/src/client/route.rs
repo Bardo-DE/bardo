@@ -12,7 +12,7 @@ use super::error::WireError;
 /// The client reads the environment only for `Environment`, which the caller chooses. A shell
 /// asks the compositor for its own connection (`org.quire.Compositor1.Connect("shell")`) and
 /// passes the descriptor as `Handed`; the compositor then knows the role without trusting a
-/// name. The same shape as shell-host's `WaylandRoute`.
+/// name. The same shape as layer-shell-host's `WaylandRoute`.
 ///
 /// ```no_run
 /// use desktop_client::client::{DesktopClient, WaylandRoute};

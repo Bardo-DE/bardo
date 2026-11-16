@@ -2,6 +2,7 @@
 //! side fills.
 
 use crate::format::format_pod;
+use agent_voice_audio::{DeviceError, PlaybackStream};
 use pipewire as pw;
 use pw::properties::properties;
 use pw::spa;
@@ -9,7 +10,6 @@ use pw::spa::pod::Pod;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use tokio::sync::{Notify, oneshot};
-use agent_voice_audio::{DeviceError, PlaybackStream};
 
 /// Samples queued ahead of the playback device before `write` waits (two seconds at 24 kHz).
 const PLAYBACK_AHEAD: usize = 48_000;

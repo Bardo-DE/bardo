@@ -6,9 +6,9 @@ use super::{Pop3Auth, Pop3Phase, Pop3Relay, app_greeting};
 use crate::fault::RelayFault;
 use crate::lines::{MAX_EARLY, closes, fail, finished, overlong, send, send_line, take_line, text};
 use crate::step::{Effect, Input, Relaying, Side};
+use account_core::{RelayAuth, Tls};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use account_core::{RelayAuth, Tls};
 
 fn ok(line: &str) -> bool {
     line == "+OK" || line.starts_with("+OK ")

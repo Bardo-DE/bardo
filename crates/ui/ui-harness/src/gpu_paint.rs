@@ -12,10 +12,10 @@ use anyrender::ResourceId;
 use anyrender_vello_hybrid::{ImageManager, ImageUploads, VelloHybridScenePainter};
 use blitz_dom::BaseDocument;
 use blitz_embed::adapter::AdapterPref;
-use ui_blitz::Gpu;
-use ui_blitz::seam::attached_gpu;
 use rustc_hash::FxHashMap;
 use std::time::{Duration, Instant};
+use ui_blitz::Gpu;
+use ui_blitz::seam::attached_gpu;
 use vello_hybrid::{RenderSize, RenderTargetConfig, Renderer, Resources, Scene, TextureBindings};
 use wgpu_context::DeviceHandle;
 
@@ -31,7 +31,7 @@ pub(crate) struct GpuPainter {
     renderer: Renderer,
     resources: Resources,
     scene: Scene,
-    /// Uploaded images by content hash, kept across frames as shell-host keeps them.
+    /// Uploaded images by content hash, kept across frames as layer-shell-host keeps them.
     images: ImageUploads,
     /// Textures the document registered (a canvas), by anyrender resource.
     bindings: FxHashMap<ResourceId, wgpu::TextureView>,

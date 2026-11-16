@@ -23,6 +23,10 @@ mod scope;
 mod slug;
 pub mod trace;
 
+/// Re-exported so `prov` is the one import for identity vocabulary.
+pub use account_capability::AgentProgram;
+pub use account_core::{AppName, DataClass, SpaceId, SpaceScope};
+pub use account_ids::UnixSeconds;
 pub use actor::{Actor, ActorKind, AgentRole, Channel, SystemPart};
 pub use agent::{Address, AgentRef};
 pub use consent::{
@@ -40,7 +44,3 @@ pub use label::{
 pub use message::{
     Fault, MAX_PARTS, MAX_TEXT_BYTES, Message, MessageKind, MessageText, Part, ReportStatus,
 };
-/// Re-exported so `prov` is the one import for identity vocabulary.
-pub use account_capability::AgentProgram;
-pub use account_core::{AppName, DataClass, SpaceId, SpaceScope};
-pub use account_ids::UnixSeconds;

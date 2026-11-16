@@ -7,11 +7,11 @@ use crate::harness_input::paste_keys;
 use crate::input::{ImeInput, PasteChord, RawKeyInput, RawKeyPhase};
 use crate::query::first;
 use blitz_traits::events::{BlitzImeEvent, MouseEventButton, UiEvent};
+use ui_blitz::seam::edit_hit as hit;
 use ui_components::host::captured::{CapturedPointer, PointerPhase};
 use ui_components::host::ime::ImeEvent;
 use ui_components::host::position::TextPosition;
 use ui_components::prelude::*;
-use ui_blitz::seam::edit_hit as hit;
 
 impl Harness {
     /// Deliver one input-method step, through the routing the window uses: to the surface that

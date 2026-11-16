@@ -1,4 +1,4 @@
-# shell-host
+# layer-shell-host
 
 Runs Blitz / Dioxus Native documents on Wayland: layer-shell surfaces (bars, docks,
 overlays), xdg popups and xdg toplevels, all sharing one GPU device and one renderer, with
@@ -144,7 +144,7 @@ Tab in one surface and a popup opened by a key both show the ring. `SurfaceHandl
 current_input_modality()` reads it without subscribing. It is what a `:focus-visible`-like ring
 follows (Blitz never matches `:focus-visible`).
 
-shell-host cannot name quire's `ds::HostModality` (`scripts/check-boundary.sh`), so the shell
+layer-shell-host cannot name quire's `ds::HostModality` (`scripts/check-boundary.sh`), so the shell
 bridges it once in each surface's root component, above its `Ds`:
 
 ```rust
@@ -176,7 +176,7 @@ its own subtree; the bridge sees every key the seat delivers to any surface.
 
 ## Consuming: fonts
 
-shell-host bundles no faces of its own (it never depends on a design system,
+layer-shell-host bundles no faces of its own (it never depends on a design system,
 `scripts/check-boundary.sh`) and its `FontContext` is built from `SharedFonts::system()` alone:
 fontconfig's system fonts, plus Blitz's own list-bullet glyph. A shell's design-system faces
 (quire's Inter, Inter Display, Space Mono, Bricolage Grotesque, Karla, Noto Serif) reach every
@@ -203,8 +203,8 @@ dependency bump (e.g. that `"Inter"` is still present) as a plain unit test.
 
 `headless::HeadlessConfig`'s `Fonts::Bundled(FontFaces)` takes the same type: a snapshot test
 gets the shell's real faces by passing the same `FontFaces` value its `HostConfig` does, rather
-than shell-host guessing at a font on disk. `headless::bundled_faces()` is a fallback for
-shell-host's own examples and tests, which bundle no design system of their own.
+than layer-shell-host guessing at a font on disk. `headless::bundled_faces()` is a fallback for
+layer-shell-host's own examples and tests, which bundle no design system of their own.
 
 ## Acceptance
 

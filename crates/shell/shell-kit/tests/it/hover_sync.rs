@@ -5,14 +5,14 @@
 //! harness's frame now dispatches that change (`blitz_embed::hover`).
 
 use dioxus::prelude::*;
-use ui_components::prelude::*;
-use ui_harness::harness::settle_until;
-use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_kit::notifications::banner_stack::{Banner, BannerKey};
 use shell_kit::notifications::parts::AppMark;
 use shell_kit::prelude::*;
 use std::cell::RefCell;
 use std::time::Duration;
+use ui_components::prelude::*;
+use ui_harness::harness::settle_until;
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
     width: 400,

@@ -3,10 +3,10 @@
 //! The listing is the app's own text, so it is labelled untrusted with the app as its source and
 //! never joins the shell's own words. An activation answers in fixed words, never the item's.
 
+use account_core::{AppName, DataClass};
 use action_client::Transport;
 use action_core::{AppRefusal, FailText, Follow, Invocation, Outcome, Preview, Undoable};
 use action_vocab::{CallClass, LabelText, Value};
-use account_core::{AppName, DataClass};
 use provenance::{Label, Labelled, Source};
 use shell_model::intents::shell::MenuAsk;
 

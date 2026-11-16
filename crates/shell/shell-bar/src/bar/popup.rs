@@ -2,11 +2,11 @@
 //! Seat)`; design/13 §13.3.2 position: `x = title.left - 8`, `y = title.bottom + 6`, status
 //! menus right-aligned to `item.right + 8`, one reusable popup repositioned on hover switch).
 
-use ui_components::prelude::*;
 use layer_shell_host::{
     ElementId, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset,
     PopupPlacement, PopupSize, Rect, Size,
 };
+use ui_components::prelude::*;
 
 use shell_ui_kit::menu::PopupRoom;
 
@@ -34,7 +34,7 @@ pub(crate) fn room() -> PopupRoom {
 }
 
 /// The popup's placement under the element whose rect is `title`. The size is only where the
-/// popup starts, before shell-host measures its document (`PopupSize::FitContent`): room for
+/// popup starts, before layer-shell-host measures its document (`PopupSize::FitContent`): room for
 /// any menu, so the first frame clips nothing.
 pub(crate) fn placement(
     title: ui_components::prelude::Rect,
@@ -56,7 +56,11 @@ pub(crate) fn placement(
 /// right end less [`EDGE_GAP`], whatever its item's place (macOS's top right). The popup hangs
 /// from the anchor's bottom-left (a title) or bottom-right (a status item, the control center),
 /// `menu_popup`'s edges; the anchor folds in the room.
-pub(crate) fn anchor_rect(title: ui_components::prelude::Rect, side: MenuSide, bar_width: i32) -> Rect {
+pub(crate) fn anchor_rect(
+    title: ui_components::prelude::Rect,
+    side: MenuSide,
+    bar_width: i32,
+) -> Rect {
     let (left, top) = (floor(title.left()), floor(title.top()));
     let (right, bottom) = (ceil(title.right()), ceil(title.bottom()));
     let (left, right) = match side {
@@ -143,12 +147,12 @@ pub fn adjust(side: MenuSide) -> PopupAdjust {
 #[cfg(test)]
 mod tests {
     use super::{MAX_PX, MenuSide, SIDE, TOP, anchor_rect, menu_offset, menu_popup};
-    use ui_components::prelude::Rect as DsRect;
-    use ui_components::prelude::Size as DsSize;
-    use ui_components::prelude::*;
     use layer_shell_host::{
         ElementId, PopupAnchor, PopupEdge, PopupGrab, PopupOffset, PopupSize, Rect, offset_rect,
     };
+    use ui_components::prelude::Rect as DsRect;
+    use ui_components::prelude::Size as DsSize;
+    use ui_components::prelude::*;
 
     fn title(x: f32, width: f32) -> DsRect {
         DsRect {

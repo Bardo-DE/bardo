@@ -70,7 +70,7 @@ engines = [
 ]
 # `TailnetLending`: installs and takes away the drop-in that lets the person's other computers
 # reach inferd (the Settings switch "Let my other computers use this computer's models"), with the
-# manager of the person's units injected. Off by default: it brings porter-fs (std only). With
+# manager of the person's units injected. Off by default: it brings account-fs (std only). With
 # `dbus` it also has `SessionUnits`, the real manager over the session bus.
 lending = ["dep:account-fs"]
 # The D-Bus transport (Linux, the desktop's inferd). It reads the session `Open` returns as

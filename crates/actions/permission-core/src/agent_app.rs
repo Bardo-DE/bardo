@@ -7,8 +7,8 @@
 //! declarations are `manifests/org.quire.AcpAgent.toml`.
 
 use crate::standing_match::{ArgFacts, CallFacts};
-use action_vocab::ActionRef;
 use account_core::AppName;
+use action_vocab::ActionRef;
 use provenance::{ActionName, Effect};
 
 /// The pseudo-app and the bus name of the host that serves its actions.

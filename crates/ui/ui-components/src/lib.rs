@@ -1,6 +1,6 @@
 //! quire's renderer-free design system: the host seams, the overlay stack, the root, the generic
-//! components, and the assembly of the stylesheet and `Ds`. It sits over three crates (`ds-core`,
-//! `ds-style`, `ds-motion`); its tests lint with `ds-lint`. `ds-shell` builds the shell's own parts
+//! components, and the assembly of the stylesheet and `Ds`. It sits over three crates (`ui-core`,
+//! `ui-style`, `ui-motion`); its tests lint with `ui-lint`. `ui-shell` builds the shell's own parts
 //! on top of this crate. Inside the crate a layer names only the layers below it
 //! (`scripts/check-boundary.sh`). A consumer writes `use ui_components::prelude::*` for the names it draws
 //! with and names everything else by its home path; the root holds only `prelude` and the

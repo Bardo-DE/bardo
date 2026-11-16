@@ -1,6 +1,6 @@
 //! inferd's model picker, as the Intelligence page meets it: its live rows with the coding agents
 //! docket lists laid over them, the picks the person makes, and the reasons it gives for a pick.
-//! The steps are `detent-model`'s `step`.
+//! The steps are `settings-app-model`'s `step`.
 
 mod models;
 mod reasons;
@@ -14,7 +14,9 @@ use crate::follow::{Followed, Slot, follow_with};
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
-use settings_app_files::{ConfigHome, DataHome, agents_switch, load_agents, programs_on, turn_on_agents};
+use settings_app_files::{
+    ConfigHome, DataHome, agents_switch, load_agents, programs_on, turn_on_agents,
+};
 use settings_app_model::{
     AccountsNotice, AgentWord, Described, PickerEffect, PickerInput, PickerState, agent_offers,
     picker_row_is_choice as is_choice, step, with_agents,

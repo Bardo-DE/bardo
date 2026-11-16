@@ -10,6 +10,10 @@ mod spell_dict;
 mod worker;
 
 use dioxus::prelude::*;
+use std::cell::RefCell;
+use std::path::PathBuf;
+use std::time::Duration;
+use ui_blitz::spell::{SpellConfig, provide_with};
 use ui_components::base::press::PointerButton;
 use ui_components::edit::input::{EditInput, KeyInput};
 use ui_components::host::position::TextPosition;
@@ -17,11 +21,7 @@ use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::spell::lang::{Lang, Spell};
 use ui_components::spell::marks::SpellReplace;
-use ui_blitz::spell::{SpellConfig, provide_with};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use std::cell::RefCell;
-use std::path::PathBuf;
-use std::time::Duration;
 use worker::{give_worker_time, settle_on_worker, wait_for_reply};
 
 /// The real time the worker is given to answer when a test asserts it must not (a negative cannot

@@ -2,8 +2,8 @@
 //! themselves are `inference_turns::structured::limits`.
 
 use crate::config::InferdConfig;
-use model_provider::{CharCount, Count};
 use inference_turns::structured::limits::*;
+use model_provider::{CharCount, Count};
 
 fn resolved(text: &str) -> Resolved {
     InferdConfig::from_toml(text).expect("reads").ai.resolve()

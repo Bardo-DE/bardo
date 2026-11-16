@@ -7,13 +7,13 @@ use std::ffi::OsString;
 use std::iter::once;
 
 use clap::Parser;
-use shell_verbs::ShellVerb;
 use shell_ipc::act::{SwitcherRequest, WorkspaceRequest};
 use shell_ipc::request::Request;
 use shell_launcher::actions::ActionId;
 use shell_model::actions::Ask;
 pub(super) use shell_model::actions::screenshot_action;
 use shell_model::screenshots::ShotKind;
+use shell_verbs::ShellVerb;
 
 use super::{Cli, Command, request};
 

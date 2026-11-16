@@ -3,14 +3,14 @@
 //! `LinkEvent`s out of its outbox. Dropping the inbox ends the task and, with it, the session.
 //! The session's `next` must be cancel safe (porter's framed sessions say so).
 
-use inference_client::{InferSession, Transport, TransportError};
 use account_capability::Tier;
 use account_core::DataClass;
-use inference_core::{ClientFrame, InferEvent, InferRefusal, ModelError};
 use account_match::Need;
+use agent_voice_wire::VoiceFault;
+use inference_client::{InferSession, Transport, TransportError};
+use inference_core::{ClientFrame, InferEvent, InferRefusal, ModelError};
 use std::sync::Arc;
 use tokio::sync::mpsc;
-use agent_voice_wire::VoiceFault;
 
 /// What the task tells the loop.
 #[derive(Debug)]

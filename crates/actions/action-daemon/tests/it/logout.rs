@@ -4,10 +4,10 @@
 use crate::support::bus::PrivateBus;
 use crate::support::world::{app, caller, mail_router};
 use action_core::*;
+use action_daemon::watch_logind;
 use action_fake::ScriptedConfirmer;
 use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue};
 use action_wire::{IntentsReply, IntentsRequest};
-use action_daemon::watch_logind;
 use provenance::{ActionName, EntityId, EntityKey, EntityKind};
 use std::sync::Arc;
 use std::time::Duration;

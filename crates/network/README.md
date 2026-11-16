@@ -3,9 +3,9 @@
 Typed [zbus](https://crates.io/crates/zbus) proxies for the two system services a Linux desktop's
 network and Bluetooth controls talk to:
 
-- `airwaves-nm`: NetworkManager (`org.freedesktop.NetworkManager`): the manager, devices, Wi-Fi,
+- `networkmanager-proxy`: NetworkManager (`org.freedesktop.NetworkManager`): the manager, devices, Wi-Fi,
   access points, active and saved connections, and enums for the kinds and states it sends.
-- `airwaves-bluez`: BlueZ (`org.bluez`): adapters, devices, batteries, the agent manager, and the
+- `bluez-proxy`: BlueZ (`org.bluez`): adapters, devices, batteries, the agent manager, and the
   errors a pairing agent answers with.
 
 Written from the services' documented D-Bus APIs. Nothing links libdbus, and nothing here is tied to
@@ -16,7 +16,7 @@ a desktop: any zbus program on any Linux distribution can use them.
 Pin by tag:
 
 ```toml
-airwaves-nm = { git = "https://github.com/Bardo-DE/airwaves", tag = "v0.1.0", default-features = false, features = ["tokio"] }
+networkmanager-proxy = { git = "https://github.com/Bardo-DE/airwaves", tag = "v0.1.0", default-features = false, features = ["tokio"] }
 ```
 
 zbus runs on its own executor by default (`async-io`); a tokio program turns default features off

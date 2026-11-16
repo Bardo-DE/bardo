@@ -355,7 +355,10 @@ pub(crate) fn relayout(state: &mut State, cause: &Cause) {
     let now = state.clock.now();
     let spec = spec_of_framed(&state.core.model, &frames::reserves(state));
     let next = state.core.layout.arrange(&spec, &state.core.knobs);
-    let motion = std::mem::replace(&mut state.core.motion, compositor_motion::MotionBook::empty());
+    let motion = std::mem::replace(
+        &mut state.core.motion,
+        compositor_motion::MotionBook::empty(),
+    );
     // A swipe that moves a row draws it itself, finish included: that row must not slide again.
     let driven: BTreeSet<OutputKey> = state
         .core

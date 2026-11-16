@@ -4,10 +4,8 @@
 //! router. The router writes the log of a native session, so an append here is refused.
 
 use action_client::{ClientError, Intents, Transport as IntentsTransport};
-use agent_session::{
-    Appended, LogFault, LogPage, Logged, PageSize, Seq, SessionEntry, SessionLog,
-};
 use action_wire::{StoredAsk, StoredView, WireRefusal};
+use agent_session::{Appended, LogFault, LogPage, Logged, PageSize, Seq, SessionEntry, SessionLog};
 use provenance::SessionId;
 use std::borrow::Borrow;
 use std::marker::PhantomData;

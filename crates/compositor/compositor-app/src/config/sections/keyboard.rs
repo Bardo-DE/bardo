@@ -2,9 +2,9 @@
 
 use crate::config::convert;
 use compositor_core::settings::CasementSettings;
+use serde::{Deserialize, Serialize};
 use ui_settings::schema::Page;
 use ui_settings::{Count, Ms};
-use serde::{Deserialize, Serialize};
 
 /// `keyboard.*`: the keymap and the key repeat. An empty XKB name is libxkbcommon's own default
 /// for it (and its `XKB_DEFAULT_*` environment): nothing here assumes a layout.

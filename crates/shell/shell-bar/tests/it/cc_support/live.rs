@@ -8,10 +8,6 @@ use std::sync::{Arc, Mutex};
 use tokio::sync::{mpsc, watch};
 
 use dioxus::prelude::*;
-use ui_components::base::geometry::placement::{Align, Side};
-use ui_components::host::measure::Anchor;
-use ui_components::prelude::*;
-use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use shell_bar::control_center::{CcPage, ControlCenter};
 use shell_model::ids::OutputName;
 use shell_settings::ShellFile;
@@ -20,6 +16,10 @@ use shell_ui_kit::links::FocusLink;
 use shell_ui_kit::menu::{PopupFrame, PopupRoom};
 use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
+use ui_components::base::geometry::placement::{Align, Side};
+use ui_components::host::measure::Anchor;
+use ui_components::prelude::*;
+use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 use super::fake;
 

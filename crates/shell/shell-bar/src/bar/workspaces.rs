@@ -6,13 +6,13 @@
 //! `BarPointer` hears. Right-click Edit Space waits for the Space editor popup.
 
 use dioxus::prelude::*;
-use ui_components::base::press::{PointerButton, Press};
 use layer_shell_host::OutputInfo;
+use shell_kit::bar::pointer::BarPointer;
+use shell_kit::prelude::*;
 use shell_model::ids::OutputName;
 use shell_model::windows::{WlCommand, Workspace};
 use shell_services::WindowsService;
-use shell_kit::bar::pointer::BarPointer;
-use shell_kit::prelude::*;
+use ui_components::base::press::{PointerButton, Press};
 
 use super::reorder::{DRAG_THRESHOLD_PX, Dropped, Pressed, reorder};
 use super::title::pointer_at;

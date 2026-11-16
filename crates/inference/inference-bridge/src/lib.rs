@@ -3,7 +3,7 @@
 //! `InferEvent`, `ProviderError` to `ModelError`, `StopReason` both ways. `request` is the way
 //! in and `reply` the way out; the mapping of the served name to a `ModelId` is here.
 //!
-//! Moved out of inferd so that the process that hosts the engines itself (inferd-client's
+//! Moved out of inferd so that the process that hosts the engines itself (inference-client's
 //! `engines` feature, an app with no inferd) speaks to them with the same mapping the daemon
 //! does. Pure: no runtime, no socket.
 
@@ -18,9 +18,9 @@ pub use request::{
 };
 pub use scores::{NoScores, choice_scores, option_scores, turn_scores};
 
-use model_provider::{Attempt, RetryPolicy, WaitMs};
 use account_capability::ModelId;
 use account_ids::IdError;
+use model_provider::{Attempt, RetryPolicy, WaitMs};
 
 /// How a request to an engine is retried, by the daemon and by an app that hosts the engines
 /// itself alike: three attempts, a quarter of a second doubling to four seconds.

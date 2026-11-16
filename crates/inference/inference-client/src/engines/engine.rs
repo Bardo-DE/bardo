@@ -1,10 +1,10 @@
 //! One engine the app points at: where it is, what it serves, how it is spoken to and whether a
 //! key goes with every request.
 
-use model_openai_compat::Flavor;
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_ids::Tokens;
+use model_openai_compat::Flavor;
 use std::fmt;
 
 /// What the app calls an engine in its routing table: the id grammar (`[a-z0-9]` then

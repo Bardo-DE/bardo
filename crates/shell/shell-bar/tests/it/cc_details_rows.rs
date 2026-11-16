@@ -8,13 +8,13 @@ use crate::cc_support;
 use cc_support::details::{center, figure, ms, open, press};
 use cc_support::fake;
 
-use ui_harness::Harness;
-use ui_harness::harness::assert_settles_to_zero_frames;
 use shell_model::attempt::{Attempt, Attempts, OpStamp};
 use shell_model::bluetooth::{BtBattery, BtConnection};
 use shell_model::network::{Connectivity, Link, Network};
 use shell_model::units::Percent;
 use shell_model::wifi::{AccessPoint, Association, Security, Ssid, Wifi};
+use ui_harness::Harness;
+use ui_harness::harness::assert_settles_to_zero_frames;
 
 // ---- Wi-Fi networks -------------------------------------------------------------------------
 

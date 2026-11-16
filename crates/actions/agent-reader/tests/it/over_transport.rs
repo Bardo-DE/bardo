@@ -5,11 +5,11 @@
 #[path = "../../../companion-daemon/tests/it/support/infer.rs"]
 mod infer;
 
-use action_core::{Reader, ReaderAsk, ReaderError, ReaderTask, ValueSchema};
-use agent_reader::{TransportReader, read};
-use action_vocab::{CharCount, ChoiceId, Handle, Value};
-use infer::{Say, ScriptedInfer, words};
 use account_core::DataClass;
+use action_core::{Reader, ReaderAsk, ReaderError, ReaderTask, ValueSchema};
+use action_vocab::{CharCount, ChoiceId, Handle, Value};
+use agent_reader::{TransportReader, read};
+use infer::{Say, ScriptedInfer, words};
 use inference_core::{InferRefusal, ReplyShape};
 use provenance::{Confidentiality, Integrity, Label, Labelled, Quarantined, SessionId, Source};
 use std::collections::BTreeSet;

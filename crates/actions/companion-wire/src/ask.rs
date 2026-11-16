@@ -1,8 +1,8 @@
 //! What a caller says to the companion, and where the launcher goes back to.
 
+use account_core::AppName;
 use action_core::{ContextKeep, UserTurn};
 use action_vocab::WindowKey;
-use account_core::AppName;
 use provenance::{SessionId, TaskId};
 use serde::{Deserialize, Serialize};
 

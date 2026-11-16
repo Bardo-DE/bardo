@@ -1,6 +1,6 @@
 //! The switch "Let my other computers use this computer's models": turning it on asks first, then
 //! sets sharing up through porter, and only when that worked is the setting written; turning it
-//! off takes sharing away and clears the setting. The steps are `detent-model`'s `sharing_step`.
+//! off takes sharing away and clears the setting. The steps are `settings-app-model`'s `sharing_step`.
 
 use crate::copy::{
     self,
@@ -8,9 +8,9 @@ use crate::copy::{
 };
 use crate::env::Env;
 use crate::files::{Edit, Files, store};
+use dioxus::prelude::*;
 use settings_app_client::{Heard, Lending, Notice, Pane};
 use settings_app_model::{SHARING_KEY, Sharing, SharingInput};
-use dioxus::prelude::*;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ui_components::prelude::*;
 

@@ -7,20 +7,20 @@ use crate::support::bus::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
+use account_core::{AppName, DataClass};
+use account_ids::{Count, Tokens};
+use action_client::{DbusTransport, Intents};
+use action_core::*;
+use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
+use action_dbus::callers::{Identity, Role};
+use action_vocab::{CallerRole, ChoiceId, Handle, Value};
+use action_wire::{ReadAsk, RecallAsk, RecallView, SessionOpen};
+use agent_reader_daemon::{ReaderHost, ReaderService, serve_on};
 use memory_core::{
     InjectQuery, MemoryItem, MemoryReply, MemoryRequest, RecallHit, RecallOver, RecallWhy,
     TrustFilter, UserText,
 };
-use action_client::{DbusTransport, Intents};
-use action_core::*;
-use action_dbus::callers::{Identity, Role};
-use action_vocab::{CallerRole, ChoiceId, Handle, Value};
-use action_wire::{ReadAsk, RecallAsk, RecallView, SessionOpen};
-use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
-use account_core::{AppName, DataClass};
-use account_ids::{Count, Tokens};
 use provenance::{AgentRef, Label, Source, SpaceId};
-use agent_reader_daemon::{ReaderHost, ReaderService, serve_on};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;

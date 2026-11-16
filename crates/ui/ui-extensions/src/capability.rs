@@ -11,7 +11,7 @@
 
 use ui_core::word::Word;
 
-/// A capability word `ds-extensions` owns. The slug is the word a manifest writes in
+/// A capability word `ui-extensions` owns. The slug is the word a manifest writes in
 /// `capability = "..."`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 #[word(case = snake)]

@@ -3,7 +3,7 @@
 //!
 //! - `storage`: a fake `org.quire.Storage1`, two drives of real files whose states move, for
 //!   building Files before syncd serves the real one. The binary `porter-rig-storage` (its name
-//!   and flags kept from when it lived in porter-rig, because the shell session runs it) serves
+//!   and flags kept from when it lived in account-rig, because the shell session runs it) serves
 //!   it on the session bus.
 
 pub mod storage;

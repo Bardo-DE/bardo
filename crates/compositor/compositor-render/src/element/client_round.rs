@@ -1,6 +1,6 @@
 //! What casement draws for a window that draws its own frame: corners clipped at a radius and,
 //! unless the client has drawn one, the shadow a framed window has. Which windows get which is
-//! decided in `casement-core` (`window::round_of`); this is the data the scene draws from.
+//! decided in `compositor-core` (`window::round_of`); this is the data the scene draws from.
 
 use super::Rounding;
 use compositor_core::window::FrameStyle;

@@ -2,9 +2,9 @@
 //! the round cap and carried on from.
 
 use dioxus::prelude::*;
+use std::time::Duration;
 use ui_core::time::clock::sleep;
 use ui_harness::{Harness, Viewport};
-use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
     width: 200,

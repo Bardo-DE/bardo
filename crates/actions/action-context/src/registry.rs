@@ -1,8 +1,8 @@
 //! The manifests of every installed app. Reading a manifest file is `action_manifest::parse`.
 
+use account_core::AppName;
 use action_manifest::{ActionDecl, ManifestError, ValidManifest};
 use action_vocab::ActionRef;
-use account_core::AppName;
 use provenance::EntityKind;
 use std::collections::{BTreeMap, BTreeSet};
 

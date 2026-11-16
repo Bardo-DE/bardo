@@ -5,9 +5,9 @@
 use crate::edit_locate::{Order, Side, Spot, order_of};
 use crate::edit_tree::Segment;
 use blitz_dom::{BaseDocument, Node, NodeId};
+use parley::{Affinity, BoundingBox, Cursor, Selection};
 use ui_components::prelude::*;
 use ui_components::style::tokens::pixel::PixelToken;
-use parley::{Affinity, BoundingBox, Cursor, Selection};
 
 /// The caret's box at `spot`: `--caret-w` wide from the insertion point, its line's height.
 pub(crate) fn caret(doc: &BaseDocument, spot: Spot) -> Option<Rect> {

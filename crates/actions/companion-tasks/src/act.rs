@@ -9,12 +9,12 @@ use crate::fault::ServeFault;
 use crate::plan::phase_of;
 use crate::runtime::Companion;
 use crate::seams::Surface;
-use companion_wire::AnswerPhase;
 use action_client::{
     ClientError, PerformEvent, PerformWatch, Transport as IntentsTransport, TransportError,
 };
-use agent_planner::Planner;
 use action_vocab::{CallId, CallRequest, CardActionId, Clock};
+use agent_planner::Planner;
+use companion_wire::AnswerPhase;
 use provenance::{Effect, TaskId};
 
 /// A card's call that has begun: the request is in flight and its events are still to be read.

@@ -20,6 +20,8 @@ pub mod running;
 pub mod syncd;
 pub mod wifi;
 
+use inference_client::LendingConfig;
+use lending::Units;
 use settings_app_client::{
     BusSource, ClientBuilder, ClientHomes, CornerDesk, Desk, Lender, NoCorners, NoPictures,
     PersonLink, Pictures, Quiet, ReasonFeed, Vouch,
@@ -33,14 +35,12 @@ use settings_app_system::spaces::SpacesLink;
 use settings_app_system::updates::{FakeLeaves, FakeUpdates};
 use settings_app_testkit::{Scratch, seed_schemas};
 use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
+use std::sync::Arc;
 use ui_components::prelude::{Scheme, SystemPrefs};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use ui_settings::SystemPrefsSource;
 use ui_settings::live::AnyOwner;
 use ui_settings::schema::Schema;
-use inference_client::LendingConfig;
-use lending::Units;
-use std::sync::Arc;
 use wifi::Wifi;
 
 pub const TMP: &str = env!("CARGO_TARGET_TMPDIR");

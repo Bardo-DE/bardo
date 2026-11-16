@@ -13,8 +13,8 @@
 
 use account_capability::LlmFeature;
 use account_fs::atomic::AtomicWrite;
-use inference_core::{InferReply, ModelError, ModelRef, ServedBy, ToolProof, Why};
 use account_match::Need;
+use inference_core::{InferReply, ModelError, ModelRef, ServedBy, ToolProof, Why};
 use inference_router::carried::Carried;
 use inference_router::seams::AuditSink;
 use inference_router::session::SessionSpec;

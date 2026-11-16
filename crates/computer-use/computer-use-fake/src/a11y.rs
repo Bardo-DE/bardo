@@ -1,9 +1,11 @@
-//! An accessibility source over fixed snapshots, loaded from the a11y-tree fixtures.
+//! An accessibility source over fixed snapshots, loaded from the computer-use-a11y-tree fixtures.
 
 use computer_use_a11y_tree::{A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget};
 
-const GTK4_DIALOG: &str = include_str!("../../computer-use-a11y-tree/fixtures/a11y/gtk4_dialog.json");
-const FIREFOX_FORM: &str = include_str!("../../computer-use-a11y-tree/fixtures/a11y/firefox_form.json");
+const GTK4_DIALOG: &str =
+    include_str!("../../computer-use-a11y-tree/fixtures/a11y/gtk4_dialog.json");
+const FIREFOX_FORM: &str =
+    include_str!("../../computer-use-a11y-tree/fixtures/a11y/firefox_form.json");
 const QUIRE_MAIL: &str = include_str!("../../computer-use-a11y-tree/fixtures/a11y/quire_mail.json");
 
 /// Which fixture.

@@ -6,12 +6,12 @@
 #[path = "support/spell_dict.rs"]
 mod spell_dict;
 
+use std::future::Future;
+use std::path::Path;
+use ui_blitz::spell::{NativeSpell, SpellConfig};
 use ui_components::prelude::*;
 use ui_components::spell::lang::Lang;
 use ui_components::spell::service::Learned;
-use ui_blitz::spell::{NativeSpell, SpellConfig};
-use std::future::Future;
-use std::path::Path;
 
 fn en() -> Lang {
     Lang::parse("en_US").expect("a language")

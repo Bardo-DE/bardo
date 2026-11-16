@@ -3,6 +3,8 @@
 //! the screen that press was, and how far the wheel turned over it.
 
 use dioxus::html::geometry::WheelDelta;
+use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayIcon, TrayItemId, TrayMenuIcon};
+use shell_services::tray::{IconArt, icon_art};
 use ui_components::base::press::{PointerButton, Press};
 use ui_components::components::menus::item::item::MenuImage;
 use ui_components::prelude::*;
@@ -10,8 +12,6 @@ use ui_components::style::icon::classify::ChromaLimit;
 use ui_components::style::icon::classify::IconKind;
 use ui_components::style::icon::classify::classify_with;
 use ui_components::style::icon::url::IconUrl;
-use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayIcon, TrayItemId, TrayMenuIcon};
-use shell_services::tray::{IconArt, icon_art};
 
 /// The top-left corner of the bar's surface in the compositor's logical space: its output's
 /// origin (the bar is anchored to the output's top-left).
@@ -117,7 +117,7 @@ pub(crate) fn screen_point(origin: ScreenOrigin, at: Point) -> (i32, i32) {
 }
 
 /// The notches a wheel event turned, on its main axis, in `wl_pointer`'s sign (positive is down
-/// or right). shell-host hands Blitz the axis value negated (its `input/pointer.rs`), so a line
+/// or right). layer-shell-host hands Blitz the axis value negated (its `input/pointer.rs`), so a line
 /// delta is turned back. A high-resolution wheel's half notch rounds to one; a pixel delta (a
 /// touchpad's continuous scroll) and a page delta are not notches and send nothing.
 pub(crate) fn scroll_delta(delta: WheelDelta) -> Option<ScrollDelta> {
@@ -141,13 +141,13 @@ mod tests {
     };
     use dioxus::html::geometry::WheelDelta;
     use dioxus::prelude::Modifiers;
+    use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayItemId, TrayMenuIcon};
+    use shell_services::tray::IconArt;
+    use std::path::PathBuf;
     use ui_components::base::press::{PointerButton, Press};
     use ui_components::components::menus::item::item::MenuImage;
     use ui_components::prelude::*;
     use ui_components::style::icon::classify::ChromaLimit;
-    use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayItemId, TrayMenuIcon};
-    use shell_services::tray::IconArt;
-    use std::path::PathBuf;
 
     fn png(pixel: [u8; 4]) -> Vec<u8> {
         let image = image::RgbaImage::from_pixel(4, 4, image::Rgba(pixel));
@@ -308,7 +308,7 @@ mod tests {
             })
         };
         let cases = [
-            // shell-host negates wl_pointer: a notch down arrives as -1 line.
+            // layer-shell-host negates wl_pointer: a notch down arrives as -1 line.
             (WheelDelta::lines(0.0, -1.0, 0.0), v(1)),
             (WheelDelta::lines(0.0, 2.0, 0.0), v(-2)),
             (WheelDelta::lines(0.0, -0.5, 0.0), v(1)),

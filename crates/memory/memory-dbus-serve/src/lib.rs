@@ -2,7 +2,7 @@
 //! served objects over a [`Serve`] handler, the signals ([`Signal`], [`emit_to`], [`emit`]), and
 //! the frozen skeletons whose introspection is the checked-in `dbus/org.quire.Memory1.xml`
 //! ([`introspection`]; the served objects declare the same document, [`served_introspection`]).
-//! The caller's half (proxies, codec, `invoke`) is `almanac-dbus`; callers never need this crate.
+//! The caller's half (proxies, codec, `invoke`) is `memory-dbus`; callers never need this crate.
 
 mod introspect;
 mod serve;

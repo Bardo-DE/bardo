@@ -8,9 +8,9 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::Subcommand;
+use shell_settings::APP;
 use ui_lint::{UserStyleNote, user_stylesheet};
 use ui_settings::{ConfigRoot, Store, UserStyle};
-use shell_settings::APP;
 
 use super::stdout::{self, Emitted};
 

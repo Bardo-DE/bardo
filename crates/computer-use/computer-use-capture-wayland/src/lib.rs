@@ -18,9 +18,9 @@ pub use pump::{Pump, PumpError};
 pub use session::{StampClock, WaylandSession};
 
 use crate::key::ObjectKey as Key;
+use computer_use_capture::{CaptureError, WindowCapture};
 use computer_use_desktop::LeaseGrant;
 use lease::Standing;
-use computer_use_capture::{CaptureError, WindowCapture};
 use session::{Masking, SinceStart};
 use state::CapState;
 use std::sync::Arc;
@@ -181,8 +181,8 @@ impl QuireMaskedCapture {
 
 #[cfg(test)]
 mod tests {
-    use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::MaskReason as ProtocolReason;
     use computer_use_capture::MaskReason;
+    use desktop_protocols::client::quire_agent_v1::quire_agent_lease_v1::MaskReason as ProtocolReason;
 
     #[test]
     fn mask_reason_codes_equal_the_protocol_enum() {

@@ -4,11 +4,11 @@
 
 use super::local::LOCAL_ITEM;
 use super::*;
+use std::collections::BTreeMap;
 use ui_settings::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
     HostName, KeyKind, KeyPath, KeySpec, Label, Note, Page, Section, WordLabels,
 };
-use std::collections::BTreeMap;
 
 const ROW: &str = "ai.model.text.fast";
 const POOL: &str = "ai.auto.pool.text";

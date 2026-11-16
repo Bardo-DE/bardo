@@ -9,8 +9,8 @@
 //! A request's URL is a porter [`WebUrl`](account_ids::WebUrl) (`https`, or `http` to this
 //! computer); [`request`] turns it into the request's URI.
 //!
-//! The clients are other crates: `porter-http-reqwest` for a direct connection and
-//! `porter-http-relay` over an accountd relay.
+//! The clients are other crates: `account-http-reqwest` for a direct connection and
+//! `account-http-relay` over an accountd relay.
 //!
 //! Requests and responses are plain values:
 //!

@@ -3,8 +3,12 @@
 
 use crate::hosting::bus::{PrivateBus, within};
 
+use account_core::{AppId, AppName, Isolation};
+use account_ids::UnixSeconds;
+use account_ids::clock::FixedClock;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Manifest, Row};
 use engine_probe::{Record, Roots, Scope, seal_of};
+use inference_core::{Policy, TierMap};
 use inference_daemon::config::{Dirs, InferdConfig, ProgramSearch};
 use inference_daemon::engines::Engines;
 use inference_daemon::installed::Installed;
@@ -13,18 +17,14 @@ use inference_daemon::service::{Inference, serve_on};
 use inference_daemon::settings::LocalEngines;
 use inference_daemon::settings::{ConfigFile, Reload};
 use inference_daemon::supervise::Supervised;
-use model_catalog::EngineKind;
-use account_core::{AppId, AppName, Isolation};
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
-use inference_core::{Policy, TierMap};
-use inference_turns::audit::Memory;
-use std::os::unix::fs::PermissionsExt;
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use inference_dbus::inference::{
     EnginePlace, EngineState, InferenceProxy, LocalEngine, local_engine_from_dbus,
 };
+use inference_turns::audit::Memory;
+use model_catalog::EngineKind;
+use std::os::unix::fs::PermissionsExt;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 fn who(role: Role) -> Caller {
     Caller {

@@ -17,9 +17,9 @@ use std::path::{Path, PathBuf};
 
 use plugin_host::manifest::{Entry, Refusal};
 use plugin_host::registry::Registry;
+use serde::Deserialize;
 use ui_helpers::{ReadCap, read_text_capped};
 use ui_settings::schema::Provided;
-use serde::Deserialize;
 
 use crate::fault::Fault;
 use crate::provision::Provision;

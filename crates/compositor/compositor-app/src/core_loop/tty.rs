@@ -20,9 +20,9 @@ use compositor_core::output::OutputConfig;
 use compositor_core::settings::PointerSettings;
 use compositor_core::time::Mono;
 use compositor_core::{Effect, Event, OutputKey, OutputName};
-use desktop_protocols::vocab::PressEdge;
 use compositor_wayland::image_capture::CaptureBook;
 use compositor_wayland::screencopy::ScreencopyPart;
+use desktop_protocols::vocab::PressEdge;
 use smithay::input::keyboard::Keysym as XkbKeysym;
 use smithay::input::keyboard::ModifiersState;
 

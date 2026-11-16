@@ -13,9 +13,9 @@ use compositor_core::OutputName;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_core::time::{Mono, VblankSeq};
 use compositor_render::pass::CapturedFrame;
-use ui_core::geometry::scale::Scale;
 use smithay::backend::allocator::Format;
 use smithay::backend::allocator::dmabuf::Dmabuf;
+use ui_core::geometry::scale::Scale;
 
 impl TtyBackend {
     /// Draws the capture frame of `output`, shown at `seq`: on the display GPU when it keeps

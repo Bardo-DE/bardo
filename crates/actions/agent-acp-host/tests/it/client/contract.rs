@@ -1,12 +1,12 @@
-//! The rules every `SessionBackend` keeps (docket-session's contract), run against `AcpBackend`
+//! The rules every `SessionBackend` keeps (agent-session's contract), run against `AcpBackend`
 //! with its calls going through the real router.
 
 use super::agent::{Act, call, say};
 use super::rig::{Fakes, Setup, abs, opening, read, wired_over};
+use action_core::SheetSurface;
 use agent_acp_core::court::{Court, OpenAgent};
 use agent_acp_host::AcpBackend;
 use agent_acp_host::fake::FakeFiles;
-use action_core::SheetSurface;
 use agent_session::contract::{self, Harness};
 use agent_session::{SessionBackend, StartSession};
 

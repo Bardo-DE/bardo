@@ -1,11 +1,11 @@
 //! The picker a page draws: where inferd's rows stand, and what the person's asks do. Every page
 //! that draws a part of the picker uses this hook, so they agree; the picker itself, with its
-//! follow loop and its calls, is `detent-client`'s.
+//! follow loop and its calls, is `settings-app-client`'s.
 
 use crate::engine_install::use_board;
 use crate::live::use_live;
-use settings_app_model::{PickerInput, PickerState};
 use dioxus::prelude::*;
+use settings_app_model::{PickerInput, PickerState};
 
 /// The picker a page draws: where inferd's rows stand, and what the person's asks do.
 #[derive(Clone, Copy)]

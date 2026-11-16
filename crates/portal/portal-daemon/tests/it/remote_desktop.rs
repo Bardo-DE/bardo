@@ -3,6 +3,7 @@ use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 
 use caller_identity_dbus::caller_identity_core::Standing;
+use portal_core::{Keep, PersistMode, RestoreToken};
 use portal_daemon::BoxFuture;
 use portal_daemon::access::{Answer, Asker, FakeAsker, Question};
 use portal_daemon::app_proof::{AppProof, AppProver, TrustAll, judge_app};
@@ -17,7 +18,6 @@ use portal_daemon::screencast::Dict;
 use portal_daemon::screencast::options::{restore_data, restore_token};
 use portal_daemon::screencast::restore::MemoryStore;
 use portal_daemon::screencast::session::SessionKey;
-use portal_core::{Keep, PersistMode, RestoreToken};
 use zbus::zvariant::{OwnedValue, Value};
 
 use crate::app_proof::{REMOTE, REMOTE_ID, REMOTE_PROGRAM, names_with_entries, program};
@@ -338,7 +338,7 @@ async fn sessions_end_with_the_peer_they_hang_on_and_their_sockets_are_taken_bac
 fn one_caller_cannot_fill_the_book_of_sessions() {
     let (service, _, _) = service(vec![]);
     let hung_on = Tether::new(Some(":1.7".to_owned()), None);
-    for n in 0..transom::peers::SESSION_LIMITS.per_caller {
+    for n in 0..portal_daemon::peers::SESSION_LIMITS.per_caller {
         let n = u32::try_from(n).expect("small");
         assert!(service.create_for(key(n), "a", hung_on.clone()).is_ok());
     }

@@ -2,7 +2,7 @@
 //! one `shell_bar::Bar` per output, fed by fixed `watch` channels (a Thursday afternoon, a
 //! 64 % battery, Wi-Fi joined to `home` with two more networks in range, Bluetooth headphones,
 //! the Balanced power mode, a track playing, three workspaces, two terminal windows), driven by
-//! shell-host's `debug-inject` commands on stdin (`sill-bar-<output> click X Y`, `stats`,
+//! layer-shell-host's `debug-inject` commands on stdin (`sill-bar-<output> click X Y`, `stats`,
 //! `<surface> capture PATH`, `quit`). Commands the bar sends to the fake services are printed
 //! on stderr, never carried out.
 //!
@@ -14,7 +14,6 @@ use std::collections::HashSet;
 use std::fmt::Debug;
 use std::time::Instant;
 
-use ui_components::base::time::stamp::FrameClock;
 use layer_shell_host::{Host, HostCtx, HostEvent, HostRoot, OutputId, OutputInfo};
 use shell_bar::Bar;
 use shell_settings::ShellFile;
@@ -22,6 +21,7 @@ use shell_ui_kit::links::CenterLink;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{MountProps, Surface, mount};
 use tokio::sync::mpsc;
+use ui_components::base::time::stamp::FrameClock;
 
 fn main() {
     if let Err(error) = run() {

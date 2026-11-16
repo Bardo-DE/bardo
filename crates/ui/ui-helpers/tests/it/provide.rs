@@ -1,11 +1,11 @@
 //! `Helpers::provide` and the availability feed over a fake installer and scratch directories.
 //! The example data file is anyview's four capabilities (names are fixtures, not claims).
 
+use std::path::{Path, PathBuf};
 use ui_helpers::{
     CapabilityName, Catalog, Environment, Executable, FakeInstaller, Family, Helpers, InstallLine,
     Missing, Outcome, PackageName, StandIn,
 };
-use std::path::{Path, PathBuf};
 
 /// The four capabilities anyview declares, as an app would ship them.
 const ANYVIEW: &str = r#"

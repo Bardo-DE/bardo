@@ -4,7 +4,7 @@
 # stand-in accountd: examples/accountd_standin.rs owns `org.quire.Accounts1` on the private bus,
 # drives sill's `org.quire.AccountsSheet1` (Open, Update, Close) with SheetView JSON from this
 # directory's heredocs, and prints each `Input` the sheet sends back. Keys are `sill debug key
-# SURFACE KEY` (shell-host's Inject::Key, which enters the sheet where an xkb key does).
+# SURFACE KEY` (layer-shell-host's Inject::Key, which enters the sheet where an xkb key does).
 #
 # Nothing here reaches the person's accountd, session bus, secret store or ~/.config: the private
 # bus is the daemon's session AND system bus, HOME and the XDG directories are scratch.

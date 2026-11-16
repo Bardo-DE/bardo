@@ -1,6 +1,6 @@
 [package]
 name = "account-http-reqwest"
-description = "porter's one direct-connection HTTP client: reqwest behind the `Http` seam of porter-http, with rustls and the platform's trust roots. The only crate in porter that names reqwest."
+description = "porter's one direct-connection HTTP client: reqwest behind the `Http` seam of account-http, with rustls and the platform's trust roots. The only crate in porter that names reqwest."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

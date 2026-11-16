@@ -1,6 +1,6 @@
 [package]
 name = "account-dbus-macros"
-description = "porter-dbus's one attribute: a bus interface written once, as the client's proxy trait, becomes its proxy, the trait a daemon implements and the zbus object that serves it."
+description = "account-dbus's one attribute: a bus interface written once, as the client's proxy trait, becomes its proxy, the trait a daemon implements and the zbus object that serves it."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

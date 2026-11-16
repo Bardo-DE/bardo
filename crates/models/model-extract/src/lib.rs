@@ -4,7 +4,7 @@
 //! synthetic `final_result` tool call where it does not, the schema in the prompt as the last
 //! resort, and the reply is always validated. [`ExtractSession`] builds the request, absorbs the
 //! reply, repairs at most as many times as its budget says, and fails with a reason; it never
-//! hands an unchecked string on. This generalises `cua-session::absorb` (the same one-repair rule,
+//! hands an unchecked string on. This generalises `computer-use-session::absorb` (the same one-repair rule,
 //! the same total function).
 //!
 //! Where it runs: `inferd` runs an `ExtractSession` for `ReplyShape::Json` and `ReplyShape::Choice`

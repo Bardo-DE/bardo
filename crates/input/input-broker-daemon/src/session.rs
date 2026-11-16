@@ -3,7 +3,6 @@
 
 use crate::backend::{Backend, Device};
 use crate::policy::Admission;
-use std::os::fd::OwnedFd;
 use input_broker_wire::limits::{
     MAX_CREATES_PER_CONNECTION, MAX_DENIED_EVENTS, MAX_DEVICES_PER_CONNECTION,
     MAX_HANDED_PER_CONNECTION,
@@ -12,6 +11,7 @@ use input_broker_wire::{
     Admit, Create, Delivery, DeviceId, Event, Filter, Kind, Limiter, Millis, Reason, Reply,
     Request, Route, plan,
 };
+use std::os::fd::OwnedFd;
 
 /// A reply, with the descriptor that rides with it when the device is handed over.
 #[derive(Debug)]

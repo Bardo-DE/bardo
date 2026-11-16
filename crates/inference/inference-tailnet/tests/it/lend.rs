@@ -5,13 +5,13 @@ use super::common::{
     observed, wait,
 };
 use account_fake_servers::Daemon;
-use inference_tailnet::{Config, Footing, Guests, Lending, Limits, Refusal, Visit, Visits, lend};
 use account_tailscale::NodeId;
+use base_testkit::GENEROUS;
+use inference_tailnet::{Config, Footing, Guests, Lending, Limits, Refusal, Visit, Visits, lend};
 use std::future::Future;
 use std::net::{IpAddr, SocketAddr};
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
-use base_testkit::GENEROUS;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::sync::{Notify, watch};
 

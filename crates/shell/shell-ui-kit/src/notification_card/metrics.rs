@@ -8,11 +8,11 @@
 //! shipped constant. The constants and the token defaults are the only two copies; a test
 //! compares them.
 
+use shell_kit::tokens::notifications::NotificationToken;
 use ui_components::motion::swipe::{Speed, SwipeMetrics};
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
 use ui_settings::Fraction;
-use shell_kit::tokens::notifications::NotificationToken;
 
 /// `--notifications-banner-width`'s shipped value.
 pub const BANNER_WIDTH: u16 = 320;

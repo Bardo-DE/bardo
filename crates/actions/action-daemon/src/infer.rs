@@ -1,6 +1,6 @@
 //! intentd's models, over inferd: the reviewer's stages and the policy writer ask through
-//! inferd-client sessions, and the quarantined reader is a client of `Reader1`. The model logic
-//! is `docket-models`' (portable, over any transport); what is here is the bus constructor.
+//! inference-client sessions, and the quarantined reader is a client of `Reader1`. The model logic
+//! is `agent-models`' (portable, over any transport); what is here is the bus constructor.
 
 use action_dbus::InferLink;
 use action_dbus::InferWatch;

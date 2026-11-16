@@ -10,17 +10,17 @@ use crate::helpers::AsHelper;
 use crate::seams::Surface;
 use crate::shared::Shared;
 use crate::task::{TaskRuntime, roster_state};
-use agent_loop::{FrontEvent, IdleState, LoopInput, LoopPhase, LoopState, SideTable, front_step};
-use memory_core::{Episode, EpisodeId};
-use companion_wire::{AnswerPhase, AskWire, FrontTask, SessionRecord};
+use account_core::AppName;
 use action_client::{Intents, Transport as IntentsTransport};
 use action_core::{
     AgentConfig, EpisodeLine, LeadText, Reveal, Roster, RosterDetail, RosterFull, RosterLine,
 };
-use agent_planner::{Catalogue, Planner};
 use action_vocab::Clock;
 use action_wire::{SessionOpen, SessionOpened};
-use account_core::AppName;
+use agent_loop::{FrontEvent, IdleState, LoopInput, LoopPhase, LoopState, SideTable, front_step};
+use agent_planner::{Catalogue, Planner};
+use companion_wire::{AnswerPhase, AskWire, FrontTask, SessionRecord};
+use memory_core::{Episode, EpisodeId};
 use provenance::{AgentRef, SessionId, SpaceId, TaskId, UnixSeconds};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::Arc;

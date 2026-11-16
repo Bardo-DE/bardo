@@ -1,16 +1,16 @@
 //! A planner model that says what a test scripted, and remembers every request it was asked.
 
-use inference_client::{Transport, TransportError};
 use account_capability::{Locality, ModelId, Tier};
 use account_core::consent::Usage;
 use account_core::{AccountId, DataClass};
 use account_ids::Tokens;
+use account_match::Need;
+use inference_client::{Transport, TransportError};
 use inference_core::{
     ChatReply, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
     InferSession, JsonText, OpenOptions, ServedBy, SessionError, StopReason, TokenUsage,
     ToolCallId, ToolCallPart, ToolName,
 };
-use account_match::Need;
 use serde_json::Value as Json;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

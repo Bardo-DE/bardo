@@ -2,19 +2,19 @@
 //! every answer.
 
 use crate::support::{Scripted, card, embed_reply, served, texts, usage, vector_of};
-use memory_core::DataClass;
-use memory_infer::InferdEmbedder;
-use memory_store::{EmbedError, EmbedRole, Embedder, RetryClass, Urgency};
 use account_capability::Modality;
 use account_capability::Tier;
 use account_core::consent::Usage;
 use account_ids::Dims;
+use account_match::DimsNeed;
+use account_match::Need;
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, ModelError,
     StopReason,
 };
-use account_match::DimsNeed;
-use account_match::Need;
+use memory_core::DataClass;
+use memory_infer::InferdEmbedder;
+use memory_store::{EmbedError, EmbedRole, Embedder, RetryClass, Urgency};
 
 #[tokio::test]
 async fn the_embedder_asks_for_the_cards_model_and_returns_one_vector_per_text() {

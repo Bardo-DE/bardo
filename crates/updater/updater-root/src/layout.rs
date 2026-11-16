@@ -13,9 +13,9 @@
 //! so tests point them at temporary directories.
 
 use semver::Version;
-use updater_core::Installed;
 use std::io;
 use std::path::{Path, PathBuf};
+use updater_core::Installed;
 
 /// The folder in each release holding the verified description it was installed from.
 pub const RECORD_DIR: &str = ".slipway";
