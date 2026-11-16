@@ -241,7 +241,7 @@ async fn a_launch_that_reaches_its_program_is_answered_with_its_timing() {
         .unit
         .unwrap_or_else(|| panic!("a launch has a scope's name"));
     assert!(
-        unit.0.starts_with("app-bardo-sill\\x2dtimed-"),
+        unit.0.starts_with("app-bardo-shell\\x2dtimed-"),
         "{}",
         unit.0
     );

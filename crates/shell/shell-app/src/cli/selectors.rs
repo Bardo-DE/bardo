@@ -1,6 +1,6 @@
 //! `bardo-shell --write-selectors DIR`: the shell's public style parts as data, so Settings can check a
 //! person's stylesheet against them without linking bardo-shell. The table
-//! lists only the parts a stylesheet may rely on; every other `sill-` class is internal.
+//! lists only the parts a stylesheet may rely on; every other `shell-` class is internal.
 
 use std::io;
 use std::path::{Path, PathBuf};

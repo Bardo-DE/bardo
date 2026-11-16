@@ -1,11 +1,11 @@
 //! Whose a notification is. The shell's own notices (accounts, sync hold, keycap, guest asks) carry
-//! a desktop entry in the `sill-` namespace; the D-Bus boundary drops that namespace from an app's
+//! a desktop entry in the `shell-` namespace; the D-Bus boundary drops that namespace from an app's
 //! hint, so an entry in it proves the notice was posted inside the shell.
 
 use super::content::AppRef;
 
 /// The namespace of the shell's own desktop entries.
-pub const SYSTEM_ENTRY_PREFIX: &str = "sill-";
+pub const SYSTEM_ENTRY_PREFIX: &str = "shell-";
 
 /// Who posted a notification.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
