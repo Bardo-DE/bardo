@@ -24,8 +24,9 @@ impl Picks {
 }
 
 /// `picks` after the person pressed `source`: with one source allowed it replaces the pick (a
-/// second press of the picked one keeps it); with several it adds or removes it. A source the
-/// plan does not offer changes nothing.
+/// second press of the picked one keeps it); with several it adds or removes it.
+///
+/// A source the plan does not offer changes nothing.
 #[must_use]
 pub fn toggle(plan: &Plan, plurality: Plurality, picks: Picks, source: Source) -> Picks {
     if !plan.offers(&source) {
@@ -69,8 +70,9 @@ impl Reply {
 }
 
 /// The answer to Allow: the picked sources that are still offered, in the plan's order (screens
-/// first), and the pointer mode when the plan offers it, else its first. Nothing offered and
-/// picked is a cancel.
+/// first), and the pointer mode when the plan offers it, else its first.
+///
+/// Nothing offered and picked is a cancel.
 #[must_use]
 pub fn reply(plan: &Plan, picks: &Picks) -> Reply {
     let sources: Vec<(String, String)> = plan

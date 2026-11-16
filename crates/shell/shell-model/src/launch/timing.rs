@@ -83,8 +83,10 @@ pub fn answer_to<'a>(
 }
 
 /// The timing line, `launch desktop_id=<id> unit=<unit> requested_at=<ns> spawned_at=<ns>
-/// pid=<pid>`: fields are `key=value` with no spaces in a value (whitespace becomes `_`); no unit
-/// reads `-` and no process reads `0`.
+/// pid=<pid>`.
+///
+/// Fields are `key=value` with no spaces in a value (whitespace becomes `_`); no unit reads `-` and
+/// no process reads `0`.
 #[must_use]
 pub fn launch_line(timing: &LaunchTiming) -> String {
     let unit = timing.unit.as_ref().map_or("-", |unit| unit.0.as_str());

@@ -1,7 +1,9 @@
-//! Choosing a row: the panel sends `SearchCommand::Chosen` (the runner counts it and carries
-//! out window and app activations), then asks the row's provider what it does
-//! (`Provider::activate`, pure, the `Activation` vocabulary) and does the rest itself: the
-//! clipboard, the field, a settings page. The mapping is pure; the panel runs it.
+//! Choosing a row.
+//!
+//! The panel sends `SearchCommand::Chosen` (the runner counts it and carries out window and app
+//! activations), then asks the row's provider what it does (`Provider::activate`, pure, the
+//! `Activation` vocabulary) and does the rest itself: the clipboard, the field, a settings page.
+//! The mapping is pure; the panel runs it.
 
 use std::fmt;
 use std::sync::{Arc, Mutex};
@@ -24,9 +26,11 @@ use shell_services::env::Buses;
 use shell_ui_kit::services::Services;
 use tokio::sync::watch;
 
-/// The providers the panel asks what a chosen row does. The daemon's search runner holds its
-/// own instances for querying; `activate` is pure, so separate instances answer the same.
-/// Provided as a root context by a demo or a test to stand in for the real five.
+/// The providers the panel asks what a chosen row does.
+///
+/// The daemon's search runner holds its own instances for querying; `activate` is pure, so separate
+/// instances answer the same. Provided as a root context by a demo or a test to stand in for the
+/// real five.
 #[derive(Clone)]
 pub struct LauncherProviders(pub Vec<Arc<dyn Provider>>);
 

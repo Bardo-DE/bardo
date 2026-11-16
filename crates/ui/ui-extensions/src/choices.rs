@@ -28,8 +28,10 @@ pub struct Choices {
 }
 
 /// The choices for `capability` among `installed`, the usable Extensions in serving order
-/// ([`Resolved::registry`](crate::Resolved)`.installed()`). Pure: nothing is read. "Your changes"
-/// ([`YOUR_CHANGES_ID`]) is never on offer: it is always applied, on top of the choice.
+/// ([`Resolved::registry`](crate::Resolved)`.installed()`).
+///
+/// Pure: nothing is read. "Your changes" ([`YOUR_CHANGES_ID`]) is never on offer: it is always
+/// applied, on top of the choice.
 #[must_use]
 pub fn choices_for(capability: Capability, installed: &[Installed<Provision>]) -> Choices {
     let mut words = vec![STANDARD.to_owned()];

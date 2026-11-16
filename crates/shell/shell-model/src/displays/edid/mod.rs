@@ -1,6 +1,8 @@
-//! A small EDID base-block parser: who made the display, what it calls itself, how big it is,
-//! its native mode and its primaries. Pure: bytes in, [`Edid`] out. Extension blocks (CTA-861,
-//! `DisplayID`) are not read; everything the shell needs is in the first 128 bytes.
+//! A small EDID base-block parser: who made the display, what it calls itself, how big it is, its
+//! native mode and its primaries.
+//!
+//! Pure: bytes in, [`Edid`] out. Extension blocks (CTA-861, `DisplayID`) are not read; everything
+//! the shell needs is in the first 128 bytes.
 //!
 //! Hand-written rather than a crate: the base block is a fixed layout of a few dozen bytes, and
 //! the maintained parsers either pull in a parser-combinator stack for it or bind libdisplay-info
@@ -27,9 +29,11 @@ pub struct Manufacturer(pub String);
 #[serde(transparent)]
 pub struct ProductCode(pub u16);
 
-/// The serial a display reports: the 0xFF descriptor's text when present, else the base block's
-/// 32-bit number (often a placeholder such as `0x01010101`, which still tells two panels of one
-/// model apart no worse than nothing).
+/// The serial a display reports.
+///
+/// The 0xFF descriptor's text when present, else the base block's 32-bit number (often a
+/// placeholder such as `0x01010101`, which still tells two panels of one model apart no worse than
+/// nothing).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Serial {

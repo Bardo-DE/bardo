@@ -6,9 +6,11 @@ use crate::displays::NightWarmthMode;
 use crate::displays::ddc::DdcDisplay;
 use crate::ids::{DdcId, OutputName};
 
-/// The connectors casement's night light must not warm (`night_light.skip_outputs`): where bardo-shell
-/// warms the monitors itself, each one that answers DDC/CI with RGB gains (the ones bardo-shell's warmth
-/// writes reach) and whose connector is known; otherwise none. Sorted, each connector once.
+/// The connectors casement's night light must not warm (`night_light.skip_outputs`).
+///
+/// Where bardo-shell warms the monitors itself, each one that answers DDC/CI with RGB gains (the
+/// ones bardo-shell's warmth writes reach) and whose connector is known; otherwise none. Sorted,
+/// each connector once.
 #[must_use]
 pub fn skip_outputs(backend: NightWarmthMode, ddc: &[DdcDisplay]) -> Vec<OutputName> {
     match backend {

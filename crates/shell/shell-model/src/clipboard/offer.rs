@@ -27,12 +27,13 @@ pub enum MimePick {
     Image(String),
 }
 
-/// The type to read from an offer of `mimes` (in the order the source offered them), or why
-/// nothing is read: [`Skipped::Secret`] for a password manager's, [`Skipped::NoKnownType`] when
-/// only private or unknown types are offered. Text wins over an
-/// image when both are offered (a browser copying a picture offers its URL as text too; macOS
-/// keeps the richer one, but the launcher's row and paste are text first). `images` is
-/// whether the policy keeps images at all.
+/// The type to read from an offer of `mimes` (in the order the source offered them), or why nothing
+/// is read.
+///
+/// [`Skipped::Secret`] for a password manager's, [`Skipped::NoKnownType`] when only private or
+/// unknown types are offered. Text wins over an image when both are offered (a browser copying a
+/// picture offers its URL as text too; macOS keeps the richer one, but the launcher's row and paste
+/// are text first). `images` is whether the policy keeps images at all.
 pub fn offer_verdict(mimes: &[String], images: ImagesKept) -> Result<MimePick, Skipped> {
     if mimes
         .iter()

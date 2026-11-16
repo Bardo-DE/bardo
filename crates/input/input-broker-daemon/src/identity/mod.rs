@@ -1,6 +1,8 @@
-//! Who is calling. The kernel names the process behind the socket (a pidfd, so a recycled process
-//! id cannot pass for another program); `peephole` judges it against the root-owned table of
-//! desktop programs; [`crate::policy`] decides what that program may have.
+//! Who is calling.
+//!
+//! The kernel names the process behind the socket (a pidfd, so a recycled process id cannot pass
+//! for another program); `peephole` judges it against the root-owned table of desktop programs;
+//! [`crate::policy`] decides what that program may have.
 
 // Test seams: never in a shipped build.
 #[cfg(any(test, feature = "fake"))]

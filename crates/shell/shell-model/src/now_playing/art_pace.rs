@@ -4,9 +4,11 @@
 use std::time::{Duration, Instant};
 
 /// When a cover wanted `now` may start, given when the player's last one was set to start and the
-/// gap `every` a player's covers keep. A cover wanted while the last one is still waiting takes its
-/// place (a player that changes cover faster than the gap gets only the newest fetched), so a
-/// stream of changes is one fetch per gap, never a queue.
+/// gap `every` a player's covers keep.
+///
+/// A cover wanted while the last one is still waiting takes its place (a player that changes cover
+/// faster than the gap gets only the newest fetched), so a stream of changes is one fetch per gap,
+/// never a queue.
 #[must_use]
 pub fn next_start(previous: Option<Instant>, now: Instant, every: Duration) -> Instant {
     match previous {

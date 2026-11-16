@@ -119,9 +119,10 @@ fn rung(k: u16) -> u16 {
     (k * 100 + STEPS / 2) / STEPS
 }
 
-/// The level after `change` from `level` (0..=100): a key press moves to the next rung of the
-/// ladder in its direction (so an odd level set by a slider joins the ladder on the next press),
-/// a slider sets the level outright.
+/// The level after `change` from `level` (0..=100).
+///
+/// A key press moves to the next rung of the ladder in its direction (so an odd level set by a
+/// slider joins the ladder on the next press), a slider sets the level outright.
 pub fn stepped(level: Percent, change: LevelChange) -> Percent {
     let level = level.0.min(100);
     Percent(match change {

@@ -1,6 +1,7 @@
 //! The real authority: `peephole` pins the process behind the socket, probes its facts and judges
-//! them against the table. This is the one file that knows `peephole`'s types; everything else
-//! sees a [`Caller`].
+//! them against the table.
+//!
+//! This is the one file that knows `peephole`'s types; everything else sees a [`Caller`].
 //!
 //! The service holds `CAP_SYS_PTRACE` so that the probe can read `/proc/<pid>/exe` and `status` of
 //! another user's process. It never asks a unit manager (that would mean connecting to a socket the

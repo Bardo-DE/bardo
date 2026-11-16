@@ -5,11 +5,13 @@ use std::path::PathBuf;
 
 use super::{Shot, ShotEffect, ShotEvent, ShotId, ShotLeave, ShotPreview, Shots, Taking};
 
-/// The one place [`Shots`] changes. `Appeared` gives the next id, makes it current (replacing
-/// any other) with a pending preview and asks for one; the same path appearing again while it is
-/// current is ignored (a watch sees both the create and the close). A preview answer for a shot
-/// no longer current is dropped. `Left` of the current shot clears it and asks for `Open` or
-/// `Trash` as the reason says; of any other id, nothing. `Take` while `Running` is ignored.
+/// The one place [`Shots`] changes.
+///
+/// `Appeared` gives the next id, makes it current (replacing any other) with a pending preview and
+/// asks for one; the same path appearing again while it is current is ignored (a watch sees both
+/// the create and the close). A preview answer for a shot no longer current is dropped. `Left` of
+/// the current shot clears it and asks for `Open` or `Trash` as the reason says; of any other id,
+/// nothing. `Take` while `Running` is ignored.
 #[must_use]
 pub fn step(shots: Shots, event: ShotEvent) -> (Shots, Vec<ShotEffect>) {
     match event {

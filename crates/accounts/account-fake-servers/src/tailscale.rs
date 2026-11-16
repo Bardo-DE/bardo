@@ -1,9 +1,11 @@
 //! A fake Tailscale `LocalAPI`: the HTTP tailscaled serves on its unix socket, in a scratch
-//! directory. It answers `status`, `whois`, `login-interactive` and the `watch-ipn-bus` stream
-//! from a table the test sets, with the checks the real one makes (the `Host` it expects, no
-//! `Origin`, the stream without private keys), and it can be stopped (the socket stays, nobody
-//! answers), refusing, signed out, in the middle of changing, or read-only. It never touches the
-//! real tailscaled or `/var/run/tailscale`.
+//! directory.
+//!
+//! It answers `status`, `whois`, `login-interactive` and the `watch-ipn-bus` stream from a table
+//! the test sets, with the checks the real one makes (the `Host` it expects, no `Origin`, the
+//! stream without private keys), and it can be stopped (the socket stays, nobody answers),
+//! refusing, signed out, in the middle of changing, or read-only. It never touches the real
+//! tailscaled or `/var/run/tailscale`.
 //!
 //! The JSON follows Tailscale v1.80.0 (`ipn/ipnstate`, `tailcfg`, `ipn`): Go's own field names.
 

@@ -73,9 +73,10 @@ pub fn run_state_of(slug: RunStateSlug, outcome: Option<CuaOutcome>) -> RunState
     }
 }
 
-/// The controls a run's row offers, in the order they are drawn. A window the person cannot see
-/// (an agent workspace or a nested session) can be watched; an ended run offers to undo what it
-/// did, when something it did can be undone.
+/// The controls a run's row offers, in the order they are drawn.
+///
+/// A window the person cannot see (an agent workspace or a nested session) can be watched; an ended
+/// run offers to undo what it did, when something it did can be undone.
 #[must_use]
 pub fn run_controls(state: RunState, place: RunMode, undoable: u32) -> Vec<RunControl> {
     use RunControl as C;

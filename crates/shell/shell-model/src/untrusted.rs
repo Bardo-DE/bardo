@@ -1,7 +1,8 @@
 //! Words that another program chose, made safe to hold, show and log: cut to a length, stripped of
-//! what can disguise a line, or escaped for the journal. Every boundary that takes an app's text
-//! (a notification, a tray label, a polkit detail, an inhibit reason) uses these, so no caller
-//! invents its own cut.
+//! what can disguise a line, or escaped for the journal.
+//!
+//! Every boundary that takes an app's text (a notification, a tray label, a polkit detail, an
+//! inhibit reason) uses these, so no caller invents its own cut.
 
 /// The most characters of an app's text one journal line carries: a line is a hint to the
 /// reader, not a copy of what the app sent.

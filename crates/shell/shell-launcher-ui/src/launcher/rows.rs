@@ -58,11 +58,12 @@ pub struct RowDetail {
     pub trail: String,
 }
 
-/// `item`'s detail at `now`. File: detail its folder (the provider's subtitle), trail its
-/// modification as the mail list words a time ("14:05" today, "Yesterday", "Mon", "12 Sep",
-/// "12 Sep 2025"); clipboard: detail the provider's subtitle, trail its age ("now", "5m",
-/// "2h", "3d", the notification card's `age_label`); web: detail the engine; others: the
-/// subtitle and no trail.
+/// `item`'s detail at `now`.
+///
+/// File: detail its folder (the provider's subtitle), trail its modification as the mail list words
+/// a time ("14:05" today, "Yesterday", "Mon", "12 Sep", "12 Sep 2025"); clipboard: detail the
+/// provider's subtitle, trail its age ("now", "5m", "2h", "3d", the notification card's
+/// `age_label`); web: detail the engine; others: the subtitle and no trail.
 #[must_use]
 pub fn row_detail(item: &Item, now: UnixTime, hours: ClockHours) -> RowDetail {
     detail_in(item, now, &TimeZone::system(), hours)

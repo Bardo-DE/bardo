@@ -1,6 +1,7 @@
-//! The DAV tree the Nextcloud and plain-DAV fakes serve: files, calendars and address books as
-//! one path space with a change counter, so PROPFIND, a `sync-collection` REPORT with a sync
-//! token, quota properties, PUT, DELETE and MKCOL all agree.
+//! The DAV tree the Nextcloud and plain-DAV fakes serve.
+//!
+//! Files, calendars and address books as one path space with a change counter, so PROPFIND, a
+//! `sync-collection` REPORT with a sync token, quota properties, PUT, DELETE and MKCOL all agree.
 
 use crate::http::{Request, Response};
 use std::collections::BTreeMap;

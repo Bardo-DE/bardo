@@ -1,12 +1,15 @@
 //! Cover-fit geometry: the part of the source that, scaled up or down evenly, fills the target on
-//! both axes, centred on both (CSS `background-size: cover`, centered). Pure, so the crop stays
-//! symmetric: the source's own centre pixel always lands on the target's. The window is cut from
-//! the source first and only that is resized, so the work is bounded by the target and the
-//! source, whatever the source's aspect ratio.
+//! both axes, centred on both (CSS `background-size: cover`, centered).
+//!
+//! Pure, so the crop stays symmetric: the source's own centre pixel always lands on the target's.
+//! The window is cut from the source first and only that is resized, so the work is bounded by the
+//! target and the source, whatever the source's aspect ratio.
 
-/// The `width` x `height` region at `x`, `y` of the source that fills the target: resize it to
-/// the target's size and nothing more is needed. The same margin is left on either side, give or
-/// take the one pixel an odd overflow cannot split evenly.
+/// The `width` x `height` region at `x`, `y` of the source that fills the target: resize it to the
+/// target's size and nothing more is needed.
+///
+/// The same margin is left on either side, give or take the one pixel an odd overflow cannot split
+/// evenly.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CoverWindow {
     pub x: u32,
@@ -15,10 +18,11 @@ pub struct CoverWindow {
     pub height: u32,
 }
 
-/// The window of `source` that covers `target`. A zero dimension on either side is floored to 1
-/// so the geometry is always finite (a zero-sized source or target never occurs for a real
-/// image or output, but this keeps the function total rather than panicking on one). The window
-/// is never empty and never leaves the source.
+/// The window of `source` that covers `target`.
+///
+/// A zero dimension on either side is floored to 1 so the geometry is always finite (a zero-sized
+/// source or target never occurs for a real image or output, but this keeps the function total
+/// rather than panicking on one). The window is never empty and never leaves the source.
 #[must_use]
 pub fn cover_window(source: (u32, u32), target: (u32, u32)) -> CoverWindow {
     let (sw, sh) = (u64::from(source.0.max(1)), u64::from(source.1.max(1)));

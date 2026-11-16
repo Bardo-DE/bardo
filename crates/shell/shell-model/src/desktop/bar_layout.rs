@@ -53,10 +53,11 @@ pub fn thumb_size(scale: u32) -> (u32, u32) {
     (at(THUMB_W), at(THUMB_H))
 }
 
-/// The commands that turn the targets `sent` into `now`: for each output, a set of its cards when
-/// they are new or moved (an empty set, which clears, once the output has none), then the plus's
-/// rectangle when that changed (`None`, which removes it, once it is gone). Outputs in order of
-/// name; equal inputs give none.
+/// The commands that turn the targets `sent` into `now`.
+///
+/// For each output, a set of its cards when they are new or moved (an empty set, which clears, once
+/// the output has none), then the plus's rectangle when that changed (`None`, which removes it,
+/// once it is gone). Outputs in order of name; equal inputs give none.
 #[must_use]
 pub fn target_commands(sent: &BarLayouts, now: &BarLayouts) -> Vec<DesktopCommand> {
     let layout =

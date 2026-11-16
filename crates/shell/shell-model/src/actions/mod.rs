@@ -1,8 +1,9 @@
 //! What each of the shell's actions is: the one table of its words, whether it asks first, the
-//! chord that stands for it, and the closed [`Effect`] the daemon carries out. Surfaces name an
-//! action by [`ActionId`] and hand it over (`shell_ui_kit::links::ActionLink`); the daemon's
-//! interpreter matches `Effect` once. Pure data: no entrance decides an output, a token or an
-//! "ask first" for itself.
+//! chord that stands for it, and the closed [`Effect`] the daemon carries out.
+//!
+//! Surfaces name an action by [`ActionId`] and hand it over (`shell_ui_kit::links::ActionLink`);
+//! the daemon's interpreter matches `Effect` once. Pure data: no entrance decides an output, a
+//! token or an "ask first" for itself.
 
 mod ask;
 mod intent;

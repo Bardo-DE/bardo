@@ -94,6 +94,7 @@ fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordE
 
 /// The almanac event for `record`: an `EventBody::Area` of area `Cua` whose JSON is the record's
 /// serde form and whose kind tag is its slug, by the actor `Companion { session, role: Cua }`.
+///
 /// Pure. A step's effect is the record's own; every other record is a `Read`.
 pub fn record_of(ctx: &RecordContext, record: &CuaRecord) -> Result<Record, RecordError> {
     let kind = KindTag::parse(&record.kind()).map_err(|e| RecordError::Kind(e.to_string()))?;

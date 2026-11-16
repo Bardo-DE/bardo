@@ -78,9 +78,11 @@ pub enum ToplevelEvent {
     Closed(WindowKey),
 }
 
-/// `toplevels` after `event`. A toplevel that is (or becomes) active moves to the front; one
-/// that opens inactive goes to the back. A change for an unknown key is treated as an open (the
-/// thread may coalesce an open and a change into one `done`).
+/// `toplevels` after `event`.
+///
+/// A toplevel that is (or becomes) active moves to the front; one that opens inactive goes to the
+/// back. A change for an unknown key is treated as an open (the thread may coalesce an open and a
+/// change into one `done`).
 #[must_use]
 pub fn step(toplevels: Toplevels, event: ToplevelEvent) -> Toplevels {
     let Toplevels { mut windows } = toplevels;

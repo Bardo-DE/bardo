@@ -1,6 +1,7 @@
-//! The agent's pure reducer: registration, the queue of requests, one helper run at a time for
-//! the request on screen, and how each request completes. The live side performs the
-//! [`PolkitEffect`]s and feeds back what happened.
+//! The agent's pure reducer: registration, the queue of requests, one helper run at a time for the
+//! request on screen, and how each request completes.
+//!
+//! The live side performs the [`PolkitEffect`]s and feeds back what happened.
 //!
 //! Rules ([`step`] follows these; `machine_tests.rs` is their table):
 //!

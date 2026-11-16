@@ -7,9 +7,11 @@ use super::plan::Candidates;
 use super::reply::{Picks, Reply, outcome_reply};
 use crate::desktop::{Answer, Consent, ConsentId};
 
-/// The most permission questions that wait behind the one on screen. The portal asks one at a
-/// time and the compositor sends the next after an answer, so more than this is a runaway; the
-/// portal's call is refused and the compositor's is dismissed without being remembered.
+/// The most permission questions that wait behind the one on screen.
+///
+/// The portal asks one at a time and the compositor sends the next after an answer, so more than
+/// this is a runaway; the portal's call is refused and the compositor's is dismissed without being
+/// remembered.
 pub const WAITING_MAX: usize = 8;
 
 /// Whether the shell serves the picker.

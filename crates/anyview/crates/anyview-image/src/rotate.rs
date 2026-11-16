@@ -100,9 +100,11 @@ fn segment_of(tiff: &[u8]) -> Result<Vec<u8>, ImageError> {
 }
 
 /// `file`, a JPEG, displayed turned clockwise by `turn` on top of whatever orientation it already
-/// has. Only the orientation entry of the EXIF block changes (the segment is added when the file
-/// has none, and the entry when the block has none); every byte outside that segment is the same.
-/// A `QuarterTurn::None` returns the file unchanged.
+/// has.
+///
+/// Only the orientation entry of the EXIF block changes (the segment is added when the file has
+/// none, and the entry when the block has none); every byte outside that segment is the same. A
+/// `QuarterTurn::None` returns the file unchanged.
 pub fn rotate_jpeg(file: &[u8], turn: QuarterTurn) -> Result<Vec<u8>, ImageError> {
     if turn == QuarterTurn::None {
         return Ok(file.to_vec());

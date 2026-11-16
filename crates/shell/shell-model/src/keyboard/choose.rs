@@ -19,9 +19,10 @@ pub fn choose(sources: &[&dyn ProfileSource], window: Option<FocusedWindow<'_>>)
         .unwrap_or_else(ProfileName::default_profile)
 }
 
-/// The profile the focused window wants under bardo-shell's sources, most specific first: the user's
-/// overrides, what the app declares, the profiles keycap has for one app (Ghostty), then the
-/// category table.
+/// The profile the focused window wants under bardo-shell's sources, most specific first.
+///
+/// The user's overrides, what the app declares, the profiles keycap has for one app (Ghostty), then
+/// the category table.
 #[must_use]
 pub fn wanted(
     overrides: &UserOverrides,

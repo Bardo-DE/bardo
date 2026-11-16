@@ -2,9 +2,11 @@
 
 use super::model::{Edge, Rect, WorkArea, Zone};
 
-/// `frame` less every zone: a top zone moves the top edge down, a bottom zone moves the bottom
-/// edge up, and so on. Zones on one edge add up. The result never has a negative size: past
-/// the far edge it is empty, sitting on the edge the zones squeezed it against.
+/// `frame` less every zone: a top zone moves the top edge down, a bottom zone moves the bottom edge
+/// up, and so on.
+///
+/// Zones on one edge add up. The result never has a negative size: past the far edge it is empty,
+/// sitting on the edge the zones squeezed it against.
 #[must_use]
 pub fn work_rect(frame: Rect, zones: &[Zone]) -> Rect {
     let sum = |edge: Edge| {

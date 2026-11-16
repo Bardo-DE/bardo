@@ -60,11 +60,12 @@ impl Connectivity {
     }
 }
 
-/// What `NetworkManager`'s `ActivatingConnection` reports about a connection other than the
-/// current primary: the primary's own activation already reaches the join through `Link` (a
-/// primary connection can itself be seen `Connecting`), so this only carries a second, independent
-/// connection trying to become primary, Wi-Fi only (the case the reference's
-/// searching glyph is for).
+/// What `NetworkManager`'s `ActivatingConnection` reports about a connection other than the current
+/// primary.
+///
+/// The primary's own activation already reaches the join through `Link` (a primary connection can
+/// itself be seen `Connecting`), so this only carries a second, independent connection trying to
+/// become primary, Wi-Fi only (the case the reference's searching glyph is for).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Activating {

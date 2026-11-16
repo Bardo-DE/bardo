@@ -1,8 +1,9 @@
-//! A launcher row's parts as quire's palette and menus take them (design/13 §13.3.9: a 34 px
-//! tile, the title, the subtitle as its detail, a trailing hint). Each row carries its chord
-//! ([`row_chord`]: its first action's, `⌘K` for actions without one, else `↵`) as quire's
-//! `RowChord::on_selected`, so only the selected row shows it and quire moves it with the
-//! selection, as Spotlight's hint does; a row in a mixed section trails its kind. Pure.
+//! A launcher row's parts as quire's palette and menus take them (design/13 §13.3.9: a 34 px tile,
+//! the title, the subtitle as its detail, a trailing hint).
+//!
+//! Each row carries its chord ([`row_chord`]: its first action's, `⌘K` for actions without one,
+//! else `↵`) as quire's `RowChord::on_selected`, so only the selected row shows it and quire moves
+//! it with the selection, as Spotlight's hint does; a row in a mixed section trails its kind. Pure.
 //!
 //! A row's tile is the icon file the app index resolved (`IconRef::File`) drawn at 48 px, as a
 //! `Symbolic` for a freedesktop `*-symbolic` file and an `Image` otherwise; else the quire glyph

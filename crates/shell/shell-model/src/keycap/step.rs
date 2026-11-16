@@ -5,9 +5,11 @@ use key_remap_proto::{Grab, Status};
 use super::command::{KeycapEvent, UnitState};
 use super::model::{Attention, KeycapState};
 
-/// `state` after `event`. The socket decides `Connected` and a drop out of it; the unit decides
-/// everything else, so a drop followed by `Failed` is `Failed` and one followed by `Active` and a
-/// new `Hello` is back to `Connected` without anyone being told.
+/// `state` after `event`.
+///
+/// The socket decides `Connected` and a drop out of it; the unit decides everything else, so a drop
+/// followed by `Failed` is `Failed` and one followed by `Active` and a new `Hello` is back to
+/// `Connected` without anyone being told.
 #[must_use]
 pub fn step(state: KeycapState, event: KeycapEvent) -> KeycapState {
     match (state, event) {

@@ -36,8 +36,10 @@ pub struct AutoEnv {
     pub data_home: PathBuf,
 }
 
-/// `calendar.sources`: `auto` and `off` (any case, trimmed; empty is `off`), else `;`-separated
-/// paths, each trimmed, `~/` expanded against `home`, a path ending in `.ics` a file and any
+/// Parses the `calendar.sources` setting.
+///
+/// The value is `auto` or `off` (any case, trimmed; empty is `off`), else `;`-separated paths,
+/// each trimmed, `~/` expanded against `home`, a path ending in `.ics` a file and any
 /// other a directory; empty entries skipped.
 pub fn parse_sources(text: &str, home: &Path) -> EventSources {
     let trimmed = text.trim();
@@ -81,10 +83,12 @@ fn place_of(path: PathBuf) -> IcsPlace {
     }
 }
 
-/// Where `auto` looks, in order: `$XDG_DATA_HOME/bardo/shell/calendars` (a directory to drop `.ics`
-/// files into), `$XDG_DATA_HOME/bardo/sync/vdir` (what porter's syncd mirrors from the accounts
-/// the person granted it: `<account>/<collection>/*.ics`) and `~/.calendars` (vdirsyncer and
-/// khal's convention). Candidates only: the caller keeps those that exist (`provider_for`).
+/// Where `auto` looks, in order.
+///
+/// `$XDG_DATA_HOME/bardo/shell/calendars` (a directory to drop `.ics` files into),
+/// `$XDG_DATA_HOME/bardo/sync/vdir` (what porter's syncd mirrors from the accounts the person
+/// granted it: `<account>/<collection>/*.ics`) and `~/.calendars` (vdirsyncer and khal's
+/// convention). Candidates only: the caller keeps those that exist (`provider_for`).
 #[must_use]
 pub fn auto_places(env: &AutoEnv) -> Vec<IcsPlace> {
     vec![

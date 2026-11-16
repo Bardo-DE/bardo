@@ -1,8 +1,10 @@
 //! Notices a service posts through the notifications service and answers when their buttons are
-//! pressed: which notification id carries which key, so a press is answered only when the id is
-//! one bardo-shell itself posted for that key. The accounts, sync-hold and guest-asks services each keep
-//! one of these over their own key (an account, a dataset, a computer); they differ only in the
-//! words and in how an action key names its notice.
+//! pressed.
+//!
+//! Which notification id carries which key, so a press is answered only when the id is one
+//! bardo-shell itself posted for that key. The accounts, sync-hold and guest-asks services each
+//! keep one of these over their own key (an account, a dataset, a computer); they differ only in
+//! the words and in how an action key names its notice.
 
 use std::collections::HashMap;
 use std::hash::Hash;
@@ -10,8 +12,10 @@ use std::hash::Hash;
 use super::{ActionKey, NotesState, NotificationId};
 
 /// The id of the notification posted for each key, kept from when it was seen in the notes until
-/// the server says it closed or the key's notice is withdrawn. It outlives the notes' own copy on
-/// purpose: a pressed button leaves the notes before its `ActionInvoked` is heard.
+/// the server says it closed or the key's notice is withdrawn.
+///
+/// It outlives the notes' own copy on purpose: a pressed button leaves the notes before its
+/// `ActionInvoked` is heard.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Notices<K: Eq + Hash>(HashMap<K, NotificationId>);
 

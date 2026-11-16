@@ -21,9 +21,11 @@ pub enum ArtSource {
     Unusable,
 }
 
-/// Classify `url`. The scheme is compared whole and case-insensitively (RFC 3986 §3.1). A web
-/// address is taken only when it is one line of printable characters with a host, so it can be
-/// handed to the download as a single argument.
+/// Classify `url`.
+///
+/// The scheme is compared whole and case-insensitively (RFC 3986 §3.1). A web address is taken only
+/// when it is one line of printable characters with a host, so it can be handed to the download as
+/// a single argument.
 pub fn art_source(url: &str) -> ArtSource {
     if url.chars().count() > ART_URL_MAX_CHARS || url.chars().any(char::is_control) {
         return ArtSource::Unusable;
@@ -67,9 +69,11 @@ pub fn art_cache_name(url: &str) -> String {
     }
 }
 
-/// The cache file name for a local cover: a stable hash of its path, its modification time and its
-/// size (so a player that writes each track's cover to the same file gets a new copy each time),
-/// with the file's own extension when it is a known image one.
+/// The cache file name for a local cover.
+///
+/// A stable hash of its path, its modification time and its size (so a player that writes each
+/// track's cover to the same file gets a new copy each time), with the file's own extension when it
+/// is a known image one.
 #[must_use]
 pub fn local_art_cache_name(path: &Path, modified: Duration, len: u64) -> String {
     let shown = path.to_string_lossy();

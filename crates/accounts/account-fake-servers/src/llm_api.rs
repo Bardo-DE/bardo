@@ -1,7 +1,9 @@
-//! A fake AI company's key check: `GET <prefix>/models` (`OpenRouter`: `<prefix>/key`), answered `200` with a small list only
-//! when the request presents a live key the way that company documents, and `401` otherwise (a
-//! right key in the wrong header is as refused as a wrong key). Plain HTTP on loopback, built
-//! from the shipped provider file of the company (`rewrite`).
+//! A fake AI company's key check.
+//!
+//! `GET <prefix>/models` (`OpenRouter`: `<prefix>/key`), answered `200` with a small list only when
+//! the request presents a live key the way that company documents, and `401` otherwise (a right key
+//! in the wrong header is as refused as a wrong key). Plain HTTP on loopback, built from the
+//! shipped provider file of the company (`rewrite`).
 
 use crate::http::{Request, Response, serve};
 use crate::net::{Bind, Listener};

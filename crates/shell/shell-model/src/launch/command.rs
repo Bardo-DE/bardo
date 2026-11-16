@@ -94,7 +94,8 @@ pub enum LaunchCommand {
     OpenSettings(SettingsOpen),
 }
 
-/// The bus name Settings runs under: the only name porter trusts for the Settings role, so it is
-/// always started by activation (as `org.bardo.Settings.service`; its desktop entry is
-/// `DBusActivatable`), never as an app scope.
+/// The bus name Settings runs under.
+///
+/// The only name porter trusts for the Settings role, so it is always started by activation (as
+/// `org.bardo.Settings.service`; its desktop entry is `DBusActivatable`), never as an app scope.
 pub const SETTINGS_BUS_NAME: &str = "org.bardo.Settings";

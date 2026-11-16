@@ -108,11 +108,13 @@ pub fn fits(slot: Slot, caps: &Capabilities) -> bool {
     caps.inputs.contains(takes) && caps.outputs.contains(gives) && tooled
 }
 
-/// The entries that can serve a slot, in catalogue order. An on-device entry is a member when one
-/// of its engine profiles runs on an engine kind in `engines` and the capabilities it passes
-/// through (`Capabilities::on_engine`) fit the slot; a remote entry has no engine here and is a
-/// member when its capabilities fit; an attached entry is a member when its engine kind is in
-/// `engines` (the wire a client speaks to it) and its capabilities fit.
+/// The entries that can serve a slot, in catalogue order.
+///
+/// An on-device entry is a member when one of its engine profiles runs on an engine kind in
+/// `engines` and the capabilities it passes through (`Capabilities::on_engine`) fit the slot; a
+/// remote entry has no engine here and is a member when its capabilities fit; an attached entry is
+/// a member when its engine kind is in `engines` (the wire a client speaks to it) and its
+/// capabilities fit.
 #[must_use]
 pub fn slot_members<'a>(
     slot: Slot,

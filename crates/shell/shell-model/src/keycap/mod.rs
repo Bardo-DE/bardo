@@ -1,7 +1,8 @@
-//! The keycap daemon as the shell sees it: its connection state, the events that move it, and
-//! the pure decisions around it: when the person should be told something and what, which focus
-//! and config keycap is sent, when systemd is asked about the unit and how long to wait before
-//! connecting again.
+//! The keycap daemon as the shell sees it.
+//!
+//! Its connection state, the events that move it, and the pure decisions around it: when the person
+//! should be told something and what, which focus and config keycap is sent, when systemd is asked
+//! about the unit and how long to wait before connecting again.
 
 mod backoff;
 mod command;

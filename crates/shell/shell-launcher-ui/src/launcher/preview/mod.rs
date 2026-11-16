@@ -1,7 +1,8 @@
-//! The preview pane: Quick Look for the selected row, a
-//! column right of the results inside the launcher card. What it shows is
-//! `shell_launcher::preview_for(row)`; its keys are [`keys::step_preview`]; its moments go
-//! through quire's `ui_components::motion::detail` in [`moment::use_pane_detail`].
+//! The preview pane: Quick Look for the selected row, a column right of the results inside the
+//! launcher card.
+//!
+//! What it shows is `shell_launcher::preview_for(row)`; its keys are [`keys::step_preview`]; its
+//! moments go through quire's `ui_components::motion::detail` in [`moment::use_pane_detail`].
 //!
 //! It is quire's `PreviewPane`, set beside the results as the palette's
 //! `aside`: bardo-shell maps a [`Preview`] to quire's `PaneContent` (`content.rs`) and a row's actions

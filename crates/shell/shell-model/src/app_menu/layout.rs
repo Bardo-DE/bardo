@@ -70,9 +70,11 @@ pub struct Node {
 #[derive(Debug, Clone, Copy)]
 struct RowsLeft(usize);
 
-/// `nodes` as the tray's rows. A rule has no words; a row's label loses its access-key marks and
-/// is cut. A layout is another program's tree: it is read for at most [`MENU_ROWS_MAX`] rows and
-/// [`MENU_DEPTH_MAX`] levels, the first of each level.
+/// `nodes` as the tray's rows.
+///
+/// A rule has no words; a row's label loses its access-key marks and is cut. A layout is another
+/// program's tree: it is read for at most [`MENU_ROWS_MAX`] rows and [`MENU_DEPTH_MAX`] levels, the
+/// first of each level.
 #[must_use]
 pub fn rows_of(nodes: Vec<Node>) -> Vec<TrayMenuEntry> {
     rows(nodes, 1, &mut RowsLeft(MENU_ROWS_MAX))

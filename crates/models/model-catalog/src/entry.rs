@@ -25,15 +25,18 @@ pub enum Licence {
 }
 
 /// The model family a weights set belongs to (`qwen`, `whisper`): lowercase, the same string for
-/// every size and fine-tune of one lineage. A router uses it for the "a reviewer of a different
-/// family" rule; it says nothing about quality.
+/// every size and fine-tune of one lineage.
+///
+/// A router uses it for the "a reviewer of a different family" rule; it says nothing about quality.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Family(pub String);
 
 /// An estimate, in whole seconds, of how long a cold engine takes from start to ready (weights
-/// read, engine warm-up). It is a figure written by hand from the engine kind, not a measurement;
-/// a router only compares it to other estimates and never treats it as a promise.
+/// read, engine warm-up).
+///
+/// It is a figure written by hand from the engine kind, not a measurement; a router only compares
+/// it to other estimates and never treats it as a promise.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ColdStartEstimateS(pub u16);
@@ -155,16 +158,19 @@ impl VramEstimate {
 }
 
 /// A model's default sampling, one set per reasoning mode: Qwen-family models want different
-/// temperatures with thinking on and off. Written in full in every chat entry; a request carries
-/// the values it uses, taken from here when the caller has no opinion.
+/// temperatures with thinking on and off.
+///
+/// Written in full in every chat entry; a request carries the values it uses, taken from here when
+/// the caller has no opinion.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SamplingDefaults {
     pub reasoning_on: Sampling,
     pub reasoning_off: Sampling,
     /// What the model does when a request says nothing about reasoning (`Reasoning::EngineDefault`:
-    /// the codec sends no switch, so the model's chat template decides). Written in every chat
-    /// entry so that the sampling a caller takes for that case is the one the model really runs
-    /// with.
+    /// the codec sends no switch, so the model's chat template decides).
+    ///
+    /// Written in every chat entry so that the sampling a caller takes for that case is the one the
+    /// model really runs with.
     pub reasoning_default: ReasoningDefault,
 }
 

@@ -11,10 +11,12 @@ pub enum ShotName {
     Other,
 }
 
-/// A finished screenshot's name: it starts with `Screenshot` (any case: the portal's
-/// `Screenshot_2026-09-26_10-15-02.png`, GNOME's `Screenshot From 2026-09-26 10-15-02.png`,
-/// spectacle's `Screenshot_20260926_101502.png`) and ends in `.png`, `.jpg`, `.jpeg` or `.webp`;
-/// hidden, partial (`.part`, `.tmp`, `~`) and other names are `Other`.
+/// A finished screenshot's name.
+///
+/// It starts with `Screenshot` (any case: the portal's `Screenshot_2026-09-26_10-15-02.png`,
+/// GNOME's `Screenshot From 2026-09-26 10-15-02.png`, spectacle's `Screenshot_20260926_101502.png`)
+/// and ends in `.png`, `.jpg`, `.jpeg` or `.webp`; hidden, partial (`.part`, `.tmp`, `~`) and other
+/// names are `Other`.
 #[must_use]
 pub fn is_screenshot_name(name: &str) -> ShotName {
     let lower = name.to_lowercase();

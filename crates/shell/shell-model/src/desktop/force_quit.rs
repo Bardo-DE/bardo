@@ -21,9 +21,10 @@ pub struct ForceQuitRow {
     pub standing: Standing,
 }
 
-/// The apps the panel lists, most recently used first: those with windows (a launching app has
-/// none yet and a windowless one is a background helper, as the Mac omits both). An app does
-/// not answer when its own life says so or any of its windows does not.
+/// The apps the panel lists, most recently used first: those with windows (a launching app has none
+/// yet and a windowless one is a background helper, as the Mac omits both).
+///
+/// An app does not answer when its own life says so or any of its windows does not.
 ///
 /// ```
 /// use shell_model::desktop::{DesktopView, force_quit_rows};

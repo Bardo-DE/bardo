@@ -1,6 +1,8 @@
 //! Scratch listeners: a loopback port or a Unix socket in a scratch directory, and the one
-//! connection type both produce. A Unix socket is a Unix platform's: elsewhere binding or
-//! dialling one is `ErrorKind::Unsupported`.
+//! connection type both produce.
+//!
+//! A Unix socket is a Unix platform's: elsewhere binding or dialling one is
+//! `ErrorKind::Unsupported`.
 
 use account_fake::FakeAddress;
 use std::io;

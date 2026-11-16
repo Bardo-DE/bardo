@@ -1,8 +1,8 @@
-//! A fake OAuth issuer: authorize (PKCE S256 required, state echoed), token (code exchange,
-//! refresh with rotation), revoke and `invalid_grant`. A
-//! refresh may narrow its grant to the `scope` it names and no further: beyond it Google answers
-//! `invalid_scope` and Microsoft `AADSTS65001`; a later authorize keeps what was consented
-//! before.
+//! A fake OAuth issuer: authorize (PKCE S256 required, state echoed), token (code exchange, refresh
+//! with rotation), revoke and `invalid_grant`.
+//!
+//! A refresh may narrow its grant to the `scope` it names and no further: beyond it Google answers
+//! `invalid_scope` and Microsoft `AADSTS65001`; a later authorize keeps what was consented before.
 //! It speaks plain HTTP on loopback; the person's consent is a knob on the handle.
 
 mod routes;

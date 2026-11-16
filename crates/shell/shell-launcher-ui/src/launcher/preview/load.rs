@@ -33,9 +33,10 @@ use tokio::sync::oneshot;
 
 use super::frames::ThumbnailFrames;
 
-/// What a peek of a file may spend: it reads a PDF whole, and a picture is fitted to a pane's
-/// worth of pixels (`PANE` is 328 by 220 px, drawn at up to twice that). Constants until quire's
-/// settings have `viewer.peek.*` keys (the viewer's FINDINGS).
+/// What a peek of a file may spend: it reads a PDF whole, and a picture is fitted to a pane's worth
+/// of pixels (`PANE` is 328 by 220 px, drawn at up to twice that).
+///
+/// Constants until quire's settings have `viewer.peek.*` keys (the viewer's FINDINGS).
 pub const PANE_BUDGET: PeekBudget = PeekBudget::DEFAULT;
 
 /// Why a file could not be previewed. Carries no path or content.

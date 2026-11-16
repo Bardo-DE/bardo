@@ -1,8 +1,10 @@
-//! A monitor's own speakers following the software volume. `PipeWire` (through its pulse
-//! server) names an HDMI or `DisplayPort` sink after the monitor at the other end, from the
-//! monitor's ELD: `... Digital Stereo (HDMI) [BenQ MA270U]`. When that bracketed name is a DDC
-//! display's EDID product name and the display has a speaker volume (VCP 0x62), a change the
-//! person makes to the software level or mute is sent on to the monitor as well. Pure.
+//! A monitor's own speakers following the software volume.
+//!
+//! `PipeWire` (through its pulse server) names an HDMI or `DisplayPort` sink after the monitor at
+//! the other end, from the monitor's ELD: `... Digital Stereo (HDMI) [BenQ MA270U]`. When that
+//! bracketed name is a DDC display's EDID product name and the display has a speaker volume (VCP
+//! 0x62), a change the person makes to the software level or mute is sent on to the monitor as
+//! well. Pure.
 //!
 //! Only changes are followed, never a state: starting bardo-shell, or switching the default sink to
 //! the monitor, sends nothing, so the monitor keeps whatever volume it had until the person

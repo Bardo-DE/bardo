@@ -54,9 +54,11 @@ pub struct SignedRatio {
     pub denominator: i32,
 }
 
-/// The facts of a photo's EXIF block. Never a place (see [`Location`], which only the viewer's
-/// own Info panel reads) and never the body and lens serial numbers, which are not read at all. An image with no EXIF block, or none the reader
-/// understands, has [`ExifFacts::none`].
+/// The facts of a photo's EXIF block.
+///
+/// Never a place (see [`Location`], which only the viewer's own Info panel reads) and never the
+/// body and lens serial numbers, which are not read at all. An image with no EXIF block, or none
+/// the reader understands, has [`ExifFacts::none`].
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ExifFacts {
     /// How the stored pixels are placed to display upright.

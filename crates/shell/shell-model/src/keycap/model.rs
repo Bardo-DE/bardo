@@ -3,9 +3,11 @@
 use key_remap_proto::Status;
 use serde::{Deserialize, Serialize};
 
-/// Where the connection to keycap stands. Failure and absence are states, not a silent default:
-/// a machine without keycap is `NotInstalled`, one not yet heard from is `Unknown`. Crosses the
-/// wire as `bardo-shell keycap status`.
+/// Where the connection to keycap stands.
+///
+/// Failure and absence are states, not a silent default: a machine without keycap is
+/// `NotInstalled`, one not yet heard from is `Unknown`. Crosses the wire as `bardo-shell keycap
+/// status`.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum KeycapState {

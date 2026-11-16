@@ -3,9 +3,10 @@
 use super::command::{AccountsEffect, AccountsEvent};
 use super::model::AccountsState;
 
-/// `state` after `event`, with the effects it calls for. An account already known is not told
-/// twice; accountd leaving changes nothing the person was told, and the list it gives on its
-/// return is compared with what was.
+/// `state` after `event`, with the effects it calls for.
+///
+/// An account already known is not told twice; accountd leaving changes nothing the person was
+/// told, and the list it gives on its return is compared with what was.
 pub fn step(state: AccountsState, event: AccountsEvent) -> (AccountsState, Vec<AccountsEffect>) {
     let AccountsState {
         present,

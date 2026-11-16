@@ -32,9 +32,10 @@ pub struct DisplayOutput {
     pub scale: DisplayScale,
 }
 
-/// `head` described, using `connector`'s EDID when it has a readable one. The EDID wins for
-/// size, native mode and identity: the compositor's copy of the same facts may be rounded, and
-/// a nested compositor's window has no EDID at all.
+/// `head` described, using `connector`'s EDID when it has a readable one.
+///
+/// The EDID wins for size, native mode and identity: the compositor's copy of the same facts may be
+/// rounded, and a nested compositor's window has no EDID at all.
 pub fn describe(head: &Head, connector: Option<&Connector>) -> DisplayOutput {
     let edid: Option<Edid> = connector.and_then(|c| edid::parse(&c.edid).ok());
     let size = edid.as_ref().and_then(|e| e.size).or(head.physical);

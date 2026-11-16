@@ -163,9 +163,10 @@ pub fn decode_bytes(bytes: &[u8], sniffed: &Sniffed) -> Result<Decoded, ImageErr
 }
 
 /// The size the picture of `src` will have once decoded and turned upright, read from the file's
-/// header and its EXIF orientation without decoding a pixel. `None` when the format's size is not
-/// read that way (ICNS, JPEG XL and SVG, whose size comes from decoding or drawing them) or the file
-/// declares more pixels than a decode accepts.
+/// header and its EXIF orientation without decoding a pixel.
+///
+/// `None` when the format's size is not read that way (ICNS, JPEG XL and SVG, whose size comes from
+/// decoding or drawing them) or the file declares more pixels than a decode accepts.
 pub fn declared_size(
     src: impl Into<Input>,
     sniffed: &Sniffed,

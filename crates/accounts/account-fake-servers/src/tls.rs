@@ -1,6 +1,7 @@
-//! The scratch CA and its leaf certificate (`fixtures/regen.sh` makes them with the openssl
-//! CLI). TEST-ONLY key material: the leaf is valid for `localhost`, `*.fake.test`, `127.0.0.1`
-//! and `::1`, and the CA signs nothing else.
+//! The scratch CA and its leaf certificate (`fixtures/regen.sh` makes them with the openssl CLI).
+//!
+//! TEST-ONLY key material: the leaf is valid for `localhost`, `*.fake.test`, `127.0.0.1` and `::1`,
+//! and the CA signs nothing else.
 
 use rustls::crypto::ring::default_provider;
 use rustls::{ClientConfig, RootCertStore, ServerConfig};

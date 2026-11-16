@@ -10,9 +10,10 @@ use super::{CalEvent, EventTime};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Days(pub u16);
 
-/// The events still to come or under way at `now`, starting before the end of the day `ahead`
-/// days after today (in `zone`), in start order, all-day events first on their day, at most
-/// `max`. An all-day event counts as under way for the whole of its days in `zone`.
+/// The events still to come or under way at `now`, starting before the end of the day `ahead` days
+/// after today (in `zone`), in start order, all-day events first on their day, at most `max`.
+///
+/// An all-day event counts as under way for the whole of its days in `zone`.
 #[must_use]
 pub fn up_next(
     events: &[CalEvent],

@@ -71,9 +71,10 @@ pub enum ModelList {
     Offered(Vec<ModelGroup>),
 }
 
-/// The groups of `places`, a place with no model left out and a model listed once. The models of
-/// this computer are grouped under the engine that runs each; a model whose engine is not known
-/// goes under a heading without one.
+/// The groups of `places`, a place with no model left out and a model listed once.
+///
+/// The models of this computer are grouped under the engine that runs each; a model whose engine is
+/// not known goes under a heading without one.
 pub fn model_groups(places: &[PlaceRow]) -> Vec<ModelGroup> {
     let mut seen = HashSet::new();
     places

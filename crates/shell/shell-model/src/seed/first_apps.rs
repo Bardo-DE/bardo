@@ -71,9 +71,10 @@ pub fn first_dock(store: Store, installed: &AppIndex) -> Option<DockPins> {
     }
 }
 
-/// The history a fresh account's launcher starts with, so its Recent row is not empty:
-/// [`first_apps`] as if used at `now`, the first most (an empty query ranks by frecency alone,
-/// and a larger count ranks higher). `None` leaves the history alone.
+/// The history a fresh account's launcher starts with, so its Recent row is not empty.
+///
+/// [`first_apps`] as if used at `now`, the first most (an empty query ranks by frecency alone, and
+/// a larger count ranks higher). `None` leaves the history alone.
 #[must_use]
 pub fn first_frecency(store: Store, installed: &AppIndex, now: UnixTime) -> Option<Frecency> {
     match store {

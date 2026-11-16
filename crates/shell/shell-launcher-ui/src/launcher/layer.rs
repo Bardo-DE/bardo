@@ -17,19 +17,22 @@ use shell_ui_kit::surface::namespace;
 pub const PANEL_WIDTH: u32 = 680;
 pub const PANEL_HEIGHT: u32 = 460;
 
-/// The room the panel may take: the card and, while the preview pane is shown, the pane beside
-/// it (`CommandPalette { aside }` widens the card by `PREVIEW_WIDTH_PX`). The surface
-/// is this wide for good; the card sits centred in it, so it widens by half the pane on each
-/// side and its middle never moves.
+/// The room the panel may take: the card and, while the preview pane is shown, the pane beside it
+/// (`CommandPalette { aside }` widens the card by `PREVIEW_WIDTH_PX`).
+///
+/// The surface is this wide for good; the card sits centred in it, so it widens by half the pane on
+/// each side and its middle never moves.
 pub const PANEL_ROOM_WIDTH: u32 = PANEL_WIDTH + PREVIEW_WIDTH_PX;
 
 /// How far in from the room's left edge the card starts while the pane is hidden.
 pub const CARD_INSET: u32 = (PANEL_ROOM_WIDTH - PANEL_WIDTH) / 2;
 
-/// The surface's transparent room around the panel for the card's ambient shadow (the Sheet's
-/// `0 24px 60px -18px`, material stack v2): it reaches 60 - 18 = 42 px beside the card and
-/// 24 + 42 = 66 px below it, and a surface clips at its edges. The panel sits at the top of the
-/// surface, centred, so the card's place on the output does not move.
+/// The surface's transparent room around the panel for the card's ambient shadow (the Sheet's `0
+/// 24px 60px -18px`, material stack v2).
+///
+/// It reaches 60 - 18 = 42 px beside the card and 24 + 42 = 66 px below it, and a surface clips at
+/// its edges. The panel sits at the top of the surface, centred, so the card's place on the output
+/// does not move.
 pub const SHADOW_SIDE: u32 = 42;
 pub const SHADOW_BELOW: u32 = 66;
 

@@ -86,12 +86,13 @@ pub enum Chime {
     Silent,
 }
 
-/// How `note` shows under `policy`. The shell's own critical notice always shows, as a persisting
-/// banner, through Do Not Disturb and a history-only style. An app's critical one persists the
-/// same way (until `APP_CRITICAL_HOLD_MS`, see `rules::sweep`) but holds back like any other
-/// while Do Not Disturb is on or the style is history-only. Otherwise: nothing but the history
-/// while held back; else a banner that persists for `resident`, `expire_timeout == 0` or the
-/// Alert style, and expires otherwise.
+/// How `note` shows under `policy`.
+///
+/// The shell's own critical notice always shows, as a persisting banner, through Do Not Disturb and
+/// a history-only style. An app's critical one persists the same way (until `APP_CRITICAL_HOLD_MS`,
+/// see `rules::sweep`) but holds back like any other while Do Not Disturb is on or the style is
+/// history-only. Otherwise: nothing but the history while held back; else a banner that persists
+/// for `resident`, `expire_timeout == 0` or the Alert style, and expires otherwise.
 #[must_use]
 pub fn presented(note: &Notification, policy: &NotificationsPolicy) -> Presented {
     let critical = note.hints.urgency == NotifyUrgency::Critical;

@@ -1,6 +1,7 @@
-//! Which colour space a panel's primaries amount to, by the geometry of their triangle in CIE
-//! 1931 xy against sRGB's and Display P3's. Pure: the float arithmetic stays inside
-//! [`classify`]; nothing floating is stored.
+//! Which colour space a panel's primaries amount to, by the geometry of their triangle in CIE 1931
+//! xy against sRGB's and Display P3's.
+//!
+//! Pure: the float arithmetic stays inside [`classify`]; nothing floating is stored.
 
 use serde::{Deserialize, Serialize};
 

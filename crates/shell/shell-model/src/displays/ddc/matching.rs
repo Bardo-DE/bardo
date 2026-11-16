@@ -1,7 +1,8 @@
-//! Which i2c bus is which monitor. Some drivers link a connector to its bus in sysfs
-//! (`card0-DP-1/ddc`); others (NVIDIA's) do not, so the reliable join is the EDID: the bytes a
-//! bus returns from address 0x50 are the bytes the kernel shows for exactly one connector.
-//! Pure.
+//! Which i2c bus is which monitor.
+//!
+//! Some drivers link a connector to its bus in sysfs (`card0-DP-1/ddc`); others (NVIDIA's) do not,
+//! so the reliable join is the EDID: the bytes a bus returns from address 0x50 are the bytes the
+//! kernel shows for exactly one connector. Pure.
 
 use crate::ids::{DdcId, OutputName};
 

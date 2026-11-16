@@ -39,9 +39,10 @@ use zbus::{Connection, ObjectServer};
 /// The slot the sheet's task puts its abort handle in, for `Close`.
 type AbortSlot = Arc<Mutex<Option<AbortHandle>>>;
 
-/// The sheets open now, by the app that asked and the kind of sheet: an app has one of each
-/// kind at a time, so it cannot stack sheets on the person. Keyed by the app, not the
-/// connection, so a second connection of the same app is the same asker.
+/// The sheets open now, by the app that asked and the kind of sheet: an app has one of each kind at
+/// a time, so it cannot stack sheets on the person.
+///
+/// Keyed by the app, not the connection, so a second connection of the same app is the same asker.
 #[derive(Debug, Clone, Default)]
 pub struct OpenSheets(Arc<Mutex<HashSet<(AppId, SheetKind)>>>);
 
@@ -54,8 +55,9 @@ pub struct SheetClaim {
 }
 
 impl OpenSheets {
-    /// A claim on a `kind` sheet for `app`, or `LimitsExceeded` while it has one open: no
-    /// `Refusal` says "you have one open already" (each is about the account or the person), so
+    /// A claim on a `kind` sheet for `app`, or `LimitsExceeded` while it has one open.
+    ///
+    /// No `Refusal` says "you have one open already" (each is about the account or the person), so
     /// the method answers the bus's own error and no sheet or Request object is made.
     pub fn claim(&self, app: &AppId, kind: SheetKind) -> Result<SheetClaim, fdo::Error> {
         let key = (app.clone(), kind);

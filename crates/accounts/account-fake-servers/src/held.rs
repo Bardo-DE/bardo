@@ -1,10 +1,11 @@
-//! A runtime that runs nothing until a test lets it: the seam for "a call made as soon as the
-//! name is owned is answered". zbus starts a connection's object server on a task of its own at
-//! its first use, and a call that arrives before that task listens is dropped. A test enters the
-//! held runtime while it makes the connection's object server, so that task cannot run. A daemon
-//! that claims its name before its calls are taken is then serving with nobody listening, and
-//! the call the test sends is lost; a daemon that claims its name only once its calls are taken
-//! cannot finish starting until the runtime is released.
+//! A runtime that runs nothing until a test lets it.
+//!
+//! The seam for "a call made as soon as the name is owned is answered". zbus starts a connection's
+//! object server on a task of its own at its first use, and a call that arrives before that task
+//! listens is dropped. A test enters the held runtime while it makes the connection's object
+//! server, so that task cannot run. A daemon that claims its name before its calls are taken is
+//! then serving with nobody listening, and the call the test sends is lost; a daemon that claims
+//! its name only once its calls are taken cannot finish starting until the runtime is released.
 //!
 //! No timer holds the runtime for long: [`HeldRuntime::start`] gives the start a short pause to
 //! show which of the two it is, and releases the runtime if the start has not finished by then.

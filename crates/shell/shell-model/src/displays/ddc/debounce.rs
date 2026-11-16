@@ -1,8 +1,9 @@
 //! Write coalescing: a slider dragged across a monitor's brightness produces dozens of values a
-//! second, and a DDC write takes ~50 ms plus the monitor's own settling time. Only the latest
-//! value per (display, feature) is kept, and it goes out once nothing newer has arrived for
-//! [`QUIET`], or at the latest [`HOLD_MAX`] after the first value it replaced, so the monitor
-//! follows a drag that never pauses instead of waiting for the release. Pure: time is a
+//! second, and a DDC write takes ~50 ms plus the monitor's own settling time.
+//!
+//! Only the latest value per (display, feature) is kept, and it goes out once nothing newer has
+//! arrived for [`QUIET`], or at the latest [`HOLD_MAX`] after the first value it replaced, so the
+//! monitor follows a drag that never pauses instead of waiting for the release. Pure: time is a
 //! [`Stamp`] argument.
 
 use super::vcp::Feature;

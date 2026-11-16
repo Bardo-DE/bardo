@@ -546,8 +546,10 @@ where
 }
 
 /// A service as a host that hosts it asks it: the accounts domain and the grants domain, each as
-/// the trait the domain crate declares. An app names this, never the six seams of
-/// [`AccountService`], to be generic over the service it hosts.
+/// the trait the domain crate declares.
+///
+/// An app names this, never the six seams of [`AccountService`], to be generic over the service it
+/// hosts.
 pub trait Service: Send + Sync {
     /// The accounts domain, borrowed from the service.
     type Accounts<'a>: AccountsApi + Send

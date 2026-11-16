@@ -20,9 +20,11 @@ pub enum BrightnessAction {
     Backlight { name: BacklightName, value: u32 },
 }
 
-/// The actions for `change` on the outputs `keys` picks (`at` being the pointer's or the
-/// focused output). Each target moves from its own level, and two outputs sharing a target (a
-/// mirrored pair) move it once.
+/// The actions for `change` on the outputs `keys` picks (`at` being the pointer's or the focused
+/// output).
+///
+/// Each target moves from its own level, and two outputs sharing a target (a mirrored pair) move it
+/// once.
 #[must_use]
 pub fn brightness_actions(
     displays: &Displays,
@@ -89,10 +91,11 @@ fn action(
     }
 }
 
-/// Whether the monitors should be probed again before they are read again: some external output
-/// has no DDC display (it did not answer the last probe, which a monitor busy with the
-/// compositor's own DDC traffic can miss), or no output is known and no DDC display either.
-/// When every external output has its DDC display, re-reading is enough.
+/// Whether the monitors should be probed again before they are read again.
+///
+/// Some external output has no DDC display (it did not answer the last probe, which a monitor busy
+/// with the compositor's own DDC traffic can miss), or no output is known and no DDC display
+/// either. When every external output has its DDC display, re-reading is enough.
 #[must_use]
 pub fn probe_needed(displays: &Displays) -> bool {
     let unanswered = displays.outputs.iter().any(|output| {
@@ -105,9 +108,10 @@ pub fn probe_needed(displays: &Displays) -> bool {
 /// Each warmed display's gains as they were before bardo-shell touched them.
 pub type Originals = BTreeMap<DdcId, RgbGain>;
 
-/// The writes that bring every DDC display with RGB gains to `warmth`, and the originals to
-/// keep: `Some` scales each display's own gains (remembered the first time) by the warmth
-/// multipliers; `None` puts back every gain bardo-shell changed and forgets them.
+/// The writes that bring every DDC display with RGB gains to `warmth`, and the originals to keep.
+///
+/// `Some` scales each display's own gains (remembered the first time) by the warmth multipliers;
+/// `None` puts back every gain bardo-shell changed and forgets them.
 #[must_use]
 pub fn warmth_writes(
     displays: &Displays,

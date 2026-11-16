@@ -1,6 +1,8 @@
-//! Night warmth through a monitor's own RGB gains (VCP 0x16/0x18/0x1A): a colour temperature,
-//! chosen by a strength, turned into three per-mille multipliers of the monitor's gains as the
-//! person left them. Pure. No schedule yet: the service applies whatever the setting says.
+//! Night warmth through a monitor's own RGB gains (VCP 0x16/0x18/0x1A).
+//!
+//! A colour temperature, chosen by a strength, turned into three per-mille multipliers of the
+//! monitor's gains as the person left them. Pure. No schedule yet: the service applies whatever the
+//! setting says.
 //!
 //! The temperature-to-RGB curve is the well-known blackbody fit to CIE 1964 10-degree colour
 //! matching data (in the public domain), evaluated here per channel and normalised so that

@@ -1,8 +1,8 @@
-//! The desktop as the shell sees it, whichever compositor protocol carries it: which backend
-//! the compositor's globals select, the views of its apps, windows and Spaces, the commands
-//! the shell sends and whether a backend can carry each, and the notes the compositor's shell
-//! protocol sends the shell. Pure; `shell-services` fills the views
-//! from the wire.
+//! The desktop as the shell sees it, whichever compositor protocol carries it.
+//!
+//! Which backend the compositor's globals select, the views of its apps, windows and Spaces, the
+//! commands the shell sends and whether a backend can carry each, and the notes the compositor's
+//! shell protocol sends the shell. Pure; `shell-services` fills the views from the wire.
 
 mod backend;
 mod bar_drops;

@@ -1,6 +1,8 @@
-//! A fake Google: an OAuth issuer that behaves as Google's does (a refresh token issued once to a
+//! A fake Google, with an OAuth issuer and the account APIs a sign-in reads.
+//!
+//! The issuer behaves as Google's does (a refresh token issued once to a
 //! code that asked for `access_type=offline`, never rotated, the granted scopes in every answer,
-//! the application secret required, revoke) and the account APIs a Google sign-in reads: userinfo,
+//! the application secret required, revoke). The account APIs are userinfo,
 //! and the one list call each of Calendar, People, Tasks and Drive's app folder that the family's
 //! capability probe makes. The APIs are plain HTTP on loopback behind `Authorization: Bearer`,
 //! and accept the access tokens the issuer minted and has not revoked; a token the issuer issued

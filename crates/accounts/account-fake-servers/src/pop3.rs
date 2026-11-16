@@ -1,7 +1,8 @@
-//! A fake POP3 server: greeting, CAPA, STLS or implicit TLS, USER/PASS, AUTH PLAIN and XOAUTH2,
-//! and enough of STAT, LIST, RETR, DELE, NOOP and QUIT for a relay test to see a session work.
-//! It refuses a wrong password, and refuses USER, PASS and AUTH before TLS when it advertises
-//! STLS. Every login attempt and every command after login is recorded on the mail handle.
+//! A fake POP3 server: greeting, CAPA, STLS or implicit TLS, USER/PASS, AUTH PLAIN and XOAUTH2, and
+//! enough of STAT, LIST, RETR, DELE, NOOP and QUIT for a relay test to see a session work.
+//!
+//! It refuses a wrong password, and refuses USER, PASS and AUTH before TLS when it advertises STLS.
+//! Every login attempt and every command after login is recorded on the mail handle.
 
 use crate::imap::Message;
 use crate::mail::{

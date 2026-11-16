@@ -119,9 +119,10 @@ impl PrivacyStore for NoPrivacyStore {
     }
 }
 
-/// A run that keeps nothing between runs (the headless backend, a session with no home folder):
-/// no book is found and none is written, so the answers last the run, but the administrator's
-/// floor is read like any run's. A run without a book is no way around what the floor refuses.
+/// A run that keeps nothing between runs (the headless backend, a session with no home folder).
+///
+/// No book is found and none is written, so the answers last the run, but the administrator's floor
+/// is read like any run's. A run without a book is no way around what the floor refuses.
 #[derive(Debug)]
 pub struct FloorOnlyStore {
     floor: FloorFiles,

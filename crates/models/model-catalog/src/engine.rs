@@ -60,12 +60,13 @@ pub struct ServedName(pub String);
 #[serde(transparent)]
 pub struct ParserName(pub String);
 
-/// An engine somebody else started, on another machine, that the entry is reached through. The
-/// entry carries no `[[engine]]` profile and no GPU share: nothing here spawns it or budgets for
-/// it. It names what a client needs: the wire (`engine`), the name to ask for and the parsers the
-/// server runs. A model whose calls we read from its text (`tools = "client_parsed"`) has no tool
-/// parser on its server; every other attached entry names one. The measured server command is the
-/// entry's comment block.
+/// An engine somebody else started, on another machine, that the entry is reached through.
+///
+/// The entry carries no `[[engine]]` profile and no GPU share: nothing here spawns it or budgets
+/// for it. It names what a client needs: the wire (`engine`), the name to ask for and the parsers
+/// the server runs. A model whose calls we read from its text (`tools = "client_parsed"`) has no
+/// tool parser on its server; every other attached entry names one. The measured server command is
+/// the entry's comment block.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AttachedEngine {

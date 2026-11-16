@@ -1,7 +1,8 @@
-//! A fake IMAP server: greeting, CAPABILITY, STARTTLS or implicit TLS, LOGIN, AUTHENTICATE
-//! PLAIN and XOAUTH2, and enough of SELECT, FETCH, UID FETCH, LIST, NOOP and LOGOUT for a relay
-//! test to see a session work. It refuses a wrong password and refuses LOGIN before TLS when it
-//! advertises STARTTLS.
+//! A fake IMAP server that is enough for a relay test to see a session work.
+//!
+//! It speaks greeting, CAPABILITY, STARTTLS or implicit TLS, LOGIN, AUTHENTICATE PLAIN and
+//! XOAUTH2, and enough of SELECT, FETCH, UID FETCH, LIST, NOOP and LOGOUT. It refuses a wrong
+//! password and refuses LOGIN before TLS when it advertises STARTTLS.
 
 mod commands;
 

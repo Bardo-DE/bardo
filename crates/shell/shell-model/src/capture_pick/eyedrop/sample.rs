@@ -10,11 +10,12 @@ pub struct ShotPixel {
     pub y: u32,
 }
 
-/// The pixel of a picture `shot` device pixels across and down that a pointer at `at` is over, on
-/// a surface `surface` logical pixels across and down that shows the whole picture. The two sizes
-/// give the scale on each axis, so a fractional scale (and the rounding of the logical size) is
-/// exact; the pixel is the one the position falls in. None when the pointer is off the surface or
-/// either size is empty.
+/// The pixel of a picture `shot` device pixels across and down that a pointer at `at` is over, on a
+/// surface `surface` logical pixels across and down that shows the whole picture.
+///
+/// The two sizes give the scale on each axis, so a fractional scale (and the rounding of the
+/// logical size) is exact; the pixel is the one the position falls in. None when the pointer is off
+/// the surface or either size is empty.
 #[must_use]
 pub fn pixel_under(shot: (u32, u32), surface: (u32, u32), at: (f64, f64)) -> Option<ShotPixel> {
     let across = |size: u32, extent: u32, position: f64| -> Option<u32> {

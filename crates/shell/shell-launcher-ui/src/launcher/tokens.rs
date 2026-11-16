@@ -1,11 +1,12 @@
-//! The launcher's placement tokens as the layer maths reads them. Each is a tuned token in
-//! `shell_kit::tokens::launcher::LauncherToken` (`--shell-launcher-top-bar-gap`,
-//! `--shell-launcher-top-centre-bias`); the panel's place is needed before the first layout, so
-//! [`LauncherTokens::read`] takes the resolved length of a custom property
-//! (`ui_blitz::Resolved::length` on the surface's document, read again when the `Styles` signal
-//! changes) and a token a sheet does not write, or writes as `calc()`, is the shipped constant.
-//! The constants and the token defaults are the only two copies; a test compares them. The
-//! bar's height is quire's `SHELL_SCALE.bar` (`--shell-bar-h`).
+//! The launcher's placement tokens as the layer maths reads them.
+//!
+//! Each is a tuned token in `shell_kit::tokens::launcher::LauncherToken`
+//! (`--shell-launcher-top-bar-gap`, `--shell-launcher-top-centre-bias`); the panel's place is
+//! needed before the first layout, so [`LauncherTokens::read`] takes the resolved length of a
+//! custom property (`ui_blitz::Resolved::length` on the surface's document, read again when the
+//! `Styles` signal changes) and a token a sheet does not write, or writes as `calc()`, is the
+//! shipped constant. The constants and the token defaults are the only two copies; a test compares
+//! them. The bar's height is quire's `SHELL_SCALE.bar` (`--shell-bar-h`).
 
 use shell_kit::tokens::launcher::LauncherToken;
 use shell_ui_kit::links::PanelPlace;

@@ -1,6 +1,8 @@
 //! Where a minimised window flies to: the dock's icon rectangles, and the commands that keep the
-//! compositor's targets equal to them. Pure; the dock fills [`OutputRects`], the daemon turns
-//! them and the desktop's windows into [`MinimiseTargets`] and sends [`MinimiseTargets::since`].
+//! compositor's targets equal to them.
+//!
+//! Pure; the dock fills [`OutputRects`], the daemon turns them and the desktop's windows into
+//! [`MinimiseTargets`] and sends [`MinimiseTargets::since`].
 
 use std::collections::BTreeMap;
 

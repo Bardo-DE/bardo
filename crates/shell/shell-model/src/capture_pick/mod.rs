@@ -1,8 +1,10 @@
-//! The screen-sharing picker as the shell holds it: what an app asked to share (`Ask`), what
-//! there is to share (`Candidates`), the choices that follow from both (`plan`), what the
-//! person has picked (`Picks`) and the answer that goes back (`reply`). The transom portal
-//! backend asks on `org.bardo.Shell1.PickCaptureSource`; `shell-services` serves it and
-//! `shell-overlays` draws the sheet. Everything here is pure and table-tested.
+//! The screen-sharing picker as the shell holds it.
+//!
+//! What an app asked to share (`Ask`), what there is to share (`Candidates`), the choices that
+//! follow from both (`plan`), what the person has picked (`Picks`) and the answer that goes back
+//! (`reply`). The transom portal backend asks on `org.bardo.Shell1.PickCaptureSource`;
+//! `shell-services` serves it and `shell-overlays` draws the sheet. Everything here is pure and
+//! table-tested.
 //!
 //! One request is open at a time, of any kind (sources, a colour or a permission question): a
 //! second while one is open is refused ([`admits`]). The colour request (`color`) is answered with a cancel until a surface

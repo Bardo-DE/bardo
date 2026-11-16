@@ -148,9 +148,10 @@ fn in_actions(
     }
 }
 
-/// Whether a plain pick of a row (a click that reached it) is one the open actions menu keeps
-/// from the row: the menu is in front, so the press belongs to it. A pick of one of the row's
-/// actions comes from the menu itself and goes through.
+/// Whether a plain pick of a row (a click that reached it) is one the open actions menu keeps from
+/// the row: the menu is in front, so the press belongs to it.
+///
+/// A pick of one of the row's actions comes from the menu itself and goes through.
 #[must_use]
 pub fn behind_menu(state: &LauncherState, choice: &Choice) -> bool {
     state.actions != ActionsMenu::Closed && *choice == Choice::Primary

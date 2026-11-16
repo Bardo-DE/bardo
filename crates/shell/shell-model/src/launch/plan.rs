@@ -6,8 +6,9 @@ use shell_launcher::{AppId, DesktopAction};
 use super::{LaunchRequest, ScopeUnit};
 use crate::apps::{App, AppIcon, ExecArgs, ExecError, Terminal, expand_exec};
 
-/// The full command: `systemd-run --user --scope --collect --unit=<unit> -- <exec...>`, with
-/// the terminal wrapper (`terminal`, e.g. `["foot", "-e"]`) in front of `Exec` when the
+/// The full command: `systemd-run --user --scope --collect --unit=<unit> -- <exec...>`.
+///
+/// It has the terminal wrapper (`terminal`, e.g. `["foot", "-e"]`) in front of `Exec` when the
 /// entry has `Terminal=true`, and the request's action's `Exec` when it names one.
 pub fn launch_argv(
     app: &App,
@@ -66,8 +67,9 @@ fn icon_arg(icon: &AppIcon) -> String {
 }
 
 /// `app-bardo-<id>-<nonce>.scope`, the scope a launch runs in: porter's [`ScopeName`] writes it, so
-/// what porter reads back to learn which app a process is (`identity_of`) is the same name. The id
-/// is escaped as a unit name component (`systemd-escape`); an empty id has no scope.
+/// what porter reads back to learn which app a process is (`identity_of`) is the same name.
+///
+/// The id is escaped as a unit name component (`systemd-escape`); an empty id has no scope.
 pub fn scope_unit(app: &AppId, nonce: u32) -> Result<ScopeUnit, CoreError> {
     ScopeName::new(Some("bardo"), &app.0, &nonce.to_string())
         .map(|name| ScopeUnit(name.to_string()))

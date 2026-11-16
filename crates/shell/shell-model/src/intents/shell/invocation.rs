@@ -1,6 +1,8 @@
 //! An `Invocation` of one of the shell's actions, read into a [`ShellAction`], and the answer an
-//! action gives. The names and the choice ids are the manifest's (`dist/intents/org.bardo.Shell.toml`);
-//! a test holds the two together.
+//! action gives.
+//!
+//! The names and the choice ids are the manifest's (`dist/intents/org.bardo.Shell.toml`); a test
+//! holds the two together.
 
 use action_core::{
     AppRefusal, FailText, Follow, Invocation, Outcome, Preview, UndoFault, Undoable,
@@ -13,9 +15,11 @@ use super::action::ShellAction;
 use crate::screenshots::ShotKind;
 use crate::windows::Step;
 
-/// The action `invocation` asks for. A name the shell does not declare is `Unsupported`; a
-/// parameter that is missing, of the wrong type or outside its options is `NeedsParam` or `Failed`
-/// with words that name it, never with the argument's own text.
+/// The action `invocation` asks for.
+///
+/// A name the shell does not declare is `Unsupported`; a parameter that is missing, of the wrong
+/// type or outside its options is `NeedsParam` or `Failed` with words that name it, never with the
+/// argument's own text.
 pub fn action_of(invocation: &Invocation) -> Result<ShellAction, AppRefusal> {
     match invocation.action.as_str() {
         "shell.launcher.open" => Ok(ShellAction::LauncherOpen {

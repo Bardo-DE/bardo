@@ -16,9 +16,10 @@ pub fn google() -> ProviderSpec {
     parse(include_str!("../../providers/google.toml"))
 }
 
-/// The shipped `providers/<id>.toml` of an AI company served by the `api_key` family
-/// (`anthropic`, `google-ai`, `moonshot`, `openai`, `openrouter`, and `openai-compatible`, which
-/// names no server: the sign-in asks for one).
+/// The shipped `providers/<id>.toml` of an AI company served by the `api_key` family.
+///
+/// The ids are `anthropic`, `google-ai`, `moonshot`, `openai`, `openrouter`, and
+/// `openai-compatible`, which names no server: the sign-in asks for one.
 #[must_use]
 pub fn ai(id: &str) -> ProviderSpec {
     let text = match id {

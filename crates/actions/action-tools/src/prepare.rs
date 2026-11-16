@@ -31,10 +31,12 @@ pub fn listing(
         .collect()
 }
 
-/// The call a tool call stands for: finds the offered action by tool name (one that is not on the
-/// menu is unknown), reads `arguments` by their declared types, labels each one `Untrusted` from
-/// `client` and makes the request as `Origin::Mcp`. An argument that does not fit its declaration
-/// is refused here, before anything is asked of the router.
+/// The call a tool call stands for.
+///
+/// Finds the offered action by tool name (one that is not on the menu is unknown), reads
+/// `arguments` by their declared types, labels each one `Untrusted` from `client` and makes the
+/// request as `Origin::Mcp`. An argument that does not fit its declaration is refused here, before
+/// anything is asked of the router.
 pub fn prepare(
     registry: &[ValidManifest],
     tool: &str,

@@ -1,6 +1,8 @@
 //! A small HTTP/1.1 server and client for the fakes: one request in, one response out, bodies by
-//! `Content-Length`. The fakes' handlers are plain functions over `Request`, so what a fake
-//! answers is a table a test can read.
+//! `Content-Length`.
+//!
+//! The fakes' handlers are plain functions over `Request`, so what a fake answers is a table a test
+//! can read.
 
 mod client;
 

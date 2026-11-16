@@ -1,5 +1,7 @@
-//! A fake Nextcloud: Login Flow v2, the OCS app-password DELETE and capabilities, `WebDAV` with
-//! sync tokens and quota, `CalDAV` and `CardDAV` collections, and the Notes API, behind HTTP Basic
+//! A fake Nextcloud server.
+//!
+//! It serves Login Flow v2, the OCS app-password DELETE and capabilities, `WebDAV` with sync
+//! tokens and quota, `CalDAV` and `CardDAV` collections, and the Notes API, behind HTTP Basic
 //! with the app passwords the login flow hands out.
 
 mod login;

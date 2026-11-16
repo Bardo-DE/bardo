@@ -1,7 +1,9 @@
 //! One new connection on its own thread: identify the peer, count it into its pool of slots, then
-//! serve it (NEW-FA-3). Identification may wait on the peer, so it never runs on the accept loop;
-//! the ticket in [`crate::pending`] holds the connection's place until the slot is decided, so
-//! identification still comes before counting (NEW-PI-6).
+//! serve it (NEW-FA-3).
+//!
+//! Identification may wait on the peer, so it never runs on the accept loop; the ticket in
+//! [`crate::pending`] holds the connection's place until the slot is decided, so identification
+//! still comes before counting (NEW-PI-6).
 
 use crate::backend::Backend;
 use crate::identity::{Authority, SeatSource};

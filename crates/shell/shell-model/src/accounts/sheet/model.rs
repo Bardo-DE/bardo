@@ -86,9 +86,11 @@ pub struct OpenSheet {
     pub awaiting: Awaiting,
 }
 
-/// Whether accountd owes the sheet a new view. A press (or Return, or a double-reported click)
-/// that has been answered must not be answered twice: accountd's machine moves on one input, and
-/// a second one would be taken for the next step's.
+/// Whether accountd owes the sheet a new view.
+///
+/// A press (or Return, or a double-reported click) that has been answered must not be answered
+/// twice: accountd's machine moves on one input, and a second one would be taken for the next
+/// step's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Awaiting {
     /// Nothing is owed: the next answer goes.

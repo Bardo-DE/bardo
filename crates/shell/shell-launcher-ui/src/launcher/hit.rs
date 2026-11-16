@@ -1,6 +1,7 @@
-//! Which part of the panel takes presses, measured by the panel and shared with the catcher
-//! (the macOS polish pass: the palette's card is as tall as its content, so the 680 x 460 panel
-//! is mostly transparent under a short list). The panel's input and blur follow the card; the
+//! Which part of the panel takes presses, measured by the panel and shared with the catcher.
+//!
+//! This is the macOS polish pass: the palette's card is as tall as its content, so the 680 x 460 panel
+//! is mostly transparent under a short list. The panel's input and blur follow the card; the
 //! catcher's input leaves out only what the panel takes, so a press under a short card closes
 //! the launcher like any other outside press.
 
@@ -43,10 +44,11 @@ pub fn card_region() -> RegionSpec {
     }
 }
 
-/// The panel's blur region: the card, and the actions menu too while it is open (it hangs below
-/// the card, so without this quire paints its see-through tint over unblurred rows). The host
-/// skips an element that is not in the document, so the menu's frame before it mounts blurs
-/// only the card.
+/// The panel's blur region: the card, and the actions menu too while it is open (it hangs below the
+/// card, so without this quire paints its see-through tint over unblurred rows).
+///
+/// The host skips an element that is not in the document, so the menu's frame before it mounts
+/// blurs only the card.
 #[must_use]
 pub fn blur_region(actions: ActionsShown) -> RegionSpec {
     match actions {

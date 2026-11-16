@@ -70,9 +70,10 @@ pub enum Reply {
     Withdrawn,
 }
 
-/// Whether the sheet may be answered with `choice` when it asked `request`: "always" only when
-/// the router offered it, "from the terminal" only when it offered that, "never" only when the
-/// request's limits offer it, and a plain yes or no whatever was offered.
+/// Whether the sheet may be answered with `choice` when it asked `request`.
+///
+/// "always" only when the router offered it, "from the terminal" only when it offered that, "never"
+/// only when the request's limits offer it, and a plain yes or no whatever was offered.
 #[must_use]
 pub fn permits(request: &ConfirmRequest, choice: SheetChoice) -> bool {
     match choice {

@@ -1,7 +1,8 @@
-//! The accounts service as the shell sees it: which accounts need the person to sign in again,
-//! and the notification that tells them (design/31 §4.4, PLAN §2.8). The events that move the
-//! state, the pure step over them, and the notice's words, its action and how to find the notice
-//! already shown.
+//! The accounts service as the shell sees it: which accounts need the person to sign in again, and
+//! the notification that tells them (design/31 §4.4, PLAN §2.8).
+//!
+//! The events that move the state, the pure step over them, and the notice's words, its action and
+//! how to find the notice already shown.
 
 mod command;
 mod model;

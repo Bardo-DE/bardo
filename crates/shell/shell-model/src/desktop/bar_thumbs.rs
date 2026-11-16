@@ -113,12 +113,13 @@ fn looks_of(view: &DesktopView, space: &SpaceId) -> Vec<WindowMark> {
         .collect()
 }
 
-/// The pictures to ask for now and the asks that follow. Each laid-out bar asks for every Space
-/// of its output, shown or not (the compositor keeps a picture session per Space across switches),
-/// once when the bar comes up, and again only after the last answer came and the Space's windows
-/// look different: a held request is the compositor's damage gate, and asking in a loop for a
-/// picture that did not change would spin. A bar that went away, or a Space that left it, forgets
-/// its ask, so the next opening asks again.
+/// The pictures to ask for now and the asks that follow.
+///
+/// Each laid-out bar asks for every Space of its output, shown or not (the compositor keeps a
+/// picture session per Space across switches), once when the bar comes up, and again only after the
+/// last answer came and the Space's windows look different: a held request is the compositor's
+/// damage gate, and asking in a loop for a picture that did not change would spin. A bar that went
+/// away, or a Space that left it, forgets its ask, so the next opening asks again.
 #[must_use]
 pub fn thumbs_wanted(
     asks: &ThumbAsks,

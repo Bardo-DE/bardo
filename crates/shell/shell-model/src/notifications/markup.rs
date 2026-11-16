@@ -70,8 +70,10 @@ pub enum RunLink {
 }
 
 /// A link target as the sender wrote it (entities decoded), of a scheme a person may follow
-/// ([`LINK_SCHEMES`]). Opened through the portal or `xdg-open` by the surface, never fetched by
-/// the server. Shared, so every run of a link holds the one copy.
+/// ([`LINK_SCHEMES`]).
+///
+/// Opened through the portal or `xdg-open` by the surface, never fetched by the server. Shared, so
+/// every run of a link holds the one copy.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Href(pub Arc<str>);
 

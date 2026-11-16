@@ -2,9 +2,10 @@
 
 use computer_use_bus::{ControlRefusal, CuaCaller, CuaMember, permits};
 
-/// `Ok` when `caller` may call `member` now: it is on the allow-list for the member
-/// (`NotPermitted` otherwise), and computer use is on for `Start` (`Disabled` otherwise). The
-/// caller check comes first, so a stranger learns nothing about the setting.
+/// `Ok` when `caller` may call `member` now: it is on the allow-list for the member (`NotPermitted`
+/// otherwise), and computer use is on for `Start` (`Disabled` otherwise).
+///
+/// The caller check comes first, so a stranger learns nothing about the setting.
 pub fn guard(caller: CuaCaller, member: CuaMember, enabled: bool) -> Result<(), ControlRefusal> {
     if !permits(caller, member) {
         Err(ControlRefusal::NotPermitted)

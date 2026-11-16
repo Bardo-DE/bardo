@@ -61,9 +61,10 @@ pub fn held(action: SessionAction, app: &str) -> (String, String) {
 /// shut-down dialog does.
 pub const COUNTDOWN_SECONDS: u32 = 60;
 
-/// The line under the question while the power menu counts down to an action that asks first:
-/// what happens if the person does nothing, and in how long. `None` for an action that never
-/// asks (Lock, Sleep), whose line is its [`consequence`].
+/// The line under the question while the power menu counts down to an action that asks first: what
+/// happens if the person does nothing, and in how long.
+///
+/// `None` for an action that never asks (Lock, Sleep), whose line is its [`consequence`].
 #[must_use]
 pub fn countdown(action: SessionAction, seconds: u32) -> Option<String> {
     let unit = if seconds == 1 { "second" } else { "seconds" };

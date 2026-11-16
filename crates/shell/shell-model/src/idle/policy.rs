@@ -172,10 +172,12 @@ pub fn power_source(battery: &Battery) -> PowerSource {
     }
 }
 
-/// The notifications to hold for `policy` on `power` while the session is locked (`locked`): none when the
-/// mode is `Off`; `Dim` and `ScreenOff` (or `LockedScreenOff` while locked, when set), and
-/// `Suspend`, each only when its time is not `Never`; a dim lead longer than the screen-off time
-/// dims from the start of idleness (after zero seconds is never asked: at least one second).
+/// The notifications to hold for `policy` on `power` while the session is locked (`locked`).
+///
+/// None when the mode is `Off`; `Dim` and `ScreenOff` (or `LockedScreenOff` while locked, when
+/// set), and `Suspend`, each only when its time is not `Never`; a dim lead longer than the
+/// screen-off time dims from the start of idleness (after zero seconds is never asked: at least one
+/// second).
 #[must_use]
 pub fn watches(policy: &IdlePolicy, power: PowerSource, locked: bool) -> Vec<Watch> {
     match policy.mode {

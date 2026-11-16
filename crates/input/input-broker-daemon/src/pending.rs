@@ -1,8 +1,9 @@
-//! Who is being identified right now (NEW-FA-3). Naming a peer reads its `/proc` entries and stats
-//! its image file, and a program that controls its own file system can make that wait for ever. So
-//! each connection is identified on a thread of its own, never on the accept loop, and what is
-//! waiting is counted here, before the thread exists, by the user the kernel names from the socket
-//! alone (no `/proc` read).
+//! Who is being identified right now (NEW-FA-3).
+//!
+//! Naming a peer reads its `/proc` entries and stats its image file, and a program that controls
+//! its own file system can make that wait for ever. So each connection is identified on a thread of
+//! its own, never on the accept loop, and what is waiting is counted here, before the thread
+//! exists, by the user the kernel names from the socket alone (no `/proc` read).
 //!
 //! A user over [`Caps::per_user`], or all users over [`Caps::total`], is closed at once. Identified
 //! callers are still counted into [`crate::slots`] afterwards (NEW-PI-6), so strangers cannot use

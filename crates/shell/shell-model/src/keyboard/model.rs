@@ -30,8 +30,10 @@ pub struct DeclaredProfile;
 pub struct CategoryTable(pub Vec<(String, ProfileName)>);
 
 /// Profiles keycap defines for one app of its own (`[profile.ghostty]`, inheriting `terminal`),
-/// matched by a part of the window's app id, lowercased: the way keycap's Plasma feed does with
-/// the resource class. Above the category table, so a terminal that has a profile of its own
-/// gets it, and below the user's overrides and what the app declares.
+/// matched by a part of the window's app id, lowercased.
+///
+/// The way keycap's Plasma feed does with the resource class. Above the category table, so a
+/// terminal that has a profile of its own gets it, and below the user's overrides and what the app
+/// declares.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OwnProfiles(pub Vec<(String, ProfileName)>);

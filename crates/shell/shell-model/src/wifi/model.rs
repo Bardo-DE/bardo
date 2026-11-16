@@ -79,10 +79,11 @@ pub enum Saved {
     New,
 }
 
-/// The networks the control center lists: one per SSID (its strongest access point, and
-/// `Connected` or `Connecting` if any of its points is), hidden (empty) SSIDs left out, ordered
-/// connected first, then saved networks, then the rest, by strength (strongest first) and then
-/// name within each group; each with whether it is saved.
+/// The networks the control center lists.
+///
+/// One per SSID (its strongest access point, and `Connected` or `Connecting` if any of its points
+/// is), hidden (empty) SSIDs left out, ordered connected first, then saved networks, then the rest,
+/// by strength (strongest first) and then name within each group; each with whether it is saved.
 #[must_use]
 pub fn listed_networks(wifi: &Wifi) -> Vec<(AccessPoint, Saved)> {
     let mut groups: HashMap<&Ssid, (AccessPoint, bool)> = HashMap::new();

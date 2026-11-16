@@ -1,6 +1,7 @@
 //! What an agent last offered, written by docket whenever a session with it opens (and when its
-//! models are listed), kept at `state/<id>/offered.toml` for the Settings app to read. This is the
-//! record as a value and as text; reading and writing the file is up to the caller.
+//! models are listed), kept at `state/<id>/offered.toml` for the Settings app to read.
+//!
+//! This is the record as a value and as text; reading and writing the file is up to the caller.
 //!
 //! ```toml
 //! seen = 3                    # how many times this was written: a counter, no clock

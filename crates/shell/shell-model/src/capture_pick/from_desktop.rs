@@ -6,9 +6,11 @@ use super::plan::WindowCandidate;
 use crate::desktop::DesktopView;
 
 /// The windows of `view` the picker offers, in the desktop's order (most recently used first):
-/// documents that are showing and not hidden from captures. Minimised windows have nothing to
-/// capture, a panel or a sheet is not something to share, and a window the compositor hides from every capture is never
-/// offered. A window with no title shows its app's name.
+/// documents that are showing and not hidden from captures.
+///
+/// Minimised windows have nothing to capture, a panel or a sheet is not something to share, and a
+/// window the compositor hides from every capture is never offered. A window with no title shows
+/// its app's name.
 #[must_use]
 pub fn windows_of(view: &DesktopView) -> Vec<WindowCandidate> {
     view.windows

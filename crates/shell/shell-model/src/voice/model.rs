@@ -29,9 +29,10 @@ pub enum HoldToTalk {
     Off,
 }
 
-/// `voice.consent`: the person's answer to the first-use sheet. `voiced` reads this very file, so
-/// the serde form is its contract: the strings `"not_asked"` and `"declined"`, and the table
-/// `{ given = <unix seconds> }`.
+/// `voice.consent`: the person's answer to the first-use sheet.
+///
+/// `voiced` reads this very file, so the serde form is its contract: the strings `"not_asked"` and
+/// `"declined"`, and the table `{ given = <unix seconds> }`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum VoiceConsent {

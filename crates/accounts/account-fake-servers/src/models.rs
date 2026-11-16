@@ -1,6 +1,7 @@
-//! Model lists: Ollama's `/api/tags` and `/api/show`, and an OpenAI-compatible `/v1/models`. Both
-//! wires also answer `POST /v1/chat/completions` (what a real Ollama, llama.cpp and LM Studio do)
-//! with a scripted stream, so a local runtime can be probed and then asked.
+//! Model lists: Ollama's `/api/tags` and `/api/show`, and an OpenAI-compatible `/v1/models`.
+//!
+//! Both wires also answer `POST /v1/chat/completions` (what a real Ollama, llama.cpp and LM Studio
+//! do) with a scripted stream, so a local runtime can be probed and then asked.
 
 use crate::http::{Hit, Request, Response, serve};
 use crate::net::{Bind, Listener};

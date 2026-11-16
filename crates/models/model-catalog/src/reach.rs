@@ -14,9 +14,10 @@ impl Reach {
 }
 
 /// The reach to use for an entry: among its reaches whose provider is in `granted` and whose wire
-/// is in `wires`, a direct one before a gateway one, and otherwise the first listed. `None` for an
-/// on-device entry and when nothing is granted or speakable. The chosen reach comes back whole, so
-/// the caller can name the provider.
+/// is in `wires`, a direct one before a gateway one, and otherwise the first listed.
+///
+/// `None` for an on-device entry and when nothing is granted or speakable. The chosen reach comes
+/// back whole, so the caller can name the provider.
 #[must_use]
 pub fn reachable<'a>(
     entry: &'a ModelEntry,

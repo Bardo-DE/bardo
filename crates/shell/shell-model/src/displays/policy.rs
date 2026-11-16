@@ -1,6 +1,7 @@
-//! The `display.*` settings as this crate sees them. `shell-settings` owns the file and its
-//! schema but brings `dioxus` with it, which this crate may not reach
-//! (`scripts/check-boundary.sh`), so the daemon translates `DisplaySettings` into a
+//! The `display.*` settings as this crate sees them.
+//!
+//! `shell-settings` owns the file and its schema but brings `dioxus` with it, which this crate may
+//! not reach (`scripts/check-boundary.sh`), so the daemon translates `DisplaySettings` into a
 //! [`DisplayPolicy`] and sends it with `DisplaysCommand::Policy`.
 
 use serde::{Deserialize, Serialize};

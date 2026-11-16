@@ -1,6 +1,8 @@
-//! A fake SMTP submission server: greeting, EHLO, STARTTLS or implicit TLS, AUTH PLAIN, LOGIN
-//! and XOAUTH2, MAIL, RCPT, DATA, RSET, NOOP, QUIT. Mail is refused (530) before AUTH, a wrong
-//! password is refused (535), and every accepted message is recorded.
+//! A fake SMTP submission server: greeting, EHLO, STARTTLS or implicit TLS, AUTH PLAIN, LOGIN and
+//! XOAUTH2, MAIL, RCPT, DATA, RSET, NOOP, QUIT.
+//!
+//! Mail is refused (530) before AUTH, a wrong password is refused (535), and every accepted message
+//! is recorded.
 
 use crate::mail::{
     Accounts, Lines, MailCtx, MailEvent, MailHandle, Mechanism, Secret, b64, decode_plain,

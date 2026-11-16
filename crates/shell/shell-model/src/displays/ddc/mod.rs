@@ -1,7 +1,8 @@
-//! DDC/CI: external monitors' own controls (brightness, contrast, speaker volume, mute, input,
-//! RGB gain) over the display cable's i2c lines: the VCP features and levels, which bus is which
-//! display, and the debounce that settles writes. The worker thread that owns every bus is the
-//! service's backend.
+//! DDC/CI: external monitors' own controls (brightness, contrast, speaker volume, mute, input, RGB
+//! gain) over the display cable's i2c lines.
+//!
+//! The VCP features and levels, which bus is which display, and the debounce that settles writes.
+//! The worker thread that owns every bus is the service's backend.
 
 pub mod debounce;
 mod display;

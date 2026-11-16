@@ -139,9 +139,10 @@ pub(super) fn weekday_of(code: &str) -> Option<Weekday> {
     }
 }
 
-/// The occurrences of `event` overlapping `window`, each a [`CalEvent`] of `calendar`: the rule
-/// expanded (none: the event once), `EXDATE`s removed, times resolved (`Zoned` by its zone name,
-/// unknown names and `Floating` in `zone`; `Date`s stay all-day). A cancelled event has none.
+/// The occurrences of `event` overlapping `window`, each a [`CalEvent`] of `calendar`.
+///
+/// The rule expanded (none: the event once), `EXDATE`s removed, times resolved (`Zoned` by its zone
+/// name, unknown names and `Floating` in `zone`; `Date`s stay all-day). A cancelled event has none.
 /// Overrides (`recurrence_id`) are merged by the reader, not here.
 pub fn occurrences(
     event: &IcsEvent,

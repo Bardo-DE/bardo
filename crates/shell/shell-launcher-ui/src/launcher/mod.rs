@@ -1,7 +1,8 @@
-//! The launcher (design/20 §1.3, design/13 §13.3.9, 06 §20.2): two surfaces kept warm with
-//! `set_visibility` — a transparent full-output catcher (`catcher/`, painted once, never
-//! animated) and the centred 680 x 460 panel with keyboard exclusivity — closing on Escape,
-//! focus lost, a catcher click or `launcher toggle`.
+//! The launcher (design/20 §1.3, design/13 §13.3.9, 06 §20.2).
+//!
+//! Two surfaces kept warm with `set_visibility` — a transparent full-output catcher (`catcher/`,
+//! painted once, never animated) and the centred 680 x 460 panel with keyboard exclusivity —
+//! closing on Escape, focus lost, a catcher click or `launcher toggle`.
 //!
 //! Both surfaces follow one shared [`shell_ui_kit::links::LauncherLink`] (`links`), which the daemon writes
 //! for `bardo-shell launcher toggle|open|close` and the panel's focus, and each surface maps or

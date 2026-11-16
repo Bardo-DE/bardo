@@ -1,8 +1,10 @@
-//! The preview pane's moments through quire's `ui_components::motion::detail` (design/26-DETAILS.md): its states as
-//! the person sees them, what each change means (an exhaustive [`Detailed`] table), and
-//! [`use_pane_detail`], the one place the pane calls `use_detail`. The launcher never plays a
-//! moment itself (quire rule 4): the cue goes to quire's `PreviewPane` (`cue`, and `operation`
-//! from `use_operation`), which plays it.
+//! The preview pane's moments through quire's `ui_components::motion::detail`
+//! (design/26-DETAILS.md).
+//!
+//! Its states as the person sees them, what each change means (an exhaustive [`Detailed`] table),
+//! and [`use_pane_detail`], the one place the pane calls `use_detail`. The launcher never plays a
+//! moment itself (quire rule 4): the cue goes to quire's `PreviewPane` (`cue`, and `operation` from
+//! `use_operation`), which plays it.
 
 use shell_launcher::PreviewKind;
 use ui_components::motion::detail::touch::Touch;

@@ -1,6 +1,8 @@
 //! The size a picture will show at, read from the start of its file: what a window is sized to
-//! before it opens. Nothing is decoded and at most [`HEAD`] bytes are read, so it costs a few
-//! milliseconds whatever the file claims.
+//! before it opens.
+//!
+//! Nothing is decoded and at most [`HEAD`] bytes are read, so it costs a few milliseconds whatever
+//! the file claims.
 
 use super::codec::{Codec, codec_for};
 use super::stills;
@@ -10,12 +12,13 @@ use anyview_core::{Input, PixelLen, PixelSize, QuarterTurn, Sniffed};
 /// EXIF block and a thumbnail inside it can fill most of 64 KiB), so a larger window is read.
 const HEAD: u64 = 256 * 1024;
 
-/// The size the picture in `src` (a path, or any bytes a host injects) shows at, upright, in pixels, as the head of the file declares
-/// it; `sniffed` is what the file was established to be. `None` when the format does not say in its
-/// head (ICNS, JPEG XL, camera raw, a layered document), the head is damaged or cut before the
-/// size, or the path is not a regular file. The size is the file's claim: nothing checks it fits
-/// a decode. An SVG gives the size it declares, rounded up to whole pixels.
-/// Blocking: run it on a worker.
+/// The size the picture in `src` (a path, or any bytes a host injects) shows at, upright, in
+/// pixels, as the head of the file declares it; `sniffed` is what the file was established to be.
+///
+/// `None` when the format does not say in its head (ICNS, JPEG XL, camera raw, a layered document),
+/// the head is damaged or cut before the size, or the path is not a regular file. The size is the
+/// file's claim: nothing checks it fits a decode. An SVG gives the size it declares, rounded up to
+/// whole pixels. Blocking: run it on a worker.
 pub fn natural_size(src: impl Into<Input>, sniffed: &Sniffed) -> Option<PixelSize> {
     let head = src.into().bytes().read_range(0..HEAD).ok()?;
     natural_size_of(&head, sniffed)

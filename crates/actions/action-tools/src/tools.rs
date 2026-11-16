@@ -80,9 +80,11 @@ pub fn tool_name(app: &account_core::AppName, action: &ActionDecl) -> Result<Too
     }
 }
 
-/// The actions offered to outside agents ([`is_offered`]): only `AgentReach::Offered`, of apps
-/// that are not host-only. Hidden ones are dropped, and so are the ones that ask every time (a
-/// client cannot answer a sheet).
+/// The actions offered to outside agents ([`is_offered`]): only `AgentReach::Offered`, of apps that
+/// are not host-only.
+///
+/// Hidden ones are dropped, and so are the ones that ask every time (a client cannot answer a
+/// sheet).
 #[must_use]
 pub fn offered(registry: &[ValidManifest]) -> Vec<(&ValidManifest, &ActionDecl)> {
     registry

@@ -196,9 +196,11 @@ fn apps(value: &toml::Value) -> (Option<Apps>, Vec<Fallback>) {
     (Some(Apps::Listed(rules)), fallbacks)
 }
 
-/// Reads `text` over `base`: each key the file sets and the table accepts replaces its base
-/// value; every other key keeps it. The daemon's `base` lists no app, so until the file names
-/// some, none is on (design/22 section 3.29).
+/// Reads `text` over `base`: each key the file sets and the table accepts replaces its base value;
+/// every other key keeps it.
+///
+/// The daemon's `base` lists no app, so until the file names some, none is on (design/22 section
+/// 3.29).
 #[must_use]
 pub fn read(text: &str, base: &CuaSettings) -> Loaded {
     let doc = match text.parse::<toml::Table>() {

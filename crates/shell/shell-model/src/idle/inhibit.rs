@@ -96,10 +96,11 @@ pub enum LogindIdle {
     Blocked,
 }
 
-/// `inhibitors` after `msg`, and the reply. Cookies count up from 1 and skip 0 on wrap; an
-/// `UnInhibit` only releases a cookie its own peer holds; an `Inhibit` from a peer holding
-/// [`INHIBITORS_PER_PEER_MAX`] changes nothing and is refused. The texts are cut to
-/// [`INHIBIT_TEXT_MAX_BYTES`].
+/// `inhibitors` after `msg`, and the reply.
+///
+/// Cookies count up from 1 and skip 0 on wrap; an `UnInhibit` only releases a cookie its own peer
+/// holds; an `Inhibit` from a peer holding [`INHIBITORS_PER_PEER_MAX`] changes nothing and is
+/// refused. The texts are cut to [`INHIBIT_TEXT_MAX_BYTES`].
 #[must_use]
 pub fn inhibit_step(inhibitors: Inhibitors, msg: InhibitMsg) -> (Inhibitors, InhibitReply) {
     let Inhibitors { mut held, last } = inhibitors;

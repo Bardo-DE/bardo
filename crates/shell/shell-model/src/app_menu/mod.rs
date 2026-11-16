@@ -1,7 +1,8 @@
-//! The focused app's menus as the bar draws them and an agent reads them: an app that serves
-//! `com.canonical.dbusmenu` at `org.bardo.AppMenu.<app_id>` (quire design/27 §5.2 rule a), what
-//! the service follows of it, the titles the bar makes from it, and what activating an item
-//! means for the gate.
+//! The focused app's menus as the bar draws them and an agent reads them.
+//!
+//! An app that serves `com.canonical.dbusmenu` at `org.bardo.AppMenu.<app_id>` (quire design/27
+//! §5.2 rule a), what the service follows of it, the titles the bar makes from it, and what
+//! activating an item means for the gate.
 //!
 //! Everything an app sends (labels, titles, `x-bardo-command-id`) is a claim, so [`route`] never
 //! lets one lower an item's effect unless the app is proven to be the app whose manifest names
