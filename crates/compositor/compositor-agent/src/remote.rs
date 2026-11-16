@@ -17,19 +17,23 @@ use desktop_protocols::vocab::PressEdge;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex, PoisonError};
 
-/// How many remote connections one session of the compositor can number: a device id holds the
-/// slot in 28 bits (the top bit keeps these ids clear of the real input backends'). Past it a
-/// new connection is refused, never given a number already used.
+/// How many remote connections one session of the compositor can number.
+///
+/// A device id holds the slot in 28 bits (the top bit keeps these ids clear of the real input
+/// backends'). Past it a new connection is refused, never given a number already used.
 pub const MAX_REMOTE_SLOTS: u32 = 1 << 28;
 
-/// The most keys, and the most buttons, one connection may hold down at once: a keyboard has
-/// fewer than 256 keys, so a peer that "holds" more is broken or hostile, and its presses are
-/// dropped instead of growing the set without end.
+/// The most keys, and the most buttons, one connection may hold down at once.
+///
+/// A keyboard has fewer than 256 keys, so a peer that "holds" more is broken or hostile, and its
+/// presses are dropped instead of growing the set without end.
 pub const MAX_HELD: usize = 256;
 
-/// Whom a remote connection's input belongs to: a `RemoteDesktop` portal session (it reaches
-/// windows like the person's hand, never the lock or a trusted surface) or an agent lease (it
-/// reaches only the window the lease holds). Fixed when the connection opens.
+/// Whom a remote connection's input belongs to.
+///
+/// Either a `RemoteDesktop` portal session (it reaches windows like the person's hand, never the
+/// lock or a trusted surface) or an agent lease (it reaches only the window the lease holds).
+/// Fixed when the connection opens.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RemoteFor {
     /// A portal session (`ConnectEis`).

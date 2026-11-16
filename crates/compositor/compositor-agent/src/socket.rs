@@ -36,10 +36,18 @@ pub enum RefuseWhy {
 }
 
 /// Hands a caller that holds `held` a connection with `wanted`, if that role is the one `held`
-/// stands for: a socket pair, the role kept with it. `held` is what the bus thread proved of the
-/// caller (`compositor_ipc::dbus`), never anything the caller said; this check is the second line
-/// should a caller of this function ask for more than the proof gave. The caller of this
-/// function inserts the server end into the display.
+/// stands for.
+///
+/// The connection is a socket pair, the role kept with it. `held` is what the bus thread proved
+/// of the caller (`compositor_ipc::dbus`), never anything the caller said; this check is the
+/// second line should a caller of this function ask for more than the proof gave. The caller of
+/// this function inserts the server end into the display.
+///
+/// # Errors
+///
+/// Returns [`RefuseWhy::UnknownUnit`] when `held` stands for no connection role,
+/// [`RefuseWhy::RoleNotAllowed`] when it does not stand for `wanted`, and
+/// [`RefuseWhy::NoSocket`] when the socket pair cannot be made.
 pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, RefuseWhy> {
     match connection_role(held) {
         None => Err(RefuseWhy::UnknownUnit),
@@ -59,9 +67,11 @@ pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, Refu
     }
 }
 
-/// The connection role a proven caller role stands for: the shell the shell's, the agent tier
-/// the agent's, the portal the portal's, every other role none. The role comes from the shipped
-/// caller table (the caller-identity library), never from a unit name.
+/// The connection role a proven caller role stands for.
+///
+/// The shell the shell's, the agent tier the agent's, the portal the portal's, every other role
+/// none. The role comes from the shipped caller table (the caller-identity library), never from a
+/// unit name.
 #[must_use]
 pub fn connection_role(held: &RoleName) -> Option<ConnectionRole> {
     match held {

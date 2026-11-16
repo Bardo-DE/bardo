@@ -33,18 +33,20 @@ use std::io;
 use std::os::fd::{AsFd, OwnedFd};
 use std::os::unix::net::UnixStream;
 
-/// Whether `held`, the role the caller proved, is the desktop portal's backend: the one caller
-/// that may ask for a remote EIS socket. The proof is made on the bus thread
-/// (`compositor_ipc::dbus`); this is the second line, so an ask that reaches the event loop with
-/// another role is refused there too.
+/// Whether `held`, the role the caller proved, is the desktop portal's backend.
+///
+/// The portal is the one caller that may ask for a remote EIS socket. The proof is made on the
+/// bus thread (`compositor_ipc::dbus`); this is the second line, so an ask that reaches the event
+/// loop with another role is refused there too.
 #[must_use]
 pub fn portal_may_connect(held: &RoleName) -> bool {
     *held == roles::PORTAL
 }
 
-/// Whether `held`, the role the caller proved, is the agent tier: the one caller that may lease
-/// a window for its input (`LeaseWindow`). The bus thread proves the role; this is the second
-/// line.
+/// Whether `held`, the role the caller proved, is the agent tier.
+///
+/// The agent tier is the one caller that may lease a window for its input (`LeaseWindow`). The
+/// bus thread proves the role; this is the second line.
 #[must_use]
 pub fn agent_may_lease(held: &RoleName) -> bool {
     *held == roles::AGENT_TIER
@@ -135,11 +137,18 @@ pub struct RemoteGrant {
     pub handle: RemoteHandle,
 }
 
-/// Opens a remote EIS connection for `owner` (a portal session or an agent lease), numbered `slot` (minted by the
-/// compositor, one per connection), offering `kinds`. Absolute pointer and touch positions are
-/// over `extent` (the union of the outputs now). A keyboard device is told `keymap`, the seat's
-/// keymap now, so the keycodes it sends mean what the person's layout means. A layout change
-/// later does not reach devices already made (each connection binds within moments of opening).
+/// Opens a remote EIS connection for `owner` (a portal session or an agent lease).
+///
+/// The connection is numbered `slot` (minted by the compositor, one per connection), offering
+/// `kinds`. Absolute pointer and touch positions are over `extent` (the union of the outputs
+/// now). A keyboard device is told `keymap`, the seat's keymap now, so the keycodes it sends mean
+/// what the person's layout means. A layout change later does not reach devices already made
+/// (each connection binds within moments of opening).
+///
+/// # Errors
+///
+/// Returns the I/O error when the socket pair cannot be made or set non-blocking, or when the
+/// EIS context cannot be made over it.
 pub fn open(
     owner: RemoteFor,
     slot: RemoteSlot,
@@ -536,7 +545,12 @@ fn sub_px(logical: f32) -> SubPx {
     } else {
         scaled.clamp(-2.0e9, 2.0e9)
     };
-    SubPx(held as i32)
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "NaN is mapped to 0 and the value is clamped to +-2e9, inside i32"
+    )]
+    let narrowed = held as i32;
+    SubPx(narrowed)
 }
 
 fn sub_point(x: f32, y: f32) -> SubPoint {
@@ -546,6 +560,10 @@ fn sub_point(x: f32, y: f32) -> SubPoint {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "NaN is mapped to 0 and the value is clamped to +-2e9, inside i32"
+)]
 fn whole(value: f32) -> i32 {
     if value.is_nan() {
         return 0;
@@ -566,14 +584,14 @@ fn placed(extent: LogicalRect, x: f32, y: f32) -> LogicalPoint {
 fn key_edge(state: eis::keyboard::KeyState) -> PressEdge {
     match state {
         eis::keyboard::KeyState::Press => PressEdge::Press,
-        _ => PressEdge::Release,
+        eis::keyboard::KeyState::Released => PressEdge::Release,
     }
 }
 
 fn button_edge(state: eis::button::ButtonState) -> PressEdge {
     match state {
         eis::button::ButtonState::Press => PressEdge::Press,
-        _ => PressEdge::Release,
+        eis::button::ButtonState::Released => PressEdge::Release,
     }
 }
 
@@ -838,7 +856,7 @@ mod tests {
             .iter()
             .map(|event| match event {
                 RemoteEvent::Input(input) => Some(input.kind.clone()),
-                _ => None,
+                RemoteEvent::Ended => None,
             })
             .collect();
         assert_eq!(

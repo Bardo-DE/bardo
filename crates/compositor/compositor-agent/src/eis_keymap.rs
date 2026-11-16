@@ -36,9 +36,15 @@ impl KeymapText {
     }
 
     /// The text in a new sealed memory file, NUL-terminated as keymap files are.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the text is too large for a 32-bit size, or when the memory file
+    /// cannot be made, written or sealed.
     pub fn to_file(&self) -> io::Result<KeymapFile> {
-        let size = u32::try_from(self.0.len() + 1)
-            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "keymap too large"))?;
+        let size = u32::try_from(self.0.len() + 1).map_err(|e| {
+            io::Error::new(io::ErrorKind::InvalidData, format!("keymap too large: {e}"))
+        })?;
         let fd = memfd_create(
             c"casement-eis-keymap",
             MemfdFlags::CLOEXEC | MemfdFlags::ALLOW_SEALING,
