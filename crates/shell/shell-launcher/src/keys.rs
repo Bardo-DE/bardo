@@ -1,8 +1,10 @@
-//! The keys of a row's actions, as the shared keymap names them. An action is bound to a chordkit
-//! [`Action`]: a standard one (Copy, Reveal, Quick Look, Open) whose chord the desktop decides, or
-//! one of the launcher's own ([`OwnAction`]) whose portable default chord is written here and which
-//! the panel registers once. The launcher never reads a modifier and never draws a chord of its
-//! own: the keymap resolves the key and quire draws the shortcut. Pure.
+//! The keys of a row's actions, as the shared keymap names them.
+//!
+//! An action is bound to a chordkit [`Action`]: a standard one (Copy, Reveal, Quick Look, Open)
+//! whose chord the desktop decides, or one of the launcher's own ([`OwnAction`]) whose portable
+//! default chord is written here and which the panel registers once. The launcher never reads a
+//! modifier and never draws a chord of its own: the keymap resolves the key and quire draws the
+//! shortcut. Pure.
 
 use keymap::{Action, AppAction, AppId, DefaultChord, Registration, StandardAction};
 use serde::{Deserialize, Serialize};
@@ -88,7 +90,7 @@ impl OwnAction {
                 .iter()
                 .copied()
                 .find(|own| own.action().as_ref() == Some(app)),
-            _ => None,
+            Action::Standard(_) => None,
         }
     }
 }
@@ -96,6 +98,8 @@ impl OwnAction {
 /// The app name the launcher's own actions are registered under.
 pub const APP: &str = "shell";
 
+/// What the panel registers for `app`: its own actions and the standard actions it does not offer.
+///
 /// What the panel registers for `app`: every own action with its default chord, and the standard
 /// actions the launcher does not offer (Bold, whose ⌘B Search the web takes, and Move to Trash,
 /// whose ⌘⌫ forgets a clipboard entry).

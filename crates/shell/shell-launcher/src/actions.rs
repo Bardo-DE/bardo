@@ -1,7 +1,9 @@
-//! The names of the shell's actions: every thing a person can ask of the desktop by name, from
-//! a menu, a corner, a launcher row, a chord or the command line. A closed enum, so a new
-//! action is a compile error at every table that must say what it is; what each one is called,
-//! asks and does is `shell_model::actions`'s, and the one place it is carried out is the daemon's.
+//! The names of the shell's actions: every thing a person can ask of the desktop by name, from a
+//! menu, a corner, a launcher row, a chord or the command line.
+//!
+//! A closed enum, so a new action is a compile error at every table that must say what it is; what
+//! each one is called, asks and does is `shell_model::actions`'s, and the one place it is carried
+//! out is the daemon's.
 //!
 //! `ActionId::ALL` (from `Word`) lists them all.
 //!

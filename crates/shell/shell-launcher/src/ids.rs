@@ -88,15 +88,14 @@ impl ProviderKind {
     pub fn counted(self) -> bool {
         match self {
             // An answer, a helper, a run and a memory row name something that ends or is
-            // forgotten; choosing one is not a habit to rank by.
+            // forgotten; choosing one is not a habit to rank by. What a person calculated is in
+            // the row's id, and it must not be kept in a file; a result is not a habit either.
             ProviderKind::Clipboard
             | ProviderKind::Companion
             | ProviderKind::Helpers
             | ProviderKind::Runs
-            | ProviderKind::Memory => false,
-            // What a person calculated is in the row's id, and it must not be kept in a file; a
-            // result is not a habit to rank by either.
-            ProviderKind::Calculator => false,
+            | ProviderKind::Memory
+            | ProviderKind::Calculator => false,
             ProviderKind::Apps
             | ProviderKind::Windows
             | ProviderKind::Settings

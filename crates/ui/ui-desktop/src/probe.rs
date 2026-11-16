@@ -5,6 +5,14 @@ use crate::Desktop;
 impl Desktop {
     /// Ask the buses which capabilities are here. Without feature `dbus`, or when no bus can be
     /// reached, everything is `Absent`; this never fails.
+    #[cfg_attr(
+        not(feature = "dbus"),
+        expect(
+            clippy::unused_async,
+            clippy::unused_async_trait_impl,
+            reason = "the probe only awaits the bus with feature `dbus`"
+        )
+    )]
     pub async fn probe() -> Desktop {
         #[cfg(feature = "dbus")]
         {

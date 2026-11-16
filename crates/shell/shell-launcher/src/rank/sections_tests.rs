@@ -78,13 +78,17 @@ fn a_weight_scales_a_score_in_thousandths() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, each a list of rows and the sections expected"
+)]
 fn typed_text_is_the_weighted_top_hit_then_sections_in_order() {
-    let plan = SectionPlan::default_plan();
     type Case<'a> = (
         &'a str,
         Vec<(ProviderKind, &'a str, u32)>,
         Vec<(Section, Vec<&'a str>)>,
     );
+    let plan = SectionPlan::default_plan();
     let cases: Vec<Case> = vec![
         ("nothing matched", vec![], vec![]),
         (
@@ -200,7 +204,7 @@ fn a_section_publishes_up_to_the_ceiling() {
     let rows: Vec<(ProviderKind, &str, u32)> = names
         .iter()
         .enumerate()
-        .map(|(n, t)| (Files, t.as_str(), 500 - n as u32))
+        .map(|(n, t)| (Files, t.as_str(), 500 - u32::try_from(n).unwrap_or(0)))
         .collect();
     let placement = place(
         &merged(&rows),

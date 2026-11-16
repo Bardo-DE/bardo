@@ -117,8 +117,8 @@ mod tests {
 
     #[test]
     fn a_non_match_is_none() {
-        let mut m = matcher();
         const CASES: &[(&str, &str)] = &[("xyz", "firefox"), ("foxfire", "firefox")];
+        let mut m = matcher();
         for &(needle, haystack) in CASES {
             assert_eq!(
                 Needle::parse(needle).score(haystack, &mut m),

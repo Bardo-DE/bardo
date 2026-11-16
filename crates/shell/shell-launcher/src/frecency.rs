@@ -1,6 +1,7 @@
 //! How often and how recently a result was chosen (age buckets 100/70/50/30/10 x count, in
-//! `$XDG_STATE_HOME/bardo/shell/frecency.json`). Pure: the file is read and written by `shell-services`,
-//! the clock is an argument.
+//! `$XDG_STATE_HOME/bardo/shell/frecency.json`).
+//!
+//! Pure: the file is read and written by `shell-services`, the clock is an argument.
 
 use std::collections::BTreeMap;
 
@@ -107,6 +108,7 @@ impl Frecency {
 
     /// `self` with the entries of `provider` whose item id `rename` maps moved to the new id.
     /// Entries that end up under one key are added: the counts sum, the latest use stands.
+    #[must_use]
     pub fn rekeyed(
         self,
         provider: ProviderKind,
@@ -141,6 +143,10 @@ impl Frecency {
     }
 
     /// The file's contents, within [`MAX_ENTRIES`]; an error when they are not a history.
+    ///
+    /// # Errors
+    ///
+    /// Returns the JSON error when the text is not a history.
     pub fn parse(text: &str) -> Result<Frecency, serde_json::Error> {
         serde_json::from_str::<Frecency>(text).map(Frecency::pruned)
     }

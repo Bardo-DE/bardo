@@ -125,6 +125,10 @@ mod tests {
 
     /// Every variant's wire form, pinned: the daemon and the launcher UI agree on these.
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one match over every kind of row, each arm saying what activating it does"
+    )]
     fn every_activation_has_a_pinned_wire_form_and_round_trips() {
         let cases: Vec<(Activation, &str)> = vec![
             (

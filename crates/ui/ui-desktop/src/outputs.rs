@@ -1,3 +1,5 @@
+//! The shell's per-output work areas, as an app reads them.
+//!
 //! The shell's per-output work areas, as an app reads them (`org.bardo.Outputs1`, capability
 //! [`Capability::Outputs`](crate::Capability::Outputs)): each output's frame, its work area (the
 //! frame less the bar's and dock's exclusive zones) and its scale. The data and its lookups are
@@ -85,7 +87,10 @@ impl Outputs {
     /// Outputs from the property's wire rows: at most [`MAX_ROWS`] of them, and a row with a
     /// frame or work area of no size, or a scale of zero, is dropped (windows fitted into
     /// nothing are worse than no answer: the caller then keeps the window system's own size).
-    #[cfg_attr(not(feature = "dbus"), allow(dead_code))]
+    #[cfg_attr(
+        not(feature = "dbus"),
+        expect(dead_code, reason = "only the bus watcher reads wire rows")
+    )]
     pub(crate) fn of_wire(rows: Vec<Wire>) -> Outputs {
         Outputs {
             areas: rows

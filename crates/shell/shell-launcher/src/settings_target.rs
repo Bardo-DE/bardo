@@ -1,3 +1,5 @@
+//! Where in Settings a result or a button points.
+//!
 //! Where in Settings a result or a button points: `ui_core::settings::SettingsTarget`
 //! (`page:wallpaper`, `key:dock.magnified_size_px`, `account:<id>`), the one type every entrance
 //! hands over. It is pure, so the pure crates hold it directly.
@@ -13,11 +15,19 @@ pub mod text {
     use ui_core::settings::SettingsTarget;
 
     /// Write `target` as its text.
+    ///
+    /// # Errors
+    ///
+    /// Returns the serializer's error when `out` cannot take the text.
     pub fn serialize<S: Serializer>(target: &SettingsTarget, out: S) -> Result<S::Ok, S::Error> {
         out.collect_str(target)
     }
 
     /// Read a target from its text.
+    ///
+    /// # Errors
+    ///
+    /// Returns the deserializer's error when the text is not a target.
     pub fn deserialize<'de, D: Deserializer<'de>>(input: D) -> Result<SettingsTarget, D::Error> {
         let text = String::deserialize(input)?;
         text.parse().map_err(serde::de::Error::custom)

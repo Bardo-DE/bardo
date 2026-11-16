@@ -47,6 +47,10 @@ fn a_preview_kind_is_its_variant() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of subjects and the pane each one shows"
+)]
 fn every_subject_has_its_preview() {
     let task = provenance::TaskId::parse("t-1").unwrap_or_else(|e| panic!("{e}"));
     let run = provenance::RunId::parse("r-1").unwrap_or_else(|e| panic!("{e}"));

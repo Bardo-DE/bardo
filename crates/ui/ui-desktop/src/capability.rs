@@ -70,6 +70,10 @@ impl Capability {
     /// The D-Bus name that means this capability, or `None` where no service name is settled
     /// (such a capability is always `Absent` until one is).
     #[must_use]
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each capability without a service name has its own reason, kept beside it"
+    )]
     pub const fn service(self) -> Option<Service> {
         match self {
             // design/33-AGENT.md section 5 (intentd, docket repo).

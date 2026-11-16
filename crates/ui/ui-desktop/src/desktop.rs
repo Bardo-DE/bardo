@@ -17,7 +17,7 @@ impl Desktop {
         self.presence.get(&capability).copied().unwrap_or(false)
     }
 
-    #[cfg(any(feature = "dbus", test))]
+    #[cfg(feature = "dbus")]
     pub(crate) fn set(&mut self, capability: Capability, presence: bool) {
         self.presence.insert(capability, presence);
     }

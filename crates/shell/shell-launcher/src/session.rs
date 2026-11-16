@@ -1,6 +1,8 @@
-//! The session's power actions: the one list every surface offers them from (the launcher's
-//! System rows, the bar's system menu, the power menu's buttons). What each is called and asked
-//! as is `shell_model::session`'s; what logind allows of them is the session service's.
+//! The session's power actions: the one list every surface offers them from (the launcher's System
+//! rows, the bar's system menu, the power menu's buttons).
+//!
+//! What each is called and asked as is `shell_model::session`'s; what logind allows of them is the
+//! session service's.
 
 use serde::{Deserialize, Serialize};
 

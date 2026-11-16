@@ -1,3 +1,5 @@
+//! What a companion row asks the daemon to do, beyond running an intent.
+//!
 //! What a companion row asks the daemon to do, beyond running an intent: ask, press a card's
 //! button, promote an answer into its app, steer a run, undo, settle a memory, switch the
 //! panel's mode. Pure vocabulary; the daemon's companion service carries each out.

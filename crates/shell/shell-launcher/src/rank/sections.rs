@@ -1,8 +1,10 @@
 //! Spotlight's sections: the merged rows placed under Top Hit, then one section per kind of thing
-//! (Applications, Documents, ... Web last), each provider with a weight (how strongly its best row
-//! competes for Top Hit) and a cap (rows shown before "Show More"). The runner publishes every
-//! placed row up to [`SectionPlan::ceiling`] with the section spans ([`place`]); the launcher shows
-//! each section capped unless the person expanded it ([`shown`]). Pure; the numbers are
+//! (Applications, Documents, ...
+//!
+//! Web last), each provider with a weight (how strongly its best row competes for Top Hit) and a
+//! cap (rows shown before "Show More"). The runner publishes every placed row up to
+//! [`SectionPlan::ceiling`] with the section spans ([`place`]); the launcher shows each section
+//! capped unless the person expanded it ([`shown`]). Pure; the numbers are
 //! [`SectionPlan::DEFAULT`], proposed, with no settings key yet (a key is a design/22 row first).
 
 use serde::{Deserialize, Serialize};

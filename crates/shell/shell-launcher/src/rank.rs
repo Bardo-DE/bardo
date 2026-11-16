@@ -15,6 +15,8 @@ use crate::matching::{MatchScore, Needle};
 #[serde(transparent)]
 pub struct Score(pub u32);
 
+/// How the typed text sits in the title, best first.
+///
 /// How the typed text sits in the title, best first: the launcher ranks a whole-title or
 /// prefix hit above a hit at a word start, that above a plain substring, and all of those above
 /// letters scattered along the title (`term` in "Capture Current Monitor"), which is what a
@@ -60,9 +62,11 @@ impl Prefix {
     }
 }
 
-/// The formula's weights, in thousandths. The plan fixes 0.7 and 0.3; it does not size the
-/// boosts, so [`RankWeights::DEFAULT`] proposes them: a prefix hit +0.25, a whole-title hit
-/// +0.35, a word-start hit +0.15, and a scattered hit worth 0.4 of its blend.
+/// The formula's weights, in thousandths.
+///
+/// The plan fixes 0.7 and 0.3; it does not size the boosts, so [`RankWeights::DEFAULT`] proposes
+/// them: a prefix hit +0.25, a whole-title hit +0.35, a word-start hit +0.15, and a scattered hit
+/// worth 0.4 of its blend.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RankWeights {
     pub matched: u16,
@@ -122,9 +126,9 @@ pub fn rank_text(
     weights: &RankWeights,
     matcher: &mut Matcher,
 ) -> Option<Score> {
-    let matched = needle.score(title, matcher)?;
+    let fit = needle.score(title, matcher)?;
     Some(rank(
-        matched,
+        fit,
         frecency,
         Prefix::of(needle.text(), title),
         weights,

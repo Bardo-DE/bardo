@@ -14,6 +14,14 @@ impl Desktop {
     /// Start following the buses, or `None` without feature `dbus`. The first value
     /// [`Watch::current`] gives is a fresh probe; subscription happens before it, so no change
     /// between the two is lost.
+    #[cfg_attr(
+        not(feature = "dbus"),
+        expect(
+            clippy::unused_async,
+            clippy::unused_async_trait_impl,
+            reason = "the watch only awaits the bus with feature `dbus`"
+        )
+    )]
     pub async fn watch() -> Option<Watch> {
         #[cfg(feature = "dbus")]
         {
@@ -58,6 +66,11 @@ impl Watch {
 #[cfg(not(feature = "dbus"))]
 impl Watch {
     /// Without feature `dbus` nothing changes: this is always `None`.
+    #[expect(
+        clippy::unused_async,
+        clippy::unused_async_trait_impl,
+        reason = "keeps the signature of the `dbus` build, where this awaits the bus"
+    )]
     pub async fn changed(&mut self) -> Option<Desktop> {
         None
     }

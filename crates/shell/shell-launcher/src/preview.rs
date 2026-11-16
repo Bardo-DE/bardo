@@ -119,7 +119,6 @@ impl ExcerptLimit {
 #[must_use]
 pub fn preview_for(item: &Item) -> Preview {
     match &item.subject {
-        Subject::None => Preview::None,
         Subject::App(app) => Preview::App {
             app: app.clone(),
             name: item.title.clone(),
@@ -129,7 +128,9 @@ pub fn preview_for(item: &Item) -> Preview {
         Subject::Clip(facts) => Preview::Clipboard(facts.clone()),
         Subject::Emoji(facts) => Preview::Emoji(facts.clone()),
         Subject::Web(facts) => Preview::Web(facts.clone()),
-        Subject::Entity(_) | Subject::Activity(_) | Subject::TerminalSession(_) => Preview::None,
+        Subject::None | Subject::Entity(_) | Subject::Activity(_) | Subject::TerminalSession(_) => {
+            Preview::None
+        }
         Subject::Answer(task) => Preview::Answer(task.clone()),
         Subject::Helper(facts) => Preview::Helper(facts.id.clone()),
         Subject::NewHelper => Preview::NewHelper,
@@ -138,6 +139,8 @@ pub fn preview_for(item: &Item) -> Preview {
     }
 }
 
+/// The first lines of `bytes` as the pane shows them.
+///
 /// The first lines of `bytes` as the pane shows them: decoded as UTF-8 (invalid sequences
 /// replaced), cut at `limit` on a character boundary, trailing whitespace trimmed; binary data
 /// (a NUL in the first 1024 bytes) is an empty excerpt.
