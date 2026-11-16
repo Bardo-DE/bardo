@@ -115,7 +115,7 @@ impl<H: Http> GraphReplica<H> {
 
     /// What a write that made or changed an item answered with: the item.
     fn written(&self, response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutRefused> {
-        let item: DriveItem = serde_json::from_slice(response.body()).map_err(|_| again())?;
+        let item: DriveItem = serde_json::from_slice(response.body()).ok().ok_or_else(again)?;
         let written = Written {
             id: RemoteId(item.id.clone()),
             version: RemoteVersion(item.etag.clone().unwrap_or_default()),
@@ -222,7 +222,7 @@ impl<H: Http> GraphReplica<H> {
         }
         let size = upload.content.size();
         let response = if size <= self.uploads.simple_max as u64 {
-            let bytes = upload.content.read(0, size).map_err(|_| again())?;
+            let bytes = upload.content.read(0, size).ok().ok_or_else(again)?;
             let url = match &upload.to {
                 UploadTo::New(place) => {
                     let parent = self.parent_id(place).await?;
@@ -264,7 +264,7 @@ impl<H: Http> GraphReplica<H> {
         match response.status().as_u16() {
             200 => {
                 let status: SessionStatus =
-                    serde_json::from_slice(response.body()).map_err(|_| again())?;
+                    serde_json::from_slice(response.body()).ok().ok_or_else(again)?;
                 Ok(status.from().map(|from| (url, from)))
             }
             404 | 410 => Ok(None),
@@ -305,8 +305,8 @@ impl<H: Http> GraphReplica<H> {
         if created.status().as_u16() != 200 {
             return Ok(Err(created));
         }
-        let session: SessionJson = serde_json::from_slice(created.body()).map_err(|_| again())?;
-        let url = WebUrl::parse(&session.upload_url).map_err(|_| again())?;
+        let session: SessionJson = serde_json::from_slice(created.body()).ok().ok_or_else(again)?;
+        let url = WebUrl::parse(&session.upload_url).ok().ok_or_else(again)?;
         upload
             .progress
             .session(Some(&Session::new(url.as_str().to_owned())));
@@ -346,7 +346,7 @@ impl<H: Http> GraphReplica<H> {
             let chunk = upload
                 .content
                 .read(sent, self.uploads.chunk as u64)
-                .map_err(|_| again())?;
+                .ok().ok_or_else(again)?;
             let last = sent + chunk.len() as u64 - 1;
             // The last chunk commits the file, with no `If-Match` looked at: asked first.
             if last + 1 == total

@@ -113,7 +113,7 @@ fn entities(
         HashMap::from([("kind".to_owned(), string(slug(&request.principal.kind)))]),
         HashSet::new(),
     )
-    .map_err(|_| FaultCause::Entities)?;
+    .ok().ok_or(FaultCause::Entities)?;
     let act_entity = Entity::new(
         act.clone(),
         HashMap::from([
@@ -124,10 +124,10 @@ fn entities(
         ]),
         HashSet::from([app.clone()]),
     )
-    .map_err(|_| FaultCause::Entities)?;
+    .ok().ok_or(FaultCause::Entities)?;
     let app_entity = Entity::new_no_attrs(app, HashSet::new());
     let all = Entities::from_entities([caller_entity, act_entity, app_entity], Some(schema))
-        .map_err(|_| FaultCause::Entities)?;
+        .ok().ok_or(FaultCause::Entities)?;
     Ok((caller, act, all))
 }
 
@@ -157,9 +157,9 @@ fn query(
     let action_uid = uid("Quire::Action", action).ok_or_else(|| fault(FaultCause::Action))?;
     let context =
         Context::from_json_value(context_json(&request.context), Some((schema, &action_uid)))
-            .map_err(|_| fault(FaultCause::Context))?;
+            .ok().ok_or_else(|| fault(FaultCause::Context))?;
     let cedar = Request::new(caller, action_uid, act, context, Some(schema))
-        .map_err(|_| fault(FaultCause::Request))?;
+        .ok().ok_or_else(|| fault(FaultCause::Request))?;
     let response = Authorizer::new().is_authorized(&cedar, policies, &entities);
     let errors = response.diagnostics().errors().count();
     if errors > 0 {

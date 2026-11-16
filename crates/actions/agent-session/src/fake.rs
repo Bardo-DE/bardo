@@ -217,8 +217,8 @@ impl SessionLog for MemoryLog {
             }
             *left -= 1;
         }
-        let encoded = encode(seq, entry).map_err(|_| LogFault::Encode)?;
-        let mut all = self.bodies.lock().map_err(|_| LogFault::Unavailable)?;
+        let encoded = encode(seq, entry).ok().ok_or(LogFault::Encode)?;
+        let mut all = self.bodies.lock().ok().ok_or(LogFault::Unavailable)?;
         let rows = all.entry(session.clone()).or_default();
         let expected = Seq(rows.len() as u64);
         if seq != expected {
@@ -234,7 +234,7 @@ impl SessionLog for MemoryLog {
         from: Option<Seq>,
         size: PageSize,
     ) -> Result<LogPage, LogFault> {
-        let all = self.bodies.lock().map_err(|_| LogFault::Unavailable)?;
+        let all = self.bodies.lock().ok().ok_or(LogFault::Unavailable)?;
         let rows = all.get(session).map(Vec::as_slice).unwrap_or_default();
         let start = from
             .map_or(0, |s| usize::try_from(s.0).unwrap_or(usize::MAX))
@@ -254,7 +254,7 @@ impl SessionLog for MemoryLog {
     }
 
     async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
-        let all = self.bodies.lock().map_err(|_| LogFault::Unavailable)?;
+        let all = self.bodies.lock().ok().ok_or(LogFault::Unavailable)?;
         Ok(all
             .iter()
             .filter(|(_, rows)| {

@@ -91,7 +91,7 @@ fn parse_line(line: &str) -> Result<Option<Step>, Problem> {
     let at = ms
         .parse::<u64>()
         .map(Mono::from_millis)
-        .map_err(|_| Problem::Time(ms.to_owned()))?;
+        .ok().ok_or_else(|| Problem::Time(ms.to_owned()))?;
     input_of(at, rest).map(|input| {
         Some(Step {
             text: words.join(" "),
@@ -158,7 +158,7 @@ fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, Problem> {
 fn device_of(word: &str) -> Result<DeviceId, Problem> {
     word.parse()
         .map(DeviceId)
-        .map_err(|_| Problem::Device(word.to_owned()))
+        .ok().ok_or_else(|| Problem::Device(word.to_owned()))
 }
 
 fn led_of(word: &str) -> Result<Led, Problem> {

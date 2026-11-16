@@ -177,7 +177,7 @@ impl<H: Http> GraphReplica<H> {
         match response.status().as_u16() {
             200 => serde_json::from_slice(response.body())
                 .map(Some)
-                .map_err(|_| ReplicaError::Transient(RetryAfter(30))),
+                .ok().ok_or(ReplicaError::Transient(RetryAfter(30))),
             404 => Ok(None),
             _ => Err(read_error(&response, self.clock.now())),
         }
@@ -239,7 +239,7 @@ impl<H: Http> GraphReplica<H> {
             return Err(read_error(&response, self.clock.now()));
         }
         let info: DriveInfo = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok().ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         let quota = info.quota;
         Ok(Quota {
             used: Bytes(quota.as_ref().and_then(|q| q.used).unwrap_or(0)),

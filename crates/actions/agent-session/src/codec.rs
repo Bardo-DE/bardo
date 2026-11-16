@@ -60,7 +60,7 @@ pub fn encode(seq: Seq, entry: &SessionEntry) -> Result<Encoded, EncodeFault> {
     };
     Ok(Encoded {
         kind: kind_tag(entry.slug()),
-        json: serde_json::to_string(&envelope).map_err(|_| EncodeFault)?,
+        json: serde_json::to_string(&envelope).ok().ok_or(EncodeFault)?,
     })
 }
 

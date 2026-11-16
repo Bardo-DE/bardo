@@ -206,7 +206,7 @@ impl<H: Http> GdriveReplica<H> {
         match response.status().as_u16() {
             200 | 201 => {
                 let file: File = serde_json::from_slice(response.body())
-                    .map_err(|_| PutRefused::Transient(RetryAfter(30)))?;
+                    .ok().ok_or(PutRefused::Transient(RetryAfter(30)))?;
                 if let Some(parent) = file.parent_id() {
                     self.state()
                         .folders

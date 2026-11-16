@@ -74,7 +74,7 @@ pub(crate) async fn ask(slot: Slot, request: ThumbRequest) -> Result<PdfPage, Dr
         }
     }
     QUEUE.ready.notify_one();
-    answer.await.map_err(|_| Dropped)
+    answer.await.ok().ok_or(Dropped)
 }
 
 /// The worker: take the oldest job whose asker still waits, raster it, answer.

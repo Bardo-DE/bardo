@@ -81,7 +81,7 @@ impl SessionHost for FakeHost {
     async fn open(&mut self, opening: Opening) -> Result<SessionId, HostFault> {
         self.minted += 1;
         let session = SessionId::parse(&format!("s-{}", self.minted))
-            .map_err(|_| HostFault::NoSuchSession)?;
+            .ok().ok_or(HostFault::NoSuchSession)?;
         self.append(&session, SessionEntry::Opened(opening.clone()))
             .await?;
         let mut backend = FakeBackend::new(self.scripts.pop_front().unwrap_or_default());

@@ -64,8 +64,8 @@ impl Adopted<'_> {
         // proxy's class against `xdg_toplevel` and answers an error, not a bad object, on a
         // mismatch. Dropping the result destroys no protocol object.
         let id = unsafe { ObjectId::from_ptr(XdgToplevel::interface(), toplevel.as_ptr().cast()) }
-            .map_err(|_| AdoptError::DeadToplevel)?;
-        XdgToplevel::from_id(&self.connection, id).map_err(|_| AdoptError::DeadToplevel)
+            .ok().ok_or(AdoptError::DeadToplevel)?;
+        XdgToplevel::from_id(&self.connection, id).ok().ok_or(AdoptError::DeadToplevel)
     }
 }
 
@@ -90,8 +90,8 @@ pub(crate) fn adopt<'a>(
     // the proxy's class against `wl_surface` and answers an error, not a bad object, on a
     // mismatch.
     let id = unsafe { ObjectId::from_ptr(WlSurface::interface(), window.surface.as_ptr().cast()) }
-        .map_err(|_| AdoptError::DeadSurface)?;
-    let surface = WlSurface::from_id(&connection, id).map_err(|_| AdoptError::DeadSurface)?;
+        .ok().ok_or(AdoptError::DeadSurface)?;
+    let surface = WlSurface::from_id(&connection, id).ok().ok_or(AdoptError::DeadSurface)?;
     Ok(Adopted {
         connection,
         surface,

@@ -56,7 +56,7 @@ impl<H: Http> GraphReplica<H> {
             (410, true) => return Err(ReplicaError::AnchorExpired),
             _ => return Err(read_error(&response, self.clock.now())),
         }
-        let page: DeltaPage = serde_json::from_slice(response.body()).map_err(|_| busy())?;
+        let page: DeltaPage = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
         let (next, more) = match (page.next, page.delta) {
             (Some(next), _) => (next, More::More),
             (None, Some(delta)) => (delta, More::Done),

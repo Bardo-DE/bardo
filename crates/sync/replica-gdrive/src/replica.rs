@@ -176,7 +176,7 @@ impl<H: Http> GdriveReplica<H> {
         match response.status().as_u16() {
             200 => serde_json::from_slice(response.body())
                 .map(Some)
-                .map_err(|_| ReplicaError::Transient(RetryAfter(30))),
+                .ok().ok_or(ReplicaError::Transient(RetryAfter(30))),
             404 => Ok(None),
             _ => Err(read_error(&response, self.clock.now())),
         }
@@ -258,7 +258,7 @@ impl<H: Http> GdriveReplica<H> {
             return Err(read_error(&response, self.clock.now()));
         }
         let about: About = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok().ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         let number = |text: Option<String>| text.and_then(|t| t.parse::<u64>().ok());
         let quota = about.quota;
         Ok(Quota {

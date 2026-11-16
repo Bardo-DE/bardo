@@ -26,7 +26,7 @@ impl Dial for TcpDial {
     async fn dial(&self) -> Result<TcpStream, HttpError> {
         TcpStream::connect(("127.0.0.1", self.0))
             .await
-            .map_err(|_| HttpError::Unreachable)
+            .ok().ok_or(HttpError::Unreachable)
     }
 }
 

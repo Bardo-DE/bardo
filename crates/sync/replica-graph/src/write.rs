@@ -125,7 +125,7 @@ impl<H: Http> GraphReplica<H> {
         match response.status().as_u16() {
             200 | 201 => {
                 let item: DriveItem = serde_json::from_slice(response.body())
-                    .map_err(|_| PutRefused::Transient(RetryAfter(30)))?;
+                    .ok().ok_or(PutRefused::Transient(RetryAfter(30)))?;
                 if let Some(parent) = item.parent_id() {
                     self.state()
                         .folders

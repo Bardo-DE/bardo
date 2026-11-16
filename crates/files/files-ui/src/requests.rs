@@ -107,7 +107,7 @@ impl Answer {
     ///
     /// Returns `ReadError` when the window closed before it answered.
     pub async fn wait(self) -> Result<Reading, ReadError> {
-        self.inbox.await.map_err(|_| ReadError)
+        self.inbox.await.ok().ok_or(ReadError)
     }
 
     /// The reading, if it has arrived; for a caller that polls (a test driving a window).
@@ -140,7 +140,7 @@ impl RequestSender {
         let (reply, inbox) = oneshot::channel();
         self.0
             .send(Asked::Read(Read { query, reply }))
-            .map_err(|_| ReadError)?;
+            .ok().ok_or(ReadError)?;
         Ok(Answer { inbox })
     }
 }

@@ -81,7 +81,7 @@ impl ThumbRequest {
     pub fn key(&self) -> Result<ThumbKey, PdfTrouble> {
         let modified = std::fs::metadata(&self.path)
             .and_then(|meta| meta.modified())
-            .map_err(|_| PdfTrouble::Unreadable)?;
+            .ok().ok_or(PdfTrouble::Unreadable)?;
         Ok(ThumbKey {
             path: self.path.clone(),
             modified,
