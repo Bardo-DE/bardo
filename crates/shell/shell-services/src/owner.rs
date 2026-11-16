@@ -49,7 +49,7 @@ pub(crate) async fn appeared(connection: &Connection, name: &str) {
             return;
         }
     }
-    std::future::pending().await
+    std::future::pending::<()>().await;
 }
 
 /// Resolves when the owner of `name` changes: it left, or another took over (state read from

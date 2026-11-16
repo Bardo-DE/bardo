@@ -22,7 +22,7 @@ use super::picture::pixels;
 type HintMap = HashMap<String, OwnedValue>;
 
 /// The posting `call` stands for, or `None` when it carries more than `HINTS_MAX` hints.
-pub(crate) fn posting(call: WireNotify) -> Option<Posting> {
+pub(crate) fn posting(call: &WireNotify) -> Option<Posting> {
     if call.hints.len() > HINTS_MAX {
         return None;
     }
@@ -212,7 +212,7 @@ mod tests {
         wire.actions = ["k".repeat(5000), long.clone()].to_vec();
         wire.hints
             .insert("category".to_owned(), owned(Value::from(long.as_str())));
-        let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
+        let posting = posting(&wire).expect("a call within the hint ceiling"); // test-only
         assert!(
             posting.app.name.len() <= 128 + 3,
             "{}",
@@ -230,7 +230,7 @@ mod tests {
     fn only_the_first_actions_are_kept() {
         let mut wire = call();
         wire.actions = (0..ACTIONS_MAX * 5).map(|n| n.to_string()).collect();
-        let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
+        let posting = posting(&wire).expect("a call within the hint ceiling"); // test-only
         assert_eq!(posting.actions.len(), ACTIONS_MAX);
     }
 
@@ -241,34 +241,27 @@ mod tests {
             wire.hints
                 .insert(format!("x-{n}"), owned(Value::from(1u32)));
         }
-        assert!(posting(wire).is_none());
+        assert!(posting(&wire).is_none());
         let mut ok = call();
         for n in 0..HINTS_MAX {
             ok.hints.insert(format!("x-{n}"), owned(Value::from(1u32)));
         }
-        assert!(posting(ok).is_some(), "the ceiling itself passes");
+        assert!(posting(&ok).is_some(), "the ceiling itself passes");
     }
 
     #[test]
     fn an_image_past_the_ceiling_is_no_image() {
         let side = i32::try_from(IMAGE_MAX_SIDE).unwrap_or(0);
+        let bytes_of = |edge: i32| usize::try_from(edge * edge * 4).unwrap_or(0);
         let cases: Vec<(&str, OwnedValue, bool)> = vec![
-            (
-                "at the ceiling",
-                rgba(side, (side * side * 4) as usize),
-                true,
-            ),
-            (
-                "one pixel over",
-                rgba(side + 1, ((side + 1) * (side + 1) * 4) as usize),
-                false,
-            ),
+            ("at the ceiling", rgba(side, bytes_of(side)), true),
+            ("one pixel over", rgba(side + 1, bytes_of(side + 1)), false),
             ("a huge array", rgba(8, 4 << 20), false),
         ];
         for (name, image, kept) in cases {
             let mut wire = call();
             wire.hints.insert("image-data".to_owned(), image);
-            let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
+            let posting = posting(&wire).expect("a call within the hint ceiling"); // test-only
             let has = matches!(posting.hints.image, NoteImage::Pixels(_));
             assert_eq!(has, kept, "{name}");
         }
@@ -281,7 +274,7 @@ mod tests {
             "desktop-entry".to_owned(),
             owned(Value::from("shell-accounts")),
         );
-        let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
+        let posting = posting(&wire).expect("a call within the hint ceiling"); // test-only
         assert_eq!(posting.app.desktop_entry, None);
     }
 }

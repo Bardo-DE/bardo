@@ -136,13 +136,13 @@ impl IntentProvider for ShellProvider {
         action_of(&inv).map(|_| Preview::None)
     }
 
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "any failure of the undo's action means the same: what it undid is gone"
+    )]
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = actor;
         let action = undo_of(&token)?;
-        #[expect(
-            clippy::map_err_ignore,
-            reason = "any failure of the undo's action means the same: what it undid is gone"
-        )]
         self.done(action).await.map_err(|_| UndoFault::Gone)
     }
 

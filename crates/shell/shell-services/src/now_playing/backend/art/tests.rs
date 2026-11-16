@@ -23,7 +23,7 @@ fn file_url(path: &Path) -> String {
 }
 
 /// The job a cover came to, or a failure naming what was there instead.
-fn job_of(art: Art, job: Option<ArtJob>) -> ArtJob {
+fn job_of(art: &Art, job: Option<ArtJob>) -> ArtJob {
     job.unwrap_or_else(|| panic!("expected a job, got {art:?}"))
 }
 
@@ -58,7 +58,7 @@ fn a_local_cover_is_copied_into_the_cache_and_drawn_from_there() {
     std::fs::write(&source, b"cover").unwrap_or_else(|e| panic!("{e}"));
 
     let (art, job) = resolve_art(&metadata(&file_url(&source)), Some(&cache));
-    let job = job_of(art, job);
+    let job = job_of(&art, job);
     let ArtJob::Copy { from, cache_path } = &job else {
         panic!("a local file is copied, got {job:?}");
     };
@@ -83,9 +83,9 @@ fn a_player_that_rewrites_one_file_for_each_track_gets_a_new_copy_each_time() {
     let source = dir.path().join("cover.png");
     std::fs::write(&source, b"first").unwrap_or_else(|e| panic!("{e}"));
     let url = file_url(&source);
-    let first = job_of(Art::None, resolve_art(&metadata(&url), Some(dir.path())).1);
+    let first = job_of(&Art::None, resolve_art(&metadata(&url), Some(dir.path())).1);
     std::fs::write(&source, b"second cover").unwrap_or_else(|e| panic!("{e}"));
-    let second = job_of(Art::None, resolve_art(&metadata(&url), Some(dir.path())).1);
+    let second = job_of(&Art::None, resolve_art(&metadata(&url), Some(dir.path())).1);
     assert_ne!(first.cache_path(), second.cache_path());
 }
 

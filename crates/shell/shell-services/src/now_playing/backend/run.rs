@@ -307,7 +307,7 @@ async fn press(
         .players
         .iter()
         .find(|p| &p.id == player)
-        .is_some_and(|p| ability_allows(&p.abilities, verb));
+        .is_some_and(|p| ability_allows(p.abilities, verb));
     if !allowed {
         return;
     }
@@ -323,7 +323,7 @@ async fn press(
     .await;
 }
 
-fn ability_allows(abilities: &Abilities, verb: MediaVerb) -> bool {
+fn ability_allows(abilities: Abilities, verb: MediaVerb) -> bool {
     match verb {
         MediaVerb::PlayPause => abilities.play_pause,
         MediaVerb::Next => abilities.next,

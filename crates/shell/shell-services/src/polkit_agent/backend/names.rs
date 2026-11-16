@@ -42,9 +42,10 @@ pub(crate) struct Own {
 /// name in the user database.
 pub(crate) fn user_for(identities: &[Identity], own: &Own, names: &impl Names) -> Option<UserName> {
     let uid = pick_identity(identities, own.uid)?;
-    match uid == own.uid {
-        true => Some(own.name.clone()),
-        false => names.name_of(uid),
+    if uid == own.uid {
+        Some(own.name.clone())
+    } else {
+        names.name_of(uid)
     }
 }
 

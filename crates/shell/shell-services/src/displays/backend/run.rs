@@ -186,7 +186,7 @@ impl Service {
         let (jobs, rx) = std_mpsc::channel();
         let (tx, displays) = watch::channel(Vec::new());
         let bus = Arc::clone(&self.paths.ddc);
-        tokio::task::spawn_blocking(move || worker::run(bus, rx, tx));
+        tokio::task::spawn_blocking(move || worker::run(bus, &rx, tx));
         let _ = jobs.send(DdcJob::Probe);
         self.ddc = Some(Ddc { jobs, displays });
     }

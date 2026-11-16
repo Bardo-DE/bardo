@@ -85,7 +85,11 @@ async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
     .unwrap_or_else(|_| panic!("no Started outcome within 5s"));
     eprintln!("bardo-shell: live launch started unit {}", started.0);
     assert!(started.0.starts_with("app-bardo-"));
-    assert!(started.0.ends_with(".scope"));
+    assert!(
+        std::path::Path::new(&started.0)
+            .extension()
+            .is_some_and(|extension| extension.eq_ignore_ascii_case("scope"))
+    );
 
     tokio::time::timeout(Duration::from_secs(10), async {
         loop {

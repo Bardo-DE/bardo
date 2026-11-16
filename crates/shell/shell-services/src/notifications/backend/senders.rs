@@ -157,11 +157,11 @@ mod tests {
         AppKey(name.to_owned())
     }
 
-    fn owner(sender: &Sender, app: &AppKey) -> Option<Owner> {
-        Some(Owner {
+    fn owner(sender: &Sender, app: &AppKey) -> Owner {
+        Owner {
             sender: sender.clone(),
             app: app.clone(),
-        })
+        }
     }
 
     fn caller(name: &str) -> Caller {
@@ -222,9 +222,9 @@ mod tests {
         let (mine, other) = (sender(":1.1"), sender(":1.2"));
         let (volume, mail, nameless) = (app("volume"), app("mail"), app(""));
         let (posted, shells, unnamed) = (NotificationId(1), NotificationId(2), NotificationId(3));
-        senders.record(posted, owner(&mine, &volume));
+        senders.record(posted, Some(owner(&mine, &volume)));
         senders.record(shells, None);
-        senders.record(unnamed, owner(&mine, &nameless));
+        senders.record(unnamed, Some(owner(&mine, &nameless)));
         assert_eq!(
             senders.replaceable(&mine, &mail, Some(posted)),
             Some(posted)

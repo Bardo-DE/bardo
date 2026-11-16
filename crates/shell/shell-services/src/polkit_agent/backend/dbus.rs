@@ -47,7 +47,7 @@ pub fn request_from_wire(
     icon_name: String,
     details: HashMap<String, String>,
     cookie: String,
-    identities: Vec<(String, HashMap<String, OwnedValue>)>,
+    identities: &[(String, HashMap<String, OwnedValue>)],
 ) -> AuthRequest {
     let mut details: Vec<(String, String)> = details.into_iter().collect();
     details.sort();
@@ -90,11 +90,12 @@ impl Agent {
         cookie: String,
         identities: Vec<(String, HashMap<String, OwnedValue>)>,
     ) -> Result<(), AgentError> {
-        let request = request_from_wire(action_id, message, icon_name, details, cookie, identities);
+        let request =
+            request_from_wire(action_id, message, icon_name, details, cookie, &identities);
         let (reply, answer) = oneshot::channel();
         self.calls
             .send(Call::Begin { request, reply })
-            .map_err(|_| AgentError::Failed("bardo-shell's agent has stopped".to_owned()))?;
+            .map_err(|e| AgentError::Failed(format!("bardo-shell's agent has stopped: {e}")))?;
         match answer.await {
             Ok(Completion::Authorized) => Ok(()),
             Ok(Completion::Cancelled) => Err(AgentError::Cancelled("cancelled".to_owned())),
@@ -104,10 +105,10 @@ impl Agent {
         }
     }
 
-    async fn cancel_authentication(&self, cookie: String) -> Result<(), AgentError> {
+    fn cancel_authentication(&self, cookie: String) -> Result<(), AgentError> {
         self.calls
             .send(Call::Cancel(Cookie(cookie)))
-            .map_err(|_| AgentError::Failed("bardo-shell's agent has stopped".to_owned()))
+            .map_err(|e| AgentError::Failed(format!("bardo-shell's agent has stopped: {e}")))
     }
 }
 
@@ -143,7 +144,7 @@ mod tests {
     use super::request_from_wire;
     use shell_model::polkit_agent::{ActionId, Cookie, Gid, Identity, Uid};
 
-    fn owned(value: Value<'_>) -> OwnedValue {
+    fn owned(value: &Value<'_>) -> OwnedValue {
         value
             .try_to_owned()
             .unwrap_or_else(|e| panic!("owned: {e}"))
@@ -151,7 +152,7 @@ mod tests {
 
     #[test]
     fn a_wire_request_parses_its_identities_and_sorts_its_details() {
-        let entry = |key: &str, value: Value<'_>| HashMap::from([(key.to_owned(), owned(value))]);
+        let entry = |key: &str, value: Value<'_>| HashMap::from([(key.to_owned(), owned(&value))]);
         let identities = vec![
             ("unix-user".to_owned(), entry("uid", Value::U32(1000))),
             ("unix-group".to_owned(), entry("gid", Value::U32(10))),
@@ -169,7 +170,7 @@ mod tests {
             String::new(),
             details,
             "c1".to_owned(),
-            identities,
+            &identities,
         );
         assert_eq!(request.cookie, Cookie("c1".to_owned()));
         assert_eq!(request.action_id, ActionId("org.example.run".to_owned()));

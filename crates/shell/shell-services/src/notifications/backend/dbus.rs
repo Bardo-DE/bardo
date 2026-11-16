@@ -121,12 +121,12 @@ pub struct WireNotify {
 /// byte or an int, read as non-zero), `sound-name`, `sound-file`, `suppress-sound`. Unknown
 /// hints are ignored; a hint of the wrong type is as if absent. Every field is cut to its ceiling
 /// (`shell_model::notifications::limits`); more than `HINTS_MAX` hints is `None`.
-pub fn posting_from_wire(call: WireNotify) -> Option<Posting> {
+pub fn posting_from_wire(call: &WireNotify) -> Option<Posting> {
     super::wire::posting(call)
 }
 
-fn stopped() -> fdo::Error {
-    fdo::Error::Failed("the notifications service has stopped".to_owned())
+fn stopped(cause: impl std::fmt::Display) -> fdo::Error {
+    fdo::Error::Failed(format!("the notifications service has stopped: {cause}"))
 }
 
 /// The unique name of whoever made the call.
@@ -147,7 +147,10 @@ pub struct Server {
 #[interface(name = "org.freedesktop.Notifications")]
 impl Server {
     /// `Notify(susssasa{sv}i) -> u`.
-    #[allow(clippy::too_many_arguments)]
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the Notifications spec's `Notify` has eight arguments, one per wire argument"
+    )]
     async fn notify(
         &self,
         #[zbus(header)] header: Header<'_>,
@@ -163,7 +166,7 @@ impl Server {
     ) -> fdo::Result<u32> {
         let sender = sender_of(&header)?;
         let caller = caller_of(connection, &sender).await;
-        let posting = posting_from_wire(WireNotify {
+        let posting = posting_from_wire(&WireNotify {
             app_name,
             replaces_id,
             app_icon,
@@ -182,8 +185,8 @@ impl Server {
                 caller,
                 reply,
             })
-            .map_err(|_| stopped())?;
-        match answer.await.map_err(|_| stopped())? {
+            .map_err(stopped)?;
+        match answer.await.map_err(stopped)? {
             NotifyAnswer::Posted(id) => Ok(id.0),
             NotifyAnswer::TooMany => Err(fdo::Error::LimitsExceeded(
                 "too many notifications too fast".to_owned(),
@@ -206,20 +209,28 @@ impl Server {
                 sender,
                 reply,
             })
-            .map_err(|_| stopped())?;
-        match answer.await.map_err(|_| stopped())? {
+            .map_err(stopped)?;
+        match answer.await.map_err(stopped)? {
             CloseAnswer::Closed => Ok(()),
             CloseAnswer::NotHeld => Err(fdo::Error::Failed(String::new())),
         }
     }
 
     /// `GetCapabilities() -> as`.
+    #[expect(
+        clippy::unused_self,
+        reason = "the interface macro serves only methods that take `self`"
+    )]
     fn get_capabilities(&self) -> Vec<String> {
         CAPABILITIES.iter().map(|word| (*word).to_owned()).collect()
     }
 
     /// `GetServerInformation() -> ssss`.
     #[zbus(out_args("name", "vendor", "version", "spec_version"))]
+    #[expect(
+        clippy::unused_self,
+        reason = "the interface macro serves only methods that take `self`"
+    )]
     fn get_server_information(&self) -> (String, String, String, String) {
         let info = SERVER_INFORMATION;
         (
@@ -290,7 +301,7 @@ mod tests {
         }
     }
 
-    fn posting_of(call: WireNotify) -> Posting {
+    fn posting_of(call: &WireNotify) -> Posting {
         posting_from_wire(call).expect("a call within the hint ceiling") // test-only
     }
 
@@ -305,7 +316,7 @@ mod tests {
             3i32,
             vec![10u8, 20, 30],
         )));
-        let posting = posting_of(call(vec![
+        let posting = posting_of(&call(vec![
             ("urgency", owned(Value::from(2u8))),
             ("category", owned(Value::from("email.arrived"))),
             (
@@ -350,7 +361,7 @@ mod tests {
             ("urgency", owned(Value::from("high"))),
         ]);
         replacing.replaces_id = 5;
-        let posting = posting_of(replacing);
+        let posting = posting_of(&replacing);
         assert_eq!(posting.replaces, Some(NotificationId(5)));
         assert_eq!(
             posting.hints.image,
