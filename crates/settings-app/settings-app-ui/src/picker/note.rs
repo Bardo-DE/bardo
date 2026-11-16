@@ -1,0 +1,15 @@
+//! The module's short line under a row, in plain secondary text.
+
+use dioxus::prelude::*;
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::prelude::*;
+
+/// A note under a row; `kind` tells the places it appears in apart (`data-note`).
+#[component]
+pub(crate) fn NoteLine(text: String, kind: &'static str) -> Element {
+    rsx! {
+        div { class: "picker-auto", "data-note": kind,
+            Label { text, role: LabelRole::Secondary, style: LabelStyle::Footnote }
+        }
+    }
+}

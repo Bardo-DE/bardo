@@ -1,7 +1,7 @@
 //! Raster image formats the viewer opens.
 
 use super::family::Family;
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// A raster image format.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

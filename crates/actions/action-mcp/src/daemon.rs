@@ -1,0 +1,241 @@
+//! The binary's body: the session bus, the bus name the `mcp` role is written under, and one
+//! edge per client connection, over stdio or a Unix socket.
+
+use crate::config::{ConfigError, McpConfig};
+use crate::edge::McpEdge;
+use action_client::{DbusTransport, Intents};
+use action_dbus::BusConnection;
+use rmcp::ServiceExt;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use zbus::fdo::RequestNameFlags;
+use zbus::fdo::RequestNameReply;
+
+/// The bus name the shipped `intentd.toml` gives the `mcp` role.
+pub const MCP_BUS: &str = "org.quire.ActionsMcp";
+
+/// Where the edge speaks MCP.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Listen {
+    /// The process's own standard input and output, for one client that started it.
+    Stdio,
+    /// A Unix socket that many clients connect to in turn.
+    Socket(PathBuf),
+}
+
+/// Why the edge stopped.
+#[derive(Debug, thiserror::Error)]
+pub enum DaemonFault {
+    /// The configuration file does not read.
+    #[error("{0}")]
+    Config(#[from] ConfigError),
+    /// The bus connection or a bus call failed.
+    #[error("bus: {0}")]
+    Bus(#[source] Box<zbus::Error>),
+    /// Another edge holds the bus name.
+    #[error("{MCP_BUS} is taken")]
+    NameTaken,
+    /// The socket or a file failed.
+    #[error("io: {0}")]
+    Io(#[from] std::io::Error),
+    /// The MCP client did not start a session.
+    #[error("session: {0}")]
+    Session(#[source] Box<rmcp::service::ServerInitializeError>),
+    /// The session's task did not finish.
+    #[error("session: {0}")]
+    Joined(#[from] tokio::task::JoinError),
+    /// A bridge was started without its session's token.
+    #[error("{0}")]
+    NoToken(#[from] crate::bound::NoToken),
+}
+
+impl From<zbus::Error> for DaemonFault {
+    fn from(error: zbus::Error) -> Self {
+        Self::Bus(Box::new(error))
+    }
+}
+
+impl From<rmcp::service::ServerInitializeError> for DaemonFault {
+    fn from(error: rmcp::service::ServerInitializeError) -> Self {
+        Self::Session(Box::new(error))
+    }
+}
+
+/// Takes the `mcp` role's bus name. intentd derives a caller's roles from the names its connection
+/// owns, so this process is `Actor::Mcp` only while it holds it; a second edge finds it taken and
+/// stops (several clients share one edge through the socket).
+pub async fn claim(connection: &BusConnection) -> Result<(), DaemonFault> {
+    let reply = connection
+        .request_name_with_flags(MCP_BUS, RequestNameFlags::DoNotQueue.into())
+        .await?;
+    match reply {
+        RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner => Ok(()),
+        RequestNameReply::InQueue | RequestNameReply::Exists => Err(DaemonFault::NameTaken),
+    }
+}
+
+/// Tells whether the edge is on, asked at every request.
+pub type ExposeRead = Arc<dyn Fn() -> bool + Send + Sync>;
+
+fn edge(
+    connection: &BusConnection,
+    config: &McpConfig,
+    expose: &ExposeRead,
+) -> McpEdge<DbusTransport> {
+    let expose = expose.clone();
+    McpEdge::new(
+        Intents::over(DbusTransport::new(connection.clone())),
+        config.client.clone(),
+    )
+    .with_expose_read(move || expose())
+}
+
+async fn over_stdio<S: rmcp::ServerHandler>(edge: S) -> Result<(), DaemonFault> {
+    let running = edge
+        .serve((tokio::io::stdin(), tokio::io::stdout()))
+        .await?;
+    running.waiting().await?;
+    Ok(())
+}
+
+async fn over_socket(
+    connection: BusConnection,
+    config: McpConfig,
+    expose: ExposeRead,
+    path: &Path,
+) -> Result<(), DaemonFault> {
+    // A stale file from a crashed edge is ours to replace; a live one would refuse the bind below
+    // only after this removes it, so the bus name (taken first) is what keeps two edges apart.
+    let _ = std::fs::remove_file(path);
+    let listener = tokio::net::UnixListener::bind(path)?;
+    eprintln!("actions-mcp: listening on {}", path.display());
+    loop {
+        let (stream, _) = listener.accept().await?;
+        let edge = edge(&connection, &config, &expose);
+        tokio::spawn(async move {
+            if let Ok(running) = edge.serve(stream).await {
+                let _ = running.waiting().await;
+            }
+        });
+    }
+}
+
+/// Serves the edge on `listen` over `connection` until the client goes (stdio) or forever (socket),
+/// switched as `config.expose` says for as long as it runs.
+pub async fn start(
+    connection: &BusConnection,
+    config: McpConfig,
+    listen: Listen,
+) -> Result<(), DaemonFault> {
+    let expose = config.expose;
+    start_following(connection, config, listen, Arc::new(move || expose)).await
+}
+
+/// `start`, with the switch asked of `expose` at every request: the daemon hands it the person's
+/// settings file, read again each time.
+pub async fn start_following(
+    connection: &BusConnection,
+    config: McpConfig,
+    listen: Listen,
+    expose: ExposeRead,
+) -> Result<(), DaemonFault> {
+    claim(connection).await?;
+    match listen {
+        Listen::Stdio => over_stdio(edge(connection, &config, &expose)).await,
+        Listen::Socket(path) => over_socket(connection.clone(), config, expose, &path).await,
+    }
+}
+
+/// What the command line asks for: `--socket PATH`, `--client NAME`, `--write-schema DIR`, `--host-socket PATH`.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Args {
+    /// Serve a socket instead of stdio.
+    pub socket: Option<PathBuf>,
+    /// The client name, over the configuration's.
+    pub client: Option<provenance::ClientName>,
+    /// Write docket's settings schema into this directory and stop.
+    pub write_schema: Option<PathBuf>,
+    /// Be the bridge of an external agent's session: forward to the host's socket on stdio. The
+    /// token is in the environment, never here.
+    pub host_socket: Option<PathBuf>,
+}
+
+/// Why the command line was not understood.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub enum CommandLineFault {
+    /// A flag that takes a value came last.
+    #[error("{0} needs a value")]
+    NeedsValue(String),
+    /// `--client` was given something that is not a client name.
+    #[error("--client: not a client name")]
+    NotAClient,
+    /// A flag this program does not have.
+    #[error("unknown argument {0}")]
+    Unknown(String),
+}
+
+impl Args {
+    /// Reads the arguments after the program name; an unknown one is an error.
+    pub fn parse(args: impl IntoIterator<Item = String>) -> Result<Self, CommandLineFault> {
+        let mut args = args.into_iter();
+        let mut parsed = Self::default();
+        while let Some(flag) = args.next() {
+            let mut value = || {
+                args.next()
+                    .ok_or_else(|| CommandLineFault::NeedsValue(flag.clone()))
+            };
+            match flag.as_str() {
+                "--socket" => parsed.socket = Some(PathBuf::from(value()?)),
+                "--write-schema" => parsed.write_schema = Some(PathBuf::from(value()?)),
+                "--host-socket" => parsed.host_socket = Some(PathBuf::from(value()?)),
+                "--client" => {
+                    parsed.client = Some(
+                        provenance::ClientName::parse(&value()?)
+                            .map_err(|_| CommandLineFault::NotAClient)?,
+                    )
+                }
+                other => return Err(CommandLineFault::Unknown(other.to_owned())),
+            }
+        }
+        Ok(parsed)
+    }
+}
+
+/// The daemon: the configuration and the session bus from `env` (the process's environment, which
+/// its `main` passes in), the arguments from the command line.
+pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFault> {
+    if let Some(dir) = args.write_schema {
+        return write_schema(&dir);
+    }
+    if let Some(socket) = args.host_socket {
+        let edge = crate::bound::BoundEdge::from_env(socket, env)?;
+        return over_stdio(edge).await;
+    }
+    let mut config = McpConfig::from_env(env)?;
+    if let Some(client) = args.client {
+        config = config.named(client);
+    }
+    if !config.expose {
+        eprintln!(
+            "actions-mcp: off (set agent.mcp.expose = true in docket/settings.toml): no tools are listed"
+        );
+    }
+    let connection = action_dbus::session_connection(env).await?;
+    let listen = args.socket.map_or(Listen::Stdio, Listen::Socket);
+    let locator = action_settings::Locator::from_env(env);
+    let expose: ExposeRead = Arc::new(move || {
+        locator
+            .read(action_settings::AgentSettings::default())
+            .value
+            .expose
+    });
+    start_following(&connection, config, listen, expose).await
+}
+
+/// `--write-schema DIR`: `docket.settings.toml` into `DIR`, for a local install (design/22 section
+/// 9.2).
+pub fn write_schema(dir: &Path) -> Result<(), DaemonFault> {
+    std::fs::create_dir_all(dir)?;
+    std::fs::write(dir.join("docket.settings.toml"), crate::settings::SCHEMA)?;
+    Ok(())
+}

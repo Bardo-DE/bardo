@@ -86,20 +86,20 @@ pub const WHOLE_FILE_CAP: ByteLen = ByteLen(1536 * 1024 * 1024);
 /// `ErrorKind::NotFound`, anything that is not a regular file (a folder, a FIFO, a device)
 /// `ErrorKind::InvalidInput`, and a file over `cap`, or one that grows past it while it is read,
 /// `ErrorKind::FileTooLarge`: never a hang, and never more than `cap` bytes in memory. The read
-/// is quire's `ds_helpers::read_capped`, the one the desktop's apps share.
+/// is quire's `ui_helpers::read_capped`, the one the desktop's apps share.
 pub fn read_whole(path: &Path, cap: ByteLen) -> Result<Vec<u8>> {
-    ds_helpers::read_capped(path, ds_helpers::ReadCap::bytes(cap.0)).map_err(io_error)
+    ui_helpers::read_capped(path, ui_helpers::ReadCap::bytes(cap.0)).map_err(io_error)
 }
 
 // `ReadError` is `non_exhaustive`: what falls to the wildcard is a failure this crate cannot
 // name yet, so it stays an error with its own message.
-fn io_error(error: ds_helpers::ReadError) -> Error {
+fn io_error(error: ui_helpers::ReadError) -> Error {
     match error {
-        ds_helpers::ReadError::NotFound { .. } => Error::from(ErrorKind::NotFound),
-        ds_helpers::ReadError::NotRegular { .. } => Error::from(ErrorKind::InvalidInput),
-        ds_helpers::ReadError::TooBig { .. } => Error::from(ErrorKind::FileTooLarge),
-        ds_helpers::ReadError::Io { source, .. } => source,
-        other @ ds_helpers::ReadError::NotText { .. } => Error::other(other),
+        ui_helpers::ReadError::NotFound { .. } => Error::from(ErrorKind::NotFound),
+        ui_helpers::ReadError::NotRegular { .. } => Error::from(ErrorKind::InvalidInput),
+        ui_helpers::ReadError::TooBig { .. } => Error::from(ErrorKind::FileTooLarge),
+        ui_helpers::ReadError::Io { source, .. } => source,
+        other @ ui_helpers::ReadError::NotText { .. } => Error::other(other),
     }
 }
 

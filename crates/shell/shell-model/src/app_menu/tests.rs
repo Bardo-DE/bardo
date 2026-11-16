@@ -1,0 +1,625 @@
+use std::collections::BTreeMap;
+
+use action_vocab::ActionRef;
+use provenance::{ActionName, AppName, Effect};
+use shell_launcher::WindowKey;
+
+use super::{
+    ActionIndex, AppMenuEvent, AppMenus, Follower, Followers, Following, Identity, ItemKey,
+    MenuApp, MenuClient, MenuName, MenuOwner, Node, NodeProps, NodeType, OwnItem, Route,
+    ServedMenu, ToggleKind, effect_of, listing, menu_trust, own_commands, own_groups, route_of,
+    rows_of, step, titles,
+};
+use crate::ids::OutputName;
+use crate::tray::{Chord, MenuCommand, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
+use crate::units::Visibility;
+use crate::windows::{Sizing, Toplevel, Toplevels, WlCommand};
+
+fn node(id: i32, label: &str, children: Vec<Node>) -> Node {
+    Node {
+        id,
+        props: NodeProps {
+            label: Some(label.to_owned()),
+            ..NodeProps::default()
+        },
+        children,
+    }
+}
+
+fn with(mut node: Node, edit: impl FnOnce(&mut NodeProps)) -> Node {
+    edit(&mut node.props);
+    node
+}
+
+/// A quire-shaped bar: the app's own menu, Edit with Undo, a hidden menu, and View.
+fn served() -> ServedMenu {
+    let undo = with(node(21, "Undo", Vec::new()), |p| {
+        p.shortcut = Some(Chord(vec!["Super".to_owned(), "Z".to_owned()]));
+        p.command = Some(MenuCommand("standard.undo".to_owned()));
+    });
+    let sidebar = with(node(41, "Sidebar", Vec::new()), |p| {
+        p.toggle = ToggleKind::Checkmark;
+        p.toggle_state = 1;
+    });
+    let menus = vec![
+        node(11, "Notes", vec![node(12, "About Notes", Vec::new())]),
+        node(20, "Edit", vec![undo]),
+        with(
+            node(30, "Secret", vec![node(31, "Hidden", Vec::new())]),
+            |p| {
+                p.visible = Visibility::Hidden;
+            },
+        ),
+        node(32, "Empty", Vec::new()),
+        node(40, "View", vec![sidebar]),
+    ];
+    ServedMenu {
+        name: MenuName("org.quire.AppMenu.dev.notes".to_owned()),
+        menus: rows_of(menus),
+    }
+}
+
+#[test]
+fn a_layout_becomes_the_trays_rows() {
+    let rule = Node {
+        id: 5,
+        props: NodeProps {
+            kind: NodeType::Separator,
+            ..NodeProps::default()
+        },
+        children: Vec::new(),
+    };
+    let radio = with(node(6, "_Small", Vec::new()), |p| {
+        p.toggle = ToggleKind::Radio;
+        p.toggle_state = 0;
+        p.enabled = false;
+        p.icon_name = Some("zoom-out".to_owned());
+    });
+    let mixed = with(node(7, "Both", Vec::new()), |p| {
+        p.toggle = ToggleKind::Checkmark;
+    });
+    let rows = rows_of(vec![rule, radio, mixed, node(8, "snake__case", Vec::new())]);
+    let kinds: Vec<(i32, String)> = rows
+        .iter()
+        .map(|row| match &row.kind {
+            TrayMenuKind::Separator => (row.id, "rule".to_owned()),
+            TrayMenuKind::Item {
+                label,
+                enabled,
+                check,
+                icon,
+                ..
+            } => (
+                row.id,
+                format!(
+                    "{label}|{enabled:?}|{check:?}|{}",
+                    icon != &TrayMenuIcon::None
+                ),
+            ),
+        })
+        .collect();
+    let want = [
+        (5, "rule"),
+        (6, "Small|false|Unchecked|true"),
+        (7, "Both|true|Mixed|false"),
+        (8, "snake_case|true|None|false"),
+    ];
+    let want: Vec<(i32, String)> = want.iter().map(|(i, s)| (*i, (*s).to_owned())).collect();
+    assert_eq!(kinds, want);
+}
+
+#[test]
+fn the_first_menu_is_the_apps_own_and_hidden_or_empty_menus_make_no_title() {
+    let made = titles(&served());
+    let app = made.app.as_ref().map(|(id, rows)| (*id, rows.len()));
+    assert_eq!(
+        app,
+        Some((11, 1)),
+        "the first menu goes into the app-name menu"
+    );
+    let order: Vec<(&str, i32)> = made
+        .menus
+        .iter()
+        .map(|menu| (menu.title.as_str(), menu.id))
+        .collect();
+    assert_eq!(order, [("Edit", 20), ("View", 40)]);
+    assert_eq!(
+        titles(&ServedMenu {
+            name: MenuName(String::new()),
+            menus: Vec::new(),
+        }),
+        super::Titles::default()
+    );
+}
+
+fn app(name: &str) -> MenuApp {
+    MenuApp(name.to_owned())
+}
+
+fn bar(name: &str) -> Follower {
+    Follower(name.to_owned())
+}
+
+#[test]
+fn followers_start_an_app_once_and_stop_it_when_nobody_names_it() {
+    type Step = (Follower, Option<MenuApp>, Vec<MenuApp>, Vec<MenuApp>);
+    let cases: Vec<(&str, Step)> = vec![
+        (
+            "the first bar starts its app",
+            (bar("DP-1"), Some(app("a")), vec![app("a")], vec![]),
+        ),
+        (
+            "a second bar on the same app starts nothing",
+            (bar("DP-2"), Some(app("a")), vec![], vec![]),
+        ),
+        (
+            "a bar moving to another app starts it, the first stays",
+            (bar("DP-2"), Some(app("b")), vec![app("b")], vec![]),
+        ),
+        (
+            "the last bar leaving stops the app",
+            (bar("DP-1"), None, vec![], vec![app("a")]),
+        ),
+        (
+            "naming the same app again changes nothing",
+            (bar("DP-2"), Some(app("b")), vec![], vec![]),
+        ),
+    ];
+    let mut followers = Followers::default();
+    for (name, (by, wants, start, stop)) in cases {
+        let (next, following) = followers.set(by, wants);
+        assert_eq!(following, Following { start, stop }, "{name}");
+        followers = next;
+    }
+    assert_eq!(
+        followers.apps().into_iter().collect::<Vec<_>>(),
+        [&app("b")]
+    );
+}
+
+#[test]
+fn the_published_menus_follow_what_was_heard() {
+    let served = served();
+    let seen = step(
+        AppMenus::default(),
+        AppMenuEvent::Served {
+            app: app("dev.notes"),
+            menu: served.clone(),
+        },
+    );
+    assert_eq!(seen.served.get(&app("dev.notes")), Some(&served));
+    let gone = step(seen, AppMenuEvent::Gone(app("dev.notes")));
+    assert_eq!(gone, AppMenus::default());
+}
+
+fn window(key: u64, app_id: &str, minimized: bool) -> Toplevel {
+    Toplevel {
+        identifier: String::new(),
+        key: WindowKey(key),
+        app_id: app_id.to_owned(),
+        title: format!("{app_id} {key}"),
+        active: false,
+        minimized,
+        sizing: Sizing::Floating,
+        workspaces: Vec::new(),
+        outputs: vec![OutputName("DP-1".to_owned())],
+    }
+}
+
+#[test]
+fn the_shells_own_rows_become_compositor_commands() {
+    let toplevels = Toplevels {
+        windows: vec![
+            window(1, "foot", false),
+            window(2, "foot", true),
+            window(3, "files", false),
+            window(4, "files", true),
+        ],
+    };
+    let cases: Vec<(OwnItem, Vec<WlCommand>)> = vec![
+        (
+            OwnItem::Raise(WindowKey(9)),
+            vec![WlCommand::Activate(WindowKey(9))],
+        ),
+        (
+            OwnItem::Minimise(WindowKey(2)),
+            vec![WlCommand::Minimize(WindowKey(2))],
+        ),
+        (OwnItem::Hide, vec![WlCommand::Minimize(WindowKey(1))]),
+        (OwnItem::HideOthers, vec![WlCommand::Minimize(WindowKey(3))]),
+        (
+            OwnItem::ShowAll,
+            vec![
+                WlCommand::Unminimize(WindowKey(2)),
+                WlCommand::Unminimize(WindowKey(4)),
+            ],
+        ),
+        (
+            OwnItem::Quit,
+            vec![
+                WlCommand::Close(WindowKey(1)),
+                WlCommand::Close(WindowKey(2)),
+            ],
+        ),
+    ];
+    for (item, want) in cases {
+        assert_eq!(own_commands(item, "foot", &toplevels), want, "{item:?}");
+    }
+}
+
+#[test]
+fn the_own_groups_hold_windows_then_hiding_then_quit() {
+    let windows = [(WindowKey(4), "~".to_owned())];
+    let labels = |quit| {
+        own_groups("Foot", &windows, quit)
+            .into_iter()
+            .map(|group| group.into_iter().map(|row| row.label).collect::<Vec<_>>())
+            .collect::<Vec<_>>()
+    };
+    let hide = ["Minimise", "Hide Foot", "Hide Others", "Show All"]
+        .map(str::to_owned)
+        .to_vec();
+    assert_eq!(
+        labels(true),
+        [
+            vec!["~".to_owned()],
+            hide.clone(),
+            vec!["Quit Foot".to_owned()]
+        ]
+    );
+    assert_eq!(labels(false), [vec!["~".to_owned()], hide]);
+}
+
+fn name(text: &str) -> AppName {
+    AppName::parse(text).unwrap_or_else(|e| panic!("{e}"))
+}
+
+fn action(app: &str, action: &str) -> ActionRef {
+    ActionRef {
+        app: name(app),
+        name: ActionName::parse(action).unwrap_or_else(|e| panic!("{e}")),
+    }
+}
+
+/// The manifests as the table sees them: the shell's harmless action and the notes app's own.
+fn actions() -> ActionIndex {
+    ActionIndex(BTreeMap::from([
+        (
+            action("org.quire.Shell", "shell.workspace.switch"),
+            Effect::Read,
+        ),
+        (action("dev.notes", "note.archive"), Effect::UndoableWrite),
+        (action("dev.notes", "note.erase"), Effect::Destructive),
+    ]))
+}
+
+#[test]
+fn an_activation_costs_what_its_route_says() {
+    let notes = Identity::Verified(name("dev.notes"));
+    let command = |text: &str| Some(MenuCommand(text.to_owned()));
+    type Case<'a> = (
+        &'a str,
+        ItemKey,
+        Option<MenuCommand>,
+        Identity,
+        Route,
+        Effect,
+    );
+    let cases: Vec<Case> = vec![
+        (
+            "a verified app's own action takes that action's declared effect",
+            ItemKey::Menu(7),
+            command("note.archive"),
+            notes.clone(),
+            Route::Intents(action("dev.notes", "note.archive")),
+            Effect::UndoableWrite,
+        ),
+        (
+            "and a destructive one stays destructive",
+            ItemKey::Menu(7),
+            command("note.erase"),
+            notes.clone(),
+            Route::Intents(action("dev.notes", "note.erase")),
+            Effect::Destructive,
+        ),
+        (
+            "another app's harmless action named by an item is only a claim",
+            ItemKey::Menu(7),
+            command("shell.workspace.switch"),
+            notes.clone(),
+            Route::Click(7),
+            Effect::Destructive,
+        ),
+        (
+            "an id the verified app's manifest does not have is a click",
+            ItemKey::Menu(7),
+            command("note.unknown"),
+            notes.clone(),
+            Route::Click(7),
+            Effect::Destructive,
+        ),
+        (
+            "an unverified app's id counts for nothing even when its manifest has it",
+            ItemKey::Menu(7),
+            command("note.archive"),
+            Identity::Unverified,
+            Route::Click(7),
+            Effect::Destructive,
+        ),
+        (
+            "an item with no command is a click",
+            ItemKey::Menu(7),
+            None,
+            notes.clone(),
+            Route::Click(7),
+            Effect::Destructive,
+        ),
+        (
+            "a command that is no action name is a click",
+            ItemKey::Menu(7),
+            command("Not A Name"),
+            notes,
+            Route::Click(7),
+            Effect::Destructive,
+        ),
+        (
+            "the shell's own Hide is read",
+            ItemKey::Own(OwnItem::Hide),
+            None,
+            Identity::Unverified,
+            Route::Own(OwnItem::Hide),
+            Effect::Read,
+        ),
+        (
+            "minimising a window is read",
+            ItemKey::Own(OwnItem::Minimise(WindowKey(3))),
+            None,
+            Identity::Unverified,
+            Route::Own(OwnItem::Minimise(WindowKey(3))),
+            Effect::Read,
+        ),
+        (
+            "raising a window is read",
+            ItemKey::Own(OwnItem::Raise(WindowKey(3))),
+            None,
+            Identity::Unverified,
+            Route::Own(OwnItem::Raise(WindowKey(3))),
+            Effect::Read,
+        ),
+        (
+            "Quit cannot be taken back, so it asks",
+            ItemKey::Own(OwnItem::Quit),
+            None,
+            Identity::Unverified,
+            Route::Own(OwnItem::Quit),
+            Effect::Destructive,
+        ),
+    ];
+    let actions = actions();
+    for (why, item, command, identity, route, effect) in cases {
+        let got = route_of(item, command.as_ref(), &identity, &actions);
+        assert_eq!(got, route, "{why}");
+        assert_eq!(effect_of(&got, &actions), effect, "{why}");
+    }
+}
+
+#[test]
+fn an_item_key_reads_back_what_a_listing_wrote() {
+    let cases = [
+        ItemKey::Own(OwnItem::Raise(WindowKey(12))),
+        ItemKey::Own(OwnItem::Minimise(WindowKey(5))),
+        ItemKey::Own(OwnItem::Hide),
+        ItemKey::Own(OwnItem::HideOthers),
+        ItemKey::Own(OwnItem::ShowAll),
+        ItemKey::Own(OwnItem::Quit),
+        ItemKey::Menu(-1_234_567),
+        ItemKey::Menu(0),
+        ItemKey::Menu(88),
+    ];
+    for key in cases {
+        assert_eq!(ItemKey::parse(&key.text()), Some(key), "{key:?}");
+    }
+    for text in ["", "raise:", "raise:x", "zoom:3", "Quit", "12x"] {
+        assert_eq!(ItemKey::parse(text), None, "{text:?}");
+    }
+}
+
+#[test]
+fn the_listing_has_one_line_per_row_with_the_id_first() {
+    let own = own_groups("Notes", &[(WindowKey(4), "Inbox".to_owned())], false);
+    let text = listing("Notes", &own, Some(&served()));
+    let want = "\
+Notes
+  [12] About Notes
+  [raise:4] Inbox
+  [minimise:4] Minimise
+  [hide] Hide Notes
+  [hide-others] Hide Others
+  [show-all] Show All
+Edit
+  [21] Undo keys=Super+Z command=standard.undo
+View
+  [41] Sidebar (checked)
+";
+    assert_eq!(text, want);
+}
+
+#[test]
+fn a_long_listing_ends_at_a_whole_line_with_a_mark() {
+    // Rows are capped at MENU_ROWS_MAX where they enter, so long labels are what fill the listing.
+    let label = "A row with some words ".repeat(4);
+    let rows: Vec<Node> = (0..2000)
+        .map(|i| node(i, label.trim_end(), Vec::new()))
+        .collect();
+    let big = ServedMenu {
+        name: MenuName(String::new()),
+        menus: rows_of(vec![node(1, "App", Vec::new()), node(2, "File", rows)]),
+    };
+    let text = listing("Big", &[], Some(&big));
+    assert!(
+        text.chars().count() <= super::LISTING_MAX,
+        "{}",
+        text.chars().count()
+    );
+    assert!(
+        text.ends_with("(more rows left out)"),
+        "{}",
+        &text[text.len() - 60..]
+    );
+    assert!(
+        text.lines()
+            .rev()
+            .nth(1)
+            .is_some_and(|l| l.ends_with("A row with some words"))
+    );
+}
+
+#[test]
+fn a_layout_is_read_for_a_few_rows_and_levels_and_short_labels() {
+    use crate::tray::{MENU_DEPTH_MAX, MENU_ROWS_MAX};
+    let wide: Vec<Node> = (0..10_000)
+        .map(|n| node(n, &"x".repeat(900), Vec::new()))
+        .collect();
+    assert_eq!(rows_of(wide).len(), MENU_ROWS_MAX);
+
+    let mut nested = node(0, "leaf", Vec::new());
+    for level in 1..40 {
+        nested = node(level, "level", vec![nested]);
+    }
+    let mut depth = 0;
+    let mut level = rows_of(vec![nested]);
+    while let Some(TrayMenuEntry {
+        kind: TrayMenuKind::Item { children, .. },
+        ..
+    }) = level.pop()
+    {
+        depth += 1;
+        level = children;
+    }
+    assert_eq!(depth, MENU_DEPTH_MAX);
+
+    let long = rows_of(vec![node(1, &"y".repeat(5_000), Vec::new())]);
+    match &long[0].kind {
+        TrayMenuKind::Item { label, .. } => assert!(label.chars().count() <= 121),
+        TrayMenuKind::Separator => panic!("a row"),
+    }
+}
+
+#[test]
+fn a_menu_is_shown_only_when_its_owner_is_the_windows_program() {
+    let client = |reported: Option<&str>| MenuClient {
+        key: "dev.notes".to_owned(),
+        reported: reported.map(str::to_owned),
+    };
+    let sandboxed = |app: &str| MenuOwner::Sandboxed {
+        app: app.to_owned(),
+    };
+    let program = |exe: &str, scope: Option<&str>| MenuOwner::Program {
+        exe: exe.to_owned(),
+        scope_app: scope.map(str::to_owned),
+    };
+    let service = |app: &str| MenuOwner::Service {
+        app: app.to_owned(),
+    };
+    const SHOWN: bool = true;
+    const HIDDEN: bool = false;
+    // `(case, owner, the window's client, trusted)`
+    let cases = [
+        // No subject reported: the app key is what is compared.
+        (
+            "a sandbox that is the app",
+            sandboxed("dev.notes"),
+            client(None),
+            SHOWN,
+        ),
+        (
+            "a sandbox that is another app",
+            sandboxed("dev.other"),
+            client(None),
+            HIDDEN,
+        ),
+        (
+            "a program launched as the app",
+            program("/usr/bin/notes", Some("dev.notes")),
+            client(None),
+            SHOWN,
+        ),
+        (
+            "a program launched as another app",
+            program("/usr/bin/notes", Some("dev.other")),
+            client(None),
+            HIDDEN,
+        ),
+        (
+            "a program with no launcher name",
+            program("/usr/bin/notes", None),
+            client(None),
+            HIDDEN,
+        ),
+        (
+            "a service that is the app",
+            service("dev.notes"),
+            client(None),
+            SHOWN,
+        ),
+        (
+            "a service that is another app",
+            service("org.quire.Settings"),
+            client(None),
+            HIDDEN,
+        ),
+        (
+            "an owner nobody can name",
+            MenuOwner::Unknown,
+            client(None),
+            HIDDEN,
+        ),
+        // Once the compositor reports the client's subject, the subject decides, not the key.
+        (
+            "the image that is the window's",
+            program("/usr/bin/notes", None),
+            client(Some("/usr/bin/notes")),
+            SHOWN,
+        ),
+        (
+            "another image under the app's scope name",
+            program("/usr/bin/evil", Some("dev.notes")),
+            client(Some("/usr/bin/notes")),
+            HIDDEN,
+        ),
+        (
+            "the sandbox that is the window's",
+            sandboxed("dev.notes"),
+            client(Some("dev.notes")),
+            SHOWN,
+        ),
+        (
+            "another sandbox",
+            sandboxed("dev.other"),
+            client(Some("dev.notes")),
+            HIDDEN,
+        ),
+        (
+            "a service is known by its key",
+            service("dev.notes"),
+            client(Some("/usr/bin/notes")),
+            SHOWN,
+        ),
+        (
+            "an unknown owner stays hidden",
+            MenuOwner::Unknown,
+            client(Some("/usr/bin/notes")),
+            HIDDEN,
+        ),
+    ];
+    for (name, owner, client, want) in cases {
+        assert_eq!(menu_trust(&owner, &client), want, "{name}");
+    }
+    let notes = MenuApp("dev.notes".to_owned());
+    assert_eq!(MenuClient::unreported(&notes), client(None));
+    assert_eq!(MenuClient::new(&notes, None), client(None));
+    assert_eq!(
+        MenuClient::new(&notes, Some("/usr/bin/notes")),
+        client(Some("/usr/bin/notes"))
+    );
+}

@@ -1,0 +1,33 @@
+[package]
+name = "account-fake-servers"
+description = "Test-only: fake OAuth issuer, IMAP, SMTP, Nextcloud, DAV, autoconfig, DNS and model-list servers on loopback or scratch sockets, built from the shipped provider files. Never a dependency of a non-test crate."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+base64 = {version = "0.22"}
+account-dav-proto = {path = "../account-dav-proto"}
+account-core = {path = "../account-core"}
+account-ids = {path = "../account-ids"}
+account-discover = {path = "../account-discover"}
+account-fake = {path = "../account-fake"}
+account-provider = {path = "../account-provider"}
+rustls = {version = "0.23", default-features = false, features = ["ring", "std", "tls12"]}
+rustls-pki-types = {version = "1"}
+serde_json = {version = "1"}
+form_urlencoded = {version = "1.2"}
+hex = {version = "0.4"}
+http = {version = "1"}
+md-5 = {version = "0.10"}
+sha2 = {version = "0.10"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio-rustls = {version = "0.26", default-features = false, features = ["ring", "tls12", "logging"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,131 @@
+//! `Desktop::probe`: ask the bus who answers.
+
+use crate::Desktop;
+
+impl Desktop {
+    /// Ask the buses which capabilities are here. Without feature `dbus`, or when no bus can be
+    /// reached, everything is `Absent`; this never fails.
+    pub async fn probe() -> Desktop {
+        #[cfg(feature = "dbus")]
+        {
+            let (session, system) = bus::connect().await;
+            Desktop::probe_on(session.as_ref(), system.as_ref()).await
+        }
+        #[cfg(not(feature = "dbus"))]
+        {
+            Desktop::default()
+        }
+    }
+}
+
+#[cfg(feature = "dbus")]
+pub(crate) mod bus {
+    use crate::Desktop;
+    use crate::capability::{Bus, Capability};
+    use ui_peer::{Deadline, within};
+    use std::collections::HashSet;
+    use std::future::Future;
+    use zbus::Connection;
+    use zbus::fdo::DBusProxy;
+
+    /// Who a screen says is not answering when a bus runs out of time.
+    pub(crate) const PEER: &str = "The message bus";
+
+    /// `work`'s answer, or `None` when it failed or did not come within [`Deadline::START`]: a
+    /// probe never waits on a wedged bus, it reports what it knows.
+    pub(crate) async fn answered<T>(work: impl Future<Output = zbus::Result<T>>) -> Option<T> {
+        within(Deadline::START, PEER, work).await.ok()?.ok()
+    }
+
+    /// The session and system connections; either may be missing (a headless box, a sandbox) or
+    /// silent.
+    pub(crate) async fn connect() -> (Option<Connection>, Option<Connection>) {
+        (
+            answered(Connection::session()).await,
+            answered(Connection::system()).await,
+        )
+    }
+
+    /// One bus: its daemon proxy and the names it can activate.
+    pub(crate) struct Side {
+        pub(crate) proxy: DBusProxy<'static>,
+        pub(crate) activatable: HashSet<String>,
+    }
+
+    impl Side {
+        pub(crate) async fn open(connection: &Connection) -> Option<Side> {
+            let proxy = DBusProxy::new(connection).await.ok()?;
+            let activatable = proxy
+                .list_activatable_names()
+                .await
+                .map(|names| names.into_iter().map(|n| n.to_string()).collect())
+                .unwrap_or_default();
+            Some(Side { proxy, activatable })
+        }
+
+        /// A name with an owner, or one the bus would start, is here.
+        pub(crate) fn presence(&self, name: &str, owned: bool) -> bool {
+            owned || self.activatable.contains(name)
+        }
+
+        /// Whether a bus name has an owner right now.
+        async fn owned(&self, name: &str) -> bool {
+            let Ok(name) = zbus::names::BusName::try_from(name) else {
+                return false;
+            };
+            matches!(self.proxy.name_has_owner(name).await, Ok(true))
+        }
+    }
+
+    /// The capabilities whose service is `name` on `bus`.
+    pub(crate) fn capabilities_named(bus: Bus, name: &str) -> impl Iterator<Item = Capability> {
+        let name = name.to_owned();
+        Capability::ALL
+            .into_iter()
+            .filter(move |c| c.service().is_some_and(|s| s.bus == bus && s.name == name))
+    }
+
+    /// Fill `desktop` from the buses, one capability at a time; a caller that cuts it short keeps
+    /// the capabilities filled so far.
+    pub(crate) async fn fill(desktop: &mut Desktop, session: Option<&Side>, system: Option<&Side>) {
+        for capability in Capability::ALL {
+            let Some(service) = capability.service() else {
+                continue;
+            };
+            let side = match service.bus {
+                Bus::Session => session,
+                Bus::System => system,
+            };
+            let presence = match side {
+                Some(side) => side.presence(service.name, side.owned(service.name).await),
+                None => false,
+            };
+            desktop.set(capability, presence);
+        }
+    }
+
+    impl Desktop {
+        /// Probe over the given connections (a private bus in tests); a missing bus leaves its
+        /// capabilities `Absent`, and so does a bus that does not finish answering within
+        /// [`Deadline::START`]: what it said before then stands.
+        pub async fn probe_on(
+            session: Option<&Connection>,
+            system: Option<&Connection>,
+        ) -> Desktop {
+            let mut desktop = Desktop::default();
+            let _ = within(Deadline::START, PEER, async {
+                let session = match session {
+                    Some(c) => Side::open(c).await,
+                    None => None,
+                };
+                let system = match system {
+                    Some(c) => Side::open(c).await,
+                    None => None,
+                };
+                fill(&mut desktop, session.as_ref(), system.as_ref()).await;
+            })
+            .await;
+            desktop
+        }
+    }
+}

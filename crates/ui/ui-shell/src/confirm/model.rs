@@ -1,0 +1,66 @@
+//! What a confirmation shows and what the person can answer.
+
+use ui_components::components::companion::mark::AppMark;
+use ui_components::components::fields::fact_list::Fact;
+use ui_core::vocab::EffectMark;
+use ui_core::word::Word;
+
+/// What the confirmation says about what the companion read.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum TaintLine {
+    /// Nothing untrusted was read.
+    Clean,
+    /// It read untrusted text from this source: "It read a message from a sender you don't know."
+    ReadUntrusted {
+        /// Where the text came from, in words.
+        source: String,
+    },
+}
+
+/// How the person answers, `data-gesture`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
+pub enum GestureMark {
+    /// A press.
+    Press,
+    /// A press held for a moment: for what cannot be undone.
+    Hold,
+}
+
+/// What the person answered.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ConfirmChoice {
+    /// Go ahead, once or always.
+    Allow {
+        /// Whether it lasts: "from now on" rather than this time only.
+        always: bool,
+    },
+    /// Do not.
+    Deny,
+}
+
+/// The content of a confirmation. Every word is the router's, never a model's: the title is
+/// generated from the action, and the facts are the arguments the action will run with.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ConfirmView {
+    /// Who asks: "Assistant".
+    pub asker: AppMark,
+    /// The app and window it acts in.
+    pub target: AppMark,
+    /// What it is about to do: "Send this email?".
+    pub title: String,
+    /// The arguments: To, Subject.
+    pub facts: Vec<Fact>,
+    /// The default button's word: "Send".
+    pub verb: String,
+    /// What it does to the world.
+    pub effect: EffectMark,
+    /// What it read that the person cannot vouch for.
+    pub taint: TaintLine,
+    /// Whether the person may also choose "always" (`data-offer`), rather than only this once.
+    pub offer_always: bool,
+    /// How the person answers.
+    pub gesture: GestureMark,
+    /// Whether the buttons take input yet (`data-arm`): they wait out the arm delay so a stray
+    /// key cannot answer.
+    pub armed: bool,
+}

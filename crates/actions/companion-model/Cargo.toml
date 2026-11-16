@@ -1,0 +1,29 @@
+[package]
+name = "companion-model"
+description = "The helpers' model: a helper's card, the board of jobs and the mailbox of posts with the pure `step` that moves them, the rules that keep the person's words apart from untrusted data, the records a restart rebuilds the board from, routines (schedules, triggers, the routine book and its `step`) and the hand-over to a watched terminal agent."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+memory-core = {path = "../../memory/memory-core"}
+action-manifest = {path = "../action-manifest"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

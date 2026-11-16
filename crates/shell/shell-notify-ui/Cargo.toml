@@ -1,0 +1,31 @@
+[package]
+name = "shell-notify-ui"
+description = "The notification surfaces: banners, the notification center and the screenshot thumbnail."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+ui-components = {path = "../../ui/ui-components"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+shell-kit = {path = "../shell-kit"}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
+shell-model = {path = "../shell-model"}
+shell-services = {path = "../shell-services"}
+shell-settings = {path = "../shell-settings"}
+shell-ui-kit = {path = "../shell-ui-kit"}
+
+[dev-dependencies]
+shell-testkit = {path = "../shell-testkit"}
+ui-harness = {path = "../../ui/ui-harness"}
+shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

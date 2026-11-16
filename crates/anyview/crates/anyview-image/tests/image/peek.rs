@@ -15,7 +15,7 @@ fn size(width: u32, height: u32) -> PixelSize {
 
 /// The facts as `(label slug, text)` rows, in order.
 fn rows<P: Peek>(peeked: &P::Peeked) -> Vec<(&'static str, String)> {
-    use ds_core::word::Word;
+    use ui_core::word::Word;
     P::facts(peeked)
         .rows()
         .iter()

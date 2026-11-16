@@ -1,0 +1,63 @@
+[package]
+name = "settings-app-ui"
+description = "The Settings window: sidebar, pages and controls, drawn only with quire's components."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+# The compiler is the fence: the window names only the client (its one door to the computer), the
+# model (its facts, and the other crates' types they are made of) and quire. Never detent-files,
+# detent-system, porter-*, almanac-*, docket-* or zbus.
+settings-app-client = {path = "../settings-app-client"}
+settings-app-model = {path = "../settings-app-model"}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+ui-components = {path = "../../ui/ui-components"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+ui-lint = {path = "../../ui/ui-lint"}
+ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "live", "tokio"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+# Fixtures: the in-memory links (the daemons' live settings modules among them: `FakeModules`) and
+# the test kit, and quire's harness. The tests that stand a service that is no live module up on a
+# private bus (the portal, running models, the engines, computers, memory, the sync service, and
+# the owner checks) need the commented ones below.
+settings-app-system = {path = "../settings-app-system", features = ["testing"]}
+settings-app-testkit = {path = "../settings-app-testkit"}
+ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
+dioxus-ssr = {version = "0.7"}
+ui-harness = {path = "../../ui/ui-harness"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+toml = {version = "1"}
+# A stand-in service on a private bus is vouched for by `AnyOwner`, or by the role check over peers
+# a test introduces owners to (the squatter tests).
+settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
+# Reads and writes the settings files and desktop entries the tests seed and check.
+settings-app-files = {path = "../settings-app-files"}
+# The stand-in daemons' wire: bus names, paths and the zbus interfaces they serve (accountd's and
+# syncd's from ferry, inferd's from steward).
+sync-bus = {path = "../../sync/sync-bus"}
+account-dbus = {path = "../../accounts/account-dbus"}
+account-wire = {path = "../../accounts/account-wire"}
+inference-dbus = {path = "../../inference/inference-dbus"}
+zbus = {version = "5.19", features = ["tokio"]}
+# The Intelligence test's stand-in inferd answers with porter's kinds and inference types.
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+# The Assistants test reads docket's places file.
+action-settings = {path = "../../actions/action-settings"}
+# The lending test's service manager implements inferd's `UnitManager`.
+inference-client = {path = "../../inference/inference-client", features = ["lending"]}
+# The Keyboard test names chords.
+keymap = {path = "../../keymap/keymap"}
+zbus-ready = { path = "../../zbus-ready" }
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

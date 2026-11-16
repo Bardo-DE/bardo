@@ -1,0 +1,333 @@
+//! syncd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
+//! loads the caller tables, starts the supervisors that keep the mirrors and serves
+//! `org.quire.Sync1`, and [`Daemon::run`] keeps it going until told to stop. The binary reads
+//! its arguments, asks [`Config::from_env`] for the environment's answers and calls these.
+//!
+//! syncd reaches accounts only through porter-client: over the bus, accountd's `Grants1`, in the
+//! daemon ([`Daemon::build`]), and over whatever transport a test hands to
+//! [`Daemon::build_over`].
+//!
+//! No other function in the library reads the environment. The network comes from the caller as
+//! a `watch::Receiver<Network>`: NetworkManager is not read yet, so the binary hands in a
+//! receiver that says "unmetered and up" for good.
+
+use crate::datasets::photos::Millis;
+use crate::datasets::pim::{ClientGrants, PimConfig, PimSupervisor, Wiring};
+use crate::datasets::storage::DriveMount;
+use crate::datasets::storage::{ClientStorageGrants, StorageConfig, StorageSupervisor};
+use crate::keep::Keep;
+use crate::paths::{BUILD, HONOURS_PROC_ROOT, Paths, rescan};
+use crate::scheduler::{Network, Settings};
+use crate::service;
+use crate::service::{Access, Hub};
+use crate::settings::{SyncSettings, read_cache_limit, serve_settings};
+use drive_fuse::Mounter;
+use account_callers::choose_proc_root;
+use account_callers::{CallerFileError, ProcCallers};
+use account_client::{AccountsLink, GrantsLink, Porter};
+use account_client_dbus::Bus;
+use account_daemon_support::xdg::PathError;
+use account_dbus::BusTarget;
+use account_ids::clock::SystemClock;
+use std::future::Future;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use tokio::sync::watch;
+use tokio::task::JoinHandle;
+use zbus::Connection;
+
+/// The wall clock in milliseconds, for Photos' hybrid clocks: the daemon is where it is read.
+#[derive(Debug, Clone, Copy)]
+struct SystemMillis;
+
+impl Millis for SystemMillis {
+    fn now_ms(&self) -> u64 {
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| u64::try_from(d.as_millis()).unwrap_or(u64::MAX))
+    }
+}
+
+/// A value that differs between two runs of the daemon: the time it started, in nanoseconds,
+/// and its process id, in hex.
+fn fresh_nonce() -> String {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_nanos());
+    format!("{nanos:x}{:x}", std::process::id())
+}
+
+/// The variable that names a directory to read callers from in place of `/proc` (a test build
+/// only).
+pub const PROC_ROOT_VAR: &str = "SYNCD_PROC_ROOT";
+
+/// The variable that shortens how often grants are read again (a test build only).
+pub const RESCAN_VAR: &str = "SYNCD_RESCAN_S";
+
+/// Everything syncd needs to start, as typed values.
+#[derive(Debug, Clone)]
+pub struct Config {
+    /// Where syncd reads and writes.
+    pub paths: Paths,
+    /// A directory to read callers from in place of `/proc`; `Some` only in a test build.
+    pub proc_root: Option<PathBuf>,
+    /// The calendar and address book supervisor.
+    pub pim: PimConfig,
+    /// The storage supervisor.
+    pub storage: StorageConfig,
+    /// The bus to serve on.
+    pub bus: BusTarget,
+}
+
+impl Config {
+    /// A configuration over `paths` on `bus`: callers read from `/proc`, every supervisor at its
+    /// shipped settings (grants read again every ten minutes).
+    pub fn new(paths: Paths, bus: BusTarget) -> Self {
+        Self {
+            paths,
+            proc_root: None,
+            pim: PimConfig::default(),
+            storage: StorageConfig::default(),
+            bus,
+        }
+    }
+
+    /// With callers read from this directory in place of `/proc`.
+    #[must_use]
+    pub fn with_proc_root(mut self, root: PathBuf) -> Self {
+        self.proc_root = Some(root);
+        self
+    }
+
+    /// With these supervisor settings.
+    #[must_use]
+    pub fn with_supervisors(mut self, pim: PimConfig, storage: StorageConfig) -> Self {
+        self.pim = pim;
+        self.storage = storage;
+        self
+    }
+
+    /// The configuration the process's environment gives. The one place syncd reads the
+    /// environment: `HOME` and the XDG directories, `SYNCD_PROC_ROOT` and `SYNCD_RESCAN_S` (a
+    /// test build only).
+    ///
+    /// # Errors
+    /// There is no home to keep state in.
+    pub fn from_env() -> Result<Self, StartError> {
+        let mut paths = Paths::resolve(|name| std::env::var(name).ok())?;
+        // A test build may read another system caller table (a jail cannot write /etc).
+        let system =
+            account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| std::env::var_os(name));
+        if let Some(line) = system.notice("syncd") {
+            eprintln!("{line}");
+        }
+        paths.callers_system = system.path().to_owned();
+        let proc = choose_proc_root(HONOURS_PROC_ROOT, PROC_ROOT_VAR, |name| {
+            std::env::var_os(name)
+        })
+        .into_honoured();
+        // `SYNCD_RESCAN_S` shortens how often grants are read again, in a test build only.
+        let rescan_var = std::env::var(RESCAN_VAR).ok();
+        let pim = PimConfig::default();
+        let pim = PimConfig {
+            rescan: rescan(BUILD, rescan_var.clone(), pim.rescan),
+        };
+        // Storage: the app folder mirror for a Files grant, the whole drive for a grant of all of
+        // it ("Show in Files"), and Photos for a Photos grant (the account's Photos row).
+        let storage = StorageConfig::default();
+        // Each drive shown in Files is a folder at `~/Cloud/<Drive>`, mounted by porter-mountd
+        // (the unit's sandbox may not run the setuid `fusermount3`, nor make a mount anyone else
+        // sees), or by syncd itself through `fusermount3` when no helper listens (syncd run by
+        // hand); its cache keeps what `syncd.toml` says.
+        let mounter = Mounter {
+            mountd: std::env::var_os("XDG_RUNTIME_DIR")
+                .map(|runtime| drive_fuse::mountd::wire::socket_in(Path::new(&runtime))),
+            ..Mounter::new("fusermount3")
+        };
+        let storage = StorageConfig {
+            rescan: rescan(BUILD, rescan_var, storage.rescan),
+            mount: DriveMount::Fuse(mounter),
+            cache_limit: read_cache_limit(&paths.settings),
+            ..storage
+        };
+        Ok(Self {
+            paths,
+            proc_root: proc,
+            pim,
+            storage,
+            bus: BusTarget::Session,
+        })
+    }
+}
+
+/// Why syncd did not start.
+#[derive(Debug, thiserror::Error)]
+pub enum StartError {
+    /// There is no home to keep state in.
+    #[error("{0}")]
+    Paths(#[from] PathError),
+    /// A caller table cannot be read.
+    #[error("{0}")]
+    Callers(#[from] CallerFileError),
+    /// The bus cannot be reached.
+    #[error("no session bus: {0}")]
+    Bus(#[source] zbus::Error),
+    /// The settings module cannot be served.
+    #[error("cannot serve the settings module: {0}")]
+    Settings(#[source] zbus::Error),
+    /// `org.quire.Photos1.Picker` cannot be served.
+    #[cfg(feature = "photos-picker")]
+    #[error("cannot serve org.quire.Photos1.Picker: {0}")]
+    Picker(#[source] zbus::Error),
+    /// The bus objects or the name could not be served.
+    #[error("cannot serve {bus}: {0}", bus = sync_bus::SYNC_BUS)]
+    Serve(#[source] zbus::Error),
+}
+
+/// syncd, serving `org.quire.Sync1` with its supervisors running.
+#[derive(Debug)]
+pub struct Daemon {
+    connection: Connection,
+    pim: JoinHandle<()>,
+    storage: JoinHandle<()>,
+}
+
+impl Daemon {
+    /// Loads the caller tables, connects to the bus, reaches accountd over that connection,
+    /// starts the supervisors, serves the settings module and serves `org.quire.Sync1` (and, with
+    /// the `photos-picker` feature, `org.quire.Photos1.Picker`). When this returns the name is
+    /// owned and calls are answered. `network` is what the supervisors read the network from.
+    ///
+    /// # Errors
+    /// See [`StartError`].
+    pub async fn build(
+        config: Config,
+        network: watch::Receiver<Network>,
+    ) -> Result<Self, StartError> {
+        let connection = config.bus.connect().await.map_err(StartError::Bus)?;
+        let porter = Porter::over(Bus::over(connection.clone()));
+        Self::build_over(config, network, connection, porter).await
+    }
+
+    /// [`Daemon::build`] over a connection the caller made and the handle on accountd it chose:
+    /// a test hands the in-process transport, with accounts of its own.
+    ///
+    /// # Errors
+    /// See [`StartError`].
+    pub async fn build_over<T: GrantsLink + AccountsLink>(
+        config: Config,
+        network: watch::Receiver<Network>,
+        connection: Connection,
+        porter: Porter<T>,
+    ) -> Result<Self, StartError> {
+        let Config {
+            paths,
+            proc_root,
+            pim,
+            storage,
+            bus: _,
+        } = config;
+        let table = account_callers::load_callers(&paths.callers_system, &paths.callers_user)?;
+        let callers = Arc::new(match proc_root {
+            #[cfg(feature = "test-proc-root")]
+            Some(root) => {
+                eprintln!(
+                    "syncd: reading callers from {} (test-proc-root build)",
+                    root.display()
+                );
+                ProcCallers::with_proc_root(connection.clone(), table, root)
+            }
+            _ => ProcCallers::new(connection.clone(), table),
+        });
+        let hub = Hub::default();
+        let accounts = Arc::new(porter.grants());
+        // What tells this run from every other: its anchors, its new Photos devices.
+        let nonce = fresh_nonce();
+        let wiring = |network| Wiring {
+            accounts: Arc::clone(&accounts),
+            hub: hub.clone(),
+            paths: paths.clone(),
+            settings: Settings::default(),
+            network,
+            owners: Access::default(),
+            clock: sync_core::Clock::new(SystemClock),
+            nonce: nonce.clone(),
+            millis: Arc::new(SystemMillis),
+        };
+        let pim = PimSupervisor::new(
+            wiring(network.clone()),
+            ClientGrants::new(Arc::clone(&accounts)),
+            pim,
+        )
+        .spawn();
+        #[cfg(feature = "photos-picker")]
+        let photos_owners = storage.photos_owners.clone();
+        let storage_files_apps = storage.files_owners.clone();
+        let storage = StorageSupervisor::new(
+            wiring(network),
+            ClientStorageGrants::new(Arc::clone(&accounts)),
+            storage,
+        );
+        #[cfg(feature = "photos-picker")]
+        let pickers = storage.pickers();
+        let (drives, cache_knob) = (storage.drive_set(), storage.cache_knob());
+        let files_apps = storage_files_apps.clone();
+        let storage = storage.spawn();
+        let daemon = Self {
+            connection: connection.clone(),
+            pim,
+            storage,
+        };
+        // On an error below `daemon` drops, which ends both supervisors.
+        // The Settings rows: the accounts accountd lists, the sync switches and removal.
+        let settings_file = paths.settings.clone();
+        let own = Arc::new(Keep::new(&porter, paths, hub.clone()).with_drives(drives.clone()));
+        serve_settings(
+            &connection,
+            SyncSettings::new(own, Arc::clone(&callers))
+                .with_cache_limit(cache_knob, settings_file),
+        )
+        .await
+        .map_err(StartError::Settings)?;
+        // `org.quire.Photos1.Picker`, only in a build with the `photos-picker` feature; each
+        // account answers through it while its Google Photos run.
+        #[cfg(feature = "photos-picker")]
+        service::serve_picker(&connection, pickers, photos_owners, Arc::clone(&callers))
+            .await
+            .map_err(StartError::Picker)?;
+        // `org.quire.Storage1`: the drives shown in Files.
+        service::serve_storage(&connection, drives, Arc::clone(&callers), files_apps)
+            .await
+            .map_err(StartError::Serve)?;
+        service::serve(&connection, hub, callers)
+            .await
+            .map_err(StartError::Serve)?;
+        Ok(daemon)
+    }
+
+    /// The daemon's connection to the bus.
+    pub fn connection(&self) -> &Connection {
+        &self.connection
+    }
+
+    /// Serves until `shutdown` completes, then ends the supervisors and closes the connection
+    /// (the name is released). The binary passes a future that never completes: SIGTERM ends
+    /// the process.
+    pub async fn run(mut self, shutdown: impl Future<Output = ()>) {
+        shutdown.await;
+        self.pim.abort();
+        self.storage.abort();
+        // An aborted task ends with a cancellation; there is nothing else to learn from it.
+        let _ = (&mut self.pim).await;
+        let _ = (&mut self.storage).await;
+        // A connection already closed by the bus has nothing left to release.
+        let _ = self.connection.clone().close().await;
+    }
+}
+
+impl Drop for Daemon {
+    fn drop(&mut self) {
+        self.pim.abort();
+        self.storage.abort();
+    }
+}

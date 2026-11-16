@@ -1,0 +1,25 @@
+[package]
+name = "account-service-grants"
+description = "The grants domain of the service: which accounts an app may use, the chooser and consent that give it one, the end of a grant, and the relays an account's grants open."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-service-core = {path = "../account-service-core"}
+account-sheet = {path = "../account-sheet"}
+account-service-accounts = {path = "../account-service-accounts"}
+account-core = {path = "../account-core"}
+account-match = {path = "../account-match"}
+account-capability = {path = "../account-capability"}
+account-wire = {path = "../account-wire"}
+account-ids = {path = "../account-ids"}
+account-provider = {path = "../account-provider"}
+account-secrets = {path = "../account-secrets"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

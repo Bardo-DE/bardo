@@ -240,7 +240,7 @@ under the same prefix as the rest: its daemons find the providers, the client ta
 first `$XDG_DATA_DIRS` entry that has them (default `/usr/local/share:/usr/share`), and its caller tables in
 `/etc/porter` (steward installs inferd and its caller table there too; ferry, which has syncd, writes nothing under `/etc`). The session script, the desktop target and the login entry
 are installed by `install/install.sh`, which `./install.sh` runs last. casement and its user unit are installed by
-`crates/casement/scripts/install.sh`, which `./install.sh` runs too. Both print the exact command to run as root when they
+`crates/compositor/scripts/install.sh`, which `./install.sh` runs too. Both print the exact command to run as root when they
 cannot write a place (`/etc`, `/usr/share/wayland-sessions`) themselves.
 
 ### The input service and the list of programs

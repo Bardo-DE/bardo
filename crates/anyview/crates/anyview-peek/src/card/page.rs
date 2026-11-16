@@ -1,9 +1,9 @@
-//! A PDF page across the boundary: `ds_blitz` hands back quire's `PdfPage`, the card draws quire's
+//! A PDF page across the boundary: `ui_blitz` hands back quire's `PdfPage`, the card draws quire's
 //! `PdfThumb`, and the peek in between speaks its own [`PageLook`].
 
 use crate::pdf::{PageLook, PageTrouble};
-use ds::components::content::image_source::{ImageSize, ImageSource};
-use ds::components::content::pdf_thumb::{PdfPage, PdfTrouble};
+use ui_components::components::content::image_source::{ImageSize, ImageSource};
+use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
 
 /// What the rasteriser returned, as the peek's own words. A blocking read never answers "still
 /// loading"; if it did, the page could not be read.

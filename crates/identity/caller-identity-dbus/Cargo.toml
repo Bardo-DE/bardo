@@ -1,0 +1,45 @@
+[package]
+name = "caller-identity-dbus"
+description = "Which program is calling, over the session or system bus: a sender's pinned process, its unit as the unit manager states it, and the check a method makes."
+version = "0.1.11"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/peephole"
+publish = false
+
+[dependencies]
+caller-identity-linux = {path = "../caller-identity-linux"}
+caller-identity-core = {path = "../caller-identity-core"}
+zbus = {version = "5.19", default-features = false}
+futures-timer = {version = "3"}
+thiserror = {version = "2"}
+tokio = {version = "1", default-features = false, features = ["rt"], optional = true}
+
+[features]
+# zbus runs on its own executor by default. A tokio program turns `default-features` off and
+# `tokio` on: zbus then runs on that runtime and `Offload::Tokio` becomes available.
+default = ["async-io"]
+async-io = ["zbus/async-io"]
+tokio = ["dep:tokio", "zbus/tokio"]
+# Test seams (`BusPeers::introduce`); a shipped binary never enables it.
+fake = ["caller-identity-linux/fake"]
+# Forwarded to peephole-core (`roles`).
+desktop = ["caller-identity-linux/desktop"]
+# Forwarded to peephole-core (developer rows). Never shipped.
+dev-rows = ["caller-identity-linux/dev-rows"]
+
+[dev-dependencies]
+caller-identity-linux = {path = "../caller-identity-linux", features = ["fake"]}
+tempfile = {version = "3"}
+zbus-ready = { path = "../../zbus-ready" }
+
+# One integration binary that needs the `fake` seams (an introduced standing, a fixture tree).
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+required-features = ["fake"]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"

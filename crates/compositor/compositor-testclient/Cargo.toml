@@ -1,0 +1,53 @@
+[package]
+name = "compositor-testclient"
+description = "Typed wayland-client helpers per protocol for casement's tests, the Transcript every client keeps, test patterns and shm buffers; the casement-probe and casement-shell-exec binaries. Reaches no smithay (B9)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[[bin]]
+name = "casement-probe"
+path = "src/bin/probe.rs"
+
+# The X11 client of the XWayland suite (P1-X1).
+[[bin]]
+name = "casement-x11probe"
+path = "src/bin/x11probe.rs"
+
+# Runs a program as the shell: the socket Compositor1.Connect("shell") hands out, in WAYLAND_SOCKET.
+[[bin]]
+name = "casement-shell-exec"
+path = "src/bin/shell_exec.rs"
+
+[dependencies]
+compositor-core = {path = "../compositor-core"}
+desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["client"]}
+# The capture helpers fold events with its reducer and read its Frame; no wire layer (a fixture
+# cannot answer its blocking round trips).
+desktop-client = {path = "../../wayland/desktop-client"}
+wayland-client = {version = "0.31"}
+wayland-backend = {version = "0.3", features = ["client_system"]}
+wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
+wayland-protocols-wlr = {version = "0.3.12", features = ["client"]}
+wayland-protocols-misc = {version = "0.3.12", features = ["client"]}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+x11rb = {version = "0.13", features = ["res"]}
+# The probe's `shell-connect` and casement-shell-exec ask org.quire.Compositor1 for the shell
+# connection (quire/handout.rs).
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
+
+[dev-dependencies]
+# The infrastructure tests run against the real compositor (a dev-dependency cycle cargo
+# allows; B9 reads normal edges only).
+compositor-testkit = {path = "../compositor-testkit"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

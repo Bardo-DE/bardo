@@ -1,0 +1,27 @@
+[package]
+name = "ui-conformance"
+description = "Behaviour tests for every quire component, driven through ds-harness on a real Blitz document. Test-only."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dev-dependencies]
+keymap = {path = "../../keymap/keymap"}
+ui-components = {path = "../ui-components"}
+ui-shell = {path = "../ui-shell"}
+ui-blitz = {path = "../ui-blitz", default-features = false, features = ["testing"]}
+ui-harness = {path = "../ui-harness", default-features = false}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+
+[features]
+default = ["quire-desktop"]
+# Desktop integration of the quire crates this one uses (design/36 section 1).
+quire-desktop = ["ui-blitz/quire-desktop"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

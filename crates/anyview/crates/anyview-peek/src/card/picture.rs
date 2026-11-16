@@ -3,9 +3,9 @@
 
 use anyview_image::ImagePeek;
 use dioxus::prelude::*;
-use ds::components::overlays::skeleton::{Skeleton, SkeletonShape};
-use ds::root::common::Common;
-use ds_blitz::{PixelFormat, Pixels, TextureFit, TextureLayer, use_gpu};
+use ui_components::components::overlays::skeleton::{Skeleton, SkeletonShape};
+use ui_components::root::common::Common;
+use ui_blitz::{PixelFormat, Pixels, TextureFit, TextureLayer, use_gpu};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;

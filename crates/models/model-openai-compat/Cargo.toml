@@ -1,0 +1,31 @@
+[package]
+name = "model-openai-compat"
+description = "The OpenAI-compatible chat-completions wire (llama-server, vLLM, LiteLLM, OpenRouter) as a model-wire codec, its quirk table, and the speech wire over model-http."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/stoker"
+publish = false
+
+[dependencies]
+model-provider = {path = "../model-provider"}
+model-http = {path = "../model-http"}
+model-wire = {path = "../model-wire"}
+speech-provider = {path = "../../speech/speech-provider"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+serde_json = {version = "1", features = ["raw_value"]}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+log = {version = "0.4"}
+
+[dev-dependencies]
+base64 = {version = "0.22"}
+model-http = {path = "../model-http", features = ["client"]}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+model-replay = {path = "../model-replay"}
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

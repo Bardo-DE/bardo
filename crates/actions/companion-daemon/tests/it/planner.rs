@@ -1,0 +1,835 @@
+//! The planner: its tools from the installed manifests, its request a function of the view, and
+//! its reply read into what the loop does next. And the arguments of a tool call, read by the
+//! types the action declares.
+
+use crate::support::infer::{Say, call, words};
+use crate::support::planner_view::{catalogue, planner, view};
+use agent_loop::ModelOutput;
+use companion_daemon::*;
+use action_core::*;
+use action_manifest::{ArgSink, ArgsFault, ParamDecl, ParamNeed, Why};
+use agent_planner::Planner;
+use action_vocab::{
+    CharCount, ChoiceDecl, ChoiceId, CivilDate, Handle, LabelText, Origin, ParamName, ParamType,
+    Seconds, TargetValue, Value,
+};
+use account_core::AppName;
+use provenance::{ActionName, EntityId, EntityKey, EntityKind, Integrity, Source};
+use serde_json::json;
+
+/// A value outside what the parameter declares.
+fn wrong(name: &str) -> ArgsFault {
+    ArgsFault::Wrong {
+        param: ParamName::parse(name).expect("param"),
+        why: action_manifest::Why::Range,
+    }
+}
+
+fn mail_tool(name: &str) -> CatalogueTool {
+    catalogue()
+        .tools()
+        .iter()
+        .find(|t| t.decl.name.as_str() == name)
+        .cloned()
+        .expect("tool")
+}
+
+#[test]
+fn only_actions_an_agent_may_offer_are_tools_with_unique_short_names() {
+    let c = catalogue();
+    let names: Vec<&str> = c.tools().iter().map(|t| t.name.as_str()).collect();
+    assert!(names.contains(&"org_quire_Mail-mail_thread_read"));
+    assert!(names.contains(&"org_quire_Memory-memory_recall"));
+    assert!(
+        !names.iter().any(|n| n.contains("memory.forget")),
+        "hidden: {names:?}"
+    );
+    let mut sorted = names.clone();
+    sorted.sort_unstable();
+    sorted.dedup();
+    assert_eq!(sorted.len(), names.len(), "unique");
+    assert!(names.iter().all(|n| n.len() <= 64));
+    // The registry's order: mail first.
+    assert_eq!(names[0], "org_quire_Mail-mail_thread_read");
+    assert_eq!(c.cards().len(), names.len());
+}
+
+#[test]
+fn a_tool_names_its_target_by_what_the_action_acts_on() {
+    let property = |name: &str| {
+        let decl = mail_tool(name).declaration().expect("declaration");
+        let schema: serde_json::Value = serde_json::from_str(decl.params.0.as_str()).expect("json");
+        schema["properties"].get("target").cloned()
+    };
+    assert_eq!(
+        property("mail.thread.read").expect("one thing")["anyOf"][0]["properties"]["kind"]["const"],
+        "mail.thread"
+    );
+    assert_eq!(
+        property("mail.thread.archive").expect("many things")["type"],
+        "array"
+    );
+    assert!(property("mail.draft.create").is_none(), "acts on nothing");
+}
+
+fn entity(key: &str) -> EntityId {
+    EntityId {
+        app: AppName::parse("org.quire.Mail").expect("app"),
+        kind: EntityKind::parse("mail.thread").expect("kind"),
+        key: EntityKey::parse(key).expect("key"),
+    }
+}
+
+fn param(name: &str) -> ParamName {
+    ParamName::parse(name).expect("param")
+}
+
+/// A tool with one parameter of `ty`, to read arguments by.
+fn tool_with(ty: ParamType, need: ParamNeed) -> CatalogueTool {
+    let mut tool = mail_tool("mail.draft.create");
+    tool.decl.params = vec![ParamDecl {
+        name: param("p"),
+        label: LabelText::parse("P").expect("label"),
+        ty,
+        need,
+        sink: ArgSink::Inert,
+        filled: None,
+    }];
+    tool
+}
+
+fn read(ty: ParamType, json: serde_json::Value) -> Result<Value, ArgsFault> {
+    let tool = tool_with(ty, ParamNeed::Required);
+    read_call(&tool, &json!({ "p": json })).map(|c| c.args[&param("p")].value.clone())
+}
+
+#[test]
+fn each_declared_type_reads_its_json() {
+    use ParamType as T;
+    let text = T::Text {
+        max: CharCount(10),
+        multiline: false,
+    };
+    let choice = T::Choice(vec![ChoiceDecl {
+        id: ChoiceId::parse("a").expect("id"),
+        label: LabelText::parse("A").expect("label"),
+    }]);
+    let kind = EntityKind::parse("mail.thread").expect("kind");
+    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let cases = [
+        (
+            "text",
+            text.clone(),
+            json!("hi"),
+            Ok(Value::Text("hi".into())),
+        ),
+        (
+            "a handle for text",
+            text,
+            json!({ "handle": 3 }),
+            Ok(Value::Handle(Handle(3))),
+        ),
+        (
+            "url",
+            T::Url,
+            json!("https://x.test"),
+            Ok(Value::Url("https://x.test".into())),
+        ),
+        (
+            "integer in range",
+            T::Integer { min: 1, max: 5 },
+            json!(3),
+            Ok(Value::Integer(3)),
+        ),
+        (
+            "integer out of range",
+            T::Integer { min: 1, max: 5 },
+            json!(9),
+            Err(wrong("p")),
+        ),
+        (
+            "datetime",
+            T::DateTime,
+            json!(86_400),
+            Ok(Value::DateTime(provenance::UnixSeconds(86_400))),
+        ),
+        (
+            "duration",
+            T::Duration,
+            json!(60),
+            Ok(Value::Duration(Seconds(60))),
+        ),
+        (
+            "date",
+            T::Date,
+            json!({ "year": 2026, "month": 10, "day": 3 }),
+            Ok(Value::Date(CivilDate {
+                year: 2026,
+                month: 10,
+                day: 3,
+            })),
+        ),
+        (
+            "a choice of the declared ones",
+            choice.clone(),
+            json!("a"),
+            Ok(Value::Choice(ChoiceId::parse("a").expect("id"))),
+        ),
+        (
+            "a choice that is not declared",
+            choice,
+            json!("zzz"),
+            Err(wrong("p")),
+        ),
+        (
+            "an entity of its kind",
+            T::Entity(kind.clone()),
+            thread.clone(),
+            Ok(Value::Entity(entity("t1"))),
+        ),
+        (
+            "an entity of another kind",
+            T::Entity(EntityKind::parse("mail.contact").expect("kind")),
+            thread.clone(),
+            Err(wrong("p")),
+        ),
+        (
+            "entities",
+            T::Entities(kind.clone()),
+            json!([thread.clone()]),
+            Ok(Value::Entities(vec![entity("t1")])),
+        ),
+        (
+            "entities with a handle among them",
+            T::Entities(kind),
+            json!([thread, { "handle": 2 }]),
+            Ok(Value::List(vec![
+                Value::Entity(entity("t1")),
+                Value::Handle(Handle(2)),
+            ])),
+        ),
+    ];
+    for (name, ty, json, want) in cases {
+        assert_eq!(read(ty, json), want, "{name}");
+    }
+}
+
+#[test]
+fn a_call_is_read_whole_or_not_at_all() {
+    let required = tool_with(ParamType::Date, ParamNeed::Required);
+    let optional = tool_with(ParamType::Date, ParamNeed::Optional);
+    assert_eq!(
+        read_call(&required, &json!({})),
+        Err(ArgsFault::Missing(param("p")))
+    );
+    assert!(
+        read_call(&optional, &json!({}))
+            .expect("optional")
+            .args
+            .is_empty()
+    );
+    assert_eq!(
+        read_call(&required, &json!({ "q": 1 })),
+        Err(ArgsFault::Unknown("q".into()))
+    );
+    assert_eq!(
+        read_call(&required, &json!(["x"])),
+        Err(ArgsFault::NotAnObject)
+    );
+    // Whatever the model passes is its own, untrusted: the router derives the real labels.
+    let call = read_call(
+        &tool_with(ParamType::Url, ParamNeed::Required),
+        &json!({ "p": "https://x.test" }),
+    )
+    .expect("call");
+    let label = &call.args[&param("p")].label;
+    assert_eq!(label.integrity, Integrity::Untrusted);
+    assert!(
+        label
+            .sources
+            .contains(&Source::Model(provenance::ModelRole::Planner))
+    );
+    // The target follows `on`.
+    let archive = mail_tool("mail.thread.archive");
+    let one = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    assert_eq!(
+        read_call(&archive, &json!({ "target": [one.clone()] }))
+            .expect("many")
+            .target,
+        TargetValue::Entities(vec![entity("t1")])
+    );
+    assert!(
+        read_call(&archive, &json!({ "target": one })).is_err(),
+        "a list is wanted"
+    );
+    assert!(
+        read_call(
+            &mail_tool("mail.draft.create"),
+            &json!({ "body": "x", "target": [] })
+        )
+        .is_err(),
+        "an action on nothing names no target"
+    );
+}
+
+#[tokio::test]
+async fn the_request_is_the_view_in_two_messages_and_the_tools_of_the_cards() {
+    let (planner, _) = planner(vec![]);
+    let view = view(catalogue().cards());
+    let request = planner.request(&view);
+    assert_eq!(request.messages.len(), 2);
+    let system = system_text(&view);
+    assert!(system.starts_with(RULES));
+    assert!(system.contains("Prefers short answers"));
+    assert!(system.contains("Eve is the landlord"));
+    let names: Vec<&str> = request.tools.iter().map(|t| t.name.as_str()).collect();
+    assert!(names.contains(&"org_quire_Mail-mail_thread_read"));
+    assert_eq!(
+        &names[names.len() - 4..],
+        [TOOL_ANSWER, TOOL_ASK, TOOL_READ, TOOL_FINISH]
+    );
+    // The same view gives the same request, byte for byte.
+    assert_eq!(request, planner.request(&view));
+    // A card the budget cut is not a tool.
+    let some = view_of_first_card();
+    let fewer = planner.request(&some);
+    assert_eq!(fewer.tools.len(), 1 + 4);
+}
+
+#[tokio::test]
+async fn the_planner_is_told_that_an_answer_in_words_comes_back_as_a_handle() {
+    let (planner, _) = planner(vec![]);
+    let request = planner.request(&view(catalogue().cards()));
+    let read = request
+        .tools
+        .iter()
+        .find(|t| t.name.as_str() == TOOL_READ)
+        .expect("quire_read");
+    let told = [RULES.to_owned(), read.description.clone()];
+    for text in told {
+        assert!(
+            text.contains("handle") && text.contains("choice, integer, date"),
+            "{text}"
+        );
+    }
+}
+
+fn view_of_first_card() -> PlannerView {
+    view(catalogue().cards().into_iter().take(1).collect())
+}
+
+#[tokio::test]
+async fn a_reply_is_read_into_calls_a_read_a_question_an_end_or_words() {
+    let thread = json!({ "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" });
+    let (planner, _) = planner(vec![
+        // Words and a call: both come back.
+        Say::Reply(
+            "Reading it.".into(),
+            vec![(
+                "org_quire_Mail-mail_thread_read".into(),
+                json!({ "target": thread }),
+            )],
+        ),
+        // A tool that is not offered, beside one that is.
+        Say::Reply(
+            String::new(),
+            vec![
+                ("nothing-here".into(), json!({})),
+                (
+                    "org_quire_Mail-mail_thread_read".into(),
+                    json!({ "target": thread }),
+                ),
+            ],
+        ),
+        call(
+            TOOL_ASK,
+            json!({ "text": "Which one?", "choices": ["a", "b"] }),
+        ),
+        call(
+            TOOL_READ,
+            json!({ "inputs": [1], "task": "classify", "want": { "kind": "choice", "v": ["spam", "ham"] } }),
+        ),
+        call(TOOL_FINISH, json!({})),
+        words("Just words."),
+        // Only an unknown tool, only bad arguments, nothing at all, and words cut off.
+        call("nothing-here", json!({})),
+        call("org_quire_Mail-mail_thread_read", json!({ "target": 5 })),
+        words(""),
+        Say::Cut("Half of a sen".into()),
+    ]);
+    let view = view(catalogue().cards());
+
+    let reply = planner.converse(&view).await.expect("calls");
+    assert_eq!(reply.said.as_deref(), Some("Reading it."));
+    let ModelOutput::Calls(calls) = &reply.then else {
+        panic!("{:?}", reply.then)
+    };
+    assert_eq!(calls.len(), 1);
+    assert_eq!(calls[0].call.origin, Origin::Companion);
+    assert_eq!(
+        calls[0].call.action.name,
+        ActionName::parse("mail.thread.read").expect("action")
+    );
+    assert_eq!(calls[0].tier, agent_loop::Tier::Typed);
+    assert_eq!(
+        calls[0].call.target,
+        TargetValue::Entities(vec![entity("t1")])
+    );
+    assert!(reply.served.is_some());
+
+    let ModelOutput::Calls(calls) = planner.plan(&view).await.expect("one valid") else {
+        panic!("calls")
+    };
+    assert_eq!(calls.len(), 1, "the tool nobody offered was dropped");
+
+    assert_eq!(
+        planner.plan(&view).await,
+        Ok(ModelOutput::Ask {
+            text: "Which one?".into(),
+            choices: vec!["a".into(), "b".into()]
+        })
+    );
+    let ModelOutput::Read(ask) = planner.plan(&view).await.expect("read") else {
+        panic!("read")
+    };
+    assert_eq!(ask.inputs, vec![Handle(1)]);
+    assert_eq!(ask.task, ReaderTask::Classify);
+    assert_eq!(planner.plan(&view).await, Ok(ModelOutput::Finish));
+    assert_eq!(
+        planner.plan(&view).await,
+        Ok(ModelOutput::Say("Just words.".into()))
+    );
+    // An unknown tool and bad arguments are told to the model; nothing at all, and words cut off,
+    // are not a reply to tell anything about.
+    assert_eq!(
+        planner.plan(&view).await,
+        Ok(ModelOutput::Unread(action_core::ReplyFault::NoSuchTool(
+            "nothing-here".into()
+        )))
+    );
+    assert!(matches!(
+        planner.plan(&view).await,
+        Ok(ModelOutput::Unread(action_core::ReplyFault::Args(_)))
+    ));
+    for why in ["nothing", "a cut-off reply"] {
+        assert_eq!(
+            planner.plan(&view).await,
+            Err(PlanFault::Unreadable),
+            "{why}"
+        );
+    }
+    // The script is spent: no model to ask.
+    assert_eq!(planner.plan(&view).await, Err(PlanFault::Unavailable));
+}
+
+fn thread_handle() -> HandleCard {
+    HandleCard {
+        handle: Handle(1),
+        shape: HandleShape::Entity(EntityKind::parse("mail.thread").expect("kind")),
+        from: Source::Mail,
+        size: CharCount(0),
+    }
+}
+
+fn tool_names(request: &inference_core::ChatRequest) -> Vec<String> {
+    request
+        .tools
+        .iter()
+        .map(|t| t.name.as_str().to_owned())
+        .collect()
+}
+
+#[tokio::test]
+async fn quire_related_is_offered_when_an_app_declares_a_relation_and_the_per_kind_action_is_not() {
+    let (planner, infer) = planner(vec![words("a"), words("b")]);
+    planner
+        .converse(&view(catalogue().cards()))
+        .await
+        .expect("a");
+    let asked = infer.asked();
+    let names = tool_names(&asked[0]);
+    assert!(names.contains(&TOOL_RELATED.to_owned()), "{names:?}");
+    assert!(
+        !names.iter().any(|n| n.contains("mail.thread.related")),
+        "reached through quire_related, not as a tool of its own: {names:?}"
+    );
+    let tool = asked[0]
+        .tools
+        .iter()
+        .find(|t| t.name.as_str() == TOOL_RELATED)
+        .expect("tool");
+    let schema: serde_json::Value = serde_json::from_str(tool.params.0.as_str()).expect("json");
+    assert_eq!(schema["properties"]["relation"]["enum"], json!(["from"]));
+
+    // No app declares a relation: the tool is not there, and the tools are what they were.
+    let plain: Vec<ActionCard> = catalogue()
+        .cards()
+        .into_iter()
+        .filter(|c| c.related.is_empty())
+        .collect();
+    planner.converse(&view(plain)).await.expect("b");
+    let names = tool_names(&infer.asked()[1]);
+    assert!(!names.contains(&TOOL_RELATED.to_owned()), "{names:?}");
+}
+
+#[tokio::test]
+async fn quire_related_is_read_into_the_call_of_the_related_action_of_the_things_kind() {
+    let (planner, _) = planner(vec![call(
+        TOOL_RELATED,
+        json!({ "of": { "handle": 1 }, "relation": "from" }),
+    )]);
+    let mut v = view(catalogue().cards());
+    v.handles = vec![thread_handle()];
+    let ModelOutput::Calls(calls) = planner.plan(&v).await.expect("a call") else {
+        panic!("a call")
+    };
+    let [planned] = calls.as_slice() else {
+        panic!("one call: {calls:?}")
+    };
+    assert_eq!(
+        planned.call.action.name,
+        ActionName::parse("mail.thread.related").expect("action")
+    );
+    assert_eq!(planned.call.target, TargetValue::Handles(vec![Handle(1)]));
+    assert_eq!(planned.call.origin, Origin::Companion);
+    assert_eq!(
+        planned.call.args[&param("relation")].value,
+        Value::Choice(ChoiceId::parse("from").expect("choice"))
+    );
+}
+
+#[tokio::test]
+async fn a_quire_related_that_cannot_be_a_call_is_told_what_was_wrong() {
+    let (planner, _) = planner(vec![
+        // A handle the view does not hold.
+        call(
+            TOOL_RELATED,
+            json!({ "of": { "handle": 9 }, "relation": "from" }),
+        ),
+        // A relation the thing's kind does not have.
+        call(
+            TOOL_RELATED,
+            json!({ "of": { "handle": 1 }, "relation": "owner" }),
+        ),
+        // No relation at all, and not an object.
+        call(TOOL_RELATED, json!({ "of": { "handle": 1 } })),
+        call(TOOL_RELATED, json!({ "of": 1, "relation": "from" })),
+        // A thing named in full, of a kind that has no such relation.
+        call(
+            TOOL_RELATED,
+            json!({ "of": { "app": "org.quire.Mail", "kind": "mail.contact", "key": "c1" }, "relation": "from" }),
+        ),
+    ]);
+    let mut v = view(catalogue().cards());
+    v.handles = vec![thread_handle()];
+    let fault = |why| Ok(ModelOutput::Unread(ReplyFault::Args(why)));
+    let wrong = |name: &str, why| ArgsFault::Wrong {
+        param: param(name),
+        why,
+    };
+    assert_eq!(planner.plan(&v).await, fault(wrong("of", Why::Type)));
+    assert_eq!(planner.plan(&v).await, fault(wrong("relation", Why::Range)));
+    assert_eq!(
+        planner.plan(&v).await,
+        fault(ArgsFault::Missing(param("relation")))
+    );
+    assert_eq!(planner.plan(&v).await, fault(wrong("of", Why::Type)));
+    assert_eq!(planner.plan(&v).await, fault(wrong("relation", Why::Range)));
+}
+
+#[tokio::test]
+async fn a_thing_named_in_full_is_asked_about_as_a_target_names_it() {
+    let (planner, _) = planner(vec![call(
+        TOOL_RELATED,
+        json!({ "of": { "app": "org.quire.Mail", "kind": "mail.thread", "key": "t1" }, "relation": "from" }),
+    )]);
+    let ModelOutput::Calls(calls) = planner
+        .plan(&view(catalogue().cards()))
+        .await
+        .expect("a call")
+    else {
+        panic!("a call")
+    };
+    assert_eq!(
+        calls[0].call.target,
+        TargetValue::Entities(vec![entity("t1")])
+    );
+}
+
+#[test]
+fn a_handle_card_names_the_relations_its_kind_has_from_the_manifests_alone() {
+    let mut v = view(catalogue().cards());
+    v.handles = vec![thread_handle()];
+    let text = companion_daemon::user_text(&v);
+    assert!(text.contains("related: from (mail.contact)"), "{text}");
+}
+
+fn text_card(n: u64, from: Source) -> HandleCard {
+    HandleCard {
+        handle: Handle(n),
+        shape: HandleShape::Text,
+        from,
+        size: CharCount(40),
+    }
+}
+
+/// `quire_finish` may name text handles of the view to show the person: the reply carries them,
+/// in order and once, and the planner reads none. A handle the view does not hold (unknown, or
+/// another session's), a thing that is not text, and a malformed list are told to the model, and
+/// the task does not end.
+#[tokio::test]
+async fn quire_finish_shows_text_handles_of_the_view_and_refuses_the_rest() {
+    let (planner, _) = planner(vec![
+        call(TOOL_FINISH, json!({ "show": [1] })),
+        call(TOOL_FINISH, json!({ "show": [2, 1, 2] })),
+        call(TOOL_FINISH, json!({ "show": [9] })),
+        call(TOOL_FINISH, json!({ "show": [3] })),
+        call(TOOL_FINISH, json!({ "show": "#1" })),
+        call(TOOL_FINISH, json!({ "show": [1, 2, 1, 2, 1, 2, 1, 2, 1] })),
+        call(TOOL_FINISH, json!({})),
+    ]);
+    let mut view = view(catalogue().cards());
+    view.handles = vec![
+        text_card(1, Source::User),
+        text_card(2, Source::Mail),
+        HandleCard {
+            handle: Handle(3),
+            shape: HandleShape::Entity(EntityKind::parse("mail.thread").expect("kind")),
+            from: Source::Mail,
+            size: CharCount(0),
+        },
+    ];
+    let unread = |why| {
+        ModelOutput::Unread(ReplyFault::Args(ArgsFault::Wrong {
+            param: ParamName::parse("show").expect("param"),
+            why,
+        }))
+    };
+
+    let trusted = planner.converse(&view).await.expect("trusted");
+    assert_eq!(
+        (trusted.then, trusted.show),
+        (ModelOutput::Finish, vec![Handle(1)])
+    );
+    let both = planner.converse(&view).await.expect("both");
+    assert_eq!(
+        (both.then, both.show),
+        (ModelOutput::Finish, vec![Handle(2), Handle(1)])
+    );
+    for (why, fault) in [
+        ("unknown", action_manifest::Why::Range),
+        ("not text", action_manifest::Why::Range),
+        ("not a list", action_manifest::Why::Type),
+    ] {
+        let reply = planner.converse(&view).await.expect(why);
+        assert_eq!((reply.then, reply.show), (unread(fault), vec![]), "{why}");
+    }
+    let many = planner.converse(&view).await.expect("too many");
+    assert_eq!(many.then, unread(action_manifest::Why::Range));
+    let none = planner.converse(&view).await.expect("none");
+    assert_eq!((none.then, none.show), (ModelOutput::Finish, vec![]));
+}
+
+#[tokio::test]
+async fn the_rules_and_the_finish_tool_say_how_to_show_a_handle() {
+    let (planner, _) = planner(vec![]);
+    let request = planner.request(&view(catalogue().cards()));
+    let finish = request
+        .tools
+        .iter()
+        .find(|t| t.name.as_str() == TOOL_FINISH)
+        .expect("quire_finish");
+    assert!(RULES.contains("\"show\""));
+    assert!(finish.description.contains("show"));
+}
+
+fn held_thing(n: u64, kind: &str) -> HandleCard {
+    HandleCard {
+        handle: Handle(n),
+        shape: HandleShape::Entity(EntityKind::parse(kind).expect("kind")),
+        from: Source::Mail,
+        size: CharCount(0),
+    }
+}
+
+/// The `target` schema of a mail tool as the request for `v` offers it.
+fn target_in(
+    planner: &PlannerModel<crate::support::infer::ScriptedInfer>,
+    v: &PlannerView,
+    tool: &str,
+) -> serde_json::Value {
+    let request = planner.request(v);
+    let decl = request
+        .tools
+        .iter()
+        .find(|t| t.name.as_str() == tool)
+        .expect("tool");
+    let schema: serde_json::Value = serde_json::from_str(decl.params.0.as_str()).expect("json");
+    schema["properties"]["target"].clone()
+}
+
+#[test]
+fn a_target_is_the_handle_of_a_held_thing_of_its_kind_and_nothing_else() {
+    let (planner, _) = planner(vec![]);
+    let mut v = view(catalogue().cards());
+    v.handles = vec![
+        held_thing(12, "mail.thread"),
+        held_thing(13, "mail.contact"),
+        held_thing(15, "mail.thread"),
+    ];
+    let one = target_in(&planner, &v, "org_quire_Mail-mail_thread_read");
+    assert_eq!(one["properties"]["handle"]["enum"], json!([12, 15]));
+    assert_eq!(one["required"], json!(["handle"]));
+    assert!(one.get("anyOf").is_none(), "one way to name it: {one}");
+    let said = one["description"].as_str().expect("described");
+    assert!(
+        said.contains("mail.thread") && said.contains("\"here\""),
+        "{said}"
+    );
+    let many = target_in(&planner, &v, "org_quire_Mail-mail_thread_archive");
+    assert_eq!(
+        many["items"]["properties"]["handle"]["enum"],
+        json!([12, 15])
+    );
+}
+
+#[test]
+fn a_target_with_many_held_things_is_a_handle_without_a_list_and_with_none_either_spelling() {
+    let (planner, _) = planner(vec![]);
+    let mut v = view(catalogue().cards());
+    v.handles = (1..=33).map(|n| held_thing(n, "mail.thread")).collect();
+    let crowded = target_in(&planner, &v, "org_quire_Mail-mail_thread_read");
+    assert!(
+        crowded["properties"]["handle"].get("enum").is_none(),
+        "{crowded}"
+    );
+    assert_eq!(crowded["properties"]["handle"]["minimum"], 0);
+    v.handles = vec![held_thing(13, "mail.contact")];
+    let none = target_in(&planner, &v, "org_quire_Mail-mail_thread_read");
+    assert_eq!(none["anyOf"].as_array().map(Vec::len), Some(2), "{none}");
+}
+
+/// The most characters the prompt may spend on where the person is and what is held, for a list
+/// of three things (it was over 3,000 before a thing had a handle of its own and the lists of
+/// uses were said once per kind).
+const THREE_ITEM_VIEW_BUDGET: usize = 1200;
+
+#[test]
+fn a_three_item_list_costs_a_short_prompt_with_each_things_handle_first() {
+    let mail = AppName::parse("org.quire.Mail").expect("app");
+    let thread = |n: u64| EntityLine {
+        handle: Handle(10 + n * 3),
+        id: EntityId {
+            app: mail.clone(),
+            kind: EntityKind::parse("mail.thread").expect("kind"),
+            key: EntityKey::parse(&format!("t{n}")).expect("key"),
+        },
+        title: Reveal::Handle(Handle(11 + n * 3)),
+        subtitle: Reveal::Handle(Handle(12 + n * 3)),
+    };
+    let mut v = view(catalogue().cards());
+    v.context = ContextView {
+        app: mail.clone(),
+        window: Reveal::Plain("org.quire.Mail".to_owned()),
+        here: HereView::Entity(thread(1)),
+        selection: SelectionView::Nothing,
+        visible: VisibleView {
+            kind: Some(EntityKind::parse("mail.thread").expect("kind")),
+            items: (1..=3).map(thread).collect(),
+            total: account_ids::Count(3),
+        },
+        text_target: TextTargetView::None,
+    };
+    v.handles = (1..=3)
+        .flat_map(|n| {
+            let text = |h: u64| HandleCard {
+                handle: Handle(h),
+                shape: HandleShape::Text,
+                from: Source::Mail,
+                size: CharCount(12),
+            };
+            [
+                text(11 + n * 3),
+                text(12 + n * 3),
+                held_thing(10 + n * 3, "mail.thread"),
+            ]
+        })
+        .collect();
+    let text = user_text(&v);
+    assert!(
+        text.contains(
+            "\"here\":{\"handle\":13,\"kind\":\"mail.thread\",\"title\":#14,\"subtitle\":#15}"
+        ),
+        "{text}"
+    );
+    assert!(
+        !text.contains("What you can name but not read"),
+        "the context already shows these handles: {text}"
+    );
+    assert!(
+        text.len() < THREE_ITEM_VIEW_BUDGET,
+        "{} characters: {text}",
+        text.len()
+    );
+}
+
+const POST_JOB: &str = "org_quire_Companion-companion_helper_post_job";
+
+/// A view that lists these helpers, all idle in the desktop Space.
+fn view_with_helpers(names: &[&str]) -> PlannerView {
+    use companion_model::helper::{HelperName, HelperPhase};
+    let mut view = view(catalogue().cards());
+    view.roster.helpers = names
+        .iter()
+        .map(|name| HelperRosterLine {
+            name: HelperName::parse(name).expect("name"),
+            space: provenance::SpaceId::parse("desktop").expect("space"),
+            state: HelperPhase::Idle,
+            doing: Some(LeadText::of("Nothing to do")),
+        })
+        .collect();
+    view
+}
+
+#[test]
+fn giving_a_job_offers_exactly_the_helpers_the_view_lists() {
+    let (planner, _) = planner(vec![]);
+    let request = planner.request(&view_with_helpers(&["Coder", "Scout", "Coder"]));
+    let decl = request
+        .tools
+        .iter()
+        .find(|t| t.name.as_str() == POST_JOB)
+        .expect("the tool");
+    let schema: serde_json::Value = serde_json::from_str(decl.params.0.as_str()).expect("json");
+    assert_eq!(
+        schema["properties"]["helper"]["enum"],
+        json!(["Coder", "Scout"])
+    );
+    // `after` may name the helper whose planner this is, which the view does not list.
+    for free in ["after", "goal"] {
+        assert!(schema["properties"][free].get("enum").is_none(), "{free}");
+    }
+}
+
+#[tokio::test]
+async fn a_helper_named_outside_the_list_is_refused_with_the_names_before_the_router() {
+    let (planner, _) = planner(vec![
+        call(
+            POST_JOB,
+            json!({ "helper": "Coder in desktop", "goal": "Say hello." }),
+        ),
+        call(POST_JOB, json!({ "helper": "Coder", "goal": "Say hello." })),
+    ]);
+    let view = view_with_helpers(&["Coder", "Scout"]);
+    assert_eq!(
+        planner.plan(&view).await,
+        Ok(ModelOutput::Unread(ReplyFault::NotOneOf {
+            param: param("helper"),
+            options: vec!["Coder".to_owned(), "Scout".to_owned()],
+        }))
+    );
+    let ModelOutput::Calls(calls) = planner.plan(&view).await.expect("a call") else {
+        panic!("a name in the list is a call")
+    };
+    assert_eq!(calls.len(), 1);
+}

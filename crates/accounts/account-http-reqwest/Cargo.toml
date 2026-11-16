@@ -1,0 +1,25 @@
+[package]
+name = "account-http-reqwest"
+description = "porter's one direct-connection HTTP client: reqwest behind the `Http` seam of porter-http, with rustls and the platform's trust roots. The only crate in porter that names reqwest."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-ids = {path = "../account-ids"}
+account-http = {path = "../account-http"}
+reqwest = {version = "0.12", default-features = false, features = ["rustls-tls-native-roots"]}
+rustls = {version = "0.23", default-features = false, features = ["ring", "std", "tls12"]}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
+
+[dev-dependencies]
+account-core = {path = "../account-core"}
+account-fake-servers = {path = "../account-fake-servers"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

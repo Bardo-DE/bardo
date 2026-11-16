@@ -1,0 +1,114 @@
+//! The root: the environment, the frame with the page's title, and the window inside it.
+
+use crate::accounts::{AccountLink, AccountsSetup};
+use crate::assistant_model::AssistantSetup;
+use crate::env::Env;
+use crate::extensions::ExtensionLink;
+use crate::files::load_all;
+use crate::view::View;
+use crate::window::Window;
+use settings_app_model::{Arrival, Notice, PageKind, arrival, assistant_model_page, opening_page};
+use dioxus::prelude::*;
+use ui_components::prelude::*;
+use ui_blitz::{TokioSpawner, use_window_handle};
+use ui_settings::{AppName, ConfigRoot, Store, use_environment};
+use std::sync::Arc;
+
+/// The Settings app. Reads its [`Env`] from the context the launcher provides.
+#[component]
+pub fn App() -> Element {
+    let env = use_context::<Env>();
+    let catalogue = env.catalogue.clone();
+    let first = opening_page(&catalogue);
+    let opening = env.opening.clone();
+    let page = use_signal(|| opening.page.clone().or(first).unwrap_or_default());
+    let query = use_signal(|| opening.query.clone());
+    let link = AccountLink::provide(page, query);
+    let extension_link = ExtensionLink::provide(page, query);
+    let handle = use_window_handle();
+    let files = use_signal({
+        let env = env.clone();
+        move || load_all(&env)
+    });
+
+    let told = env.clone();
+    use_future(move || {
+        let (told, catalogue) = (told.clone(), told.catalogue.clone());
+        let (mut page, mut query, mut files) = (page, query, files);
+        let handle = handle.clone();
+        async move {
+            let Some(mut notices) = told.inbox.take() else {
+                return;
+            };
+            while let Some(notice) = notices.recv().await {
+                match notice {
+                    Notice::OpenPage(slug)
+                        if catalogue.page(&slug).is_some()
+                            || PageKind::is_assistant_setup(&slug)
+                            || PageKind::is_accounts_setup(&slug) =>
+                    {
+                        query.set(String::new());
+                        page.set(slug);
+                    }
+                    Notice::OpenPage(_) => {}
+                    Notice::OpenTarget(target) => match arrival(&catalogue, &target) {
+                        Some(Arrival::Page { slug, query: asked }) => {
+                            query.set(asked);
+                            page.set(slug);
+                        }
+                        Some(Arrival::Account(account)) => link.open_target(account),
+                        Some(Arrival::Extension(extension)) => extension_link.open(extension.0),
+                        None => {}
+                    },
+                    Notice::Reload => files.set(load_all(&told)),
+                    Notice::OpenAccount(target) => link.open_target(target),
+                    Notice::Raise(token) => {
+                        if let Some(window) = &handle {
+                            window.focus_with_token(token);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    let appearance = use_environment(
+        Store::new(
+            ConfigRoot::Scratch(env.config_home.0.clone()),
+            AppName::QUIRE,
+        ),
+        env.system.clone(),
+        Arc::new(TokioSpawner::current()),
+    );
+    let now = appearance();
+    let view = View::of(&catalogue, &query(), &page());
+    let assistant_setup = PageKind::is_assistant_setup(&page());
+    let accounts_setup = PageKind::is_accounts_setup(&page());
+    let title = if assistant_setup {
+        assistant_model_page().label().to_owned()
+    } else if accounts_setup {
+        crate::copy::common::ACCOUNTS.to_owned()
+    } else {
+        view.current
+            .as_ref()
+            .and_then(|slug| catalogue.page(slug))
+            .map_or(crate::copy::window::SETTINGS, |page| page.title.as_str())
+            .to_owned()
+    };
+    rsx! {
+        Ds {
+            appearance: now.settings.appearance.appearance(),
+            system: now.system,
+            material: Material::Window,
+            window: WindowFrame::titlebar(title, true),
+            style { {crate::STYLE} }
+            if assistant_setup {
+                AssistantSetup {}
+            } else if accounts_setup {
+                AccountsSetup {}
+            } else {
+                Window { page, query, files, view }
+            }
+        }
+    }
+}

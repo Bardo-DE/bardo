@@ -26,6 +26,6 @@ pub fn image_data_url(bytes: &[u8], name: &FileName) -> Option<String> {
     let mime = image_mime(bytes, name)?;
     Some(format!(
         "data:{mime};base64,{}",
-        ds_core::base64::encode(bytes)
+        ui_core::base64::encode(bytes)
     ))
 }

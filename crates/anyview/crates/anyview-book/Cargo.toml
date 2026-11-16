@@ -15,7 +15,7 @@ roxmltree = {version = "0.21"}
 thiserror = {version = "2"}
 
 [dev-dependencies]
-ds-core = {path = "../../../quire/crates/ds-core"}
+ui-core = {path = "../../../ui/ui-core"}
 # `OnDisk`: the input of a book in the scratch folder (core opens no file).
 anyview-fs = {path = "../anyview-fs"}
 tempfile = {version = "3"}

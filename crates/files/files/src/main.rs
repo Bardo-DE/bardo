@@ -1,0 +1,171 @@
+//! `files`: the desktop's file manager.
+//!
+//! This is the only place the program reads its arguments and its environment: the folder to
+//! open, the person's home and user folders, the XDG folders and the working folder. They are
+//! passed down as values; the window reads nothing itself. `main` parses, builds the one runtime,
+//! claims the running instance (or hands its request to it) and opens the window. See `args.rs`
+//! for the command line.
+
+mod apps;
+mod args;
+mod bridge;
+mod clouds;
+mod icons;
+mod launcher;
+mod opener;
+mod places;
+mod port;
+mod session;
+mod state;
+mod thumbnails;
+mod volumes;
+
+use std::ffi::OsString;
+use std::path::PathBuf;
+use std::process::ExitCode;
+use std::sync::Arc;
+
+use ui_extensions::Search;
+use ui_settings::ConfigRoot;
+use files_core::{FolderPath, Location};
+use files_desktop::{Disks, ProcUsers};
+use files_trash::SystemTrash;
+use files_ui::settings;
+use files_ui::{IconSources, Launch};
+
+use crate::apps::InstalledApps;
+use crate::args::{Args, Start};
+use crate::opener::DesktopOpener;
+use crate::session::{Role, join, launch_token};
+use crate::volumes::DesktopVolumes;
+
+fn main() -> ExitCode {
+    let argv: Vec<OsString> = std::env::args_os().skip(1).collect();
+    if let Some(asked) = args::schema_dir(&argv) {
+        return write_schema(asked);
+    }
+    let args = match Args::parse(argv) {
+        Ok(args) => args,
+        Err(said) => {
+            eprintln!("files: {said}");
+            eprintln!("usage: files [FOLDER]");
+            eprintln!("       files --write-schema DIR");
+            return ExitCode::from(2);
+        }
+    };
+    let folder = match args.start {
+        Start::Trash => Some(Location::Trash),
+        Start::Given(path) => folder_at(absolute(path, std::env::current_dir().ok())),
+        Start::Home => folder_at(places::new_window(
+            settings::load(&ConfigRoot::Xdg).new_window(),
+        )),
+    };
+    let Some(start) = folder else {
+        eprintln!("files: there is no folder to open; give one: files FOLDER");
+        return ExitCode::FAILURE;
+    };
+    let runtime = match tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(2)
+        .enable_all()
+        .build()
+    {
+        Ok(runtime) => runtime,
+        Err(err) => {
+            eprintln!("files: {err}");
+            return ExitCode::FAILURE;
+        }
+    };
+    let role = runtime.block_on(join(
+        args.dbus_activated,
+        start.clone(),
+        launch_token(),
+        runtime.handle().clone(),
+    ));
+    let Role::App(running) = role else {
+        return ExitCode::SUCCESS;
+    };
+    let dirs = launcher::xdg_dirs();
+    let db = Arc::new(launcher::mime_db(&dirs));
+    let launcher = Arc::new(launcher::launcher(&dirs, &db, running.activate));
+    // The cloud drives need the session bus; without it the window shows none.
+    let cloud = runtime.block_on(clouds::connect(runtime.handle().clone()));
+    let opener = match &cloud {
+        Some(cloud) => DesktopOpener::new(launcher.clone()).with_web(cloud.web.clone()),
+        None => DesktopOpener::new(launcher.clone()),
+    };
+    let launch = Launch::new(start, Arc::new(opener))
+        .with_file_icons(IconSources::new(Search::from_env(), db))
+        .with_apps(Arc::new(InstalledApps::new(launcher)))
+        .with_places(places::found())
+        .with_prefs(state::prefs_store(&ConfigRoot::Xdg))
+        .with_preferences(settings::follow(
+            ConfigRoot::Xdg,
+            runtime.handle(),
+            Arc::new(SystemTrash),
+        ))
+        .with_thumbnails(thumbnails::shared())
+        .with_requests(running.requests)
+        .with_runtime(runtime.handle().clone());
+    let launch = match cloud {
+        Some(cloud) => launch.with_clouds(cloud.clouds),
+        None => launch,
+    };
+    // Without the system bus the window has no disks to list.
+    let launch = match runtime.block_on(Disks::system(Arc::new(ProcUsers::new("/proc")))) {
+        Ok(disks) => launch.with_volumes(Arc::new(DesktopVolumes::new(
+            disks,
+            runtime.handle().clone(),
+        ))),
+        Err(_) => launch,
+    };
+    let launch = match dirs::home_dir().and_then(|home| FolderPath::new(home).ok()) {
+        Some(home) => launch.with_home(home),
+        None => launch,
+    };
+    match files_ui::run(launch) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(err) => {
+            eprintln!("files: {err}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// `files --write-schema DIR`: the schema the Settings app reads, written into `DIR`.
+fn write_schema(asked: Result<PathBuf, String>) -> ExitCode {
+    let dir = match asked {
+        Ok(dir) => dir,
+        Err(said) => {
+            eprintln!("files: {said}");
+            return ExitCode::from(2);
+        }
+    };
+    match settings::write_schema(&dir) {
+        Ok(written) => {
+            println!("wrote {}", written.display());
+            ExitCode::SUCCESS
+        }
+        Err(err) => {
+            eprintln!("files: {}: {err}", dir.display());
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// The folder place `path` names, when there is a path and it is absolute.
+fn folder_at(path: Option<std::path::PathBuf>) -> Option<Location> {
+    FolderPath::new(path?).ok().map(Location::Folder)
+}
+
+/// `path` made absolute against the working folder `cwd`; a relative path with no working folder
+/// stays relative, and the window then has no folder to open.
+fn absolute(
+    path: std::path::PathBuf,
+    cwd: Option<std::path::PathBuf>,
+) -> Option<std::path::PathBuf> {
+    if path.is_absolute() {
+        Some(path)
+    } else {
+        cwd.map(|cwd| cwd.join(path))
+    }
+}

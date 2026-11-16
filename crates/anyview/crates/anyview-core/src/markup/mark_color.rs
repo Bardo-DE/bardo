@@ -1,6 +1,6 @@
 //! The palette a mark is coloured from.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// The colours a mark can have: the palette Preview offers, yellow first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

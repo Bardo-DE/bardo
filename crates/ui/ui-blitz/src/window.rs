@@ -1,0 +1,228 @@
+//! The window seam (`ui_components::prelude::HostWindow`) over the winit window `launch` opens (FINDINGS "Window
+//! frame"). Moves, resizes, zoom and minimize are winit's own requests; close goes through
+//! blitz-shell's `request_window_close`, which drops the window and ends the event loop as the
+//! compositor's close does. The left half, right half and centre placements need a client that
+//! can read and set its own position: winit answers `outer_position` with `NotSupported` on
+//! Wayland and ignores `set_outer_position` there, so they are unsupported on Wayland and work
+//! on X11 (and wherever winit can place a window).
+//!
+//! `launch` provides it as `ui_components::prelude::WindowHost` and refreshes the state on every resize and focus
+//! change. Another Blitz host (shell-host's surfaces, through sill) provides its own
+//! `HostWindow` over its `SurfaceHandle` instead.
+
+use crate::window_place::{Area, placement};
+use crate::window_requests::Requests;
+use blitz_traits::shell::ShellProvider;
+use dioxus_native::winit::dpi::{PhysicalPosition, PhysicalSize};
+use dioxus_native::winit::icon::{Icon, RgbaIcon};
+use dioxus_native::winit::window::{ResizeDirection, Window};
+use dioxus_native_dom::NodeHandle;
+use ui_components::prelude::*;
+use ui_components::window::icon::WindowIcon;
+use ui_components::window::vocab::{PageZoom, TileError, WindowTile, Zoom};
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::Arc;
+
+/// The winit window, as the frame's host.
+pub struct WinitWindow {
+    window: Arc<dyn Window>,
+    shell: Arc<dyn ShellProvider>,
+    /// Where a resize the platform applied without an event is reported (`Requests::applied`).
+    requests: Option<Requests>,
+    /// The document, once it is mounted, whose viewport a page zoom changes.
+    document: Option<Rc<RefCell<Option<NodeHandle>>>>,
+}
+
+impl std::fmt::Debug for WinitWindow {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("WinitWindow")
+            .field("window", &self.window.id())
+            .finish_non_exhaustive()
+    }
+}
+
+impl WinitWindow {
+    /// The seam over `window`, closing through `shell` (the document's shell provider).
+    pub fn new(window: Arc<dyn Window>, shell: Arc<dyn ShellProvider>) -> Self {
+        WinitWindow {
+            window,
+            shell,
+            requests: None,
+            document: None,
+        }
+    }
+
+    /// The same seam, zooming `document` on a page zoom.
+    pub(crate) fn zooming(mut self, document: Rc<RefCell<Option<NodeHandle>>>) -> Self {
+        self.document = Some(document);
+        self
+    }
+
+    /// The same seam, reporting the resizes the platform applies without an event to `requests`.
+    pub(crate) fn reporting(mut self, requests: Option<Requests>) -> Self {
+        self.requests = requests;
+        self
+    }
+
+    /// The output the window is on, if winit can say where it is.
+    fn output(&self) -> Option<Area> {
+        let monitor = self.window.current_monitor()?;
+        let at = monitor.position()?;
+        let size = monitor.current_video_mode()?.size();
+        Some(Area {
+            x: at.x,
+            y: at.y,
+            width: size.width,
+            height: size.height,
+        })
+    }
+
+    /// Whether the client can place itself: it can read its own position and its output's.
+    fn placeable(&self) -> bool {
+        matches!(
+            (self.window.outer_position(), self.output()),
+            (Ok(_), Some(_))
+        )
+    }
+}
+
+impl HostWindow for WinitWindow {
+    fn begin_move(&self) {
+        // Refused where the platform has no interactive move (a web canvas, a phone), or when
+        // no button is down: the pointer stays where it was, which is all the frame can do.
+        let _ = self.window.drag_window();
+    }
+
+    fn begin_resize(&self, edge: ResizeEdge) {
+        // Refused on macOS and where there is no interactive resize: nothing happens.
+        let _ = self.window.drag_resize_window(direction(edge));
+    }
+
+    fn zoom(&self, zoom: Zoom) {
+        let maximized = match zoom {
+            Zoom::Toggle => !self.window.is_maximized(),
+            Zoom::Maximize => true,
+            Zoom::Restore => false,
+        };
+        self.window.set_maximized(maximized);
+    }
+
+    fn minimize(&self) {
+        self.window.set_minimized(true);
+    }
+
+    fn close(&self) {
+        self.shell.request_window_close();
+    }
+
+    fn tile(&self, tile: WindowTile) -> Result<(), TileError> {
+        if tile == WindowTile::Fill {
+            self.window.set_maximized(true);
+            return Ok(());
+        }
+        let (true, Some(output)) = (self.placeable(), self.output()) else {
+            return Err(TileError);
+        };
+        let size = self.window.outer_size();
+        let Some(area) = placement(output, (size.width, size.height), tile) else {
+            return Err(TileError);
+        };
+        if self.window.is_maximized() {
+            self.window.set_maximized(false);
+        }
+        self.window
+            .set_outer_position(PhysicalPosition::new(area.x, area.y).into());
+        let applied = self
+            .window
+            .request_surface_size(PhysicalSize::new(area.width, area.height).into());
+        if let Some(requests) = &self.requests {
+            requests.applied(self.window.id(), applied);
+        }
+        Ok(())
+    }
+
+    fn supports(&self, tile: WindowTile) -> bool {
+        match tile {
+            WindowTile::Fill => true,
+            WindowTile::LeftHalf | WindowTile::RightHalf | WindowTile::Centre => self.placeable(),
+        }
+    }
+
+    fn state(&self) -> WindowState {
+        WindowState {
+            maximized: self.window.is_maximized(),
+            fullscreen: self.window.fullscreen().is_some(),
+            activated: self.window.has_focus(),
+        }
+    }
+
+    fn set_title(&self, title: &str) {
+        self.window.set_title(title);
+    }
+
+    fn set_icon(&self, icon: &WindowIcon) {
+        self.window.set_window_icon(winit_icon(icon));
+    }
+
+    fn page_zoom(&self, step: PageZoom) {
+        let Some(handle) = self
+            .document
+            .as_ref()
+            .and_then(|slot| slot.borrow().clone())
+        else {
+            return;
+        };
+        {
+            let mut doc = handle.doc_mut();
+            let mut viewport = doc.viewport_mut();
+            let next = crate::shell_keys::zoomed(viewport.zoom(), step);
+            viewport.set_zoom(next);
+        }
+        // The next frame lays the page out at its new size, and the host's scale follows it.
+        self.window.request_redraw();
+    }
+}
+
+/// winit's icon for `icon`; none if winit refuses the pixels.
+pub(crate) fn winit_icon(icon: &WindowIcon) -> Option<Icon> {
+    RgbaIcon::new(icon.rgba().to_vec(), icon.width(), icon.height())
+        .ok()
+        .map(Icon::from)
+}
+
+/// winit's name for an edge.
+fn direction(edge: ResizeEdge) -> ResizeDirection {
+    match edge {
+        ResizeEdge::Top => ResizeDirection::North,
+        ResizeEdge::Bottom => ResizeDirection::South,
+        ResizeEdge::Left => ResizeDirection::West,
+        ResizeEdge::Right => ResizeDirection::East,
+        ResizeEdge::TopLeft => ResizeDirection::NorthWest,
+        ResizeEdge::TopRight => ResizeDirection::NorthEast,
+        ResizeEdge::BottomLeft => ResizeDirection::SouthWest,
+        ResizeEdge::BottomRight => ResizeDirection::SouthEast,
+    }
+}
+
+/// Who draws the window's frame.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum Decorations {
+    /// The compositor or the toolkit's fallback (winit's default): an app that draws no
+    /// `WindowFrame` of its own.
+    #[default]
+    Server,
+    /// The app: its root draws `ui_components::prelude::WindowFrame::Titlebar`, and the window asks for no
+    /// decorations.
+    Client,
+}
+
+impl Decorations {
+    /// winit's decorations flag for it.
+    pub(crate) fn winit(self) -> bool {
+        match self {
+            Decorations::Server => true,
+            Decorations::Client => false,
+        }
+    }
+}

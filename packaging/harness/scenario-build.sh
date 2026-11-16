@@ -86,17 +86,17 @@ fetch_foot() {
 # is untouched): with QUIRE_DEBUG_PROBE=<dir> set it lists its controls by role and name (harness/lib/accounts.sh,
 # detent_press). Never a release build.
 build_detent() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/detent-target" cargo build -p detent --features ds-blitz/debug-probe,dev-callers)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/detent-target" cargo build -p settings-app --features ds-blitz/debug-probe,dev-callers)
 }
 
 build_sill() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" cargo build -p sill --features debug) &&
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" cargo build -p shell-app --features debug) &&
     built_at sill-target
 }
 
 # transom, --locked (the tree's Cargo.lock is never changed).
 build_transom() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/transom-target" cargo build -p transom --features debug --locked)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/transom-target" cargo build -p portal-daemon --features debug --locked)
 }
 
 # The demos shell-host's accept scripts run, built the way those scripts build them (two cargo
@@ -105,10 +105,10 @@ build_transom() {
 build_shell_host() {
   local target="$SCEN_BUILD/shell-host-target"
   mkdir -p "$target"
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$target" cargo build -p shell-host \
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$target" cargo build -p layer-shell-host \
     --example demo_hover --example demo_scroll --example demo_ime --example demo_swipe \
     --example demo_switcher --example demo_drag --example demo_lock)
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$target" cargo build -p shell-host --features debug-inject \
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$target" cargo build -p layer-shell-host --features debug-inject \
     --example demo_popup_keys --example demo_window --example probe_toplevel)
 }
 
@@ -116,8 +116,8 @@ build_shell_host() {
 # a fixture /proc tree (ACCOUNTD_PROC_ROOT; ferry's syncd, below, reads SYNCD_PROC_ROOT and steward's inferd INFERD_PROC_ROOT),
 # because nothing in the jail runs in a systemd scope. A release build ignores the variables; the features are never default.
 build_porter() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p accountd --features test-proc-root) || return 1
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p porter-rig)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p account-daemon --features test-proc-root) || return 1
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p account-rig)
 }
 
 # Ferry's syncd and test rig. syncd is a test build like porter's accountd: `test-proc-root` makes it read caller identities from a
@@ -125,34 +125,34 @@ build_porter() {
 # feature (the binary then ignores the variable and no caller is known). ferry-rig gives ferry-rig-servers (the issuer and Graph)
 # and ferry-rig-client.
 build_ferry() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/ferry-target" cargo build -p syncd --features test-proc-root \
-    && CARGO_TARGET_DIR="$SCEN_BUILD/ferry-target" cargo build -p ferry-rig)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/ferry-target" cargo build -p sync-daemon --features test-proc-root \
+    && CARGO_TARGET_DIR="$SCEN_BUILD/ferry-target" cargo build -p sync-rig)
 }
 
 # Steward's inferd. A test build like porter's daemons: `test-proc-root` makes it read caller identities from a fixture /proc tree
 # (INFERD_PROC_ROOT).
 build_steward() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/steward-target" cargo build -p inferd --features test-proc-root \
-    && CARGO_TARGET_DIR="$SCEN_BUILD/steward-target" cargo build -p steward-rig --bin steward-rig-client)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/steward-target" cargo build -p inference-daemon --features test-proc-root \
+    && CARGO_TARGET_DIR="$SCEN_BUILD/steward-target" cargo build -p inference-rig --bin steward-rig-client)
 }
 
 # cuad, the screen helper. The fixture-callers feature makes it read caller identities from a fake
 # /proc (CUAD_TEST_PROC_ROOT): nothing in the jail runs in a systemd scope. A test build, never shipped.
 build_cuad() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/cua-target" nice cargo build -p cuad --features fixture-callers) &&
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/cua-target" nice cargo build -p computer-use-daemon --features fixture-callers) &&
     built_at cua-target
 }
 
 # The assistant's services as docket-accept builds (fixture identities, scripted stand-ins), docket-bringup and quire-do's
 # test twin.
 build_docket() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/docket-target" nice cargo build -p docket-accept --bins) &&
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/docket-target" nice cargo build -p action-accept --bins) &&
     built_at docket-target
 }
 
 # sill with the debug probe: the accounts-* scenarios read the accounts sheet through it.
 build_sill_probe() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" cargo build -p sill --features debug,ds-blitz/debug-probe)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" cargo build -p shell-app --features debug,ds-blitz/debug-probe)
 }
 
 # foot is the scenarios' terminal: say how to get it before the long builds, not after.

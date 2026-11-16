@@ -1,0 +1,335 @@
+//! Codegen for `#[derive(SettingsSchema)]` on a struct: one `impl SettingsSchema` whose
+//! `schema()` builds a `KeySpec` per field from its `#[settings(...)]` attributes and its own
+//! type (design/22-SETTINGS.md section 9.1).
+
+use proc_macro2::TokenStream;
+use quote::quote;
+use syn::spanned::Spanned;
+
+use crate::attrs::{EndsAttr, FieldAttrs, FootnoteAttr, container_attrs, field_attrs};
+use crate::shape::{Shape, shape_of};
+
+pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::Result<TokenStream> {
+    let syn::Fields::Named(fields) = &data.fields else {
+        return Err(syn::Error::new(
+            data.fields.span(),
+            "#[derive(SettingsSchema)] only supports a struct with named fields",
+        ));
+    };
+
+    let container = container_attrs(input.span(), &input.attrs)?;
+    let app = container
+        .file
+        .split('/')
+        .next()
+        .unwrap_or(&container.file)
+        .to_owned();
+    let file = &container.file;
+    let domain = &container.domain;
+    let page = &container.page;
+    let ident = &input.ident;
+
+    let mut pushes = Vec::new();
+    let mut guards = Vec::new();
+    for field in &fields.named {
+        let Some(field_ident) = &field.ident else {
+            continue;
+        };
+        let attrs = field_attrs(field.span(), &field.attrs)?;
+        let FieldAttrs::Key {
+            label,
+            help,
+            section,
+            unit,
+            advanced,
+            agent_settable,
+            hint,
+            control,
+            note,
+            ends,
+        } = attrs
+        else {
+            // `#[settings(skip)]`: a catch-all field such as `extra: toml::Table`, not a key.
+            continue;
+        };
+        let path = format!("{domain}.{field_ident}");
+        let exposure = if advanced {
+            quote! { ::ui_settings::schema::Exposure::Advanced }
+        } else {
+            quote! { ::ui_settings::schema::Exposure::Basic }
+        };
+        let agent_setting = if agent_settable {
+            guards.push(never_settable_guard(&path));
+            quote! { ::ui_settings::schema::AgentSetting::Settable }
+        } else {
+            quote! { ::ui_settings::schema::AgentSetting::HandsOff }
+        };
+        let shape = shape_of(&field_ident.to_string(), &field.ty, hint)
+            .map_err(|reason| syn::Error::new(field.ty.span(), reason))?;
+        let kind = kind_expr(shape, &field.ty, unit.as_deref());
+        let control = if let Some(control) = control {
+            quote! {
+                ::std::option::Option::Some(::ui_settings::schema::ControlName(#control.to_owned()))
+            }
+        } else {
+            quote! { ::std::option::Option::None }
+        };
+        let note = match note {
+            Some(note) => quote! {
+                ::std::option::Option::Some(::ui_settings::schema::Note(#note.to_owned()))
+            },
+            None => quote! { ::std::option::Option::None },
+        };
+        let ends = match ends.map(|ends| *ends) {
+            Some(EndsAttr { low, high }) => quote! {
+                ::std::option::Option::Some(::ui_settings::schema::SliderEnds {
+                    low: ::ui_settings::schema::Label(#low.to_owned()),
+                    high: ::ui_settings::schema::Label(#high.to_owned()),
+                })
+            },
+            None => quote! { ::std::option::Option::None },
+        };
+        pushes.push(quote! {
+            key.push(::ui_settings::schema::KeySpec {
+                path: ::ui_settings::schema::KeyPath(#path.to_owned()),
+                kind: #kind,
+                default: ::ui_settings::schema::to_value(&default.#field_ident),
+                label: ::ui_settings::schema::Label(#label.to_owned()),
+                help: ::ui_settings::schema::Help(#help.to_owned()),
+                page: #page,
+                section: ::ui_settings::schema::Section(#section.to_owned()),
+                exposure: #exposure,
+                labels: ::std::default::Default::default(),
+                agent: #agent_setting,
+                unavailable: ::std::default::Default::default(),
+                groups: ::std::default::Default::default(),
+                places: ::std::default::Default::default(),
+                note: #note,
+                control: #control,
+                ends: #ends,
+            });
+        });
+    }
+
+    let footnotes = container
+        .footnotes
+        .iter()
+        .map(|FootnoteAttr { section, text }| {
+            quote! {
+                ::ui_settings::schema::Footnote {
+                    page: #page,
+                    section: ::ui_settings::schema::Section(#section.to_owned()),
+                    text: ::ui_settings::schema::FootnoteText(#text.to_owned()),
+                }
+            }
+        });
+    Ok(quote! {
+        #(#guards)*
+        impl ::ui_settings::schema::SettingsSchema for #ident {
+            fn schema() -> ::ui_settings::schema::Schema {
+                let default = <Self as ::core::default::Default>::default();
+                let mut key: ::std::vec::Vec<::ui_settings::schema::KeySpec> = ::std::vec::Vec::new();
+                #(#pushes)*
+                ::ui_settings::schema::Schema {
+                    app: ::ui_settings::schema::AppId(#app.to_owned()),
+                    file: ::ui_settings::schema::FilePath(#file.to_owned()),
+                    version: 1,
+                    foreign: ::ui_settings::schema::ForeignTables::default(),
+                    pages: ::std::vec::Vec::new(),
+                    key,
+                    footnotes: ::std::vec![#(#footnotes),*],
+                }
+            }
+        }
+    })
+}
+
+/// A compile-time assertion that `path` is not under a never-agent-settable prefix
+/// (`ui_settings::schema::AGENT_NEVER_SETTABLE`). The derive cannot read that list itself
+/// (`ds-settings` depends on this crate), so the check is a `const` evaluated in the
+/// consumer's build: a violation is a compile error naming the key.
+fn never_settable_guard(path: &str) -> TokenStream {
+    let message = format!(
+        "settings key `{path}` is under a never-agent-settable prefix \
+         (ui_settings::schema::AGENT_NEVER_SETTABLE): remove `agent_settable`"
+    );
+    quote! {
+        const _: () = ::core::assert!(
+            !::ui_settings::schema::is_never_settable(#path),
+            #message
+        );
+    }
+}
+
+/// The `KeyKind` expression for one field, from its shape, type and unit.
+fn kind_expr(shape: Shape, ty: &syn::Type, unit: Option<&str>) -> TokenStream {
+    match shape {
+        Shape::Bounded { min, max } => {
+            let unit = if let Some(unit) = unit {
+                quote! { ::std::option::Option::Some(#unit.to_owned()) }
+            } else {
+                quote! { ::std::option::Option::None }
+            };
+            quote! { ::ui_settings::schema::KeyKind::Bounded { min: #min, max: #max, unit: #unit } }
+        }
+        Shape::Toggle => quote! { ::ui_settings::schema::KeyKind::Toggle },
+        Shape::Text => quote! { ::ui_settings::schema::KeyKind::Text },
+        Shape::Provided { capability } => quote! {
+            ::ui_settings::schema::KeyKind::Provided { capability: #capability.to_owned() }
+        },
+        Shape::Colour => quote! { ::ui_settings::schema::KeyKind::Colour },
+        Shape::TextList => quote! {
+            ::ui_settings::schema::KeyKind::List(::std::boxed::Box::new(
+                ::ui_settings::schema::KeyKind::Text
+            ))
+        },
+        Shape::List(inner) => {
+            quote! { <#inner as ::ui_settings::schema::ListElement>::list_kind() }
+        }
+        Shape::EnumType => quote! { ::ui_settings::schema::kind_of::<#ty>() },
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    //! The compile errors a malformed struct gets, checked on the expansion itself: there is
+    //! no `trybuild` in this workspace's lockfile to drive a UI test instead.
+
+    use super::expand;
+
+    fn expanded(source: &str) -> syn::Result<proc_macro2::TokenStream> {
+        let input: syn::DeriveInput =
+            syn::parse_str(source).unwrap_or_else(|e| panic!("{source}: {e}"));
+        let syn::Data::Struct(data) = &input.data else {
+            panic!("{source}: not a struct");
+        };
+        expand(&input, data)
+    }
+
+    const HEAD: &str = "#[settings(file = \"a/s.toml\", domain = \"d\", page = Page::Dock)]";
+
+    #[test]
+    fn a_number_without_a_range_is_missing_range_naming_the_field() {
+        const CASES: &[(&str, &str)] = &[
+            ("u8", "size"),
+            ("Px", "gap_px"),
+            ("ui_settings::Ms", "delay_ms"),
+        ];
+        for (ty, field) in CASES {
+            let source = format!("{HEAD} struct S {{ #[settings(label = \"L\")] {field}: {ty} }}");
+            let err = expanded(&source).err().map(|e| e.to_string());
+            let want = format!("MissingRange {{ field: {field} }}");
+            assert!(
+                err.as_deref().is_some_and(|e| e.starts_with(&want)),
+                "{ty}: {err:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn text_fields_are_text_by_type_or_attribute() {
+        const CASES: &[&str] = &[
+            "#[settings(label = \"L\")] f: String",
+            "#[settings(label = \"L\")] f: std::path::PathBuf",
+            "#[settings(label = \"L\")] f: Cow<'static, str>",
+            "#[settings(label = \"L\", text)] f: SoundTheme",
+        ];
+        for field in CASES {
+            let source = format!("{HEAD} struct S {{ {field} }}");
+            let tokens = expanded(&source).unwrap_or_else(|e| panic!("{field}: {e}"));
+            let text = tokens.to_string();
+            assert!(text.contains("KeyKind :: Text"), "{field}: {text}");
+        }
+    }
+
+    #[test]
+    fn a_provided_field_is_a_provided_key_naming_its_capability() {
+        let source = format!(
+            "{HEAD} struct S {{ #[settings(label = \"L\", provided = \"look\")] f: Provided }}"
+        );
+        let text = expanded(&source)
+            .unwrap_or_else(|e| panic!("{e}"))
+            .to_string();
+        assert!(text.contains("KeyKind :: Provided"), "{text}");
+        assert!(text.contains("\"look\""), "{text}");
+    }
+
+    #[test]
+    fn a_vec_is_a_list_of_text_or_whatever_its_element_says() {
+        const CASES: &[(&str, &str)] = &[
+            ("Vec<String>", "KeyKind :: List"),
+            ("Vec<Row>", "ListElement > :: list_kind"),
+        ];
+        for (ty, want) in CASES {
+            let source = format!("{HEAD} struct S {{ #[settings(label = \"L\")] f: {ty} }}");
+            let text = expanded(&source)
+                .unwrap_or_else(|e| panic!("{ty}: {e}"))
+                .to_string();
+            assert!(text.contains(want), "{ty}: {text}");
+        }
+    }
+
+    #[test]
+    fn agent_settable_emits_a_compile_time_never_settable_guard() {
+        const CASES: &[(&str, &str)] = &[("cua", "cua.f"), ("agent", "agent.f"), ("d", "d.f")];
+        for (domain, path) in CASES {
+            let source = format!(
+                "#[settings(file = \"a/s.toml\", domain = \"{domain}\", page = Page::Dock)] \
+                 struct S {{ #[settings(label = \"L\", agent_settable)] f: String }}"
+            );
+            let text = expanded(&source)
+                .unwrap_or_else(|e| panic!("{e}"))
+                .to_string();
+            assert!(
+                text.contains(&format!("is_never_settable (\"{path}\")")),
+                "{domain}: {text}"
+            );
+            assert!(
+                text.contains("const _ : () = :: core :: assert !"),
+                "{domain}: {text}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_hands_off_field_emits_no_guard() {
+        let source = format!("{HEAD} struct S {{ #[settings(label = \"L\")] f: String }}");
+        let text = expanded(&source)
+            .unwrap_or_else(|e| panic!("{e}"))
+            .to_string();
+        assert!(!text.contains("is_never_settable"), "{text}");
+    }
+
+    #[test]
+    fn a_named_control_is_emitted_on_the_key_and_none_otherwise() {
+        const CASES: &[(&str, &str)] = &[
+            (
+                "#[settings(label = \"L\", control = \"picture\")]",
+                "ControlName (\"picture\"",
+            ),
+            (
+                "#[settings(label = \"L\")]",
+                "control : :: std :: option :: Option :: None",
+            ),
+        ];
+        for (attr, want) in CASES {
+            let source = format!("{HEAD} struct S {{ {attr} f: String }}");
+            let text = expanded(&source)
+                .unwrap_or_else(|e| panic!("{attr}: {e}"))
+                .to_string();
+            assert!(text.contains(want), "{attr}: {text}");
+        }
+    }
+
+    #[test]
+    fn a_number_with_a_range_is_bounded() {
+        let source = format!(
+            "{HEAD} struct S {{ #[settings(label = \"L\", range = \"1..=9\", unit = \"px\")] f: Px }}"
+        );
+        let text = expanded(&source)
+            .unwrap_or_else(|e| panic!("{e}"))
+            .to_string();
+        assert!(text.contains("KeyKind :: Bounded"), "{text}");
+        assert!(text.contains("min : 1i64"), "{text}");
+    }
+}

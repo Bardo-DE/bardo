@@ -1,0 +1,24 @@
+[package]
+name = "account-client"
+description = "The app-facing API of the account service: sign an account in, find one by capability, ask for consent, over any transport."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+account-match = {path = "../account-match"}
+account-capability = {path = "../account-capability"}
+account-wire = {path = "../account-wire"}
+account-ids = {path = "../account-ids"}
+account-sheet = {path = "../account-sheet"}
+futures-core = {version = "0.3"}
+futures-util = {version = "0.3", default-features = false}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

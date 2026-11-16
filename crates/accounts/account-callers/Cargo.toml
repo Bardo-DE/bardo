@@ -1,0 +1,38 @@
+[package]
+name = "account-callers"
+description = "Who is calling a daemon: a bus connection's sender to an app and a role (peephole's judgement of the process, then the caller table), the table read from its files, and which /proc and which system tables a daemon reads them from."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+caller-identity-linux = {path = "../../identity/caller-identity-linux"}
+caller-identity-core = {default-features = false, features = ["toml"], path = "../../identity/caller-identity-core"}
+caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+# The table's reader, behind the feature that only the daemons turn on.
+toml = {version = "1", optional = true}
+
+[features]
+# The caller table read from `callers.toml` files (`load_callers`): accountd's and syncd's.
+file = ["dep:toml"]
+# TEST ONLY, never default and never in dist: `ProcCallers::with_proc_root` and `caller_of_pid` read a
+# directory tree standing for /proc (peephole's `fake` seams: a process that is only a claim). A daemon
+# turns it on through its own `test-proc-root` feature; check-boundary.sh checks that no default build
+# has it.
+test-proc-root = ["caller-identity-linux/fake"]
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

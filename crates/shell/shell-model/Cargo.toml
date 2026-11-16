@@ -1,0 +1,46 @@
+[package]
+name = "shell-model"
+description = "The shell's pure vocabulary: units, ids, attempts, and every service's state, commands, events and pure step."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+action-wire = {path = "../../actions/action-wire"}
+companion-model = {path = "../../actions/companion-model"}
+permission-core = {path = "../../actions/permission-core"}
+action-manifest = {path = "../../actions/action-manifest"}
+action-vocab = {path = "../../actions/action-vocab"}
+account-sheet = {path = "../../accounts/account-sheet"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+shell-launcher = {path = "../shell-launcher"}
+keymap = {path = "../../keymap/keymap"}
+ui-core = {path = "../../ui/ui-core"}
+ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+key-remap-proto = {path = "../../input/key-remap-proto"}
+action-core = {path = "../../actions/action-core"}
+companion-wire = {path = "../../actions/companion-wire"}
+agent-voice-wire = {path = "../../actions/agent-voice-wire"}
+computer-use-bus = {path = "../../computer-use/computer-use-bus"}
+memory-core = {path = "../../memory/memory-core"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+desktop-protocols = {path = "../../wayland/desktop-protocols"}
+jiff = {version = "0.2"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+zeroize = {version = "1"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,30 @@
+[package]
+name = "memory-infer"
+description = "almanac's two models through inferd (org.quire.Inference1, over inferd-client's Transport): an embedder for recall and a consolidator that drafts hunks, each with its deadlines. No daemon: an app that is not memoryd can use them over its own transport."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+memory-store = {path = "../memory-store"}
+memory-tidy = {path = "../memory-tidy"}
+inference-client = {path = "../../inference/inference-client"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+memory-core = {path = "../memory-core"}
+memory-fake = {path = "../memory-fake"}
+memory-recall = {path = "../memory-recall", features = ["testing"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

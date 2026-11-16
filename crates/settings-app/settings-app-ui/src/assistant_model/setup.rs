@@ -1,0 +1,89 @@
+//! The first-run step: a hero mark, one sentence, the picker's row, Skip and Continue. Choosing
+//! writes at once, as everywhere in Settings; Skip leaves without writing and Continue leaves
+//! once a model is chosen. Either closes the window.
+
+use super::picker::AssistantPicker;
+use crate::env::Env;
+use crate::picker::{Picker, use_picker};
+use settings_app_model::{Clearing, PageKind, SetupAction, SetupAvailability, setup_availability};
+use dioxus::prelude::*;
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::components::controls::button::Button;
+use ui_components::components::controls::button_model::Answers;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
+use ui_components::root::pass_through::ExtraClass;
+use ui_components::style::icon::family::PlateFamily;
+use ui_components::style::tokens::control_size::ControlSize;
+use ui_blitz::{AppHandle, use_app_handle};
+
+/// The step, under the frame: the picker's row and the two buttons.
+#[component]
+pub(crate) fn AssistantSetup() -> Element {
+    let env = use_context::<Env>();
+    let app = use_app_handle();
+    let Picker { state, ask } = use_picker();
+    use_future({
+        let client = env.client.clone();
+        move || {
+            let client = client.clone();
+            async move {
+                client
+                    .start(PageKind::AssistantModel.traits().modules)
+                    .await
+            }
+        }
+    });
+    let now = state();
+    let skip = availability_of(setup_availability(&now, SetupAction::Skip));
+    let next = availability_of(setup_availability(&now, SetupAction::Continue));
+    let (skip_app, next_app) = (app.clone(), app);
+    rsx! {
+        div { class: "assistant-setup", "data-assistant": "setup",
+            IconView {
+                source: IconSource::Glyph(Icon::Sparkles),
+                size: IconSize::Tile48,
+                plate: Some(PlateFamily::Violet),
+            }
+            Label { text: crate::copy::assistant_model::CHOOSE_A_MODEL_FOR_YOUR_ASSISTANT, role: LabelRole::Primary, style: LabelStyle::Title }
+            div { class: "assistant-setup-card",
+                AssistantPicker { state: now, clearing: Clearing::Withheld, onask: ask }
+            }
+            div { class: "assistant-setup-buttons",
+                Button {
+                    label: crate::copy::common::SKIP,
+                    answers: Answers::Escape,
+                    size: ControlSize::Large,
+                    availability: skip,
+                    common: Common { extra_class: ExtraClass::parse("assistant-skip").ok(), ..Common::default() },
+                    onclick: move |_| leave(skip_app.as_ref()),
+                }
+                Button {
+                    label: crate::copy::common::CONTINUE,
+                    answers: Answers::Return,
+                    size: ControlSize::Large,
+                    availability: next,
+                    common: Common { extra_class: ExtraClass::parse("assistant-continue").ok(), ..Common::default() },
+                    onclick: move |_| leave(next_app.as_ref()),
+                }
+            }
+        }
+    }
+}
+
+/// A button that can be pressed now is enabled.
+fn availability_of(availability: SetupAvailability) -> Availability {
+    match availability {
+        SetupAvailability::Now => Availability::Enabled,
+        SetupAvailability::NotYet => Availability::Disabled,
+    }
+}
+
+/// Closes the window. `app` is the running app, absent in the harness, where there is no window
+/// to close.
+fn leave(app: Option<&AppHandle>) {
+    if let Some(app) = app {
+        // The loop having ended already is the same as the window being closed.
+        let _ended = app.quit();
+    }
+}

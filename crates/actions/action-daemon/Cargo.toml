@@ -1,0 +1,97 @@
+[package]
+name = "action-daemon"
+description = "The daemon: builds the router over its seams (apps over D-Bus, the sheet, inferd, memoryd, the grant file) and serves org.quire.Intents1; also hosts the built-in org.quire.Memory and org.quire.Companion providers. The binary is a skeleton."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "action_daemon"
+path = "src/lib.rs"
+
+[[bin]]
+name = "intentd"
+path = "src/main.rs"
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+sandbox = {path = "../../sandbox/sandbox"}
+companion-model = {path = "../companion-model"}
+action-checkpoint-git = {path = "../action-checkpoint-git"}
+permission-core = {path = "../permission-core"}
+account-dbus = {path = "../../accounts/account-dbus"}
+account-callers = {path = "../../accounts/account-callers"}
+account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+action-vocab = {path = "../action-vocab"}
+action-store = {path = "../action-store"}
+action-log = {path = "../action-log"}
+action-context = {path = "../action-context"}
+action-router = {path = "../action-router"}
+agent-skills = {path = "../agent-skills"}
+agent-skills-disk = {path = "../agent-skills-disk"}
+action-settings = {path = "../action-settings"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
+action-provider = {path = "../action-provider"}
+action-dbus = {path = "../action-dbus", features = ["inferd"]}
+action-procroot = {path = "../action-procroot"}
+companion-memory = {path = "../companion-memory"}
+companion-memory-core = {path = "../companion-memory-core"}
+agent-session = {path = "../agent-session"}
+agent-models = {path = "../agent-models"}
+permission-policy = {path = "../permission-policy"}
+action-review = {path = "../action-review"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
+memory-client = {default-features = false, features = ["dbus"], path = "../../memory/memory-client"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+notify = {version = "8.2"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[dev-dependencies]
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+memory-core = {path = "../../memory/memory-core"}
+agent-acp-bin = {path = "../agent-acp-bin"}
+action-host = {path = "../action-host"}
+action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
+action-testbus = {path = "../action-testbus"}
+action-fake = {path = "../action-fake"}
+inference-core = {features = ["testing"], path = "../../inference/inference-core"}
+account-wire = {path = "../../accounts/account-wire"}
+memory-dbus = {path = "../../memory/memory-dbus"}
+memory-dbus-serve = {path = "../../memory/memory-dbus-serve"}
+agent-reader-daemon = {path = "../agent-reader-daemon"}
+proptest = {version = "1"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
+action-provider = {path = "../action-provider", features = ["dbus"]}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+serde_json = {version = "1"}
+tempfile = {version = "3"}
+toml = {version = "1"}
+action-gate-wire = {path = "../action-gate-wire"}
+
+[features]
+# Span export over OTLP (docket-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
+otlp = ["action-log/otlp"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

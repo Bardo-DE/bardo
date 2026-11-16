@@ -1,0 +1,302 @@
+//! The root: `div.ds` carrying `data-theme`, `data-accent`, `data-motion`,
+//! `data-material`, `data-blur`, `data-modality` and the hover hub's `data-hover`, with the frame's `--f-*`
+//! inline; then the stylesheet (when inlined), the frame layers and grain, the children, the
+//! overlay host and the toast host. It provides `Scope`, `HoverHub`, `ToastHub`, `LayerStack`
+//! and `Overlays` as context. Its click handler, the last to hear a click, hands a click that
+//! landed on nothing focusable to the host's `ClickFocusHost` (FINDINGS "Native focus"), and it
+//! provides the same seams to the controls inside it, which hand over a click they keep to
+//! themselves (`focus::click::kept_click`).
+//!
+//! What the root paints follows its material (`chrome.rs`): a Window draws the Space gradient
+//! opaque with its A/B layers and grain (`data-frame="opaque"`, its own stacking context so the
+//! layers paint over its background); the bar, the dock, a popover panel, the OSD and a
+//! widget draw the same layers and grain as one group at the material's tint alpha
+//! (`data-frame="tinted"`, design/21-SPACES.md sections 3 and 5); a Popover, Sheet or Toast root
+//! paints nothing on its own box (`data-chrome="transparent"`) and its cards paint the material;
+//! the bar and the dock stamp `data-ground="frame"` so the components on them take the `--f-*`
+//! inks.
+//!
+//! `styles` is the chosen look and the person's two stylesheets (`ui_style::kit::Styles`,
+//! ARCHITECTURE.md section 10): each non-blank one goes in its own `<style data-ds-style=look |
+//! desktop | app>` right after the design-system sheet, lowest first. The look is `@layer look`
+//! (after `ds` and `app`); the person's two are unlayered, so their rules beat every layered one
+//! whatever the specificity, and the app's own beat the desktop-wide ones. A change to the signal
+//! restyles the document; a blank sheet draws no element. `custom_styles: false`
+//! ("Use my styles" is off, `appearance.custom_styles`) draws none of the three.
+//!
+//! `surface` is the consumer's name for the surface this root is (`[data-surface=bar]`, the public
+//! selector surface a user stylesheet targets, `selectors::SURFACE_ATTRIBUTE`).
+//!
+//! `stylesheet` says how the stylesheet reaches the document (`Inject`); `sheet` is the text
+//! `Inject::Inline` writes: `None` is `ui_components::stylesheet()`, and a crate that adds components of its
+//! own passes the sheet its kits make (`ui_shell::stylesheet()`), so the root draws them too.
+//!
+//! The materials' tint over blur, highlight, hairline, shadow strength and vibrancy are
+//! stylesheet tokens (`--m-tint-alpha`, `--m-highlight-light`, ..., `--m-vibrancy`) with their
+//! defaults in the material blocks; the root writes none of them, so a look or the person's own
+//! sheet sets them. A `radius` overrides the material's corner (`--m-radius` inline): the dock's
+//! pill is its root, and its radius is `dock.pill_radius_px`.
+//!
+//! The root also writes the pixel tokens' inputs for its device scale (`scale`, else the host's
+//! `HostSignals`, else 1x; `tokens/pixel.rs`), so every hairline is whole device pixels at 1.25,
+//! 1.5 or 1.75 (design/01-LAYOUT.md section 2.1). At 1x it writes nothing.
+//!
+//! A client-decorated window passes `window: WindowFrame::Titlebar { .. }`: the root stamps
+//! `data-window-frame` and draws the titlebar, its children in `div.ds-window-body`, and the
+//! resize edges (`components/window_frame.rs`). The default draws nothing more.
+//! An overlay root passes `extent: RootExtent::Viewport` (`extent.rs`): a root holding only
+//! positioned content (a centred sheet) is otherwise 0 px tall. A popup document, whose host
+//! fits the surface to its content, passes `RootExtent::Popup`: the floating card lies in flow
+//! at the origin and no outside catcher covers the surface.
+//! An app's own window passes `RootExtent::Window`: the root is the window's height, so a
+//! `height:100%` child (a split view) needs no `100vh` container of the app's.
+
+use crate::components::chrome::window_frame::{WindowFrame, framed};
+use crate::components::overlays::title_tips::use_title_tips_provider;
+use crate::components::overlays::toast::ToastHost;
+use crate::focus::click::ClickRoot;
+use crate::host::event_point::pointer_point;
+use crate::host::signals::HostSignals;
+use crate::keys::use_keys_provider;
+use crate::root::chrome::{FrameTint, Ground, RootChrome};
+use crate::root::extent::RootExtent;
+use crate::root::pointer_trail::PointerTrail;
+use crate::stack::host::{OverlayHost, use_overlays_provider};
+use crate::stack::hover_hub::use_hover_hub_provider;
+use crate::stack::layer_stack::LayerStack;
+use crate::stack::toast_hub::use_toast_hub_provider;
+use dioxus::prelude::*;
+use ui_core::geometry::scale::Scale;
+use ui_core::vocab::modality_word;
+use ui_core::word::Word;
+use ui_style::appearance::blur::blur_word;
+use ui_style::appearance::material::Material;
+use ui_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemPrefs};
+use ui_style::kit::Styles;
+use ui_style::scale::use_root_scale;
+use ui_style::scope::{Scope, use_scope_provider};
+use ui_style::space::{frame_vars::FrameVars, look::SpaceLook, provided::use_space_look_provider};
+use ui_style::tokens::delay::TipDelay;
+use ui_style::tokens::{pixel::PixelToken, shape::Corner};
+use std::rc::Rc;
+
+/// How the stylesheet reaches the document.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum Inject {
+    /// A `<style>` inside `.ds` (spike S1).
+    #[default]
+    Inline,
+    /// The host adds `ui_components::stylesheet()` to the document itself (the S1 fallback).
+    Host,
+}
+
+/// The design system's root. Everything a surface draws goes inside one.
+#[component]
+pub fn Ds(
+    appearance: Appearance,
+    #[props(default)] system: SystemPrefs,
+    #[props(default)] look: SpaceLook,
+    material: Material,
+    #[props(default)] blur: bool,
+    #[props(default)] stylesheet: Inject,
+    #[props(default)] sheet: Option<&'static str>,
+    #[props(default)] chrome: Option<RootChrome>,
+    #[props(default)] ground: Option<Ground>,
+    #[props(default)] frame: Option<FrameTint>,
+    #[props(default)] radius: Option<Corner>,
+    #[props(default)] scale: Option<Scale>,
+    #[props(default)] window: WindowFrame,
+    #[props(default)] extent: RootExtent,
+    #[props(default)] styles: ReadSignal<Styles>,
+    #[props(default = true)] custom_styles: bool,
+    #[props(default)] surface: Option<&'static str>,
+    #[props(default)] tip_delay: TipDelay,
+    children: Element,
+) -> Element {
+    use_keys_provider();
+    let signals = use_hook(try_consume_context::<HostSignals>);
+    let scale = use_root_scale(scale, signals.map(|signals| (signals.scale)()));
+    let chrome = chrome.unwrap_or_else(|| RootChrome::of(material));
+    let frame_tint = frame.unwrap_or_else(|| FrameTint::of(material, chrome));
+    let ground = ground.unwrap_or_else(|| Ground::of(material));
+    let resolved = resolve(appearance, look.theme, system);
+    let mut element = use_hook(|| CopyValue::new(None::<Rc<MountedData>>));
+    let click_root = use_context_provider(|| ClickRoot::of(element));
+    let trail = PointerTrail::provide();
+    let modality = signals.is_some_and(|signals| (signals.modality)());
+    let activity = signals.is_none_or(|signals| (signals.activity)());
+    let env = use_scope_provider(Scope {
+        resolved,
+        scheme: resolved.scheme,
+        material,
+        blur,
+        modality,
+        activity,
+    });
+    use_space_look_provider(&look);
+    let hover = use_hover_hub_provider(env, tip_delay);
+    use_title_tips_provider();
+    let toasts = use_toast_hub_provider();
+    use_context_provider(|| Signal::new(LayerStack::default()));
+    use_overlays_provider();
+    let frame = FrameVars::of(&look, resolved.scheme);
+    let layers = use_frame_layers(&frame.gradient);
+    let corner = radius
+        .map(crate::root::surface::radius_style)
+        .unwrap_or_default();
+    let pixels = PixelToken::style_attr(scale);
+    let style = format!(
+        "{}{}{corner}{pixels}",
+        frame.style_attr(),
+        crate::root::surface::accent_text_style(material),
+    );
+    let framing = window.attribute();
+    let hover = if hover.warmth() { "warm" } else { "cold" };
+    rsx! {
+        div {
+            class: "ds",
+            "data-theme": resolved.scheme.slug(),
+            "data-accent": resolved.accent.slug(),
+            "data-contrast": resolved.contrast.attribute(),
+            "data-transparency": resolved.transparency.attribute(),
+            "data-motion": resolved.motion.slug(),
+            "data-material": material.slug(),
+            "data-blur": blur_word(blur),
+            "data-modality": modality_word(modality),
+            "data-activity": (!activity).then_some("inactive"),
+            "data-hover": hover,
+            "data-chrome": chrome.attribute(),
+            "data-frame": frame_tint.attribute(),
+            "data-ground": ground.attribute(),
+            "data-corner": radius.and_then(Corner::attribute),
+            "data-window-frame": framing,
+            "data-extent": extent.attribute(),
+            "data-surface": surface,
+            style,
+            onmounted: move |event: MountedEvent| element.set(Some(event.data())),
+            // Last to hear a click: where the keyboard goes when it landed on nothing focusable.
+            onclick: move |event: MouseEvent| click_root.clicked(&event),
+            // Last to hear a move: where the pointer is, for a list asking whether it moved.
+            onpointermove: move |event: PointerEvent| {
+                // A replayed move (Blitz's hover repair) is not one: it arms nothing.
+                if trail.moved(pointer_point(&event)) {
+                    toasts.pointer_moved();
+                }
+                trail.heard(&event);
+            },
+            if stylesheet == Inject::Inline {
+                style { {sheet.unwrap_or_else(crate::assembly::stylesheet::stylesheet)} }
+            }
+            // The look is in `@layer look`; the person's two are unlayered, so a rule of theirs beats
+            // every layered rule (the design system's `ds`, a consumer's `app`, the look) whatever
+            // its specificity.
+            for (slot , text) in styles.read().drawn(custom_styles).into_iter().map(|sheet| (sheet.slot.attribute(), sheet.text)) {
+                style { key: "{slot}", "data-ds-style": slot, {text} }
+            }
+            match frame_tint {
+                FrameTint::Opaque => frame_layers(layers),
+                FrameTint::Tinted => rsx! {
+                    div { class: "ds-frame", {frame_layers(layers)} }
+                },
+                FrameTint::None => rsx! {},
+            }
+            {framed(window, children)}
+            OverlayHost {}
+            ToastHost {}
+        }
+    }
+}
+
+/// The two gradient layers and the grain over them.
+fn frame_layers(layers: [(&'static str, Option<&'static str>, String); 2]) -> Element {
+    rsx! {
+        for (slot , data_layer , gradient) in layers {
+            div {
+                key: "{slot}",
+                class: "ds-layer",
+                "data-layer": data_layer,
+                style: "--f-grad:{gradient}",
+            }
+        }
+        div { class: "ds-grain" }
+    }
+}
+
+/// Which of the two frame layers is showing.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Front {
+    A,
+    B,
+}
+
+/// The two frame layers' gradients and which one is in front.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct FrameLayers {
+    a: String,
+    b: String,
+    front: Front,
+}
+
+impl FrameLayers {
+    /// Show `gradient`: when it is new, the hidden layer takes it and comes to the front, so
+    /// the stylesheet's opacity transition cross-fades the two (design/21-SPACES.md
+    /// section 5).
+    fn show(self, gradient: &str) -> Self {
+        let showing = match self.front {
+            Front::A => &self.a,
+            Front::B => &self.b,
+        };
+        if showing == gradient {
+            return self;
+        }
+        match self.front {
+            Front::A => FrameLayers {
+                b: gradient.to_owned(),
+                front: Front::B,
+                ..self
+            },
+            Front::B => FrameLayers {
+                a: gradient.to_owned(),
+                front: Front::A,
+                ..self
+            },
+        }
+    }
+
+    /// Each layer's key, `data-layer` attribute and gradient, in a fixed order so the nodes
+    /// persist. The hidden layer carries `data-layer="back"` (the attribute form the
+    /// stylesheet's `.ds-layer[*|data-layer=back]{opacity:0}` rule matches, per FINDINGS
+    /// "`Ds`'s own `Material::Window` frame layers do not match their own stylesheet rule");
+    /// the front layer carries no `data-layer` at all, so it hits the lint's `DsInternals`
+    /// attribute set the same way `data-theme` etc. do, rather than a class the stylesheet
+    /// never targets.
+    fn render(&self) -> [(&'static str, Option<&'static str>, String); 2] {
+        let data_layer = |slot| {
+            if slot == self.front {
+                None
+            } else {
+                Some("back")
+            }
+        };
+        [
+            ("a", data_layer(Front::A), self.a.clone()),
+            ("b", data_layer(Front::B), self.b.clone()),
+        ]
+    }
+}
+
+/// The frame layers for this render. Kept outside any signal: `Ds` re-renders whenever its
+/// look changes, and nothing else reads them.
+fn use_frame_layers(gradient: &str) -> [(&'static str, Option<&'static str>, String); 2] {
+    let mut layers = use_hook(|| {
+        CopyValue::new(FrameLayers {
+            a: gradient.to_owned(),
+            b: gradient.to_owned(),
+            front: Front::A,
+        })
+    });
+    let next = layers.peek().clone().show(gradient);
+    let rendered = next.render();
+    layers.set(next);
+    rendered
+}

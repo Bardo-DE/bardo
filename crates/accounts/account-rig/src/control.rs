@@ -1,0 +1,188 @@
+//! The control endpoint: the scenario's levers on the fakes, a small HTTP server on loopback in
+//! the rig's own process. `curl` is enough to drive it. Every answer is JSON (`{"ok":true,..}`)
+//! except where a route says it returns bytes; an unknown route is `404`, a missing or bad
+//! parameter `400`, a lever on a fake that was not started `409`.
+//!
+//! | route | does |
+//! |---|---|
+//! | `GET /rig` | the text of `rig.json` |
+//! | `POST /issuer/refuse-refreshes?n=N` | the next N refresh requests get `invalid_grant` |
+//! | `POST /issuer/revoke[?token=T]` | revokes T at the issuer (default: the planted refresh token) |
+//! | `POST /google/seed[?what=calendars\|people\|tasks\|all]` | fills the fake Google's Calendar, People and/or Tasks with a small set |
+//! | `POST /google/calendar?id=I&name=N[&color=C]`, `POST /google/calendar-remove?id=I` | adds, renames or removes a calendar |
+//! | `POST /google/event?calendar=C&id=I` (body: Google event JSON), `POST /google/event-remove?calendar=C&id=I` | a remote edit or delete of an event |
+//! | `POST /google/person?resource=people/cN` (body: Person JSON), `POST /google/person-remove?resource=R` | a remote edit or delete of a contact |
+//! | `POST /google/task-list?id=I&title=T`, `POST /google/task-list-remove?id=I` | adds, renames or removes a task list |
+//! | `POST /google/task?list=L&id=I` (body: Task JSON), `POST /google/task-remove?list=L&id=I` | a remote edit or delete of a task |
+//! | `POST /google/expire-sync` | every Calendar and People sync token handed out is stale (`410`, `EXPIRED_SYNC_TOKEN`) |
+//! | `GET /google/hits` | `{"hits":[{"method","target","status","bearer"}]}` (never the token) |
+//! | `GET /imap/attempts`, `/smtp/attempts`, `/pop3/attempts` | `{"attempts":[{"user","outcome"}]}`, oldest first, `outcome` is `accepted` or `refused`; never the password or token |
+//! | `POST /ollama/stop`, `POST /ollama/start` | stops the fake Ollama / starts it on the same port |
+//! | `GET /ollama/status` | `{"running":bool,"chats":N}` |
+//! | `POST /stop` | ends the rig as SIGTERM does |
+
+use crate::planted::OAUTH_REFRESH_TOKEN;
+use crate::servers::Ollama;
+use account_fake_servers::http::{Request, Response, Scheme, post_form, send, serve};
+use account_fake_servers::net::{Bind, Listener};
+use account_fake_servers::{GoogleHandle, IssuerHandle, MailHandle, browser::split_loopback};
+use serde_json::{Value, json};
+use std::io;
+use std::sync::Arc;
+use tokio::sync::Notify;
+
+mod google;
+
+/// What the levers act on.
+#[derive(Debug, Clone)]
+pub struct Levers {
+    /// The issuer, when it runs.
+    pub issuer: Option<IssuerHandle>,
+    /// The fake Google's APIs, when they run.
+    pub google: Option<GoogleHandle>,
+    /// The IMAP server, when it runs.
+    pub imap: Option<MailHandle>,
+    /// The SMTP server, when it runs.
+    pub smtp: Option<MailHandle>,
+    /// The POP3 server, when it runs.
+    pub pop3: Option<MailHandle>,
+    /// The fake Ollama, when it runs.
+    pub ollama: Option<Arc<Ollama>>,
+    /// The text `GET /rig` answers.
+    pub rig: Arc<std::sync::Mutex<String>>,
+    /// Rung by `POST /stop`.
+    pub stop: Arc<Notify>,
+}
+
+pub(super) fn ok(extra: Value) -> Response {
+    let mut body = json!({ "ok": true });
+    if let (Some(into), Some(from)) = (body.as_object_mut(), extra.as_object()) {
+        into.extend(from.clone());
+    }
+    Response::json(200, &body)
+}
+
+pub(super) fn refused(status: u16, why: &str) -> Response {
+    Response::json(status, &json!({ "ok": false, "error": why }))
+}
+
+pub(super) fn absent(what: &str) -> Response {
+    refused(409, &format!("{what} was not started"))
+}
+
+/// Runs an async step from the handler (which is a plain function on a runtime thread).
+fn run<T>(work: impl std::future::Future<Output = T>) -> T {
+    tokio::task::block_in_place(|| tokio::runtime::Handle::current().block_on(work))
+}
+
+/// The login attempts a mail fake recorded: who tried and how it ended, never what was
+/// presented (a password or a bearer token stays in the fake).
+fn attempts(server: Option<&MailHandle>, name: &str) -> Response {
+    let Some(server) = server else {
+        return absent(name);
+    };
+    let attempts: Vec<Value> = server
+        .attempts()
+        .iter()
+        .map(|a| {
+            json!({
+                "user": a.user,
+                "outcome": if a.accepted { "accepted" } else { "refused" },
+            })
+        })
+        .collect();
+    ok(json!({ "attempts": attempts }))
+}
+
+impl Levers {
+    /// Answers one request.
+    pub fn answer(&self, request: &Request) -> Response {
+        let query = |name: &str| request.query_value(name);
+        match (request.method.as_str(), request.path()) {
+            ("GET", "/rig") => {
+                let text = self
+                    .rig
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
+                    .clone();
+                Response::new(200).typed("application/json", text)
+            }
+            ("POST", "/issuer/refuse-refreshes") => {
+                match (
+                    self.issuer.as_ref(),
+                    query("n").and_then(|n| n.parse::<u32>().ok()),
+                ) {
+                    (None, _) => absent("the issuer"),
+                    (_, None) => refused(400, "n is a number"),
+                    (Some(issuer), Some(n)) => {
+                        issuer.refuse_refreshes(n);
+                        ok(json!({ "n": n }))
+                    }
+                }
+            }
+            ("POST", "/issuer/revoke") => {
+                let Some(issuer) = self.issuer.as_ref() else {
+                    return absent("the issuer");
+                };
+                let token = query("token").unwrap_or_else(|| OAUTH_REFRESH_TOKEN.to_owned());
+                let Ok((address, _)) = split_loopback(issuer.base_url()) else {
+                    return refused(500, "the issuer has no loopback address");
+                };
+                let sent = run(post_form(&address, "/revoke", &[("token", &token)]));
+                match sent {
+                    Ok(answer) if answer.status == 200 => ok(json!({})),
+                    _ => refused(502, "the issuer did not take the revoke"),
+                }
+            }
+            ("GET", "/imap/attempts") => attempts(self.imap.as_ref(), "the IMAP server"),
+            ("GET", "/smtp/attempts") => attempts(self.smtp.as_ref(), "the SMTP server"),
+            ("GET", "/pop3/attempts") => attempts(self.pop3.as_ref(), "the POP3 server"),
+            ("POST", "/ollama/stop") => match self.ollama.as_ref() {
+                None => absent("the fake Ollama"),
+                Some(ollama) => ok(json!({ "stopped": run(ollama.stop()) })),
+            },
+            ("POST", "/ollama/start") => match self.ollama.as_ref() {
+                None => absent("the fake Ollama"),
+                Some(ollama) => match run(ollama.start()) {
+                    Ok(started) => ok(json!({ "started": started, "port": ollama.port() })),
+                    Err(why) => refused(500, &format!("cannot bind the old port: {why}")),
+                },
+            },
+            ("GET", "/ollama/status") => match self.ollama.as_ref() {
+                None => absent("the fake Ollama"),
+                Some(ollama) => ok(json!({
+                    "running": ollama.is_running(), "chats": ollama.chats(), "port": ollama.port(),
+                })),
+            },
+            ("POST", "/stop") => {
+                self.stop.notify_one();
+                ok(json!({}))
+            }
+            (_, path) if path.starts_with("/google/") => self.google_lever(request),
+            _ => refused(404, "no such lever"),
+        }
+    }
+}
+
+/// Binds the control endpoint on loopback and serves it on a task; its URL.
+pub async fn serve_levers(levers: Levers) -> io::Result<(String, tokio::task::JoinHandle<()>)> {
+    let listener = Listener::bind(&Bind::Port(0), "control").await?;
+    let port = account_fake_servers::net::port_of(listener.address());
+    let task = tokio::spawn(serve(
+        listener,
+        None,
+        Arc::new(move |request: Request| levers.answer(&request)),
+    ));
+    Ok((format!("http://127.0.0.1:{port}"), task))
+}
+
+/// A request to a control endpoint, for the tests and for scenarios written in Rust.
+pub async fn call(control: &str, method: &str, target: &str, body: &[u8]) -> io::Result<Response> {
+    let (address, _) = split_loopback(control)?;
+    send(
+        &address,
+        Scheme::Http,
+        &Request::new(method, target).with_body(body.to_vec()),
+    )
+    .await
+}

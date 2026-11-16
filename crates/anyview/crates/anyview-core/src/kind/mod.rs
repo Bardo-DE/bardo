@@ -34,7 +34,7 @@ pub use tree::TreeFormat;
 pub(crate) use family::{Family, from_extension, from_mime};
 pub(crate) use syntax::{for_extension as syntax_for_extension, for_name as syntax_for_name};
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// What a file is. A closed set, so every decision about files is a match on it; the one place
 /// that decides per kind is `crate::profile`.
@@ -79,7 +79,7 @@ pub enum FormatKind {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ds_core::testing::word_matches_serde;
+    use ui_core::testing::word_matches_serde;
 
     #[test]
     fn kinds_are_stored_as_their_slugs() {

@@ -1,9 +1,9 @@
 use super::*;
-use chordkit::{Action, DefaultChord};
-use ds_core::standard_action::StandardAction;
-use ds_core::testing::word_matches_serde;
-use ds_core::vocab::Shortcut;
-use ds_core::word::Word;
+use keymap::{Action, DefaultChord};
+use ui_core::standard_action::StandardAction;
+use ui_core::testing::word_matches_serde;
+use ui_core::vocab::Shortcut;
+use ui_core::word::Word;
 
 #[test]
 fn actions_are_stored_as_their_slugs() {

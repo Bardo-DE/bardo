@@ -1,0 +1,44 @@
+[package]
+name = "computer-use-run"
+description = "The pure run machine of a computer-use run: observations, the phase table, inputs and effects, effect classification, mode support, the lease book, stall detection, the configuration and the seams cuad plugs in."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+action-gate-wire = {path = "../../actions/action-gate-wire"}
+action-wire = {path = "../../actions/action-wire"}
+permission-core = {path = "../../actions/permission-core"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-action = {path = "../computer-use-action"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+keymap = {path = "../../keymap/keymap"}
+computer-use-capture = {path = "../computer-use-capture"}
+computer-use-seat-input = {path = "../computer-use-seat-input"}
+computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
+computer-use-bus = {path = "../computer-use-bus"}
+action-core = {path = "../../actions/action-core"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+model-provider = {path = "../../models/model-provider"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+keyboard-types = {version = "0.7", features = ["serde"]}
+blake3 = {version = "1"}
+
+[dev-dependencies]
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+action-vocab = {path = "../../actions/action-vocab"}
+computer-use-fake = {path = "../computer-use-fake"}
+serde_json = {version = "1"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

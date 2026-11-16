@@ -62,7 +62,7 @@ pub mod portable;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 
-pub use ds_core::settings::{ExtensionId, SettingsTarget};
+pub use ui_core::settings::{ExtensionId, SettingsTarget};
 pub use env::{BusRoute, Dirs, Env};
 pub use error::{IoOp, PlatformError};
 pub use instance::{Claim, Handoff, Instance, Primary, Request};

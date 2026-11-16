@@ -1,0 +1,466 @@
+use super::rig::*;
+use account_capability::CapabilityKind as K;
+use account_capability::KindToggle;
+use account_capability::{AbsentReason, Offer, Provenance};
+use account_core::AccountId;
+use account_core::{Credential, Family, SecretPurpose, TenantConsent};
+use account_fake_servers::{Consent, IssuerEvent, TokenResult};
+use account_provider::{LoginHint, Provider, SignIn, SignInMode, SignInStart, SignInStep};
+use account_sheet::{SignInFault, SignInInput};
+
+fn grant_types(rig: &Rig) -> Vec<String> {
+    rig.issuer
+        .events()
+        .into_iter()
+        .filter_map(|e| match e {
+            IssuerEvent::Token {
+                grant_type,
+                result: TokenResult::Issued { .. },
+                ..
+            } => Some(grant_type),
+            _ => None,
+        })
+        .collect()
+}
+
+/// Signs in by loopback up to the review, with the browser answering.
+async fn to_review(
+    rig: &Rig,
+) -> (
+    account_family_kit::Conversation<
+        account_family_oauth::BrowserFlow<account_family_oauth::Microsoft, Wire>,
+    >,
+    SignInStep,
+) {
+    to_review_from(rig, start()).await
+}
+
+/// The same for a sign-in begun like `begun`.
+async fn to_review_from(
+    rig: &Rig,
+    begun: SignInStart,
+) -> (
+    account_family_kit::Conversation<
+        account_family_oauth::BrowserFlow<account_family_oauth::Microsoft, Wire>,
+    >,
+    SignInStep,
+) {
+    let mut signin = rig.provider.sign_in(begun).expect("sign in");
+    let SignInStep::OpenBrowser { url } = signin.next(SignInInput::Start).await else {
+        panic!("expected the browser")
+    };
+    let page = url.as_str().to_owned();
+    let browser = tokio::spawn(async move { browse(&page).await });
+    let step = until_settled(&mut signin, 200).await;
+    browser.await.expect("task").expect("browser");
+    (signin, step)
+}
+
+#[tokio::test]
+async fn a_known_address_is_sent_as_the_hint_and_microsoft_gets_no_prompt() {
+    let ada = LoginHint::parse("ada@outlook.com").expect("an address");
+    for hint in [Some(&ada), None] {
+        let rig = Rig::new(true).await;
+        let mut begun = start();
+        if let Some(hint) = hint {
+            begun = begun.with_login_hint(hint.clone());
+        }
+        let (_signin, step) = to_review_from(&rig, begun).await;
+        assert!(matches!(step, SignInStep::Review { .. }), "{step:?}");
+        let query = rig
+            .issuer
+            .authorize_queries()
+            .pop()
+            .expect("an authorize request");
+        let get = |name: &str| {
+            query
+                .iter()
+                .find(|(n, _)| n == name)
+                .map(|(_, v)| v.as_str())
+        };
+        assert_eq!(get("login_hint"), hint.map(LoginHint::as_str), "{hint:?}");
+        assert_eq!(get("prompt"), None, "{hint:?}");
+    }
+}
+
+#[tokio::test]
+async fn a_loopback_sign_in_reviews_what_graph_allows_then_hands_over_the_credential() {
+    let rig = Rig::new(true).await;
+    let (mut signin, step) = to_review(&rig).await;
+    let SignInStep::Review {
+        claims,
+        endpoints,
+        restriction,
+        label,
+    } = step
+    else {
+        panic!("expected a review, got {step:?}")
+    };
+    assert_eq!(label.0, "ada@contoso.onmicrosoft.com");
+    let kinds: Vec<K> = claims.iter().map(|c| c.offer.kind()).collect();
+    assert_eq!(
+        kinds,
+        [
+            K::Mail,
+            K::Calendar,
+            K::Contacts,
+            K::Tasks,
+            K::Notes,
+            K::Storage
+        ]
+    );
+    for claim in &claims {
+        let want = match claim.offer.kind() {
+            K::Mail => Provenance::Discovered,
+            _ => Provenance::Probed,
+        };
+        assert_eq!(claim.provenance, want, "{claim:?}");
+        assert!(matches!(claim.offer, Offer::Present(_)), "{claim:?}");
+    }
+    assert_eq!(restriction.consent, TenantConsent::User);
+    let servers: Vec<(Family, &str)> = endpoints
+        .iter()
+        .map(|e| (e.family, e.url.as_str()))
+        .collect();
+    assert_eq!(
+        servers,
+        [
+            (Family::Imap, "imaps://outlook.office365.com:993"),
+            (Family::Smtp, "smtp://smtp.office365.com:587"),
+            (Family::Graph, "https://graph.microsoft.com"),
+        ]
+    );
+    assert!(endpoints.iter().all(|e| e.check().is_ok()));
+    assert!(endpoints.iter().all(|e| e.login.0 == label.0));
+
+    // Nothing is handed over before the person confirms.
+    let again = signin.next(SignInInput::Poll).await;
+    assert!(matches!(again, SignInStep::Review { .. }));
+    let choices = vec![KindToggle {
+        kind: K::Notes,
+        toggle: false,
+    }];
+    let SignInStep::Done(signed) = signin.next(SignInInput::Confirm(choices)).await else {
+        panic!("expected done")
+    };
+    let [(purpose, Credential::OAuth { refresh, .. })] = signed.credentials.as_slice() else {
+        panic!("one OAuth credential: {:?}", signed.credentials)
+    };
+    assert_eq!(*purpose, SecretPurpose::OAuthRefresh);
+    assert!(rig.issuer.refresh_is_live(refresh.expose()));
+
+    // The code was redeemed for Exchange, and Graph's token came from a scoped refresh.
+    assert_eq!(grant_types(&rig), ["authorization_code", "refresh_token"]);
+    let calls = rig.graph.calls();
+    assert_eq!(calls[0].0, "/v1.0/me");
+    assert!(
+        calls
+            .iter()
+            .all(|(_, bearer)| rig.issuer.access_is_live(bearer))
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|(path, _)| path == "/v1.0/me/onenote/notebooks")
+    );
+}
+
+#[tokio::test]
+async fn a_tenant_that_forbids_onenote_shows_notes_absent_for_consent() {
+    let rig = Rig::new(true).await;
+    rig.graph.refuse("/v1.0/me/onenote/notebooks", 403);
+    let (_, step) = to_review(&rig).await;
+    let SignInStep::Review {
+        claims,
+        restriction,
+        endpoints,
+        ..
+    } = step
+    else {
+        panic!("expected a review, got {step:?}")
+    };
+    let notes = claims
+        .iter()
+        .find(|c| c.offer.kind() == K::Notes)
+        .expect("notes");
+    assert_eq!(
+        notes.offer,
+        Offer::Absent {
+            kind: K::Notes,
+            reason: AbsentReason::TenantConsent
+        }
+    );
+    assert_eq!(notes.provenance, Provenance::Probed);
+    assert_eq!(restriction.consent, TenantConsent::AdminRequired);
+    // The rest still answered, so Graph is still an endpoint.
+    assert!(endpoints.iter().any(|e| e.family == Family::Graph));
+    let present = claims
+        .iter()
+        .filter(|c| matches!(c.offer, Offer::Present(_)))
+        .count();
+    assert_eq!(present, 5);
+}
+
+#[tokio::test]
+async fn a_personal_account_that_is_refused_has_no_tenant_to_blame() {
+    let rig = Rig::new(true).await;
+    *rig.graph.address.lock().unwrap() = "ada@outlook.com".into();
+    rig.graph.refuse("/v1.0/me/onenote/notebooks", 403);
+    rig.graph.refuse("/v1.0/me/todo/lists", 404);
+    let (_, step) = to_review(&rig).await;
+    let SignInStep::Review {
+        claims,
+        restriction,
+        ..
+    } = step
+    else {
+        panic!("expected a review, got {step:?}")
+    };
+    let reason_of = |kind| {
+        claims.iter().find_map(|c| match &c.offer {
+            Offer::Absent { kind: k, reason } if *k == kind => Some(*reason),
+            _ => None,
+        })
+    };
+    assert_eq!(reason_of(K::Notes), Some(AbsentReason::ProviderOffersNone));
+    assert_eq!(reason_of(K::Tasks), Some(AbsentReason::NotOnServer));
+    assert_eq!(restriction.consent, TenantConsent::User);
+}
+
+#[tokio::test]
+async fn onedrive_reports_its_quota() {
+    let rig = Rig::new(true).await;
+    let (_, step) = to_review(&rig).await;
+    let SignInStep::Review { claims, .. } = step else {
+        panic!("expected a review")
+    };
+    let storage = claims
+        .iter()
+        .find(|c| c.offer.kind() == K::Storage)
+        .expect("storage");
+    let Offer::Present(account_capability::Capability::Storage(cap)) = &storage.offer else {
+        panic!("present storage")
+    };
+    assert!(cap.quota);
+}
+
+#[tokio::test]
+async fn declining_the_consent_page_cancels_and_nothing_is_exchanged() {
+    let rig = Rig::new(true).await;
+    rig.issuer.set_consent(Consent::Deny);
+    let (_, step) = to_review(&rig).await;
+    assert_eq!(step, SignInStep::Failed(SignInFault::Cancelled));
+    assert!(grant_types(&rig).is_empty());
+}
+
+#[tokio::test]
+async fn a_build_with_no_client_id_says_so_before_opening_anything() {
+    let rig = Rig::new(false).await;
+    let mut signin = rig.provider.sign_in(start()).expect("sign in");
+    assert_eq!(
+        signin.next(SignInInput::Start).await,
+        SignInStep::Failed(SignInFault::NeedsClientId)
+    );
+    assert!(rig.issuer.events().is_empty());
+}
+
+/// ux-2: a client id written to the person's clients file while the provider is running (what
+/// Settings does) is used by the next sign-in, with no new provider and no restart.
+#[tokio::test]
+async fn a_client_id_written_after_start_is_used_by_the_next_sign_in() {
+    let rig = Rig::new(false).await;
+    let dir = base_testkit::Scratch::new("families-ux2");
+    let files = account_family_oauth::ClientFiles {
+        shipped: dir.join("shipped.toml"),
+        own: dir.join("clients.toml"),
+    };
+    let env = account_family_oauth::OAuthEnv::new(
+        Wire {
+            graph: std::sync::Arc::clone(&rig.graph),
+        },
+        account_oauth::ClientRegistry::default(),
+        account_ids::clock::SystemClock,
+    )
+    .with_channel(account_provider::ClientChannel::Development)
+    .with_files(files.clone());
+    let provider =
+        account_family_oauth::OAuthProvider::with_env(account_family_oauth::Microsoft, spec(), env);
+
+    // ux-1: the add list leaves it out until then.
+    assert!(!provider.ready());
+    let mut before = provider.sign_in(start()).expect("sign in");
+    assert_eq!(
+        before.next(SignInInput::Start).await,
+        SignInStep::Failed(SignInFault::NeedsClientId)
+    );
+    std::fs::write(
+        &files.own,
+        "[[client]]\nissuer = \"microsoft\"\nchannel = \"development\"\nclient_id = \"set-in-settings\"\n",
+    )
+    .expect("write");
+    assert!(provider.ready());
+    let mut after = provider.sign_in(start()).expect("sign in");
+    let SignInStep::OpenBrowser { url } = after.next(SignInInput::Start).await else {
+        panic!("expected the browser once a client id is set")
+    };
+    assert!(
+        url.as_str().contains("client_id=set-in-settings"),
+        "{}",
+        url.as_str()
+    );
+    let _ = after.next(SignInInput::Cancel).await;
+    let _ = std::fs::remove_file(&files.own);
+}
+
+#[tokio::test]
+async fn cancelling_closes_the_listeners_and_ends_the_sign_in() {
+    let rig = Rig::new(true).await;
+    let mut signin = rig.provider.sign_in(start()).expect("sign in");
+    let SignInStep::OpenBrowser { url } = signin.next(SignInInput::Start).await else {
+        panic!("expected the browser")
+    };
+    assert_eq!(signin.next(SignInInput::Poll).await, SignInStep::Waiting);
+    let port = redirect_port(url.as_str()).expect("the redirect names a port");
+    assert!(
+        tokio::net::TcpStream::connect(("127.0.0.1", port))
+            .await
+            .is_ok()
+    );
+    assert_eq!(
+        signin.next(SignInInput::Cancel).await,
+        SignInStep::Failed(SignInFault::Cancelled)
+    );
+    drop(signin);
+    // The listener's task is aborted with the sign-in; give the runtime a turn to close it.
+    let deadline = base_testkit::Deadline::generous();
+    while !deadline.passed() {
+        if tokio::net::TcpStream::connect(("127.0.0.1", port))
+            .await
+            .is_err()
+        {
+            return;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    deadline.fail("the loopback listener to close");
+}
+
+fn again() -> SignInStart {
+    SignInStart::new(SignInMode::Reauthenticate {
+        account: AccountId::parse("ada").expect("id"),
+        endpoints: Vec::new(),
+    })
+}
+
+#[tokio::test]
+async fn a_loopback_sign_in_again_ends_done_without_a_review() {
+    let rig = Rig::new(true).await;
+    let mut signin = rig.provider.sign_in(again()).expect("sign in");
+    let SignInStep::OpenBrowser { url } = signin.next(SignInInput::Start).await else {
+        panic!("expected the browser")
+    };
+    let page = url.as_str().to_owned();
+    let browser = tokio::spawn(async move { browse(&page).await });
+    let step = until_settled(&mut signin, 200).await;
+    browser.await.expect("task").expect("browser");
+    let SignInStep::Done(signed) = step else {
+        panic!("expected done with no review, got {step:?}")
+    };
+    assert_eq!(signed.label.0, "ada@contoso.onmicrosoft.com");
+    assert!(matches!(
+        signed.credentials.as_slice(),
+        [(SecretPurpose::OAuthRefresh, Credential::OAuth { .. })]
+    ));
+}
+
+#[tokio::test]
+async fn a_graph_that_answers_5xx_ends_the_sign_in_unreachable_and_it_stays_over() {
+    let rig = Rig::new(true).await;
+    let mut signin = rig.provider.sign_in(start()).expect("sign in");
+    let SignInStep::OpenBrowser { url } = signin.next(SignInInput::Start).await else {
+        panic!("expected the browser")
+    };
+    let page = url.as_str().to_owned();
+    let browser = tokio::spawn(async move { browse(&page).await });
+    // The issuer has issued; Graph is the part that is down.
+    *rig.graph.statuses.lock().unwrap() = [("/v1.0/me".to_owned(), 503)].into();
+    let step = until_settled(&mut signin, 200).await;
+    browser.await.expect("task").expect("browser");
+    assert_eq!(step, SignInStep::Failed(SignInFault::Unreachable));
+    assert_eq!(
+        signin.next(SignInInput::Poll).await,
+        SignInStep::Failed(SignInFault::Cancelled)
+    );
+}
+
+const FILES: &str = "https://graph.microsoft.com/Files.ReadWrite";
+const CALENDARS: &str = "https://graph.microsoft.com/Calendars.ReadWrite";
+
+fn asked_scope(rig: &Rig) -> String {
+    let query = rig
+        .issuer
+        .authorize_queries()
+        .pop()
+        .expect("an authorize request");
+    query
+        .into_iter()
+        .find(|(n, _)| n == "scope")
+        .map(|(_, v)| v)
+        .expect("scope")
+}
+
+#[tokio::test]
+async fn sign_in_never_asks_the_whole_drive() {
+    let rig = Rig::new(true).await;
+    let _ = to_review(&rig).await;
+    let scope = asked_scope(&rig);
+    assert!(!scope.split(' ').any(|s| s == FILES), "{scope}");
+    assert!(scope.split(' ').any(|s| s == CALENDARS), "{scope}");
+}
+
+#[tokio::test]
+async fn asking_for_the_whole_drive_asks_it_alone_and_records_it_with_the_rest() {
+    let rig = Rig::new(true).await;
+    let (_, step) = to_review(&rig).await;
+    let SignInStep::Review {
+        endpoints: stored, ..
+    } = step
+    else {
+        panic!("expected a review, got {step:?}")
+    };
+    let begun = SignInStart::new(SignInMode::Extend {
+        account: AccountId::parse("ada").expect("id"),
+        endpoints: stored.clone(),
+        kinds: vec![K::Storage],
+    });
+    let (mut signin, step) = to_review_from(&rig, begun).await;
+    let scope = asked_scope(&rig);
+    assert!(scope.split(' ').any(|s| s == FILES), "{scope}");
+    assert!(!scope.split(' ').any(|s| s == CALENDARS), "{scope}");
+    let SignInStep::Review {
+        claims, endpoints, ..
+    } = step
+    else {
+        panic!("expected a review, got {step:?}")
+    };
+    let kinds: Vec<K> = claims.iter().map(|c| c.offer.kind()).collect();
+    assert_eq!(kinds, [K::Storage]);
+    assert_eq!(endpoints.len(), stored.len());
+    assert!(
+        endpoints
+            .iter()
+            .all(|e| e.login.0 == "ada@contoso.onmicrosoft.com")
+    );
+    let choices = vec![KindToggle {
+        kind: K::Storage,
+        toggle: true,
+    }];
+    let SignInStep::Done(signed) = signin.next(SignInInput::Confirm(choices)).await else {
+        panic!("expected done")
+    };
+    let [(_, Credential::OAuth { granted, .. })] = signed.credentials.as_slice() else {
+        panic!("one OAuth credential: {:?}", signed.credentials)
+    };
+    assert_eq!(granted.holds(FILES), Some(true));
+    assert_eq!(granted.holds(CALENDARS), Some(true));
+}

@@ -1,0 +1,356 @@
+//! The toast's state: one visible at a time, each push restarting the 5000 ms hold, which the
+//! pointer over the toast pauses (design/30 section 2.9, design/04-COMPONENTS.md section 23,
+//! design/06-INTERACTIONS.md section 9).
+//!
+//! The hold is a task of the root that provides the hub and drops with it; it writes through
+//! `try_set`, so a hold that finds the hub gone stops (`ui_style::task`).
+
+use dioxus::core::{Task, current_scope_id};
+use dioxus::prelude::*;
+use ui_core::time::clock::sleep;
+use ui_style::icon::Icon;
+use ui_style::task::{Gone, spawn_in, try_get, try_set};
+use ui_style::tokens::delay::DelayToken;
+
+/// What an undo would restore, as the consumer's own token.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct UndoToken(pub u64);
+
+/// The button a toast offers: what it says and its glyph. An undo's is `Undo` with the undo arrow;
+/// any other is the consumer's ("View", "Open", "Retry").
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ToastAction {
+    /// Its words.
+    pub label: String,
+    /// The glyph before them, if any.
+    pub icon: Option<Icon>,
+}
+
+impl ToastAction {
+    /// A button of `label` with no glyph.
+    pub fn new(label: impl Into<String>) -> Self {
+        ToastAction {
+            label: label.into(),
+            icon: None,
+        }
+    }
+
+    /// The same button with `icon` before its words.
+    pub fn with_icon(self, icon: Icon) -> Self {
+        ToastAction {
+            icon: Some(icon),
+            ..self
+        }
+    }
+
+    /// The undo's own button.
+    fn undo() -> Self {
+        ToastAction::new("Undo").with_icon(Icon::Undo)
+    }
+}
+
+/// Whether the toast answers the pointer yet. A toast that appears under a still pointer does
+/// not take it (the Mac's banners don't): a press there reaches what is below, and the toast
+/// neither counts as hovered nor holds. A move of the pointer arms it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum Armed {
+    /// It just appeared and the pointer has not moved since: transparent to the pointer.
+    #[default]
+    Waiting,
+    /// The pointer has moved: it holds while hovered and its button takes presses.
+    Live,
+}
+
+impl Armed {
+    /// The attribute value on the toast: `data-armed`.
+    pub fn slug(self) -> &'static str {
+        match self {
+            Armed::Waiting => "waiting",
+            Armed::Live => "live",
+        }
+    }
+}
+
+/// The toast as it is now.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub enum ToastState {
+    /// Below the card edge.
+    #[default]
+    Hidden,
+    /// Up, saying `text`, with an undo when there is one.
+    Shown {
+        /// What just happened: "Archived".
+        text: String,
+        /// What pressing its action undoes, when the action is an undo.
+        undo: Option<UndoToken>,
+        /// Its button: `Undo` when `undo` is set, else the consumer's own, else none.
+        action: Option<ToastAction>,
+    },
+}
+
+/// The toast manager, provided as context by `Ds` and rendered by `ToastHost`.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ToastHub {
+    state: Signal<ToastState>,
+    undone: Signal<Option<UndoToken>>,
+    on_undo: Signal<Option<EventHandler<UndoToken>>>,
+    on_action: Signal<Option<EventHandler<()>>>,
+    hold: Signal<Option<Task>>,
+    armed: Signal<Armed>,
+    scope: ScopeId,
+}
+
+impl ToastHub {
+    /// Show `text`, replacing any toast, and restart the hold.
+    pub fn push(&self, text: String, undo: Option<UndoToken>) {
+        self.show(text, undo, None);
+    }
+
+    /// Show `text` with an undo, replacing any toast, and restart the hold; when the person
+    /// undoes this toast, `on_undo` is called with `undo`, so the consumer restores in its own
+    /// handler instead of watching [`ToastHub::last_undo`] in an effect.
+    ///
+    /// A later push replaces the handler with its own (or with none): only the toast on screen
+    /// can be undone. The handler belongs to the scope that created it, so push from a
+    /// component that outlives the toast (the page, not a row that may be gone by then).
+    pub fn push_undoable(&self, text: String, undo: UndoToken, on_undo: EventHandler<UndoToken>) {
+        self.show(text, Some(undo), Some(on_undo));
+    }
+
+    /// Show `text` with `action` as its button, replacing any toast, and restart the hold; when
+    /// the person presses the button, `on_press` is called and the toast goes.
+    ///
+    /// The handler is the push's own and belongs to the scope that created it, like
+    /// [`ToastHub::push_undoable`]'s: push from a component that outlives the toast.
+    pub fn push_action(&self, text: String, action: ToastAction, on_press: EventHandler<()>) {
+        let _ = self.try_show(text, Push::Action(action, on_press));
+    }
+
+    fn show(
+        &self,
+        text: String,
+        undo: Option<UndoToken>,
+        on_undo: Option<EventHandler<UndoToken>>,
+    ) {
+        let _ = self.try_show(text, Push::Undo(undo, on_undo));
+    }
+
+    fn try_show(&self, text: String, shown: Push) -> Result<(), Gone> {
+        let (undo, action, on_undo, on_action) = match shown {
+            Push::Undo(undo, on_undo) => (undo, undo.map(|_| ToastAction::undo()), on_undo, None),
+            Push::Action(action, on_press) => (None, Some(action), None, Some(on_press)),
+        };
+        try_set(self.on_undo, on_undo)?;
+        try_set(self.on_action, on_action)?;
+        try_set(self.armed, Armed::Waiting)?;
+        try_set(self.state, ToastState::Shown { text, undo, action })?;
+        self.start_hold()
+    }
+
+    /// The toast's button was pressed: an undo runs as [`ToastHub::undo`]; a consumer's action
+    /// hides the toast at once and calls the push's handler.
+    ///
+    /// Nothing happens when no toast is up.
+    pub fn press_action(&self) {
+        let ToastState::Shown { undo, .. } = self.state.peek().clone() else {
+            return;
+        };
+        if undo.is_some() {
+            self.undo();
+            return;
+        }
+        self.hide();
+        let mut handler = self.on_action;
+        if let Some(handler) = handler.take() {
+            handler.call(());
+        }
+    }
+
+    /// (Re)start the hold: the toast hides when it has run out.
+    fn start_hold(&self) -> Result<(), Gone> {
+        self.stop_hold()?;
+        let hold = DelayToken::ToastHold.delay();
+        let hub = *self;
+        let started = spawn_in(self.scope, async move {
+            sleep(hold).await;
+            if try_set(hub.hold, None).is_ok() {
+                hub.hide();
+            }
+        });
+        try_set(self.hold, Some(started))
+    }
+
+    /// Whether the toast answers the pointer yet.
+    pub fn armed(&self) -> Armed {
+        *self.armed.read()
+    }
+
+    /// The root heard the pointer move somewhere (not a replayed move to where it was): a toast
+    /// that appeared under the pointer is armed.
+    pub(crate) fn pointer_moved(&self) {
+        if *self.armed.peek() == Armed::Waiting {
+            let _ = try_set(self.armed, Armed::Live);
+        }
+    }
+
+    /// The pointer came over the toast: the hold stops, so it stays up while it is read.
+    pub fn pause(&self) {
+        let _ = self.stop_hold();
+    }
+
+    /// The pointer left the toast: the hold starts over, in full, if a toast is up.
+    pub fn resume(&self) {
+        if matches!(*self.state.peek(), ToastState::Shown { .. }) {
+            let _ = self.start_hold();
+        }
+    }
+
+    /// The toast as it is now.
+    pub fn state(&self) -> ToastState {
+        self.state.read().clone()
+    }
+
+    /// The toast's action was pressed: hide at once, call the push's `on_undo`
+    /// with the token, and report it.
+    ///
+    /// `None`, and nothing hidden, when no toast is up. The token is also kept as the last
+    /// undo, for a consumer that watches rather than handles the release.
+    pub fn undo(&self) -> Option<UndoToken> {
+        let ToastState::Shown { undo, .. } = self.state.peek().clone() else {
+            return None;
+        };
+        self.hide();
+        let mut undone = self.undone;
+        undone.set(undo);
+        let mut handler = self.on_undo;
+        let handler = handler.take();
+        if let (Some(token), Some(handler)) = (undo, handler) {
+            handler.call(token);
+        }
+        undo
+    }
+
+    /// The token the last undo reported.
+    pub fn last_undo(&self) -> Option<UndoToken> {
+        (self.undone)()
+    }
+
+    /// Hide at once.
+    pub fn hide(&self) {
+        if self.stop_hold().is_ok() {
+            let _ = ui_style::task::try_set_if_changed(self.state, ToastState::Hidden);
+        }
+    }
+
+    fn stop_hold(&self) -> Result<(), Gone> {
+        // Copied out first: a guard held through the body would make the write below a
+        // double borrow.
+        if let Some(running) = try_get(self.hold)? {
+            running.cancel();
+            try_set(self.hold, None)?;
+        }
+        Ok(())
+    }
+}
+
+/// What a push brings: an optional undo with its handler, or a consumer's own action.
+enum Push {
+    Undo(Option<UndoToken>, Option<EventHandler<UndoToken>>),
+    Action(ToastAction, EventHandler<()>),
+}
+
+/// A new hub for `Ds` to provide.
+pub fn use_toast_hub_provider() -> ToastHub {
+    let scope = use_hook(current_scope_id);
+    use_context_provider(|| ToastHub {
+        state: Signal::new(ToastState::Hidden),
+        undone: Signal::new(None),
+        on_undo: Signal::new(None),
+        on_action: Signal::new(None),
+        hold: Signal::new(None),
+        armed: Signal::new(Armed::Waiting),
+        scope,
+    })
+}
+
+/// The enclosing `Ds`'s toast manager.
+pub fn use_toast_hub() -> ToastHub {
+    use_context::<ToastHub>()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{ToastAction, ToastHub, UndoToken, use_toast_hub_provider};
+    use dioxus::prelude::*;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    /// What the handlers saw, and what `undo` returned, in order.
+    #[derive(Clone, Default)]
+    struct Log(Rc<RefCell<Vec<String>>>);
+
+    impl PartialEq for Log {
+        fn eq(&self, other: &Self) -> bool {
+            Rc::ptr_eq(&self.0, &other.0)
+        }
+    }
+
+    impl Log {
+        fn note(&self, line: String) {
+            self.0.borrow_mut().push(line);
+        }
+    }
+
+    #[component]
+    fn Script(log: Log) -> Element {
+        let hub: ToastHub = use_toast_hub_provider();
+        use_hook(move || {
+            let heard = |log: Log| {
+                EventHandler::new(move |token: UndoToken| log.note(format!("heard {}", token.0)))
+            };
+            // An undone push calls its own handler once, with its own token.
+            hub.push_undoable("Archived".into(), UndoToken(1), heard(log.clone()));
+            log.note(format!("undo {:?}", hub.undo().map(|t| t.0)));
+            // Nothing is up now: no second call.
+            log.note(format!("undo {:?}", hub.undo().map(|t| t.0)));
+            // A later push replaces the handler: the first toast's handler never hears the
+            // second's undo.
+            hub.push_undoable("Snoozed".into(), UndoToken(2), heard(log.clone()));
+            hub.push("Moved".into(), Some(UndoToken(3)));
+            log.note(format!("undo {:?}", hub.undo().map(|t| t.0)));
+            log.note(format!("last {:?}", hub.last_undo().map(|t| t.0)));
+            // A consumer's action: pressing it calls its handler once, then nothing is left.
+            let ran = log.clone();
+            hub.push_action(
+                "Sent".into(),
+                ToastAction::new("View"),
+                EventHandler::new(move |()| ran.note("view".into())),
+            );
+            hub.press_action();
+            hub.press_action();
+            // Pressed through an undo toast it is the undo.
+            hub.push_undoable("Moved".into(), UndoToken(4), heard(log.clone()));
+            hub.press_action();
+        });
+        rsx! {}
+    }
+
+    #[test]
+    fn a_press_calls_the_handler_its_push_gave() {
+        let log = Log::default();
+        let mut dom = VirtualDom::new_with_props(Script, ScriptProps { log: log.clone() });
+        dom.rebuild_in_place();
+        assert_eq!(
+            *log.0.borrow(),
+            [
+                "heard 1",
+                "undo Some(1)",
+                "undo None",
+                "undo Some(3)",
+                "last Some(3)",
+                "view",
+                "heard 4"
+            ]
+        );
+    }
+}

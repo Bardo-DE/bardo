@@ -1,0 +1,451 @@
+//! A session rebuilt from its `ResumePlan`: pure, so every rule of a restore is a table test.
+//!
+//! What comes back as it was: the person's words, the policy as stored (the policy writer is
+//! not asked), the history, the taint (never lower than the log's), the breaker's trip. What
+//! comes back changed: handles are labels with no value, an interrupted call is a history line
+//! that says so and is not run again, the budget's wall clock starts again, nothing is known
+//! to have been shown (`known` is empty), and a session whose log cannot be trusted is closed
+//! for display.
+
+use crate::handles::HandleTable;
+use crate::session::{CloseCause, SessionState};
+use crate::state::{SessionKind, SessionRecord};
+use crate::tasks::{TaskRecord, TaskState};
+use crate::wal::Wal;
+use crate::who::actor_of;
+use memory_core::EpisodeId;
+use companion_model::RunsIn;
+use action_core::{
+    ExternalAgent, Ledger, Reveal, SheetSurface, StepEnd, StepLine, StepShown, UserTurn,
+};
+use agent_session::{ResumeFault, ResumePlan, SessionEntry, Standing, TaintCause, TaintNote};
+use action_wire::TaskLedger;
+use account_core::AppName;
+use account_ids::Count;
+use provenance::{Actor, AgentRef, AgentRole, Label, SessionId, UnixSeconds};
+
+/// The app a session is attributed to when its log never said who opened it (a record from
+/// before the durable log).
+const FALLBACK_OPENER: &str = permission_core::COMPANION_APP;
+
+/// A restored session and everything beside it the router must make consistent.
+#[derive(Debug)]
+pub struct Rebuilt {
+    /// The session.
+    pub record: SessionRecord,
+    /// Its task.
+    pub task: TaskRecord,
+    /// The highest number any id of it used: new ids must be above it.
+    pub reserve: u64,
+    /// The taint the log itself holds: below the session's when a repair is still to be
+    /// appended.
+    pub durable: bool,
+}
+
+/// Whether the plan found untrusted handles with no taint entry before them.
+fn needs_repair(plan: &ResumePlan) -> bool {
+    plan.faults
+        .iter()
+        .any(|f| matches!(f, ResumeFault::MissingTaint { .. }))
+}
+
+/// The number in an id of the form `<letter>-<number>`.
+pub fn number_of(id: &str) -> u64 {
+    id.rsplit('-')
+        .next()
+        .and_then(|n| n.parse().ok())
+        .unwrap_or(0)
+}
+
+/// The history line of a call a crash cut off.
+fn interrupted_line(open: &agent_session::CallOpen) -> StepLine {
+    StepLine {
+        call: open.call,
+        action: open.action.clone(),
+        effect: open.effect,
+        end: StepEnd::Interrupted,
+        shown: StepShown::Full,
+        with: Vec::new(),
+    }
+}
+
+/// Where the session stands, and what its task is doing.
+fn state_of(standing: &Standing, taint: bool) -> (SessionState, TaskState) {
+    match standing {
+        Standing::Open => (SessionState::Open(taint), TaskState::Working),
+        Standing::Paused(trip) => (
+            SessionState::Paused { taint, trip: *trip },
+            TaskState::NeedsYou,
+        ),
+        Standing::Closed(cause) => (
+            SessionState::Closed((*cause).into()),
+            TaskState::Ended(provenance::ReportStatus::Done),
+        ),
+        // A log that cannot be trusted whole is shown, not continued.
+        Standing::Blocked(_) => (
+            SessionState::Closed(CloseCause::Closed),
+            TaskState::Ended(provenance::ReportStatus::Done),
+        ),
+    }
+}
+
+/// What the session has used: the last checkpoint plus the calls since, on a wall clock that
+/// starts at `now` (budgets count active time, owner decision D5).
+fn ledger_of(plan: &ResumePlan, now: UnixSeconds) -> Ledger {
+    let base = plan.budget.checkpoint.unwrap_or_else(|| Ledger::new(now));
+    Ledger {
+        started: now,
+        window_start: now,
+        in_window: Count(0),
+        calls: Count(base.calls.0.saturating_add(plan.budget.calls_since.0)),
+        ..base
+    }
+}
+
+/// The distinct labels of the handles, which a message the session sends joins.
+fn labels_of(plan: &ResumePlan) -> Vec<Label> {
+    let mut seen: Vec<Label> = Vec::new();
+    for handle in &plan.handles {
+        if !seen.contains(&handle.label) {
+            seen.push(handle.label.clone());
+        }
+    }
+    seen
+}
+
+/// What waits to be appended once the session is live: a step for each interrupted call (so
+/// the log says what the restore told the planner), and the taint a repair found due.
+fn queued(plan: &ResumePlan, lines: &[StepLine]) -> Vec<SessionEntry> {
+    let taint = needs_repair(plan).then_some(SessionEntry::Taint(TaintNote {
+        cause: TaintCause::Repaired,
+        at_call: None,
+    }));
+    taint
+        .into_iter()
+        .chain(lines.iter().cloned().map(SessionEntry::Step))
+        .collect()
+}
+
+/// The session `plan` describes, as of `now`.
+pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
+    let opening = &plan.opening;
+    let agent = opening.agent.clone().unwrap_or(AgentRef::Companion);
+    let opener = opening
+        .opener
+        .clone()
+        .unwrap_or_else(|| AppName::parse(FALLBACK_OPENER).expect("a fixed app name is valid"));
+    let taint = plan.taint;
+    let (state, task_state) = state_of(&plan.standing, taint);
+    let cut_off: Vec<StepLine> = plan
+        .interrupted
+        .iter()
+        .map(|i| interrupted_line(&i.open))
+        .collect();
+
+    // The agent app and its own id for the conversation, while it is in a terminal's hands.
+    let in_terminal = plan
+        .hand
+        .as_ref()
+        .filter(|note| note.to == RunsIn::Terminal)
+        .and_then(|note| note.agent.as_ref());
+    let rewind = match &opening.backend {
+        agent_session::BackendKind::Watch(rewind) => *rewind,
+        _ => opening.rewind,
+    };
+    let external = match (&opening.backend, in_terminal) {
+        (agent_session::BackendKind::Acp(program), _) => Some(ExternalAgent {
+            program: program.clone(),
+            sheets: SheetSurface::Desktop,
+            label: opening.label.clone(),
+            rewind: opening.rewind,
+            helper: None,
+        }),
+        (_, Some(named)) => Some(ExternalAgent {
+            program: named.program.clone(),
+            sheets: SheetSurface::Desktop,
+            label: opening.label.clone(),
+            rewind,
+            helper: None,
+        }),
+        _ => None,
+    };
+    // A watch session is a terminal's, whatever agent its opening names; so is a conversation
+    // that went to a terminal and has not come back.
+    let (kind, actor) = match (&opening.backend, in_terminal) {
+        (agent_session::BackendKind::Watch(rewind), _) => {
+            (SessionKind::Watch(*rewind), Actor::Cli)
+        }
+        (_, Some(_)) => (SessionKind::Watch(rewind), Actor::Cli),
+        _ => (
+            SessionKind::Agent,
+            actor_of(&agent, external.as_ref(), id, &opener),
+        ),
+    };
+    let mut record = SessionRecord::new(
+        opening.task.clone(),
+        actor,
+        opener,
+        opening.space.clone(),
+        now,
+    );
+    record.kind = kind;
+    record.agent_session = in_terminal.map(|named| named.session.clone());
+    if let Some(seat) = &plan.seat {
+        record.actor = Actor::Companion {
+            session: id.clone(),
+            role: AgentRole::Helper {
+                helper: seat.helper.clone(),
+                task: opening.task.clone(),
+            },
+        };
+        record.helper = Some(seat.clone());
+    }
+    record.label = match kind {
+        SessionKind::Watch(_) => opening.label.clone(),
+        SessionKind::Agent => None,
+    };
+    record.external = external;
+    record.cwd = opening.cwd.clone();
+    record.state = state;
+    record.ledger = ledger_of(plan, now);
+    record.turns = plan.turns.clone();
+    record.policy = plan.policy.clone();
+    record.history = plan.history.iter().chain(&cut_off).cloned().collect();
+    record.seen = labels_of(plan);
+    record.saw.untrusted = taint;
+    // The log does not say whether private text was shown; a session that did anything is
+    // taken to have seen some.
+    record.saw.private = !(record.history.is_empty() && plan.handles.is_empty());
+    let mut handles = HandleTable::new();
+    plan.handles
+        .iter()
+        .cloned()
+        .for_each(|label| handles.restore_label(label));
+    record.handles = handles;
+    for (skill, _) in &plan.skills {
+        // The cap and the byte budget are not charged again; the body is not held.
+        let _ = record.skill_loads.admit(skill, 0);
+    }
+    record.wal = match &plan.standing {
+        Standing::Open | Standing::Paused(_) => {
+            let mut wal = Wal::on(plan.taint);
+            queued(plan, &cut_off)
+                .into_iter()
+                .for_each(|entry| wal.note(entry));
+            wal
+        }
+        Standing::Closed(_) | Standing::Blocked(_) => Wal::Off,
+    };
+
+    let first = plan.turns.first().map(|t| t.text.clone());
+    let ids = plan
+        .turns
+        .iter()
+        .map(|t: &UserTurn| t.id.0)
+        .chain(record.history.iter().map(|s| s.call.0))
+        .chain([number_of(id.as_str()), number_of(opening.task.as_str())]);
+    let reserve = ids.max().unwrap_or(0);
+    let task = TaskRecord {
+        task: opening.task.clone(),
+        session: id.clone(),
+        agent: agent.clone(),
+        parent: opening.parent.clone(),
+        space: opening.space.clone(),
+        state: task_state,
+        goal: Reveal::Plain(first.unwrap_or_default()),
+        last: record.history.last().cloned(),
+        ledger: TaskLedger {
+            task: opening.task.clone(),
+            agent,
+            parent: opening
+                .parent
+                .as_ref()
+                .and_then(|p| EpisodeId::parse(p.as_str()).ok()),
+            space: opening.space.clone(),
+            started: now,
+            asked: plan.turns.clone(),
+            steps: Vec::new(),
+            touched: Vec::new(),
+            results: Vec::new(),
+        },
+    };
+    let durable = !needs_repair(plan) && plan.taint;
+    Rebuilt {
+        record,
+        task,
+        reserve,
+        durable,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use action_core::Rewind;
+    use permission_core::BreakerTrip;
+    use agent_session::{
+        BackendKind, CallOpen, EndCause, Interrupted, Opening, ResumedBudget, TaintCause,
+    };
+    use action_vocab::CallId;
+    use provenance::{ActionName, Effect, SpaceId, TaskId};
+
+    fn plan(standing: Standing) -> ResumePlan {
+        ResumePlan {
+            opening: Opening {
+                task: TaskId::parse("t-4").expect("task"),
+                space: SpaceId::parse("work").expect("space"),
+                opener: Some(AppName::parse("org.quire.Shell").expect("app")),
+                agent: Some(AgentRef::Companion),
+                backend: BackendKind::Native,
+                parent: None,
+                forked_from: None,
+                cwd: None,
+                started_from: None,
+                label: None,
+                rewind: Default::default(),
+            },
+            seat: None,
+            hand: None,
+            standing,
+            taint: false,
+            policy: None,
+            turns: vec![],
+            history: vec![],
+            summary: None,
+            interrupted: vec![],
+            handles: vec![],
+            budget: ResumedBudget {
+                checkpoint: None,
+                calls_since: Count(0),
+            },
+            skills: vec![],
+            faults: vec![],
+        }
+    }
+
+    fn id() -> SessionId {
+        SessionId::parse("s-4").expect("session")
+    }
+
+    #[test]
+    fn an_external_agents_label_survives_a_rebuild() {
+        let mut p = plan(Standing::Open);
+        p.opening.backend = BackendKind::Acp(
+            permission_core::ProgramName::parse("claude-code").expect("program"),
+        );
+        p.opening.label = Some("Claude Code".to_owned());
+        p.opening.rewind = Rewind::Agent;
+        let record = rebuild(&id(), &p, UnixSeconds(1)).record;
+        let external = record.external.expect("external");
+        assert_eq!(external.label, p.opening.label);
+        // The host's rewind setting is read back from the log, not reset.
+        assert_eq!(external.rewind, Rewind::Agent);
+        assert!(matches!(
+            record.actor,
+            provenance::Actor::Acp { label: Some(_), .. }
+        ));
+    }
+
+    #[test]
+    fn the_wall_clock_restarts_and_the_calls_carry_over() {
+        let mut p = plan(Standing::Open);
+        let then = Ledger {
+            calls: Count(7),
+            writes: Count(3),
+            ..Ledger::new(UnixSeconds(100))
+        };
+        p.budget = ResumedBudget {
+            checkpoint: Some(then),
+            calls_since: Count(2),
+        };
+        let rebuilt = rebuild(&id(), &p, UnixSeconds(5000));
+        let ledger = rebuilt.record.ledger;
+        assert_eq!(
+            ledger.started,
+            UnixSeconds(5000),
+            "active time, not elapsed"
+        );
+        assert_eq!(ledger.window_start, UnixSeconds(5000));
+        assert_eq!((ledger.calls, ledger.writes), (Count(9), Count(3)));
+    }
+
+    #[test]
+    fn a_paused_session_restores_paused_and_waits_for_the_person() {
+        let trip = BreakerTrip::Consecutive;
+        let rebuilt = rebuild(&id(), &plan(Standing::Paused(trip)), UnixSeconds(1));
+        assert_eq!(
+            rebuilt.record.state,
+            SessionState::Paused { taint: false, trip }
+        );
+        assert_eq!(rebuilt.task.state, TaskState::NeedsYou);
+        assert!(rebuilt.record.wal.is_on());
+    }
+
+    #[test]
+    fn a_closed_or_blocked_session_is_shown_and_never_written() {
+        let closed = rebuild(
+            &id(),
+            &plan(Standing::Closed(EndCause::SpaceHalted)),
+            UnixSeconds(1),
+        );
+        assert_eq!(
+            closed.record.state,
+            SessionState::Closed(CloseCause::SpaceHalted)
+        );
+        let mut p = plan(Standing::Blocked(agent_session::Blocker::Gap));
+        p.taint = true;
+        let blocked = rebuild(&id(), &p, UnixSeconds(1));
+        assert_eq!(
+            blocked.record.state,
+            SessionState::Closed(CloseCause::Closed)
+        );
+        assert!(blocked.record.saw.untrusted);
+        for rebuilt in [closed, blocked] {
+            assert_eq!(rebuilt.record.wal, Wal::Off);
+        }
+    }
+
+    #[test]
+    fn an_interrupted_call_is_a_history_line_and_a_step_to_write_once() {
+        let mut p = plan(Standing::Open);
+        let open = CallOpen {
+            call: CallId(12),
+            action: action_vocab::ActionRef {
+                app: AppName::parse("org.quire.Mail").expect("app"),
+                name: ActionName::parse("mail.thread.archive").expect("action"),
+            },
+            effect: Effect::UndoableWrite,
+        };
+        p.interrupted = vec![Interrupted {
+            call: CallId(12),
+            open,
+        }];
+        let rebuilt = rebuild(&id(), &p, UnixSeconds(1));
+        assert_eq!(rebuilt.record.history.len(), 1);
+        assert_eq!(rebuilt.record.history[0].end, StepEnd::Interrupted);
+        assert!(rebuilt.reserve >= 12, "new ids start above the call's");
+        let Wal::On { pending, .. } = &rebuilt.record.wal else {
+            panic!("a live session is on the record")
+        };
+        assert_eq!(pending.len(), 1);
+        assert!(matches!(&pending[0], SessionEntry::Step(l) if l.call == CallId(12)));
+    }
+
+    #[test]
+    fn untrusted_handles_with_no_taint_are_repaired_on_the_record() {
+        let mut p = plan(Standing::Open);
+        p.taint = true;
+        p.faults = vec![ResumeFault::MissingTaint {
+            at: agent_session::Seq(1),
+        }];
+        let rebuilt = rebuild(&id(), &p, UnixSeconds(1));
+        assert!(!rebuilt.durable, "the repair is still to be written");
+        let Wal::On { pending, .. } = &rebuilt.record.wal else {
+            panic!("on the record")
+        };
+        assert!(matches!(
+            &pending[0],
+            SessionEntry::Taint(n) if n.cause == TaintCause::Repaired
+        ));
+    }
+}

@@ -1,0 +1,76 @@
+[package]
+name = "compositor-app"
+description = "casement, the desktop's Wayland compositor: the composition root (State, the smithay delegates, the protocol handlers, exec, the clock, the settings document) and the binary."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "casement"
+path = "src/main.rs"
+# The real session needs the device libraries (A2): a build without the default features is the
+# headless library only (what the test kit, cua's tests and a harness take).
+required-features = ["tty", "libinput"]
+
+[dependencies]
+compositor-core = {path = "../compositor-core"}
+compositor-layout = {path = "../compositor-layout"}
+compositor-motion = {path = "../compositor-motion"}
+compositor-render = {path = "../compositor-render"}
+compositor-icons = {path = "../compositor-icons"}
+compositor-chrome = {path = "../compositor-chrome"}
+compositor-wayland = {path = "../compositor-wayland", features = ["quire"]}
+compositor-backend = {path = "../compositor-backend"}
+compositor-agent = {path = "../compositor-agent"}
+compositor-ipc = {path = "../compositor-ipc"}
+compositor-privacy = {path = "../compositor-privacy"}
+desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["server"]}
+shell-verbs = {path = "../../wayland/shell-verbs"}
+account-core = {path = "../../accounts/account-core"}
+ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+ui-core = {path = "../../ui/ui-core", default-features = false}
+ui-settings = {path = "../../ui/ui-settings", default-features = false, features = ["quire-desktop"]}
+keymap = {path = "../../keymap/keymap"}
+key-remap-client = {path = "../../input/key-remap-client"}
+# A14's feature list, the union the binary links (xwayland off until the Q-C5 gate). The device
+# backends (drm, gbm, libinput, udev, libseat) come with the `tty` and `libinput` features below.
+smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "backend_libei", "backend_vulkan", "backend_winit", "desktop", "renderer_gl", "renderer_multi", "renderer_pixman", "use_system_lib", "wayland_frontend"]}
+calloop = {version = "0.14"}
+jiff = {version = "0.2"}
+x11rb = {version = "0.13", features = ["res"]}
+nix = {version = "0.31", default-features = false, features = ["socket"]}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+tracing-subscriber = {version = "0.3", default-features = false, features = ["fmt", "std", "env-filter"]}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+toml = {version = "1"}
+
+[features]
+# The real session (A2): the tty backend's adapters (libseat, udev, DRM, GBM) and libinput. On by
+# default so `cargo build -p compositor-app` makes the compositor; a headless consumer takes the
+# library with `default-features = false` (the workspace dependency does).
+default = ["tty", "libinput"]
+tty = ["compositor-backend/tty"]
+libinput = ["compositor-backend/libinput"]
+# Headless tests only (B10): the test kit builds casement with it. A binary with it refuses
+# every backend but headless and refuses to start outside the jail (jail_check.rs). It also reads
+# test caller rows from the injected folder (`clients/dev_callers.rs`), hence `dev-rows`.
+testing = ["compositor-render/testing", "compositor-backend/testing", "compositor-ipc/dev-rows"]
+# casementctl's Debug1 on the private bus (B10); the same refusals as `testing`.
+debug-inject = ["compositor-ipc/debug-inject", "compositor-backend/debug-inject", "compositor-ipc/dev-rows"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

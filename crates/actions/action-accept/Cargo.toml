@@ -1,0 +1,94 @@
+[package]
+name = "action-accept"
+description = "Test only: the first end-to-end acceptance of the agent tier. The real intentd, companiond, readerd, memoryd and inferd run as processes on a private bus (inferd replaying cassettes), beside a mail provider and a Confirm1 server, and SPEC section 5 flows (a) and (c) run through them."
+publish = false
+
+# The daemons run as their own processes from these thin mains: the same daemon the packaged
+# binaries run (`run_with`, given the proc root and model tap from the environment), under names that cannot collide with theirs in one target directory. memoryd's
+# memoryd and inferd are not here: `build.rs` builds the packaged binaries of almanac (with its
+# `test-keys` feature), porter and steward, from their folders of this workspace.
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+[[bin]]
+name = "accept-intentd"
+path = "src/bin/accept-intentd.rs"
+
+[[bin]]
+name = "accept-companiond"
+path = "src/bin/accept-companiond.rs"
+
+[[bin]]
+name = "accept-acp"
+path = "src/bin/accept-acp.rs"
+
+[[bin]]
+name = "accept-docket-agent"
+path = "src/bin/accept-docket-agent.rs"
+
+[[bin]]
+name = "accept-readerd"
+path = "src/bin/accept-readerd.rs"
+
+# `quire-do` itself: the packaged main, built under a name of the acceptance harness (a test of this
+# package can only name this package's binaries).
+[[bin]]
+name = "accept-quire-do"
+path = "../action-cli/src/main.rs"
+
+[[bin]]
+name = "accept-actions-mcp"
+path = "src/bin/accept-actions-mcp.rs"
+
+[[bin]]
+name = "accept-bus-relay"
+path = "src/bin/accept-bus-relay.rs"
+
+[[bin]]
+name = "accept-fake-agent"
+path = "src/bin/accept-fake-agent.rs"
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+action-mcp = {path = "../action-mcp"}
+companion-wire = {path = "../companion-wire"}
+companion-daemon = {path = "../companion-daemon"}
+agent-acp-server = {path = "../agent-acp-server"}
+agent-acp-bin = {path = "../agent-acp-bin", features = ["testing"]}
+action-cli = {path = "../action-cli"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
+permission-core = {path = "../permission-core"}
+action-provider = {path = "../action-provider", features = ["dbus"]}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+action-vocab = {path = "../action-vocab"}
+action-dbus = {path = "../action-dbus", features = ["fixture-callers", "inferd"]}
+action-log = {path = "../action-log"}
+action-trace = {path = "../action-trace"}
+action-router = {path = "../action-router"}
+agent-session = {path = "../agent-session"}
+action-testbus = {path = "../action-testbus"}
+fnv = {version = "1"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+action-daemon = {path = "../action-daemon"}
+agent-reader-daemon = {path = "../agent-reader-daemon"}
+memory-core = {path = "../../memory/memory-core"}
+memory-client = {default-features = false, features = ["dbus"], path = "../../memory/memory-client"}
+account-core = {path = "../../accounts/account-core"}
+account-callers = {path = "../../accounts/account-callers"}
+inference-core = {path = "../../inference/inference-core"}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tempfile = {version = "3"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -9,7 +9,7 @@ repository = "https://github.com/Bardo-DE/anyview"
 publish = false
 
 [dependencies]
-bayonet = {default-features = false, path = "../../../bayonet"}
+plugin-host = {default-features = false, path = "../../../plugin/plugin-host"}
 serde = {version = "1", features = ["derive"]}
 thiserror = {version = "2"}
 

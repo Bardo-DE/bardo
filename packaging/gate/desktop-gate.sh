@@ -10,7 +10,7 @@
 #           check that no trace of the removed compositor stack is left in the tree.
 # --phase   --merge, and additionally an entry of expected-skips.toml whose `closes` is P<n> or
 #           earlier must be gone: the list is empty at that phase's exit; and sill's own acceptance
-#           suite on casement (crates/sill/dev/accept.sh --compositor casement, its skips
+#           suite on casement (crates/shell/dev/accept.sh --compositor casement, its skips
 #           listed in sill-accept-skips.txt). The scenarios launcher-p95-on-casement and
 #           detent-on-casement-at-1.5 are the phase's other checks and run with every scenario.
 #

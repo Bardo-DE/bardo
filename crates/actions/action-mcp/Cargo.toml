@@ -1,0 +1,52 @@
+[package]
+name = "action-mcp"
+description = "The MCP edge: an MCP server generated from the registry's offered actions, every call through the router as Actor::Mcp with untrusted arguments. Off by default; the binary serves it over stdio or a Unix socket."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "action_mcp"
+path = "src/lib.rs"
+
+[[bin]]
+name = "actions-mcp"
+path = "src/main.rs"
+
+[dependencies]
+action-tools = {path = "../action-tools"}
+action-core = {path = "../action-core"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
+action-dbus = {path = "../action-dbus"}
+action-manifest = {path = "../action-manifest"}
+action-settings = {path = "../action-settings"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+rmcp = {version = "3.5", default-features = false, features = ["server", "transport-io"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
+action-testbus = {path = "../action-testbus"}
+action-daemon = { path = "../action-daemon" }
+tempfile = {version = "3"}
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+action-fake = {path = "../action-fake"}
+action-router = {path = "../action-router"}
+rmcp = {version = "3.5", default-features = false, features = ["client", "server", "transport-io"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+action-wire = {path = "../action-wire"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,299 @@
+//! Table tests for the app tile's menu: its rows (`app.rs`) and its entries (`entries.rs`).
+
+use super::{Checked, DockMenuRow, OptionHeld, app, menu_entries, menu_windows};
+use crate::dock::items::{DockItem, ItemKind};
+use crate::dock::machine::{TileApp, TileId};
+use crate::dock::pick::{DockPick, LoginChange};
+use ui_components::prelude::*;
+use shell_launcher::{AppId, WindowKey};
+use shell_model::apps::{App, AppIcon, DbusActivation, DesktopActionEntry, Listing, Terminal};
+use shell_model::windows::{Sizing, Toplevel, Toplevels};
+use std::path::PathBuf;
+
+const TERM: &str = "foot";
+
+fn term() -> App {
+    App {
+        id: AppId(TERM.to_owned()),
+        name: "Example Terminal".to_owned(),
+        generic_name: String::new(),
+        comment: String::new(),
+        exec: "foot".to_owned(),
+        icon: AppIcon::None,
+        startup_wm_class: None,
+        flatpak: None,
+        bus_names: Vec::new(),
+        intents_app: None,
+        renamed_from: Vec::new(),
+        terminal: Terminal::No,
+        activation: DbusActivation::Exec,
+        actions: vec![DesktopActionEntry {
+            id: "new-window".to_owned(),
+            name: "New Window".to_owned(),
+            exec: "foot".to_owned(),
+        }],
+        mime_types: Vec::new(),
+        categories: Vec::new(),
+        keyboard_profile: None,
+        keywords: Vec::new(),
+        listing: Listing::Shown,
+        path: PathBuf::from("/usr/share/applications/foot.desktop"),
+    }
+}
+
+fn window(key: u64, app_id: &str, active: bool, minimized: bool) -> Toplevel {
+    Toplevel {
+        identifier: String::new(),
+        key: WindowKey(key),
+        app_id: app_id.to_owned(),
+        title: format!("shell {key}"),
+        active,
+        minimized,
+        sizing: Sizing::Floating,
+        workspaces: Vec::new(),
+        outputs: Vec::new(),
+    }
+}
+
+fn toplevels() -> Toplevels {
+    Toplevels {
+        windows: vec![
+            window(2, TERM, true, false),
+            window(9, "firefox", false, false),
+            window(1, TERM, false, true),
+        ],
+    }
+}
+
+fn pinned(app: TileApp) -> DockItem {
+    DockItem {
+        tile: TileId(1),
+        kind: ItemKind::Pinned(AppId(TERM.to_owned())),
+        app,
+    }
+}
+
+fn names(entries: &[MenuItem<DockPick>]) -> Vec<String> {
+    entries
+        .iter()
+        .map(|e| match e {
+            MenuItem::Header(t) => format!("# {t}"),
+            MenuItem::Item { title, check, .. } => match check {
+                Some(Check::On) => format!("{title} ✓"),
+                _ => title.clone(),
+            },
+            MenuItem::Submenu {
+                title, children, ..
+            } => {
+                format!("{title} > [{}]", names(children).join(", "))
+            }
+            MenuItem::Info { title, .. } => format!("i {title}"),
+            MenuItem::Separator => "--".to_owned(),
+            MenuItem::Swatches(row) => format!("* {}", row.title),
+        })
+        .collect()
+}
+
+fn menu(item: &DockItem, option: OptionHeld) -> Vec<MenuItem<DockPick>> {
+    menu_at_login(item, option, Checked::Unchecked)
+}
+
+fn menu_at_login(item: &DockItem, option: OptionHeld, login: Checked) -> Vec<MenuItem<DockPick>> {
+    let entry = term();
+    let all = toplevels();
+    let rows = app::rows(item, Some(&entry), &all, option, login);
+    let windows = menu_windows(item, Some(&entry), &all);
+    menu_entries(&rows, item.kind.app_id(), &windows)
+}
+
+#[test]
+fn a_running_pinned_app_lists_windows_actions_options_and_quit() {
+    let item = pinned(TileApp::Active { windows: 2 });
+    let rows = app::rows(
+        &item,
+        Some(&term()),
+        &toplevels(),
+        OptionHeld::Up,
+        Checked::Unchecked,
+    );
+    assert_eq!(
+        rows,
+        vec![
+            DockMenuRow::Window {
+                title: "shell 2".to_owned(),
+                active: Checked::Checked,
+                minimized: false,
+            },
+            DockMenuRow::Window {
+                title: "shell 1".to_owned(),
+                active: Checked::Unchecked,
+                minimized: true,
+            },
+            DockMenuRow::Separator,
+            DockMenuRow::DesktopAction {
+                id: "new-window".to_owned(),
+                name: "New Window".to_owned(),
+            },
+            DockMenuRow::Separator,
+            DockMenuRow::KeepInDock(Checked::Checked),
+            DockMenuRow::OpenAtLogin {
+                state: Checked::Unchecked,
+                entry: PathBuf::from("/usr/share/applications/foot.desktop"),
+            },
+            DockMenuRow::ShowInFiles,
+            DockMenuRow::Separator,
+            DockMenuRow::ShowAllWindows,
+            DockMenuRow::Hide,
+            DockMenuRow::Quit,
+        ]
+    );
+    let entries = menu(&item, OptionHeld::Up);
+    assert_eq!(
+        names(&entries),
+        [
+            "shell 2 ✓",
+            "◆ shell 1",
+            "--",
+            "New Window",
+            "--",
+            "Options > [Remove from Dock, Open at Login, Show in Files]",
+            "--",
+            "Show All Windows",
+            "Hide",
+            "Quit"
+        ]
+    );
+    let picks: Vec<DockPick> = entries
+        .into_iter()
+        .filter_map(|e| match e {
+            MenuItem::Item { value, .. } => Some(value),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(
+        picks.first_chunk::<3>(),
+        Some(&[
+            DockPick::Activate(WindowKey(2)),
+            DockPick::Activate(WindowKey(1)),
+            DockPick::Action {
+                app: AppId(TERM.to_owned()),
+                action: "new-window".to_owned()
+            },
+        ])
+    );
+    assert_eq!(
+        picks.last(),
+        Some(&DockPick::Quit(vec![WindowKey(2), WindowKey(1)]))
+    );
+}
+
+#[test]
+fn not_running_offers_no_quit_and_a_running_app_can_be_kept() {
+    let idle = pinned(TileApp::NotRunning);
+    let none = Toplevels::default();
+    let rows = app::rows(
+        &idle,
+        Some(&term()),
+        &none,
+        OptionHeld::Up,
+        Checked::Unchecked,
+    );
+    assert!(rows.contains(&DockMenuRow::KeepInDock(Checked::Checked)));
+    assert!(!rows.contains(&DockMenuRow::Quit));
+    let running = DockItem {
+        kind: ItemKind::Running(AppId(TERM.to_owned())),
+        ..pinned(TileApp::Inactive)
+    };
+    let entries = menu(&running, OptionHeld::Up);
+    assert!(
+        names(&entries)
+            .contains(&"Options > [Keep in Dock, Open at Login, Show in Files]".to_owned())
+    );
+}
+
+#[test]
+fn the_options_go_in_a_submenu_and_show_all_windows_is_added() {
+    let item = pinned(TileApp::Inactive);
+    let entries = menu(&item, OptionHeld::Held);
+    assert_eq!(
+        names(&entries),
+        [
+            "shell 2 ✓",
+            "◆ shell 1",
+            "--",
+            "New Window",
+            "--",
+            "Options > [Remove from Dock, Open at Login, Show in Files]",
+            "--",
+            "Show All Windows",
+            "Hide",
+            "Force Quit"
+        ]
+    );
+    let running = DockItem {
+        kind: ItemKind::Running(AppId(TERM.to_owned())),
+        ..pinned(TileApp::Inactive)
+    };
+    let kept = names(&menu(&running, OptionHeld::Up));
+    assert!(kept.contains(&"Options > [Keep in Dock, Open at Login, Show in Files]".to_owned()));
+}
+
+#[test]
+fn open_at_login_is_checked_when_the_folder_says_so_and_a_pick_flips_it() {
+    let item = pinned(TileApp::Inactive);
+    let login_pick = |login| {
+        let entries = menu_at_login(&item, OptionHeld::Up, login);
+        let options = entries.into_iter().find_map(|e| match e {
+            MenuItem::Submenu { children, .. } => Some(children),
+            _ => None,
+        });
+        options
+            .into_iter()
+            .flatten()
+            .find_map(|e| match e {
+                MenuItem::Item {
+                    title,
+                    value,
+                    check,
+                    ..
+                } if title == "Open at Login" => Some((check, value)),
+                _ => None,
+            })
+            .expect("Open at Login is offered")
+    };
+    let app = || AppId(TERM.to_owned());
+    assert_eq!(
+        login_pick(Checked::Unchecked),
+        (
+            None,
+            DockPick::OpenAtLogin(LoginChange::On {
+                app: app(),
+                entry: PathBuf::from("/usr/share/applications/foot.desktop"),
+            })
+        )
+    );
+    assert_eq!(
+        login_pick(Checked::Checked),
+        (
+            Some(Check::On),
+            DockPick::OpenAtLogin(LoginChange::Off { app: app() })
+        )
+    );
+}
+
+#[test]
+fn show_all_windows_brings_back_the_minimized_ones_and_raises_the_front() {
+    let item = pinned(TileApp::Inactive);
+    let entries = menu(&item, OptionHeld::Up);
+    let pick = entries.into_iter().find_map(|e| match e {
+        MenuItem::Item { title, value, .. } if title == "Show All Windows" => Some(value),
+        _ => None,
+    });
+    assert_eq!(
+        pick,
+        Some(DockPick::ShowAll {
+            minimized: vec![WindowKey(1)],
+            front: Some(WindowKey(2)),
+        })
+    );
+}

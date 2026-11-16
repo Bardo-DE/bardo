@@ -1,0 +1,34 @@
+[package]
+name = "ui-icon-tool"
+description = "App-icon post-process (design/08-ICONS.md 2, 3.7): key, fit, squircle plate, size set, contact sheets."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+clap = {version = "4", features = ["derive"]}
+thiserror = {version = "2"}
+serde = {version = "1", features = ["derive"]}
+toml = {version = "1"}
+# The Space palette derivation, so a Monochrome icon tinted by a Space matches its frame.
+ui-components = {path = "../ui-components"}
+ui-style = {path = "../ui-style", default-features = false}
+# Where an installed app-icon set is looked up (`icons install`, sill FINDINGS Q71).
+ui-settings = {path = "../ui-settings", default-features = false}
+
+[features]
+default = ["quire-desktop"]
+# Desktop integration of the quire crates this one uses (design/36 section 1).
+quire-desktop = ["ui-settings/quire-desktop"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[[bin]]
+name = "icons"
+path = "src/main.rs"

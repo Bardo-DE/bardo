@@ -76,11 +76,11 @@ harness/scenario-build.sh --w2
 # 2. private checkouts of the shell and its host library (the scenarios run sill's scripts from there)
 #    sill (scenario-build.sh: checkouts) at $SCEN_SIB/sill
 # 3. the shell with its test features (the stand-in screen-brightness file)
-(cd $SCEN_SIB/sill && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p sill --features debug)
+(cd $SCEN_SIB/sill && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p shell-app --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
-(cd $SCEN_SIB/cua && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p cuad --features fixture-callers)
+(cd $SCEN_SIB/cua && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command (docket-accept: test builds)
-(cd $SCEN_SIB/docket && CARGO_TARGET_DIR=$SCEN_BUILD/docket-target nice cargo build -p docket-accept --bins)
+(cd $SCEN_SIB/docket && CARGO_TARGET_DIR=$SCEN_BUILD/docket-target nice cargo build -p action-accept --bins)
 # and, once, the offline drawing app (needs node and npm; changes nothing outside its folder):
 $WF/fixtures/w2/build-excalidraw.sh
 EOF

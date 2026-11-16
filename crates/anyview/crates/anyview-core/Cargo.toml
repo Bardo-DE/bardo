@@ -14,8 +14,8 @@ testing = []
 
 [dependencies]
 # The actions and chords of the keymap: a file action's own id and default chord.
-chordkit = {path = "../../../chordkit/crates/chordkit"}
-ds-core = {path = "../../../quire/crates/ds-core"}
+keymap = {path = "../../../keymap/keymap"}
+ui-core = {path = "../../../ui/ui-core"}
 infer = {version = "0.19"}
 serde = {version = "1", features = ["derive"]}
 jiff = {version = "0.2"}
@@ -23,7 +23,7 @@ thiserror = {version = "2"}
 
 [dev-dependencies]
 # `ds_core::testing::word_matches_serde`, for the stored `Word` enums.
-ds-core = {features = ["testing"], path = "../../../quire/crates/ds-core"}
+ui-core = {features = ["testing"], path = "../../../ui/ui-core"}
 serde_json = {version = "1"}
 
 [lints.rust]

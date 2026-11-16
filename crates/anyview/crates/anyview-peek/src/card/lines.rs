@@ -2,7 +2,7 @@
 
 use anyview_text::{TOKEN_CLASS_PREFIX, TokenLine};
 use dioxus::prelude::*;
-use ds::prelude::Word;
+use ui_components::prelude::Word;
 
 /// Plain lines, one block each; an empty line keeps its height with a no-break space.
 pub(super) fn plain(lines: &[String]) -> Element {

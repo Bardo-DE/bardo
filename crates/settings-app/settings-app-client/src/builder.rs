@@ -1,0 +1,287 @@
+//! Building a [`Client`]: over the real services of the person's session, with any of them
+//! replaced by what a test hands in.
+
+use crate::client::Client;
+use crate::picker::{AgentSearch, ReasonFeed};
+use settings_app_files::{CacheHome, ConfigHome, DataHome, PictureDirs};
+use settings_app_system::accounts::{AccountsLink, OnBus as AccountsOnBus};
+use settings_app_system::bluetooth::{BluetoothLink, OnBluetooth};
+use settings_app_system::bus::BusSource;
+use settings_app_system::chooser::OnPortal;
+use settings_app_system::computers::{ComputersLink, OnBus as ComputersOnBus};
+use settings_app_system::displays::{DisplaysLink, OnCompositor};
+use settings_app_system::engine_install::{Desk, OnEngines};
+use settings_app_system::engines::{EnginesLink, OnBus as EnginesOnBus};
+use settings_app_system::hot_corners::{CornerDesk, OnCorners};
+use settings_app_system::lending::Lender;
+use settings_app_system::memory_consent::{MemoryLink, OnBus as MemoryOnBus};
+use settings_app_system::modules::{ModulesLink, OnBus as ModulesOnBus};
+use settings_app_system::person::{NoPerson, OnAccounts, PersonLink};
+use settings_app_system::picker::{OnClient as PickerOnClient, PickerLink};
+use settings_app_system::privacy::{OnClient as PrivacyOnClient, PrivacyLink};
+use settings_app_system::running::{OnBus as RunningOnBus, RunningLink};
+use settings_app_system::screen_sharing::{OnBus as ScreenSharingOnBus, ScreenSharingLink};
+use settings_app_system::spaces::{OnBus as SpacesOnBus, SpacesLink};
+use settings_app_system::sync::{OnBus as SyncOnBus, SyncLink};
+use settings_app_system::updates::{Departure, OnBus, PowerMenu, UpdatesLink};
+use settings_app_system::wallpaper::{OnDisk, Pictures, Thumbnails};
+use settings_app_system::wifi::{OnWifi, WifiLink};
+use std::path::PathBuf;
+use std::sync::Arc;
+
+/// The person's own folders the client reads and writes: settings, data and cache (or scratch
+/// folders standing in for them).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ClientHomes {
+    /// Where the settings files are.
+    pub config: ConfigHome,
+    /// Where docket's agents and the added pictures are.
+    pub data: DataHome,
+    /// Where the Wallpaper page's small pictures are kept.
+    pub cache: CacheHome,
+}
+
+/// Where the person's name and picture come from when the services are looked for on `bus`: on
+/// the person's own session, the system's accounts, else the passwd file and the home folder. On
+/// no bus, or a test's private one, nobody is known, so nothing of this computer's own reaches a
+/// window that was told to look somewhere else.
+fn person_on(bus: &BusSource) -> Arc<dyn PersonLink> {
+    match bus {
+        BusSource::Session => Arc::new(OnAccounts::new(
+            bus.clone(),
+            PathBuf::from("/etc/passwd"),
+            std::env::var_os("HOME")
+                .map(PathBuf::from)
+                .unwrap_or_default(),
+        )),
+        BusSource::Absent | BusSource::Address(..) => Arc::new(NoPerson),
+    }
+}
+
+/// A client being built: every service is the person's own until a setter says otherwise.
+#[derive(Debug, Clone)]
+pub struct ClientBuilder(Client);
+
+impl ClientBuilder {
+    /// A client over the real services, looked for on `bus`, with its files under `homes`.
+    pub fn over(bus: BusSource, homes: ClientHomes) -> ClientBuilder {
+        let ClientHomes {
+            config,
+            data,
+            cache,
+        } = homes;
+        let chooser = Arc::new(OnPortal(bus.clone()));
+        let desk = Arc::new(OnEngines::new(bus.clone(), Arc::clone(&chooser), &data.0));
+        let pictures = Arc::new(OnDisk::new(
+            Arc::clone(&chooser),
+            PictureDirs::standard(&data),
+            Thumbnails::under(&cache),
+        ));
+        let corners = Arc::new(OnCorners::new(Arc::clone(&chooser), Vec::new()));
+        let person = person_on(&bus);
+        ClientBuilder(Client {
+            chooser,
+            modules: Arc::new(ModulesOnBus(bus.clone())),
+            accounts: Arc::new(AccountsOnBus(bus.clone())),
+            sync: Arc::new(SyncOnBus(bus.clone())),
+            picker: Arc::new(PickerOnClient),
+            privacy: Arc::new(PrivacyOnClient),
+            screen_sharing: Arc::new(ScreenSharingOnBus(bus.clone())),
+            spaces: Arc::new(SpacesOnBus(bus.clone())),
+            memory: Arc::new(MemoryOnBus(bus.clone())),
+            running: Arc::new(RunningOnBus(bus.clone())),
+            computers: Arc::new(ComputersOnBus(bus.clone())),
+            engines: Arc::new(EnginesOnBus(bus.clone())),
+            reasons: ReasonFeed::default(),
+            lender: Lender::from_env(),
+            updates: Arc::new(OnBus(bus.clone())),
+            log_out: Arc::new(PowerMenu),
+            wifi: Arc::new(OnWifi(bus.clone())),
+            bluetooth: Arc::new(OnBluetooth::new(bus.clone())),
+            displays: Arc::new(OnCompositor(bus.clone())),
+            desk,
+            pictures,
+            person,
+            corners,
+            search: AgentSearch {
+                config_home: config,
+                data_home: data,
+                programs_path: String::new(),
+            },
+            agents_program: None,
+            bus,
+        })
+    }
+
+    /// The client built.
+    pub fn build(self) -> Client {
+        self.0
+    }
+
+    /// With the lending switch reaching `lender`.
+    #[must_use]
+    pub fn with_lender(self, lender: Lender) -> ClientBuilder {
+        ClientBuilder(Client { lender, ..self.0 })
+    }
+
+    /// With the Software Update pane following `updates`.
+    #[must_use]
+    pub fn with_updates(self, updates: Arc<dyn UpdatesLink>) -> ClientBuilder {
+        ClientBuilder(Client { updates, ..self.0 })
+    }
+
+    /// With the Software Update pane logging out through `log_out`.
+    #[must_use]
+    pub fn with_log_out(self, log_out: Arc<dyn Departure>) -> ClientBuilder {
+        ClientBuilder(Client { log_out, ..self.0 })
+    }
+
+    /// With the Wi-Fi pane following `wifi`.
+    #[must_use]
+    pub fn with_wifi(self, wifi: Arc<dyn WifiLink>) -> ClientBuilder {
+        ClientBuilder(Client { wifi, ..self.0 })
+    }
+
+    /// With the Bluetooth pane following `bluetooth`.
+    #[must_use]
+    pub fn with_bluetooth(self, bluetooth: Arc<dyn BluetoothLink>) -> ClientBuilder {
+        ClientBuilder(Client {
+            bluetooth,
+            ..self.0
+        })
+    }
+
+    /// With the Displays pane following `displays`.
+    #[must_use]
+    pub fn with_displays(self, displays: Arc<dyn DisplaysLink>) -> ClientBuilder {
+        ClientBuilder(Client { displays, ..self.0 })
+    }
+
+    /// With the engine sheet working through `desk`.
+    #[must_use]
+    pub fn with_engines(self, desk: Arc<dyn Desk>) -> ClientBuilder {
+        ClientBuilder(Client { desk, ..self.0 })
+    }
+
+    /// With the llama.cpp note over `engines`.
+    #[must_use]
+    pub fn with_engine_note(self, engines: Arc<dyn EnginesLink>) -> ClientBuilder {
+        ClientBuilder(Client { engines, ..self.0 })
+    }
+
+    /// Looking for coding agents on `programs_path` (the value of `PATH`).
+    #[must_use]
+    pub fn with_programs_path(self, programs_path: String) -> ClientBuilder {
+        let search = AgentSearch {
+            programs_path,
+            ..self.0.search.clone()
+        };
+        ClientBuilder(Client { search, ..self.0 })
+    }
+
+    /// Downloading coding assistants with the program at `agents_program`.
+    #[must_use]
+    pub fn with_agents_program(self, agents_program: Option<PathBuf>) -> ClientBuilder {
+        ClientBuilder(Client {
+            agents_program,
+            ..self.0
+        })
+    }
+
+    /// With the Wallpaper page working through `pictures`.
+    #[must_use]
+    pub fn with_pictures(self, pictures: Arc<dyn Pictures>) -> ClientBuilder {
+        ClientBuilder(Client { pictures, ..self.0 })
+    }
+
+    /// With the sidebar's card showing the person `person` names.
+    #[must_use]
+    pub fn with_person(self, person: Arc<dyn PersonLink>) -> ClientBuilder {
+        ClientBuilder(Client { person, ..self.0 })
+    }
+
+    /// Listing the apps' actions from the manifests in `intent_dirs`, in the order of trust.
+    #[must_use]
+    pub fn with_intent_dirs(self, intent_dirs: Vec<PathBuf>) -> ClientBuilder {
+        let corners = Arc::new(OnCorners::new(Arc::clone(&self.0.chooser), intent_dirs));
+        ClientBuilder(Client { corners, ..self.0 })
+    }
+
+    /// With the Hot Corners sheet working through `corners`.
+    #[must_use]
+    pub fn with_corners(self, corners: Arc<dyn CornerDesk>) -> ClientBuilder {
+        ClientBuilder(Client { corners, ..self.0 })
+    }
+
+    /// With the panes that follow a daemon's live settings module looking for it in `modules`.
+    #[must_use]
+    pub fn with_modules(self, modules: Arc<dyn ModulesLink>) -> ClientBuilder {
+        ClientBuilder(Client { modules, ..self.0 })
+    }
+
+    /// With the Accounts pane over `accounts`.
+    #[must_use]
+    pub fn with_accounts(self, accounts: Arc<dyn AccountsLink>) -> ClientBuilder {
+        ClientBuilder(Client { accounts, ..self.0 })
+    }
+
+    /// With the Accounts pane asking the sync service through `sync`.
+    #[must_use]
+    pub fn with_sync(self, sync: Arc<dyn SyncLink>) -> ClientBuilder {
+        ClientBuilder(Client { sync, ..self.0 })
+    }
+
+    /// With the model picker setting its rows through `picker`.
+    #[must_use]
+    pub fn with_picker(self, picker: Arc<dyn PickerLink>) -> ClientBuilder {
+        ClientBuilder(Client { picker, ..self.0 })
+    }
+
+    /// With the Privacy page setting its rows through `privacy`.
+    #[must_use]
+    pub fn with_privacy(self, privacy: Arc<dyn PrivacyLink>) -> ClientBuilder {
+        ClientBuilder(Client { privacy, ..self.0 })
+    }
+
+    /// With the Spaces page over `spaces`.
+    #[must_use]
+    pub fn with_spaces(self, spaces: Arc<dyn SpacesLink>) -> ClientBuilder {
+        ClientBuilder(Client { spaces, ..self.0 })
+    }
+
+    /// With the Privacy page's portal list over `screen_sharing`.
+    #[must_use]
+    pub fn with_screen_sharing(self, screen_sharing: Arc<dyn ScreenSharingLink>) -> ClientBuilder {
+        ClientBuilder(Client {
+            screen_sharing,
+            ..self.0
+        })
+    }
+
+    /// With the memory consent over `memory`.
+    #[must_use]
+    pub fn with_memory(self, memory: Arc<dyn MemoryLink>) -> ClientBuilder {
+        ClientBuilder(Client { memory, ..self.0 })
+    }
+
+    /// With the running-models list over `running`.
+    #[must_use]
+    pub fn with_running(self, running: Arc<dyn RunningLink>) -> ClientBuilder {
+        ClientBuilder(Client { running, ..self.0 })
+    }
+
+    /// With Your computers over `computers`.
+    #[must_use]
+    pub fn with_computers(self, computers: Arc<dyn ComputersLink>) -> ClientBuilder {
+        ClientBuilder(Client {
+            computers,
+            ..self.0
+        })
+    }
+
+    /// With the picker's reason footer reading `reasons`.
+    #[must_use]
+    pub fn with_reasons(self, reasons: ReasonFeed) -> ClientBuilder {
+        ClientBuilder(Client { reasons, ..self.0 })
+    }
+}

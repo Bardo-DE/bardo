@@ -1,0 +1,80 @@
+[package]
+name = "memory-daemon"
+description = "almanac's memory daemon: serves org.quire.Memory1 over almanac-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[features]
+# `MEMORYD_KEYS=file:<path>` selects a file-backed key store (`almanac_keyfile::FileKeys`), for a
+# jailed acceptance run with no Secret Service. TEST ONLY: off by default, never in a release or
+# dist build; without it the variable is ignored.
+test-keys = ["dep:memory-keyfile"]
+# `MEMORYD_PROC_ROOT=<dir>` makes the daemon read `<dir>/<pid>/cgroup` for its callers instead of
+# `/proc/<pid>/cgroup`, so an acceptance run can present its test processes as units. TEST ONLY:
+# off by default, never in a release or dist build (check-boundary.sh fails if a default build
+# has it); without it the variable is ignored.
+test-proc-root = ["account-callers/test-proc-root"]
+
+[dependencies]
+memory-core = {path = "../memory-core"}
+memory-seal = {path = "../memory-seal", features = ["oo7"]}
+memory-keyfile = {path = "../memory-keyfile", optional = true}
+memory-eventlog = {path = "../memory-eventlog"}
+memory-store = {path = "../memory-store"}
+memory-files = {path = "../memory-files"}
+memory-recall = {path = "../memory-recall"}
+memory-local = {path = "../memory-local"}
+memory-host = {path = "../memory-host"}
+memory-service = {path = "../memory-service"}
+memory-infer = {path = "../memory-infer"}
+memory-tidy = {path = "../memory-tidy"}
+memory-settings = {path = "../memory-settings"}
+memory-watch = {path = "../memory-watch"}
+atomic-write-file = {version = "0.3"}
+memory-dbus = {path = "../memory-dbus"}
+memory-dbus-serve = {path = "../memory-dbus-serve"}
+account-core = {path = "../../accounts/account-core"}
+account-callers = {features = ["file"], path = "../../accounts/account-callers"}
+account-daemon-support = {path = "../../accounts/account-daemon-support"}
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
+clap = {version = "4", features = ["derive"]}
+getrandom = {version = "0.3"}
+landlock = {version = "0.4"}
+rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+serde_json = {version = "1"}
+blake3 = {version = "1"}
+
+[dev-dependencies]
+account-wire = {path = "../../accounts/account-wire"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+inference-core = {path = "../../inference/inference-core"}
+account-dbus = {path = "../../accounts/account-dbus"}
+inference-dbus = {path = "../../inference/inference-dbus"}
+# The tests present their processes as a fixture tree, which porter reads only in a test build.
+memory-daemon = { path = ".", features = ["test-proc-root"] }
+memory-client = {path = "../memory-client", default-features = false, features = ["dbus"]}
+memory-fake = {path = "../memory-fake"}
+memory-seal = {path = "../memory-seal", features = ["oo7", "testing"]}
+memory-recall = {path = "../memory-recall", features = ["testing"]}
+tar = {version = "0.4"}
+tempfile = {version = "3"}
+zbus-ready = { path = "../../zbus-ready" }
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[[bin]]
+name = "memoryd"
+path = "src/main.rs"

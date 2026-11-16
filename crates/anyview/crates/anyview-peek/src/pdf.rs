@@ -2,7 +2,7 @@
 //! thumbnail cache (see `raster`); without it a PDF is peeked as facts only, since a headless
 //! build links no renderer.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 #[cfg(feature = "pane")]
 pub(crate) mod raster;

@@ -8,8 +8,8 @@ use crate::support;
 use anyview_peek::{AnyPeeked, Card, Part, Parts, peek};
 use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
-use ds::assembly::ds::Inject;
-use ds::prelude::{Appearance, Ds, Material};
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::{Appearance, Ds, Material};
 use std::sync::Arc;
 use support::{Home, fixture, pane_budget};
 

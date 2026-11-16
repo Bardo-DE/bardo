@@ -1,0 +1,432 @@
+//! What a finished sign-in becomes: the account row, its secrets, its toggles, its audit line
+//! and, for "Add, and allow", its first grant. Each store is all or nothing: a secret that
+//! cannot be filed or a registry that cannot be written leaves nothing behind.
+//!
+//! The row is added only once its secrets are filed (the id is reserved meanwhile), and nothing
+//! is awaited between adding it and its grant. An add that is dropped midway (the caller went
+//! away) therefore leaves either no row, or a whole account; at worst some secrets filed under
+//! an id no account has, which nothing reads and a later account of that id overwrites.
+
+use crate::Accounts;
+use account_capability::{Capability, Claim, KindToggle, Offer, Provenance, Subject, effective};
+use account_core::consent::{ConsentAnswer, GrantScope, Usage};
+use account_core::store::AccountToggle;
+use account_core::{Account, AccountState, AppId, AuthKind, DataClass, LoginName, SecretKey};
+use account_core::{AccountId, ProviderId};
+use account_match::Need;
+use account_provider::{ProviderSpec, SignInStep, Signed};
+use account_service_core::audit::AuditEvent;
+use account_service_core::consent::settle;
+use account_service_core::registry::{Asker, Registry};
+use account_service_core::{Audited, Ports};
+
+use account_ids::clock::Clock;
+use account_secrets::Secrets;
+use account_wire::{AccountsReply, Refusal};
+use std::collections::HashSet;
+use std::sync::{Mutex, MutexGuard};
+
+/// What an app asked for when no account fit: the account added from its sheet is granted to it
+/// in the same step ("Add, and allow Mail to use it"), not by a second prompt.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AllowFor {
+    /// The need the new account must meet to be granted.
+    pub need: Need,
+    /// The data it touches.
+    pub class: DataClass,
+    /// Interactive or background.
+    pub usage: Usage,
+}
+
+/// An account id for `label` at `provider` that no account in `registry` has and no add in
+/// flight has reserved: the provider's id and the label as a slug, with a number after it when
+/// that is taken.
+pub(crate) fn fresh_id(
+    registry: &Registry,
+    reserved: &HashSet<AccountId>,
+    provider: &ProviderId,
+    label: &str,
+) -> AccountId {
+    let slug: String = label
+        .to_ascii_lowercase()
+        .chars()
+        .map(|c| match c {
+            'a'..='z' | '0'..='9' | '.' | '_' => c,
+            _ => '-',
+        })
+        .collect::<String>()
+        .split('-')
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>()
+        .join("-");
+    let taken =
+        |id: &AccountId| reserved.contains(id) || registry.accounts.iter().any(|a| a.id == *id);
+    let stem = match slug.is_empty() {
+        true => provider.to_string(),
+        false => format!("{provider}-{slug}"),
+    };
+    let suffixes = std::iter::once(String::new()).chain((2..).map(|n| format!("-{n}")));
+    suffixes
+        .filter_map(|suffix| {
+            // An id is at most 64 bytes, and the number after a cut stem must stay whole.
+            let room = 64usize.saturating_sub(suffix.len());
+            let cut: String = stem.chars().take(room).collect();
+            AccountId::parse(&format!(
+                "{}{suffix}",
+                cut.trim_end_matches(['-', '.', '_'])
+            ))
+            .ok()
+        })
+        .find(|id| !taken(id))
+        .unwrap_or_else(|| unreachable!("the suffixes are unbounded and each id is well formed"))
+}
+
+/// The logins an account's endpoints are for. An endpoint with an empty login name has none (the
+/// address of a server of the person's own, which takes a key and no login).
+fn logins(endpoints: &[account_core::ServiceEndpoint]) -> HashSet<&LoginName> {
+    endpoints
+        .iter()
+        .map(|e| &e.login)
+        .filter(|login| !login.0.is_empty())
+        .collect()
+}
+
+/// The servers an account's endpoints are at (scheme, host and port).
+fn servers(endpoints: &[account_core::ServiceEndpoint]) -> HashSet<account_ids::Origin> {
+    endpoints.iter().map(|e| e.url.origin()).collect()
+}
+
+/// Whether `held` and `new` are the same login at the same servers. An account with no login
+/// (an API key) is never the same as another: two keys of one provider are two accounts.
+fn same_login(held: &[account_core::ServiceEndpoint], new: &[account_core::ServiceEndpoint]) -> bool {
+    let (held_logins, new_logins) = (logins(held), logins(new));
+    !new_logins.is_empty() && held_logins == new_logins && servers(held) == servers(new)
+}
+
+/// The account in `registry` that adding `new` through `provider` would make again, if any. An
+/// agent program signs itself in to the one plan its own login holds, so a second account of the
+/// same agent provider is the same account, and so is a second Tailscale (one program serves
+/// this computer); any other is the same login at the same servers.
+pub(crate) fn duplicate<'r>(
+    registry: &'r Registry,
+    provider: &ProviderId,
+    new: &[account_core::ServiceEndpoint],
+) -> Option<&'r Account> {
+    registry.accounts.iter().find(|held| {
+        held.provider == *provider
+            && (matches!(held.auth, AuthKind::AgentLogin | AuthKind::OwnProgram)
+                || same_login(&held.endpoints, new))
+    })
+}
+
+/// An account id an add has chosen and is filing secrets under. Dropping it (the add finished,
+/// failed, or was cancelled) frees the id: by then the row holds it, or nothing does.
+struct Reservation<'a> {
+    held: &'a Mutex<HashSet<AccountId>>,
+    id: AccountId,
+}
+
+impl Drop for Reservation<'_> {
+    fn drop(&mut self) {
+        // A plain set update that cannot panic midway.
+        self.held
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .remove(&self.id);
+    }
+}
+
+impl<E: Ports> Accounts<'_, E> {
+    fn reserved_ids(&self) -> MutexGuard<'_, HashSet<AccountId>> {
+        self.state
+            .reserved
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    /// The account `provider` already has that the sign-in's `step` shows again, if any: the same
+    /// login at the same servers, or the same agent. Only the review and the finished sign-in
+    /// show one.
+    pub(crate) fn already_added(
+        &self,
+        provider: &ProviderId,
+        step: &SignInStep,
+    ) -> Option<AccountId> {
+        let endpoints = match step {
+            SignInStep::Review { endpoints, .. } => endpoints,
+            SignInStep::Done(signed) => &signed.endpoints,
+            _ => return None,
+        };
+        duplicate(&self.ctx.lock(), provider, endpoints).map(|a| a.id.clone())
+    }
+
+    /// Stores the account `signed` describes, with the person's service `choices`, and the
+    /// grant for `allow` when the new account meets its need.
+    pub(crate) async fn store_new(
+        &self,
+        caller: &AppId,
+        spec: &ProviderSpec,
+        signed: &Signed,
+        choices: &[KindToggle],
+        allow: Option<&AllowFor>,
+    ) -> Result<AccountId, ()> {
+        if signed.endpoints.iter().any(|e| e.check().is_err()) {
+            return Err(());
+        }
+        let off: Vec<KindToggle> = choices
+            .iter()
+            .filter(|c| !c.toggle)
+            .map(|c| KindToggle {
+                kind: c.kind,
+                toggle: false,
+            })
+            .collect();
+        // The id is chosen and reserved first, the secrets are filed under it, and only then
+        // does the row appear: a drop at an await leaves no row without its secrets.
+        let reservation = {
+            let registry = self.ctx.lock();
+            let mut reserved = self.reserved_ids();
+            let id = fresh_id(&registry, &reserved, &spec.id, &signed.label.0);
+            reserved.insert(id.clone());
+            Reservation {
+                held: &self.state.reserved,
+                id,
+            }
+        };
+        for (purpose, credential) in &signed.credentials {
+            let key = SecretKey {
+                account: reservation.id.clone(),
+                purpose: *purpose,
+            };
+            if self.ctx.secrets().put(&key, credential).await.is_err() {
+                // Nothing more can be done for a secret that cannot be deleted.
+                let _ = self.ctx.secrets().delete_account(&reservation.id).await;
+                return Err(());
+            }
+        }
+        // The row, its toggles and its first grant are one transaction, and the only place a
+        // duplicate is refused for good: the sheet stops a second add of one login at the review,
+        // but a second sheet may finish first, even while these secrets are being filed. A
+        // transaction that refuses, or that cannot be saved, leaves the registry as it
+        // was, and the secrets go.
+        let stored = self
+            .ctx
+            .transact(|registry| {
+                if duplicate(registry, &spec.id, &signed.endpoints).is_some() {
+                    return Err(Refusal::Unavailable);
+                }
+                let account = Account {
+                    id: reservation.id.clone(),
+                    provider: spec.id.clone(),
+                    label: signed.label.clone(),
+                    state: spec.auth.kind.facts().first_state,
+                    auth: spec.auth.kind,
+                    capabilities: effective(&signed.claims, &off),
+                    restriction: signed.restriction.clone(),
+                    endpoints: signed.endpoints.clone(),
+                };
+                registry.accounts.push(account.clone());
+                registry.toggles.extend(off.iter().map(|t| AccountToggle {
+                    account: account.id.clone(),
+                    kind: t.kind,
+                    toggle: t.toggle,
+                }));
+                let granted =
+                    allow.and_then(|ask| self.grant_first(registry, caller, &account.id, ask));
+                let mut lines = vec![Audited::new(
+                    Some(caller.clone()),
+                    Some(account.id.clone()),
+                    AuditEvent::SignedIn,
+                )];
+                if let Some(AccountsReply::Chosen(candidate)) = granted {
+                    lines.push(Audited::new(
+                        Some(caller.clone()),
+                        Some(account.id.clone()),
+                        AuditEvent::Granted {
+                            grant: candidate.grant,
+                            kind: ask_kind(allow),
+                        },
+                    ));
+                }
+                Ok((lines, account.id))
+            })
+            .await;
+        match stored {
+            Ok(written) => Ok(written.value),
+            Err(_) => {
+                // Nothing more can be done for a secret that cannot be deleted.
+                let _ = self.ctx.secrets().delete_account(&reservation.id).await;
+                Err(())
+            }
+        }
+    }
+
+    /// The first grant of "Add, and allow": always, for the app that asked, when the new account
+    /// meets what it asked for.
+    fn grant_first(
+        &self,
+        registry: &mut Registry,
+        caller: &AppId,
+        account: &AccountId,
+        ask: &AllowFor,
+    ) -> Option<AccountsReply> {
+        let asker = Asker {
+            app: caller,
+            class: ask.class,
+            usage: ask.usage,
+        };
+        let answer = ConsentAnswer::Allow {
+            account: account.clone(),
+            scope: GrantScope::Always,
+        };
+        let reply = settle(
+            registry,
+            &ask.need,
+            asker,
+            None,
+            None,
+            answer,
+            self.ctx.clock().now(),
+        );
+        matches!(reply, AccountsReply::Chosen(_)).then_some(reply)
+    }
+
+    /// Files the credentials of a sign-in again under the account's id, sets it working, and
+    /// audits it. A different person's login is refused: the account keeps its owner.
+    ///
+    /// Runs under the account's turn at its issuer, as a look at the account again does, so a
+    /// credential read before this one was filed is never written back over it.
+    pub(crate) async fn store_renewed(
+        &self,
+        caller: &AppId,
+        account: &AccountId,
+        signed: &Signed,
+    ) -> Result<(), ()> {
+        let flight = self.ctx.flights().of(account);
+        let _turn = flight.gate.lock().await;
+        self.renew(caller, account, signed, &[]).await
+    }
+
+    /// Files the credential of a sign-in that asked for one more access, as
+    /// [`Self::store_renewed`] does, once it is known to be the same person: the answer's login
+    /// must be the account's own, and an account with no login to compare keeps what it has.
+    /// The account then claims `given`, the access the person just agreed to (the provider's
+    /// on-use rows of the kinds asked), so a need of it fits the account from now on. Each is
+    /// claimed as `Declared`, below what sign-in found of its kind, so what the account shows of
+    /// the kind is unchanged; a claim already held is not added twice. The credential and the
+    /// claims are one transaction.
+    pub(crate) async fn store_extended(
+        &self,
+        caller: &AppId,
+        account: &AccountId,
+        signed: &Signed,
+        given: &[Capability],
+    ) -> Result<(), ()> {
+        let flight = self.ctx.flights().of(account);
+        let _turn = flight.gate.lock().await;
+        let held = self
+            .ctx
+            .lock()
+            .accounts
+            .iter()
+            .find(|a| a.id == *account)
+            .map(|a| a.endpoints.clone())
+            .ok_or(())?;
+        if !same_person(&held, &signed.endpoints) {
+            return Err(());
+        }
+        self.renew(caller, account, signed, given).await
+    }
+
+    /// The body of both, under the account's turn: files the credentials, then in one
+    /// transaction sets the account working, dates the sign-in and claims `given`.
+    async fn renew(
+        &self,
+        caller: &AppId,
+        account: &AccountId,
+        signed: &Signed,
+        given: &[Capability],
+    ) -> Result<(), ()> {
+        let held = self
+            .ctx
+            .lock()
+            .accounts
+            .iter()
+            .find(|a| a.id == *account)
+            .map(|a| a.endpoints.clone())
+            .ok_or(())?;
+        if !held.is_empty()
+            && !signed.endpoints.is_empty()
+            && logins(&held) != logins(&signed.endpoints)
+        {
+            return Err(());
+        }
+        for (purpose, credential) in &signed.credentials {
+            let key = SecretKey {
+                account: account.clone(),
+                purpose: *purpose,
+            };
+            self.ctx
+                .secrets()
+                .put(&key, credential)
+                .await
+                .map_err(|_| ())?;
+        }
+        self.ctx
+            .transact(|registry| {
+                let row = registry
+                    .accounts
+                    .iter_mut()
+                    .find(|a| a.id == *account)
+                    .ok_or(Refusal::UnknownGrant)?;
+                // Signing in again makes a refused credential good. An agent account has none: the
+                // agent says when it is signed in, so the state stays what the agent last said.
+                if row.auth != AuthKind::AgentLogin {
+                    row.state = AccountState::Ok;
+                }
+                // The date of this sign-in starts the next seven days.
+                if signed.restriction.signed_in.is_some() {
+                    row.restriction.signed_in = signed.restriction.signed_in;
+                }
+                for capability in given {
+                    let claim = Claim {
+                        subject: Subject::Account,
+                        offer: Offer::Present(capability.clone()),
+                        provenance: Provenance::Declared,
+                    };
+                    if !row.capabilities.contains(&claim) {
+                        row.capabilities.push(claim);
+                    }
+                }
+                let line = Audited::new(
+                    Some(caller.clone()),
+                    Some(account.clone()),
+                    AuditEvent::Reauthed,
+                );
+                Ok((vec![line], ()))
+            })
+            .await
+            .map(|_| ())
+            .map_err(drop)
+    }
+}
+
+/// Whether a sign-in that showed `new` was the person whose servers are `held`: the same logins,
+/// and at least one.
+fn same_person(
+    held: &[account_core::ServiceEndpoint],
+    new: &[account_core::ServiceEndpoint],
+) -> bool {
+    let held = logins(held);
+    !held.is_empty() && held == logins(new)
+}
+
+fn ask_kind(allow: Option<&AllowFor>) -> account_capability::CapabilityKind {
+    allow.map_or_else(
+        || unreachable!("a grant was made only for an ask"),
+        |ask| ask.need.kind(),
+    )
+}
+
+#[cfg(test)]
+mod tests;

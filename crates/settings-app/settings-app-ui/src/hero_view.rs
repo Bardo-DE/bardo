@@ -1,0 +1,21 @@
+//! The head of an overview page: its tile, its name and one sentence on what it is for.
+
+use crate::copy::heroes;
+use crate::icons::tile_of;
+use settings_app_model::PageKind;
+use dioxus::prelude::*;
+use ui_components::components::content::label::{LabelRole, LabelStyle};
+use ui_components::components::forms::icon_tile::tile;
+use ui_components::prelude::*;
+
+/// The hero of the page `title` of `kind`, a kind whose row says it opens with one.
+#[component]
+pub(crate) fn HeroView(kind: PageKind, title: String) -> Element {
+    rsx! {
+        div { class: "hero", "data-hero": "{title}",
+            div { class: "hero-tile", {tile(tile_of(kind))} }
+            Label { text: title.clone(), role: LabelRole::Primary, style: LabelStyle::Title }
+            Label { text: heroes::line(kind), role: LabelRole::Secondary }
+        }
+    }
+}

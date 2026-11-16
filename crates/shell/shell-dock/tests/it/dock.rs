@@ -1,0 +1,184 @@
+//! The dock in a `ui_harness::Harness` on the fake services: pinned apps then running ones
+//! grouped by app, the Trash, running dots, the badge, the progress bar, the regions' elements, the
+//! icon on no plate; a value fed after the first frame changes what it shows.
+
+use std::time::Duration;
+
+use ui_lint::{LintConfig, Profile, assert_clean};
+use ui_settings::{Environment, IconStyle};
+use shell_dock::Dock;
+use shell_launcher::AppId;
+use shell_model::badges::Badges;
+use shell_model::pins::DockPins;
+use shell_model::windows::Toplevels;
+use shell_settings::ShellFile;
+use shell_ui_kit::harness::{SurfaceHarness, fake};
+use shell_ui_kit::hooks::PinnedAppearance;
+
+type Running = SurfaceHarness<Dock>;
+
+/// The dock on `file` and `appearance`, fed the dock fixtures and drawn.
+fn start_with(file: ShellFile, appearance: PinnedAppearance) -> Running {
+    let mut run = SurfaceHarness::<Dock>::setup((), ())
+        .settings(file)
+        .appearance(appearance)
+        .start();
+    run.feeds.apps.send_replace(fake::dock::index());
+    run.feeds.pins.send_replace(fake::dock::pins());
+    run.feeds.badges.send_replace(fake::dock::badges());
+    run.feeds
+        .windows
+        .send_modify(|wl| wl.toplevels = fake::dock::toplevels_on("DP-1"));
+    run.harness.advance(Duration::from_millis(40));
+    run
+}
+
+fn start(file: ShellFile) -> Running {
+    start_with(file, PinnedAppearance::default())
+}
+
+/// How many times `needle` occurs in `html`.
+fn count(html: &str, needle: &str) -> usize {
+    html.matches(needle).count()
+}
+
+/// The tiles' names in document order (a label is drawn only while it is up).
+fn labels(html: &str) -> Vec<String> {
+    html.split("class=\"ds-dock-tile\" data-running=\"")
+        .skip(1)
+        .filter_map(|rest| rest.split("aria-label=\"").nth(1))
+        .filter_map(|rest| rest.split('"').next().map(str::to_owned))
+        .collect()
+}
+
+#[test]
+fn pinned_then_running_then_trash_with_dots_and_a_badge() {
+    let run = start(ShellFile::default());
+    let html = run.harness.html();
+    assert_eq!(
+        labels(&html),
+        ["Example Files", "Example Terminal", "Firefox", "Trash"],
+        "{html}"
+    );
+    let cases = [
+        ("four tiles", "class=\"ds-dock-tile\"", 4),
+        ("terminal and firefox run", "data-running=\"active\"", 2),
+        (
+            "each with quire's running dot",
+            "class=\"ds-running-dot\"",
+            2,
+        ),
+        ("every icon as it is, on no plate", "class=\"ds-plate\"", 0),
+        ("no bare art", "class=\"sill-dock-art\"", 0),
+        ("the terminal draws its own icon", "icons/foot.svg", 1),
+        ("quire's floor in the pill", "class=\"ds-dock-floor\"", 1),
+        ("a squircle pill", "data-corner=\"squircle\"", 1),
+        (
+            "the tile's size and the floor",
+            "--dock-tile-px:48px;--dock-floor-on:0;",
+            1,
+        ),
+        ("firefox's count", ">7</span>", 1),
+        ("one badge", "class=\"ds-badge\"", 1),
+        ("firefox's progress bar", "class=\"ds-dock-progress\"", 1),
+        ("the hit element", "id=\"dock-hit\"", 1),
+        ("the pill element", "id=\"dock-pill\"", 1),
+        (
+            "the separator before Trash",
+            "class=\"sill-dock-separator\"",
+            1,
+        ),
+        ("no strip while auto-hide is off", "id=\"dock-strip\"", 0),
+        ("the Dock material", "data-material=\"dock\"", 1),
+        ("the root draws the Space", "data-frame=\"tinted\"", 1),
+        ("no tint layer of the dock's own", "sill-dock-tint", 0),
+        ("plates on paper", "data-ground=\"frame\"", 0),
+        (
+            "Files and Terminal draw their own icons",
+            "data-kind=\"image\"",
+            2,
+        ),
+    ];
+    for (name, needle, want) in cases {
+        let got = count(&html, needle);
+        assert_eq!(got, want, "{name}: {needle}\n{html}");
+    }
+}
+
+#[test]
+fn fed_values_replace_the_defaults() {
+    let mut run = start(ShellFile::default());
+    let before = run.harness.html();
+    run.feeds.pins.send_replace(DockPins {
+        pinned: vec![AppId(fake::dock::FIREFOX.to_owned())],
+    });
+    run.feeds
+        .windows
+        .send_modify(|wl| wl.toplevels = Toplevels::default());
+    run.feeds.badges.send_replace(Badges::default());
+    run.harness.advance(Duration::from_millis(40));
+    let after = run.harness.html();
+    assert_eq!(labels(&after), ["Firefox", "Trash"]);
+    let cases = [
+        ("no window, no dot", "class=\"ds-running-dot\"", 2, 0),
+        ("no badge", "class=\"ds-badge\"", 1, 0),
+    ];
+    for (name, needle, was, now) in cases {
+        assert_eq!(
+            (count(&before, needle), count(&after, needle)),
+            (was, now),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn settings_drop_the_trash_and_add_the_strip() {
+    let mut file = ShellFile::default();
+    file.dock.trash = false;
+    file.dock.autohide = true;
+    let html = start(file).harness.html();
+    assert_eq!(
+        labels(&html),
+        ["Example Files", "Example Terminal", "Firefox"]
+    );
+    assert_eq!(count(&html, "class=\"sill-dock-separator\""), 0);
+    assert_eq!(count(&html, "id=\"dock-strip\""), 1);
+}
+
+/// The dock drawn with `style` as the icon style.
+fn styled(style: IconStyle) -> String {
+    let mut environment = Environment::default();
+    environment.settings.icons.style = style;
+    start_with(ShellFile::default(), PinnedAppearance(environment))
+        .harness
+        .html()
+}
+
+/// Under every style the terminal's own hicolor icon is drawn as it is, on no plate.
+#[test]
+fn a_mapped_app_draws_its_own_icon_on_no_plate() {
+    for style in [IconStyle::Colour, IconStyle::Muted, IconStyle::Monochrome] {
+        let html = styled(style);
+        assert!(!html.contains("class=\"ds-plate\""), "{style:?}: {html}");
+        assert!(
+            html.contains("data-kind=\"image\""),
+            "{style:?}: an image, not the window glyph\n{html}"
+        );
+        assert!(
+            !html.contains("sill-dock-art"),
+            "{style:?}: no art of the dock's own\n{html}"
+        );
+    }
+}
+
+/// The popup frame's stylesheet (the dock's context menu, the bar's menus, the tray's): clean
+/// under Strict with no exception, since quire's `RootExtent::Popup` lays the overlay in flow.
+#[test]
+fn the_popup_frame_stylesheet_is_clean_under_strict() {
+    let strict = LintConfig {
+        profile: Profile::Strict,
+        ..LintConfig::new(&shell_kit::kits())
+    };
+    assert_clean(shell_ui_kit::menu::POPUP_FRAME_CSS, &strict);
+}

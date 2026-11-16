@@ -1,0 +1,48 @@
+//! WindowTitlebar: with a subtitle, a proxy icon and the edited dot, active and inactive.
+
+use crate::pages::Section;
+use dioxus::prelude::*;
+use ui_components::components::chrome::titlebar_parts::TitleParts;
+use ui_components::components::chrome::window_frame::{TitleRoom, WindowTitlebar};
+use ui_components::prelude::*;
+use ui_components::style::icon::render::Glyph;
+
+/// The WindowTitlebar section.
+#[component]
+pub fn TitlebarSection() -> Element {
+    let bar = |title: &'static str, parts: TitleParts| {
+        rsx! {
+            div { class: "g-titlebar", WindowTitlebar { title, parts } }
+        }
+    };
+    rsx! {
+        Section { title: "WindowTitlebar", note: "The window's titlebar: traffic lights (the green one zooms; with Option held it only zooms, and held or rested on otherwise it opens the tiling menu), the title, a subtitle after it, a proxy icon before it and the edited dot; a drag moves the window and a double-click zooms it. A leading control (a sidebar button) sits after the lights and a trailing one at the bar's end; a press on either is its own and never moves the window, and `title_room` keeps the title centred in the bar or in the room between them.",
+            {bar("Untitled", TitleParts::default())}
+            {bar("Quarterly report", TitleParts { subtitle: Some("Edited today".to_owned()), ..TitleParts::default() })}
+            {bar("Quarterly report.pdf", TitleParts { proxy: Some(Icon::File), edited: true, ..TitleParts::default() })}
+            div { class: "g-titlebar",
+                WindowTitlebar { title: "No lights", lights: false }
+            }
+            div { class: "g-titlebar",
+                WindowTitlebar {
+                    title: "Leading control",
+                    leading: rsx! {
+                        Glyph { icon: Icon::PanelLeft }
+                    },
+                }
+            }
+            div { class: "g-titlebar",
+                WindowTitlebar {
+                    title: "Beside the controls",
+                    title_room: TitleRoom::Beside,
+                    leading: rsx! {
+                        Glyph { icon: Icon::PanelLeft }
+                    },
+                    trailing: rsx! {
+                        Glyph { icon: Icon::Search }
+                    },
+                }
+            }
+        }
+    }
+}

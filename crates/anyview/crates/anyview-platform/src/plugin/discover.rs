@@ -6,11 +6,11 @@
 use crate::env::Env;
 use anyview_plugin::{OffPlugin, PluginError, Plugins, Provision, shipped_extension_id};
 use anyview_plugin_protocol::PROTOCOL_VERSION;
-use bayonet::manifest::{ManifestError, PluginId, Raw, RawCapability};
-use bayonet::registry::{Candidate, Registry};
-use bayonet::{Reparsed, reparse};
-use ds_extensions::{ExtensionId, ExtensionsFile, Search};
-use ds_settings::{AppName, ConfigRoot, Store};
+use plugin_host::manifest::{ManifestError, PluginId, Raw, RawCapability};
+use plugin_host::registry::{Candidate, Registry};
+use plugin_host::{Reparsed, reparse};
+use ui_extensions::{ExtensionId, ExtensionsFile, Search};
+use ui_settings::{AppName, ConfigRoot, Store};
 use std::convert::Infallible;
 use std::path::{Path, PathBuf};
 
@@ -19,7 +19,7 @@ use std::path::{Path, PathBuf};
 const MANIFEST_FILE: &str = "extension.toml";
 
 /// A manifest file that is not a plugin.
-pub type Rejected = bayonet::Rejected<Provision>;
+pub type Rejected = plugin_host::Rejected<Provision>;
 
 /// What was found: the registry, and each file that could not become a plugin.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -168,7 +168,7 @@ fn retyped(error: ManifestError<RawCapability, Infallible>) -> PluginError {
 /// would serve first because ids sort. Any other id is a plugin somebody else wrote and is read
 /// as it stands.
 fn legacy(env: &Env, folder: &Path) -> (Vec<Candidate<Provision>>, Vec<Rejected>) {
-    let scan = bayonet::scan::<Provision>(&bayonet::Search::new(
+    let scan = plugin_host::scan::<Provision>(&plugin_host::Search::new(
         "anyview",
         folder,
         &env.dirs.data_dirs,

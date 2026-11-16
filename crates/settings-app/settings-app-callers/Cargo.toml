@@ -1,0 +1,33 @@
+[package]
+name = "settings-app-callers"
+description = "Which program is on the other end of a bus name: the desktop's caller table over peephole, as the owner check the live client asks and the peers the activation object judges its callers with."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+# `OwnerCheck`, `SenderName` and `Verdict`: the check this crate answers.
+ui-settings = {path = "../../ui/ui-settings", features = ["live"]}
+caller-identity-dbus = {default-features = false, features = ["desktop", "tokio"], path = "../../identity/caller-identity-dbus"}
+rustix = {version = "1.1", default-features = false, features = ["std", "process"], optional = true}
+thiserror = {version = "2", optional = true}
+zbus = {version = "5.19", features = ["tokio"]}
+
+[dev-dependencies]
+settings-app-testkit = {path = "../settings-app-testkit"}
+
+[features]
+# Test seams: a standing introduced for a bus name's owner, and peers over an empty table. A shipped
+# binary never enables it; a dev-dependency does.
+testing = ["caller-identity-dbus/fake"]
+# `detent --dev-callers FILE`: callers named in a person's own rows file are let in at `Proof::Dev`
+# (peephole's `dev-rows`). Off by default; only the `detent` binary's feature of the same name turns it
+# on, so no shipped build has it.
+dev-callers = ["caller-identity-dbus/dev-rows", "dep:rustix", "dep:thiserror"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

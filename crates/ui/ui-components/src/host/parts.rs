@@ -1,0 +1,136 @@
+//! The parts of the document seam. Each is a cohesive handful of reads and writes; a host
+//! implements them all (`DocumentHost`), and every method answers `Busy` or `Unknown` rather than
+//! panicking when the renderer holds the document or the element is not its own.
+
+use crate::host::captured::CapturedPointer;
+use crate::host::caret::{Caret, FieldSelection, InitialCaret};
+use crate::host::drop_hit::DropHit;
+use crate::host::fallback::Fallback;
+use crate::host::focused::Focused;
+use crate::host::found::Found;
+use crate::host::hand_back::HandBack;
+use crate::host::ime::{ImeEvent, ImeListener};
+use crate::host::measure::Measured;
+use crate::host::pasted::Pasted;
+use crate::host::phase::{Observe, Observed, PhaseWrite};
+use crate::host::position::{TextPosition, TextRange};
+use crate::host::probe::Probe;
+use crate::host::reveal::Scrolled;
+use dioxus::prelude::{EventHandler, MountedData};
+use ui_core::geometry::units::{Point, Rect};
+use std::rc::Rc;
+
+/// Moving the keyboard focus into and out of an element, and where it goes when its holder leaves.
+pub trait FocusHost {
+    /// Give `el` the keyboard.
+    fn focus(&self, el: &MountedData) -> Focused;
+    /// Take the keyboard from `el`: [`Focused::Done`] when it had it and no longer has it.
+    fn blur(&self, el: &MountedData) -> Focused;
+    /// Select all of `el`'s text, once the caret is in it.
+    fn select(&self, el: &MountedData) -> Focused;
+    /// Give `el` the keyboard and put its caret at `at` in the same write, so a key typed the
+    /// moment the focus lands never meets a caret placed afterwards from a stale view of the
+    /// text. A host that cannot place a caret from here selects all for
+    /// [`InitialCaret::SelectAll`] and [`InitialCaret::SelectStem`] (the whole name) and only
+    /// focuses for the rest; a field that already has the keyboard keeps its caret.
+    fn focus_placing(&self, el: &MountedData, at: InitialCaret) -> Focused {
+        match (self.focus(el), at) {
+            (Focused::Done, InitialCaret::SelectAll | InitialCaret::SelectStem) => self.select(el),
+            (focused, _) => focused,
+        }
+    }
+    /// Where the keyboard goes when a surface that took it is removed.
+    fn hand_back(&self) -> &HandBack;
+}
+
+/// A text field's caret and selection.
+pub trait CaretHost {
+    /// Where the caret is in the field `el`.
+    fn caret(&self, el: &MountedData) -> Caret;
+    /// Put the caret of the focused field `el` at `at`.
+    fn place_caret(&self, el: &MountedData, at: InitialCaret) -> Focused;
+    /// The field's selection, in characters.
+    fn selection(&self, el: &MountedData) -> FieldSelection;
+    /// Whether the focused field `el`, not laid out yet, still owes its caret its landing: a field
+    /// with text and no editor yet. An empty field owes nothing: its caret sits at the start, which
+    /// is its end too, so a key typed the moment it is built is never moved away from. A host that
+    /// cannot tell owes nothing.
+    fn caret_owed(&self, el: &MountedData) -> bool {
+        let _ = el;
+        false
+    }
+}
+
+/// Where things are in the document.
+pub trait GeometryHost {
+    /// `el`'s border box, in logical pixels.
+    fn measure(&self, el: &MountedData) -> Measured;
+    /// Scroll `list`'s own content the least that shows `item`, with no animation.
+    fn reveal(&self, list: &MountedData, item: &MountedData) -> Scrolled;
+    /// The first element matching a CSS selector.
+    fn find(&self, selector: &str) -> Found;
+    /// Whether `a` and `b` are the same node of the host's document: an element found by selector
+    /// is a different handle on the same node as the one a component mounted. Two nodes, or a
+    /// handle the host cannot read, are not.
+    fn same(&self, a: &MountedData, b: &MountedData) -> bool;
+    /// Publish what the frame phase sees of `el` into a signal, whenever it changes, until the
+    /// returned watch is dropped. A host with no phase answers [`Observed::Unsupported`].
+    fn observe(&self, _el: &MountedData, _what: Observe) -> Observed {
+        Observed::Unsupported
+    }
+    /// Queue a write to `el` for the frame phase to apply, in the frame's next step. Answers
+    /// whether it was queued: a host with no phase, or an element that is not its own, queues
+    /// nothing.
+    fn write(&self, _el: &MountedData, _write: PhaseWrite) -> bool {
+        false
+    }
+}
+
+/// Where the keyboard goes after a click on nothing focusable.
+pub trait ClickFocusHost {
+    /// Read the click from the document through `root`, before the renderer's default action.
+    fn fallback(&self, root: &MountedData) -> Fallback;
+    /// Give the ancestor `fallback` found the keyboard once the click has run, if the click left
+    /// the focus nowhere.
+    fn restore(&self, ancestor: &MountedData) -> Focused;
+    /// Give the pressed control, or its nearest focusable ancestor, the keyboard now: a click a
+    /// control kept with its default prevented.
+    fn press(&self, root: &MountedData) -> Focused;
+}
+
+/// What an edit surface reads geometry, the clipboard and the pointer through. Each takes the
+/// surface's element, so the host searches only its subtree; points and rects are the window's
+/// logical pixels.
+pub trait EditHost {
+    /// The text position under a point.
+    fn hit_test(&self, surface: &MountedData, at: Point) -> Probe<TextPosition>;
+    /// The caret's box at a position.
+    fn caret_rect(&self, surface: &MountedData, at: &TextPosition) -> Probe<Rect>;
+    /// The boxes a selection covers, one per line of text and one per whole atom.
+    fn selection_rects(&self, surface: &MountedData, range: &TextRange) -> Probe<Vec<Rect>>;
+    /// The clipboard, with its HTML when it has any. Call from a handler.
+    fn paste(&self) -> Option<Pasted>;
+    /// Route every pointer move and the release to `sink` until the button comes up, wherever the
+    /// pointer is: called at a press on the surface.
+    fn capture(&self, surface: &MountedData, sink: EventHandler<CapturedPointer>) -> Probe<()>;
+    /// The window's IME.
+    fn ime(&self) -> &dyn ImeHost;
+}
+
+/// The window's IME, as an edit surface uses it.
+pub trait ImeHost {
+    /// Turn the IME on (the surface has the keyboard) or off (it lost it) for the surface.
+    fn switch(&self, surface: &MountedData, on: bool) -> Probe<()>;
+    /// Where the IME's candidate window should sit: the caret's rect.
+    fn cursor_area(&self, surface: &MountedData, area: Rect) -> Probe<()>;
+    /// Deliver the IME's events to `sink` while the surface (or a node inside it) has the focus.
+    fn listen(&self, surface: &MountedData, sink: EventHandler<ImeEvent>) -> Probe<ImeListener>;
+    /// Stop delivering to a listener.
+    fn forget(&self, listener: ImeListener);
+}
+
+/// The host's hit test for a file drag.
+pub trait FileDropHost {
+    /// The innermost of `targets` under `at`, or the one whose element is an ancestor of what is.
+    fn hit(&self, targets: &[Rc<MountedData>], at: Point) -> DropHit;
+}

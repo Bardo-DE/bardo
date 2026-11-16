@@ -1,0 +1,391 @@
+#!/usr/bin/env bash
+# App switcher acceptance (design/13 §13.3.5, design/20 §1.11), on casement
+# (brought up and ended by start_compositor). Starts `sill run`
+# from this checkout's build (SILL_PROFILE, debug by default; `--features debug`) with its own XDG_RUNTIME_DIR
+# (WAYLAND_DISPLAY as an absolute socket path) and a scratch XDG_CONFIG_HOME, and three windows of
+# its own inside the nested compositor, never the user's:
+#   term    `foot`;
+#   demo    shell-host's `demo_window` (app id `demo_window`), which prints its own activated
+#           state: the script's view of the nested toplevel state;
+#   calc    `kcalc` (org.kde.kcalc), the one Q closes.
+# Started term, demo, calc, so the most recently used order is calc, demo, term. Every window
+# is killed at the end.
+#
+# The chord is `sill switcher next|prev`, as the compositor's window-switch shortcut runs it.
+# Its modifier is Alt, injected with `sill debug key SURFACE Alt --action press|release`
+# (shell-host's `Inject::Key`, which moves the seat modifiers the switcher reads through
+# `use_modifiers`); its release is the release. The keys pressed while Alt is held are `sill debug
+# key SURFACE KEY` too, and nothing reaches the user's session: every key goes to the switcher
+# surface of this run's own daemon. The show delay is 400 ms (`switcher.show_delay_ms`). Right and
+# Left step as Tab and Shift+Tab do. The script needs casement for the windows
+# (toplevel activation), which the headless KWin does not offer.
+#
+#   1. Warm: `sill-switcher-<out>` exists from the start, hidden (its capture fails).
+#   2. The quick tap: `next` + `commit` inside the delay switches to the previous app (demo goes
+#      Active, then, again, Inactive) with no panel frames; `next` alone with nothing held (the
+#      release came before the focus) switches too, with no panel, unless the nested seat
+#      reports a modifier held at the focus (the host session can leave it with Alt down; the
+#      line then says NOT PROVEN and the injected Alt's release commits it).
+#   3. Alt held, `next` shows the panel after the show delay, not before, on the three apps
+#      (screenshot dev/out/switcher-casement.png); `next` and `prev` move the selection (the
+#      panel's pixels change, and come back); `cancel` hides it, and no window's activation
+#      changed, then or at Alt's release.
+#   4. Alt held, `next`, then past the delay `next` and `commit`: the third app in MRU order is
+#      activated (term: demo goes Inactive).
+#   5. Alt held, `next`, a Right (the ring moves), a Left, Alt's release: the release
+#      activates the selection (demo goes Active).
+#   6. Alt held, `next`, Right, a `q` on calc: it closes and the panel stays; Escape hides
+#      it, and no window's activation changed.
+#   7. 5 s idle after it hides: 0 frames on the switcher surface.
+#
+# Usage: dev/accept/switcher.sh
+set -uo pipefail
+# shellcheck source=dev/lib/all.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
+OUT_DIR="$SILL_OUT_ROOT/accept-switcher"
+SHOTS="$SILL_SHOTS"
+mkdir -p "$OUT_DIR" "$SHOTS"
+HOST_TARGET="$SILL_OUT_ROOT/shell-host-examples"
+DEMO="$HOST_TARGET/debug/examples/demo_window"
+SHOW_DELAY_MS=400
+
+start_compositor || exit 1
+if [ "$COMPOSITOR" = casement ]; then
+  # The switcher lists real toplevels (foot, shell-host's demo_window, kcalc) through the
+  # compositor's toplevel protocols and a held Alt; casement's window management (activation, the
+  # toplevel list, a focused app's modifiers) is P1/P2 work, and the apps themselves are not in
+  # the jail's tools. Nothing here can be proven before that.
+  expected_skip "the app switcher needs real windows and casement's window management (P1/P2), and foot/kcalc are not jail tools"
+  stop_compositor
+  exit 2
+fi
+scratch_new
+mkdir -p "$CONFIG/sill"
+PIDS=()
+HOLD=
+
+# Alt down on the switcher, held for $1 ms (none: a bare tap of Alt), then up: the modifier the
+# switcher reads through `use_modifiers`.
+alt_held() {
+  sill debug key "$SWITCHER" Alt --action press >>"$OUT_DIR/keys.log" 2>&1
+  [ -n "${1:-}" ] && sleep "$(python3 -c "print($1 / 1000)")"
+  sill debug key "$SWITCHER" Alt --action release >>"$OUT_DIR/keys.log" 2>&1
+}
+# Press the named key (`sill debug key` names) on the switcher.
+press() { sill debug key "$SWITCHER" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
+
+# The mean absolute difference of two PNGs' RGBA bytes (0-255).
+diff_of() {
+  python3 - "$1" "$2" <<'EOF'
+import sys
+from PIL import Image, ImageChops
+a = Image.open(sys.argv[1]).convert("RGBA")
+b = Image.open(sys.argv[2]).convert("RGBA")
+if a.size != b.size:
+    print(255); sys.exit()
+d = ImageChops.difference(a, b)
+print(round(sum(d.tobytes()) / len(d.tobytes()), 3))
+EOF
+}
+
+# Capture the switcher to $1; succeeds only when the panel drew (over 1000 opaque pixels).
+panel_to() {
+  sill debug capture "$SWITCHER" "$1" >/dev/null 2>&1 || return 1
+  [ "$(opaque_pixels "$1")" -gt 1000 ]
+}
+
+# Wait up to $1 ms for the panel; prints the ms it took.
+wait_panel() {
+  local start t
+  start=$(now_ms)
+  while [ $(( $(now_ms) - start )) -lt "$1" ]; do
+    if panel_to "$OUT_DIR/probe.png"; then echo $(( $(now_ms) - start )); return 0; fi
+    sleep 0.02
+  done
+  return 1
+}
+
+# Wait up to $1 ms for the switcher to be unmapped (its capture fails).
+wait_hidden() {
+  local start
+  start=$(now_ms)
+  while [ $(( $(now_ms) - start )) -lt "$1" ]; do
+    sill debug capture "$SWITCHER" "$OUT_DIR/gone.png" >/dev/null 2>&1 || return 0
+    sleep 0.02
+  done
+  return 1
+}
+
+# demo_window's activated state, as it last printed it ("Active" or "Inactive").
+demo_state() {
+  grep '^{.*"event":"state"' "$OUT_DIR/demo.log" | tail -1 \
+    | python3 -c 'import json,sys; t=sys.stdin.read(); print(json.loads(t)["activated"] if t else "none")' 2>/dev/null \
+    || echo none
+}
+
+# How many state lines demo_window has printed.
+demo_lines() { grep -c '^{.*"event":"state"' "$OUT_DIR/demo.log"; }
+
+# Wait up to $2 ms for demo_window's state to be $1.
+wait_demo() {
+  local start
+  start=$(now_ms)
+  while [ $(( $(now_ms) - start )) -lt "$2" ]; do
+    [ "$(demo_state)" = "$1" ] && return 0
+    sleep 0.05
+  done
+  return 1
+}
+
+# The debug daemon (the lib's build) and shell-host's demo_window, built in this checkout's own
+# target directory so shell-host's is left alone.
+build_switcher() {
+  build || return 1
+  CARGO_TARGET_DIR="$HOST_TARGET" cargo build --manifest-path "$HOST_REPO/Cargo.toml" \
+    -p layer-shell-host --features debug-inject --example demo_window >>"$OUT_DIR/build.log" 2>&1 || {
+    echo "demo_window build failed (see $OUT_DIR/build.log)" >&2; return 1; }
+}
+
+start_switcher_daemon() {
+  printf '[switcher]\nshow_delay_ms = %s\n' "$SHOW_DELAY_MS" >"$CONFIG/sill/settings.toml"
+  backdrop_seed "$CONFIG" || return 1
+  launch_daemon || return 1
+  NAME=$(output_name) || return 1
+  SWITCHER="sill-switcher-$NAME"
+  sleep 1
+}
+
+# The three windows, each waited for; demo's state lines go to demo.log. Each starts through
+# `nested` (it execs), so the pid kept is the window's own and the kill reaches it.
+start_windows() {
+  nested foot >"$OUT_DIR/term.log" 2>&1 &
+  PIDS+=($!)
+  sleep 2
+  : >"$OUT_DIR/demo.log"
+  rm -f "$OUT_DIR/demo.in"
+  mkfifo "$OUT_DIR/demo.in"
+  nested "$DEMO" <"$OUT_DIR/demo.in" >"$OUT_DIR/demo.log" 2>&1 &
+  PIDS+=($!)
+  exec 8>"$OUT_DIR/demo.in"
+  wait_demo Active 30000 || { echo "demo_window never became active" >&2; return 1; }
+  nested env QT_QPA_PLATFORM=wayland kcalc >"$OUT_DIR/calc.log" 2>&1 &
+  CALC_PID=$!
+  PIDS+=("$CALC_PID")
+  wait_demo Inactive 10000 || { echo "kcalc never took the focus" >&2; return 1; }
+  sleep 1
+}
+
+stop_windows() {
+  local pid display
+  display=$WL
+  exec 8>&- 2>/dev/null
+  for pid in "${PIDS[@]}"; do
+    pkill -P "$pid" 2>/dev/null
+    kill "$pid" 2>/dev/null
+  done
+  for pid in "${PIDS[@]}"; do wait "$pid" 2>/dev/null; done
+  PIDS=()
+  # foot may hand its window to a process of its own: the one on this socket started
+  # from this checkout (never the host's, never another checkout's).
+  for pid in $(pgrep -x foot); do
+    [ "$(readlink "/proc/$pid/cwd")" = "$SILL_REPO" ] || continue
+    tr '\0' '\n' <"/proc/$pid/environ" 2>/dev/null | grep -qx "WAYLAND_DISPLAY=$display" \
+      && kill "$pid" 2>/dev/null
+  done
+}
+
+# How much longer a held chord is held on a debug build: every `sill debug capture` and key
+# takes several times as long there, and a step's own captures run while Alt is down, so a hold
+# sized for an idle host ends before the step does (a loaded host, load 20 or more, is the same) and "the release did not activate" is a script
+# artefact, not a finding. The nominal holds are the ones in the steps.
+HOLD_SCALE=3
+budgets_apply || HOLD_SCALE=6
+
+# The chord `sill switcher next`, then Alt held for $1 ms times HOLD_SCALE (in the background,
+# its pid in HOLD), down inside the show delay.
+chord_held() {
+  sill switcher next >>"$OUT_DIR/chords.log" 2>&1
+  alt_held $(( $1 * HOLD_SCALE )) &
+  HOLD=$!
+  sleep 0.05
+}
+
+# 1.
+step_warm() {
+  local log="$OUT_DIR/warm.log"
+  sill debug stats >"$log" 2>&1
+  grep -q "\"$SWITCHER\"" "$log" || { echo "$SWITCHER is not in 'sill debug stats'" >&2; return 1; }
+  if sill debug capture "$SWITCHER" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
+    echo "the switcher is mapped before any chord" >&2; return 1
+  fi
+  echo "$SWITCHER spawned at start, hidden" | tee -a "$log" >&2
+}
+
+# One quick next+commit: its time, and the switcher's frames around it (on stdout: "MS FRAMES").
+quick_commit() {
+  local f0 f1 start took
+  f0=$(frames_of "$SWITCHER")
+  start=$(now_ms)
+  sill switcher next >>"$1" 2>&1; sill switcher commit >>"$1" 2>&1
+  took=$(( $(now_ms) - start ))
+  sleep 0.4
+  f1=$(frames_of "$SWITCHER")
+  echo "$took $(( f1 - f0 ))"
+}
+
+# A quick next+commit ($1 ms) is inside the show delay: a release budget (the time is two IPC
+# round trips). On a debug build it is only printed (the frames-at-most-2 check still applies).
+within_delay() { budgets_apply || return 0; [ "$1" -lt "$SHOW_DELAY_MS" ]; }
+
+# 2. MRU calc, demo, term.
+step_quick_tap() {
+  local log="$OUT_DIR/quick.log" took frames ok=yes seat=none f0 f1
+  : >"$log"
+  read -r took frames <<<"$(quick_commit "$log")"
+  wait_demo Active 2000 || ok=no
+  echo "quick next+commit in ${took} ms: demo $(demo_state) (the previous app); switcher frames ${frames}" | tee -a "$log" >&2
+  within_delay "$took" && [ "$frames" -le 2 ] || ok=no
+  read -r took frames <<<"$(quick_commit "$log")"
+  wait_demo Inactive 2000 || ok=no
+  echo "again in ${took} ms: demo $(demo_state) (calc); switcher frames ${frames}" | tee -a "$log" >&2
+  within_delay "$took" && [ "$frames" -le 2 ] || ok=no
+  f0=$(frames_of "$SWITCHER")
+  sill switcher next >>"$log" 2>&1
+  sleep "$(python3 -c "print(($SHOW_DELAY_MS + 300) / 1000)")"
+  if panel_to "$OUT_DIR/stuck.png"; then
+    # The seat told the switcher a modifier is held (the host session can leave the nested seat
+    # with Alt down after an Alt+Tab away from its window, and the injected Alt cannot lift
+    # it): a held chord waits for its release, as it should. The injected Alt's release
+    # commits it; the tap without a commit is then not proven here.
+    seat=held
+    alt_held >>"$OUT_DIR/keys.log" 2>&1
+    wait_hidden 1500
+  fi
+  wait_demo Active 2000 || ok=no
+  f1=$(frames_of "$SWITCHER")
+  case "$seat" in
+    none) echo "next alone, nothing held (the release came before the focus): demo $(demo_state) (the previous app), no panel; switcher frames $(( f1 - f0 ))" | tee -a "$log" >&2
+      [ $(( f1 - f0 )) -le 2 ] || ok=no ;;
+    *) echo "NOT PROVEN next alone: the nested seat reported Alt held at the focus, so the panel waited for the release (demo $(demo_state) after the injected Alt's release)" | tee -a "$log" >&2 ;;
+  esac
+  [ "$ok" = yes ]
+}
+
+# 3. MRU demo, calc, term.
+step_show_move_cancel() {
+  local log="$OUT_DIR/show.log" early=none shown ab ac before
+  : >"$log"
+  before=$(demo_lines)
+  chord_held 5000
+  panel_to "$OUT_DIR/early.png" && early=panel
+  shown=$(wait_panel 2000) || { echo "the panel never showed" >&2; wait "$HOLD"; return 1; }
+  sleep 0.3
+  shot "$SHOTS/switcher-casement.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
+  panel_to "$OUT_DIR/a.png"
+  sill switcher next >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/b.png"
+  sill switcher prev >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/c.png"
+  ab=$(diff_of "$OUT_DIR/a.png" "$OUT_DIR/b.png")
+  ac=$(diff_of "$OUT_DIR/a.png" "$OUT_DIR/c.png")
+  sill switcher cancel >>"$log" 2>&1
+  wait_hidden 1500 || { echo "cancel left it up" >&2; wait "$HOLD"; return 1; }
+  wait "$HOLD"
+  sleep 0.5
+  echo "at 200 ms: ${early}; the panel a further ${shown} ms on (delay ${SHOW_DELAY_MS} ms, polled by capture);" \
+    "next moved the ring (diff ${ab}), prev brought it back (diff ${ac}); cancel hid it;" \
+    "demo's state lines ${before} -> $(demo_lines) ($(demo_state)) after Alt's release" | tee -a "$log" >&2
+  [ "$early" = none ] || return 1
+  python3 -c "import sys; sys.exit(0 if $ab > 0.05 and $ac < $ab / 4 else 1)" || return 1
+  [ "$before" = "$(demo_lines)" ] && [ "$(demo_state)" = Active ]
+}
+
+# 4. MRU demo, calc, term: the third is term.
+step_commit_third() {
+  local log="$OUT_DIR/commit.log"
+  : >"$log"
+  chord_held 2500
+  sleep 0.5
+  sill switcher next >>"$log" 2>&1
+  sleep 0.1
+  sill switcher commit >>"$log" 2>&1
+  wait_hidden 1500 || { echo "commit left it up" >&2; wait "$HOLD"; return 1; }
+  wait_demo Inactive 2000 || { echo "the third app (term) was not activated" >&2; wait "$HOLD"; return 1; }
+  wait "$HOLD"
+  sleep 0.3
+  echo "next, past the delay, next, commit: term (third in MRU) activated, demo $(demo_state), still after Alt's release" | tee -a "$log" >&2
+  [ "$(demo_state)" = Inactive ]
+}
+
+# 5. MRU term, demo, calc: next selects demo, Right calc, Left demo; the release activates it.
+step_real_keys() {
+  local log="$OUT_DIR/keys-step.log" moved
+  : >"$log"
+  chord_held 2000
+  # The panel shows after the 400 ms delay: wait for it, a fixed 350 ms sat on the boundary.
+  wait_panel 3000 >/dev/null
+  panel_to "$OUT_DIR/k1.png" || { echo "no panel while Alt is held" >&2; wait "$HOLD"; return 1; }
+  press ArrowRight || { wait "$HOLD"; return 1; }
+  sleep 0.5
+  panel_to "$OUT_DIR/k2.png" || { echo "the panel closed at Right" >&2; wait "$HOLD"; return 1; }
+  moved=$(diff_of "$OUT_DIR/k1.png" "$OUT_DIR/k2.png")
+  press ArrowLeft || { wait "$HOLD"; return 1; }
+  wait "$HOLD"
+  wait_hidden 1500 || { echo "Alt's release did not close it" >&2; return 1; }
+  wait_demo Active 2000 || { echo "the release did not activate demo" >&2; return 1; }
+  echo "Alt held: a Right moved the ring (diff ${moved}), Left brought it back; Alt's release closed it and activated demo ($(demo_state))" | tee -a "$log" >&2
+  python3 -c "import sys; sys.exit(0 if $moved > 0.05 else 1)"
+}
+
+# 6. MRU demo, term, calc: next selects term, Right calc, q closes it, Escape.
+step_quit() {
+  local log="$OUT_DIR/quit.log" gone=no stayed=no lines
+  : >"$log"
+  lines=$(demo_lines)
+  chord_held 3000
+  # Keys go to the panel once it is up (a debug build takes longer than 750 ms to draw it).
+  wait_panel 4000 >/dev/null
+  sleep 0.3
+  press ArrowRight || { wait "$HOLD"; return 1; }
+  sleep 0.4
+  press q || { wait "$HOLD"; return 1; }
+  for _ in $(seq 60); do kill -0 "$CALC_PID" 2>/dev/null || { gone=yes; break; }; sleep 0.05; done
+  sleep 0.6
+  panel_to "$OUT_DIR/after-quit.png" && stayed=yes
+  press Escape || { wait "$HOLD"; return 1; }
+  wait "$HOLD"
+  wait_hidden 1500 || { echo "Escape left it up" >&2; return 1; }
+  sleep 0.3
+  echo "a q on calc: closed ${gone}; the panel stayed ${stayed}; Escape hid it; demo's state lines ${lines} -> $(demo_lines) ($(demo_state))" | tee -a "$log" >&2
+  [ "$gone" = yes ] && [ "$stayed" = yes ] && [ "$(demo_lines)" = "$lines" ]
+}
+
+# 7.
+step_idle() {
+  local log="$OUT_DIR/idle.log" f0 f1
+  sleep 1
+  f0=$(frames_of "$SWITCHER")
+  sleep 5
+  f1=$(frames_of "$SWITCHER")
+  echo "5 s idle after it hides: $SWITCHER $(( f1 - f0 )) frames" | tee "$log" >&2
+  [ "$(( f1 - f0 ))" = 0 ]
+}
+
+cleanup() {
+  stop_windows
+  stop_daemon
+  stop_private_bus
+  stop_compositor
+  scratch_drop
+}
+trap cleanup EXIT
+
+nested wayland-info >/dev/null 2>&1 || { echo "no nested compositor (start_compositor failed)" >&2; exit 1; }
+build_switcher || exit 1
+await_no_process || exit 1
+start_private_bus || exit 1
+start_switcher_daemon || exit 1
+start_windows || exit 1
+run_steps step_warm step_quick_tap step_show_move_cancel step_commit_third step_real_keys \
+  step_quit step_idle
+status=$STATUS
+echo "logs in $OUT_DIR; screenshot $SHOTS/switcher-casement.png"
+exit "$status"

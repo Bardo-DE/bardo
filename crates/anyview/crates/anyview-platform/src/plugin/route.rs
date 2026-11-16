@@ -6,7 +6,7 @@ use crate::thumbnail::ThumbPixels;
 use anyview_core::{FactLabel, FactValue, Facts, FilePath, PixelLen};
 use anyview_plugin::{MissingPlugin, OffPlugin, Plugins, Route, Subject};
 use anyview_plugin_protocol::{Capability, FactRow};
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// What asking the plugins about a file came to.
 #[derive(Debug, Clone, PartialEq, Eq)]

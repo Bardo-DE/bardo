@@ -1,0 +1,83 @@
+[package]
+name = "computer-use-daemon"
+description = "The computer-use daemon and its library: the supervisor of runs wired to the system seams of cua-system, the org.quire.Cua provider and org.quire.Cua1. The binary serves both names on the session bus."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[lib]
+name = "computer_use_daemon"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cuad"
+path = "src/main.rs"
+
+[features]
+# The person's own keymap (and this desktop's bindings) from keycap, for the shortcut line the
+# model is told. On for the daemon; off, only the platform's conventions apply.
+default = ["keycap"]
+keycap = ["dep:key-remap-client"]
+# A test build only: callers are read from a fixture process tree and a callers file the harness
+# names (`CUAD_TEST_PROC_ROOT`, `CUAD_TEST_SYSTEM_CALLERS`) in place of `/proc` and `/etc/quire`.
+# Never on in a shipped build.
+fixture-callers = ["action-dbus/fixture-callers"]
+
+[dependencies]
+action-wire = {path = "../../actions/action-wire"}
+action-manifest = {path = "../../actions/action-manifest"}
+action-vocab = {path = "../../actions/action-vocab"}
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+computer-use-system = {path = "../computer-use-system"}
+computer-use-bus = {path = "../computer-use-bus"}
+computer-use-run = {path = "../computer-use-run"}
+keymap = {path = "../../keymap/keymap"}
+key-remap-client = {optional = true, path = "../../input/key-remap-client"}
+computer-use-host = {path = "../computer-use-host"}
+computer-use-dbus = {path = "../computer-use-dbus"}
+action-core = {path = "../../actions/action-core"}
+action-client = {default-features = false, features = ["dbus"], path = "../../actions/action-client"}
+action-provider = {features = ["dbus"], path = "../../actions/action-provider"}
+action-dbus = {path = "../../actions/action-dbus"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+account-daemon-support = {path = "../../accounts/account-daemon-support"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+
+[dev-dependencies]
+action-gate-wire = {path = "../../actions/action-gate-wire"}
+permission-core = {path = "../../actions/permission-core"}
+account-capability = {path = "../../accounts/account-capability"}
+# The tests present their processes as a fixture tree, which porter reads only in a test build.
+action-dbus = {features = ["fixture-callers"], path = "../../actions/action-dbus"}
+memory-core = {path = "../../memory/memory-core"}
+computer-use-action = {path = "../computer-use-action"}
+computer-use-fake = {path = "../computer-use-fake"}
+inference-core = {path = "../../inference/inference-core"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+computer-use-seat-input = {path = "../computer-use-seat-input"}
+computer-use-capture = {path = "../computer-use-capture"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tempfile = {version = "3"}
+serde_json = {version = "1"}
+action-daemon = {path = "../../actions/action-daemon"}
+action-fake = {path = "../../actions/action-fake"}
+action-router = {path = "../../actions/action-router"}
+memory-fake = {path = "../../memory/memory-fake"}
+memory-service = {path = "../../memory/memory-service"}
+memory-client = {default-features = false, features = ["dbus", "in_process"], path = "../../memory/memory-client"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

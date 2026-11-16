@@ -1,0 +1,43 @@
+[package]
+name = "agent-planner"
+description = "The planner model: the working-set view rendered into a chat request, the catalogue of tools, and the reply read back into a ModelOutput, behind a `Planner` trait, implemented by `PlannerModel` over any inferd-client Transport. Portable: no bus, no runtime."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[features]
+# Test code: `ScriptedPlanner`, a `Planner` that plays a script. Only dev-dependencies turn it on.
+testing = []
+
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+agent-loop = {path = "../agent-loop"}
+memory-core = {path = "../../memory/memory-core"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+action-core = {path = "../action-core"}
+action-manifest = {path = "../action-manifest"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+inference-client = {path = "../../inference/inference-client"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+agent-planner = {path = ".", features = ["testing"]}
+action-fake = {path = "../action-fake"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,41 @@
+[package]
+name = "shell-bar"
+description = "The menu bar, its menus and tray, and the control center it hangs."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+ui-components = {path = "../../ui/ui-components"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+shell-kit = {path = "../shell-kit"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
+shell-launcher = {path = "../shell-launcher"}
+shell-model = {path = "../shell-model"}
+shell-services = {path = "../shell-services"}
+shell-settings = {path = "../shell-settings"}
+shell-ui-kit = {path = "../shell-ui-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+
+[dev-dependencies]
+shell-testkit = {path = "../shell-testkit"}
+serde_json = {version = "1"}
+ui-harness = {path = "../../ui/ui-harness"}
+shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
+dioxus-ssr = {version = "0.7"}
+ui-lint = {path = "../../ui/ui-lint"}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
+jiff = {version = "0.2"}
+
+[[example]]
+name = "bar_demo"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

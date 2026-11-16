@@ -1,0 +1,23 @@
+[package]
+name = "computer-use-types"
+description = "The leaf types cua-bus carries and the capability crates (a11y-tree, seat-input, maskcap) re-export: Role, the node selector, the input receipt and seat error, the frame digest. Serde only."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+account-core = {path = "../../accounts/account-core"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

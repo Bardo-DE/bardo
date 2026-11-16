@@ -1,0 +1,177 @@
+//! What the daemon's tests share: a private session bus, scratch directories, seams that are
+//! real where the test is about the real thing (SQLCipher, sealed files) and in memory where it
+//! is about the system around it (keys, the embedder, the callers).
+
+#![allow(dead_code)]
+
+pub mod bus;
+pub mod inferd;
+
+use memory_core::{Dirs, SpaceId};
+use memory_dbus_serve::serve_on;
+use memory_fake::ScriptedConsolidator;
+use memory_seal::{KeyError, KeyStore, MemoryKeys, SpaceKey};
+use memory_service::Caller;
+use memory_service::MemoryService;
+use memory_store::{EmbedRole, EmbedderCard, Urgency, Vector};
+use memory_daemon::{Confinement, Consent, Daemon, SpaceRegistry, SystemBackend, TablePeers};
+use memory_recall::{EmbedError, Embedder, FakeEmbedder};
+use std::path::Path;
+use std::sync::Arc;
+
+/// A registry that lists the Spaces these tests use, as porter's would after they were made.
+pub fn listed_spaces() -> SpaceRegistry {
+    SpaceRegistry::listing(["work", "home", "old"].map(space))
+}
+
+pub fn space(id: &str) -> SpaceId {
+    SpaceId::parse(id).expect("space")
+}
+
+/// Scratch XDG roots under `root`: nothing here is the real home.
+pub fn dirs_in(root: &Path) -> Dirs {
+    Dirs::new(
+        root.join("data"),
+        root.join("cache"),
+        root.join("config"),
+        root.join("run"),
+    )
+}
+
+/// A key store two daemons can share, as the Secret Service is shared by successive runs.
+#[derive(Debug, Clone, Default)]
+pub struct SharedKeys(pub Arc<MemoryKeys>);
+
+impl KeyStore for SharedKeys {
+    async fn get(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
+        self.0.get(space).await
+    }
+
+    async fn create(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
+        self.0.create(space).await
+    }
+
+    async fn destroy(&self, space: &SpaceId) -> Result<(), KeyError> {
+        self.0.destroy(space).await
+    }
+}
+
+/// The fake embedder that gives the executor back before it answers, as a call to inferd does:
+/// without it a second request could never overlap the first.
+#[derive(Debug, Clone)]
+pub struct SlowEmbedder(pub FakeEmbedder);
+
+impl Embedder for SlowEmbedder {
+    fn card(&self) -> &EmbedderCard {
+        self.0.card()
+    }
+
+    async fn embed(
+        &self,
+        texts: &[String],
+        role: EmbedRole,
+        urgency: Urgency,
+    ) -> Result<Vec<Vector>, EmbedError> {
+        for _ in 0..3 {
+            tokio::task::yield_now().await;
+        }
+        self.0.embed(texts, role, urgency).await
+    }
+}
+
+pub type TestBackend = SystemBackend<SharedKeys, SlowEmbedder, ScriptedConsolidator>;
+
+pub fn backend(dirs: &Dirs, keys: &SharedKeys, consolidator: ScriptedConsolidator) -> TestBackend {
+    SystemBackend::with(
+        dirs.clone(),
+        keys.clone(),
+        SlowEmbedder(FakeEmbedder::new()),
+        consolidator,
+    )
+    .with_registry(listed_spaces())
+}
+
+pub fn service(dirs: &Dirs, keys: &SharedKeys) -> MemoryService<TestBackend> {
+    MemoryService::new(
+        backend(dirs, keys, ScriptedConsolidator::default()),
+        memory_core::RuleSet::standard(),
+    )
+}
+
+/// A daemon on `bus` over scratch directories, with the clients that call it.
+pub struct World {
+    pub daemon: Arc<Daemon<TestBackend, TablePeers>>,
+    pub server: zbus::Connection,
+    pub address: String,
+    pub dirs: Dirs,
+    pub keys: SharedKeys,
+}
+
+impl World {
+    /// The daemon, serving on `bus`'s address.
+    pub async fn start(bus: &bus::PrivateBus, dirs: &Dirs, keys: &SharedKeys) -> World {
+        Self::start_with(bus, dirs, keys, None).await
+    }
+
+    /// The daemon, with `consent` as the place the person's confirmations of loosened settings go.
+    pub async fn start_with(
+        bus: &bus::PrivateBus,
+        dirs: &Dirs,
+        keys: &SharedKeys,
+        consent: Option<Consent>,
+    ) -> World {
+        let daemon = Daemon::new(service(dirs, keys), TablePeers::new(), dirs.clone());
+        let daemon = match consent {
+            Some(consent) => daemon.with_consent(consent),
+            None => daemon,
+        };
+        Self::serving(bus, dirs, keys, daemon).await
+    }
+
+    /// The daemon, told it started `confinement` (what `start` computes from the sandbox).
+    pub async fn start_confined(
+        bus: &bus::PrivateBus,
+        dirs: &Dirs,
+        keys: &SharedKeys,
+        confinement: Confinement,
+    ) -> World {
+        let daemon = Daemon::new(service(dirs, keys), TablePeers::new(), dirs.clone())
+            .with_confinement(confinement);
+        Self::serving(bus, dirs, keys, daemon).await
+    }
+
+    async fn serving(
+        bus: &bus::PrivateBus,
+        dirs: &Dirs,
+        keys: &SharedKeys,
+        daemon: Daemon<TestBackend, TablePeers>,
+    ) -> World {
+        let server = connect(&bus.address).await;
+        let daemon = Arc::new(daemon);
+        serve_on(&server, daemon.clone()).await.expect("serve");
+        daemon.attach(server.clone());
+        World {
+            daemon,
+            server,
+            address: bus.address.clone(),
+            dirs: dirs.clone(),
+            keys: keys.clone(),
+        }
+    }
+
+    /// A new connection to the bus that the daemon takes for `caller`.
+    pub async fn client(&self, caller: Caller) -> zbus::Connection {
+        let connection = connect(&self.address).await;
+        let unique = connection.unique_name().expect("unique name").to_string();
+        self.daemon.peers().introduce(&unique, caller);
+        connection
+    }
+}
+
+pub async fn connect(address: &str) -> zbus::Connection {
+    zbus::connection::Builder::address(address)
+        .expect("address")
+        .build()
+        .await
+        .expect("connect to the private bus")
+}

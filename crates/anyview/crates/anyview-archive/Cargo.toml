@@ -11,7 +11,7 @@ publish = false
 [dependencies]
 anyview-core = {path = "../anyview-core"}
 bzip2 = {version = "0.6"}
-ds-core = {path = "../../../quire/crates/ds-core"}
+ui-core = {path = "../../../ui/ui-core"}
 flate2 = {version = "1", default-features = false, features = ["rust_backend"]}
 lzma-rust2 = {version = "0.16", default-features = false, features = ["std", "xz"]}
 quick-xml = {version = "0.41"}

@@ -1,5 +1,5 @@
 //! The pane drawn: server-side renders of each body kept as goldens, the markup and stylesheet held
-//! to quire's coherence rules, and behaviour through `ds_harness`'s real Blitz document.
+//! to quire's coherence rules, and behaviour through `ui_harness`'s real Blitz document.
 //!
 //! `DS_BLESS=1 cargo test -p anyview-peek --test peek pane::` writes the goldens; read the diff before
 //! committing one.
@@ -14,10 +14,10 @@ use anyview_peek::{AnyPeeked, Body, Card, PageLook, PdfPeeked, STYLE, peek};
 use anyview_text::{TokenClass, TokenLine, TokenSpan};
 use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
-use ds::assembly::ds::Inject;
-use ds::prelude::{Appearance, Ds, Material, Word};
-use ds_harness::{Backdrop, Harness, HarnessConfig, Viewport};
-use ds_lint::{LintConfig, Profile, Rule, assert_clean, markup};
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::{Appearance, Ds, Material, Word};
+use ui_harness::{Backdrop, Harness, HarnessConfig, Viewport};
+use ui_lint::{LintConfig, Profile, Rule, assert_clean, markup};
 use std::sync::{Arc, OnceLock};
 use support::{Home, fixture, pane_budget};
 
@@ -183,20 +183,20 @@ fn the_stylesheet_uses_design_system_tokens_only() {
         STYLE,
         &LintConfig {
             profile: Profile::Strict,
-            ..LintConfig::new(&ds::kits())
+            ..LintConfig::new(&ui_components::kits())
         },
     );
 }
 
 /// quire's `TextureLayer` carries `ds-texture-layer` and styles itself inline, so its own class has
 /// no rule: quire's markup lint flags quire's own component (FINDINGS: open item for quire).
-fn is_texture_layer(offence: &ds_lint::Offence) -> bool {
+fn is_texture_layer(offence: &ui_lint::Offence) -> bool {
     offence.selector == "object.ds-texture-layer"
 }
 
 #[test]
 fn every_class_the_pane_draws_is_styled_and_nothing_is_raw_markup() {
-    let css = format!("{}\n{STYLE}", ds::stylesheet());
+    let css = format!("{}\n{STYLE}", ui_components::stylesheet());
     let all = [
         "picture",
         "page",
@@ -213,7 +213,7 @@ fn every_class_the_pane_draws_is_styled_and_nothing_is_raw_markup() {
     .map(body);
     for peeked in &all {
         let html = render(peeked);
-        let offences = markup(&html, &css, &LintConfig::new(&ds::kits()));
+        let offences = markup(&html, &css, &LintConfig::new(&ui_components::kits()));
         let wrong: Vec<_> = offences
             .iter()
             .filter(|offence| {

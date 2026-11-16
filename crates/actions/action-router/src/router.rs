@@ -1,0 +1,295 @@
+//! The router: the seams, the configuration and the state, with one entry point.
+
+use crate::auth::acting_role;
+use crate::seams::Seams;
+use crate::watch::Watch;
+use action_context::state::RouterState;
+use action_core::AgentConfig;
+use permission_core::Floor;
+use action_vocab::{CallerRole, Clock};
+use action_wire::{CallerId, IntentsReply, IntentsRequest, WidenAnswer, WidenAsk, WireRefusal};
+use permission_policy::Presets;
+use std::future::Future;
+use std::sync::{Arc, Mutex, MutexGuard, RwLock};
+
+/// The router over one set of seams.
+#[derive(Debug)]
+pub struct Router<S: Seams> {
+    /// The seams.
+    pub seams: S,
+    /// The proposed values the router starts with.
+    pub config: AgentConfig,
+    /// The values the person's settings give while the daemon runs (`apply_settings`); they win
+    /// over `config` once set.
+    live: RwLock<Option<AgentConfig>>,
+    /// The administrator's floor, read once at start by the daemon: `Floor::none()` unless it
+    /// sets one. Agents only; the person's own launcher acts never meet it.
+    pub floor: Floor,
+    /// The policy point, swapped whole when the policy files change (`set_presets`): a call in
+    /// flight keeps the set it started with.
+    presets: RwLock<Arc<Presets>>,
+    /// What it mutates.
+    pub state: Mutex<RouterState>,
+}
+
+impl<S: Seams> Router<S> {
+    /// A router with nothing installed.
+    pub fn new(seams: S, config: AgentConfig, presets: Presets) -> Self {
+        Self {
+            seams,
+            config,
+            live: RwLock::new(None),
+            floor: Floor::none(),
+            presets: RwLock::new(Arc::new(presets)),
+            state: Mutex::new(RouterState::new()),
+        }
+    }
+
+    /// The values in force now: the person's latest settings, else the ones the router started
+    /// with. Every decision reads them afresh, so a settings change applies to the next call.
+    pub fn agent_config(&self) -> AgentConfig {
+        match self.live.read() {
+            Ok(live) => live.unwrap_or(self.config),
+            Err(poisoned) => poisoned.into_inner().unwrap_or(self.config),
+        }
+    }
+
+    /// Puts the person's settings in force for every call after this one.
+    pub fn apply_settings(&self, config: AgentConfig) {
+        match self.live.write() {
+            Ok(mut live) => *live = Some(config),
+            Err(poisoned) => *poisoned.into_inner() = Some(config),
+        }
+    }
+
+    /// The policy sets in force now. Every decision reads them afresh.
+    pub fn presets(&self) -> Arc<Presets> {
+        match self.presets.read() {
+            Ok(presets) => presets.clone(),
+            Err(poisoned) => poisoned.into_inner().clone(),
+        }
+    }
+
+    /// Puts rebuilt policy sets in force for every call after this one.
+    pub fn set_presets(&self, presets: Presets) {
+        let presets = Arc::new(presets);
+        match self.presets.write() {
+            Ok(mut held) => *held = presets,
+            Err(poisoned) => *poisoned.into_inner() = presets,
+        }
+    }
+
+    /// The state, even if a thread that held it panicked: the data is still what a test or a
+    /// halt needs to read.
+    pub(crate) fn locked(&self) -> MutexGuard<'_, RouterState> {
+        match self.state.lock() {
+            Ok(guard) => guard,
+            Err(poisoned) => poisoned.into_inner(),
+        }
+    }
+
+    /// Answers one request from one caller. The caller's identity is what the transport
+    /// derived; the router checks that its role may make the request (`permits`) before
+    /// anything else. The signature is the seam's: a future that can cross a multi-threaded
+    /// runtime, written out so every implementation of the seam reads the same.
+    pub fn handle(
+        &self,
+        caller: &CallerId,
+        request: IntentsRequest,
+    ) -> impl Future<Output = IntentsReply> + Send {
+        self.handle_watched(caller, request, Watch::none())
+    }
+
+    /// `handle` for a request whose requester watches it: a computer-use gate check tells
+    /// `watch` when it is about to ask the person (`Progress(Confirming)`) and waits for its
+    /// `Proceed` before the sheet is drawn, and a withdrawn request takes its sheet back. A
+    /// `Run.Perform` tells `watch` how far the call is (`Reviewing`, `Previewing`,
+    /// `Confirming(id)`, `Dispatched`) and waits for nothing.
+    #[allow(clippy::manual_async_fn)]
+    pub fn handle_watched(
+        &self,
+        caller: &CallerId,
+        request: IntentsRequest,
+        watch: Watch,
+    ) -> impl Future<Output = IntentsReply> + Send {
+        async move {
+            let Some(role) = acting_role(&caller.roles, request.member()) else {
+                return IntentsReply::Refused(WireRefusal::NotAllowed);
+            };
+            self.restore_named(caller, role, &request).await;
+            // One place refuses whatever would run something in a watch session.
+            if let Err(why) = self.watch_gate(caller, role, &request) {
+                return IntentsReply::Refused(why);
+            }
+            let reply = self.answer(caller, role, request, &watch).await;
+            self.settle(reply).await
+        }
+    }
+
+    async fn answer(
+        &self,
+        caller: &CallerId,
+        role: action_vocab::CallerRole,
+        request: IntentsRequest,
+        watch: &Watch,
+    ) -> IntentsReply {
+        use IntentsRequest as R;
+        match request {
+            R::Manifests => self.manifests(),
+            R::IndexPush(batch) => self.index_push(caller, batch),
+            R::IndexReset { epoch } => self.index_reset(caller, epoch),
+            R::Search(ask) => self.search_query(role, ask),
+            R::SearchCancel(_) => IntentsReply::Done,
+            R::Perform {
+                call,
+                session,
+                parent_window,
+                activation,
+            } => {
+                if let Err(why) = self.checkpoint_reach(caller, role, &call).await {
+                    return IntentsReply::Refused(why);
+                }
+                let now = self.seams.clock().now();
+                let who =
+                    self.locked()
+                        .who_for(caller, role, session.as_ref(), now, self.start_mode());
+                // Only the launcher's token means anything: it is the person's own click.
+                let activation = activation.filter(|_| role == CallerRole::Launcher);
+                match who {
+                    // Boxed: the call's whole lifecycle is the largest future the router has, and
+                    // it would otherwise sit inline in every caller's.
+                    Ok(who) => IntentsReply::Performed(Box::new(
+                        Box::pin(self.perform_chain(who, call, parent_window, activation, watch))
+                            .await,
+                    )),
+                    Err(why) => IntentsReply::Refused(why),
+                }
+            }
+            R::DryRun { call, session } => {
+                if let Err(why) = self.checkpoint_reach(caller, role, &call).await {
+                    return IntentsReply::Refused(why);
+                }
+                let now = self.seams.clock().now();
+                let who =
+                    self.locked()
+                        .who_for(caller, role, session.as_ref(), now, self.start_mode());
+                match who {
+                    Ok(who) => self.run_dry(who, call).await,
+                    Err(why) => IntentsReply::Refused(why),
+                }
+            }
+            R::Preview(id) => self.run_preview(&id).await,
+            R::Suggest(ask) => self.run_suggest(role, ask).await,
+            R::Undo(id) => self.run_undo(caller, role, id).await,
+            R::UndoAll(scope) => self.run_undo_all(caller, role, scope).await,
+            R::Context { session, app } => {
+                // A terminal has one session of its own, which it cannot name.
+                let session = match role {
+                    CallerRole::Cli => {
+                        let now = self.seams.clock().now();
+                        match self
+                            .locked()
+                            .who_for(caller, role, None, now, self.start_mode())
+                        {
+                            Ok(who) => who.session.unwrap_or(session),
+                            Err(why) => return IntentsReply::Refused(why),
+                        }
+                    }
+                    _ => session,
+                };
+                self.session_context(&session, app).await
+            }
+            R::SessionOpen(open) => match self.existing_conversation(role, &open).await {
+                Some(kept) => kept,
+                None => self.session_open(caller, role, open),
+            },
+            R::SessionTurn { session, turn } => {
+                match self.record_turn(caller, role, &session, turn) {
+                    Ok(recorded) => {
+                        // The restore point is saved before the agent is told of the turn.
+                        self.checkpoint_step(&session, recorded.id).await;
+                        self.begin_turn(&session, recorded.id);
+                        self.derive_policy(&session).await;
+                        IntentsReply::TurnRecorded(recorded.id)
+                    }
+                    Err(why) => IntentsReply::Refused(why),
+                }
+            }
+            R::SessionMode(ask) => self.session_mode(ask),
+            R::SessionClose { session } => self.session_close(caller, role, &session),
+            R::SessionTurnEnded { session, turn, .. } => {
+                self.session_turn_ended(caller, role, &session, turn)
+            }
+            R::SessionResolve { session, handle } => self.session_resolve(&session, handle).await,
+            R::SessionDisplay { session, handle } => self.session_display(&session, handle),
+            R::SessionDisplayLabelled { session, handle } => {
+                self.session_display_labelled(&session, handle)
+            }
+            R::SessionRead { session, ask } => self.session_read(&session, ask).await,
+            R::SessionTaskPolicy { session } => match self.locked().sessions.get(&session) {
+                Some(record) => IntentsReply::TaskPolicy(record.policy.clone().map(Box::new)),
+                None => IntentsReply::Refused(WireRefusal::NoSuchSession),
+            },
+            R::SessionWiden { session, widen } => self.session_widen(&session, widen).await,
+            R::SessionNote { session, note } => self.session_note(&session, note),
+            R::SessionRecall { session, ask } => self.session_recall(&session, ask).await,
+            R::SessionNarrow { session, turn } => self.session_narrow(&session, turn).await,
+            R::SessionHandles { session } => self.session_handles(&session),
+            R::SessionStored { ask } => self.session_stored(caller, role, ask).await,
+            R::MessageSend { session, draft } => self.message_send(caller, role, &session, draft),
+            R::MessageInbox(ask) => self.message_inbox(role, ask).await,
+            R::GateGrant(ask) => self.gate_grant(ask).await,
+            R::GateCheck(ask) => self.gate_check(ask, watch).await,
+            R::ControlHalt { scope, cause } => self.control_halt(scope, cause).await,
+            R::ControlResume { scope } => self.control_resume(scope),
+            R::ControlState => IntentsReply::State(self.locked().kill.clone()),
+            R::ControlJournal(filter) => self.control_journal(role, &filter),
+            R::ControlTerminalGrants => IntentsReply::TerminalGrants(self.terminal_grants()),
+            R::ControlTerminalRevoke(action) => {
+                self.revoke_terminal_grant(&action);
+                IntentsReply::Done
+            }
+            R::ControlStandingGrants => IntentsReply::StandingGrants(self.standing_grants()),
+            R::ControlStandingRevoke(id) => {
+                self.revoke_standing(&id);
+                IntentsReply::Done
+            }
+            R::CheckpointList { session } => self.checkpoint_list(caller, role, &session).await,
+            R::CheckpointPlan { session, id } => {
+                self.checkpoint_plan(caller, role, &session, id).await
+            }
+            R::CheckpointWatch {
+                workspace,
+                label,
+                rewind,
+            } => self.checkpoint_watch(caller, workspace, &label, rewind),
+            R::CheckpointMark { session } => self.checkpoint_mark(&session).await,
+            R::CheckpointWatchAgent {
+                workspace,
+                label,
+                rewind,
+                agent,
+            } => self.checkpoint_watch_agent(caller, workspace, &label, rewind, agent),
+            R::CheckpointHandover { session, to, agent } => {
+                self.checkpoint_handover(caller, &session, to, agent)
+            }
+            R::CheckpointWatched => self.checkpoint_watched(),
+        }
+    }
+
+    async fn session_widen(&self, session: &provenance::SessionId, widen: WidenAsk) -> IntentsReply {
+        let said = self
+            .locked()
+            .sessions
+            .get(session)
+            .map(|r| r.turns.iter().any(|t| t.id == widen.turn));
+        match said {
+            None => IntentsReply::Refused(WireRefusal::NoSuchSession),
+            Some(false) => IntentsReply::Refused(WireRefusal::Malformed),
+            Some(true) => {
+                let answer: WidenAnswer = self.widen_policy(session, widen.change).await;
+                IntentsReply::Widened(answer)
+            }
+        }
+    }
+}

@@ -1,0 +1,67 @@
+//! `display.*`: how sill treats displays (brightness and volume keys, night warmth, font
+//! rendering for other apps, colour management). All Advanced for now (design/22 §5 has no
+//! Displays page yet). There is no scale key: the compositor owns a display's scale.
+
+use ui_settings::Percent;
+use ui_settings::schema::Page;
+use serde::{Deserialize, Serialize};
+use shell_model::displays::{FontRenderingMode, HardwareVolume, KeysTarget, NightWarmthMode};
+
+/// Displays.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[serde(default)]
+#[settings(file = "sill/settings.toml", domain = "display", page = Page::Appearance)]
+pub struct DisplaySettings {
+    #[settings(
+        label = "Brightness keys adjust",
+        help = "The display under the pointer, or every display.",
+        section = "Display",
+        advanced
+    )]
+    pub brightness_keys_target: KeysTarget,
+    #[settings(
+        label = "Monitor speakers follow the volume",
+        help = "Volume changes also set the monitor's own volume when it supports that.",
+        section = "Display",
+        advanced,
+        note = "Only monitors that accept volume changes."
+    )]
+    pub hardware_volume: HardwareVolume,
+    #[settings(
+        label = "Night warmth",
+        help = "Warms external monitors by lowering their blue and green; undone when off.",
+        section = "Display",
+        advanced,
+        note = "Only external monitors that support it change."
+    )]
+    pub night_warmth: NightWarmthMode,
+    #[settings(
+        label = "Night warmth strength",
+        help = "0 leaves white alone; 100 warms it the most.",
+        section = "Display",
+        range = "0..=100",
+        unit = "%",
+        ends = ("Cool", "Warm"),
+        advanced
+    )]
+    pub night_warmth_strength: Percent,
+    #[settings(
+        label = "Text rendering in other apps",
+        help = "Auto sets smooth text for other apps, unless you've set your own.",
+        section = "Display",
+        advanced
+    )]
+    pub font_rendering: FontRenderingMode,
+}
+
+impl Default for DisplaySettings {
+    fn default() -> Self {
+        DisplaySettings {
+            brightness_keys_target: KeysTarget::PointerOutput,
+            hardware_volume: HardwareVolume::WhenMonitorIsOutput,
+            night_warmth: NightWarmthMode::Off,
+            night_warmth_strength: Percent(50),
+            font_rendering: FontRenderingMode::Auto,
+        }
+    }
+}

@@ -1,0 +1,33 @@
+[package]
+name = "ui-components"
+description = "Renderer-free design system: tokens, palette, icons, components, motion."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ui-core = {path = "../ui-core"}
+ui-intents = {path = "../ui-intents"}
+ui-motion = {path = "../ui-motion", features = ["dioxus"]}
+ui-style = {path = "../ui-style", default-features = false, features = ["dioxus", "icon-classify"]}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+# `ds::keys`: the toolkit side of the keymap; sources are injected, none is linked here.
+keymap = {path = "../../keymap/keymap"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+# `ui_manifest`: the conformance file an app's menu items and shortcuts are written to.
+toml = {version = "1"}
+
+[dev-dependencies]
+dioxus-ssr = {version = "0.7"}
+ui-lint = {path = "../ui-lint"}
+ui-core = {path = "../ui-core", features = ["testing"]}
+# `menus::export`: the tree's JSON form, round-tripped.
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

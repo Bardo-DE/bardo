@@ -1,0 +1,42 @@
+[package]
+name = "settings-app-intents"
+description = "What an agent or a command line may do in Settings: detent's intents manifest and its IntentProvider1 provider."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+action-wire = {path = "../../actions/action-wire"}
+action-manifest = {path = "../../actions/action-manifest"}
+action-vocab = {path = "../../actions/action-vocab"}
+account-ids = {path = "../../accounts/account-ids"}
+settings-app-callers = {path = "../settings-app-callers"}
+settings-app-client = {path = "../settings-app-client"}
+settings-app-files = {path = "../settings-app-files"}
+settings-app-model = {path = "../settings-app-model"}
+action-provider = {path = "../../actions/action-provider", features = ["dbus"]}
+action-core = {path = "../../actions/action-core"}
+action-dbus = {path = "../../actions/action-dbus"}
+ui-peer = {path = "../../ui/ui-peer"}
+ui-settings = {path = "../../ui/ui-settings"}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+thiserror = {version = "2"}
+toml = {version = "1"}
+zbus = {version = "5.19", features = ["tokio"]}
+
+[dev-dependencies]
+account-sheet = {path = "../../accounts/account-sheet"}
+settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
+action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
+settings-app-testkit = {path = "../settings-app-testkit"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,55 @@
+//! Badges' state and the LauncherEntry app URI.
+
+use std::collections::BTreeMap;
+
+use serde::{Deserialize, Serialize};
+use shell_launcher::AppId;
+
+use crate::units::{Permille, Urgency, Visibility};
+
+/// Every app with something to show, by desktop id.
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct Badges {
+    pub apps: BTreeMap<AppId, Badge>,
+}
+
+/// One app's LauncherEntry properties. The count and progress are kept even while hidden, as
+/// the protocol sends value and visibility separately.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct Badge {
+    pub count: u64,
+    pub count_visibility: Visibility,
+    /// `progress` 0..1 as thousandths.
+    pub progress: Permille,
+    pub progress_visibility: Visibility,
+    /// `urgent`: the app needs the person (the dock does not bounce, design/10 §10.3.5).
+    pub urgency: Urgency,
+}
+
+impl Badge {
+    /// The count to draw: visible and above zero.
+    pub fn shown_count(&self) -> Option<u64> {
+        (self.count_visibility == Visibility::Shown && self.count > 0).then_some(self.count)
+    }
+
+    /// The progress to draw, when visible.
+    pub fn shown_progress(&self) -> Option<Permille> {
+        (self.progress_visibility == Visibility::Shown).then_some(self.progress)
+    }
+}
+
+/// How many apps' badges are kept: a desktop has a few dozen apps, and any program on the bus may
+/// send an `Update` for any id, so the map is bounded, not left to grow with what is sent.
+pub const BADGE_APPS_MAX: usize = 256;
+
+/// The longest desktop id taken from an `app_uri`, in bytes: real ids are a few dozen.
+pub const APP_ID_MAX_BYTES: usize = 128;
+
+/// The desktop id an `app_uri` names: `application://org.gnome.Nautilus.desktop` is
+/// `org.gnome.Nautilus`. Another scheme, an empty id, or one longer than [`APP_ID_MAX_BYTES`] is `None`.
+pub fn parse_app_uri(uri: &str) -> Option<AppId> {
+    let rest = uri.strip_prefix("application://")?;
+    let id = rest.strip_suffix(".desktop").unwrap_or(rest);
+    (!id.is_empty() && id.len() <= APP_ID_MAX_BYTES && !id.contains('/'))
+        .then(|| AppId(id.to_owned()))
+}

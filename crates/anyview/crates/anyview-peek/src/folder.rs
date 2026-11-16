@@ -11,7 +11,7 @@ use anyview_core::{
 };
 use anyview_fs::open_regular;
 use anyview_text::Tally;
-use ds_core::word::Word;
+use ui_core::word::Word;
 use std::fs::{self, DirEntry};
 use std::io::Read;
 use std::path::Path;

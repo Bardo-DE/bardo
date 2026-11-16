@@ -1,0 +1,141 @@
+//! The terminal's standing grants. A terminal cannot tell the person from an agent typing in
+//! it, so every act that is not a read asks; the one way to skip the ask is the person's own
+//! answer on the sheet, "Allow from the terminal: this action, until logout". The grant is kept
+//! as a task policy of the terminal's session that names the action (`ActionMatch::One`), so
+//! the control centre reads it like any policy and revokes it; it ends with the session. There
+//! is no flag, option or environment variable that grants it.
+
+use crate::router::Router;
+use crate::seams::Seams;
+use action_review::Breaker;
+use action_context::session::{SessionEvent, session_step};
+use action_context::tasks::TaskState;
+use action_core::AuditRecord;
+use action_core::EventSink;
+use action_gate::prepared::Prepared;
+use action_gate::terminal::{grant_policy, kinds_of};
+use permission_core::{ActionMatch, TaskPolicyState};
+use action_vocab::{ActionRef, CallerRole, Clock};
+use provenance::{Actor, SpaceScope};
+
+impl<S: Seams> Router<S> {
+    /// The person answered "allow from the terminal": the terminal session of `p` now holds the
+    /// grant. Ignored for any call that did not come from the terminal.
+    pub(crate) fn record_terminal_grant(&self, p: &Prepared) {
+        let (Some(session), true) = (&p.who.session, p.who.actor == Actor::Cli) else {
+            return;
+        };
+        let at = self.seams.clock().now();
+        let task = {
+            let mut st = self.locked();
+            let Some(record) = st.sessions.get_mut(session) else {
+                return;
+            };
+            let mut policy = record
+                .policy
+                .take()
+                .unwrap_or_else(|| grant_policy(record, &p.decl, self.agent_config().mass_at));
+            policy
+                .actions
+                .insert(ActionMatch::One(p.request.action.clone()));
+            policy.kinds.extend(kinds_of(&p.decl));
+            policy.ceiling = policy.ceiling.max(p.decl.effect);
+            let task = policy.task.clone();
+            record.policy = Some(policy);
+            task
+        };
+        self.seams.sink().append(AuditRecord::TaskPolicy {
+            at,
+            task,
+            state: TaskPolicyState::Active,
+            change: permission_core::PolicyChangeKind::Widens,
+        });
+    }
+
+    /// The actions the terminal may run without asking, until logout: what the control centre
+    /// shows.
+    pub fn terminal_grants(&self) -> Vec<ActionRef> {
+        let st = self.locked();
+        st.terminal_sessions()
+            .iter()
+            .filter_map(|id| st.sessions.get(id))
+            .filter_map(|r| r.policy.as_ref())
+            .flat_map(|p| p.actions.iter())
+            .filter_map(|m| match m {
+                ActionMatch::One(action) => Some(action.clone()),
+                ActionMatch::AppUpTo(..) => None,
+            })
+            .collect()
+    }
+
+    /// Withdraws the standing grant for `action`: the next call from the terminal asks again.
+    pub fn revoke_terminal_grant(&self, action: &ActionRef) -> bool {
+        let at = self.seams.clock().now();
+        let task = {
+            let mut st = self.locked();
+            let mut revoked = None;
+            for id in st.terminal_sessions() {
+                if let Some(record) = st.sessions.get_mut(&id)
+                    && let Some(policy) = record.policy.as_mut()
+                    && policy.actions.remove(&ActionMatch::One(action.clone()))
+                {
+                    revoked = Some(policy.task.clone());
+                }
+            }
+            revoked
+        };
+        match task {
+            Some(task) => {
+                self.seams.sink().append(AuditRecord::TaskPolicy {
+                    at,
+                    task,
+                    state: TaskPolicyState::Revoked,
+                    change: permission_core::PolicyChangeKind::Narrows,
+                });
+                true
+            }
+            None => false,
+        }
+    }
+
+    /// The person resumed (`Control.Resume`, the control centre's alone): every terminal session
+    /// the breaker paused in `scope` takes calls again with a fresh breaker. A terminal has no
+    /// turn to record (`Session.Turn` is the launcher's and the fields'), so without this a
+    /// session the breaker paused would refuse every `quire-do` call until logout. Nothing a
+    /// terminal can send reaches it: the member is the control role's, and the answer to a
+    /// sheet cannot do it because a paused session shows none.
+    pub(crate) fn resume_terminals(&self, scope: &SpaceScope) {
+        let mut st = self.locked();
+        for id in st.terminal_sessions() {
+            let Some(record) = st.sessions.get_mut(&id) else {
+                continue;
+            };
+            let covered = match scope {
+                SpaceScope::Any => true,
+                SpaceScope::Only(space) => *space == record.space,
+            };
+            if !covered {
+                continue;
+            }
+            let (state, _) = session_step(record.state, SessionEvent::UserTurn);
+            record.state = state;
+            record.breaker = Breaker::new();
+            let task = record.task.clone();
+            if let Some(t) = st.tasks.get_mut(&task)
+                && matches!(t.state, TaskState::NeedsYou | TaskState::Paused)
+            {
+                t.state = TaskState::Working;
+            }
+        }
+    }
+
+    /// Logout: every terminal session ends and takes its standing grants with it. The daemon
+    /// calls this when the person's session ends.
+    pub fn end_terminal_sessions(&self) {
+        let mut st = self.locked();
+        for id in st.terminal_sessions() {
+            st.sessions.remove(&id);
+        }
+        st.implicit.retain(|(role, _), _| *role != CallerRole::Cli);
+    }
+}

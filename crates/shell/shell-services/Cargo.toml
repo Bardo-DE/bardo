@@ -1,0 +1,105 @@
+[package]
+name = "shell-services"
+description = "Effectful services behind watch channels: power, network, displays, sessions, notifications, launching and the compositor's windows."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[features]
+# `sill run --dev-callers FILE`: callers named in a person's own rows file are let in at
+# `Proof::Dev` (peephole's `dev-rows`). Off by default; only the sill binary's `debug` feature turns
+# it on, so no shipped build has it (the desktop gate refuses `dev-rows` in any release shape).
+# It also lets `sill run --proc-root DIR` name callers by a stand-in `/proc` (docket's
+# `fixture-callers`), as a jail with no systemd must.
+dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
+
+[dependencies]
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+action-wire = {path = "../../actions/action-wire"}
+companion-model = {path = "../../actions/companion-model"}
+permission-core = {path = "../../actions/permission-core"}
+action-manifest = {path = "../../actions/action-manifest"}
+action-vocab = {path = "../../actions/action-vocab"}
+account-tailscale = {path = "../../accounts/account-tailscale"}
+inference-tailnet = {path = "../../inference/inference-tailnet"}
+account-sheet = {path = "../../accounts/account-sheet"}
+account-wire = {path = "../../accounts/account-wire"}
+account-ids = {path = "../../accounts/account-ids"}
+anyview-core = {path = "../../anyview/crates/anyview-core"}
+anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["quire-desktop"]}
+shell-model = {path = "../shell-model"}
+shell-launcher = {path = "../shell-launcher"}
+ui-core = {path = "../../ui/ui-core"}
+ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
+key-remap-proto = {path = "../../input/key-remap-proto"}
+action-core = {path = "../../actions/action-core"}
+action-dbus = {path = "../../actions/action-dbus"}
+action-client = {path = "../../actions/action-client", features = ["dbus"]}
+action-provider = {path = "../../actions/action-provider", features = ["dbus"]}
+companion-wire = {path = "../../actions/companion-wire"}
+agent-voice-wire = {path = "../../actions/agent-voice-wire"}
+agent-voice-dbus = {path = "../../actions/agent-voice-dbus"}
+computer-use-bus = {path = "../../computer-use/computer-use-bus"}
+computer-use-dbus = {path = "../../computer-use/computer-use-dbus"}
+memory-core = {path = "../../memory/memory-core"}
+memory-dbus = {path = "../../memory/memory-dbus"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+desktop-protocols = {path = "../../wayland/desktop-protocols"}
+desktop-client = {path = "../../wayland/desktop-client", features = ["client"]}
+sync-bus = {path = "../../sync/sync-bus"}
+account-dbus = {path = "../../accounts/account-dbus"}
+inference-client = {path = "../../inference/inference-client", default-features = false, features = ["dbus"]}
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
+toml = {version = "1"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+nix = {version = "0.31", default-features = false, features = ["user"]}
+async-trait = {version = "0.1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+networkmanager-proxy = {default-features = false, features = ["tokio"], path = "../../network/networkmanager-proxy"}
+bluez-proxy = {default-features = false, features = ["tokio"], path = "../../network/bluez-proxy"}
+smithay-client-toolkit = {version = "0.20", default-features = false, features = ["calloop", "xkbcommon"]}
+wayland-client = {version = "0.31"}
+wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
+upower_dbus = {git = "https://github.com/pop-os/dbus-settings-bindings", rev = "eed01dd3609e90e3c8cd043656734c500956c793"}
+libpulse-binding = {version = "2.30"}
+system-tray = {version = "0.8.9"}
+freedesktop-icons = {version = "0.4"}
+notify = {version = "8.2"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+logind-zbus = {version = "5"}
+dirs = {version = "6"}
+jiff = {version = "0.2"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+ddc = {version = "0.2"}
+ddc-i2c = {version = "0.2.2", default-features = false, features = ["with-linux"]}
+nonstick = {version = "0.1.2"}
+percent-encoding = {version = "2.3"}
+zbus-ready = { path = "../../zbus-ready" }
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
+# A caller that is only a claim (`BusPeers::introduce`): the tests name who their stand-ins are.
+caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
+# intentd is named from a fixture tree (`<root>/<pid>/cgroup`) in the private-bus tests.
+action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
+shell-testkit = {path = "../shell-testkit"}
+action-router = {path = "../../actions/action-router"}
+action-fake = {path = "../../actions/action-fake"}
+action-checkpoint = {path = "../../actions/action-checkpoint"}
+permission-policy = {path = "../../actions/permission-policy"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,20 @@
+[package]
+name = "memory-host"
+description = "The files memory keeps beside its Spaces: finding and reading the settings file and the confirmation store, and writing a private file whole. Client/IO; the service and the settings model read no file themselves."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+memory-settings = {path = "../memory-settings"}
+memory-core = {path = "../memory-core"}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

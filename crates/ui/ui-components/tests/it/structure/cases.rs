@@ -1,0 +1,351 @@
+//! The structure components in every state they can express, as data: the table the golden test
+//! walks. One `Case` is one component in one state; its golden is
+//! `tests/snapshots/structure/<component>/<state>.html`.
+
+use dioxus::prelude::*;
+use ui_components::components::chrome::capsule::model::{CapsuleSlot, LevelSlot, ScrubSlot};
+use ui_components::components::chrome::capsule::priority::essentials;
+use ui_components::components::chrome::capsule::view::Capsule;
+use ui_components::components::chrome::document_tabs::{DocumentTab, DocumentTabs};
+use ui_components::components::chrome::sidebar::Sidebar;
+use ui_components::components::chrome::sidebar_model::{SidebarFill, SidebarSection};
+use ui_components::components::chrome::split_view::model::{PaneSpec, SplitPane};
+use ui_components::components::chrome::split_view::view::SplitView;
+use ui_components::components::chrome::tab_view::TabView;
+use ui_components::components::chrome::titlebar_parts::TitleParts;
+use ui_components::components::chrome::toolbar::model::{ToolbarItem, ToolbarRoom};
+use ui_components::components::chrome::toolbar::view::Toolbar;
+use ui_components::components::chrome::window_frame::WindowTitlebar;
+use ui_components::components::content::text_runs::RunTone;
+use ui_components::components::controls::button_model::{Bezel, ImagePosition};
+use ui_components::components::controls::checkbox::Checkbox;
+use ui_components::components::controls::scrubber_model::BufferedRange;
+use ui_components::components::fields::fact_list::{Fact, FactList};
+use ui_components::components::fields::field_row::{FieldGroup, FieldRow, RowLayout};
+use ui_components::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn, TableRow};
+use ui_components::components::lists::table::view::Table;
+use ui_components::components::overlays::drag_ghost::DragCount;
+use ui_components::motion::spring::Millis;
+use ui_components::prelude::*;
+use ui_core::vocab::RowState;
+use ui_style::tokens::control_size::{ControlSize, SidebarSize};
+use ui_style::tokens::spacing::SpacingToken;
+
+/// One component in one state.
+pub struct Case {
+    pub component: &'static str,
+    pub state: &'static str,
+    pub make: fn() -> Element,
+}
+
+fn items() -> Vec<ToolbarItem<u8>> {
+    vec![
+        ToolbarItem::new(0, "Back", Icon::ChevronLeft),
+        ToolbarItem::new(1, "Share", Icon::Upload),
+        ToolbarItem::new(2, "Tag", Icon::Tag).toggle(Check::On),
+        ToolbarItem::new(3, "Search", Icon::Search).with(Availability::Disabled),
+    ]
+}
+
+fn capsule_slots() -> Vec<CapsuleSlot<u8>> {
+    vec![
+        CapsuleSlot::Item(ToolbarItem::new(0, "Zoom out", Icon::Minus)),
+        CapsuleSlot::Readout("100%".to_owned()),
+        CapsuleSlot::Item(ToolbarItem::new(1, "Zoom in", Icon::Plus)),
+        CapsuleSlot::Divider,
+        CapsuleSlot::Item(ToolbarItem::new(2, "Rotate", Icon::Refresh).toggle(Check::On)),
+        CapsuleSlot::Item(ToolbarItem::new(3, "Info", Icon::Info).with(Availability::Disabled)),
+    ]
+}
+
+/// A media player's capsule: play, elapsed, the progress bar, what is left, the level, a button.
+fn media_slots() -> Vec<CapsuleSlot<u8>> {
+    vec![
+        CapsuleSlot::Item(ToolbarItem::new(0, "Play", Icon::Play)),
+        CapsuleSlot::Readout("1:03".to_owned()),
+        CapsuleSlot::Scrub(ScrubSlot {
+            label: "Position".to_owned(),
+            position: Fraction(350),
+            length: Millis(180_000),
+            buffered: vec![BufferedRange {
+                from: Fraction(0),
+                to: Fraction(600),
+            }],
+            availability: Availability::Enabled,
+        }),
+        CapsuleSlot::Readout("-1:57".to_owned()),
+        CapsuleSlot::Level(LevelSlot {
+            label: "Volume".to_owned(),
+            value: Fraction(700),
+            availability: Availability::Enabled,
+        }),
+        CapsuleSlot::Item(ToolbarItem::new(1, "Info", Icon::Info)),
+    ]
+}
+
+fn columns() -> Vec<TableColumn<u8>> {
+    vec![
+        TableColumn::new(0, "Name", Px(160.0)),
+        TableColumn::new(1, "Size", Px(80.0)).aligned(CellAlign::Trailing),
+        TableColumn::new(2, "Kind", Px(90.0)),
+    ]
+}
+
+fn table_rows() -> Vec<TableRow<u8>> {
+    vec![
+        TableRow::new(
+            1,
+            "Report",
+            vec![rsx! { "Report" }, rsx! { "2 MB" }, rsx! { "PDF" }],
+        ),
+        TableRow::new(
+            2,
+            "Notes",
+            vec![rsx! { "Notes" }, rsx! { "12 KB" }, rsx! { "Text" }],
+        ),
+    ]
+}
+
+fn places() -> Vec<ListItem<u8>> {
+    let place = |key: u8, title: &'static str, here: bool| {
+        ListItem::row(
+            key,
+            title,
+            rsx! {
+                Row {
+                    title: TextLine::from(title),
+                    leading: RowLeading::Icon(Icon::Inbox),
+                    state: RowState {
+                        selection: here,
+                        ..RowState::default()
+                    },
+                }
+            },
+        )
+    };
+    vec![place(1, "Inbox", true), place(2, "Archive", false)]
+}
+
+fn tabs(count: u8) -> Vec<Choice<u8>> {
+    (0..count)
+        .map(|at| Choice::new(at, format!("Tab {}", at + 1)))
+        .collect()
+}
+
+fn titles(count: u8) -> Vec<DocumentTab> {
+    (0..count)
+        .map(|at| DocumentTab::new(format!("Document {}", at + 1)))
+        .collect()
+}
+
+fn pane(shown: bool) -> Vec<SplitPane> {
+    vec![SplitPane::new(PaneSpec::SIDEBAR, rsx! { p { "Side" } }).shown(shown)]
+}
+
+pub const CASES: &[Case] = &[
+    Case {
+        component: "table",
+        state: "sorted-and-selected",
+        make: || rsx! { Table::<u8, u8> { label: "Files", columns: columns(), rows: table_rows(), sort: Some(Sort { column: 0, direction: SortDirection::Ascending }), on_sort: |_| {}, selection: vec![2], cursor: Some(2), onselect: |_| {} } },
+    },
+    Case {
+        component: "table",
+        state: "descending",
+        make: || rsx! { Table::<u8, u8> { label: "Files", columns: columns(), rows: table_rows(), sort: Some(Sort { column: 1, direction: SortDirection::Descending }), on_sort: |_| {}, onselect: |_| {} } },
+    },
+    Case {
+        component: "capsule",
+        state: "shown",
+        make: || rsx! { Capsule::<u8> { label: "Controls", slots: essentials(capsule_slots()), shown: true, onpick: |_| {} } },
+    },
+    Case {
+        component: "capsule",
+        state: "media",
+        make: || rsx! { Capsule::<u8> { label: "Playback", slots: essentials(media_slots()), shown: true, onpick: |_| {} } },
+    },
+    Case {
+        component: "capsule",
+        state: "hidden",
+        make: || rsx! { Capsule::<u8> { label: "Controls", slots: essentials(capsule_slots()), shown: false, onpick: |_| {} } },
+    },
+    Case {
+        component: "toolbar",
+        state: "fits",
+        make: || rsx! { Toolbar::<u8> { leading: items()[..1].to_vec(), trailing: items()[1..].to_vec(), title: Some(TextLine::from("Downloads")), subtitle: Some(TextLine::from("14 items")), room: ToolbarRoom::Fixed(Px(800.0)), onpick: |_| {} } },
+    },
+    Case {
+        component: "toolbar",
+        state: "overflow",
+        make: || rsx! { Toolbar::<u8> { leading: items()[..1].to_vec(), trailing: items()[1..].to_vec(), title: Some(TextLine::from("Downloads")), room: ToolbarRoom::Fixed(Px(250.0)), onpick: |_| {} } },
+    },
+    Case {
+        component: "column",
+        state: "default",
+        make: || rsx! { Column { p { "First" } p { "Second" } } },
+    },
+    Case {
+        component: "column",
+        state: "gap-and-align",
+        make: || rsx! { Column { gap: Some(SpacingToken::S20), align: ColumnAlign::Center, p { "First" } p { "Second" } } },
+    },
+    Case {
+        component: "column",
+        state: "gapless-fill",
+        make: || rsx! { Column { gap: None, extent: ColumnExtent::Fill, p { "First" } p { "Second" } } },
+    },
+    Case {
+        component: "column",
+        state: "fixed",
+        make: || rsx! { Column { extent: ColumnExtent::Fixed(ControlSize::Large), p { "First" } } },
+    },
+    Case {
+        component: "icon_button_group",
+        state: "small",
+        make: || rsx! { IconButtonGroup { label: "Formatting", Button { bezel: Bezel::Toolbar, size: ControlSize::Small, image: ImagePosition::Only, icon: Icon::Bold, label: "Bold", onclick: |_| {} } Button { bezel: Bezel::Toolbar, size: ControlSize::Small, image: ImagePosition::Only, icon: Icon::Italic, label: "Italic", onclick: |_| {} } } },
+    },
+    Case {
+        component: "banner_action_row",
+        state: "field-and-buttons",
+        make: || rsx! { BannerActionRow { label: "Name", field: rsx! { p { "Field" } }, p { "Save" } p { "Cancel" } } },
+    },
+    Case {
+        component: "pinned_bar",
+        state: "top",
+        make: || rsx! { PinnedBar { label: "Suggestion", bar: rsx! { p { "Offer" } }, p { "Content" } } },
+    },
+    Case {
+        component: "pinned_bar",
+        state: "bottom",
+        make: || rsx! { PinnedBar { label: "Suggestion", edge: PinEdge::Bottom, bar: rsx! { p { "Offer" } }, p { "Content" } } },
+    },
+    Case {
+        component: "split_view",
+        state: "open",
+        make: || rsx! { SplitView { label: "Example", panes: pane(true), p { "Content" } } },
+    },
+    Case {
+        component: "split_view",
+        state: "folded",
+        make: || rsx! { SplitView { label: "Example", panes: pane(false), p { "Content" } } },
+    },
+    Case {
+        component: "split_view",
+        state: "folded-peeking",
+        make: || rsx! { SplitView { label: "Example", panes: vec![SplitPane::new(PaneSpec::SIDEBAR, rsx! { p { "Side" } }).shown(false).peeking()], p { "Content" } } },
+    },
+    Case {
+        component: "sidebar",
+        state: "medium",
+        make: || rsx! { Sidebar::<u8> { label: "Mail", sections: vec![SidebarSection::List(places())], cursor: Some(1), onselect: |_| {}, header: rsx! { p { "Search" } } } },
+    },
+    Case {
+        component: "sidebar",
+        state: "large",
+        make: || rsx! { Sidebar::<u8> { label: "Mail", sections: vec![SidebarSection::List(places())], size: SidebarSize::Large, onselect: |_| {} } },
+    },
+    Case {
+        component: "sidebar",
+        state: "sections-and-foot-clear",
+        make: || {
+            rsx! {
+                Sidebar::<u8> {
+                    label: "Mail",
+                    fill: SidebarFill::Clear,
+                    sections: vec![
+                        SidebarSection::Custom(rsx! { p { "Pinned" } }),
+                        SidebarSection::List(places()),
+                        SidebarSection::List(places()),
+                    ],
+                    cursor: Some(1),
+                    onselect: |_| {},
+                    foot: rsx! { p { "Space" } },
+                }
+            }
+        },
+    },
+    Case {
+        component: "tab_view",
+        state: "second",
+        make: || rsx! { TabView::<u8> { label: "Settings", tabs: tabs(4), value: 1, onchange: |_| {}, p { "Body" } } },
+    },
+    Case {
+        component: "tab_view",
+        state: "six-at-most",
+        make: || rsx! { TabView::<u8> { label: "Settings", tabs: tabs(8), value: 0, onchange: |_| {}, p { "Body" } } },
+    },
+    Case {
+        component: "document_tabs",
+        state: "second",
+        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(3), selected: 1, onselect: |_| {}, onclose: |_| {}, onnew: |_| {} } },
+    },
+    Case {
+        component: "document_tabs",
+        state: "reorderable",
+        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(2), selected: 0, onselect: |_| {}, onclose: |_| {}, onnew: |_| {}, onreorder: |_| {} } },
+    },
+    Case {
+        component: "document_tabs",
+        state: "seven-no-limit",
+        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(7), selected: 0, onselect: |_| {}, onclose: |_| {}, onnew: |_| {} } },
+    },
+    Case {
+        component: "field_row",
+        state: "setting",
+        make: || rsx! { FieldRow { label: TextLine::from("Wi-Fi"), help: Some(TextLine::from("Join known networks.")), span { "control" } } },
+    },
+    Case {
+        component: "field_row",
+        state: "on-request",
+        make: || rsx! { FieldRow { label: TextLine::from("Wi-Fi"), help: Some(TextLine::from("Join known networks.")), help_on_request: true, span { "control" } } },
+    },
+    Case {
+        component: "field_row",
+        state: "form",
+        make: || rsx! { FieldRow { label: TextLine::from("Name"), layout: RowLayout::Form, span { "control" } } },
+    },
+    Case {
+        component: "field_row",
+        state: "several-controls",
+        make: || rsx! { FieldRow { label: TextLine::from("Protection"), layout: RowLayout::Form, Checkbox { label: "Sign", value: Check::On, onchange: |_| {} } Checkbox { label: "Encrypt", value: Check::Off, onchange: |_| {} } Button { label: "Options", onclick: |_| {} } } },
+    },
+    Case {
+        component: "field_row",
+        state: "disabled",
+        make: || rsx! { FieldRow { label: TextLine::from("Airplane"), availability: Availability::Disabled, span { "control" } } },
+    },
+    Case {
+        component: "field_row",
+        state: "group",
+        make: || rsx! { FieldGroup { title: "Network", FieldRow { label: TextLine::from("A"), span { "a" } } FieldRow { label: TextLine::from("B"), span { "b" } } } },
+    },
+    Case {
+        component: "fact_list",
+        state: "invitation",
+        make: || rsx! { FactList { facts: vec![Fact::new("When", "Tue 4 Nov, 10:00 to 11:00"), Fact::new("Where", "Room 4"), Fact::new("Who", TextLine::Runs(vec![TextRun::new("Dana", RunTone::Strong), TextRun::new(", Noor and 3 more", RunTone::Plain)]))] } },
+    },
+    Case {
+        component: "fact_list",
+        state: "empty-value",
+        make: || rsx! { FactList { facts: vec![Fact::new("Where", "")] } },
+    },
+    Case {
+        component: "drag_ghost",
+        state: "one",
+        make: || rsx! { DragGhost { title: "Report", sub: "2 MB", at: Point { x: Px(452.0), y: Px(206.0) } } },
+    },
+    Case {
+        component: "drag_ghost",
+        state: "many",
+        make: || rsx! { DragGhost { title: "5 items", sub: "Downloads", count: DragCount::new(5), at: Point { x: Px(452.0), y: Px(206.0) } } },
+    },
+    Case {
+        component: "titlebar",
+        state: "plain",
+        make: || rsx! { WindowTitlebar { title: "Untitled" } },
+    },
+    Case {
+        component: "titlebar",
+        state: "parts",
+        make: || rsx! { WindowTitlebar { title: "Report", parts: TitleParts { subtitle: Some("Edited today".to_owned()), proxy: Some(Icon::File), edited: true }, lights: false } },
+    },
+];

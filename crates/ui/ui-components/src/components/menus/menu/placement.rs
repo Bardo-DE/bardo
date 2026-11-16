@@ -1,0 +1,42 @@
+//! Where a menu is and how it differs from the others (design/30 section 2.4): the three
+//! placements, where each goes against its anchor and what each shows. One density for all
+//! (row 22, separator 9, inset 5, radius 10); every menu opens at once.
+
+use ui_core::geometry::{
+    placement::{Align, Placement, Side},
+    units::{Px, Rect},
+};
+use ui_core::word::Word;
+
+/// The panel's padding: rows sit this far inside its edge, and a submenu's top sits this far
+/// above its parent row.
+pub(crate) const MENU_INSET: Px = Px(5.0);
+
+/// The least height a menu keeps when its anchor leaves little room on either side: about three
+/// rows, so it never shrinks to a sliver.
+pub(crate) const MIN_ROOM: Px = Px(84.0);
+
+/// Where a menu belongs (`NSMenu`'s three roles).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
+pub enum MenuPlacement {
+    /// A menu bar menu, hung under its title.
+    Bar,
+    /// A pop-up or pull-down button's menu, a Dock or status-item menu: below its anchor.
+    #[default]
+    Popup,
+    /// A context menu, at the pointer: it hides what is unavailable. Its key equivalents show,
+    /// as every menu's do (the owner's call, 2026-10-17, over design/27's HIG row).
+    Context,
+}
+
+impl MenuPlacement {
+    /// Where the menu goes against its anchor: a bar menu flush under its title, a pop-up two
+    /// below its button, a context menu at the pointer.
+    pub(crate) fn placement(self, anchor: Rect) -> (Rect, Placement, Px) {
+        let gap = match self {
+            MenuPlacement::Bar | MenuPlacement::Context => Px(0.0),
+            MenuPlacement::Popup => Px(2.0),
+        };
+        (anchor, Placement::new(Side::Bottom, Align::Start), gap)
+    }
+}

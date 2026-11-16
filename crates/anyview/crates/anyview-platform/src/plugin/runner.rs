@@ -12,11 +12,11 @@ use anyview_plugin_protocol::{
     Capability, DecodeRequest, Done, ErrorCode, ExportRequest, FactRow, Failure, Frame, Hello,
     HostMessage, ImageHeader, PluginMessage, ProbeRequest, Progress, ThumbnailRequest,
 };
-use bayonet::manifest::PluginId;
-use bayonet::run::{RunError, Runner, Session};
+use plugin_host::manifest::PluginId;
+use plugin_host::run::{RunError, Runner, Session};
 use std::ops::ControlFlow;
 
-pub use bayonet::run::Timeouts;
+pub use plugin_host::run::Timeouts;
 
 /// Runs requests against plugins. A request starts the plugin, greets it, asks once and kills
 /// the process on every path out.

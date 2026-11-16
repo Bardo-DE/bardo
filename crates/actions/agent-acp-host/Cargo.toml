@@ -1,0 +1,62 @@
+[package]
+name = "agent-acp-host"
+description = "The ACP client edge: an external coding agent (Claude Code, Gemini CLI) is a session backend. `AcpBackend` speaks the Agent Client Protocol as the client, on the official agent-client-protocol SDK's client role, over a `Spawn` seam; every call the agent makes is formed, confined and ruled by the router (`Court`, `IntentsCourt` over docket-client) before the `Performer` acts. The IO under it: files and the working directory, the agent's tool socket, the sandboxed terminals (bulkhead), the agent apps of the helpers. Our own ACP rules are `acp-core`; the server edge (an editor drives us) is `docket-acp`; the process that starts agents is `docket-launch`. The `testing` feature adds the in-memory pipe, scripted spawner and file map."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[features]
+# `fake`: an in-memory pipe, a scripted `Spawn` and a file system in a map, for tests of this crate
+# and of the launcher.
+testing = []
+
+[lib]
+name = "agent_acp_host"
+path = "src/lib.rs"
+
+[dependencies]
+agent-acp-core = {path = "../agent-acp-core"}
+action-tools = {path = "../action-tools"}
+agent-client-protocol = {version = "3.5", default-features = false}
+sandbox = {path = "../../sandbox/sandbox"}
+companion-model = {path = "../companion-model"}
+const-hex = {version = "1.19"}
+action-client = {path = "../action-client", default-features = false}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+action-procroot = {path = "../action-procroot"}
+agent-session = {path = "../agent-session"}
+action-store = {path = "../action-store"}
+futures-channel = {version = "0.3", default-features = false, features = ["std"]}
+futures-util = {version = "0.3", default-features = false, features = ["sink", "std"]}
+getrandom = {version = "0.3", features = ["std"]}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+action-review = {path = "../action-review"}
+agent-acp-host = {path = ".", features = ["testing"]}
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+action-fake = {path = "../action-fake"}
+action-host = {path = "../action-host"}
+action-router = {path = "../action-router"}
+agent-session = {path = "../agent-session", features = ["testing"]}
+action-testbus = {path = "../action-testbus"}
+jsonschema = {version = "0.58", default-features = false}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

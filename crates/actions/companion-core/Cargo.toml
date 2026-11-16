@@ -1,0 +1,27 @@
+[package]
+name = "companion-core"
+description = "The companion's pure logic, with no runtime, bus, file or clock: how a helper's job end is told to the board, the answers and notices the board keeps, the desk's decisions and their typed refusals, the terminal hand-over rules, the routines' due and event-poll rules, the systemd timer text, and who may make which call."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+memory-core = {path = "../../memory/memory-core"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest"}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

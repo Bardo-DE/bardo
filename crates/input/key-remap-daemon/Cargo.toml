@@ -1,0 +1,36 @@
+[package]
+name = "key-remap-daemon"
+description = "Mac keyboard mapping daemon: grabs keyboards, remaps by profile, writes one virtual keyboard; the desktop picks the profile over a socket"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.91"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Bardo-DE/keycap"
+
+[dependencies]
+key-remap-core = { path = "../key-remap-core" }
+key-remap-proto = { path = "../key-remap-proto" }
+key-remap-client = { path = "../key-remap-client" }
+key-remap-evdev = { path = "../key-remap-evdev" }
+# The broker that makes the virtual devices, and the device vocabulary its requests are written in.
+keymap = {path = "../../keymap/keymap"}
+thiserror = {version = "2"}
+notify = {version = "8.2"}
+rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+caller-identity-linux = {path = "../../identity/caller-identity-linux"}
+service-locator = {features = ["guard"], path = "../../platform/service-locator"}
+caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
+input-broker-client = {path = "../input-broker-client"}
+
+[dev-dependencies]
+input-broker-client = {features = ["fake"], path = "../input-broker-client"}
+key-remap-devtest = { path = "../key-remap-devtest" }
+# A held process that is only a claim, for tests of who the socket's peer is; never in a shipped build.
+caller-identity-linux = {features = ["fake"], path = "../../identity/caller-identity-linux"}
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[[bin]]
+name = "keycap"
+path = "src/main.rs"

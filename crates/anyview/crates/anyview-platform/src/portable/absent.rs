@@ -8,7 +8,7 @@ use crate::printer::{PrintOutcome, Printer};
 use crate::settings::{OpenSettings, Opening};
 use crate::share::{Share, ShareTarget};
 use anyview_core::FilePath;
-use ds_core::settings::SettingsTarget;
+use ui_core::settings::SettingsTarget;
 
 /// [`Share`] with nowhere to send a file.
 #[derive(Debug, Clone, Copy, Default)]

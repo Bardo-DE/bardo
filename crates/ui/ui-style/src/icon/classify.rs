@@ -1,0 +1,163 @@
+//! Symbolic or image: design/08-ICONS.md section 1.5 step 2. A status item's pixmap (or a
+//! non-symbolic themed icon) whose opaque pixels are all near-grey is monochrome and is
+//! recoloured to the text colour like a symbolic icon; anything with colour in it states a
+//! fact about its app and is shown as it is.
+//!
+//! Near-grey is OKLCH chroma below a threshold (design/08 section 1.5 proposes 0.04). The
+//! limit is a constant, 0.04 (range 0.0..=0.2; there is no setting); [`classify_with`] takes the
+//! default ([`ChromaLimit::default`]) or one built with [`ChromaLimit::try_from`].
+
+#[cfg(feature = "icon-classify")]
+use ui_core::colour::oklab::{Oklab, Oklch};
+#[cfg(feature = "icon-classify")]
+use ui_core::colour::srgb::Srgb;
+use ui_core::error::DsError;
+
+/// How an external icon should be drawn: the `IconSource` variant it belongs in.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum IconKind {
+    /// Monochrome: recolour its alpha to the text colour (`IconSource::Symbolic`).
+    Symbolic,
+    /// Coloured: show it as it is (`IconSource::Image`).
+    Image,
+}
+
+/// The chroma below which a pixel counts as grey, in thousandths of OKLCH chroma.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct ChromaLimit(pub u16);
+
+impl ChromaLimit {
+    /// design/08 section 1.5's threshold, 0.04, a constant (there is no setting).
+    pub const PROPOSED: ChromaLimit = ChromaLimit(40);
+
+    /// The range a caller's own limit may take, in plain OKLCH chroma (`0..0.2`).
+    pub const RANGE: std::ops::RangeInclusive<f32> = 0.0..=0.2;
+}
+
+impl Default for ChromaLimit {
+    /// 0.04.
+    fn default() -> Self {
+        ChromaLimit::PROPOSED
+    }
+}
+
+impl TryFrom<f32> for ChromaLimit {
+    type Error = DsError;
+
+    /// `chroma` as a caller would carry it — plain OKLCH chroma, not thousandths — refusing
+    /// anything outside `ChromaLimit::RANGE` (`0.0..=0.2`).
+    fn try_from(chroma: f32) -> Result<Self, DsError> {
+        if !ChromaLimit::RANGE.contains(&chroma) {
+            return Err(DsError::ChromaLimitRange {
+                value: format!("{chroma}"),
+            });
+        }
+        Ok(ChromaLimit((chroma * 1000.0).round() as u16))
+    }
+}
+
+#[cfg(feature = "icon-classify")]
+/// The alpha at which a pixel counts as opaque: half coverage. Fainter edge pixels carry
+/// too little of their colour to say anything about it.
+const OPAQUE_FROM: u8 = 128;
+
+/// Whether the PNG `png` is a symbolic or an image icon: symbolic when every pixel with at
+/// least half coverage has OKLCH chroma below `limit` (a fully transparent icon is symbolic).
+/// Needs the `icon-classify` feature (on by default), which links the PNG decoder.
+#[cfg(feature = "icon-classify")]
+pub fn classify_with(png: &[u8], limit: ChromaLimit) -> Result<IconKind, DsError> {
+    let decoded = image::load_from_memory_with_format(png, image::ImageFormat::Png)
+        .map_err(|error| DsError::IconDecode {
+            reason: error.to_string(),
+        })?
+        .to_rgba8();
+    let bound = f64::from(limit.0) / 1000.0;
+    let coloured = decoded
+        .pixels()
+        .filter(|pixel| pixel.0[3] >= OPAQUE_FROM)
+        .any(|pixel| chroma([pixel.0[0], pixel.0[1], pixel.0[2]]) >= bound);
+    Ok(if coloured {
+        IconKind::Image
+    } else {
+        IconKind::Symbolic
+    })
+}
+
+/// The OKLCH chroma of an sRGB colour.
+#[cfg(feature = "icon-classify")]
+pub(crate) fn chroma(rgb: [u8; 3]) -> f64 {
+    Oklch::from(Oklab::from(Srgb(rgb))).c
+}
+
+#[cfg(all(test, feature = "icon-classify"))]
+mod tests {
+    use super::{ChromaLimit, IconKind, chroma, classify_with};
+    use image::{ImageFormat, Rgba, RgbaImage};
+    use std::io::Cursor;
+
+    /// A 16 x 16 PNG: a ring of `edge` around an 8 x 8 middle of `middle`.
+    fn png(middle: [u8; 4], edge: [u8; 4]) -> Vec<u8> {
+        let image = RgbaImage::from_fn(16, 16, |x, y| {
+            let inside = (4..12).contains(&x) && (4..12).contains(&y);
+            Rgba(if inside { middle } else { edge })
+        });
+        let mut bytes = Cursor::new(Vec::new());
+        image
+            .write_to(&mut bytes, ImageFormat::Png)
+            .expect("a PNG encodes");
+        bytes.into_inner()
+    }
+
+    const CLEAR: [u8; 4] = [0, 0, 0, 0];
+
+    #[test]
+    fn grey_is_symbolic_and_colour_is_an_image() {
+        // (name, middle, edge, want)
+        #[rustfmt::skip]
+        const CASES: &[(&str, [u8; 4], [u8; 4], IconKind)] = &[
+            ("black glyph on clear", [0, 0, 0, 255], CLEAR, IconKind::Symbolic),
+            ("white glyph on clear", [255, 255, 255, 255], CLEAR, IconKind::Symbolic),
+            ("mid grey, opaque ground", [128, 128, 128, 255], [40, 40, 40, 255], IconKind::Symbolic),
+            ("a faint tint of blue", [120, 122, 128, 255], CLEAR, IconKind::Symbolic),
+            ("red", [220, 30, 40, 255], CLEAR, IconKind::Image),
+            ("app blue", [40, 110, 220, 255], CLEAR, IconKind::Image),
+            ("grey glyph, green badge ring", [90, 90, 90, 255], [40, 180, 80, 255], IconKind::Image),
+            ("colour only where nearly clear", [0, 0, 0, 255], [220, 30, 40, 100], IconKind::Symbolic),
+            ("colour at half coverage", [0, 0, 0, 255], [220, 30, 40, 128], IconKind::Image),
+            ("nothing opaque at all", CLEAR, CLEAR, IconKind::Symbolic),
+        ];
+        for &(name, middle, edge, want) in CASES {
+            assert_eq!(
+                classify_with(&png(middle, edge), ChromaLimit::default()),
+                Ok(want),
+                "{name}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_threshold_is_the_callers_to_move() {
+        let tinted = png([120, 122, 140, 255], CLEAR);
+        let measured = chroma([120, 122, 140]);
+        assert!((0.02..0.04).contains(&measured), "{measured}");
+        assert_eq!(
+            classify_with(&tinted, ChromaLimit::default()),
+            Ok(IconKind::Symbolic)
+        );
+        assert_eq!(classify_with(&tinted, ChromaLimit(20)), Ok(IconKind::Image));
+    }
+
+    #[test]
+    fn try_from_f32_scales_to_thousandths_and_refuses_out_of_range() {
+        assert_eq!(ChromaLimit::try_from(0.04), Ok(ChromaLimit(40)));
+        assert_eq!(ChromaLimit::try_from(0.0), Ok(ChromaLimit(0)));
+        assert_eq!(ChromaLimit::try_from(0.2), Ok(ChromaLimit(200)));
+        assert!(ChromaLimit::try_from(-0.01).is_err());
+        assert!(ChromaLimit::try_from(0.201).is_err());
+    }
+
+    #[test]
+    fn bytes_that_are_not_a_png_are_refused() {
+        assert!(classify_with(b"not a png", ChromaLimit::default()).is_err());
+    }
+}

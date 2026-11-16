@@ -1,0 +1,53 @@
+//! What the phase reads from a laid-out document and the one write it makes, as functions over the
+//! document.
+
+use blitz_dom::{BaseDocument, NodeId, ScrollBehavior};
+use ui_components::base::geometry::scroll::Scroll;
+use ui_components::host::phase::PhaseWrite;
+use ui_components::prelude::{Point, Px, Rect, Size};
+
+/// `node`'s border box in logical pixels; `None` when the node is gone.
+pub(crate) fn border_box(doc: &BaseDocument, node: NodeId) -> Option<Rect> {
+    if !crate::layout_chain::placeable(doc, node) {
+        return None;
+    }
+    let found = doc.get_client_bounding_rect(node)?;
+    Some(Rect {
+        origin: Point {
+            x: Px(found.x as f32),
+            y: Px(found.y as f32),
+        },
+        size: Size {
+            width: Px(found.width as f32),
+            height: Px(found.height as f32),
+        },
+    })
+}
+
+/// `node`'s own scroll state: the offset, the height it shows (its border box less its borders) and
+/// the content's length, which is the height plus how far the content can scroll. `None` when the
+/// node is gone.
+pub(crate) fn scroll_of(doc: &BaseDocument, node: NodeId) -> Option<Scroll> {
+    let found = doc.get_node(node)?;
+    let layout = found.final_layout();
+    let viewport = layout.size.height - layout.border.top - layout.border.bottom;
+    Some(Scroll {
+        offset: Px(found.scroll_offset().y as f32),
+        viewport: Px(viewport),
+        content: Px(viewport + layout.scroll_height()),
+    })
+}
+
+/// Apply `write` to `node`; whether it moved anything.
+pub(super) fn apply(doc: &mut BaseDocument, node: NodeId, write: PhaseWrite) -> bool {
+    match write {
+        PhaseWrite::ScrollTo(offset) => {
+            let Some(before) = doc.get_node(node).map(|found| *found.scroll_offset()) else {
+                return false;
+            };
+            doc.scroll_to(node, before.x, f64::from(offset.0), ScrollBehavior::Instant);
+            let after = doc.get_node(node).map(|found| *found.scroll_offset());
+            after != Some(before)
+        }
+    }
+}

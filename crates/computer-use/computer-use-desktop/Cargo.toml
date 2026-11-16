@@ -1,0 +1,25 @@
+[package]
+name = "computer-use-desktop"
+description = "The desktop vocabulary every cua crate shares: windows, leases, backend capabilities, glow, units and the Desktop and LeaseControl seams."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-action = {path = "../computer-use-action"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

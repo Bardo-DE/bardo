@@ -1,0 +1,48 @@
+[package]
+name = "account-client-inproc"
+description = "The hosted transport of porter-client: an app that runs the account service itself, with its own providers, secrets and sheet host."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-capability = {path = "../account-capability"}
+account-client = {path = "../account-client"}
+account-core = {path = "../account-core"}
+account-ids = {path = "../account-ids"}
+account-match = {path = "../account-match"}
+account-provider = {path = "../account-provider"}
+account-secrets = {path = "../account-secrets"}
+account-service = {path = "../account-service"}
+account-service-accounts = {path = "../account-service-accounts"}
+account-service-core = {path = "../account-service-core"}
+account-service-grants = {path = "../account-service-grants"}
+account-sheet = {path = "../account-sheet"}
+account-wire = {path = "../account-wire"}
+# `relays`: `PorterRelays`, the relay host that runs `porter_proxy::relay` over rustls.
+account-proxy = {path = "../account-proxy", optional = true, features = ["io", "tls"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
+
+[dev-dependencies]
+account-fake = {path = "../account-fake"}
+account-fake-servers = {path = "../account-fake-servers"}
+account-families = {path = "../account-families"}
+account-family-generic = {path = "../account-family-generic"}
+account-http = {path = "../account-http"}
+account-http-reqwest = {path = "../account-http-reqwest"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[features]
+# No feature is on by default: a consumer names the ones it uses.
+default = []
+# `PorterRelays`: a `RelayHost` that runs the authenticated relays of an app or daemon hosting its
+# own `AccountService`, on its tokio runtime, over rustls. Off by default: it brings porter-proxy
+# with TLS and a runtime.
+relays = ["dep:account-proxy", "dep:tokio"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

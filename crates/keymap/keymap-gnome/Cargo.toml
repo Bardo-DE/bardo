@@ -1,0 +1,15 @@
+[package]
+name = "keymap-gnome"
+description = "chordkit source for gnome shortcut settings."
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.91"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Bardo-DE/chordkit"
+
+[dependencies]
+keymap = {path = "../keymap"}
+keymap-fs = {path = "../keymap-fs"}
+
+[lints.rust]
+unsafe_code = "forbid"

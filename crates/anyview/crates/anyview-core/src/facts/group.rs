@@ -1,6 +1,6 @@
 //! The sections a file's facts are listed in, and how much of them a summary line carries.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// A section of the Info panel. Closed, so every pane names and orders the sections the same way.
 /// The declaration order is the display order: the sections of what the file holds first, and

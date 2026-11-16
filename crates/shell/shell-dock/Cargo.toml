@@ -1,0 +1,39 @@
+[package]
+name = "shell-dock"
+description = "The dock: tiles, magnification, machines and its context menu."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+keymap = {path = "../../keymap/keymap"}
+ui-components = {path = "../../ui/ui-components"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+shell-kit = {path = "../shell-kit"}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
+shell-launcher = {path = "../shell-launcher"}
+shell-model = {path = "../shell-model"}
+shell-services = {path = "../shell-services"}
+shell-settings = {path = "../shell-settings"}
+shell-ui-kit = {path = "../shell-ui-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+
+[dev-dependencies]
+desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
+shell-testkit = {path = "../shell-testkit"}
+ui-harness = {path = "../../ui/ui-harness"}
+shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
+ui-lint = {path = "../../ui/ui-lint"}
+ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
+
+[[example]]
+name = "dock_demo"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

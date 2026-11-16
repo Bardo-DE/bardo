@@ -1,0 +1,51 @@
+//! `ext_data_control_manager_v1`: clipboard managers (sill's clipboard history). Hidden from
+//! sandboxed clients (I7).
+
+use crate::data_device::SelectionKind;
+use crate::primary_selection::PrimarySelectionPart;
+use crate::states::GlobalFilter;
+use compositor_core::Event;
+use compositor_core::policy::GlobalKind;
+use smithay::reexports::wayland_protocols::ext::data_control::v1::server::ext_data_control_manager_v1::ExtDataControlManagerV1;
+use smithay::reexports::wayland_server::{DisplayHandle, GlobalDispatch};
+use std::collections::BTreeMap;
+use smithay::wayland::selection::ext_data_control::{DataControlState, ExtDataControlManagerGlobalData};
+
+/// `ext_data_control_manager_v1`.
+#[derive(Debug)]
+pub struct ExtDataControlPart {
+    /// smithay's state.
+    pub state: DataControlState,
+    /// How many changes of each selection the manager has been told of.
+    pub changes: BTreeMap<SelectionKind, u32>,
+}
+
+impl ExtDataControlPart {
+    /// Creates the global (version 1) over the clipboard and `primary`, filtered by the I7
+    /// table.
+    pub fn new<D>(
+        display: &DisplayHandle,
+        role_filter: GlobalFilter,
+        primary: &PrimarySelectionPart,
+    ) -> ExtDataControlPart
+    where
+        D: GlobalDispatch<ExtDataControlManagerV1, ExtDataControlManagerGlobalData> + 'static,
+    {
+        ExtDataControlPart {
+            state: DataControlState::new::<D, _>(
+                display,
+                Some(&primary.state),
+                role_filter.for_global(GlobalKind::ExtDataControl),
+            ),
+            changes: BTreeMap::new(),
+        }
+    }
+}
+
+/// A selection changed (whoever set it: a client, or a manager). smithay tells every bound
+/// manager itself, so the part only counts the change it told them of.
+pub fn on_control_selection(part: &mut ExtDataControlPart, kind: SelectionKind) -> Vec<Event> {
+    let count = part.changes.entry(kind).or_insert(0);
+    *count = count.saturating_add(1);
+    Vec::new()
+}

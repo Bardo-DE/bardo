@@ -1,6 +1,6 @@
 //! Turns and flips.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// A clockwise rotation in whole quarter turns. Stored (it is part of an edit), so it is
 /// written as its slug.
@@ -69,7 +69,7 @@ pub enum Axis {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ds_core::testing::word_matches_serde;
+    use ui_core::testing::word_matches_serde;
 
     #[test]
     fn turns_add_wrap_and_reverse() {

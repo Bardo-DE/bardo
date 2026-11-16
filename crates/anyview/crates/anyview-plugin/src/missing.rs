@@ -3,13 +3,13 @@
 use crate::handles::Subject;
 use anyview_core::{Fact, FactLabel, FactValue, FormatKind, Helper};
 use anyview_plugin_protocol::Capability;
-use bayonet::{Suggestion, suggest};
+use plugin_host::{Suggestion, suggest};
 
 /// A package a person installs with their system's package manager. Its helper is the distro tool
 /// the package's plugin runs: what the viewer offers to install when the plugin is there and its
 /// tool is not. Its tool is the file name of the program the plugin's manifest names, when it names
 /// one the system provides (mpv's), which is then visible in the manifest as a missing file.
-pub type Package = bayonet::Package<Helper>;
+pub type Package = plugin_host::Package<Helper>;
 
 /// Playback, through the user's own mpv.
 const MPV: Package = Package::new("anyview-mpv", Helper::VideoPlayback, Some("mpv"));

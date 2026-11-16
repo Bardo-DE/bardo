@@ -1,0 +1,201 @@
+//! Scratch listeners: a loopback port or a Unix socket in a scratch directory, and the one
+//! connection type both produce. A Unix socket is a Unix platform's: elsewhere binding or
+//! dialling one is `ErrorKind::Unsupported`.
+
+use account_fake::FakeAddress;
+use std::io;
+use std::net::SocketAddr;
+use std::path::PathBuf;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
+use tokio::net::{TcpListener, TcpStream};
+#[cfg(unix)]
+use tokio::net::{UnixListener, UnixStream};
+
+/// Where a fake binds.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Bind {
+    /// This port on `127.0.0.1` (a fake that stops and comes back where it was); port 0 is an
+    /// ephemeral one.
+    Port(u16),
+    /// A socket file in this (scratch) directory, named after the fake.
+    Socket(PathBuf),
+}
+
+/// How a phase of a mail session begins (IMAP, POP3 and SMTP fakes alike).
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum Entry {
+    /// A new connection: send the greeting. `secure` says it is TLS from the first byte.
+    Greet { secure: bool },
+    /// After STARTTLS: the channel is secure and no greeting is sent.
+    Resume,
+}
+
+/// A bound listener and the address it is reachable at.
+#[derive(Debug)]
+pub struct Listener {
+    kind: Kind,
+    address: FakeAddress,
+}
+
+#[derive(Debug)]
+enum Kind {
+    Tcp(TcpListener),
+    #[cfg(unix)]
+    Unix(UnixListener),
+}
+
+/// Who connected.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Peer {
+    /// A loopback peer, by its (ephemeral) address.
+    Tcp(SocketAddr),
+    /// A Unix peer.
+    Unix,
+}
+
+/// One accepted or dialled connection.
+#[derive(Debug)]
+pub enum Conn {
+    /// Over loopback.
+    Tcp(TcpStream),
+    /// Over a Unix socket.
+    #[cfg(unix)]
+    Unix(UnixStream),
+}
+
+impl Listener {
+    /// Binds as `bind` says; `name` names the socket file for `Bind::Socket`.
+    pub async fn bind(bind: &Bind, name: &str) -> io::Result<Self> {
+        match bind {
+            Bind::Port(port) => {
+                let listener = TcpListener::bind(("127.0.0.1", *port)).await?;
+                let port = listener.local_addr()?.port();
+                Ok(Self {
+                    kind: Kind::Tcp(listener),
+                    address: FakeAddress::Loopback(port),
+                })
+            }
+            #[cfg(unix)]
+            Bind::Socket(dir) => {
+                let path = dir.join(format!("{name}.sock"));
+                let listener = UnixListener::bind(&path)?;
+                Ok(Self {
+                    kind: Kind::Unix(listener),
+                    address: FakeAddress::Socket(path),
+                })
+            }
+            #[cfg(not(unix))]
+            Bind::Socket(dir) => Err(no_unix_socket(&dir.join(format!("{name}.sock")))),
+        }
+    }
+
+    /// Where it listens.
+    pub fn address(&self) -> &FakeAddress {
+        &self.address
+    }
+
+    /// The next connection.
+    pub async fn accept(&self) -> io::Result<(Conn, Peer)> {
+        match &self.kind {
+            Kind::Tcp(l) => {
+                let (stream, peer) = l.accept().await?;
+                // A reply written in two parts (head, then body) must not wait for the peer's
+                // delayed acknowledgement: that is 40 ms a request on loopback.
+                let _ = stream.set_nodelay(true);
+                Ok((Conn::Tcp(stream), Peer::Tcp(peer)))
+            }
+            #[cfg(unix)]
+            Kind::Unix(l) => {
+                let (stream, _) = l.accept().await?;
+                Ok((Conn::Unix(stream), Peer::Unix))
+            }
+        }
+    }
+}
+
+/// Connects to a fake.
+pub async fn dial(address: &FakeAddress) -> io::Result<Conn> {
+    match address {
+        FakeAddress::Loopback(port) => {
+            let stream = TcpStream::connect(("127.0.0.1", *port)).await?;
+            let _ = stream.set_nodelay(true);
+            Ok(Conn::Tcp(stream))
+        }
+        #[cfg(unix)]
+        FakeAddress::Socket(path) => Ok(Conn::Unix(UnixStream::connect(path).await?)),
+        #[cfg(not(unix))]
+        FakeAddress::Socket(path) => Err(no_unix_socket(path)),
+    }
+}
+
+/// The Unix socket `path` asked for where there are none.
+#[cfg(not(unix))]
+fn no_unix_socket(path: &std::path::Path) -> io::Error {
+    io::Error::new(
+        io::ErrorKind::Unsupported,
+        format!(
+            "{} is a Unix socket, which needs a Unix platform",
+            path.display()
+        ),
+    )
+}
+
+/// The port of a loopback address; a Unix socket has none, so the caller named the wrong
+/// kind of bind.
+pub fn port_of(address: &FakeAddress) -> u16 {
+    match address {
+        FakeAddress::Loopback(port) => *port,
+        FakeAddress::Socket(path) => {
+            panic!(
+                "{} is a Unix socket; this fake needs a loopback port",
+                path.display()
+            )
+        }
+    }
+}
+
+impl AsyncRead for Conn {
+    fn poll_read(
+        self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &mut ReadBuf<'_>,
+    ) -> Poll<io::Result<()>> {
+        match self.get_mut() {
+            Conn::Tcp(s) => Pin::new(s).poll_read(cx, buf),
+            #[cfg(unix)]
+            Conn::Unix(s) => Pin::new(s).poll_read(cx, buf),
+        }
+    }
+}
+
+impl AsyncWrite for Conn {
+    fn poll_write(
+        self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &[u8],
+    ) -> Poll<io::Result<usize>> {
+        match self.get_mut() {
+            Conn::Tcp(s) => Pin::new(s).poll_write(cx, buf),
+            #[cfg(unix)]
+            Conn::Unix(s) => Pin::new(s).poll_write(cx, buf),
+        }
+    }
+
+    fn poll_flush(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+        match self.get_mut() {
+            Conn::Tcp(s) => Pin::new(s).poll_flush(cx),
+            #[cfg(unix)]
+            Conn::Unix(s) => Pin::new(s).poll_flush(cx),
+        }
+    }
+
+    fn poll_shutdown(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+        match self.get_mut() {
+            Conn::Tcp(s) => Pin::new(s).poll_shutdown(cx),
+            #[cfg(unix)]
+            Conn::Unix(s) => Pin::new(s).poll_shutdown(cx),
+        }
+    }
+}

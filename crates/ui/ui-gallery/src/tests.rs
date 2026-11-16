@@ -1,0 +1,81 @@
+//! Whole-gallery tests: every page renders through the real root, and what it renders is
+//! quire's markup only (coherence rule 2); one page snapshots to real pixels.
+
+use crate::app::App;
+use crate::axes::{Axes, Showcase, start_with};
+use crate::page::Page;
+use crate::style;
+use dioxus::prelude::*;
+use ui_components::prelude::*;
+use ui_harness::{Clock, HarnessConfig, Viewport, snapshot_with};
+use ui_lint::{Exception, LintConfig, Profile, markup};
+use std::time::Duration;
+
+/// Offences in quire's own markup the gallery lives with: none. Every one would be drawn by a
+/// quire component, not by the gallery, and a gap reported to quire (the Gaps page lists them).
+/// The computed custom properties quire writes inline on its own elements (the `--f-*` frame,
+/// `--f-grad`, `--av-bg`, `--pc`, a Space dot's `--dot-c*`) and the SendPill's marked ring are
+/// not offences. The Space editor's five inline gradients and fills were the last.
+const EXCEPTIONS: &[Exception] = &[];
+
+/// The page's markup after its first render, posed.
+fn rendered(page: Page) -> String {
+    start_with(Axes {
+        page,
+        showcase: Showcase::Posed,
+        ..Axes::default()
+    });
+    let mut dom = VirtualDom::new(App);
+    dom.rebuild_in_place();
+    dom.render_immediate_to_vec();
+    dioxus_ssr::render(&dom)
+}
+
+#[test]
+fn every_page_renders_quire_markup_only() {
+    let css = format!("{}\n{}", ui_shell::stylesheet(), style::CSS);
+    let config = LintConfig {
+        profile: Profile::Strict,
+        exceptions: EXCEPTIONS,
+        ..LintConfig::new(&ui_shell::kits())
+    };
+    let mut failures = Vec::new();
+    for page in Page::ALL.iter().copied() {
+        let html = rendered(page);
+        assert!(
+            html.contains("class=\"g-card\""),
+            "{page:?} did not render the page card"
+        );
+        for offence in markup(&html, &css, &config) {
+            failures.push(format!(
+                "{page:?}: {:?} {} {}",
+                offence.rule, offence.selector, offence.text
+            ));
+        }
+    }
+    failures.sort();
+    failures.dedup();
+    assert!(failures.is_empty(), "{failures:#?}");
+}
+
+#[test]
+fn a_page_snapshots_to_real_pixels() {
+    start_with(Axes {
+        page: Page::Controls,
+        showcase: Showcase::Posed,
+        ..Axes::default()
+    });
+    let view = Viewport {
+        width: 400,
+        height: 300,
+        scale_percent: 100,
+    };
+    let config = HarnessConfig::new(view).with_clock(Clock::Virtual);
+    let frames = snapshot_with(App, config, &[Duration::from_secs(10)]).expect("renders");
+    let frame = &frames[0];
+    assert_eq!(frame.dimensions(), (400, 300));
+    let mut colours = frame.pixels().map(|pixel| pixel.0).collect::<Vec<_>>();
+    colours.sort_unstable();
+    colours.dedup();
+    assert!(colours.len() > 64, "only {} colours: blank", colours.len());
+}

@@ -7,8 +7,8 @@
 #   --destdir DIR      a staging root put in front of every path (default $DESTDIR, else none)
 #   --sysconfdir DIR   where the user target and the casement and sill units go, in DIR/systemd/user (default $SYSCONFDIR, else /etc)
 #   --sessions-dir DIR the display manager's wayland-sessions directory (default /usr/share/wayland-sessions)
-#   --tree DIR         the bardo tree (default $BARDO_TREE, else the parent of packaging/): crates/casement/dist/casement.service and
-#                      crates/sill/dist/sill.service are the units installed
+#   --tree DIR         the bardo tree (default $BARDO_TREE, else the parent of packaging/): crates/compositor/dist/casement.service and
+#                      crates/shell/dist/sill.service are the units installed
 #
 # Never runs sudo and never writes to $HOME: a destination you cannot write is printed with the
 # command to run as root (through sudo, doas or pkexec, whichever this machine has), and the script stops there.

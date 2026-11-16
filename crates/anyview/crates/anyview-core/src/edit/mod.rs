@@ -7,7 +7,7 @@ mod tests;
 pub use adjust::{Adjust, PixelRect};
 
 use crate::units::{Axis, PageIndex, PageRange, QuarterTurn, TimeRange};
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// One change to a file. An edit is a value: the save pipeline applies it, undo stores it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]

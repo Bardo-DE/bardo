@@ -1,0 +1,224 @@
+//! The materials as markup (FINDINGS "Materials, blur and colour"): a plate, a squircle surface and
+//! root, the bar item, the workspace pills, the dock's dot and floor, the palette's squircle
+//! card. Each specimen lints clean and every `ds-` class in it must be styled by the stylesheet.
+
+use crate::support::specimens::{Checks, Specimen};
+
+use dioxus::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::base::press::Press;
+use ui_components::components::controls::badge::BadgeContent;
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::components::menus::palette::palette_group::PaletteGroups;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
+use ui_components::style::icon::family::PlateFamily;
+use ui_components::style::icon::plate_tint::PlateTint;
+use ui_components::style::icon::retint::IconStyle;
+use ui_components::style::icon::retint::Tint;
+use ui_components::style::space::presets::PRESETS;
+use ui_components::style::tokens::shape::Corner;
+use shell_kit::prelude::*;
+
+/// The Work Space's Monochrome plate tint.
+fn work() -> Option<PlateTint> {
+    PlateTint::of(IconStyle::Monochrome, Tint::space(PRESETS[0].dots))
+}
+
+/// A root in `theme`, for the tinted plates' two schemes.
+fn scheme(theme: Theme) -> Appearance {
+    Appearance {
+        theme,
+        ..Appearance::default()
+    }
+}
+
+#[derive(Props, Clone)]
+struct HostProps {
+    make: fn() -> Element,
+}
+
+impl PartialEq for HostProps {
+    fn eq(&self, _: &Self) -> bool {
+        false
+    }
+}
+
+fn host(props: HostProps) -> Element {
+    (props.make)()
+}
+
+fn render(make: fn() -> Element) -> String {
+    let mut dom = VirtualDom::new_with_props(host, HostProps { make });
+    dom.rebuild_in_place();
+    dioxus_ssr::render(&dom)
+}
+
+/// A specimen's name and how it renders.
+type Case = (&'static str, fn() -> Element);
+
+const CASES: &[Case] = &[
+    ("plate-blue", || {
+        rsx! {
+            IconView { source: IconSource::Glyph(Icon::Folder), size: IconSize::Tile48, plate: Some(PlateFamily::Blue) }
+        }
+    }),
+    ("plate-neutral-symbolic", || {
+        rsx! {
+            IconView { source: IconSource::Glyph(Icon::Window), size: IconSize::Tile96, plate: Some(PlateFamily::Neutral) }
+        }
+    }),
+    // Both schemes' stops are written on the plate; the root's data-theme picks them.
+    ("plate-neutral-monochrome-light", || {
+        rsx! {
+            Ds { appearance: scheme(Theme::Light), material: Material::Dock, stylesheet: Inject::Host,
+                IconView { source: IconSource::Glyph(Icon::Window), size: IconSize::Tile48, plate: Some(PlateFamily::Neutral), plate_tint: work() }
+            }
+        }
+    }),
+    ("plate-neutral-monochrome-dark", || {
+        rsx! {
+            Ds { appearance: scheme(Theme::Dark), material: Material::Dock, stylesheet: Inject::Host,
+                IconView { source: IconSource::Glyph(Icon::Window), size: IconSize::Tile48, plate: Some(PlateFamily::Neutral), plate_tint: work() }
+            }
+        }
+    }),
+    ("plate-blue-muted", || {
+        rsx! {
+            IconView { source: IconSource::Glyph(Icon::Folder), size: IconSize::Tile48, plate: Some(PlateFamily::Blue), plate_tint: Some(PlateTint::Muted) }
+        }
+    }),
+    ("surface-squircle", || {
+        rsx! {
+            Ds { appearance: Appearance::default(), material: Material::Window, stylesheet: Inject::Host,
+                Surface { material: Material::Sheet, radius: Some(Corner::Squircle(Px(14.0))), p { "inside" } }
+            }
+        }
+    }),
+    ("root-dock-squircle", || {
+        rsx! {
+            Ds { appearance: Appearance::default(), material: Material::Dock, stylesheet: Inject::Host, radius: Some(Corner::Squircle(Px(18.0))),
+                DockFloor {}
+                div { style: "position:relative", RunningDot {} }
+            }
+        }
+    }),
+    ("dock-tile", || {
+        rsx! {
+            DockTile { icon: IconSource::Glyph(Icon::Folder), plate: Some(PlateFamily::Blue), label: "Files", onclick: |_| {} }
+        }
+    }),
+    ("dock-tile-running-badge-label", || {
+        rsx! {
+            DockTile {
+                icon: IconSource::Glyph(Icon::Mail),
+                plate: Some(PlateFamily::Blue),
+                running: true,
+                badge: Some(BadgeContent::Number(3)),
+                label: "Mail",
+                label_shown: Some(true),
+                onclick: |_| {},
+            }
+        }
+    }),
+    ("dock-tile-progress-magnified", || {
+        rsx! {
+            DockTile {
+                icon: IconSource::Glyph(Icon::Download),
+                plate: Some(PlateFamily::Green),
+                progress: Some(Fraction(400)),
+                side: Px(80.0),
+                label: "Downloads",
+                onclick: |_| {},
+            }
+        }
+    }),
+    ("dock-tile-muted-dot-badge", || {
+        rsx! {
+            DockTile {
+                icon: IconSource::Glyph(Icon::Folder),
+                plate: Some(PlateFamily::Neutral),
+                plate_tint: Some(PlateTint::Muted),
+                badge: Some(BadgeContent::Dot),
+                label: "Files",
+                onclick: |_| {},
+            }
+        }
+    }),
+    ("dock-tile-bounce", || {
+        rsx! {
+            DockTile {
+                icon: IconSource::Glyph(Icon::Mail),
+                plate: Some(PlateFamily::Blue),
+                running: true,
+                lift: Px(12.0),
+                label: "Mail",
+                onclick: |_| {},
+            }
+        }
+    }),
+    ("pane-header-back-and-switch", || {
+        rsx! {
+            PaneHeader {
+                title: "Wi-Fi",
+                back: Some(EventHandler::new(|_: Press| {})),
+                trailing: rsx! { span { "switch" } },
+            }
+        }
+    }),
+    ("pane-header-plain", || {
+        rsx! {
+            PaneHeader { title: "Bluetooth" }
+        }
+    }),
+    ("pane-footer", || {
+        rsx! {
+            PaneFooter {
+                Button { bezel: Bezel::Inline, label: "Wi-Fi Settings…", onclick: |_| {} }
+            }
+        }
+    }),
+    ("bar-items", || {
+        rsx! {
+            MenuBarItem { emphasis: true, label: "Files", onclick: |_| {} }
+            MenuBarItem { shown: true, common: Common { id: Some("file".to_string()), ..Common::default() }, label: "File", onclick: |_| {} }
+            MenuBarItem { label: "Edit", onclick: |_| {} }
+        }
+    }),
+    ("workspace-pills", || {
+        rsx! {
+            WorkspacePills { label: "Workspaces",
+                WorkspacePill { label: "1", current: true, onclick: |_| {} }
+                WorkspacePill { label: "2", onclick: |_| {} }
+            }
+        }
+    }),
+    ("palette-squircle", || {
+        rsx! {
+            Ds { appearance: Appearance::default(), material: Material::Sheet, stylesheet: Inject::Host,
+            CommandPalette::<u8> {
+                label: "Launch",
+                placeholder: "Search",
+                query: "",
+                tokens: Vec::new(),
+                groups: PaletteGroups::default(),
+                empty: "Nothing",
+                oninput: |_| {},
+                onpick: |_| {},
+                onclose: |_| {},
+                host: CommandPaletteHost::Surface,
+                corner: Some(Corner::Squircle(Px(14.0))),
+            }
+            }
+        }
+    }),
+];
+
+pub(crate) fn specimens() -> Vec<Specimen> {
+    CASES
+        .iter()
+        .map(|(name, make)| {
+            Specimen::of(&format!("materials/{name}.html"), render(*make)).checked(Checks::Styled)
+        })
+        .collect()
+}

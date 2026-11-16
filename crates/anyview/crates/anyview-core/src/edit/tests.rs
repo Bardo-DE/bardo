@@ -1,7 +1,7 @@
 use super::*;
 use crate::units::MediaTime;
 use crate::units::{PixelLen, PixelSize};
-use ds_core::testing::word_matches_serde;
+use ui_core::testing::word_matches_serde;
 
 fn range(first: u32, last: u32) -> PageRange {
     PageRange::new(PageIndex(first), PageIndex(last)).unwrap()

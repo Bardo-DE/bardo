@@ -1,0 +1,25 @@
+[package]
+name = "memory-store"
+description = "The seams almanac's service stands on, as traits and types only: the event log, the file vault and the search index. No SQLite, no OpenSSL, no runtime."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+memory-core = {path = "../memory-core"}
+memory-seal = {path = "../memory-seal"}
+blake3 = {version = "1"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+memory-fake = {path = "../memory-fake"}
+memory-service = {path = "../memory-service"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

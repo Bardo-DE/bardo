@@ -31,7 +31,7 @@ mod capability;
 mod error;
 mod message;
 
-pub use bayonet::wire::{
+pub use plugin_host::wire::{
     Frame, FrameDecoder, MAX_JSON_BYTES, MAX_PAYLOAD_BYTES, WireError, encode_frame, read_frame,
     write_frame,
 };

@@ -12,7 +12,7 @@ publish = false
 anyview-core = {path = "../anyview-core"}
 # `OpenFile`, the one way a path is opened (core does no I/O).
 anyview-fs = {path = "../anyview-fs"}
-ds-core = {path = "../../../quire/crates/ds-core"}
+ui-core = {path = "../../../ui/ui-core"}
 calamine = {version = "0.38", default-features = false}
 # Reads a zipped workbook's directory before calamine does (calamine already brings it in).
 zip = {version = "9", default-features = false, features = ["deflate"]}

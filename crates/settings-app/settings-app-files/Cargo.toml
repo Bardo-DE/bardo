@@ -1,0 +1,32 @@
+[package]
+name = "settings-app-files"
+description = "Reading and writing the settings files the schemas describe: lenient load, atomic write."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+keymap = {path = "../../keymap/keymap"}
+settings-app-model = {path = "../settings-app-model"}
+agent-registry = {path = "../../actions/agent-registry"}
+agent-install = {path = "../../actions/agent-install"}
+action-settings = {path = "../../actions/action-settings"}
+ui-extensions = {path = "../../ui/ui-extensions"}
+ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
+freedesktop-icons = {version = "0.4"}
+ui-settings = {path = "../../ui/ui-settings"}
+serde_json = {version = "1"}
+key-remap-client = {path = "../../input/key-remap-client"}
+thiserror = {version = "2"}
+toml = {version = "1"}
+toml_edit = {version = "0.25"}
+
+[dev-dependencies]
+settings-app-testkit = {path = "../settings-app-testkit"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

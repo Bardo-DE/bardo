@@ -1,0 +1,16 @@
+[package]
+name = "ui-behaviour"
+description = "Pure input machines a shell and a compositor both run: the app switcher, hot corners, the Command key's tap and hold, and the Space swipe."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ui-core = {path = "../ui-core"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

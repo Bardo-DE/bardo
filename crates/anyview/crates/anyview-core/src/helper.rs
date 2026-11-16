@@ -1,6 +1,6 @@
 //! The distro tools the viewer's plugins run, as the viewer names them when one is missing.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// A tool of the person's own system that a plugin runs, and that the viewer can offer to install
 /// when it is not there. The slug of each is the capability's name in the helpers file the

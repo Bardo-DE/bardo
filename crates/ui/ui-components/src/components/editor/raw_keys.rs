@@ -1,0 +1,102 @@
+//! RawKeySurface: a focusable block for an app that draws its own region (a terminal grid) and
+//! wants every key as the keyboard sent it. Where `EditSurface` turns keys into text and
+//! gestures, this hands over each key down, repeat and up with its physical code, its modifiers,
+//! and the text it types ([`RawKey`]).
+//!
+//! The surface calls `prevent_default` on every key it hears, so Tab stays in the region and no
+//! key moves the page. It draws nothing and shows no focus ring: the app draws
+//! its cursor. The app moves the keyboard in with `focus_soon_told` on the element its
+//! `common.mounted` gives it, and runs its IME with `ui_components::edit::composition`.
+
+use crate::edit::pointer::EditFocus;
+use crate::edit::raw_key::{KeyPhase, RawKey};
+use crate::root::common::Common;
+use dioxus::prelude::*;
+
+/// A region that hears raw keys.
+///
+/// - `on_key`: each key down, repeat and up, in order.
+/// - `on_focus`: the region took or lost the keyboard through the renderer's own focus events
+///   (a press, Tab). A focus the app asks for with `focus_soon_told` sends none; `told` is that.
+/// - `style`: the element's inline style, for the size or position the app's renderer sets inline.
+/// - `onpointerdown`, `onpointermove`, `onpointerup`, `onwheel`: the pointer and wheel events of
+///   the element, passed through as they arrive, for an app that draws a grid and reads the mouse
+///   itself.
+/// - `common`: the app's `id`, class, `data-*` and accessible name on the element; its `mounted`
+///   hears the element once it is in the document.
+#[component]
+pub fn RawKeySurface(
+    on_key: EventHandler<RawKey>,
+    #[props(default)] on_focus: Option<EventHandler<EditFocus>>,
+    #[props(default)] style: Option<String>,
+    #[props(default)] onpointerdown: Option<EventHandler<PointerEvent>>,
+    #[props(default)] onpointermove: Option<EventHandler<PointerEvent>>,
+    #[props(default)] onpointerup: Option<EventHandler<PointerEvent>>,
+    #[props(default)] onwheel: Option<EventHandler<WheelEvent>>,
+    #[props(default)] common: Common,
+    children: Element,
+) -> Element {
+    let read = move |event: &KeyboardEvent, phase: KeyPhase| {
+        event.prevent_default();
+        let phase = match phase {
+            KeyPhase::Press if event.is_auto_repeating() => KeyPhase::Repeat,
+            other => other,
+        };
+        on_key.call(RawKey::new(
+            phase,
+            (event.key(), event.code()),
+            (event.modifiers(), event.location()),
+        ));
+    };
+    let read_up = read;
+    let class = common.class("ds-raw-keys");
+    let data = common.data_attributes();
+    let label = common.aria_label.clone();
+    let id = common.id.clone();
+    rsx! {
+        div {
+            class,
+            id,
+            role: "application",
+            "aria-label": label,
+            tabindex: "0",
+            style,
+            "data-keys": "capture",
+            onmounted: move |event: MountedEvent| common.mounted(event),
+            onkeydown: move |event: KeyboardEvent| read(&event, KeyPhase::Press),
+            onkeyup: move |event: KeyboardEvent| read_up(&event, KeyPhase::Release),
+            onpointerdown: move |event: PointerEvent| {
+                if let Some(heard) = onpointerdown {
+                    heard.call(event);
+                }
+            },
+            onpointermove: move |event: PointerEvent| {
+                if let Some(heard) = onpointermove {
+                    heard.call(event);
+                }
+            },
+            onpointerup: move |event: PointerEvent| {
+                if let Some(heard) = onpointerup {
+                    heard.call(event);
+                }
+            },
+            onwheel: move |event: WheelEvent| {
+                if let Some(heard) = onwheel {
+                    heard.call(event);
+                }
+            },
+            onfocus: move |_: FocusEvent| {
+                if let Some(told) = on_focus {
+                    told.call(EditFocus::In);
+                }
+            },
+            onblur: move |_: FocusEvent| {
+                if let Some(told) = on_focus {
+                    told.call(EditFocus::Out);
+                }
+            },
+            ..data,
+            {children}
+        }
+    }
+}

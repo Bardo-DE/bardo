@@ -1,0 +1,25 @@
+[package]
+name = "compositor-motion"
+description = "casement's pure motion: the MotionBook of ds-motion spring legs, retargeting with velocity kept, and sampling into an Eq FrameScene in 1/120 px."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[dependencies]
+compositor-core = {path = "../compositor-core"}
+compositor-layout = {path = "../compositor-layout"}
+desktop-protocols = {path = "../../wayland/desktop-protocols"}
+ui-core = {path = "../../ui/ui-core", default-features = false}
+ui-style = {path = "../../ui/ui-style", default-features = false}
+ui-motion = {path = "../../ui/ui-motion", default-features = false}
+
+[dev-dependencies]
+account-core = {path = "../../accounts/account-core"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

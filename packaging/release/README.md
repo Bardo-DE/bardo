@@ -127,8 +127,8 @@ checks slipway's install with `check-helpers.sh`, and runs `pkexec /usr/libexec/
 
 ```
 cd bardo
-cargo build --release --locked -p slipway-root
-sudo sh -c 'umask 022 && crates/slipway/scripts/install.sh --bin-dir target/release --pubkey /path/to/release.pub'
+cargo build --release --locked -p updater-root
+sudo sh -c 'umask 022 && crates/updater/scripts/install.sh --bin-dir target/release --pubkey /path/to/release.pub'
 packaging/release/bootstrap.sh
 ```
 
@@ -149,7 +149,7 @@ answers. `smoke.sh` covers the install on a throwaway machine and `health-scenar
 
 Release N is the first to carry the four turnstile files. slipway's privileged helper is never replaced by a release, and an older one refuses
 a release that lists a file its rule list does not name, so **everyone re-runs slipway's install by hand before that release** (the
-`cargo build ... -p slipway-root && sudo sh -c 'umask 022 && crates/slipway/scripts/install.sh ...'` lines above, with a slipway that has the four rules and, in
+`cargo build ... -p updater-root && sudo sh -c 'umask 022 && crates/updater/scripts/install.sh ...'` lines above, with a slipway that has the four rules and, in
 `apply/settle.rs`, the step that reloads systemd and the device rules and starts `turnstile.socket`). A computer that skips it keeps working
 at the version it has: the release is refused whole and says why. `release/system-files.list` and the slipway crate of this tree move in
 the same step; until then `release/check-system-list.sh` fails against the old pin, on purpose.

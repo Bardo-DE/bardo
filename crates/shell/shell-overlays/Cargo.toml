@@ -1,0 +1,46 @@
+[package]
+name = "shell-overlays"
+description = "The overlay surfaces: OSD, power menu, polkit prompt, app switcher, idle dim, hot corners, wallpaper and the lock screen."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+account-sheet = {path = "../../accounts/account-sheet"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+keymap = {path = "../../keymap/keymap"}
+ui-components = {path = "../../ui/ui-components"}
+ui-behaviour = {path = "../../ui/ui-behaviour"}
+ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+shell-kit = {path = "../shell-kit"}
+ui-shell = {path = "../../ui/ui-shell"}
+jiff = {version = "0.2"}
+account-core = {path = "../../accounts/account-core"}
+serde_json = {version = "1"}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
+shell-launcher = {path = "../shell-launcher"}
+shell-model = {path = "../shell-model"}
+shell-services = {path = "../shell-services"}
+shell-settings = {path = "../shell-settings"}
+shell-ui-kit = {path = "../shell-ui-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+
+[dev-dependencies]
+desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
+shell-testkit = {path = "../shell-testkit"}
+shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
+ui-harness = {path = "../../ui/ui-harness"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
+
+[[example]]
+name = "wallpaper_demo"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

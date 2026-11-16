@@ -1,0 +1,202 @@
+//! A voice chat on a live session: the plan for it and the turn that runs it.
+//!
+//! The session machine collects the audio (`Phase::Hearing`) and hands it over with the chat
+//! ([`inference_router::seams::TurnRunner::start_heard`]). The turn then plans the request as `plan_pipeline`
+//! does for audio in and text out (the text model hears it itself, or `voice_in` does first),
+//! over the models the app is offered now, and runs the plan with [`run_pipeline`]: `Ears` on
+//! the speech host, then the answering model on the transcript. The stages announce themselves
+//! (`Routed` and a `Stage` note each), so the session's own `Answer` note is not sent for the
+//! turn: exactly one per turn.
+
+use crate::engines::{Engines, Offered, named_tiers, through_grants};
+use crate::runner::Turns;
+use crate::speech::Ears;
+use account_core::AppId;
+use inference_core::{
+    Answer, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest, Modality, ModelError,
+    ModelRef, RequestShape, StageRole,
+};
+use inference_router::pipeline::plan;
+use inference_router::router::placed::Allowed;
+use inference_router::seams::{RunningTurn, TurnRunner, TurnStep};
+use inference_router::session::{HeardAudio, SessionSpec};
+use inference_turns::Turn;
+use inference_turns::pipeline::{PipelineInput, VecAudio, run_pipeline};
+use std::collections::BTreeSet;
+use std::ops::ControlFlow;
+use tokio::sync::mpsc;
+
+/// What a session needs to plan and run a voice chat: the engines, the app whose grants decide
+/// the hosted models in reach, and what the session was opened for.
+#[derive(Debug, Clone)]
+pub struct Hearing {
+    /// The daemon's engines (the models, their readiness, the settings).
+    pub engines: Engines,
+    /// The caller; none offers no hosted model.
+    pub app: Option<AppId>,
+    /// What the session was opened for.
+    pub spec: SessionSpec,
+    /// The places the session may run, when the caller named them: the stages of a voice chat
+    /// stay in the place the session's route chose, which is inside the set.
+    pub allowed: Option<Allowed>,
+    /// The model the session names for itself, when it does: the text slot's choice for the
+    /// plan, as for the route.
+    pub named: Option<ModelRef>,
+}
+
+impl Hearing {
+    /// Plans and runs one voice chat, its events going to `sink`.
+    pub(crate) async fn run(
+        &self,
+        turns: &Turns,
+        chat: ChatRequest,
+        heard: HeardAudio,
+        sink: &mut impl ChatSink,
+    ) -> InferReply {
+        let spec = &self.spec;
+        let offered = match &self.app {
+            Some(app) => self.engines.offer(app, spec.class, spec.usage).await,
+            None => {
+                self.engines.look_at_attached().await;
+                Offered::default()
+            }
+        };
+        let settings = self.engines.settings();
+        let shape = RequestShape {
+            class: spec.class,
+            inputs: BTreeSet::from([Modality::Text, Modality::Audio]),
+            answer: Answer::Text,
+        };
+        let listed = self.engines.listed_with(&offered);
+        let listed = match &self.allowed {
+            None => listed,
+            Some(_) => {
+                let Some(pinned) = turns.pinned_to_now() else {
+                    return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+                };
+                let served = &pinned.served;
+                let place =
+                    self.engines
+                        .place_for(&served.locality, &served.account, &served.model);
+                listed
+                    .into_iter()
+                    .filter(|one| self.engines.place_of(&one.card) == place)
+                    .collect()
+            }
+        };
+        let planned = match plan(
+            &shape,
+            &spec.need,
+            spec.tier,
+            &listed,
+            &settings.routing_policy(),
+            &through_grants(
+                &named_tiers(&settings.tiers, &spec.need, self.named.as_ref()),
+                &offered,
+            ),
+            settings.auto,
+            settings.describe_images,
+        ) {
+            Ok(planned) => planned,
+            Err(refusal) => {
+                if let Some(declined) = refusal.declined()
+                    && sink.event(InferEvent::Declined(declined.clone())) == ControlFlow::Break(())
+                {
+                    return InferReply::Cancelled;
+                }
+                return InferReply::Refused(refusal.infer_refusal());
+            }
+        };
+        let model_of = |role| {
+            planned
+                .stages
+                .iter()
+                .find(|stage| stage.role == role)
+                .map(|stage| ModelRef {
+                    account: stage.picked.chosen.account.clone(),
+                    model: stage.picked.chosen.model.clone(),
+                })
+        };
+        let Some(answering) = model_of(StageRole::Answer) else {
+            return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+        };
+        let Some(pinned) = self.engines.pinned_for(&answering, &offered) else {
+            return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+        };
+        let names = planned
+            .stages
+            .iter()
+            .filter_map(|stage| {
+                let model = ModelRef {
+                    account: stage.picked.chosen.account.clone(),
+                    model: stage.picked.chosen.model.clone(),
+                };
+                let name = self.engines.label_of(&model, &offered)?;
+                Some((model, name))
+            })
+            .collect();
+        let answer = Answering {
+            turns: turns.pinned_to(pinned),
+            engines: self.engines.clone(),
+            model: answering,
+        };
+        let input = PipelineInput {
+            audio: Some((heard.begin, VecAudio(heard.frames.into()))),
+            chat,
+            names,
+        };
+        run_pipeline(
+            &planned,
+            settings.auto.show_reason,
+            input,
+            &Ears::new(self.engines.clone()),
+            &answer,
+            sink,
+        )
+        .await
+    }
+}
+
+/// The answering stage's turns: the model is asked for (started if it must be) before its turn
+/// runs, since it may not be the one the session's route woke.
+struct Answering {
+    turns: Turns,
+    engines: Engines,
+    model: ModelRef,
+}
+
+impl TurnRunner for Answering {
+    type Turn = Turn;
+
+    fn start(&self, request: InferRequest, attachments: Vec<std::os::fd::OwnedFd>) -> Turn {
+        let (steps, inbox) = mpsc::unbounded_channel();
+        let (turns, engines, model) =
+            (self.turns.clone(), self.engines.clone(), self.model.clone());
+        let task = tokio::spawn(async move {
+            use inference_router::seams::EngineHost;
+            if engines.want(model).await.is_err() {
+                let _ = steps.send(TurnStep::Done(InferReply::Failed(ModelError::NotReady)));
+                return;
+            }
+            let mut inner = turns.start(request, attachments);
+            loop {
+                let step = inner.next().await;
+                let last = matches!(step, TurnStep::Done(_));
+                if steps.send(step).is_err() || last {
+                    return;
+                }
+            }
+        });
+        Turn::running(inbox, task)
+    }
+
+    fn start_heard(&self, _: ChatRequest, _: HeardAudio) -> Turn {
+        let (steps, inbox) = mpsc::unbounded_channel();
+        let task = tokio::spawn(async move {
+            let _ = steps.send(TurnStep::Done(InferReply::Refused(
+                inference_core::InferRefusal::Unsupported,
+            )));
+        });
+        Turn::running(inbox, task)
+    }
+}

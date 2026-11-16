@@ -55,7 +55,7 @@ fn a_sealed_chapter_inlines_what_the_package_holds_and_nothing_remote() {
     let chapter = epub.chapter(SectionIndex(0)).unwrap();
     let data = format!(
         "data:image/png;base64,{}",
-        ds_core::base64::encode(support::PNG)
+        ui_core::base64::encode(support::PNG)
     );
     assert!(
         chapter

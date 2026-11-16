@@ -1,0 +1,25 @@
+[package]
+name = "account-service-accounts"
+description = "The accounts domain of the service: add an account, sign it in again, ask for more access, rediscover what it can do, switch its kinds, remove it, and the agent sign-in and local runtimes that are accounts too."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-service-core = {path = "../account-service-core"}
+account-core = {path = "../account-core"}
+account-tailscale = {path = "../account-tailscale"}
+account-match = {path = "../account-match"}
+account-capability = {path = "../account-capability"}
+account-sheet = {path = "../account-sheet"}
+account-wire = {path = "../account-wire"}
+account-ids = {path = "../account-ids"}
+account-provider = {path = "../account-provider"}
+account-secrets = {path = "../account-secrets"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

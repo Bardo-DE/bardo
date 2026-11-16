@@ -1,0 +1,31 @@
+[package]
+name = "inference-rig"
+description = "Test tooling, never installed and never in dist: steward-rig-client acts as an app over the session bus a jailed scenario gives it and opens an inferd session, with one chat turn when asked. The identity fixture is porter-rig's, so the same --proc-root tree names it to accountd and inferd alike. Nothing shipped depends on it."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[[bin]]
+name = "steward-rig-client"
+path = "src/bin/steward-rig-client.rs"
+
+[dependencies]
+inference-client = {path = "../inference-client", features = ["dbus"]}
+account-capability = {path = "../../accounts/account-capability"}
+account-core = {path = "../../accounts/account-core"}
+account-ids = {path = "../../accounts/account-ids"}
+inference-core = {path = "../inference-core"}
+account-match = {path = "../../accounts/account-match"}
+account-rig = {path = "../../accounts/account-rig"}
+clap = {version = "4", features = ["derive"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

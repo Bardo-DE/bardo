@@ -1,0 +1,81 @@
+[package]
+name = "agent-acp-bin"
+description = "The docket-acp process: the ACP server edge on stdio, hosting its own companion (docket-native NativeHost) over the session bus. Refuses to serve unless agent.acp.expose is on. The lib is what the acceptance harness runs under its own name."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "agent_acp_bin"
+
+[[bin]]
+name = "docket-acp"
+path = "src/main.rs"
+
+[[bin]]
+name = "docket-agent"
+path = "src/bin/docket-agent.rs"
+
+[[bin]]
+name = "docket-net-forward"
+path = "src/bin/docket-net-forward.rs"
+
+[[bin]]
+name = "docket-net-enter"
+path = "src/bin/docket-net-enter.rs"
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+companion-client = {path = "../companion-client"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+agent-acp-core = {path = "../agent-acp-core"}
+agent-acp-server = {path = "../agent-acp-server"}
+agent-acp-host = {path = "../agent-acp-host"}
+agent-registry = {path = "../agent-registry"}
+agent-install = {path = "../agent-install"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
+permission-core = {path = "../permission-core"}
+action-provider = {path = "../action-provider", features = ["dbus"]}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+action-vocab = {path = "../action-vocab"}
+action-dbus = {path = "../action-dbus", features = ["inferd"]}
+action-host = {path = "../action-host"}
+action-store = {path = "../action-store"}
+agent-launch = {path = "../agent-launch", features = ["dbus"]}
+action-log = {path = "../action-log"}
+agent-native = {path = "../agent-native"}
+agent-planner = {path = "../agent-planner"}
+agent-session = {path = "../agent-session"}
+action-settings = {path = "../action-settings"}
+clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
+companion-tasks = {path = "../companion-tasks"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+account-core = {path = "../../accounts/account-core"}
+account-callers = {path = "../../accounts/account-callers"}
+serde_json = {version = "1"}
+provenance = {path = "../../provenance/provenance"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[dev-dependencies]
+action-fake = {path = "../action-fake"}
+tempfile = {version = "3"}
+
+[features]
+# What the acceptance harness needs to host an agent in its own process (`harness`). Only dev-dependencies
+# and the harness crates turn it on; no packaged binary does.
+testing = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

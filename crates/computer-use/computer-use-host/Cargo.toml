@@ -1,0 +1,43 @@
+[package]
+name = "computer-use-host"
+description = "The run executor, as a library: the supervisor of runs over the seams, the drive loop, the router's gate and the message and record links, and the person's settings read from text. No backend, no bus connection and no file watch: the seams are the caller's. cuad is its daemon."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+action-gate-wire = {path = "../../actions/action-gate-wire"}
+action-wire = {path = "../../actions/action-wire"}
+permission-core = {path = "../../actions/permission-core"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+computer-use-capture = {path = "../computer-use-capture"}
+computer-use-bus = {path = "../computer-use-bus"}
+computer-use-run = {path = "../computer-use-run"}
+action-core = {path = "../../actions/action-core"}
+action-client = {default-features = false, path = "../../actions/action-client"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+memory-core = {path = "../../memory/memory-core"}
+memory-client = {default-features = false, path = "../../memory/memory-client"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+inference-core = {path = "../../inference/inference-core"}
+computer-use-action = {path = "../computer-use-action"}
+computer-use-fake = {path = "../computer-use-fake"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

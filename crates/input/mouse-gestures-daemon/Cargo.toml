@@ -1,0 +1,34 @@
+[package]
+name = "mouse-gestures-daemon"
+description = "Magic Mouse gesture daemon: hidraw decoder, scroll feel, gestures, a socket for shell-host and a virtual touchpad for everyone else"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Bardo-DE/palmrest"
+
+[dependencies]
+mouse-gestures-proto = { path = "../mouse-gestures-proto" }
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+serde_json = {version = "1"}
+toml = {version = "1"}
+notify = {version = "8.2"}
+rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+input-linux = {version = "0.7", default-features = false}
+input-broker-client = {path = "../input-broker-client"}
+caller-identity-linux = {path = "../../identity/caller-identity-linux"}
+service-locator = {features = ["guard"], path = "../../platform/service-locator"}
+caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
+
+[dev-dependencies]
+input-broker-client = {features = ["fake"], path = "../input-broker-client"}
+# A held process that is only a claim, for tests of who the socket's peer is; never in a shipped build.
+caller-identity-linux = {features = ["fake"], path = "../../identity/caller-identity-linux"}
+
+[lints.rust]
+unsafe_code = "deny"
+
+[[bin]]
+name = "palmrest"
+path = "src/main.rs"

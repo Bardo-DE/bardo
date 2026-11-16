@@ -1,0 +1,361 @@
+//! Offered protocols and `supports`.
+
+use desktop_protocols::vocab::{
+    Answer, AskId, Assign, OverviewMode, PlaceTarget, ShellRole, Toggle, TrialAnswer, TrialId,
+    WindowEntry,
+};
+use desktop_client::capture::CaptureRequest;
+use desktop_client::output::OutputConfig;
+use desktop_client::{
+    AppKey, CommandRoute, DesktopBackend, Rect, SpaceKey, SpaceTarget, requires_on,
+};
+use desktop_client::{
+    DesktopCommand, GroupKey, OutputName, Protocol, ProtocolSet, SurfaceKey, ToplevelKey,
+    WorkspaceKey, missing, requires, supports,
+};
+
+fn toplevel_commands() -> Vec<DesktopCommand> {
+    let t = ToplevelKey::new(1);
+    vec![
+        DesktopCommand::Activate(t),
+        DesktopCommand::Close(t),
+        DesktopCommand::Minimise(t),
+        DesktopCommand::Unminimise(t),
+        DesktopCommand::Maximise(t),
+        DesktopCommand::Unmaximise(t),
+        DesktopCommand::Fullscreen {
+            toplevel: t,
+            output: None,
+        },
+        DesktopCommand::Unfullscreen(t),
+        DesktopCommand::SetMinimiseTarget {
+            toplevel: t,
+            surface: SurfaceKey::new(1),
+            rect: Rect::new(0, 0, 10, 10),
+        },
+    ]
+}
+
+fn workspace_commands() -> Vec<DesktopCommand> {
+    let w = WorkspaceKey::new(1);
+    let g = GroupKey::new(1);
+    vec![
+        DesktopCommand::ActivateWorkspace(w),
+        DesktopCommand::DeactivateWorkspace(w),
+        DesktopCommand::AssignWorkspace {
+            workspace: w,
+            group: g,
+        },
+        DesktopCommand::RemoveWorkspace(w),
+        DesktopCommand::CreateWorkspace {
+            group: g,
+            name: "x".into(),
+        },
+        DesktopCommand::CommitWorkspaces,
+    ]
+}
+
+#[test]
+fn interfaces_round_trip_and_unknown_ones_are_ignored() {
+    for protocol in Protocol::ALL {
+        assert_eq!(
+            Protocol::from_interface(protocol.interface()),
+            Some(protocol)
+        );
+    }
+    assert_eq!(Protocol::from_interface("wl_compositor"), None);
+    let set = ProtocolSet::from_interfaces(["wl_compositor", "ext_workspace_manager_v1"]);
+    assert!(set.contains(Protocol::ExtWorkspace));
+    assert_eq!(set.iter().count(), 1);
+    assert_eq!(
+        ProtocolSet::empty().with(Protocol::WlrOutputManagement),
+        ProtocolSet::from_interfaces(["zwlr_output_manager_v1"])
+    );
+}
+
+#[test]
+fn toplevel_commands_need_the_wlr_manager_only() {
+    let wlr = ProtocolSet::empty().with(Protocol::WlrForeignToplevelManagement);
+    let list_only = ProtocolSet::empty().with(Protocol::ExtForeignToplevelList);
+    for command in toplevel_commands() {
+        assert!(supports(&wlr, &command), "{:?}", command);
+        assert!(!supports(&list_only, &command), "{:?}", command);
+        assert_eq!(
+            missing(&list_only, &command),
+            Some(Protocol::WlrForeignToplevelManagement)
+        );
+    }
+}
+
+#[test]
+fn workspace_commands_need_ext_workspace() {
+    let offered = ProtocolSet::empty().with(Protocol::ExtWorkspace);
+    for command in workspace_commands() {
+        assert!(supports(&offered, &command), "{:?}", command);
+        assert!(!supports(&ProtocolSet::empty(), &command));
+    }
+}
+
+#[test]
+fn output_commands_need_wlr_output_management() {
+    let offered = ProtocolSet::empty().with(Protocol::WlrOutputManagement);
+    for command in [
+        DesktopCommand::ApplyOutputs(OutputConfig::new(vec![])),
+        DesktopCommand::TestOutputs(OutputConfig::new(vec![])),
+    ] {
+        assert!(supports(&offered, &command));
+        assert!(!supports(&ProtocolSet::empty(), &command));
+    }
+}
+
+#[test]
+fn a_space_picture_needs_the_copy_manager_and_the_shell_not_the_output_source() {
+    let request = CaptureRequest::of_space(
+        OutputName::new("DP-1"),
+        desktop_client::SpaceId::new("s-1"),
+        desktop_client::Size::new(160, 90),
+    );
+    let command = DesktopCommand::CaptureOutput(request);
+    assert_eq!(
+        requires(&command),
+        &[Protocol::ExtImageCopyCapture, Protocol::QuireShell]
+    );
+}
+
+#[test]
+fn capture_needs_both_the_copy_manager_and_the_output_source() {
+    let command = DesktopCommand::CaptureOutput(CaptureRequest::new(OutputName::new("DP-1")));
+    let copy = ProtocolSet::empty().with(Protocol::ExtImageCopyCapture);
+    let both = copy.clone().with(Protocol::ExtOutputImageCaptureSource);
+    assert!(!supports(&copy, &command));
+    assert_eq!(
+        missing(&copy, &command),
+        Some(Protocol::ExtOutputImageCaptureSource)
+    );
+    assert!(supports(&both, &command));
+    assert_eq!(requires(&command).len(), 2);
+}
+
+fn offering(protocols: &[Protocol]) -> ProtocolSet {
+    protocols
+        .iter()
+        .fold(ProtocolSet::empty(), |set, p| set.with(*p))
+}
+
+/// The commands only the Quire arm carries, each with the protocols it needs.
+fn quire_only() -> Vec<(DesktopCommand, Vec<Protocol>)> {
+    let t = ToplevelKey::new(1);
+    let s = SpaceKey::new(1);
+    let a = AppKey::new(1);
+    let window = vec![Protocol::QuireDesktop, Protocol::ExtForeignToplevelList];
+    let desktop = vec![Protocol::QuireDesktop];
+    let shell = vec![Protocol::QuireShell];
+    vec![
+        (
+            DesktopCommand::Place {
+                toplevel: t,
+                target: PlaceTarget::Left,
+            },
+            window.clone(),
+        ),
+        (
+            DesktopCommand::MoveToSpace {
+                toplevel: t,
+                space: s,
+            },
+            window.clone(),
+        ),
+        (
+            DesktopCommand::AssignSpaces {
+                toplevel: t,
+                assign: Assign::AllSpaces,
+            },
+            window,
+        ),
+        (DesktopCommand::ActivateSpace(s), desktop.clone()),
+        (DesktopCommand::RemoveSpace(s), desktop.clone()),
+        (
+            DesktopCommand::MoveSpace {
+                space: s,
+                position: 2,
+            },
+            desktop.clone(),
+        ),
+        (
+            DesktopCommand::CreateSpace {
+                output: OutputName::new("DP-1"),
+            },
+            desktop.clone(),
+        ),
+        (DesktopCommand::ActivateApp(a), desktop.clone()),
+        (DesktopCommand::HideApp(a), desktop.clone()),
+        (DesktopCommand::UnhideApp(a), desktop.clone()),
+        (DesktopCommand::HideOtherApps(a), desktop.clone()),
+        (DesktopCommand::QuitApp(a), desktop.clone()),
+        (DesktopCommand::ForceQuitApp(a), desktop.clone()),
+        (DesktopCommand::ReopenApp(a), desktop),
+        (DesktopCommand::ClearMinimiseTarget(t), shell.clone()),
+        (
+            DesktopCommand::SetShellRole {
+                surface: SurfaceKey::new(1),
+                role: ShellRole::Dock,
+            },
+            shell.clone(),
+        ),
+        (DesktopCommand::PickSwitcher(0), shell.clone()),
+        (DesktopCommand::CancelSwitcher, shell.clone()),
+        (
+            DesktopCommand::Overview {
+                mode: OverviewMode::MissionControl,
+                toggle: Toggle::On,
+            },
+            shell.clone(),
+        ),
+        (DesktopCommand::ShowDesktop(Toggle::Off), shell.clone()),
+        (
+            DesktopCommand::PickWindowMenu {
+                window: desktop_client::ToplevelIdentifier::new("w-1"),
+                entry: WindowEntry::Fill,
+            },
+            shell.clone(),
+        ),
+        (
+            DesktopCommand::PickSplit(desktop_client::ToplevelIdentifier::new("w-2")),
+            shell.clone(),
+        ),
+        (DesktopCommand::CancelSplit, shell.clone()),
+        (
+            DesktopCommand::DivideSplit {
+                window: desktop_client::ToplevelIdentifier::new("w-1"),
+                share: 400,
+            },
+            shell.clone(),
+        ),
+        (
+            DesktopCommand::SetSpaceTargets {
+                output: OutputName::new("DP-1"),
+                targets: vec![SpaceTarget::new(
+                    desktop_client::SpaceId::new("s-1"),
+                    Rect::new(0, 0, 160, 90),
+                )],
+            },
+            shell.clone(),
+        ),
+        (
+            DesktopCommand::SetNewSpaceTarget {
+                output: OutputName::new("DP-1"),
+                rect: Some(Rect::new(0, 0, 160, 90)),
+            },
+            shell.clone(),
+        ),
+        (
+            DesktopCommand::AnswerPermission {
+                ask: AskId::new(3),
+                answer: Answer::Allow,
+            },
+            shell.clone(),
+        ),
+        (
+            DesktopCommand::AnswerTrial {
+                trial: TrialId::new(4),
+                answer: TrialAnswer::Keep,
+            },
+            shell,
+        ),
+    ]
+}
+
+#[test]
+fn quire_commands_need_exactly_their_quire_protocols() {
+    for (command, needs) in quire_only() {
+        assert_eq!(requires(&command), needs.as_slice(), "{:?}", command);
+        let offered = needs
+            .iter()
+            .fold(ProtocolSet::empty(), |set, p| set.with(*p));
+        assert!(supports(&offered, &command), "{:?}", command);
+        assert_eq!(missing(&offered, &command), None);
+        for dropped in &needs {
+            let partial = needs
+                .iter()
+                .filter(|p| *p != dropped)
+                .fold(ProtocolSet::empty(), |set, p| set.with(*p));
+            assert!(!supports(&partial, &command));
+            assert_eq!(missing(&partial, &command), Some(*dropped));
+        }
+    }
+}
+
+#[test]
+fn wlr_alone_cannot_do_what_only_quire_can() {
+    let wlr = offering(&[
+        Protocol::WlrForeignToplevelManagement,
+        Protocol::ExtForeignToplevelList,
+    ]);
+    for (command, _) in quire_only() {
+        assert!(!supports(&wlr, &command), "{:?}", command);
+    }
+}
+
+#[test]
+fn on_the_quire_arm_the_window_commands_go_to_quire_not_wlr() {
+    let quire = offering(&[Protocol::QuireDesktop, Protocol::ExtForeignToplevelList]);
+    let wlr_too = quire.clone().with(Protocol::WlrForeignToplevelManagement);
+    for command in toplevel_commands() {
+        if command.route() == CommandRoute::MinimiseTarget {
+            // The minimise target is the shell's: quire_shell_v1.
+            assert_eq!(missing(&quire, &command), Some(Protocol::QuireShell));
+            assert!(supports(
+                &quire.clone().with(Protocol::QuireShell),
+                &command
+            ));
+        } else {
+            assert!(supports(&quire, &command), "{command:?}");
+            assert!(supports(&wlr_too, &command), "{command:?}");
+        }
+        assert_eq!(
+            requires_on(Some(DesktopBackend::Wlr), &command),
+            &[Protocol::WlrForeignToplevelManagement],
+            "{command:?} on the wlr arm"
+        );
+    }
+}
+
+#[test]
+fn quire_without_the_ext_list_falls_back_to_wlr_for_the_window_commands() {
+    let offered = offering(&[
+        Protocol::QuireDesktop,
+        Protocol::WlrForeignToplevelManagement,
+    ]);
+    assert!(supports(
+        &offered,
+        &DesktopCommand::Close(ToplevelKey::new(1))
+    ));
+    let only_quire = offering(&[Protocol::QuireDesktop]);
+    assert_eq!(
+        missing(&only_quire, &DesktopCommand::Close(ToplevelKey::new(1))),
+        Some(Protocol::WlrForeignToplevelManagement)
+    );
+}
+
+#[test]
+fn every_command_is_listed_once_and_needs_something() {
+    let mut commands = toplevel_commands();
+    commands.extend(workspace_commands());
+    commands.push(DesktopCommand::ApplyOutputs(OutputConfig::new(vec![])));
+    commands.push(DesktopCommand::TestOutputs(OutputConfig::new(vec![])));
+    commands.push(DesktopCommand::CaptureOutput(CaptureRequest::new(
+        OutputName::new("x"),
+    )));
+    commands.extend(quire_only().into_iter().map(|(c, _)| c));
+    let mut kinds = Vec::new();
+    for command in &commands {
+        assert!(!requires(command).is_empty(), "{:?}", command);
+        assert!(
+            !kinds.contains(&std::mem::discriminant(command)),
+            "{:?} twice",
+            command
+        );
+        kinds.push(std::mem::discriminant(command));
+    }
+    assert_eq!(kinds.len(), 46);
+}

@@ -1,0 +1,31 @@
+[package]
+name = "account-fake"
+description = "Test-only: fake providers, accounts, a scripted consent prompter and a fixed clock, so client and daemon tests run without a network."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+account-capability = {path = "../account-capability"}
+account-sheet = {path = "../account-sheet"}
+account-wire = {path = "../account-wire"}
+account-ids = {path = "../account-ids"}
+account-provider = {path = "../account-provider"}
+account-secrets = {path = "../account-secrets", features = ["testing"]}
+account-service = {path = "../account-service"}
+account-service-core = {path = "../account-service-core"}
+
+[dev-dependencies]
+account-service-accounts = {path = "../account-service-accounts"}
+base-testkit = {path = "../../base/base-testkit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+account-match = {path = "../account-match"}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

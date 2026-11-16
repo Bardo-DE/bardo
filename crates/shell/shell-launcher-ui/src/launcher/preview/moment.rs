@@ -1,0 +1,100 @@
+//! The preview pane's moments through quire's `ui_components::motion::detail` (design/26-DETAILS.md): its states as
+//! the person sees them, what each change means (an exhaustive [`Detailed`] table), and
+//! [`use_pane_detail`], the one place the pane calls `use_detail`. The launcher never plays a
+//! moment itself (quire rule 4): the cue goes to quire's `PreviewPane` (`cue`, and `operation`
+//! from `use_operation`), which plays it.
+
+use ui_components::motion::detail::touch::Touch;
+use ui_components::motion::detail::use_detail::Detail;
+use ui_components::prelude::*;
+use shell_launcher::PreviewKind;
+
+/// The pane as the person sees it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum PaneState {
+    /// Leaving, or not there.
+    Hidden,
+    /// Showing a preview of this kind, all of it loaded.
+    Showing(PreviewKind),
+    /// Waiting on a slow load: a file's peek.
+    Pending,
+    /// What it names could not be read: the still words say so.
+    Failed,
+}
+
+impl Detailed for PaneState {
+    fn moment(from: &Self, to: &Self) -> Moment {
+        use PaneState::{Failed, Hidden, Pending, Showing};
+        match (from, to) {
+            (Hidden, Hidden) | (Pending, Pending) | (Failed, Failed) => Moment::Rest,
+            (Hidden, Showing(_) | Failed) => Moment::Appear,
+            // The selection moved (instant, design/13 §13.3.9): the content changes in place,
+            // the pane's entrance does not replay. The same kind is the same pane (R2).
+            (Showing(was), Showing(now)) if was == now => Moment::Rest,
+            (Showing(_) | Failed, Showing(_)) | (Showing(_), Failed) => Moment::Preview,
+            (Hidden | Showing(_) | Failed, Pending) => Moment::Pending,
+            // A load landing is content arriving, not an operation the person asked to succeed:
+            // no check, no seal (R12).
+            (Pending, Showing(_)) => Moment::Change,
+            (Pending, Failed) => Moment::Failure,
+            (Showing(_) | Pending | Failed, Hidden) => Moment::Dismiss,
+        }
+    }
+
+    fn first(state: &Self) -> Moment {
+        match state {
+            PaneState::Hidden => Moment::Rest,
+            PaneState::Showing(_) | PaneState::Failed => Moment::Appear,
+            PaneState::Pending => Moment::Pending,
+        }
+    }
+}
+
+/// Track the pane's `state`, caused by `touch` (a key or a press in the panel, else
+/// `Touch::Remote`). The pane mounts when the person shows it, so its first frame animates.
+pub fn use_pane_detail(state: PaneState, touch: Touch) -> Detail<PaneState> {
+    use_detail(state, touch)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::PaneState;
+    use super::PaneState::{Failed, Hidden, Pending, Showing};
+    use ui_components::motion::detail::detailed::first_table;
+    use ui_components::motion::detail::detailed::moment_table;
+    use ui_components::prelude::*;
+    use shell_launcher::PreviewKind::{Emoji, File, Web};
+
+    #[test]
+    fn the_pane_moments() {
+        #[rustfmt::skip]
+        moment_table::<PaneState>(&[
+            (Hidden, Showing(File), Moment::Appear),
+            (Hidden, Pending, Moment::Pending),
+            (Hidden, Failed, Moment::Appear),
+            (Showing(File), Showing(Emoji), Moment::Preview),
+            (Showing(File), Showing(File), Moment::Rest),
+            (Showing(File), Pending, Moment::Pending),
+            (Showing(File), Failed, Moment::Preview),
+            (Pending, Showing(Web), Moment::Change),
+            (Pending, Failed, Moment::Failure),
+            (Pending, Pending, Moment::Rest),
+            (Failed, Showing(File), Moment::Preview),
+            (Failed, Pending, Moment::Pending),
+            (Showing(Emoji), Hidden, Moment::Dismiss),
+            (Pending, Hidden, Moment::Dismiss),
+            (Failed, Hidden, Moment::Dismiss),
+            (Hidden, Hidden, Moment::Rest),
+        ]);
+    }
+
+    #[test]
+    fn the_pane_first_frames() {
+        first_table::<PaneState>(&[
+            (Hidden, Moment::Rest),
+            (Showing(File), Moment::Appear),
+            (Pending, Moment::Pending),
+            (Failed, Moment::Appear),
+        ]);
+    }
+}

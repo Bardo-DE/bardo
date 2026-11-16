@@ -1,0 +1,32 @@
+[package]
+name = "companion-wire"
+description = "The bodies of org.quire.Companion1: asks, answers and their cards, plans, forms and refusals, the session records the companion stores, and the front pointer."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+companion-model = {path = "../companion-model"}
+action-core = {path = "../action-core"}
+action-manifest = {path = "../action-manifest"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+memory-core = {path = "../../memory/memory-core"}
+serde = {version = "1", features = ["derive"]}
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+proptest = {version = "1"}
+serde_json = {version = "1"}
+action-wire = {path = "../action-wire"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

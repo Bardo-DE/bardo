@@ -1,0 +1,29 @@
+[package]
+name = "action-eval-core"
+description = "The red-team suite as values: the case and corpus format, the attack format, the pure judgement of a case, the Wilson interval, the metrics, the attack scores and the per-commit summary. No router, no Cedar, no file or clock reads."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+action-core = {path = "../action-core"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

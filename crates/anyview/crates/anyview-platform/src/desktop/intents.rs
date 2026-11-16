@@ -10,17 +10,17 @@
 use crate::error::PlatformError;
 use crate::instance::Request;
 use anyview_core::FilePath;
-use docket_core::{
+use action_core::{
     AppRefusal, ContextSnapshot, FailText, Follow, Here, Hit, Invocation, Outcome, Preview,
     Selection, SuggestAsk, TextTarget, UndoFault, Undoable, Visible, WindowPrivacy,
 };
-use docket_dbus::callers::{Identity, intentd_only};
-use docket_manifest::{Manifest, ValidManifest, validate};
-use docket_provider::{ContextSource, IntentProvider, SummonTarget};
-use docket_vocab::{EntityRef, FileRef, LabelText, TargetValue, UndoToken};
-use docket_wire::{SummonAnswer, SummonOrigin, SummonSerial};
-use porter_ids::Count;
-use prov::{Actor, Confidentiality, EntityId, Integrity, Label, Labelled, Source};
+use action_dbus::callers::{Identity, intentd_only};
+use action_manifest::{Manifest, ValidManifest, validate};
+use action_provider::{ContextSource, IntentProvider, SummonTarget};
+use action_vocab::{EntityRef, FileRef, LabelText, TargetValue, UndoToken};
+use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
+use account_ids::Count;
+use provenance::{Actor, Confidentiality, EntityId, Integrity, Label, Labelled, Source};
 use std::collections::BTreeSet;
 use std::path::Path;
 use std::sync::Arc;
@@ -64,7 +64,7 @@ pub(super) async fn serve(
     let window = PrivateWindow::new(&manifest);
     let provider = ViewerIntents::new(manifest, sender);
     let callers = Arc::new(Identity::on(connection.clone(), intentd_only(), proc_root));
-    docket_provider::serve_on_with(connection, provider, window, NoPrompt, callers)
+    action_provider::serve_on_with(connection, provider, window, NoPrompt, callers)
         .await
         .map_err(|error| PlatformError::Bus {
             call: "offer the viewer to the agent layer",
@@ -167,7 +167,7 @@ impl IntentProvider for ViewerIntents {
 /// What the viewer tells the router about the window: nothing but that it is the viewer. The
 /// viewer holds no entities and its documents are the person's, so the window is reported private.
 pub(super) struct PrivateWindow {
-    app: porter_core::AppName,
+    app: account_core::AppName,
 }
 
 impl PrivateWindow {

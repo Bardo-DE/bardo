@@ -20,7 +20,7 @@ encode = ["dep:ravif", "dep:img-parts"]
 
 [dependencies]
 anyview-core = {path = "../anyview-core"}
-ds-core = {path = "../../../quire/crates/ds-core"}
+ui-core = {path = "../../../ui/ui-core"}
 # The pinned block enables png and jpeg; the other formats the viewer opens are added here.
 image = {version = "0.25.6", default-features = false, features = ["bmp", "exr", "gif", "hdr", "ico", "jpeg", "png", "qoi", "tga", "tiff", "webp"]}
 img-parts = {version = "0.4", optional = true}

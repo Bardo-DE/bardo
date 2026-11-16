@@ -1,0 +1,25 @@
+[package]
+name = "model-catalog"
+description = "The curated model table as data files: entries, engine profiles, the file format and its parser."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/stoker"
+publish = false
+
+[dependencies]
+model-provider = {path = "../model-provider"}
+speech-provider = {path = "../../speech/speech-provider"}
+serde = {version = "1", features = ["derive"]}
+toml = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+model-vision-prep = {path = "../model-vision-prep"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

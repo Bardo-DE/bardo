@@ -1,0 +1,44 @@
+[package]
+name = "agent-native"
+description = "The native durable-session backend: a docket-tasks Companion's planner loop behind docket-session's SessionBackend and SessionHost (NativeBackend, NativeHost), one cancel-safe flight per turn, sheets through a SheetDesk, fork and export over the log. The ACP edge's host in docket-acp-bin."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+agent-loop = {path = "../agent-loop"}
+companion-wire = {path = "../companion-wire"}
+action-client = {path = "../action-client", default-features = false}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+agent-planner = {path = "../agent-planner"}
+agent-session = {path = "../agent-session"}
+companion-tasks = {path = "../companion-tasks"}
+futures-channel = {version = "0.3", default-features = false, features = ["std"]}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+provenance = {path = "../../provenance/provenance"}
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-match = {path = "../../accounts/account-match"}
+account-wire = {path = "../../accounts/account-wire"}
+account-ids = {path = "../../accounts/account-ids"}
+companion-model = {path = "../companion-model"}
+agent-session = {path = "../agent-session", features = ["testing"]}
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+action-fake = {path = "../action-fake"}
+action-router = {path = "../action-router"}
+account-core = {path = "../../accounts/account-core"}
+inference-client = {path = "../../inference/inference-client"}
+inference-core = {path = "../../inference/inference-core"}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

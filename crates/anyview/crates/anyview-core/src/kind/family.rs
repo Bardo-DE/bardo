@@ -1,7 +1,7 @@
 //! What every closed family of formats (raster, media container, font, archive, …) has in common:
 //! the file extensions it is written with and its MIME type. One trait, one generic lookup.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// A closed set of formats that share a kind of file and are told apart by extension and MIME.
 pub(crate) trait Family: Word {

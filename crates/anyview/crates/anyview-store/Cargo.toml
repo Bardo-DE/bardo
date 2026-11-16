@@ -11,7 +11,7 @@ publish = false
 [dependencies]
 anyview-core = {path = "../anyview-core"}
 # Capped reads, atomic writes and moving a damaged file aside: quire's, shared by the desktop's apps.
-ds-helpers = {default-features = false, path = "../../../quire/crates/ds-helpers"}
+ui-helpers = {default-features = false, path = "../../../ui/ui-helpers"}
 log = {version = "0.4"}
 serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1"}

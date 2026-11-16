@@ -1,0 +1,111 @@
+[package]
+name = "inference-daemon"
+description = "steward's AI broker daemon: serves org.quire.Inference1 over porter-infer, with the router, the engine host, the model turns and the audit trail behind the session server's four seams."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[features]
+# TEST ONLY, off by default and never in dist: `INFERD_PROC_ROOT=<dir>` makes the caller lookup read
+# `<dir>/<pid>/cgroup` instead of `/proc`, for acceptance runs whose processes are in no unit.
+# Without this feature the variable is ignored (with a line on standard error).
+test-proc-root = ["account-callers/test-proc-root"]
+
+[dependencies]
+zbus-ready = { path = "../../zbus-ready" }
+account-core = {path = "../../accounts/account-core"}
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-wire = {path = "../../accounts/account-wire"}
+account-ids = {path = "../../accounts/account-ids"}
+account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
+account-fs = {path = "../../accounts/account-fs"}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+account-callers = {path = "../../accounts/account-callers"}
+account-dbus = {path = "../../accounts/account-dbus"}
+# The AI keys are accountd's: inferd asks it through porter-client (`broker`).
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+account-settings = {path = "../../accounts/account-settings"}
+inference-probe = {path = "../inference-probe"}
+inference-dbus = {path = "../inference-dbus"}
+account-http = {path = "../../accounts/account-http"}
+account-http-reqwest = {path = "../../accounts/account-http-reqwest"}
+account-provider = {path = "../../accounts/account-provider"}
+inference-tailnet = {path = "../inference-tailnet", features = ["io", "persist"]}
+account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
+inference-core = {path = "../inference-core"}
+# Routing and the session machine: the router, the plan, the catalogue, the local model book, the
+# attached engines as values, the seams.
+inference-router = {path = "../inference-router"}
+# Running turns: a local model's chat, embedding and computer-use turns, the structured-reply
+# check, the audit trail and the stages of a pipeline.
+inference-turns = {path = "../inference-turns"}
+inference-bridge = {path = "../inference-bridge"}
+ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+iso_currency = {version = "0.7", features = ["with-serde"]}
+model-catalog = {path = "../../models/model-catalog"}
+# What differs between the engines, what is installed and pinned, and where an engine is found.
+engine-spec = {path = "../../engines/engine-spec"}
+engine-manifest = {path = "../../engines/engine-manifest"}
+engine-probe = {path = "../../engines/engine-probe"}
+engine-supervisor = {path = "../../engines/engine-supervisor"}
+model-http = {features = ["client", "tls"], path = "../../models/model-http"}
+model-openai-compat = {path = "../../models/model-openai-compat"}
+model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
+computer-use-parse = {path = "../../computer-use/computer-use-parse"}
+computer-use-session = {path = "../../computer-use/computer-use-session"}
+computer-use-vendors = {path = "../../computer-use/computer-use-vendors"}
+model-extract = {path = "../../models/model-extract"}
+model-replay = {path = "../../models/model-replay"}
+model-wire = {path = "../../models/model-wire"}
+speech-provider = {path = "../../speech/speech-provider"}
+speech-host-client = {path = "../../speech/speech-host-client"}
+clap = {version = "4", features = ["derive"]}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+# The stable short hash that names a computer written in a script with no letters or digits of
+# ASCII (`computers::slug_of`); std's hasher changes between Rust versions.
+sha2 = {version = "0.10"}
+# The agent token: its bytes from the system's random source, and its compare in constant time.
+getrandom = {version = "0.4.3"}
+chrono = {version = "0.4", default-features = false, features = ["alloc"]}
+hex = {version = "0.4"}
+subtle = {version = "2.6.1"}
+thiserror = {version = "2"}
+# `signal` is the one feature this crate adds to the pinned line: SIGTERM and SIGINT end the daemon
+# gracefully (`shutdown`).
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+# The client side the tests drive inferd through.
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+inference-client = {path = "../inference-client", features = ["dbus"]}
+# `sealed_key`: the memfd the fake Broker hands a key on.
+account-secrets = {path = "../../accounts/account-secrets"}
+engine-supervisor = {features = ["testing"], path = "../../engines/engine-supervisor"}
+model-provider = {features = ["testing"], path = "../../models/model-provider"}
+account-fake = {path = "../../accounts/account-fake"}
+account-fake-servers = {path = "../../accounts/account-fake-servers"}
+# The scratch directory, the test catalog entries and the models they make.
+inference-router = {path = "../inference-router", features = ["testing"]}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[[bin]]
+name = "inferd"
+path = "src/main.rs"

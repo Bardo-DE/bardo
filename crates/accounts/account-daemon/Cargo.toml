@@ -1,0 +1,81 @@
+[package]
+name = "account-daemon"
+description = "porter's identity daemon: org.quire.Accounts1 over porter-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+zbus-ready = { path = "../../zbus-ready" }
+account-core = {path = "../account-core"}
+account-match = {path = "../account-match"}
+account-capability = {path = "../account-capability"}
+account-sheet = {path = "../account-sheet"}
+account-wire = {path = "../account-wire"}
+account-ids = {path = "../account-ids"}
+account-daemon-support = {path = "../account-daemon-support", default-features = false, features = ["watch"]}
+account-fs = {path = "../account-fs"}
+account-callers = {path = "../account-callers", features = ["file"]}
+account-dbus = {path = "../account-dbus"}
+account-families = {path = "../account-families", features = ["set"]}
+account-family-oauth = {path = "../account-family-oauth"}
+account-provider = {path = "../account-provider"}
+account-proxy = {path = "../account-proxy", features = ["tls"]}
+account-secrets = {path = "../account-secrets", features = ["oo7"]}
+account-service = {path = "../account-service"}
+account-service-accounts = {path = "../account-service-accounts"}
+account-service-core = {path = "../account-service-core"}
+account-identities = {path = "../account-identities"}
+account-spaces = {path = "../account-spaces"}
+account-settings = {path = "../account-settings"}
+account-sheets = {path = "../account-sheets"}
+account-store = {path = "../account-store"}
+account-tailscale = {path = "../account-tailscale", features = ["io"]}
+ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+clap = {version = "4", features = ["derive"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+sha2 = {version = "0.10"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+# The client crates are tested against this daemon (tests/it/client), not the other way round.
+account-client = {path = "../account-client"}
+account-client-dbus = {path = "../account-client-dbus"}
+base-testkit = {path = "../../base/base-testkit"}
+ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+account-fake = {path = "../account-fake"}
+account-fake-servers = {path = "../account-fake-servers"}
+account-http = {path = "../account-http"}
+account-http-reqwest = {path = "../account-http-reqwest"}
+account-oauth = {path = "../account-oauth"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[features]
+# Test builds only, never default and never in dist: `ACCOUNTD_PROC_ROOT=<dir>` makes the binary
+# read caller identities from <dir> instead of /proc, because the jailed and acceptance tests run
+# processes outside service cgroups, and `PORTER_SYSTEM_CALLERS=<file>` makes it read that file as
+# the system caller table, because a jail cannot write /etc/porter. A release build ignores both
+# variables. A test in tests/dist.rs fails if this feature is ever default, and
+# check-boundary.sh checks it too.
+test-proc-root = ["account-callers/test-proc-root"]
+# Test builds only, never default and never in dist: `ACCOUNTD_KEYS=file:<absolute path>` keeps
+# credentials in one 0600 plain-text JSON file (porter-secrets' `FileSecrets`) instead of the
+# Secret Service, for private-bus and scratch runs with no keyring. A release build ignores the
+# variable and says so once. tests/dist.rs and check-boundary.sh fail if this feature is default.
+test-keys = ["account-secrets/test-keys"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[[bin]]
+name = "accountd"
+path = "src/main.rs"

@@ -1,0 +1,29 @@
+[package]
+name = "drive-fuse"
+description = "A drive of ferry-drive at a real path: fuser's calls (lookup, getattr, readdir, open, read, release, statfs, and create, mkdir, write, setattr, rename, unlink, rmdir, fsync) mapped onto the core, read-write over a drive that takes changes, mounted through the system's fusermount3 run as a separate process (fuser with no default features: no libfuse is linked). Stale mounts are cleaned before mounting; a computer with no /dev/fuse or fusermount3 is told apart."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+drive-core = {path = "../drive-core"}
+# The helper syncd asks to mount when its sandbox may not (its client and wire format).
+drive-mount-daemon = {path = "../drive-mount-daemon"}
+# No default features: the pure-Rust mount, through `fusermount3` as a separate process, and no
+# libfuse linked (no GPL or LGPL linking).
+fuser = { version = "0.18", default-features = false }
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+drive-core = {path = "../drive-core", features = ["testing"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

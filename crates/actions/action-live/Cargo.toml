@@ -1,0 +1,72 @@
+[package]
+name = "action-live"
+description = "Operator tools over the acceptance world: docket-live runs the eval corpora and the acceptance flows against a real model or a cassette on a private bus, and docket-bringup starts the agent services on a demo shell's bus. Not shipped; docket-accept holds the world they run in."
+publish = false
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+
+[[bin]]
+name = "docket-live"
+path = "src/bin/docket-live.rs"
+
+[[bin]]
+name = "docket-bringup"
+path = "src/bin/docket-bringup.rs"
+
+# The daemons the world starts are docket-accept's binaries (`accept-intentd` and the rest), found
+# beside the running program (`Binaries::beside`): build them first with `cargo build -p action-accept --bins`.
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+action-review = {path = "../action-review"}
+agent-registry = {path = "../agent-registry"}
+sandbox = {path = "../../sandbox/sandbox"}
+clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+companion-wire = {path = "../companion-wire"}
+action-accept = {path = "../action-accept"}
+agent-acp-bin = {path = "../agent-acp-bin", features = ["testing"]}
+agent-acp-host = {path = "../agent-acp-host"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+action-dbus = {path = "../action-dbus", features = ["fixture-callers", "inferd"]}
+action-eval = {path = "../action-eval"}
+action-fake = {path = "../action-fake"}
+action-host = {path = "../action-host"}
+agent-launch = {path = "../agent-launch"}
+agent-models = {path = "../agent-models"}
+agent-planner = {path = "../agent-planner"}
+agent-reader = {path = "../agent-reader"}
+agent-session = {path = "../agent-session", features = ["testing"]}
+action-store = {path = "../action-store"}
+companion-tasks = {path = "../companion-tasks"}
+action-testbus = {path = "../action-testbus"}
+action-trace = {path = "../action-trace"}
+action-eval-core = {path = "../action-eval-core"}
+inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
+account-core = {path = "../../accounts/account-core"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+inference-core = {path = "../../inference/inference-core"}
+provenance = {path = "../../provenance/provenance"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+action-settings = {path = "../action-settings"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -51,7 +51,7 @@ pub fn budget(bytes: u64) -> PeekBudget {
 
 /// The facts as `(label slug, text)` rows, in order.
 pub fn rows(facts: &anyview_core::Facts) -> Vec<(&'static str, String)> {
-    use ds_core::word::Word;
+    use ui_core::word::Word;
     facts
         .rows()
         .iter()

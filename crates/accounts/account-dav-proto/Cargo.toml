@@ -1,0 +1,26 @@
+[package]
+name = "account-dav-proto"
+description = "WebDAV, CalDAV and CardDAV as text, with no IO: discovery as a state machine (feature `discover`), request bodies built as strings, multistatus replies read from &str with each property's status, and RFC 6578 sync-collection with removals, truncation and expired tokens."
+version = "0.1.0"
+license = "MIT OR Apache-2.0"
+keywords = ["webdav", "caldav", "carddav", "multistatus", "sans-io"]
+categories = ["parser-implementations", "network-programming"]
+publish = false
+edition = "2024"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+
+[features]
+# The requests as `http::Request<String>`, for a caller on the `http` crate's types.
+http = ["dep:http"]
+# The discovery walk (principal, home sets, collections) as a state machine over those requests.
+discover = ["http"]
+
+[dependencies]
+roxmltree = {version = "0.21"}
+thiserror = {version = "2"}
+http = {version = "1", optional = true}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

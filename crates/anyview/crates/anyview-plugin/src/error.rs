@@ -4,7 +4,7 @@ use anyview_plugin_protocol::Capability;
 
 /// Why a manifest, or the program it names, cannot be used: bayonet's shared reasons (the file,
 /// the id, the protocol, the programs) with this viewer's own in [`ProvisionFault`].
-pub type PluginError = bayonet::manifest::ManifestError<Capability, ProvisionFault>;
+pub type PluginError = plugin_host::manifest::ManifestError<Capability, ProvisionFault>;
 
 /// Why the viewer refuses a `[[provides]]` entry that is well formed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

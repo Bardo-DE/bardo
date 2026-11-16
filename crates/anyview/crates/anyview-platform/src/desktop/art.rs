@@ -37,7 +37,7 @@ pub(super) fn write(folder: &Path, art: &Artwork) -> Option<PathBuf> {
     let file = folder.join(&name);
     if !file.is_file() {
         // Beside the file and renamed over it, so a reader never sees half a picture.
-        ds_helpers::write_atomic(&file, &art.png, ds_helpers::NewFileMode::OwnerOnly)
+        ui_helpers::write_atomic(&file, &art.png, ui_helpers::NewFileMode::OwnerOnly)
             .inspect_err(|error| log::warn!("cannot keep the cover: {error}"))
             .ok()?;
     }

@@ -1,0 +1,404 @@
+//! The drag itself, as a pure state machine: what it carries, where the pointer is, and when
+//! the files land. The host feeds it through [`FileDropBoard`](crate::file_drop::board::FileDropBoard); a target's
+//! view and the window's acceptance follow from it and from the target under the pointer.
+
+use crate::file_drop::drag::{DropAcceptance, FileDrag, FileDragInput, FileDrop, Offer};
+use dioxus::prelude::Modifiers;
+use ui_core::geometry::units::Point;
+use ui_core::vocab::DropState;
+use std::path::PathBuf;
+
+/// What the drag carries, as far as the host knows.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub(crate) enum Contents {
+    /// The platform has not said yet.
+    #[default]
+    Waiting,
+    /// These files, never an empty list.
+    Files(Vec<PathBuf>),
+    /// Not files.
+    Other,
+}
+
+impl Contents {
+    fn of(offer: Offer) -> Contents {
+        match offer {
+            Offer::Files(paths) if !paths.is_empty() => Contents::Files(paths),
+            Offer::Files(_) | Offer::Other => Contents::Other,
+        }
+    }
+}
+
+/// A drag from outside the window.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub(crate) enum DragTrack {
+    /// No drag is over the window.
+    #[default]
+    Idle,
+    /// A drag is over the window, the pointer at `point` once the platform has said.
+    Dragging {
+        contents: Contents,
+        point: Option<Point>,
+    },
+    /// Let go before the platform said what it carries: the files land when it does.
+    Released {
+        point: Option<Point>,
+        modifiers: Modifiers,
+    },
+}
+
+impl DragTrack {
+    /// Where the pointer is while the drag is over the window.
+    pub(crate) fn point(&self) -> Option<Point> {
+        match self {
+            DragTrack::Dragging { point, .. } => *point,
+            DragTrack::Idle | DragTrack::Released { .. } => None,
+        }
+    }
+}
+
+/// The drag after one input, and the files that landed with it.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct Step {
+    pub(crate) track: DragTrack,
+    pub(crate) landed: Option<FileDrop>,
+}
+
+impl Step {
+    fn to(track: DragTrack) -> Step {
+        Step {
+            track,
+            landed: None,
+        }
+    }
+
+    fn landing(paths: Vec<PathBuf>, point: Point, modifiers: Modifiers) -> Step {
+        Step {
+            track: DragTrack::Idle,
+            landed: Some(FileDrop {
+                paths,
+                point,
+                modifiers,
+            }),
+        }
+    }
+}
+
+/// The drag after `input`.
+pub(crate) fn step(track: DragTrack, input: FileDragInput) -> Step {
+    match (track, input) {
+        (_, FileDragInput::Entered { point }) => Step::to(DragTrack::Dragging {
+            contents: Contents::Waiting,
+            point,
+        }),
+        (_, FileDragInput::Left) => Step::to(DragTrack::Idle),
+        (DragTrack::Dragging { point, .. }, FileDragInput::Offered(offer)) => {
+            Step::to(DragTrack::Dragging {
+                contents: Contents::of(offer),
+                point,
+            })
+        }
+        (DragTrack::Dragging { contents, .. }, FileDragInput::Moved { point }) => {
+            Step::to(DragTrack::Dragging {
+                contents,
+                point: Some(point),
+            })
+        }
+        (DragTrack::Dragging { contents, point }, FileDragInput::Dropped { modifiers }) => {
+            dropped(contents, point, modifiers)
+        }
+        (DragTrack::Released { point, modifiers }, FileDragInput::Offered(offer)) => {
+            match (Contents::of(offer), point) {
+                (Contents::Files(paths), Some(point)) => Step::landing(paths, point, modifiers),
+                _ => Step::to(DragTrack::Idle),
+            }
+        }
+        (
+            track,
+            FileDragInput::Offered(_) | FileDragInput::Moved { .. } | FileDragInput::Dropped { .. },
+        ) => Step::to(track),
+    }
+}
+
+/// A release while dragging: the files land now, or once the platform says what they are.
+fn dropped(contents: Contents, point: Option<Point>, modifiers: Modifiers) -> Step {
+    match (contents, point) {
+        (Contents::Files(paths), Some(point)) => Step::landing(paths, point, modifiers),
+        (Contents::Waiting, point) => Step::to(DragTrack::Released { point, modifiers }),
+        (Contents::Files(_) | Contents::Other, _) => Step::to(DragTrack::Idle),
+    }
+}
+
+/// What one target shows while the drag is `track`, the pointer `over` it or not: `FileDrag::Over` and
+/// `DropState::Target` under the pointer, `DropState::Accepts` elsewhere while files are
+/// dragged, nothing otherwise.
+pub(crate) fn target_view(track: &DragTrack, over: bool) -> TargetView {
+    match (track, over) {
+        (
+            DragTrack::Dragging {
+                contents: Contents::Files(paths),
+                point: Some(point),
+            },
+            true,
+        ) => TargetView {
+            drag: FileDrag::Over(FileDrop {
+                paths: paths.clone(),
+                point: *point,
+                modifiers: Modifiers::empty(),
+            }),
+            place: DropState::Target,
+        },
+        (
+            DragTrack::Dragging {
+                contents: Contents::Files(_),
+                ..
+            },
+            _,
+        ) => TargetView {
+            drag: FileDrag::Idle,
+            place: DropState::Accepts,
+        },
+        _ => TargetView::default(),
+    }
+}
+
+/// Whether the window takes the drag with the pointer over a target or not.
+pub(crate) fn acceptance(track: &DragTrack, over: bool) -> DropAcceptance {
+    match (track, over) {
+        (
+            DragTrack::Dragging {
+                contents: Contents::Waiting | Contents::Files(_),
+                ..
+            },
+            true,
+        ) => DropAcceptance::Copy,
+        _ => DropAcceptance::Refuse,
+    }
+}
+
+/// What one target shows.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub(crate) struct TargetView {
+    pub(crate) drag: FileDrag,
+    pub(crate) place: DropState,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ui_core::geometry::units::Px;
+
+    fn at(x: f32, y: f32) -> Point {
+        Point { x: Px(x), y: Px(y) }
+    }
+
+    fn dropped() -> FileDragInput {
+        FileDragInput::Dropped {
+            modifiers: Modifiers::empty(),
+        }
+    }
+
+    fn files() -> Vec<PathBuf> {
+        vec![PathBuf::from("/tmp/a.pdf"), PathBuf::from("/tmp/b.png")]
+    }
+
+    fn run(inputs: Vec<FileDragInput>) -> (DragTrack, Vec<FileDrop>) {
+        inputs.into_iter().fold(
+            (DragTrack::Idle, Vec::new()),
+            |(track, mut landed), input| {
+                let next = step(track, input);
+                landed.extend(next.landed);
+                (next.track, landed)
+            },
+        )
+    }
+
+    #[test]
+    fn a_drag_ends_as_its_inputs_say() {
+        use FileDragInput::{Entered, Left, Moved, Offered};
+        let cases: Vec<(&str, Vec<FileDragInput>, DragTrack, Vec<FileDrop>)> = vec![
+            (
+                "files dropped after moving",
+                vec![
+                    Entered { point: None },
+                    Offered(Offer::Files(files())),
+                    Moved {
+                        point: at(5.0, 6.0),
+                    },
+                    dropped(),
+                ],
+                DragTrack::Idle,
+                vec![FileDrop {
+                    paths: files(),
+                    point: at(5.0, 6.0),
+                    modifiers: Modifiers::empty(),
+                }],
+            ),
+            (
+                "released before the paths came: they land when they do",
+                vec![
+                    Entered {
+                        point: Some(at(1.0, 2.0)),
+                    },
+                    dropped(),
+                    Offered(Offer::Files(files())),
+                ],
+                DragTrack::Idle,
+                vec![FileDrop {
+                    paths: files(),
+                    point: at(1.0, 2.0),
+                    modifiers: Modifiers::empty(),
+                }],
+            ),
+            (
+                "released with Option held before the paths came: the modifiers land with them",
+                vec![
+                    Entered {
+                        point: Some(at(1.0, 2.0)),
+                    },
+                    FileDragInput::Dropped {
+                        modifiers: Modifiers::ALT,
+                    },
+                    Offered(Offer::Files(files())),
+                ],
+                DragTrack::Idle,
+                vec![FileDrop {
+                    paths: files(),
+                    point: at(1.0, 2.0),
+                    modifiers: Modifiers::ALT,
+                }],
+            ),
+            (
+                "a URL is never dropped",
+                vec![
+                    Entered {
+                        point: Some(at(1.0, 2.0)),
+                    },
+                    Offered(Offer::Other),
+                    dropped(),
+                ],
+                DragTrack::Idle,
+                vec![],
+            ),
+            (
+                "an empty file list is not files",
+                vec![
+                    Entered {
+                        point: Some(at(1.0, 2.0)),
+                    },
+                    Offered(Offer::Files(vec![])),
+                    dropped(),
+                ],
+                DragTrack::Idle,
+                vec![],
+            ),
+            (
+                "left before the release",
+                vec![
+                    Entered { point: None },
+                    Offered(Offer::Files(files())),
+                    Moved {
+                        point: at(5.0, 6.0),
+                    },
+                    Left,
+                    dropped(),
+                ],
+                DragTrack::Idle,
+                vec![],
+            ),
+            (
+                "still over the window",
+                vec![
+                    Entered { point: None },
+                    Moved {
+                        point: at(5.0, 6.0),
+                    },
+                    Offered(Offer::Files(files())),
+                ],
+                DragTrack::Dragging {
+                    contents: Contents::Files(files()),
+                    point: Some(at(5.0, 6.0)),
+                },
+                vec![],
+            ),
+            (
+                "released with no position ever given: nowhere to land",
+                vec![
+                    Entered { point: None },
+                    Offered(Offer::Files(files())),
+                    dropped(),
+                ],
+                DragTrack::Idle,
+                vec![],
+            ),
+        ];
+        for (name, inputs, track, landed) in cases {
+            assert_eq!(run(inputs), (track, landed), "{name}");
+        }
+    }
+
+    #[test]
+    fn a_target_lights_only_for_files() {
+        let over_files = DragTrack::Dragging {
+            contents: Contents::Files(files()),
+            point: Some(at(3.0, 4.0)),
+        };
+        let waiting = DragTrack::Dragging {
+            contents: Contents::Waiting,
+            point: Some(at(3.0, 4.0)),
+        };
+        let other = DragTrack::Dragging {
+            contents: Contents::Other,
+            point: Some(at(3.0, 4.0)),
+        };
+        let cases = [
+            (
+                &over_files,
+                true,
+                FileDrag::Over(FileDrop {
+                    paths: files(),
+                    point: at(3.0, 4.0),
+                    modifiers: Modifiers::empty(),
+                }),
+                DropState::Target,
+                DropAcceptance::Copy,
+            ),
+            (
+                &over_files,
+                false,
+                FileDrag::Idle,
+                DropState::Accepts,
+                DropAcceptance::Refuse,
+            ),
+            (
+                &waiting,
+                true,
+                FileDrag::Idle,
+                DropState::Idle,
+                DropAcceptance::Copy,
+            ),
+            (
+                &other,
+                true,
+                FileDrag::Idle,
+                DropState::Idle,
+                DropAcceptance::Refuse,
+            ),
+            (
+                &DragTrack::Idle,
+                true,
+                FileDrag::Idle,
+                DropState::Idle,
+                DropAcceptance::Refuse,
+            ),
+        ];
+        for (track, over, drag, place, accept) in cases {
+            assert_eq!(
+                target_view(track, over),
+                TargetView { drag, place },
+                "{track:?} {over:?}"
+            );
+            assert_eq!(acceptance(track, over), accept, "{track:?} {over:?}");
+        }
+    }
+}

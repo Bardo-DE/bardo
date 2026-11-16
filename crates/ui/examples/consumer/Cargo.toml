@@ -1,0 +1,65 @@
+[package]
+name = "consumer"
+description = "Minimal consumer of quire, outside the quire workspace: proves the four coherence rules from CONSUMING.md."
+version = "0.0.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+publish = false
+
+# Its own workspace: quire's root Cargo.toml does not (and must not) list this package in
+# `members`, so this manifest marks itself a workspace root or cargo treats it as an orphaned
+# member of the quire workspace it happens to sit under.
+[workspace]
+
+[dependencies]
+# quire, by path: this is what a consumer's own Cargo.toml looks like today, before quire has
+# a published version (CONSUMING.md "Adding quire").
+ui-components = { path = "../../ui-components" }
+ui-settings = { path = "../../ui-settings", features = ["dioxus"] }
+ui-blitz = { path = "../../ui-blitz" }
+
+# ---- lines copied from quire/docs/workspace-deps.toml (pinned block) ----
+# ds's own dependency tree (dioxus-native, blitz-*, anyrender, ...) resolves against quire's own
+# workspace (crates/ds/Cargo.toml has no [workspace] of its own, so it joins whichever ancestor
+# has one: quire's root, not this one) — this package only needs to name what it writes rsx!
+# and cargo test against itself.
+dioxus = { version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"] }
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+dioxus-ssr = "0.7"
+# The test driver: a real Blitz document on a fast-forwarded clock (CONSUMING.md section 5, rule 4).
+ui-harness = { path = "../../ui-harness" }
+# The linter: a consumer's own tests call it (CONSUMING.md section 5).
+ui-lint = { path = "../../ui-lint" }
+
+[lints.rust]
+unsafe_code = "deny"
+
+# Patches apply only at a workspace root, so this root repeats quire's block verbatim.
+# vello and anyrender come from our forks (github.com/Bardo-DE/vello and /anyrender, branch
+# quire-filters): the colour matrix filter, multi-threaded filter layers and CSS filter lists, so
+# every CSS `filter` function paints on both backends. Move back to crates.io once upstream has
+# them (blitz-kit docs/blitz-gaps.md tracks the PRs).
+[patch.crates-io]
+vello_common = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
+vello_cpu = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
+vello_hybrid = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
+vello_sparse_shaders = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
+glifo = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
+anyrender = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
+anyrender_vello_cpu = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
+anyrender_vello_hybrid = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
+wgpu_context = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
+pixels_window_renderer = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
+# dioxus-core 0.7.10 can spin forever in VirtualDom::wait_for_work: a task woken and then cancelled
+# before it is polled (a use_resource restart) leaves an empty entry in the dirty-task queue that
+# pop_task never removes. Fixed upstream in DioxusLabs/dioxus#5554 (0.8-alpha only); this fork
+# (github.com/Bardo-DE/dioxus, branch quire-0.7) backports it onto 0.7.10. Remove when quire
+# moves to dioxus 0.8.
+dioxus-core = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
+dioxus-core-types = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
+generational-box = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
+subsecond = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
+subsecond-types = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }

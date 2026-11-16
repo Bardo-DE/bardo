@@ -1,7 +1,7 @@
 //! Opening Settings at a place: a page, a key, or one Extension's row.
 
 use crate::error::PlatformError;
-use ds_core::settings::SettingsTarget;
+use ui_core::settings::SettingsTarget;
 use std::fmt::Debug;
 use std::future::Future;
 use std::pin::Pin;

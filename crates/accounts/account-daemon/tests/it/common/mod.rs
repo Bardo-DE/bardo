@@ -1,0 +1,434 @@
+//! The rig every bus test of accountd uses: a private bus, accountd's front end over the real
+//! `AccountService` with the fake providers, a hand-written sheet host, and clients introduced
+//! by unique name. Nothing here reaches the real session, Secret Service or network.
+#![allow(dead_code)]
+
+pub mod bus;
+pub mod host;
+
+pub use host::SheetHost;
+pub use account_fake::{mail_account, storage_account};
+
+use account_daemon::{BusSheets, Options, TableCallers, serve_with};
+use bus::PrivateBus;
+use host::HostLog;
+use account_callers::{Caller, CallerRole};
+use account_core::AccountId;
+use account_core::{AppId, AppName, Credential, Isolation, SecretKey, SecretPurpose, SecretText};
+use account_fake::{
+    FakeProvider, MemoryStore, RecordingAudit, cloud_provider, llm_account, llm_provider,
+    mail_provider,
+};
+use account_identities::SheetsDesk;
+use account_ids::clock::FixedClock;
+use account_secrets::{MemorySecrets, Secrets, SecretsError};
+use account_service::AccountService;
+use account_service_core::registry::Registry;
+use account_wire::names::{SHEET_BUS, SHEET_PATH};
+use std::sync::Arc;
+use base_testkit::Scratch;
+
+pub const APP_PASSWORD: &str = "S3CRET-APP-PASSWORD";
+pub const REFRESH_TOKEN: &str = "S3CRET-REFRESH-TOKEN";
+pub const ACCESS_TOKEN: &str = "S3CRET-ACCESS-TOKEN";
+
+/// Secrets the test can still read after they moved into the service.
+#[derive(Debug, Clone, Default)]
+pub struct Shared(pub Arc<MemorySecrets>);
+
+impl Secrets for Shared {
+    async fn put(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
+        self.0.put(key, value).await
+    }
+    async fn get(&self, key: &SecretKey) -> Result<Credential, SecretsError> {
+        self.0.get(key).await
+    }
+    async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {
+        self.0.delete(key).await
+    }
+    async fn delete_account(&self, account: &AccountId) -> Result<(), SecretsError> {
+        self.0.delete_account(account).await
+    }
+}
+
+pub type Svc = AccountService<
+    FakeProvider,
+    Shared,
+    BusSheets<TableCallers>,
+    FixedClock,
+    MemoryStore,
+    RecordingAudit,
+>;
+
+pub fn app(name: &str) -> AppId {
+    AppId {
+        name: AppName::parse(name).expect("app name"),
+        isolation: Isolation::Flatpak,
+    }
+}
+
+pub fn photos() -> AppId {
+    app("org.quire.Photos")
+}
+
+pub fn caller(name: &str, role: CallerRole) -> Caller {
+    Caller {
+        app: app(name),
+        role,
+    }
+}
+
+/// accountd, serving, with a sheet host on the bus.
+#[derive(Debug)]
+pub struct Rig {
+    pub bus: PrivateBus,
+    pub connection: zbus::Connection,
+    pub callers: Arc<TableCallers>,
+    pub service: Arc<Svc>,
+    pub secrets: Shared,
+    pub audit: RecordingAudit,
+    pub store: MemoryStore,
+    pub host_connection: zbus::Connection,
+    pub host_log: HostLog,
+}
+
+impl Rig {
+    pub async fn start() -> Self {
+        Self::start_with(Options::default(), SheetHost::quiet()).await
+    }
+
+    pub async fn start_with(options: Options, host: SheetHost) -> Self {
+        let providers = vec![cloud_provider(), mail_provider(), llm_provider()];
+        Self::start_over(options, host, providers).await
+    }
+
+    /// As `start_with`, over these providers (the accounts are the fake three).
+    pub async fn start_over(
+        options: Options,
+        host: SheetHost,
+        providers: Vec<FakeProvider>,
+    ) -> Self {
+        let accounts = vec![storage_account(), mail_account(), llm_account()];
+        Self::start_holding(options, host, providers, accounts).await
+    }
+
+    /// As `start_over`, with `accounts` in the registry in place of the fake three.
+    pub async fn start_holding(
+        mut options: Options,
+        host: SheetHost,
+        providers: Vec<FakeProvider>,
+        accounts: Vec<account_core::Account>,
+    ) -> Self {
+        let bus = PrivateBus::start();
+        let callers = Arc::new(TableCallers::new());
+        let connection = bus.connect().await;
+
+        let host_log = host.log();
+        let host_connection = bus.connect().await;
+        host_connection
+            .object_server()
+            .at(SHEET_PATH, host)
+            .await
+            .expect("host object");
+        // As the real host must: the name only once the connection answers calls (accountd's
+        // `Open` to a host still starting was dropped without an answer).
+        zbus_ready::serving(&host_connection)
+            .await
+            .expect("the host takes calls");
+        host_connection
+            .request_name(SHEET_BUS)
+            .await
+            .expect("host name");
+        callers.introduce_as(
+            host_connection.unique_name().expect("name").as_str(),
+            caller("org.example.SheetHost", CallerRole::SheetHost),
+        );
+
+        let secrets = Shared::default();
+        for (account, purpose, credential) in [
+            (
+                storage_account().id,
+                SecretPurpose::Password,
+                Credential::Password(SecretText::new(APP_PASSWORD)),
+            ),
+            (
+                mail_account().id,
+                SecretPurpose::OAuthRefresh,
+                Credential::OAuth {
+                    access: SecretText::new(ACCESS_TOKEN),
+                    refresh: SecretText::new(REFRESH_TOKEN),
+                    expires_at: account_ids::UnixSeconds(1_790_000_000),
+                    granted: Default::default(),
+                },
+            ),
+        ] {
+            let _ = secrets
+                .put(&SecretKey { account, purpose }, &credential)
+                .await;
+        }
+        let registry = Registry {
+            accounts,
+            grants: vec![],
+            toggles: vec![],
+        };
+        let store = MemoryStore::default();
+        let audit = RecordingAudit::default();
+        if options.identities.is_none() {
+            options.identities = Some(Arc::new(SheetsDesk::new(
+                BusSheets::new(connection.clone(), Arc::clone(&callers)),
+                secrets.clone(),
+                audit.clone(),
+                FixedClock(account_fake::NOW),
+            )));
+        }
+        let sheets = BusSheets::new(connection.clone(), Arc::clone(&callers));
+        let service = Arc::new(
+            AccountService::new(
+                providers,
+                registry,
+                secrets.clone(),
+                sheets,
+                FixedClock(account_fake::NOW),
+            )
+            .with_store(store.clone())
+            .with_audit(audit.clone()),
+        );
+        serve_with(
+            &connection,
+            Arc::clone(&service),
+            Arc::clone(&callers),
+            options,
+        )
+        .await
+        .expect("accountd serves");
+        Self {
+            bus,
+            connection,
+            callers,
+            service,
+            secrets,
+            audit,
+            store,
+            host_connection,
+            host_log,
+        }
+    }
+
+    /// A new connection that accountd knows as `who`.
+    pub async fn client_as(&self, who: Caller) -> zbus::Connection {
+        let connection = self.bus.connect().await;
+        let name = connection.unique_name().expect("name").to_string();
+        self.callers.introduce_as(&name, who);
+        connection
+    }
+
+    /// A connection that is app `name` in the `App` role.
+    pub async fn client(&self, name: &str) -> zbus::Connection {
+        self.client_as(caller(name, CallerRole::App)).await
+    }
+
+    /// A connection accountd does not know.
+    pub async fn stranger(&self) -> zbus::Connection {
+        self.bus.connect().await
+    }
+}
+
+/// Polls `condition` until it holds, up to [`base_testkit::GENEROUS`] by the clock.
+pub async fn eventually(what: &str, mut condition: impl FnMut() -> bool) {
+    let deadline = base_testkit::Deadline::generous();
+    while !deadline.passed() {
+        if condition() {
+            return;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    deadline.fail(what);
+}
+
+/// Options whose clients file is a scratch one, so that [`publish`] has something to write, and
+/// the directory it is in: bind it for as long as the rig runs, declared before the rig.
+pub fn poking_options() -> (Scratch, Options) {
+    let dir = Scratch::new("accountd-poke");
+    let options = Options {
+        clients: Some(dir.join("clients.toml")),
+        ..Options::default()
+    };
+    (dir, options)
+}
+
+/// Makes accountd tell whoever is to be told what changed in the service since it last told
+/// them: a successful `Set` from Settings ends in a publish. The rig must have been started with
+/// [`poking_options`].
+pub async fn publish(rig: &Rig) {
+    settings(rig)
+        .await
+        .set(
+            &key("accounts.clients.microsoft"),
+            &toml::Value::String("poke".into()),
+        )
+        .await
+        .expect("a poke");
+}
+
+use account_dbus::Details;
+use account_dbus::accounts::refusal_error_name;
+use account_wire::Refusal;
+
+/// The text of a vardict entry.
+pub fn text_of(details: &Details, key: &str) -> Option<String> {
+    let value = details.get(key)?.try_clone().ok()?;
+    String::try_from(value).ok()
+}
+
+/// The D-Bus error name of a failed call.
+pub fn error_name(error: &zbus::Error) -> String {
+    match error {
+        zbus::Error::MethodError(name, _, _) => name.to_string(),
+        zbus::Error::FDO(fdo) => {
+            use zbus::DBusError;
+            fdo.name().to_string()
+        }
+        other => format!("{other:?}"),
+    }
+}
+
+pub fn refusal_name(refusal: Refusal) -> String {
+    refusal_error_name(refusal)
+}
+
+pub const ACCESS_DENIED: &str = "org.freedesktop.DBus.Error.AccessDenied";
+pub const UNKNOWN_OBJECT: &str = "org.freedesktop.DBus.Error.UnknownObject";
+
+use ui_settings::live::{AnyOwner, LiveClient};
+use ui_settings::schema::KeyPath;
+
+/// A client of the settings module as `who`.
+pub async fn settings_as(rig: &Rig, who: Caller) -> LiveClient {
+    let connection = rig.client_as(who).await;
+    LiveClient::new(
+        &connection,
+        "org.quire.Accounts1",
+        &account_daemon::settings_path(),
+        AnyOwner,
+    )
+    .expect("client")
+}
+
+/// The Settings app's own client.
+pub async fn settings(rig: &Rig) -> LiveClient {
+    settings_as(rig, caller("org.quire.Settings", CallerRole::Settings)).await
+}
+
+pub fn key(path: &str) -> KeyPath {
+    KeyPath(path.to_owned())
+}
+
+/// Collects the manager's signals a connection receives, by member name.
+pub async fn listen(connection: &zbus::Connection) -> zbus::MessageStream {
+    let rule = zbus::MatchRule::builder()
+        .msg_type(zbus::message::Type::Signal)
+        .interface("org.quire.Accounts1.Manager")
+        .expect("interface")
+        .build();
+    zbus::MessageStream::for_match_rule(rule, connection, None)
+        .await
+        .expect("stream")
+}
+
+/// The member names received within `wait`. For proving that something does NOT arrive (a short
+/// `wait` is right there) and for collecting what follows a signal already heard; a signal that
+/// SHOULD arrive is waited for with [`heard_names`], which does not depend on the machine's speed.
+pub async fn heard(stream: &mut zbus::MessageStream, wait: std::time::Duration) -> Vec<String> {
+    let mut names = Vec::new();
+    let deadline = tokio::time::Instant::now() + wait;
+    while let Some(name) = next_member(stream, deadline).await {
+        names.push(name);
+    }
+    names
+}
+
+/// The next signal's member name before `deadline`; `None` when time is up or the stream ends.
+async fn next_member(
+    stream: &mut zbus::MessageStream,
+    deadline: tokio::time::Instant,
+) -> Option<String> {
+    use zbus::export::futures_core::Stream;
+    loop {
+        let next = tokio::time::timeout_at(
+            deadline,
+            std::future::poll_fn(|cx| std::pin::Pin::new(&mut *stream).poll_next(cx)),
+        )
+        .await;
+        match next {
+            Ok(Some(Ok(message))) => {
+                if let Some(member) = message.header().member() {
+                    return Some(member.to_string());
+                }
+            }
+            _ => return None,
+        }
+    }
+}
+
+/// Every member name received until each of `expected` has arrived (waited for by the clock,
+/// [`base_testkit::Deadline`]: a signal that should come is not given up on because the machine
+/// is slow), and then whatever else follows within a short settling window, so that a test can
+/// still assert there was no extra or repeated signal. Fails the test naming the missing signals.
+pub async fn heard_names(stream: &mut zbus::MessageStream, expected: &[&str]) -> Vec<String> {
+    /// The window after the last expected signal in which extras are collected: a published
+    /// change tells its listeners in one burst, so this proves "no more" and never decides
+    /// whether a signal that should come does.
+    const SETTLE: std::time::Duration = std::time::Duration::from_millis(300);
+    let limit = base_testkit::Deadline::generous();
+    let mut names: Vec<String> = Vec::new();
+    while !expected.iter().all(|want| names.iter().any(|n| n == want)) {
+        let left = base_testkit::GENEROUS.saturating_sub(limit.waited());
+        match next_member(stream, tokio::time::Instant::now() + left).await {
+            Some(name) => names.push(name),
+            None => limit.fail(&format!("the signals {expected:?} (heard {names:?})")),
+        }
+    }
+    names.extend(heard(stream, SETTLE).await);
+    names
+}
+
+/// Every message on the bus, from the moment the tap is set: the bytes of each, as a monitor sees
+/// them (file descriptors are not bytes, so what travels on one is not in them).
+pub struct Tap(zbus::MessageStream);
+
+impl Tap {
+    pub async fn start(bus: &PrivateBus) -> Self {
+        let monitor = bus.connect().await;
+        zbus::fdo::MonitoringProxy::new(&monitor)
+            .await
+            .expect("proxy")
+            .become_monitor(&[], 0)
+            .await
+            .expect("monitor");
+        Self(zbus::MessageStream::from(monitor))
+    }
+
+    /// What has gone by so far.
+    pub async fn drain(&mut self) -> Vec<Vec<u8>> {
+        use zbus::export::futures_core::Stream;
+        let mut seen = Vec::new();
+        loop {
+            let next = tokio::time::timeout(
+                std::time::Duration::from_millis(300),
+                std::future::poll_fn(|cx| std::pin::Pin::new(&mut self.0).poll_next(cx)),
+            )
+            .await;
+            match next {
+                Ok(Some(Ok(message))) => seen.push(message.data().to_vec()),
+                _ => return seen,
+            }
+        }
+    }
+}
+
+/// Whether `needle` is anywhere in `haystack`.
+pub fn contains(haystack: &[u8], needle: &str) -> bool {
+    haystack
+        .windows(needle.len())
+        .any(|window| window == needle.as_bytes())
+}

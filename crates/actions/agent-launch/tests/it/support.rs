@@ -1,0 +1,143 @@
+//! Fixtures: the agents.toml of each route, and a launcher wired to the fakes.
+#![allow(dead_code)]
+
+use sandbox::AbsPath;
+use agent_acp_host::LaunchPlan;
+use agent_acp_host::fake::{ChannelWire, pipe};
+use agent_launch::fake::{FakeAccounts, FakeProc, FakeProcs, Mood, ProcsSeen, Secrets};
+use agent_launch::{AgentSpawn, AgentsFile, Registry};
+use permission_core::ProgramName;
+
+use provenance::SessionId;
+use std::sync::Arc;
+
+pub const CWD: &str = "/work/app";
+
+pub fn abs(text: &str) -> AbsPath {
+    AbsPath::parse(text).expect("abs")
+}
+
+/// Claude Code through inferd: a base URL and a per-session token, network to the endpoint only.
+pub const ENDPOINT: &str = r#"
+[[agent]]
+program = "claude-code"
+command = "/home/me/.local/bin/claude-agent-acp"
+args = ["--stdio"]
+route = "endpoint"
+network = "endpoint_only"
+key_env = "ANTHROPIC_API_KEY"
+base_url_env = "ANTHROPIC_BASE_URL"
+protocol = "anthropic_messages"
+reads = ["/home/me/.local/share/node"]
+state = ["/home/me/.claude", "/home/me/.claude.json"]
+home = "/home/me"
+[agent.endpoint]
+kind = "account"
+id = "anthropic-main"
+[agent.set]
+NODE_NO_WARNINGS = "1"
+"#;
+
+/// An agent that takes a key and cannot take a base URL: a handoff.
+pub const HANDOFF: &str = r#"
+[[agent]]
+program = "gemini-cli"
+command = "/opt/gemini/bin/gemini-acp"
+route = "handoff"
+network = "host"
+key_env = "GEMINI_API_KEY"
+protocol = "generate_content"
+"#;
+
+/// A subscription login: the agent's own sign-in, nothing from us, the host network.
+pub const LOGIN: &str = r#"
+[[agent]]
+program = "claude-code"
+command = "/home/me/.local/bin/claude-agent-acp"
+route = "login"
+network = "host"
+state = ["/home/me/.claude"]
+home = "/home/me"
+login = ["konsole", "-e", "claude", "login"]
+"#;
+
+/// A subscription login that reaches only the sites it names: a filter, not the host's network.
+pub const ALLOWLIST: &str = r#"
+[[agent]]
+program = "claude-code"
+command = "/home/me/.local/bin/claude-agent-acp"
+route = "login"
+network = "allowlist"
+allow = ["api.example.com", "*.example.org"]
+deny = ["private.example.org"]
+state = ["/home/me/.claude"]
+home = "/home/me"
+"#;
+
+pub fn plan(program: &str, session: &str) -> LaunchPlan {
+    LaunchPlan {
+        program: ProgramName::parse(program).expect("program"),
+        session: SessionId::parse(session).expect("session"),
+        cwd: abs(CWD),
+        edge: None,
+    }
+}
+
+pub struct Rig {
+    pub spawn: AgentSpawn<FakeAccounts, FakeProcs>,
+    pub accounts: FakeAccounts,
+    pub procs: ProcsSeen,
+    pub registry: Registry<FakeProc>,
+    pub file: Arc<AgentsFile>,
+    pub secrets: Secrets,
+    pub dir: tempfile::TempDir,
+    /// The agent's end of the pipe, for tests that talk to it.
+    pub agent_end: Option<ChannelWire>,
+}
+
+pub fn rig(toml: &str, mood: Mood, with_process: bool) -> Rig {
+    let secrets = Secrets::default();
+    let accounts = FakeAccounts::with(mood, secrets.clone());
+    let (near, far) = pipe();
+    let wires = if with_process { vec![near] } else { Vec::new() };
+    let (procs, seen) = FakeProcs::new(wires);
+    let dir = tempfile::tempdir().expect("scratch");
+    let file = Arc::new(AgentsFile::parse(toml).expect("agents.toml"));
+    let registry = Registry::default();
+    let spawn = AgentSpawn::new(
+        file.clone(),
+        Arc::new(accounts.clone()),
+        procs,
+        dir.path().to_owned(),
+        abs("/opt/docket/docket-net-forward"),
+        registry.clone(),
+    );
+    Rig {
+        spawn,
+        accounts,
+        procs: seen,
+        registry,
+        file,
+        secrets,
+        dir,
+        agent_end: Some(far),
+    }
+}
+
+/// A subscription login with the Claude Code preset; `{state}` is where its state lives.
+pub fn confined(state: &str, set: &str) -> String {
+    format!(
+        r#"
+[[agent]]
+program = "claude-code"
+command = "/home/me/.local/bin/claude-agent-acp"
+route = "login"
+network = "host"
+state = ["{state}"]
+home = "/home/me"
+profile = "claude-code"
+[agent.set]
+{set}
+"#
+    )
+}

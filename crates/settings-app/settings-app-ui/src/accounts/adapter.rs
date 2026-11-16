@@ -1,0 +1,246 @@
+//! The pieces of the Accounts pane that quire's R2a release changes (button roles, a controlled
+//! plain text field, initial focus on an alert). Every use of them in the pane goes through here,
+//! so the switch to R2a is these few lines and nothing else.
+
+use crate::copy::account_sync::{KEEP_HELP, hold_banner};
+use crate::copy::accounts::{removal, secret_standing};
+use settings_app_model::{ClientValue, HoldCounts, RemovalQuestion, SyncHold};
+use dioxus::prelude::*;
+use ui_components::components::controls::button::Button;
+use ui_components::components::controls::button_model::{Answers, Bezel, ImagePosition};
+use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
+use ui_components::components::overlays::inline_banner::InlineBanner;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
+use ui_components::style::tokens::control_size::ControlSize;
+use ui_settings::schema::ActionWeight;
+
+/// Whether an action's weight makes its button destructive.
+fn is_destructive(weight: ActionWeight) -> bool {
+    weight == ActionWeight::Destructive
+}
+
+/// The name a screen reader says for a button that acts on `subject`: "Revoke Photos allowed:
+/// storage". Several rows carry the same visible word; this says which one it is.
+fn spoken(label: &str, subject: &str) -> Common {
+    Common {
+        aria_label: Some(if subject.is_empty() {
+            label.to_owned()
+        } else {
+            format!("{label} {subject}")
+        }),
+        ..Common::default()
+    }
+}
+
+/// A button for an action key, named by the thing it acts on. A destructive one is drawn as such;
+/// it never acts on its own press (the pane puts a question between the press and the action).
+#[component]
+pub(super) fn ActionButton(
+    label: String,
+    subject: String,
+    weight: ActionWeight,
+    availability: Availability,
+    onpress: EventHandler<()>,
+) -> Element {
+    rsx! {
+        Button {
+            common: spoken(&label, &subject),
+            label,
+            destructive: is_destructive(weight),
+            size: ControlSize::Small,
+            availability,
+            onclick: move |_| onpress.call(()),
+        }
+    }
+}
+
+/// The quiet button on an account's row that opens the account, named by it ("Manage Home
+/// cloud").
+#[component]
+pub(crate) fn OpenButton(label: String, subject: String, onpress: EventHandler<()>) -> Element {
+    rsx! {
+        Button {
+            common: spoken(&label, &subject),
+            label,
+            bezel: Bezel::Inline,
+            size: ControlSize::Small,
+            onclick: move |_| onpress.call(()),
+        }
+    }
+}
+
+/// The question before an account is removed or an assistant signed out: a critical alert whose
+/// destructive button is never the default, so Return keeps the account signed in.
+#[component]
+pub(super) fn RemoveAlert(
+    question: RemovalQuestion,
+    remove_name: String,
+    onkeep: EventHandler<()>,
+    onremove: EventHandler<()>,
+) -> Element {
+    let words = removal(&question, &remove_name);
+    rsx! {
+        Alert {
+            title: words.title,
+            message: Some(TextLine::from(words.message)),
+            style: AlertStyle::Critical,
+            buttons: vec![
+                AlertButton::new(words.keep, AlertRole::Cancel, onkeep),
+                AlertButton::new(words.action, AlertRole::Destructive, onremove),
+            ],
+        }
+    }
+}
+
+/// A text field for a sign-in key or secret. A key holds what is typed until the caret leaves or
+/// Enter is pressed, and is made anew when the stored value changes (the caller keys it on the
+/// value). A secret is write-only: it shows "Set" or "Not set", never what is stored, and what is
+/// typed replaces it. Either waits (greyed) until its key is set, when it is a secret.
+#[component]
+pub(super) fn ClientField(
+    label: String,
+    value: ClientValue,
+    availability: Availability,
+    onchange: EventHandler<String>,
+) -> Element {
+    match value {
+        ClientValue::Text(text) => rsx! {
+            KeyField { label, value: text, availability, onchange }
+        },
+        ClientValue::Secret { set } => rsx! {
+            SecretField { label, set, availability, onchange }
+        },
+    }
+}
+
+#[component]
+fn KeyField(
+    label: String,
+    value: String,
+    availability: Availability,
+    onchange: EventHandler<String>,
+) -> Element {
+    let mut draft = use_signal(|| value.clone());
+    rsx! {
+        TextField {
+            label,
+            value: draft(),
+            availability,
+            size: ControlSize::Small,
+            oninput: move |next| draft.set(next),
+            onchange: move |next: String| onchange.call(next),
+        }
+    }
+}
+
+/// A secure field that starts empty with the secret's standing where the text would be. What is
+/// typed is handed on when the caret leaves or Enter is pressed, and the field is made anew, so
+/// the text is not drawn again.
+#[component]
+fn SecretField(
+    label: String,
+    set: bool,
+    availability: Availability,
+    onchange: EventHandler<String>,
+) -> Element {
+    let mut made = use_signal(|| 0_u32);
+    rsx! {
+        Fragment { key: "{made}",
+            TextField {
+                label,
+                value: String::new(),
+                placeholder: secret_standing(set).to_owned(),
+                kind: FieldKind::Secure,
+                availability,
+                size: ControlSize::Small,
+                oninput: move |_: String| {},
+                onchange: move |next: String| {
+                    made += 1;
+                    onchange.call(next);
+                },
+            }
+        }
+    }
+}
+
+/// The plus under the list, which opens the add sheet; it waits while one is open or a change
+/// is in flight.
+#[component]
+pub(super) fn AddAccountButton(
+    sheet_open: bool,
+    availability: Availability,
+    onpress: EventHandler<()>,
+) -> Element {
+    let availability = if sheet_open {
+        Availability::Disabled
+    } else {
+        availability
+    };
+    rsx! {
+        Button {
+            label: crate::copy::common::ADD_ACCOUNT_ELLIPSIS,
+            title: Some(crate::copy::account_views::ADD_ACCOUNT.to_owned()),
+            icon: Some(Icon::Plus),
+            image: ImagePosition::Only,
+            size: ControlSize::Small,
+            availability,
+            onclick: move |_| onpress.call(()),
+        }
+    }
+}
+
+/// The minus under the list, which asks to remove the selected account.
+#[component]
+pub(super) fn RemoveAccountButton(
+    availability: Availability,
+    onpress: EventHandler<()>,
+) -> Element {
+    rsx! {
+        Button {
+            label: crate::copy::account_views::REMOVE_ACCOUNT,
+            title: Some(crate::copy::account_views::REMOVE_ACCOUNT.to_owned()),
+            icon: Some(Icon::Minus),
+            image: ImagePosition::Only,
+            size: ControlSize::Small,
+            availability,
+            onclick: move |_| onpress.call(()),
+        }
+    }
+}
+
+/// The banner on a sync row whose deletion waits for the person: Keep (the default, asks nothing
+/// of anyone) and Remove (destructive, never the default).
+#[component]
+pub(super) fn HoldBanner(
+    hold: SyncHold,
+    onkeep: EventHandler<()>,
+    onremove: EventHandler<()>,
+) -> Element {
+    let HoldCounts { held, .. } = hold.counts;
+    rsx! {
+        InlineBanner {
+            severity: Severity::Warn,
+            text: TextLine::from(hold_banner(&hold)),
+            detail: Some(TextLine::from(KEEP_HELP)),
+            common: Common {
+                aria_label: Some(crate::copy::account_views::files_removed_on_the_server(held)),
+                ..Common::default()
+            },
+            actions: rsx! {
+                Button {
+                    label: crate::copy::account_views::KEEP,
+                    size: ControlSize::Small,
+                    answers: Answers::Return,
+                    onclick: move |_| onkeep.call(()),
+                }
+                Button {
+                    label: crate::copy::common::REMOVE,
+                    destructive: true,
+                    size: ControlSize::Small,
+                    onclick: move |_| onremove.call(()),
+                }
+            },
+        }
+    }
+}

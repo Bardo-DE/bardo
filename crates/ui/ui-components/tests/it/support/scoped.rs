@@ -1,0 +1,35 @@
+//! A scope for a case that renders without a `Ds` above it: a component that reads one (a
+//! switch, a spinner, a disclosure) finds light, Postmark and Reduced motion.
+
+use dioxus::prelude::*;
+use ui_components::prelude::*;
+use ui_style::appearance::resolve::Resolved;
+use ui_style::appearance::system::Contrast;
+use ui_style::appearance::transparency::Transparency;
+use ui_style::scope::Scope;
+
+/// The scope a component reads when nothing above it is a `Ds`: light, Postmark, Reduced motion
+/// (every settle 94 ms).
+pub fn scope() -> Scope {
+    Scope {
+        resolved: Resolved {
+            scheme: Scheme::Light,
+            accent: Accent::Blue,
+            motion: MotionLevel::Reduced,
+            contrast: Contrast::Normal,
+            transparency: Transparency::System,
+        },
+        scheme: Scheme::Light,
+        material: Material::Window,
+        blur: false,
+        modality: false,
+        activity: true,
+    }
+}
+
+/// `children` under that scope. It draws nothing of its own.
+#[component]
+pub fn Scoped(children: Element) -> Element {
+    use_context_provider(|| Signal::new(scope()));
+    children
+}

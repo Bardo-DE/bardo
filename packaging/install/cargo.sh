@@ -35,21 +35,21 @@ build_tree() {
 # part_packages PART: the cargo packages whose programs PART installs (none: nothing to build).
 part_packages() {
   case $1 in
-    porter) echo accountd ;;
-    ferry) echo syncd ferry-mountd ;;
-    steward) echo inferd ;;
+    porter) echo account-daemon ;;
+    ferry) echo sync-daemon drive-mount-daemon ;;
+    steward) echo inference-daemon ;;
     stoker) echo engine-install ;;
-    almanac) echo memoryd ;;
-    docket) echo intentd companiond readerd actions-mcp docket-cli docket-acp-bin ;;
-    cua) echo cuad ;;
-    detent) echo detent ;;
-    casement) echo casement casementctl ;;
-    sill) echo sill ;;
-    transom) echo transom ;;
-    turnstile) echo turnstile ;;
-    keycap) echo keycap ;;
+    almanac) echo memory-daemon ;;
+    docket) echo action-daemon companion-daemon agent-reader-daemon action-mcp action-cli agent-acp-bin ;;
+    cua) echo computer-use-daemon ;;
+    detent) echo settings-app ;;
+    casement) echo compositor-app compositor-ctl ;;
+    sill) echo shell-app ;;
+    transom) echo portal-daemon ;;
+    turnstile) echo input-broker-daemon ;;
+    keycap) echo key-remap-daemon ;;
     files) echo files ;;
-    palmrest) echo palmrest ;;
+    palmrest) echo mouse-gestures-daemon ;;
   esac
 }
 

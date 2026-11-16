@@ -1,7 +1,7 @@
 //! `ExportChoice`: what one format's export sheet is generic over.
 
 use super::extension::ExportExtension;
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// A format's closed set of exports, with the options each carries. Each format has its own
 /// implementation, so a combination that makes no sense (a page range on a photo) cannot be

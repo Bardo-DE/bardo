@@ -150,13 +150,13 @@ mod tests {
     }
 
     fn png_url() -> String {
-        format!("data:image/png;base64,{}", ds_core::base64::encode(PNG))
+        format!("data:image/png;base64,{}", ui_core::base64::encode(PNG))
     }
 
     #[test]
     fn local_images_become_data_urls_and_everything_else_is_refused() {
         let base = FilePath::new("/notes").unwrap();
-        let svg_url = format!("data:image/svg+xml;base64,{}", ds_core::base64::encode(SVG));
+        let svg_url = format!("data:image/svg+xml;base64,{}", ui_core::base64::encode(SVG));
         // name, reference, result
         let cases: Vec<(&str, &str, Option<String>)> = vec![
             ("relative", "pic.png", Some(png_url())),

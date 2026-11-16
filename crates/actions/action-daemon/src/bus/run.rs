@@ -1,0 +1,158 @@
+//! `Run` and `Gate`: the members that act, most of them through a Request object.
+
+use super::request::Watching;
+use super::{Gateway, json};
+use action_core::ActivationToken;
+use action_dbus::{Details, IntentsError};
+use action_vocab::UndoId;
+use action_wire::{IntentsReply, IntentsRequest};
+use zbus::message::Header;
+use zbus::zvariant::OwnedObjectPath;
+
+pub(crate) struct RunBus(pub(crate) Gateway);
+
+/// The activation token in a `Perform`'s options: a non-empty string under `activation`. Whether
+/// the caller may send one is the router's to say (the launcher only).
+fn activation_of(options: &Details) -> Option<ActivationToken> {
+    let value = options.get(action_dbus::OPTION_ACTIVATION)?;
+    let text: &str = value.downcast_ref().ok()?;
+    ActivationToken::parse(text)
+}
+
+#[zbus::interface(name = "org.quire.Intents1.Run")]
+impl RunBus {
+    async fn perform(
+        &self,
+        call: String,
+        session: String,
+        parent_window: String,
+        options: Details,
+        #[zbus(header)] header: Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> Result<OwnedObjectPath, IntentsError> {
+        // A caller that watches is told how far the call is (`Reviewing`, `Previewing`,
+        // `Confirming`, `Dispatched`); nothing waits for it.
+        let watching = match options.contains_key(action_dbus::OPTION_WATCH) {
+            true => Watching::Listening,
+            false => Watching::No,
+        };
+        let request = IntentsRequest::Perform {
+            call: json(&call)?,
+            session: json(&session)?,
+            parent_window: json(&parent_window)?,
+            activation: activation_of(&options),
+        };
+        self.0
+            .start_as(&header, connection, request, watching)
+            .await
+    }
+
+    async fn dry_run(
+        &self,
+        call: String,
+        session: String,
+        #[zbus(header)] header: Header<'_>,
+    ) -> Result<String, IntentsError> {
+        let request = IntentsRequest::DryRun {
+            call: json(&call)?,
+            session: json(&session)?,
+        };
+        self.0
+            .answer(&header, request, |reply| {
+                super::or_refused(reply, |r| match r {
+                    IntentsReply::Preview(p) => Some(p),
+                    _ => None,
+                })
+            })
+            .await
+    }
+
+    async fn preview(
+        &self,
+        entity: String,
+        #[zbus(header)] header: Header<'_>,
+    ) -> Result<String, IntentsError> {
+        self.0
+            .answer(&header, IntentsRequest::Preview(json(&entity)?), |reply| {
+                super::or_refused(reply, |r| match r {
+                    IntentsReply::Preview(p) => Some(p),
+                    _ => None,
+                })
+            })
+            .await
+    }
+
+    async fn suggest(
+        &self,
+        ask: String,
+        #[zbus(header)] header: Header<'_>,
+    ) -> Result<String, IntentsError> {
+        self.0
+            .answer(&header, IntentsRequest::Suggest(json(&ask)?), |reply| {
+                super::or_refused(reply, |r| match r {
+                    IntentsReply::Suggestions(s) => Some(s),
+                    _ => None,
+                })
+            })
+            .await
+    }
+
+    async fn undo(
+        &self,
+        entry: u64,
+        #[zbus(header)] header: Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> Result<OwnedObjectPath, IntentsError> {
+        self.0
+            .start(&header, connection, IntentsRequest::Undo(UndoId(entry)))
+            .await
+    }
+
+    async fn undo_all(
+        &self,
+        scope: String,
+        #[zbus(header)] header: Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> Result<OwnedObjectPath, IntentsError> {
+        self.0
+            .start(&header, connection, IntentsRequest::UndoAll(json(&scope)?))
+            .await
+    }
+}
+
+pub(crate) struct GateBus(pub(crate) Gateway);
+
+#[zbus::interface(name = "org.quire.Intents1.Gate")]
+impl GateBus {
+    async fn grant(
+        &self,
+        ask: String,
+        #[zbus(header)] header: Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> Result<OwnedObjectPath, IntentsError> {
+        self.0
+            .start(&header, connection, IntentsRequest::GateGrant(json(&ask)?))
+            .await
+    }
+
+    async fn check(
+        &self,
+        ask: String,
+        options: Details,
+        #[zbus(header)] header: Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> Result<OwnedObjectPath, IntentsError> {
+        let watching = match options.contains_key(action_dbus::OPTION_WATCH) {
+            true => Watching::Yes,
+            false => Watching::No,
+        };
+        self.0
+            .start_as(
+                &header,
+                connection,
+                IntentsRequest::GateCheck(json(&ask)?),
+                watching,
+            )
+            .await
+    }
+}

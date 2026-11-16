@@ -1,0 +1,137 @@
+//! A command palette kept mounted while hidden: a launcher that mounts a
+//! palette per opening pays 15-20 ms for it, so it keeps one and says whether it is shown.
+//!
+//! Hidden, the card is `display:none` (nothing laid out or painted, as an empty `ToastHost`) and
+//! off the layer stack. Each time it is shown again it replays its entrance by swapping the
+//! keyframe's `X`/`X--b` alias (`data-pulse`, design/05-MOTION.md section 9 rule 2) and restarting
+//! the settle timer, starts over from an empty query and the first choice, and takes the keyboard.
+
+use dioxus::prelude::*;
+use ui_core::word::Word;
+use ui_motion::anim::Anim;
+use ui_motion::presence::Presence;
+use ui_motion::timer::{MotionTimer, TimerPhase, use_motion_timer};
+
+/// What one render's `shown` does to the palette.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum Change {
+    /// Nothing: as it was (or mounted shown, which plays the entrance as it mounts).
+    Stay,
+    /// Shown after being hidden: replay the entrance, start over, take the keyboard.
+    Show,
+    /// Hidden: leave the layer stack.
+    Hide,
+}
+
+/// The change from `last` (`None` before the first render) to `now`.
+pub(crate) fn change(last: Option<bool>, now: bool) -> Change {
+    match (last, now) {
+        (Some(false), true) => Change::Show,
+        (None | Some(true), false) => Change::Hide,
+        (None | Some(true), true) | (Some(false), false) => Change::Stay,
+    }
+}
+
+/// Which of the entrance keyframe's two names the card plays: flipping it restarts the
+/// animation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
+enum Alias {
+    A,
+    B,
+}
+
+impl Alias {
+    fn flipped(self) -> Self {
+        match self {
+            Alias::A => Alias::B,
+            Alias::B => Alias::A,
+        }
+    }
+}
+
+/// The palette's showing, for one render.
+#[derive(Clone, Copy)]
+pub(crate) struct Showing {
+    /// Whether the card is shown now.
+    pub shown: bool,
+    /// What this render's `shown` changed.
+    pub change: Change,
+    /// Whether the card has been shown since it mounted: a palette mounted hidden does not
+    /// take the keyboard until it is first shown.
+    pub seen: bool,
+    timer: MotionTimer,
+    alias: Signal<Alias>,
+    /// The timer's settle callback, made in render: an effect has no scope to make one in.
+    settled: EventHandler<()>,
+}
+
+/// The showing hook: `shown` is the caller's (`None`, always shown), `anim` the entrance.
+pub(crate) fn use_showing(shown: Option<bool>, anim: Anim) -> Showing {
+    let now = shown.unwrap_or(true);
+    let timer = use_motion_timer(anim);
+    let mut last = use_hook(|| CopyValue::new(None::<bool>));
+    let mut seen = use_hook(|| {
+        if now {
+            timer.start(EventHandler::new(|()| {}));
+        }
+        CopyValue::new(now)
+    });
+    let change = change(*last.peek(), now);
+    last.set(Some(now));
+    if change == Change::Show {
+        seen.set(true);
+    }
+    Showing {
+        shown: now,
+        change,
+        seen: *seen.peek(),
+        timer,
+        alias: use_signal(|| Alias::A),
+        settled: EventHandler::new(|()| {}),
+    }
+}
+
+impl Showing {
+    /// `data-presence`: entering until the entrance settles, then present.
+    pub(crate) fn presence(&self) -> Presence {
+        match self.timer.phase() {
+            TimerPhase::Settled => Presence::Present,
+            TimerPhase::Idle | TimerPhase::Running => Presence::Entering,
+        }
+    }
+
+    /// `data-pulse`: which of the entrance keyframe's names the card plays.
+    pub(crate) fn alias(&self) -> &'static str {
+        self.alias.read().slug()
+    }
+
+    /// Play the entrance again from its first frame. Call it from an effect or a handler.
+    pub(crate) fn replay(&self) {
+        let alias = self.alias;
+        if let Ok(now) = ui_style::task::try_get(alias) {
+            let _ = ui_style::task::try_set(alias, now.flipped());
+        }
+        self.timer.start(self.settled);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Change, change};
+
+    #[test]
+    fn only_a_hidden_palette_shown_again_replays() {
+        #[rustfmt::skip]
+        let cases = [
+            (None, true, Change::Stay),
+            (None, false, Change::Hide),
+            (Some(true), true, Change::Stay),
+            (Some(true), false, Change::Hide),
+            (Some(false), false, Change::Stay),
+            (Some(false), true, Change::Show),
+        ];
+        for (last, now, want) in cases {
+            assert_eq!(change(last, now), want, "{last:?} -> {now:?}");
+        }
+    }
+}

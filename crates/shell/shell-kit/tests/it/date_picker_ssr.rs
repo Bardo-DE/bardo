@@ -1,0 +1,101 @@
+//! DatePicker as markup (design/30 section 2.3): each specimen is linted against the stylesheet and
+//! every `ds-date-picker` class in it is styled by the picker's sheet.
+
+use crate::support::specimens::{Checks, Specimen};
+
+use dioxus::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::prelude::*;
+use shell_kit::date_picker::model::{DateValue, Elements, PickerStyle, TimeOfDay};
+use shell_kit::month_grid::data::DayKey;
+use shell_kit::prelude::*;
+
+const PICKER_CSS: &str = include_str!("../../src/date_picker/style.css");
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Case {
+    Textual,
+    DateAndTime,
+    Graphical,
+    Disabled,
+}
+
+const CASES: [(Case, &str); 4] = [
+    (Case::Textual, "textual"),
+    (Case::DateAndTime, "textual-date-and-time"),
+    (Case::Graphical, "graphical"),
+    (Case::Disabled, "disabled"),
+];
+
+#[derive(Props, Clone, PartialEq)]
+struct CaseProps {
+    case: Case,
+}
+
+fn start() -> DateValue {
+    DateValue {
+        day: DayKey {
+            year: 2026,
+            month: 9,
+            day: 30,
+        },
+        time: TimeOfDay {
+            hour: 14,
+            minute: 41,
+        },
+    }
+}
+
+#[allow(non_snake_case)]
+fn Specimen(props: CaseProps) -> Element {
+    let picker = match props.case {
+        Case::Textual => rsx! { DatePicker { label: "Date", value: start(), onchange: |_| {} } },
+        Case::DateAndTime => {
+            rsx! { DatePicker { label: "Date", value: start(), elements: Elements::DateAndTime, onchange: |_| {} } }
+        }
+        Case::Graphical => {
+            rsx! { DatePicker { label: "Date", value: start(), style: PickerStyle::Graphical, elements: Elements::DateAndTime, onchange: |_| {} } }
+        }
+        Case::Disabled => {
+            rsx! { DatePicker { label: "Date", value: start(), availability: Availability::Disabled, onchange: |_| {} } }
+        }
+    };
+    rsx! {
+        Ds { appearance: Appearance::default(), material: Material::Popover, stylesheet: Inject::Host, {picker} }
+    }
+}
+
+fn render(case: Case) -> String {
+    let mut dom = VirtualDom::new_with_props(Specimen, CaseProps { case });
+    dom.rebuild_in_place();
+    dioxus_ssr::render(&dom)
+}
+
+pub(crate) fn specimens() -> Vec<Specimen> {
+    CASES
+        .iter()
+        .map(|&(case, name)| {
+            Specimen::of(&format!("date_picker/{name}.html"), render(case)).checked(Checks::Lint)
+        })
+        .collect()
+}
+
+/// Every `ds-date-picker` class a state uses is in the picker's own sheet.
+#[test]
+fn every_picker_class_is_in_the_pickers_sheet() {
+    let mut failures = Vec::new();
+    for (case, name) in CASES {
+        let html = render(case);
+        for class in html
+            .split("class=\"")
+            .skip(1)
+            .filter_map(|rest| rest.split('"').next())
+            .flat_map(str::split_whitespace)
+        {
+            if class.starts_with("ds-date-picker") && !PICKER_CSS.contains(&format!(".{class}")) {
+                failures.push(format!("{name}: .{class} is not in the picker's sheet"));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}

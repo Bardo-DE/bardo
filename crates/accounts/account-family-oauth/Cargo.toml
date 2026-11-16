@@ -1,0 +1,32 @@
+[package]
+name = "account-family-oauth"
+description = "OAuth: PKCE through a loopback redirect, one provider, sign-in and session for every issuer, with the rules of Google and Microsoft beside them. A driver: oauth-probe-proto reads what a token shows, porter-oauth does the exchanges, and this crate sends the reads."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-family-kit = {path = "../account-family-kit"}
+account-oauth-probe-proto = {path = "../account-oauth-probe-proto"}
+account-core = {path = "../account-core"}
+account-capability = {path = "../account-capability"}
+account-sheet = {path = "../account-sheet"}
+account-ids = {path = "../account-ids"}
+account-provider = {path = "../account-provider"}
+account-http = {path = "../account-http"}
+account-http-reqwest = {path = "../account-http-reqwest"}
+account-oauth = {path = "../account-oauth", features = ["io"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

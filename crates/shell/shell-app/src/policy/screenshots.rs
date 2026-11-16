@@ -1,0 +1,52 @@
+//! The screenshots service's policy from `screenshot.folders`; the portal takes the shot. Until the
+//! first is sent the service stays passive and watches nothing.
+
+use std::path::{Path, PathBuf};
+
+use shell_model::screenshots::{ShotCommand, ShotPolicy, parse_folders};
+use shell_settings::ShellFile;
+
+use super::Policy;
+
+/// The service's policy `file` makes (`parse_folders` against `home`).
+pub fn policy_of(file: &ShellFile, home: &Path) -> ShotPolicy {
+    ShotPolicy {
+        folders: parse_folders(&file.screenshot.folders, home),
+    }
+}
+
+/// The screenshots service's policy from the settings, its folders found against `home`.
+#[derive(Debug, Clone)]
+pub struct ScreenshotsBridge {
+    pub home: PathBuf,
+}
+
+impl Policy for ScreenshotsBridge {
+    type Command = ShotCommand;
+    type Out = ShotPolicy;
+
+    fn of(&self, file: &ShellFile) -> ShotPolicy {
+        policy_of(file, &self.home)
+    }
+
+    fn command(policy: ShotPolicy) -> ShotCommand {
+        ShotCommand::Configure(policy)
+    }
+}
+#[cfg(test)]
+mod tests {
+    use shell_model::screenshots::{ShotFolders, ShotPolicy};
+    use shell_settings::ShellFile;
+
+    use super::policy_of;
+
+    #[test]
+    fn the_default_settings_watch_pictures_with_the_portal() {
+        assert_eq!(
+            policy_of(&ShellFile::default(), std::path::Path::new("/home/p")),
+            ShotPolicy {
+                folders: ShotFolders::Auto,
+            }
+        );
+    }
+}

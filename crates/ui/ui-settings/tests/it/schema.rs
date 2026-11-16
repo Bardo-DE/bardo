@@ -1,0 +1,756 @@
+//! design/22-SETTINGS.md section 9.6's acceptance list, for the two domains this wave's derive
+//! covers: `AppearanceSettings` and `IconsSettings` (`crates/ds-settings/src/settings.rs`).
+//!
+//! Run as an integration test, not a unit test, because the section 9.7 check reads a file outside
+//! the crate (`doc_tables.rs` does the same: `cargo test`'s working directory for a `tests/`
+//! binary is the crate root). Which keys the doc lists, and with what default and range, is
+//! `doc_tables.rs`: those tables are generated from the schema.
+
+use std::path::Path;
+
+use ui_settings::schema::{Page, Schema, SettingsSchema, deep_link_path};
+use ui_settings::{AppearanceSettings, IconsSettings};
+
+const DOC_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../design/22-SETTINGS.md");
+
+fn schemas() -> Vec<Schema> {
+    vec![AppearanceSettings::schema(), IconsSettings::schema()]
+}
+
+// ---------------------------------------------------------------------------------------------
+// schema_round_trip
+
+#[test]
+fn schema_round_trip() {
+    for schema in schemas() {
+        let text = schema.to_toml();
+        let back = Schema::from_toml(&text).unwrap_or_else(|e| panic!("{text}: {e}"));
+        assert_eq!(back, schema, "{text}");
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// deep_link_resolves
+
+#[test]
+fn deep_link_resolves() {
+    let schemas = schemas();
+    assert_eq!(
+        deep_link_path(&schemas, "dark mode").map(|p| p.0),
+        Some("appearance.theme".to_owned()),
+        "\"dark mode\" should resolve to appearance.theme through its help text"
+    );
+    // The field is `motion_level` (`design/22-SETTINGS.md` section 3.1's own key,
+    // `appearance.motion_level`; the derive's path is mechanically `<domain>.<field>`, so it is
+    // not literally `appearance.motion` — see this crate's handback report). The doc's own
+    // wording for the key is "reduce motion" (section 3.1's `MotionLevel::Reduced` row), which
+    // is in the field's help text.
+    assert_eq!(
+        deep_link_path(&schemas, "reduce motion").map(|p| p.0),
+        Some("appearance.motion_level".to_owned()),
+        "\"reduce motion\" should resolve to appearance.motion_level through its help text"
+    );
+}
+
+// ---------------------------------------------------------------------------------------------
+// The doc's section 9.7 list
+
+fn keys_in_section(doc: &str, heading: &str, next_heading: &str) -> Vec<String> {
+    let start = doc
+        .find(heading)
+        .unwrap_or_else(|| panic!("{heading:?} not found in {DOC_PATH}"));
+    let after = &doc[start..];
+    let end = after
+        .find(next_heading)
+        .unwrap_or_else(|| panic!("{next_heading:?} not found after {heading:?} in {DOC_PATH}"));
+    let section = &after[..end];
+    section
+        .lines()
+        .filter_map(|line| {
+            let mut cells = line.split('|').map(str::trim);
+            let first_cell = cells.nth(1)?;
+            let key = first_cell.strip_prefix('`')?.strip_suffix('`')?;
+            // A retiring key has no field on purpose (its row says why).
+            let status = line
+                .trim_end_matches('|')
+                .rsplit('|')
+                .next()
+                .unwrap_or("")
+                .trim();
+            (!status.starts_with("RETIRING")).then(|| key.to_owned())
+        })
+        .collect()
+}
+
+// ---------------------------------------------------------------------------------------------
+// The struct-level acceptance items (b)-(c) from the derive's own promise: `AppearanceSettings`
+// and `IconsSettings` both carry the derive, resolve to the right file/page, and Advanced keys
+// are actually marked Advanced.
+
+#[test]
+fn both_domains_resolve_to_quire_appearance_toml() {
+    for schema in schemas() {
+        assert_eq!(schema.app.0, "quire");
+        assert_eq!(schema.file.0, "quire/appearance.toml");
+        assert_eq!(schema.version, 1);
+        for key in &schema.key {
+            assert_eq!(key.page, Page::Appearance, "{}", key.path.0);
+        }
+    }
+}
+
+/// The icon style is Basic (the Appearance page); any other icons key would be Advanced
+/// (design/22-SETTINGS.md section 5).
+#[test]
+fn icons_keys_exposure() {
+    const BASIC: [&str; 1] = ["icons.style"];
+    let icons = IconsSettings::schema();
+    assert_eq!(icons.key.len(), 1);
+    for key in &icons.key {
+        let want = match BASIC.contains(&key.path.0.as_str()) {
+            true => ui_settings::schema::Exposure::Basic,
+            false => ui_settings::schema::Exposure::Advanced,
+        };
+        assert_eq!(
+            key.exposure, want,
+            "{} (design/22-SETTINGS.md section 5)",
+            key.path.0
+        );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// agent_settable (design/22-SETTINGS.md section 9.7)
+
+use ui_settings::quire_schema;
+use ui_settings::schema::{AGENT_NEVER_SETTABLE, AGENT_SETTABLE_PROPOSED, AgentSetting};
+
+fn settable(schema: &Schema) -> Vec<&str> {
+    schema
+        .key
+        .iter()
+        .filter(|key| key.agent == AgentSetting::Settable)
+        .map(|key| key.path.0.as_str())
+        .collect()
+}
+
+#[test]
+fn use_my_styles_is_a_switch_on_the_appearance_page_that_defaults_to_on() {
+    use ui_settings::schema::{KeyKind, Page};
+    let schema = quire_schema();
+    let key = schema
+        .key
+        .iter()
+        .find(|key| key.path.0 == "appearance.custom_styles")
+        .expect("the key is in the schema");
+    assert_eq!(key.label.0, "Use my styles");
+    assert_eq!(key.page, Page::Appearance);
+    assert_eq!(key.default, toml::Value::Boolean(true));
+    assert_eq!(key.agent, AgentSetting::Settable);
+    assert!(
+        matches!(key.kind, KeyKind::Toggle),
+        "a bool is a switch: {:?}",
+        key.kind
+    );
+}
+
+#[test]
+fn a_mark_round_trips_derive_to_toml_to_loader_in_the_wire_form_detent_reads() {
+    let schema = quire_schema();
+    let text = schema.to_toml();
+    assert_eq!(text.matches("agent = \"settable\"").count(), 5, "{text}");
+    // Detent reads the mark from the raw table; the same text must show it there.
+    let table: toml::Table = text.parse().expect("the written schema is TOML");
+    let marked: Vec<&str> = table["key"]
+        .as_array()
+        .expect("[[key]] tables")
+        .iter()
+        .filter(|key| key.get("agent").and_then(toml::Value::as_str) == Some("settable"))
+        .filter_map(|key| key.get("path")?.as_str())
+        .collect();
+    assert_eq!(
+        marked,
+        [
+            "appearance.theme",
+            "appearance.accent",
+            "appearance.look",
+            "appearance.file_icons",
+            "appearance.custom_styles"
+        ]
+    );
+    let back = Schema::from_toml(&text).unwrap_or_else(|e| panic!("{text}: {e}"));
+    assert_eq!(back, schema);
+}
+
+#[test]
+fn a_schema_file_from_before_the_mark_loads_every_key_hands_off() {
+    // Strip every `agent` line from today's output: what an older program wrote.
+    let old: String = quire_schema()
+        .to_toml()
+        .lines()
+        .filter(|line| !line.starts_with("agent = "))
+        .map(|line| format!("{line}\n"))
+        .collect();
+    let schema = Schema::from_toml(&old).unwrap_or_else(|e| panic!("{old}: {e}"));
+    assert!(!schema.key.is_empty());
+    assert!(schema.key.iter().all(|k| k.agent == AgentSetting::HandsOff));
+}
+
+#[test]
+fn quire_marks_only_proposed_keys_it_owns() {
+    for path in settable(&quire_schema()) {
+        assert!(AGENT_SETTABLE_PROPOSED.contains(&path), "{path}");
+    }
+    for key in quire_schema().key {
+        let never = AGENT_NEVER_SETTABLE
+            .iter()
+            .any(|prefix| key.path.0.starts_with(prefix));
+        assert!(
+            !never || key.agent == AgentSetting::HandsOff,
+            "{} is never agent-settable",
+            key.path.0
+        );
+    }
+}
+
+#[test]
+fn the_design_doc_lists_exactly_the_proposed_keys() {
+    let doc =
+        std::fs::read_to_string(Path::new(DOC_PATH)).unwrap_or_else(|e| panic!("{DOC_PATH}: {e}"));
+    let in_doc = keys_in_section(
+        &doc,
+        "### 9.7 Agent-settable keys (proposed)",
+        "### 9.8 Pages, controls",
+    );
+    assert_eq!(in_doc, AGENT_SETTABLE_PROPOSED);
+}
+
+// ---------------------------------------------------------------------------------------------
+// A provided key (design/22-SETTINGS.md section 9.1, `KeyKind::Provided`)
+
+mod provided {
+    use ui_settings::schema::{Control, KeyKind, Provided, Schema, WordLabels};
+    use ui_settings::{AppearanceFile, quire_schema};
+
+    use crate::support::Scratch;
+
+    fn look_key() -> ui_settings::schema::KeySpec {
+        quire_schema()
+            .key
+            .into_iter()
+            .find(|key| key.path.0 == "appearance.look")
+            .expect("appearance.look is in the quire schema")
+    }
+
+    #[test]
+    fn appearance_look_is_a_provided_key_that_round_trips_in_the_schema_text() {
+        let key = look_key();
+        assert_eq!(
+            key.kind,
+            KeyKind::Provided {
+                capability: "look".to_owned()
+            }
+        );
+        assert_eq!(key.default, toml::Value::String("standard".to_owned()));
+        assert_eq!(key.label.0, "Look");
+        let schema = quire_schema();
+        let text = schema.to_toml();
+        assert!(text.contains("kind = \"provided\""), "{text}");
+        assert!(text.contains("capability = \"look\""), "{text}");
+        assert_eq!(Schema::from_toml(&text), Ok(schema));
+    }
+
+    #[test]
+    fn a_provided_key_is_drawn_by_the_menu_control_once_its_choices_are_filled() {
+        let key = look_key();
+        assert_eq!(key.control(), Control::Menu);
+        let words = vec!["standard".to_owned(), "org.example.Paper".to_owned()];
+        let labels = WordLabels(
+            [("standard", "Standard"), ("org.example.Paper", "Paper")]
+                .into_iter()
+                .map(|(word, label)| (word.to_owned(), label.to_owned()))
+                .collect(),
+        );
+        let filled = key.offering(words.clone(), labels);
+        assert_eq!(filled.kind, KeyKind::Menu { variants: words });
+        assert_eq!(filled.control(), Control::Menu);
+        assert_eq!(filled.labels.of("org.example.Paper"), Some("Paper"));
+    }
+
+    #[test]
+    fn the_stored_choice_is_a_bare_word_and_any_text_loads() {
+        let scratch = Scratch::new();
+        let store = scratch.store();
+        let mut file = AppearanceFile::default();
+        assert_eq!(file.appearance.look, Provided::standard());
+        file.appearance.look = Provided::new("org.example.Paper");
+        store.save(&file).expect("saves");
+        let text = std::fs::read_to_string(store.path::<AppearanceFile>().expect("path"))
+            .expect("the file is there");
+        assert!(text.contains("look = \"org.example.Paper\""), "{text}");
+        let loaded = store.load::<AppearanceFile>();
+        assert_eq!(
+            loaded.value.appearance.look.chosen(),
+            Some("org.example.Paper")
+        );
+        assert!(loaded.invalid.is_empty() && loaded.unknown.is_empty());
+    }
+}
+
+// `LiveSchema` is the `live` feature's.
+#[cfg(feature = "live")]
+mod unavailable {
+    use ui_settings::live::LiveSchema;
+    use ui_settings::schema::{
+        ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+        UnavailableReason,
+    };
+
+    fn spec() -> KeySpec {
+        KeySpec {
+            ends: None,
+            path: KeyPath("ai.model.text.fast".to_owned()),
+            kind: KeyKind::Menu {
+                variants: vec!["a".to_owned(), "b".to_owned()],
+            },
+            default: toml::Value::String("a".to_owned()),
+            label: Label("Fast".to_owned()),
+            help: Help(String::new()),
+            page: Page::Intelligence,
+            section: Section("Text".to_owned()),
+            exposure: Exposure::Basic,
+            labels: Default::default(),
+            agent: Default::default(),
+            unavailable: Default::default(),
+            groups: Default::default(),
+            places: Default::default(),
+            note: None,
+            control: None,
+        }
+    }
+
+    fn gated() -> KeySpec {
+        let mut key = spec();
+        key.unavailable.insert(
+            ChoiceWord("b".to_owned()),
+            UnavailableReason("Add an account to use".to_owned()),
+        );
+        key
+    }
+
+    fn live(key: KeySpec) -> LiveSchema {
+        LiveSchema {
+            version: 1,
+            key: vec![key],
+        }
+    }
+
+    #[test]
+    fn the_field_round_trips_in_json_and_is_absent_when_empty() {
+        let with = live(gated());
+        let json = with.to_json();
+        assert!(
+            json.contains(r#""unavailable":{"b":"Add an account to use"}"#),
+            "{json}"
+        );
+        assert_eq!(LiveSchema::from_json(&json).expect("parses"), with);
+
+        let without = live(spec());
+        let json = without.to_json();
+        assert!(!json.contains("unavailable"), "{json}");
+        assert_eq!(LiveSchema::from_json(&json).expect("parses"), without);
+    }
+
+    #[test]
+    fn json_from_before_the_field_parses() {
+        let old = r#"{"version":1,"key":[{"path":"ai.model.text.fast","kind":{"kind":"menu","v":{"variants":["a","b"]}},"default":"a","label":"Fast","help":"","page":{"kind":"intelligence"},"section":"Text","exposure":"basic"}]}"#;
+        let schema = LiveSchema::from_json(old).expect("old json parses");
+        assert!(schema.key[0].unavailable.is_empty());
+    }
+
+    #[test]
+    fn the_field_round_trips_in_toml() {
+        let key = gated();
+        let text = toml::to_string(&key).expect("serialises");
+        assert!(text.contains("[unavailable]"), "{text}");
+        assert_eq!(toml::from_str::<KeySpec>(&text).expect("parses"), key);
+        assert!(!toml::to_string(&spec()).unwrap().contains("unavailable"));
+    }
+
+    #[test]
+    fn an_unavailable_choice_is_refused_with_its_reason() {
+        let key = gated();
+        let refused = key
+            .check_available(&toml::Value::String("b".to_owned()))
+            .expect_err("b is gated");
+        assert_eq!(refused.reason.0, "Add an account to use");
+        assert_eq!(refused.choice.0, "b");
+        assert!(
+            key.check_available(&toml::Value::String("a".to_owned()))
+                .is_ok()
+        );
+        assert!(key.check_available(&toml::Value::Boolean(true)).is_ok());
+    }
+}
+
+// `LiveSchema` is the `live` feature's.
+#[cfg(feature = "live")]
+mod groups {
+    use ui_settings::live::LiveSchema;
+    use ui_settings::schema::{
+        ChoiceGroup, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+    };
+
+    fn spec(words: &[&str], groups: &[(&str, &str)]) -> KeySpec {
+        KeySpec {
+            ends: None,
+            path: KeyPath("ai.model.text.fast".to_owned()),
+            kind: KeyKind::Menu {
+                variants: words.iter().map(|word| (*word).to_owned()).collect(),
+            },
+            default: toml::Value::String(String::new()),
+            label: Label("Fast".to_owned()),
+            help: Help(String::new()),
+            page: Page::Intelligence,
+            section: Section("Text".to_owned()),
+            exposure: Exposure::Basic,
+            labels: Default::default(),
+            agent: Default::default(),
+            unavailable: Default::default(),
+            groups: groups
+                .iter()
+                .map(|(word, group)| {
+                    (
+                        ChoiceWord((*word).to_owned()),
+                        ChoiceGroup((*group).to_owned()),
+                    )
+                })
+                .collect(),
+            places: Default::default(),
+            note: None,
+            control: None,
+        }
+    }
+
+    /// Choices, their groups, and the sections wanted.
+    type Case<'a> = (&'a [&'a str], &'a [(&'a str, &'a str)], &'a [Want<'a>]);
+    type Want<'a> = (Option<&'a str>, &'a [&'a str]);
+
+    fn grouped() -> KeySpec {
+        spec(&["", "a1", "g1"], &[("a1", "Anthropic"), ("g1", "Google")])
+    }
+
+    #[test]
+    fn the_field_round_trips_in_json_and_is_absent_when_empty() {
+        let with = LiveSchema {
+            version: 1,
+            key: vec![grouped()],
+        };
+        let json = with.to_json();
+        assert!(
+            json.contains(r#""groups":{"a1":"Anthropic","g1":"Google"}"#),
+            "{json}"
+        );
+        assert_eq!(LiveSchema::from_json(&json).expect("parses"), with);
+        let without = LiveSchema {
+            version: 1,
+            key: vec![spec(&["a", "b"], &[])],
+        };
+        let json = without.to_json();
+        assert!(!json.contains("groups"), "{json}");
+        assert_eq!(LiveSchema::from_json(&json).expect("parses"), without);
+    }
+
+    #[test]
+    fn json_from_before_the_field_parses() {
+        let old = r#"{"version":1,"key":[{"path":"ai.model.text.fast","kind":{"kind":"menu","v":{"variants":["a","b"]}},"default":"a","label":"Fast","help":"","page":{"kind":"intelligence"},"section":"Text","exposure":"basic"}]}"#;
+        assert!(
+            LiveSchema::from_json(old).expect("parses").key[0]
+                .groups
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn the_field_round_trips_in_toml() {
+        let key = grouped();
+        let text = toml::to_string(&key).expect("serialises");
+        assert!(text.contains("[groups]"), "{text}");
+        assert_eq!(toml::from_str::<KeySpec>(&text).expect("parses"), key);
+        assert!(
+            !toml::to_string(&spec(&["a", "b"], &[]))
+                .unwrap()
+                .contains("groups")
+        );
+    }
+
+    #[test]
+    fn grouped_choices_are_ungrouped_first_then_groups_by_first_appearance() {
+        let table: &[Case] = &[
+            (&["a", "b"], &[], &[(None, &["a", "b"])]),
+            (
+                &["", "auto", "g1", "a1", "g2", "a2", "l1"],
+                &[
+                    ("g1", "Google"),
+                    ("g2", "Google"),
+                    ("a1", "Anthropic"),
+                    ("a2", "Anthropic"),
+                ],
+                &[
+                    (None, &["", "auto", "l1"]),
+                    (Some("Google"), &["g1", "g2"]),
+                    (Some("Anthropic"), &["a1", "a2"]),
+                ],
+            ),
+            (
+                &["a1", "x"],
+                &[("a1", "Anthropic")],
+                &[(None, &["x"]), (Some("Anthropic"), &["a1"])],
+            ),
+            (
+                &["a1"],
+                &[("a1", "Anthropic")],
+                &[(Some("Anthropic"), &["a1"])],
+            ),
+        ];
+        for (words, groups, want) in table {
+            let key = spec(words, groups);
+            let got: Vec<(Option<&str>, Vec<&str>)> = key
+                .grouped_choices()
+                .into_iter()
+                .map(|section| (section.group.map(|group| group.0.as_str()), section.choices))
+                .collect();
+            let want: Vec<(Option<&str>, Vec<&str>)> = want
+                .iter()
+                .map(|(group, choices)| (*group, choices.to_vec()))
+                .collect();
+            assert_eq!(got, want, "{words:?}");
+        }
+    }
+}
+
+// `LiveSchema` is the `live` feature's.
+#[cfg(feature = "live")]
+mod places {
+    use ui_settings::live::LiveSchema;
+    use ui_settings::schema::{
+        ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help, HostName, KeyKind,
+        KeyPath, KeySpec, Label, Note, Page, Section,
+    };
+
+    fn word(text: &str) -> ChoiceWord {
+        ChoiceWord(text.to_owned())
+    }
+
+    fn spec() -> KeySpec {
+        KeySpec {
+            ends: None,
+            path: KeyPath("ai.model.text.fast".to_owned()),
+            kind: KeyKind::Menu {
+                variants: vec!["a".to_owned(), "b".to_owned()],
+            },
+            default: toml::Value::String("a".to_owned()),
+            label: Label("Fast".to_owned()),
+            help: Help(String::new()),
+            page: Page::Intelligence,
+            section: Section("Text".to_owned()),
+            exposure: Exposure::Basic,
+            labels: Default::default(),
+            agent: Default::default(),
+            unavailable: Default::default(),
+            groups: Default::default(),
+            places: Default::default(),
+            note: None,
+            control: None,
+        }
+    }
+
+    fn placed() -> KeySpec {
+        let mut key = spec();
+        key.places.insert(
+            word("a"),
+            ChoicePlace::ThisComputer {
+                engine: Some(EngineName("llama.cpp".to_owned())),
+            },
+        );
+        key.places.insert(
+            word("b"),
+            ChoicePlace::Cloud {
+                company: CompanyName("Anthropic".to_owned()),
+            },
+        );
+        key.note = Some(Note("Runs where you pick.".to_owned()));
+        key
+    }
+
+    #[test]
+    fn each_place_has_its_wire_form() {
+        let table: &[(ChoicePlace, &str)] = &[
+            (
+                ChoicePlace::ThisComputer {
+                    engine: Some(EngineName("llama.cpp".to_owned())),
+                },
+                r#"{"kind":"this_computer","engine":"llama.cpp"}"#,
+            ),
+            (
+                ChoicePlace::ThisComputer { engine: None },
+                r#"{"kind":"this_computer"}"#,
+            ),
+            (
+                ChoicePlace::YourComputer {
+                    host: HostName("frieren".to_owned()),
+                },
+                r#"{"kind":"your_computer","host":"frieren"}"#,
+            ),
+            (
+                ChoicePlace::Cloud {
+                    company: CompanyName("Anthropic".to_owned()),
+                },
+                r#"{"kind":"cloud","company":"Anthropic"}"#,
+            ),
+            (ChoicePlace::Assistant, r#"{"kind":"assistant"}"#),
+        ];
+        for (place, wire) in table {
+            assert_eq!(&serde_json::to_string(place).expect("serialises"), wire);
+            assert_eq!(
+                &serde_json::from_str::<ChoicePlace>(wire).expect("parses"),
+                place
+            );
+        }
+    }
+
+    #[test]
+    fn places_and_note_round_trip_in_json() {
+        let with = LiveSchema {
+            version: 1,
+            key: vec![placed()],
+        };
+        let json = with.to_json();
+        assert!(
+            json.contains(r#""places":{"a":{"kind":"this_computer","engine":"llama.cpp"},"b":{"kind":"cloud","company":"Anthropic"}}"#),
+            "{json}"
+        );
+        assert!(json.contains(r#""note":"Runs where you pick.""#), "{json}");
+        assert_eq!(LiveSchema::from_json(&json).expect("parses"), with);
+    }
+
+    #[test]
+    fn places_and_note_round_trip_in_toml() {
+        let key = placed();
+        let text = toml::to_string(&key).expect("serialises");
+        assert!(text.contains("[places.a]"), "{text}");
+        assert!(text.contains("note = "), "{text}");
+        assert_eq!(toml::from_str::<KeySpec>(&text).expect("parses"), key);
+    }
+
+    #[test]
+    fn a_key_without_them_writes_neither_field() {
+        let json = LiveSchema {
+            version: 1,
+            key: vec![spec()],
+        }
+        .to_json();
+        assert!(!json.contains("places") && !json.contains("note"), "{json}");
+        let text = toml::to_string(&spec()).expect("serialises");
+        assert!(!text.contains("places") && !text.contains("note"), "{text}");
+    }
+
+    #[test]
+    fn json_from_before_the_fields_parses() {
+        let old = r#"{"version":1,"key":[{"path":"ai.model.text.fast","kind":{"kind":"menu","v":{"variants":["a","b"]}},"default":"a","label":"Fast","help":"","page":{"kind":"intelligence"},"section":"Text","exposure":"basic"}]}"#;
+        let key = &LiveSchema::from_json(old).expect("parses").key[0];
+        assert!(key.places.is_empty());
+        assert_eq!(key.note, None);
+    }
+
+    #[test]
+    fn place_of_reads_the_entry_for_a_word() {
+        let key = placed();
+        assert_eq!(
+            key.place_of("b"),
+            Some(&ChoicePlace::Cloud {
+                company: CompanyName("Anthropic".to_owned())
+            })
+        );
+        assert_eq!(key.place_of("zzz"), None);
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// notes, slider ends and section footnotes (detent's style pass, 2026-10-27)
+
+mod notes_and_footnotes {
+    use ui_settings::schema::{
+        Footnote, FootnoteText, Label, Note, Page, Schema, Section, SettingsSchema, SliderEnds,
+    };
+
+    #[derive(Debug, Default, ui_settings::SettingsSchema)]
+    #[settings(
+        file = "quire/test.toml",
+        domain = "dock",
+        page = Page::Dock,
+        footnote(section = "Hiding", text = "The Dock comes back when the pointer reaches the edge.")
+    )]
+    struct DockLike {
+        #[settings(label = "Size", range = "16..=128", ends = ("Small", "Large"))]
+        size: u8,
+        #[settings(
+            label = "Hide automatically",
+            section = "Hiding",
+            note = "Only on this display."
+        )]
+        hide: String,
+    }
+
+    fn key<'a>(schema: &'a Schema, path: &str) -> &'a ui_settings::schema::KeySpec {
+        schema
+            .key
+            .iter()
+            .find(|k| k.path.0 == path)
+            .unwrap_or_else(|| panic!("no {path}"))
+    }
+
+    #[test]
+    fn the_derive_sets_a_note_slider_ends_and_a_footnote() {
+        let schema = DockLike::schema();
+        assert_eq!(
+            key(&schema, "dock.size").ends,
+            Some(SliderEnds {
+                low: Label("Small".to_owned()),
+                high: Label("Large".to_owned()),
+            })
+        );
+        assert_eq!(key(&schema, "dock.size").note, None);
+        assert_eq!(
+            key(&schema, "dock.hide").note,
+            Some(Note("Only on this display.".to_owned()))
+        );
+        assert_eq!(key(&schema, "dock.hide").ends, None);
+        assert_eq!(
+            schema.footnotes,
+            vec![Footnote {
+                page: Page::Dock,
+                section: Section("Hiding".to_owned()),
+                text: FootnoteText(
+                    "The Dock comes back when the pointer reaches the edge.".to_owned(),
+                ),
+            }]
+        );
+    }
+
+    #[test]
+    fn they_round_trip_and_an_older_schema_reads_without_them() {
+        let schema = DockLike::schema();
+        let text = schema.to_toml();
+        assert!(text.contains("[[footnote]]"), "{text}");
+        assert_eq!(Schema::from_toml(&text).ok(), Some(schema));
+        let older = super::schemas().remove(0).to_toml();
+        assert!(
+            !older.contains("footnote") && !older.contains("ends"),
+            "{older}"
+        );
+        let back = Schema::from_toml(&older).unwrap_or_else(|e| panic!("{older}: {e}"));
+        assert!(back.footnotes.is_empty());
+        assert!(back.key.iter().all(|k| k.ends.is_none()));
+    }
+}

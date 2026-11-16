@@ -1,0 +1,27 @@
+[package]
+name = "agent-voice-wire"
+description = "The bodies of org.quire.Voice1: begin, events on the utterance fd, ends, faults, status and refusals. Content-free except the transcript fields, which redact their Debug."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+action-wire = {path = "../action-wire"}
+action-vocab = {path = "../action-vocab"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

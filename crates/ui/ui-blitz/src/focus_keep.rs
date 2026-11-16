@@ -1,0 +1,217 @@
+//! The keyboard after the element that had it leaves the document.
+//!
+//! Blitz resets the focus to nowhere when the focused node is removed
+//! (`clear_interaction_state_for_removed_node`), so a menu that closed on Escape, or a field
+//! whose own Enter removed it, left every later key going to the document's root instead of
+//! the app's `.app[tabindex]`. Under `FocusFallback::Ancestor` the host looks at the focus after
+//! each settled frame (the harness) or window event (the window, before the document hears the
+//! event), and when the element it last saw focused is gone and the focus is nowhere, focuses
+//! the nearest focusable ancestor that element had, remembered while it was there (Blitz severs
+//! a removed node from its parent). A surface a component registered through `ui_components::host::hand_back::HandBack`
+//! (a floating menu's panel, whose own ancestors are the overlay layer) gives it to the element
+//! it named first (the menu's anchor). After those, the element focused before the removed one
+//! and then the element under the pointer when the keyboard moved to it (the button whose press
+//! opened the menu, when the menu's own focus overtook the press's): the opener, in both cases.
+//!
+//! A focus cleared on purpose (a field's blur, a click on nothing) leaves the element in the
+//! document, and the keeper then does nothing, even if the element leaves later.
+
+use crate::click_focus::nowhere;
+use crate::focus_chain::{Candidates, Mark};
+use crate::node_ref::{DocRef, NodeRef};
+use blitz_dom::{BaseDocument, NodeId};
+use dioxus::prelude::MountedData;
+use std::cell::RefCell;
+use std::rc::Rc;
+
+/// The element last seen with the keyboard, and where the keyboard could go without it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Held {
+    node: Mark,
+    /// The element itself (if focusable) and its focusable ancestors, nearest first.
+    candidates: Candidates,
+}
+
+/// What the keeper last saw.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+enum Seen {
+    /// Nothing focused yet, or the keeper just moved the focus.
+    #[default]
+    Nothing,
+    /// An element has the keyboard.
+    On(Held),
+    /// The focus was cleared while the element stayed: on purpose, so it is left there.
+    Released(Held),
+}
+
+impl Seen {
+    fn held(&self) -> Option<&Held> {
+        match self {
+            Seen::Nothing => None,
+            Seen::On(held) | Seen::Released(held) => Some(held),
+        }
+    }
+}
+
+/// The host's memory of the focus, one per document.
+#[derive(Debug, Clone, Default)]
+pub struct FocusKeeper {
+    seen: Seen,
+    /// The candidates of the element focused before the last one, then those under the pointer
+    /// when the focus moved.
+    before: Candidates,
+    /// Surfaces that give the keyboard back to a named element (`ui_components::host::hand_back::HandBack`).
+    returns: Vec<HandBack>,
+}
+
+/// One registered hand-back: when `surface` is removed with the keyboard, `opener` has it next;
+/// if the opener has gone too (the pick swapped the view it stood in), `fallback` does, the
+/// opener's focusable ancestors as they were when the surface mounted.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct HandBack {
+    surface: NodeId,
+    opener: NodeId,
+    fallback: Candidates,
+}
+
+impl FocusKeeper {
+    /// Look at `doc`'s focus: remember a newly focused element, and answer the element to focus
+    /// when the one that had the keyboard was removed.
+    pub(crate) fn look(&mut self, doc: &BaseDocument) -> Option<NodeId> {
+        match focused(doc) {
+            Some(held) => {
+                if self.seen.held().map(|seen| &seen.node) != Some(&held.node) {
+                    self.before = self.before_next(doc);
+                }
+                self.seen = Seen::On(held);
+                None
+            }
+            None => self.lost(doc),
+        }
+    }
+
+    /// The candidates to fall back on once the element now focused is removed: those of the
+    /// element that had the keyboard, then the one under the pointer. When that element is
+    /// already gone (a menu replaced by the part its row opened), it was only passing the
+    /// keyboard on, so the opener it came from stays the one to return to.
+    fn before_next(&self, doc: &BaseDocument) -> Candidates {
+        match self.seen.held() {
+            Some(seen) if seen.node.is_here(doc) => seen.candidates.then(&under_pointer(doc)),
+            Some(_) => self.before.clone(),
+            None => under_pointer(doc),
+        }
+    }
+
+    /// Record that `surface`, removed with the keyboard, gives it to `opener`, or to `fallback`
+    /// (the opener's focusable ancestors, read now) once the opener is gone.
+    pub(crate) fn hand_back(&mut self, surface: NodeId, opener: NodeId, fallback: Candidates) {
+        self.returns.retain(|back| back.surface != surface);
+        self.returns.push(HandBack {
+            surface,
+            opener,
+            fallback,
+        });
+    }
+
+    /// The candidates `surface`'s registered opener offers now (its ancestors from when the
+    /// surface mounted, if the opener has gone), and the registrations of surfaces no longer in
+    /// `doc` forgotten.
+    fn opener_of(&mut self, doc: &BaseDocument, surface: NodeId) -> Candidates {
+        let offered = self
+            .returns
+            .iter()
+            .find(|back| back.surface == surface)
+            .map(|back| {
+                if in_document(doc, back.opener) {
+                    Candidates::from(doc, back.opener)
+                } else {
+                    back.fallback.clone()
+                }
+            });
+        self.returns.retain(|back| in_document(doc, back.surface));
+        offered.unwrap_or_default()
+    }
+
+    /// The focus is nowhere: removed, or cleared on purpose.
+    fn lost(&mut self, doc: &BaseDocument) -> Option<NodeId> {
+        let Seen::On(held) = self.seen.clone() else {
+            return None;
+        };
+        if held.node.is_here(doc) {
+            self.seen = Seen::Released(held);
+            return None;
+        }
+        let next = self
+            .opener_of(doc, held.node.node())
+            .then(&held.candidates)
+            .then(&self.before)
+            .first_live(doc);
+        self.seen = Seen::Nothing;
+        next
+    }
+}
+
+/// The focusable elements from the one under the pointer up.
+fn under_pointer(doc: &BaseDocument) -> Candidates {
+    doc.get_hover_node_id()
+        .map_or_else(Candidates::default, |node| Candidates::from(doc, node))
+}
+
+/// Whether `node` is in `doc`'s tree.
+fn in_document(doc: &BaseDocument, node: NodeId) -> bool {
+    doc.get_node(node)
+        .is_some_and(|found| found.flags.is_in_document())
+}
+
+/// The element with the keyboard, unless it is nowhere.
+fn focused(doc: &BaseDocument) -> Option<Held> {
+    if nowhere(doc) {
+        return None;
+    }
+    let id = doc.get_focussed_node_id()?;
+    let node = Mark::of(doc.get_node(id)?)?;
+    Some(Held {
+        node,
+        candidates: Candidates::from(doc, id),
+    })
+}
+
+/// Look at the document behind `doc` and focus what the keeper answers. `true` when it focused
+/// an ancestor of a removed element. A document the renderer holds is looked at next time.
+pub fn keep(keeper: &mut FocusKeeper, doc: &DocRef) -> bool {
+    let before = keeper.clone();
+    let Some(Some(next)) = doc.read(|read| keeper.look(read)) else {
+        return false;
+    };
+    match doc.write(|write| {
+        write.set_focus_to(next);
+        crate::focus::caret_after_text(write, next);
+        write.shell_provider.request_redraw();
+    }) {
+        Ok(()) => true,
+        Err(_) => {
+            // Look again next time, from what was known before this look.
+            *keeper = before;
+            false
+        }
+    }
+}
+
+/// The `ui_components::host::hand_back::HandBack` that records into `keeper`. A registration made while the keeper is
+/// busy looking is dropped; the keeper's own fallbacks still apply.
+pub(crate) fn hand_back_seam(keeper: Rc<RefCell<FocusKeeper>>) -> ui_components::host::hand_back::HandBack {
+    ui_components::host::hand_back::HandBack::recording(Rc::new(
+        move |surface: &MountedData, opener: &MountedData| {
+            if let (Some(surface), Some(opener), Ok(mut keeper)) = (
+                NodeRef::of(surface),
+                NodeRef::of(opener),
+                keeper.try_borrow_mut(),
+            ) {
+                let fallback = opener
+                    .read(|doc| Candidates::from(doc, opener.node))
+                    .unwrap_or_default();
+                keeper.hand_back(surface.node, opener.node, fallback);
+            }
+        },
+    ))
+}

@@ -1,0 +1,19 @@
+[package]
+name = "computer-use-dbus"
+description = "org.quire.Cua1 (Manager and Run) as zbus proxies and skeletons, its introspection, bus names, object paths and the error mapping."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+computer-use-bus = {path = "../computer-use-bus"}
+provenance = {path = "../../provenance/provenance"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

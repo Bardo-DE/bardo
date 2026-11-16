@@ -1,0 +1,22 @@
+//! Files dragged into the harness's document from outside, as the window's hook feeds a drag
+//! from the platform (`crate::window_drop`): the same `ui_components::file_drop::board::FileDropBoard`, the same hit test.
+
+use crate::harness::Harness;
+use dioxus::core::consume_context_from_scope;
+use dioxus::prelude::ScopeId;
+use ui_components::file_drop::board::FileDropBoard;
+use ui_components::file_drop::drag::{DropAcceptance, FileDragInput};
+
+impl Harness {
+    /// One step of a drag from outside the window (`FileDragInput::Entered`, `Offered`, `Moved`,
+    /// `Dropped`, `Left`), then a render. Answers what the window would tell the platform: a copy
+    /// over a drop target, a refusal elsewhere.
+    pub(crate) fn file_drag(&mut self, input: FileDragInput) -> DropAcceptance {
+        let answer = self.within(|| {
+            consume_context_from_scope::<FileDropBoard>(ScopeId::ROOT)
+                .map_or(DropAcceptance::Refuse, |host| host.feed(input))
+        });
+        self.settle_now();
+        answer
+    }
+}

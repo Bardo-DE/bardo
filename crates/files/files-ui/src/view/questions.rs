@@ -1,0 +1,133 @@
+//! The questions the window asks before it goes on: a taken name, and erasing for good. Each is
+//! quire's `Alert`, with Finder's words.
+
+use dioxus::prelude::*;
+use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle, Suppression};
+use ui_components::prelude::{Alert, Check, TextLine};
+use files_core::{Answer, Conflict, Resolution};
+use files_model::{BusyDisk, ExtensionChange, Input, Question};
+
+use crate::state::Browse;
+use crate::words::{CANNOT_UNDO, conflict_words, erase_words, extension_words, force_eject_words};
+
+/// The question that is up, if any.
+#[component]
+pub(super) fn Questions(browse: Browse) -> Element {
+    let question = browse.state.read().question().clone();
+    match question {
+        Question::None => rsx! {},
+        Question::EmptyTrash => erase(browse, erase_words(None), "Empty Trash"),
+        Question::DeleteForGood(items) => {
+            let first = items
+                .first()
+                .map(|item| item.original.name.display().into_owned())
+                .unwrap_or_default();
+            let title = erase_words(Some((items.len(), first)));
+            erase(browse, title, "Delete Immediately")
+        }
+        Question::Conflict(conflict) => rsx! {
+            ConflictAlert { browse, conflict }
+        },
+        Question::ForceEject(busy) => force_eject(browse, &busy),
+        Question::ChangeExtension(change) => extension(browse, &change),
+    }
+}
+
+/// "Are you sure you want to permanently erase ...?" with the destructive button and Cancel.
+fn erase(browse: Browse, title: String, action: &str) -> Element {
+    let confirm = EventHandler::new(move |()| browse.send(Input::Confirm));
+    let cancel = EventHandler::new(move |()| browse.send(Input::Dismiss));
+    rsx! {
+        Alert {
+            title,
+            message: Some(TextLine::from(CANNOT_UNDO)),
+            style: AlertStyle::Warning,
+            buttons: vec![
+                AlertButton::new(action, AlertRole::Destructive, confirm),
+                AlertButton::new("Cancel", AlertRole::Cancel, cancel),
+            ],
+        }
+    }
+}
+
+/// A rename that changes a file's extension: use the new name or keep the old extension, which is
+/// the default.
+fn extension(browse: Browse, change: &ExtensionChange) -> Element {
+    let confirm = EventHandler::new(move |()| browse.send(Input::Confirm));
+    let keep = EventHandler::new(move |()| browse.send(Input::Dismiss));
+    let words = extension_words(change);
+    rsx! {
+        Alert {
+            title: words.title,
+            message: Some(TextLine::from(words.message)),
+            style: AlertStyle::Warning,
+            buttons: vec![
+                AlertButton::new(&words.go_ahead, AlertRole::Normal, confirm),
+                AlertButton::new(&words.keep, AlertRole::Cancel, keep),
+            ],
+        }
+    }
+}
+
+/// A disk in use: Force Eject (destructive) or Cancel, which is the default.
+fn force_eject(browse: Browse, busy: &BusyDisk) -> Element {
+    let confirm = EventHandler::new(move |()| browse.send(Input::Confirm));
+    let cancel = EventHandler::new(move |()| browse.send(Input::Dismiss));
+    let (title, message) = force_eject_words(&busy.name, &busy.programs);
+    rsx! {
+        Alert {
+            title,
+            message: Some(TextLine::from(message)),
+            style: AlertStyle::Warning,
+            buttons: vec![
+                AlertButton::new("Force Eject", AlertRole::Destructive, confirm),
+                AlertButton::new("Cancel", AlertRole::Cancel, cancel),
+            ],
+        }
+    }
+}
+
+/// A taken name: Keep Both, Replace, Skip (when more items come after) or Stop, and "Apply to
+/// All" for the rest.
+#[component]
+fn ConflictAlert(browse: Browse, conflict: Conflict) -> Element {
+    let mut all = use_signal(|| Check::Off);
+    let (title, message) = conflict_words(&conflict);
+    let answer = move |answer: Answer| {
+        let resolution = match all() {
+            Check::On => Resolution::for_rest(answer),
+            Check::Off | Check::Mixed => Resolution::once(answer),
+        };
+        browse.send(Input::Answer(resolution));
+    };
+    let button = move |label: &str, role: AlertRole, answer_with: Answer| {
+        AlertButton::new(
+            label,
+            role,
+            EventHandler::new(move |()| answer(answer_with)),
+        )
+    };
+    let mut buttons = vec![
+        button("Keep Both", AlertRole::Normal, Answer::KeepBoth),
+        button("Replace", AlertRole::Normal, Answer::Replace),
+    ];
+    let suppression = if conflict.rest > 0 {
+        buttons.push(button("Skip", AlertRole::Normal, Answer::Skip));
+        Some(Suppression {
+            label: "Apply to All".to_owned(),
+            value: all(),
+            onchange: EventHandler::new(move |now: Check| all.set(now)),
+        })
+    } else {
+        None
+    };
+    buttons.push(button("Stop", AlertRole::Cancel, Answer::Stop));
+    rsx! {
+        Alert {
+            title,
+            message: Some(TextLine::from(message)),
+            buttons,
+            suppression,
+        }
+    }
+}

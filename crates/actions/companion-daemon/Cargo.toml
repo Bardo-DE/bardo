@@ -1,0 +1,73 @@
+[package]
+name = "companion-daemon"
+description = "The companion daemon: one identity over many tasks, each its own docket session. Serves org.quire.Companion1; the binary serves it on the session bus. It is the bus adapter and the daemon over docket-helpers (the helpers' hub and the routine timer); the decisions over values are companion-core's."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "companion_daemon"
+path = "src/lib.rs"
+
+[[bin]]
+name = "companiond"
+path = "src/main.rs"
+
+[dependencies]
+companion-core = {path = "../companion-core"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-vocab = {path = "../action-vocab"}
+companion-helpers = {path = "../companion-helpers", features = ["tokio"]}
+action-store = {path = "../action-store"}
+action-log = {path = "../action-log"}
+agent-planner = {path = "../agent-planner"}
+agent-skills = {path = "../agent-skills"}
+agent-skills-disk = {path = "../agent-skills-disk"}
+companion-tasks = {path = "../companion-tasks"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
+action-dbus = {path = "../action-dbus", features = ["inferd"]}
+action-procroot = {path = "../action-procroot"}
+action-settings = {path = "../action-settings"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+account-callers = {path = "../../accounts/account-callers"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+toml = {version = "1"}
+tracing = {version = "0.1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[features]
+# Span export over OTLP (docket-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
+otlp = ["action-log/otlp"]
+
+[dev-dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+memory-core = {path = "../../memory/memory-core"}
+action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
+agent-loop = {path = "../agent-loop"}
+action-manifest = {path = "../action-manifest"}
+permission-core = {path = "../permission-core"}
+inference-client = {path = "../../inference/inference-client"}
+inference-core = {path = "../../inference/inference-core"}
+action-testbus = {path = "../action-testbus"}
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+action-fake = {path = "../action-fake"}
+action-router = {path = "../action-router"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

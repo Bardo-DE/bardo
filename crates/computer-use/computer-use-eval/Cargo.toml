@@ -1,0 +1,54 @@
+[package]
+name = "computer-use-eval"
+description = "The computer-use model eval: fake surfaces, a task set, a harness that plays a task against a scripted or a local model, and the report."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[[bin]]
+name = "cua-eval"
+path = "src/main.rs"
+
+[dependencies]
+action-gate-wire = {path = "../../actions/action-gate-wire"}
+action-wire = {path = "../../actions/action-wire"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-action = {path = "../computer-use-action"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+keymap = {path = "../../keymap/keymap"}
+computer-use-capture = {path = "../computer-use-capture"}
+computer-use-seat-input = {path = "../computer-use-seat-input"}
+computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
+computer-use-bus = {path = "../computer-use-bus"}
+computer-use-run = {path = "../computer-use-run"}
+computer-use-fake = {path = "../computer-use-fake"}
+action-core = {path = "../../actions/action-core"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+computer-use-session = {path = "../computer-use-session"}
+computer-use-vendors = {path = "../computer-use-vendors"}
+computer-use-parse = {path = "../computer-use-parse"}
+model-catalog = {path = "../../models/model-catalog"}
+model-http = {features = ["client"], path = "../../models/model-http"}
+model-openai-compat = {path = "../../models/model-openai-compat"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
+keyboard-types = {version = "0.7", features = ["serde"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+model-provider = {features = ["testing"], path = "../../models/model-provider"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

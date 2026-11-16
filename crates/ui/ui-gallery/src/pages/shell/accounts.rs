@@ -1,0 +1,295 @@
+//! The Accounts page: the consent alert and every step of the add-account sheet in light and
+//! dark, each in a Sheet root of its own over the wallpaper, and the small parts an app shows
+//! (account picker, no-account states, badge, limited notes). The values are the page's own:
+//! nothing here talks to an account service.
+
+use crate::axes::Axes;
+use crate::pages::Section;
+use crate::wallpaper;
+use dioxus::prelude::*;
+use ui_components::assembly::ds::Inject;
+use ui_components::components::content::provider_mark::MarkProvider;
+use ui_components::prelude::*;
+use ui_shell::accounts::model::{
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText, FormField,
+    FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey, ServiceKey,
+    ServiceLine, ServiceOffer, SignInFault,
+};
+use ui_shell::prelude::*;
+
+fn account(label: &str, provider: MarkProvider) -> AccountChoice {
+    AccountChoice {
+        key: ChoiceKey(label.to_owned()),
+        label: label.to_owned(),
+        provider,
+    }
+}
+
+fn accounts() -> Vec<AccountChoice> {
+    vec![
+        account("ada@example.org", MarkProvider::Fastmail),
+        account("ada@work.example", MarkProvider::Microsoft),
+    ]
+}
+
+fn providers() -> Vec<ProviderEntry> {
+    [
+        ("nextcloud", "Nextcloud", MarkProvider::Imap),
+        ("fastmail", "Fastmail", MarkProvider::Fastmail),
+        ("google", "Google", MarkProvider::Google),
+        ("microsoft", "Microsoft 365", MarkProvider::Microsoft),
+    ]
+    .map(|(key, label, mark)| ProviderEntry::new(ProviderKey(key.to_owned()), label, mark))
+    .to_vec()
+}
+
+fn field(role: FieldRole, text: FieldText) -> FormField {
+    FormField::new(role, true, text)
+}
+
+fn manual(role: FieldRole, text: &str, part: FormPart) -> FormField {
+    field(role, FieldText::Plain(text.to_owned())).in_part(part)
+}
+
+fn chosen(role: FieldRole, slug: &str, options: &[(&str, &str)], part: FormPart) -> FormField {
+    let choices = options
+        .iter()
+        .map(|(slug, label)| Choice::new(*slug, *label));
+    manual(role, slug, part).choosing(choices.collect())
+}
+
+fn secret(role: FieldRole, part: FormPart) -> FormField {
+    field(role, FieldText::Secret(Hidden::new("not shown"))).in_part(part)
+}
+
+const PROTOCOLS: [(&str, &str); 3] = [
+    ("imap", "Most servers (IMAP)"),
+    ("pop3", "Older servers (POP)"),
+    ("jmap", "Newer servers (JMAP)"),
+];
+const SECURITIES: [(&str, &str); 2] = [
+    ("tls", "Secure from the start (SSL/TLS)"),
+    ("starttls", "Secure after connecting (STARTTLS)"),
+];
+
+/// The hand-typed form for `protocol`, as a host refits it: newer servers have no outgoing fields.
+fn by_hand(protocol: &str, port: &str, hint: &'static str) -> Vec<FormField> {
+    use FieldRole::*;
+    use FormPart::*;
+    let ported = |role, text: &str, hint, part| {
+        let port = manual(role, text, part).hinted(hint);
+        FormField {
+            required: false,
+            ..port
+        }
+    };
+    match protocol {
+        "jmap" => vec![
+            chosen(Protocol, "jmap", &PROTOCOLS, Incoming),
+            manual(SessionUrl, "https://mail.example.org/session", Incoming),
+            secret(Token, SignIn),
+        ],
+        other => vec![
+            chosen(Protocol, other, &PROTOCOLS, Incoming),
+            manual(Server, "mail.example.org", Incoming),
+            ported(Port, port, hint, Incoming),
+            chosen(Security, "tls", &SECURITIES, Incoming),
+            manual(OutgoingServer, "smtp.example.org", Outgoing),
+            ported(OutgoingPort, "", "587", Outgoing),
+            chosen(OutgoingSecurity, "starttls", &SECURITIES, Outgoing),
+            manual(Username, "ada", SignIn),
+            secret(Password, SignIn),
+        ],
+    }
+}
+
+fn service(key: &str, name: &str, offer: ServiceOffer, limit: Option<Limitation>) -> ServiceLine {
+    ServiceLine {
+        key: ServiceKey(key.to_owned()),
+        name: name.to_owned(),
+        offer,
+        limit,
+    }
+}
+
+fn services() -> Vec<ServiceLine> {
+    vec![
+        service("mail", "Mail", ServiceOffer::Offered(Check::On), None),
+        service(
+            "calendar",
+            "Calendar",
+            ServiceOffer::Offered(Check::On),
+            None,
+        ),
+        service(
+            "files",
+            "Files",
+            ServiceOffer::Offered(Check::Off),
+            Some(Limitation::AppFolderOnly),
+        ),
+        service(
+            "notes",
+            "Notes",
+            ServiceOffer::Absent(Limitation::NotOnServer),
+            None,
+        ),
+    ]
+}
+
+/// The page.
+#[component]
+pub fn AccountsPage() -> Element {
+    rsx! {
+        Section { title: "Consent", note: "ConsentAlert: an app asks to use an account. The alert's own column (icon slot, title, message), the account pop-up when several fit, then Allow Once (the default, Return), This Session Only (only when the host offers it), Always Allow and Don't Allow stacked. Escape dismisses and stores nothing; only Don't Allow denies. With no account that fits it offers Add Account instead.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: consent(vec![account("ada@example.org", MarkProvider::Fastmail)]) }
+                Stage { theme: Theme::Dark, body: consent(accounts()) }
+                Stage { theme: Theme::Light, body: consent(vec![]) }
+            }
+        }
+        Section { title: "Choose a provider", note: "ProviderList: a search field over the providers' rows with their marks, and a generic Other row. The keyboard starts in the search; Return picks the row under the cursor, else the first match; Escape cancels.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: step(rsx! {
+                    ProviderList { providers: providers(), query: String::new(), on_query: |_| {}, on_cursor: |_| {}, on_pick: |_| {}, on_cancel: |_| {} }
+                }) }
+                Stage { theme: Theme::Dark, body: step(rsx! {
+                    ProviderList { providers: providers(), query: "mail".to_owned(), on_query: |_| {}, on_cursor: |_| {}, on_pick: |_| {}, on_cancel: |_| {} }
+                }) }
+            }
+        }
+        Section { title: "Sign in", note: "SignInForm: the fields the step asks for, words from the role. Continue stays disabled until every required field has text; a refused password marks its field with a sentence under it and shakes once per refused attempt. The password is a hidden field: its text reaches the host as secret text and never the markup.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: sign_in(vec![
+                    field(FieldRole::Address, FieldText::Plain(String::new())),
+                    field(FieldRole::Password, FieldText::Secret(Hidden::default())),
+                ], None) }
+                Stage { theme: Theme::Dark, body: sign_in(vec![
+                    field(FieldRole::Address, FieldText::Plain("ada@example.org".to_owned())),
+                    field(FieldRole::Password, FieldText::Secret(Hidden::new("not shown"))),
+                ], Some(FieldProblem { role: FieldRole::Password, kind: ProblemKind::Refused, attempt: Attempt(1) })) }
+            }
+        }
+        Section { title: "Sign in by hand", note: "SignInForm with choices and groups: a field that carries choices is a pop-up button and reports the slug of the one picked through the same edit event, so the host can refit the list (newer servers have no outgoing fields). Fields that name a part sit in titled groups; a port is a plain entry whose hint is the host's usual number, and a refused or invalid one is marked under it.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, height: StageHeight::Tall, body: sign_in(by_hand("imap", "", "993"), None) }
+                Stage { theme: Theme::Dark, height: StageHeight::Tall, body: sign_in(by_hand("pop3", "pop", "995"), Some(FieldProblem { role: FieldRole::Port, kind: ProblemKind::Invalid, attempt: Attempt(1) })) }
+            }
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, height: StageHeight::Tall, body: sign_in(by_hand("jmap", "", ""), None) }
+            }
+        }
+        Section { title: "Browser and device code", note: "BrowserWait: the page that was opened, Copy Link (the host copies; Copied once it says so), Open Again and Cancel. ShowCode: the device code large, the page to type it at, Copy Code.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: step(rsx! {
+                    BrowserWait { provider: "Nextcloud", url: "https://cloud.example.org/login/v2/flow/abc123", on_open_again: |_| {}, on_copy: |_| {}, on_cancel: |_| {} }
+                }) }
+                Stage { theme: Theme::Dark, body: step(rsx! {
+                    ShowCode { provider: "Microsoft 365", code: "BQKD-4MZP", url: "https://microsoft.com/devicelogin", copied: true, on_copy: |_| {}, on_cancel: |_| {} }
+                }) }
+            }
+        }
+        Section { title: "Working and failed", note: "SignInWorking: nothing can be pressed but Cancel. SignInFailed: why it ended without an account in a sentence, with Back, Cancel and Try Again (the default). With Recovery::NoRetry a retry cannot help: no Try Again, Done is the default, and an optional FailureAction (Open Settings) stands before it.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: step(rsx! {
+                    SignInWorking { provider: "Fastmail", on_cancel: |_| {} }
+                }) }
+                Stage { theme: Theme::Dark, body: step(rsx! {
+                    SignInFailed { provider: "Fastmail", why: SignInFault::Unreachable, on_retry: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+                }) }
+            }
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: step(rsx! {
+                    SignInFailed {
+                        provider: "Fastmail",
+                        why: SignInFault::Forbidden,
+                        recovery: Recovery::NoRetry,
+                        extra: Some(FailureAction { label: "Open Settings".to_owned(), on_press: EventHandler::new(|()| {}) }),
+                        on_back: |_| {},
+                        on_cancel: |_| {},
+                    }
+                }) }
+            }
+        }
+        Section { title: "Review", note: "ReviewServices: each service the provider offers with a switch, a limited one with its reason, and one the provider lacks with why. The last button reads Done, or Add, and allow Mail to use it when an app's chooser sent the person here.",
+            div { class: "g-row g-row-top",
+                Stage { theme: Theme::Light, body: step(rsx! {
+                    ReviewServices { account: "ada@example.org", services: services(), on_toggle: |_| {}, on_done: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+                }) }
+                Stage { theme: Theme::Dark, body: step(rsx! {
+                    ReviewServices { account: "ada@example.org", services: services(), allow: Some("Mail".to_owned()), on_toggle: |_| {}, on_done: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+                }) }
+            }
+        }
+        Section { title: "In an app", note: "AccountPicker: a pop-up of the accounts an app may use with Add Account under them. NoAccount: the empty state for each reason, with the one action that can help. AccountBadge: the mark and the name. LimitedNote: the one secondary line.",
+            div { class: "g-row g-row-top",
+                AccountPicker { accounts: accounts(), chosen: Some(ChoiceKey("ada@example.org".to_owned())), on_pick: |_| {} }
+                AccountBadge { provider: MarkProvider::Fastmail, label: "ada@example.org" }
+                LimitedNote { limit: Limitation::SevenDays }
+            }
+            div { class: "g-row g-row-top",
+                for why in [NoAccountWhy::NeedsAccount, NoAccountWhy::Denied, NoAccountWhy::Unsupported] {
+                    div { class: "g-col",
+                        NoAccount { why, on_add: |_| {}, on_settings: |_| {} }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn consent(choices: Vec<AccountChoice>) -> Element {
+    rsx! {
+        ConsentAlert { app: "Photos", request: "keep its library in your files", choices, on_choose: |_| {}, on_answer: |_| {} }
+    }
+}
+
+/// A step in the standalone panel, as a host without a window of its own would show it.
+fn step(body: Element) -> Element {
+    rsx! {
+        AccountSheet { label: "Add Account", on_dismiss: |_| {}, {body} }
+    }
+}
+
+fn sign_in(fields: Vec<FormField>, problem: Option<FieldProblem>) -> Element {
+    step(rsx! {
+        SignInForm { provider: "Fastmail", mark: MarkProvider::Fastmail, fields, problem, on_input: |_| {}, on_submit: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+    })
+}
+
+/// How tall a stage is: a long form needs more wallpaper around it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+enum StageHeight {
+    #[default]
+    Regular,
+    Tall,
+}
+
+impl StageHeight {
+    fn slug(self) -> &'static str {
+        match self {
+            StageHeight::Regular => "regular",
+            StageHeight::Tall => "tall",
+        }
+    }
+}
+
+/// A sheet root of `theme` over the wallpaper holding `body`.
+#[component]
+fn Stage(theme: Theme, body: Element, #[props(default)] height: StageHeight) -> Element {
+    let axes = use_context::<Signal<Axes>>();
+    let (accent, motion) = {
+        let axes = axes.read();
+        (axes.accent, axes.motion)
+    };
+    rsx! {
+        div { class: "g-modal g-accounts", "data-height": height.slug(), style: "background-image:url(\"{wallpaper::uri()}\")",
+            Ds {
+                appearance: Appearance { theme, accent, motion, ..Appearance::default() },
+                material: Material::Sheet,
+                stylesheet: Inject::Host,
+                div { class: "g-accounts-stage" }
+                {body}
+            }
+        }
+    }
+}

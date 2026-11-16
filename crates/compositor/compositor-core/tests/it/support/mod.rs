@@ -1,0 +1,105 @@
+//! Builders shared by casement-core's tests (not API).
+
+pub mod driver;
+
+use compositor_core::app::AppKey;
+use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
+use compositor_core::output::{EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm};
+use compositor_core::space::{Space, SpaceContent, SpaceIndex};
+use compositor_core::time::{Millihertz, Mono};
+use compositor_core::window::{
+    SizeLimits, SpacePlace, StackRank, Window, WindowHints, WindowOrigin, WindowState, WindowTitle,
+};
+use compositor_core::{ClientKey, OutputKey, OutputName, WindowId};
+use desktop_protocols::vocab::{Emphasis, Modality, SensitivityLevel, WindowRole};
+use account_core::{AppId, AppName, ClaimedId, Isolation, SpaceId};
+use std::time::Duration;
+
+pub fn ms(n: u64) -> Mono {
+    Mono(Duration::from_millis(n))
+}
+
+pub fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
+    LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })
+}
+
+pub fn proven(name: &str) -> AppKey {
+    AppKey::Proven(AppId {
+        name: AppName::parse(name).expect("app name"),
+        isolation: Isolation::Unsandboxed,
+    })
+}
+
+pub fn claimed(name: &str) -> ClaimedId {
+    ClaimedId::parse(name).expect("claimed id")
+}
+
+pub fn space_id(text: &str) -> SpaceId {
+    SpaceId::parse(text).expect("space id")
+}
+
+pub fn mode(w: u32, h: u32, millihertz: u32, preferred: bool) -> Mode {
+    Mode {
+        size: PhysicalSize { w, h },
+        refresh: Millihertz(millihertz),
+        preferred,
+    }
+}
+
+/// A display on connector `name` with `modes` over `mm` millimetres, no EDID serial.
+pub fn display(name: &str, modes: Vec<Mode>, mm: (u32, u32)) -> OutputFacts {
+    let edid = EdidFacts {
+        make: "Test".to_owned(),
+        model: name.to_owned(),
+        serial: EdidSerial::Unknown,
+    };
+    let name = OutputName::parse(name).expect("output name");
+    OutputFacts {
+        key: OutputKey::of(&edid, &name),
+        name,
+        edid,
+        modes,
+        physical: PhysicalMm { w: mm.0, h: mm.1 },
+        vrr: false,
+    }
+}
+
+/// A headless 1920x1080 60 Hz output.
+pub fn headless(name: &str) -> OutputFacts {
+    display(name, vec![mode(1920, 1080, 60_000, true)], (0, 0))
+}
+
+pub fn desktop(id: &str, output: &OutputKey, position: u32) -> Space {
+    Space {
+        id: space_id(id),
+        output: output.clone(),
+        content: SpaceContent::Desktop,
+        position: SpaceIndex(position),
+    }
+}
+
+/// A floating document window `n` of `app` on Space `space`.
+pub fn window(n: u64, app: &AppKey, space: &str) -> Window {
+    Window {
+        id: WindowId(n),
+        client: ClientKey(n),
+        app: app.clone(),
+        origin: WindowOrigin::Wayland,
+        role: WindowRole::Document,
+        modality: Modality::None,
+        place: SpacePlace::On(space_id(space)),
+        home: None,
+        stack: StackRank(n),
+        state: WindowState::Floating(rect(100, 100, 800, 600)),
+        parent: None,
+        emphasis: Emphasis::Inactive,
+        sensitivity: SensitivityLevel::Normal,
+        limits: SizeLimits {
+            min: LogicalSize { w: 0, h: 0 },
+            max: None,
+        },
+        title: WindowTitle::default(),
+        claimed_id: claimed("test"),
+        hints: WindowHints::unset(),
+    }
+}

@@ -1,0 +1,79 @@
+//! One notification drawn as quire's `NotificationCard` (design/13 §13.3.6 "Banner", "Content"),
+//! shared by the banners and the notification center so both read alike. sill supplies the words
+//! (the app's icon and name, the age, the body's runs, the actions) and hears the presses; quire
+//! draws the plate, the two-to-six-line body, the actions and the close button on hover, the
+//! group's count and layers, and the swipe.
+
+pub mod actions;
+pub mod body;
+pub mod icon;
+pub mod labels;
+pub mod metrics;
+pub mod parts;
+
+mod use_tokens;
+mod view;
+
+pub use body::rich_body;
+pub use labels::{Age, age, age_label, app_label, group_count};
+pub use metrics::{NotificationTokens, icon_size, swipe_metrics};
+pub use parts::{CardPart, part_id};
+pub use use_tokens::use_notification_tokens;
+pub use view::{use_app_mark, wall_now};
+
+use dioxus::prelude::*;
+use ui_components::root::common::Common;
+use shell_model::notifications::{ActionKey, Href, Notification, UnixMs};
+use shell_kit::notifications::parts::Hover;
+use shell_kit::notifications::swipe::NotificationSwipe;
+
+/// Where the card is drawn: a banner paints the Toast material; a center row the
+/// center's Popover.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CardPlace {
+    Banner,
+    Center,
+}
+
+/// What was pressed on a card.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum CardPress {
+    /// The card itself (a press, Enter or Space): the `default` action when it offers one.
+    Body,
+    /// One of its action buttons.
+    Action(ActionKey),
+    /// The close button.
+    Close,
+    /// A link in the body.
+    Link(Href),
+}
+
+/// `note` as a card; `count` notifications stand behind it (1: no chip, no layers). `id` names
+/// quire's plate for a region (a banner's `toast-<id>`); `swipe` lets a drag dismiss it;
+/// `on_hover` hears the pointer come and go; `common` puts the caller's own data on the card's
+/// root (a list's keyboard ring).
+#[component]
+pub fn NoteCard(
+    note: Notification,
+    count: usize,
+    place: CardPlace,
+    now: UnixMs,
+    #[props(default)] id: Option<String>,
+    #[props(default)] swipe: NotificationSwipe,
+    #[props(default)] on_hover: Option<EventHandler<Hover>>,
+    on_press: EventHandler<CardPress>,
+    #[props(default)] common: Common,
+) -> Element {
+    view::card(
+        note,
+        count,
+        place,
+        now,
+        view::CardWiring {
+            common: Common { id, ..common },
+            swipe,
+            on_hover,
+            on_press,
+        },
+    )
+}

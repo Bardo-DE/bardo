@@ -1,0 +1,40 @@
+[package]
+name = "updater-root"
+description = "The three programs that run as root (install, roll back, health record) and the code only they need"
+
+# These programs run with the administrator's rights, so what they link is kept short and is checked by
+# scripts/check-boundary.sh: no network client, no bus, no async runtime, no logging framework.
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/slipway"
+publish = false
+[[bin]]
+name = "slipway-apply"
+path = "src/bin/slipway_apply.rs"
+
+[[bin]]
+name = "slipway-rollback"
+path = "src/bin/slipway_rollback.rs"
+
+[[bin]]
+name = "slipway-health"
+path = "src/bin/slipway_health.rs"
+
+[dependencies]
+updater-core = {path = "../updater-core"}
+thiserror = {version = "2"}
+semver = {version = "1", features = ["serde"]}
+toml = {version = "0.9"}
+rustix = {version = "1", default-features = false, features = ["std", "fs", "process"]}
+tar = {version = "0.4.46"}
+zstd = {version = "0.13"}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

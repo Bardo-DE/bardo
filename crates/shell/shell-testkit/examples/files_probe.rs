@@ -1,0 +1,278 @@
+//! Drives the launcher's files provider the way the runner does (its `query` on the blocking
+//! pool), prints its rows, and optionally carries out the first row's activation through the
+//! real launch service (`LaunchCommand::Open`): `dev/accept/launcher.sh` and
+//! `tests/files_tracker_live.rs` run it in a scratch environment (a scratch `HOME`, a private
+//! bus, a stub opener), never in the person's own.
+//!
+//! Usage: `files_probe --home DIR [--backend auto|tracker|fd|plocate] [--query TEXT]
+//! [--budget-ms N] [--retry-ms N] [--choose primary|reveal|copy] [--settle-ms N] [--detect]`
+//!
+//! Prints `detect tracker=… fd=… plocate=…` for `--detect`, one `row\t<title>\t<folder>
+//! \t<mime>` line per row, `rows <n>`, and for `--choose` what was done (`open <target>` or
+//! `copy <text>`). `--retry-ms` asks again until a row comes back (an index still indexing).
+
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+use shell_launcher::{
+    ActionId, Activation, Cancel, Choice, Item, Provider, Query, Subject, VecSink,
+};
+use shell_model::apps::AppIndex;
+use shell_model::launch::{LaunchCommand, OpenRequest};
+use shell_model::results::LauncherPolicy;
+use shell_search::providers::FilesProvider;
+use shell_search::providers::files::tracker::TrackerIndex;
+use shell_search::providers::files::walk::{WalkIndex, Walker};
+use shell_search::providers::files::{
+    FileAnswer, FileAsk, FileIndex, HitLimit, IndexSource, choice,
+};
+use shell_services::env::{Bus, BusRoute, Env};
+use shell_services::launch;
+use tokio::sync::watch;
+
+/// The token the probe hands the opener, so a stub can show it arrived.
+const TOKEN: &str = "sill-accept-files-token";
+
+#[derive(Debug)]
+struct Args {
+    home: PathBuf,
+    backend: Backend,
+    query: String,
+    budget: Duration,
+    retry: Duration,
+    choose: Option<Choice>,
+    settle: Duration,
+    detect: Detect,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Backend {
+    Auto,
+    Tracker,
+    Fd,
+    Plocate,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Detect {
+    Ask,
+    Skip,
+}
+
+fn main() {
+    let args = parse(std::env::args().skip(1).collect());
+    let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
+    runtime.block_on(run(args));
+}
+
+async fn run(args: Args) {
+    if args.detect == Detect::Ask {
+        let found = tokio::task::spawn_blocking(|| choice::detect(&session()))
+            .await
+            .unwrap_or_else(|e| panic!("{e}"));
+        println!(
+            "detect tracker={:?} fd={:?} plocate={:?}",
+            found.tracker, found.fd, found.plocate
+        );
+    }
+    if args.query.is_empty() {
+        return;
+    }
+    let provider = Arc::new(provider(&args));
+    let rows = rows_within(&provider, &args).await;
+    for row in &rows {
+        let mime = match &row.subject {
+            Subject::File(file) => file.mime.0.clone(),
+            _ => String::new(),
+        };
+        println!("row\t{}\t{}\t{mime}", row.title, row.subtitle);
+    }
+    println!("rows {}", rows.len());
+    if rows.is_empty() {
+        println!("answer {}", raw_answer(&args).await);
+    }
+    if let Some(first) = rows.first() {
+        choose(&provider, first, &args).await;
+    }
+}
+
+/// What the chosen index itself answered, as its kind and a count (no paths): why no row came.
+async fn raw_answer(args: &Args) -> String {
+    let index = index_of(args.backend);
+    let ask = FileAsk {
+        text: args.query.clone(),
+        under: args.home.clone(),
+        limit: HitLimit(40),
+        budget: args.budget,
+    };
+    tokio::task::spawn_blocking(move || {
+        match index.search(&ask, &Query::begin(ask.text.clone(), &Cancel::new())) {
+            FileAnswer::Hits(hits) => format!("hits {}", hits.len()),
+            FileAnswer::Partial(hits) => format!("partial {}", hits.len()),
+            FileAnswer::Unavailable(fault) => format!("unavailable {fault:?}"),
+        }
+    })
+    .await
+    .unwrap_or_else(|e| panic!("{e}"))
+}
+
+/// The process's own session bus: the script runs this probe on a private one.
+fn session() -> Bus {
+    Bus::session(BusRoute::Usual)
+}
+
+/// The index `backend` names: `auto` is the one the shell picks on this machine.
+fn index_of(backend: Backend) -> Arc<dyn FileIndex> {
+    match backend {
+        Backend::Tracker => Arc::new(TrackerIndex { session: session() }),
+        Backend::Fd | Backend::Auto => Arc::new(WalkIndex { walker: Walker::Fd }),
+        Backend::Plocate => Arc::new(WalkIndex {
+            walker: Walker::Plocate,
+        }),
+    }
+}
+
+fn provider(args: &Args) -> FilesProvider {
+    let source = match args.backend {
+        Backend::Auto => IndexSource::Detect(session()),
+        Backend::Tracker | Backend::Fd | Backend::Plocate => {
+            IndexSource::Given(index_of(args.backend))
+        }
+    };
+    let policy = LauncherPolicy {
+        files_budget: args.budget,
+        ..LauncherPolicy::default()
+    };
+    FilesProvider {
+        policy: watch::channel(policy).1,
+        frecency: Arc::new(Mutex::default()),
+        source,
+        home: args.home.clone(),
+        // No viewer history: the probe asks the index alone.
+        viewer_store: args.home.join(".files-probe-no-viewer"),
+    }
+}
+
+/// The provider's rows, asked again until some come back or `args.retry` passes.
+async fn rows_within(provider: &Arc<FilesProvider>, args: &Args) -> Vec<Item> {
+    let deadline = Instant::now() + args.retry;
+    loop {
+        let asked = Arc::clone(provider);
+        let text = args.query.clone();
+        let rows = tokio::task::spawn_blocking(move || {
+            let mut sink = VecSink::default();
+            asked.query(&Query::begin(text, &Cancel::new()), &mut sink);
+            sink.0.into_iter().flatten().collect::<Vec<_>>()
+        })
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
+        if !rows.is_empty() || Instant::now() >= deadline {
+            return rows;
+        }
+        tokio::time::sleep(Duration::from_millis(500)).await;
+    }
+}
+
+async fn choose(provider: &FilesProvider, row: &Item, args: &Args) {
+    let Some(choice) = &args.choose else {
+        return;
+    };
+    match provider.activate(row, choice) {
+        Activation::Open { target } => {
+            println!("open {target:?}");
+            let (_apps_tx, apps) = watch::channel(AppIndex::default());
+            let rt = tokio::runtime::Handle::current();
+            let env = Env::from_process();
+            let notifications =
+                shell_services::service::spawn::<shell_services::NotificationsService>(
+                    &rt,
+                    &env,
+                    Default::default(),
+                )
+                .control;
+            let links = launch::LaunchLinks {
+                apps,
+                notifications,
+            };
+            let launch = shell_services::service::spawn::<launch::LaunchService>(&rt, &env, links);
+            launch
+                .control
+                .send(LaunchCommand::Open(OpenRequest {
+                    target,
+                    token: Some(TOKEN.to_owned()),
+                }))
+                .unwrap_or_else(|e| panic!("{e}"));
+            tokio::time::sleep(args.settle).await;
+        }
+        Activation::Copy { text } => println!("copy {text}"),
+        other => println!("other {other:?}"),
+    }
+}
+
+fn parse(raw: Vec<String>) -> Args {
+    let mut args = Args {
+        home: PathBuf::new(),
+        backend: Backend::Fd,
+        query: String::new(),
+        budget: Duration::from_millis(150),
+        retry: Duration::ZERO,
+        choose: None,
+        settle: Duration::from_millis(1500),
+        detect: Detect::Skip,
+    };
+    let mut rest = raw.into_iter();
+    while let Some(flag) = rest.next() {
+        if flag == "--detect" {
+            args.detect = Detect::Ask;
+            continue;
+        }
+        let value = rest
+            .next()
+            .unwrap_or_else(|| usage(&format!("{flag} needs a value")));
+        let millis = || Duration::from_millis(value.parse().unwrap_or_else(|_| usage(&flag)));
+        match flag.as_str() {
+            "--home" => args.home = PathBuf::from(&value),
+            "--backend" => args.backend = backend(&value),
+            "--query" => args.query = value.clone(),
+            "--budget-ms" => args.budget = millis(),
+            "--retry-ms" => args.retry = millis(),
+            "--choose" => args.choose = Some(choice_of(&value)),
+            "--settle-ms" => args.settle = millis(),
+            other => usage(&format!("unknown flag {other}")),
+        }
+    }
+    if !args.query.is_empty() && !args.home.is_absolute() {
+        usage("--home must be an absolute folder");
+    }
+    args
+}
+
+fn backend(name: &str) -> Backend {
+    match name {
+        "auto" => Backend::Auto,
+        "tracker" => Backend::Tracker,
+        "fd" => Backend::Fd,
+        "plocate" => Backend::Plocate,
+        other => usage(&format!("unknown backend {other}")),
+    }
+}
+
+fn choice_of(name: &str) -> Choice {
+    match name {
+        "primary" => Choice::Primary,
+        "reveal" => Choice::Action(ActionId("reveal_in_folder".to_owned())),
+        "copy" => Choice::Action(ActionId("copy_path".to_owned())),
+        other => usage(&format!("unknown choice {other}")),
+    }
+}
+
+fn usage(problem: &str) -> ! {
+    eprintln!("files_probe: {problem}");
+    eprintln!(
+        "usage: files_probe --home DIR [--backend auto|tracker|fd|plocate] \
+         [--query TEXT] [--budget-ms N] [--retry-ms N] [--choose primary|reveal|copy] \
+         [--settle-ms N] [--detect]"
+    );
+    std::process::exit(2);
+}

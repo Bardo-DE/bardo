@@ -1,0 +1,580 @@
+//! The fixtures validate and the fakes behave.
+
+use action_review::{ReviewVerdict, Reviewer};
+use computer_use_action::{RunMode, WindowTrust};
+use action_core::*;
+use action_fake::*;
+use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_manifest::{Lasting, TitleTrust, ValidManifest};
+use permission_core::{
+    ArgLabels, GrantCaller, Recipient, ReviewError, SessionSaw, Stage, StandingGrant,
+    StandingScope, Strictness,
+};
+use action_provider::IntentProvider;
+use action_router::GrantStore;
+use action_vocab::{
+    ActionRef, Args, CallId, CallRequest, CallerRole, Clock, FileRef, LabelText, Millis, Origin,
+    ParamName, Seconds, TargetValue, UndoToken, Value,
+};
+use action_wire::{CallerId, SessionOpen};
+use provenance::{ActionName, Actor, AppName, SpaceId, UnixSeconds};
+use std::collections::BTreeSet;
+
+fn space() -> SpaceId {
+    SpaceId::parse("work").expect("space")
+}
+
+fn mail() -> FakeMail {
+    FakeMail::new(mail_manifest().expect("fixture"), space())
+        .with_thread(MailThread {
+            key: "t1".into(),
+            subject: "Receipts".into(),
+            from: "shop@example.test".into(),
+            body: "hello".into(),
+        })
+        .with_contact(MailContact {
+            key: "c1".into(),
+            name: "Accounting".into(),
+            address: "accounting@example.test".into(),
+        })
+}
+
+fn invocation(action: &str, keys: &[&str]) -> Invocation {
+    let app = AppName::parse("org.quire.Mail").expect("app");
+    Invocation {
+        call: CallId(1),
+        action: ActionName::parse(action).expect("action"),
+        target: TargetValue::Entities(
+            keys.iter()
+                .map(|k| provenance::EntityId {
+                    app: app.clone(),
+                    kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
+                    key: provenance::EntityKey::parse(k).expect("key"),
+                })
+                .collect(),
+        ),
+        args: Args::new(),
+        actor: Actor::User {
+            via: AppName::parse("org.quire.Shell").expect("app"),
+        },
+        origin: Origin::Launcher,
+        space: space(),
+    }
+}
+
+#[test]
+fn the_fixture_manifests_parse_and_validate() {
+    let mail = mail_manifest().expect("mail");
+    let files = files_manifest().expect("files");
+    let effects = |m: &ValidManifest| -> Vec<(String, provenance::Effect)> {
+        m.manifest()
+            .actions
+            .iter()
+            .map(|a| (a.name.as_str().to_owned(), a.effect))
+            .collect()
+    };
+    assert!(effects(&mail).contains(&("mail.message.send".into(), provenance::Effect::Outbound)));
+    assert!(effects(&mail).contains(&("mail.thread.delete".into(), provenance::Effect::Destructive)));
+    assert!(effects(&files).contains(&("files.file.move".into(), provenance::Effect::UndoableWrite)));
+    let titles = &mail.manifest().entities[0].titles;
+    assert_eq!(*titles, TitleTrust::ThirdParty(provenance::Source::Mail));
+}
+
+#[test]
+fn fake_router_installs_the_fixture_and_the_shipped_manifests() {
+    let router = fake_router(AgentConfig::default()).expect("router");
+    let state = router.state.lock().expect("lock");
+    assert_eq!(state.registry.all().count(), 5);
+    assert!(state.registry.unresolved().is_empty());
+}
+
+#[tokio::test]
+async fn archive_then_undo_round_trips_through_the_apps_own_store() {
+    let app = mail();
+    let out = app
+        .perform(invocation("mail.thread.archive", &["t1"]))
+        .await
+        .expect("archived");
+    assert!(app.is_archived("t1"));
+    let Undoable::Yes(token) = out.undo else {
+        panic!("archive is undoable")
+    };
+    app.undo(
+        token.clone(),
+        Actor::User {
+            via: AppName::parse("org.quire.Shell").expect("app"),
+        },
+    )
+    .await
+    .expect("undone");
+    assert!(!app.is_archived("t1"));
+    // The token is spent: a second undo says the change is gone.
+    let again = app
+        .undo(
+            token,
+            Actor::User {
+                via: AppName::parse("org.quire.Shell").expect("app"),
+            },
+        )
+        .await;
+    assert_eq!(again, Err(UndoFault::Gone));
+}
+
+#[tokio::test]
+async fn reading_a_thread_labels_the_body_untrusted() {
+    let out = mail()
+        .perform(invocation("mail.thread.read", &["t1"]))
+        .await
+        .expect("read");
+    let value = out.value.expect("a value");
+    assert_eq!(value.value, Value::Text("hello".into()));
+    assert_eq!(value.label.integrity, provenance::Integrity::Untrusted);
+    assert!(value.label.sources.contains(&provenance::Source::Mail));
+}
+
+#[tokio::test]
+async fn a_missing_thread_is_not_found_and_delete_is_not_undoable() {
+    let app = mail();
+    let missing = app
+        .perform(invocation("mail.thread.archive", &["nope"]))
+        .await;
+    assert!(matches!(missing, Err(AppRefusal::NotFound(_))));
+    let gone = app
+        .perform(invocation("mail.thread.delete", &["t1"]))
+        .await
+        .expect("deleted");
+    assert_eq!(gone.undo, Undoable::No);
+    assert!(!app.has_thread("t1"));
+}
+
+#[tokio::test]
+async fn search_finds_subjects_and_suggest_finds_contacts() {
+    let app = mail();
+    assert_eq!(app.search("Receipts").await.len(), 1);
+    assert!(app.search("zzz").await.is_empty());
+    let ask = SuggestAsk {
+        action: ActionRef {
+            app: AppName::parse("org.quire.Mail").expect("app"),
+            name: ActionName::parse("mail.message.send").expect("a"),
+        },
+        param: ParamName::parse("to").expect("p"),
+        typed: "Acc".into(),
+    };
+    assert_eq!(app.suggest(ask).await.len(), 1);
+}
+
+#[tokio::test]
+async fn files_move_and_undo() {
+    let manifest = files_manifest().expect("files");
+    let files = FakeFiles::new(manifest, space()).with_file("f1", "/home/p/a.pdf", "x");
+    let app = AppName::parse("org.quire.Files").expect("app");
+    let mut inv = invocation("files.file.move", &["f1"]);
+    inv.target = TargetValue::Entities(vec![provenance::EntityId {
+        app,
+        kind: provenance::EntityKind::parse("files.file").expect("k"),
+        key: provenance::EntityKey::parse("f1").expect("k"),
+    }]);
+    inv.args.insert(
+        ParamName::parse("to").expect("p"),
+        provenance::Labelled {
+            value: Value::File(FileRef::parse("/home/p/docs").expect("f")),
+            label: provenance::Label::trusted_user(),
+        },
+    );
+    let preview = files.dry_run(inv.clone()).await.expect("preview");
+    assert!(matches!(preview, Preview::Moves(m) if m.len() == 1));
+    let out = files.perform(inv).await.expect("moved");
+    assert_eq!(files.path_of("f1").as_deref(), Some("/home/p/docs/f1"));
+    let Undoable::Yes(token) = out.undo else {
+        panic!("move is undoable")
+    };
+    files.undo(token, Actor::Unknown).await.expect("undone");
+    assert_eq!(files.path_of("f1").as_deref(), Some("/home/p/a.pdf"));
+}
+
+fn review_request() -> action_review::ReviewRequest {
+    use provenance::{Integrity, SpaceId};
+    action_review::ReviewRequest {
+        space: SpaceId::parse("work").expect("space"),
+        strictness: Strictness::Default,
+        turns: vec![],
+        proposed: action_review::ProposedAction {
+            app: AppName::parse("org.quire.Mail").expect("app"),
+            action: ActionName::parse("mail.thread.archive").expect("a"),
+            label: LabelText::parse("Archive").expect("l"),
+            effect: provenance::Effect::UndoableWrite,
+            kinds: BTreeSet::new(),
+            count: account_ids::Count(1),
+            args: vec![],
+            lasting: Lasting::No,
+        },
+        labels: ArgLabels {
+            per_arg: Default::default(),
+            planner: Integrity::Trusted,
+            saw: SessionSaw {
+                private: false,
+                untrusted: false,
+            },
+        },
+        task_policy: None,
+        history: vec![],
+    }
+}
+
+#[tokio::test]
+async fn the_scripted_reviewer_counts_its_calls_and_follows_its_queue() {
+    let reviewer = ScriptedReviewer::queued(
+        vec![Ok(ReviewVerdict::Allow), Err(ReviewError::Timeout)],
+        ReviewMode::AlwaysAsk,
+    );
+    let request = review_request();
+    assert_eq!(
+        reviewer.review(Stage::Quick, &request).await,
+        Ok(ReviewVerdict::Allow)
+    );
+    assert_eq!(
+        reviewer.review(Stage::Deliberate, &request).await,
+        Err(ReviewError::Timeout)
+    );
+    assert!(matches!(
+        reviewer.review(Stage::SecondOpinion, &request).await,
+        Ok(ReviewVerdict::Ask { .. })
+    ));
+    assert_eq!(reviewer.call_count(), 3);
+    let stages: Vec<Stage> = reviewer.calls().into_iter().map(|(s, _)| s).collect();
+    assert_eq!(
+        stages,
+        [Stage::Quick, Stage::Deliberate, Stage::SecondOpinion]
+    );
+    assert_eq!(
+        ScriptedReviewer::always_allow()
+            .review(Stage::Quick, &request)
+            .await,
+        Ok(ReviewVerdict::Allow)
+    );
+    assert_eq!(
+        ScriptedReviewer::timing_out()
+            .review(Stage::Quick, &request)
+            .await,
+        Err(ReviewError::Timeout)
+    );
+}
+
+#[tokio::test]
+async fn the_scripted_confirmer_pops_in_order_and_records_requests() {
+    let receipt = |n: &str| provenance::ConfirmReceipt {
+        id: ConfirmId::parse(n).expect("id"),
+        input: provenance::InputProof::SheetFallback,
+        at: UnixSeconds(1),
+        covers: provenance::Confidentiality::Secret,
+    };
+    let confirmer = ScriptedConfirmer::answering(vec![
+        ConfirmAnswer::Allowed {
+            written: None,
+            scope: GrantScope::Once,
+            receipt: receipt("c-1"),
+        },
+        ConfirmAnswer::Ended(ConfirmEnd::Refused),
+    ]);
+    let request = |id: &str| ConfirmRequest {
+        id: ConfirmId::parse(id).expect("id"),
+        space: space(),
+        actor: Actor::Unknown,
+        app: AppName::parse("org.quire.Mail").expect("app"),
+        action: LabelText::parse("Send").expect("l"),
+        effect: provenance::Effect::Outbound,
+        count: account_ids::Count(1),
+        detail: ConfirmDetail::Plain,
+        lines: vec![],
+        why: vec![],
+        taint: TaintNote::Clean,
+        offer: ConfirmOffer::OnceOnly,
+        always: Default::default(),
+        limits: Default::default(),
+        gesture: Gesture::Press,
+        anchor: Anchor::Centre,
+        expires: Seconds(120),
+        editor: None,
+        helper: None,
+        brief: None,
+    };
+    use action_core::Confirmer;
+    assert!(matches!(
+        confirmer.confirm(request("c-1")).await,
+        ConfirmAnswer::Allowed { .. }
+    ));
+    assert_eq!(
+        confirmer.confirm(request("c-2")).await,
+        ConfirmAnswer::Ended(ConfirmEnd::Refused)
+    );
+    assert_eq!(
+        confirmer.confirm(request("c-3")).await,
+        ConfirmAnswer::Ended(ConfirmEnd::Dismissed)
+    );
+    confirmer
+        .cancel(&ConfirmId::parse("c-3").expect("id"))
+        .await;
+    assert_eq!(confirmer.requests().len(), 3);
+    assert_eq!(confirmer.cancelled().len(), 1);
+}
+
+#[tokio::test]
+async fn the_scripted_writer_and_reader_answer_and_count() {
+    use action_core::{PolicyWriter, Reader};
+    let writer = ScriptedWriter::failing();
+    let task = provenance::TaskId::parse("t-1").expect("task");
+    assert_eq!(
+        writer.derive(&task, &[], &[], &space()).await,
+        Err(ReviewError::Unavailable)
+    );
+    assert_eq!(writer.calls(), [(task, 0)]);
+    let reader = ScriptedReader::answering(vec![Ok(Value::Integer(3))]);
+    let session = provenance::SessionId::parse("s-1").expect("session");
+    let ask = ReaderAsk {
+        inputs: vec![],
+        want: ValueSchema::Integer { min: 0, max: 9 },
+        task: ReaderTask::Extract,
+    };
+    assert_eq!(
+        reader.extract(&session, ask.clone(), vec![]).await,
+        Ok(Value::Integer(3))
+    );
+    assert_eq!(
+        reader.extract(&session, ask, vec![]).await,
+        Err(ReaderError::Refused)
+    );
+    assert_eq!(reader.asks().len(), 2);
+    assert_eq!(reader.sessions(), [session.clone(), session]);
+}
+
+#[tokio::test]
+async fn a_client_reaches_the_router_in_process_behind_its_feature() {
+    use action_client::{InProcess, Intents};
+    let router = fake_router(AgentConfig::default()).expect("router");
+    router.seams.link.mail.add_thread(MailThread {
+        key: "t1".into(),
+        subject: "Hi".into(),
+        from: "a@example.test".into(),
+        body: "Hello".into(),
+    });
+    let router = std::sync::Arc::new(router);
+    let launcher = CallerId {
+        app: account_core::AppId {
+            name: AppName::parse("org.quire.Shell").expect("app"),
+            isolation: account_core::Isolation::Unsandboxed,
+        },
+        roles: BTreeSet::from([CallerRole::Launcher]),
+    };
+    let intents = Intents::over(InProcess::new(router.clone(), launcher));
+    let end = intents
+        .perform(
+            CallRequest {
+                action: ActionRef {
+                    app: AppName::parse("org.quire.Mail").expect("app"),
+                    name: ActionName::parse("mail.thread.archive").expect("action"),
+                },
+                target: TargetValue::Entities(vec![provenance::EntityId {
+                    app: AppName::parse("org.quire.Mail").expect("app"),
+                    kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
+                    key: provenance::EntityKey::parse("t1").expect("key"),
+                }]),
+                args: Args::new(),
+                origin: Origin::Launcher,
+            },
+            None,
+            None,
+        )
+        .await
+        .expect("a reply");
+    assert!(end.is_ok(), "the person's own act ran: {end:?}");
+    assert!(router.seams.link.mail.is_archived("t1"));
+}
+
+#[tokio::test]
+async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed() {
+    use action_client::{GateEvent, InProcess, Intents};
+    use provenance::{AgentRef, ConfirmReceipt, InputProof, RunId};
+    let mut router = fake_router(AgentConfig::default()).expect("router");
+    router.seams.confirmer = ScriptedConfirmer::answering(vec![ConfirmAnswer::Allowed {
+        written: None,
+        scope: GrantScope::Once,
+        receipt: ConfirmReceipt {
+            id: provenance::ConfirmId::parse("c-1").expect("id"),
+            input: InputProof::HardwareSeat,
+            at: UnixSeconds(1),
+            covers: provenance::Confidentiality::Secret,
+        },
+    }]);
+    let router = std::sync::Arc::new(router);
+    let cuad = CallerId {
+        app: account_core::AppId {
+            name: AppName::parse("org.quire.Cuad").expect("app"),
+            isolation: account_core::Isolation::Unsandboxed,
+        },
+        roles: BTreeSet::from([CallerRole::Cua]),
+    };
+    let intents = Intents::over(InProcess::new(router.clone(), cuad));
+    let run = RunId::parse("r-1").expect("run");
+    intents
+        .session_open(SessionOpen {
+            space: space(),
+            agent: AgentRef::Cua { run: run.clone() },
+            parent: None,
+            cwd: None,
+            started_from: None,
+            external: None,
+            helper: None,
+            acts_for: None,
+        })
+        .await
+        .expect("cuad opens its run's session");
+    let ask = CuaAsk {
+        run,
+        step: 1,
+        app: AppName::parse("org.quire.Mail").expect("app"),
+        trust: WindowTrust::Quire,
+        mode: RunMode::InPlace,
+        space: space(),
+        action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,
+        node: None,
+        effect: provenance::Effect::Outbound,
+        basis: EffectBasis::DefaultTable,
+        screen: provenance::Label::trusted_user(),
+    };
+    let mut watch = intents.gate_check_watched(ask).await.expect("a watch");
+    let GateEvent::Confirming(id) = watch.next().await.expect("progress") else {
+        panic!("the person is about to be asked")
+    };
+    assert!(
+        router.seams.confirmer.requests().is_empty(),
+        "no sheet before proceed"
+    );
+    watch.proceed().await.expect("proceed");
+    assert_eq!(watch.next().await, Ok(GateEvent::Verdict(GateAnswer::Run)));
+    assert_eq!(router.seams.confirmer.requests()[0].id, id);
+}
+
+#[tokio::test]
+async fn the_virtual_clock_completes_a_timer_only_when_advanced_to_it() {
+    use std::future::Future;
+    let clock = FixedClock::at(UnixSeconds(1));
+    let mut timer = Box::pin(clock.after(Millis(100)));
+    let waker = std::task::Waker::noop();
+    let mut cx = std::task::Context::from_waker(waker);
+    assert!(timer.as_mut().poll(&mut cx).is_pending());
+    assert_eq!(clock.next_ask().await, Millis(100));
+    clock.advance(Millis(99));
+    assert!(timer.as_mut().poll(&mut cx).is_pending());
+    clock.advance(Millis(1));
+    assert!(timer.as_mut().poll(&mut cx).is_ready());
+    // No time at all is no wait; the instant never moves.
+    clock.after(Millis(0)).await;
+    assert_eq!(clock.now(), UnixSeconds(1));
+    assert_eq!(clock.asked(), [Millis(100), Millis(0)]);
+}
+
+fn send_to(key: &str) -> Invocation {
+    let mut inv = invocation("mail.message.send", &[]);
+    let to = provenance::EntityId {
+        app: AppName::parse("org.quire.Mail").expect("app"),
+        kind: provenance::EntityKind::parse("mail.contact").expect("kind"),
+        key: provenance::EntityKey::parse(key).expect("key"),
+    };
+    inv.args.insert(
+        ParamName::parse("to").expect("param"),
+        provenance::Labelled {
+            value: Value::Entity(to),
+            label: provenance::Label::trusted_user(),
+        },
+    );
+    inv
+}
+
+fn user() -> Actor {
+    Actor::User {
+        via: AppName::parse("org.quire.Shell").expect("app"),
+    }
+}
+
+async fn sent_token(app: &FakeMail) -> UndoToken {
+    match app.perform(send_to("c1")).await.expect("sent").undo {
+        Undoable::Yes(token) => token,
+        other => panic!("send is undoable, got {other:?}"),
+    }
+}
+
+#[tokio::test]
+async fn undoing_two_sends_in_order_removes_both() {
+    let app = mail();
+    let first = sent_token(&app).await;
+    let second = sent_token(&app).await;
+    assert_eq!(app.sent().len(), 2);
+    app.undo(first, user()).await.expect("first undone");
+    app.undo(second, user()).await.expect("second undone");
+    assert!(app.sent().is_empty(), "the second undo found its own send");
+}
+
+#[tokio::test]
+async fn undoing_a_send_whose_entry_is_gone_says_so() {
+    let app = mail();
+    let token = sent_token(&app).await;
+    app.clear();
+    assert_eq!(app.undo(token, user()).await, Err(UndoFault::Gone));
+}
+
+#[tokio::test]
+async fn undoing_two_drafts_out_of_order_removes_both() {
+    let app = mail();
+    let mut tokens = Vec::new();
+    for _ in 0..2 {
+        match app
+            .perform(invocation("mail.draft.create", &[]))
+            .await
+            .expect("drafted")
+            .undo
+        {
+            Undoable::Yes(token) => tokens.push(token),
+            other => panic!("a draft is undoable, got {other:?}"),
+        }
+    }
+    for token in tokens {
+        app.undo(token, user()).await.expect("undone");
+    }
+    assert_eq!(app.drafts(), 0);
+}
+
+#[test]
+fn clearing_the_grants_drops_the_standing_ones_too() {
+    let grants = MemoryGrants::new();
+    grants.add_standing(StandingGrant::new(
+        GrantCaller::Cli,
+        StandingScope::Outbound {
+            action: ActionRef {
+                app: AppName::parse("org.quire.Mail").expect("app"),
+                name: ActionName::parse("mail.message.send").expect("action"),
+            },
+            to: Recipient::address("accounting@example.test").expect("address"),
+        },
+        UnixSeconds(1),
+    ));
+    assert_eq!(grants.standing().len(), 1);
+    grants.clear();
+    assert!(grants.standing().is_empty());
+}
+
+#[test]
+fn clearing_the_link_forgets_what_a_case_left_in_it() {
+    let router = fake_router(AgentConfig::default()).expect("router");
+    let link = &router.seams.link;
+    let app = AppName::parse("org.quire.Mail").expect("app");
+    link.answering
+        .lock()
+        .expect("lock")
+        .insert(app, Answering::Absent);
+    link.menu
+        .script("copy", MenuItem::effect(provenance::Effect::Read));
+    link.clear();
+    assert!(link.answering.lock().expect("lock").is_empty());
+    assert!(link.window.lock().expect("lock").is_none());
+    assert!(link.performed.lock().expect("lock").is_empty());
+}

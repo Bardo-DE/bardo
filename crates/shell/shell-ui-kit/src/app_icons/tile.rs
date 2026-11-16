@@ -1,0 +1,61 @@
+//! A tile's icon, as the switcher and the Split View picker pick one (design/08 §4): the entry's own icon file in the
+//! icon style (re-tinted under Muted and Monochrome), a `*-symbolic` file in the text colour,
+//! and quire's `Window` glyph for an app with no icon (or no entry). Every entry takes this one
+//! path. quire's `AppSwitcher` stretches a file to the cell's icon square, so it is loaded at
+//! the drawn icon side times the scale.
+
+use std::path::Path;
+
+use ui_components::prelude::*;
+use ui_components::style::icon::render::IconPx;
+use ui_components::style::icon::url::IconUrl;
+use shell_launcher::AppId;
+use shell_model::apps::{AppIcon, AppIndex};
+
+use super::{IconContext, IconFile, LogicalPx, pick, theme_art};
+
+/// What a surface's tile icons depend on.
+#[derive(Debug, Clone)]
+pub struct TileIcons {
+    pub cx: IconContext,
+    pub index: AppIndex,
+    /// The tile's icon side ([`ICON_SIDE`] for the switcher).
+    pub side: LogicalPx,
+}
+
+impl TileIcons {
+    /// `app`'s icon.
+    pub fn source(&self, app: &AppId) -> IconSource {
+        let px = pick(self.side, self.cx.scale);
+        let resolver = self.cx.resolver;
+        let file = match self.index.get(app).map(|entry| &entry.icon) {
+            Some(AppIcon::File(path)) => IconFile::of(path),
+            Some(AppIcon::None) | None => None,
+        };
+        match file {
+            Some(IconFile::Symbolic(path)) => self
+                .external(&path)
+                .map_or_else(window, IconSource::Symbolic),
+            Some(IconFile::Themed(path)) => {
+                let file = resolver.path(&theme_art(&path, px, self.cx.look));
+                self.external(&file).map_or_else(window, IconSource::Image)
+            }
+            None => window(),
+        }
+    }
+
+    fn external(&self, path: &Path) -> Option<ExternalIcon> {
+        Some(ExternalIcon {
+            url: IconUrl::file(path).ok()?,
+            size: IconSize::Px(IconPx(u8::try_from(self.side.0).unwrap_or(u8::MAX))),
+        })
+    }
+}
+
+fn window() -> IconSource {
+    IconSource::Glyph(Icon::Window)
+}
+
+/// The icon's side to resolve art at: the switcher's drawn icon, 64 (design/20 section 1.11,
+/// as [`shell_kit::switcher::switcher_fit::SwitcherMetrics`] draws it).
+pub const ICON_SIDE: LogicalPx = LogicalPx(64);

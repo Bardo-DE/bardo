@@ -9,7 +9,7 @@ use anyview_core::{
     Delimiter, Fact, FactGroup, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input,
     OfficeFormat, Peek, PeekBudget, Sniffed,
 };
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// What a peek of a table holds.
 #[derive(Debug, Clone, PartialEq, Eq)]

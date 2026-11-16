@@ -2,7 +2,7 @@
 //! The one match on `FileAction`.
 
 use super::{FileAction, Reach};
-use ds_core::standard_action::StandardAction;
+use ui_core::standard_action::StandardAction;
 
 /// How an action is bound to keys.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

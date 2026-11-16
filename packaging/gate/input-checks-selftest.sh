@@ -19,7 +19,7 @@ world() {
     "$s/peephole/peephole-core/src" "$s/turnstile/dist" "$s/keycap/dist" "$s/palmrest/dist" "$s/sill/dist"
   cp "$HERE/check-callers-table.sh" "$HERE/check-no-fake.sh" "$HERE/check-no-uinput-access.sh" "$d/gate/"
   cp "$REAL/dist/desktop-callers.toml" "$d/dist/"
-  printf '#!/usr/bin/env bash\ncargo_in "$d" turnstile -p turnstile\nput_system 644 "$t/dist/72-turnstile.rules" /etc/udev/rules.d/72-turnstile.rules\nput_system 644 "$t/dist/turnstile.service" /usr/lib/systemd/system/turnstile.service\nput_system 644 "$k/dist/keycap.service" /usr/lib/systemd/system/keycap.service\n' >"$d/release/build.sh"
+  printf '#!/usr/bin/env bash\ncargo_in "$d" turnstile -p input-broker-daemon\nput_system 644 "$t/dist/72-turnstile.rules" /etc/udev/rules.d/72-turnstile.rules\nput_system 644 "$t/dist/turnstile.service" /usr/lib/systemd/system/turnstile.service\nput_system 644 "$k/dist/keycap.service" /usr/lib/systemd/system/keycap.service\n' >"$d/release/build.sh"
   printf '#!/usr/bin/env bash\n' >"$d/install.sh"
   printf '#!/usr/bin/env bash\necho "644 $x/dist/72-turnstile.rules /etc/udev/rules.d/72-turnstile.rules"\n' >"$d/install/system.sh"
   # peephole's role list, copied from the real one when it is in this tree, else the eighteen written out
@@ -93,7 +93,7 @@ world; printf 'cargo build --all-features\n' >>"$tmp/w/bardo/packaging/install.s
 bad 1 nofake; says "all features"
 world; printf '# cargo build --features fake (a comment)\n' >>"$tmp/w/bardo/packaging/install.sh"
 ok nofake
-world; printf '      - run: cargo build --release -p turnstile --features turnstile/fake\n' >"$tmp/w/bardo/packaging/.github/workflows/release.yml"
+world; printf '      - run: cargo build --release -p input-broker-daemon --features turnstile/fake\n' >"$tmp/w/bardo/packaging/.github/workflows/release.yml"
 bad 1 nofake
 world; printf '[features]\nfake = []\ndefault = ["extra"]\nextra = ["dep/fake"]\n' >"$tmp/w/bardo/crates/turnstile/Cargo.toml"
 bad 1 nofake; says "default features"

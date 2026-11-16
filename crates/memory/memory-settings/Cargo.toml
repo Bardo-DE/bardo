@@ -1,0 +1,19 @@
+[package]
+name = "memory-settings"
+description = "What the person can set for memory: the typed memory settings, the schema file the Settings app draws them from, the lenient reader of the settings text, and the confirmation gate for values looser than the shipped defaults. Pure: no files are read here."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+memory-core = {path = "../memory-core"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

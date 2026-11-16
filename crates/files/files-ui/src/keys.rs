@@ -1,0 +1,261 @@
+//! What a key press means in the window: files' own actions, the standard ones it answers, and
+//! typing a name to jump to it.
+//!
+//! The window never reads which modifier is held. quire's `Keys` turns a press into chordkit's
+//! `Action` (the keymap follows the system's own shortcut settings), and this file declares
+//! files' actions with portable chords written with `Primary` and answers the ones the window
+//! offers. Standard actions are handled, never declared.
+
+use keymap::{Action, AppAction, AppId, Context, DefaultChord, Registration, StandardAction};
+use dioxus::prelude::{
+    Key, KeyboardEvent, ModifiersInteraction, ReadableExt, Signal, WritableExt, use_hook,
+};
+use ui_components::base::command::types_text;
+use ui_components::prelude::{Keys, use_keys};
+use files_core::ViewMode;
+use files_model::{Browser, GoTo, InfoView, Input};
+
+use crate::state::Browse;
+
+/// files' name to chordkit: the first part of every action id.
+const APP: &str = "files";
+
+/// What an action of files asks of the window.
+type Asks = fn() -> Input;
+
+/// Each action of files with its id, its default chords and what it asks for. `Primary` is
+/// Command or Ctrl. A symbol typed with Shift is written both ways, as a layout may report either.
+const OWN: &[(&str, &[&str], Asks)] = &[
+    // Back (Command+[), Forward (Command+]), the folder that holds this one (Command+Up) and
+    // Open the selection (Command+Down).
+    ("files.back", &["Primary+["], || Input::Back),
+    ("files.forward", &["Primary+]"], || Input::Forward),
+    ("files.enclosing", &["Primary+Up"], || Input::Enclosing),
+    ("files.open", &["Primary+Down"], || Input::Open),
+    // Show or leave out hidden files, and rename the selected item in place.
+    (
+        "files.show-hidden",
+        &["Primary+Shift+.", "Primary+Shift+>"],
+        || Input::ToggleHidden,
+    ),
+    ("files.rename", &["Return"], || Input::BeginRename),
+    // Move what was copied here instead of copying it.
+    ("files.paste-move", &["Primary+Alt+V"], || Input::PasteMove),
+    // Show the properties of the selection, go to a folder typed by path, and put the paths of the
+    // selection on the clipboard.
+    ("files.get-info", &["Primary+I"], || Input::GetInfo),
+    ("files.go-to-folder", &["Primary+Shift+G"], || {
+        Input::GoToFolder
+    }),
+    ("files.copy-pathname", &["Primary+Alt+C"], || {
+        Input::CopyAsPathname
+    }),
+    // Show the folder as icons (Command+1) or as a list (Command+2), and the preview pane or
+    // put it away.
+    ("files.as-icons", &["Primary+1"], || {
+        Input::SetView(ViewMode::Icons)
+    }),
+    ("files.as-list", &["Primary+2"], || {
+        Input::SetView(ViewMode::List)
+    }),
+    ("files.toggle-preview", &["Primary+Shift+P"], || {
+        Input::TogglePreview
+    }),
+    // A new tab, and the next and previous tab.
+    ("files.new-tab", &["Primary+T"], || Input::NewTab),
+    (
+        "files.next-tab",
+        &["Primary+Shift+]", "Primary+Shift+}"],
+        || Input::NextTab,
+    ),
+    (
+        "files.previous-tab",
+        &["Primary+Shift+[", "Primary+Shift+{"],
+        || Input::PreviousTab,
+    ),
+];
+
+/// What the action an id names asks for.
+fn own_input(action: &AppAction) -> Option<Input> {
+    OWN.iter()
+        .find(|(id, _, _)| *id == action.id())
+        .map(|(_, _, asks)| asks())
+}
+
+/// The rows of one action: its id with each chord.
+fn rows(id: &str, chords: &[&str]) -> Vec<(AppAction, DefaultChord)> {
+    let Ok(action) = AppAction::new(id) else {
+        return Vec::new();
+    };
+    chords
+        .iter()
+        .filter_map(|chord| chord.parse::<DefaultChord>().ok())
+        .map(|chord| (action.clone(), chord))
+        .collect()
+}
+
+/// `groups` as one registration for `app`.
+fn registration(app: &AppId, groups: &[Vec<(AppAction, DefaultChord)>]) -> Registration {
+    // Files has no text styles, no fonts, no find and no printing, so Command+I is Get Info rather
+    // than Italic, Command+T is New Tab rather than Show Fonts, Shift+Command+G is Go to Folder
+    // rather than Find Previous and Shift+Command+P is Show Preview rather than Page Setup, as
+    // in Finder.
+    let start = Registration::new(app).forgo_all([
+        StandardAction::Italic,
+        StandardAction::ShowFonts,
+        StandardAction::FindPrevious,
+        StandardAction::PageSetup,
+    ]);
+    groups
+        .iter()
+        .flatten()
+        .fold(start, |registration, (action, chord)| {
+            registration.action(action.clone(), *chord)
+        })
+}
+
+/// Declares files' actions on `keys`. A registration is all or nothing, so each action is tried
+/// on top of those already taken and one the system keeps for itself costs that action alone.
+fn register(keys: &Keys) {
+    let Ok(app) = AppId::new(APP) else {
+        return;
+    };
+    let mut taken: Vec<Vec<(AppAction, DefaultChord)>> = Vec::new();
+    for (id, chords, _) in OWN {
+        taken.push(rows(id, chords));
+        if let Err(conflict) = keys.register(&app, &registration(&app, &taken)) {
+            eprintln!("files: keys: {conflict}");
+            taken.pop();
+        }
+    }
+}
+
+/// The window's keymap, with files' actions declared in it once, at the first render.
+pub(crate) fn use_registered() -> Keys {
+    let keys = use_keys();
+    use_hook(move || register(&keys));
+    keys
+}
+
+/// Answers a key press in the window. A key the window takes is consumed; the rest goes on to
+/// the focused control.
+pub(crate) fn pressed(
+    keys: Keys,
+    browse: Browse,
+    sidebar: Signal<bool>,
+    event: &KeyboardEvent,
+) -> bool {
+    // The name field has the keyboard while one is typed: its keys are its own.
+    if browse.renaming() {
+        return false;
+    }
+    if event.key() == Key::Escape {
+        return escape(browse);
+    }
+    // Get Info, Go to Folder and the sheet of apps are sheets over the window: the keys behind
+    // them wait.
+    if sheet_up(&browse.state.read()) {
+        return false;
+    }
+    match keys.action_of(event, Context::Normal) {
+        Some(action) => act(&action, browse, sidebar),
+        None => type_ahead(browse, event),
+    }
+}
+
+/// Carries out `action`, when the window answers it.
+fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> bool {
+    let send = |input: Input| {
+        browse.send(input);
+        true
+    };
+    match action {
+        Action::Standard(standard) if *standard == StandardAction::SelectAll => {
+            send(Input::SelectAll)
+        }
+        Action::Standard(standard) if *standard == StandardAction::Open => send(Input::Open),
+        Action::Standard(standard) if *standard == StandardAction::Copy => send(Input::Copy),
+        Action::Standard(standard) if *standard == StandardAction::Paste => send(Input::Paste),
+        Action::Standard(standard) if *standard == StandardAction::Undo => send(Input::Undo),
+        Action::Standard(standard) if *standard == StandardAction::QuickLook => {
+            send(Input::QuickLook)
+        }
+        // New Folder (Shift+Command+N), Move to Trash (Command+Backspace) and Empty Trash
+        // (Shift+Command+Backspace) are standard, as in Finder.
+        Action::Standard(standard) if *standard == StandardAction::NewFolder => {
+            send(Input::NewFolder)
+        }
+        Action::Standard(standard) if *standard == StandardAction::MoveToTrash => {
+            send(Input::MoveToTrash)
+        }
+        Action::Standard(standard) if *standard == StandardAction::EmptyTrash => {
+            send(Input::EmptyTrash)
+        }
+        // Close (Command+W) closes the tab, and the window with the last one.
+        Action::Standard(standard) if *standard == StandardAction::Close => send(Input::CloseTab),
+        Action::Standard(standard) if *standard == StandardAction::ToggleSidebar => {
+            let next = !sidebar();
+            sidebar.set(next);
+            true
+        }
+        Action::App(app) => own_input(app).is_some_and(send),
+        // A standard action the window does not offer, or one chordkit adds later.
+        Action::Standard(_) => false,
+    }
+}
+
+/// A letter, digit or symbol typed with no command key held jumps to the name that starts with
+/// what has been typed.
+fn type_ahead(browse: Browse, event: &KeyboardEvent) -> bool {
+    let key = event.key();
+    if !types_text(&key, event.modifiers()) {
+        return false;
+    }
+    let Key::Character(text) = key else {
+        return false;
+    };
+    // A space with no name begun is Quick Look (Finder's); in the middle of one it is a letter.
+    if text == " " && browse.state.read().typed().is_empty() {
+        browse.send(Input::QuickLook);
+        return true;
+    }
+    for c in text.chars() {
+        browse.send(Input::Type(c));
+    }
+    true
+}
+
+/// Whether a sheet is up over the folder: Get Info, Go to Folder or the apps of Open With.
+fn sheet_up(state: &Browser) -> bool {
+    !matches!(state.info(), InfoView::Closed)
+        || !matches!(state.go_to(), GoTo::Closed)
+        || state.chooser_open()
+}
+
+/// Escape puts away what is up over the folder: a sheet of Go to Folder or of apps, Get Info,
+/// else Quick Look. With nothing up the key goes on to whoever has it.
+fn escape(browse: Browse) -> bool {
+    let input = {
+        let state = browse.state.read();
+        if !matches!(state.go_to(), GoTo::Closed) {
+            Some(Input::GoToCancel)
+        } else if state.chooser_open() {
+            Some(Input::CloseChooseApp)
+        } else {
+            match (state.info(), state.quick_look()) {
+                (InfoView::Closed, None) => None,
+                (InfoView::Closed, Some(_)) => Some(Input::CloseQuickLook),
+                (InfoView::Loading(_) | InfoView::Shown(_) | InfoView::Failed(..), _) => {
+                    Some(Input::CloseInfo)
+                }
+            }
+        }
+    };
+    match input {
+        Some(input) => {
+            browse.send(input);
+            true
+        }
+        None => false,
+    }
+}

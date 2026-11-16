@@ -3,7 +3,7 @@
 
 use crate::error::PlatformError;
 use anyview_core::FilePath;
-use ds_core::word::Word;
+use ui_core::word::Word;
 use std::future::Future;
 
 /// Where a file can be sent.

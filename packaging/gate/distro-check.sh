@@ -121,13 +121,13 @@ expect toolchain "$(tree_toolchain "$tmp/trees/pinned")" "1.2.3"
 expect no-toolchain "$(tree_toolchain "$tmp/trees/plain")" ""
 expect tree-root "$(tree_root)" "$(cd "$HERE/../.." && pwd)"
 expect tree-root-env "$(BARDO_TREE=$tmp/trees/plain/ tree_root)" "$tmp/trees/plain"
-expect build-tree "$(BARDO_TREE=$tmp/trees/pinned PATH=$tmp/cargobin:$PATH build_tree -p sill)" \
-  "cwd=/ TC=1.2.3 FLAGS=unset TARGET=$tmp/trees/pinned/target build --release --locked --manifest-path $tmp/trees/pinned/Cargo.toml --config net.git-fetch-with-cli=true -p sill"
-expect build-tree-plain "$(BARDO_TREE=$tmp/trees/plain CARGO_TARGET_DIR=$tmp/t PATH=$tmp/cargobin:$PATH build_tree -p casement)" \
-  "cwd=/ TC= FLAGS=unset TARGET=$tmp/t build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p casement"
+expect build-tree "$(BARDO_TREE=$tmp/trees/pinned PATH=$tmp/cargobin:$PATH build_tree -p shell-app)" \
+  "cwd=/ TC=1.2.3 FLAGS=unset TARGET=$tmp/trees/pinned/target build --release --locked --manifest-path $tmp/trees/pinned/Cargo.toml --config net.git-fetch-with-cli=true -p shell-app"
+expect build-tree-plain "$(BARDO_TREE=$tmp/trees/plain CARGO_TARGET_DIR=$tmp/t PATH=$tmp/cargobin:$PATH build_tree -p compositor-app)" \
+  "cwd=/ TC= FLAGS=unset TARGET=$tmp/t build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p compositor-app"
 # one cargo run for every package of the parts, each package once
 expect build-parts "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts casement sill)" \
-  "cwd=/ TC= FLAGS=unset TARGET=$tmp/trees/plain/target build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p casement -p casementctl -p sill"
+  "cwd=/ TC= FLAGS=unset TARGET=$tmp/trees/plain/target build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p compositor-app -p compositor-ctl -p shell-app"
 expect no-packages "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts callers session)" ""
 
 # 6. the check mode on a made-up machine: an empty PATH of stubs, an empty root, a fake dpkg and ldconfig.

@@ -1,7 +1,7 @@
 //! What a caller asks the card to draw: the picture (or page, lines, table), the file's name, the
 //! rows of facts.
 
-use ds::prelude::Word;
+use ui_components::prelude::Word;
 
 /// One of the pieces the card is made of.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

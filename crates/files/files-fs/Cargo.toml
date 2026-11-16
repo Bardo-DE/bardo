@@ -1,0 +1,39 @@
+[package]
+name = "files-fs"
+description = "The disk behind traits for files: listing a folder and watching it, with fakes for tests."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/files"
+publish = false
+
+[features]
+# `FakeLister` and `FakeWatcher`, for tests of the crates above.
+testing = []
+
+[dependencies]
+ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+files-core = {path = "../files-core"}
+notify = {version = "8.2"}
+thiserror = {version = "2"}
+toml = {version = "1"}
+
+[dev-dependencies]
+files-fs = { path = ".", features = ["testing"] }
+tempfile = {version = "3"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

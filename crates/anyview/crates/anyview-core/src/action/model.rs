@@ -1,6 +1,6 @@
 //! The one list of actions a file offers, shared by the launcher and the viewer.
 
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// Something a person can do to a file. The launcher's row menu, the viewer's ⌘K palette and its
 /// menus all list from this one set.

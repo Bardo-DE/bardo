@@ -4,7 +4,7 @@
 
 use super::{TokenClass, TokenLine};
 use crate::escape::escape_into;
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// The class prefix of a token span: a `Keyword` is `class="tok-keyword"`.
 pub const TOKEN_CLASS_PREFIX: &str = "tok-";

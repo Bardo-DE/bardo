@@ -1,0 +1,43 @@
+[package]
+name = "action-fake"
+description = "Test fakes for docket: fixture manifests, FakeMail and FakeFiles providers, scripted confirmer, reviewer, writer, reader and memory, and fake_router over them."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+sandbox = {path = "../../sandbox/sandbox"}
+action-checkpoint = {path = "../action-checkpoint"}
+action-core = {path = "../action-core"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+agent-session = {path = "../agent-session", features = ["testing"]}
+action-context = {path = "../action-context"}
+action-router = {path = "../action-router"}
+action-provider = {path = "../action-provider"}
+permission-policy = {path = "../permission-policy"}
+action-review = {path = "../action-review"}
+inference-client = {path = "../../inference/inference-client"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+provenance = {path = "../../provenance/provenance"}
+memory-core = {path = "../../memory/memory-core"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+action-gate-wire = {path = "../action-gate-wire"}
+action-wire = {path = "../action-wire"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

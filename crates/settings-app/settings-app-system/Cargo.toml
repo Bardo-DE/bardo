@@ -1,0 +1,62 @@
+[package]
+name = "settings-app-system"
+description = "Every service the Settings app reaches: one Link trait per service, the real zbus implementation, and an in-memory fake for tests."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[features]
+# The in-memory fakes of the links, for tests of the layers above.
+testing = ["zbus/p2p"]
+
+[dependencies]
+account-tailscale = {path = "../../accounts/account-tailscale"}
+inference-tailnet = {path = "../../inference/inference-tailnet"}
+account-wire = {path = "../../accounts/account-wire"}
+bluez-proxy = {default-features = false, features = ["tokio"], path = "../../network/bluez-proxy"}
+networkmanager-proxy = {default-features = false, features = ["tokio"], path = "../../network/networkmanager-proxy"}
+memory-core = {path = "../../memory/memory-core"}
+anyview-core = {path = "../../anyview/crates/anyview-core"}
+anyview-fs = {path = "../../anyview/crates/anyview-fs"}
+anyview-image = {path = "../../anyview/crates/anyview-image"}
+anyview-platform = {path = "../../anyview/crates/anyview-platform"}
+desktop-protocols = {path = "../../wayland/desktop-protocols"}
+desktop-client = {path = "../../wayland/desktop-client", features = ["client"]}
+settings-app-callers = {path = "../settings-app-callers"}
+settings-app-files = {path = "../settings-app-files"}
+settings-app-model = {path = "../settings-app-model"}
+ui-peer = {path = "../../ui/ui-peer"}
+ui-settings = {path = "../../ui/ui-settings", features = ["live", "tokio"]}
+md-5 = {version = "0.10"}
+engine-install = {path = "../../engines/engine-install"}
+engine-manifest = {path = "../../engines/engine-manifest"}
+engine-probe = {path = "../../engines/engine-probe"}
+engine-spec = {path = "../../engines/engine-spec"}
+inference-client = {path = "../../inference/inference-client", features = ["dbus", "lending"]}
+model-catalog = {path = "../../models/model-catalog"}
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+account-core = {path = "../../accounts/account-core"}
+account-callers = {path = "../../accounts/account-callers"}
+sync-bus = {path = "../../sync/sync-bus"}
+account-dbus = {path = "../../accounts/account-dbus"}
+inference-dbus = {path = "../../inference/inference-dbus"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
+toml = {version = "1"}
+zbus = {version = "5.19", features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[dev-dependencies]
+# The integration tests use the fakes, which the library has behind `testing`.
+settings-app-system = {path = ".", features = ["testing"]}
+settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
+ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

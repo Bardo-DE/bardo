@@ -5,10 +5,10 @@
 
 use crate::provision::Provision;
 
-pub use bayonet::manifest::{PathRole, PluginId, Program};
+pub use plugin_host::manifest::{PathRole, PluginId, Program};
 
 /// A plugin as it describes itself.
-pub type Manifest = bayonet::manifest::Manifest<Provision>;
+pub type Manifest = plugin_host::manifest::Manifest<Provision>;
 
 #[cfg(test)]
 mod tests {

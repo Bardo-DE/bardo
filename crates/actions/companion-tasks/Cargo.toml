@@ -1,0 +1,45 @@
+[package]
+name = "companion-tasks"
+description = "The companion's task model, portable: one identity over many tasks (TaskRuntime, the drive loop's effects, the roster, the front pointer, side conversations, the idle pass, restart recovery), generic over the router link, the `Planner`, the clock and the surface. companiond is its bus adapter; docket-inapp uses it in one app."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+agent-loop = {path = "../agent-loop"}
+memory-core = {path = "../../memory/memory-core"}
+companion-core = {path = "../companion-core"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+action-client = {path = "../action-client", default-features = false}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+agent-planner = {path = "../agent-planner"}
+agent-session = {path = "../agent-session"}
+agent-skills = {path = "../agent-skills"}
+action-store = {path = "../action-store"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+provenance = {path = "../../provenance/provenance"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+action-fake = {path = "../action-fake"}
+agent-planner = {path = "../agent-planner", features = ["testing"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

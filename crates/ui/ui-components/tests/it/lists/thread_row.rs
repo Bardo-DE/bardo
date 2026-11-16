@@ -1,0 +1,116 @@
+//! The mail-app thread row cases: a search hit's runs in the subject and snippet, a row named for
+//! a screen reader, and the strip revealed or held down by its caller, titled, with a button
+//! whose menu is open.
+
+use super::cases::Case;
+use super::rows::strip_actions;
+use dioxus::prelude::*;
+use ui_components::components::app::hover_strip::{ActionId, HoverStrip};
+use ui_components::components::app::row_more::RowMore;
+use ui_components::components::app::thread_row::ThreadRow;
+use ui_components::components::content::text_runs::RunTone;
+use ui_components::prelude::*;
+use ui_components::root::common::Common;
+use ui_core::vocab::RowState;
+
+/// "Re: UIDL stability" with the hit marked and the prefix faint.
+fn marked_subject() -> TextLine {
+    TextLine::Runs(vec![
+        TextRun::new("Re: ", RunTone::Faint),
+        TextRun::new("UIDL", RunTone::Mark),
+        TextRun::new(" stability across ", RunTone::Plain),
+        TextRun::new("servers", RunTone::Strong),
+    ])
+}
+
+/// A read row carrying `strip`, its subject and snippet marked.
+fn row_with(strip: Option<Element>) -> Element {
+    row_slots(strip, None)
+}
+
+/// A row with the quiet `more` button, its menu open or not, and a tag beside it.
+fn row_more(expanded: bool) -> Element {
+    row_slots(None, Some(rsx! { RowMore { expanded, onclick: |_| {} } }))
+}
+
+/// A read row carrying `strip` and `more`, its subject and snippet marked.
+fn row_slots(strip: Option<Element>, more: Option<Element>) -> Element {
+    rsx! {
+        ThreadRow {
+            state: RowState { selection: true, emphasis: false, ..RowState::default() },
+            name: "Dana Okafor",
+            via: None,
+            subject: marked_subject(),
+            snippet: TextLine::Runs(vec![
+                TextRun::new("Treat ", RunTone::Plain),
+                TextRun::new("UIDL", RunTone::Mark),
+                TextRun::new(" as stable only while UIDVALIDITY holds.", RunTone::Plain),
+            ]),
+            time: "09:41",
+            tags: rsx! {},
+            star: None,
+            strip,
+            more,
+            onclick: |_| {},
+            common: Common { aria_label: Some("Open Re: UIDL stability across servers".to_string()), ..Common::default() },
+        }
+    }
+}
+
+/// The strip revealed by the caller, each button titled, the label menu open.
+fn caller_strip(shown: bool) -> Element {
+    rsx! {
+        HoverStrip {
+            actions: strip_actions(),
+            shown,
+            titles: true,
+            expanded: vec![
+                (ActionId("snooze".to_string()), false),
+                (ActionId("label".to_string()), true),
+            ],
+        }
+    }
+}
+
+pub const THREAD_ROW_CASES: &[Case] = &[
+    Case {
+        component: "thread_row",
+        state: "marked-runs",
+        make: || row_with(None),
+    },
+    Case {
+        component: "thread_row",
+        state: "strip-shown-by-caller",
+        make: || row_with(Some(caller_strip(true))),
+    },
+    Case {
+        component: "thread_row",
+        state: "more-collapsed",
+        make: || row_more(false),
+    },
+    Case {
+        component: "thread_row",
+        state: "more-expanded",
+        make: || row_more(true),
+    },
+    Case {
+        component: "row_more",
+        state: "alone",
+        make: || rsx! { RowMore { onclick: |_| {} } },
+    },
+    Case {
+        component: "row_more",
+        state: "labelled-shown",
+        make: || rsx! { RowMore { label: "Actions for this thread", shown: true, onclick: |_| {} } },
+    },
+    Case {
+        component: "hover_strip",
+        state: "shown-visible",
+        make: || caller_strip(true),
+    },
+    Case {
+        component: "hover_strip",
+        state: "shown-hidden",
+        make: || caller_strip(false),
+    },
+];

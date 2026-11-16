@@ -1,6 +1,6 @@
 //! The peek of a PDF with the `pane` feature: its first page, rasterised by `ds-blitz`'s thumbnail cache.
 //!
-//! pdfrum is reached only through `ds_blitz::pdf_thumb_blocking` (the `pdf` feature), the same
+//! pdfrum is reached only through `ui_blitz::pdf_thumb_blocking` (the `pdf` feature), the same
 //! worker-side call and the same cache the launcher's `PdfFileThumb` uses, so a page peeked here
 //! is a cache hit when the pane asks for it again at the same size.
 
@@ -11,10 +11,10 @@ use crate::looking::PANE_FIT;
 use anyview_core::{
     ByteLen, FactLabel, FactValue, Facts, FormatKind, Input, Peek, PeekBudget, PixelSize, Sniffed,
 };
-use ds_blitz::{ThumbRequest, pdf_thumb_blocking, pdf_thumb_bytes};
-use ds_core::geometry::scale::Scale;
-use ds_core::geometry::units::{Px, Size};
-use ds_core::word::Word;
+use ui_blitz::{ThumbRequest, pdf_thumb_blocking, pdf_thumb_bytes};
+use ui_core::geometry::scale::Scale;
+use ui_core::geometry::units::{Px, Size};
+use ui_core::word::Word;
 
 /// The peek of the kind `Pdf`.
 ///

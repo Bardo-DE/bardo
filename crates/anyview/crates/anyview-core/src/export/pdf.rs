@@ -4,7 +4,7 @@ use super::choice::ExportChoice;
 use super::extension::ExportExtension;
 use super::target::RasterTarget;
 use crate::units::{Dpi, PageSelection};
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 /// An export of a PDF document. Page choices are a [`PageSelection`], not a range, because "all
 /// pages" is the default and is picked before the document's length is known.

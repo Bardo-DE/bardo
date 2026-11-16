@@ -1,0 +1,44 @@
+[package]
+name = "inference-core"
+description = "The AI broker's pure half: typed requests and replies, the local-first routing policy, spend caps, audit entries, and the Model trait wire adapters implement."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[dependencies]
+account-core = {path = "../../accounts/account-core"}
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-parse = {path = "../../computer-use/computer-use-parse"}
+computer-use-session = {path = "../../computer-use/computer-use-session"}
+model-vision-prep = {path = "../../models/model-vision-prep"}
+model-provider = {path = "../../models/model-provider"}
+model-catalog = {path = "../../models/model-catalog"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+base64 = {version = "0.22"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+iso_currency = {version = "0.7", features = ["with-serde"]}
+base-testkit = {path = "../../base/base-testkit"}
+# Its own fakes, for tests/it.
+inference-core = { path = ".", features = ["testing"] }
+# `llm_account` for the fake model test (tests/it/fake_model.rs).
+account-fake = {path = "../../accounts/account-fake"}
+proptest = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[features]
+# `testing`: `FakeModel` and `FakeInferSession`, for the tests of code built on the broker.
+testing = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

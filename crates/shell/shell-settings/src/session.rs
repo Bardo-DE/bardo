@@ -1,0 +1,35 @@
+//! `session.*`: sill's own lock screen (design/20 §1.9); design/22 §3.19 has the rows. The lock
+//! grace lives here because it belongs to the lock screen, but its `KeySpec` is on the Power page
+//! with `idle.*` (design/22 §3.19; `crate::schema` moves it, the derive has one page a struct).
+
+use ui_settings::Secs;
+use ui_settings::schema::Page;
+use serde::{Deserialize, Serialize};
+
+/// The lock screen.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[serde(default)]
+#[settings(
+    file = "sill/settings.toml", domain = "session", page = Page::Accounts,
+    footnote(section = "Lock screen", text = "Locking yourself, closing the lid and sleep always ask for the password."),
+)]
+pub struct SessionSettings {
+    #[settings(
+        label = "Require the password after the display turns off",
+        help = "Seconds a quick wake skips the password; locking, lid close and sleep always ask.",
+        section = "Lock screen",
+        range = "0..=60",
+        unit = "s",
+        advanced,
+        note = "Set 0 to always ask for the password."
+    )]
+    pub lock_grace_s: Secs,
+}
+
+impl Default for SessionSettings {
+    fn default() -> Self {
+        SessionSettings {
+            lock_grace_s: Secs(5),
+        }
+    }
+}

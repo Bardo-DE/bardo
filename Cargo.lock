@@ -3,36 +3,6 @@
 version = 4
 
 [[package]]
-name = "a11y-atspi"
-version = "0.1.0"
-dependencies = [
- "a11y-tree",
- "atspi",
- "cua-action",
- "cua-desktop",
- "porter-core",
- "porter-ids",
- "prov",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "a11y-tree"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "cua-desktop",
- "cua-types",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "ab_glyph"
 version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -108,47 +78,1052 @@ dependencies = [
 ]
 
 [[package]]
-name = "accountd"
+name = "account-calendar"
 version = "0.1.0"
 dependencies = [
+ "account-dav-proto",
+ "account-fake-servers",
+ "account-http",
+ "account-http-relay",
+ "account-ids",
+ "base64 0.22.1",
+ "chrono",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "account-callers"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "base-testkit",
+ "caller-identity-core",
+ "caller-identity-dbus",
+ "caller-identity-linux",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "zbus",
+]
+
+[[package]]
+name = "account-capability"
+version = "0.1.0"
+dependencies = [
+ "account-ids",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "account-client"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-sheet",
+ "account-wire",
+ "futures-core",
+ "futures-util",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-client-dbus"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-core",
+ "account-dbus",
+ "account-ids",
+ "account-match",
+ "account-secrets",
+ "account-tailscale",
+ "account-wire",
+ "futures-util",
+ "rustix 1.1.6",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zbus",
+ "zeroize",
+]
+
+[[package]]
+name = "account-client-inproc"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-core",
+ "account-fake",
+ "account-fake-servers",
+ "account-families",
+ "account-family-generic",
+ "account-http",
+ "account-http-reqwest",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-proxy",
+ "account-secrets",
+ "account-service",
+ "account-service-accounts",
+ "account-service-core",
+ "account-service-grants",
+ "account-sheet",
+ "account-wire",
+ "tokio",
+]
+
+[[package]]
+name = "account-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-ids",
+ "account-match",
+ "caller-identity-core",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "subtle",
+ "thiserror 2.0.21",
+ "zeroize",
+]
+
+[[package]]
+name = "account-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-daemon-support",
+ "account-dbus",
+ "account-fake",
+ "account-fake-servers",
+ "account-families",
+ "account-family-oauth",
+ "account-fs",
+ "account-http",
+ "account-http-reqwest",
+ "account-identities",
+ "account-ids",
+ "account-match",
+ "account-oauth",
+ "account-provider",
+ "account-proxy",
+ "account-secrets",
+ "account-service",
+ "account-service-accounts",
+ "account-service-core",
+ "account-settings",
+ "account-sheet",
+ "account-sheets",
+ "account-spaces",
+ "account-store",
+ "account-tailscale",
+ "account-wire",
+ "base-testkit",
  "clap",
- "ds-settings",
- "porter-callers",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-daemon",
- "porter-dbus",
- "porter-fake",
- "porter-fake-servers",
- "porter-families",
- "porter-family-oauth",
- "porter-fs",
- "porter-http",
- "porter-http-reqwest",
- "porter-identities",
- "porter-ids",
- "porter-match",
- "porter-oauth",
- "porter-provider",
- "porter-proxy",
- "porter-secrets",
- "porter-service",
- "porter-service-accounts",
- "porter-service-core",
- "porter-settings",
- "porter-sheet",
- "porter-sheets",
- "porter-spaces",
- "porter-store",
- "porter-tailscale",
- "porter-wire",
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "sha2 0.10.9",
- "test-kit",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-settings",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "account-daemon-support"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "notify",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-dav-proto"
+version = "0.1.0"
+dependencies = [
+ "http",
+ "roxmltree 0.21.1",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-dbus"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-dbus-macros",
+ "account-ids",
+ "account-tailscale",
+ "account-wire",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "account-dbus-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "account-discover"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-http",
+ "account-ids",
+ "account-provider",
+ "hickory-resolver",
+ "roxmltree 0.21.1",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "account-fake"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-service",
+ "account-service-accounts",
+ "account-service-core",
+ "account-sheet",
+ "account-wire",
+ "base-testkit",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "account-fake-secret-service"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "account-fake-servers"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-dav-proto",
+ "account-discover",
+ "account-fake",
+ "account-ids",
+ "account-provider",
+ "base-testkit",
+ "base64 0.22.1",
+ "form_urlencoded",
+ "hex",
+ "http",
+ "md-5 0.10.6",
+ "rustls",
+ "rustls-pki-types",
+ "serde_json",
+ "sha2 0.10.9",
+ "tokio",
+ "tokio-rustls",
+]
+
+[[package]]
+name = "account-families"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-dav-proto",
+ "account-discover",
+ "account-fake",
+ "account-fake-servers",
+ "account-family-generic",
+ "account-family-kit",
+ "account-family-nextcloud",
+ "account-family-oauth",
+ "account-http",
+ "account-http-reqwest",
+ "account-ids",
+ "account-match",
+ "account-oauth",
+ "account-provider",
+ "account-proxy",
+ "account-secrets",
+ "account-service",
+ "account-service-accounts",
+ "account-service-core",
+ "account-sheet",
+ "account-tailscale",
+ "account-wire",
+ "base-testkit",
+ "base64 0.22.1",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "account-family-generic"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-discover",
+ "account-family-kit",
+ "account-generic-proto",
+ "account-http",
+ "account-provider",
+ "account-proxy",
+ "account-sheet",
+ "tokio",
+]
+
+[[package]]
+name = "account-family-kit"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-http",
+ "account-provider",
+ "account-sheet",
+ "base-testkit",
+ "base64 0.22.1",
+ "tokio",
+]
+
+[[package]]
+name = "account-family-nextcloud"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-dav-proto",
+ "account-family-kit",
+ "account-http",
+ "account-nextcloud-proto",
+ "account-provider",
+ "account-sheet",
+]
+
+[[package]]
+name = "account-family-oauth"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-family-kit",
+ "account-http",
+ "account-http-reqwest",
+ "account-ids",
+ "account-oauth",
+ "account-oauth-probe-proto",
+ "account-provider",
+ "account-sheet",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "account-fs"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "account-generic-proto"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-dav-proto",
+ "account-ids",
+ "account-provider",
+ "account-sheet",
+ "http",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-http"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "http",
+ "httpdate",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-http-relay"
+version = "0.1.0"
+dependencies = [
+ "account-client",
+ "account-core",
+ "account-http",
+ "account-ids",
+ "account-wire",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "tokio",
+]
+
+[[package]]
+name = "account-http-reqwest"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-fake-servers",
+ "account-http",
+ "account-ids",
+ "reqwest 0.12.28",
+ "rustls",
+ "tokio",
+]
+
+[[package]]
+name = "account-identities"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-fs",
+ "account-ids",
+ "account-secrets",
+ "account-service-core",
+ "account-sheet",
+ "account-wire",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "account-ids"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-keyring-chunked"
+version = "0.1.0"
+dependencies = [
+ "keyring-core",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-match"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-ids",
+ "serde",
+]
+
+[[package]]
+name = "account-nextcloud-proto"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "http",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-oauth"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-fake-servers",
+ "account-http",
+ "account-ids",
+ "account-provider",
+ "base-testkit",
+ "base64 0.22.1",
+ "form_urlencoded",
+ "httparse",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "subtle",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "account-oauth-probe-proto"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-ids",
+ "http",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "account-provider"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-sheet",
+ "serde",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "account-proxy"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-fake",
+ "account-fake-servers",
+ "account-ids",
+ "account-proxy",
+ "base-testkit",
+ "base64 0.22.1",
+ "httparse",
+ "rustls-native-certs",
+ "rustls-pki-types",
+ "tokio",
+ "tokio-rustls",
+ "webpki-roots",
+]
+
+[[package]]
+name = "account-rig"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-daemon",
+ "account-fake",
+ "account-fake-secret-service",
+ "account-fake-servers",
+ "account-ids",
+ "account-provider",
+ "account-secrets",
+ "account-service",
+ "account-service-core",
+ "account-wire",
+ "base-testkit",
+ "clap",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "account-secrets"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-fs",
+ "account-ids",
+ "account-keyring-chunked",
+ "account-secrets",
+ "apple-native-keyring-store",
+ "base-testkit",
+ "keyring-core",
+ "oo7",
+ "rustix 1.1.6",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "windows-native-keyring-store",
+ "zeroize",
+]
+
+[[package]]
+name = "account-service"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-service-accounts",
+ "account-service-core",
+ "account-service-grants",
+ "account-sheet",
+ "account-wire",
+]
+
+[[package]]
+name = "account-service-accounts"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-service-core",
+ "account-sheet",
+ "account-tailscale",
+ "account-wire",
+]
+
+[[package]]
+name = "account-service-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-sheet",
+ "account-wire",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-service-grants"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-service-accounts",
+ "account-service-core",
+ "account-sheet",
+ "account-wire",
+]
+
+[[package]]
+name = "account-settings"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-fake",
+ "account-ids",
+ "account-provider",
+ "account-service-core",
+ "account-sheet",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-settings",
+]
+
+[[package]]
+name = "account-sheet"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-tailscale",
+ "account-wire",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-sheets"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "account-dbus",
+ "account-provider",
+ "account-service-core",
+ "account-sheet",
+ "account-wire",
+ "base-testkit",
+ "serde_json",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "account-spaces"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-fs",
+ "account-ids",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "account-store"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-fake",
+ "account-fs",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "account-tailscale"
+version = "0.1.0"
+dependencies = [
+ "account-fake-servers",
+ "account-ids",
+ "account-tailscale",
+ "base-testkit",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "account-wire"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-accept"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-core",
+ "account-ids",
+ "action-cli",
+ "action-client",
+ "action-core",
+ "action-daemon",
+ "action-dbus",
+ "action-log",
+ "action-manifest",
+ "action-mcp",
+ "action-provider",
+ "action-router",
+ "action-testbus",
+ "action-trace",
+ "action-vocab",
+ "action-wire",
+ "agent-acp-bin",
+ "agent-acp-server",
+ "agent-reader-daemon",
+ "agent-session",
+ "companion-daemon",
+ "companion-wire",
+ "fnv",
+ "futures-util",
+ "inference-core",
+ "memory-client",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "action-checkpoint"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-vocab",
+ "const-hex",
+ "provenance",
+ "sandbox",
+ "sha2 0.11.0",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-checkpoint-git"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-checkpoint",
+ "action-core",
+ "percent-encoding",
+ "provenance",
+ "sandbox",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "action-cli"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-client",
+ "action-core",
+ "action-daemon",
+ "action-dbus",
+ "action-fake",
+ "action-manifest",
+ "action-provider",
+ "action-router",
+ "action-testbus",
+ "action-vocab",
+ "action-wire",
+ "agent-session",
+ "agent-skills",
+ "agent-skills-disk",
+ "companion-client",
+ "companion-wire",
+ "futures-util",
+ "inference-core",
+ "memory-core",
+ "memory-dbus",
+ "memory-dbus-serve",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "url",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "action-client"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-core",
+ "action-dbus",
+ "action-fake",
+ "action-gate-wire",
+ "action-manifest",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "companion-model",
+ "computer-use-action",
+ "futures-util",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "action-context"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-review",
+ "action-vocab",
+ "action-wire",
+ "agent-session",
+ "agent-skills",
+ "companion-model",
+ "futures-channel",
+ "futures-util",
+ "memory-core",
+ "permission-core",
+ "permission-policy",
+ "provenance",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-manifest",
+ "action-vocab",
+ "companion-model",
+ "inference-core",
+ "iso_currency",
+ "memory-core",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-daemon-support",
+ "account-dbus",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "action-checkpoint-git",
+ "action-client",
+ "action-context",
+ "action-core",
+ "action-dbus",
+ "action-fake",
+ "action-gate-wire",
+ "action-host",
+ "action-log",
+ "action-manifest",
+ "action-procroot",
+ "action-provider",
+ "action-review",
+ "action-router",
+ "action-settings",
+ "action-store",
+ "action-testbus",
+ "action-vocab",
+ "action-wire",
+ "agent-acp-bin",
+ "agent-models",
+ "agent-reader-daemon",
+ "agent-session",
+ "agent-skills",
+ "agent-skills-disk",
+ "companion-memory",
+ "companion-memory-core",
+ "companion-model",
+ "computer-use-action",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "memory-client",
+ "memory-core",
+ "memory-dbus",
+ "memory-dbus-serve",
+ "model-provider",
+ "notify",
+ "permission-core",
+ "permission-policy",
+ "proptest",
+ "provenance",
+ "rust_decimal",
+ "sandbox",
+ "serde",
+ "serde_json",
+ "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "toml 1.1.6+spec-1.1.0",
@@ -157,66 +1132,256 @@ dependencies = [
 ]
 
 [[package]]
-name = "acp-core"
+name = "action-dbus"
 version = "0.1.0"
 dependencies = [
- "agent-client-protocol",
- "bulkhead",
- "companion-model",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-session",
- "docket-vocab",
- "iso_currency",
- "model-provider",
- "porter-ids",
- "prov",
- "rust_decimal",
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "account-dbus",
+ "account-match",
+ "action-core",
+ "action-dbus",
+ "action-manifest",
+ "action-vocab",
+ "action-wire",
+ "inference-client",
+ "inference-core",
+ "inference-dbus",
+ "provenance",
+ "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.21",
- "tracing",
+ "zbus",
 ]
 
 [[package]]
-name = "action-review"
+name = "action-eval"
 version = "0.1.0"
 dependencies = [
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
+ "account-core",
+ "account-ids",
+ "action-context",
+ "action-core",
+ "action-eval-core",
+ "action-fake",
+ "action-manifest",
+ "action-review",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "agent-skills",
+ "agent-skills-disk",
+ "clap",
+ "permission-core",
  "proptest",
- "prov",
+ "provenance",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "action-eval-core"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-vocab",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
 ]
 
 [[package]]
-name = "actions-mcp"
+name = "action-fake"
 version = "0.1.0"
 dependencies = [
- "actions-tools",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-manifest",
- "docket-permissions-core",
- "docket-router",
- "docket-settings",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
- "intentd",
- "porter-core",
- "prov",
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-checkpoint",
+ "action-client",
+ "action-context",
+ "action-core",
+ "action-gate-wire",
+ "action-manifest",
+ "action-provider",
+ "action-review",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "agent-session",
+ "computer-use-action",
+ "inference-client",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "permission-policy",
+ "provenance",
+ "sandbox",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "action-gate"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-context",
+ "action-core",
+ "action-manifest",
+ "action-review",
+ "action-vocab",
+ "action-wire",
+ "model-genai-names",
+ "model-provider",
+ "permission-core",
+ "permission-policy",
+ "provenance",
+ "rust_decimal",
+ "sandbox",
+ "serde_json",
+ "toml 1.1.6+spec-1.1.0",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "action-gate-wire"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-core",
+ "computer-use-action",
+ "provenance",
+ "serde",
+]
+
+[[package]]
+name = "action-host"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-vocab",
+ "agent-session",
+ "futures-channel",
+ "futures-util",
+ "permission-core",
+ "provenance",
+]
+
+[[package]]
+name = "action-live"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-accept",
+ "action-client",
+ "action-core",
+ "action-dbus",
+ "action-eval",
+ "action-eval-core",
+ "action-fake",
+ "action-host",
+ "action-manifest",
+ "action-review",
+ "action-settings",
+ "action-store",
+ "action-testbus",
+ "action-trace",
+ "action-vocab",
+ "action-wire",
+ "agent-acp-bin",
+ "agent-acp-host",
+ "agent-launch",
+ "agent-models",
+ "agent-planner",
+ "agent-reader",
+ "agent-registry",
+ "agent-session",
+ "clap",
+ "companion-tasks",
+ "companion-wire",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "sandbox",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "zbus",
+]
+
+[[package]]
+name = "action-log"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "thiserror 2.0.21",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "action-manifest"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-vocab",
+ "memory-core",
+ "proptest",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "url",
+]
+
+[[package]]
+name = "action-mcp"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-client",
+ "action-core",
+ "action-daemon",
+ "action-dbus",
+ "action-fake",
+ "action-manifest",
+ "action-router",
+ "action-settings",
+ "action-testbus",
+ "action-tools",
+ "action-vocab",
+ "action-wire",
+ "permission-core",
+ "provenance",
  "rmcp",
  "serde",
  "serde_json",
@@ -228,19 +1393,210 @@ dependencies = [
 ]
 
 [[package]]
-name = "actions-tools"
+name = "action-procroot"
 version = "0.1.0"
 dependencies = [
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "porter-core",
- "prov",
+ "account-core",
+ "action-wire",
+ "tempfile",
+]
+
+[[package]]
+name = "action-provider"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-dbus",
+ "action-manifest",
+ "action-vocab",
+ "action-wire",
+ "futures-util",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "action-review"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "inference-core",
+ "model-provider",
+ "permission-core",
+ "proptest",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-router"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-checkpoint",
+ "action-context",
+ "action-core",
+ "action-fake",
+ "action-gate",
+ "action-gate-wire",
+ "action-manifest",
+ "action-provider",
+ "action-review",
+ "action-vocab",
+ "action-wire",
+ "agent-session",
+ "agent-skills",
+ "companion-model",
+ "computer-use-action",
+ "futures-util",
+ "memory-core",
+ "model-provider",
+ "permission-core",
+ "permission-policy",
+ "proptest",
+ "provenance",
+ "rust_decimal",
+ "sandbox",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "tracing",
+]
+
+[[package]]
+name = "action-settings"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-store",
+ "action-vocab",
+ "agent-registry",
+ "model-provider",
+ "permission-core",
+ "rust_decimal",
+ "serde",
+ "tempfile",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "toml_edit",
+]
+
+[[package]]
+name = "action-store"
+version = "0.1.0"
+dependencies = [
+ "action-vocab",
+ "atomic-write-file",
+ "futures-util",
+ "provenance",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-testbus"
+version = "0.1.0"
+dependencies = [
+ "action-dbus",
+ "tempfile",
+ "zbus",
+]
+
+[[package]]
+name = "action-tools"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "permission-core",
+ "provenance",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "action-trace"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "action-core",
+ "action-dbus",
+ "inference-core",
+ "serde",
+ "serde_json",
+ "tracing",
+]
+
+[[package]]
+name = "action-ui-adapter"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-provider",
+ "action-vocab",
+ "action-wire",
+ "agent-voice-wire",
+ "companion-wire",
+ "inference-core",
+ "permission-core",
+ "provenance",
+ "thiserror 2.0.21",
+ "ui-intents",
+]
+
+[[package]]
+name = "action-vocab"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "chrono",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "action-wire"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-gate-wire",
+ "action-manifest",
+ "action-vocab",
+ "companion-model",
+ "computer-use-action",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -280,6 +1636,142 @@ dependencies = [
  "cipher 0.5.2",
  "cpubits",
  "cpufeatures 0.3.1",
+]
+
+[[package]]
+name = "agent-acp-bin"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-client",
+ "action-core",
+ "action-dbus",
+ "action-fake",
+ "action-host",
+ "action-log",
+ "action-manifest",
+ "action-provider",
+ "action-settings",
+ "action-store",
+ "action-vocab",
+ "action-wire",
+ "agent-acp-core",
+ "agent-acp-host",
+ "agent-acp-server",
+ "agent-install",
+ "agent-launch",
+ "agent-native",
+ "agent-planner",
+ "agent-registry",
+ "agent-session",
+ "clap",
+ "companion-client",
+ "companion-model",
+ "companion-tasks",
+ "companion-wire",
+ "futures-util",
+ "permission-core",
+ "provenance",
+ "sandbox",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "agent-acp-core"
+version = "0.1.0"
+dependencies = [
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "agent-client-protocol",
+ "agent-session",
+ "companion-model",
+ "iso_currency",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "sandbox",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tracing",
+]
+
+[[package]]
+name = "agent-acp-host"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-client",
+ "action-core",
+ "action-fake",
+ "action-host",
+ "action-manifest",
+ "action-procroot",
+ "action-review",
+ "action-router",
+ "action-store",
+ "action-testbus",
+ "action-tools",
+ "action-vocab",
+ "action-wire",
+ "agent-acp-core",
+ "agent-acp-host",
+ "agent-client-protocol",
+ "agent-session",
+ "companion-model",
+ "const-hex",
+ "futures-channel",
+ "futures-util",
+ "getrandom 0.3.4",
+ "jsonschema",
+ "permission-core",
+ "provenance",
+ "sandbox",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "agent-acp-server"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-fake",
+ "action-settings",
+ "action-testbus",
+ "action-vocab",
+ "agent-acp-core",
+ "agent-client-protocol",
+ "agent-session",
+ "companion-model",
+ "companion-wire",
+ "futures-channel",
+ "futures-util",
+ "jsonschema",
+ "permission-core",
+ "provenance",
+ "sandbox",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -324,26 +1816,271 @@ dependencies = [
 ]
 
 [[package]]
+name = "agent-inapp"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "action-client",
+ "action-context",
+ "action-core",
+ "action-fake",
+ "action-host",
+ "action-manifest",
+ "action-provider",
+ "action-review",
+ "action-router",
+ "action-store",
+ "action-vocab",
+ "action-wire",
+ "agent-loop",
+ "agent-models",
+ "agent-planner",
+ "agent-reader",
+ "agent-session",
+ "agent-skills",
+ "agent-skills-disk",
+ "companion-memory",
+ "companion-memory-core",
+ "companion-tasks",
+ "companion-wire",
+ "computer-use-action",
+ "futures-channel",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "memory-client",
+ "memory-core",
+ "memory-fake",
+ "memory-service",
+ "permission-core",
+ "permission-policy",
+ "provenance",
+ "sandbox",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "agent-install"
+version = "0.1.0"
+dependencies = [
+ "action-store",
+ "agent-registry",
+ "clap",
+ "flate2",
+ "serde",
+ "serde_json",
+ "tar",
+ "tempfile",
+ "thiserror 2.0.21",
+ "zip",
+]
+
+[[package]]
+name = "agent-launch"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-dbus",
+ "account-wire",
+ "action-core",
+ "action-manifest",
+ "action-settings",
+ "action-store",
+ "action-testbus",
+ "action-vocab",
+ "agent-acp-core",
+ "agent-acp-host",
+ "agent-acp-server",
+ "agent-client-protocol",
+ "agent-registry",
+ "agent-session",
+ "companion-model",
+ "fnv",
+ "inference-dbus",
+ "permission-core",
+ "provenance",
+ "sandbox",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "tracing",
+ "zbus",
+]
+
+[[package]]
 name = "agent-loop"
 version = "0.1.0"
 dependencies = [
- "almanac-core",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "action-wire",
  "companion-wire",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "docket-wire",
- "porter-core",
- "porter-ids",
+ "memory-core",
+ "permission-core",
  "proptest",
- "prov",
+ "provenance",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "agents-core"
+name = "agent-models"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "action-core",
+ "action-fake",
+ "action-review",
+ "action-vocab",
+ "inference-client",
+ "inference-core",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "agent-native"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "action-client",
+ "action-core",
+ "action-fake",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "agent-loop",
+ "agent-planner",
+ "agent-session",
+ "companion-model",
+ "companion-tasks",
+ "companion-wire",
+ "futures-channel",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "permission-core",
+ "provenance",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "agent-planner"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-core",
+ "action-fake",
+ "action-manifest",
+ "action-vocab",
+ "agent-loop",
+ "agent-planner",
+ "companion-model",
+ "companion-wire",
+ "inference-client",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "agent-reader"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "action-core",
+ "action-fake",
+ "action-vocab",
+ "agent-models",
+ "inference-client",
+ "inference-core",
+ "proptest",
+ "provenance",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "agent-reader-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "action-client",
+ "action-context",
+ "action-core",
+ "action-dbus",
+ "action-fake",
+ "action-log",
+ "action-router",
+ "action-testbus",
+ "action-vocab",
+ "action-wire",
+ "agent-reader",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "permission-core",
+ "proptest",
+ "provenance",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "agent-registry"
 version = "0.1.0"
 dependencies = [
  "const-hex",
@@ -352,6 +2089,148 @@ dependencies = [
  "sha2 0.11.0",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "agent-session"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-vocab",
+ "action-wire",
+ "agent-session",
+ "companion-model",
+ "companion-wire",
+ "memory-core",
+ "model-provider",
+ "permission-core",
+ "proptest",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "agent-skills"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "provenance",
+ "serde",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "agent-skills-disk"
+version = "0.1.0"
+dependencies = [
+ "action-manifest",
+ "agent-skills",
+ "tempfile",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "agent-voice-audio"
+version = "0.1.0"
+dependencies = [
+ "agent-voice-audio",
+ "futures-util",
+ "serde",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "agent-voice-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-dbus",
+ "action-log",
+ "action-procroot",
+ "action-testbus",
+ "action-vocab",
+ "action-wire",
+ "agent-voice-audio",
+ "agent-voice-dbus",
+ "agent-voice-loop",
+ "agent-voice-pipewire",
+ "agent-voice-wire",
+ "clap",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "serde",
+ "serde_json",
+ "speech-provider",
+ "speech-vad",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "tracing",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "agent-voice-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
+name = "agent-voice-loop"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "action-wire",
+ "agent-voice-wire",
+ "inference-core",
+ "serde",
+ "serde_json",
+ "speech-provider",
+]
+
+[[package]]
+name = "agent-voice-pipewire"
+version = "0.1.0"
+dependencies = [
+ "agent-voice-audio",
+ "pipewire",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "agent-voice-wire"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-vocab",
+ "action-wire",
+ "inference-core",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -375,20 +2254,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c982642fa9e8606056828ee9a8505737230110bb1099153c79efe865c59d12ba"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "airwaves-bluez"
-version = "0.1.0"
-dependencies = [
- "zbus",
-]
-
-[[package]]
-name = "airwaves-nm"
-version = "0.1.0"
-dependencies = [
- "zbus",
 ]
 
 [[package]]
@@ -435,240 +2300,6 @@ name = "allocator-api2"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
-
-[[package]]
-name = "almanac-client"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-dbus",
- "almanac-fake",
- "almanac-seal",
- "almanac-service",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "almanac-core"
-version = "0.1.0"
-dependencies = [
- "const-hex",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "ulid",
-]
-
-[[package]]
-name = "almanac-dbus"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "zbus",
-]
-
-[[package]]
-name = "almanac-dbus-serve"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-dbus",
- "serde",
- "serde_json",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "almanac-fake"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-seal",
- "almanac-service",
- "almanac-settings",
- "almanac-store",
- "almanac-tidy",
- "chrono",
- "eventlog",
- "memfiles",
- "memfiles-format",
- "recall",
- "rusqlite",
- "serde_json",
- "tar",
- "tempfile",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "almanac-host"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-settings",
- "tempfile",
-]
-
-[[package]]
-name = "almanac-infer"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-fake",
- "almanac-store",
- "almanac-tidy",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "recall",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "almanac-keyfile"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-seal",
- "atomic-write-file",
- "const-hex",
- "tempfile",
- "tokio",
-]
-
-[[package]]
-name = "almanac-local"
-version = "0.1.0"
-dependencies = [
- "almanac-client",
- "almanac-core",
- "almanac-fake",
- "almanac-host",
- "almanac-seal",
- "almanac-service",
- "almanac-settings",
- "almanac-store",
- "almanac-tidy",
- "eventlog",
- "getrandom 0.3.4",
- "memfiles",
- "recall",
- "rusqlite",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "almanac-seal"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-seal",
- "blake3",
- "chacha20poly1305",
- "const-hex",
- "getrandom 0.3.4",
- "oo7",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "zeroize",
-]
-
-[[package]]
-name = "almanac-search"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-store",
-]
-
-[[package]]
-name = "almanac-service"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-fake",
- "almanac-seal",
- "almanac-search",
- "almanac-settings",
- "almanac-store",
- "almanac-tidy",
- "blake3",
- "chrono",
- "const-hex",
- "eventlog",
- "memfiles-format",
- "serde",
- "serde_json",
- "tar",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "almanac-settings"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "serde",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "almanac-store"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-fake",
- "almanac-seal",
- "almanac-service",
- "blake3",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "almanac-tidy"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-fake",
- "blake3",
- "memfiles-format",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "almanac-watch"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "blake3",
- "notify",
- "tempfile",
- "thiserror 2.0.21",
-]
 
 [[package]]
 name = "android-activity"
@@ -849,7 +2480,6 @@ dependencies = [
  "anyview-core",
  "anyview-fs",
  "bzip2",
- "ds-core",
  "flate2",
  "lzma-rs",
  "lzma-rust2",
@@ -859,6 +2489,7 @@ dependencies = [
  "tar",
  "tempfile",
  "thiserror 2.0.21",
+ "ui-core",
  "zip",
 ]
 
@@ -869,10 +2500,10 @@ dependencies = [
  "anyview-archive",
  "anyview-core",
  "anyview-fs",
- "ds-core",
  "roxmltree 0.21.1",
  "tempfile",
  "thiserror 2.0.21",
+ "ui-core",
  "zip",
 ]
 
@@ -880,13 +2511,13 @@ dependencies = [
 name = "anyview-core"
 version = "0.1.0-beta.1"
 dependencies = [
- "chordkit",
- "ds-core",
  "infer",
  "jiff",
+ "keymap",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "ui-core",
 ]
 
 [[package]]
@@ -906,9 +2537,9 @@ name = "anyview-fs"
 version = "0.1.0-beta.1"
 dependencies = [
  "anyview-core",
- "ds-helpers",
  "rustix 1.1.6",
  "tempfile",
+ "ui-helpers",
 ]
 
 [[package]]
@@ -917,7 +2548,6 @@ version = "0.1.0-beta.1"
 dependencies = [
  "anyview-core",
  "anyview-fs",
- "ds-core",
  "icns",
  "image",
  "img-parts",
@@ -930,6 +2560,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tiff",
+ "ui-core",
 ]
 
 [[package]]
@@ -945,17 +2576,17 @@ dependencies = [
  "anyview-text",
  "dioxus",
  "dioxus-ssr",
- "ds",
- "ds-blitz",
- "ds-core",
- "ds-harness",
- "ds-lint",
  "log",
  "matroska-demuxer",
  "mp4parse",
  "symphonia",
  "tempfile",
  "thiserror 2.0.21",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "ui-harness",
+ "ui-lint",
  "zip",
 ]
 
@@ -963,37 +2594,37 @@ dependencies = [
 name = "anyview-platform"
 version = "0.1.0-beta.1"
 dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-dbus",
+ "action-manifest",
+ "action-provider",
+ "action-vocab",
+ "action-wire",
  "anyview-core",
  "anyview-platform",
  "anyview-plugin",
  "anyview-plugin-protocol",
- "bayonet",
  "dirs 6.0.0",
- "docket-core",
- "docket-dbus",
- "docket-manifest",
- "docket-provider",
- "docket-vocab",
- "docket-wire",
- "ds-core",
- "ds-extensions",
- "ds-helpers",
- "ds-settings",
  "futures-util",
- "latchkey",
  "log",
  "md-5 0.10.6",
  "memfd",
  "percent-encoding",
+ "plugin-host",
  "png",
- "porter-core",
- "porter-ids",
- "prov",
+ "provenance",
  "serde_json",
+ "service-locator",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "toml 1.1.6+spec-1.1.0",
+ "ui-core",
+ "ui-extensions",
+ "ui-helpers",
+ "ui-settings",
  "zbus",
 ]
 
@@ -1003,7 +2634,7 @@ version = "0.1.0-beta.1"
 dependencies = [
  "anyview-core",
  "anyview-plugin-protocol",
- "bayonet",
+ "plugin-host",
  "serde",
  "thiserror 2.0.21",
 ]
@@ -1012,7 +2643,7 @@ dependencies = [
 name = "anyview-plugin-protocol"
 version = "0.1.0-beta.1"
 dependencies = [
- "bayonet",
+ "plugin-host",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -1023,13 +2654,13 @@ name = "anyview-store"
 version = "0.1.0-beta.1"
 dependencies = [
  "anyview-core",
- "ds-helpers",
  "log",
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
+ "ui-helpers",
 ]
 
 [[package]]
@@ -1041,7 +2672,6 @@ dependencies = [
  "calamine",
  "chardetng",
  "csv",
- "ds-core",
  "encoding_rs",
  "pulldown-cmark",
  "rustix 1.1.6",
@@ -1049,6 +2679,7 @@ dependencies = [
  "syntect",
  "tempfile",
  "thiserror 2.0.21",
+ "ui-core",
  "unicode-segmentation",
  "zip",
 ]
@@ -1472,6 +3103,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-testkit"
+version = "0.1.0"
+
+[[package]]
 name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1482,18 +3117,6 @@ name = "base64"
 version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
-
-[[package]]
-name = "bayonet"
-version = "0.2.0"
-dependencies = [
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
 
 [[package]]
 name = "bincode"
@@ -1669,18 +3292,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "blitz-html"
-version = "0.3.0-beta.2"
-source = "git+https://github.com/Bardo-DE/blitz?rev=841386a71f17673c211217725e75068774517ba8#841386a71f17673c211217725e75068774517ba8"
-dependencies = [
- "blitz-dom",
- "blitz-traits",
- "html5ever",
- "xml5ever",
-]
-
-[[package]]
-name = "blitz-kit"
+name = "blitz-embed"
 version = "0.1.0"
 dependencies = [
  "blitz-dom",
@@ -1690,6 +3302,17 @@ dependencies = [
  "serde",
  "tokio",
  "wgpu",
+]
+
+[[package]]
+name = "blitz-html"
+version = "0.3.0-beta.2"
+source = "git+https://github.com/Bardo-DE/blitz?rev=841386a71f17673c211217725e75068774517ba8#841386a71f17673c211217725e75068774517ba8"
+dependencies = [
+ "blitz-dom",
+ "blitz-traits",
+ "html5ever",
+ "xml5ever",
 ]
 
 [[package]]
@@ -1819,6 +3442,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "bluez-proxy"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
 name = "borrow-or-share"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1872,16 +3502,6 @@ name = "built"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c0e531d93d39c34eef561e929e8a7f86d77a5af08aac4f6d6e39976c51858e9"
-
-[[package]]
-name = "bulkhead"
-version = "0.1.0"
-dependencies = [
- "landlock",
- "serde",
- "tempfile",
- "thiserror 2.0.21",
-]
 
 [[package]]
 name = "bumpalo"
@@ -1969,6 +3589,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "caller-identity-core"
+version = "0.1.11"
+dependencies = [
+ "serde",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "caller-identity-dbus"
+version = "0.1.11"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "futures-timer",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "caller-identity-linux"
+version = "0.1.11"
+dependencies = [
+ "caller-identity-core",
+ "nix 0.31.3",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "calloop"
 version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2024,285 +3677,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
-]
-
-[[package]]
-name = "casement"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "casement-agent",
- "casement-backend",
- "casement-chrome",
- "casement-core",
- "casement-icons",
- "casement-ipc",
- "casement-layout",
- "casement-motion",
- "casement-privacy",
- "casement-protocols",
- "casement-render",
- "casement-wayland",
- "chordkit",
- "ds-core",
- "ds-helpers",
- "ds-settings",
- "jiff",
- "keycap-client",
- "nix 0.31.3",
- "porter-core",
- "rustix 1.1.6",
- "serde",
- "shell-verbs",
- "smithay",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "tracing",
- "tracing-subscriber",
- "x11rb",
-]
-
-[[package]]
-name = "casement-agent"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "peephole-core",
- "reis",
- "rustix 1.1.6",
- "smithay",
- "tracing",
-]
-
-[[package]]
-name = "casement-backend"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "casement-render",
- "ds-core",
- "rustix 1.1.6",
- "serde",
- "smithay",
- "thiserror 2.0.21",
- "tracing",
-]
-
-[[package]]
-name = "casement-chrome"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "ds-core",
- "ds-style",
- "parley",
- "thiserror 2.0.21",
- "vello_cpu 0.1.0",
-]
-
-[[package]]
-name = "casement-core"
-version = "0.1.0"
-dependencies = [
- "casement-protocols",
- "ds-behaviour",
- "ds-core",
- "ds-motion",
- "ds-style",
- "porter-core",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "casement-icons"
-version = "0.1.0"
-dependencies = [
- "ds-helpers",
- "freedesktop-icons",
- "image",
- "resvg",
- "rustix 1.1.6",
- "tempfile",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "casement-ipc"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "casement-backend",
- "casement-core",
- "casement-protocols",
- "ds-core",
- "ds-settings",
- "ds-style",
- "peephole-bus",
- "porter-core",
- "porter-dbus",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "tracing",
- "xkbcommon 0.9.0",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "casement-layout"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "ds-core",
- "ds-style",
- "porter-core",
- "proptest",
- "taffy",
-]
-
-[[package]]
-name = "casement-motion"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-layout",
- "casement-protocols",
- "ds-core",
- "ds-motion",
- "ds-style",
- "porter-core",
-]
-
-[[package]]
-name = "casement-privacy"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "ds-helpers",
- "rustix 1.1.6",
- "tempfile",
- "thiserror 2.0.21",
- "tracing",
-]
-
-[[package]]
-name = "casement-protocols"
-version = "0.1.0"
-dependencies = [
- "bitflags 2.13.2",
- "quick-xml 0.41.0",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "wayland-backend",
- "wayland-client",
- "wayland-protocols",
- "wayland-scanner",
- "wayland-server",
-]
-
-[[package]]
-name = "casement-render"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-motion",
- "casement-protocols",
- "ds-core",
- "image",
- "proptest",
- "smithay",
- "tempfile",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "casement-testclient"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "casement-testkit",
- "desktop-client",
- "rustix 1.1.6",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "wayland-backend",
- "wayland-client",
- "wayland-protocols",
- "wayland-protocols-misc",
- "wayland-protocols-wlr",
- "x11rb",
- "zbus",
-]
-
-[[package]]
-name = "casement-testkit"
-version = "0.1.0"
-dependencies = [
- "casement",
- "casement-backend",
- "casement-core",
- "casement-ipc",
- "casement-layout",
- "casement-protocols",
- "casement-render",
- "casement-testclient",
- "casement-wayland",
- "ds-core",
- "image",
- "porter-core",
- "proptest",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "smithay",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "wayland-client",
- "zbus",
-]
-
-[[package]]
-name = "casement-wayland"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "desktop-client",
- "ds-core",
- "porter-core",
- "smithay",
- "thiserror 2.0.21",
- "tracing",
- "xkbcommon 0.9.0",
-]
-
-[[package]]
-name = "casementctl"
-version = "0.1.0"
-dependencies = [
- "casement-privacy",
- "desktop-client",
- "image",
- "rustix 1.1.6",
- "thiserror 2.0.21",
- "tokio",
- "wayland-client",
- "zbus",
 ]
 
 [[package]]
@@ -2494,48 +3868,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chordkit"
-version = "0.1.0"
-dependencies = [
- "keyboard-types 0.8.3",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "chordkit-file"
-version = "0.1.0"
-dependencies = [
- "libc",
- "tempfile",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "chordkit-gnome"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "chordkit-file",
-]
-
-[[package]]
-name = "chordkit-kde"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "chordkit-file",
-]
-
-[[package]]
-name = "chordkit-macos"
-version = "0.1.0"
-dependencies = [
- "chordkit",
-]
-
-[[package]]
 name = "chrono"
 version = "0.4.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2683,13 +4015,13 @@ dependencies = [
 name = "companion-client"
 version = "0.1.0"
 dependencies = [
+ "action-client",
+ "action-dbus",
+ "action-wire",
  "companion-model",
  "companion-wire",
- "docket-client",
- "docket-dbus",
- "docket-wire",
  "futures-util",
- "prov",
+ "provenance",
  "serde",
  "serde_json",
  "zbus",
@@ -2699,94 +4031,55 @@ dependencies = [
 name = "companion-core"
 version = "0.1.0"
 dependencies = [
- "almanac-core",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-wire",
  "companion-model",
  "companion-wire",
- "docket-core",
- "docket-manifest",
- "docket-wire",
- "porter-core",
- "porter-ids",
- "prov",
+ "memory-core",
+ "provenance",
  "serde_json",
 ]
 
 [[package]]
-name = "companion-model"
+name = "companion-daemon"
 version = "0.1.0"
 dependencies = [
- "almanac-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "companion-wire"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "companion-model",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "docket-wire",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "proptest",
- "prov",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "companiond"
-version = "0.1.0"
-dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-client",
+ "action-core",
+ "action-dbus",
+ "action-fake",
+ "action-log",
+ "action-manifest",
+ "action-procroot",
+ "action-router",
+ "action-settings",
+ "action-store",
+ "action-testbus",
+ "action-vocab",
+ "action-wire",
  "agent-loop",
- "almanac-core",
+ "agent-planner",
+ "agent-skills",
+ "agent-skills-disk",
  "companion-core",
+ "companion-helpers",
  "companion-model",
+ "companion-tasks",
  "companion-wire",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-helpers",
- "docket-log",
- "docket-manifest",
- "docket-permissions-core",
- "docket-planner",
- "docket-procroot",
- "docket-router",
- "docket-settings",
- "docket-skills",
- "docket-skills-disk",
- "docket-store",
- "docket-tasks",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
  "futures-util",
- "inferd-client",
- "porter-callers",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "prov",
+ "inference-client",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "provenance",
  "serde",
  "serde_json",
  "tempfile",
@@ -2796,6 +4089,854 @@ dependencies = [
  "tracing",
  "zbus",
  "zbus-ready",
+]
+
+[[package]]
+name = "companion-helpers"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-client",
+ "action-core",
+ "action-fake",
+ "action-manifest",
+ "action-router",
+ "action-store",
+ "action-vocab",
+ "action-wire",
+ "agent-planner",
+ "chrono",
+ "companion-core",
+ "companion-helpers",
+ "companion-model",
+ "companion-tasks",
+ "companion-wire",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "companion-memory"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-context",
+ "action-core",
+ "action-fake",
+ "action-manifest",
+ "action-provider",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "agent-session",
+ "companion-memory-core",
+ "memory-client",
+ "memory-core",
+ "memory-fake",
+ "memory-service",
+ "permission-core",
+ "provenance",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "companion-memory-core"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "action-core",
+ "companion-model",
+ "memory-core",
+ "provenance",
+ "serde_json",
+]
+
+[[package]]
+name = "companion-model"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-manifest",
+ "action-vocab",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "companion-tasks"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-client",
+ "action-core",
+ "action-fake",
+ "action-manifest",
+ "action-store",
+ "action-vocab",
+ "action-wire",
+ "agent-loop",
+ "agent-planner",
+ "agent-session",
+ "agent-skills",
+ "companion-core",
+ "companion-model",
+ "companion-wire",
+ "futures-util",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "companion-wire"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "action-wire",
+ "companion-model",
+ "inference-core",
+ "memory-core",
+ "permission-core",
+ "proptest",
+ "provenance",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "compositor-agent"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "compositor-core",
+ "desktop-protocols",
+ "reis",
+ "rustix 1.1.6",
+ "smithay",
+ "tracing",
+]
+
+[[package]]
+name = "compositor-app"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "calloop",
+ "compositor-agent",
+ "compositor-backend",
+ "compositor-chrome",
+ "compositor-core",
+ "compositor-icons",
+ "compositor-ipc",
+ "compositor-layout",
+ "compositor-motion",
+ "compositor-privacy",
+ "compositor-render",
+ "compositor-wayland",
+ "desktop-protocols",
+ "jiff",
+ "key-remap-client",
+ "keymap",
+ "nix 0.31.3",
+ "rustix 1.1.6",
+ "serde",
+ "shell-verbs",
+ "smithay",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "tracing",
+ "tracing-subscriber",
+ "ui-core",
+ "ui-helpers",
+ "ui-settings",
+ "x11rb",
+]
+
+[[package]]
+name = "compositor-backend"
+version = "0.1.0"
+dependencies = [
+ "compositor-core",
+ "compositor-render",
+ "desktop-protocols",
+ "rustix 1.1.6",
+ "serde",
+ "smithay",
+ "thiserror 2.0.21",
+ "tracing",
+ "ui-core",
+]
+
+[[package]]
+name = "compositor-chrome"
+version = "0.1.0"
+dependencies = [
+ "compositor-core",
+ "parley",
+ "thiserror 2.0.21",
+ "ui-core",
+ "ui-style",
+ "vello_cpu 0.1.0",
+]
+
+[[package]]
+name = "compositor-core"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "desktop-protocols",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-behaviour",
+ "ui-core",
+ "ui-motion",
+ "ui-style",
+]
+
+[[package]]
+name = "compositor-ctl"
+version = "0.1.0"
+dependencies = [
+ "compositor-privacy",
+ "desktop-client",
+ "image",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+ "tokio",
+ "wayland-client",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-icons"
+version = "0.1.0"
+dependencies = [
+ "freedesktop-icons",
+ "image",
+ "resvg",
+ "rustix 1.1.6",
+ "tempfile",
+ "thiserror 2.0.21",
+ "ui-helpers",
+]
+
+[[package]]
+name = "compositor-ipc"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-dbus",
+ "caller-identity-dbus",
+ "calloop",
+ "compositor-backend",
+ "compositor-core",
+ "desktop-protocols",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "tracing",
+ "ui-core",
+ "ui-settings",
+ "ui-style",
+ "xkbcommon 0.9.0",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "compositor-layout"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "compositor-core",
+ "desktop-protocols",
+ "proptest",
+ "taffy",
+ "ui-core",
+ "ui-style",
+]
+
+[[package]]
+name = "compositor-motion"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "compositor-core",
+ "compositor-layout",
+ "desktop-protocols",
+ "ui-core",
+ "ui-motion",
+ "ui-style",
+]
+
+[[package]]
+name = "compositor-privacy"
+version = "0.1.0"
+dependencies = [
+ "compositor-core",
+ "desktop-protocols",
+ "rustix 1.1.6",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tracing",
+ "ui-helpers",
+]
+
+[[package]]
+name = "compositor-render"
+version = "0.1.0"
+dependencies = [
+ "compositor-core",
+ "compositor-motion",
+ "desktop-protocols",
+ "image",
+ "proptest",
+ "smithay",
+ "tempfile",
+ "thiserror 2.0.21",
+ "ui-core",
+]
+
+[[package]]
+name = "compositor-testclient"
+version = "0.1.0"
+dependencies = [
+ "compositor-core",
+ "compositor-testkit",
+ "desktop-client",
+ "desktop-protocols",
+ "rustix 1.1.6",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-protocols-misc",
+ "wayland-protocols-wlr",
+ "x11rb",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-testkit"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "compositor-app",
+ "compositor-backend",
+ "compositor-core",
+ "compositor-ipc",
+ "compositor-layout",
+ "compositor-render",
+ "compositor-testclient",
+ "compositor-wayland",
+ "desktop-protocols",
+ "image",
+ "proptest",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "smithay",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-core",
+ "wayland-client",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-wayland"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "compositor-core",
+ "desktop-client",
+ "desktop-protocols",
+ "smithay",
+ "thiserror 2.0.21",
+ "tracing",
+ "ui-core",
+ "xkbcommon 0.9.0",
+]
+
+[[package]]
+name = "computer-use-a11y-atspi"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "atspi",
+ "computer-use-a11y-tree",
+ "computer-use-action",
+ "computer-use-desktop",
+ "provenance",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "computer-use-a11y-tree"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "computer-use-action",
+ "computer-use-desktop",
+ "computer-use-types",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "computer-use-action"
+version = "0.1.0"
+dependencies = [
+ "keyboard-types 0.7.0",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "computer-use-bus"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-gate-wire",
+ "action-vocab",
+ "computer-use-action",
+ "computer-use-desktop",
+ "computer-use-types",
+ "inference-core",
+ "iso_currency",
+ "memory-core",
+ "model-provider",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "computer-use-capture"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "blake3",
+ "computer-use-action",
+ "computer-use-desktop",
+ "computer-use-types",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "computer-use-capture-wayland"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "computer-use-action",
+ "computer-use-capture",
+ "computer-use-desktop",
+ "desktop-protocols",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+ "tokio",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-server",
+]
+
+[[package]]
+name = "computer-use-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-daemon-support",
+ "account-ids",
+ "action-client",
+ "action-core",
+ "action-daemon",
+ "action-dbus",
+ "action-fake",
+ "action-gate-wire",
+ "action-manifest",
+ "action-provider",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "computer-use-action",
+ "computer-use-bus",
+ "computer-use-capture",
+ "computer-use-dbus",
+ "computer-use-desktop",
+ "computer-use-fake",
+ "computer-use-host",
+ "computer-use-run",
+ "computer-use-seat-input",
+ "computer-use-system",
+ "futures-util",
+ "inference-core",
+ "key-remap-client",
+ "keymap",
+ "memory-client",
+ "memory-core",
+ "memory-fake",
+ "memory-service",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "zbus",
+]
+
+[[package]]
+name = "computer-use-dbus"
+version = "0.1.0"
+dependencies = [
+ "computer-use-bus",
+ "provenance",
+ "thiserror 2.0.21",
+ "zbus",
+]
+
+[[package]]
+name = "computer-use-desktop"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "computer-use-action",
+ "desktop-protocols",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "computer-use-eval"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-gate-wire",
+ "action-wire",
+ "computer-use-a11y-tree",
+ "computer-use-action",
+ "computer-use-bus",
+ "computer-use-capture",
+ "computer-use-desktop",
+ "computer-use-fake",
+ "computer-use-parse",
+ "computer-use-run",
+ "computer-use-seat-input",
+ "computer-use-session",
+ "computer-use-vendors",
+ "inference-core",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "model-catalog",
+ "model-http",
+ "model-openai-compat",
+ "model-provider",
+ "model-vision-prep",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "computer-use-eval-cloud"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "computer-use-eval",
+ "inference-client",
+ "inference-core",
+ "model-catalog",
+ "model-provider",
+ "model-vision-prep",
+ "rust_decimal",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "zbus",
+]
+
+[[package]]
+name = "computer-use-fake"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-gate-wire",
+ "action-wire",
+ "computer-use-a11y-tree",
+ "computer-use-action",
+ "computer-use-bus",
+ "computer-use-capture",
+ "computer-use-desktop",
+ "computer-use-parse",
+ "computer-use-run",
+ "computer-use-seat-input",
+ "inference-core",
+ "model-provider",
+ "model-replay",
+ "permission-core",
+ "provenance",
+ "reis",
+ "rustix 1.1.6",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "computer-use-host"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-client",
+ "action-core",
+ "action-gate-wire",
+ "action-wire",
+ "computer-use-a11y-tree",
+ "computer-use-action",
+ "computer-use-bus",
+ "computer-use-capture",
+ "computer-use-desktop",
+ "computer-use-fake",
+ "computer-use-run",
+ "inference-core",
+ "memory-client",
+ "memory-core",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "computer-use-parse"
+version = "0.1.0"
+dependencies = [
+ "computer-use-action",
+ "keyboard-types 0.7.0",
+ "model-provider",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "computer-use-run"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-gate-wire",
+ "action-vocab",
+ "action-wire",
+ "blake3",
+ "computer-use-a11y-tree",
+ "computer-use-action",
+ "computer-use-bus",
+ "computer-use-capture",
+ "computer-use-desktop",
+ "computer-use-fake",
+ "computer-use-seat-input",
+ "inference-core",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "model-provider",
+ "permission-core",
+ "provenance",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "computer-use-seat-ei"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "computer-use-action",
+ "computer-use-desktop",
+ "computer-use-fake",
+ "computer-use-seat-input",
+ "futures-util",
+ "reis",
+ "tokio",
+]
+
+[[package]]
+name = "computer-use-seat-input"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "computer-use-action",
+ "computer-use-desktop",
+ "computer-use-types",
+ "keyboard-types 0.7.0",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "xkbcommon 0.8.0",
+]
+
+[[package]]
+name = "computer-use-session"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "computer-use-action",
+ "computer-use-parse",
+ "computer-use-vendors",
+ "model-http",
+ "model-openai-compat",
+ "model-provider",
+ "model-replay",
+ "model-vision-prep",
+ "model-wire",
+ "proptest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "computer-use-system"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "action-client",
+ "computer-use-a11y-atspi",
+ "computer-use-a11y-tree",
+ "computer-use-action",
+ "computer-use-capture",
+ "computer-use-capture-wayland",
+ "computer-use-desktop",
+ "computer-use-host",
+ "computer-use-run",
+ "computer-use-seat-ei",
+ "computer-use-seat-input",
+ "desktop-client",
+ "inference-client",
+ "inference-core",
+ "memory-client",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+ "tokio",
+ "wayland-client",
+ "zbus",
+]
+
+[[package]]
+name = "computer-use-types"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "computer-use-desktop",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "computer-use-vendors"
+version = "0.1.0"
+dependencies = [
+ "computer-use-action",
+ "computer-use-parse",
+ "model-provider",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -3115,354 +5256,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cua-action"
-version = "0.1.0"
-dependencies = [
- "keyboard-types 0.7.0",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "cua-bus"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "cua-action",
- "cua-desktop",
- "cua-types",
- "docket-core",
- "docket-gate-wire",
- "docket-vocab",
- "iso_currency",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "rust_decimal",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "cua-dbus"
-version = "0.1.0"
-dependencies = [
- "cua-bus",
- "prov",
- "thiserror 2.0.21",
- "zbus",
-]
-
-[[package]]
-name = "cua-desktop"
-version = "0.1.0"
-dependencies = [
- "casement-protocols",
- "cua-action",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "cua-eval"
-version = "0.1.0"
-dependencies = [
- "a11y-tree",
- "chordkit",
- "cua-action",
- "cua-bus",
- "cua-desktop",
- "cua-fake",
- "cua-parse",
- "cua-run",
- "cua-session",
- "cua-vendors",
- "docket-core",
- "docket-gate-wire",
- "docket-wire",
- "keyboard-types 0.7.0",
- "maskcap",
- "model-catalog",
- "model-http",
- "model-openai-compat",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "rust_decimal",
- "seat-input",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "vision-prep",
-]
-
-[[package]]
-name = "cua-eval-cloud"
-version = "0.1.0"
-dependencies = [
- "cua-eval",
- "inferd-client",
- "model-catalog",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "rust_decimal",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "vision-prep",
- "zbus",
-]
-
-[[package]]
-name = "cua-fake"
-version = "0.1.0"
-dependencies = [
- "a11y-tree",
- "cua-action",
- "cua-bus",
- "cua-desktop",
- "cua-parse",
- "cua-run",
- "docket-core",
- "docket-gate-wire",
- "docket-permissions-core",
- "docket-wire",
- "maskcap",
- "model-provider",
- "model-replay",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "reis",
- "rustix 1.1.6",
- "seat-input",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "cua-host"
-version = "0.1.0"
-dependencies = [
- "a11y-tree",
- "almanac-client",
- "almanac-core",
- "cua-action",
- "cua-bus",
- "cua-desktop",
- "cua-fake",
- "cua-run",
- "docket-client",
- "docket-core",
- "docket-gate-wire",
- "docket-permissions-core",
- "docket-wire",
- "maskcap",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "rust_decimal",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "cua-parse"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "keyboard-types 0.7.0",
- "model-provider",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "cua-run"
-version = "0.1.0"
-dependencies = [
- "a11y-tree",
- "blake3",
- "chordkit",
- "cua-action",
- "cua-bus",
- "cua-desktop",
- "cua-fake",
- "docket-core",
- "docket-gate-wire",
- "docket-permissions-core",
- "docket-vocab",
- "docket-wire",
- "keyboard-types 0.7.0",
- "maskcap",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "rust_decimal",
- "seat-input",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "cua-session"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "cua-action",
- "cua-parse",
- "cua-vendors",
- "model-http",
- "model-openai-compat",
- "model-provider",
- "model-replay",
- "model-wire",
- "proptest",
- "serde",
- "serde_json",
- "vision-prep",
-]
-
-[[package]]
-name = "cua-system"
-version = "0.1.0"
-dependencies = [
- "a11y-atspi",
- "a11y-tree",
- "almanac-client",
- "cua-action",
- "cua-desktop",
- "cua-host",
- "cua-run",
- "desktop-client",
- "docket-client",
- "inferd-client",
- "maskcap",
- "maskcap-wayland",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "rustix 1.1.6",
- "seat-ei",
- "seat-input",
- "thiserror 2.0.21",
- "tokio",
- "wayland-client",
- "zbus",
-]
-
-[[package]]
-name = "cua-types"
-version = "0.1.0"
-dependencies = [
- "cua-desktop",
- "porter-core",
- "porter-ids",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "cua-vendors"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "cua-parse",
- "model-provider",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "cuad"
-version = "0.1.0"
-dependencies = [
- "almanac-client",
- "almanac-core",
- "almanac-fake",
- "almanac-service",
- "chordkit",
- "cua-action",
- "cua-bus",
- "cua-dbus",
- "cua-desktop",
- "cua-fake",
- "cua-host",
- "cua-run",
- "cua-system",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-gate-wire",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-router",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "intentd",
- "keycap-client",
- "maskcap",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-daemon",
- "porter-ids",
- "porter-infer",
- "prov",
- "rust_decimal",
- "seat-input",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
-]
-
-[[package]]
 name = "cursor-icon"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3581,15 +5374,6 @@ name = "data-url"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be1e0bca6c3637f992fc1cc7cbc52a78c1ef6db076dbf1059c4323d6a2048376"
-
-[[package]]
-name = "dav-proto"
-version = "0.1.0"
-dependencies = [
- "http",
- "roxmltree 0.21.1",
- "thiserror 2.0.21",
-]
 
 [[package]]
 name = "dav1d"
@@ -3718,7 +5502,7 @@ dependencies = [
 name = "desktop-client"
 version = "0.1.0"
 dependencies = [
- "casement-protocols",
+ "desktop-protocols",
  "rustix 1.1.6",
  "thiserror 2.0.21",
  "wayland-client",
@@ -3727,207 +5511,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "detent"
+name = "desktop-protocols"
 version = "0.1.0"
 dependencies = [
- "clap",
- "detent-callers",
- "detent-client",
- "detent-files",
- "detent-intents",
- "detent-model",
- "detent-testkit",
- "detent-ui",
- "ds-blitz",
- "ds-settings",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "detent-callers"
-version = "0.1.0"
-dependencies = [
- "detent-testkit",
- "ds-settings",
- "peephole-bus",
- "rustix 1.1.6",
- "thiserror 2.0.21",
- "zbus",
-]
-
-[[package]]
-name = "detent-client"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "detent-files",
- "detent-model",
- "detent-system",
- "ds-settings",
- "porter-infer",
- "porter-provider",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "detent-files"
-version = "0.1.0"
-dependencies = [
- "agents-core",
- "chordkit",
- "detent-model",
- "detent-testkit",
- "docket-agents",
- "docket-settings",
- "ds-extensions",
- "ds-helpers",
- "ds-settings",
- "freedesktop-icons",
- "keycap-client",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
- "toml_edit",
-]
-
-[[package]]
-name = "detent-intents"
-version = "0.1.0"
-dependencies = [
- "detent-callers",
- "detent-client",
- "detent-files",
- "detent-model",
- "detent-testkit",
- "docket-core",
- "docket-dbus",
- "docket-manifest",
- "docket-provider",
- "docket-vocab",
- "docket-wire",
- "ds-peer",
- "ds-settings",
- "porter-core",
- "porter-ids",
- "porter-sheet",
- "prov",
+ "bitflags 2.13.2",
+ "quick-xml 0.41.0",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
-]
-
-[[package]]
-name = "detent-model"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "chordkit",
- "detent-testkit",
- "docket-core",
- "docket-manifest",
- "docket-settings",
- "docket-vocab",
- "ds-helpers",
- "ds-settings",
- "keycap-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-sheet",
- "porter-tailnet",
- "porter-tailscale",
- "regex",
- "serde_json",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "detent-system"
-version = "0.1.0"
-dependencies = [
- "airwaves-bluez",
- "airwaves-nm",
- "almanac-core",
- "anyview-core",
- "anyview-fs",
- "anyview-image",
- "anyview-platform",
- "casement-protocols",
- "desktop-client",
- "detent-callers",
- "detent-files",
- "detent-model",
- "detent-system",
- "ds-peer",
- "ds-settings",
- "engine-install",
- "engine-manifest",
- "engine-probe",
- "engine-spec",
- "ferry-bus",
- "inferd-client",
- "md-5 0.10.6",
- "model-catalog",
- "porter-callers",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-dbus",
- "porter-tailnet",
- "porter-tailscale",
- "porter-wire",
- "serde_json",
- "steward-dbus",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "detent-testkit"
-version = "0.1.0"
-
-[[package]]
-name = "detent-ui"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "detent-callers",
- "detent-client",
- "detent-files",
- "detent-model",
- "detent-system",
- "detent-testkit",
- "dioxus",
- "dioxus-ssr",
- "docket-settings",
- "ds",
- "ds-blitz",
- "ds-harness",
- "ds-helpers",
- "ds-lint",
- "ds-settings",
- "ferry-bus",
- "image",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-dbus",
- "porter-infer",
- "porter-wire",
- "steward-dbus",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
- "zbus-ready",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-scanner",
+ "wayland-server",
 ]
 
 [[package]]
@@ -4305,1071 +5901,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "docket-accept"
-version = "0.1.0"
-dependencies = [
- "actions-mcp",
- "almanac-client",
- "almanac-core",
- "companion-wire",
- "companiond",
- "docket-acp",
- "docket-acp-bin",
- "docket-cli",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-log",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-router",
- "docket-session",
- "docket-testbus",
- "docket-trace",
- "docket-vocab",
- "docket-wire",
- "fnv",
- "futures-util",
- "intentd",
- "porter-callers",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "readerd",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "docket-acp"
-version = "0.1.0"
-dependencies = [
- "acp-core",
- "agent-client-protocol",
- "bulkhead",
- "companion-model",
- "companion-wire",
- "docket-core",
- "docket-fake",
- "docket-permissions-core",
- "docket-session",
- "docket-settings",
- "docket-testbus",
- "docket-vocab",
- "futures-channel",
- "futures-util",
- "jsonschema",
- "porter-core",
- "porter-ids",
- "prov",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "docket-acp-bin"
-version = "0.1.0"
-dependencies = [
- "acp-core",
- "agents-core",
- "bulkhead",
- "clap",
- "companion-client",
- "companion-model",
- "companion-wire",
- "docket-acp",
- "docket-acp-host",
- "docket-agents",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-host",
- "docket-launch",
- "docket-log",
- "docket-manifest",
- "docket-native",
- "docket-permissions-core",
- "docket-planner",
- "docket-provider",
- "docket-session",
- "docket-settings",
- "docket-store",
- "docket-tasks",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "porter-callers",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "prov",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "docket-acp-host"
-version = "0.1.0"
-dependencies = [
- "acp-core",
- "action-review",
- "actions-tools",
- "agent-client-protocol",
- "bulkhead",
- "companion-model",
- "const-hex",
- "docket-acp-host",
- "docket-client",
- "docket-core",
- "docket-fake",
- "docket-host",
- "docket-manifest",
- "docket-permissions-core",
- "docket-procroot",
- "docket-router",
- "docket-session",
- "docket-store",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
- "futures-channel",
- "futures-util",
- "getrandom 0.3.4",
- "jsonschema",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "docket-agents"
-version = "0.1.0"
-dependencies = [
- "agents-core",
- "clap",
- "docket-store",
- "flate2",
- "serde",
- "serde_json",
- "tar",
- "tempfile",
- "thiserror 2.0.21",
- "zip",
-]
-
-[[package]]
-name = "docket-checkpoint"
-version = "0.1.0"
-dependencies = [
- "bulkhead",
- "const-hex",
- "docket-core",
- "docket-vocab",
- "porter-core",
- "porter-ids",
- "prov",
- "sha2 0.11.0",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "docket-checkpoint-git"
-version = "0.1.0"
-dependencies = [
- "bulkhead",
- "docket-checkpoint",
- "docket-core",
- "percent-encoding",
- "porter-core",
- "porter-ids",
- "prov",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "docket-cli"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-dbus",
- "almanac-dbus-serve",
- "companion-client",
- "companion-wire",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-router",
- "docket-session",
- "docket-skills",
- "docket-skills-disk",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "intentd",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "url",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "docket-client"
-version = "0.1.0"
-dependencies = [
- "companion-model",
- "cua-action",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-gate-wire",
- "docket-manifest",
- "docket-permissions-core",
- "docket-router",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "porter-core",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "docket-context"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "almanac-core",
- "companion-model",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-session",
- "docket-skills",
- "docket-vocab",
- "docket-wire",
- "futures-channel",
- "futures-util",
- "policy-point",
- "porter-core",
- "porter-ids",
- "prov",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "docket-core"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "companion-model",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "iso_currency",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "rust_decimal",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "docket-dbus"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-dbus",
- "docket-manifest",
- "docket-vocab",
- "docket-wire",
- "inferd-client",
- "porter-callers",
- "porter-capability",
- "porter-core",
- "porter-dbus",
- "porter-infer",
- "porter-match",
- "prov",
- "serde",
- "serde_json",
- "steward-dbus",
- "tempfile",
- "thiserror 2.0.21",
- "zbus",
-]
-
-[[package]]
-name = "docket-ds"
-version = "0.1.0"
-dependencies = [
- "companion-wire",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-vocab",
- "docket-wire",
- "ds-intents",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "thiserror 2.0.21",
- "voice-wire",
-]
-
-[[package]]
-name = "docket-eval"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "clap",
- "docket-context",
- "docket-core",
- "docket-fake",
- "docket-manifest",
- "docket-permissions-core",
- "docket-router",
- "docket-skills",
- "docket-skills-disk",
- "docket-vocab",
- "docket-wire",
- "eval-core",
- "porter-core",
- "porter-ids",
- "proptest",
- "prov",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "docket-fake"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "almanac-core",
- "bulkhead",
- "cua-action",
- "docket-checkpoint",
- "docket-client",
- "docket-context",
- "docket-core",
- "docket-gate-wire",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-router",
- "docket-session",
- "docket-vocab",
- "docket-wire",
- "inferd-client",
- "policy-point",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "prov",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "docket-gate"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "bulkhead",
- "docket-context",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "docket-wire",
- "genai-names",
- "model-provider",
- "policy-point",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "prov",
- "rust_decimal",
- "serde_json",
- "toml 1.1.6+spec-1.1.0",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "docket-gate-wire"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "docket-core",
- "porter-core",
- "prov",
- "serde",
-]
-
-[[package]]
-name = "docket-helpers"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "chrono",
- "companion-core",
- "companion-model",
- "companion-wire",
- "docket-client",
- "docket-core",
- "docket-fake",
- "docket-helpers",
- "docket-manifest",
- "docket-permissions-core",
- "docket-planner",
- "docket-router",
- "docket-store",
- "docket-tasks",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "prov",
- "serde_json",
- "tempfile",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "docket-host"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-permissions-core",
- "docket-session",
- "docket-vocab",
- "futures-channel",
- "futures-util",
- "porter-core",
- "porter-ids",
- "prov",
-]
-
-[[package]]
-name = "docket-inapp"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "agent-loop",
- "almanac-client",
- "almanac-core",
- "almanac-fake",
- "almanac-service",
- "bulkhead",
- "companion-wire",
- "cua-action",
- "docket-client",
- "docket-context",
- "docket-core",
- "docket-fake",
- "docket-host",
- "docket-manifest",
- "docket-memory",
- "docket-memory-core",
- "docket-models",
- "docket-permissions-core",
- "docket-planner",
- "docket-provider",
- "docket-reader",
- "docket-router",
- "docket-session",
- "docket-skills",
- "docket-skills-disk",
- "docket-store",
- "docket-tasks",
- "docket-vocab",
- "docket-wire",
- "futures-channel",
- "futures-util",
- "inferd-client",
- "policy-point",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-wire",
- "prov",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "docket-launch"
-version = "0.1.0"
-dependencies = [
- "acp-core",
- "agent-client-protocol",
- "agents-core",
- "bulkhead",
- "companion-model",
- "docket-acp",
- "docket-acp-host",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-session",
- "docket-settings",
- "docket-store",
- "docket-testbus",
- "docket-vocab",
- "fnv",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-dbus",
- "porter-wire",
- "prov",
- "serde",
- "serde_json",
- "steward-dbus",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "tracing",
- "zbus",
-]
-
-[[package]]
-name = "docket-live"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "agents-core",
- "bulkhead",
- "clap",
- "companion-wire",
- "docket-accept",
- "docket-acp-bin",
- "docket-acp-host",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-eval",
- "docket-fake",
- "docket-host",
- "docket-launch",
- "docket-manifest",
- "docket-models",
- "docket-permissions-core",
- "docket-planner",
- "docket-reader",
- "docket-session",
- "docket-settings",
- "docket-store",
- "docket-tasks",
- "docket-testbus",
- "docket-trace",
- "docket-vocab",
- "docket-wire",
- "eval-core",
- "futures-util",
- "inferd-client",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "prov",
- "rust_decimal",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
-]
-
-[[package]]
-name = "docket-log"
-version = "0.1.0"
-dependencies = [
- "serde_json",
- "thiserror 2.0.21",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "docket-manifest"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "docket-vocab",
- "porter-core",
- "proptest",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
- "url",
-]
-
-[[package]]
-name = "docket-memory"
-version = "0.1.0"
-dependencies = [
- "almanac-client",
- "almanac-core",
- "almanac-fake",
- "almanac-service",
- "docket-context",
- "docket-core",
- "docket-fake",
- "docket-manifest",
- "docket-memory-core",
- "docket-permissions-core",
- "docket-provider",
- "docket-router",
- "docket-session",
- "docket-vocab",
- "docket-wire",
- "porter-core",
- "porter-ids",
- "prov",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "docket-memory-core"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "companion-model",
- "docket-core",
- "porter-core",
- "prov",
- "serde_json",
-]
-
-[[package]]
-name = "docket-models"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "docket-core",
- "docket-fake",
- "docket-permissions-core",
- "docket-vocab",
- "inferd-client",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-wire",
- "prov",
- "rust_decimal",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "docket-native"
-version = "0.1.0"
-dependencies = [
- "agent-loop",
- "companion-model",
- "companion-wire",
- "docket-client",
- "docket-core",
- "docket-fake",
- "docket-permissions-core",
- "docket-planner",
- "docket-router",
- "docket-session",
- "docket-tasks",
- "docket-vocab",
- "docket-wire",
- "futures-channel",
- "futures-util",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-wire",
- "prov",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "docket-permissions-core"
-version = "0.1.0"
-dependencies = [
- "bulkhead",
- "docket-manifest",
- "docket-vocab",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "proptest",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "url",
-]
-
-[[package]]
-name = "docket-planner"
-version = "0.1.0"
-dependencies = [
- "agent-loop",
- "almanac-core",
- "companion-model",
- "companion-wire",
- "docket-core",
- "docket-fake",
- "docket-manifest",
- "docket-permissions-core",
- "docket-planner",
- "docket-vocab",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "docket-procroot"
-version = "0.1.0"
-dependencies = [
- "docket-wire",
- "porter-core",
- "tempfile",
-]
-
-[[package]]
-name = "docket-provider"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-dbus",
- "docket-manifest",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "docket-reader"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-fake",
- "docket-models",
- "docket-vocab",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-wire",
- "proptest",
- "prov",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "docket-router"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "almanac-core",
- "bulkhead",
- "companion-model",
- "cua-action",
- "docket-checkpoint",
- "docket-context",
- "docket-core",
- "docket-fake",
- "docket-gate",
- "docket-gate-wire",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-session",
- "docket-skills",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "model-provider",
- "policy-point",
- "porter-core",
- "porter-ids",
- "proptest",
- "prov",
- "rust_decimal",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "tracing",
-]
-
-[[package]]
-name = "docket-session"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "companion-model",
- "companion-wire",
- "docket-core",
- "docket-permissions-core",
- "docket-session",
- "docket-vocab",
- "docket-wire",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "proptest",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "docket-settings"
-version = "0.1.0"
-dependencies = [
- "agents-core",
- "docket-core",
- "docket-permissions-core",
- "docket-store",
- "docket-vocab",
- "model-provider",
- "rust_decimal",
- "serde",
- "tempfile",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
- "toml_edit",
-]
-
-[[package]]
-name = "docket-skills"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-manifest",
- "docket-vocab",
- "porter-core",
- "prov",
- "serde",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "docket-skills-disk"
-version = "0.1.0"
-dependencies = [
- "docket-manifest",
- "docket-skills",
- "tempfile",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "docket-store"
-version = "0.1.0"
-dependencies = [
- "atomic-write-file",
- "docket-vocab",
- "futures-util",
- "prov",
- "tempfile",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "docket-tasks"
-version = "0.1.0"
-dependencies = [
- "agent-loop",
- "almanac-core",
- "companion-core",
- "companion-model",
- "companion-wire",
- "docket-client",
- "docket-core",
- "docket-fake",
- "docket-manifest",
- "docket-permissions-core",
- "docket-planner",
- "docket-session",
- "docket-skills",
- "docket-store",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "prov",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "docket-testbus"
-version = "0.1.0"
-dependencies = [
- "docket-dbus",
- "tempfile",
- "zbus",
-]
-
-[[package]]
-name = "docket-trace"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-dbus",
- "porter-capability",
- "porter-core",
- "porter-infer",
- "serde",
- "serde_json",
- "tracing",
-]
-
-[[package]]
-name = "docket-vocab"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "docket-wire"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "companion-model",
- "cua-action",
- "docket-core",
- "docket-gate-wire",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "doctest-file"
 version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5395,6 +5926,50 @@ name = "dpi"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8b14ccef22fc6f5a8f4d7d768562a182c04ce9a3b3157b91390b52ddfdf1a76"
+
+[[package]]
+name = "drive-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-fs",
+ "account-ids",
+ "base-testkit",
+ "drive-core",
+ "hex",
+ "md-5 0.10.6",
+ "quickxorhash",
+ "rangemap",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "sync-core",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "drive-fuse"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "drive-core",
+ "drive-mount-daemon",
+ "fuser",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "drive-mount-daemon"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "listenfd",
+ "rustix 1.1.6",
+]
 
 [[package]]
 name = "drm"
@@ -5434,319 +6009,6 @@ checksum = "ecc8e1361066d91f5ffccff060a3c3be9c3ecde15be2959c1937595f7a82a9f8"
 dependencies = [
  "libc",
  "linux-raw-sys 0.9.4",
-]
-
-[[package]]
-name = "ds"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "dioxus",
- "dioxus-ssr",
- "ds-core",
- "ds-intents",
- "ds-lint",
- "ds-motion",
- "ds-style",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "ds-behaviour"
-version = "0.1.0"
-dependencies = [
- "ds-core",
-]
-
-[[package]]
-name = "ds-blitz"
-version = "0.1.0"
-dependencies = [
- "anyrender",
- "anyrender_vello_hybrid",
- "arboard",
- "blitz-dom",
- "blitz-html",
- "blitz-kit",
- "blitz-paint",
- "blitz-shell",
- "blitz-traits",
- "chordkit",
- "chordkit-gnome",
- "chordkit-kde",
- "dioxus",
- "dioxus-asset-resolver",
- "dioxus-native",
- "dioxus-native-dom",
- "dirs 6.0.0",
- "ds",
- "ds-desktop",
- "ds-harness",
- "ds-helpers",
- "ds-peer",
- "image",
- "keyboard-types 0.7.0",
- "memfd",
- "parley",
- "pdfrum",
- "pdfrum-anyrender",
- "pdfrum-common",
- "pdfrum-edit",
- "peephole-bus",
- "peniko",
- "quire-emoji",
- "raw-window-handle",
- "serde",
- "skrifa 0.44.0",
- "spellbook",
- "thiserror 2.0.21",
- "tokio",
- "wayland-backend",
- "wayland-client",
- "wayland-protocols",
- "wayland-scanner",
- "wayland-server",
- "webbrowser",
- "wgpu",
- "wgpu_context",
- "zbus",
-]
-
-[[package]]
-name = "ds-conformance"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "dioxus",
- "ds",
- "ds-blitz",
- "ds-harness",
- "ds-shell",
- "image",
-]
-
-[[package]]
-name = "ds-core"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "ds-core-derive",
- "futures-timer",
- "keyboard-types 0.7.0",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "ds-core-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "ds-desktop"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds-peer",
- "tokio",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "ds-extensions"
-version = "0.1.0"
-dependencies = [
- "bayonet",
- "ds-core",
- "ds-helpers",
- "ds-settings",
- "ds-style",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "ds-gallery"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "dioxus",
- "dioxus-ssr",
- "ds",
- "ds-blitz",
- "ds-core",
- "ds-harness",
- "ds-lint",
- "ds-settings",
- "ds-shell",
- "image",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "ds-harness"
-version = "0.1.0"
-dependencies = [
- "anyrender",
- "anyrender_vello_cpu",
- "anyrender_vello_hybrid",
- "blitz-dom",
- "blitz-html",
- "blitz-kit",
- "blitz-paint",
- "blitz-traits",
- "chordkit",
- "dioxus",
- "dioxus-native-dom",
- "ds",
- "ds-blitz",
- "ds-core",
- "image",
- "keyboard-types 0.7.0",
- "parley",
- "peniko",
- "rustc-hash 2.1.3",
- "serde",
- "thiserror 2.0.21",
- "tokio",
- "vello_hybrid",
- "wgpu",
- "wgpu_context",
- "zbus",
-]
-
-[[package]]
-name = "ds-helpers"
-version = "0.1.0"
-dependencies = [
- "ds-peer",
- "rustix 1.1.6",
- "serde",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "ds-intents"
-version = "0.1.0"
-dependencies = [
- "ds-core",
-]
-
-[[package]]
-name = "ds-lint"
-version = "0.1.0"
-dependencies = [
- "cssparser",
- "ds",
- "ds-core",
- "ds-style",
-]
-
-[[package]]
-name = "ds-motion"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds",
- "ds-core",
- "ds-style",
-]
-
-[[package]]
-name = "ds-peer"
-version = "0.1.0"
-dependencies = [
- "futures-timer",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "ds-settings"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds",
- "ds-core",
- "ds-helpers",
- "ds-peer",
- "ds-settings-derive",
- "ds-style",
- "futures-timer",
- "notify",
- "objc2-core-foundation",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "toml_edit",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "ds-settings-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "ds-settings-page"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "dioxus-ssr",
- "ds",
- "ds-lint",
- "ds-settings",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "ds-shell"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "dioxus-ssr",
- "ds",
- "ds-core",
- "ds-lint",
- "ds-motion",
- "ds-style",
- "zeroize",
-]
-
-[[package]]
-name = "ds-style"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "dioxus-ssr",
- "ds-core",
- "ds-core-derive",
- "ds-style",
- "image",
- "serde",
- "serde_json",
- "skrifa 0.44.0",
 ]
 
 [[package]]
@@ -6019,24 +6281,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "eval-core"
-version = "0.1.0"
-dependencies = [
- "docket-core",
- "docket-permissions-core",
- "docket-vocab",
- "model-provider",
- "porter-core",
- "porter-ids",
- "prov",
- "rust_decimal",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
 name = "event-listener"
 version = "5.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6054,23 +6298,6 @@ checksum = "8be9f3dfaaffdae2972880079a491a1a8bb7cbed0b8dd7a347f668b4150a3b93"
 dependencies = [
  "event-listener",
  "pin-project-lite",
-]
-
-[[package]]
-name = "eventlog"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-seal",
- "almanac-store",
- "blake3",
- "const-hex",
- "eventlog",
- "rusqlite",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -6094,17 +6321,6 @@ name = "extended"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af9673d8203fcb076b19dfd17e38b3d4ae9f44959416ea532ce72415a6020365"
-
-[[package]]
-name = "fake-secret-service"
-version = "0.1.0"
-dependencies = [
- "serde",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
- "zbus-ready",
-]
 
 [[package]]
 name = "fallible-iterator"
@@ -6201,123 +6417,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59b16d394a9991c9b0fee89855daafc7c6cd341be9528ac8b45f9b7aed3d8be8"
 
 [[package]]
-name = "ferry-bus"
-version = "0.1.0"
-dependencies = [
- "porter-dbus",
- "porter-dbus-macros",
- "porter-ids",
- "serde",
- "zbus",
-]
-
-[[package]]
-name = "ferry-drive"
-version = "0.1.0"
-dependencies = [
- "ferry-drive",
- "ferry-sync",
- "hex",
- "md-5 0.10.6",
- "porter-capability",
- "porter-fs",
- "porter-ids",
- "quickxorhash",
- "rangemap",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "ferry-drive-fuse"
-version = "0.1.0"
-dependencies = [
- "ferry-drive",
- "ferry-mountd",
- "fuser",
- "rustix 1.1.6",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "ferry-fake-graph"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "porter-core",
- "porter-fake",
- "porter-fake-servers",
- "porter-ids",
- "porter-provider",
- "quickxorhash",
- "serde_json",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "ferry-mountd"
-version = "0.1.0"
-dependencies = [
- "listenfd",
- "rustix 1.1.6",
- "test-kit",
-]
-
-[[package]]
-name = "ferry-rig"
-version = "0.1.0"
-dependencies = [
- "clap",
- "ferry-bus",
- "ferry-fake-graph",
- "ferry-sync",
- "porter-callers",
- "porter-core",
- "porter-dbus",
- "porter-fake-servers",
- "porter-ids",
- "porter-rig",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "syncd",
- "test-kit",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "ferry-sync"
-version = "0.1.0"
-dependencies = [
- "ferry-sync",
- "porter-capability",
- "porter-http",
- "porter-ids",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
 name = "files"
 version = "0.1.0"
 dependencies = [
  "anyview-platform",
  "dirs 6.0.0",
- "ds-extensions",
- "ds-helpers",
- "ds-settings",
  "files-core",
  "files-desktop",
  "files-fs",
@@ -6327,43 +6431,46 @@ dependencies = [
  "freedesktop-icons",
  "tempfile",
  "tokio",
+ "ui-extensions",
+ "ui-helpers",
+ "ui-settings",
 ]
 
 [[package]]
 name = "files-core"
 version = "0.1.0"
 dependencies = [
- "ds-helpers",
  "thiserror 2.0.21",
+ "ui-helpers",
 ]
 
 [[package]]
 name = "files-desktop"
 version = "0.1.0"
 dependencies = [
- "docket-core",
- "docket-dbus",
- "docket-manifest",
- "docket-provider",
- "docket-vocab",
- "docket-wire",
- "ds-helpers",
- "ferry-bus",
+ "account-core",
+ "account-dbus",
+ "account-ids",
+ "action-core",
+ "action-dbus",
+ "action-manifest",
+ "action-provider",
+ "action-vocab",
+ "action-wire",
  "files-core",
  "files-desktop",
  "files-fs",
  "futures-util",
- "porter-core",
- "porter-dbus",
- "porter-ids",
- "prov",
+ "provenance",
  "serde",
  "serde_json",
- "syncd-fakes",
+ "sync-bus",
+ "sync-fakes",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "toml 1.1.6+spec-1.1.0",
+ "ui-helpers",
  "zbus",
  "zbus-ready",
 ]
@@ -6372,13 +6479,13 @@ dependencies = [
 name = "files-fs"
 version = "0.1.0"
 dependencies = [
- "ds-helpers",
  "files-core",
  "files-fs",
  "notify",
  "tempfile",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
+ "ui-helpers",
 ]
 
 [[package]]
@@ -6418,27 +6525,27 @@ dependencies = [
  "anyview-image",
  "anyview-peek",
  "anyview-platform",
- "chordkit",
  "chrono",
  "dioxus",
- "ds",
- "ds-blitz",
- "ds-extensions",
- "ds-harness",
- "ds-helpers",
- "ds-lint",
- "ds-settings",
  "files-core",
  "files-fs",
  "files-model",
  "files-ops",
  "files-trash",
  "files-ui",
+ "keymap",
  "serde",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "toml 1.1.6+spec-1.1.0",
+ "ui-blitz",
+ "ui-components",
+ "ui-extensions",
+ "ui-harness",
+ "ui-helpers",
+ "ui-lint",
+ "ui-settings",
 ]
 
 [[package]]
@@ -6789,10 +6896,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genai-names"
-version = "0.1.0"
-
-[[package]]
 name = "generational-box"
 version = "0.7.10"
 source = "git+https://github.com/Bardo-DE/dioxus?rev=a615fd9f09e272c688a45e366161c576cecf0439#a615fd9f09e272c688a45e366161c576cecf0439"
@@ -6809,20 +6912,6 @@ checksum = "85649ca51fd72272d7821adaf274ad91c288277713d9c18820d8499a7ff69e9a"
 dependencies = [
  "typenum",
  "version_check",
-]
-
-[[package]]
-name = "generic-proto"
-version = "0.1.0"
-dependencies = [
- "dav-proto",
- "http",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-provider",
- "porter-sheet",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -7397,20 +7486,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "icons"
-version = "0.1.0"
-dependencies = [
- "clap",
- "ds",
- "ds-settings",
- "ds-style",
- "image",
- "serde",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
 name = "icu_collections"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7655,24 +7730,130 @@ dependencies = [
 ]
 
 [[package]]
-name = "inferd"
+name = "inference-bridge"
 version = "0.1.0"
 dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "inference-core",
+ "model-catalog",
+ "model-openai-compat",
+ "model-provider",
+ "model-vision-prep",
+ "rust_decimal",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "inference-client"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "account-dbus",
+ "account-fake-servers",
+ "account-fs",
+ "account-ids",
+ "account-match",
+ "account-tailscale",
+ "account-wire",
+ "base-testkit",
+ "computer-use-action",
+ "inference-bridge",
+ "inference-core",
+ "inference-daemon",
+ "inference-dbus",
+ "inference-router",
+ "inference-tailnet",
+ "inference-turns",
+ "model-http",
+ "model-openai-compat",
+ "model-provider",
+ "model-wire",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-settings",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "inference-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-fake",
+ "account-ids",
+ "account-match",
+ "base-testkit",
+ "base64 0.22.1",
+ "computer-use-action",
+ "computer-use-parse",
+ "computer-use-session",
+ "inference-core",
+ "iso_currency",
+ "model-catalog",
+ "model-provider",
+ "model-vision-prep",
+ "proptest",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "inference-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-daemon-support",
+ "account-dbus",
+ "account-fake",
+ "account-fake-servers",
+ "account-fs",
+ "account-http",
+ "account-http-reqwest",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-settings",
+ "account-tailscale",
+ "account-wire",
+ "base-testkit",
  "chrono",
  "clap",
- "cua-action",
- "cua-parse",
- "cua-session",
- "cua-vendors",
- "ds-settings",
+ "computer-use-action",
+ "computer-use-parse",
+ "computer-use-session",
+ "computer-use-vendors",
  "engine-manifest",
  "engine-probe",
  "engine-spec",
  "engine-supervisor",
  "getrandom 0.4.3",
  "hex",
- "inferd-client",
- "inferd-probe",
+ "inference-bridge",
+ "inference-client",
+ "inference-core",
+ "inference-dbus",
+ "inference-probe",
+ "inference-router",
+ "inference-tailnet",
+ "inference-turns",
  "iso_currency",
  "model-catalog",
  "model-extract",
@@ -7680,31 +7861,8 @@ dependencies = [
  "model-openai-compat",
  "model-provider",
  "model-replay",
+ "model-vision-prep",
  "model-wire",
- "porter-bridge",
- "porter-callers",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-daemon",
- "porter-dbus",
- "porter-fake",
- "porter-fake-servers",
- "porter-fs",
- "porter-http",
- "porter-http-reqwest",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-provider",
- "porter-router",
- "porter-secrets",
- "porter-settings",
- "porter-tailnet",
- "porter-tailscale",
- "porter-turns",
- "porter-wire",
  "rust_decimal",
  "rustix 1.1.6",
  "serde",
@@ -7712,62 +7870,135 @@ dependencies = [
  "sha2 0.10.9",
  "speech-host-client",
  "speech-provider",
- "steward-dbus",
  "subtle",
- "test-kit",
  "thiserror 2.0.21",
  "tokio",
  "toml 1.1.6+spec-1.1.0",
- "vision-prep",
+ "ui-settings",
  "zbus",
  "zbus-ready",
 ]
 
 [[package]]
-name = "inferd-client"
+name = "inference-dbus"
 version = "0.1.0"
 dependencies = [
- "cua-action",
- "ds-settings",
- "inferd",
+ "account-capability",
+ "account-core",
+ "account-dbus",
+ "account-dbus-macros",
+ "account-ids",
+ "account-match",
+ "account-wire",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zbus",
+]
+
+[[package]]
+name = "inference-probe"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-http",
+ "account-ids",
+ "account-provider",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "inference-rig"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-rig",
+ "clap",
+ "inference-client",
+ "inference-core",
+ "serde",
+ "serde_json",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "inference-router"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "account-tailscale",
+ "base-testkit",
+ "computer-use-action",
+ "engine-probe",
+ "engine-spec",
+ "engine-supervisor",
+ "inference-core",
+ "inference-tailnet",
+ "model-catalog",
  "model-http",
  "model-openai-compat",
  "model-provider",
- "model-wire",
- "porter-bridge",
- "porter-callers",
- "porter-capability",
- "porter-core",
- "porter-dbus",
- "porter-fake-servers",
- "porter-fs",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-router",
- "porter-tailnet",
- "porter-tailscale",
- "porter-turns",
- "porter-wire",
+ "model-vision-prep",
  "rustix 1.1.6",
  "serde",
- "serde_json",
- "steward-dbus",
- "test-kit",
+ "speech-provider",
  "thiserror 2.0.21",
- "tokio",
- "zbus",
- "zbus-ready",
+ "toml 1.1.6+spec-1.1.0",
 ]
 
 [[package]]
-name = "inferd-probe"
+name = "inference-tailnet"
 version = "0.1.0"
 dependencies = [
- "porter-capability",
- "porter-http",
- "porter-ids",
- "porter-provider",
+ "account-fake-servers",
+ "account-fs",
+ "account-ids",
+ "account-tailscale",
+ "base-testkit",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "inference-tailnet",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "inference-turns"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "base-testkit",
+ "computer-use-action",
+ "computer-use-parse",
+ "computer-use-session",
+ "computer-use-vendors",
+ "engine-supervisor",
+ "inference-bridge",
+ "inference-core",
+ "inference-router",
+ "model-extract",
+ "model-http",
+ "model-openai-compat",
+ "model-provider",
+ "model-vision-prep",
+ "rustix 1.1.6",
+ "serde",
  "serde_json",
  "tokio",
 ]
@@ -7834,6 +8065,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "input-broker-client"
+version = "0.1.1"
+dependencies = [
+ "input-broker-wire",
+ "rustix 1.1.6",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "input-broker-daemon"
+version = "0.1.1"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "input-broker-client",
+ "input-broker-wire",
+ "input-linux",
+ "libc",
+ "listenfd",
+ "rustix 1.1.6",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "input-broker-wire"
+version = "0.1.1"
+dependencies = [
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "input-linux"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7856,74 +8120,6 @@ name = "input-sys"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "36eee07d8e02bd95bf52b2e642cf13d33701b94c6e4b04fbf1d1fb07e9cb19e7"
-
-[[package]]
-name = "intentd"
-version = "0.1.0"
-dependencies = [
- "action-review",
- "almanac-client",
- "almanac-core",
- "almanac-dbus",
- "almanac-dbus-serve",
- "bulkhead",
- "companion-model",
- "cua-action",
- "docket-acp-bin",
- "docket-checkpoint-git",
- "docket-client",
- "docket-context",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-gate-wire",
- "docket-host",
- "docket-log",
- "docket-manifest",
- "docket-memory",
- "docket-memory-core",
- "docket-models",
- "docket-permissions-core",
- "docket-procroot",
- "docket-provider",
- "docket-router",
- "docket-session",
- "docket-settings",
- "docket-skills",
- "docket-skills-disk",
- "docket-store",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "inferd-client",
- "model-provider",
- "notify",
- "policy-point",
- "porter-callers",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-daemon",
- "porter-dbus",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-wire",
- "proptest",
- "prov",
- "readerd",
- "rust_decimal",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
- "zbus-ready",
-]
 
 [[package]]
 name = "interpolate_name"
@@ -8441,6 +8637,74 @@ dependencies = [
 ]
 
 [[package]]
+name = "key-remap-client"
+version = "0.1.0"
+dependencies = [
+ "key-remap-proto",
+ "keymap",
+ "keymap-fs",
+ "rustix 1.1.6",
+ "shell-verbs",
+ "tempfile",
+]
+
+[[package]]
+name = "key-remap-core"
+version = "0.1.0"
+dependencies = [
+ "key-remap-proto",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "key-remap-daemon"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "input-broker-client",
+ "key-remap-client",
+ "key-remap-core",
+ "key-remap-devtest",
+ "key-remap-evdev",
+ "key-remap-proto",
+ "keymap",
+ "notify",
+ "rustix 1.1.6",
+ "service-locator",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "key-remap-devtest"
+version = "0.1.0"
+dependencies = [
+ "key-remap-client",
+ "key-remap-evdev",
+ "key-remap-proto",
+ "rustix 1.1.6",
+]
+
+[[package]]
+name = "key-remap-evdev"
+version = "0.1.0"
+dependencies = [
+ "input-linux",
+ "rustix 1.1.6",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "key-remap-proto"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "keyboard-types"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8462,79 +8726,45 @@ dependencies = [
 ]
 
 [[package]]
-name = "keycap"
+name = "keymap"
 version = "0.1.0"
 dependencies = [
- "chordkit",
- "keycap-client",
- "keycap-core",
- "keycap-devtest",
- "keycap-protocol",
- "keycap-sys",
- "latchkey",
- "notify",
- "peephole",
- "peephole-core",
- "rustix 1.1.6",
- "thiserror 2.0.21",
- "turnstile-client",
-]
-
-[[package]]
-name = "keycap-client"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "chordkit-file",
- "keycap-protocol",
- "rustix 1.1.6",
- "shell-verbs",
- "tempfile",
-]
-
-[[package]]
-name = "keycap-core"
-version = "0.1.0"
-dependencies = [
- "keycap-protocol",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "keycap-devtest"
-version = "0.1.0"
-dependencies = [
- "keycap-client",
- "keycap-protocol",
- "keycap-sys",
- "rustix 1.1.6",
-]
-
-[[package]]
-name = "keycap-protocol"
-version = "0.1.0"
-dependencies = [
+ "keyboard-types 0.8.3",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "keycap-sys"
+name = "keymap-fs"
 version = "0.1.0"
 dependencies = [
- "input-linux",
- "rustix 1.1.6",
+ "libc",
+ "tempfile",
  "thiserror 2.0.21",
 ]
 
 [[package]]
-name = "keyring-chunked"
+name = "keymap-gnome"
 version = "0.1.0"
 dependencies = [
- "keyring-core",
- "thiserror 2.0.21",
+ "keymap",
+ "keymap-fs",
+]
+
+[[package]]
+name = "keymap-kde"
+version = "0.1.0"
+dependencies = [
+ "keymap",
+ "keymap-fs",
+]
+
+[[package]]
+name = "keymap-macos"
+version = "0.1.0"
+dependencies = [
+ "keymap",
 ]
 
 [[package]]
@@ -8654,16 +8884,43 @@ dependencies = [
 ]
 
 [[package]]
-name = "latchkey"
+name = "layer-shell-host"
 version = "0.1.0"
 dependencies = [
- "interprocess",
- "latchkey",
- "peephole",
- "peephole-core",
+ "anyrender",
+ "anyrender_vello_cpu",
+ "anyrender_vello_hybrid",
+ "blitz-dom",
+ "blitz-embed",
+ "blitz-paint",
+ "blitz-traits",
+ "calloop",
+ "calloop-wayland-source",
+ "cursor-icon",
+ "desktop-protocols",
+ "dioxus",
+ "dioxus-document",
+ "dioxus-native-dom",
+ "image",
+ "keyboard-types 0.7.0",
+ "mouse-gestures-proto",
+ "nix 0.31.3",
+ "peniko",
+ "raw-window-handle",
+ "rustc-hash 2.1.3",
  "rustix 1.1.6",
- "tempfile",
- "widestring",
+ "serde",
+ "serde_json",
+ "smithay-client-toolkit 0.20.0",
+ "thiserror 2.0.21",
+ "tokio",
+ "vello_common 0.1.0",
+ "vello_hybrid",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wgpu",
+ "wgpu_context",
 ]
 
 [[package]]
@@ -9117,38 +9374,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "maskcap"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "blake3",
- "cua-action",
- "cua-desktop",
- "cua-types",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "maskcap-wayland"
-version = "0.1.0"
-dependencies = [
- "casement-protocols",
- "cua-action",
- "cua-desktop",
- "maskcap",
- "porter-core",
- "porter-ids",
- "rustix 1.1.6",
- "thiserror 2.0.21",
- "tokio",
- "wayland-client",
- "wayland-protocols",
- "wayland-server",
-]
-
-[[package]]
 name = "matchers"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9217,32 +9442,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "memfiles"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-seal",
- "almanac-store",
- "memfiles",
- "tempfile",
-]
-
-[[package]]
-name = "memfiles-format"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-store",
- "chrono",
- "memfiles",
- "proptest",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "memmap2"
 version = "0.9.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9261,54 +9460,344 @@ dependencies = [
 ]
 
 [[package]]
-name = "memoryd"
+name = "memory-client"
 version = "0.1.0"
 dependencies = [
- "almanac-client",
- "almanac-core",
- "almanac-dbus",
- "almanac-dbus-serve",
- "almanac-fake",
- "almanac-host",
- "almanac-infer",
- "almanac-keyfile",
- "almanac-local",
- "almanac-seal",
- "almanac-service",
- "almanac-settings",
- "almanac-store",
- "almanac-tidy",
- "almanac-watch",
+ "memory-core",
+ "memory-dbus",
+ "memory-fake",
+ "memory-seal",
+ "memory-service",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "memory-core"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "const-hex",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "ulid",
+]
+
+[[package]]
+name = "memory-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-daemon-support",
+ "account-dbus",
+ "account-ids",
+ "account-wire",
  "atomic-write-file",
  "blake3",
  "clap",
- "eventlog",
  "getrandom 0.3.4",
- "inferd-client",
+ "inference-client",
+ "inference-core",
+ "inference-dbus",
  "landlock",
- "memfiles",
- "memoryd",
- "porter-callers",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-daemon",
- "porter-dbus",
- "porter-ids",
- "porter-infer",
- "porter-wire",
- "recall",
+ "memory-client",
+ "memory-core",
+ "memory-daemon",
+ "memory-dbus",
+ "memory-dbus-serve",
+ "memory-eventlog",
+ "memory-fake",
+ "memory-files",
+ "memory-host",
+ "memory-infer",
+ "memory-keyfile",
+ "memory-local",
+ "memory-recall",
+ "memory-seal",
+ "memory-service",
+ "memory-settings",
+ "memory-store",
+ "memory-tidy",
+ "memory-watch",
  "rusqlite",
  "serde",
  "serde_json",
- "steward-dbus",
  "tar",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
  "zbus-ready",
+]
+
+[[package]]
+name = "memory-dbus"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zbus",
+]
+
+[[package]]
+name = "memory-dbus-serve"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "memory-dbus",
+ "serde",
+ "serde_json",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "memory-eventlog"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "const-hex",
+ "memory-core",
+ "memory-eventlog",
+ "memory-seal",
+ "memory-store",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "memory-fake"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "memory-core",
+ "memory-eventlog",
+ "memory-files",
+ "memory-files-format",
+ "memory-recall",
+ "memory-seal",
+ "memory-service",
+ "memory-settings",
+ "memory-store",
+ "memory-tidy",
+ "rusqlite",
+ "serde_json",
+ "tar",
+ "tempfile",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "memory-files"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "memory-files",
+ "memory-seal",
+ "memory-store",
+ "tempfile",
+]
+
+[[package]]
+name = "memory-files-format"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "memory-core",
+ "memory-files",
+ "memory-store",
+ "proptest",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "memory-host"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "memory-settings",
+ "tempfile",
+]
+
+[[package]]
+name = "memory-infer"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-match",
+ "inference-client",
+ "inference-core",
+ "memory-core",
+ "memory-fake",
+ "memory-recall",
+ "memory-store",
+ "memory-tidy",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "memory-keyfile"
+version = "0.1.0"
+dependencies = [
+ "atomic-write-file",
+ "const-hex",
+ "memory-core",
+ "memory-seal",
+ "tempfile",
+ "tokio",
+]
+
+[[package]]
+name = "memory-local"
+version = "0.1.0"
+dependencies = [
+ "getrandom 0.3.4",
+ "memory-client",
+ "memory-core",
+ "memory-eventlog",
+ "memory-fake",
+ "memory-files",
+ "memory-host",
+ "memory-recall",
+ "memory-seal",
+ "memory-service",
+ "memory-settings",
+ "memory-store",
+ "memory-tidy",
+ "rusqlite",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "memory-recall"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "memory-recall",
+ "memory-store",
+ "rusqlite",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "memory-seal"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "chacha20poly1305",
+ "const-hex",
+ "getrandom 0.3.4",
+ "memory-core",
+ "memory-seal",
+ "oo7",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "zeroize",
+]
+
+[[package]]
+name = "memory-search"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "memory-store",
+]
+
+[[package]]
+name = "memory-service"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "chrono",
+ "const-hex",
+ "memory-core",
+ "memory-eventlog",
+ "memory-fake",
+ "memory-files-format",
+ "memory-seal",
+ "memory-search",
+ "memory-settings",
+ "memory-store",
+ "memory-tidy",
+ "serde",
+ "serde_json",
+ "tar",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "memory-settings"
+version = "0.1.0"
+dependencies = [
+ "memory-core",
+ "serde",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "memory-store"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "memory-core",
+ "memory-fake",
+ "memory-seal",
+ "memory-service",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "memory-tidy"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "memory-core",
+ "memory-fake",
+ "memory-files-format",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "memory-watch"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "memory-core",
+ "notify",
+ "tempfile",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -9405,26 +9894,30 @@ dependencies = [
 name = "model-catalog"
 version = "0.1.0"
 dependencies = [
- "cua-action",
+ "computer-use-action",
  "model-provider",
+ "model-vision-prep",
  "serde",
  "serde_json",
  "speech-provider",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
- "vision-prep",
 ]
 
 [[package]]
 name = "model-extract"
 version = "0.1.0"
 dependencies = [
- "cua-action",
+ "computer-use-action",
  "model-provider",
+ "model-vision-prep",
  "proptest",
  "serde_json",
- "vision-prep",
 ]
+
+[[package]]
+name = "model-genai-names"
+version = "0.1.0"
 
 [[package]]
 name = "model-http"
@@ -9467,17 +9960,17 @@ name = "model-provider"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
- "cua-action",
- "genai-names",
+ "computer-use-action",
  "iso_currency",
+ "model-genai-names",
  "model-http",
  "model-provider",
+ "model-vision-prep",
  "proptest",
  "rust_decimal",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "vision-prep",
 ]
 
 [[package]]
@@ -9487,12 +9980,25 @@ dependencies = [
  "blake3",
  "model-http",
  "model-provider",
+ "model-vision-prep",
  "proptest",
  "serde",
  "serde_json",
  "speech-provider",
  "thiserror 2.0.21",
- "vision-prep",
+]
+
+[[package]]
+name = "model-vision-prep"
+version = "0.1.0"
+dependencies = [
+ "computer-use-action",
+ "fast_image_resize",
+ "image",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -9520,6 +10026,33 @@ dependencies = [
  "smallvec",
  "tagptr",
  "uuid",
+]
+
+[[package]]
+name = "mouse-gestures-daemon"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "input-broker-client",
+ "input-linux",
+ "mouse-gestures-proto",
+ "notify",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "service-locator",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
+name = "mouse-gestures-proto"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -9652,22 +10185,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "networkmanager-proxy"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
 name = "new_debug_unreachable"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
-
-[[package]]
-name = "nextcloud-proto"
-version = "0.1.0"
-dependencies = [
- "http",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "serde_json",
- "thiserror 2.0.21",
-]
 
 [[package]]
 name = "nix"
@@ -9931,17 +10459,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.119",
-]
-
-[[package]]
-name = "oauth-probe-proto"
-version = "0.1.0"
-dependencies = [
- "http",
- "porter-capability",
- "porter-ids",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -10341,33 +10858,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "palmrest"
-version = "0.1.0"
-dependencies = [
- "input-linux",
- "latchkey",
- "notify",
- "palmrest-protocol",
- "peephole",
- "peephole-core",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
- "turnstile-client",
-]
-
-[[package]]
-name = "palmrest-protocol"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "parking"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10701,39 +11191,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "peephole"
-version = "0.1.11"
-dependencies = [
- "nix 0.31.3",
- "peephole-core",
- "rustix 1.1.6",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "peephole-bus"
-version = "0.1.11"
-dependencies = [
- "futures-timer",
- "peephole",
- "peephole-core",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "peephole-core"
-version = "0.1.11"
-dependencies = [
- "serde",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
 name = "pem"
 version = "3.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10761,6 +11218,41 @@ name = "percent-encoding"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
+
+[[package]]
+name = "permission-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "action-manifest",
+ "action-vocab",
+ "proptest",
+ "provenance",
+ "sandbox",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "url",
+]
+
+[[package]]
+name = "permission-policy"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "cedar-policy",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
 
 [[package]]
 name = "petgraph"
@@ -10968,6 +11460,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 
 [[package]]
+name = "plugin-host"
+version = "0.2.0"
+dependencies = [
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
 name = "png"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10978,23 +11482,6 @@ dependencies = [
  "fdeflate",
  "flate2",
  "miniz_oxide 0.8.9",
-]
-
-[[package]]
-name = "policy-point"
-version = "0.1.0"
-dependencies = [
- "cedar-policy",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "porter-core",
- "porter-ids",
- "prov",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -11053,808 +11540,30 @@ dependencies = [
 ]
 
 [[package]]
-name = "porter-bridge"
+name = "portal-core"
 version = "0.1.0"
 dependencies = [
- "model-catalog",
- "model-openai-compat",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "rust_decimal",
- "thiserror 2.0.21",
- "vision-prep",
-]
-
-[[package]]
-name = "porter-calendar"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "dav-proto",
- "porter-fake-servers",
- "porter-http",
- "porter-http-relay",
- "porter-ids",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "porter-callers"
-version = "0.1.0"
-dependencies = [
- "peephole",
- "peephole-bus",
- "peephole-core",
- "porter-core",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "zbus",
-]
-
-[[package]]
-name = "porter-capability"
-version = "0.1.0"
-dependencies = [
- "porter-ids",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "porter-client"
-version = "0.1.0"
-dependencies = [
- "futures-core",
- "futures-util",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-sheet",
- "porter-wire",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-client-dbus"
-version = "0.1.0"
-dependencies = [
- "futures-util",
- "porter-capability",
- "porter-client",
- "porter-core",
- "porter-dbus",
- "porter-ids",
- "porter-match",
- "porter-secrets",
- "porter-tailscale",
- "porter-wire",
- "rustix 1.1.6",
- "serde_json",
- "thiserror 2.0.21",
- "zbus",
- "zeroize",
-]
-
-[[package]]
-name = "porter-client-inproc"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-client",
- "porter-core",
- "porter-fake",
- "porter-fake-servers",
- "porter-families",
- "porter-family-generic",
- "porter-http",
- "porter-http-reqwest",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-proxy",
- "porter-secrets",
- "porter-service",
- "porter-service-accounts",
- "porter-service-core",
- "porter-service-grants",
- "porter-sheet",
- "porter-wire",
- "tokio",
-]
-
-[[package]]
-name = "porter-core"
-version = "0.1.0"
-dependencies = [
- "peephole-core",
- "porter-capability",
- "porter-ids",
- "porter-match",
- "secrecy",
- "serde",
- "serde_json",
- "subtle",
- "thiserror 2.0.21",
- "zeroize",
-]
-
-[[package]]
-name = "porter-daemon"
-version = "0.1.0"
-dependencies = [
- "notify",
- "test-kit",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-dbus"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-dbus-macros",
- "porter-ids",
- "porter-tailscale",
- "porter-wire",
  "proptest",
- "serde",
- "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "portal-daemon"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-dbus",
+ "image",
+ "pipewire",
+ "portal-core",
+ "rustix 1.1.6",
+ "tempfile",
  "thiserror 2.0.21",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "wayland-client",
+ "wayland-protocols",
  "zbus",
-]
-
-[[package]]
-name = "porter-dbus-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "porter-discover"
-version = "0.1.0"
-dependencies = [
- "hickory-resolver",
- "porter-capability",
- "porter-core",
- "porter-http",
- "porter-ids",
- "porter-provider",
- "roxmltree 0.21.1",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "porter-fake"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-secrets",
- "porter-service",
- "porter-service-accounts",
- "porter-service-core",
- "porter-sheet",
- "porter-wire",
- "serde_json",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "porter-fake-servers"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "dav-proto",
- "form_urlencoded",
- "hex",
- "http",
- "md-5 0.10.6",
- "porter-core",
- "porter-discover",
- "porter-fake",
- "porter-ids",
- "porter-provider",
- "rustls",
- "rustls-pki-types",
- "serde_json",
- "sha2 0.10.9",
- "test-kit",
- "tokio",
- "tokio-rustls",
-]
-
-[[package]]
-name = "porter-families"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "dav-proto",
- "porter-capability",
- "porter-core",
- "porter-discover",
- "porter-fake",
- "porter-fake-servers",
- "porter-family-generic",
- "porter-family-kit",
- "porter-family-nextcloud",
- "porter-family-oauth",
- "porter-http",
- "porter-http-reqwest",
- "porter-ids",
- "porter-match",
- "porter-oauth",
- "porter-provider",
- "porter-proxy",
- "porter-secrets",
- "porter-service",
- "porter-service-accounts",
- "porter-service-core",
- "porter-sheet",
- "porter-tailscale",
- "porter-wire",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "porter-family-generic"
-version = "0.1.0"
-dependencies = [
- "generic-proto",
- "porter-capability",
- "porter-core",
- "porter-discover",
- "porter-family-kit",
- "porter-http",
- "porter-provider",
- "porter-proxy",
- "porter-sheet",
- "tokio",
-]
-
-[[package]]
-name = "porter-family-kit"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "porter-core",
- "porter-http",
- "porter-provider",
- "porter-sheet",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "porter-family-nextcloud"
-version = "0.1.0"
-dependencies = [
- "dav-proto",
- "nextcloud-proto",
- "porter-capability",
- "porter-core",
- "porter-family-kit",
- "porter-http",
- "porter-provider",
- "porter-sheet",
-]
-
-[[package]]
-name = "porter-family-oauth"
-version = "0.1.0"
-dependencies = [
- "oauth-probe-proto",
- "porter-capability",
- "porter-core",
- "porter-family-kit",
- "porter-http",
- "porter-http-reqwest",
- "porter-ids",
- "porter-oauth",
- "porter-provider",
- "porter-sheet",
- "serde",
- "serde_json",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "porter-fs"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "porter-http"
-version = "0.1.0"
-dependencies = [
- "http",
- "httpdate",
- "porter-core",
- "porter-ids",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-http-relay"
-version = "0.1.0"
-dependencies = [
- "http-body-util",
- "hyper",
- "hyper-util",
- "porter-client",
- "porter-core",
- "porter-http",
- "porter-ids",
- "porter-wire",
- "tokio",
-]
-
-[[package]]
-name = "porter-http-reqwest"
-version = "0.1.0"
-dependencies = [
- "porter-core",
- "porter-fake-servers",
- "porter-http",
- "porter-ids",
- "reqwest 0.12.28",
- "rustls",
- "tokio",
-]
-
-[[package]]
-name = "porter-identities"
-version = "0.1.0"
-dependencies = [
- "porter-core",
- "porter-fs",
- "porter-ids",
- "porter-secrets",
- "porter-service-core",
- "porter-sheet",
- "porter-wire",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "porter-ids"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "percent-encoding",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-infer"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "cua-action",
- "cua-parse",
- "cua-session",
- "iso_currency",
- "model-catalog",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-fake",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "proptest",
- "rust_decimal",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
- "vision-prep",
-]
-
-[[package]]
-name = "porter-match"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-ids",
- "serde",
-]
-
-[[package]]
-name = "porter-oauth"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "form_urlencoded",
- "httparse",
- "porter-core",
- "porter-fake-servers",
- "porter-http",
- "porter-ids",
- "porter-provider",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "subtle",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "porter-provider"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-sheet",
- "serde",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "porter-proxy"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "httparse",
- "porter-capability",
- "porter-core",
- "porter-fake",
- "porter-fake-servers",
- "porter-ids",
- "porter-proxy",
- "rustls-native-certs",
- "rustls-pki-types",
- "test-kit",
- "tokio",
- "tokio-rustls",
- "webpki-roots",
-]
-
-[[package]]
-name = "porter-rig"
-version = "0.1.0"
-dependencies = [
- "accountd",
- "clap",
- "fake-secret-service",
- "porter-callers",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-fake",
- "porter-fake-servers",
- "porter-ids",
- "porter-provider",
- "porter-secrets",
- "porter-service",
- "porter-service-core",
- "porter-wire",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "test-kit",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "porter-router"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "engine-probe",
- "engine-spec",
- "engine-supervisor",
- "model-catalog",
- "model-http",
- "model-openai-compat",
- "model-provider",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-tailnet",
- "porter-tailscale",
- "rustix 1.1.6",
- "serde",
- "speech-provider",
- "test-kit",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
- "vision-prep",
-]
-
-[[package]]
-name = "porter-secrets"
-version = "0.1.0"
-dependencies = [
- "apple-native-keyring-store",
- "keyring-chunked",
- "keyring-core",
- "oo7",
- "porter-capability",
- "porter-core",
- "porter-fs",
- "porter-ids",
- "porter-secrets",
- "rustix 1.1.6",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
- "windows-native-keyring-store",
- "zeroize",
-]
-
-[[package]]
-name = "porter-service"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-secrets",
- "porter-service-accounts",
- "porter-service-core",
- "porter-service-grants",
- "porter-sheet",
- "porter-wire",
-]
-
-[[package]]
-name = "porter-service-accounts"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-secrets",
- "porter-service-core",
- "porter-sheet",
- "porter-tailscale",
- "porter-wire",
-]
-
-[[package]]
-name = "porter-service-core"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-secrets",
- "porter-sheet",
- "porter-wire",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-service-grants"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-secrets",
- "porter-service-accounts",
- "porter-service-core",
- "porter-sheet",
- "porter-wire",
-]
-
-[[package]]
-name = "porter-settings"
-version = "0.1.0"
-dependencies = [
- "ds-settings",
- "porter-capability",
- "porter-core",
- "porter-fake",
- "porter-ids",
- "porter-provider",
- "porter-service-core",
- "porter-sheet",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "porter-sheet"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-tailscale",
- "porter-wire",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-sheets"
-version = "0.1.0"
-dependencies = [
- "porter-callers",
- "porter-capability",
- "porter-core",
- "porter-dbus",
- "porter-provider",
- "porter-service-core",
- "porter-sheet",
- "porter-wire",
- "serde_json",
- "test-kit",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "porter-spaces"
-version = "0.1.0"
-dependencies = [
- "porter-core",
- "porter-fs",
- "porter-ids",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "porter-store"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-fake",
- "porter-fs",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "porter-tailnet"
-version = "0.1.0"
-dependencies = [
- "http-body-util",
- "hyper",
- "hyper-util",
- "porter-fake-servers",
- "porter-fs",
- "porter-ids",
- "porter-tailnet",
- "porter-tailscale",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "porter-tailscale"
-version = "0.1.0"
-dependencies = [
- "http-body-util",
- "hyper",
- "hyper-util",
- "porter-fake-servers",
- "porter-ids",
- "porter-tailscale",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "porter-turns"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "cua-parse",
- "cua-session",
- "cua-vendors",
- "engine-supervisor",
- "model-extract",
- "model-http",
- "model-openai-compat",
- "model-provider",
- "porter-bridge",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-router",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "test-kit",
- "tokio",
- "vision-prep",
-]
-
-[[package]]
-name = "porter-wire"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-match",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -11987,12 +11696,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "prov"
+name = "provenance"
 version = "0.1.0"
 dependencies = [
- "porter-capability",
- "porter-core",
- "porter-ids",
+ "account-capability",
+ "account-core",
+ "account-ids",
  "proptest",
  "serde",
  "serde_json",
@@ -12167,13 +11876,6 @@ dependencies = [
  "socket2",
  "tracing",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "quire-emoji"
-version = "0.1.0"
-dependencies = [
- "fontique",
 ]
 
 [[package]]
@@ -12445,59 +12147,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "readerd"
-version = "0.1.0"
-dependencies = [
- "docket-client",
- "docket-context",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-log",
- "docket-permissions-core",
- "docket-reader",
- "docket-router",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "inferd-client",
- "porter-callers",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-wire",
- "proptest",
- "prov",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
 name = "reborrow"
 version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "03251193000f4bd3b042892be858ee50e8b3719f2b08e5833ac4353724632430"
-
-[[package]]
-name = "recall"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "almanac-store",
- "recall",
- "rusqlite",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
-]
 
 [[package]]
 name = "recvmsg"
@@ -12645,6 +12298,58 @@ name = "renderdoc-sys"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832"
+
+[[package]]
+name = "replica-gdrive"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-fake-servers",
+ "account-http",
+ "account-http-relay",
+ "account-ids",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "sync-core",
+ "tokio",
+]
+
+[[package]]
+name = "replica-graph"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-fake-servers",
+ "account-http",
+ "account-http-relay",
+ "account-ids",
+ "base-testkit",
+ "base64 0.22.1",
+ "hex",
+ "serde",
+ "serde_json",
+ "sync-core",
+ "sync-fake-graph",
+ "tokio",
+]
+
+[[package]]
+name = "replica-webdav"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-dav-proto",
+ "account-fake-servers",
+ "account-http",
+ "account-http-relay",
+ "account-ids",
+ "base-testkit",
+ "base64 0.22.1",
+ "roxmltree 0.21.1",
+ "sync-core",
+ "tokio",
+]
 
 [[package]]
 name = "reqwest"
@@ -13031,6 +12736,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "sandbox"
+version = "0.1.0"
+dependencies = [
+ "landlock",
+ "serde",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "schannel"
 version = "0.1.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13100,37 +12815,6 @@ dependencies = [
  "memmap2",
  "smithay-client-toolkit 0.21.1",
  "tiny-skia",
-]
-
-[[package]]
-name = "seat-ei"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "cua-desktop",
- "cua-fake",
- "futures-util",
- "porter-core",
- "porter-ids",
- "reis",
- "seat-input",
- "tokio",
-]
-
-[[package]]
-name = "seat-input"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "cua-desktop",
- "cua-types",
- "keyboard-types 0.7.0",
- "porter-core",
- "porter-ids",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "xkbcommon 0.8.0",
 ]
 
 [[package]]
@@ -13328,6 +13012,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "service-locator"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "caller-identity-linux",
+ "interprocess",
+ "rustix 1.1.6",
+ "service-locator",
+ "tempfile",
+ "widestring",
+]
+
+[[package]]
 name = "servo_arc"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13335,6 +13032,210 @@ checksum = "170fb83ab34de17dc69aa7c67482b22218ddb85da56546f9bd6b929e32a05930"
 dependencies = [
  "serde",
  "stable_deref_trait",
+]
+
+[[package]]
+name = "settings-app"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "settings-app-callers",
+ "settings-app-client",
+ "settings-app-files",
+ "settings-app-intents",
+ "settings-app-model",
+ "settings-app-testkit",
+ "settings-app-ui",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-blitz",
+ "ui-settings",
+]
+
+[[package]]
+name = "settings-app-callers"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-dbus",
+ "rustix 1.1.6",
+ "settings-app-testkit",
+ "thiserror 2.0.21",
+ "ui-settings",
+ "zbus",
+]
+
+[[package]]
+name = "settings-app-client"
+version = "0.1.0"
+dependencies = [
+ "account-provider",
+ "inference-core",
+ "memory-core",
+ "settings-app-files",
+ "settings-app-model",
+ "settings-app-system",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-settings",
+]
+
+[[package]]
+name = "settings-app-files"
+version = "0.1.0"
+dependencies = [
+ "action-settings",
+ "agent-install",
+ "agent-registry",
+ "freedesktop-icons",
+ "key-remap-client",
+ "keymap",
+ "serde_json",
+ "settings-app-model",
+ "settings-app-testkit",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "toml_edit",
+ "ui-extensions",
+ "ui-helpers",
+ "ui-settings",
+]
+
+[[package]]
+name = "settings-app-intents"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-ids",
+ "account-sheet",
+ "action-core",
+ "action-dbus",
+ "action-manifest",
+ "action-provider",
+ "action-vocab",
+ "action-wire",
+ "provenance",
+ "serde",
+ "serde_json",
+ "settings-app-callers",
+ "settings-app-client",
+ "settings-app-files",
+ "settings-app-model",
+ "settings-app-testkit",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-peer",
+ "ui-settings",
+ "zbus",
+]
+
+[[package]]
+name = "settings-app-model"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-sheet",
+ "account-tailscale",
+ "action-core",
+ "action-manifest",
+ "action-settings",
+ "action-vocab",
+ "inference-core",
+ "inference-tailnet",
+ "key-remap-client",
+ "keymap",
+ "memory-core",
+ "regex",
+ "serde_json",
+ "settings-app-testkit",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-helpers",
+ "ui-settings",
+]
+
+[[package]]
+name = "settings-app-system"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-dbus",
+ "account-tailscale",
+ "account-wire",
+ "anyview-core",
+ "anyview-fs",
+ "anyview-image",
+ "anyview-platform",
+ "bluez-proxy",
+ "desktop-client",
+ "desktop-protocols",
+ "engine-install",
+ "engine-manifest",
+ "engine-probe",
+ "engine-spec",
+ "inference-client",
+ "inference-dbus",
+ "inference-tailnet",
+ "md-5 0.10.6",
+ "memory-core",
+ "model-catalog",
+ "networkmanager-proxy",
+ "serde_json",
+ "settings-app-callers",
+ "settings-app-files",
+ "settings-app-model",
+ "settings-app-system",
+ "sync-bus",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-peer",
+ "ui-settings",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "settings-app-testkit"
+version = "0.1.0"
+
+[[package]]
+name = "settings-app-ui"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-dbus",
+ "account-wire",
+ "action-settings",
+ "dioxus",
+ "dioxus-ssr",
+ "image",
+ "inference-client",
+ "inference-core",
+ "inference-dbus",
+ "keymap",
+ "settings-app-callers",
+ "settings-app-client",
+ "settings-app-files",
+ "settings-app-model",
+ "settings-app-system",
+ "settings-app-testkit",
+ "sync-bus",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-helpers",
+ "ui-lint",
+ "ui-settings",
+ "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -13402,43 +13303,463 @@ dependencies = [
 ]
 
 [[package]]
-name = "shell-host"
+name = "shell-app"
 version = "0.1.0"
 dependencies = [
- "anyrender",
- "anyrender_vello_cpu",
- "anyrender_vello_hybrid",
- "blitz-dom",
- "blitz-kit",
- "blitz-paint",
- "blitz-traits",
- "calloop",
- "calloop-wayland-source",
- "casement-protocols",
- "cursor-icon",
- "dioxus",
- "dioxus-document",
- "dioxus-native-dom",
- "image",
+ "account-core",
+ "agent-voice-wire",
+ "caller-identity-dbus",
+ "clap",
  "keyboard-types 0.7.0",
- "nix 0.31.3",
- "palmrest-protocol",
- "peniko",
- "raw-window-handle",
- "rustc-hash 2.1.3",
+ "layer-shell-host",
+ "notify",
+ "provenance",
  "rustix 1.1.6",
  "serde",
  "serde_json",
- "smithay-client-toolkit 0.20.0",
+ "service-locator",
+ "shell-bar",
+ "shell-dock",
+ "shell-ipc",
+ "shell-kit",
+ "shell-launcher",
+ "shell-launcher-ui",
+ "shell-model",
+ "shell-notify-ui",
+ "shell-overlays",
+ "shell-search",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "shell-verbs",
  "thiserror 2.0.21",
  "tokio",
- "vello_common 0.1.0",
- "vello_hybrid",
- "wayland-backend",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "ui-extensions",
+ "ui-harness",
+ "ui-lint",
+ "ui-settings",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "shell-bar"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "image",
+ "jiff",
+ "layer-shell-host",
+ "serde_json",
+ "shell-kit",
+ "shell-launcher",
+ "shell-model",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "tokio",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-lint",
+ "ui-settings",
+]
+
+[[package]]
+name = "shell-dock"
+version = "0.1.0"
+dependencies = [
+ "desktop-client",
+ "dioxus",
+ "keymap",
+ "layer-shell-host",
+ "shell-kit",
+ "shell-launcher",
+ "shell-model",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "tokio",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-lint",
+ "ui-settings",
+]
+
+[[package]]
+name = "shell-ipc"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "key-remap-proto",
+ "serde",
+ "serde_json",
+ "shell-launcher",
+ "shell-model",
+ "shell-testkit",
+ "thiserror 2.0.21",
+ "ui-core",
+]
+
+[[package]]
+name = "shell-kit"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "image",
+ "serde",
+ "serde_json",
+ "shell-testkit",
+ "thiserror 2.0.21",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "ui-harness",
+ "ui-lint",
+ "ui-settings",
+ "ui-shell",
+]
+
+[[package]]
+name = "shell-launcher"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-vocab",
+ "keymap",
+ "memory-core",
+ "nucleo-matcher",
+ "provenance",
+ "serde",
+ "serde_json",
+ "ui-core",
+]
+
+[[package]]
+name = "shell-launcher-ui"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-vocab",
+ "anyview-core",
+ "anyview-fs",
+ "anyview-image",
+ "anyview-peek",
+ "anyview-platform",
+ "companion-model",
+ "companion-wire",
+ "dioxus",
+ "dioxus-ssr",
+ "dirs 6.0.0",
+ "image",
+ "jiff",
+ "keymap",
+ "layer-shell-host",
+ "md-5 0.10.6",
+ "memory-core",
+ "permission-core",
+ "png",
+ "provenance",
+ "serde_json",
+ "shell-kit",
+ "shell-launcher",
+ "shell-model",
+ "shell-search",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "tokio",
+ "ui-behaviour",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-lint",
+]
+
+[[package]]
+name = "shell-model"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-sheet",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "action-wire",
+ "agent-voice-wire",
+ "companion-model",
+ "companion-wire",
+ "computer-use-action",
+ "computer-use-bus",
+ "desktop-protocols",
+ "inference-core",
+ "jiff",
+ "key-remap-proto",
+ "keymap",
+ "memory-core",
+ "permission-core",
+ "provenance",
+ "serde",
+ "serde_json",
+ "shell-launcher",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-core",
+ "ui-helpers",
+ "zeroize",
+]
+
+[[package]]
+name = "shell-notify-ui"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "image",
+ "layer-shell-host",
+ "shell-kit",
+ "shell-model",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-settings",
+]
+
+[[package]]
+name = "shell-overlays"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-ids",
+ "account-sheet",
+ "desktop-client",
+ "dioxus",
+ "image",
+ "jiff",
+ "keymap",
+ "layer-shell-host",
+ "serde_json",
+ "shell-kit",
+ "shell-launcher",
+ "shell-model",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "tokio",
+ "ui-behaviour",
+ "ui-components",
+ "ui-harness",
+ "ui-settings",
+ "ui-shell",
+]
+
+[[package]]
+name = "shell-search"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "anyview-core",
+ "anyview-store",
+ "companion-model",
+ "companion-wire",
+ "computer-use-action",
+ "computer-use-bus",
+ "emojis",
+ "fend-core",
+ "jiff",
+ "memory-core",
+ "mime_guess",
+ "nucleo-matcher",
+ "percent-encoding",
+ "permission-core",
+ "provenance",
+ "serde_json",
+ "shell-launcher",
+ "shell-model",
+ "shell-services",
+ "shell-testkit",
+ "tokio",
+ "ui-core",
+ "ui-settings",
+ "zbus",
+]
+
+[[package]]
+name = "shell-services"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-core",
+ "account-dbus",
+ "account-ids",
+ "account-sheet",
+ "account-tailscale",
+ "account-wire",
+ "action-checkpoint",
+ "action-client",
+ "action-core",
+ "action-dbus",
+ "action-fake",
+ "action-manifest",
+ "action-provider",
+ "action-router",
+ "action-vocab",
+ "action-wire",
+ "agent-voice-dbus",
+ "agent-voice-wire",
+ "anyview-core",
+ "anyview-platform",
+ "async-trait",
+ "bluez-proxy",
+ "caller-identity-dbus",
+ "companion-model",
+ "companion-wire",
+ "computer-use-action",
+ "computer-use-bus",
+ "computer-use-dbus",
+ "ddc",
+ "ddc-i2c",
+ "desktop-client",
+ "desktop-protocols",
+ "dirs 6.0.0",
+ "freedesktop-icons",
+ "image",
+ "inference-client",
+ "inference-core",
+ "inference-tailnet",
+ "jiff",
+ "key-remap-proto",
+ "libpulse-binding",
+ "logind-zbus",
+ "memory-core",
+ "memory-dbus",
+ "networkmanager-proxy",
+ "nix 0.31.3",
+ "nonstick",
+ "notify",
+ "percent-encoding",
+ "permission-core",
+ "permission-policy",
+ "provenance",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "shell-launcher",
+ "shell-model",
+ "shell-testkit",
+ "smithay-client-toolkit 0.20.0",
+ "sync-bus",
+ "system-tray",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-core",
+ "ui-helpers",
+ "ui-settings",
+ "upower_dbus",
  "wayland-client",
  "wayland-protocols",
- "wgpu",
- "wgpu_context",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "shell-settings"
+version = "0.1.0"
+dependencies = [
+ "key-remap-proto",
+ "provenance",
+ "serde",
+ "shell-launcher",
+ "shell-model",
+ "shell-testkit",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-core",
+ "ui-settings",
+]
+
+[[package]]
+name = "shell-testkit"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-dbus",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "shell-launcher",
+ "shell-model",
+ "shell-search",
+ "shell-services",
+ "tokio",
+ "wayland-client",
+ "wayland-protocols",
+ "zbus",
+]
+
+[[package]]
+name = "shell-ui-kit"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "action-core",
+ "action-manifest",
+ "action-vocab",
+ "companion-wire",
+ "computer-use-action",
+ "dioxus",
+ "dioxus-ssr",
+ "dirs 6.0.0",
+ "image",
+ "jiff",
+ "key-remap-client",
+ "keymap",
+ "layer-shell-host",
+ "permission-core",
+ "provenance",
+ "resvg",
+ "serde",
+ "serde_json",
+ "shell-kit",
+ "shell-launcher",
+ "shell-model",
+ "shell-search",
+ "shell-services",
+ "shell-settings",
+ "shell-testkit",
+ "shell-ui-kit",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-behaviour",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "ui-harness",
+ "ui-lint",
+ "ui-settings",
 ]
 
 [[package]]
@@ -13465,466 +13786,6 @@ checksum = "c4db69cba1110affc0e9f7bcd48bbf87b3f4fc7c61fc9155afd4c469eb3d6c1b"
 dependencies = [
  "errno",
  "libc",
-]
-
-[[package]]
-name = "sill"
-version = "0.1.0"
-dependencies = [
- "clap",
- "ds",
- "ds-blitz",
- "ds-core",
- "ds-extensions",
- "ds-harness",
- "ds-lint",
- "ds-settings",
- "keyboard-types 0.7.0",
- "latchkey",
- "notify",
- "peephole-bus",
- "porter-core",
- "prov",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "shell-host",
- "shell-verbs",
- "sill-bar",
- "sill-dock",
- "sill-ipc",
- "sill-launcher",
- "sill-launcher-ui",
- "sill-model",
- "sill-notify-ui",
- "sill-overlays",
- "sill-search",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "voice-wire",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "sill-bar"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "dioxus-ssr",
- "ds",
- "ds-blitz",
- "ds-harness",
- "ds-lint",
- "ds-settings",
- "image",
- "jiff",
- "serde_json",
- "shell-host",
- "sill-launcher",
- "sill-model",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
- "tokio",
-]
-
-[[package]]
-name = "sill-dock"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "desktop-client",
- "dioxus",
- "ds",
- "ds-blitz",
- "ds-harness",
- "ds-lint",
- "ds-settings",
- "shell-host",
- "sill-launcher",
- "sill-model",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
- "tokio",
-]
-
-[[package]]
-name = "sill-ipc"
-version = "0.1.0"
-dependencies = [
- "clap",
- "ds-core",
- "keycap-protocol",
- "serde",
- "serde_json",
- "sill-launcher",
- "sill-model",
- "sill-testkit",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "sill-launcher"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "chordkit",
- "docket-core",
- "docket-vocab",
- "ds-core",
- "nucleo-matcher",
- "prov",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "sill-launcher-ui"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "anyview-core",
- "anyview-fs",
- "anyview-image",
- "anyview-peek",
- "anyview-platform",
- "chordkit",
- "companion-model",
- "companion-wire",
- "dioxus",
- "dioxus-ssr",
- "dirs 6.0.0",
- "docket-core",
- "docket-permissions-core",
- "docket-vocab",
- "ds",
- "ds-behaviour",
- "ds-blitz",
- "ds-harness",
- "ds-lint",
- "image",
- "jiff",
- "md-5 0.10.6",
- "png",
- "prov",
- "serde_json",
- "shell-host",
- "sill-launcher",
- "sill-model",
- "sill-search",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
- "tokio",
-]
-
-[[package]]
-name = "sill-model"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "casement-protocols",
- "chordkit",
- "companion-model",
- "companion-wire",
- "cua-action",
- "cua-bus",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "docket-wire",
- "ds-core",
- "ds-helpers",
- "jiff",
- "keycap-protocol",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-sheet",
- "prov",
- "serde",
- "serde_json",
- "sill-launcher",
- "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
- "voice-wire",
- "zeroize",
-]
-
-[[package]]
-name = "sill-notify-ui"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds",
- "ds-blitz",
- "ds-harness",
- "ds-settings",
- "image",
- "shell-host",
- "sill-model",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
-]
-
-[[package]]
-name = "sill-overlays"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "desktop-client",
- "dioxus",
- "ds",
- "ds-behaviour",
- "ds-harness",
- "ds-settings",
- "ds-shell",
- "image",
- "jiff",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-sheet",
- "serde_json",
- "shell-host",
- "sill-launcher",
- "sill-model",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
- "tokio",
-]
-
-[[package]]
-name = "sill-search"
-version = "0.1.0"
-dependencies = [
- "almanac-core",
- "anyview-core",
- "anyview-store",
- "companion-model",
- "companion-wire",
- "cua-action",
- "cua-bus",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "ds-core",
- "ds-settings",
- "emojis",
- "fend-core",
- "jiff",
- "mime_guess",
- "nucleo-matcher",
- "percent-encoding",
- "prov",
- "serde_json",
- "sill-launcher",
- "sill-model",
- "sill-services",
- "sill-testkit",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "sill-services"
-version = "0.1.0"
-dependencies = [
- "airwaves-bluez",
- "airwaves-nm",
- "almanac-core",
- "almanac-dbus",
- "anyview-core",
- "anyview-platform",
- "async-trait",
- "casement-protocols",
- "companion-model",
- "companion-wire",
- "cua-action",
- "cua-bus",
- "cua-dbus",
- "ddc",
- "ddc-i2c",
- "desktop-client",
- "dirs 6.0.0",
- "docket-checkpoint",
- "docket-client",
- "docket-core",
- "docket-dbus",
- "docket-fake",
- "docket-manifest",
- "docket-permissions-core",
- "docket-provider",
- "docket-router",
- "docket-vocab",
- "docket-wire",
- "ds-core",
- "ds-helpers",
- "ds-settings",
- "ferry-bus",
- "freedesktop-icons",
- "image",
- "inferd-client",
- "jiff",
- "keycap-protocol",
- "libpulse-binding",
- "logind-zbus",
- "nix 0.31.3",
- "nonstick",
- "notify",
- "peephole-bus",
- "percent-encoding",
- "policy-point",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-core",
- "porter-dbus",
- "porter-ids",
- "porter-infer",
- "porter-sheet",
- "porter-tailnet",
- "porter-tailscale",
- "porter-wire",
- "prov",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "sill-launcher",
- "sill-model",
- "sill-testkit",
- "smithay-client-toolkit 0.20.0",
- "system-tray",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "upower_dbus",
- "voice-dbus",
- "voice-wire",
- "wayland-client",
- "wayland-protocols",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "sill-settings"
-version = "0.1.0"
-dependencies = [
- "ds-core",
- "ds-settings",
- "keycap-protocol",
- "prov",
- "serde",
- "sill-launcher",
- "sill-model",
- "sill-testkit",
- "toml 1.1.6+spec-1.1.0",
-]
-
-[[package]]
-name = "sill-shell-kit"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "dioxus-ssr",
- "ds",
- "ds-blitz",
- "ds-core",
- "ds-harness",
- "ds-lint",
- "ds-settings",
- "ds-shell",
- "image",
- "serde",
- "serde_json",
- "sill-testkit",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "sill-testkit"
-version = "0.1.0"
-dependencies = [
- "porter-core",
- "porter-dbus",
- "rustix 1.1.6",
- "serde",
- "serde_json",
- "sill-launcher",
- "sill-model",
- "sill-search",
- "sill-services",
- "tokio",
- "wayland-client",
- "wayland-protocols",
- "zbus",
-]
-
-[[package]]
-name = "sill-ui-kit"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "companion-wire",
- "cua-action",
- "dioxus",
- "dioxus-ssr",
- "dirs 6.0.0",
- "docket-core",
- "docket-manifest",
- "docket-permissions-core",
- "docket-vocab",
- "ds",
- "ds-behaviour",
- "ds-blitz",
- "ds-core",
- "ds-harness",
- "ds-lint",
- "ds-settings",
- "image",
- "jiff",
- "keycap-client",
- "porter-capability",
- "porter-core",
- "prov",
- "resvg",
- "serde",
- "serde_json",
- "shell-host",
- "sill-launcher",
- "sill-model",
- "sill-search",
- "sill-services",
- "sill-settings",
- "sill-shell-kit",
- "sill-testkit",
- "sill-ui-kit",
- "thiserror 2.0.21",
- "tokio",
 ]
 
 [[package]]
@@ -14008,56 +13869,6 @@ name = "slab"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
-
-[[package]]
-name = "slipway"
-version = "0.1.0"
-dependencies = [
- "peephole-bus",
- "semver",
- "serde",
- "slipway-core",
- "slipway-root",
- "tar",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 0.9.12+spec-1.1.0",
- "tracing",
- "tracing-subscriber",
- "ureq",
- "zbus",
- "zbus-ready",
- "zstd",
-]
-
-[[package]]
-name = "slipway-core"
-version = "0.1.0"
-dependencies = [
- "minisign-verify",
- "proptest",
- "semver",
- "serde",
- "sha2 0.11.0",
- "thiserror 2.0.21",
- "time",
- "toml 0.9.12+spec-1.1.0",
-]
-
-[[package]]
-name = "slipway-root"
-version = "0.1.0"
-dependencies = [
- "rustix 1.1.6",
- "semver",
- "slipway-core",
- "tar",
- "tempfile",
- "thiserror 2.0.21",
- "toml 0.9.12+spec-1.1.0",
- "zstd",
-]
 
 [[package]]
 name = "slotmap"
@@ -14315,94 +14126,6 @@ name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
-
-[[package]]
-name = "steward-dbus"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-dbus",
- "porter-dbus-macros",
- "porter-ids",
- "porter-match",
- "porter-wire",
- "serde",
- "serde_json",
- "test-kit",
- "thiserror 2.0.21",
- "zbus",
-]
-
-[[package]]
-name = "steward-rig"
-version = "0.1.0"
-dependencies = [
- "clap",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "porter-rig",
- "serde",
- "serde_json",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "storage-gdrive"
-version = "0.1.0"
-dependencies = [
- "ferry-sync",
- "porter-capability",
- "porter-fake-servers",
- "porter-http",
- "porter-http-relay",
- "porter-ids",
- "serde",
- "serde_json",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "storage-graph"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "ferry-fake-graph",
- "ferry-sync",
- "hex",
- "porter-capability",
- "porter-fake-servers",
- "porter-http",
- "porter-http-relay",
- "porter-ids",
- "serde",
- "serde_json",
- "test-kit",
- "tokio",
-]
-
-[[package]]
-name = "storage-webdav"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "dav-proto",
- "ferry-sync",
- "porter-capability",
- "porter-fake-servers",
- "porter-http",
- "porter-http-relay",
- "porter-ids",
- "roxmltree 0.21.1",
- "test-kit",
- "tokio",
-]
 
 [[package]]
 name = "strict-num"
@@ -14865,83 +14588,148 @@ dependencies = [
 ]
 
 [[package]]
-name = "sync_wrapper"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bf256ce5efdfa370213c1dabab5935a12e49f2c58d15e9eac2870d3b4f27263"
+name = "sync-bus"
+version = "0.1.0"
 dependencies = [
- "futures-core",
+ "account-dbus",
+ "account-dbus-macros",
+ "account-ids",
+ "serde",
+ "zbus",
 ]
 
 [[package]]
-name = "syncd"
+name = "sync-core"
 version = "0.1.0"
 dependencies = [
+ "account-capability",
+ "account-http",
+ "account-ids",
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "sync-core",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "sync-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-client-dbus",
+ "account-client-inproc",
+ "account-core",
+ "account-daemon-support",
+ "account-dav-proto",
+ "account-dbus",
+ "account-fake",
+ "account-fake-servers",
+ "account-fs",
+ "account-http",
+ "account-http-relay",
+ "account-http-reqwest",
+ "account-ids",
+ "account-match",
+ "account-provider",
+ "account-secrets",
+ "account-service",
+ "account-service-core",
+ "account-sheet",
+ "account-wire",
+ "base-testkit",
  "base64 0.22.1",
  "chrono",
  "clap",
- "dav-proto",
- "ds-settings",
- "ferry-bus",
- "ferry-drive",
- "ferry-drive-fuse",
- "ferry-fake-graph",
- "ferry-sync",
+ "drive-core",
+ "drive-fuse",
  "hex",
  "mime_guess",
  "nanohtml2text",
- "porter-callers",
- "porter-capability",
- "porter-client",
- "porter-client-dbus",
- "porter-client-inproc",
- "porter-core",
- "porter-daemon",
- "porter-dbus",
- "porter-fake",
- "porter-fake-servers",
- "porter-fs",
- "porter-http",
- "porter-http-relay",
- "porter-http-reqwest",
- "porter-ids",
- "porter-match",
- "porter-provider",
- "porter-secrets",
- "porter-service",
- "porter-service-core",
- "porter-sheet",
- "porter-wire",
+ "replica-gdrive",
+ "replica-graph",
+ "replica-webdav",
  "rusqlite",
  "serde",
  "serde_json",
  "sha2 0.10.9",
- "storage-gdrive",
- "storage-graph",
- "storage-webdav",
- "syncd",
- "syncd-fakes",
+ "sync-bus",
+ "sync-core",
+ "sync-daemon",
+ "sync-fake-graph",
+ "sync-fakes",
  "tempfile",
- "test-kit",
  "thiserror 2.0.21",
  "tokio",
  "toml 1.1.6+spec-1.1.0",
+ "ui-settings",
  "windows-zones",
  "zbus",
  "zbus-ready",
 ]
 
 [[package]]
-name = "syncd-fakes"
+name = "sync-fake-graph"
 version = "0.1.0"
 dependencies = [
+ "account-core",
+ "account-fake",
+ "account-fake-servers",
+ "account-ids",
+ "account-provider",
+ "base-testkit",
+ "base64 0.22.1",
+ "quickxorhash",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "sync-fakes"
+version = "0.1.0"
+dependencies = [
+ "account-dbus",
+ "base-testkit",
  "clap",
- "ferry-bus",
- "porter-dbus",
- "test-kit",
+ "sync-bus",
  "tokio",
  "zbus",
  "zbus-ready",
+]
+
+[[package]]
+name = "sync-rig"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-core",
+ "account-dbus",
+ "account-fake-servers",
+ "account-ids",
+ "account-rig",
+ "base-testkit",
+ "clap",
+ "rustix 1.1.6",
+ "serde",
+ "serde_json",
+ "sync-bus",
+ "sync-core",
+ "sync-daemon",
+ "sync-fake-graph",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "sync_wrapper"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bf256ce5efdfa370213c1dabab5935a12e49f2c58d15e9eac2870d3b4f27263"
+dependencies = [
+ "futures-core",
 ]
 
 [[package]]
@@ -15105,10 +14893,6 @@ checksum = "06794f8f6c5c898b3275aebefa6b8a1cb24cd2c6c79397ab15774837a0bc5755"
 dependencies = [
  "winapi-util",
 ]
-
-[[package]]
-name = "test-kit"
-version = "0.1.0"
 
 [[package]]
 name = "thin-vec"
@@ -15511,33 +15295,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "transom"
-version = "0.1.0"
-dependencies = [
- "image",
- "peephole-bus",
- "pipewire",
- "rustix 1.1.6",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "transom-core",
- "wayland-client",
- "wayland-protocols",
- "zbus",
-]
-
-[[package]]
-name = "transom-core"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "trash"
 version = "5.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -15578,39 +15335,6 @@ name = "ttf-parser"
 version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2df906b07856748fa3f6e0ad0cbaa047052d4a7dd609e231c4f72cee8c36f31"
-
-[[package]]
-name = "turnstile"
-version = "0.1.1"
-dependencies = [
- "input-linux",
- "libc",
- "listenfd",
- "peephole",
- "peephole-core",
- "rustix 1.1.6",
- "tempfile",
- "thiserror 2.0.21",
- "turnstile-client",
- "turnstile-wire",
-]
-
-[[package]]
-name = "turnstile-client"
-version = "0.1.1"
-dependencies = [
- "rustix 1.1.6",
- "tempfile",
- "thiserror 2.0.21",
- "turnstile-wire",
-]
-
-[[package]]
-name = "turnstile-wire"
-version = "0.1.1"
-dependencies = [
- "thiserror 2.0.21",
-]
 
 [[package]]
 name = "twox-hash"
@@ -15657,6 +15381,340 @@ dependencies = [
  "memoffset",
  "tempfile",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "ui-behaviour"
+version = "0.1.0"
+dependencies = [
+ "ui-core",
+]
+
+[[package]]
+name = "ui-blitz"
+version = "0.1.0"
+dependencies = [
+ "anyrender",
+ "anyrender_vello_hybrid",
+ "arboard",
+ "blitz-dom",
+ "blitz-embed",
+ "blitz-html",
+ "blitz-paint",
+ "blitz-shell",
+ "blitz-traits",
+ "caller-identity-dbus",
+ "dioxus",
+ "dioxus-asset-resolver",
+ "dioxus-native",
+ "dioxus-native-dom",
+ "dirs 6.0.0",
+ "image",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "keymap-gnome",
+ "keymap-kde",
+ "memfd",
+ "parley",
+ "pdfrum",
+ "pdfrum-anyrender",
+ "pdfrum-common",
+ "pdfrum-edit",
+ "peniko",
+ "raw-window-handle",
+ "serde",
+ "skrifa 0.44.0",
+ "spellbook",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-components",
+ "ui-desktop",
+ "ui-emoji",
+ "ui-harness",
+ "ui-helpers",
+ "ui-peer",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-scanner",
+ "wayland-server",
+ "webbrowser",
+ "wgpu",
+ "wgpu_context",
+ "zbus",
+]
+
+[[package]]
+name = "ui-components"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "keymap",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-core",
+ "ui-intents",
+ "ui-lint",
+ "ui-motion",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-conformance"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "image",
+ "keymap",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-shell",
+]
+
+[[package]]
+name = "ui-core"
+version = "0.1.0"
+dependencies = [
+ "futures-timer",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "ui-core-derive",
+]
+
+[[package]]
+name = "ui-core-derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "ui-desktop"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "tokio",
+ "ui-peer",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "ui-emoji"
+version = "0.1.0"
+dependencies = [
+ "fontique",
+]
+
+[[package]]
+name = "ui-extensions"
+version = "0.1.0"
+dependencies = [
+ "plugin-host",
+ "serde",
+ "thiserror 2.0.21",
+ "ui-core",
+ "ui-helpers",
+ "ui-settings",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-gallery"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "image",
+ "keymap",
+ "thiserror 2.0.21",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "ui-harness",
+ "ui-lint",
+ "ui-settings",
+ "ui-shell",
+]
+
+[[package]]
+name = "ui-harness"
+version = "0.1.0"
+dependencies = [
+ "anyrender",
+ "anyrender_vello_cpu",
+ "anyrender_vello_hybrid",
+ "blitz-dom",
+ "blitz-embed",
+ "blitz-html",
+ "blitz-paint",
+ "blitz-traits",
+ "dioxus",
+ "dioxus-native-dom",
+ "image",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "parley",
+ "peniko",
+ "rustc-hash 2.1.3",
+ "serde",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "vello_hybrid",
+ "wgpu",
+ "wgpu_context",
+ "zbus",
+]
+
+[[package]]
+name = "ui-helpers"
+version = "0.1.0"
+dependencies = [
+ "rustix 1.1.6",
+ "serde",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-peer",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "ui-icon-tool"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "image",
+ "serde",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-components",
+ "ui-settings",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-intents"
+version = "0.1.0"
+dependencies = [
+ "ui-core",
+]
+
+[[package]]
+name = "ui-lint"
+version = "0.1.0"
+dependencies = [
+ "cssparser",
+ "ui-components",
+ "ui-core",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-motion"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "ui-components",
+ "ui-core",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-peer"
+version = "0.1.0"
+dependencies = [
+ "futures-timer",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "ui-settings"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "futures-timer",
+ "notify",
+ "objc2-core-foundation",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 1.1.6+spec-1.1.0",
+ "toml_edit",
+ "ui-components",
+ "ui-core",
+ "ui-helpers",
+ "ui-peer",
+ "ui-settings-derive",
+ "ui-style",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "ui-settings-derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "ui-settings-page"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "toml 1.1.6+spec-1.1.0",
+ "ui-components",
+ "ui-lint",
+ "ui-settings",
+]
+
+[[package]]
+name = "ui-shell"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "ui-components",
+ "ui-core",
+ "ui-lint",
+ "ui-motion",
+ "ui-style",
+ "zeroize",
+]
+
+[[package]]
+name = "ui-style"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "image",
+ "serde",
+ "serde_json",
+ "skrifa 0.44.0",
+ "ui-core",
+ "ui-core-derive",
+ "ui-style",
 ]
 
 [[package]]
@@ -15792,6 +15850,56 @@ name = "untrusted"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
+
+[[package]]
+name = "updater-core"
+version = "0.1.0"
+dependencies = [
+ "minisign-verify",
+ "proptest",
+ "semver",
+ "serde",
+ "sha2 0.11.0",
+ "thiserror 2.0.21",
+ "time",
+ "toml 0.9.12+spec-1.1.0",
+]
+
+[[package]]
+name = "updater-daemon"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-dbus",
+ "semver",
+ "serde",
+ "tar",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml 0.9.12+spec-1.1.0",
+ "tracing",
+ "tracing-subscriber",
+ "updater-core",
+ "updater-root",
+ "ureq",
+ "zbus",
+ "zbus-ready",
+ "zstd",
+]
+
+[[package]]
+name = "updater-root"
+version = "0.1.0"
+dependencies = [
+ "rustix 1.1.6",
+ "semver",
+ "tar",
+ "tempfile",
+ "thiserror 2.0.21",
+ "toml 0.9.12+spec-1.1.0",
+ "updater-core",
+ "zstd",
+]
 
 [[package]]
 name = "upower_dbus"
@@ -16033,114 +16141,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "vision-prep"
-version = "0.1.0"
-dependencies = [
- "cua-action",
- "fast_image_resize",
- "image",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "voice-audio"
-version = "0.1.0"
-dependencies = [
- "futures-util",
- "serde",
- "thiserror 2.0.21",
- "tokio",
- "voice-audio",
-]
-
-[[package]]
-name = "voice-dbus"
-version = "0.1.0"
-dependencies = [
- "zbus",
-]
-
-[[package]]
-name = "voice-loop"
-version = "0.1.0"
-dependencies = [
- "docket-wire",
- "porter-capability",
- "porter-core",
- "porter-infer",
- "serde",
- "serde_json",
- "speech-provider",
- "voice-wire",
-]
-
-[[package]]
-name = "voice-pipewire"
-version = "0.1.0"
-dependencies = [
- "pipewire",
- "serde",
- "serde_json",
- "tokio",
- "voice-audio",
-]
-
-[[package]]
-name = "voice-wire"
-version = "0.1.0"
-dependencies = [
- "docket-vocab",
- "docket-wire",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "voiced"
-version = "0.1.0"
-dependencies = [
- "clap",
- "docket-dbus",
- "docket-log",
- "docket-procroot",
- "docket-testbus",
- "docket-vocab",
- "docket-wire",
- "futures-util",
- "inferd-client",
- "porter-capability",
- "porter-core",
- "porter-ids",
- "porter-infer",
- "porter-match",
- "serde",
- "serde_json",
- "speech-provider",
- "speech-vad",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml 1.1.6+spec-1.1.0",
- "tracing",
- "voice-audio",
- "voice-dbus",
- "voice-loop",
- "voice-pipewire",
- "voice-wire",
- "zbus",
- "zbus-ready",
-]
 
 [[package]]
 name = "void"

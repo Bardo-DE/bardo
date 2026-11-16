@@ -11,7 +11,7 @@ publish = false
 [dependencies]
 anyview-core = {path = "../anyview-core"}
 anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}
-bayonet = {default-features = false, features = ["host"], path = "../../../bayonet"}
+plugin-host = {default-features = false, features = ["host"], path = "../../../plugin/plugin-host"}
 serde = {version = "1", features = ["derive"]}
 thiserror = {version = "2"}
 

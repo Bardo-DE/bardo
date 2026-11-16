@@ -1,0 +1,90 @@
+//! The records companiond keeps of its own sessions (`companion-wire`'s `SessionRecord`), written
+//! through the router (`Session.Note`) so a restart can rebuild the roster and the front task.
+//! A record that cannot be written costs only that rebuild: nothing waits on it.
+
+use crate::best_effort::best_effort;
+use crate::runtime::{Companion, Notes};
+use crate::seams::Surface;
+use memory_core::JsonText;
+use companion_wire::SessionRecord;
+use action_client::Transport as IntentsTransport;
+use agent_planner::Planner;
+use action_vocab::{Clock, NoteSlug};
+use action_wire::{NoteAsk, SessionNote, TaskLedger, skeleton_of};
+use provenance::{SessionId, TaskId};
+
+/// The record as the router stores it: its slug and its serde JSON.
+pub(crate) fn note_of(record: &SessionRecord) -> Option<NoteAsk> {
+    let slug = NoteSlug::parse(record.slug()).ok()?;
+    let json = JsonText::parse(&serde_json::to_string(record).ok()?).ok()?;
+    Some(NoteAsk::Record(SessionNote { slug, json }))
+}
+
+impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
+    /// Writes `record` for `session`. A router that does not answer is not waited for twice.
+    pub(crate) async fn record(&self, session: &SessionId, record: &SessionRecord) {
+        if self.notes == Notes::Silent {
+            return;
+        }
+        if let Some(note) = note_of(record) {
+            let written = self.intents.session_note(session.clone(), note).await;
+            best_effort("session.note.record", session, written);
+        }
+    }
+
+    /// A `companion.skill.load` that succeeded: the task remembers the skill (its `uses` go first
+    /// in the action list, its body stays in the view) and the session record says which and at
+    /// what version. A call of any other action, or an id that is not offered, changes nothing.
+    pub(crate) async fn skill_loaded(
+        &mut self,
+        task: &TaskId,
+        session: &SessionId,
+        call: &action_vocab::CallRequest,
+    ) {
+        let is_load = call.action.app.as_str() == "org.quire.Companion"
+            && call.action.name.as_str() == "companion.skill.load";
+        let id = action_vocab::ParamName::parse("id")
+            .ok()
+            .and_then(|param| call.args.get(&param))
+            .and_then(|a| match &a.value {
+                action_vocab::Value::Text(t) => action_core::SkillId::parse(t).ok(),
+                _ => None,
+            });
+        let (true, Some(id)) = (is_load, id) else {
+            return;
+        };
+        let Some(version) = self.skills.get(&id).map(|s| s.version.clone()) else {
+            return;
+        };
+        // A reload is free and not a new fact: only the first load is recorded.
+        match self.runtimes.get_mut(task) {
+            Some(rt) if !rt.loaded.contains(&id) => rt.loaded.push(id.clone()),
+            _ => return,
+        }
+        let record = SessionRecord::SkillLoaded {
+            task: task.clone(),
+            id,
+            version,
+        };
+        self.record(session, &record).await;
+    }
+
+    /// What the task has done so far, as a typed digest: the skeleton of its ledger.
+    pub(crate) fn digest_of(&self, task: &TaskId) -> Option<memory_core::Skeleton> {
+        let rt = self.runtimes.get(task)?;
+        Some(skeleton_of(&TaskLedger {
+            task: task.clone(),
+            agent: rt.agent.clone(),
+            parent: rt
+                .parent
+                .as_ref()
+                .and_then(|p| memory_core::EpisodeId::parse(p.as_str()).ok()),
+            space: rt.space.clone(),
+            started: rt.started,
+            asked: rt.turns.clone(),
+            steps: rt.steps.clone(),
+            touched: vec![],
+            results: vec![],
+        }))
+    }
+}

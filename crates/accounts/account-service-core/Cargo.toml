@@ -1,0 +1,26 @@
+[package]
+name = "account-service-core"
+description = "What the service domains share: the registry and its pure answers, the audit trail, the sheets seam, the reach policy, the per-account turns at an issuer, and the context (the seams and the registry) every domain works on."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+account-match = {path = "../account-match"}
+account-capability = {path = "../account-capability"}
+account-sheet = {path = "../account-sheet"}
+account-wire = {path = "../account-wire"}
+account-ids = {path = "../account-ids"}
+account-provider = {path = "../account-provider"}
+account-secrets = {path = "../account-secrets"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

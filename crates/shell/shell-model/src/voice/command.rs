@@ -1,0 +1,68 @@
+//! What tells the voice service things, what happens in it, and what that asks of the outside.
+
+use agent_voice_wire::{CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal, VoiceTrigger};
+
+use super::model::{AskScope, ConsentAnswer, VoiceParams};
+use crate::companion::AskInput;
+
+/// What the daemon and the surfaces tell the service.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum VoiceCommand {
+    /// The settings changed.
+    Params(VoiceParams),
+    /// The hold began, over `scope`.
+    Start {
+        /// What was focused.
+        scope: AskScope,
+        /// What began it.
+        trigger: VoiceTrigger,
+    },
+    /// The key was let go: finish and send.
+    Stop,
+    /// Discard everything, for `cause`: Escape, other input, focus lost or the shell.
+    Cancel(CancelCause),
+    /// The note was read.
+    Dismiss,
+    /// The consent sheet was answered.
+    Answer(ConsentAnswer),
+}
+
+/// What happens in the service.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum VoiceEvent {
+    /// The service was told something.
+    Told(VoiceCommand),
+    /// The shell's seat was taken or given up.
+    Reached(bool),
+    /// `Begin` returned: the utterance exists.
+    Began,
+    /// `voiced` refused `Begin`.
+    Refused(VoiceRefusal),
+    /// `Begin` could not be asked.
+    Unreachable,
+    /// A frame of the utterance's stream.
+    Frame(Frame),
+    /// The utterance's `Ended` signal (it carries no words).
+    Ended(UtteranceEnd),
+    /// The stream closed.
+    StreamClosed,
+    /// The stream sent a frame over the size cap and was closed: it cannot be followed on.
+    StreamBroken,
+    /// `voiced` refused our `Cancel` as malformed: the microphone may still be open.
+    CancelRefused,
+}
+
+/// What the service must do outside the pure state.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum VoiceEffect {
+    /// Call `Voice1.Begin`.
+    Begin(VoiceTrigger),
+    /// Call `Utterance.Release`.
+    Release,
+    /// Call `Utterance.Cancel` with this cause.
+    Cancel(CancelCause),
+    /// Write the answer to the sheet into the settings.
+    Record(ConsentAnswer),
+    /// Give the companion the question.
+    Ask(AskInput),
+}

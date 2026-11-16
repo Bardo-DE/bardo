@@ -1,0 +1,29 @@
+[package]
+name = "account-sheets"
+description = "The bus side of porter's sheets, for the daemon that shows one: BusSheets draws a sheet in the sheet host over org.quire.AccountsSheet1, AppNames says what a person calls an app, and RequestObjects serves the portal-shaped Request object of a sheet method for accountd."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+account-capability = {path = "../account-capability"}
+account-sheet = {path = "../account-sheet"}
+account-wire = {path = "../account-wire"}
+account-callers = {path = "../account-callers"}
+account-dbus = {path = "../account-dbus"}
+account-provider = {path = "../account-provider"}
+account-service-core = {path = "../account-service-core"}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

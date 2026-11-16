@@ -4,7 +4,7 @@ use crate::error::ProvisionFault;
 use crate::handles::Handles;
 use anyview_core::{FormatKind, Mime};
 use anyview_plugin_protocol::Capability;
-use bayonet::manifest::{Entry, PathReach, PathRole, Provides, Refusal, absolute};
+use plugin_host::manifest::{Entry, PathReach, PathRole, Provides, Refusal, absolute};
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 

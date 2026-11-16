@@ -1,0 +1,33 @@
+[package]
+name = "account-client-dbus"
+description = "The bus transport of porter-client: accountd on the session bus, for an app that lets accountd hold its accounts."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-client = {path = "../account-client"}
+account-core = {path = "../account-core"}
+account-wire = {path = "../account-wire"}
+account-capability = {path = "../account-capability"}
+account-match = {path = "../account-match"}
+account-dbus = {path = "../account-dbus"}
+account-ids = {path = "../account-ids"}
+account-tailscale = {path = "../account-tailscale"}
+futures-util = {version = "0.3", default-features = false}
+serde_json = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+thiserror = {version = "2"}
+zeroize = {version = "1"}
+
+[dev-dependencies]
+# `sealed_key` and a memfd: the credential tests hand a key over as the daemon does.
+account-secrets = {path = "../account-secrets"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

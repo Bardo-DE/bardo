@@ -1,0 +1,209 @@
+//! Render a Dioxus root component to `image::RgbaImage` buffers with no Wayland connection,
+//! no window and no GPU surface. This is the CI gate for every future surface: every
+//! `examples/demo_*.rs` and every quire component eventually gets a `render_png` snapshot
+//! test.
+//!
+//! Pipeline, per the plan's "Custom host" findings: build a [`DioxusDocument`] from a plain
+//! Dioxus component, drain its initial async work, then for each requested timestamp call
+//! `resolve(t)` (which drives Stylo's `DocumentAnimationSet`, so `transition`/`@keyframes`
+//! progress is a pure function of the timestamp we pass in, not of wall-clock time) followed
+//! by `paint_scene` and a CPU (`anyrender_vello_cpu`) readback. There is no window, so there is
+//! nothing to present and nothing to poll for input.
+
+use std::path::{Path, PathBuf};
+
+use anyrender::render_to_buffer;
+use anyrender_vello_cpu::VelloCpuImageRenderer;
+use blitz_dom::{Document, DocumentConfig, FontContext};
+use blitz_paint::paint_scene;
+use blitz_traits::shell::{ColorScheme, Viewport};
+use dioxus::core::Element;
+use dioxus::core::VirtualDom;
+use dioxus_native_dom::DioxusDocument;
+use image::RgbaImage;
+
+use crate::dom::document::BODY_RESET;
+use crate::scale::Scale120;
+use blitz_embed::fonts::{FontFaces, SharedFonts};
+
+/// `DioxusDocument::poll` is driven until it reports no further pending work, capped so a
+/// component whose effects never settle (a bug, not a feature) cannot hang a render.
+const MAX_POLL_ITERATIONS: u32 = 32;
+
+/// A framebuffer size in physical pixels.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PixelSize {
+    pub width: u32,
+    pub height: u32,
+}
+
+impl PixelSize {
+    pub fn new(width: u32, height: u32) -> Self {
+        Self { width, height }
+    }
+}
+
+/// Which fonts a headless render has available. `Bundled` is the reproducible choice for a
+/// snapshot test: it registers exactly the given faces and turns system font discovery off, so
+/// a render does not vary with whatever happens to be installed on the machine that runs it, and
+/// (unlike the old single-arbitrary-TTF path this replaced) uses the same face list a real
+/// surface would get from `HostConfig::fonts` — see [`bundled_faces`] for shell-host's own
+/// fixtures, which have no design system of their own to point at.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Fonts {
+    /// Register these faces and disable system font discovery.
+    Bundled(FontFaces),
+    /// Discover system fonts normally (matches what a real on-screen surface sees).
+    System,
+}
+
+/// Configuration for [`render_png`].
+#[derive(Debug, Clone)]
+pub struct HeadlessConfig {
+    pub size: PixelSize,
+    pub scale: Scale120,
+    pub color_scheme: ColorScheme,
+    /// One output image per timestamp, fed to `BaseDocument::resolve` in order.
+    pub at_seconds: Vec<f64>,
+    pub fonts: Fonts,
+}
+
+/// Render `root` headlessly, once per timestamp in `config.at_seconds`, returning one image
+/// per timestamp in the same order.
+///
+/// Builds a [`DioxusDocument`] from `root`, polls it to idle (bounded, see
+/// [`MAX_POLL_ITERATIONS`]), then for each timestamp resolves style/layout at that time,
+/// paints the resolved document into a scene, and rasterizes that scene on the CPU
+/// (`anyrender_vello_cpu`) into an RGBA8 buffer.
+///
+/// A custom [`blitz_dom::Widget`] on this path receives a CPU
+/// [`anyrender::RenderContext`], whose `renderer_specific_context` is `None` (no wgpu
+/// device) — a widget written against the wgpu texture pattern (see `tests/gpu.rs`'s `Swatch`)
+/// will render as fully transparent here. That is expected: this function exists to snapshot
+/// ordinary document content and CSS motion, not to exercise a widget's GPU path.
+pub fn render_png(root: fn() -> Element, config: HeadlessConfig) -> Vec<RgbaImage> {
+    let HeadlessConfig {
+        size,
+        scale,
+        color_scheme,
+        at_seconds,
+        fonts,
+    } = config;
+
+    let viewport = Viewport::new(size.width, size.height, scale.factor() as f32, color_scheme);
+    let mut doc = DioxusDocument::new(
+        VirtualDom::new(root),
+        DocumentConfig {
+            viewport: Some(viewport),
+            font_ctx: Some(build_font_context(fonts)),
+            ..Default::default()
+        },
+    );
+    doc.inner_mut().add_user_agent_stylesheet(BODY_RESET);
+
+    doc.initial_build();
+    for _ in 0..MAX_POLL_ITERATIONS {
+        if !doc.poll(None) {
+            break;
+        }
+    }
+
+    at_seconds
+        .into_iter()
+        .map(|t| render_frame(&mut doc, t, size, scale))
+        .collect()
+}
+
+fn render_frame(doc: &mut DioxusDocument, t: f64, size: PixelSize, scale: Scale120) -> RgbaImage {
+    let mut inner = doc.inner.borrow_mut();
+    // The live path's order: the root's scheme first, so a switch rebuilds every box.
+    crate::dom::scheme::follow_root(&mut inner);
+    inner.resolve(t);
+    // The same re-hoist the live path does after every resolve.
+    crate::dom::stacking::rehoist(&mut inner);
+
+    let buffer = render_to_buffer::<VelloCpuImageRenderer, _>(
+        |painter| {
+            paint_scene(
+                painter,
+                &mut inner,
+                scale.factor(),
+                size.width,
+                size.height,
+                0,
+                0,
+            )
+        },
+        size.width,
+        size.height,
+    );
+
+    RgbaImage::from_raw(size.width, size.height, buffer)
+        .expect("anyrender::render_to_buffer returns exactly width * height * 4 bytes")
+}
+
+/// One [`FontContext`] per call: `Fonts::Bundled` builds a collection without system fonts
+/// (`SharedFonts::bundled`), because blitz-dom's own default construction hard-codes
+/// `system_fonts` to its `system-fonts` *cargo* feature, which `shell-host`'s pinned dependency
+/// block always enables; supplying `font_ctx` ourselves is the only way to turn it off for a
+/// reproducible render.
+fn build_font_context(fonts: Fonts) -> FontContext {
+    match fonts {
+        Fonts::System => SharedFonts::system(),
+        Fonts::Bundled(faces) => SharedFonts::bundled(&faces),
+    }
+    .for_document()
+}
+
+/// A `Fonts::Bundled` face list for shell-host's own examples and tests, which (unlike a real
+/// shell) bundle no design system of their own to pass through `HostConfig::fonts`.
+///
+/// Prefers `~/quire/crates/ds/assets/fonts` (quire's own bundled faces); falls back to the first
+/// TTF under `/usr/share/fonts` in sorted path order, deterministic on a given machine but not
+/// portable across machines with a different font package set. Panics if neither location has a
+/// usable font — a render with no glyphs at all is a broken environment, not a value this
+/// function can return. Leaks the bytes to get `&'static [u8]` (`FontFaces`' bound): fine for a
+/// one-time test/example fixture, not something a real host's hot path does.
+pub fn bundled_faces() -> FontFaces {
+    let quire_fonts = home_dir().join("quire/crates/ds/assets/fonts");
+    let path = first_ttf_sorted(&quire_fonts)
+        .or_else(|| first_ttf_sorted(Path::new("/usr/share/fonts")))
+        .expect("at least one system TTF font is installed at /usr/share/fonts");
+    let bytes = std::fs::read(&path).expect("bundled font file is readable");
+    eprintln!(
+        "shell-host::headless: bundled_faces registered {}",
+        path.display()
+    );
+    FontFaces(vec![Box::leak(bytes.into_boxed_slice())])
+}
+
+fn home_dir() -> PathBuf {
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .unwrap_or_default()
+}
+
+fn first_ttf_sorted(dir: &Path) -> Option<PathBuf> {
+    let mut ttfs: Vec<PathBuf> = walk_ttfs(dir);
+    ttfs.sort();
+    ttfs.into_iter().next()
+}
+
+fn walk_ttfs(dir: &Path) -> Vec<PathBuf> {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return Vec::new();
+    };
+    let mut found = Vec::new();
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.is_dir() {
+            found.extend(walk_ttfs(&path));
+        } else if path
+            .extension()
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("ttf"))
+        {
+            found.push(path);
+        }
+    }
+    found
+}

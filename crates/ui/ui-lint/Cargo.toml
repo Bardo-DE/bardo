@@ -1,0 +1,21 @@
+[package]
+name = "ui-lint"
+description = "The design system's stylesheet and markup linter: reads its vocabulary from Kits and tokenizes with cssparser."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ui-core = {path = "../ui-core"}
+ui-style = {path = "../ui-style", default-features = false}
+cssparser = {version = "0.37"}
+
+[dev-dependencies]
+ui-components = {path = "../ui-components"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

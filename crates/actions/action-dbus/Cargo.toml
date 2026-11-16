@@ -1,0 +1,45 @@
+[package]
+name = "action-dbus"
+description = "org.quire.Intents1, IntentProvider1, Confirm1, Companion1 and Reader1 as zbus proxies and skeletons, their introspection, bus names and the error mapping."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest"}
+action-vocab = {path = "../action-vocab"}
+provenance = {path = "../../provenance/provenance"}
+account-callers = {features = ["file"], path = "../../accounts/account-callers"}
+account-dbus = {path = "../../accounts/account-dbus"}
+inference-client = {features = ["dbus"], optional = true, path = "../../inference/inference-client"}
+inference-dbus = {path = "../../inference/inference-dbus"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {optional = true, path = "../../inference/inference-core"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+thiserror = {version = "2"}
+
+[features]
+# `inferd_transport`: the one place a daemon makes its inferd link (intentd, companiond, readerd),
+# and the watch on it that a live run turns on (`watch`; docket-trace is the watcher).
+inferd = ["dep:inference-client", "dep:inference-core"]
+# Callers read from a fixture tree standing for /proc and the unit manager (`Identity::on_fixture`):
+# porter reads one only in a test build. Turned on by docket-accept and by tests' dev-dependencies,
+# never by a shipped crate (check-boundary.sh checks every shipped package's feature tree).
+fixture-callers = ["account-callers/test-proc-root"]
+
+[dev-dependencies]
+action-dbus = { path = ".", features = ["fixture-callers"] }
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

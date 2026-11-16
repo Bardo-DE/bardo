@@ -1,0 +1,39 @@
+[package]
+name = "sandbox"
+description = "Run a command or an agent process confined by bubblewrap: read-only root, one writable directory, no network unless given, and a kill that takes the whole sandbox."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/bulkhead"
+readme = "README.md"
+publish = false
+
+[[bin]]
+name = "bulkhead-forward"
+path = "src/bin/bulkhead-forward.rs"
+
+[[bin]]
+name = "bulkhead-enter"
+path = "src/bin/bulkhead-enter.rs"
+required-features = ["landlock"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+landlock = { version = "0.4", optional = true }
+
+[features]
+# The exec stage's Landlock calls (`enter::apply`, `enter::enter_main` and the `bulkhead-enter`
+# binary). Off by default: a crate that only builds the agent's command line (the plan, the argv,
+# the report line) links no sandbox library; the binary that IS the exec stage turns it on.
+landlock = ["dep:landlock"]
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

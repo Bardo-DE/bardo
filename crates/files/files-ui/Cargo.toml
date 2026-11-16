@@ -1,0 +1,65 @@
+[package]
+name = "files-ui"
+description = "The window of files: a Finder-like folder view drawn only with quire's components."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/files"
+publish = false
+
+[features]
+# `FakeVolumes`, for tests of this crate and of the binary around it.
+testing = []
+
+[dependencies]
+anyview-core = {path = "../../anyview/crates/anyview-core"}
+anyview-fs = {path = "../../anyview/crates/anyview-fs"}
+# The picture of a file for the icon view: scaled and encoded here, kept in the shared thumbnail cache below.
+anyview-image = {path = "../../anyview/crates/anyview-image"}
+# The `pane` feature is the card that draws a peek (mailo's choice); no `media`, so no player.
+anyview-peek = {default-features = false, features = ["pane"], path = "../../anyview/crates/anyview-peek"}
+# The shared thumbnail cache's trait (and its freedesktop implementation, which the binary builds).
+anyview-platform = {path = "../../anyview/crates/anyview-platform"}
+keymap = {path = "../../keymap/keymap"}
+chrono = {version = "0.4", default-features = false, features = ["std", "clock"]}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+ui-components = {path = "../../ui/ui-components"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+ui-extensions = {path = "../../ui/ui-extensions"}
+ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+ui-settings = {features = ["dioxus"], path = "../../ui/ui-settings"}
+files-core = {path = "../files-core"}
+files-fs = {path = "../files-fs"}
+files-model = {path = "../files-model"}
+files-ops = {path = "../files-ops"}
+files-trash = {path = "../files-trash"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
+
+[dev-dependencies]
+files-ui = { path = ".", features = ["testing"] }
+# `FakeThumbnails`, the cache in memory.
+anyview-platform = {features = ["testing"], path = "../../anyview/crates/anyview-platform"}
+ui-harness = {path = "../../ui/ui-harness"}
+ui-lint = {path = "../../ui/ui-lint"}
+files-fs = {path = "../files-fs", features = ["testing"]}
+files-trash = {path = "../files-trash", features = ["testing"]}
+tempfile = {version = "3"}
+toml = {version = "1"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

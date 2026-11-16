@@ -1,0 +1,49 @@
+[package]
+name = "action-router"
+description = "The pure router: `Router` and the seams the daemon passes in, over docket-context (what it remembers) and docket-gate (the pure steps of a call)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+companion-model = {path = "../companion-model"}
+action-checkpoint = {path = "../action-checkpoint"}
+action-context = {path = "../action-context"}
+action-core = {path = "../action-core"}
+action-gate = {path = "../action-gate"}
+action-wire = {path = "../action-wire"}
+action-gate-wire = {path = "../action-gate-wire"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+agent-session = {path = "../agent-session"}
+agent-skills = {path = "../agent-skills"}
+permission-policy = {path = "../permission-policy"}
+action-review = {path = "../action-review"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+memory-core = {path = "../../memory/memory-core"}
+thiserror = {version = "2"}
+serde_json = {version = "1"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+sandbox = {path = "../../sandbox/sandbox"}
+model-provider = {path = "../../models/model-provider"}
+toml = {version = "1"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+agent-session = {path = "../agent-session", features = ["testing"]}
+action-fake = {path = "../action-fake"}
+action-provider = {path = "../action-provider"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+proptest = {version = "1"}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

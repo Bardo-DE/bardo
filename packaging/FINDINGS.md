@@ -198,7 +198,7 @@ tables at `$sysconfdir/porter`):
   package is needed. Run-time: at-spi2-core (already the `at-spi` row, a recommended need); the cua installer prints a
   note when the accessibility service is missing. No runtime library beyond the ones the other programs already load,
   so `release/deps.sh` is unchanged (the CI check of linked libraries will say if that is wrong).
-- Release: `release/build.sh` has `build_cua` (`cargo build -p cuad`, then the installer with `--bin-dir`, `--prefix
+- Release: `release/build.sh` has `build_cua` (`cargo build -p computer-use-daemon`, then the installer with `--bin-dir`, `--prefix
   /opt/quire/current`, `--destdir <stage>`, `--sysconfdir /opt/quire/current/system/etc`). Everything it stages is in an
   exported folder (`libexec/quire` and `share/dbus-1/interfaces` stay in the bundle without links, as docket's do) or is
   the one system file `system/etc/quire/cuad-callers.toml`, in `/etc/quire`, an allowed system folder; no new folder is

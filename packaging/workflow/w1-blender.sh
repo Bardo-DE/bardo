@@ -74,15 +74,15 @@ print_build() {
   cat <<EOF
 # Run these one at a time, nice, from the folder holding the checkouts ($SIB).
 # 1. the desktop window (a plain build: a test build refuses to run outside the jail)
-(cd $SIB/casement && CARGO_TARGET_DIR=$T_CASEMENT nice cargo build -p casement -p casementctl)
+(cd $SIB/casement && CARGO_TARGET_DIR=$T_CASEMENT nice cargo build -p compositor-app -p compositor-ctl)
 # 2. the stand-in for the system's login service, in a folder of its own so test features do not reach step 1
-(cd $SIB/casement && CARGO_TARGET_DIR=$T_TOOLS nice cargo build -p casement-testkit --bin fake-logind)
+(cd $SIB/casement && CARGO_TARGET_DIR=$T_TOOLS nice cargo build -p compositor-testkit --bin fake-logind)
 # 3. the shell (bar, dock, launcher)
-(cd $SIB/sill && CARGO_TARGET_DIR=$T_SILL nice cargo build -p sill --features debug)
+(cd $SIB/sill && CARGO_TARGET_DIR=$T_SILL nice cargo build -p shell-app --features debug)
 # 4. the screen helper
-(cd $SIB/cua && CARGO_TARGET_DIR=$T_CUA nice cargo build -p cuad --features fixture-callers)
+(cd $SIB/cua && CARGO_TARGET_DIR=$T_CUA nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command
-(cd $SIB/docket && CARGO_TARGET_DIR=$T_DOCKET nice cargo build -p docket-accept --bins)
+(cd $SIB/docket && CARGO_TARGET_DIR=$T_DOCKET nice cargo build -p action-accept --bins)
 EOF
 }
 

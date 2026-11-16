@@ -4,9 +4,9 @@ use anyview_archive::{ArchivePeeked, EntryKind};
 use anyview_core::FactValue;
 use anyview_text::{RowLabel, TablePeeked, TreePeeked, TreeRow};
 use dioxus::prelude::*;
-use ds::components::lists::table::model::{TableColumn, TableRow};
-use ds::components::lists::table::view::Table;
-use ds::prelude::Px;
+use ui_components::components::lists::table::model::{TableColumn, TableRow};
+use ui_components::components::lists::table::view::Table;
+use ui_components::prelude::Px;
 
 /// The most columns the card draws; the facts say how many the table has.
 const MAX_COLUMNS: usize = 6;

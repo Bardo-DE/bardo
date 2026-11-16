@@ -1,0 +1,31 @@
+[package]
+name = "action-provider"
+description = "The app side of org.quire.Intents1: the IntentProvider, ContextSource and SummonTarget traits an app implements, and (behind the dbus feature) serve and serve_on, which answer org.quire.IntentProvider1 on the app's own bus name. The caller side is docket-client."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest"}
+action-vocab = {path = "../action-vocab"}
+action-dbus = {path = "../action-dbus", optional = true}
+futures-util = {version = "0.3", default-features = false, features = ["std"], optional = true}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"], optional = true}
+serde_json = {version = "1", optional = true}
+thiserror = {version = "2"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+zbus-ready = {path = "../../zbus-ready", optional = true}
+
+[features]
+# `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's intentd calls it).
+dbus = ["dep:action-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus", "dep:zbus-ready"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

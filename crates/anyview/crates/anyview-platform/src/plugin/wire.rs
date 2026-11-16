@@ -3,7 +3,7 @@
 
 use anyview_plugin::Provision;
 use anyview_plugin_protocol::{Capability, HostMessage, PROTOCOL_VERSION, PluginMessage};
-use bayonet::run::{Greeting, Protocol};
+use plugin_host::run::{Greeting, Protocol};
 
 /// Protocol version 1 between the viewer and its plugins.
 #[derive(Debug, Clone, Copy)]

@@ -1,0 +1,24 @@
+[package]
+name = "account-family-kit"
+description = "What the protocol families are written with: the one sign-in conversation every family drives (Flow, Move, Conversation), the seams a password family dials through, and the form and credential helpers the Nextcloud and generic families share."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+account-provider = {path = "../account-provider"}
+account-sheet = {path = "../account-sheet"}
+account-http = {path = "../account-http"}
+base64 = {version = "0.22"}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

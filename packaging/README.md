@@ -85,4 +85,4 @@ The lane gate for the tree is `~/rs-wt/gate-lane-jailed.sh <tree dir>` (it hands
 and the nextest archive build outside, the tests inside `harness/jail.sh`.
 
 Conventions: the casement-scope plan (`~/rs-wt/compositor-scope/20-FREEZE-PLAN.md`) sections 3, 4.14
-and 6; shell code follows the style of `crates/sill/dev/lib`.
+and 6; shell code follows the style of `crates/shell/dev/lib`.

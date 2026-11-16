@@ -101,7 +101,7 @@ retarget() {
 
 build_casement() {
   local d; d=$(repo_dir casement)
-  cargo_in -p casement -p casementctl
+  cargo_in -p compositor-app -p compositor-ctl
   # INTERIM: casement has no installer here; it ships dist/casement.service with ExecStart=/usr/bin/casement
   # $CASEMENT_SESSION_ARGS (retarget keeps the arguments). The unit is root-held, as the account service requires of a fixed
   # role: staged in lib/systemd/user here, and made a plain system file at /usr/lib/systemd/user by plain_units below.
@@ -118,7 +118,7 @@ build_casement() {
 
 build_sill() {
   local d; d=$(repo_dir sill)
-  cargo_in -p sill
+  cargo_in -p shell-app
   # INTERIM: dist/install.sh has fixed destinations and sudo. Same files, under the prefix; the PAM
   # service is a system file (slipway-apply places it), and the keycap layer sits under share/sill
   # (FINDINGS.md).
@@ -173,7 +173,7 @@ build_session() {
 
 build_porter() {
   local d; d=$(repo_dir porter)
-  cargo_in -p accountd
+  cargo_in -p account-daemon
   # --sysconfdir under the bundle's system tree: the caller table lands at system/etc/porter/callers.toml, a system
   # file slipway-apply places at /etc/porter/ (where porter reads it).
   (cd "$d" && CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" \
@@ -182,7 +182,7 @@ build_porter() {
 
 build_steward() {
   local d; d=$(repo_dir steward)
-  cargo_in -p inferd
+  cargo_in -p inference-daemon
   # Same as porter's: system/etc/porter/inferd-callers.toml, a system file slipway-apply places at /etc/porter/.
   (cd "$d" && CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" \
     ./scripts/install.sh --no-build --prefix "$P" --destdir "$stage" --sysconfdir "$P/system/etc")
@@ -190,7 +190,7 @@ build_steward() {
 
 build_ferry() {
   local d; d=$(repo_dir ferry)
-  cargo_in -p syncd -p ferry-mountd
+  cargo_in -p sync-daemon -p drive-mount-daemon
   # ferry's installer has no --sysconfdir (it writes nothing under /etc: syncd's caller row is in porter's table). The units and
   # the activation file name the prefix's libexec.
   (cd "$d" && CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" \
@@ -207,7 +207,7 @@ build_stoker() {
 
 build_almanac() {
   local d; d=$(repo_dir almanac)
-  cargo_in -p memoryd
+  cargo_in -p memory-daemon
   # The caller table
   # lands at system/etc/quire/memory-callers.toml, a system file slipway-apply places at /etc/quire. The unit and the
   # activation file name the prefix's libexec. Built above, so the installer only installs (--bin-dir).
@@ -216,7 +216,7 @@ build_almanac() {
 
 build_docket() {
   local d; d=$(repo_dir docket)
-  cargo_in -p intentd -p companiond -p readerd -p actions-mcp -p docket-cli -p docket-acp-bin
+  cargo_in -p action-daemon -p companion-daemon -p agent-reader-daemon -p action-mcp -p action-cli -p agent-acp-bin
   # The caller tables land at system/etc/quire/*-callers.toml
   # and the default settings at system/etc/xdg/quire/, both system files slipway places (/etc/xdg/quire needs
   # slipway >= aa427f2). Not built with --with-voice (the voice daemon needs the sound and clang development packages).
@@ -225,7 +225,7 @@ build_docket() {
 
 build_cua() {
   local d; d=$(repo_dir cua)
-  cargo_in -p cuad
+  cargo_in -p computer-use-daemon
   # The daemon lands in libexec/quire, the unit (with its
   # protections) in lib/systemd/user, the activation files in share/dbus-1/services and the Settings schema in
   # share/quire/settings, all exported folders; the interface XML in share/dbus-1/interfaces stays in the bundle
@@ -236,7 +236,7 @@ build_cua() {
 
 build_detent() {
   local d; d=$(repo_dir detent)
-  cargo_in -p detent
+  cargo_in -p settings-app
   CARGO_TARGET_DIR="${CARGO_TARGET_ROOT:-$out/target}" "$ROOT/install.sh" --tree "$tree" --prefix "$P" --destdir "$stage" --no-build --only detent
 }
 
@@ -249,7 +249,7 @@ build_files() {
 
 build_transom() {
   local d; d=$(repo_dir transom)
-  cargo_in -p transom
+  cargo_in -p portal-daemon
   # The portal backend (screen sharing, screenshots). Same files and places as transom's scripts/install.sh,
   # under the prefix: the program in libexec, the user unit in lib/systemd/user, the D-Bus activation file
   # and the portal file in the exported share directories (pack.sh links those under /usr). Both the unit and
@@ -269,13 +269,13 @@ build_transom() {
 
 build_turnstile() {
   local d; d=$(repo_dir turnstile)
-  # The root service that makes palmrest's and keycap's virtual input devices. Only the daemon is built (-p turnstile,
+  # The root service that makes palmrest's and keycap's virtual input devices. Only the daemon is built (-p input-broker-daemon,
   # no feature: its `fake` kernel and identity are for its tests and never ship; gate/check-no-fake.sh). The program is
   # exported to /usr/local/bin/turnstile (exports.toml), which the unit starts as shipped. The four files are system
   # files (turnstile's lane named them; slipway's list has them since its input-service change): the socket and the
   # service in the vendor folder, the rule that makes /dev/uinput root-only and takes the `uaccess` tag off it, and the
   # module list. Nothing here gives the node to the person or to the `input` group.
-  cargo_in -p turnstile
+  cargo_in -p input-broker-daemon
   put 755 "$(tdir)/turnstile" bin/turnstile
   put_system 644 "$d/dist/turnstile.socket" /usr/lib/systemd/system/turnstile.socket
   put_system 644 "$d/dist/turnstile.service" /usr/lib/systemd/system/turnstile.service
@@ -285,7 +285,7 @@ build_turnstile() {
 
 build_keycap() {
   local d; d=$(repo_dir keycap)
-  cargo_in -p keycap
+  cargo_in -p key-remap-daemon
   # INTERIM: install.sh stages under DESTDIR but at /etc and /usr/local, outside the prefix. The unit and the polkit
   # rule are system files (slipway-apply places them); the unit goes to /usr/lib/systemd/system (the vendor folder; /etc
   # stays the administrator's). On the desktop the input service (turnstile) owns /dev/uinput and hands keycap each
@@ -305,7 +305,7 @@ build_keycap() {
 
 build_palmrest() {
   local d; d=$(repo_dir palmrest)
-  cargo_in -p palmrest
+  cargo_in -p mouse-gestures-daemon
   # INTERIM: install.sh stages under DESTDIR but at /etc and /usr/local, outside the prefix. palmrest is a system service like
   # keycap (owner decision 2026-10-17): its unit is a system file in /usr/lib/systemd/system, staged as palmrest ships it,
   # starting /usr/local/bin/palmrest, the link exports.toml makes to bin/palmrest (that is also what install/system.sh writes at
@@ -322,7 +322,7 @@ build_slipway() {
   local d; d=$(repo_dir slipway)
   # slipway-root is the crate of the three programs that run as root (slipway-apply, slipway-rollback,
   # slipway-health); they are built here, in the same target folder, so the workflow can hand them to the smoke job.
-  cargo_in -p slipway -p slipway-root
+  cargo_in -p updater-daemon -p updater-root
   # INTERIM: slipway's scripts/install.sh installs the helpers, polkit action, unit and bus file on a machine
   # (first install, release/bootstrap.sh); the release carries only the user program. slipway-apply,
   # slipway-rollback and slipway-health are not in the bundle: a release must not replace a binary that runs as root.

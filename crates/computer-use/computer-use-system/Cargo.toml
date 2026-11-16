@@ -1,0 +1,41 @@
+[package]
+name = "computer-use-system"
+description = "The system adapters of computer use: the real seams of a running desktop (casement's desktop, capture over wayland, input over EIS, the AT-SPI tree), the model over inferd, and the links to the router's gate and memoryd. The daemon in cuad wires them."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+desktop-client = {features = ["client"], path = "../../wayland/desktop-client"}
+computer-use-capture = {path = "../computer-use-capture"}
+computer-use-capture-wayland = {path = "../computer-use-capture-wayland"}
+computer-use-seat-input = {path = "../computer-use-seat-input"}
+computer-use-seat-ei = {path = "../computer-use-seat-ei"}
+computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
+computer-use-a11y-atspi = {path = "../computer-use-a11y-atspi"}
+computer-use-run = {path = "../computer-use-run"}
+computer-use-host = {path = "../computer-use-host"}
+action-client = {default-features = false, features = ["dbus"], path = "../../actions/action-client"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
+memory-client = {default-features = false, features = ["dbus"], path = "../../memory/memory-client"}
+wayland-client = {version = "0.31"}
+rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+computer-use-action = {path = "../computer-use-action"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

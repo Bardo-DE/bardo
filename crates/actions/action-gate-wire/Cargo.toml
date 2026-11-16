@@ -1,0 +1,20 @@
+[package]
+name = "action-gate-wire"
+description = "The computer-use gate's wire: the ask `cuad` sends to `Intents1.Gate.Check` for each pixel step (`CuaAsk`, `NodeFacts`, `EffectBasis`) and the router's answer (`GateAnswer`). Sits above docket-core, whose `CallRefusal` the answer holds."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+computer-use-action = {path = "../../computer-use/computer-use-action"}
+action-core = {path = "../action-core"}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

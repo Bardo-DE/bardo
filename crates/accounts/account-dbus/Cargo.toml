@@ -1,0 +1,32 @@
+[package]
+name = "account-dbus"
+description = "porter's D-Bus API: accountd's interfaces (org.quire.Accounts1, Identities1, Spaces1, Tailnet1 and the AI keys'), each written once, as the zbus proxy its callers use, the trait a daemon implements and the object that serves it."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-core = {path = "../account-core"}
+account-tailscale = {path = "../account-tailscale"}
+account-wire = {path = "../account-wire"}
+account-dbus-macros = {path = "../account-dbus-macros"}
+account-ids = {path = "../account-ids"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+# The caller's runtime (`accounts::pending`); zbus already runs on tokio here.
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+proptest = {version = "1"}
+# The test runtime.
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+account-capability = {path = "../account-capability"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

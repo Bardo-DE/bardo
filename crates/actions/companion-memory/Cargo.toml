@@ -1,0 +1,39 @@
+[package]
+name = "companion-memory"
+description = "docket's memory seam over a transport, portable: `MemoryLink` and `SessionLog` over almanac-client (any Transport: memoryd over D-Bus, or the service hosted in process), `MemoryProvider` (the org.quire.Memory actions as an IntentProvider), and `AuditState`, which drains the audit queue into memory with retry accounting. No bus, no runtime."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+memory-client = {default-features = false, path = "../../memory/memory-client"}
+memory-core = {path = "../../memory/memory-core"}
+action-core = {path = "../action-core"}
+action-manifest = {path = "../action-manifest"}
+action-vocab = {path = "../action-vocab"}
+companion-memory-core = {path = "../companion-memory-core"}
+action-provider = {path = "../action-provider"}
+agent-session = {path = "../agent-session"}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+permission-core = {path = "../permission-core"}
+agent-session = {path = "../agent-session", features = ["testing"]}
+memory-client = {default-features = false, features = ["in_process"], path = "../../memory/memory-client"}
+memory-fake = {path = "../../memory/memory-fake"}
+memory-service = {path = "../../memory/memory-service"}
+action-fake = {path = "../action-fake"}
+action-context = {path = "../action-context"}
+action-router = {path = "../action-router"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+action-wire = {path = "../action-wire"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

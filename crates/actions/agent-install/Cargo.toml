@@ -1,0 +1,35 @@
+[package]
+name = "agent-install"
+description = "Installs coding agents from the agent registry: fetch a pinned version, check it against its digest, unpack it into a directory docket owns, and read and write the records kept there. The values are agents-core. Nothing here runs an agent, and the network is reached only by the install and update commands."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "agent_install"
+path = "src/lib.rs"
+
+[[bin]]
+name = "docket-agents"
+path = "src/main.rs"
+
+[dependencies]
+agent-registry = {path = "../agent-registry"}
+clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+action-store = {path = "../action-store"}
+flate2 = {version = "1"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tar = {version = "0.4"}
+thiserror = {version = "2"}
+zip = {version = "9", default-features = false, features = ["deflate-flate2"]}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,102 @@
+//! The only writes to the folder: deleting the files a restore removes, with the checks that no
+//! path leaves the folder through a link. Blocking; the store runs these on a blocking thread.
+
+use action_core::WorkPath;
+use std::io::ErrorKind;
+use std::path::Path;
+
+/// A path that would reach outside the folder, or a folder that could not be looked at.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+pub(crate) enum Unsafe {
+    /// A folder on the way to the file is a link.
+    #[error("a folder on the way is a link")]
+    Link,
+    /// A folder on the way could not be read.
+    #[error("a folder on the way could not be read")]
+    Unreadable,
+}
+
+/// Fails if any folder between `root` and a file of `paths` is a link: git would refuse to write
+/// through one, and a delete must not follow one out of the folder either.
+pub(crate) fn stay_inside(root: &Path, paths: &[&WorkPath]) -> Result<(), Unsafe> {
+    for path in paths {
+        let steps: Vec<&str> = path.as_str().split('/').collect();
+        let mut here = root.to_path_buf();
+        for step in steps.iter().take(steps.len().saturating_sub(1)) {
+            here.push(step);
+            match std::fs::symlink_metadata(&here) {
+                Ok(meta) if meta.file_type().is_symlink() => return Err(Unsafe::Link),
+                Ok(_) => {}
+                // Nothing here yet, so nothing below it either.
+                Err(why) if why.kind() == ErrorKind::NotFound => break,
+                Err(_) => return Err(Unsafe::Unreadable),
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Deletes `paths` (a path already gone is fine) and then the folders that are left empty by it,
+/// never `root` itself. Each file's folder is resolved (links followed) at the moment of its
+/// delete and must still be inside the resolved `root`, and the delete names the resolved folder,
+/// so a link put in place after `stay_inside` ran is caught; only a swap inside the few
+/// microseconds between that check and the unlink is left (closing it takes `openat`).
+pub(crate) fn delete(root: &Path, paths: &[WorkPath]) -> std::io::Result<()> {
+    let root = root.canonicalize()?;
+    for path in paths {
+        let file = root.join(path.as_str());
+        let (Some(parent), Some(name)) = (file.parent(), file.file_name()) else {
+            continue;
+        };
+        let real = match parent.canonicalize() {
+            Ok(real) => real,
+            // The folder is gone, and so is the file.
+            Err(why) if why.kind() == ErrorKind::NotFound => continue,
+            Err(why) => return Err(why),
+        };
+        if !real.starts_with(&root) {
+            return Err(ErrorKind::PermissionDenied.into());
+        }
+        match std::fs::remove_file(real.join(name)) {
+            Ok(()) => {}
+            Err(why) if why.kind() == ErrorKind::NotFound => {}
+            Err(why) => return Err(why),
+        }
+        let mut folder = Some(real.as_path());
+        while let Some(dir) = folder {
+            if dir == root || !dir.starts_with(&root) || std::fs::remove_dir(dir).is_err() {
+                break;
+            }
+            folder = dir.parent();
+        }
+    }
+    Ok(())
+}
+
+/// Whether `folder` or a folder above it has a `.git` (a folder or a file), looked at without
+/// following a link and without running git.
+pub(crate) fn inside_repository(folder: &Path) -> bool {
+    folder
+        .ancestors()
+        .any(|dir| std::fs::symlink_metadata(dir.join(".git")).is_ok())
+}
+
+/// The person's `.git/info/exclude` of a repository whose top is `root`, if every step on the way
+/// is a real folder and the file is a regular file: git reads it only as patterns. None when the
+/// folder is below the top of its repository, or when a link is in the way.
+pub(crate) fn person_excludes(root: &Path) -> Option<String> {
+    let mut here = root.to_path_buf();
+    for step in [".git", "info"] {
+        here.push(step);
+        if !std::fs::symlink_metadata(&here).ok()?.is_dir() {
+            return None;
+        }
+    }
+    here.push("exclude");
+    let meta = std::fs::symlink_metadata(&here).ok()?;
+    if meta.is_file() {
+        here.to_str().map(str::to_owned)
+    } else {
+        None
+    }
+}

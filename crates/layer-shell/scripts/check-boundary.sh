@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Crate boundaries, mechanically enforced.
+#
+# `cargo tree -i <dep>` exits 101 when the dependency is absent, which is precisely the state
+# we want. Checking the exit status would therefore fail whenever the boundary holds, so we
+# check for OUTPUT instead: any line naming the dependency is a leak.
+#
+# Each rule is "<crate>: <forbidden deps...>". Forbidden names are exact package names; a
+# family such as blitz-* is spelled out member by member.
+set -uo pipefail
+cd "$(dirname "$0")/.."
+
+# shell-host is portable to any Wayland compositor: nothing compositor-specific, D-Bus or PulseAudio. It
+# also stands below the design system and the gesture daemon: nothing of quire's or palmrest's
+# daemon. The palmrest socket's messages come from the `palmrest-protocol` crate, which is not the
+# daemon (`palmrest`, forbidden below) and depends on serde and thiserror only.
+RULES=(
+  "shell-host: zbus libpulse-binding ds-native ds-settings ds-core palmrest"
+)
+fail=0
+
+for rule in "${RULES[@]}"; do
+  crate="${rule%%:*}"
+  read -r -a forbidden <<<"${rule#*:}"
+  # A crate that cargo cannot find would make every check below pass vacuously.
+  if ! cargo tree -p "$crate" --depth 0 >/dev/null 2>&1; then
+    echo "ERROR: cargo tree cannot resolve $crate; the boundary was not checked"
+    fail=1
+    continue
+  fi
+  leaked=0
+  for dep in "${forbidden[@]}"; do
+    if [ -n "$(cargo tree -p "$crate" -i "$dep" -e normal,build 2>/dev/null)" ]; then
+      echo "LEAK: $crate depends on $dep"
+      cargo tree -p "$crate" -i "$dep" -e normal,build 2>/dev/null | head -20
+      leaked=1
+      fail=1
+    fi
+  done
+  if [ "$leaked" -eq 0 ]; then
+    echo "boundary holds: $crate reaches none of ${forbidden[*]}"
+  fi
+done
+
+# The host paints the scroll thumb itself (design/11 §11.3.12): Blitz's own overlay
+# scrollbars (the `scrollbars` feature of blitz-paint / blitz-dom) must stay off, or both would
+# paint and Blitz's thumb drag would write clamped offsets under the engine.
+features=$(cargo tree -p layer-shell-host -e features -i blitz-dom 2>/dev/null)
+if grep -q 'blitz-dom feature "scrollbars"' <<<"$features"; then
+  echo "LEAK: blitz-dom's scrollbars feature is enabled"
+  fail=1
+else
+  echo "blitz scrollbars feature off: the host's thumb is the only one"
+fi
+
+exit "$fail"

@@ -1,0 +1,63 @@
+//! The recipes of the small-state details' animations (design/26-DETAILS.md section 3.2): the
+//! glyph morph's and the rolling digits' layers, the remote seal and the one-shot nudge. Every
+//! one plays once; the grammar has no loop outside a bounded pending step.
+
+use super::recipe::{Fill, Iteration, Recipe, recipe};
+use ui_style::tokens::{easing::EasingToken, timing::DurationToken};
+
+/// `morph-in` at `--t-quick --e-out`: the incoming glyph of a DownUp or OffUp morph.
+pub(super) const MORPH_IN: Recipe = recipe(
+    "morph-in",
+    DurationToken::Quick,
+    EasingToken::Out,
+    Fill::Backwards,
+    Iteration::Once,
+);
+
+/// `morph-in` at `--t-quick --e-spring`: the incoming glyph of a morph the person's press caused
+/// (design/26 R5); Calm and Reduced flatten the spring to `--e-out` through the token.
+pub(super) const MORPH_IN_SPRING: Recipe = recipe(
+    "morph-in",
+    DurationToken::Quick,
+    EasingToken::Out,
+    Fill::Backwards,
+    Iteration::Once,
+);
+
+/// `morph-out` at `--t-quick --e-out`: the outgoing glyph of a DownUp morph, held gone until
+/// its layer is removed.
+pub(super) const MORPH_OUT: Recipe = recipe(
+    "morph-out",
+    DurationToken::Quick,
+    EasingToken::Out,
+    Fill::Forwards,
+    Iteration::Once,
+);
+
+/// `fade` at `--t-quick --e-out`: the incoming glyph of a cross-fade.
+pub(super) const MORPH_FADE_IN: Recipe = recipe(
+    "fade",
+    DurationToken::Quick,
+    EasingToken::Out,
+    Fill::Backwards,
+    Iteration::Once,
+);
+
+/// `morph-fade-out` at `--t-quick --e-out`: the outgoing glyph of a cross-fade.
+pub(super) const MORPH_FADE_OUT: Recipe = recipe(
+    "morph-fade-out",
+    DurationToken::Quick,
+    EasingToken::Out,
+    Fill::Forwards,
+    Iteration::Once,
+);
+
+/// `slide-r` at `--t-move --e-out`: the preview pane's entrance when nothing the person touched
+/// showed it (R5: `Anim::PaneInR` springs, on contact only).
+pub(super) const PANE_IN_R_OUT: Recipe = recipe(
+    "slide-r",
+    DurationToken::Move,
+    EasingToken::Out,
+    Fill::None,
+    Iteration::Once,
+);

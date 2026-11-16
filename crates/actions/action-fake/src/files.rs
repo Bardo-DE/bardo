@@ -1,0 +1,266 @@
+//! `FakeFiles`: an in-memory files app behind the fixture manifest, with real undo tokens.
+
+use crate::labels::{app_label, entity, entity_ref, outcome, third_party};
+use action_core::{
+    AppRefusal, FileMove, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault, Undoable,
+};
+use action_manifest::ValidManifest;
+use action_provider::IntentProvider;
+use action_vocab::{FileRef, ParamName, TargetValue, UndoToken, Value};
+use account_core::{AppName, DataClass};
+use provenance::{Actor, EntityId, Labelled, Source, SpaceId};
+use std::collections::BTreeMap;
+use std::sync::Mutex;
+
+#[derive(Debug, Default)]
+struct State {
+    /// Where each file lives: key to path.
+    files: BTreeMap<String, String>,
+    content: BTreeMap<String, String>,
+    /// Who owns each file: key to the owner's key.
+    owners: BTreeMap<String, String>,
+    undo: BTreeMap<String, Vec<(String, String)>>,
+    next: u64,
+}
+
+/// The fake files app.
+#[derive(Debug)]
+pub struct FakeFiles {
+    manifest: ValidManifest,
+    app: AppName,
+    space: SpaceId,
+    state: Mutex<State>,
+}
+
+impl FakeFiles {
+    /// A files app with this manifest, working in `space`.
+    pub fn new(manifest: ValidManifest, space: SpaceId) -> Self {
+        let app = manifest.manifest().app.clone();
+        Self {
+            manifest,
+            app,
+            space,
+            state: Mutex::new(State::default()),
+        }
+    }
+
+    /// Adds a file at `path` with `content`.
+    pub fn with_file(self, key: &str, path: &str, content: &str) -> Self {
+        self.add_file(key, path, content);
+        self
+    }
+
+    /// Adds a file to a running app.
+    pub fn add_file(&self, key: &str, path: &str, content: &str) {
+        self.edit(|s| {
+            s.files.insert(key.into(), path.into());
+            s.content.insert(key.into(), content.into());
+        });
+    }
+
+    /// Records who owns the file `key`.
+    pub fn add_owner(&self, key: &str, owner: &str) {
+        self.edit(|s| {
+            s.owners.insert(key.into(), owner.into());
+        });
+    }
+
+    /// Forgets every file and undo token.
+    pub fn clear(&self) {
+        self.edit(|s| *s = State::default());
+    }
+
+    fn edit<R>(&self, f: impl FnOnce(&mut State) -> R) -> R {
+        match self.state.lock() {
+            Ok(mut s) => f(&mut s),
+            Err(p) => f(&mut p.into_inner()),
+        }
+    }
+
+    /// What the app lists: every file by its path (somebody else's words), in key order.
+    pub fn shown(&self) -> Vec<action_vocab::EntityRef> {
+        let (app, space) = (self.app.clone(), self.space.clone());
+        self.edit(|s| {
+            s.files
+                .iter()
+                .filter_map(|(key, path)| {
+                    let title = Labelled {
+                        value: path.clone(),
+                        label: third_party(Source::File, DataClass::Files, space.clone()),
+                    };
+                    let subtitle = Labelled {
+                        value: String::new(),
+                        label: app_label(&app),
+                    };
+                    Some(entity_ref(
+                        entity(&app, "files.file", key)?,
+                        title,
+                        subtitle,
+                    ))
+                })
+                .collect()
+        })
+    }
+
+    /// Where a file is now.
+    pub fn path_of(&self, key: &str) -> Option<String> {
+        self.edit(|s| s.files.get(key).cloned())
+    }
+
+    fn keys(target: &TargetValue) -> Vec<String> {
+        match target {
+            TargetValue::Entities(ids) => ids.iter().map(|e| e.key.as_str().to_owned()).collect(),
+            TargetValue::Nothing
+            | TargetValue::Handles(_)
+            | TargetValue::Text(_)
+            | TargetValue::Files(_) => vec![],
+        }
+    }
+
+    fn destination(inv: &Invocation) -> Option<String> {
+        let name = ParamName::parse("to").ok()?;
+        match &inv.args.get(&name)?.value {
+            Value::File(f) => Some(f.as_str().to_owned()),
+            _ => None,
+        }
+    }
+}
+
+impl IntentProvider for FakeFiles {
+    fn manifest(&self) -> &ValidManifest {
+        &self.manifest
+    }
+
+    async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
+        let keys = Self::keys(&inv.target);
+        let (app, space) = (self.app.clone(), self.space.clone());
+        self.edit(|s| match inv.action.as_str() {
+            "files.file.read" => {
+                let key = keys.first().ok_or(AppRefusal::Unsupported)?;
+                let text = s.content.get(key).ok_or_else(|| {
+                    entity(&app, "files.file", key)
+                        .map_or(AppRefusal::Unsupported, AppRefusal::NotFound)
+                })?;
+                let label = third_party(Source::File, DataClass::Files, space);
+                let mut out = outcome(None, Undoable::No, Preview::None);
+                out.value = Some(Labelled {
+                    value: Value::Text(text.clone()),
+                    label,
+                });
+                Ok(out)
+            }
+            "files.file.related" => {
+                let key = keys.first().ok_or(AppRefusal::Unsupported)?;
+                if !s.files.contains_key(key) {
+                    return Err(entity(&app, "files.file", key)
+                        .map_or(AppRefusal::Unsupported, AppRefusal::NotFound));
+                }
+                let chosen = ParamName::parse(action_manifest::RELATION_ARG)
+                    .ok()
+                    .and_then(|n| inv.args.get(&n))
+                    .map(|a| &a.value);
+                let Some(Value::Choice(relation)) = chosen else {
+                    return Err(AppRefusal::Unsupported);
+                };
+                if relation.as_str() != "owner" {
+                    return Err(AppRefusal::Unsupported);
+                }
+                let owners = s
+                    .owners
+                    .get(key)
+                    .and_then(|o| entity(&app, "files.person", o))
+                    .into_iter()
+                    .collect();
+                let mut out = outcome(None, Undoable::No, Preview::None);
+                out.value = Some(Labelled {
+                    value: Value::Entities(owners),
+                    label: crate::labels::app_label(&app),
+                });
+                Ok(out)
+            }
+            "files.file.move" => {
+                let to = Self::destination(&inv).ok_or(AppRefusal::Unsupported)?;
+                let mut undo = Vec::new();
+                for k in &keys {
+                    let from = s.files.get(k).cloned().ok_or(AppRefusal::Unsupported)?;
+                    undo.push((k.clone(), from));
+                    s.files.insert(k.clone(), format!("{to}/{k}"));
+                }
+                s.next += 1;
+                let token = UndoToken::parse(&format!("files-undo-{}", s.next))
+                    .map_err(|_| AppRefusal::Busy)?;
+                s.undo.insert(token.as_str().to_owned(), undo);
+                Ok(outcome(
+                    Some(format!("Moved {} files", keys.len())),
+                    Undoable::Yes(token),
+                    Preview::None,
+                ))
+            }
+            "files.file.delete" => {
+                keys.iter().for_each(|k| {
+                    s.files.remove(k);
+                    s.content.remove(k);
+                });
+                Ok(outcome(
+                    Some(format!("Deleted {} files", keys.len())),
+                    Undoable::No,
+                    Preview::None,
+                ))
+            }
+            _ => Err(AppRefusal::Unsupported),
+        })
+    }
+
+    async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
+        let keys = Self::keys(&inv.target);
+        self.edit(|s| match inv.action.as_str() {
+            "files.file.move" => {
+                let to = Self::destination(&inv).ok_or(AppRefusal::Unsupported)?;
+                let moves = keys
+                    .iter()
+                    .filter_map(|k| {
+                        let from = FileRef::parse(s.files.get(k)?).ok()?;
+                        let dest = FileRef::parse(&format!("{to}/{k}")).ok()?;
+                        Some(FileMove { from, to: dest })
+                    })
+                    .collect();
+                Ok(Preview::Moves(moves))
+            }
+            _ => Ok(Preview::None),
+        })
+    }
+
+    async fn undo(&self, token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
+        self.edit(|s| match s.undo.remove(token.as_str()) {
+            None => Err(UndoFault::Gone),
+            Some(back) => {
+                back.into_iter().for_each(|(k, from)| {
+                    s.files.insert(k, from);
+                });
+                Ok(())
+            }
+        })
+    }
+
+    async fn search(&self, _text: &str) -> Vec<Hit> {
+        // Files are not indexed by this fixture: the router asks the index, not the app.
+        vec![]
+    }
+
+    async fn preview(&self, id: &EntityId) -> Preview {
+        self.edit(|s| {
+            match s
+                .files
+                .get(id.key.as_str())
+                .and_then(|p| FileRef::parse(p).ok())
+            {
+                Some(file) => Preview::Image(file),
+                None => Preview::None,
+            }
+        })
+    }
+
+    async fn suggest(&self, _ask: SuggestAsk) -> Vec<action_vocab::EntityRef> {
+        vec![]
+    }
+}

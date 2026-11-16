@@ -1,0 +1,44 @@
+[package]
+name = "action-eval"
+description = "The red-team suite runner: reads the corpus and attack files, plays the cases over docket-fake, and checks an app against the conformance rules. The case format, judgement and scores are in eval-core."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[[bin]]
+name = "docket-eval"
+path = "src/main.rs"
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+action-review = {path = "../action-review"}
+action-fake = {path = "../action-fake"}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+agent-skills = {path = "../agent-skills"}
+agent-skills-disk = {path = "../agent-skills-disk"}
+
+action-eval-core = {path = "../action-eval-core"}
+action-context = {path = "../action-context"}
+action-router = {path = "../action-router"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+proptest = {version = "1"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

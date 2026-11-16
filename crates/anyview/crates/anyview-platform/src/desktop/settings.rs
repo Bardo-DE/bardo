@@ -5,7 +5,7 @@
 use crate::env::{BusRoute, Env};
 use crate::error::PlatformError;
 use crate::settings::{OpenSettings, Opening};
-use ds_core::settings::SettingsTarget;
+use ui_core::settings::SettingsTarget;
 use std::collections::HashMap;
 use zbus::zvariant::Value;
 

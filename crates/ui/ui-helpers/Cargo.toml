@@ -1,0 +1,40 @@
+[package]
+name = "ui-helpers"
+description = "Missing helpers: apps declare the distro tools they run, probe for them, and ask PackageKit to install one at the moment of use."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ui-peer = {path = "../ui-peer"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+toml = {version = "1"}
+zbus = {version = "5.19", optional = true}
+
+# `update_atomic` locks a sidecar file between programs.
+[target.'cfg(unix)'.dependencies]
+rustix = {version = "1", default-features = false, features = ["std", "fs"]}
+
+[dev-dependencies]
+# The tests' runtime; the crate itself names none (zbus brings its own executor).
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+# The tests run zbus on that runtime (the fake PackageKit sleeps with tokio inside a zbus
+# handler). Named here so `cargo test -p ui-helpers` alone builds it so, not only when another
+# workspace member happens to turn the feature on.
+zbus = {version = "5.19", features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[features]
+default = ["quire-desktop"]
+# The PackageKit backend (`installer/packagekit.rs`), over the system bus. Without it
+# `PackageKit::system()` still exists and every install is `Outcome::Unsupported`
+# (design/36 section 2); `PackageKit::on` is absent, since it takes a zbus connection.
+quire-desktop = ["dep:zbus"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

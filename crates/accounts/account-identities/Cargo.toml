@@ -1,0 +1,30 @@
+[package]
+name = "account-identities"
+description = "The identities domain of the accounts daemon: which apps use each identity (identity-uses.json, kept with the same atomic save), the identity each connection just picked, and the desk that shows the picker and reads a picked identity's password."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+account-service-core = {path = "../account-service-core"}
+account-sheet = {path = "../account-sheet"}
+account-core = {path = "../account-core"}
+account-ids = {path = "../account-ids"}
+account-fs = {path = "../account-fs", features = ["book"]}
+account-secrets = {path = "../account-secrets"}
+account-wire = {path = "../account-wire"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

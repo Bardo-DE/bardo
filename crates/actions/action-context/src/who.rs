@@ -1,0 +1,315 @@
+//! Who a request acts for. The connection says which role called; the router says which
+//! session that role acts in, and how far to believe the labels it supplies.
+
+use crate::labels::Voice;
+use crate::state::{RouterState, SessionRecord};
+use action_core::ExternalAgent;
+use permission_core::{GrantCaller, ProgramName};
+use action_vocab::CallerRole;
+use action_wire::{CallerId, WireRefusal};
+use account_core::AppName;
+use provenance::{Actor, AgentRef, AgentRole, ClientName, SessionId, TaskId};
+
+/// The party behind a request.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Who {
+    /// The connection.
+    pub caller: CallerId,
+    /// The role it acts in.
+    pub role: CallerRole,
+    /// The session it acts in; none for the person, whose own surfaces are not agents.
+    pub session: Option<SessionId>,
+    /// How calls and the journal name it.
+    pub actor: Actor,
+    /// How far its labels are believed.
+    pub voice: Voice,
+    /// The editor the person is speaking through, named by the app behind its connection (what
+    /// the router saw, never a name the editor wrote about itself).
+    pub editor: Option<ClientName>,
+    /// The external agent the call is made for, when its host makes it: the program the host
+    /// named when it opened the session, never a name the agent sent.
+    pub agent: Option<AgentSeat>,
+    /// The helper whose job or conversation the session is, when the companion opened it for
+    /// one: an editor's "always" in it is that helper's alone.
+    pub helper: Option<provenance::HelperId>,
+}
+
+/// The external agent behind a host's call.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AgentSeat {
+    /// The configured program.
+    pub program: ProgramName,
+    /// The host that shows this session's sheets itself, when the session asked for that.
+    pub host: Option<ClientName>,
+    /// The helper this agent app is, when the session was opened for one: its grants are that
+    /// helper's alone.
+    pub helper: Option<provenance::HelperId>,
+}
+
+/// How an external agent program is named as an actor: `acp:<program>`, cut to a client name's
+/// length, so an audit line tells an agent from an MCP client of the same name.
+pub(crate) fn acp_client(program: &ProgramName) -> Option<ClientName> {
+    let mut text = format!("acp:{}", program.as_str());
+    while text.len() > 64 {
+        text.pop();
+    }
+    ClientName::parse(&text).ok()
+}
+
+/// The editor the person last spoke through in `record`: the app that recorded its latest turn,
+/// if that turn came from an editor.
+pub fn editor_of(record: &SessionRecord) -> Option<ClientName> {
+    let from = &record.turns.last()?.from;
+    if from.role() != CallerRole::Editor {
+        return None;
+    }
+    ClientName::parse(from.app()?.as_str()).ok()
+}
+
+/// Where a sheet for a call of `who` goes when an editor is driving its session.
+pub fn route_of(who: &Who) -> Option<action_core::EditorRoute> {
+    let client = match &who.agent {
+        Some(seat) => seat.host.clone()?,
+        None => who.editor.clone()?,
+    };
+    Some(action_core::EditorRoute {
+        client,
+        session: who.session.clone()?,
+    })
+}
+
+impl Who {
+    /// The consent a grant for this party is keyed by.
+    pub fn grant_caller(&self) -> GrantCaller {
+        if let Some(seat) = &self.agent {
+            return match &seat.helper {
+                Some(helper) => GrantCaller::AcpHelper {
+                    program: seat.program.clone(),
+                    helper: helper.clone(),
+                },
+                None => GrantCaller::AcpAgent(seat.program.clone()),
+            };
+        }
+        if let (Some(_), Some(helper)) = (&self.editor, &self.helper) {
+            return GrantCaller::Helper(helper.clone());
+        }
+        if let Some(client) = &self.editor
+            && !matches!(
+                self.actor,
+                Actor::Companion {
+                    role: AgentRole::Cua { .. },
+                    ..
+                }
+            )
+        {
+            return GrantCaller::Editor(client.clone());
+        }
+        match &self.actor {
+            Actor::Companion {
+                role: AgentRole::Cua { .. },
+                ..
+            } => GrantCaller::Cua,
+            Actor::Mcp { client } => GrantCaller::Mcp(client.clone()),
+            Actor::Acp { program, .. } => GrantCaller::AcpAgent(program.into()),
+            Actor::Cli => GrantCaller::Cli,
+            Actor::App { app } | Actor::ThirdParty { app, .. } => GrantCaller::App(app.clone()),
+            Actor::Companion { .. }
+            | Actor::User { .. }
+            | Actor::System { .. }
+            | Actor::Unknown => GrantCaller::Companion,
+        }
+    }
+}
+
+impl RouterState {
+    /// Who a `role` calling as `caller` is. The person's surfaces act directly; a companion
+    /// acts in the session it names, else its newest (a closed one refuses its calls, so a halt reads as a halt); MCP clients, terminals and apps act in a session of
+    /// their own, made when they first call.
+    pub fn who_for(
+        &mut self,
+        caller: &CallerId,
+        role: CallerRole,
+        named: Option<&SessionId>,
+        now: provenance::UnixSeconds,
+        start: permission_core::Mode,
+    ) -> Result<Who, WireRefusal> {
+        let app = caller.app.name.clone();
+        let (actor, voice) = match role {
+            CallerRole::Launcher | CallerRole::Field | CallerRole::Editor => {
+                let actor = Actor::User { via: app };
+                let editor = (role == CallerRole::Editor)
+                    .then(|| ClientName::parse(caller.app.name.as_str()).ok())
+                    .flatten();
+                return Ok(Who {
+                    caller: caller.clone(),
+                    role,
+                    session: None,
+                    actor,
+                    voice: Voice::Person,
+                    editor,
+                    agent: None,
+                    helper: None,
+                });
+            }
+            CallerRole::Companion => {
+                let mut companions = self
+                    .sessions
+                    .iter()
+                    .filter(|(_, r)| matches!(r.actor, Actor::Companion { .. }));
+                let session = match named {
+                    Some(wanted) => companions.find(|(id, _)| *id == wanted),
+                    // A helper's conversation is the person's to talk in: a call that names no session is
+                    // never taken to be in it.
+                    None => companions
+                        .filter(|(_, r)| {
+                            !r.helper.as_ref().is_some_and(|seat| {
+                                seat.place == companion_model::helper::SeatPlace::Conversation
+                            })
+                        })
+                        .max_by_key(|(id, _)| crate::session::age(id)),
+                }
+                .map(|(id, r)| {
+                    (
+                        id.clone(),
+                        r.actor.clone(),
+                        editor_of(r),
+                        r.helper.as_ref().map(|seat| seat.helper.clone()),
+                    )
+                })
+                .ok_or(WireRefusal::NoSuchSession)?;
+                return Ok(Who {
+                    caller: caller.clone(),
+                    role,
+                    session: Some(session.0),
+                    actor: session.1,
+                    voice: Voice::Model,
+                    editor: session.2,
+                    agent: None,
+                    helper: session.3,
+                });
+            }
+            CallerRole::Mcp => {
+                let client = ClientName::parse(app.as_str()).map_err(|_| WireRefusal::Malformed)?;
+                (
+                    Actor::Mcp {
+                        client: client.clone(),
+                    },
+                    Voice::External(client),
+                )
+            }
+            CallerRole::AcpAgent => return self.agent_who(caller, named),
+            CallerRole::Cli => (Actor::Cli, Voice::Cli),
+            CallerRole::App => (Actor::App { app: app.clone() }, Voice::App),
+            CallerRole::Reader
+            | CallerRole::Cua
+            | CallerRole::Confirm
+            | CallerRole::Compositor
+            | CallerRole::Control => return Err(WireRefusal::NotAllowed),
+        };
+        let key = (role, app.clone());
+        let session = match self
+            .implicit
+            .get(&key)
+            .filter(|s| self.sessions.contains_key(*s))
+        {
+            Some(existing) => existing.clone(),
+            None => {
+                let n = self.mint();
+                let session =
+                    SessionId::parse(&format!("s-{n}")).map_err(|_| WireRefusal::Malformed)?;
+                let task = TaskId::parse(&format!("t-{n}")).map_err(|_| WireRefusal::Malformed)?;
+                let mut record =
+                    SessionRecord::new(task, actor.clone(), app, provenance::SpaceId::desktop(), now);
+                // A program that opened no session acts in one that starts in the start mode.
+                record.mode = start;
+                self.sessions.insert(session.clone(), record);
+                self.implicit.insert(key, session.clone());
+                session
+            }
+        };
+        Ok(Who {
+            caller: caller.clone(),
+            role,
+            session: Some(session),
+            actor,
+            voice,
+            editor: None,
+            agent: None,
+            helper: None,
+        })
+    }
+
+    /// The host of an external agent, acting in the agent's session. The session must be named,
+    /// must be an agent session, and must have been opened by this very app: a host acts only
+    /// in the sessions it opened, as the program it named then.
+    fn agent_who(&self, caller: &CallerId, named: Option<&SessionId>) -> Result<Who, WireRefusal> {
+        let session = named.ok_or(WireRefusal::Malformed)?;
+        let record = self
+            .sessions
+            .get(session)
+            .ok_or(WireRefusal::NoSuchSession)?;
+        let external = record
+            .external
+            .as_ref()
+            .filter(|_| record.opener == caller.app.name)
+            .ok_or(WireRefusal::NotAllowed)?;
+        let client = acp_client(&external.program).ok_or(WireRefusal::Malformed)?;
+        let host = match external.sheets {
+            action_core::SheetSurface::Host => ClientName::parse(caller.app.name.as_str()).ok(),
+            action_core::SheetSurface::Desktop => None,
+        };
+        Ok(Who {
+            caller: caller.clone(),
+            role: CallerRole::AcpAgent,
+            session: Some(session.clone()),
+            actor: record.actor.clone(),
+            voice: Voice::Agent(client),
+            editor: None,
+            helper: None,
+            agent: Some(AgentSeat {
+                program: external.program.clone(),
+                host,
+                helper: external.helper.clone(),
+            }),
+        })
+    }
+}
+
+/// Who acts in the session of `agent`, opened by `opener`: how calls and the journal name it.
+pub fn actor_of(
+    agent: &AgentRef,
+    external: Option<&ExternalAgent>,
+    session: &SessionId,
+    opener: &AppName,
+) -> Actor {
+    if let Some(external) = external {
+        // prov's own actor when the program fits porter's grammar; the older `acp:<program>`
+        // client name otherwise, so the audit still tells the agent apart.
+        if let Ok(program) = provenance::AgentProgram::parse(external.program.as_str()) {
+            return Actor::Acp {
+                program,
+                label: external.label.clone(),
+            };
+        }
+        if let Some(client) = crate::who::acp_client(&external.program) {
+            return Actor::Mcp { client };
+        }
+    }
+    match agent {
+        AgentRef::Companion => Actor::Companion {
+            session: session.clone(),
+            role: AgentRole::Planner,
+        },
+        AgentRef::Worker { task } => Actor::Companion {
+            session: session.clone(),
+            role: AgentRole::Worker { task: task.clone() },
+        },
+        AgentRef::Cua { run } => Actor::Companion {
+            session: session.clone(),
+            role: AgentRole::Cua { run: run.clone() },
+        },
+        AgentRef::User => Actor::User {
+            via: opener.clone(),
+        },
+    }
+}

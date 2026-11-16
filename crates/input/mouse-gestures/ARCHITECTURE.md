@@ -1,0 +1,315 @@
+# Architecture
+
+palmrest is the Magic Mouse 2 gesture daemon: it reads touch reports, turns them into scroll and
+gesture streams, and delivers them over a socket to shell-host surfaces and, through virtual
+input devices, to every other client. `README.md` has the data flow, the socket protocol and
+the safety rules; quire's `design/12-BEHAVIOUR-gestures.md` is the specification;
+`CONVENTIONS.md` points to the published Rust guides and gives three design directions (push IO to
+the edges, let types carry the facts, judgement over rules); `FINDINGS.md` holds the open items and
+standing facts. This file is the map: where each thing lives, what may depend on what, and how to add
+the next thing. palmrest depends on no shell crate and runs on any Linux.
+
+## 1. Crate map
+
+| Crate | Path | Purpose | May depend on |
+|---|---|---|---|
+| `palmrest-protocol` | `crates/palmrest-protocol` | the socket contract with shell-host: `ToHost`, `ToDaemon`, their field types, `PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
+| `palmrest` | `crates/palmrest` | the pure core, the tools that replay recordings, and the daemon; library plus the `palmrest` binary | `palmrest-protocol`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `turnstile-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `peephole`, `peephole-core` (git, tag `v0.1.4`; the socket's shell check only; `peephole`'s `fake` feature only as a dev dependency) |
+
+Edges: `palmrest` -> `palmrest-protocol` only. `palmrest-protocol` depends on no other workspace
+crate, and has no `toml`, `notify` or `rustix`, so shell-host takes it without pulling the
+daemon. shell-host imports `palmrest-protocol` as a path dependency; nothing else of palmrest
+leaves the repo. There is no boundary script; `cargo tree -p mouse-gestures-proto` showing only
+serde, serde_json and thiserror is the check, run in review.
+
+The library surface of `palmrest` is the pure core plus the recording tools (section 2). The
+daemon, `sys` and the CLI verbs are `pub(crate)`; the one public entry to them is
+`command::run`.
+
+### Moves
+
+| From | To |
+|---|---|
+| `crates/palmrest/src/protocol.rs` | `crates/palmrest-protocol/src/lib.rs` split into `message.rs` (`ToHost`, `ToDaemon`, `Filter`, `Topic`, `DeviceInfo`), `vocab.rs` (`GestureId`, `Phase`, `Axis`, `TapKind`, `ActiveTouch`, `Over`), `wire.rs` (`encode`, `decode`, `Compat`, `compat`, constants), `tests.rs` |
+| `crates/palmrest/src/lib.rs` re-export `pub use protocol::{ToDaemon, ToHost}` | deleted; callers import `palmrest_protocol` |
+| `outputs/uinput.rs` | `daemon/uinput/` (`caps`, `direct`, `emitter`, `route`, `probe`) |
+| `sys.rs` | `daemon/sys.rs` (safe evdev and uinput ioctls) and `daemon/hidioc.rs` (the one `unsafe` module: `HIDIOCSFEATURE`) |
+| `main.rs` verbs (`record_cmd`, `replay_cmd`, `check_uinput`, usage, arguments) | `command/{mod.rs (Command, parse, run), record.rs, replay.rs, probe.rs}`; `main.rs` is `fn main() -> ExitCode { palmrest::command::run(std::env::args()) }` |
+| `gestures/live.rs`, the seven `gestures.live_workspace_*` keys | deleted (section 8) |
+| `tests/socket.rs`, `tests/latency.rs` | unit tests beside `daemon/socket.rs` and `daemon/latency.rs` |
+
+## 2. Modules and layers
+
+`crates/palmrest/src`. A module imports from its own layer or a lower one only.
+
+| Layer | Modules | Nature | Visibility |
+|---|---|---|---|
+| L0 vocabulary | `time` (`Mono`), `keys` (`Key`, `KeyCombo`), `config/units`, `sensor/units` | newtypes | `pub` |
+| L1 sensors | `sensor` (`Sensor`, `Frame`, `Surface`, `lattice`), `sensor/magic_mouse` (`MagicMouseHid`, `decode`, `encode`, `report`, `known`), `sensor/evdev` (`EvdevMultitouch`), `touch`, `stamp` | bytes to millimetre frames | `pub` |
+| L2 settings | `config` (`Config`, sections, `lenient`, `load`, `watch`) | pure except `load` and `watch` (file reads, inotify) | `pub` |
+| L3 feel and gestures | `feel` (`shell`, `pad`, `curve`), `gestures` (`contacts`, `bands`, `click`, `motion`, `stroke`, `swipe`, `one_swipe`, `tap`) | pure | `pub` |
+| L4 tracker and actions | `tracker` (`Tracker::step`, `Out`), `action` (`Gesture`, `Action`, `plan`) | pure composition: `Tracker::step(self, &Frame, now) -> (Self, Vec<Out>)` | `pub` |
+| L5 outputs model | `outputs` (`Emitter`, `RecordingEmitter`, `pad`, `events`) | the seam and the models of what is written | `pub` |
+| L6 tools | `recording`, `replay` (`replay`, `feed`, `outs`) | pure: feed recorded reads through the core | `pub` |
+| L7 effects | `daemon` (`reader`, `socket`, `discover`, `hidraw`, `evdev`, `devices`, `dispatch`, `record`, `latency`, `source`, `uinput`, `sys`, `hidioc`) | threads, sockets, nodes, clocks, uinput, ioctls | `pub(crate)` |
+| L8 entry | `command` | argument parsing, one `run(args)`; reads `std::env` once into `daemon::Env` | `pub` (one fn) |
+
+`recording` and `replay` stay public because the acceptance suite and the `palmrest replay`
+verb are the same harness: a recording file in, the core's outputs out, no clock and no device.
+`daemon` is where every thread, socket, device node and clock lives; the core never reaches
+into it.
+
+Inside `daemon`, the two machines with decisions follow the concept-directory shape: the pure part
+decides, a thin `io` part gathers the facts that need a syscall, feeds them in as events and carries
+out the effects it gets back.
+
+| Concept | `model.rs` | `step.rs` | `io.rs` |
+|---|---|---|---|
+| `socket/` (the subscribers) | `Subscribers`, `SocketEvent`, `SocketEffect` | `Subscribers::step(self, event, now) -> (Self, Vec<SocketEffect>)`, with `admit`, `packet`, `deliver`, `publish` | the poll loop, `accept`, the seat file, the vouch, the reader's channel; `conn.rs` holds the descriptors |
+| `devices/` (the virtual devices) | `Life`, `Event`, `Effect` | `step(Life, Event) -> (Life, Vec<Effect>)` | `Devices`: holds the emitter and the factory, performs `Create`, `DropEmitter` and `Log` |
+
+`lib.rs` holds declarations and these root re-exports only: `Config`, `Mono`, `Sensor`,
+`Frame`, `Surface`, `Tracker`, `Out`.
+
+## 3. One home
+
+| Concept | Home |
+|---|---|
+| Monotonic instants | `time::Mono` |
+| Device timestamp fitted to monotonic time | `stamp` |
+| Millimetre and lattice units, the reference grid | `sensor::units`, `sensor::lattice` |
+| Frame, contact, surface of a sensor | `sensor::{frame, surface}` |
+| Magic Mouse report codec, known devices | `sensor::magic_mouse::{decode, encode, report, known}` |
+| evdev multitouch slots | `sensor::evdev` |
+| Touch block and grid `Point` | `touch` |
+| Palm and rest rejection, contact tracking | `gestures::contacts` |
+| Reading the contacts as a stroke: the contact set, the one centroid delta, the axis lock, scroll or Spaces-swipe intent, the phases and the motion in mm | `gestures::stroke` (`Recogniser::step`) |
+| One-finger swipe, the fired two-finger swipe (remapped only), double-taps | `gestures::{one_swipe, swipe, tap}` |
+| Every transfer function from mm to an output, one per sink | `feel::shell` (px for the shell, with `feel::curve`), `feel::pad` (pad distance) |
+| Gesture state of the daemon | `tracker::Tracker` |
+| What each sink makes of a stroke event | `tracker::strokes` |
+| The virtual touchpad session: landing, following, lifting, the libinput zones, and what may be down under a claim or a locked session | `outputs::pad` (`layout` for the geometry, `Policy` for what is allowed: the one place the pad's silence is decided) |
+| What the tracker asks for | `tracker::Out` |
+| Gesture to action table, what an action asks of the shell | `action`, `keys` |
+| Socket messages | `palmrest-protocol` |
+| The settings a person chooses (scroll speed, the gesture table), default, range | `config::sections` |
+| Every other tuning number | a named constant beside the code that uses it |
+| Lenient per-key reading | `config::lenient` |
+| Config file location, reload | `config::{load, watch}` |
+| The schema of the config for the Settings app (`palmrest --write-schema`) | `config::schema` (table in `keys.rs`), `command::schema` |
+| Virtual device write seam | `outputs::Emitter` |
+| Touchpad frame model, evdev event encoding | `outputs::{pad, events}` |
+| Recording file format | `recording` |
+| Replaying recordings | `replay` |
+| Threads, sockets, discovery, backoff, nodes | `daemon` |
+| Subscribers of the socket: ids, admission, caps, the joint claim and lock, what the reader is told and when | `daemon::socket::{model, step}` (the pure `Subscribers::step`; `admit`, `packet`, `deliver`, `publish`, `aggregate` hold its parts), `limits` (the caps and budgets) |
+| The socket thread: polling, reading, the peer facts (uid, vouch, seat file), carrying out effects | `daemon::socket::{io, conn}` |
+| Who has the seat, and what a connection is to the daemon (shell, other program, stranger) | `daemon::socket::seat` (`peer_of`), `daemon::socket::shell` (`Steering`, palmrest's shell table); the shell check, the seat file and the accept failures are `latchkey::guard`, shared with keycap |
+| Actions that need the person's session (asked of the shell, never run here) | `action::plan` (the tracker's `Out::Deferred(Action)` becomes an `Option<HostAction>`), `palmrest_protocol::HostAction`, `ToHost::Run` |
+| The person's settings laid over the machine's | `config::layer`, `ToDaemon::UserConfig` |
+| What the shell says about the lock screen | `palmrest_protocol::ToDaemon::SessionLock`, `Tracker::with_session_lock` |
+| The virtual devices: what each is, asking the input service for them, the direct fallback | `daemon::uinput::{caps, emitter, direct, route}` |
+| When to rebuild the devices after a cut, and when to give up | `daemon::devices::{model, step}` (the pure lifecycle); `devices::io` holds the emitter and the factory |
+| evdev and uinput ioctls | `daemon::sys` (through `input-linux`, no `unsafe`) |
+| the hidraw feature ioctl and all `unsafe` | `daemon::hidioc` |
+| Environment, clock, directories | `daemon::Env`, built once in `command::run` |
+| Command-line verbs | `command` |
+
+## 4. Traits
+
+| Trait | Signature | Implementors |
+|---|---|---|
+| `Emitter` (`outputs`) | `fn pad(&mut self, f: &PadFrame) -> Result<(), OutputError>; fn key(&mut self, k: &KeyCombo) -> Result<(), OutputError>` | `daemon::uinput::UinputEmitter` (over any `turnstile_client::Session`), `RecordingEmitter` |
+| `Setting` (`config::lenient`) | `fn read(v: &toml::Value, key: &str, warn: &mut Vec<Warning>) -> Option<Self>` | every unit newtype and `Action` (through `settings_struct!` and `serde_settings!`) |
+
+Add an implementor of `Emitter` for a new kind of output
+device, of `Setting` for a new value type. Add a new trait only when two real implementations
+are swapped at a boundary. The next candidate is a second source of the daemon's clock and
+environment (`daemon::Env`); it is a plain struct until a fake exists.
+
+**Closed enums that stay enums:** `Out`, `Action`, `Gesture`, `ToHost`, `ToDaemon`, `Phase`, `Moment` (what each phase of a stroke carries),
+`Sensor` (the two kinds of device), `RecordedSource` (which one a node or recording is).
+
+## 5. Recipes
+
+### Add a gesture
+
+1. `gestures/<gesture>.rs`: the recogniser as a pure value, `fn step(self, input, now, &Config)
+   -> (Self, Option<Event>)`, with its state as a small enum; no clock, no I/O. Declare it in
+   `gestures/mod.rs` and export the type there.
+2. Its thresholds as named constants at the top of its file (`Um` for lengths, `Ms` for times), not as keys: a gesture's tuning numbers are not settings.
+3. `action.rs`: a `Gesture` variant when it fires an action, its default in the
+   `gesture_action_map` table, and its `Action` mapping in `plan` if it needs a new action.
+4. `tracker/mod.rs`: its state as a field of `Tracker` (as `stroke`, `one`, `swipe` and `tap` are),
+   one call in `step`, one arm turning its event into `Out`s (`tracker/out.rs`, or
+   `tracker/strokes.rs` for what a stroke event causes). The gesture never talks to the socket
+   directly.
+5. If the host must see it: a `ToHost` variant in `palmrest-protocol` (the protocol changes:
+   bump `PROTOCOL_VERSION`, update the round-trip test and shell-host in the same change).
+6. Tests: a table test of the recogniser beside it; a scenario in `tests/support/scenarios.rs`
+   (a synthesised stroke), its fixture written by `PALMREST_REGEN_FIXTURES=1 cargo test --test
+   fixtures_current`, and a replay assertion in `tests/palmrest/gestures_replay.rs`; the same recording
+   replayed through `EvdevMultitouch` in `tests/evdev_parity.rs`.
+
+### Add a sensor
+
+1. `sensor/<family>/mod.rs`: the type, with `surface` and `decode`; `decode` returns millimetre
+   `Frame`s on the reference lattice and a `SensorError` for a malformed read; its `Surface`
+   states size, resolution, buttons and clock.
+2. `sensor/mod.rs`: declare and export it; add its variant to `Sensor` and `SensorError`.
+3. `daemon/source.rs`: a `RecordedSource` variant and its arm in `Opened::read_len`;
+   `daemon/<family>.rs` for opening and identifying the node (node facts parsed, never
+   searched); `recording.rs`: its arm in `RecordedSource::sensor` and `header` so recordings replay.
+4. Tests: decode tables from bytes captured with `palmrest record`; a parity test in
+   `tests/` replaying an existing fixture re-expressed through the new sensor to the same
+   outputs.
+
+### Add an output or emitter
+
+1. A new kind of thing written: a variant in `Out` (`tracker/out.rs`) and a method on `Emitter`
+   (`outputs/mod.rs`), with its `Emitted` variant and the `RecordingEmitter` arm.
+2. `outputs/<name>.rs`: the pure model and its event encoding (tested by tables).
+3. `daemon/uinput/emitter.rs` (or `daemon/<backend>.rs` for another backend): the implementor of
+   `Emitter`; the kernel calls go through `daemon/sys.rs` (`daemon/hidioc.rs` for hidraw).
+4. `daemon/dispatch.rs`: the `Out` arm that calls the emitter; `daemon/devices/` when the
+   device is created lazily.
+5. Tests: encode tables; a replay test asserting the `RecordingEmitter`'s `Emitted` list. No
+   test constructs a real device.
+
+### Add a config key
+
+A key is for what a person chooses (macOS offers it for a mouse or trackpad) or a real
+behaviour choice; a tuning number is a named constant beside the code that uses it.
+
+1. `config/sections.rs`: one line in the section's `settings_struct!`: `name: Type = default,
+   in lo => hi;` with a doc comment. Lengths are `Um`, times `Ms`; a closed choice is an enum
+   (with `serde_settings!`), never a `bool` or a string.
+2. `config/file.rs`: nothing unless it is a new section (then the `Config` field, its
+   `Default`, and its `section(...)` call).
+3. Read it where it is used, from the `Config` value the caller holds (`tracker`, `gestures`,
+   `feel`), never from a global.
+4. `palmrest --print-config` prints it automatically; `README.md` "Configuration" names it.
+5. `config/schema/keys.rs`: one row (label, help, section, its range or words). The default
+   comes from `Config::default()`; a test fails until every key has a row, and reads each row's
+   bounds and words back through the lenient reader.
+6. Tests: the round-trip in `config/file.rs` tests, and a case in the lenient-reading table
+   (a bad value keeps the default and yields one `Warning`).
+
+A key that is removed needs nothing in the reader: an unknown key in a stored file is ignored
+(`a_file_with_removed_keys_still_loads`).
+
+### The schema and quire
+
+`palmrest --write-schema DIR` writes `palmrest.settings.toml`, the file quire's Settings app
+reads (quire `design/22-SETTINGS.md` section 9). palmrest takes no quire crate, so it does not use
+quire's `SettingsSchema` derive: `config::schema` writes the same format from a table, with the
+tests above as the guard that it cannot drift from `Config`.
+
+## 6. Test harness
+
+| Kind of thing | Test |
+|---|---|
+| Codecs, feel, gestures, config, protocol | table tests beside the code |
+| Whole-core behaviour | replay: a recording through `replay::replay` with `RecordingEmitter`, asserting `Out`s and `Emitted`; strokes and fixtures from `tests/support` |
+| Another sensor | the same recording re-expressed as evdev events, replayed to identical outputs (`tests/evdev_parity.rs`) |
+| Decoder | goldens in `tests/fixtures/reference/`, frozen; the reference gesture cases in `tests/palmrest/reference_cases.rs` |
+| Socket | decisions as pure `Subscribers::step` tests over events (`daemon/socket/tests/{step, packet, aggregate}.rs`); a private socket in a temp dir for the wiring (`tests/{wiring, passes}.rs`) |
+| Latency | ignored release test beside `daemon/latency.rs` |
+
+The one harness is `replay` plus `tests/support`. No test creates an input device, opens a real
+node for writing, or reads a real config directory or a running daemon.
+
+## 7. Repo rules
+
+- **palmrest is a system service** (a dynamic user, `dist/palmrest.service`; owner decision 2026-10-17, as
+  keycap): its socket is `/run/palmrest/events.sock`, mode 0666, and `daemon::socket` serves only the person
+  at the seat. A connection is a `Peer`: the `Shell` (the process in `sill.service` under that person's own
+  manager, held by pidfd and judged by peephole), another program of the person (`Plain`: subscribes, may
+  say `Locked`, never `Unlocked`, and its `PointerOver` is ignored) or a stranger (closed at once). The
+  session counts as unlocked only while the shell says so; a user switch closes the old user's
+  connections. Its settings are `/etc/palmrest/gestures.toml`; nothing in the daemon reads a home folder.
+- **A panic ends the process** (`panic = "abort"` in release) and a socket thread that cannot poll exits it, so
+  systemd restarts the unit; a daemon with a dead socket thread never keeps running.
+- **Everything a subscriber can make the socket thread store or read is capped** (`socket/limits.rs`):
+  subscribers, packets per pass, queued messages; a subscriber is known by id, never by position.
+- **Only `daemon` owns threads, sockets, devices, clocks and the environment.** When the core
+  seems to need an effect, it returns an `Out` for the daemon to carry out.
+- **`unsafe` lives only in `daemon/hidioc.rs`** (`HIDIOCSFEATURE`), with a `SAFETY` comment. The evdev and
+  uinput ioctls in `daemon/sys.rs` go through `input-linux`'s safe handles.
+- **Units:** the core computes on an integer grid fixed in millimetres (the Magic Mouse 2's own,
+  26 units/mm across, 70 along), in newtypes (`Um`, `Ms`, `Fraction`, `GestureId`), so every
+  sensor feels the same per millimetre. The only floats in public types are the socket's px.
+- **The protocol is a crate:** a change to `ToHost` or `ToDaemon` is a change to
+  `palmrest-protocol`, its round-trip tests, `PROTOCOL_VERSION` when incompatible, and
+  shell-host, in one change.
+- **Device ids are parsed, never searched:** `HID_ID` is read as `bus:vendor:product`.
+- **No `bool` in a field, parameter or key.** A key is an enum.
+- **The decoder is pinned by frozen goldens**; nothing regenerates them.
+- **Tests never create an input device:** every test writes through `RecordingEmitter` or
+  `turnstile_client::fake::FakeSource`, and no test reads a real config directory, opens the
+  service's socket or touches a running daemon (README, "Safety rules").
+- **Gate** (no boundary script):
+
+  ```bash
+  cargo fmt --all --check
+  cargo clippy --workspace --all-targets --all-features -- -D warnings
+  cargo test --workspace --all-features
+  cargo deny check licenses
+  ```
+
+## 8. The live Spaces swipe
+
+palmrest does not model the swipe's progress, overshoot or commit: casement does, on any
+touchpad. A two-finger sideways stroke (the recogniser's `SpaceSwipe`) lands four contacts on the
+virtual touchpad that follow the fingers' x 1:1 and lift the moment the fingers do (no minimum
+time down: libinput only taps with up to three fingers); casement decides to commit or return on
+the lift. A pause does not end a swipe (only a scroll's lock times out), and a click or a palm
+during one moves the row back to where it landed before it lifts, so casement returns to the Space
+it was on. It is live while both two-finger rows of
+`[gestures.gesture_action_map]` are the workspace defaults. Any other mapping fires its action once
+per 7.7 mm of travel (500 ms cooldown) from the same intent (`gestures::swipe`). The swipe runs
+whoever holds the pointer, and not while the session is locked: the lock screen lifts a running
+swipe at once (`Tracker::with_session_lock` returns the lift). `ToHost::Swipe` is not sent; its
+variant stays in the protocol until shell-host drops it in lockstep.
+
+## 9. Migration order
+
+Each step keeps master green (the gate above).
+
+1. (done) `palmrest-protocol` crate: create it, move `protocol.rs` into it (split as in section 1), add
+   it to the workspace, switch `palmrest` to import it, delete the re-export in `lib.rs`. The
+   shell-host session then deletes its copy.
+2. (done) Delete `gestures/live.rs`, the seven `live_workspace_*` keys, their `README` and default
+   config text.
+3. (done) Move `sys.rs` and `outputs/uinput.rs` into `daemon/`; make `daemon` and its `sys` `pub(crate)`.
+4. (done) Move `tests/socket.rs` and `tests/latency.rs` in-crate; add `command/`, reduce `main.rs`;
+   `daemon::Env` replaces the `std::env` reads in `main.rs` and `daemon/mod.rs`.
+5. (done) Trim `lib.rs` to declarations and the root list in section 2.
+
+## 10. The virtual devices and the input service
+
+palmrest does not own `/dev/uinput`. The input service (turnstile, a separate repository and a
+root service) does, and makes palmrest's three devices on request after checking who asks.
+
+| File (`daemon/uinput/`) | Holds |
+|---|---|
+| `emitter.rs` | `UinputEmitter<S: Session>`: asks for the touchpad, and for the keyboard only when a gesture presses keys (`Create::keys` with the deduplicated codes of `KeyCombo::codes()`). One `Session::send` per pad frame. Counts `Sent::Dropped` frames and goes on. Turns every `ClientError` into an `OutputError` in plain words, asking the session for the service's reason first |
+| `route.rs` | `LiveSource`: a `DeviceSource` over the service or the direct node (`Origin`; the session is a boxed `Session`) |
+| `direct.rs` | `DirectSource`/`DirectSession`: the same `Session` over palmrest's own uinput node (`--direct-uinput`) |
+| `caps.rs` | each device's identity and capabilities (used by `direct.rs`) |
+| `probe.rs` | `--check-uinput`: open a session and make a touchpad |
+
+Who rebuilds, and when to stop, is `daemon/devices/step.rs` and nothing else (`model.rs` holds the states, events and effects, `io.rs` the emitter and the factory that carry them out). A write that fails is returned once as an error: that error is the news that the devices were lost, and `dispatch` hands it to the reader. `OutputError` says what
+happened: `Unavailable` (the service is not there yet; retried without limit), `Write` (the
+device failed; rebuilt) and `Cut` (the service closed the connection, refused palmrest or timed
+out; counted). After a cut the devices are rebuilt with the 1 s, 2 s, 4 s, 5 s backoff, three
+times; a fourth cut in a row, with no frame going through between, ends the virtual devices with
+one line in the log that carries the service's reason. A change of settings that changes what the
+devices must be tries again. The socket stream to shell-host is unaffected throughout.
+
+A key combination the service denies (a key that types text with no ctrl, alt or super) is
+reported when the settings are read (`Action::read`, `Key::needs_a_shortcut_modifier`). That
+predicate mirrors the service's key classes (`turnstile-wire`'s `keytable`); a test here pins
+which names are free, and the service's tests fail when `keys::NAMES` has a code it lacks.
+
+`Origin::Service` is the service alone (no fallback to the node); `--direct-uinput` (`Route::Node`) is for development.

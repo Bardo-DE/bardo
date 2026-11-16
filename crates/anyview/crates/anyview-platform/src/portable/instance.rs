@@ -9,7 +9,7 @@
 use super::frame::{self, FrameError, MAX_LINE};
 use crate::error::PlatformError;
 use crate::instance::{Claim, Instance, Primary, Request};
-use latchkey::{Agent, Error as Latch, Listening, Stream};
+use service_locator::{Agent, Error as Latch, Listening, Stream};
 use std::io::{BufRead, BufReader, Read, Write};
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -78,14 +78,14 @@ impl LatchkeyInstance {
                     hash.wrapping_mul(31).wrapping_add(u64::from(c))
                 });
                 let user = format!("scratch{user:x}");
-                let environment = latchkey::Environment {
+                let environment = service_locator::Environment {
                     runtime_dir: Some(dir.to_owned()),
                     tmpdir: Some(dir.to_owned()),
                     home: Some(dir.to_owned()),
                     local_app_data: Some(dir.to_owned()),
                     user: Some(user),
                 };
-                Agent::in_environment(AGENT, latchkey::here(), &environment)
+                Agent::in_environment(AGENT, service_locator::here(), &environment)
             }
         }
         .map_err(|error| failed("find the viewer's socket", &error))
@@ -265,7 +265,7 @@ fn accept_loop(listening: &Listening, stopping: &AtomicBool, sender: &Sender<Req
 /// `stream` as something that stops waiting for a client that sends nothing.
 #[cfg(unix)]
 fn timed(stream: Stream) -> std::io::Result<std::os::unix::net::UnixStream> {
-    let socket = std::os::unix::net::UnixStream::from(latchkey::into_fd(stream)?);
+    let socket = std::os::unix::net::UnixStream::from(service_locator::into_fd(stream)?);
     socket.set_read_timeout(Some(CLIENT_WAIT))?;
     Ok(socket)
 }

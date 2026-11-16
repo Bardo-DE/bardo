@@ -1,0 +1,121 @@
+[package]
+name = "layer-shell-host"
+description = "Blitz documents on Wayland layer-shell, xdg popups and toplevels, one GPU device for every surface."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/shell-host"
+publish = false
+
+[dependencies]
+# Wayland
+smithay-client-toolkit = {version = "0.20", default-features = false, features = ["calloop", "xkbcommon"]}
+wayland-client = {version = "0.31"}
+# Named for its `client_system` feature: `Connection::backend().display_ptr()` (gpu::raw_handle).
+wayland-backend = {version = "0.3", features = ["client_system"]}
+wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
+calloop = {version = "0.14"}
+calloop-wayland-source = {version = "0.4"}
+raw-window-handle = {version = "0.6"}
+keyboard-types = {version = "0.7"}
+cursor-icon = {version = "1"}
+# `quire_window_v1`'s client bindings and the wire vocab (`handlers::quire_window`).
+desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
+# Documents and rendering
+blitz-embed = {features = ["adapter", "settings"], path = "../../blitz-embed/blitz-embed"}
+blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
+blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
+blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
+dioxus-native-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "accessibility"]}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus-document = {version = "0.7"}
+anyrender = {version = "0.13"}
+anyrender_vello_hybrid = {version = "0.10"}
+anyrender_vello_cpu = {version = "0.17", features = ["multithreading", "filters"]}
+vello_hybrid = {version = "0.1"}
+wgpu = {version = "29"}
+wgpu_context = {version = "0.9"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+# Common
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+thiserror = {version = "2"}
+serde = {version = "1", features = ["derive"]}
+# The per-device image cache (`gpu::context`).
+rustc-hash = {version = "2"}
+vello_common = {version = "0.1"}
+# The debug-inject JSON stats lines.
+serde_json = {version = "1"}
+# The palmrest socket's messages (`input::palmrest`).
+mouse-gestures-proto = {path = "../../input/mouse-gestures-proto"}
+# The overlay scroll thumb's shapes and colour (scroll::paint).
+peniko = {version = "0.6"}
+# SOCK_SEQPACKET for the palmrest socket (std has no seqpacket, and unsafe is not allowed
+# here); in the pinned block since quire b45282a.
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+# `SO_PEERPIDFD` for the palmrest socket's peer (rustix has no safe wrapper for it).
+nix = {version = "0.31", default-features = false, features = ["socket"]}
+
+[features]
+default = []
+# `render_png` and everything downstream of it: no window, no Wayland connection, no GPU
+# surface. Off by default because it is a CI/testing path, not something a running shell
+# needs linked in.
+headless = []
+# Per-surface debug commands on stdin (`<surface> hover x y`, `stats`, `capture`) and
+# `HostCtx::inject`. Off in a shipped shell.
+debug-inject = []
+
+# The acceptance probe: a plain xdg toplevel (JSON configure lines) the demo items cover.
+[[example]]
+name = "probe_toplevel"
+required-features = ["debug-inject"]
+
+[[example]]
+name = "demo_bar"
+required-features = ["debug-inject"]
+
+[[example]]
+name = "demo_dock"
+required-features = ["debug-inject"]
+
+# A `PopupSize::FitContent` popup measures its own content and re-fits when it
+# grows.
+[[example]]
+name = "demo_popup"
+required-features = ["debug-inject"]
+
+# A wallpaper-shaped Background surface whose content changes after its first frame.
+[[example]]
+name = "demo_wallpaper"
+required-features = ["debug-inject"]
+
+# A client-decorated toplevel: move, resize band, maximize, configure state.
+[[example]]
+name = "demo_window"
+required-features = ["debug-inject"]
+
+# The session lock's acceptance; its guard against locking a real session is table-tested in
+# tests/shell_host (`guard.rs` is included there).
+[[example]]
+name = "demo_lock"
+
+# The IME acceptance: a plain `<input>` on an exclusive-keyboard Overlay layer.
+[[example]]
+name = "demo_ime"
+
+# The popup keyboard acceptance: a None bar and a grabbing popup that prints its keys.
+[[example]]
+name = "demo_popup_keys"
+
+# The swipe acceptance: a banner whose blur and input regions follow a card as a
+# drag and an exit animation transform it.
+[[example]]
+name = "demo_swipe"
+[dev-dependencies]
+# The drag outcome's wire form in tests, and demo_drag's JSON lines.
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

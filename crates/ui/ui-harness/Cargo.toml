@@ -1,0 +1,63 @@
+[package]
+name = "ui-harness"
+description = "Test driver for quire documents on Blitz: Harness, Clock::Virtual, snapshots, painters. Dev-only."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ui-components = {path = "../ui-components"}
+ui-core = {path = "../ui-core"}
+ui-blitz = {path = "../ui-blitz", default-features = false, features = ["testing"]}
+# `AdapterPref`, the GPU ranking and device request the hybrid painter opens its device with.
+blitz-embed = {features = ["adapter"], path = "../../blitz-embed/blitz-embed"}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
+blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
+blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
+blitz-html = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
+# The inline layouts' glyph runs: where each line of text is ink (`inset`).
+parley = {version = "0.11.1", default-features = false, features = ["std", "complex-scripts"]}
+dioxus-native-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "accessibility"]}
+anyrender = {version = "0.13"}
+anyrender_vello_hybrid = {version = "0.10"}
+anyrender_vello_cpu = {version = "0.17", features = ["multithreading", "filters"]}
+wgpu = {version = "29"}
+# The hybrid backend (`gpu_paint`): vello_hybrid driven directly on an offscreen device, and the
+# device handle anyrender_vello_hybrid paints with.
+vello_hybrid = {version = "0.1"}
+wgpu_context = {version = "0.9"}
+rustc-hash = {version = "2"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+keyboard-types = {version = "0.7"}
+# `HarnessConfig::with_platform`: the fixed-platform keymap tests run under.
+keymap = {path = "../../keymap/keymap"}
+peniko = {version = "0.6"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+# The virtual-clock ask test wakes the document from a watch channel.
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+# `menu_export`: a client of the app's exported menu, on a private bus.
+zbus = {version = "5.19"}
+serde = {version = "1", features = ["derive"]}
+
+[features]
+default = ["quire-desktop"]
+# Desktop integration of the quire crates this one uses (design/36 section 1).
+quire-desktop = ["ui-blitz/quire-desktop"]
+# `pdf_app` and `Harness::pdf`: a harness's document printed as it is now.
+pdf = ["ui-blitz/pdf"]
+# `menu_export`: the exported menu bar, driven over a private bus.
+menus = ["ui-blitz/menus"]
+
+[[test]]
+name = "menu_export"
+required-features = ["menus"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

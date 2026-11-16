@@ -1,0 +1,104 @@
+//! GroupHeader: the head of one app's notifications in the notification center (design/20 section
+//! 1.6, design/13 section 13.3.6 "Grouping by app"). The app's icon at 16,
+//! its name and how many it holds in `SectionHeader`'s group type (the data face in capitals at
+//! the caption size, `--ink-faint`), then the trailing pair: the toggle that folds the group to
+//! its newest ("N more" while folded, "Show less" while open) and Clear. Both are Quiet buttons
+//! that keep their press, so a header inside a pressable group row never also presses the row.
+
+use dioxus::prelude::*;
+use ui_components::base::press::Press;
+use ui_components::base::vocab::shown_word;
+use ui_components::components::content::icon_source::IconSource;
+use ui_components::components::content::icon_view::IconView;
+use ui_components::components::content::text_runs::{TextLine, text};
+use ui_components::components::controls::button::Button;
+use ui_components::components::controls::button_model::Bezel;
+use ui_components::root::common::Common;
+use ui_components::style::icon::render::IconSize;
+
+/// The toggle's words: "Show less" while the group is open; while folded to its newest, how
+/// many are hidden ("2 more"), or nothing when there is nothing to show.
+fn toggle_label(expanded: bool, count: u32) -> Option<String> {
+    match (expanded, count) {
+        (true, _) => Some("Show less".to_owned()),
+        (false, 0 | 1) => None,
+        (false, n) => Some(format!("{} more", n - 1)),
+    }
+}
+
+/// One app's group header. `count` is how many notifications the group holds; `expanded` is
+/// whether the group shows them all (`aria-expanded` on the toggle). `on_toggle` folds or opens
+/// it; `on_clear` clears the group.
+#[component]
+pub fn GroupHeader(
+    icon: IconSource,
+    #[props(into)] name: TextLine,
+    count: u32,
+    #[props(default)] expanded: bool,
+    on_toggle: EventHandler<Press>,
+    on_clear: EventHandler<Press>,
+    #[props(default)] common: Common,
+) -> Element {
+    let clear = format!("Clear {}", name.plain_text());
+    let class = common.class("ds-group-header");
+    let data = common.data_attributes();
+    rsx! {
+        div {
+            class,
+            id: common.id.clone(),
+            "data-expanded": shown_word(expanded),
+            "aria-label": common.aria_label.clone(),
+            onmounted: move |event| common.mounted(event),
+            ..data,
+            span { class: "ds-group-header-icon",
+                IconView { source: icon, size: IconSize::Base }
+            }
+            span { class: "ds-group-header-name", {text(&name)} }
+            if count > 0 {
+                span { class: "ds-group-header-count", "{count}" }
+            }
+            span { class: "ds-group-header-actions",
+                if let Some(label) = toggle_label(expanded, count) {
+                    Button {
+                        bezel: Bezel::Inline,
+                        label,
+                        shown: expanded,
+                        stop_propagation: true,
+                        onclick: move |press| on_toggle.call(press),
+                    }
+                }
+                Button {
+                    common: Common { aria_label: Some(clear), ..Common::default() },
+                    bezel: Bezel::Inline,
+                    label: "Clear",
+                    stop_propagation: true,
+                    onclick: move |press| on_clear.call(press),
+                }
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::toggle_label;
+
+    #[test]
+    fn the_toggle_names_what_it_will_do() {
+        let cases = [
+            (true, 4, Some("Show less")),
+            (true, 1, Some("Show less")),
+            (false, 4, Some("3 more")),
+            (false, 2, Some("1 more")),
+            (false, 1, None),
+            (false, 0, None),
+        ];
+        for (expanded, count, want) in cases {
+            assert_eq!(
+                toggle_label(expanded, count).as_deref(),
+                want,
+                "{expanded:?} {count}"
+            );
+        }
+    }
+}

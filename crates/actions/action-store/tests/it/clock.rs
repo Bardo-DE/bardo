@@ -1,0 +1,13 @@
+//! The system clock reads the time, and a wait of no time at all is done at once.
+
+use action_store::SystemClock;
+use action_vocab::{Clock, Millis};
+use std::pin::Pin;
+use std::task::{Context, Poll, Waker};
+
+#[test]
+fn no_time_at_all_is_already_done() {
+    let mut waiting = Box::pin(SystemClock.after(Millis(0)));
+    let mut cx = Context::from_waker(Waker::noop());
+    assert_eq!(Pin::new(&mut waiting).poll(&mut cx), Poll::Ready(()));
+}

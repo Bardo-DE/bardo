@@ -7,21 +7,21 @@ use crate::missing::{MissingPlugin, Package, suggested_package};
 use crate::off::OffPlugin;
 use crate::provision::{Provision, TargetName};
 use anyview_plugin_protocol::{Capability, PROTOCOL_VERSION};
-use bayonet::registry::{Fit, Registry};
+use plugin_host::registry::{Fit, Registry};
 
-pub use bayonet::registry::Origin;
+pub use plugin_host::registry::Origin;
 
 /// Whether the files a manifest names can be used.
-pub type Readiness = bayonet::registry::Readiness<Provision>;
+pub type Readiness = plugin_host::registry::Readiness<Provision>;
 
 /// A manifest as discovery found it.
-pub type Candidate = bayonet::registry::Candidate<Provision>;
+pub type Candidate = plugin_host::registry::Candidate<Provision>;
 
 /// A plugin the viewer can use.
-pub type Installed = bayonet::registry::Installed<Provision>;
+pub type Installed = plugin_host::registry::Installed<Provision>;
 
 /// A plugin that was found and cannot be used, with the reason.
-pub type Unusable = bayonet::registry::Unusable<Provision>;
+pub type Unusable = plugin_host::registry::Unusable<Provision>;
 
 /// What a lookup came to. A plugin that is turned off is not missing: it is named so the viewer can
 /// offer to turn it on.

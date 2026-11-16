@@ -1,0 +1,30 @@
+[package]
+name = "agent-loop"
+description = "The companion's pure machines: the working-set assembler, the planner step, the tier rule, side-conversation capture, the idle pass, completion notes and the restart rebuild."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+permission-core = {path = "../permission-core"}
+action-vocab = {path = "../action-vocab"}
+companion-wire = {path = "../companion-wire"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+memory-core = {path = "../../memory/memory-core"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+action-manifest = {path = "../action-manifest"}
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

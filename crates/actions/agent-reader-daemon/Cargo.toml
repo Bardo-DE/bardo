@@ -1,0 +1,58 @@
+[package]
+name = "agent-reader-daemon"
+description = "The quarantined reader: a separate process that reads untrusted text under a closed task and a schema, with no tools, and answers a typed value. The binary serves Reader1 on the session bus."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "agent_reader_daemon"
+path = "src/lib.rs"
+
+[[bin]]
+name = "readerd"
+path = "src/main.rs"
+
+[dependencies]
+action-core = {path = "../action-core"}
+action-vocab = {path = "../action-vocab"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
+action-dbus = {path = "../action-dbus", features = ["inferd"]}
+agent-reader = {path = "../agent-reader"}
+provenance = {path = "../../provenance/provenance"}
+account-core = {path = "../../accounts/account-core"}
+account-callers = {path = "../../accounts/account-callers"}
+inference-core = {path = "../../inference/inference-core"}
+inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
+thiserror = {version = "2"}
+serde_json = {version = "1"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tracing = {version = "0.1"}
+action-log = {path = "../action-log"}
+zbus-ready = { path = "../../zbus-ready" }
+
+[dev-dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+account-wire = {path = "../../accounts/account-wire"}
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
+permission-core = {path = "../permission-core"}
+action-testbus = {path = "../action-testbus"}
+tempfile = {version = "3"}
+action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
+action-fake = {path = "../action-fake"}
+inference-core = {features = ["testing"], path = "../../inference/inference-core"}
+proptest = {version = "1"}
+action-context = {path = "../action-context"}
+action-router = {path = "../action-router"}
+action-wire = {path = "../action-wire"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

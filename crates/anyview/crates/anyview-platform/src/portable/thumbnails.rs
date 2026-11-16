@@ -52,7 +52,7 @@ impl ThumbnailCache for FreedesktopThumbnails {
         size: ThumbSize,
     ) -> Result<Option<ThumbPixels>, PlatformError> {
         let path = self.path(file, size);
-        let bytes = match ds_helpers::read_capped(&path, THUMBNAIL_CAP) {
+        let bytes = match ui_helpers::read_capped(&path, THUMBNAIL_CAP) {
             Ok(bytes) => bytes,
             Err(error) if error.is_missing() => return Ok(None),
             Err(error) => {
@@ -192,13 +192,13 @@ fn create_private_dir(directory: &Path) -> std::io::Result<()> {
 
 /// The most a cached thumbnail may be: a 1024-pixel PNG is a few MiB, so a file over this is not
 /// a thumbnail.
-const THUMBNAIL_CAP: ds_helpers::ReadCap = ds_helpers::ReadCap::mib(32);
+const THUMBNAIL_CAP: ui_helpers::ReadCap = ui_helpers::ReadCap::mib(32);
 
-/// Write `bytes` as the file `path` with quire's `ds_helpers::write_atomic`, so a reader never sees
+/// Write `bytes` as the file `path` with quire's `ui_helpers::write_atomic`, so a reader never sees
 /// half a file: a temporary file of this writer's own beside it, synced, renamed over it. A new
 /// thumbnail is readable by its owner alone, as the thumbnail specification asks.
 fn write_atomically(path: &Path, bytes: &[u8]) -> Result<(), PlatformError> {
-    ds_helpers::write_atomic(path, bytes, ds_helpers::NewFileMode::OwnerOnly)
+    ui_helpers::write_atomic(path, bytes, ui_helpers::NewFileMode::OwnerOnly)
         .map_err(|error| PlatformError::io(IoOp::Write, &error.path, &error.source))
 }
 

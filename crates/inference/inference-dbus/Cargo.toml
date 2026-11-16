@@ -1,0 +1,32 @@
+[package]
+name = "inference-dbus"
+description = "steward's D-Bus API: org.quire.Inference1 (inference and agents) written once, as the zbus proxy its callers use, the trait inferd implements and the object that serves it, with the bus vocabulary and row codecs."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[dependencies]
+account-core = {path = "../../accounts/account-core"}
+account-match = {path = "../../accounts/account-match"}
+account-ids = {path = "../../accounts/account-ids"}
+# The names of the bus (`porter_wire::names`), shared with the clients that dial it.
+account-wire = {path = "../../accounts/account-wire"}
+# The shared helpers: `Details`, `Call`, `Document`, `Unserved`, the vardict codec.
+account-dbus = {path = "../../accounts/account-dbus"}
+# `#[bus_interface]`; its expansion names `::porter_dbus::Call` and `::porter_dbus::Unserved`.
+account-dbus-macros = {path = "../../accounts/account-dbus-macros"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+base-testkit = {path = "../../base/base-testkit"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

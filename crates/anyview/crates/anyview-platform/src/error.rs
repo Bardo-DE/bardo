@@ -121,9 +121,9 @@ pub enum PlatformError {
 }
 
 #[cfg(unix)]
-impl From<bayonet::run::RunError<Capability>> for PlatformError {
-    fn from(error: bayonet::run::RunError<Capability>) -> Self {
-        use bayonet::run::RunError;
+impl From<plugin_host::run::RunError<Capability>> for PlatformError {
+    fn from(error: plugin_host::run::RunError<Capability>) -> Self {
+        use plugin_host::run::RunError;
         match error {
             RunError::Spawn { program, kind } => PlatformError::Spawn { program, kind },
             RunError::Silent { plugin, waited } => PlatformError::PluginSilent {

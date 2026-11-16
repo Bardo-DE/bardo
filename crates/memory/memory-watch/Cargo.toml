@@ -1,0 +1,29 @@
+[package]
+name = "memory-watch"
+description = "File-change capture: the FileWatch seam, InotifyWatch, and the pure join of observed changes with the reasons apps supply."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+memory-core = {path = "../memory-core"}
+blake3 = {version = "1"}
+notify = {version = "8.2", optional = true}
+thiserror = {version = "2"}
+
+[features]
+default = ["linux"]
+# `InotifyWatch`: notify's inotify backend. Off elsewhere; `join` and the seam stay portable.
+linux = ["dep:notify"]
+# blake3's portable Rust implementation, for a cross build with no C compiler for the target.
+pure-hash = ["blake3/pure"]
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

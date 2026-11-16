@@ -1,0 +1,21 @@
+[package]
+name = "engine-spec"
+description = "What differs between the engines (llama-server, vLLM, Strata, the speech host, Kokoro) as one trait with default methods: the disk word, the distro packages, the command line, the checks a catalog entry must pass. Pure."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/stoker"
+publish = false
+
+[dependencies]
+model-catalog = {path = "../../models/model-catalog"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

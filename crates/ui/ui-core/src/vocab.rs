@@ -1,0 +1,627 @@
+//! The props vocabulary every component shares (design/04-COMPONENTS.md "Shared vocabulary").
+//!
+//! A yes/no prop is a `bool` (`shown`, `selected`, `muted`, `active`); an enum here is a choice
+//! with more than two states, or one that carries more than a fact. The `*_word` functions write a
+//! `bool` as the stylesheet word its `data-*` attribute selects on.
+
+use crate::word::Word;
+use serde::{Deserialize, Serialize};
+
+/// Whether a control takes input (design/30 section 1.5). `Disabled` adds `aria-disabled="true"`
+/// and drops the handler; `Busy` adds `aria-busy="true"`, drops the handler as well, and is
+/// where a control's busy accessory shows.
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word, serde::Serialize, serde::Deserialize,
+)]
+#[serde(rename_all = "kebab-case")]
+pub enum Availability {
+    /// Takes input.
+    #[default]
+    Enabled,
+    /// Shown, but takes no input.
+    Disabled,
+    /// Working: takes no input until the work ends.
+    Busy,
+}
+
+/// How much attention a message asks for (design/30 section 2.9): the tone of an inline banner and
+/// of a status label. `Info` is the accent, the others are the status colours `--ok`, `--warn`
+/// and `--danger`. `data-severity`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
+pub enum Severity {
+    /// A note: the accent.
+    #[default]
+    Info,
+    /// It worked, it is fine.
+    Ok,
+    /// Take care.
+    Warn,
+    /// It failed, it is not what it says.
+    Danger,
+}
+
+/// What kind of surface a control opens (`aria-haspopup`): the word that tells assistive
+/// technology a press brings up a menu, a dialog or a list of choices.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
+pub enum HasPopup {
+    /// A menu of commands.
+    Menu,
+    /// A dialog, sheet or popover with its own content.
+    Dialog,
+    /// A list of options to choose one from.
+    Listbox,
+}
+
+/// Where an item stands in a drag (design/04-COMPONENTS.md section 34): the place under the
+/// pointer that would take the drop writes `data-drop="target"`, every other place that could
+/// take it `data-drop="accepts"`, the thing being dragged `data-drag="source"`, and every
+/// other item neither.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
+pub enum DropState {
+    /// Not part of the drag.
+    #[default]
+    Idle,
+    /// Under the pointer and accepting: lit and grown.
+    Target,
+    /// Able to take what is being dragged, while the pointer is elsewhere: every
+    /// place a dragged thread could land is outlined as the drag starts, before the pointer is
+    /// over any, so the reader sees where it may go. A quiet dashed accent hairline, weaker
+    /// than `Target`'s fill, scale and shadow; written `data-drop="accepts"`.
+    Accepts,
+    /// Being dragged: dimmed to .35 while its ghost follows the pointer.
+    Source,
+}
+
+/// On, off or mixed (`NSControl.StateValue`, design/30 section 1.5): a toggle's value, a
+/// toggle button's pressed state, a menu item's check mark. `aria-pressed` on a button,
+/// `aria-checked` on a toggle or a menu item; `Mixed` writes `"mixed"`.
+///
+/// `Toggle` has no mixed look: it refuses `Mixed` and draws it as `Off`.
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word, serde::Serialize, serde::Deserialize,
+)]
+#[serde(rename_all = "kebab-case")]
+pub enum Check {
+    /// Pressed, checked, on.
+    On,
+    /// Not pressed, unchecked, off.
+    #[default]
+    Off,
+    /// Some of what it covers is on and some is off.
+    Mixed,
+}
+
+/// What closes a floating layer (`NSPopover.Behavior`, design/30 section 1.5).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
+pub enum Dismiss {
+    /// Escape, or a click outside.
+    #[default]
+    Transient,
+    /// Escape only.
+    Semitransient,
+    /// Neither: only its owner closes it.
+    Manual,
+}
+
+/// Where a press on a control stands (design/30 section 1.5): from a pointer or a key going
+/// down until it is released. `data-pressed` is written for `Pressed` and `Held`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
+pub enum PressPhase {
+    /// No press under way.
+    #[default]
+    Idle,
+    /// Down, by pointer or key; released inside, it activates.
+    Pressed,
+    /// Down for the long-press delay: the press has become a long press.
+    Held,
+}
+
+impl PressPhase {
+    /// `data-pressed`: present while a press is under way.
+    pub fn attr(self) -> Option<&'static str> {
+        match self {
+            PressPhase::Idle => None,
+            PressPhase::Pressed | PressPhase::Held => Some("true"),
+        }
+    }
+}
+
+/// The state every row shares (design/30 section 1.5): list, menu, palette, sidebar and
+/// settings rows are drawn from the same four facts, so a row takes one prop, not four.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub struct RowState {
+    /// Whether the row is the selected one, or the place the person is (`aria-selected`).
+    pub selection: bool,
+    /// Whether the row is in unread (strong) weight; `false` is read weight.
+    pub emphasis: bool,
+    /// Whether the row takes input, and whether it is working.
+    pub availability: Availability,
+    /// The row's part in a drag.
+    pub drop: DropState,
+}
+
+/// A proportion in thousandths: 0 is none, 1000 is all. Written inline as `--f`.
+///
+/// Not clamped by the type: a settings gain may exceed 1000 (design/22-SETTINGS.md section 4
+/// uses the same type); a component clamps what it draws.
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Serialize, Deserialize,
+)]
+#[serde(transparent)]
+pub struct Fraction(pub u16);
+
+/// A percentage, 0 to 100, clamped on construction: `IdleDim`'s `level`
+/// (design/22-SETTINGS.md section 3.24 `idle.dim_level_pct`). `ds` may not depend on
+/// `ds-settings` (`scripts/check-boundary.sh`), so the two `Percent` types agree by shape, not
+/// by sharing a definition; a caller already holding `ui_settings::Percent` passes its `.0`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(from = "u8", into = "u8")]
+pub struct Percent(pub u8);
+
+impl Percent {
+    /// `value`, clamped to 100.
+    pub fn new(value: u8) -> Self {
+        Percent(value.min(100))
+    }
+}
+
+impl From<u8> for Percent {
+    fn from(value: u8) -> Self {
+        Percent::new(value)
+    }
+}
+
+impl From<Percent> for u8 {
+    fn from(value: Percent) -> Self {
+        value.0
+    }
+}
+
+/// One key in a shortcut.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ShortcutKey {
+    /// Control, drawn `⌃`.
+    Ctrl,
+    /// Shift, drawn `⇧`.
+    Shift,
+    /// Alt, drawn `⌥`.
+    Alt,
+    /// Super, drawn `⌘`.
+    Super,
+    /// A printable key, drawn upper-case.
+    Char(char),
+    /// Space.
+    Space,
+    /// Enter, drawn `↵`.
+    Enter,
+    /// Escape.
+    Escape,
+    /// Tab.
+    Tab,
+    /// Backspace.
+    Backspace,
+    /// Up arrow.
+    Up,
+    /// Down arrow.
+    Down,
+    /// Left arrow.
+    Left,
+    /// Right arrow.
+    Right,
+    /// Home: the line's start in a text surface.
+    Home,
+    /// End: the line's end.
+    End,
+    /// Delete (forward delete), drawn `⌦`.
+    Delete,
+    /// Page Up.
+    PageUp,
+    /// Page Down.
+    PageDown,
+    /// Insert: with Shift a paste, with Ctrl a copy, in a text surface.
+    Insert,
+    /// The context-menu key (the Menu key): opens a text surface's spelling menu at the caret.
+    ContextMenu,
+    /// A function key, `F(1)` to `F(12)` (see [`ShortcutKey::function`]), drawn `F9`. A number
+    /// outside that range is no key: it draws its name but resolves to nothing.
+    F(u8),
+}
+
+/// A key combination, modifiers first, rendered as glyphs with no separator: `⌃T`
+/// (design/04-COMPONENTS.md O-2). Bind a standard one with [`Shortcut::standard`] and an app's
+/// own with [`Shortcut::custom`], which refuses a reserved combination (design/27 section 6.2).
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
+pub struct Shortcut(pub Vec<ShortcutKey>);
+
+impl Shortcut {
+    /// The glyph text, modifiers in the Mac's order whatever order they were given in: `⌃⌥⇧⌘`,
+    /// then the key (`⇧⌘Z`).
+    pub fn glyphs(&self) -> String {
+        self.keys().into_iter().map(ShortcutKey::glyph).collect()
+    }
+
+    /// The keys in the order they are drawn: modifiers first in the Mac's order (⌃⌥⇧⌘),
+    /// deduplicated, then the rest as given.
+    pub fn keys(&self) -> Vec<ShortcutKey> {
+        crate::standard_action::normalized(self.0.iter().copied())
+    }
+}
+
+impl ShortcutKey {
+    /// A modifier's place in the Mac's order (Control, Option, Shift, Command), or `None` for a
+    /// key that is not a modifier.
+    pub(crate) fn modifier_rank(self) -> Option<u8> {
+        match self {
+            ShortcutKey::Ctrl => Some(0),
+            ShortcutKey::Alt => Some(1),
+            ShortcutKey::Shift => Some(2),
+            ShortcutKey::Super => Some(3),
+            _ => None,
+        }
+    }
+
+    /// Whether this is a key and no modifier.
+    pub(crate) fn is_plain(self) -> bool {
+        self.modifier_rank().is_none()
+    }
+
+    /// The text one key cap shows. Only `⌃ ⇧ ⌥ ⌘`, upper-case characters and `↵` are the
+    /// doc's; the rest are not specified in design/04-COMPONENTS.md (O-2 names only the
+    /// modifiers). TODO(O-2): Space, Escape, Tab, Backspace, the arrows and Home, End, Delete, PageUp,
+    /// PageDown, Insert and ContextMenu need sign-off.
+    pub fn glyph(self) -> String {
+        match self {
+            ShortcutKey::Ctrl => "⌃".to_string(),
+            ShortcutKey::Shift => "⇧".to_string(),
+            ShortcutKey::Alt => "⌥".to_string(),
+            ShortcutKey::Super => "⌘".to_string(),
+            ShortcutKey::Char(c) => c.to_uppercase().collect(),
+            ShortcutKey::Space => "Space".to_string(),
+            ShortcutKey::Enter => "↵".to_string(),
+            ShortcutKey::Escape => "Esc".to_string(),
+            ShortcutKey::Tab => "⇥".to_string(),
+            ShortcutKey::Backspace => "⌫".to_string(),
+            ShortcutKey::Up => "↑".to_string(),
+            ShortcutKey::Down => "↓".to_string(),
+            ShortcutKey::Left => "←".to_string(),
+            ShortcutKey::Right => "→".to_string(),
+            ShortcutKey::Home => "↖".to_string(),
+            ShortcutKey::End => "↘".to_string(),
+            ShortcutKey::Delete => "⌦".to_string(),
+            ShortcutKey::PageUp => "⇞".to_string(),
+            ShortcutKey::PageDown => "⇟".to_string(),
+            ShortcutKey::Insert => "Ins".to_string(),
+            ShortcutKey::ContextMenu => "Menu".to_string(),
+            ShortcutKey::F(n) => format!("F{n}"),
+        }
+    }
+
+    /// The function key `F<n>`, or `None` outside `F1` to `F12`.
+    pub fn function(n: u8) -> Option<ShortcutKey> {
+        (1..=12).contains(&n).then_some(ShortcutKey::F(n))
+    }
+
+    /// Whether this is an arrow key: `KeyEquivalent` writes `data-glyph="arrow"` for it, so the
+    /// cap draws Up, Down, Left and Right larger than the rest of the small face (at 9.5 px an
+    /// arrow's stroke reads as a dash).
+    pub fn is_arrow(self) -> bool {
+        matches!(
+            self,
+            ShortcutKey::Up | ShortcutKey::Down | ShortcutKey::Left | ShortcutKey::Right
+        )
+    }
+}
+
+impl Availability {
+    /// `aria-disabled`: present only when disabled.
+    pub fn aria_disabled(self) -> Option<&'static str> {
+        match self {
+            Availability::Enabled | Availability::Busy => None,
+            Availability::Disabled => Some("true"),
+        }
+    }
+
+    /// `aria-busy`: present only while busy.
+    pub fn aria_busy(self) -> Option<&'static str> {
+        match self {
+            Availability::Enabled | Availability::Disabled => None,
+            Availability::Busy => Some("true"),
+        }
+    }
+}
+
+impl DropState {
+    /// The `data-drop` value: `target`, `accepts`, or nothing.
+    pub fn drop_attr(self) -> Option<&'static str> {
+        match self {
+            DropState::Target => Some("target"),
+            DropState::Accepts => Some("accepts"),
+            DropState::Idle | DropState::Source => None,
+        }
+    }
+
+    /// The `data-drag` value: `source`, or nothing.
+    pub fn drag_attr(self) -> Option<&'static str> {
+        match self {
+            DropState::Source => Some("source"),
+            DropState::Idle | DropState::Target | DropState::Accepts => None,
+        }
+    }
+}
+
+impl Check {
+    /// The `aria-pressed` / `aria-checked` word.
+    pub fn aria(self) -> &'static str {
+        match self {
+            Check::On => "true",
+            Check::Off => "false",
+            Check::Mixed => "mixed",
+        }
+    }
+
+    /// The other state: `Mixed` resolves to `On`, as a mixed checkbox does when clicked.
+    pub fn flipped(self) -> Self {
+        match self {
+            Check::On => Check::Off,
+            Check::Off | Check::Mixed => Check::On,
+        }
+    }
+}
+
+/// The `aria-expanded`, `aria-selected`, `aria-current` or `aria-pressed` word for a fact.
+pub fn aria_word(on: bool) -> &'static str {
+    if on { "true" } else { "false" }
+}
+
+/// `data-shown`: `visible` while a thing is up, `hidden` while it is down.
+pub fn shown_word(shown: bool) -> &'static str {
+    if shown { "visible" } else { "hidden" }
+}
+
+/// `data-selected`: `selected` for the selected option, `unselected` for any other.
+pub fn selected_word(selected: bool) -> &'static str {
+    if selected { "selected" } else { "unselected" }
+}
+
+/// `data-activity`: `active` while a thing takes part, `inactive` at rest.
+pub fn activity_word(active: bool) -> &'static str {
+    if active { "active" } else { "inactive" }
+}
+
+/// `data-emphasis`: `strong` for unread weight, `plain` for read weight.
+pub fn emphasis_word(strong: bool) -> &'static str {
+    if strong { "strong" } else { "plain" }
+}
+
+/// `data-modality` on `.ds`: `keyboard` after a key (focus rings show), `pointer` after a pointer.
+///
+/// blitz-dom hard-codes `:focus-visible` and `:focus-within` to false and a click does not focus
+/// a button (spike S12), so the focus ring is `.ds[*|data-modality=keyboard] :focus` and the host
+/// says which modality is current.
+pub fn modality_word(keyboard: bool) -> &'static str {
+    if keyboard { "keyboard" } else { "pointer" }
+}
+
+impl Fraction {
+    /// All of it.
+    pub(crate) const ONE: Fraction = Fraction(1000);
+
+    /// The value a component draws: clamped to 0..=1000.
+    pub fn clamped(self) -> Self {
+        Fraction(self.0.min(Self::ONE.0))
+    }
+
+    /// The value in whole percent, rounded: what a battery's figure prints and its
+    /// `aria-valuenow` reads.
+    pub fn whole_percent(self) -> u16 {
+        (self.clamped().0 + 5) / 10
+    }
+
+    /// The clamped value as a CSS number for `--f`: `0.35`, `0`, `1`.
+    pub fn css(self) -> String {
+        let permille = self.clamped().0;
+        let text = format!("{}.{:03}", permille / 1000, permille % 1000);
+        text.trim_end_matches('0').trim_end_matches('.').to_string()
+    }
+}
+
+/// The companion's one presence (design/32 section 3): a look of the orb and the window glow,
+/// never a panel. `data-presence`; stored as its snake-case word.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[word(case = snake)]
+pub enum CompanionPresence {
+    /// Still; zero frames anywhere.
+    #[default]
+    Idle,
+    /// Taking a prompt: a field focused in prompt mode.
+    Listening,
+    /// Thinking, or running typed actions out of sight.
+    Working,
+    /// Acting in a window: the compositor glows that window.
+    Acting,
+    /// Blocked on the person: a question, a confirmation, a taken-over run. Still (zero frames).
+    Waiting,
+}
+
+/// What a person can do with one memory row (design/32 section 6). The launcher's verb and the
+/// memory view's button are this one enum.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[word(case = snake)]
+pub enum MemoryVerb {
+    /// Delete it, and everything derived from it.
+    Forget,
+    /// Confirm a pending fact so it lasts.
+    Keep,
+    /// Refuse a pending fact.
+    Discard,
+    /// Open what it came from.
+    OpenSource,
+    /// Write the memory out as files.
+    Export,
+}
+
+/// How much a call can change the world, for drawing only: the view of the wire's effect, ordered
+/// by severity. `data-effect`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Word)]
+pub enum EffectMark {
+    /// Reads, changes nothing.
+    Read,
+    /// Writes, and can be undone.
+    UndoableWrite,
+    /// Sends something out of the machine.
+    Outbound,
+    /// Runs commands on this computer: it can do anything the person's account can, so it is
+    /// marked apart from a plain write and from `Destructive`.
+    Execute,
+    /// Destroys something that cannot be put back.
+    Destructive,
+}
+
+/// Who did a thing, for drawing only: the view of the wire's actor. `data-actor`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
+pub enum ActorMark {
+    /// The person.
+    You,
+    /// The companion.
+    Companion,
+}
+
+/// A count a view shows ("12 results", "3 steps"): the view of the wire's count.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+pub struct Tally(pub u32);
+
+/// How loud the microphone hears, in permille (0 to 1000): the view of the voice wire's level. It
+/// drives the orb's inline `--orb-level` only while the companion is listening.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+pub struct InputLevel(pub u16);
+
+#[cfg(test)]
+mod percent_tests {
+    use super::Percent;
+
+    #[test]
+    fn a_percent_is_clamped_on_construction() {
+        const CASES: &[(u8, u8)] = &[(0, 0), (80, 80), (100, 100), (101, 100), (255, 100)];
+        for &(given, want) in CASES {
+            assert_eq!(Percent::new(given), Percent(want), "{given}");
+            assert_eq!(Percent::from(given), Percent(want), "from {given}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod fraction_tests {
+    use super::Fraction;
+
+    #[test]
+    fn a_fraction_reads_as_whole_percent_rounded_and_clamped() {
+        const CASES: &[(u16, u16)] = &[
+            (0, 0),
+            (4, 0),
+            (5, 1),
+            (844, 84),
+            (845, 85),
+            (1000, 100),
+            (1200, 100),
+        ];
+        for &(given, want) in CASES {
+            assert_eq!(Fraction(given).whole_percent(), want, "{given}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod word_tests {
+    use super::{
+        ActorMark, Availability, Check, CompanionPresence, Dismiss, DropState, EffectMark,
+        MemoryVerb, PressPhase, Severity,
+    };
+    use crate::word::Word;
+
+    /// Every member of `T` parses back from its own slug, and no two share one.
+    fn round_trips<T: Word + std::fmt::Debug>() {
+        for &word in T::ALL {
+            assert_eq!(T::parse(word.slug()), Some(word), "{word:?}");
+        }
+        let slugs: std::collections::HashSet<_> = T::ALL.iter().map(|word| word.slug()).collect();
+        assert_eq!(slugs.len(), T::ALL.len(), "{:?}", T::ALL);
+    }
+
+    #[test]
+    fn every_vocabulary_word_parses_back_from_its_slug() {
+        round_trips::<ActorMark>();
+        round_trips::<Availability>();
+        round_trips::<Check>();
+        round_trips::<CompanionPresence>();
+        round_trips::<Dismiss>();
+        round_trips::<DropState>();
+        round_trips::<EffectMark>();
+        round_trips::<MemoryVerb>();
+        round_trips::<PressPhase>();
+        round_trips::<Severity>();
+    }
+
+    #[test]
+    fn check_writes_its_aria_word_and_flips() {
+        const CHECKS: &[(Check, &str, Check)] = &[
+            (Check::On, "true", Check::Off),
+            (Check::Off, "false", Check::On),
+            (Check::Mixed, "mixed", Check::On),
+        ];
+        for &(check, aria, flipped) in CHECKS {
+            assert_eq!(check.aria(), aria, "{check:?}");
+            assert_eq!(check.flipped(), flipped, "{check:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod availability_tests {
+    use super::{Availability, PressPhase};
+
+    #[test]
+    fn availability_writes_its_own_aria_attribute() {
+        const CASES: &[(Availability, Option<&str>, Option<&str>)] = &[
+            (Availability::Enabled, None, None),
+            (Availability::Disabled, Some("true"), None),
+            (Availability::Busy, None, Some("true")),
+        ];
+        for &(availability, disabled, busy) in CASES {
+            assert_eq!(availability.aria_disabled(), disabled, "{availability:?}");
+            assert_eq!(availability.aria_busy(), busy, "{availability:?}");
+        }
+    }
+
+    #[test]
+    fn data_pressed_is_written_from_the_press_going_down_until_release() {
+        const CASES: &[(PressPhase, Option<&str>)] = &[
+            (PressPhase::Idle, None),
+            (PressPhase::Pressed, Some("true")),
+            (PressPhase::Held, Some("true")),
+        ];
+        for &(phase, want) in CASES {
+            assert_eq!(phase.attr(), want, "{phase:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod companion_tests {
+    use super::EffectMark;
+    use crate::word::Word;
+
+    #[test]
+    fn effect_marks_order_by_severity() {
+        let ordered = [
+            EffectMark::Read,
+            EffectMark::UndoableWrite,
+            EffectMark::Outbound,
+            EffectMark::Execute,
+            EffectMark::Destructive,
+        ];
+        assert_eq!(EffectMark::ALL, ordered);
+        assert!(ordered.windows(2).all(|pair| pair[0] < pair[1]));
+    }
+}

@@ -1,0 +1,40 @@
+[package]
+name = "settings-app"
+description = "The desktop's Settings app."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+clap = {version = "4", features = ["derive"]}
+settings-app-callers = {path = "../settings-app-callers", optional = true}
+settings-app-client = {path = "../settings-app-client"}
+settings-app-files = {path = "../settings-app-files"}
+settings-app-intents = {path = "../settings-app-intents"}
+settings-app-model = {path = "../settings-app-model"}
+settings-app-ui = {path = "../settings-app-ui"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+ui-settings = {path = "../../ui/ui-settings"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+
+[features]
+# `detent --dev-callers FILE`: the stand-ins a checkout built, named in the person's own rows file,
+# are let in as the desktop's services (accountd, inferd, syncd, the compositor, the shell) at a
+# standing below every real proof. Off by default; the desktop's test jail builds with it, a
+# release build never does.
+dev-callers = ["dep:settings-app-callers", "settings-app-callers/dev-callers"]
+
+[dev-dependencies]
+settings-app-testkit = {path = "../settings-app-testkit"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[[bin]]
+name = "detent"
+path = "src/main.rs"

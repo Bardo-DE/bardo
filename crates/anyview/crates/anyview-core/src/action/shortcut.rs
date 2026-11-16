@@ -2,9 +2,9 @@
 
 use super::FileAction;
 use super::spec::{Binding, spec_of};
-use chordkit::{Action, AppAction, DefaultChord, StandardAction};
-use ds_core::vocab::Shortcut;
-use ds_core::word::Word;
+use keymap::{Action, AppAction, DefaultChord, StandardAction};
+use ui_core::vocab::Shortcut;
+use ui_core::word::Word;
 
 /// The shortcut of `action`, or `None` when it has none.
 ///

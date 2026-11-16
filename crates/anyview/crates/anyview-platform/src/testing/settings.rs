@@ -3,7 +3,7 @@
 use super::locked;
 use crate::error::PlatformError;
 use crate::settings::{OpenSettings, Opening};
-use ds_core::settings::SettingsTarget;
+use ui_core::settings::SettingsTarget;
 use std::sync::{Arc, Mutex};
 
 /// An [`OpenSettings`] that records the places it was asked to open.

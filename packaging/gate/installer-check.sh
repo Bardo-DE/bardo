@@ -260,12 +260,12 @@ printf '#!/bin/sh\nexit 0\n' >"$tmp/bin/rustup"
 chmod +x "$tmp/bin/cargo" "$tmp/bin/rustup"
 : >"$log"
 inst_build --destdir "$dest" --only detent >"$tmp/out.log" 2>&1 || { cat "$tmp/out.log" >&2; fail "the detent build run failed"; }
-grep -q "^cargo cwd=/ TC=9.9.9 FLAGS=unset LINKER= build --release --locked --manifest-path $sib/Cargo.toml --config net.git-fetch-with-cli=true -p detent\$" "$log" || fail "detent was not built from / with --manifest-path: $(cat "$log")"
+grep -q "^cargo cwd=/ TC=9.9.9 FLAGS=unset LINKER= build --release --locked --manifest-path $sib/Cargo.toml --config net.git-fetch-with-cli=true -p settings-app\$" "$log" || fail "detent was not built from / with --manifest-path: $(cat "$log")"
 [ "$(grep -c '^cargo ' "$log")" = 1 ] || fail "the build was more than one cargo run: $(cat "$log")"
 # several components: still one cargo run, each package once
 : >"$log"
 inst_build --destdir "$dest" --only casement,sill,porter >"$tmp/out.log" 2>&1 || { cat "$tmp/out.log" >&2; fail "the build run for three components failed"; }
-grep -q "^cargo cwd=/ .* -p accountd -p casement -p casementctl -p sill\$" "$log" || fail "three components were not one cargo run: $(cat "$log")"
+grep -q "^cargo cwd=/ .* -p account-daemon -p compositor-app -p compositor-ctl -p shell-app\$" "$log" || fail "three components were not one cargo run: $(cat "$log")"
 [ "$(grep -c '^cargo ' "$log")" = 1 ] || fail "the build was more than one cargo run: $(cat "$log")"
 rm -f -- "$tmp/bin/cargo" "$tmp/bin/rustup"
 : >"$log"

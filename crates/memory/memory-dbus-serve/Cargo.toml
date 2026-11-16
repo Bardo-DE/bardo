@@ -1,0 +1,21 @@
+[package]
+name = "memory-dbus-serve"
+description = "The daemon's half of almanac's D-Bus API: the org.quire.Memory1 objects served over a handler, the signals, and the introspection."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+memory-core = {path = "../memory-core"}
+memory-dbus = {path = "../memory-dbus"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+zbus-ready = { path = "../../zbus-ready" }
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

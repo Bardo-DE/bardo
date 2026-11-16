@@ -1,0 +1,594 @@
+//! One quire document with no window: the pieces `Harness` and `snapshot` share. It gets the
+//! shared font context, the app's net policy, the HTML parser (so an `<iframe srcdoc>` is a
+//! real sub-document, as in the window), a shell whose clipboard is in memory, sequential styling (deterministic, and
+//! no rayon pool per test), the host's input modality, device scale, rect read and focus write as
+//! root context, and a waker to sleep on. Every frame's layout is snapped to the device pixel
+//! grid (`crate::snap`), so a picture at a fractional scale is what a snapping host shows.
+
+use crate::error::HarnessError;
+use crate::fake_window::{FakeWindow, WindowSpec};
+use crate::headless_step::PhaseOrder;
+use crate::painter::{Canvas, PaintTime, Painter};
+use crate::recorded_window::{WindowHosting, WindowLog};
+use crate::round_budget::{MAX_ROUNDS, RoundBudget};
+use crate::snapshot::Viewport;
+use blitz_dom::{BaseDocument, Document as _, DocumentConfig, NodeId, StyleThreading};
+use blitz_html::HtmlProvider;
+use blitz_embed::hit::element_of;
+use blitz_embed::hover::{LastMove, Repaired, Shift, remember, repair};
+use blitz_embed::scroll::geom::ViewPoint;
+use blitz_traits::events::UiEvent;
+use blitz_traits::net::NetWaker;
+use blitz_traits::shell::{ColorScheme, ShellProvider, Viewport as BlitzViewport};
+use keymap::Platform;
+use dioxus::prelude::*;
+use dioxus_native_dom::DioxusDocument;
+use ui_components::file_drop::board::FileDropBoard;
+use ui_components::host::gesture::GestureBus;
+use ui_components::prelude::*;
+use ui_blitz::FocusFallback;
+use ui_blitz::ScrollHandle;
+use ui_blitz::WindowSizer;
+use ui_blitz::clipboard::Memory;
+use ui_blitz::font_context;
+use ui_blitz::seam::DocRef;
+use ui_blitz::seam::DsNet;
+use ui_blitz::seam::EditListeners;
+use ui_blitz::seam::FrameBook;
+use ui_blitz::seam::FrameParser;
+use ui_blitz::seam::MemoryShell;
+use ui_blitz::seam::Phase;
+use ui_blitz::seam::Setup;
+use ui_blitz::seam::Wakeup;
+use ui_blitz::seam::WindowScroll;
+use ui_blitz::seam::follow_scheme;
+use ui_blitz::seam::{FocusKeeper, focus_finder, keep};
+use ui_blitz::seam::{
+    HoverTracker, ask_frame_image, ask_frame_menu, image_under, link_under, live_frames,
+    report_frame_hover, report_frame_image, report_frame_menu,
+};
+use ui_blitz::seam::{LinkInbox, frame_links, read_link};
+use ui_blitz::seam::{Provided, Wiring};
+use ui_blitz::{FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu};
+use ui_core::time::clock::now;
+use peniko::Color;
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::Arc;
+use std::task::{Context, Waker};
+use std::time::Duration;
+
+/// Whether a document is laid out as it renders: a shell surface is not until it is mapped.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum Layout {
+    /// Styled and laid out every frame.
+    #[default]
+    Running,
+    /// Rendered (components run, tasks are polled) but never styled or laid out: a surface
+    /// whose document was built before the compositor mapped it.
+    Held,
+}
+
+/// Why a round wants another: its renders ran. A window draws the frame its renders asked for and
+/// no more, so a stepped frame does not count this reason (`Headless::step`).
+pub(crate) const RE_RENDERED: &str = "components re-rendered";
+
+/// A headless document and what drives it.
+pub(crate) struct Headless {
+    pub(crate) doc: DioxusDocument,
+    modality: Signal<bool>,
+    scale: Signal<Scale>,
+    wakeup: Arc<Wakeup>,
+    viewport: Viewport,
+    pub(crate) layout: Layout,
+    /// The document's shell, whose clipboard is in memory.
+    pub(crate) shell: Arc<MemoryShell>,
+    /// Links clicked in the document's frames, on their way to the app.
+    links: LinkInbox,
+    /// The document's frames and their tags.
+    book: FrameBook,
+    /// Whether the app hears the pointer cross links in frames, and the link it is on.
+    hover: (Option<FrameHandler<FrameLinkHover>>, HoverTracker),
+    /// Whether the app hears a context menu asked over a link in a frame.
+    menu: Option<FrameHandler<FrameLinkMenu>>,
+    /// Whether the app hears a click on an image in a frame.
+    images: Option<FrameHandler<FrameImageClick>>,
+    /// The edit surfaces listening for IME events.
+    pub(crate) listeners: EditListeners,
+    /// The components listening for touchpad gestures.
+    pub(crate) gestures: GestureBus,
+    /// Under `FocusFallback::Ancestor`, where the keyboard goes when its element is removed.
+    keeper: Keeper,
+    /// The last pointer event, replayed when a resolve moves the hover by itself
+    /// (`blitz_embed::hover`).
+    resting: LastMove,
+    /// What paints it: vello_cpu unless the harness asked for vello_hybrid.
+    pub(crate) painter: Painter,
+    /// The frame phase: the writes the app queued and the values it watches, run after each
+    /// layout.
+    pub(crate) phase: Phase,
+    /// Where in a frame the phase's early step runs.
+    pub(crate) order: PhaseOrder,
+    /// Whether a frame is owed to the document: input arrived, or the last frame asked for another.
+    pub(crate) owed: bool,
+    /// How many frames the document has laid out and painted.
+    pub(crate) frames: u64,
+    /// The window's scrolling, run before each layout as the window loop runs it.
+    pub(crate) scroll: WindowScroll,
+    /// The window the sizer asks, and the sizer components read with `use_window_sizer`.
+    pub(crate) window: FakeWindow,
+    pub(crate) sizer: WindowSizer,
+    /// What the app set through its window host, when it has one.
+    pub(crate) window_log: WindowLog,
+    /// The platform the document's keymap is fixed to.
+    pub(crate) platform: Platform,
+}
+
+/// The hovered element (a hovered text node counts as its element, which carries the listeners).
+fn hovered(doc: &BaseDocument) -> Option<NodeId> {
+    element_of(doc, doc.get_hover_node_id()?)
+}
+
+/// Whether the document hands the keyboard on when its element is removed.
+#[derive(Debug, Clone)]
+enum Keeper {
+    /// To the nearest focusable ancestor (`crate::focus_keep`).
+    Ancestor(Rc<RefCell<FocusKeeper>>),
+    /// Blitz's own: nowhere.
+    Off,
+}
+
+impl Headless {
+    /// Build `app` at `viewport` with the app's `setup` and run its first render (no layout
+    /// yet).
+    pub(crate) fn new(
+        app: fn() -> Element,
+        viewport: Viewport,
+        setup: &Setup,
+        spec: WindowSpec,
+    ) -> Self {
+        let wakeup = Arc::new(Wakeup::default());
+        let fetches = Arc::clone(&wakeup);
+        let net_waker: Arc<dyn NetWaker> = Arc::new(move |_doc: usize| fetches.note_fetch());
+        let shell = Arc::new(MemoryShell::default());
+        let book = FrameBook::new();
+        let (frame_nav, links) = frame_links(&setup.frame_links, book.clone());
+        let frame_net = DsNet::frame(
+            setup.net.clone(),
+            Some(Arc::clone(&net_waker)),
+            book.clone(),
+        );
+        let config = DocumentConfig {
+            viewport: Some(blitz_viewport(viewport)),
+            font_ctx: Some(font_context()),
+            net_provider: Some(DsNet::top(
+                setup.net.clone(),
+                None,
+                Some(net_waker),
+                setup.file_roots.clone(),
+            )),
+            html_parser_provider: Some(FrameParser::shared(
+                Arc::new(HtmlProvider),
+                frame_net,
+                frame_nav,
+            )),
+            shell_provider: Some(Arc::clone(&shell) as Arc<dyn ShellProvider>),
+            style_threading: StyleThreading::Sequential,
+            ..Default::default()
+        };
+        let listeners = EditListeners::default();
+        let mut vdom = VirtualDom::new(app);
+        // The app's own first, so a quire context of the same type (none today) would win.
+        setup.install(&mut vdom);
+        let signals = vdom.in_runtime(|| HostSignals {
+            modality: Signal::new_in_scope(false, ScopeId::ROOT),
+            scale: Signal::new_in_scope(Scale::from_percent(viewport.scale_percent), ScopeId::ROOT),
+            activity: Signal::new_in_scope(true, ScopeId::ROOT),
+        });
+        vdom.provide_root_context(signals);
+        let window = FakeWindow::new(viewport, spec);
+        let sizer = vdom.in_runtime(|| WindowSizer::over(Rc::new(window.clone())));
+        vdom.provide_root_context(sizer.clone());
+        let window_log = WindowLog::default();
+        match spec.hosting {
+            WindowHosting::Absent => {}
+            WindowHosting::Recorded => {
+                let host = vdom.in_scope(ScopeId::ROOT, || {
+                    WindowHost::new(Rc::new(window_log.clone()))
+                });
+                vdom.provide_root_context(host);
+            }
+        }
+        let keeper = match setup.focus_fallback {
+            FocusFallback::Ancestor => {
+                Keeper::Ancestor(Rc::new(RefCell::new(FocusKeeper::default())))
+            }
+            FocusFallback::BlitzDefault => Keeper::Off,
+        };
+        let mut doc = DioxusDocument::new(vdom, config);
+        let found = DocRef::Cell(Rc::clone(&doc.inner));
+        let phase = Phase::default();
+        phase.attach(found.clone(), doc.vdom.runtime());
+        let provided = Provided::of(Wiring {
+            focus_fallback: setup.focus_fallback,
+            keeper: match &keeper {
+                Keeper::Ancestor(shared) => Some(Rc::clone(shared)),
+                Keeper::Off => None,
+            },
+            find: Some(focus_finder(move || Some(found.clone()))),
+            clipboard: Rc::new(Memory(Arc::clone(&shell))),
+            listeners: listeners.clone(),
+            phase: phase.clone(),
+        });
+        // `use_resolved` registers its token readings with this phase, as in a window.
+        doc.vdom.provide_root_context(phase.clone());
+        doc.vdom.provide_root_context(phase.after_resolve());
+        let gestures = GestureBus::default();
+        doc.vdom.provide_root_context(gestures.clone());
+        let scroll = WindowScroll::new(
+            phase.clone(),
+            gestures.clone(),
+            now(),
+            setup.keys.platform(),
+        );
+        // Every frame the harness resolves runs the scroll step, so a command needs no wake.
+        doc.vdom
+            .provide_root_context(ScrollHandle::new(scroll.clone(), Rc::new(|| {})));
+        doc.vdom.provide_root_context(provided.clipboard);
+        doc.vdom
+            .provide_root_context(FileDropBoard::new(Rc::clone(&provided.host)));
+        doc.vdom.provide_root_context(provided.host);
+        doc.initial_build();
+        Headless {
+            doc,
+            modality: signals.modality,
+            scale: signals.scale,
+            wakeup,
+            viewport,
+            layout: Layout::Running,
+            shell,
+            links,
+            book,
+            hover: (setup.frame_links.hover(), HoverTracker::default()),
+            menu: setup.frame_links.menu(),
+            images: setup.frame_links.images(),
+            listeners,
+            gestures,
+            keeper,
+            resting: LastMove::Unknown,
+            painter: Painter::Cpu,
+            phase,
+            order: PhaseOrder::default(),
+            owed: false,
+            frames: 0,
+            scroll,
+            window,
+            sizer,
+            window_log,
+            platform: setup.keys.platform(),
+        }
+    }
+
+    /// Remember where `event` leaves the pointer, if it is a pointer event.
+    pub(crate) fn note_pointer(&mut self, event: &UiEvent) {
+        if let UiEvent::PointerMove(moved) = event {
+            self.scroll.track_pointer(ViewPoint {
+                x: f64::from(moved.coords.client_x),
+                y: f64::from(moved.coords.client_y),
+            });
+        }
+        self.resting = remember(std::mem::take(&mut self.resting), event);
+    }
+
+    /// What wakes this document.
+    pub(crate) fn wakeup(&self) -> &Arc<Wakeup> {
+        &self.wakeup
+    }
+
+    /// Record the kind of input that arrived last, so `Ds` stamps `data-modality`.
+    pub(crate) fn set_modality(&self, next: bool) {
+        let mut modality = self.modality;
+        self.doc.vdom.in_runtime(|| {
+            if *modality.peek() != next {
+                modality.set(next);
+            }
+        });
+    }
+
+    /// Deliver the resizes the window applied at once (`SizerAck::Applied`) as the window loop
+    /// delivers winit's `Some(size)`: the document is laid out at the new size and the sizer
+    /// hears it, as for a `SurfaceResized`.
+    pub(crate) fn deliver_applied(&mut self) {
+        for applied in self.window.take_applied() {
+            self.resize(Viewport {
+                width: applied.logical.width,
+                height: applied.logical.height,
+                ..self.viewport
+            });
+            let sizer = self.sizer.clone();
+            self.doc.vdom.in_runtime(|| sizer.resized(applied.physical));
+        }
+    }
+
+    /// Lay the document out in `viewport` from now on, keeping its colour scheme, and tell the
+    /// app the device scale it now has. The caller resolves the document afterwards.
+    pub(crate) fn resize(&mut self, viewport: Viewport) {
+        let scheme = self.doc.inner.borrow().viewport().color_scheme;
+        let mut next = blitz_viewport(viewport);
+        next.color_scheme = scheme;
+        self.doc.inner.borrow_mut().set_viewport(next);
+        self.viewport = viewport;
+        let mut scale = self.scale;
+        let percent = Scale::from_percent(viewport.scale_percent);
+        self.doc.vdom.in_runtime(|| {
+            if *scale.peek() != percent {
+                scale.set(percent);
+            }
+        });
+    }
+
+    /// Run every render the document has queued; whether there was any.
+    ///
+    /// # Panics
+    /// When the renders never run dry: a render loop in the app, which the idle-frame rule
+    /// exists to catch, and which a test must fail on, not carry on from.
+    pub(crate) fn flush(&mut self) -> bool {
+        let waker = Waker::from(Arc::clone(&self.wakeup));
+        let mut budget = RoundBudget::new();
+        let mut rendered = false;
+        while self.doc.poll(Some(Context::from_waker(&waker))) {
+            rendered = true;
+            assert!(
+                !budget.spend(),
+                "render loop: the document was still re-rendering after {MAX_ROUNDS} rounds of \
+                 renders with no input, so a component writes state on every render or an \
+                 effect keeps re-running itself.\ndocument:\n{}",
+                self.html_excerpt()
+            );
+        }
+        rendered
+    }
+
+    /// The start of the document's HTML, for a failure message.
+    fn html_excerpt(&self) -> String {
+        const EXCERPT: usize = 4000;
+        let html = self.doc.inner.borrow().root_element().outer_html();
+        match html.char_indices().nth(EXCERPT) {
+            Some((end, _)) => format!("{}... ({} bytes in all)", &html[..end], html.len()),
+            None => html,
+        }
+    }
+
+    /// Bring the document to animation time `at`: render what is queued, follow the root's
+    /// scheme, style and lay out, and go round again while a round produced more work (an image
+    /// that landed during styling is applied on the next resolve, spike S7).
+    ///
+    /// # Panics
+    /// After [`MAX_ROUNDS`] rounds that each produced more work, naming what kept producing it.
+    pub(crate) fn frame(&mut self, at: Duration) {
+        let mut budget = RoundBudget::new();
+        let wanted = loop {
+            let wanted = self.round(at);
+            if wanted.is_empty() {
+                return;
+            }
+            if budget.spend() {
+                break wanted;
+            }
+        };
+        panic!(
+            "render loop: the document was still changing after {MAX_ROUNDS} rounds of one frame; \
+             the last round still had: {}.\ndocument:\n{}",
+            wanted.join(", "),
+            self.html_excerpt()
+        );
+    }
+
+    /// One frame in the window's order: render what is queued, lay out, paint, then run the
+    /// phase for what the frame left; the reasons another frame is wanted, none when the document
+    /// is at rest.
+    pub(crate) fn round(&mut self, at: Duration) -> Vec<&'static str> {
+        self.deliver_applied();
+        let inner = &self.doc.inner;
+        self.links
+            .drain(&|frame, href| read_link(&inner.borrow(), frame, href));
+        // Before the renders, as the window loop runs it: a listener the scroll step hands eased
+        // detents to writes its signal now, and this frame's renders show it.
+        if self.layout != Layout::Held {
+            self.scroll.frame(now());
+            // As the window does, so a component over a scroll offset renders this frame's.
+            self.phase.publish_scrolls();
+        }
+        let rendered = self.flush();
+        // After the renders and tasks have run, so a component's own hand-back (a menu's
+        // to its anchor) goes first.
+        let kept = self.keep_focus();
+        self.find_frames();
+        if self.layout == Layout::Held {
+            return Vec::new();
+        }
+        // Before the layout, so it sees this frame's offsets, as the window loop runs it.
+        if self.order == PhaseOrder::BeforePaint {
+            self.early_phase(at);
+        }
+        let restyled = follow_scheme(&mut self.doc.inner.borrow_mut()).is_some();
+        let fetched = self.wakeup.fetched();
+        let synced = self.resolve(at);
+        self.frames += 1;
+        let landed = self.wakeup.fetched() != fetched;
+        // After layout, as the window runs it: a published value or an applied write is
+        // seen by the next round's renders.
+        let phased = self.phase.run(true).changed();
+        let wanted: Vec<&'static str> = [
+            (rendered, RE_RENDERED),
+            (restyled, "the colour scheme changed the root's style"),
+            (landed, "a fetched resource landed during layout"),
+            (phased, "the frame phase changed a published value"),
+            (kept, "focus moved to an ancestor"),
+            (
+                synced == Repaired::Yes,
+                "hover was repaired under the pointer",
+            ),
+        ]
+        .into_iter()
+        .filter_map(|(more, why)| more.then_some(why))
+        .collect();
+        wanted
+    }
+
+    /// Style and lay out at `at`, then dispatch the hover change the layout made under a
+    /// resting pointer, which Blitz's resolve records silently (`blitz_embed::hover`). At most
+    /// one replay per round: the replayed move leaves Blitz's hover where the next resolve
+    /// finds it, so that one's re-hit-test changes nothing.
+    pub(crate) fn resolve(&mut self, at: Duration) -> Repaired {
+        let mut inner = self.doc.inner.borrow_mut();
+        let before = hovered(&inner);
+        inner.resolve(at.as_secs_f64());
+        ui_blitz::snap_to_device(&mut inner);
+        let after = hovered(&inner);
+        drop(inner);
+        repair(&mut self.doc, &self.resting, Shift { before, after })
+    }
+
+    /// Hand the keyboard to a focusable ancestor of a focused element the renders removed.
+    fn keep_focus(&mut self) -> bool {
+        match &mut self.keeper {
+            Keeper::Ancestor(keeper) => keep(
+                &mut keeper.borrow_mut(),
+                &DocRef::Cell(Rc::clone(&self.doc.inner)),
+            ),
+            Keeper::Off => false,
+        }
+    }
+
+    /// Find the frames the renders attached under their `iframe`s, so their requests reach the
+    /// app tagged. The document is free by then: the app's `decide` may touch it.
+    fn find_frames(&self) {
+        let live = live_frames(&self.doc.inner.borrow());
+        self.book.bind(live);
+    }
+
+    /// The pointer moved to `at`: tell the app if it came onto or left a link in a frame.
+    pub(crate) fn hover_at(&mut self, at: Point) {
+        let (hover, tracker) = &mut self.hover;
+        let Some(hover) = hover.as_ref() else {
+            return;
+        };
+        let under = link_under(&self.doc.inner.borrow(), at);
+        let crossings = tracker.step(under, at, &self.book);
+        report_frame_hover(Some(hover), crossings);
+    }
+
+    /// The secondary button was released at `at`: tell the app if it was over a link in a frame.
+    pub(crate) fn menu_at(&self, at: Point) {
+        if self.menu.is_none() {
+            return;
+        }
+        let under = link_under(&self.doc.inner.borrow(), at);
+        report_frame_menu(self.menu.as_ref(), ask_frame_menu(under, at, &self.book));
+    }
+
+    /// The primary button was released at `at`: tell the app if it was on an image in a frame.
+    pub(crate) fn image_at(&self, at: Point) {
+        if self.images.is_none() {
+            return;
+        }
+        let under = image_under(&self.doc.inner.borrow(), at);
+        report_frame_image(self.images.as_ref(), ask_frame_image(under, at, &self.book));
+    }
+
+    /// Paint the document as it was last resolved, over `backdrop`.
+    pub(crate) fn paint(&mut self, backdrop: Backdrop) -> Result<image::RgbaImage, HarnessError> {
+        let canvas = self.canvas(backdrop);
+        let mut inner = self.doc.inner.borrow_mut();
+        let pixels = self.painter.picture(&mut inner, canvas)?;
+        let (width, height) = (canvas.width, canvas.height);
+        let length = pixels.len();
+        image::RgbaImage::from_raw(width, height, pixels).ok_or_else(|| {
+            HarnessError::Renderer(format!(
+                "the renderer returned {length} bytes for {width}x{height}"
+            ))
+        })
+    }
+
+    /// Paint the document as it was last resolved, over `backdrop`, to the end, and time it.
+    pub(crate) fn paint_timed(&mut self, backdrop: Backdrop) -> Result<PaintTime, HarnessError> {
+        let canvas = self.canvas(backdrop);
+        let mut inner = self.doc.inner.borrow_mut();
+        self.painter.time(&mut inner, canvas)
+    }
+
+    /// The frame to paint over `backdrop`, at the viewport's device size.
+    fn canvas(&self, backdrop: Backdrop) -> Canvas {
+        let (width, height) = physical(self.viewport);
+        let ground = match (backdrop, self.doc.inner.borrow().viewport().color_scheme) {
+            (Backdrop::Clear, _) => Color::TRANSPARENT,
+            (Backdrop::Scheme, ColorScheme::Dark) => Color::BLACK,
+            (Backdrop::Scheme, ColorScheme::Light) => Color::WHITE,
+        };
+        Canvas {
+            width,
+            height,
+            scale: scale(self.viewport),
+            ground,
+        }
+    }
+}
+
+/// What a headless picture is painted over.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum Backdrop {
+    /// The scheme's own ground, white or black: what a window shows behind a document.
+    #[default]
+    Scheme,
+    /// Nothing: fully transparent, as a shell surface is where its document paints nothing, so
+    /// a picture's alpha is the document's own coverage.
+    Clear,
+}
+
+/// Device pixels per logical pixel.
+fn scale(viewport: Viewport) -> f64 {
+    f64::from(viewport.scale_percent) / 100.0
+}
+
+/// The viewport in device pixels.
+pub(crate) fn physical(viewport: Viewport) -> (u32, u32) {
+    let device = |logical: u32| (f64::from(logical) * scale(viewport)).round() as u32;
+    (device(viewport.width), device(viewport.height))
+}
+
+/// Blitz's viewport for ours, light until the root says otherwise.
+fn blitz_viewport(viewport: Viewport) -> BlitzViewport {
+    let (width, height) = physical(viewport);
+    BlitzViewport::new(width, height, scale(viewport) as f32, ColorScheme::Light)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::physical;
+    use crate::snapshot::Viewport;
+
+    /// A logical size and scale, and the device pixels it renders at.
+    type Case = (Viewport, (u32, u32));
+
+    const fn at(width: u32, height: u32, scale_percent: u16) -> Viewport {
+        Viewport {
+            width,
+            height,
+            scale_percent,
+        }
+    }
+
+    const CASES: &[Case] = &[
+        (at(400, 300, 100), (400, 300)),
+        (at(400, 300, 200), (800, 600)),
+        (at(401, 301, 150), (602, 452)),
+    ];
+
+    #[test]
+    fn device_pixels_follow_the_scale() {
+        for &(viewport, expected) in CASES {
+            assert_eq!(physical(viewport), expected, "{viewport:?}");
+        }
+    }
+}

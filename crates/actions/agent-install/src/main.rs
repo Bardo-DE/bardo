@@ -1,0 +1,159 @@
+//! `docket-agents`: the commands that reach the network for agents.
+//!
+//! ```text
+//! docket-agents --dir DIR installed           what is installed, without the network: one JSON
+//!                                             object a line (id, versions)
+//! docket-agents --dir DIR list                every agent on offer: one JSON object a line
+//!                                             (id, name, description, version, installed)
+//! docket-agents --dir DIR check ID            what the registry offers against what is installed
+//! docket-agents --dir DIR install ID VERSION  install exactly that version
+//! ```
+//! `--registry-file FILE` reads the snapshot from a file instead of the registry. `install` says
+//! `installing ID VERSION` on its first line before it reaches the network.
+
+use agent_registry::dirs::AgentsDir;
+use agent_registry::snapshot::{Snapshot, SnapshotFault};
+use clap::{Parser, Subcommand};
+use agent_install::fetch::{Curl, Fetch, FetchFault};
+use agent_install::run::System;
+use agent_install::store::{agents, versions};
+use agent_install::{Standing, Want, install, offers, standing};
+use std::path::PathBuf;
+use std::process::ExitCode;
+
+const REGISTRY: &str = "https://cdn.agentclientprotocol.com/registry/v1/latest/registry.json";
+
+/// The command line.
+#[derive(Debug, Parser)]
+#[command(
+    name = "docket-agents",
+    about = "Coding agents from the agent registry"
+)]
+struct Cli {
+    /// The agents directory.
+    #[arg(long, global = true, value_name = "DIR")]
+    dir: PathBuf,
+    /// Read the registry snapshot from this file instead of the registry.
+    #[arg(long, global = true, value_name = "FILE")]
+    registry_file: Option<PathBuf>,
+    #[command(subcommand)]
+    command: Request,
+}
+
+/// What is asked.
+#[derive(Debug, Subcommand)]
+enum Request {
+    /// What is installed, without the network.
+    Installed,
+    /// Every agent on offer.
+    List,
+    /// What the registry offers against what is installed.
+    Check {
+        /// The agent's registry id.
+        id: String,
+    },
+    /// Install exactly that version.
+    Install {
+        /// The agent's registry id.
+        id: String,
+        /// The version to install.
+        version: String,
+    },
+}
+
+/// Why the registry snapshot was not got.
+#[derive(Debug, thiserror::Error)]
+enum SnapshotError {
+    #[error("{0}")]
+    Unread(#[from] std::io::Error),
+    #[error("{0}")]
+    Unfetched(#[from] FetchFault),
+    #[error("{0}")]
+    NotText(#[from] std::string::FromUtf8Error),
+    #[error("{0}")]
+    Invalid(#[from] SnapshotFault),
+}
+
+fn snapshot(file: Option<PathBuf>) -> Result<Snapshot, SnapshotError> {
+    let text = match file {
+        Some(path) => std::fs::read_to_string(path)?,
+        None => String::from_utf8(Curl.get(REGISTRY)?)?,
+    };
+    Ok(Snapshot::parse(&text)?)
+}
+
+/// Prints each installed agent and its versions, one JSON object a line.
+fn installed(dir: &AgentsDir) -> ExitCode {
+    for id in agents(dir) {
+        let versions: Vec<String> = versions(dir, &id)
+            .iter()
+            .map(|v| v.as_str().to_owned())
+            .collect();
+        let line = serde_json::json!({ "id": id.as_str(), "versions": versions });
+        println!("{line}");
+    }
+    ExitCode::SUCCESS
+}
+
+fn main() -> ExitCode {
+    let cli = Cli::parse();
+    let dir = AgentsDir::at(&cli.dir);
+    if let Request::Installed = cli.command {
+        return installed(&dir);
+    }
+    let snap = match snapshot(cli.registry_file) {
+        Ok(snap) => snap,
+        Err(why) => {
+            eprintln!("{why}");
+            return ExitCode::FAILURE;
+        }
+    };
+    match &cli.command {
+        Request::Installed => installed(&dir),
+        Request::List => {
+            for offer in offers(&dir, &snap) {
+                match serde_json::to_string(&offer) {
+                    Ok(line) => println!("{line}"),
+                    Err(why) => {
+                        eprintln!("{why}");
+                        return ExitCode::FAILURE;
+                    }
+                }
+            }
+            ExitCode::SUCCESS
+        }
+        Request::Check { id } => {
+            match standing(&dir, &snap, id) {
+                Standing::Unknown => println!("the list has no {id}"),
+                Standing::Current(v) => {
+                    println!("{id} {v} is installed and is the version on offer")
+                }
+                Standing::Offered { offered, installed } => println!(
+                    "{id} {offered} is on offer; installed: {}. To take it: docket-agents install {id} {offered}",
+                    if installed.is_empty() {
+                        "nothing".to_owned()
+                    } else {
+                        installed.join(", ")
+                    }
+                ),
+            }
+            ExitCode::SUCCESS
+        }
+        Request::Install { id, version } => {
+            println!("installing {id} {version}");
+            match install(&dir, &snap, Want { id, version }, (&Curl, &System)) {
+                Ok(done) => {
+                    println!(
+                        "installed {} {}; pin `version = \"{}\"` in agents.toml",
+                        done.id, done.version, done.version
+                    );
+                    ExitCode::SUCCESS
+                }
+                Err(why) => {
+                    eprintln!("{why}");
+                    ExitCode::FAILURE
+                }
+            }
+        }
+    }
+}

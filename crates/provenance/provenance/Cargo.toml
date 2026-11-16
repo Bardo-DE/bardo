@@ -1,0 +1,24 @@
+[package]
+name = "provenance"
+description = "Provenance for the companion: who acted, what it may do, and the labels (integrity, confidentiality, source) that follow data, with the witness that raises them."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/prov"
+publish = false
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+account-core = {path = "../../accounts/account-core"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"

@@ -1,0 +1,101 @@
+[package]
+name = "sync-daemon"
+description = "ferry's sync daemon: org.quire.Sync1 over ferry-sync replicas. The library holds the SQLite journal, the engine over a Replica and a Dataset, the pure scheduler, the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through porter-client); the binary resolves its paths and serves. Datasets: the calendar, contacts and tasks mirror (CalDAV, CardDAV, Microsoft Graph and Google), the storage folder (WebDAV, OneDrive and Google Drive app folders), the whole drives shown in Files, and Photos for an account whose Photos row is on."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+zbus-ready = { path = "../../zbus-ready" }
+sync-bus = {path = "../sync-bus"}
+drive-core = {path = "../drive-core"}
+drive-fuse = {path = "../drive-fuse"}
+sync-core = {path = "../sync-core"}
+replica-gdrive = {path = "../replica-gdrive"}
+replica-graph = {path = "../replica-graph"}
+replica-webdav = {path = "../replica-webdav"}
+windows-zones = {path = "../windows-zones"}
+# Accounts, grants and relays: accountd's, reached through porter-client (the bus transport in
+# the daemon). Nothing of porter's account stack is a dependency of syncd; the dev-dependencies
+# host one in process for the tests.
+account-client = {path = "../../accounts/account-client"}
+account-client-dbus = {path = "../../accounts/account-client-dbus"}
+# What syncd serves: the callers it judges and the bus objects (`Call`, `Details`, `BusTarget`).
+account-callers = {features = ["file"], path = "../../accounts/account-callers"}
+account-dbus = {path = "../../accounts/account-dbus"}
+# Only `xdg`: the directories a daemon keeps its files under.
+account-daemon-support = {default-features = false, path = "../../accounts/account-daemon-support"}
+# The vocabulary: needs, grants, ids, the parent window.
+account-core = {path = "../../accounts/account-core"}
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+account-wire = {path = "../../accounts/account-wire"}
+account-ids = {path = "../../accounts/account-ids"}
+account-fs = {path = "../../accounts/account-fs"}
+account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
+account-http = {path = "../../accounts/account-http"}
+account-http-relay = {path = "../../accounts/account-http-relay"}
+ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+clap = {version = "4", features = ["derive"]}
+rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+chrono = {version = "0.4", default-features = false, features = ["alloc"]}
+hex = {version = "0.4"}
+mime_guess = {version = "2", default-features = false}
+nanohtml2text = {version = "0.3"}
+sha2 = {version = "0.10"}
+thiserror = {version = "2"}
+# `signal`: SIGTERM unmounts the drives before the process ends.
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+sync-daemon = { path = ".", features = ["testing"] }
+base64 = {version = "0.22"}
+tempfile = {version = "3"}
+sync-fake-graph = {path = "../sync-fake-graph"}
+# The account service hosted in the test process, as the in-process transport of porter-client.
+account-client-inproc = {features = ["relays"], path = "../../accounts/account-client-inproc"}
+account-fake = {path = "../../accounts/account-fake"}
+account-sheet = {path = "../../accounts/account-sheet"}
+account-fake-servers = {path = "../../accounts/account-fake-servers"}
+account-http-reqwest = {path = "../../accounts/account-http-reqwest"}
+account-provider = {path = "../../accounts/account-provider"}
+account-secrets = {features = ["testing"], path = "../../accounts/account-secrets"}
+account-service = {path = "../../accounts/account-service"}
+account-service-core = {path = "../../accounts/account-service-core"}
+drive-core = {path = "../drive-core", features = ["testing"]}
+sync-core = {path = "../sync-core", features = ["testing"]}
+# The words the fake of Storage1 gives are held to the live ones (tests/it/fake_words.rs).
+sync-fakes = {path = "../sync-fakes"}
+# A paused clock for the stop wait's timing test.
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+
+[features]
+# Test builds only, never default and never in dist: `SYNCD_PROC_ROOT=<dir>` makes the binary
+# read caller identities from <dir> instead of /proc, because the jailed and acceptance tests run
+# processes outside service cgroups, and `PORTER_SYSTEM_CALLERS=<file>` makes it read that file as
+# the system caller table, because a jail cannot write /etc/porter. A release build ignores both
+# variables. A test in tests/dist.rs fails if this feature is ever default, and
+# check-boundary.sh checks it too.
+test-proc-root = ["account-callers/test-proc-root"]
+# `MemoryDataset`, the in-memory local side the engine's tests (and daemon tests) drive.
+testing = []
+# Serves `org.quire.Photos1.Picker` beside Sync1 (ferry-bus's feature of the same name declares
+# it). Off by default: no Photos app ships in v1.
+photos-picker = ["sync-bus/photos-picker"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[[bin]]
+name = "syncd"
+path = "src/main.rs"

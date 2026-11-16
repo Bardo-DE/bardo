@@ -1,0 +1,59 @@
+[package]
+name = "files-desktop"
+description = "How files meets the desktop: the file manager service, its actions for agents, UDisks2 disks, one running instance, and opening files with apps."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/files"
+publish = false
+
+[features]
+# `FakeSpawn`, `FakeActivate` and `FakeUsers`, for tests of the crates above.
+testing = []
+
+[dependencies]
+action-wire = {path = "../../actions/action-wire"}
+action-manifest = {path = "../../actions/action-manifest"}
+action-vocab = {path = "../../actions/action-vocab"}
+account-ids = {path = "../../accounts/account-ids"}
+action-provider = {features = ["dbus"], path = "../../actions/action-provider"}
+action-core = {path = "../../actions/action-core"}
+action-dbus = {path = "../../actions/action-dbus"}
+ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+files-core = {path = "../files-core"}
+files-fs = {path = "../files-fs"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+account-core = {path = "../../accounts/account-core"}
+account-dbus = {path = "../../accounts/account-dbus"}
+sync-bus = {path = "../../sync/sync-bus"}
+provenance = {path = "../../provenance/provenance"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../zbus-ready" }
+
+[dev-dependencies]
+files-desktop = { path = ".", features = ["testing"] }
+files-fs = {path = "../files-fs", features = ["testing"]}
+# Porter's fake Storage1, served on the tests' private bus (test tooling, never shipped).
+sync-fakes = {path = "../../sync/sync-fakes"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tempfile = {version = "3"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

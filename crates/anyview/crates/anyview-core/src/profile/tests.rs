@@ -4,7 +4,7 @@ use super::{actions_for, edits_for, has_stage, mime_for};
 use crate::action::{FileAction, Reach, reach};
 use crate::edit::EditKind;
 use crate::kind::FormatKind;
-use ds_core::word::Word;
+use ui_core::word::Word;
 
 const COMMON: &[FileAction] = &[
     FileAction::Open,

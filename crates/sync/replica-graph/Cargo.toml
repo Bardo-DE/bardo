@@ -1,0 +1,31 @@
+[package]
+name = "replica-graph"
+description = "The Microsoft Graph replica: ferry-sync's Replica over OneDrive's app folder (`/me/drive/special/approot`) or the whole drive (`/me/drive/root`). Changes by delta query with the delta link as the anchor (a resync is AnchorExpired), writes guarded by If-Match and conflictBehavior=fail, small files by simple upload and large ones by upload session, quota from the drive. Its HTTP goes through the Http it is handed (in syncd, porter-http-relay's RelayHttp over accountd's OpenAuthenticated, which adds the bearer). Pure: no runtime, no socket."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+base64 = {version = "0.22"}
+hex = {version = "0.4"}
+account-capability = {path = "../../accounts/account-capability"}
+account-ids = {path = "../../accounts/account-ids"}
+account-http = {path = "../../accounts/account-http"}
+sync-core = {path = "../sync-core"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+sync-fake-graph = {path = "../sync-fake-graph"}
+account-fake-servers = {path = "../../accounts/account-fake-servers"}
+account-http-relay = {path = "../../accounts/account-http-relay"}
+sync-core = {path = "../sync-core", features = ["testing"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

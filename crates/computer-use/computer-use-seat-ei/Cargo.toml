@@ -1,0 +1,27 @@
+[package]
+name = "computer-use-seat-ei"
+description = "The EI client of the agent's seat: an AgentSeat over reis, to the compositor's stock GetSenderSocket socket or the fork's lease socket. It does the input that seat-input plans."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+computer-use-seat-input = {path = "../computer-use-seat-input"}
+computer-use-action = {path = "../computer-use-action"}
+computer-use-desktop = {path = "../computer-use-desktop"}
+account-core = {path = "../../accounts/account-core"}
+reis = {version = "0.7", features = ["tokio"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+
+[dev-dependencies]
+# The in-process EIS server the seat is tested against.
+computer-use-fake = {path = "../computer-use-fake"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

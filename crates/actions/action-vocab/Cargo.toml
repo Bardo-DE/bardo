@@ -1,0 +1,24 @@
+[package]
+name = "action-vocab"
+description = "docket's smallest vocabulary: ids, units, values and their arguments, call requests and classes, who is calling, RFC 3339 dates, the workspace name, the `Clock` seam and the text marks a name may not carry."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+chrono = {version = "0.4", default-features = false, features = ["std"]}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,52 @@
+[package]
+name = "companion-helpers"
+description = "The helpers' runner: the hub that owns the board of helper jobs and carries its effects out (records through the router, the sentences told, each helper's conversation, the tasks that run the jobs through a `Spawn` seam), the helper desk and the terminal hand-over it answers, and the routines' scheduler with its host, desk, systemd timer directory and zone. What is decided over values is companion-core's; companiond is the bus adapter over this."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+account-ids = {path = "../../accounts/account-ids"}
+memory-core = {path = "../../memory/memory-core"}
+chrono = {version = "0.4", default-features = false, features = ["clock", "std"]}
+companion-core = {path = "../companion-core"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+action-client = {path = "../action-client", default-features = false}
+action-core = {path = "../action-core"}
+action-wire = {path = "../action-wire"}
+action-manifest = {path = "../action-manifest"}
+action-vocab = {path = "../action-vocab"}
+agent-planner = {path = "../agent-planner"}
+action-store = {path = "../action-store"}
+companion-tasks = {path = "../companion-tasks"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+account-core = {path = "../../accounts/account-core"}
+provenance = {path = "../../provenance/provenance"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
+tracing = {version = "0.1"}
+
+[features]
+# `TokioSpawn`: the `Spawn` seam on the tokio runtime the caller is in.
+tokio = ["dep:tokio"]
+
+[dev-dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
+action-fake = {path = "../action-fake"}
+companion-helpers = {path = ".", features = ["tokio"]}
+permission-core = {path = "../permission-core"}
+action-router = {path = "../action-router"}
+inference-client = {path = "../../inference/inference-client"}
+inference-core = {path = "../../inference/inference-core"}
+serde_json = {version = "1"}
+tempfile = {version = "3"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
