@@ -2,7 +2,6 @@
 //! The proposal waits for Apply.
 
 pub mod model;
-pub mod step;
 #[cfg(test)]
 mod tests;
 pub mod view;

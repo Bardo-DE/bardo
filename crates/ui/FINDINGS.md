@@ -301,20 +301,7 @@ Not built, or limited, in quire:
 ## Companion freeze
 
 The companion's types are frozen with placeholder views (design/32, design/33,
-30-CATALOGUE 2.13). Every behaviour behind a frozen signature is `todo!()`; each is a fill item.
-
-`todo!()` bodies (9):
-
-| Where | What it needs |
-| --- | --- |
-| `ds::components::companion::orb::step::orb_look` | the look table of design/32 section 3, table-tested over every presence and motion level |
-| `ds::components::companion::prompt::step::prompt_step` | the prompt table of design/32 section 4 |
-| `ds::components::companion::prompt::binding::use_prompt_target` | registering a field with the `CompanionPort`; needs `TextField` and `CommandPalette` to take `mode` and `chips` first |
-| `ds::components::companion::plan::step::plan_step` | `design/agent/ux.md` section 3.4: `plan_step_table`, `excluded_steps_not_run`, `stop_keeps_done_steps`, `undo_all_only_after_run` |
-| `ds::components::companion::replace::step::replace_step` | `design/agent/ux.md` section 3.4: every phase against every input |
-| `ds::components::companion::port::NoPort::answers` | a signal that never changes, made in the caller's Dioxus scope |
-| `ds::components::companion::port::NoPort::heard`, `NoDictation::text` | the same: a signal that never changes (voice marks, voice.md section 3.6) |
-| `ds_style::tokens::glow::glow_spec` | the glow values per look and scheme; none and waiting have no period |
+30-CATALOGUE 2.13). The behaviours behind the frozen signatures are filled as they land.
 
 Placeholder views (each draws one root `div.ds-<name>` and its sheet is a comment): `CompanionOrb`,
 `ContextChips`, `AnswerCard`, `PlanList`, `ReplaceBar`, `RunRow`, `ActivityStrip`,

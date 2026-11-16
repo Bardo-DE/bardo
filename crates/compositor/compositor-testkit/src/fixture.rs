@@ -17,8 +17,7 @@ use standing::arriving_standing;
 pub use standing::{ASKED_PROGRAM, program_standing, trusted_standing};
 
 use crate::fakes::{
-    FakeA11y, FakePalmrest, FakeSession, FakeShellCalls, FakeSpawner, MemoryLockMarker,
-    MemorySpaceStore,
+    FakeA11y, FakeSession, FakeShellCalls, FakeSpawner, MemoryLockMarker, MemorySpaceStore,
 };
 use crate::input::FixtureInput;
 use crate::spec::FixtureSpec;
@@ -509,11 +508,6 @@ impl Fixture {
     /// The virtual input devices.
     pub fn input(&mut self) -> FixtureInput<'_> {
         FixtureInput::of(self)
-    }
-
-    /// The fake palmrest feed (bodies at P3).
-    pub fn palmrest(&mut self) -> &mut FakePalmrest {
-        todo!("P3-Z: Fixture::palmrest")
     }
 
     /// The fake session the fixture holds (the headless backend opens no device through it).

@@ -3,11 +3,7 @@
 //! quire owns the values and the compositor links this crate to read them, so the glow it draws
 //! is the one the design system describes; this module is plain data and names no renderer.
 
-use crate::appearance::theme::Scheme;
-use std::time::Duration;
-use ui_core::colour::srgb::Srgb;
 use ui_core::geometry::units::Px;
-use ui_core::vocab::Fraction;
 
 /// A spot inside the window the glow brightens, in logical pixels.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -20,7 +16,7 @@ pub struct GlowSpot {
     pub radius: Px,
 }
 
-/// What the glow shows: the view input to [`glow_spec`].
+/// What the glow shows.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GlowLook {
     /// No glow.
@@ -34,27 +30,4 @@ pub enum GlowLook {
     },
     /// Waiting for the person: still.
     Waiting,
-}
-
-/// The values the glow is drawn with. Holds floats because it is built from [`Px`].
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct GlowSpec {
-    /// The three colours it fades between.
-    pub colours: [Srgb; 3],
-    /// How wide the ring is.
-    pub width: Px,
-    /// How soft its edge is.
-    pub blur: Px,
-    /// How long one pulse takes; none holds it still (zero frames).
-    pub period: Option<Duration>,
-    /// How strong it is.
-    pub strength: Fraction,
-}
-
-/// The glow for `look` in `scheme`, from the orb's tokens. `None` and `Waiting` have no period.
-#[must_use]
-pub fn glow_spec(_look: &GlowLook, _scheme: Scheme) -> GlowSpec {
-    todo!(
-        "glow_spec: values per design/32 section 3; glow_spec_idle_and_waiting_have_no_period pins the still looks"
-    )
 }
