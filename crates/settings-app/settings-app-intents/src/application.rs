@@ -88,10 +88,17 @@ impl Application {
         admit(&self.peers, &self.refusals, &header).await?;
         self.window
             .send(Notice::Raise(token_of(&platform_data)))
-            .map_err(|_| gone())
+            .ok()
+            .ok_or(gone())
     }
 
     /// Settings opens no files.
+    #[expect(
+        clippy::unused_async,
+        clippy::unused_async_trait_impl,
+        clippy::used_underscore_binding,
+        reason = "the interface macro exports `open` as an async method with these named arguments, and Settings opens no files"
+    )]
     async fn open(&self, _uris: Vec<String>, _platform_data: PlatformData) -> fdo::Result<()> {
         Err(fdo::Error::NotSupported(
             "Settings does not open files".to_owned(),
@@ -113,19 +120,22 @@ impl Application {
             OPEN_ACCOUNT => self
                 .window
                 .send(Notice::OpenAccount(target_of(&parameter)))
-                .map_err(|_| gone())?,
+                .ok()
+                .ok_or(gone())?,
             OPEN_PAGE => {
                 if let Some(page) = page_of(&parameter) {
                     self.window
                         .send(Notice::OpenPage(page))
-                        .map_err(|_| gone())?;
+                        .ok()
+                        .ok_or(gone())?;
                 }
             }
             OPEN_TARGET => match target_text_of(&parameter) {
                 Some(target) => self
                     .window
                     .send(Notice::OpenTarget(target))
-                    .map_err(|_| gone())?,
+                    .ok()
+                    .ok_or(gone())?,
                 None => eprintln!("bardo-settings: open-target needs page:, key: or account: text"),
             },
             _ => {
@@ -135,7 +145,8 @@ impl Application {
         }
         self.window
             .send(Notice::Raise(token_of(&platform_data)))
-            .map_err(|_| gone())
+            .ok()
+            .ok_or(gone())
     }
 }
 
@@ -172,11 +183,18 @@ pub enum HandOverFault {
     Bus(#[from] zbus::Error),
 }
 
-/// Asks the running Settings to show itself: what a second `bardo-settings` does instead of opening a
-/// second window. `token` is the xdg-activation token this process was started with, if any;
-/// `page` is the page the second `bardo-settings` was asked to open, if any. The owner of
-/// `org.bardo.Settings` must hold the Settings role first, judged by `peers`, and is then called
-/// by its own unique name, so a program that takes the name meanwhile hears nothing.
+/// Asks the running Settings to show itself: what a second `bardo-settings` does instead of opening
+/// a second window.
+///
+/// `token` is the xdg-activation token this process was started with, if any; `page` is the page
+/// the second `bardo-settings` was asked to open, if any. The owner of `org.bardo.Settings` must
+/// hold the Settings role first, judged by `peers`, and is then called by its own unique name, so a
+/// program that takes the name meanwhile hears nothing.
+///
+/// # Errors
+///
+/// [`HandOverFault`] when the owner of the name is not Settings, the bus call fails, or the owner
+/// does not answer inside the read deadline.
 pub async fn hand_over(
     connection: &zbus::Connection,
     peers: &BusPeers,
@@ -198,8 +216,14 @@ pub async fn hand_over(
 }
 
 /// [`hand_over`] on the session bus, connecting first and judging with the desktop's caller
-/// table: the whole of it, connecting included, gets the read deadline, so a stuck bus socket
+/// table.
+///
+/// The whole of it, connecting included, gets the read deadline, so a stuck bus socket
 /// ends a second `bardo-settings` instead of hanging it.
+///
+/// # Errors
+///
+/// [`HandOverFault`] when connecting fails or [`hand_over`] fails, all inside the read deadline.
 pub async fn hand_over_session(
     token: Option<String>,
     page: Option<PageSlug>,

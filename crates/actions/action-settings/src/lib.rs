@@ -43,9 +43,11 @@ pub const REVIEW_CEILING: action_core::ReviewTimeouts = action_core::ReviewTimeo
     second: action_vocab::Millis(30_000),
 };
 
-/// Every value of the file, typed: what the router and the companion read, and whether the MCP
-/// and ACP edges are on. The file stores the three switches as TOML `true` / `false`. All three
-/// are off by default: an edge that was never switched on serves nothing.
+/// Every value of the file, typed: what the router and the companion read, and whether the MCP and
+/// ACP edges are on.
+///
+/// The file stores the three switches as TOML `true` / `false`. All three are off by default: an
+/// edge that was never switched on serves nothing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AgentSettings {
     /// The proposed values, with the person's choices in them.

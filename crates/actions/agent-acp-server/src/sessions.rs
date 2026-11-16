@@ -40,8 +40,9 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     ) -> Result<(Vec<agent_session::Logged>, ResumePlan), Error> {
         let rows = read_all(&self.log, session)
             .await
-            .map_err(|_| fault::internal("the session log could not be read"))?;
-        let plan = resume_plan(&rows).map_err(|_| fault::unknown_session())?;
+            .ok()
+            .ok_or_else(|| fault::internal("the session log could not be read"))?;
+        let plan = resume_plan(&rows).ok().ok_or_else(fault::unknown_session)?;
         let claim = Claimant {
             role: CallerRole::Editor,
             app: &self.editor,
@@ -64,7 +65,9 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         }
         let n = self.mint();
         let opening = Opening {
-            task: TaskId::parse(&format!("acp-t-{n}")).map_err(|_| fault::internal("no task"))?,
+            task: TaskId::parse(&format!("acp-t-{n}"))
+                .ok()
+                .ok_or_else(|| fault::internal("no task"))?,
             space: space_of(&cwd),
             opener: Some(self.editor.clone()),
             agent: Some(AgentRef::Companion),
@@ -74,13 +77,14 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             cwd: Some(cwd.clone()),
             started_from: None,
             label: None,
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
         };
         let session = self
             .host
             .open(opening)
             .await
-            .map_err(|_| fault::internal("the session could not be opened"))?;
+            .ok()
+            .ok_or_else(|| fault::internal("the session could not be opened"))?;
         let mode = Mode::default();
         let (helper, turns) = (None, Turns::Here);
         self.roster.insert(
@@ -99,8 +103,9 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         link: &Link,
         asked: LoadSessionRequest,
     ) -> Result<LoadSessionResponse, Error> {
-        let session =
-            SessionId::parse(&asked.session_id.0).map_err(|_| fault::unknown_session())?;
+        let session = SessionId::parse(&asked.session_id.0)
+            .ok()
+            .ok_or_else(fault::unknown_session)?;
         // A helper's conversation is not a stored session of this editor's: it is found by name
         // in the workspace's Space.
         let here = workspace(&asked.cwd).ok();
@@ -117,7 +122,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         }
         for update in history::replay(&rows, &plan) {
             link.update(&session, update)
-                .map_err(|_| fault::internal("the connection closed"))?;
+                .ok()
+                .ok_or_else(|| fault::internal("the connection closed"))?;
         }
         if !self.roster.contains_key(&session) {
             self.host
@@ -148,13 +154,14 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         let wanted = asked.cwd.as_deref().map(workspace).transpose()?;
         let skip: usize = match asked.cursor.as_deref() {
             None => 0,
-            Some(c) => c.parse().map_err(|_| fault::invalid("bad cursor"))?,
+            Some(c) => c.parse().ok().ok_or_else(|| fault::invalid("bad cursor"))?,
         };
         let stored = self
             .log
             .sessions()
             .await
-            .map_err(|_| fault::internal("the session log could not be read"))?;
+            .ok()
+            .ok_or_else(|| fault::internal("the session log could not be read"))?;
         let mut infos: Vec<SessionInfo> = wanted
             .as_ref()
             .map(|w| self.helper_infos(w))

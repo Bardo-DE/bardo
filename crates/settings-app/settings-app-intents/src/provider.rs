@@ -48,6 +48,10 @@ impl std::fmt::Debug for SettingsProvider {
 impl SettingsProvider {
     /// The provider of `catalogue`, whose files are under `home`; `window` is told what it must
     /// show or read again, and `accounts` says which accounts there are.
+    ///
+    /// # Errors
+    ///
+    /// [`ManifestFault`] when the embedded manifest does not parse or does not validate.
     pub fn new(
         catalogue: Arc<Catalogue>,
         home: ConfigHome,
@@ -238,6 +242,10 @@ impl IntentProvider for SettingsProvider {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let Ask::SetKey { key, text } = ask(&inv, &self.app)? else {
             return Ok(Preview::None);
@@ -258,6 +266,10 @@ impl IntentProvider for SettingsProvider {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn undo(&self, token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
         let change = self
             .journal()
@@ -265,12 +277,13 @@ impl IntentProvider for SettingsProvider {
             .cloned()
             .ok_or(UndoFault::Gone)?;
         let entry = self.catalogue.entry(&change.key).ok_or(UndoFault::Gone)?;
-        if self.current(entry).map_err(|_| UndoFault::Conflict)? != change.after {
+        if self.current(entry).ok().ok_or(UndoFault::Conflict)? != change.after {
             self.journal().forget(&token);
             return Err(UndoFault::Conflict);
         }
         save(&self.home, &change.file, &change.key, &change.before)
-            .map_err(|_| UndoFault::Conflict)?;
+            .ok()
+            .ok_or(UndoFault::Conflict)?;
         self.journal().forget(&token);
         let _ = self.window.send(Notice::Reload);
         Ok(())
@@ -279,10 +292,18 @@ impl IntentProvider for SettingsProvider {
     /// Never answers: the launcher's search reads intentd's own index (the pages and keys in
     /// `bardo/actions/search/org.bardo.Settings.toml`, see `search_file`), so a query never reaches
     /// this app. Design: search-index/DESIGN.md, "Launcher search".
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn search(&self, _text: &str) -> Vec<Hit> {
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         match id.kind.as_str() {
             "settings.key" => self.preview_key(id.key.as_str()),
@@ -291,6 +312,10 @@ impl IntentProvider for SettingsProvider {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn suggest(&self, ask: SuggestAsk) -> Vec<EntityRef> {
         let typed = ask.typed.to_lowercase();
         let matches = |label: &str, path: &str| {

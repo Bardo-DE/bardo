@@ -9,8 +9,9 @@ use serde::{Deserialize, Serialize};
 const LONGEST: usize = 255;
 
 /// The systemd scope of a terminal's child (`vte-spawn-*.scope`, `tmux-spawn-*.scope`,
-/// `session-*.scope`): the leaf of its cgroup path, as `is_terminal_scope` accepts it. Advisory:
-/// every terminal runs as the person, so the name tells which one, never who.
+/// `session-*.scope`): the leaf of its cgroup path, as `is_terminal_scope` accepts it.
+///
+/// Advisory: every terminal runs as the person, so the name tells which one, never who.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct TerminalScope(String);
@@ -22,6 +23,10 @@ pub struct NotATerminalScope;
 
 impl TerminalScope {
     /// The scope a cgroup path ends in, if it is a terminal's.
+    ///
+    /// # Errors
+    ///
+    /// [`NotATerminalScope`] when the last component of `cgroup` is not a terminal's scope.
     pub fn from_cgroup(cgroup: &str) -> Result<Self, NotATerminalScope> {
         let leaf = cgroup.rsplit('/').next().unwrap_or_default();
         Self::try_from(leaf.to_owned())

@@ -1,6 +1,8 @@
-//! How long a terminal command may run. A command nobody stops would hold its sandbox (and the
-//! machine's memory and processes) for ever; past this long it is killed with bulkhead's own
-//! kill, and its terminal stays readable like any killed one.
+//! How long a terminal command may run.
+//!
+//! A command nobody stops would hold its sandbox (and the machine's memory and processes) for ever;
+//! past this long it is killed with bulkhead's own kill, and its terminal stays readable like any
+//! killed one.
 
 use std::time::Duration;
 

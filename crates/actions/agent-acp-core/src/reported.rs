@@ -1,9 +1,10 @@
-//! What an agent tells us it is doing, as opposed to what it asks us to do. A `tool_call` it
-//! reports is a display record, `acpagent.reported.<kind>`, and it is never performed, never
-//! trusted, and never a reason to let anything through: the agent may claim it ran anything. A
-//! kind that brings content in (a read, a fetch, a command) is told to the router so the session
-//! is tainted by it. Its message text is its words (untrusted); its thoughts are `Thought`
-//! events and nothing reads them as instructions or as the person's.
+//! What an agent tells us it is doing, as opposed to what it asks us to do.
+//!
+//! A `tool_call` it reports is a display record, `acpagent.reported.<kind>`, and it is never
+//! performed, never trusted, and never a reason to let anything through: the agent may claim it ran
+//! anything. A kind that brings content in (a read, a fetch, a command) is told to the router so
+//! the session is tainted by it. Its message text is its words (untrusted); its thoughts are
+//! `Thought` events and nothing reads them as instructions or as the person's.
 
 use crate::names;
 use crate::taint::brings_content;
@@ -97,8 +98,9 @@ fn usage(update: &agent_client_protocol::schema::v1::UsageUpdate) -> UsageNote {
     }
 }
 
-/// The record of a request for a call to our own edge that was answered "once" at the door: a
-/// started and an ended line under `acpagent.reported.other`, effect `read` (the answer
+/// The record of a request for a call to our own edge that was answered "once" at the door.
+///
+/// A started and an ended line under `acpagent.reported.other`, effect `read` (the answer
 /// changed nothing; the call itself is ruled, and shown, when it reaches the edge).
 pub fn door_opened(next: &mut u64) -> Vec<BackendEvent> {
     let Some(action) = names::reported_action(ToolKind::Other) else {

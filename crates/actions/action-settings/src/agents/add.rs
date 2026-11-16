@@ -72,6 +72,11 @@ fn entry_of(agent: &NewAgent) -> Table {
 }
 
 /// `text` with `agent` listed after the other entries. Empty text is an empty file. Pure.
+///
+/// # Errors
+///
+/// [`AddFault`] when `text` is not readable TOML, an agent of that name is listed already, or the
+/// name, registry, version or label is not one docket can keep.
 pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddFault> {
     let names = [&agent.program, &agent.registry, &agent.version];
     if !names.iter().all(|w| word_fine(w)) {
@@ -80,7 +85,7 @@ pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddFault> 
     if !label_fine(&agent.label) {
         return Err(AddFault::BadLabel);
     }
-    let mut doc: DocumentMut = text.parse().map_err(|_| AddFault::Unreadable)?;
+    let mut doc: DocumentMut = text.parse().ok().ok_or(AddFault::Unreadable)?;
     let list = doc
         .entry("agent")
         .or_insert(Item::ArrayOfTables(ArrayOfTables::new()))
@@ -94,8 +99,12 @@ pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddFault> 
 }
 
 /// `text` without the entry listed as `program`. Pure.
+///
+/// # Errors
+///
+/// [`ChoiceFault`] when `text` is not readable TOML or no such agent is listed.
 pub fn edit_agent_remove(text: &str, program: &str) -> Result<String, ChoiceFault> {
-    let mut doc: DocumentMut = text.parse().map_err(|_| ChoiceFault::Unreadable)?;
+    let mut doc: DocumentMut = text.parse().ok().ok_or(ChoiceFault::Unreadable)?;
     let list = doc
         .get_mut("agent")
         .and_then(Item::as_array_of_tables_mut)
@@ -110,6 +119,10 @@ pub fn edit_agent_remove(text: &str, program: &str) -> Result<String, ChoiceFaul
 
 /// Adds `agent` to the file at `path`, which need not exist yet; the file is replaced whole or
 /// not at all.
+///
+/// # Errors
+///
+/// [`AddFault`] when the file cannot be read or written, or [`edit_agent_add`] refuses the edit.
 pub fn write_agent_add(path: &Path, agent: &NewAgent) -> Result<(), AddFault> {
     let text = match std::fs::read_to_string(path) {
         Ok(text) => text,
@@ -118,15 +131,24 @@ pub fn write_agent_add(path: &Path, agent: &NewAgent) -> Result<(), AddFault> {
     };
     let edited = edit_agent_add(&text, agent)?;
     if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir).map_err(|_| AddFault::Io)?;
+        std::fs::create_dir_all(dir).ok().ok_or(AddFault::Io)?;
     }
-    write_atomic(path, edited.as_bytes()).map_err(|_| AddFault::Io)
+    write_atomic(path, edited.as_bytes())
+        .ok()
+        .ok_or(AddFault::Io)
 }
 
 /// Takes the entry of `program` out of the file at `path`; the file is replaced whole or not at
 /// all.
+///
+/// # Errors
+///
+/// [`ChoiceFault`] when the file cannot be read or written, or [`edit_agent_remove`] refuses the
+/// edit.
 pub fn write_agent_remove(path: &Path, program: &str) -> Result<(), ChoiceFault> {
-    let text = std::fs::read_to_string(path).map_err(|_| ChoiceFault::Io)?;
+    let text = std::fs::read_to_string(path).ok().ok_or(ChoiceFault::Io)?;
     let edited = edit_agent_remove(&text, program)?;
-    write_atomic(path, edited.as_bytes()).map_err(|_| ChoiceFault::Io)
+    write_atomic(path, edited.as_bytes())
+        .ok()
+        .ok_or(ChoiceFault::Io)
 }

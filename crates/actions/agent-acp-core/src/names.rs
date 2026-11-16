@@ -1,7 +1,8 @@
-//! What an external agent's calls are called, and how ACP's words map to ours. The calls the host
-//! makes for the agent are the actions of the `org.bardo.AcpAgent` pseudo-app (`action_core::
-//! agent_app`); what the agent only reports having done itself is recorded for display under
-//! `acpagent.reported.<kind>` and is never dispatched.
+//! What an external agent's calls are called, and how ACP's words map to ours.
+//!
+//! The calls the host makes for the agent are the actions of the `org.bardo.AcpAgent` pseudo-app
+//! (`action_core:: agent_app`); what the agent only reports having done itself is recorded for
+//! display under `acpagent.reported.<kind>` and is never dispatched.
 
 use action_vocab::ActionRef;
 use agent_client_protocol::schema::v1::ToolKind;

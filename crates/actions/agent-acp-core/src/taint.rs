@@ -1,8 +1,10 @@
 //! Which thing put an agent session under the rule "after any file is served, a command asks and
-//! offers no always". The router holds the taint itself (its labels decide); this is the host's
-//! typed record of the first cause, so a later narrowing (taint by path, or only content the agent
-//! then uses in a command) is a change to what counts here and to the label the performer gives,
-//! not a hunt through string compares.
+//! offers no always".
+//!
+//! The router holds the taint itself (its labels decide); this is the host's typed record of the
+//! first cause, so a later narrowing (taint by path, or only content the agent then uses in a
+//! command) is a change to what counts here and to the label the performer gives, not a hunt
+//! through string compares.
 
 use base_path::AbsPath;
 use permission_core::PermissionKind;

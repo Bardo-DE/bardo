@@ -9,7 +9,6 @@ use action_core::UserTurn;
 use companion_model::helper::HelperName;
 use companion_wire::{JobLine, ToldWire};
 use provenance::{HelperId, SessionId, SpaceId};
-use std::future::Future;
 
 /// A helper as the editor sees it: one session, titled with its name.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,9 +27,11 @@ pub struct HelperRow {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HelperRefusal(pub String);
 
-/// The person's helpers, as far as an editor may reach them. Nothing here lets the editor answer a
-/// sheet of ours or widen a helper. An editor's "always" in a helper's session is the router's to
-/// record, under the helper's id (`GrantCaller::Helper`), so it is that helper's alone.
+/// The person's helpers, as far as an editor may reach them.
+///
+/// Nothing here lets the editor answer a sheet of ours or widen a helper. An editor's "always" in a
+/// helper's session is the router's to record, under the helper's id (`GrantCaller::Helper`), so it
+/// is that helper's alone.
 pub trait Helpers: ConversationTurns + Send {
     /// Every helper there is. The server keeps those in the editor's workspace's Space.
     fn rows(&self) -> Vec<HelperRow>;
@@ -63,6 +64,10 @@ impl Helpers for NoHelpers {
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn open_job(&mut self, _helper: &HelperId) -> Result<SessionId, HelperRefusal> {
         Err(HelperRefusal("There are no helpers here.".to_owned()))
     }
@@ -73,6 +78,10 @@ impl Helpers for NoHelpers {
 }
 
 impl ConversationTurns for NoHelpers {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn say(
         &mut self,
         _session: &SessionId,

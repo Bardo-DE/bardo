@@ -46,7 +46,7 @@ pub(crate) fn answer<T: JsonRpcResponse>(
     responder: Responder<T>,
     result: Result<T, Error>,
 ) -> Result<(), Gone> {
-    responder.respond_with_result(result).map_err(|_| Gone)
+    responder.respond_with_result(result).ok().ok_or(Gone)
 }
 
 impl Inbound {
@@ -103,7 +103,7 @@ impl Link {
     /// Sends `session/update` for `session`.
     pub(crate) fn update(&self, session: &SessionId, update: SessionUpdate) -> Result<(), Gone> {
         let note = SessionNotification::new(out::wire_id(session), update);
-        self.cx.send_notification(note).map_err(|_| Gone)
+        self.cx.send_notification(note).ok().ok_or(Gone)
     }
 
     /// Sends the permission `request`. Its answer comes on the returned channel; dropping the

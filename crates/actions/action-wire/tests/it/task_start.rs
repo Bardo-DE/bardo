@@ -14,12 +14,12 @@ fn args(items: Vec<(&str, Value)>) -> Args {
 
 #[test]
 fn task_start_reads_its_arguments() {
-    let research = ChoiceId::parse("research").expect("id");
     type Case = (
         &'static str,
         Args,
         Result<(&'static str, TaskKind), ArgFault>,
     );
+    let research = ChoiceId::parse("research").expect("id");
     let cases: Vec<Case> = vec![
         (
             "goal and kind",

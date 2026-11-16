@@ -43,11 +43,16 @@ pub fn is_regular(meta: &Metadata) -> bool {
     meta.file_type().is_file()
 }
 
-/// Opens `path` and returns the file with the metadata of the open handle. A path that is not a
-/// regular file once opened is refused with `ErrorKind::InvalidInput`. The path is stat-ed
-/// before it is opened, and on Unix it is opened with `O_NONBLOCK`, because opening a FIFO for
-/// reading otherwise blocks until something writes to it; the check on the handle then refuses
-/// a FIFO swapped in between the two.
+/// Opens `path` and returns the file with the metadata of the open handle.
+///
+/// A path that is not a regular file once opened is refused with `ErrorKind::InvalidInput`. The
+/// path is stat-ed before it is opened, and on Unix it is opened with `O_NONBLOCK`, because opening
+/// a FIFO for reading otherwise blocks until something writes to it; the check on the handle then
+/// refuses a FIFO swapped in between the two.
+///
+/// # Errors
+///
+/// The [`std::io::Error`] of the open or stat, or of the file not being a regular file.
 pub fn open_regular(path: &Path) -> Result<(File, Metadata)> {
     if !is_regular(&std::fs::metadata(path)?) {
         return Err(Error::from(ErrorKind::InvalidInput));
@@ -66,7 +71,8 @@ fn open_nonblocking(path: &Path) -> Result<File> {
     use std::os::unix::fs::OpenOptionsExt;
     // A regular file ignores the flag; a FIFO opens at once instead of waiting for a writer.
     let nonblock = i32::try_from(rustix::fs::OFlags::NONBLOCK.bits())
-        .map_err(|_| Error::from(ErrorKind::Unsupported))?;
+        .ok()
+        .ok_or_else(|| Error::from(ErrorKind::Unsupported))?;
     std::fs::OpenOptions::new()
         .read(true)
         .custom_flags(nonblock)
@@ -78,16 +84,23 @@ fn open_nonblocking(path: &Path) -> Result<File> {
     File::open(path)
 }
 
-/// The most a file may be for the viewer to read it whole into memory before decoding or editing:
-/// the ceiling `anyview-image` holds a decode's peak to, since a file over it cannot be decoded
+/// The most a file may be for the viewer to read it whole into memory before decoding or editing.
+///
+/// It is the ceiling `anyview-image` holds a decode's peak to, since a file over it cannot be decoded
 /// within that peak, and a parse that allocates for a larger one would abort the whole process.
 pub const WHOLE_FILE_CAP: ByteLen = ByteLen(1536 * 1024 * 1024);
 
-/// The regular file at `path`, read whole, when it is at most `cap` long. A missing file is
-/// `ErrorKind::NotFound`, anything that is not a regular file (a folder, a FIFO, a device)
-/// `ErrorKind::InvalidInput`, and a file over `cap`, or one that grows past it while it is read,
-/// `ErrorKind::FileTooLarge`: never a hang, and never more than `cap` bytes in memory. The read
-/// is quire's `base_fs::read_capped`, the one the desktop's apps share.
+/// The regular file at `path`, read whole, when it is at most `cap` long.
+///
+/// A missing file is `ErrorKind::NotFound`, anything that is not a regular file (a folder, a FIFO,
+/// a device) `ErrorKind::InvalidInput`, and a file over `cap`, or one that grows past it while it
+/// is read, `ErrorKind::FileTooLarge`: never a hang, and never more than `cap` bytes in memory. The
+/// read is quire's `base_fs::read_capped`, the one the desktop's apps share.
+///
+/// # Errors
+///
+/// The [`std::io::Error`] of the read, which is `ErrorKind::NotFound`, `InvalidInput` or
+/// `FileTooLarge` as above.
 pub fn read_whole(path: &Path, cap: ByteLen) -> Result<Vec<u8>> {
     base_fs::read_capped(path, base_fs::ReadCap::bytes(cap.0)).map_err(io_error)
 }
@@ -114,6 +127,10 @@ pub struct OpenFile {
 
 impl OpenFile {
     /// The regular file at `path`, opened ([`open_regular`]).
+    ///
+    /// # Errors
+    ///
+    /// The [`std::io::Error`] of [`open_regular`].
     pub fn open(path: &Path) -> Result<OpenFile> {
         open_regular(path).map(|(file, meta)| OpenFile {
             file,
@@ -214,7 +231,6 @@ fn at_path(path: &FilePath, stamp: Option<FileStamp>) -> Input {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use anyview_core::ModTime;
     use std::io::Read;
 
     #[test]

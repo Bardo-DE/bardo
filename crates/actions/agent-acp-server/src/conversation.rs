@@ -14,7 +14,6 @@
 use crate::helpers::HelperRefusal;
 use action_core::UserTurn;
 use provenance::SessionId;
-use std::future::Future;
 
 /// Where the person's words in a helper's conversation are taken to be answered.
 pub trait ConversationTurns: Send {

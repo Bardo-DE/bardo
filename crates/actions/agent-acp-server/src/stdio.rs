@@ -39,6 +39,10 @@ pub enum LineFault {
 /// `buf` keeps what has been read of an unfinished line between calls, so a dropped read loses
 /// no input and a retry carries on. `None` is the end of the stream. A line over the cap is an
 /// error; the stream is then in the middle of it and is to be closed, not read on.
+///
+/// # Errors
+///
+/// [`LineFault`] when the reader fails, a line is not text, or a line is over `cap` bytes.
 pub async fn read_capped<R: AsyncBufRead + Unpin>(
     reader: &mut R,
     buf: &mut Vec<u8>,
@@ -71,7 +75,7 @@ fn text_of(mut bytes: Vec<u8>) -> Result<String, LineFault> {
     if bytes.last() == Some(&b'\r') {
         bytes.pop();
     }
-    String::from_utf8(bytes).map_err(|_| LineFault::NotText)
+    String::from_utf8(bytes).ok().ok_or(LineFault::NotText)
 }
 
 /// The lines of `reader` as the SDK reads them: blank lines skipped, and the stream ends, with a

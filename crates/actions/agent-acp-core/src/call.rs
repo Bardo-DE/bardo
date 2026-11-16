@@ -14,9 +14,10 @@ use permission_core::{
 use provenance::{Integrity, Label, Labelled, ModelRole, Source};
 use std::collections::BTreeSet;
 
-/// A handle the host holds for what is too big or too private for a sheet or a reviewer (the
-/// text of a write, the argument vector and environment of a command): the router carries the
-/// name and never the thing.
+/// A handle the host holds for what is too big or too private for a sheet or a reviewer.
+///
+/// That is the text of a write, or the argument vector and environment of a command: the router
+/// carries the name and never the thing.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct StageId(String);
 

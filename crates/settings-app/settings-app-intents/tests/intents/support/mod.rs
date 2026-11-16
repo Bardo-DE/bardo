@@ -1,6 +1,9 @@
 //! Settings served on a private bus, called the way intentd calls an app: from the connection
 //! that owns `org.bardo.Intents1`, through `IntentProvider1`.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses some of the world's helpers, and the others stay unused in it"
+)]
 
 mod bus;
 
@@ -55,8 +58,8 @@ pub struct World {
     pub window: Arc<WrittenDown>,
     scratch: Scratch,
     proxy: IntentProviderProxy<'static>,
-    _bus: PrivateBus,
-    _app: zbus::Connection,
+    bus: PrivateBus,
+    app: zbus::Connection,
     _intentd: zbus::Connection,
     /// What the activation object judges its callers with: nobody is anyone until a test says so.
     peers: Arc<BusPeers>,
@@ -171,8 +174,8 @@ impl World {
             window,
             scratch,
             proxy,
-            _bus: bus,
-            _app: app,
+            bus,
+            app,
             _intentd: intentd,
             peers,
         }
@@ -192,12 +195,12 @@ impl World {
 
     /// A connection to the bus that is in no row of the caller table: any program of the person's.
     pub async fn stranger(&self) -> zbus::Connection {
-        self._bus.connect().await
+        self.bus.connect().await
     }
 
     /// The unique name of the connection that serves Settings.
     pub fn owner(&self) -> String {
-        unique(&self._app)
+        unique(&self.app)
     }
 
     pub fn config_home(&self) -> ConfigHome {

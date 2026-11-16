@@ -41,8 +41,13 @@ pub struct TaskStart {
 impl TaskStart {
     /// Reads the arguments of `companion.task.start`: `goal` is text and `kind` one of the
     /// declared choices (research when it is left out, as the manifest defaults it).
+    ///
+    /// # Errors
+    ///
+    /// [`ArgFault`] when `goal` is missing or not text, or `kind` is not one of the declared
+    /// choices.
     pub fn from_args(args: &Args) -> Result<Self, ArgFault> {
-        let name = |n: &str| ParamName::parse(n).map_err(|_| ArgFault::Missing);
+        let name = |n: &str| ParamName::parse(n).ok().ok_or(ArgFault::Missing);
         let goal = match args.get(&name("goal")?).map(|a| &a.value) {
             Some(Value::Text(t)) if !t.is_empty() => MessageText::new(t.clone()),
             Some(Value::Text(_)) | None => return Err(ArgFault::Missing),

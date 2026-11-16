@@ -39,7 +39,7 @@ fn spoken(blocks: &[ContentBlock]) -> Option<String> {
     (!joined.trim().is_empty()).then_some(joined)
 }
 
-fn refused(fault: HostFault) -> Error {
+fn refused(fault: &HostFault) -> Error {
     match fault {
         HostFault::NotOpen => fault::not_now("the session takes no turn"),
         HostFault::NoSuchSession => fault::unknown_session(),
@@ -106,8 +106,9 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     /// Reads the prompt, and either hands the person's turn to the host or, for a helper's
     /// conversation, keeps it to be taken to the helper.
     async fn begin(&mut self, asked: PromptRequest) -> Result<Begun, Error> {
-        let session =
-            SessionId::parse(&asked.session_id.0).map_err(|_| fault::unknown_session())?;
+        let session = SessionId::parse(&asked.session_id.0)
+            .ok()
+            .ok_or_else(fault::unknown_session)?;
         let known = self
             .roster
             .get(&session)
@@ -125,7 +126,10 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         if turns == Turns::AtHelper {
             return Ok(Begun::AtHelper(session, turn));
         }
-        self.host.turn(&session, turn).await.map_err(refused)?;
+        self.host
+            .turn(&session, turn)
+            .await
+            .map_err(|fault| refused(&fault))?;
         Ok(Begun::Here(session, mode))
     }
 

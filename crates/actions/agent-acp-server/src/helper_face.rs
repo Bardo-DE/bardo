@@ -76,7 +76,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         self.host
             .resume(&session)
             .await
-            .map_err(|_| fault::internal("the job could not be started"))?;
+            .ok()
+            .ok_or_else(|| fault::internal("the job could not be started"))?;
         let mode = Mode::default();
         let helper = Some(row.id);
         let turns = Turns::Here;
@@ -112,7 +113,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         let jobs = self.helpers.jobs(&row.id);
         for update in helper_replay::recent(&row.name, &jobs) {
             link.update(&row.session, update)
-                .map_err(|_| fault::internal("the connection closed"))?;
+                .ok()
+                .ok_or_else(|| fault::internal("the connection closed"))?;
         }
         if !self.roster.contains_key(&row.session) {
             self.host
@@ -150,7 +152,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
 
     /// The board's sentence, as a plain agent line in each session this connection has for that
     /// helper.
-    pub(crate) fn tell(&mut self, link: &Link, told: ToldWire) -> Result<(), Gone> {
+    pub(crate) fn tell(&mut self, link: &Link, told: &ToldWire) -> Result<(), Gone> {
         let sessions: Vec<SessionId> = self
             .roster
             .iter()

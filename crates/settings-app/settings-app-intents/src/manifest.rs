@@ -18,6 +18,10 @@ pub enum ManifestFault {
 }
 
 /// The validated manifest of `org.bardo.Settings`.
+///
+/// # Errors
+///
+/// [`ManifestFault`] when the embedded manifest does not parse or does not validate.
 pub fn manifest() -> Result<ValidManifest, ManifestFault> {
     let parsed: Manifest = toml::from_str(TEXT).map_err(|e| ManifestFault::Parse(e.to_string()))?;
     validate(parsed).map_err(ManifestFault::Invalid)

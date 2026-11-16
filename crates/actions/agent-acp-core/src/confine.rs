@@ -1,8 +1,10 @@
 //! Where an external agent's file calls may reach: the session's working directory and nothing
-//! else. Pure: the lexical rules here, and one fact from the file system (the path after
-//! symlinks) passed in. A path the agent names is refused if it is not absolute, steps up with
-//! `..`, lies outside the directory, resolves outside it through a link, or names a place that
-//! holds the person's secrets (even inside the directory).
+//! else.
+//!
+//! Pure: the lexical rules here, and one fact from the file system (the path after symlinks) passed
+//! in. A path the agent names is refused if it is not absolute, steps up with `..`, lies outside
+//! the directory, resolves outside it through a link, or names a place that holds the person's
+//! secrets (even inside the directory).
 //!
 //! A write to a place that can later run code outside the sandbox (`.git`, an editor or agent
 //! configuration) is `Sensitive`: it asks every time and is never offered "always".
@@ -124,8 +126,12 @@ fn care(path: &AbsPath) -> Care {
 
 /// The lexical half: parse and check the name against `scope`. The caller then resolves the
 /// path's links and passes the result to [`confine`].
+///
+/// # Errors
+///
+/// [`Refusal`] when `requested` is not an absolute path or is outside `scope`.
 pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
-    let path = AbsPath::parse(requested).map_err(|_| Refusal::BadPath)?;
+    let path = AbsPath::parse(requested).ok().ok_or(Refusal::BadPath)?;
     if !scope.covers(&path) {
         return Err(Refusal::Outside);
     }
@@ -134,6 +140,11 @@ pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
 
 /// The whole rule, given the links resolved: `real_scope` is the scope after links, `real` the
 /// path after links.
+///
+/// # Errors
+///
+/// [`Refusal`] when `real_scope` does not cover `real`, or `real` is not the path the name leads
+/// to.
 pub fn confine(real_scope: &AbsPath, path: AbsPath, real: AbsPath) -> Result<Confined, Refusal> {
     if !real_scope.covers(&real) {
         return Err(Refusal::Link);

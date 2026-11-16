@@ -43,9 +43,11 @@ fn say(place: &Place) -> Say {
     }
 }
 
-/// Picks the place for a task. `floor` removes places first and no setting restores one;
-/// `can_do` says whether a place is good enough for the task. Then the closest allowed place
-/// wins: this computer, your computers, cloud accounts.
+/// Picks the place for a task.
+///
+/// `floor` removes places first and no setting restores one; `can_do` says whether a place is good
+/// enough for the task. Then the closest allowed place wins: this computer, your computers, cloud
+/// accounts.
 pub fn route(floor: Floor, places: &Places, can_do: impl Fn(&Place) -> bool) -> Routed {
     let fits: Vec<Place> = places
         .all()

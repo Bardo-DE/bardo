@@ -53,8 +53,9 @@ fn page_entry(page: &PageModel) -> Entry<'_> {
 }
 
 /// The text of the search file of `catalogue`: one `settings.page` entry per page, one
-/// `settings.key` entry per key a read can name (a path two schemas share names none). An entry
-/// whose key is not a valid entity key is left out, as the provider leaves it out of a
+/// `settings.key` entry per key a read can name (a path two schemas share names none).
+///
+/// An entry whose key is not a valid entity key is left out, as the provider leaves it out of a
 /// suggestion.
 pub fn search_entries(catalogue: &Catalogue) -> String {
     let Ok(app) = AppName::parse(APP_NAME) else {

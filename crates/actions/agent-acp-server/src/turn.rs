@@ -132,9 +132,8 @@ impl Turn {
     /// The editor cancelled (or went away).
     pub fn cancelled(&mut self) -> Vec<Order> {
         match std::mem::replace(&mut self.state, State::Running) {
-            State::Running => self.stop(None, Why::Cancelled),
+            State::Running | State::Sheeting(_) => self.stop(None, Why::Cancelled),
             State::Asking(call) => self.stop(Some(call), Why::Cancelled),
-            State::Sheeting(_) => self.stop(None, Why::Cancelled),
             other => {
                 self.state = other;
                 Vec::new()

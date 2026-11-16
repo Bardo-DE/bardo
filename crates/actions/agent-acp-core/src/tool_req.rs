@@ -1,9 +1,11 @@
-//! A permission request, read. The agent's `toolCall` says a kind, a title, the paths it touches
-//! and its raw input; none of it is trusted. This reduces it to what the router can rule on: the
-//! kind, the paths (each confined as `fs/*` paths are), a command line for an execute, an address
-//! for a fetch. A path outside the session's directory or one that holds secrets makes the whole
-//! request `Forbidden`: it is refused without asking, before any call is formed. The agent's
-//! title is dropped: it is prose, and the sheet does not draw an agent's prose.
+//! A permission request, read.
+//!
+//! The agent's `toolCall` says a kind, a title, the paths it touches and its raw input; none of it
+//! is trusted. This reduces it to what the router can rule on: the kind, the paths (each confined
+//! as `fs/*` paths are), a command line for an execute, an address for a fetch. A path outside the
+//! session's directory or one that holds secrets makes the whole request `Forbidden`: it is refused
+//! without asking, before any call is formed. The agent's title is dropped: it is prose, and the
+//! sheet does not draw an agent's prose.
 
 use crate::call::{Command, PermissionAsk};
 use crate::confine::{Care, confine, named};

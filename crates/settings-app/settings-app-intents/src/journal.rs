@@ -88,7 +88,7 @@ mod tests {
     fn the_oldest_change_is_forgotten_past_the_limit() {
         let mut journal = Journal::default();
         let first = journal.record(change(0)).expect("a token");
-        let last = (1..=KEPT as i64)
+        let last = (1..=i64::try_from(KEPT).expect("KEPT fits an i64"))
             .filter_map(|n| journal.record(change(n)))
             .last()
             .expect("a token");

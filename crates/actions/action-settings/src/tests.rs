@@ -5,8 +5,8 @@ use crate::keys::{Rule, table};
 use std::collections::BTreeSet;
 
 /// A spend cap of `n` millionths of a US dollar.
-fn micro_usd(n: i64) -> Option<model_provider::Money> {
-    Some(model_provider::Money::usd(rust_decimal::Decimal::new(n, 6)))
+fn micro_usd(n: i64) -> model_provider::Money {
+    model_provider::Money::usd(rust_decimal::Decimal::new(n, 6))
 }
 
 fn schema() -> toml::Table {
@@ -310,7 +310,7 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
             .agent
             .budget
             .spend,
-        micro_usd(2_500_000)
+        Some(micro_usd(2_500_000))
     );
 }
 
@@ -344,7 +344,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
             let loaded = read(&text, AgentSettings::default());
             let mut want = AgentSettings::default();
             if other == spend {
-                want.agent.budget.spend = micro_usd(100);
+                want.agent.budget.spend = Some(micro_usd(100));
             } else {
                 want.agent.start_mode = permission_core::Mode::Manual;
             }
@@ -358,7 +358,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
 #[test]
 fn a_fallback_is_the_base_value_not_the_default() {
     let mut base = AgentSettings::default();
-    base.agent.budget.spend = micro_usd(11);
+    base.agent.budget.spend = Some(micro_usd(11));
     let loaded = read("[agent.budget]\nspend_microusd = -1\n", base);
     assert_eq!(loaded.value, base);
     assert_eq!(
@@ -420,7 +420,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
     let locator = Locator::from_env(&env);
     assert_eq!(locator.watch_dir(), Some(home.path().join("bardo/actions")));
     let value = locator.read(AgentSettings::default()).value;
-    assert_eq!(value.agent.budget.spend, micro_usd(5));
+    assert_eq!(value.agent.budget.spend, Some(micro_usd(5)));
     // The first file wins whole: the later directory's other keys are not merged in.
     assert!(!value.expose);
     let none = Locator::from_env(&|_: &str| None::<String>);

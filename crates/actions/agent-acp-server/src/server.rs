@@ -66,7 +66,8 @@ macro_rules! forward {
         $builder.on_receive_request(
             async move |asked: $request, responder, _cx| {
                 tx.unbounded_send(Inbound::$variant(Box::new(asked), responder))
-                    .map_err(|_| Error::internal_error())
+                    .ok()
+                    .ok_or_else(Error::internal_error)
             },
             on_receive_request!(),
         )
@@ -135,6 +136,10 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     /// its requests, what the board says of a helper the editor has a session for goes out as a
     /// plain line in that session. A sentence that comes while a prompt runs waits for the prompt
     /// to end.
+    ///
+    /// # Errors
+    ///
+    /// [`Error`] when the connection to the editor cannot be served or ends in an error.
     pub async fn run(&mut self, transport: impl ConnectTo<Agent> + 'static) -> Result<(), Error> {
         let (tx, rx) = mpsc::unbounded();
         let builder = Agent.builder().name("bardo-agent-acp");
@@ -148,7 +153,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             .on_receive_notification(
                 async move |cancel: CancelNotification, _cx| {
                     tx.unbounded_send(Inbound::Cancel(cancel))
-                        .map_err(|_| Error::internal_error())
+                        .ok()
+                        .ok_or_else(Error::internal_error)
                 },
                 on_receive_notification!(),
             )
@@ -174,7 +180,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             match heard {
                 Either::Left(None) => return Ok(()),
                 Either::Left(Some(inbound)) => self.inbound(link, inbound).await?,
-                Either::Right(told) => self.tell(link, told)?,
+                Either::Right(told) => self.tell(link, &told)?,
             }
         }
     }
@@ -183,9 +189,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         match (self.readiness, inbound) {
             // Nothing to cancel between prompts.
             (_, Inbound::Cancel(_)) => Ok(()),
-            (_, Inbound::Initialize(asked, responder)) => {
-                answer(responder, self.initialize(*asked))
-            }
+            (_, Inbound::Initialize(_, responder)) => answer(responder, Ok(self.initialize())),
             (Readiness::Fresh, other) => other.refuse(fault::not_now("initialize first")),
             (Readiness::Ready, Inbound::New(asked, responder)) => {
                 answer(responder, self.new_session(*asked).await)
@@ -197,7 +201,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
                 answer(responder, self.list_sessions(*asked).await)
             }
             (Readiness::Ready, Inbound::SetMode(asked, responder)) => {
-                answer(responder, self.set_mode(*asked))
+                answer(responder, self.set_mode(&asked))
             }
             (Readiness::Ready, Inbound::Prompt(asked, responder)) => {
                 self.prompt(link, *asked, responder).await
@@ -205,21 +209,22 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         }
     }
 
-    fn initialize(&mut self, _asked: InitializeRequest) -> Result<InitializeResponse, Error> {
+    fn initialize(&mut self) -> InitializeResponse {
         self.readiness = Readiness::Ready;
         // Version 1 whatever the editor asks for: it picks whether to go on.
         let capabilities = AgentCapabilities::new()
             .load_session(true)
             .prompt_capabilities(PromptCapabilities::new())
             .session_capabilities(SessionCapabilities::new().list(SessionListCapabilities::new()));
-        Ok(InitializeResponse::new(ProtocolVersion::V1)
+        InitializeResponse::new(ProtocolVersion::V1)
             .agent_capabilities(capabilities)
-            .agent_info(Implementation::new("docket", env!("CARGO_PKG_VERSION"))))
+            .agent_info(Implementation::new("docket", env!("CARGO_PKG_VERSION")))
     }
 
-    fn set_mode(&mut self, asked: SetSessionModeRequest) -> Result<SetSessionModeResponse, Error> {
-        let session =
-            SessionId::parse(&asked.session_id.0).map_err(|_| fault::unknown_session())?;
+    fn set_mode(&mut self, asked: &SetSessionModeRequest) -> Result<SetSessionModeResponse, Error> {
+        let session = SessionId::parse(&asked.session_id.0)
+            .ok()
+            .ok_or_else(fault::unknown_session)?;
         let mode = Mode::parse(&asked.mode_id.0).ok_or_else(|| fault::invalid("no such mode"))?;
         let known = self
             .roster

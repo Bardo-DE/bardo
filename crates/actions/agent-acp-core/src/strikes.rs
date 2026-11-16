@@ -1,7 +1,9 @@
 //! The host's own count of refusals that never reached the router: a path outside the session's
-//! directory, one that holds secrets, a request that is not a call. The router's breaker counts
-//! what it ruled on; an agent that keeps trying places it may not reach is never ruled on, so
-//! this counts them, and the turn pauses until the person speaks. Pure counts.
+//! directory, one that holds secrets, a request that is not a call.
+//!
+//! The router's breaker counts what it ruled on; an agent that keeps trying places it may not reach
+//! is never ruled on, so this counts them, and the turn pauses until the person speaks. Pure
+//! counts.
 
 use permission_core::BreakerTrip;
 

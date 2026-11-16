@@ -108,8 +108,9 @@ pub enum RecallView {
     Spaces(Vec<provenance::SpaceId>),
 }
 
-/// A record companiond keeps about its own sessions (`companion-wire`'s `SessionRecord`, in its
-/// serde form): the router stores it for the Space the session is in, as
+/// A record companiond keeps about its own sessions.
+///
+/// It is `companion-wire`'s `SessionRecord`, in its serde form: the router stores it for the Space the session is in, as
 /// `Area { Companion }` of kind `companion.session.<slug>`, trusted and private to the Space.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SessionNote {
@@ -119,8 +120,9 @@ pub struct SessionNote {
     pub json: JsonText,
 }
 
-/// A record of the helpers (a card, a job or a post) the companion hands the router to keep, in
-/// its serde form: the router stores it for the Space the session is in, as `Area { Helpers }`
+/// A record of the helpers (a card, a job or a post) the companion hands the router to keep.
+///
+/// In its serde form: the router stores it for the Space the session is in, as `Area { Helpers }`
 /// of the kind's tag (`helpers.card`, `helpers.job`, `helpers.post`), trusted and private to the
 /// Space.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

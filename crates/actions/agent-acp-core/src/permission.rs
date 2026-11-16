@@ -1,7 +1,8 @@
-//! The gate's ruling on the editor's or an agent's permission request: which option ids mean
-//! "go on", and what an outcome, a reply or an error is worth. Only `allow_once` allows; `allow_always`
-//! counts only on a sheet that offered it; anything else, an error or a cancel is a reject. The
-//! words of the options are not here.
+//! The gate's ruling on the editor's or an agent's permission request: which option ids mean "go
+//! on", and what an outcome, a reply or an error is worth.
+//!
+//! Only `allow_once` allows; `allow_always` counts only on a sheet that offered it; anything else,
+//! an error or a cancel is a reject. The words of the options are not here.
 
 use action_core::ConfirmRequest;
 use agent_client_protocol::schema::v1::{

@@ -1,6 +1,9 @@
 //! A fake ACP client that plays the editor over an in-memory duplex stream, and the fixtures
 //! around it. Scripted: no network, no process, no clock.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test file uses some of the rig's helpers, and the others stay unused in it"
+)]
 
 use account_core::AppName;
 use action_core::{CallRefusal, StepEnd, StepLine, StepShown};
@@ -15,6 +18,7 @@ use agent_session::{BackendEvent, CallEvent, CallOpen, TurnEnd};
 use permission_core::DenyCode;
 use provenance::{ActionName, Effect, UnixSeconds};
 use serde_json::{Value, json};
+use std::fmt::Write as _;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, duplex};
 use tokio::io::{AsyncWriteExt, BufReader, DuplexStream, Lines, ReadHalf, WriteHalf, split};
@@ -324,25 +328,32 @@ impl Editor {
     /// to choose, so each is numbered by its place in the transcript.
     pub fn transcript(&self) -> String {
         let mut asked = 0;
-        self.seen
-            .iter()
-            .map(|message| {
-                let mut message = message.clone();
-                if message.get("method").is_some() && message.get("id").is_some() {
-                    asked += 1;
-                    message["id"] = json!(format!("request-{asked}"));
-                }
-                format!("{message}\n")
-            })
-            .collect()
+        let mut text = String::new();
+        for message in &self.seen {
+            let mut message = message.clone();
+            if message.get("method").is_some() && message.get("id").is_some() {
+                asked += 1;
+                message["id"] = json!(format!("request-{asked}"));
+            }
+            writeln!(text, "{message}").expect("a string takes text");
+        }
+        text
     }
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a scripted answer: it has the `Option<Value>` shape of every handler the rig takes"
+)]
 pub fn allow(request: &Value) -> Option<Value> {
     let _ = request;
     Some(json!({"outcome": {"outcome": "selected", "optionId": "allow_once"}}))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a scripted answer: it has the `Option<Value>` shape of every handler the rig takes"
+)]
 pub fn reject(request: &Value) -> Option<Value> {
     let _ = request;
     Some(json!({"outcome": {"outcome": "selected", "optionId": "reject_once"}}))

@@ -79,6 +79,10 @@ impl FakeHelpers {
 }
 
 impl ConversationTurns for FakeHelpers {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn say(&mut self, session: &SessionId, turn: UserTurn) -> Result<String, HelperRefusal> {
         self.seen
             .lock()
@@ -102,6 +106,10 @@ impl Helpers for FakeHelpers {
             .unwrap_or_default()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is `async`; this implementation has nothing to await"
+    )]
     async fn open_job(&mut self, helper: &HelperId) -> Result<SessionId, HelperRefusal> {
         self.seen.lock().expect("seen").opened.push(helper.clone());
         Ok(self.job_session.clone())
@@ -137,7 +145,7 @@ async fn seed(log: &MemoryLog, id: &str) {
         cwd: None,
         started_from: None,
         label: None,
-        rewind: Default::default(),
+        rewind: action_core::Rewind::default(),
     };
     log.append(&session(id), Seq(0), &SessionEntry::Opened(opening))
         .await
@@ -363,7 +371,7 @@ async fn load_replays_the_recent_jobs_in_plain_words() {
             state: JobShown::Done,
             note: None,
             answer: Some("Offer B is the best.".to_owned()),
-            from: Default::default(),
+            from: companion_wire::JobFrom::default(),
         }],
     ));
     let (mut server, mut ed) = rig_with(&log, vec![], EDITOR, fake);

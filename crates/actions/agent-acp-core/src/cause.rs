@@ -1,7 +1,9 @@
-//! Where an agent's start went wrong. `BackendFault::Unavailable` is one fault for many causes (a
-//! folder the sandbox may not write, a process that did not start, an agent that answered
-//! nonsense); the person is told one sentence, so the cause is written to the log at the step
-//! where it is dropped, and [`Step`] names that step.
+//! Where an agent's start went wrong.
+//!
+//! `BackendFault::Unavailable` is one fault for many causes (a folder the sandbox may not write, a
+//! process that did not start, an agent that answered nonsense); the person is told one sentence,
+//! so the cause is written to the log at the step where it is dropped, and [`Step`] names that
+//! step.
 
 use agent_session::BackendFault;
 use std::fmt;

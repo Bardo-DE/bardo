@@ -12,17 +12,26 @@ use std::collections::BTreeSet;
 const TERMINAL_SCOPES: [&str; 3] = ["vte-spawn-", "tmux-spawn-", "session-"];
 
 /// Whether the cgroup path (the unified line of `/proc/<pid>/cgroup`) ends in a terminal child's
-/// scope. The one place the desktop says what a terminal is: intentd derives the cli role from it
-/// and companiond lets the same processes open, ask and close.
+/// scope.
+///
+/// The one place the desktop says what a terminal is: intentd derives the cli role from it and
+/// companiond lets the same processes open, ask and close.
 #[must_use]
 pub fn is_terminal_scope(cgroup: &str) -> bool {
     let leaf = cgroup.rsplit('/').next().unwrap_or_default();
-    leaf.ends_with(".scope") && TERMINAL_SCOPES.iter().any(|p| leaf.starts_with(p))
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "a systemd unit name is matched exactly: `.scope` is a unit type suffix, not a file extension"
+    )]
+    let is_scope = leaf.ends_with(".scope");
+    is_scope && TERMINAL_SCOPES.iter().any(|p| leaf.starts_with(p))
 }
 
-/// A caller as the transport derived it: an identity and the roles `actiond.toml` gives that
-/// bus name. One name may play several (sill is the launcher, the confirm server and the
-/// control centre); the role a call acts in is the first that may make it.
+/// A caller as the transport derived it: an identity and the roles `actiond.toml` gives that bus
+/// name.
+///
+/// One name may play several (sill is the launcher, the confirm server and the control centre); the
+/// role a call acts in is the first that may make it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CallerId {
     /// The application, as porter derives it from the connection.

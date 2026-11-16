@@ -73,6 +73,11 @@ fn apply(entry: &mut toml_edit::Table, key: &str, pick: &Pick) {
 }
 
 /// `text` with the choices set in the entry listed as `program`. Pure.
+///
+/// # Errors
+///
+/// [`ChoiceFault`] when `text` is not readable TOML, no such agent is listed, or the model or the
+/// way of signing in is not one docket can keep.
 pub fn edit_agent_choice(
     text: &str,
     program: &str,
@@ -84,7 +89,7 @@ pub fn edit_agent_choice(
     if matches!(&choice.way, Pick::Set(id) if !way_fine(id)) {
         return Err(ChoiceFault::BadWay);
     }
-    let mut doc: DocumentMut = text.parse().map_err(|_| ChoiceFault::Unreadable)?;
+    let mut doc: DocumentMut = text.parse().ok().ok_or(ChoiceFault::Unreadable)?;
     let entry = entry_of(&mut doc, program)?;
     apply(entry, "model", &choice.model);
     apply(entry, "sign_in", &choice.way);
@@ -105,10 +110,16 @@ fn entry_of<'a>(
 }
 
 /// `text` with `checkpoints` (who keeps the history of the files the agent changes) set in the
-/// entry listed as `program`. Written out in full, so a later change of the default does not
-/// move a choice the person made. Pure.
+/// entry listed as `program`.
+///
+/// Written out in full, so a later change of the default does not move a choice the person made.
+/// Pure.
+///
+/// # Errors
+///
+/// [`ChoiceFault`] when `text` is not readable TOML or no such agent is listed.
 pub fn edit_agent_rewind(text: &str, program: &str, rewind: Rewind) -> Result<String, ChoiceFault> {
-    let mut doc: DocumentMut = text.parse().map_err(|_| ChoiceFault::Unreadable)?;
+    let mut doc: DocumentMut = text.parse().ok().ok_or(ChoiceFault::Unreadable)?;
     let entry = entry_of(&mut doc, program)?;
     let word = match rewind {
         Rewind::Docket => "docket",
@@ -120,20 +131,34 @@ pub fn edit_agent_rewind(text: &str, program: &str, rewind: Rewind) -> Result<St
 
 /// Sets `checkpoints` in the entry of `program` in the file at `path`; the file is replaced
 /// whole or not at all.
+///
+/// # Errors
+///
+/// [`ChoiceFault`] when the file cannot be read or written, or [`edit_agent_rewind`] refuses the
+/// edit.
 pub fn write_agent_rewind(path: &Path, program: &str, rewind: Rewind) -> Result<(), ChoiceFault> {
-    let text = std::fs::read_to_string(path).map_err(|_| ChoiceFault::Io)?;
+    let text = std::fs::read_to_string(path).ok().ok_or(ChoiceFault::Io)?;
     let edited = edit_agent_rewind(&text, program, rewind)?;
-    write_atomic(path, edited.as_bytes()).map_err(|_| ChoiceFault::Io)
+    write_atomic(path, edited.as_bytes())
+        .ok()
+        .ok_or(ChoiceFault::Io)
 }
 
 /// Sets the choices in the entry of `program` in the file at `path`; the file is replaced whole
 /// or not at all.
+///
+/// # Errors
+///
+/// [`ChoiceFault`] when the file cannot be read or written, or [`edit_agent_choice`] refuses the
+/// edit.
 pub fn write_agent_choice(
     path: &Path,
     program: &str,
     choice: &AgentChoice,
 ) -> Result<(), ChoiceFault> {
-    let text = std::fs::read_to_string(path).map_err(|_| ChoiceFault::Io)?;
+    let text = std::fs::read_to_string(path).ok().ok_or(ChoiceFault::Io)?;
     let edited = edit_agent_choice(&text, program, choice)?;
-    write_atomic(path, edited.as_bytes()).map_err(|_| ChoiceFault::Io)
+    write_atomic(path, edited.as_bytes())
+        .ok()
+        .ok_or(ChoiceFault::Io)
 }

@@ -13,6 +13,10 @@ use ui_peer::{Deadline, within};
 
 /// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the bus name
 /// `org.bardo.Settings`. Returns once the name is ours; the connection keeps serving.
+///
+/// # Errors
+///
+/// [`ServeError`] when the name cannot be claimed or an object cannot be exported.
 pub async fn serve(
     connection: &BusConnection,
     provider: SettingsProvider,
@@ -25,9 +29,15 @@ pub async fn serve(
     serve_on(connection, provider, context.clone(), context).await
 }
 
-/// [`serve`], answering the process `callers` names as intentd instead of intentd's unit on the
-/// system's `/proc`, and judging who may activate the window with `peers` instead of the desktop's
-/// caller table: a test's stand-ins for the router and the shell.
+/// [`serve`], with a test's stand-ins for the router and the shell.
+///
+/// It answers the process `callers` names as intentd instead of intentd's unit on the system's
+/// `/proc`, and judges who may activate the window with `peers` instead of the desktop's caller
+/// table.
+///
+/// # Errors
+///
+/// [`ServeError`] when the name cannot be claimed or an object cannot be exported.
 pub async fn serve_with<K: Callers>(
     connection: &BusConnection,
     provider: SettingsProvider,
@@ -54,12 +64,19 @@ pub enum ServeFault {
     Serve(String),
 }
 
-/// Connects to the session bus (`DBUS_SESSION_BUS_ADDRESS`, read by the bus library) and
-/// serves `provider` on it. The connection is returned: dropping it takes the service off the
-/// bus, so the caller keeps it for as long as the app runs.
+/// Connects to the session bus (`DBUS_SESSION_BUS_ADDRESS`, read by the bus library) and serves
+/// `provider` on it.
+///
+/// The connection is returned: dropping it takes the service off the bus, so the caller keeps it
+/// for as long as the app runs.
 ///
 /// A bus that does not answer inside the read deadline is [`ServeFault::Connect`]: Settings then
 /// opens without the service instead of never opening (audit DETENT-07).
+///
+/// # Errors
+///
+/// [`ServeFault`] when the session bus does not answer in time, the name is taken, or serving
+/// fails.
 pub async fn serve_session(provider: SettingsProvider) -> Result<BusConnection, ServeFault> {
     within(BUS_DEADLINE, BUS_PEER, serve_unbounded(provider))
         .await
