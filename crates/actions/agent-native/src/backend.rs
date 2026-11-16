@@ -130,9 +130,10 @@ where
         if self.flight.is_some() {
             return Err(BackendFault::Busy);
         }
-        let window = WindowKey::parse(EDITOR_WINDOW)
-            .ok()
-            .ok_or(BackendFault::Unavailable)?;
+        let window = WindowKey::parse(EDITOR_WINDOW).map_err(|error| {
+            tracing::warn!(%error, "the editor window name is not a window key");
+            BackendFault::Unavailable
+        })?;
         let core = Arc::clone(&self.core);
         let session = self.session.clone();
         self.flight = Some(Flight::of(|mut tap| {
@@ -216,8 +217,10 @@ where
             if core.task_of(&self.session).is_none() {
                 core.adopt_stored(&self.session, plan)
                     .await
-                    .ok()
-                    .ok_or(BackendFault::Unavailable)?;
+                    .map_err(|error| {
+                        tracing::warn!(%error, "the stored session could not be adopted");
+                        BackendFault::Unavailable
+                    })?;
             }
         }
         self.bind().await?;

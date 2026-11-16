@@ -170,8 +170,10 @@ where
                 acts_for: None,
             })
             .await
-            .ok()
-            .ok_or(BackendFault::Unavailable)?
+            .map_err(|error| {
+                tracing::warn!(%error, "the companion did not open the session");
+                BackendFault::Unavailable
+            })?
         };
         let mut backend = self.fresh(&opened.session);
         backend
@@ -286,10 +288,10 @@ where
         self.backend(session)?.close().await;
         self.over.insert(session.clone());
         let mut core = self.core.lock().await;
-        core.close(session.clone())
-            .await
-            .ok()
-            .ok_or(BackendFault::Unavailable)?;
+        core.close(session.clone()).await.map_err(|error| {
+            tracing::warn!(%error, "the companion did not close the session");
+            BackendFault::Unavailable
+        })?;
         Ok(())
     }
 
