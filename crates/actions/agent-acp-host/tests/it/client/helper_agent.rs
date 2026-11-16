@@ -339,7 +339,7 @@ fn card(id: &str) -> HelperCard {
         actions: BTreeSet::<ActionMatch>::new(),
         kinds: BTreeSet::new(),
         ceiling: provenance::Effect::Read,
-        max_count: account_ids::Count(1),
+        max_count: base_ids::Count(1),
         recipients: vec![],
         destinations: vec![],
         paths: vec![],
@@ -357,7 +357,7 @@ fn card(id: &str) -> HelperCard {
         model: HelperModel::Unset,
         reach,
         budget: HelperBudget {
-            steps: account_ids::Count(4),
+            steps: base_ids::Count(4),
         },
     };
     HelperCard::new(helper(id), draft)

@@ -12,7 +12,7 @@ use crate::scheduler::{
 use crate::service::{
     Confirm, ConfirmError, Event, Handle, Nudge, Settle, SettleError, StatusSnapshot,
 };
-use account_ids::clock::Clock;
+use base_time::Clock;
 use std::sync::Arc;
 use std::time::Duration;
 use sync_core::{MassDelete, Quota, Replica, StoredConflict};
@@ -132,7 +132,7 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
     /// time the computer was awake and the clock does not, so after a suspend a single long
     /// sleep would run late by as long as the computer slept; each step ends by looking at the
     /// clock again. Ends early, `Woken`, when something the scheduler reads changed.
-    async fn sleep_until(&mut self, at: account_ids::UnixSeconds) -> Slept {
+    async fn sleep_until(&mut self, at: base_time::UnixSeconds) -> Slept {
         loop {
             let remaining = u64::try_from(at.0.saturating_sub(self.engine_now().0)).unwrap_or(0);
             if remaining == 0 {
@@ -146,7 +146,7 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
     }
 
     /// The engine's clock: a cycle's dating and the scheduler's must agree.
-    fn engine_now(&self) -> account_ids::UnixSeconds {
+    fn engine_now(&self) -> base_time::UnixSeconds {
         self.engine.now()
     }
 
@@ -243,7 +243,7 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
         self.handle.cycle_ended();
     }
 
-    fn next_last(&self, result: &Result<Report, SyncError>, now: account_ids::UnixSeconds) -> Last {
+    fn next_last(&self, result: &Result<Report, SyncError>, now: base_time::UnixSeconds) -> Last {
         let failed = |retry_after: u32| {
             let failures = match self.last {
                 Last::Failed { failures, .. } => failures.saturating_add(1),
@@ -304,7 +304,7 @@ impl<R: Replica, D: Dataset, K: Clock> Driver<R, D, K> {
         }
     }
 
-    fn publish(&self, now: account_ids::UnixSeconds) {
+    fn publish(&self, now: base_time::UnixSeconds) {
         let journal = self.engine.journal();
         let anchor_age = journal
             .anchor()

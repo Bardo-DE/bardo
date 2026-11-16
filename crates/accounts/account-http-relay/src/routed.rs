@@ -9,7 +9,7 @@
 
 use account_http::http::{Request, Response};
 use account_http::{Http, HttpError};
-use account_ids::{Origin, WebUrl};
+use base_url::{Origin, WebUrl};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, PoisonError};
 

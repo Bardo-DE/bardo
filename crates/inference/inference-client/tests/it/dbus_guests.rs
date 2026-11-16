@@ -8,8 +8,8 @@
 use crate::common;
 
 use account_dbus::{BusStream, Details};
-use account_ids::UnixSeconds;
 use account_tailscale::NodeId;
+use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use inference_client::{
     ClientError, ComputerReason, DbusTransport, GuestChange, Inference, TransportError,

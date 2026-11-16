@@ -13,8 +13,8 @@ use account_core::AppId;
 use account_core::EndpointUrl;
 use account_core::ProviderHint;
 use account_core::{AccountId, AuthKind, ProviderId};
-use account_ids::WebUrl;
 use account_tailscale::Machine;
+use base_url::WebUrl;
 
 /// What the sheet was opened for.
 #[derive(Debug, Clone, PartialEq, Eq)]

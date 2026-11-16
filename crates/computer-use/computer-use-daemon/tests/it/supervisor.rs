@@ -50,7 +50,7 @@ async fn end_to_end_scripted_run_done() {
     .unwrap();
     let (end, signals) = ended_with(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Done);
-    assert_eq!(end.steps, account_ids::Count(2));
+    assert_eq!(end.steps, base_ids::Count(2));
     assert!(
         matches!(end.report, ReportDelivery::Sent(_)),
         "the report went out"
@@ -493,8 +493,8 @@ async fn the_callers_body_is_a_request_the_app_is_the_windows_and_limits_stay_in
         Err(ControlRefusal::BadTask)
     ));
     let mut greedy = task();
-    greedy.budget.steps = account_ids::Count(1_000_000);
-    greedy.budget.stall_frames = account_ids::Count(0);
+    greedy.budget.steps = base_ids::Count(1_000_000);
+    greedy.budget.stall_frames = base_ids::Count(0);
     let id = sup.start(CuaCaller::Companion, greedy).await.unwrap();
     let view = sup.view(&id).expect("live");
     assert_eq!(view.task.budget, computer_use_bus::RunBudget::PROPOSED);

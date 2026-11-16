@@ -3,10 +3,10 @@
 
 use crate::model::CuaModel;
 use crate::rules::Rules;
-use account_ids::UnixSeconds;
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use action_gate_wire::{CuaAsk, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk, WireRefusal};
+use base_time::UnixSeconds;
 use computer_use_a11y_tree::A11ySource;
 use computer_use_bus::{CuaRecord, CuaTask};
 use computer_use_capture::WindowCapture;

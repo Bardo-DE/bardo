@@ -2,7 +2,7 @@
 
 use super::helpers::*;
 use account_core::DataClass;
-use account_ids::Permille;
+use base_ids::Permille;
 use inference_core::{
     ClientFrame, Declined, DeclinedBecause, InferEvent, InferRefusal, InferReply, ModelError,
     ModelRef, PickRefusal, Readiness, RequestKind, Why,

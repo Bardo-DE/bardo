@@ -32,7 +32,8 @@ use crate::replica::GraphReplica;
 use account_http::http::header::CONTENT_TYPE;
 use account_http::http::{Method, Response};
 use account_http::{Http, request};
-use account_ids::{UnixSeconds, WebUrl};
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use sync_core::DELETED;
 use sync_core::status::{refused, write_unreached};
 use sync_core::{

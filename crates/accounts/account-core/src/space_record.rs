@@ -3,7 +3,7 @@
 
 use crate::error::CoreError;
 use crate::space::DesktopSpace;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// The longest Space name, in characters.
@@ -33,7 +33,7 @@ impl SpaceName {
     }
 }
 
-account_ids::string_newtype!(SpaceName, CoreError);
+base_ids::string_newtype!(SpaceName, CoreError);
 
 /// How a Space looks (a colour, a symbol), as quire's Spaces kit writes it (compact JSON of its
 /// `SpaceLook`). Opaque to porter: kept and handed back as it came, never parsed; only its
@@ -55,7 +55,7 @@ impl SpaceLook {
     }
 }
 
-account_ids::string_newtype!(SpaceLook, CoreError);
+base_ids::string_newtype!(SpaceLook, CoreError);
 
 /// One desktop-wide Space.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -88,7 +88,7 @@ pub enum SpaceChange {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::word::{from_word, word as word_of};
+    use base_ids::word::{from_word, word as word_of};
 
     #[test]
     fn names_are_what_the_person_typed_within_bounds() {

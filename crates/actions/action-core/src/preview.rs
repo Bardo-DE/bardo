@@ -1,7 +1,7 @@
 //! The closed vocabulary of previews the host draws with its own components; apps send data only.
 
-use account_ids::Bytes;
 use action_vocab::{CharCount, EntityRef, FileRef, LabelText};
+use base_ids::Bytes;
 use provenance::{Labelled, UnixSeconds};
 use serde::{Deserialize, Serialize};
 

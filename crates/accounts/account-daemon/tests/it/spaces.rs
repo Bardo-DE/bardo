@@ -296,7 +296,7 @@ async fn an_app_making_too_many_spaces_at_once_is_held_back() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_creation_window_runs_on_the_injected_monotonic_clock() {
-    let clock = std::sync::Arc::new(account_ids::clock::ManualMonotonic::new());
+    let clock = std::sync::Arc::new(base_time::ManualMonotonic::new());
     let rig = start(Options {
         monotonic: Some(clock.clone()),
         ..Options::default()

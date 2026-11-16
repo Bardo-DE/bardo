@@ -2,7 +2,7 @@
 
 use super::trigger::Trigger;
 use crate::helper::{GoalText, JobFault, JobId, PauseWhy};
-use account_ids::Count;
+use base_ids::Count;
 use memory_core::EventRef;
 use provenance::{HelperId, UnixSeconds};
 use serde::{Deserialize, Serialize};

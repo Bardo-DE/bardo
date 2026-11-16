@@ -4,7 +4,7 @@
 use super::{Engine, SyncError};
 use crate::dataset::Dataset;
 use crate::journal::Op;
-use account_ids::clock::Clock;
+use base_time::Clock;
 use sync_core::{BaseVersion, ItemState, JournalItem, RemoteSide, Replica, Resolution};
 
 impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {

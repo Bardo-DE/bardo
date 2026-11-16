@@ -1,8 +1,8 @@
 //! The tier rule, the front pointer and completion notes.
 
 use crate::support::*;
-use account_ids::Count;
 use agent_loop::*;
+use base_ids::Count;
 use provenance::{AgentRef, ReportStatus, RunId};
 
 #[test]

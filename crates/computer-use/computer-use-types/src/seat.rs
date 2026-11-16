@@ -1,6 +1,6 @@
 //! What the seat reports: how text got in, whose seat, the receipt, and why delivery failed.
 
-use account_ids::Count;
+use base_ids::Count;
 use computer_use_desktop::{LeaseId, Stamp};
 use serde::{Deserialize, Serialize};
 

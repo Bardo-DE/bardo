@@ -14,7 +14,7 @@ use super::PimKind;
 use super::vdir::{self, Meta};
 use crate::dataset::{Dataset, DatasetError, DatasetId, Direction, fingerprint};
 use crate::journal::{Journal, Op};
-use account_ids::Bytes;
+use base_ids::Bytes;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::path::PathBuf;

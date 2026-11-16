@@ -46,7 +46,7 @@ thiserror = { workspace = true }
 account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
 account-wire = {path = "../../accounts/account-wire"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 sandbox = {path = "../../sandbox/sandbox"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-fake = {path = "../action-fake"}

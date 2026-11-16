@@ -3,9 +3,10 @@ use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_core::{AppName, Isolation};
-use account_ids::clock::FixedClock;
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
 use base_testkit::Scratch;
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason, Why};
 
 fn app() -> AppId {

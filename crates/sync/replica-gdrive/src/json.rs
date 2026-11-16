@@ -1,6 +1,6 @@
 //! What Drive's JSON says, read as far as the replica needs.
 
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde::Deserialize;
 use sync_core::{ContentHash, ItemKind};
 

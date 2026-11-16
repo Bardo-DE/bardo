@@ -2,7 +2,7 @@ use super::*;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use account_ids::Permille;
+use base_ids::Permille;
 
 fn target(sampling: DefaultSampling) -> Target {
     Target {

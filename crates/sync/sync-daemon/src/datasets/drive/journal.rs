@@ -5,7 +5,8 @@
 //! one more row written.
 
 use crate::journal::{JournalError, prepare_with};
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use rusqlite::{Connection, OptionalExtension, Transaction, params};
 use std::path::Path;
 use std::sync::{Mutex, MutexGuard, PoisonError};

@@ -15,12 +15,12 @@ use account_core::{Isolation, SecretKey, SecretPurpose, SecretText, SpaceScope};
 use account_daemon::{Options, TableCallers, serve_with};
 use account_dbus::BusStream;
 use account_fake::{MemoryStore, NOW, ScriptedSheets, llm_account, llm_provider};
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_wire::Refusal;
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use std::sync::Arc;
 

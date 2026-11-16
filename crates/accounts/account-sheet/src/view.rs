@@ -9,7 +9,7 @@ use account_core::EndpointUrl;
 use account_core::ProviderId;
 use account_core::consent::ConsentAsk;
 use account_core::{AppId, AppLabel};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde::{Deserialize, Serialize};
 
 /// One provider in the list the person picks from.

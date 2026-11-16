@@ -21,9 +21,9 @@ use account_dbus::accounts::{
 };
 use account_dbus::zvariant::OwnedObjectPath;
 use account_dbus::{BusError, Details};
-use account_ids::word::from_word;
 use account_wire::names::ACCOUNTS_PATH;
 use account_wire::{AccountsReply, ParentWindow};
+use base_ids::word::from_word;
 use futures_util::StreamExt;
 use futures_util::stream::select;
 use std::future::Future;

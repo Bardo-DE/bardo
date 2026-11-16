@@ -4,8 +4,8 @@
 use crate::support::*;
 use account_capability::ModelId;
 use account_core::AccountId;
-use account_ids::Count;
 use action_vocab::TurnId;
+use base_ids::Count;
 use companion_model::WatchedAgent;
 use companion_model::helper::*;
 use inference_core::ModelRef;

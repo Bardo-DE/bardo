@@ -1,6 +1,6 @@
 //! The memory timeline, read from memoryd as the shell: newest first, every actor and every app.
 
-use account_ids::Count;
+use base_ids::Count;
 use memory_core::{
     ActorFilter, FactId, FactView, Settlement, SpaceState, SpaceSummary, TimelineFilter,
     TimelinePage, TimelineQuery, TrustFilter,

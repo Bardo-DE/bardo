@@ -5,9 +5,9 @@ use crate::helpers::{button, off, readout, refused};
 use crate::identity_rows::{Expires, UsedBy};
 use crate::{AccountRow, Acts, At, Boxed, Row};
 use account_core::{Account, AccountState, AuthKind};
-use account_ids::word::word as word_of;
 use account_sheet::ProviderGroup;
 use account_sheet::words::group_heading;
+use base_ids::word::word as word_of;
 use ui_settings::live::LiveError;
 use ui_settings::schema::{ActionWeight, KeySpec};
 

@@ -13,7 +13,7 @@ use crate::write::Target;
 use account_http::http::header::CONTENT_TYPE;
 use account_http::http::{Method, Response};
 use account_http::{Http, request};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use sync_core::status::write_unreached;
 use sync_core::{PutRefused, RetryAfter};
 

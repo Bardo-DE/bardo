@@ -14,7 +14,7 @@ use account_capability::{
     LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
 };
 use account_capability::{Claim, Offer, Provenance, Subject};
-use account_ids::{Count, Dims, Px, Tokens};
+use base_ids::{Count, Dims, Px, Tokens};
 use computer_use_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
 use model_catalog::{

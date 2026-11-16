@@ -2,8 +2,8 @@
 
 use crate::support::rules;
 use account_core::{AppName, DataClass};
-use account_ids::Count;
 use action_gate_wire::EffectBasis;
+use base_ids::Count;
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };

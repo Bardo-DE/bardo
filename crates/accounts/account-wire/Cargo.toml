@@ -17,7 +17,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-account-ids = {path = "../account-ids"}
+
 
 [lints]
 workspace = true

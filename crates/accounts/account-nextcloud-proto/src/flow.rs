@@ -6,7 +6,7 @@
 
 use crate::{Error, web};
 use account_core::{EndpointUrl, LoginName, SecretText};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use http::header::{ACCEPT, CONTENT_TYPE, USER_AGENT};
 use http::{Method, Request, Response, StatusCode};
 use serde_json::Value;

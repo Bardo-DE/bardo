@@ -9,7 +9,7 @@
 
 use crate::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
 use crate::datasets::photos::cas::{self, hash_file};
-use account_ids::Bytes;
+use base_ids::Bytes;
 use std::io;
 use std::path::{Component, Path, PathBuf};
 use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};

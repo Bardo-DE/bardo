@@ -12,7 +12,7 @@ use crate::event::EventRef;
 use crate::ids::{Cursor, KindPattern};
 use crate::inject::{BodyMode, RecentEntry};
 use crate::thing::ThingRef;
-use account_ids::Count;
+use base_ids::Count;
 use serde::{Deserialize, Serialize};
 
 /// "The next events of one stream": oldest first, strictly after `after`. Answered with

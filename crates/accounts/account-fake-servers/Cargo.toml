@@ -13,7 +13,8 @@ base-testkit = {path = "../../base/base-testkit"}
 base64 = { workspace = true }
 account-dav-proto = {path = "../account-dav-proto"}
 account-core = {path = "../account-core"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-url = { path = "../../base/base-url" }
 account-discover = {path = "../account-discover"}
 account-fake = {path = "../account-fake"}
 account-provider = {path = "../account-provider"}

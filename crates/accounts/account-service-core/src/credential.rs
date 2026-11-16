@@ -11,12 +11,12 @@ use account_core::AccountId;
 use account_core::{
     Account, AccountState, Audience, Credential, IssuedToken, SecretKey, SecretPurpose,
 };
-use account_ids::clock::Clock;
 use account_provider::Provider;
 use account_provider::ProviderSession;
 use account_provider::{Presented, ProviderError};
 use account_secrets::Secrets;
 use account_wire::Refusal;
+use base_time::Clock;
 
 impl<E: Ports> Ctx<E> {
     /// A short-lived token for `audience` under a grant of a kind and reach (`grant`) from

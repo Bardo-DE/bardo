@@ -14,7 +14,6 @@ use account_fake::{
     AskLog, MemoryStore, NOW, RecordingAudit, Scripted, ScriptedSheets, cloud_provider,
     llm_account, llm_provider, mail_account, mail_provider, storage_account,
 };
-use account_ids::clock::FixedClock;
 use account_match::llm_need;
 use account_secrets::{MemorySecrets, Secrets, SecretsError};
 use account_service::AccountService;
@@ -22,6 +21,7 @@ use account_service_core::audit::AuditEvent;
 use account_service_core::registry::Registry;
 use account_wire::ParentWindow;
 use account_wire::{AccountsReply, AccountsRequest, Refusal};
+use base_time::FixedClock;
 use std::sync::Arc;
 
 const KEY: &str = "sk-or-v1-S3CRET-CLOUD-KEY-0123456789";

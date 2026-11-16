@@ -16,8 +16,6 @@ use account_fake::{
     FakeProvider, FakeSignIn, MemoryStore, NOW, Scripted, ScriptedSheets, mail_account,
     mail_provider,
 };
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
 use account_match::MailNeed;
 use account_match::Need;
 use account_provider::{
@@ -28,6 +26,8 @@ use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_wire::{AccountsReply, AccountsRequest};
 use account_wire::{ParentWindow, Refusal};
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 

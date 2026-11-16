@@ -8,7 +8,7 @@
 //! lane's queue. The person's own turn goes ahead of every helper's; helpers keep the order they
 //! asked in.
 
-use account_ids::Count;
+use base_ids::Count;
 use inference_core::Asker;
 use std::collections::{BTreeMap, BTreeSet};
 

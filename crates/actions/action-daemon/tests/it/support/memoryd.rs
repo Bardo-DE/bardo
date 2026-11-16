@@ -6,7 +6,7 @@
 //! must cover its documents'), and answers every caller as `Caller::Router`.
 #![allow(dead_code)]
 
-use account_ids::Count;
+use base_ids::Count;
 use memory_core::{EventBody, EventRef, MemoryReply, MemoryRequest, Record, ReplicaId, Seq};
 use memory_dbus::{Call, MemoryError, decode_request, encode_reply};
 use memory_dbus_serve::{Serve, serve_on};

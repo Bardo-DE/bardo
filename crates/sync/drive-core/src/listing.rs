@@ -1,7 +1,8 @@
 //! The drive's listing as the core reads it: entries by id, each with its parent and its own
 //! name, never a path.
 
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use std::collections::{BTreeSet, VecDeque};
 use sync_core::{ContentHash, ItemKind, RemoteId, RemoteVersion};
 

@@ -113,7 +113,7 @@ fn the_reply_shape_is_the_schema() {
             "list",
             ValueSchema::List {
                 of: Box::new(ValueSchema::Integer { min: 0, max: 9 }),
-                max: account_ids::Count(3),
+                max: base_ids::Count(3),
             },
         ),
     ];

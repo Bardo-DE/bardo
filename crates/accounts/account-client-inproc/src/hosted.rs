@@ -13,7 +13,6 @@ use account_core::stream::duplex;
 use account_core::{
     AccountId, AppId, Candidate, DataClass, EndpointUrl, GrantId, ProviderHint, ProviderId,
 };
-use account_ids::clock::{Clock, SystemClock};
 use account_match::Need;
 use account_provider::Provider;
 use account_secrets::Secrets;
@@ -24,6 +23,7 @@ use account_service_grants::GrantsApi;
 use account_sheet::host::Sheets;
 use account_sheet::{EditServers, EditedServers};
 use account_wire::{AccountsReply, ParentWindow, Refusal};
+use base_time::{Clock, SystemClock};
 use std::sync::Arc;
 
 /// How much of a relay's traffic an in-memory stream holds before the writer waits.

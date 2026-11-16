@@ -2,9 +2,10 @@
 //! in a scratch repository must never run when the store takes, plans, restores and drops points.
 
 use crate::scratch::{Scratch, root};
-use account_ids::{Count, UnixSeconds};
 use action_checkpoint::{ApplyAsk, CheckpointStore, DropAsk, PlanAsk, TakeAsk};
 use action_core::CheckpointId;
+use base_ids::Count;
+use base_time::UnixSeconds;
 use provenance::SessionId;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;

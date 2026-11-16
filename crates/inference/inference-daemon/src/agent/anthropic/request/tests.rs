@@ -1,5 +1,5 @@
 use super::*;
-use account_ids::Tokens;
+use base_ids::Tokens;
 use inference_core::{Effort, Knob};
 use serde_json::json;
 
@@ -204,8 +204,8 @@ fn defaults_and_dropped_hints_change_nothing() {
     let Knob::Set(sampling) = chat.control.sampling else {
         panic!("a sampling");
     };
-    assert_eq!(sampling.temperature, account_ids::Permille(250));
-    assert_eq!(sampling.top_k, Knob::Set(account_ids::Count(20)));
+    assert_eq!(sampling.temperature, base_ids::Permille(250));
+    assert_eq!(sampling.top_k, Knob::Set(base_ids::Count(20)));
     assert_eq!(chat.messages.len(), 1);
 }
 

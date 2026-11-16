@@ -5,9 +5,9 @@ use account_capability::ModelId;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::DataClass;
-use account_ids::Tokens;
 use account_match::Need;
 use account_wire::{decode_frame, encode_frame};
+use base_ids::Tokens;
 use inference_core::{
     AudioFrame, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, ModelRef,
     Readiness, ServedBy,

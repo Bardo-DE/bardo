@@ -40,7 +40,7 @@ pub fn cloud_card() -> inference_core::ModelCard {
     use account_capability::{Billing, Locality};
     use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
     use account_core::AccountId;
-    use account_ids::Tokens;
+    use base_ids::Tokens;
     inference_core::ModelCard {
         account: AccountId::parse("anthropic").expect("id"),
         model: ModelId::parse("sonnet").expect("id"),

@@ -15,7 +15,9 @@ account-match = {path = "../account-match"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
 account-wire = {path = "../account-wire"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 account-daemon-support = {path = "../account-daemon-support", default-features = false, features = ["watch"]}
 account-fs = {path = "../account-fs"}
 account-callers = {path = "../account-callers", features = ["file"]}

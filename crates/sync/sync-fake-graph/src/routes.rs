@@ -142,7 +142,7 @@ fn route(drive: &Drive, path: &str) -> Option<(Address, String)> {
                 let names = names
                     .split('/')
                     .filter(|s| !s.is_empty())
-                    .map(account_ids::percent::decode)
+                    .map(base_url::percent::decode)
                     .collect();
                 Some((
                     Address::Below(from, names),
@@ -162,18 +162,15 @@ fn route(drive: &Drive, path: &str) -> Option<(Address, String)> {
         let names = names
             .split('/')
             .filter(|s| !s.is_empty())
-            .map(account_ids::percent::decode)
+            .map(base_url::percent::decode)
             .collect();
         return Some((
-            Address::Below(account_ids::percent::decode(id), names),
+            Address::Below(base_url::percent::decode(id), names),
             op.trim_start_matches('/').to_owned(),
         ));
     }
     let (id, op) = rest.split_once('/').unwrap_or((rest, ""));
-    Some((
-        Address::Item(account_ids::percent::decode(id)),
-        op.to_owned(),
-    ))
+    Some((Address::Item(base_url::percent::decode(id)), op.to_owned()))
 }
 
 /// Whether OneDrive takes `name`: here, the characters it refuses and a leading or trailing

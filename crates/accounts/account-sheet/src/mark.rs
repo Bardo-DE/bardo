@@ -36,7 +36,7 @@ impl MarkLetter {
     }
 }
 
-account_ids::string_newtype!(MarkLetter, MarkFaceError);
+base_ids::string_newtype!(MarkLetter, MarkFaceError);
 
 /// A colour written `#RRGGBB`: `#` and six hex digits, stored upper-case. No alpha, no short
 /// form, no names.
@@ -55,7 +55,7 @@ impl MarkColour {
     }
 }
 
-account_ids::string_newtype!(MarkColour, MarkFaceError);
+base_ids::string_newtype!(MarkColour, MarkFaceError);
 
 /// The face a provider file gives its mark: a letter on a colour.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

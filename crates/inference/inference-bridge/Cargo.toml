@@ -15,7 +15,7 @@ model-provider = {path = "../../models/model-provider"}
 account-core = {path = "../../accounts/account-core"}
 account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../inference-core"}
 thiserror = { workspace = true }
 model-vision-prep = {path = "../../models/model-vision-prep"}

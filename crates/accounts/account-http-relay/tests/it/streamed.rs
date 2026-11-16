@@ -5,7 +5,7 @@ use crate::server::{Seen, read_request};
 use account_http::http::{Method, StatusCode};
 use account_http::{Http, HttpError, request};
 use account_http_relay::{Dial, RelayHttp, RelayLimits, RelayStream};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use hyper::body::{Body, Bytes, Frame, SizeHint};
 use std::convert::Infallible;
 use std::pin::Pin;

@@ -144,7 +144,7 @@ impl Snapshot {
 
 /// The folder an account's journals, cache and drive are kept under, and its drive's id.
 fn drive_dir(account: &AccountId) -> Option<AccountDir> {
-    AccountDir::parse(&account_ids::object_segment(account.as_str()))
+    AccountDir::parse(&base_ids::object_segment(account.as_str()))
 }
 
 /// What syncd keeps of the accounts, over accountd through account-client.

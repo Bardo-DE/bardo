@@ -21,7 +21,7 @@ use account_dav_proto::{
 };
 use account_http::Http;
 use account_http::http::Response;
-use account_ids::Bytes;
+use base_ids::Bytes;
 use std::collections::{BTreeMap, BTreeSet};
 use sync_core::DELETED;
 use sync_core::status::{read_error, unreached};
@@ -459,7 +459,7 @@ fn diff(
     root: &crate::path::Root,
     known: &Known,
     now: &[Entry],
-    at: account_ids::UnixSeconds,
+    at: base_time::UnixSeconds,
 ) -> Vec<Change> {
     let changed: Vec<Entry> = now
         .iter()

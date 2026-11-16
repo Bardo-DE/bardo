@@ -16,7 +16,7 @@ path = "src/bin/inference-rig-client.rs"
 inference-client = {path = "../inference-client", features = ["dbus"]}
 account-capability = {path = "../../accounts/account-capability"}
 account-core = {path = "../../accounts/account-core"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../inference-core"}
 account-match = {path = "../../accounts/account-match"}
 account-rig = {path = "../../accounts/account-rig"}

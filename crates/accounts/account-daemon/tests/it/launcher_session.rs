@@ -5,7 +5,7 @@
 
 use crate::launcher_register::error_name;
 use crate::launcher_rig::*;
-use account_ids::word::word as word_of;
+use base_ids::word::word as word_of;
 
 use account_core::SessionToken;
 use account_core::audit::CredentialEnd;

@@ -2,7 +2,7 @@
 //! their own.
 
 use account_core::AppName;
-use account_ids::is_id;
+use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 
 macro_rules! text_id {

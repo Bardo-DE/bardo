@@ -9,7 +9,8 @@ use crate::op::MemoryOp;
 use crate::text::UserText;
 use crate::thing::{ThingRef, ThingRole, ThingView, Verb};
 use account_core::{AppName, SpaceId};
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
+use base_time::UnixSeconds;
 use provenance::{Actor, Effect, Label, Message, Part, SessionId};
 use serde::{Deserialize, Serialize};
 

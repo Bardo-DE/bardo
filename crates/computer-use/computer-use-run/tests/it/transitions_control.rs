@@ -27,7 +27,7 @@ fn model_says() -> SuccessCheck {
 fn receipt(at: u64) -> InputReceipt {
     InputReceipt {
         lease: LeaseId(1),
-        ops: account_ids::Count(3),
+        ops: base_ids::Count(3),
         text_path: None,
         origin: InputOrigin::SharedSeatViaEi,
         at: Stamp(at),

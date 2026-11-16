@@ -17,13 +17,13 @@ use account_core::{
         Verdict,
     },
 };
-use account_ids::word::word as word_of;
-use account_ids::*;
 use account_match::Need;
 use account_match::{
     AgentNeed, CuaNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed, LlmNeed,
     MailNeed, NotesNeed, PhotosNeed, PimNeed, PushNeed, RerankNeed, SpeechNeed, StorageNeed,
 };
+use base_ids::word::word as word_of;
+use base_ids::*;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;

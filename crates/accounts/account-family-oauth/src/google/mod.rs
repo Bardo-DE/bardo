@@ -23,10 +23,12 @@ use account_core::{
     TokenKind, TokenLifetime, Verification,
 };
 use account_http::Http;
-use account_ids::{Count, UnixSeconds, UrlScheme};
 use account_oauth::TokenResponse;
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;
+use base_ids::Count;
+use base_time::UnixSeconds;
+use base_url::UrlScheme;
 use probe::probe;
 use reauth::reason_of_refusal;
 use scopes::Granted;
@@ -322,7 +324,7 @@ impl BrowserIssuer for Google {
 /// Whether a row of the file names `wanted`: its family's word, or its endpoint.
 fn names_a_row(spec: &ProviderSpec, wanted: &str) -> bool {
     spec.capabilities.iter().any(|row| {
-        account_ids::word::word(&row.family) == wanted
+        base_ids::word::word(&row.family) == wanted
             || row
                 .endpoint
                 .as_ref()
@@ -354,7 +356,7 @@ fn grant_target<H>(
         .iter()
         .filter(|row| row.capability.kind() == kind)
         .find(|row| {
-            account_ids::word::word(&row.family) == wanted
+            base_ids::word::word(&row.family) == wanted
                 || row
                     .endpoint
                     .as_ref()

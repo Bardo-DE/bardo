@@ -4,7 +4,7 @@
 
 use crate::support::{FakeCompositor, Stance, Window};
 use account_core::AppName;
-use account_ids::Px;
+use base_ids::Px;
 use computer_use_action::{
     Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace,
 };

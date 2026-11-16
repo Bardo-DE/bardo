@@ -10,10 +10,10 @@ use crate::spec as spec_of;
 use crate::{At, GrantRow, PERMITS, ROWS, Row};
 use account_core::consent::Grant;
 use account_core::{Account, AccountId, AccountState, AppName, GrantId, ProviderId};
-use account_ids::word::{from_word, word};
 use account_provider::Issuer;
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
+use base_ids::word::{from_word, word};
 use std::collections::BTreeMap;
 use ui_settings::live::LiveSchema;
 use ui_settings::schema::{Exposure, KeyKind, KeySpec};
@@ -567,7 +567,7 @@ mod tests {
                 },
                 decision: Decision::Allow,
                 scope: GrantScope::Always,
-                at: account_ids::UnixSeconds(0),
+                at: base_time::UnixSeconds(0),
             }],
             accounts: vec![account],
             toggles: vec![],

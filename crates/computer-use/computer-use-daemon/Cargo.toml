@@ -30,7 +30,8 @@ fixture-callers = ["action-dbus/fixture-callers"]
 action-wire = {path = "../../actions/action-wire"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-system = {path = "../computer-use-system"}
 computer-use-bus = {path = "../computer-use-bus"}

@@ -16,7 +16,7 @@ use account_capability::CapabilityKind;
 use account_capability::StorageScope;
 use account_core::AccountId;
 use account_core::{Audience, Credential, IssuedToken};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};

@@ -27,8 +27,8 @@ use account_core::consent::Usage;
 use account_core::{DataClass, GrantId};
 use account_dbus::accounts::sheet::{SheetKind, reply_of};
 use account_dbus::accounts::{Abandon, KeysProxy, ServiceRoot, Sheet, SheetError};
-use account_ids::word::word as word_of;
 use account_wire::{AccountsReply, ParentWindow};
+use base_ids::word::word as word_of;
 
 fn malformed(what: Malformed) -> AiKeysError {
     AiKeysError::Link(LinkError::Malformed(what))

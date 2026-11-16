@@ -76,7 +76,7 @@ impl ClientEntry {
     /// (scheme, host, port) is none of the origins the issuer publishes. A path may differ
     /// (Microsoft's `organizations` or `consumers` tenant). A row with no endpoints stays.
     pub fn leaves_the_issuer(&self) -> bool {
-        let origins = |e: &IssuerEndpoints| -> Vec<account_ids::Origin> {
+        let origins = |e: &IssuerEndpoints| -> Vec<base_url::Origin> {
             [Some(&e.authorize), Some(&e.token), e.revoke.as_ref()]
                 .into_iter()
                 .flatten()

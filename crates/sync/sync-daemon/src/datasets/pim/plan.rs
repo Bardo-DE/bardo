@@ -98,7 +98,7 @@ pub fn plan(kind: PimKind, found: Vec<Found>) -> Vec<Planned> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::WebUrl;
+    use base_url::WebUrl;
 
     fn found(segment: &str, url: &str) -> Found {
         Found {
@@ -180,7 +180,7 @@ mod tests {
 #[cfg(test)]
 mod kind_tests {
     use super::*;
-    use account_ids::WebUrl;
+    use base_url::WebUrl;
 
     #[test]
     fn a_calendar_and_an_address_book_of_one_name_never_share_a_directory_or_a_dataset() {

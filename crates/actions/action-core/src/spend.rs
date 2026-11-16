@@ -3,7 +3,7 @@
 //! `budget::charge` reads it and `charge_turn` writes it.
 
 use crate::budget::{Budget, BudgetKind, Ledger};
-use account_ids::Tokens;
+use base_ids::Tokens;
 use inference_core::ChargeTotal;
 use model_provider::Money;
 use rust_decimal::Decimal;

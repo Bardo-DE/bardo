@@ -22,8 +22,8 @@
 use crate::error::TransportError;
 use crate::transport::bus_error;
 use account_dbus::{BusConnection, BusStream, Details};
-use account_ids::UnixSeconds;
 use account_tailscale::NodeId;
+use base_time::UnixSeconds;
 use inference_dbus::inference::{GUEST_KEY_NAME, GUEST_KEY_SINCE};
 use inference_dbus::inference::{GuestAsksStream, GuestsChangedStream, InferenceProxy};
 use inference_tailnet::GuestAsk;

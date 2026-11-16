@@ -571,9 +571,9 @@ fn usd(cents: i64) -> model_provider::Money {
 #[tokio::test]
 async fn model_spend_over_the_cap_stops_the_next_call_and_unpriced_turns_never_do() {
     let tokens = TokenTotals {
-        input: account_ids::Tokens(10),
-        output: account_ids::Tokens(5),
-        cached: account_ids::Tokens(0),
+        input: base_ids::Tokens(10),
+        output: base_ids::Tokens(5),
+        cached: base_ids::Tokens(0),
     };
     let paying = || {
         let mut config = AgentConfig::default();
@@ -664,9 +664,9 @@ async fn the_roster_shows_a_tasks_spend_and_what_is_left() {
     let s = ready(&router).await;
     let report = TurnReport {
         tokens: TokenTotals {
-            input: account_ids::Tokens(40),
-            output: account_ids::Tokens(10),
-            cached: account_ids::Tokens(8),
+            input: base_ids::Tokens(40),
+            output: base_ids::Tokens(10),
+            cached: base_ids::Tokens(8),
         },
         charge: Some(usd(100)),
     };
@@ -685,7 +685,7 @@ async fn the_roster_shows_a_tasks_spend_and_what_is_left() {
         .expect("a task with totals");
     assert_eq!(used.charges.reported, usd(100));
     assert_eq!(used.remaining, Some(usd(400)));
-    assert_eq!(used.tokens.input, account_ids::Tokens(40));
+    assert_eq!(used.tokens.input, base_ids::Tokens(40));
 }
 
 #[tokio::test]
@@ -736,7 +736,7 @@ async fn an_undoable_act_is_journalled_under_its_actor_and_can_be_undone() {
         IntentsRequest::ControlJournal(JournalFilter {
             run: None,
             session: Some(s.session.clone()),
-            limit: account_ids::Count(10),
+            limit: base_ids::Count(10),
         }),
     )
     .await
@@ -760,7 +760,7 @@ async fn an_undoable_act_is_journalled_under_its_actor_and_can_be_undone() {
         IntentsRequest::ControlJournal(JournalFilter {
             run: None,
             session: None,
-            limit: account_ids::Count(10),
+            limit: base_ids::Count(10),
         }),
     )
     .await

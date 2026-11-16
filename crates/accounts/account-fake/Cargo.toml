@@ -13,7 +13,9 @@ account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
 account-wire = {path = "../account-wire"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 account-provider = {path = "../account-provider"}
 account-secrets = {path = "../account-secrets", features = ["testing"]}
 account-service = {path = "../account-service"}

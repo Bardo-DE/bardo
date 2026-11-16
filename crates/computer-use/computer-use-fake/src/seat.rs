@@ -1,6 +1,6 @@
 //! A seat that records what it is asked to do.
 
-use account_ids::Count;
+use base_ids::Count;
 use computer_use_desktop::{EiSocket, GlobalRect, LeaseGrant, LeaseId, SeatIsolation, Stamp};
 use computer_use_seat_input::{
     AgentSeat, Emulation, InputOp, InputOrigin, InputReceipt, Keymap, SeatCaps, SeatError,

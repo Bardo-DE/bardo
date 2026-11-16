@@ -1,6 +1,6 @@
 //! Where syncd reads and writes, resolved from the environment (PLAN §2.3): the one place the
 //! daemon names a path, so a test can give it scratch directories. An account is named on disk
-//! by its object-path segment (`account_ids::object_segment`), the form the account's
+//! by its object-path segment (`base_ids::object_segment`), the form the account's
 //! directories are named in, so a wipe needs no map back to the id.
 
 pub use account_daemon_support::xdg::PathError;

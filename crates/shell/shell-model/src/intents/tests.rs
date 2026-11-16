@@ -1,12 +1,12 @@
 //! The seat as a whole: the queue and the terminal moved through [`step`], and the fixtures the
 //! parts' tests share.
 
-use account_ids::Count;
 use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmId, ConfirmOffer, ConfirmParts, ConfirmRequest,
     Gesture, TaintNote,
 };
 use action_vocab::{LabelText, Seconds};
+use base_ids::Count;
 use permission_core::AskReason;
 use provenance::{Actor, AppName, Effect, SpaceId, UnixSeconds};
 

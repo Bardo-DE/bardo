@@ -7,7 +7,7 @@
 use crate::common;
 
 use account_capability::StorageScope;
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use common::{Replica, Server};
 use replica_gdrive::{Root, Uploads};
 use sync_core::{

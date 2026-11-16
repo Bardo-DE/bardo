@@ -3,10 +3,10 @@
 //! each text labelled by the kind's declared title trust.
 
 use account_core::AppName;
-use account_ids::Count;
 use action_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use action_manifest::TitleTrust;
 use action_provider::ContextSource;
+use base_ids::Count;
 use provenance::{Label, Labelled, SpaceId};
 use ui_intents::ContextModel;
 

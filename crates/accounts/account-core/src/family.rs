@@ -148,7 +148,7 @@ impl Family {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::word::word as word_of;
+    use base_ids::word::word as word_of;
 
     const CASES: &[(&str, Family, &str, Option<EndpointProtocol>)] = &[
         ("imap", Family::Imap, "imap", Some(EndpointProtocol::Imap)),

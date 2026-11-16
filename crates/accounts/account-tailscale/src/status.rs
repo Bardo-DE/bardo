@@ -8,7 +8,7 @@
 use crate::error::TailscaleError;
 use crate::time::unix_seconds;
 use crate::{Machine, MachineOwner, NodeId};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::net::IpAddr;

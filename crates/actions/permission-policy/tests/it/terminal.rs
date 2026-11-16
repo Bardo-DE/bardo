@@ -123,7 +123,7 @@ fn terminal_grid() {
             UndoableWrite,
             |r| {
                 granted(r);
-                r.context.count = account_ids::Count(21);
+                r.context.count = base_ids::Count(21);
             },
             Ask,
         ),

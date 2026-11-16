@@ -3,7 +3,7 @@
 
 use crate::common::Script;
 use account_calendar::{CalendarError, CalendarStore, Date, Event, Google, Graph, Jmap, When};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 
 fn event(uid: &str) -> Event {
     let day = Date {

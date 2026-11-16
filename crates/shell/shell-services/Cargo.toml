@@ -27,7 +27,7 @@ account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-wire = {path = "../../accounts/account-wire"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["quire-desktop"]}
 shell-model = {path = "../shell-model"}

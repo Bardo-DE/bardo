@@ -119,9 +119,9 @@ pub fn served() -> ServedBy {
 
 pub fn usage() -> TokenUsage {
     TokenUsage {
-        input: account_ids::Tokens(1),
-        output: account_ids::Tokens(1),
-        cached: account_ids::Tokens(0),
+        input: base_ids::Tokens(1),
+        output: base_ids::Tokens(1),
+        cached: base_ids::Tokens(0),
         charge: None,
     }
 }

@@ -78,7 +78,7 @@ impl ContextSource for QuietWindow {
             visible: Visible {
                 kind: None,
                 items: vec![],
-                total: account_ids::Count(0),
+                total: base_ids::Count(0),
             },
             text_target: TextTarget::None,
             privacy: WindowPrivacy::Normal,

@@ -7,7 +7,7 @@
 use crate::hosting;
 
 use account_dbus::Details;
-use account_ids::TurnCount;
+use base_ids::TurnCount;
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::agent::*;
 use hosting::engine::Chat;
@@ -438,7 +438,7 @@ async fn only_the_agent_launcher_may_open_an_endpoint() {
         .session(
             &account_match::Need::Llm(account_match::LlmNeed::new(
                 [account_capability::LlmFeature::Chat].into(),
-                account_ids::Tokens(10),
+                base_ids::Tokens(10),
             )),
             account_core::DataClass::Prompt,
             account_capability::Tier::Balanced,

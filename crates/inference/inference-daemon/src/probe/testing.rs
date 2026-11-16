@@ -5,8 +5,8 @@ use account_capability::Modality;
 use account_capability::ModelId;
 use account_capability::{Capability, EmbedCap, EmbedPrompts, LlmCap, LlmFeature, LlmWire};
 use account_capability::{Claim, Offer, Provenance, Subject};
-use account_ids::{Count, Dims, Tokens};
 use account_provider::Port;
+use base_ids::{Count, Dims, Tokens};
 
 fn claim(id: &ModelId, capability: Capability) -> Claim {
     Claim {

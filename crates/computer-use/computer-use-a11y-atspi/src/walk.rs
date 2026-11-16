@@ -3,7 +3,7 @@
 use super::map;
 use super::tree::{AtspiTree, Extents, RawNode};
 use account_core::DataClass;
-use account_ids::Count;
+use base_ids::Count;
 use computer_use_a11y_tree::{A11yError, A11yTarget};
 use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeBudget, NodeValue, Parent, TreeSource, Truncation, TypedHint,

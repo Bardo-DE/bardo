@@ -119,7 +119,7 @@ pub trait BrowserIssuer: Clone + Debug + Send + Sync + Sized + 'static {
     }
 
     /// A refresh was refused (`invalid_grant`): note why, if the issuer's rules know.
-    fn refused(&self, state: &mut Self::State, testing: bool, now: account_ids::UnixSeconds) {
+    fn refused(&self, state: &mut Self::State, testing: bool, now: base_time::UnixSeconds) {
         let _ = (state, testing, now);
     }
 }

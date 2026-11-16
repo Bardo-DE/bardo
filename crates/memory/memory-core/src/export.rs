@@ -3,7 +3,7 @@
 use crate::chain::Head;
 use crate::op::ExportCounts;
 use account_core::SpaceId;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// The top directory of the tar stream; its trailing number is the export format.

@@ -1,7 +1,7 @@
 //! What an app receives to act as an account: short-lived, never a refresh token (G4).
 
 use crate::secret::SecretText;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// The two SASL initial responses porter presents or reads, unencoded: the protocol base64-encodes

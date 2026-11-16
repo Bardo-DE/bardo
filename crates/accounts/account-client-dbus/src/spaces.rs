@@ -21,8 +21,8 @@ use account_dbus::Details;
 use account_dbus::accounts::{
     SPACE_KEY_CREATED, SPACE_KEY_LOOK, SPACE_KEY_NAME, SpaceChanged, SpacesProxy,
 };
-use account_ids::UnixSeconds;
-use account_ids::word::from_word;
+use base_ids::word::from_word;
+use base_time::UnixSeconds;
 use futures_util::StreamExt;
 
 /// accountd's registry of desktop-wide Spaces, as an app uses it over the bus.

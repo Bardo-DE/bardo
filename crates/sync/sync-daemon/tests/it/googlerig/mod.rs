@@ -24,10 +24,10 @@ use account_core::{
 use account_fake::FakeProvider;
 use account_fake_servers::google::MediaOrigin;
 use account_fake_servers::{FakeGoogle, GoogleHandle, Running};
-use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use base_time::UnixSeconds;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_daemon::datasets::pim::{AccountdUnavailable, Wiring};
@@ -189,7 +189,7 @@ impl Rig {
             settings: quick(),
             network: self.network.clone(),
             owners: Access::default(),
-            clock: sync_core::Clock::new(account_ids::clock::SystemClock),
+            clock: sync_core::Clock::new(base_time::SystemClock),
             nonce: "t1".to_owned(),
             millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
                 1_700_000_000_000,
@@ -366,7 +366,7 @@ fn placeholder(
             settings: quick(),
             network: network.clone(),
             owners: Access::default(),
-            clock: sync_core::Clock::new(account_ids::clock::SystemClock),
+            clock: sync_core::Clock::new(base_time::SystemClock),
             nonce: "t1".to_owned(),
             millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
                 1_700_000_000_000,

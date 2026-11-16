@@ -5,7 +5,7 @@
 //! typed facts about a program: what it is called, how it takes a key and a base URL, and which
 //! protocols it speaks to a model.
 
-use account_ids::IdError;
+use base_ids::IdError;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -30,7 +30,7 @@ impl AgentProgram {
     }
 }
 
-account_ids::string_newtype!(AgentProgram, IdError);
+base_ids::string_newtype!(AgentProgram, IdError);
 
 /// The name of an environment variable (`ANTHROPIC_API_KEY`): 1 to 64 bytes of uppercase ASCII
 /// letters, digits and `_`, not starting with a digit. Only the name; a value is never here.
@@ -55,7 +55,7 @@ impl EnvName {
     }
 }
 
-account_ids::string_newtype!(EnvName, IdError);
+base_ids::string_newtype!(EnvName, IdError);
 
 /// A request format an agent speaks to its model.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

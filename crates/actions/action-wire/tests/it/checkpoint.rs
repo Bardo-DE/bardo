@@ -1,12 +1,12 @@
 //! The checkpoint requests and replies of the wire.
 
-use account_ids::Count;
 use action_core::{
     CheckpointFault, CheckpointId, CheckpointList, RestorePlan, Retention, Rewind, TurnEnd,
     TurnState,
 };
 use action_vocab::{Days, TurnId, Workspace};
 use action_wire::{IntentsReply, IntentsRequest, Member};
+use base_ids::Count;
 use companion_model::{
     AppSessionId, HandNote, RunsIn, WatchOwner, WatchedAgent, WatchedLine, Watching,
 };

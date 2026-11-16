@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 # The names of the bus (`porter_wire::names`), shared with the clients that dial it.
 account-wire = {path = "../../accounts/account-wire"}
 # The shared helpers: `Details`, `Call`, `Document`, `Unserved`, the vardict codec.

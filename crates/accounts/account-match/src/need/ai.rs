@@ -7,7 +7,7 @@ use account_capability::{
     CuaCap, CuaEnv, EmbedCap, ImageGenCap, ImageMode, LlmCap, LlmFeature, Modality, RerankCap,
     SpeechCap, SpeechMode,
 };
-use account_ids::{Count, Dims, Px, Tokens};
+use base_ids::{Count, Dims, Px, Tokens};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 

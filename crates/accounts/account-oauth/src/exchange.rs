@@ -11,8 +11,8 @@ use account_core::{EndpointUrl, SecretText};
 use account_http::http::header::{ACCEPT, CONTENT_TYPE};
 use account_http::http::{Method, Response};
 use account_http::{Http, request_to};
-use account_ids::UnixSeconds;
 use account_provider::{ClientEntry, IssuerEndpoints};
+use base_time::UnixSeconds;
 use serde::Deserialize;
 
 /// A token endpoint's answer, as the issuer writes it. Secret fields redact in `Debug`.

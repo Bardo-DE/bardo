@@ -16,8 +16,8 @@ mod tests;
 
 use crate::dataset::{Dataset, DatasetError, Direction, replica_hash};
 use crate::journal::{Journal, JournalError, Op};
-use account_ids::UnixSeconds;
-use account_ids::clock::Clock;
+use base_time::Clock;
+use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_core::{
     Acknowledgement, BaseVersion, Blob, ByteRange, Conflict, ItemState, JournalItem, LocalId,

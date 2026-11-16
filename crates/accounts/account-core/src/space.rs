@@ -22,7 +22,7 @@
 
 use crate::app_id::AppName;
 use crate::error::CoreError;
-use account_ids::is_id;
+use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -79,7 +79,7 @@ impl DesktopSpace {
     }
 }
 
-account_ids::string_newtype!(DesktopSpace, CoreError);
+base_ids::string_newtype!(DesktopSpace, CoreError);
 
 /// The app name and number of an `app:<app name>:<n>` text, when it is one.
 fn app_parts(text: &str) -> Option<(AppName, LocalSpace)> {
@@ -156,7 +156,7 @@ impl SpaceId {
     }
 }
 
-account_ids::string_newtype!(SpaceId, CoreError);
+base_ids::string_newtype!(SpaceId, CoreError);
 
 /// Which Spaces a decision covers.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

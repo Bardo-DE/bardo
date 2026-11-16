@@ -7,13 +7,13 @@ use account_capability::Tier;
 use account_capability::{LlmFeature, Modality};
 use account_core::DataClass;
 use account_core::consent::Usage;
-use account_ids::Dims;
 use account_match::Need;
 use account_match::{DimsNeed, EmbedNeed};
 use action_core::ReviewTimeouts;
 use action_daemon::InferdModel;
 use action_review::{ReviewVerdict, Reviewer};
 use action_vocab::{Caller, Millis};
+use base_ids::Dims;
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, ChatSink, EmbedRequest, EmbedRole, InferEvent,
     InferRefusal, InferReply, Knob, MessagePart, Model, ModelCard, ModelError, ReplyShape,
@@ -275,7 +275,7 @@ fn review_request() -> action_review::ReviewRequest {
             label: LabelText::parse("Archive").expect("label"),
             effect: provenance::Effect::UndoableWrite,
             kinds: BTreeSet::new(),
-            count: account_ids::Count(1),
+            count: base_ids::Count(1),
             args: vec![],
             lasting: Lasting::No,
         },

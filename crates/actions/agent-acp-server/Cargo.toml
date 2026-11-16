@@ -32,7 +32,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 tracing = { workspace = true }
 
 [dev-dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 sandbox = {path = "../../sandbox/sandbox"}
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-fake = {path = "../action-fake"}

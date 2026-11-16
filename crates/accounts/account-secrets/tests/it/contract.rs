@@ -97,7 +97,7 @@ async fn contract<F: Fixture>(fixture: F) {
             Credential::OAuth {
                 access: SecretText::new("a"),
                 refresh: SecretText::new("r"),
-                expires_at: account_ids::UnixSeconds(9),
+                expires_at: base_time::UnixSeconds(9),
                 granted: Default::default(),
             },
         ),

@@ -481,7 +481,7 @@ fn count_lost<S: Seams>(router: &Router<S>, lost: usize) {
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let more = u32::try_from(lost).unwrap_or(u32::MAX);
-    state.kill.audit_lost = account_ids::Count(state.kill.audit_lost.0.saturating_add(more));
+    state.kill.audit_lost = base_ids::Count(state.kill.audit_lost.0.saturating_add(more));
 }
 
 /// Where a record that names no Space of its own happened, from the router's session and task

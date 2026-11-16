@@ -6,7 +6,8 @@
 use crate::common;
 
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use common::{Flavor, Replica, Server};
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, MemoryReplica, More, PutItem,

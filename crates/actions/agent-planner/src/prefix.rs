@@ -49,7 +49,6 @@ impl<P: Transport> PlannerModel<P> {
 mod tests {
     use super::*;
     use account_core::AppName;
-    use account_ids::Count;
     use action_core::{
         AgentConfig, ContextView, Covers, HandleCard, HandleShape, HereView, Reveal, Roster,
         SelectionView, Summary, SummaryText, TextTargetView, TurnVia, UserTurn, VisibleView,
@@ -57,6 +56,7 @@ mod tests {
     use action_fake::WordsModel;
     use action_vocab::{Caller, CharCount, Handle, TurnId};
     use agent_loop::{Sources, assemble};
+    use base_ids::Count;
     use provenance::{Integrity, Source, UnixSeconds};
 
     fn sources(window: &str) -> Sources {

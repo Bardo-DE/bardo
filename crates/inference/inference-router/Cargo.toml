@@ -19,7 +19,7 @@ inference-tailnet = {path = "../inference-tailnet"}
 account-tailscale = {path = "../../accounts/account-tailscale"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../inference-core"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 # Which program an engine kind runs (`Engine`), and the folder a person pointed at (Strata).

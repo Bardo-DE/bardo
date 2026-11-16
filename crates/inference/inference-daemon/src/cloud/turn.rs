@@ -295,7 +295,7 @@ fn counted(report: Option<sp::UsageReport>) -> Option<TokenUsage> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::Tokens;
+    use base_ids::Tokens;
     use rust_decimal::Decimal;
 
     /// A count is counted as given with its charge, a request no model ran is counted as

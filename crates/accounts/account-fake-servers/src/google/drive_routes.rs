@@ -532,7 +532,7 @@ pub fn answer(
         (method, _) => method,
     };
     if let Some(rest) = path.strip_prefix("/upload/drive/v3/files") {
-        let id = rest.strip_prefix('/').map(account_ids::percent::decode);
+        let id = rest.strip_prefix('/').map(base_url::percent::decode);
         return Some(match (method, id) {
             ("POST", None) => upload(drive, base, request, None),
             ("PUT", None) => chunk(drive, request),
@@ -583,14 +583,14 @@ pub fn answer(
             let id = files
                 .strip_prefix("files/")
                 .and_then(|rest| rest.strip_suffix("/export"))
-                .map(account_ids::percent::decode)?;
+                .map(base_url::percent::decode)?;
             match drive.get(&id) {
                 Some(node) => export(drive, node, request),
                 None => error(404, "notFound"),
             }
         }
         (_, files) => {
-            let id = account_ids::percent::decode(files.strip_prefix("files/")?);
+            let id = base_url::percent::decode(files.strip_prefix("files/")?);
             match method {
                 "GET" => match drive.get(&id) {
                     None => error(404, "notFound"),

@@ -17,7 +17,7 @@ use account_dav_proto::{Depth, escape, parse_multistatus};
 use account_http::http::header::{ACCEPT, CONTENT_TYPE, IF_NONE_MATCH};
 use account_http::http::{Method, Request, Response};
 use account_http::{HeaderText, Http, HttpError, request, uri, webdav};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 
 /// A CalDAV account's calendars, under its calendar home.
 #[derive(Debug, Clone)]

@@ -129,7 +129,7 @@ pub const NO_MODEL_SEES_SCREEN: &str =
 mod tests {
     use super::*;
     use account_capability::{CuaBatching, CuaCap, CuaEnv, LlmCap, LlmWire};
-    use account_ids::{Px, Tokens};
+    use base_ids::{Px, Tokens};
 
     fn llm(features: &[LlmFeature]) -> Capability {
         Capability::Llm(LlmCap {

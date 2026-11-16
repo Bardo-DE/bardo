@@ -3,8 +3,8 @@
 //! across renames and address changes. Pure data; the one program that reads Tailscale is
 //! `account-tailscale`.
 
-use account_ids::IdError;
-use account_ids::UnixSeconds;
+use base_ids::IdError;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::net::IpAddr;

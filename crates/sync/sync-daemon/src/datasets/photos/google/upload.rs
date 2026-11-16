@@ -20,7 +20,7 @@ use super::ledger::{Entry, Kept, LedgerError};
 use crate::dataset::fingerprint;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_http::Http;
-use account_ids::Bytes;
+use base_ids::Bytes;
 use std::path::PathBuf;
 use sync_core::DELETED;
 use sync_core::{

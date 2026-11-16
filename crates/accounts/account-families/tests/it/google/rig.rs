@@ -9,13 +9,13 @@ use account_fake_servers::{Google, shipped};
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
 use account_http::http::{Request, Response};
 use account_http::{Http, HttpError};
-use account_ids::UnixSeconds;
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{
     ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer, ProviderSpec, SignIn, SignInMode,
     SignInStart, SignInStep,
 };
 use account_sheet::SignInInput;
+use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -135,7 +135,7 @@ impl Rig {
         let env = OAuthEnv::new(
             wire.clone(),
             registry,
-            account_ids::clock::FixedClock::new(UnixSeconds(0)),
+            base_time::FixedClock::new(UnixSeconds(0)),
         )
         .with_channel(ClientChannel::Development)
         .with_poll_slice(Duration::from_millis(20))

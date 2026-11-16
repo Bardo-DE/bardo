@@ -26,9 +26,9 @@ pub mod trace;
 /// Re-exported so `prov` is the one import for identity vocabulary.
 pub use account_capability::AgentProgram;
 pub use account_core::{AppName, DataClass, SpaceId, SpaceScope};
-pub use account_ids::UnixSeconds;
 pub use actor::{Actor, ActorKind, AgentRole, Channel, SystemPart};
 pub use agent::{Address, AgentRef};
+pub use base_time::UnixSeconds;
 pub use consent::{
     BeyondReceipt, ConfirmId, ConfirmReceipt, InputProof, Witness, declassify, endorse,
 };

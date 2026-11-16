@@ -11,7 +11,7 @@ use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http_relay::{RelayDial, RelayHttp};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use replica_webdav::WebDavReplica;
 use std::sync::Arc;
 use sync_core::Clock;

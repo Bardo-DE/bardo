@@ -146,7 +146,7 @@ pub(super) fn fit_of(
 mod tests {
     use super::*;
     use account_core::AppName;
-    use account_ids::Px;
+    use base_ids::Px;
     use computer_use_desktop::{
         GlobalCoord, GlobalRect, Pid, ToplevelIdent, WindowTitle, WorkspaceRef,
     };

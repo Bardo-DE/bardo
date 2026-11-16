@@ -1,7 +1,8 @@
 //! Rows to values and back: the one place SQL text lives.
 
 use super::{JournalError, Op};
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use rusqlite::{Connection, OptionalExtension, Row, Transaction, params};
 use sync_core::{
     Acknowledgement, Anchor, BaseVersion, Conflict, ContentHash, ItemPath, ItemState, JournalItem,

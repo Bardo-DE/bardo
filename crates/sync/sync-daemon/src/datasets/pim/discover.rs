@@ -9,7 +9,7 @@
 use super::PimKind;
 use account_dav_proto::discover::{Home, Next, Reach, Scope, Walk};
 use account_http::{Http, HttpError};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 
 /// One calendar or address book on the server.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -54,7 +54,7 @@ fn segment_of(url: &WebUrl) -> String {
         .split('/')
         .rfind(|part| !part.is_empty())
         .unwrap_or("collection");
-    account_ids::percent::decode(last)
+    base_url::percent::decode(last)
 }
 
 /// Every calendar (or address book) the account has, in the server's order.

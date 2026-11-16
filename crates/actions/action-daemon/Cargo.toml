@@ -17,7 +17,7 @@ name = "bardo-actiond"
 path = "src/main.rs"
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 sandbox = {path = "../../sandbox/sandbox"}
 companion-model = {path = "../companion-model"}
 action-checkpoint-git = {path = "../action-checkpoint-git"}

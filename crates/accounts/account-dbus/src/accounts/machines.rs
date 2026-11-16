@@ -5,8 +5,8 @@
 use crate::Details;
 use crate::json_value::bad;
 use account_core::CoreError;
-use account_ids::UnixSeconds;
 use account_tailscale::{Machine, MachineOwner, NodeId};
+use base_time::UnixSeconds;
 use std::net::IpAddr;
 use zbus::zvariant::{OwnedValue, Value};
 

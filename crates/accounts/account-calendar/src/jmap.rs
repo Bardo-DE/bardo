@@ -10,7 +10,7 @@ use crate::event::{CalendarRef, Event, Stored, When};
 use crate::json::{body, exchange, request, text};
 use account_http::Http;
 use account_http::http::Method;
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde_json::{Value, json};
 
 /// The capabilities every request names it uses.

@@ -12,7 +12,7 @@ use crate::rules::RememberRule;
 use crate::thing::ThingRef;
 use crate::timeline::TimelineQuery;
 use account_core::{AppName, SpaceId};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use provenance::RunId;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

@@ -69,11 +69,7 @@ impl<H: Http> OAuthEnv<H> {
     /// An environment over `http` with `clock` for the time and the system's randomness,
     /// `registry` for the clients, the stable channel, the issuer's own userinfo endpoint and a
     /// two-second poll.
-    pub fn new<C: account_ids::clock::Clock + 'static>(
-        http: H,
-        registry: ClientRegistry,
-        clock: C,
-    ) -> Self {
+    pub fn new<C: base_time::Clock + 'static>(http: H, registry: ClientRegistry, clock: C) -> Self {
         Self {
             http: Arc::new(http),
             registry,
@@ -142,10 +138,7 @@ impl<H: Http + Default> OAuthEnv<H> {
     /// The environment of a daemon reading its clients from `files` (the shipped clients file
     /// and the person's own, read again at every use: a damaged file reads as empty, so the
     /// sign-in says it needs a client id rather than guessing one) and the time from `clock`.
-    pub fn with_client_files<C: account_ids::clock::Clock + 'static>(
-        files: ClientFiles,
-        clock: C,
-    ) -> Self {
+    pub fn with_client_files<C: base_time::Clock + 'static>(files: ClientFiles, clock: C) -> Self {
         Self::new(H::default(), ClientRegistry::default(), clock).with_files(files)
     }
 }
@@ -169,7 +162,7 @@ mod tests {
         OAuthEnv::new(
             Nowhere,
             ClientRegistry::default(),
-            account_ids::clock::FixedClock::new(account_ids::UnixSeconds(0)),
+            base_time::FixedClock::new(base_time::UnixSeconds(0)),
         )
     }
 

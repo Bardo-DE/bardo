@@ -274,7 +274,7 @@ mod tests {
 
     #[test]
     fn each_company_gets_its_documented_header() {
-        let url = account_ids::WebUrl::parse("https://api.example.org/v1/models").expect("url");
+        let url = base_url::WebUrl::parse("https://api.example.org/v1/models").expect("url");
         let key = SecretText::new("KEY");
         let headers = |family| {
             present_key(account_http::request(Method::GET, &url), family, &key)

@@ -11,7 +11,7 @@
 
 use account_http::HttpError;
 use account_http::http::{HeaderMap, Request, Response, StatusCode, Uri};
-use account_ids::{Origin, UrlScheme};
+use base_url::{Origin, UrlScheme};
 use reqwest::redirect::Policy;
 use reqwest::{Certificate, Client};
 use std::error::Error;

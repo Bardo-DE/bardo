@@ -133,7 +133,7 @@ impl ClaimedId {
     }
 }
 
-account_ids::string_newtype!(ClaimedId, CoreError);
+base_ids::string_newtype!(ClaimedId, CoreError);
 
 #[cfg(test)]
 mod tests;

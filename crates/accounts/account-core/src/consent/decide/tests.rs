@@ -1,6 +1,6 @@
 use super::*;
 use crate::consent::Grant;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 
 fn granted(id: &str, scope: GrantScope) -> Verdict {
     Verdict::Granted {

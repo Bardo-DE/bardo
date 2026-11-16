@@ -15,7 +15,7 @@ mod backoff;
 pub use backoff::{Jitter, exponential, jittered, next_look};
 
 use account_capability::Delta;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 
 /// How the machine is connected.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

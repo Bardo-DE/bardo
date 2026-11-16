@@ -4,7 +4,8 @@ use crate::chain::ChainReport;
 use crate::ids::ReplicaId;
 use crate::slug::slug_enum;
 use account_core::SpaceId;
-use account_ids::{Bytes, Count, UnixSeconds};
+use base_ids::{Bytes, Count};
+use base_time::UnixSeconds;
 use provenance::RunId;
 use serde::{Deserialize, Serialize};
 

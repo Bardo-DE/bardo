@@ -2,8 +2,8 @@
 //! they take, and the dataset's folder below the root the replica was given (the app data folder
 //! or My Drive).
 
-use account_ids::percent::encode_unreserved;
-use account_ids::{Origin, WebUrl};
+use base_url::percent::encode_unreserved;
+use base_url::{Origin, WebUrl};
 use sync_core::ItemPath;
 
 /// The fields every file answer is asked for.

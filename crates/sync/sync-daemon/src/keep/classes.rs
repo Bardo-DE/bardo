@@ -204,7 +204,7 @@ mod tests {
     use super::*;
     use account_core::GrantId;
     use account_core::consent::GrantScope;
-    use account_ids::UnixSeconds;
+    use base_time::UnixSeconds;
 
     fn grant(key: GrantKey, decision: Decision) -> Grant {
         Grant {

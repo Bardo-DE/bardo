@@ -1,7 +1,7 @@
 //! What becomes of a removed desktop-wide Space's memories and event history.
 
 use crate::slug::slug_enum;
-use account_ids::Count;
+use base_ids::Count;
 use serde::{Deserialize, Serialize};
 
 slug_enum!(

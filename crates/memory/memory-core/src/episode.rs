@@ -16,7 +16,8 @@ use crate::slug::slug_enum;
 use crate::text::{UserText, text_id};
 use crate::thing::{ThingRef, ThingRole, ThingView};
 use account_core::SpaceId;
-use account_ids::{Count, UnixSeconds, is_id};
+use base_ids::{Count, is_id};
+use base_time::UnixSeconds;
 use provenance::{
     ActionName, AgentRef, Effect, Label, MessageText, ModelRole, OutcomeRef, UndoHandle,
 };

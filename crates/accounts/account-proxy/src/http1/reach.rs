@@ -16,7 +16,7 @@ fn plain_path(path: &str) -> Option<Vec<u8>> {
     if path.contains('\\') || ["%2f", "%5c", "%00"].iter().any(|e| lower.contains(e)) {
         return None;
     }
-    let bytes = account_ids::percent::decode_checked(path)?;
+    let bytes = base_url::percent::decode_checked(path)?;
     let dotted = bytes
         .split(|b| *b == b'/')
         .any(|segment| segment == b"." || segment == b"..");

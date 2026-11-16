@@ -13,7 +13,7 @@ base64 = { workspace = true }
 httparse = { workspace = true }
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
-account-ids = {path = "../account-ids"}
+base-url = { path = "../../base/base-url" }
 rustls-native-certs = { workspace = true, optional = true }
 rustls-pki-types = { workspace = true, optional = true }
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}

@@ -179,7 +179,7 @@ where
 /// # use action_core::{Here, Selection, TextTarget, Visible, WindowPrivacy};
 /// # use action_fake::{FakeFiles, FixedClock, ScriptedReviewer, WordsModel, files_manifest};
 /// # use account_core::AppName;
-/// # use account_ids::Count;
+/// # use base_ids::Count;
 /// # use provenance::{Label, Labelled, SpaceId, UnixSeconds};
 /// use action_host::ConfirmSheet;
 /// use agent_session::SheetChoice;

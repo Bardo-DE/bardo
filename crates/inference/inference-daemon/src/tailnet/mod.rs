@@ -27,9 +27,9 @@ pub use machines::{BusMachines, Machines, NoMachines};
 
 use crate::attached::relay_socket;
 use crate::engines::Engines;
-use account_ids::clock::Clock;
 use account_tailscale::LocalApi;
 use account_tailscale::NodeId;
+use base_time::Clock;
 use inference_tailnet::{
     Config, Dialer, GuestEvent, Guests, Lending, Listening, Observer, OnFault, Relay, Timing, lend,
 };

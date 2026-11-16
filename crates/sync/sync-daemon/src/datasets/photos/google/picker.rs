@@ -16,7 +16,7 @@ use crate::datasets::photos::cas;
 use account_http::http::request::Builder;
 use account_http::http::{Method, Response};
 use account_http::{Http, request};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde::Deserialize;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -158,7 +158,7 @@ struct FileWire {
 
 /// A query value with everything but unreserved characters percent-encoded.
 fn encode(text: &str) -> String {
-    account_ids::percent::encode_unreserved(text)
+    base_url::percent::encode_unreserved(text)
 }
 
 /// `"1s"`, `"600.5s"` as a duration; anything else is `None`.

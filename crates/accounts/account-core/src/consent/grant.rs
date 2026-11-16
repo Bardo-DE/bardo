@@ -2,7 +2,7 @@
 
 use crate::GrantId;
 use crate::SessionToken;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// Whether the app acts for a person at the screen or on its own (indexing, backup).

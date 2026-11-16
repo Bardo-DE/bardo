@@ -156,9 +156,9 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
         Ok(EmbedReply::new(
             vectors,
             TokenUsage {
-                input: account_ids::Tokens(input.0),
-                output: account_ids::Tokens(0),
-                cached: account_ids::Tokens(0),
+                input: base_ids::Tokens(input.0),
+                output: base_ids::Tokens(0),
+                cached: base_ids::Tokens(0),
                 charge: None,
             },
             self.served.clone(),

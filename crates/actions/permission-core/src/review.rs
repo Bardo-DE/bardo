@@ -4,8 +4,8 @@
 //! refusals and audit records of this crate name them.
 
 use account_capability::ModelId;
-use account_ids::Count;
 use action_vocab::Millis;
+use base_ids::Count;
 use provenance::Effect;
 use serde::{Deserialize, Serialize};
 use std::fmt;

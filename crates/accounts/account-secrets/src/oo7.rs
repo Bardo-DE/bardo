@@ -390,7 +390,7 @@ impl Secrets for Oo7NamedSecrets {
 mod tests {
     use super::*;
     use account_core::SecretText;
-    use account_ids::UnixSeconds;
+    use base_time::UnixSeconds;
     use std::sync::atomic::{AtomicU32, Ordering};
 
     /// A daemon that answers only the keyrings opened since it started: the `n`th open is

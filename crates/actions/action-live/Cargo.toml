@@ -21,7 +21,7 @@ path = "src/bin/agent-bringup.rs"
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
 agent-registry = {path = "../agent-registry"}
 sandbox = {path = "../../sandbox/sandbox"}

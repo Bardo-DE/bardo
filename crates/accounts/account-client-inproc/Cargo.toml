@@ -12,7 +12,8 @@ publish.workspace = true
 account-capability = {path = "../account-capability"}
 account-client = {path = "../account-client"}
 account-core = {path = "../account-core"}
-account-ids = {path = "../account-ids"}
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 account-match = {path = "../account-match"}
 account-provider = {path = "../account-provider"}
 account-secrets = {path = "../account-secrets"}

@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 computer-use-desktop = {path = "../computer-use-desktop"}
 desktop-client = {features = ["client"], path = "../../wayland/desktop-client"}
 computer-use-capture = {path = "../computer-use-capture"}

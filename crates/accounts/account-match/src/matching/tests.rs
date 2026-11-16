@@ -7,7 +7,7 @@ use account_capability::{
 };
 use account_capability::{AgentCap, AgentProgram, AgentProtocol, EnvName};
 use account_capability::{CuaBatching, CuaCap, CuaEnv, LlmWire};
-use account_ids::{Px, Tokens};
+use base_ids::{Px, Tokens};
 
 fn agent(program: &str, base_url_env: Option<&str>, protocols: &[AgentProtocol]) -> Offer {
     present(Capability::Agent(Box::new(AgentCap {

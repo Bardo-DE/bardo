@@ -12,7 +12,8 @@ publish.workspace = true
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 computer-use-parse = {path = "../../computer-use/computer-use-parse"}
 computer-use-session = {path = "../../computer-use/computer-use-session"}

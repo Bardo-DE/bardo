@@ -75,7 +75,7 @@ fn browser() -> SheetView {
     SheetView::BrowserWait {
         provider: provider("google"),
         row: None,
-        url: account_ids::WebUrl::parse("https://login.example.org/a")
+        url: base_url::WebUrl::parse("https://login.example.org/a")
             .unwrap_or_else(|e| panic!("{e}")),
     }
 }
@@ -453,7 +453,7 @@ fn an_answer_goes_once_per_view_and_the_next_view_frees_the_next() {
 fn a_browser_step_shown_opens_its_page_and_shown_again_opens_it_again() {
     let page = || {
         SheetOut::OpenPage(
-            account_ids::WebUrl::parse("https://login.example.org/a")
+            base_url::WebUrl::parse("https://login.example.org/a")
                 .unwrap_or_else(|e| panic!("{e}")),
         )
     };

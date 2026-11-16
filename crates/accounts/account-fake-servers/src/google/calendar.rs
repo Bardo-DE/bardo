@@ -268,12 +268,12 @@ impl Calendars {
         let response = match parts.as_slice() {
             ["users", "me", "calendarList"] => self.list(request),
             ["calendars", calendar, "events"] => {
-                self.events_list(&account_ids::percent::decode(calendar), request)
+                self.events_list(&base_url::percent::decode(calendar), request)
             }
             ["calendars", calendar, "events", id] => {
                 let (calendar, id) = (
-                    account_ids::percent::decode(calendar),
-                    account_ids::percent::decode(id),
+                    base_url::percent::decode(calendar),
+                    base_url::percent::decode(id),
                 );
                 self.rows
                     .iter()

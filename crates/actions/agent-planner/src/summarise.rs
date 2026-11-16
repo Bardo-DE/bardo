@@ -160,10 +160,10 @@ impl<P: Transport> PlannerModel<P> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::Count;
     use action_core::Covers;
     use action_fake::WordsModel;
     use action_vocab::Handle;
+    use base_ids::Count;
     use provenance::Integrity;
 
     fn input() -> SummaryInput {

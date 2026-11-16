@@ -5,7 +5,7 @@ use crate::slug::slug_enum;
 use crate::text::{ContentDigest, UserText};
 use crate::thing::{ThingRef, Verb};
 use account_core::SpaceId;
-use account_ids::Count;
+use base_ids::Count;
 use provenance::Actor;
 use serde::{Deserialize, Serialize};
 

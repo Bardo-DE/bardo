@@ -11,7 +11,7 @@ use account_core::{
     TenantConsent, Tls, TokenLifetime, Verification,
 };
 use account_dbus::accounts::{account_path, candidate_from_dbus, candidate_to_dbus};
-use account_ids::{Count, Tokens};
+use base_ids::{Count, Tokens};
 use zbus::zvariant::OwnedObjectPath;
 
 fn candidates() -> Vec<Candidate> {

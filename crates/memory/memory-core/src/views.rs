@@ -10,7 +10,8 @@ use crate::slug::slug_enum;
 use crate::text::UserText;
 use crate::thing::ThingView;
 use crate::timeline::TimelineEntry;
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
+use base_time::UnixSeconds;
 use provenance::{Actor, RunId};
 use serde::{Deserialize, Serialize};
 

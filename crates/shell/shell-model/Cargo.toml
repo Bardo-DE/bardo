@@ -17,7 +17,8 @@ action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-url = { path = "../../base/base-url" }
 shell-launcher = {path = "../shell-launcher"}
 keymap = {path = "../../keymap/keymap"}
 ui-core = {path = "../../ui/ui-core"}

@@ -2,7 +2,8 @@
 //! versions, conflicts as values, tombstones, and cursor reset.
 
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, ChangePage, Conflict, Cursor, ItemPath, MemoryReplica,
     More, PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteSide, Replica, ReplicaError,
@@ -206,8 +207,8 @@ async fn a_range_fetch_returns_only_that_span() {
         .await
         .expect("put");
     let span = sync_core::ByteRange::Span {
-        start: account_ids::Bytes(2),
-        len: account_ids::Bytes(3),
+        start: base_ids::Bytes(2),
+        len: base_ids::Bytes(3),
     };
     assert_eq!(replica.fetch(&id, span).await, Ok(Blob(b"234".to_vec())));
 }

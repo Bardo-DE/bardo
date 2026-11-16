@@ -124,7 +124,7 @@ async fn answered(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> (boo
     let proxy = InferenceProxy::new(&client).await.expect("proxy");
     let need = need_to_dbus(&Need::Llm(LlmNeed::new(
         Default::default(),
-        account_ids::Tokens(1),
+        base_ids::Tokens(1),
     )));
     let reply = bus::within(
         "inferd's answer to Availability",

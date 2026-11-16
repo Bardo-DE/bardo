@@ -23,7 +23,7 @@ use account_core::{AccountId, AccountState, AiAccountRow, AppId, DataClass, Gran
 use account_core::{LlmVerdict, OwnServerRow, ProviderId, SecretText};
 use account_dbus::accounts::{BrokerProxy, ai_account_from_dbus};
 use account_dbus::accounts::{own_server_from_dbus, verdict_from_dbus};
-use account_ids::word::word as word_of;
+use base_ids::word::word as word_of;
 use futures_util::StreamExt;
 use std::io::Read;
 use zeroize::Zeroizing;

@@ -4,7 +4,7 @@
 use super::{Compared, Engine, Halt, Outcome, Report};
 use crate::dataset::{Dataset, replica_hash};
 use crate::journal::Op;
-use account_ids::clock::Clock;
+use base_time::Clock;
 use sync_core::{
     Acknowledgement, BaseVersion, Conflict, ItemState, JournalItem, LocalChange, PutItem,
     PutRefused, PutTarget, RemoteId, RemoteSide, RemoteVersion, Replica, TombstoneOrigin,

@@ -6,8 +6,8 @@
 use super::dbus::{DbusTransport, Rows, bus_error};
 use crate::error::TransportError;
 use account_dbus::Details;
-use account_ids::UnixSeconds;
 use account_tailscale::NodeId;
+use base_time::UnixSeconds;
 use inference_dbus::inference::{
     CANDIDATE_KEY_MODELS, CANDIDATE_KEY_NAME, CANDIDATE_KEY_NEEDS_APPROVAL, GUEST_KEY_NAME,
     GUEST_KEY_SINCE, GUEST_KEY_STATE,

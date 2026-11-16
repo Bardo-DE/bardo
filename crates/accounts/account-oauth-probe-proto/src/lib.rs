@@ -13,7 +13,7 @@
 pub mod google;
 pub mod microsoft;
 
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use http::header::{ACCEPT, AUTHORIZATION};
 use http::{HeaderValue, Method, Request};
 

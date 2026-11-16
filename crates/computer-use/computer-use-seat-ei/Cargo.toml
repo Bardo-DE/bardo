@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 computer-use-seat-input = {path = "../computer-use-seat-input"}
 computer-use-action = {path = "../computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}

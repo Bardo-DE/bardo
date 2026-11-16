@@ -6,7 +6,7 @@ use crate::error::CalendarError;
 use account_http::http::header::{HeaderName, HeaderValue, IF_MATCH};
 use account_http::http::{Method, Request, Response};
 use account_http::{Http, HttpError, request as builder};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde_json::Value;
 
 /// A request to `url` with `body` as JSON.

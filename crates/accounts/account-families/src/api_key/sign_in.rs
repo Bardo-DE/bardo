@@ -7,11 +7,11 @@ use account_core::{Family, LoginName, SecretText, ServiceEndpoint, Tls, server_a
 use account_family_kit::{Flow, Move};
 use account_http::Http;
 use account_http_reqwest::ReqwestHttp;
-use account_ids::UrlScheme;
 use account_provider::{ProviderSpec, SignInMode, SignInStep, Signed};
 use account_sheet::{
     Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SignInFault, SignInInput,
 };
+use base_url::UrlScheme;
 use std::sync::Arc;
 
 /// The ApiKey sign-in flow.

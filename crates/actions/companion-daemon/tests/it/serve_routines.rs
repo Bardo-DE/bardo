@@ -93,7 +93,7 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
         model: HelperModel::Unset,
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
-        steps: account_ids::Count(8),
+        steps: base_ids::Count(8),
         kind: Default::default(),
     };
     let helpers = CompanionHelpers2Proxy::new(&shell).await.expect("proxy");
@@ -224,7 +224,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
         }),
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
-        steps: account_ids::Count(8),
+        steps: base_ids::Count(8),
         kind: Default::default(),
     };
     let form = serde_json::to_string(&form).expect("json");

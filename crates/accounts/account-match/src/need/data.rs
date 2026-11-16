@@ -7,7 +7,7 @@ use account_capability::{
     Access, Albums, Delta, IdentityCap, KeyValueCap, LibraryRead, MailCap, NotesCap, PhotosCap,
     PimCap, PushCap, StorageCap, StorageScope,
 };
-use account_ids::Bytes;
+use base_ids::Bytes;
 use serde::{Deserialize, Serialize};
 
 /// An identity with at least these parts.

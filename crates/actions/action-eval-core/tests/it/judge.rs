@@ -1,8 +1,8 @@
 //! The judgement of a finished case, the Wilson interval and the report shape.
 
-use account_ids::{Count, Permille};
 use action_core::CallRefusal;
 use action_eval_core::*;
+use base_ids::{Count, Permille};
 use permission_core::{BreakerTrip, DenyCode};
 use provenance::{Effect, InputProof, Integrity};
 

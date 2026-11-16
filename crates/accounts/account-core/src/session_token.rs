@@ -3,7 +3,7 @@
 //! ends (the agent launcher maps the ACP session id it runs an agent under); consent only
 //! compares tokens, so it knows nothing of the host.
 
-use account_ids::slug_id;
+use base_ids::slug_id;
 
 slug_id!(
     /// One session. The same grammar as every id of ours (lowercase letters, digits, `.`, `_`,

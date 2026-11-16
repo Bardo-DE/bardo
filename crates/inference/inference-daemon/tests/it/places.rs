@@ -192,7 +192,7 @@ async fn the_shell_may_list_the_places_and_ask_for_no_model() {
     assert!(world.accounts.places().await.is_ok());
     let need = account_match::Need::Llm(account_match::LlmNeed::new(
         [account_capability::LlmFeature::Chat].into(),
-        account_ids::Tokens(1000),
+        base_ids::Tokens(1000),
     ));
     let opened = world
         .accounts
@@ -258,9 +258,9 @@ async fn within_generous(work: impl std::future::Future<Output = ()>) -> bool {
 mod routing {
     use super::*;
     use account_capability::LlmFeature;
-    use account_ids::Tokens;
     use account_match::LlmNeed;
     use account_match::Need;
+    use base_ids::Tokens;
     use inference_core::{OpenOptions, PlaceId, Policy};
     use inference_dbus::inference::InferenceProxy;
 
@@ -478,9 +478,9 @@ mod refusals {
     use super::routing::placed_world_with;
     use super::*;
     use account_capability::LlmFeature;
-    use account_ids::Tokens;
     use account_match::LlmNeed;
     use account_match::Need;
+    use base_ids::Tokens;
     use inference_dbus::inference::{InferenceProxy, PLACE_ERROR_PREFIX, place_refusal_of};
 
     const COMPANION: &str = "org.bardo.Companion";
@@ -707,7 +707,7 @@ mod computers {
             .with_places(vec![PlaceId::parse("computer:studio-pc").expect("place")]);
         let need = account_match::Need::Llm(account_match::LlmNeed::new(
             [account_capability::LlmFeature::Chat].into(),
-            account_ids::Tokens(1000),
+            base_ids::Tokens(1000),
         ));
         let mut session = within(
             "Open",

@@ -23,7 +23,7 @@ use crate::actor::Actor;
 use crate::agent::{Address, AgentRef};
 use crate::ids::{EntityId, MessageId, OutcomeRef, ThreadId, UndoHandle};
 use crate::label::{Label, Measured};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

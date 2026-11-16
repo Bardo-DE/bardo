@@ -6,8 +6,8 @@
 use crate::exchange::{ExchangeFault, refresh};
 use account_core::{Credential, GrantedScopes};
 use account_http::Http;
-use account_ids::UnixSeconds;
 use account_provider::{ClientEntry, IssuerEndpoints};
+use base_time::UnixSeconds;
 
 pub use account_core::token::{RENEW_MARGIN_SECONDS, is_due};
 

@@ -7,9 +7,9 @@ use super::engine::{FakeEngine, Script};
 use super::speech_host::SpeechEngines;
 use super::tailnet::{FakeTailscale, TailnetPlan};
 use account_core::{AppId, AppName, Isolation};
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
 use base_testkit::Scratch;
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 use engine_supervisor::{
     EngineHost, EngineId, ExitCode, FakeGpu, GpuMemory, HostError, Probe, ReadyProbe,
     SupervisorConfig, UnitSpec,

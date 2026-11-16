@@ -10,7 +10,8 @@ publish.workspace = true
 
 [dependencies]
 account-core = {path = "../account-core"}
-account-ids = {path = "../account-ids"}
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 http = { workspace = true }
 httpdate = { workspace = true }
 thiserror = { workspace = true }

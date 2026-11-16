@@ -1,6 +1,6 @@
 //! Whether the screen has stopped changing.
 
-use account_ids::Count;
+use base_ids::Count;
 use computer_use_capture::FrameDigest;
 use serde::{Deserialize, Serialize};
 

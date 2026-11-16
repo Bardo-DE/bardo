@@ -7,7 +7,7 @@ use crate::scores::OptionScores;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
-use account_ids::Tokens;
+use base_ids::Tokens;
 pub use model_provider::EmbedVector;
 use model_provider::Money;
 use serde::{Deserialize, Serialize};

@@ -24,7 +24,7 @@ fn sheet(id: &str) -> ConfirmRequest {
         app: account_core::AppName::parse("org.bardo.Mail").expect("app"),
         action: LabelText::parse("Send 1 message").expect("words"),
         effect: provenance::Effect::Outbound,
-        count: account_ids::Count(1),
+        count: base_ids::Count(1),
         detail: ConfirmDetail::Plain,
         lines: vec![],
         why: vec![AskReason::FirstUse],

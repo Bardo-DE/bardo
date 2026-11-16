@@ -124,7 +124,7 @@ fn input_goes_only_to_the_window_that_is_focused_and_visible() {
         // The keys wait a moment for the focus: a clock that answers at once.
         w.clock = computer_use_fake::FixedClock::at(
             computer_use_desktop::Stamp(0),
-            account_ids::UnixSeconds(0),
+            base_time::UnixSeconds(0),
         )
         .impatient();
         let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");

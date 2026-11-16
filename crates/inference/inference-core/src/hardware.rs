@@ -2,7 +2,7 @@
 //! several helpers on one model, graphics memory nearly full, a long wait. Each is a fact, never
 //! a refusal; the person may go ahead. Pure: the facts in, the notes out.
 
-use account_ids::{Bytes, Count};
+use base_ids::{Bytes, Count};
 use serde::{Deserialize, Serialize};
 
 /// A wait this long (requests ahead) is worth saying.

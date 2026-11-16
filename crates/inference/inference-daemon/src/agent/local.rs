@@ -18,7 +18,7 @@ use super::token::random_hex;
 use super::wire::{Parsed, SseOut, only_thought};
 use super::{anthropic, openai};
 use crate::runner::{Pin, Pinned, Turns};
-use account_ids::Tokens;
+use base_ids::Tokens;
 use inference_core::{
     ChatReply, InferEvent, InferReply, InferRequest, ModelError, Readiness, ServedBy, TokenUsage,
 };

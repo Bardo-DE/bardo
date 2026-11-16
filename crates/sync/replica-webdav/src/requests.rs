@@ -6,7 +6,7 @@ use account_dav_proto::http::bytes;
 use account_dav_proto::{Depth, SyncLevel, names};
 use account_http::http::Request;
 use account_http::{HttpError, uri};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 
 fn propfind(url: WebUrl, depth: Depth, props: &[&str]) -> Result<Request<Vec<u8>>, HttpError> {
     Ok(bytes::propfind(uri(&url)?, depth, props))

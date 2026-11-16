@@ -15,8 +15,6 @@ use account_fake::{
     FakeProvider, MemoryStore, RecordingAudit, ScriptedSheets, cloud_provider, mail_account,
     mail_provider, storage_account,
 };
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInStart,
 };
@@ -24,6 +22,8 @@ use account_secrets::{MemorySecrets, Secrets};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_wire::{AccountsReply, AccountsRequest};
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 use std::sync::{Arc, Mutex};
 
 /// The kind and reach each token was asked for: `None` for a token asked with no kind.

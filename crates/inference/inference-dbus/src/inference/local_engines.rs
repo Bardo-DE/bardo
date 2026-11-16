@@ -4,7 +4,7 @@
 //! [`LocalEngine`], never the strings.
 
 use account_dbus::Details;
-use account_ids::word::{from_word, word};
+use base_ids::word::{from_word, word};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use zbus::zvariant::{OwnedValue, Value};

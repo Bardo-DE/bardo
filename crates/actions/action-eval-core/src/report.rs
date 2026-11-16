@@ -3,8 +3,8 @@
 
 use crate::attack_score::AttackMetrics;
 use crate::case::Corpus;
-use account_ids::{Count, Permille};
 use action_vocab::Millis;
+use base_ids::{Count, Permille};
 use model_provider::Money;
 use permission_core::Stage;
 use serde::{Deserialize, Serialize};

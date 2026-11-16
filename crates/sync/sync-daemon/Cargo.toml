@@ -34,7 +34,9 @@ account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 account-wire = {path = "../../accounts/account-wire"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 account-fs = {path = "../../accounts/account-fs"}
 account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
 account-http = {path = "../../accounts/account-http"}

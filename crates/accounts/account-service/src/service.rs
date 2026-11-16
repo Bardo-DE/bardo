@@ -10,7 +10,6 @@ use account_core::{
     AccountState, AppId, Candidate, DataClass, EndpointUrl, LlmVerdict, OwnServerRow, RelayPlan,
     SecretText, SessionToken,
 };
-use account_ids::clock::Clock;
 use account_match::Need;
 use account_provider::{Provider, ProviderSpec, RevokeOutcome};
 use account_secrets::{Secrets, SecretsError};
@@ -25,6 +24,7 @@ use account_service_grants::{Grants, GrantsApi};
 use account_sheet::host::Sheets;
 use account_wire::{AccountsReply, AccountsRequest};
 use account_wire::{ParentWindow, Refusal};
+use base_time::Clock;
 
 /// accountd's core over its seams. The store and the audit sink default to none: the registry
 /// then lives for the process, and nothing is logged.

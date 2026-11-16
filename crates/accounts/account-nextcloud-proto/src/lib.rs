@@ -19,7 +19,7 @@ pub mod revoke;
 
 use account_capability::{CapabilityKind, Claim, offers};
 use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint};
-use account_ids::{UrlScheme, WebUrl};
+use base_url::{UrlScheme, WebUrl};
 use http::header::AUTHORIZATION;
 use http::{HeaderValue, Request, Response};
 

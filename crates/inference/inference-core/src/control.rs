@@ -5,7 +5,7 @@
 //! one, re-exported; only the sampling numbers keep porter's units.
 
 use crate::scores::ScoreOptions;
-use account_ids::{Count, Permille, Tokens};
+use base_ids::{Count, Permille, Tokens};
 use serde::{Deserialize, Serialize};
 
 pub use model_provider::{

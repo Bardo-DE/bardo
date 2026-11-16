@@ -2,7 +2,7 @@
 //! of the log. Grammars are checked once where text enters.
 
 use crate::text::{decode_lower_hex, dotted, element_ok, text_id};
-use account_ids::is_id;
+use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use ulid::Ulid;

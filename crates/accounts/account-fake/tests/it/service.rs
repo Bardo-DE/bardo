@@ -7,13 +7,13 @@ use account_core::consent::{GrantScope, Usage};
 use account_core::{AccountId, GrantId};
 use account_core::{AppId, AppName, DataClass, EndpointUrl, Family, Isolation};
 use account_fake::{MemoryStore, NOW, RecordingAudit, Scripted, ScriptedSheets, fake_service};
-use account_ids::clock::FixedClock;
 use account_match::Need;
 use account_match::{MailNeed, StorageNeed};
 use account_service_core::audit::AuditEvent;
 use account_wire::ParentWindow;
 use account_wire::Refusal;
 use account_wire::{AccountsReply, AccountsRequest};
+use base_time::FixedClock;
 
 fn app(name: &str) -> AppId {
     AppId {

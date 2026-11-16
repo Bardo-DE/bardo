@@ -5,7 +5,7 @@ use crate::error::ProviderFileError;
 use crate::spec::ProviderSpec;
 use account_capability::{Capability, CapabilityKind, LlmWire};
 use account_core::{AuthKind, Family};
-use account_ids::word::{from_word, word};
+use base_ids::word::{from_word, word};
 
 /// The provider declared by one file's text, or why it is refused.
 pub fn parse_provider(text: &str) -> Result<ProviderSpec, ProviderFileError> {

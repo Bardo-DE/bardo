@@ -6,8 +6,8 @@
 //! loopback redirect, a local model server). No user info, no fragment; the text is ASCII with
 //! nothing a header or a command line would choke on. Its serde form is the text.
 
-use crate::error::IdError;
 use crate::origin::{Origin, UrlScheme, split_authority};
+use base_ids::IdError;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

@@ -23,8 +23,8 @@ use crate::srv::{found_from_srv_with, lookup_srv};
 use account_core::Tls;
 use account_http::http::Method;
 use account_http::{Http, HttpError, request};
-use account_ids::WebUrl;
 use account_provider::{DomainMatch, ProviderSet};
+use base_url::WebUrl;
 use std::fmt;
 
 /// The most a configuration document may weigh. Real ones are a few kilobytes.

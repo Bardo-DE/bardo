@@ -130,7 +130,7 @@ fn seed(home: &Path) {
         GrantKey,
         consent::{Decision, Grant, GrantScope, Usage},
     };
-    use account_ids::UnixSeconds;
+    use base_time::UnixSeconds;
     let mut account = account_fake::storage_account();
     account.auth = AuthKind::Password;
     let mut key = account_fake::llm_account();

@@ -204,13 +204,11 @@ impl Tasks {
         let parts: Vec<&str> = rest.trim_matches('/').split('/').collect();
         let response = match parts.as_slice() {
             ["users", "@me", "lists"] => self.lists(request),
-            ["lists", list, "tasks"] => {
-                self.tasks_list(&account_ids::percent::decode(list), request)
-            }
+            ["lists", list, "tasks"] => self.tasks_list(&base_url::percent::decode(list), request),
             ["lists", list, "tasks", id] => {
                 let (list, id) = (
-                    account_ids::percent::decode(list),
-                    account_ids::percent::decode(id),
+                    base_url::percent::decode(list),
+                    base_url::percent::decode(id),
                 );
                 self.rows
                     .iter()

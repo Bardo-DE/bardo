@@ -7,8 +7,8 @@
 mod actor;
 mod conn;
 
-use account_ids::Count;
 use actor::{Cmd, Link};
+use base_ids::Count;
 use computer_use_desktop::{EiSocket, GlobalRect, LeaseGrant, LeaseId, SeatIsolation};
 use computer_use_seat_input::InputOp;
 use computer_use_seat_input::Keymap;

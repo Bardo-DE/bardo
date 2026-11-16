@@ -72,13 +72,13 @@ pub fn address_books(server: &EndpointUrl, user: &str) -> Option<EndpointUrl> {
 /// decoded.
 pub fn user_of(path: &str) -> Option<String> {
     let last = path.trim_end_matches('/').rsplit('/').next()?;
-    let decoded = account_ids::percent::decode_strict(last)?;
+    let decoded = base_url::percent::decode_strict(last)?;
     (!decoded.is_empty()).then_some(decoded)
 }
 
 /// A path segment, percent-encoded (an `@` or a space in a user id is not a URL character).
 fn segment(text: &str) -> String {
-    account_ids::percent::encode_unreserved(text)
+    base_url::percent::encode_unreserved(text)
 }
 
 #[cfg(test)]

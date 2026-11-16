@@ -5,7 +5,8 @@
 use account_http::http::request::Builder;
 use account_http::http::{Method, Response, StatusCode};
 use account_http::{HeaderText, Http, request};
-use account_ids::{UnixSeconds, WebUrl};
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use serde::Deserialize;
 use sync_core::Clock;
 

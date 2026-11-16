@@ -7,7 +7,8 @@
 use crate::common;
 
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use common::{Replica, Server};
 use replica_gdrive::{Root, Uploads};
 use sync_core::{

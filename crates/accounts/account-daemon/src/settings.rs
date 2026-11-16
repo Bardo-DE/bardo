@@ -325,7 +325,7 @@ impl<H: Host, C: Callers> Acts for AccountsSettings<H, C> {
                 announce_row(
                     &core,
                     &Key::row(id, REAUTH),
-                    account_ids::word::word(&ReauthNews::of(&reply)),
+                    base_ids::word::word(&ReauthNews::of(&reply)),
                 )
                 .await;
             });
@@ -490,7 +490,7 @@ async fn announce_row<H, C>(core: &Core<H, C>, key: &Key, word: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::word::word;
+    use base_ids::word::word;
 
     #[test]
     fn each_reauth_news_keeps_the_word_the_pane_reads() {

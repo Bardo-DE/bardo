@@ -192,13 +192,8 @@ fn the_sign_in_row_is_read_by_its_slug() {
         SignInWay::Outside,
         SignInWay::Nothing,
     ] {
-        let account = pane_with_sign_in(Some(account_ids::word::word(&way)));
-        assert_eq!(
-            account.sign_in,
-            Some(way),
-            "{}",
-            account_ids::word::word(&way)
-        );
+        let account = pane_with_sign_in(Some(base_ids::word::word(&way)));
+        assert_eq!(account.sign_in, Some(way), "{}", base_ids::word::word(&way));
     }
 }
 

@@ -2,9 +2,9 @@
 //! this process (memory-fake's backend) and no service at all. The D-Bus path is covered by
 //! intentd's `audit.rs` through its re-exports.
 
-use account_ids::Count;
 use action_core::{AuditRecord, HaltCause};
 use action_core::{EventSink, LinkFault, MemoryLink};
+use base_ids::Count;
 use companion_memory::{AlmanacMemory, AuditState, Link};
 use companion_memory_core::QueuedSink;
 use memory_client::{Absent, InProcess};

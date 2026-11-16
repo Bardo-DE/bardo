@@ -10,7 +10,8 @@ publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 account-core = {path = "../../accounts/account-core"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }

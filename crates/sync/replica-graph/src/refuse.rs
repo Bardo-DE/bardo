@@ -5,7 +5,7 @@
 
 use crate::json::ErrorBody;
 use account_http::http::Response;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use sync_core::PutRefused;
 use sync_core::status::retry_after;
 

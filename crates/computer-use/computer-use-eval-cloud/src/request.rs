@@ -5,7 +5,7 @@
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use account_ids::{Count, Permille, Tokens};
+use base_ids::{Count, Permille, Tokens};
 use inference_core as pi;
 use model_provider as sp;
 use model_vision_prep::MediaType;

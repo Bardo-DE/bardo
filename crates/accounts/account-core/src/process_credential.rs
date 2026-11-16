@@ -2,8 +2,8 @@
 //! session ask P2). accountd makes it; the launcher names it to end the credential and is told it
 //! when accountd ends one. It is not a secret and it is never derived from one.
 
-use account_ids::IdError;
-use account_ids::is_id;
+use base_ids::IdError;
+use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 
 /// One handed-off credential. The same grammar as every id of ours, so it is also safe as a
@@ -22,7 +22,7 @@ impl ProcessCredentialId {
     }
 }
 
-account_ids::string_newtype!(ProcessCredentialId, IdError);
+base_ids::string_newtype!(ProcessCredentialId, IdError);
 
 #[cfg(test)]
 mod tests {

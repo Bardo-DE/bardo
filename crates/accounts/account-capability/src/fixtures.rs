@@ -6,7 +6,7 @@ use crate::{
     Access, Capability, Delta, HashKind, LabelModel, LlmCap, LlmFeature, LlmWire, MailCap,
     MailTransport, StorageCap, StorageScope,
 };
-use account_ids::Tokens;
+use base_ids::Tokens;
 
 /// A storage capability with the given access, change feed and reach.
 pub fn storage(access: Access, delta: Delta, scope: StorageScope) -> Capability {

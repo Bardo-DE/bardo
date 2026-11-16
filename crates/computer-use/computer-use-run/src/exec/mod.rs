@@ -22,9 +22,9 @@ use crate::screen::ScreenRead;
 use crate::seams::{
     Clock, GateCheck, GateEvent, GateLink, LinkError, MessageLink, Parts, RecordSink, Seams,
 };
-use account_ids::Count;
 use action_core::{Delivery, SendRefusal};
 use action_wire::{GrantAsk, WireRefusal};
+use base_ids::Count;
 use computer_use_bus::{CuaRecord, CuaTask, ReportDelivery};
 use computer_use_capture::DamageAt;
 pub use deadline::{Deadline, deadline_of};

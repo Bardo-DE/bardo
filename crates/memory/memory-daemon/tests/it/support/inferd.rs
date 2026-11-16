@@ -6,9 +6,9 @@
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use account_dbus::Details;
-use account_ids::Tokens;
 use account_wire::names::{INFERENCE_BUS, INFERENCE_PATH};
 use account_wire::{decode_frame, encode_frame};
+use base_ids::Tokens;
 use inference_core::{
     ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferRefusal, InferReply,
     InferRequest, ServedBy, StopReason, TokenUsage,

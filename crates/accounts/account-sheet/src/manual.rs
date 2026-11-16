@@ -21,9 +21,9 @@ use super::fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, first_
 use super::view::{FieldProblem, ProblemKind};
 use account_core::{AuthKind, Direction, SecretText, Tls};
 use account_core::{EndpointUrl, server_address, server_address_shape};
-use account_ids::UrlScheme;
-use account_ids::word::{from_word, word};
 use account_tailscale::{Machine, MachineOwner};
+use base_ids::word::{from_word, word};
+use base_url::UrlScheme;
 use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
 

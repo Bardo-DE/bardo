@@ -212,10 +212,10 @@ fn route(rest: &str) -> Route {
     }
     let parts: Vec<&str> = rest.split('/').collect();
     match parts.as_slice() {
-        [calendar, "events", "delta"] => Route::Delta(account_ids::percent::decode(calendar)),
+        [calendar, "events", "delta"] => Route::Delta(base_url::percent::decode(calendar)),
         [calendar, "events", event] => Route::Event(
-            account_ids::percent::decode(calendar),
-            account_ids::percent::decode(event),
+            base_url::percent::decode(calendar),
+            base_url::percent::decode(event),
         ),
         _ => Route::Unknown,
     }

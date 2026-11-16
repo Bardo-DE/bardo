@@ -27,7 +27,7 @@ provenance = {path = "../../provenance/provenance"}
 account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
 account-wire = {path = "../../accounts/account-wire"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 companion-model = {path = "../companion-model"}
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}

@@ -6,7 +6,8 @@ use crate::anchor::Anchor;
 use crate::change::Tombstone;
 use crate::item::{BaseVersion, ContentHash, ItemPath, RemoteId, RemoteVersion};
 use crate::refusal::Conflict;
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// The dataset's own id for an item it holds locally (a path, an asset id).

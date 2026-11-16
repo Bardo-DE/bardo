@@ -266,7 +266,7 @@ impl SheetDesk for Canned {
                 app: app("org.bardo.Mail"),
                 action: LabelText::parse("Archive messages").expect("label"),
                 effect: provenance::Effect::UndoableWrite,
-                count: account_ids::Count(1),
+                count: base_ids::Count(1),
                 detail: ConfirmDetail::Plain,
                 lines: Vec::new(),
                 why: Vec::new(),

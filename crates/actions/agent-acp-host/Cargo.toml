@@ -45,7 +45,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 tracing = { workspace = true }
 
 [dev-dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
 agent-acp-host = {path = ".", features = ["testing"]}
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}

@@ -13,7 +13,7 @@ name = "agent-eval"
 path = "src/main.rs"
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
 action-fake = {path = "../action-fake"}
 action-core = {path = "../action-core"}

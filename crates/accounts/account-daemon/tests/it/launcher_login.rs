@@ -13,10 +13,10 @@ use account_core::AccountState;
 use account_daemon::launcher::LoginTiming;
 use account_dbus::accounts::ServiceRoot;
 use account_dbus::accounts::launcher_fault_error_name_in;
-use account_ids::clock::Clock;
 use account_service_accounts::{Launchers as _, LoginEnd};
 use account_service_core::audit::AuditEvent;
 use account_wire::LauncherFault;
+use base_time::Clock;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicI64, Ordering};
 use zbus::export::futures_core::Stream;
@@ -26,8 +26,8 @@ use zbus::export::futures_core::Stream;
 struct TestClock(AtomicI64);
 
 impl Clock for TestClock {
-    fn now(&self) -> account_ids::UnixSeconds {
-        account_ids::UnixSeconds(self.0.load(Ordering::SeqCst))
+    fn now(&self) -> base_time::UnixSeconds {
+        base_time::UnixSeconds(self.0.load(Ordering::SeqCst))
     }
 }
 

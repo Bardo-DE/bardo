@@ -1,6 +1,6 @@
 //! `EiSeat` against `FakeEis`: the real reis client over a socketpair, no compositor.
 
-use account_ids::Px;
+use base_ids::Px;
 use computer_use_action::{Button, Coord, Notches, Point, ScrollDir, TypedText};
 use computer_use_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Ms, SeatIsolation, ToplevelInfo,

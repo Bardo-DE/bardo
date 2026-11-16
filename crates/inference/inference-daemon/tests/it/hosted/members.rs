@@ -3,8 +3,8 @@
 
 use super::*;
 use account_dbus::Details;
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 use inference_core::{InferRefusal, ModelError, Readiness};
 use inference_daemon::engines::Engines;
 use inference_daemon::peers::TablePeers;

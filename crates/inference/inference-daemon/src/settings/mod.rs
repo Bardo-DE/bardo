@@ -33,7 +33,7 @@ pub use resolve::{Resolved, floor_value, model_text, parse_model, resolve, slot_
 
 use account_core::AccountId;
 use account_core::AppId;
-use account_ids::Permille;
+use base_ids::Permille;
 use inference_core::{
     AutoPolicy, ClassFloor, Floor, Period, Policy, SpendCap, SpendScope, TierMap,
 };

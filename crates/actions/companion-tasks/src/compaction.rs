@@ -53,7 +53,6 @@ mod tests {
     use crate::{Companion, Quiet};
     use account_capability::Tier;
     use account_core::{AppId, AppName, Isolation};
-    use account_ids::{Count, Tokens};
     use action_client::{InProcess, Intents};
     use action_core::{
         AgentConfig, Covers, StepEnd, StepLine, StepShown, Summary, SummaryText, TurnVia, UserTurn,
@@ -67,6 +66,7 @@ mod tests {
         BackendKind, Compacted, CompactedBy, Logged, Opening, Read, Seq, SessionEntry, TaintCause,
         TaintNote, resume_plan,
     };
+    use base_ids::{Count, Tokens};
     use provenance::{ActionName, AgentRef, Effect, Integrity, SpaceId, TaskId, UnixSeconds};
     use std::{collections::BTreeSet, sync::Arc};
 

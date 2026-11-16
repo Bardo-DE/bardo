@@ -16,7 +16,7 @@ use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http_relay::{RelayDial, RelayHttp, RelayLimits, Routed, bare_url};
-use account_ids::{Origin, WebUrl};
+use base_url::{Origin, WebUrl};
 use std::sync::Arc;
 
 /// What the upload API sends through.

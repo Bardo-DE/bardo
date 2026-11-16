@@ -6,12 +6,12 @@ use account_core::{
     Account, AccountLabel, Audience, Credential, IssuedToken, Restriction, SecretPurpose,
     SecretText, TokenKind,
 };
-use account_ids::UnixSeconds;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignIn,
     SignInMode, SignInStart, SignInStep, Signed, parse_provider,
 };
 use account_sheet::{SignInFault, SignInInput};
+use base_time::UnixSeconds;
 
 /// A provider over one parsed provider file.
 #[derive(Debug, Clone)]

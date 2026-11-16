@@ -48,7 +48,7 @@ use crate::limit::CacheLimit;
 use crate::listing::{Listing, ListingError};
 use crate::sink::Sink;
 use crate::source::Source;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use fetch::Transfer;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};

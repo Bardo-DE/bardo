@@ -15,7 +15,7 @@
 //! entry) and a `-inf` is a mass of 0. This module only maps its answer onto porter's types, so
 //! the two `Permille` types meet in one place, and checks the result once more.
 
-use account_ids::Permille;
+use base_ids::Permille;
 use inference_core as pi;
 use model_provider::{self as sp, FirstTokenLogprobs};
 

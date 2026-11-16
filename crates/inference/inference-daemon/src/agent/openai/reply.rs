@@ -3,7 +3,7 @@
 
 use crate::agent::fail::{Failure, Shape};
 use crate::agent::wire::{SseOut, counted};
-use account_ids::Permille;
+use base_ids::Permille;
 use inference_core::{ChatReply, StopReason, ToolCallPart};
 use serde_json::{Value, json};
 

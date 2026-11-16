@@ -6,7 +6,7 @@ use crate::connect::Connect;
 use crate::fault::RelayFault;
 use account_core::Tls;
 use account_core::stream::ByteStream;
-use account_ids::Origin;
+use base_url::Origin;
 use rustls_pki_types::{CertificateDer, ServerName};
 use std::io;
 use std::net::SocketAddr;
@@ -177,7 +177,7 @@ impl Connect for RustlsConnect {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::UrlScheme;
+    use base_url::UrlScheme;
     use tokio::net::TcpListener;
 
     #[test]

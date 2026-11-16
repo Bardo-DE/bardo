@@ -255,7 +255,7 @@ mod view_tests {
                 },
             ),
         ];
-        asked.count = account_ids::Count(12);
+        asked.count = base_ids::Count(12);
         asked.detail = ConfirmDetail::Recipients(vec![Shown::Plain("accounts@example.com".into())]);
         let view = sheet_view(&sheets(asked)).unwrap_or_else(|| panic!("a view"));
         let shown: Vec<(&str, &str, Option<&str>)> = view
@@ -323,7 +323,7 @@ mod view_tests {
         let name: AppName = app("org.bardo.Mail");
         assert_eq!(app_words(&name), "Mail");
         assert_eq!(app_words(&app("org.bardo.Companion")), "Assistant");
-        assert!(!why_words(&permission_core::AskReason::Mass(account_ids::Count(3))).is_empty());
+        assert!(!why_words(&permission_core::AskReason::Mass(base_ids::Count(3))).is_empty());
         let said = |why: &str| permission_core::AskReason::Said {
             rule: permission_core::PolicyId("ask-after-untrusted".to_owned()),
             why: why.to_owned(),

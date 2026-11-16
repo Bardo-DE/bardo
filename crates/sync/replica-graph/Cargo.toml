@@ -12,7 +12,9 @@ publish.workspace = true
 base64 = { workspace = true }
 hex = { workspace = true }
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 account-http = {path = "../../accounts/account-http"}
 sync-core = {path = "../sync-core"}
 serde = { workspace = true, features = ["derive"] }

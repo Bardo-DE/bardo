@@ -2,7 +2,6 @@
 //! scripted person, the attack turn and the report file.
 
 use account_core::AppName;
-use account_ids::Count;
 use action_core::Confirmer;
 use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmEnd, ConfirmOffer, ConfirmParts, ConfirmRequest,
@@ -15,6 +14,7 @@ use action_live::engine::hijacked_judge_cassette;
 use action_live::person::Person;
 use action_live::report_file::write_report;
 use action_vocab::{Caller, LabelText, Seconds, TurnId};
+use base_ids::Count;
 use futures_util::FutureExt;
 use permission_core::AskReason;
 use provenance::{Label, Labelled, SessionId, UnixSeconds};
@@ -79,7 +79,7 @@ fn sheet(app: &str, label: &str) -> ConfirmRequest {
         app: AppName::parse(app).expect("app"),
         action: LabelText::parse(label).expect("label"),
         effect: provenance::Effect::UndoableWrite,
-        count: account_ids::Count(1),
+        count: base_ids::Count(1),
         detail: ConfirmDetail::Plain,
         lines: vec![],
         why: vec![AskReason::Tainted],

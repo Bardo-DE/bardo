@@ -7,9 +7,9 @@ use crate::answers::Answers;
 use crate::job::{JobEnding, JobReport, JobSpec};
 use crate::refusal::Refusal;
 use account_core::AppName;
-use account_ids::Count;
 use action_core::{HelperRosterLine, LeadText};
 use action_manifest::Manifest;
+use base_ids::Count;
 use companion_model::helper::{
     Board, BoardEffect, BoardEvent, CardDraft, Ceiling, GoalOrigin, GoalText, HelperBudget,
     HelperCard, HelperKind, HelperModel, HelperName, HelperState, JobFault, JobId, JobRefusal,

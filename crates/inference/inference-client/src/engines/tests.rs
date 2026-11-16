@@ -4,7 +4,7 @@ use super::wire::shape;
 use super::*;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
-use account_ids::Tokens;
+use base_ids::Tokens;
 use inference_core::Slot;
 
 fn engine(id: &str, url: &str, locality: Locality) -> Engine {

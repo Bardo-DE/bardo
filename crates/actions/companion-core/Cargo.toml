@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 memory-core = {path = "../../memory/memory-core"}
 companion-model = {path = "../companion-model"}
 companion-wire = {path = "../companion-wire"}

@@ -2,7 +2,7 @@ use super::*;
 use crate::datasets::pim::items_in;
 use crate::journal::Journal;
 use crate::testing::scratch;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use sync_core::{
     Anchor, BaseVersion, Conflict, RemoteId, RemoteSide, RemoteVersion, StoredAnchor,
     StoredConflict,

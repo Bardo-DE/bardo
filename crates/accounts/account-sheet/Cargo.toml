@@ -12,7 +12,8 @@ publish.workspace = true
 account-core = {path = "../account-core"}
 account-tailscale = {path = "../account-tailscale"}
 account-capability = {path = "../account-capability"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-url = { path = "../../base/base-url" }
 account-wire = {path = "../account-wire"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }

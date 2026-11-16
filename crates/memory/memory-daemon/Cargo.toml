@@ -58,7 +58,7 @@ blake3 = { workspace = true }
 [dev-dependencies]
 account-wire = {path = "../../accounts/account-wire"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../../inference/inference-core"}
 account-dbus = {path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../../inference/inference-dbus"}

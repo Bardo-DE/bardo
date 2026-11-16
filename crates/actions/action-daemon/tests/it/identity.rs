@@ -102,7 +102,7 @@ async fn an_unnamed_connection_is_the_cli_only_in_a_terminal_scope() {
             .call(IntentsRequest::ControlJournal(JournalFilter {
                 run: None,
                 session: None,
-                limit: account_ids::Count(5),
+                limit: base_ids::Count(5),
             }))
             .await
             .expect("a reply");

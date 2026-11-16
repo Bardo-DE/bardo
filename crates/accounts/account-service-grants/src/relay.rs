@@ -12,13 +12,13 @@ use account_core::{
     Account, AccountState, AppId, Audience, Credential, EndpointUrl, Family, RelayAuth, RelayPlan,
     SecretKey, SecretPurpose, SecretText, ServiceEndpoint, TokenKind,
 };
-use account_ids::word::word as word_of;
 use account_provider::Provider;
 use account_secrets::{Secrets, SecretsError};
 use account_service_core::Ports;
 use account_service_core::reach::{declared_endpoint, reach_for};
 use account_service_core::refusal::secrets_refusal;
 use account_wire::Refusal;
+use base_ids::word::word as word_of;
 
 /// The secrets a password account may file for `endpoint`, most specific first: a server of its
 /// own, then the account's one password.

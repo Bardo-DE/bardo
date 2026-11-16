@@ -85,7 +85,7 @@ dependencies = [
  "account-fake-servers",
  "account-http",
  "account-http-relay",
- "account-ids",
+ "base-url",
  "base64 0.22.1",
  "chrono",
  "serde_json",
@@ -115,7 +115,8 @@ dependencies = [
 name = "account-capability"
 version = "0.1.0"
 dependencies = [
- "account-ids",
+ "base-ids",
+ "base-url",
  "serde",
  "serde_json",
 ]
@@ -126,10 +127,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-sheet",
  "account-wire",
+ "base-ids",
  "futures-core",
  "futures-util",
  "thiserror 2.0.21",
@@ -143,11 +144,12 @@ dependencies = [
  "account-client",
  "account-core",
  "account-dbus",
- "account-ids",
  "account-match",
  "account-secrets",
  "account-tailscale",
  "account-wire",
+ "base-ids",
+ "base-time",
  "futures-util",
  "rustix 1.1.6",
  "serde_json",
@@ -169,7 +171,6 @@ dependencies = [
  "account-family-generic",
  "account-http",
  "account-http-reqwest",
- "account-ids",
  "account-match",
  "account-provider",
  "account-proxy",
@@ -180,6 +181,8 @@ dependencies = [
  "account-service-grants",
  "account-sheet",
  "account-wire",
+ "base-time",
+ "base-url",
  "tokio",
 ]
 
@@ -188,8 +191,10 @@ name = "account-core"
 version = "0.1.0"
 dependencies = [
  "account-capability",
- "account-ids",
  "account-match",
+ "base-ids",
+ "base-time",
+ "base-url",
  "caller-identity-core",
  "secrecy",
  "serde",
@@ -218,7 +223,6 @@ dependencies = [
  "account-http",
  "account-http-reqwest",
  "account-identities",
- "account-ids",
  "account-match",
  "account-oauth",
  "account-provider",
@@ -234,7 +238,10 @@ dependencies = [
  "account-store",
  "account-tailscale",
  "account-wire",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "clap",
  "old-folders",
  "rustix 1.1.6",
@@ -274,9 +281,10 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-dbus-macros",
- "account-ids",
  "account-tailscale",
  "account-wire",
+ "base-ids",
+ "base-time",
  "proptest",
  "serde",
  "serde_json",
@@ -301,8 +309,8 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-http",
- "account-ids",
  "account-provider",
+ "base-url",
  "hickory-resolver",
  "roxmltree 0.21.1",
  "serde",
@@ -318,7 +326,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -327,7 +334,10 @@ dependencies = [
  "account-service-core",
  "account-sheet",
  "account-wire",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "serde_json",
  "tokio",
 ]
@@ -351,9 +361,10 @@ dependencies = [
  "account-dav-proto",
  "account-discover",
  "account-fake",
- "account-ids",
  "account-provider",
+ "base-ids",
  "base-testkit",
+ "base-url",
  "base64 0.22.1",
  "form_urlencoded",
  "hex",
@@ -383,7 +394,6 @@ dependencies = [
  "account-family-oauth",
  "account-http",
  "account-http-reqwest",
- "account-ids",
  "account-match",
  "account-oauth",
  "account-provider",
@@ -395,7 +405,10 @@ dependencies = [
  "account-sheet",
  "account-tailscale",
  "account-wire",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "base64 0.22.1",
  "serde",
  "serde_json",
@@ -455,12 +468,14 @@ dependencies = [
  "account-family-kit",
  "account-http",
  "account-http-reqwest",
- "account-ids",
  "account-oauth",
  "account-oauth-probe-proto",
  "account-provider",
  "account-sheet",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "serde",
  "serde_json",
  "tokio",
@@ -483,9 +498,9 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-dav-proto",
- "account-ids",
  "account-provider",
  "account-sheet",
+ "base-url",
  "http",
  "thiserror 2.0.21",
 ]
@@ -495,7 +510,8 @@ name = "account-http"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-time",
+ "base-url",
  "http",
  "httpdate",
  "thiserror 2.0.21",
@@ -508,8 +524,8 @@ dependencies = [
  "account-client",
  "account-core",
  "account-http",
- "account-ids",
  "account-wire",
+ "base-url",
  "http-body-util",
  "hyper",
  "hyper-util",
@@ -523,7 +539,7 @@ dependencies = [
  "account-core",
  "account-fake-servers",
  "account-http",
- "account-ids",
+ "base-url",
  "reqwest",
  "rustls",
  "tokio",
@@ -535,27 +551,16 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "account-fs",
- "account-ids",
  "account-secrets",
  "account-service-core",
  "account-sheet",
  "account-wire",
  "base-testkit",
+ "base-time",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
-]
-
-[[package]]
-name = "account-ids"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "percent-encoding",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -571,7 +576,8 @@ name = "account-match"
 version = "0.1.0"
 dependencies = [
  "account-capability",
- "account-ids",
+ "base-ids",
+ "base-url",
  "serde",
 ]
 
@@ -581,7 +587,7 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
+ "base-url",
  "http",
  "serde_json",
  "thiserror 2.0.21",
@@ -594,9 +600,9 @@ dependencies = [
  "account-core",
  "account-fake-servers",
  "account-http",
- "account-ids",
  "account-provider",
  "base-testkit",
+ "base-time",
  "base64 0.22.1",
  "form_urlencoded",
  "httparse",
@@ -614,7 +620,7 @@ name = "account-oauth-probe-proto"
 version = "0.1.0"
 dependencies = [
  "account-capability",
- "account-ids",
+ "base-url",
  "http",
  "serde",
  "serde_json",
@@ -626,9 +632,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-sheet",
+ "base-ids",
+ "base-url",
  "serde",
  "thiserror 2.0.21",
  "toml",
@@ -642,9 +649,9 @@ dependencies = [
  "account-core",
  "account-fake",
  "account-fake-servers",
- "account-ids",
  "account-proxy",
  "base-testkit",
+ "base-url",
  "base64 0.22.1",
  "httparse",
  "rustls-native-certs",
@@ -667,13 +674,14 @@ dependencies = [
  "account-fake",
  "account-fake-secret-service",
  "account-fake-servers",
- "account-ids",
  "account-provider",
  "account-secrets",
  "account-service",
  "account-service-core",
  "account-wire",
  "base-testkit",
+ "base-time",
+ "base-url",
  "clap",
  "rustix 1.1.6",
  "serde",
@@ -689,11 +697,11 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-fs",
- "account-ids",
  "account-keyring-chunked",
  "account-secrets",
  "apple-native-keyring-store",
  "base-testkit",
+ "base-time",
  "keyring-core",
  "oo7",
  "rustix 1.1.6",
@@ -710,7 +718,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -719,6 +726,7 @@ dependencies = [
  "account-service-grants",
  "account-sheet",
  "account-wire",
+ "base-time",
 ]
 
 [[package]]
@@ -727,7 +735,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -735,6 +742,8 @@ dependencies = [
  "account-sheet",
  "account-tailscale",
  "account-wire",
+ "base-time",
+ "base-url",
 ]
 
 [[package]]
@@ -743,12 +752,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
  "account-sheet",
  "account-wire",
+ "base-time",
+ "base-url",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -760,7 +770,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -768,6 +777,8 @@ dependencies = [
  "account-service-core",
  "account-sheet",
  "account-wire",
+ "base-ids",
+ "base-time",
 ]
 
 [[package]]
@@ -777,10 +788,11 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-fake",
- "account-ids",
  "account-provider",
  "account-service-core",
  "account-sheet",
+ "base-ids",
+ "base-time",
  "toml",
  "ui-settings",
 ]
@@ -791,9 +803,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-tailscale",
  "account-wire",
+ "base-ids",
+ "base-url",
  "proptest",
  "serde",
  "serde_json",
@@ -824,8 +837,8 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "account-fs",
- "account-ids",
  "base-testkit",
+ "base-time",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -852,9 +865,10 @@ name = "account-tailscale"
 version = "0.1.0"
 dependencies = [
  "account-fake-servers",
- "account-ids",
  "account-tailscale",
+ "base-ids",
  "base-testkit",
+ "base-time",
  "http-body-util",
  "hyper",
  "hyper-util",
@@ -870,7 +884,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "serde",
  "serde_json",
@@ -883,7 +896,6 @@ version = "0.1.0"
 dependencies = [
  "account-callers",
  "account-core",
- "account-ids",
  "action-cli",
  "action-client",
  "action-core",
@@ -902,6 +914,7 @@ dependencies = [
  "agent-acp-server",
  "agent-reader-daemon",
  "agent-session",
+ "base-ids",
  "companion-daemon",
  "companion-wire",
  "fnv",
@@ -925,9 +938,10 @@ name = "action-checkpoint"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-vocab",
+ "base-ids",
+ "base-time",
  "const-hex",
  "provenance",
  "sandbox",
@@ -940,9 +954,10 @@ name = "action-checkpoint-git"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-checkpoint",
  "action-core",
+ "base-ids",
+ "base-time",
  "percent-encoding",
  "provenance",
  "sandbox",
@@ -958,7 +973,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-client",
  "action-core",
  "action-daemon",
@@ -973,6 +987,7 @@ dependencies = [
  "agent-session",
  "agent-skills",
  "agent-skills-disk",
+ "base-ids",
  "companion-client",
  "companion-wire",
  "futures-util",
@@ -1023,7 +1038,6 @@ name = "action-context"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-review",
@@ -1031,6 +1045,7 @@ dependencies = [
  "action-wire",
  "agent-session",
  "agent-skills",
+ "base-ids",
  "companion-model",
  "futures-channel",
  "futures-util",
@@ -1048,9 +1063,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-manifest",
  "action-vocab",
+ "base-ids",
+ "base-time",
  "companion-model",
  "inference-core",
  "iso_currency",
@@ -1075,7 +1091,6 @@ dependencies = [
  "account-core",
  "account-daemon-support",
  "account-dbus",
- "account-ids",
  "account-match",
  "account-wire",
  "action-checkpoint-git",
@@ -1103,6 +1118,7 @@ dependencies = [
  "agent-session",
  "agent-skills",
  "agent-skills-disk",
+ "base-ids",
  "companion-memory",
  "companion-memory-core",
  "companion-model",
@@ -1163,7 +1179,6 @@ name = "action-eval"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-context",
  "action-core",
  "action-eval-core",
@@ -1175,6 +1190,7 @@ dependencies = [
  "action-wire",
  "agent-skills",
  "agent-skills-disk",
+ "base-ids",
  "clap",
  "permission-core",
  "proptest",
@@ -1191,9 +1207,9 @@ name = "action-eval-core"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-vocab",
+ "base-ids",
  "model-provider",
  "permission-core",
  "provenance",
@@ -1210,7 +1226,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-checkpoint",
  "action-client",
@@ -1224,6 +1239,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "agent-session",
+ "base-ids",
  "computer-use-action",
  "inference-client",
  "inference-core",
@@ -1242,13 +1258,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-context",
  "action-core",
  "action-manifest",
  "action-review",
  "action-vocab",
  "action-wire",
+ "base-ids",
  "model-genai-names",
  "model-provider",
  "permission-core",
@@ -1278,10 +1294,10 @@ name = "action-host"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-vocab",
  "agent-session",
+ "base-ids",
  "futures-channel",
  "futures-util",
  "permission-core",
@@ -1294,7 +1310,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-accept",
  "action-client",
@@ -1320,6 +1335,7 @@ dependencies = [
  "agent-reader",
  "agent-registry",
  "agent-session",
+ "base-ids",
  "clap",
  "companion-tasks",
  "companion-wire",
@@ -1427,10 +1443,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-vocab",
+ "base-ids",
  "inference-core",
  "model-provider",
  "permission-core",
@@ -1446,7 +1462,6 @@ name = "action-router"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-checkpoint",
  "action-context",
  "action-core",
@@ -1460,6 +1475,7 @@ dependencies = [
  "action-wire",
  "agent-session",
  "agent-skills",
+ "base-ids",
  "companion-model",
  "computer-use-action",
  "futures-util",
@@ -1553,13 +1569,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-provider",
  "action-vocab",
  "action-wire",
  "agent-voice-wire",
+ "base-ids",
  "companion-wire",
  "inference-core",
  "permission-core",
@@ -1573,7 +1589,7 @@ name = "action-vocab"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "chrono",
  "provenance",
  "serde",
@@ -1586,11 +1602,11 @@ name = "action-wire"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-gate-wire",
  "action-manifest",
  "action-vocab",
+ "base-ids",
  "companion-model",
  "computer-use-action",
  "memory-core",
@@ -1647,7 +1663,6 @@ dependencies = [
  "account-callers",
  "account-capability",
  "account-core",
- "account-ids",
  "action-client",
  "action-core",
  "action-dbus",
@@ -1669,6 +1684,7 @@ dependencies = [
  "agent-planner",
  "agent-registry",
  "agent-session",
+ "base-ids",
  "clap",
  "companion-client",
  "companion-model",
@@ -1690,12 +1706,12 @@ dependencies = [
 name = "agent-acp-core"
 version = "0.1.0"
 dependencies = [
- "account-ids",
  "action-core",
  "action-manifest",
  "action-vocab",
  "agent-client-protocol",
  "agent-session",
+ "base-ids",
  "companion-model",
  "iso_currency",
  "model-provider",
@@ -1713,7 +1729,6 @@ name = "agent-acp-host"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-client",
  "action-core",
  "action-fake",
@@ -1731,6 +1746,7 @@ dependencies = [
  "agent-acp-host",
  "agent-client-protocol",
  "agent-session",
+ "base-ids",
  "companion-model",
  "const-hex",
  "futures-channel",
@@ -1753,7 +1769,6 @@ name = "agent-acp-server"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-fake",
  "action-settings",
@@ -1762,6 +1777,7 @@ dependencies = [
  "agent-acp-core",
  "agent-client-protocol",
  "agent-session",
+ "base-ids",
  "companion-model",
  "companion-wire",
  "futures-channel",
@@ -1823,7 +1839,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-wire",
  "action-client",
@@ -1845,6 +1860,7 @@ dependencies = [
  "agent-session",
  "agent-skills",
  "agent-skills-disk",
+ "base-ids",
  "companion-memory",
  "companion-memory-core",
  "companion-tasks",
@@ -1927,11 +1943,11 @@ name = "agent-loop"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-vocab",
  "action-wire",
+ "base-ids",
  "companion-wire",
  "memory-core",
  "permission-core",
@@ -1947,13 +1963,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-wire",
  "action-core",
  "action-fake",
  "action-review",
  "action-vocab",
+ "base-ids",
  "inference-client",
  "inference-core",
  "model-provider",
@@ -1971,7 +1987,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-wire",
  "action-client",
@@ -1983,6 +1998,7 @@ dependencies = [
  "agent-loop",
  "agent-planner",
  "agent-session",
+ "base-ids",
  "companion-model",
  "companion-tasks",
  "companion-wire",
@@ -2002,7 +2018,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-core",
  "action-fake",
@@ -2010,6 +2025,7 @@ dependencies = [
  "action-vocab",
  "agent-loop",
  "agent-planner",
+ "base-ids",
  "companion-model",
  "companion-wire",
  "inference-client",
@@ -2030,13 +2046,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-wire",
  "action-core",
  "action-fake",
  "action-vocab",
  "agent-models",
+ "base-ids",
  "inference-client",
  "inference-core",
  "proptest",
@@ -2052,7 +2068,6 @@ dependencies = [
  "account-callers",
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-wire",
  "action-client",
@@ -2099,11 +2114,11 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-vocab",
  "action-wire",
  "agent-session",
+ "base-ids",
  "companion-model",
  "companion-wire",
  "memory-core",
@@ -2157,7 +2172,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-dbus",
  "action-log",
@@ -2170,6 +2184,7 @@ dependencies = [
  "agent-voice-loop",
  "agent-voice-pipewire",
  "agent-voice-wire",
+ "base-time",
  "clap",
  "futures-util",
  "inference-client",
@@ -2225,9 +2240,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-vocab",
  "action-wire",
+ "base-ids",
+ "base-time",
  "inference-core",
  "proptest",
  "serde",
@@ -2597,7 +2613,6 @@ name = "anyview-platform"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-dbus",
  "action-manifest",
@@ -2608,6 +2623,7 @@ dependencies = [
  "anyview-platform",
  "anyview-plugin",
  "anyview-plugin-protocol",
+ "base-ids",
  "dirs 6.0.0",
  "futures-util",
  "log",
@@ -3105,8 +3121,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-ids"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "base-testkit"
 version = "0.1.0"
+
+[[package]]
+name = "base-time"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+]
+
+[[package]]
+name = "base-url"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "base64"
@@ -4034,10 +4077,10 @@ name = "companion-core"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-wire",
+ "base-ids",
  "companion-model",
  "companion-wire",
  "memory-core",
@@ -4052,7 +4095,6 @@ dependencies = [
  "account-callers",
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-client",
  "action-core",
@@ -4071,6 +4113,7 @@ dependencies = [
  "agent-planner",
  "agent-skills",
  "agent-skills-disk",
+ "base-ids",
  "companion-core",
  "companion-helpers",
  "companion-model",
@@ -4099,7 +4142,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-client",
  "action-core",
@@ -4110,6 +4152,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "agent-planner",
+ "base-ids",
  "chrono",
  "companion-core",
  "companion-helpers",
@@ -4133,7 +4176,6 @@ name = "companion-memory"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-context",
  "action-core",
  "action-fake",
@@ -4143,6 +4185,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "agent-session",
+ "base-ids",
  "companion-memory-core",
  "memory-client",
  "memory-core",
@@ -4172,9 +4215,9 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-manifest",
  "action-vocab",
+ "base-ids",
  "inference-core",
  "memory-core",
  "permission-core",
@@ -4190,7 +4233,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-client",
  "action-core",
  "action-fake",
@@ -4202,6 +4244,8 @@ dependencies = [
  "agent-planner",
  "agent-session",
  "agent-skills",
+ "base-ids",
+ "base-time",
  "companion-core",
  "companion-model",
  "companion-wire",
@@ -4222,11 +4266,11 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-vocab",
  "action-wire",
+ "base-ids",
  "companion-model",
  "inference-core",
  "memory-core",
@@ -4506,8 +4550,8 @@ name = "computer-use-a11y-atspi"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "atspi",
+ "base-ids",
  "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-desktop",
@@ -4521,7 +4565,7 @@ name = "computer-use-a11y-tree"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "computer-use-action",
  "computer-use-desktop",
  "computer-use-types",
@@ -4547,10 +4591,11 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-gate-wire",
  "action-vocab",
+ "base-ids",
+ "base-time",
  "computer-use-action",
  "computer-use-desktop",
  "computer-use-types",
@@ -4583,7 +4628,7 @@ name = "computer-use-capture-wayland"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "computer-use-action",
  "computer-use-capture",
  "computer-use-desktop",
@@ -4603,7 +4648,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-daemon-support",
- "account-ids",
  "action-client",
  "action-core",
  "action-daemon",
@@ -4615,6 +4659,8 @@ dependencies = [
  "action-router",
  "action-vocab",
  "action-wire",
+ "base-ids",
+ "base-time",
  "computer-use-action",
  "computer-use-bus",
  "computer-use-capture",
@@ -4662,7 +4708,7 @@ name = "computer-use-desktop"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "computer-use-action",
  "desktop-protocols",
  "provenance",
@@ -4677,10 +4723,11 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-gate-wire",
  "action-wire",
+ "base-ids",
+ "base-time",
  "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-bus",
@@ -4715,8 +4762,8 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
+ "base-ids",
  "computer-use-eval",
  "inference-client",
  "inference-core",
@@ -4736,10 +4783,11 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-gate-wire",
  "action-wire",
+ "base-ids",
+ "base-time",
  "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-bus",
@@ -4767,11 +4815,12 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-client",
  "action-core",
  "action-gate-wire",
  "action-wire",
+ "base-ids",
+ "base-time",
  "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-bus",
@@ -4812,11 +4861,12 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-core",
  "action-gate-wire",
  "action-vocab",
  "action-wire",
+ "base-ids",
+ "base-time",
  "blake3",
  "computer-use-a11y-tree",
  "computer-use-action",
@@ -4843,7 +4893,7 @@ name = "computer-use-seat-ei"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "computer-use-action",
  "computer-use-desktop",
  "computer-use-fake",
@@ -4858,7 +4908,7 @@ name = "computer-use-seat-input"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "computer-use-action",
  "computer-use-desktop",
  "computer-use-types",
@@ -4894,9 +4944,9 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "action-client",
+ "base-ids",
  "computer-use-a11y-atspi",
  "computer-use-a11y-tree",
  "computer-use-action",
@@ -4923,7 +4973,7 @@ name = "computer-use-types"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
  "computer-use-desktop",
  "serde",
  "serde_json",
@@ -5937,8 +5987,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-fs",
- "account-ids",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "drive-core",
  "hex",
  "md-5 0.10.6",
@@ -6454,13 +6506,13 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "account-dbus",
- "account-ids",
  "action-core",
  "action-dbus",
  "action-manifest",
  "action-provider",
  "action-vocab",
  "action-wire",
+ "base-ids",
  "files-core",
  "files-desktop",
  "files-fs",
@@ -7736,8 +7788,8 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
+ "base-ids",
  "inference-core",
  "model-catalog",
  "model-openai-compat",
@@ -7757,11 +7809,13 @@ dependencies = [
  "account-dbus",
  "account-fake-servers",
  "account-fs",
- "account-ids",
  "account-match",
  "account-tailscale",
  "account-wire",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "computer-use-action",
  "inference-bridge",
  "inference-core",
@@ -7791,9 +7845,10 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-fake",
- "account-ids",
  "account-match",
+ "base-ids",
  "base-testkit",
+ "base-time",
  "base64 0.22.1",
  "computer-use-action",
  "computer-use-parse",
@@ -7827,14 +7882,16 @@ dependencies = [
  "account-fs",
  "account-http",
  "account-http-reqwest",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
  "account-settings",
  "account-tailscale",
  "account-wire",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "chrono",
  "clap",
  "computer-use-action",
@@ -7889,9 +7946,9 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-dbus-macros",
- "account-ids",
  "account-match",
  "account-wire",
+ "base-ids",
  "base-testkit",
  "serde",
  "serde_json",
@@ -7905,8 +7962,9 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-http",
- "account-ids",
  "account-provider",
+ "base-ids",
+ "base-url",
  "serde_json",
  "tokio",
 ]
@@ -7917,9 +7975,9 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-rig",
+ "base-ids",
  "clap",
  "inference-client",
  "inference-core",
@@ -7935,9 +7993,9 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
  "account-tailscale",
+ "base-ids",
  "base-testkit",
  "computer-use-action",
  "engine-probe",
@@ -7963,9 +8021,9 @@ version = "0.1.0"
 dependencies = [
  "account-fake-servers",
  "account-fs",
- "account-ids",
  "account-tailscale",
  "base-testkit",
+ "base-time",
  "http-body-util",
  "hyper",
  "hyper-util",
@@ -7983,9 +8041,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
+ "base-ids",
  "base-testkit",
+ "base-time",
  "computer-use-action",
  "computer-use-parse",
  "computer-use-session",
@@ -9473,7 +9532,8 @@ name = "memory-core"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
+ "base-ids",
+ "base-time",
  "const-hex",
  "provenance",
  "serde",
@@ -9493,9 +9553,9 @@ dependencies = [
  "account-core",
  "account-daemon-support",
  "account-dbus",
- "account-ids",
  "account-wire",
  "atomic-write-file",
+ "base-ids",
  "blake3",
  "clap",
  "getrandom 0.4.3",
@@ -9638,8 +9698,8 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-match",
+ "base-ids",
  "inference-client",
  "inference-core",
  "memory-core",
@@ -11230,9 +11290,9 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "action-manifest",
  "action-vocab",
+ "base-ids",
  "proptest",
  "provenance",
  "sandbox",
@@ -11247,10 +11307,10 @@ name = "permission-policy"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "action-core",
  "action-manifest",
  "action-vocab",
+ "base-ids",
  "cedar-policy",
  "permission-core",
  "provenance",
@@ -11707,7 +11767,8 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
+ "base-ids",
+ "base-time",
  "proptest",
  "serde",
  "serde_json",
@@ -12248,8 +12309,10 @@ dependencies = [
  "account-fake-servers",
  "account-http",
  "account-http-relay",
- "account-ids",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "serde",
  "serde_json",
  "sync-core",
@@ -12264,8 +12327,10 @@ dependencies = [
  "account-fake-servers",
  "account-http",
  "account-http-relay",
- "account-ids",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "base64 0.22.1",
  "hex",
  "serde",
@@ -12284,8 +12349,10 @@ dependencies = [
  "account-fake-servers",
  "account-http",
  "account-http-relay",
- "account-ids",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "base64 0.22.1",
  "roxmltree 0.21.1",
  "sync-core",
@@ -12996,7 +13063,6 @@ name = "settings-app-intents"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-ids",
  "account-sheet",
  "action-core",
  "action-dbus",
@@ -13004,6 +13070,7 @@ dependencies = [
  "action-provider",
  "action-vocab",
  "action-wire",
+ "base-ids",
  "provenance",
  "serde",
  "serde_json",
@@ -13026,13 +13093,13 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-sheet",
  "account-tailscale",
  "action-core",
  "action-manifest",
  "action-settings",
  "action-vocab",
+ "base-ids",
  "inference-core",
  "inference-tailnet",
  "key-remap-client",
@@ -13385,13 +13452,14 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-sheet",
  "action-core",
  "action-manifest",
  "action-vocab",
  "action-wire",
  "agent-voice-wire",
+ "base-ids",
+ "base-url",
  "companion-model",
  "companion-wire",
  "computer-use-action",
@@ -13439,8 +13507,8 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-ids",
  "account-sheet",
+ "base-url",
  "desktop-client",
  "dioxus",
  "image",
@@ -13505,7 +13573,6 @@ dependencies = [
  "account-client-dbus",
  "account-core",
  "account-dbus",
- "account-ids",
  "account-sheet",
  "account-tailscale",
  "account-wire",
@@ -13524,6 +13591,7 @@ dependencies = [
  "anyview-core",
  "anyview-platform",
  "async-trait",
+ "base-ids",
  "bluez-proxy",
  "caller-identity-dbus",
  "companion-model",
@@ -14485,7 +14553,7 @@ version = "0.1.0"
 dependencies = [
  "account-dbus",
  "account-dbus-macros",
- "account-ids",
+ "base-ids",
  "serde",
  "zbus",
 ]
@@ -14496,8 +14564,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-http",
- "account-ids",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "serde",
  "serde_json",
  "sync-core",
@@ -14524,7 +14594,6 @@ dependencies = [
  "account-http",
  "account-http-relay",
  "account-http-reqwest",
- "account-ids",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -14532,7 +14601,10 @@ dependencies = [
  "account-service-core",
  "account-sheet",
  "account-wire",
+ "base-ids",
  "base-testkit",
+ "base-time",
+ "base-url",
  "base64 0.22.1",
  "chrono",
  "clap",
@@ -14571,9 +14643,9 @@ dependencies = [
  "account-core",
  "account-fake",
  "account-fake-servers",
- "account-ids",
  "account-provider",
  "base-testkit",
+ "base-url",
  "base64 0.22.1",
  "quickxorhash",
  "serde_json",
@@ -14601,9 +14673,10 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-fake-servers",
- "account-ids",
  "account-rig",
  "base-testkit",
+ "base-time",
+ "base-url",
  "clap",
  "rustix 1.1.6",
  "serde",

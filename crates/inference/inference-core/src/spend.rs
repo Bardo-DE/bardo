@@ -3,7 +3,7 @@
 //! never the current one.
 
 use account_core::{AccountId, AppId};
-use account_ids::{Permille, TurnCount};
+use base_ids::{Permille, TurnCount};
 use model_provider::Money;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};

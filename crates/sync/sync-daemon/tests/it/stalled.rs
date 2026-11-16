@@ -9,7 +9,7 @@ use account_core::stream::{ByteStream, duplex};
 use account_http::http::{Method, Request};
 use account_http::{Http, HttpError, request};
 use account_http_relay::{Dial, RelayHttp, RelayLimits, RelayStream};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use std::sync::Mutex;
 use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};

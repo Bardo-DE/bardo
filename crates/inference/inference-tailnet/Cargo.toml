@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-time = { path = "../../base/base-time" }
 account-fs = {optional = true, path = "../../accounts/account-fs"}
 account-tailscale = {path = "../../accounts/account-tailscale"}
 serde = { workspace = true, features = ["derive"] }

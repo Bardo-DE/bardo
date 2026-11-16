@@ -2,7 +2,7 @@
 
 use crate::ids::Seq;
 use crate::text::Link32;
-use account_ids::Count;
+use base_ids::Count;
 use serde::{Deserialize, Serialize};
 
 /// The newest entry of a log.

@@ -28,8 +28,8 @@ use crate::write::Target;
 use account_http::http::header::CONTENT_TYPE;
 use account_http::http::{Method, Response};
 use account_http::{HeaderText, Http, request};
-use account_ids::WebUrl;
-use account_ids::percent::encode_unreserved;
+use base_url::WebUrl;
+use base_url::percent::encode_unreserved;
 use sync_core::status::{refused, write_unreached};
 use sync_core::{
     BaseVersion, Conflict, DriveWrite, Found, Place, PutRefused, RemoteId, RemoteSide,

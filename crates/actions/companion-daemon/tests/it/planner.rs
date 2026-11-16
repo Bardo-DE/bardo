@@ -736,7 +736,7 @@ fn a_three_item_list_costs_a_short_prompt_with_each_things_handle_first() {
         visible: VisibleView {
             kind: Some(EntityKind::parse("mail.thread").expect("kind")),
             items: (1..=3).map(thread).collect(),
-            total: account_ids::Count(3),
+            total: base_ids::Count(3),
         },
         text_target: TextTargetView::None,
     };

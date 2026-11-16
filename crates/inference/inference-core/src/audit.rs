@@ -6,7 +6,8 @@ use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_core::{AppId, DataClass};
-use account_ids::{Bytes, Count, UnixSeconds};
+use base_ids::{Bytes, Count};
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// One audited request.

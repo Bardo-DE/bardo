@@ -3,7 +3,7 @@
 //! companion may ask for.
 
 use super::ai::LlmWire;
-use account_ids::Px;
+use base_ids::Px;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 

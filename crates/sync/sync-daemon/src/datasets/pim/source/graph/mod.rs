@@ -29,7 +29,9 @@ use account_core::GrantId;
 use account_http::http::{Method, Response};
 use account_http::{HeaderText, Http, HttpError, request};
 use account_http_relay::{RelayDial, RelayHttp};
-use account_ids::{Bytes, UnixSeconds, WebUrl};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use json::{Calendar, CalendarPage, Event, EventPage};
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
@@ -96,15 +98,15 @@ pub(super) fn origin(base: &WebUrl) -> String {
 
 /// What a Graph or Google id keeps in a path segment: the unreserved characters and `=`, which
 /// the ids' base64 padding uses.
-const ID_SEGMENT: &account_ids::percent::AsciiSet = &account_ids::percent::UNRESERVED.remove(b'=');
+const ID_SEGMENT: &base_url::percent::AsciiSet = &base_url::percent::UNRESERVED.remove(b'=');
 
 /// A path segment: everything but unreserved characters and `=` percent-encoded.
 pub(super) fn encode(segment: &str) -> String {
-    account_ids::percent::encode(segment, ID_SEGMENT)
+    base_url::percent::encode(segment, ID_SEGMENT)
 }
 
 pub(super) fn decode(segment: &str) -> String {
-    account_ids::percent::decode(segment)
+    base_url::percent::decode(segment)
 }
 
 /// The directory name of a calendar: stable (a rename must not move it) and short (Graph's ids

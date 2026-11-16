@@ -2,8 +2,8 @@ use super::*;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
 use account_core::AccountId;
-use account_ids::Tokens;
 use account_match::{DimsNeed, EmbedNeed, LlmNeed};
+use base_ids::Tokens;
 use inference_core::{
     AutoPolicy, LicenceClass, ModelCard, Permit, PlaceKind, Policy, Readiness, SwapCost,
 };

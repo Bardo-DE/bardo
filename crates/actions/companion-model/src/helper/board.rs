@@ -12,7 +12,7 @@ use crate::helper::notice::Notice;
 use crate::helper::post::{Post, PostId, PostPart, PostTo};
 use crate::helper::records::{CardRecord, HelperRecord};
 use crate::helper::rules::JobRefusal;
-use account_ids::Count;
+use base_ids::Count;
 use memory_core::EventRef;
 use provenance::{EntityId, HelperId, Label, TaskId};
 use serde::{Deserialize, Serialize};

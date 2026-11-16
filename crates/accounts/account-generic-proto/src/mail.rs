@@ -5,9 +5,9 @@ use crate::{Error, declared};
 use account_capability::{Capability, MailCap, MailTransport};
 use account_capability::{Claim, Offer};
 use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
-use account_ids::UrlScheme;
 use account_provider::{DomainName, ProviderSpec};
 use account_sheet::{Hop, MailServers};
+use base_url::UrlScheme;
 
 /// The domain of an address, when it is one.
 pub fn domain_of(address: &str) -> Option<DomainName> {

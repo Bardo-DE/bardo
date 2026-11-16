@@ -12,7 +12,7 @@ publish.workspace = true
 chrono = { workspace = true, features = ["alloc"] }
 account-dav-proto = {path = "../account-dav-proto", features = ["discover"]}
 account-http = {path = "../account-http"}
-account-ids = {path = "../account-ids"}
+base-url = { path = "../../base/base-url" }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}

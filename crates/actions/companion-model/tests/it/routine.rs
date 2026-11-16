@@ -4,7 +4,7 @@
 
 use crate::helper::hid;
 use crate::support::*;
-use account_ids::Count;
+use base_ids::Count;
 use companion_model::helper::{
     GoalText, HelperRecord, HelperRecordKind, JobFault, JobId, PauseWhy,
 };

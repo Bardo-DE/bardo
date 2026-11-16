@@ -1,8 +1,8 @@
 //! The AI kinds (design/31 §2.3): declared per model, aggregated per account. Feature sets are
 //! sets of variants, never flags.
 
-use account_ids::IdError;
-use account_ids::{Count, Dims, Px, Tokens};
+use base_ids::IdError;
+use base_ids::{Count, Dims, Px, Tokens};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -144,7 +144,7 @@ impl LanguageTag {
     }
 }
 
-account_ids::string_newtype!(LanguageTag, IdError);
+base_ids::string_newtype!(LanguageTag, IdError);
 
 /// An image generator (a hosted model or a ComfyUI workflow).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

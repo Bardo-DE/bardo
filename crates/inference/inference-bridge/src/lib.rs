@@ -19,7 +19,7 @@ pub use request::{
 pub use scores::{NoScores, choice_scores, option_scores, turn_scores};
 
 use account_capability::ModelId;
-use account_ids::IdError;
+use base_ids::IdError;
 use model_provider::{Attempt, RetryPolicy, WaitMs};
 
 /// How a request to an engine is retried, by the daemon and by an app that hosts the engines

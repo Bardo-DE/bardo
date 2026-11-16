@@ -5,7 +5,7 @@
 use crate::fault::RelayFault;
 use account_core::Tls;
 use account_core::stream::ByteStream;
-use account_ids::Origin;
+use base_url::Origin;
 use std::future::Future;
 
 /// Opens connections to an endpoint's origin. A connection that cannot be made is

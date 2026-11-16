@@ -1394,7 +1394,7 @@ impl account_proxy::Connect for Counted {
 
     async fn dial(
         &self,
-        origin: &account_ids::Origin,
+        origin: &base_url::Origin,
         tls: Tls,
     ) -> Result<account_proxy::NetStream, account_proxy::RelayFault> {
         self.dials.fetch_add(1, std::sync::atomic::Ordering::SeqCst);

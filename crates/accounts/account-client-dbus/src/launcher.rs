@@ -44,11 +44,11 @@ use account_dbus::accounts::{
     Abandon, AgentLoginRequested, AgentLogoutRequested, LauncherProxy, ProcessCredentialRevoked,
     ServiceRoot, Sheet, SheetError,
 };
-use account_ids::word::{from_word, word as word_of};
 use account_wire::AccountsReply;
 use account_wire::AskKind;
 use account_wire::LauncherFault;
 use account_wire::Refusal;
+use base_ids::word::{from_word, word as word_of};
 use futures_util::StreamExt;
 use futures_util::stream::select;
 

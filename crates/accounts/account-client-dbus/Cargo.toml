@@ -15,7 +15,8 @@ account-wire = {path = "../account-wire"}
 account-capability = {path = "../account-capability"}
 account-match = {path = "../account-match"}
 account-dbus = {path = "../account-dbus"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 account-tailscale = {path = "../account-tailscale"}
 futures-util = { workspace = true }
 serde_json = { workspace = true }

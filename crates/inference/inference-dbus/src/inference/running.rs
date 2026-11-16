@@ -3,7 +3,7 @@
 //! [`RunningModel`], never the strings.
 
 use account_dbus::Details;
-use account_ids::word::{from_word, word};
+use base_ids::word::{from_word, word};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use zbus::zvariant::{OwnedValue, Value};

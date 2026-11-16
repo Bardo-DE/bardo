@@ -1,7 +1,7 @@
 //! From what the desktop client reduced to what cuad's seams speak: pure, no connection.
 
 use account_core::AppName;
-use account_ids::Px;
+use base_ids::Px;
 use computer_use_desktop::{
     DesktopError, DesktopEvent, GlobalCoord, GlobalRect, Pid, ToplevelIdent, ToplevelInfo,
     ToplevelState, WindowTitle, WindowTrust, WorkspaceRef,

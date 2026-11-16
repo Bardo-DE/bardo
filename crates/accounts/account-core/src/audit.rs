@@ -26,7 +26,7 @@ pub enum CredentialEnd {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::word::{from_word, word as word_of};
+    use base_ids::word::{from_word, word as word_of};
 
     #[test]
     fn the_bus_words_of_an_end_are_the_audit_words_as_written() {

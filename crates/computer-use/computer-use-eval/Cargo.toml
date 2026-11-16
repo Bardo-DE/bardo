@@ -16,7 +16,8 @@ path = "src/main.rs"
 action-gate-wire = {path = "../../actions/action-gate-wire"}
 action-wire = {path = "../../actions/action-wire"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 computer-use-action = {path = "../computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 keymap = {path = "../../keymap/keymap"}

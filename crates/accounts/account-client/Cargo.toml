@@ -13,7 +13,7 @@ account-core = {path = "../account-core"}
 account-match = {path = "../account-match"}
 account-capability = {path = "../account-capability"}
 account-wire = {path = "../account-wire"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
 account-sheet = {path = "../account-sheet"}
 futures-core = { workspace = true }
 futures-util = { workspace = true }

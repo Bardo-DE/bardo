@@ -3,11 +3,11 @@
 
 use account_capability::{Billing, Locality, ModelId};
 use account_core::AccountId;
-use account_ids::Tokens;
 use action_core::*;
 use action_manifest::Lasting;
 use action_review::*;
 use action_vocab::{Caller, LabelText, Millis, TurnId};
+use base_ids::Tokens;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
     ModelCard, ModelError, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
@@ -183,7 +183,7 @@ pub fn request() -> ReviewRequest {
             label: LabelText::parse("Archive").expect("label"),
             effect: Effect::UndoableWrite,
             kinds: BTreeSet::new(),
-            count: account_ids::Count(2),
+            count: base_ids::Count(2),
             args: vec![],
             lasting: Lasting::No,
         },

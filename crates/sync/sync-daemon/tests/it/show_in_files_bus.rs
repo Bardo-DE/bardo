@@ -22,11 +22,11 @@ use account_core::{
 };
 use account_fake::{FakeProvider, ScriptedSheets};
 use account_fake_servers::Running;
-use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use account_sheet::SheetInput;
+use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host_with};
 use common::{Known, client};
@@ -198,7 +198,7 @@ async fn build(
         settings: Settings::quick(),
         network,
         owners: Access::default(),
-        clock: sync_core::Clock::new(account_ids::clock::SystemClock),
+        clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
         millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
             1_700_000_000_000,

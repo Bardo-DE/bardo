@@ -2,8 +2,8 @@
 //! paths are `account_wire::names`.
 
 use account_core::AccountId;
-use account_ids::object_segment;
 use account_wire::names::ACCOUNTS_PATH;
+use base_ids::object_segment;
 
 /// `Spaces1.List`'s key of a Space's name (`s`).
 pub const SPACE_KEY_NAME: &str = "name";

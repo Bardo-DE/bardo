@@ -17,9 +17,9 @@ use account_dbus::accounts::sheet::SheetKind;
 use account_dbus::accounts::{
     ACCOUNT_OPTION, GrantsProxy, candidate_from_dbus, from_text, to_text,
 };
-use account_ids::word::{from_word, word};
 use account_match::Need;
 use account_wire::{AccountsReply, ParentWindow};
+use base_ids::word::{from_word, word};
 use zbus::zvariant::{OwnedValue, Value};
 
 impl Bus {

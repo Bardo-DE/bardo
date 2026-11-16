@@ -9,7 +9,7 @@
 use super::cas::{self, ContentId};
 use super::library::{PhotoLibrary, originals_dir};
 use crate::dataset::{Dataset, DatasetError, DatasetId};
-use account_ids::Bytes;
+use base_ids::Bytes;
 use std::io;
 use std::path::Path;
 use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};

@@ -3,7 +3,7 @@
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
-use account_ids::{Permille, Tokens, TurnCount};
+use base_ids::{Permille, Tokens, TurnCount};
 use inference_core::*;
 use model_provider::Money;
 use rust_decimal::Decimal;

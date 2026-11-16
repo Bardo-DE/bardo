@@ -1,7 +1,7 @@
 //! The small units every cua crate shares: time on cuad's clock, process ids, global logical
 //! coordinates and 32-byte digests.
 
-use account_ids::Px;
+use base_ids::Px;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

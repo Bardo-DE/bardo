@@ -4,8 +4,8 @@ use account_capability::StorageScope;
 use account_capability::{AbsentReason, Offer, Provenance};
 use account_core::AccountId;
 use account_core::{Credential, SecretText, TokenKind};
-use account_ids::UnixSeconds;
 use account_provider::{Presented, Provider, ProviderError, ProviderSession, RevokeOutcome};
+use base_time::UnixSeconds;
 
 fn account() -> AccountId {
     AccountId::parse("11111111-1111-4111-8111-111111111111").expect("account id")
@@ -298,10 +298,10 @@ mod service {
         Account, AccountLabel, AccountState, AuthKind, Restriction, SecretKey, SecretPurpose,
     };
     use account_fake::ScriptedSheets;
-    use account_ids::clock::FixedClock;
     use account_secrets::{MemorySecrets, Secrets, SecretsError};
     use account_service::AccountService;
     use account_service_core::registry::Registry;
+    use base_time::FixedClock;
     use std::sync::Arc;
 
     /// A store the test keeps a handle on after the service has one.

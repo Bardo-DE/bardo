@@ -9,12 +9,12 @@
 
 use crate::cursor_cache::CursorCache;
 use account_core::AppName;
-use account_ids::Count;
 use action_vocab::Clock;
 use agent_session::{
     Appended, LogFault, LogPage, PageSize, SESSION_KIND, Seq, SessionEntry, SessionLog, decode,
     encode, session_thing,
 };
+use base_ids::Count;
 use memory_client::{ClientError, Memory, Transport};
 use memory_core::{
     AreaPayload, AreaTag, BodyMode, Cause, Cursor, EntriesQuery, EventBody, JsonText, KindPattern,

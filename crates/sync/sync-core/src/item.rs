@@ -1,6 +1,8 @@
 //! A remote item and the versions a write is checked against.
 
-use account_ids::{Bytes, UnixSeconds, WebUrl};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use serde::{Deserialize, Serialize};
 
 /// A replica's own id for an item (a Drive file id, a WebDAV href).

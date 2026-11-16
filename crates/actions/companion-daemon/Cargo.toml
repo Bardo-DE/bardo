@@ -54,7 +54,7 @@ otlp = ["action-log/otlp"]
 [dev-dependencies]
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 memory-core = {path = "../../memory/memory-core"}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
 agent-loop = {path = "../agent-loop"}

@@ -1,16 +1,16 @@
 //! What the OAuth families (Microsoft, Google) take from their surroundings: the time, randomness
-//! for PKCE, and the clients files. The caller hands in the clock (a `account_ids::clock::Clock`)
+//! for PKCE, and the clients files. The caller hands in the clock (a `base_time::Clock`)
 //! and the clients files' paths; the families read neither the environment nor the system clock.
 //! Randomness is still read from the operating system. Each family's environment holds these as
 //! arguments, so a test hands in a counting clock and fixed bytes.
 
-use account_ids::UnixSeconds;
-use account_ids::clock::Clock as ClockSource;
+use base_time::Clock as ClockSource;
+use base_time::UnixSeconds;
 use std::path::PathBuf;
 use std::sync::Arc;
 
 /// A source of the current time, as a closure: what a family reads the time through. A caller
-/// with a `account_ids::clock::Clock` converts it with [`clock_of`].
+/// with a `base_time::Clock` converts it with [`clock_of`].
 pub type Clock = Arc<dyn Fn() -> UnixSeconds + Send + Sync>;
 
 /// The closure a family reads the time through, over a caller's clock.

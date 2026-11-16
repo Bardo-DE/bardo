@@ -61,7 +61,7 @@ impl Account {
 
 /// The group a `group` row's word names; none for a word this build does not know.
 fn group_of(word: &str) -> Option<ProviderGroup> {
-    account_ids::word::from_word(word)
+    base_ids::word::from_word(word)
 }
 
 /// The account with `key`, whichever module listed it: an account is its key alone. A key no

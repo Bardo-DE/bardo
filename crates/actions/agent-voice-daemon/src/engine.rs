@@ -50,7 +50,7 @@ pub(crate) struct Utt {
     pub n: u64,
     pub caller: String,
     pub intent: VoiceIntent,
-    pub since: account_ids::UnixSeconds,
+    pub since: base_time::UnixSeconds,
     pub state: UtteranceState,
     pub sink: EventSink,
     pub attached: Option<(String, EventSink)>,

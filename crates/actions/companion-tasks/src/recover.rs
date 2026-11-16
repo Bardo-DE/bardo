@@ -9,9 +9,9 @@
 //! agent) has nothing else to rebuild its sessions from, and a log that has just begun may have
 //! older notes.
 
-use account_ids::Count;
 use action_core::RosterState;
 use agent_loop::{Rebuilt, ReplayEvent, ReplayWhat, rebuild};
+use base_ids::Count;
 use companion_wire::{SESSION_KIND_PREFIX, SessionRecord};
 use memory_core::{BodyMode, Episode, KindPattern, RecentEntry, RecentQuery, TrustFilter};
 use provenance::{Message, RunId, SpaceId, UnixSeconds};

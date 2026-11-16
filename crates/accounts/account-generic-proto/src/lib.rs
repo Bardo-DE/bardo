@@ -20,8 +20,8 @@ pub mod mail;
 
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::EndpointUrl;
-use account_ids::{UrlScheme, WebUrl};
 use account_provider::ProviderSpec;
+use base_url::{UrlScheme, WebUrl};
 use http::header::AUTHORIZATION;
 use http::{HeaderValue, Request};
 

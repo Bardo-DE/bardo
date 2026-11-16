@@ -17,12 +17,12 @@ use account_fake_servers::http::{Request, Scheme, send};
 use account_fake_servers::{FakeNextcloud, LoginPolicy, NextcloudHandle, Running, shipped};
 use account_family_nextcloud::{NextcloudProvider, NextcloudSession};
 use account_http::{NoSleep, SharedHttp};
-use account_ids::WebUrl;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, RevokeOutcome, SignInMode, SignInStart,
     SignInStep, Signed,
 };
 use account_sheet::{FieldKind, SignInFault, SignInInput};
+use base_url::WebUrl;
 use common::{Fakes, all_on, plain};
 use std::time::Duration;
 

@@ -4,10 +4,10 @@ use crate::changes::Changes;
 use crate::error::LinkError;
 use crate::link::{AccountWatch, AccountsLink, ServerEdits};
 use account_core::{AccountId, AccountLabel, AccountState, ProviderHint, ProviderId, ReauthReason};
-use account_ids::object_segment;
 use account_sheet::{EditServers, EditedServers, ServersFixed};
 use account_wire::names::ACCOUNTS_PATH;
 use account_wire::{ParentWindow, Refusal};
+use base_ids::object_segment;
 use std::sync::Arc;
 
 /// Why an accounts call failed. More reasons may be added: match with a wildcard.

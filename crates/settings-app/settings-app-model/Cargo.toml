@@ -15,7 +15,7 @@ account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 memory-core = {path = "../../memory/memory-core"}
 keymap = {path = "../../keymap/keymap"}
 action-core = {path = "../../actions/action-core"}

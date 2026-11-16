@@ -2,7 +2,7 @@
 //! running). Local ids are paths; a test edits files through `put` and `remove`.
 
 use super::{Dataset, DatasetError, DatasetId, fingerprint};
-use account_ids::Bytes;
+use base_ids::Bytes;
 use std::collections::BTreeMap;
 use std::sync::{Mutex, PoisonError};
 use sync_core::{Blob, ConflictRule, ItemPath, LocalId, Scanned};

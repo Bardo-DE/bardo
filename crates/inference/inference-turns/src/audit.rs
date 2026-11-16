@@ -9,8 +9,8 @@
 //! (`serve::Carried`); the reply alone could not say.
 
 use account_core::AppId;
-use account_ids::clock::Clock;
-use account_ids::{Bytes, Tokens};
+use base_ids::{Bytes, Tokens};
+use base_time::Clock;
 use inference_core::{AuditEntry, InferReply, ServedBy, TokenUsage, Why};
 use inference_router::carried::Carried;
 use inference_router::seams::AuditSink;

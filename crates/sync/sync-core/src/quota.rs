@@ -1,7 +1,7 @@
 //! How full a Storage account is, for Settings' "used / total" and for an upload that checks
 //! before it sends (design/31 §2.2 `quota`).
 
-use account_ids::Bytes;
+use base_ids::Bytes;
 use serde::{Deserialize, Serialize};
 
 /// What a replica's account has used and may use.

@@ -13,7 +13,8 @@ account-core = {path = "../account-core"}
 account-tailscale = {path = "../account-tailscale"}
 account-wire = {path = "../account-wire"}
 account-dbus-macros = {path = "../account-dbus-macros"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

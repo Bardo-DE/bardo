@@ -8,7 +8,7 @@
 //! person signed in, from the age of the sign-in.
 
 use account_core::ReauthReason;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 
 /// Why Google refused a renewal, when it is the seven days: the client is in testing and the
 /// sign-in is old enough, or of unknown age (core's one rule, `ReauthReason::of_seven_days`). A

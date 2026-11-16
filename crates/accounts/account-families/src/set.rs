@@ -25,9 +25,9 @@ use account_family_generic::SharedDns;
 use account_family_oauth::ClientFiles;
 use account_http::SharedHttp;
 use account_http_reqwest::ReqwestHttp;
-use account_ids::clock::Clock;
 use account_provider::{DomainName, ProviderFileError, ProviderSet, ProviderSpec, parse_provider};
 use account_tailscale::LocalApi;
+use base_time::Clock;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -341,9 +341,7 @@ mod tests {
                 shipped: PathBuf::from("/nonexistent/clients.toml"),
                 own: PathBuf::from("/nonexistent/own-clients.toml"),
             },
-            Arc::new(account_ids::clock::FixedClock::new(
-                account_ids::UnixSeconds(0),
-            )),
+            Arc::new(base_time::FixedClock::new(base_time::UnixSeconds(0))),
         )
         .with_clients(
             SharedHttp::new(ReqwestHttp::new()),

@@ -1,6 +1,6 @@
 //! Whether a model can answer now (design/31 §3.3).
 
-use account_ids::Permille;
+use base_ids::Permille;
 use serde::{Deserialize, Serialize};
 
 /// How ready one model is. Ordered by how soon it can answer.

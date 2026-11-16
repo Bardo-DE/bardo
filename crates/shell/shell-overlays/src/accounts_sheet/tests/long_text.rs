@@ -4,8 +4,8 @@
 use account_capability::CapabilityKind;
 use account_core::consent::{AccountChoice as AskChoice, ConsentAsk, Usage};
 use account_core::{AccountLabel, DataClass};
-use account_ids::WebUrl;
 use account_sheet::{ProviderKind, ProviderRow, Review, ReviewView, RowKind, SheetView};
+use base_url::WebUrl;
 use shell_model::accounts::sheet::SheetAction;
 use ui_shell::accounts::model::ProviderPick;
 

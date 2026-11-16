@@ -12,7 +12,7 @@ publish.workspace = true
 account-service-core = {path = "../account-service-core"}
 account-sheet = {path = "../account-sheet"}
 account-core = {path = "../account-core"}
-account-ids = {path = "../account-ids"}
+base-time = { path = "../../base/base-time" }
 account-fs = {path = "../account-fs", features = ["book"]}
 account-secrets = {path = "../account-secrets"}
 account-wire = {path = "../account-wire"}

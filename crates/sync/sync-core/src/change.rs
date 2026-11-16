@@ -2,7 +2,7 @@
 
 use crate::anchor::Anchor;
 use crate::item::{RemoteId, RemoteItem, RemoteVersion};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// One change.

@@ -3,10 +3,10 @@
 //! the profile is only what the person said themselves.
 
 use crate::support::*;
-use account_ids::Count;
 use action_core::*;
 use action_fake::FakeMemory;
 use action_wire::{IntentsReply, IntentsRequest, RecallAsk, RecallView};
+use base_ids::Count;
 use memory_core::{
     BodyMode, Episode, EpisodeId, EpisodeKind, EpisodeOutcome, EventRef, EventSummary, Fact,
     FactId, FactState, FactText, FactView, JsonText, KindTag, MemoryItem, MemoryReply,
@@ -329,7 +329,7 @@ async fn a_step_that_failed_in_an_earlier_turn_is_not_handed_to_the_planner() {
         RecallAsk::Inject(memory_core::InjectQuery {
             space: space("work"),
             text: UserText::new("receipts"),
-            budget: account_ids::Tokens(100),
+            budget: base_ids::Tokens(100),
             k: Count(3),
             over: memory_core::RecallOver::Both,
             trust: TrustFilter::Any,

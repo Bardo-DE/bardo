@@ -7,7 +7,7 @@ use crate::{AccountRow, Acts, At, Boxed, toggle_of};
 use account_capability::{AbsentReason, CapabilityKind, Offer};
 use account_core::consent::{Decision, Grant, GrantScope};
 use account_core::{Account, AccountState, AuthKind, GrantId};
-use account_ids::word::{from_word, word};
+use base_ids::word::{from_word, word};
 use ui_settings::live::LiveError;
 use ui_settings::schema::{ActionWeight, Exposure, KeyKind, KeySpec};
 

@@ -6,10 +6,10 @@
 
 use account_callers::CallerRole;
 use account_core::AccountId;
-use account_ids::word::word as word_of;
 use account_service_core::registry::Registry;
 use account_settings::accounts::{Key, expiry_text, path, since_text};
 use account_settings::{EXPIRES, LABEL, REVOKE, SCOPE, SINCE, STATE};
+use base_ids::word::word as word_of;
 use ui_settings::schema::KeyPath;
 
 /// One change a client may be told of.
@@ -252,7 +252,7 @@ mod tests {
             },
             decision: Decision::Allow,
             scope,
-            at: account_ids::UnixSeconds(at),
+            at: base_time::UnixSeconds(at),
         }
     }
 

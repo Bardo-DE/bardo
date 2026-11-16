@@ -3,7 +3,7 @@
 //! `#[serde(rename_all = "snake_case")]` and writes the table of words once, in the derive.
 //!
 //! ```
-//! use account_ids::word::{from_word, word};
+//! use base_ids::word::{from_word, word};
 //!
 //! #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 //! #[serde(rename_all = "snake_case")]

@@ -4,7 +4,7 @@
 //! (the permit, the program, the caller) is in accountd's launcher tests.
 
 use super::common;
-use account_ids::word::word as word_of;
+use base_ids::word::word as word_of;
 
 use account_capability::{AgentProgram, EnvName};
 use account_client_dbus::{Bus, ChildKey, ChildKeyError, Delivery, Launcher, LauncherError};

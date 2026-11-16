@@ -34,7 +34,7 @@ fn model_says() -> SuccessCheck {
 fn receipt(at: u64) -> InputReceipt {
     InputReceipt {
         lease: LeaseId(1),
-        ops: account_ids::Count(3),
+        ops: base_ids::Count(3),
         text_path: None,
         origin: InputOrigin::SharedSeatViaEi,
         at: Stamp(at),
@@ -182,8 +182,8 @@ fn an_observation_goes_to_the_model_and_the_run_notes_what_it_read() {
         _ => None,
     });
     assert_eq!(call.expect("a model call").step, StepIndex(1));
-    assert_eq!(d.run.used.steps, account_ids::Count(1));
-    assert_eq!(d.run.frames.count(), account_ids::Count(1));
+    assert_eq!(d.run.used.steps, base_ids::Count(1));
+    assert_eq!(d.run.frames.count(), base_ids::Count(1));
     assert_eq!(
         d.run.taint.integrity,
         provenance::Integrity::Untrusted,
@@ -208,7 +208,7 @@ fn equal_frames_in_a_row_end_the_run_as_a_stall() {
 #[test]
 fn the_step_budget_ends_the_run_when_the_step_past_it_is_observed() {
     let mut t = task(model_says());
-    t.budget.steps = account_ids::Count(1);
+    t.budget.steps = base_ids::Count(1);
     let mut d = Drive::leased(STOCK, t);
     d.feed(RunInput::Observed(Box::new(observation(1, tree(vec![])))));
     assert_eq!(*d.phase(), RunPhase::Thinking(StepIndex(1)));
@@ -740,7 +740,7 @@ fn an_empty_reply_and_a_vendor_hint_count_as_failures_and_look_again_at_the_next
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
     d.feed(RunInput::ModelReplied(reply(vec![])));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
-    assert_eq!(d.run.used.model_failures, account_ids::Count(1));
+    assert_eq!(d.run.used.model_failures, base_ids::Count(1));
     let mut hinted = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
     let mut r = reply(vec![click_at(1, 1)]);
     r.reply.safety = vec![inference_core::SafetyHint::Blocked("no".into())];
@@ -906,7 +906,7 @@ fn a_confirmation_that_is_declined_is_told_to_the_model_as_declined() {
 #[test]
 fn the_rate_limit_ends_the_run_before_the_action_that_would_pass_it() {
     let mut t = task(model_says());
-    t.budget.actions_per_min = account_ids::Count(2);
+    t.budget.actions_per_min = base_ids::Count(2);
     let mut d = Drive::thinking(STOCK, t, tree(vec![]));
     d.feed(RunInput::ModelReplied(reply(vec![click_at(1, 1)])));
     for i in 0..2_u8 {
@@ -955,15 +955,15 @@ fn a_window_that_moved_under_the_aim_is_not_injected_into_and_the_run_looks_agai
 fn the_bus_is_told_how_many_equal_frames_came_in_a_row() {
     let mut d = Drive::leased(STOCK, task(model_says()));
     d.feed(RunInput::Observed(Box::new(observation(5, tree(vec![])))));
-    assert_eq!(d.run.used.stalled, account_ids::Count(1));
+    assert_eq!(d.run.used.stalled, base_ids::Count(1));
     d.feed(RunInput::ModelFailed(CuaModelError::Transient));
     d.feed(RunInput::Observed(Box::new(observation(5, tree(vec![])))));
-    assert_eq!(d.run.used.stalled, account_ids::Count(2));
+    assert_eq!(d.run.used.stalled, base_ids::Count(2));
     d.feed(RunInput::ModelFailed(CuaModelError::Transient));
     d.feed(RunInput::Observed(Box::new(observation(6, tree(vec![])))));
     assert_eq!(
         d.run.used.stalled,
-        account_ids::Count(1),
+        base_ids::Count(1),
         "a new frame starts again"
     );
 }

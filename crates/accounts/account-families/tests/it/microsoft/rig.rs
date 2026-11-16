@@ -8,13 +8,13 @@ use account_fake_servers::{FakeIssuer, IssuerHandle, Running, shipped};
 use account_family_oauth::{Microsoft, OAuthEnv, OAuthProvider};
 use account_http::http::{Request, Response};
 use account_http::{Http, HttpError};
-use account_ids::UnixSeconds;
 use account_oauth::ClientRegistry;
 use account_provider::{
     ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer, ProviderSpec, SignIn, SignInMode,
     SignInStart, SignInStep,
 };
 use account_sheet::SignInInput;
+use base_time::UnixSeconds;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::{Arc, Mutex};
@@ -184,7 +184,7 @@ impl Rig {
             },
             ClientRegistry::layered(ClientsFile { clients }, ClientsFile::default()),
             // The clock is replaced below by the counting one.
-            account_ids::clock::FixedClock::new(UnixSeconds(0)),
+            base_time::FixedClock::new(UnixSeconds(0)),
         )
         .with_channel(ClientChannel::Development)
         .with_poll_slice(Duration::from_millis(20))

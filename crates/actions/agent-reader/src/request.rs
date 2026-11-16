@@ -3,8 +3,8 @@
 
 use account_core::DataClass;
 use account_core::consent::Usage;
-use account_ids::{Permille, Tokens};
 use action_core::{ReaderAsk, ReaderTask, ValueSchema};
+use base_ids::{Permille, Tokens};
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, Reasoning, ReplyShape, Role,
     Sampling, ToolChoice, ToolParallelism,

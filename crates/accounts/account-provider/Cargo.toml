@@ -13,7 +13,8 @@ account-core = {path = "../account-core"}
 account-match = {path = "../account-match"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
-account-ids = {path = "../account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-url = { path = "../../base/base-url" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }

@@ -1,8 +1,8 @@
 //! Every provider file the repo ships parses, round-trips through TOML, and lays over the
 //! others by id.
 
-use account_ids::word::word as word_of;
 use account_provider::{ProviderSet, ProviderSpec, parse_provider};
+use base_ids::word::word as word_of;
 use std::path::PathBuf;
 
 fn shipped() -> Vec<(PathBuf, ProviderSpec)> {

@@ -16,7 +16,7 @@ testing = []
 action-wire = {path = "../../actions/action-wire"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 action-provider = {features = ["dbus"], path = "../../actions/action-provider"}
 action-core = {path = "../../actions/action-core"}
 action-dbus = {path = "../../actions/action-dbus"}

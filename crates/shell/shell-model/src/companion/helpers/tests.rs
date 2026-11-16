@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 use account_capability::ModelId;
 use account_core::AccountId;
-use account_ids::Count;
+use base_ids::Count;
 use companion_model::{
     helper::Ceiling, helper::HelperKind, helper::HelperModel, helper::HelperName,
     helper::HelperPhase,

@@ -9,7 +9,7 @@ use account_fake_servers::tls;
 use account_http::http::{self, Method, StatusCode};
 use account_http::{HeaderText, Http, HttpError, request, request_to};
 use account_http_reqwest::{Limits, ReqwestHttp};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::net::TcpListener;

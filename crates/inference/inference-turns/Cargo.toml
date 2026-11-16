@@ -12,7 +12,8 @@ publish.workspace = true
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 inference-core = {path = "../inference-core"}
 inference-bridge = {path = "../inference-bridge"}
 inference-router = {path = "../inference-router"}

@@ -2,7 +2,7 @@
 //! because both prov (`AgentRole::Helper`) and inference-core (`Asker::Helper`) name it, and
 //! inference-core may depend only on account-core and computer-use-action.
 
-use account_ids::IdError;
+use base_ids::IdError;
 use serde::{Deserialize, Serialize};
 
 /// One of the person's helpers. Opaque to porter (docket mints and owns it): 1 to 128 bytes, no
@@ -22,4 +22,4 @@ impl HelperId {
     }
 }
 
-account_ids::string_newtype!(HelperId, IdError);
+base_ids::string_newtype!(HelperId, IdError);

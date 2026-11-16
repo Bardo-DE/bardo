@@ -138,9 +138,9 @@ pub fn served() -> ServedBy {
 
 pub fn usage() -> TokenUsage {
     TokenUsage {
-        input: account_ids::Tokens(3),
-        output: account_ids::Tokens(0),
-        cached: account_ids::Tokens(0),
+        input: base_ids::Tokens(3),
+        output: base_ids::Tokens(0),
+        cached: base_ids::Tokens(0),
         charge: None,
     }
 }

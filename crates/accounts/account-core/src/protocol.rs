@@ -1,7 +1,7 @@
 //! The wire protocol a relay speaks for an endpoint. A leaf: the endpoint (which names the
 //! family) and the family (which names its protocol) both use it, and it names neither.
 
-use account_ids::UrlScheme;
+use base_url::UrlScheme;
 use serde::{Deserialize, Serialize};
 
 /// The wire protocol an authenticated relay speaks for an endpoint (`account-proxy`).

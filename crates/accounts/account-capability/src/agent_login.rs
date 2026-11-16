@@ -4,9 +4,9 @@
 //! URL, no code, no free text. Every word here is a member of a closed set, so a launcher cannot
 //! tunnel the login through the outcome.
 
-use account_ids::IdError;
-use account_ids::is_id;
-use account_ids::word::{from_word, word as word_of};
+use base_ids::IdError;
+use base_ids::is_id;
+use base_ids::word::{from_word, word as word_of};
 use serde::{Deserialize, Serialize};
 
 /// The id of one request for a login or a logout, made by accountd and sent to one launcher
@@ -25,7 +25,7 @@ impl LoginRequestId {
     }
 }
 
-account_ids::string_newtype!(LoginRequestId, IdError);
+base_ids::string_newtype!(LoginRequestId, IdError);
 
 /// Why the launcher could not finish a login or a logout: a coarse word from a closed set. It
 /// says nothing of how the agent failed.

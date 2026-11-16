@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-ids = {path = "../account-ids"}
+base-url = { path = "../../base/base-url" }
 account-http = {path = "../account-http"}
 reqwest = { workspace = true, features = ["rustls-no-provider"] }
 rustls = { workspace = true, features = ["ring", "std", "tls12"] }

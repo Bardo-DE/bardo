@@ -11,7 +11,7 @@ use crate::{
     consent::{Decision, GrantScope, Usage},
 };
 use account_capability::{Claim, Offer, Provenance, Subject};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 
 fn account(endpoints: Vec<ServiceEndpoint>) -> Account {
     Account {

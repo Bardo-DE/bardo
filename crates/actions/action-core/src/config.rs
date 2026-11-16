@@ -4,8 +4,8 @@
 //! [`AgentConfig`].
 
 use crate::budget::Budget;
-use account_ids::{Count, Tokens};
 use action_vocab::{Days, Depth, Millis, Seconds};
+use base_ids::{Count, Tokens};
 use iso_currency::Currency;
 use model_provider::Money;
 use permission_core::{Mode, RowSets};

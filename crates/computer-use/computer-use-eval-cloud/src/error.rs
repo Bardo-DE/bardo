@@ -2,7 +2,7 @@
 //! that failed. The binary prints the error and exits with status 2.
 
 use account_capability::Tier;
-use account_ids::IdError;
+use base_ids::IdError;
 use computer_use_eval::corpus::CorpusError;
 use computer_use_eval::flags::FlagError;
 use computer_use_eval::live::LiveError;

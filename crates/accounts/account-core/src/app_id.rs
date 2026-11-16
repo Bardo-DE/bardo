@@ -31,7 +31,7 @@ impl AppName {
     }
 }
 
-account_ids::string_newtype!(AppName, CoreError);
+base_ids::string_newtype!(AppName, CoreError);
 
 /// What a person reads for an app ("Claude Code"), as accountd resolves it (its caller table, the
 /// app's desktop entry, the agent's provider file): free text, never the bus id. A sheet that

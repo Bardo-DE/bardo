@@ -19,7 +19,7 @@
 
 use account_dbus::Details;
 use account_dbus_macros::bus_interface;
-use account_ids::word::{from_word, word};
+use base_ids::word::{from_word, word};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

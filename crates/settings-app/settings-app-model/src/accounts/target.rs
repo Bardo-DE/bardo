@@ -3,7 +3,7 @@
 
 use super::model::{AccountKey, AccountsPane};
 use account_core::AccountId;
-use account_ids::object_segment;
+use base_ids::object_segment;
 
 /// The object path every account lives under (`org.bardo.Accounts1`'s `account/<segment>`).
 /// accountd's `account_dbus::accounts::account_path` is the writer of this; settings-app-model may not depend

@@ -19,7 +19,7 @@ path = "src/main.rs"
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 computer-use-eval = {path = "../computer-use-eval"}
 model-catalog = {path = "../../models/model-catalog"}
 model-provider = {path = "../../models/model-provider"}

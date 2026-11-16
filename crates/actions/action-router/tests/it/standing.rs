@@ -183,7 +183,7 @@ async fn a_reviewer_that_asks_still_reaches_the_person() {
 #[tokio::test]
 async fn an_exhausted_budget_still_refuses() {
     let mut router = ready_router().await;
-    router.config.budget.outbound = account_ids::Count(0);
+    router.config.budget.outbound = base_ids::Count(0);
     router
         .seams
         .grants

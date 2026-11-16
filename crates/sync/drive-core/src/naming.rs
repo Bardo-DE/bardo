@@ -167,7 +167,7 @@ pub fn assign(bases: &[String]) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::WebUrl;
+    use base_url::WebUrl;
 
     fn names(bases: &[&str]) -> Vec<String> {
         assign(&bases.iter().map(|b| (*b).to_owned()).collect::<Vec<_>>())

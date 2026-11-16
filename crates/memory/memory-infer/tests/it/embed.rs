@@ -5,9 +5,9 @@ use crate::support::{Scripted, card, embed_reply, served, texts, usage, vector_o
 use account_capability::Modality;
 use account_capability::Tier;
 use account_core::consent::Usage;
-use account_ids::Dims;
 use account_match::DimsNeed;
 use account_match::Need;
+use base_ids::Dims;
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, ModelError,
     StopReason,

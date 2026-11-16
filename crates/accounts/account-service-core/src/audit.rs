@@ -12,7 +12,7 @@ use account_capability::{AgentProgram, CapabilityKind};
 use account_core::SessionToken;
 use account_core::{AccountId, GrantId};
 use account_core::{AccountState, AppId, Audience, DesktopSpace, EndpointUrl};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// Receives one entry per audited event. It cannot fail the call that caused it: a log that

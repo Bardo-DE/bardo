@@ -14,7 +14,7 @@ use crate::settings::SpendLine;
 use account_core::AccountId;
 use account_core::AppId;
 use account_fs::atomic::AtomicWrite;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TokenUsage, spend_verdict};
 use model_provider::Money;
 use serde::{Deserialize, Serialize};

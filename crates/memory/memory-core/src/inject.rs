@@ -8,7 +8,8 @@ use crate::text::{JsonText, UserText};
 use crate::timeline::TrustFilter;
 use crate::views::EventSummary;
 use account_core::SpaceId;
-use account_ids::{Count, Tokens, UnixSeconds};
+use base_ids::{Count, Tokens};
+use base_time::UnixSeconds;
 use provenance::{Effect, Label};
 use serde::{Deserialize, Serialize};
 

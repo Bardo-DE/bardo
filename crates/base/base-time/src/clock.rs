@@ -1,6 +1,5 @@
-//! The time, as a seam: the one `Clock` trait every crate that dates something takes, the system's
-//! wall clock, and a fixed clock for tests. Nothing here reads the time unless a caller asks
-//! [`SystemClock`] for it, and the daemons are the callers.
+//! The clocks: the wall clock as [`Clock`] and the monotonic one as [`Monotonic`], each with a system
+//! reader and a test double.
 
 use crate::UnixSeconds;
 use std::sync::Arc;

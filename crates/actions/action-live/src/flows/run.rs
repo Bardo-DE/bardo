@@ -33,7 +33,7 @@ pub(crate) async fn undo_held(launcher: &Launcher, world: &World) -> UndoCheck {
         launcher.intents.journal(JournalFilter {
             run: None,
             session: None,
-            limit: account_ids::Count(10),
+            limit: base_ids::Count(10),
         }),
     )
     .await;

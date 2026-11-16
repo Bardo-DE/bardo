@@ -2,7 +2,8 @@
 
 use crate::ids::text_id;
 use crate::label::{Confidentiality, Integrity, Labelled, Source};
-use account_ids::{UnixSeconds, is_id};
+use base_ids::is_id;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 text_id!(

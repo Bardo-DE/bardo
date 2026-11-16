@@ -20,9 +20,9 @@ use account_service_core::consent::settle;
 use account_service_core::registry::{Asker, Registry};
 use account_service_core::{Audited, Ports};
 
-use account_ids::clock::Clock;
 use account_secrets::Secrets;
 use account_wire::{AccountsReply, Refusal};
+use base_time::Clock;
 use std::collections::HashSet;
 use std::sync::{Mutex, MutexGuard};
 
@@ -92,7 +92,7 @@ fn logins(endpoints: &[account_core::ServiceEndpoint]) -> HashSet<&LoginName> {
 }
 
 /// The servers an account's endpoints are at (scheme, host and port).
-fn servers(endpoints: &[account_core::ServiceEndpoint]) -> HashSet<account_ids::Origin> {
+fn servers(endpoints: &[account_core::ServiceEndpoint]) -> HashSet<base_url::Origin> {
     endpoints.iter().map(|e| e.url.origin()).collect()
 }
 

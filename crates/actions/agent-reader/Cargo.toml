@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 action-core = {path = "../action-core"}
 action-vocab = {path = "../action-vocab"}
 agent-models = {path = "../agent-models"}

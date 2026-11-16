@@ -15,7 +15,7 @@ testing = []
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 companion-model = {path = "../companion-model"}
 companion-wire = {path = "../companion-wire"}
 action-core = {path = "../action-core"}

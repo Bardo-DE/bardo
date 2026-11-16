@@ -12,7 +12,7 @@ publish.workspace = true
 action-wire = {path = "../../actions/action-wire"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 settings-app-callers = {path = "../settings-app-callers"}
 settings-app-client = {path = "../settings-app-client"}
 settings-app-files = {path = "../settings-app-files"}

@@ -17,7 +17,7 @@ fn prune_keeps_actionable_visible_first_within_budget() {
     assert_eq!(
         pruned.truncated,
         Truncation::Pruned {
-            dropped: account_ids::Count(dropped)
+            dropped: base_ids::Count(dropped)
         }
     );
     assert!(

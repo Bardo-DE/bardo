@@ -4,8 +4,8 @@ use account_capability::ModelId;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::DataClass;
-use account_ids::{Count, Tokens};
 use account_match::LlmNeed;
+use base_ids::{Count, Tokens};
 use base_testkit::Scratch;
 use std::sync::Mutex as StdMutex;
 

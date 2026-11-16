@@ -363,7 +363,7 @@ async fn a_resume_starts_a_new_agent_session_and_keeps_the_taint() {
         handles: Vec::new(),
         budget: agent_session::ResumedBudget {
             checkpoint: None,
-            calls_since: account_ids::Count(0),
+            calls_since: base_ids::Count(0),
         },
         skills: Vec::new(),
         faults: Vec::new(),

@@ -11,8 +11,8 @@
 
 #[cfg(feature = "persist")]
 use account_fs::atomic::AtomicWrite;
-use account_ids::UnixSeconds;
 use account_tailscale::NodeId;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 #[cfg(feature = "persist")]

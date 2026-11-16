@@ -6,8 +6,8 @@ use account_client::{Grants, GrantsError, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use account_http::HttpError;
-use account_ids::{Origin, UrlScheme};
 use account_wire::Refusal;
+use base_url::{Origin, UrlScheme};
 use std::sync::Arc;
 
 /// Why a relay could not be had, as the client takes it: access the account has not given yet

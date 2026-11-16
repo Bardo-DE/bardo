@@ -2,8 +2,8 @@ use super::*;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use account_ids::Permille;
 use account_match::DimsNeed;
+use base_ids::Permille;
 use base_testkit::Scratch;
 use inference_router::testkit::models;
 use std::io::Write;
@@ -69,11 +69,11 @@ fn reasoning_picks_the_catalog_sampling_set_and_an_explicit_sampling_wins() {
     own.control.sampling = pi::Knob::Set(pi::Sampling {
         temperature: Permille(300),
         top_p: pi::Knob::Set(Permille(900)),
-        top_k: pi::Knob::Set(account_ids::Count(40)),
+        top_k: pi::Knob::Set(base_ids::Count(40)),
         min_p: pi::Knob::Off,
         seed: pi::Knob::Set(pi::Seed(7)),
     });
-    own.control.max_output = pi::Knob::Set(account_ids::Tokens(1));
+    own.control.max_output = pi::Knob::Set(base_ids::Tokens(1));
     own.control.stop = vec!["END".into()];
     let turn = chat_turn(&model, &own, &Frames::default()).expect("turn");
     assert_eq!(
@@ -306,7 +306,7 @@ fn embedding_texts_carry_the_prefix_of_their_role_and_are_cut_into_batches() {
         &embed(
             &["a", "b", "c"],
             pi::EmbedRole::Document,
-            DimsNeed::Exactly(account_ids::Dims(4)),
+            DimsNeed::Exactly(base_ids::Dims(4)),
         ),
     )
     .expect("turns");

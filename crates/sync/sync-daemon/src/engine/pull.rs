@@ -3,7 +3,7 @@
 use super::{Compared, Engine, Halt, Outcome, Report, conflict_of, halt, provisional};
 use crate::dataset::{Dataset, Direction, fingerprint};
 use crate::journal::Op;
-use account_ids::clock::Clock;
+use base_time::Clock;
 use std::collections::BTreeSet;
 use std::sync::atomic::Ordering;
 use sync_core::{

@@ -8,7 +8,7 @@
 
 use crate::codec::Logged;
 use crate::entry::{Seq, SessionEntry};
-use account_ids::Count;
+use base_ids::Count;
 use provenance::SessionId;
 use std::future::Future;
 

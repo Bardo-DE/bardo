@@ -7,7 +7,7 @@
 //! a calibrated probability. They are only ever asked for, and only ever answered, for a request
 //! whose shape is [`crate::ReplyShape::Choice`]; on any other shape the knob is ignored.
 
-use account_ids::{Count, Permille};
+use base_ids::{Count, Permille};
 use serde::{Deserialize, Serialize};
 
 /// The most first-token candidates an engine is asked for, and the number asked when an app

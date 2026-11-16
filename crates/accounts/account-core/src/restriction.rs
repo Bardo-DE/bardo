@@ -1,7 +1,8 @@
 //! Why an account is limited, for the one secondary line Settings shows (design/31 §2.5).
 
 use account_capability::CapabilityKind;
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// Everything that limits an account beyond its capabilities.
@@ -182,7 +183,7 @@ pub enum LimitReason {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::word::{from_word, word as word_of};
+    use base_ids::word::{from_word, word as word_of};
 
     const DAY: i64 = 86_400;
 

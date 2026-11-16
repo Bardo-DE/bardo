@@ -5,7 +5,7 @@ use crate::server::{After, Seen, serve};
 use account_http::http::{Method, Request, StatusCode};
 use account_http::{Http, HttpError, request};
 use account_http_relay::{Dial, RelayHttp, RelayLimits};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};

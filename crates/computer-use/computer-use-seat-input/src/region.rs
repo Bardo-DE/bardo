@@ -80,7 +80,7 @@ impl RegionMap {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::Px;
+    use base_ids::Px;
 
     fn frame(x: i32, y: i32) -> GlobalRect {
         GlobalRect {

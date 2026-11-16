@@ -320,6 +320,6 @@ async fn an_unreadable_record_is_a_fault_not_a_guess() {
     );
 }
 
-fn porter_count(n: u32) -> account_ids::Count {
-    account_ids::Count(n)
+fn porter_count(n: u32) -> base_ids::Count {
+    base_ids::Count(n)
 }

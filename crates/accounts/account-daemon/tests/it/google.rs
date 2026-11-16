@@ -20,13 +20,13 @@ use account_fake_servers::{Google, shipped};
 use account_families::DynProvider;
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
 use account_http_reqwest::ReqwestHttp;
-use account_ids::clock::FixedClock;
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer};
 use account_secrets::Secrets;
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_sheet::{SheetInput, SheetView};
+use base_time::FixedClock;
 use common::bus::PrivateBus;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, Tap, caller, contains};
@@ -65,16 +65,16 @@ struct World {
 #[derive(Default)]
 struct Sky(std::sync::atomic::AtomicI64);
 
-impl account_ids::clock::Clock for Sky {
-    fn now(&self) -> account_ids::UnixSeconds {
+impl base_time::Clock for Sky {
+    fn now(&self) -> base_time::UnixSeconds {
         match self.0.load(std::sync::atomic::Ordering::SeqCst) {
             0 => {
                 let since = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
                     .unwrap_or_default();
-                account_ids::UnixSeconds(i64::try_from(since.as_secs()).unwrap_or(i64::MAX))
+                base_time::UnixSeconds(i64::try_from(since.as_secs()).unwrap_or(i64::MAX))
             }
-            at => account_ids::UnixSeconds(at),
+            at => base_time::UnixSeconds(at),
         }
     }
 }
@@ -107,7 +107,7 @@ impl World {
         let env = OAuthEnv::new(
             ReqwestHttp::default(),
             client_with(&google, traits),
-            account_ids::clock::SystemClock,
+            base_time::SystemClock,
         )
         .with_channel(ClientChannel::Development)
         .with_poll_slice(Duration::from_millis(50))

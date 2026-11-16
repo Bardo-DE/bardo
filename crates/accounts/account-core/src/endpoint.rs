@@ -10,7 +10,8 @@ use crate::family::Family;
 use crate::protocol::EndpointProtocol;
 use crate::secret::SecretText;
 use account_capability::CapabilityKind;
-use account_ids::{IdError, Origin, UrlScheme, WebUrl, split_authority};
+use base_ids::IdError;
+use base_url::{Origin, UrlScheme, WebUrl, split_authority};
 use serde::{Deserialize, Serialize};
 
 mod reach;
@@ -187,7 +188,7 @@ fn admits(scheme: UrlScheme, tls: Tls) -> bool {
     }
 }
 
-account_ids::string_newtype!(EndpointUrl, CoreError);
+base_ids::string_newtype!(EndpointUrl, CoreError);
 
 /// Why an endpoint is not one porter will use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

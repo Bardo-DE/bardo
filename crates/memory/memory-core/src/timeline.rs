@@ -5,7 +5,8 @@ use crate::ids::{Cursor, KindPattern, KindTag};
 use crate::slug::slug_enum;
 use crate::thing::ThingView;
 use account_core::AppName;
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
+use base_time::UnixSeconds;
 use provenance::{Actor, Effect, Label};
 use serde::{Deserialize, Serialize};
 

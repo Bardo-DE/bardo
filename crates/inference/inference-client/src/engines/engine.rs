@@ -3,7 +3,7 @@
 
 use account_capability::ModelId;
 use account_core::AccountId;
-use account_ids::Tokens;
+use base_ids::Tokens;
 use model_openai_compat::Flavor;
 use std::fmt;
 
@@ -15,7 +15,7 @@ pub struct EngineId(String);
 impl EngineId {
     /// The id named `text`.
     pub fn parse(text: &str) -> Result<Self, EngineError> {
-        match account_ids::is_id(text) {
+        match base_ids::is_id(text) {
             true => Ok(Self(text.to_owned())),
             false => Err(EngineError::Id(text.to_owned())),
         }

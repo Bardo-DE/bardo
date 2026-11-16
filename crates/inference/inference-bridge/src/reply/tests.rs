@@ -102,9 +102,9 @@ fn a_reply_is_gathered_from_the_events_in_order() {
     assert_eq!(
         reply.usage,
         pi::TokenUsage {
-            input: account_ids::Tokens(10),
-            output: account_ids::Tokens(4),
-            cached: account_ids::Tokens(3),
+            input: base_ids::Tokens(10),
+            output: base_ids::Tokens(4),
+            cached: base_ids::Tokens(3),
             charge: Some(sp::Money::usd(Decimal::new(95, 5))),
         }
     );
@@ -185,6 +185,6 @@ fn a_turn_that_asked_gets_the_shares_of_its_options_on_the_reply() {
     let (reply, why) = asking(&["yes", "no"]).chat_reply_noted(&end, served());
     assert_eq!(why, None);
     let scores = reply.scores.expect("scores");
-    assert_eq!(scores.share_of("yes"), Some(account_ids::Permille(750)));
-    assert_eq!(scores.share_of("no"), Some(account_ids::Permille(250)));
+    assert_eq!(scores.share_of("yes"), Some(base_ids::Permille(750)));
+    assert_eq!(scores.share_of("no"), Some(base_ids::Permille(250)));
 }

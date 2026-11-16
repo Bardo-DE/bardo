@@ -5,8 +5,8 @@
 
 use account_capability::{Capability, CapabilityKind};
 use account_core::{Audience, Family};
-use account_ids::word::word as word_of;
 use account_provider::ProviderSpec;
+use base_ids::word::word as word_of;
 
 /// Whether a grant for `kind` on an account of `spec` covers `audience`.
 pub(crate) fn covers(spec: &ProviderSpec, kind: CapabilityKind, audience: &Audience) -> bool {

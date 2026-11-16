@@ -9,7 +9,8 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 sandbox = {path = "../../sandbox/sandbox"}
 action-checkpoint = {path = "../action-checkpoint"}
 action-core = {path = "../action-core"}

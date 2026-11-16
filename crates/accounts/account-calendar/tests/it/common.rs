@@ -7,7 +7,7 @@ use account_http::http::header::{AUTHORIZATION, HeaderValue};
 use account_http::http::{Request, Response};
 use account_http::{HeaderText, Http, HttpError};
 use account_http_relay::{Dial, RelayHttp, RelayLimits};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use std::collections::VecDeque;
 use std::future::Future;
 use std::sync::Mutex;

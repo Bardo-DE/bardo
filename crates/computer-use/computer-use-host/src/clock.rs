@@ -1,6 +1,6 @@
 //! The system clock: read here, in the daemon, and nowhere below it.
 
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use computer_use_desktop::Stamp;
 use computer_use_run::Clock;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};

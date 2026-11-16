@@ -1,8 +1,8 @@
 //! Budgets, the ledger that spends them, and the kill switch. `charge` and `halted` are pure.
 
 use crate::spend::{Spent, check_turn};
-use account_ids::Count;
 use action_vocab::{Depth, Seconds};
+use base_ids::Count;
 use model_provider::Money;
 use permission_core::BreakerTrip;
 use provenance::{Effect, SpaceId, UnixSeconds};

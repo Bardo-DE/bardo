@@ -113,7 +113,7 @@ fn redirect_target(
         false => location.to_owned(),
     };
     let url = EndpointUrl::parse(&text).map_err(|_| DiscoverFault::Unreadable)?;
-    match url.origin().scheme == account_ids::UrlScheme::Https {
+    match url.origin().scheme == base_url::UrlScheme::Https {
         true => Ok(url),
         false => Err(DiscoverFault::Unreadable),
     }
@@ -161,7 +161,7 @@ pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
         return Err(DiscoverFault::Unreadable);
     }
     let url = EndpointUrl::parse(&session.api_url).map_err(|_| DiscoverFault::Unreadable)?;
-    let tls = match url.origin().scheme == account_ids::UrlScheme::Https {
+    let tls = match url.origin().scheme == base_url::UrlScheme::Https {
         true => Tls::Implicit,
         false => Tls::Plain,
     };

@@ -15,7 +15,8 @@ use crate::text::PlanDigest;
 use crate::text::UserText;
 use crate::timeline::TimelinePage;
 use crate::views::{DraftView, EventSummary, FactView, FileProvenance, ForgetPlanView};
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
+use base_time::UnixSeconds;
 use provenance::Label;
 use serde::{Deserialize, Serialize};
 

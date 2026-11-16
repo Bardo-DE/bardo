@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 computer-use-desktop = {path = "../computer-use-desktop"}
 account-core = {path = "../../accounts/account-core"}
 serde = { workspace = true, features = ["derive"] }

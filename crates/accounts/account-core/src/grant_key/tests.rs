@@ -5,7 +5,7 @@ use crate::data_class::DataClass;
 use crate::space::{SpaceId, SpaceScope};
 use crate::{AccountId, GrantId};
 use account_capability::CapabilityKind;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 
 fn key(app: &str, usage: Usage) -> GrantKey {
     GrantKey {

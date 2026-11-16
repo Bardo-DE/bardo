@@ -4,7 +4,8 @@
 
 use crate::error::HttpError;
 use account_core::EndpointUrl;
-use account_ids::{UnixSeconds, UrlScheme, WebUrl};
+use base_time::UnixSeconds;
+use base_url::{UrlScheme, WebUrl};
 use http::header::{HeaderMap, HeaderName, HeaderValue};
 use http::request::Builder;
 use http::{Method, Request, Response, Uri};

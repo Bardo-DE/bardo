@@ -2,7 +2,7 @@ use super::*;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
-use account_ids::Tokens;
+use base_ids::Tokens;
 use inference_core::{JsonText, ServedBy, TokenUsage, ToolCallId, ToolName};
 
 fn reply(

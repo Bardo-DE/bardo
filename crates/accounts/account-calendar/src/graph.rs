@@ -10,7 +10,7 @@ use crate::event::{CalendarRef, Event, Stored, When};
 use crate::json::{bare, body, encode, exchange, if_match, removed, request, text, url};
 use account_http::Http;
 use account_http::http::Method;
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde_json::{Value, json};
 
 /// Graph's v1.0 endpoint.

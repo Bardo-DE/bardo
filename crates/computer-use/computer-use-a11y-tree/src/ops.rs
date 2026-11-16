@@ -3,7 +3,7 @@
 use crate::model::{A11yNode, A11ySnapshot, NodeBudget, NodeState, Parent, Truncation};
 use crate::render::is_secret;
 use crate::selector::{NameMatch, NodeSelector, Resolution, SelectorStep};
-use account_ids::Count;
+use base_ids::Count;
 use computer_use_action::{NodeId, Rect, WindowSpace};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};

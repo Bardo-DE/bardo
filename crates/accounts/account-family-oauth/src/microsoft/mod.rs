@@ -18,10 +18,10 @@ use account_core::{
     SecretPurpose, ServiceEndpoint, TenantConsent, Tls, TokenKind,
 };
 use account_http::Http;
-use account_ids::UrlScheme;
 use account_oauth::{TokenResponse, refresh_scoped};
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;
+use base_url::UrlScheme;
 use graph::{Found, probe, whoami};
 
 /// Microsoft's rules.

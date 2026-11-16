@@ -408,7 +408,7 @@ async fn a_hear_then_answer_pipeline_hears_on_the_speech_host_and_answers_on_a_t
     };
     let need = Need::Llm(account_match::LlmNeed::new(
         [account_capability::LlmFeature::Chat].into(),
-        account_ids::Tokens(1000),
+        base_ids::Tokens(1000),
     ));
     let planned = plan(
         &shape,

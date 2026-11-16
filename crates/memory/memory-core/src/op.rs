@@ -5,7 +5,8 @@ use crate::ids::{FactId, RuleId, Seq, TopicPath};
 use crate::rules::DropReason;
 use crate::text::{Link32, PlanDigest};
 use account_core::SpaceId;
-use account_ids::{Count, UnixSeconds};
+use base_ids::Count;
+use base_time::UnixSeconds;
 use provenance::{Actor, RunId};
 use serde::{Deserialize, Serialize};
 

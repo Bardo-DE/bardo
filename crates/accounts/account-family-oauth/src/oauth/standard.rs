@@ -14,10 +14,10 @@ use account_core::{
     SecretPurpose, ServiceEndpoint, Tls, TokenKind,
 };
 use account_http::Http;
-use account_ids::UrlScheme;
 use account_oauth::TokenResponse;
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;
+use base_url::UrlScheme;
 
 /// The rules of `issuer`, which publishes who answered at its userinfo endpoint and has nothing
 /// else to say.
@@ -170,7 +170,7 @@ fn audience_word(audience: &Audience) -> String {
 }
 
 fn names(row: &account_provider::CapabilityRow, wanted: &str) -> bool {
-    account_ids::word::word(&row.family) == wanted
+    base_ids::word::word(&row.family) == wanted
         || row
             .endpoint
             .as_ref()

@@ -9,11 +9,11 @@ use account_core::{
     AccountLabel, AuthKind, Credential, EndpointUrl, Restriction, SecretPurpose, SecretText,
     ServiceEndpoint,
 };
-use account_ids::WebUrl;
 use account_sheet::{
     FieldSpec, Manual, Progress, Review, ServiceRow, ServiceState, SignInFault, SignInInput,
     UserCode,
 };
+use base_url::WebUrl;
 use std::future::Future;
 
 /// Why the sign-in was started.

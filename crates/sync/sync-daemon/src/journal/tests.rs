@@ -1,6 +1,7 @@
 use super::*;
 use crate::testing::scratch;
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use sync_core::{
     Acknowledgement, Anchor, BaseVersion, Conflict, ContentHash, ItemPath, ItemState, RemoteSide,
     RemoteVersion, Tombstone, TombstoneOrigin,

@@ -15,7 +15,7 @@ use crate::config::InferdConfig;
 use crate::structured::AiConfig;
 use account_capability::Tier;
 use account_core::DataClass;
-use account_ids::Permille;
+use base_ids::Permille;
 use inference_core::{
     AutoRow, ClassFloor, Floor, ModelRef, Policy, PoolRow, Slot, TierMap, TierRow,
 };

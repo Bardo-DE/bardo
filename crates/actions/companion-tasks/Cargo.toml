@@ -10,7 +10,8 @@ publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 agent-loop = {path = "../agent-loop"}
 memory-core = {path = "../../memory/memory-core"}
 companion-core = {path = "../companion-core"}

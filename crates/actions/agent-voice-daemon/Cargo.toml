@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-time = { path = "../../base/base-time" }
 agent-voice-loop = {path = "../agent-voice-loop"}
 agent-voice-audio = {path = "../agent-voice-audio"}
 agent-voice-wire = {path = "../agent-voice-wire"}

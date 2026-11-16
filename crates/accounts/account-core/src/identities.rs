@@ -5,7 +5,7 @@
 
 use crate::account::Account;
 use crate::{AccountId, ProviderId};
-use account_ids::slug_id;
+use base_ids::slug_id;
 use serde::{Deserialize, Serialize};
 
 slug_id!(
@@ -101,7 +101,7 @@ impl Identity {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::word::{from_word, word as word_of};
+    use base_ids::word::{from_word, word as word_of};
 
     #[test]
     fn a_kind_reads_back_from_its_word_and_an_identity_from_its_account() {

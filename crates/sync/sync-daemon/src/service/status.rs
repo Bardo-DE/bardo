@@ -138,7 +138,8 @@ pub fn conflict_details(stored: &StoredConflict) -> Details {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::{Bytes, UnixSeconds};
+    use base_ids::Bytes;
+    use base_time::UnixSeconds;
     use sync_core::{Conflict, LocalId, RemoteId, RemoteVersion};
 
     fn text(details: &Details, key: &str) -> Option<String> {

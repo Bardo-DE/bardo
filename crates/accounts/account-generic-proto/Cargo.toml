@@ -12,7 +12,7 @@ publish.workspace = true
 account-dav-proto = {path = "../account-dav-proto", features = ["discover"]}
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
-account-ids = {path = "../account-ids"}
+base-url = { path = "../../base/base-url" }
 account-provider = {path = "../account-provider"}
 account-sheet = {path = "../account-sheet"}
 http = { workspace = true }

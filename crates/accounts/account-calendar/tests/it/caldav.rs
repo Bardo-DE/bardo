@@ -5,7 +5,7 @@ use crate::common::{Client, Server};
 use account_calendar::account_http::http::{Method, header::CONTENT_TYPE};
 use account_calendar::account_http::{Http, request};
 use account_calendar::{CalDav, CalendarError, CalendarStore, Event, Instant, When};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 
 fn ics(uid: &str, summary: &str) -> String {
     format!(

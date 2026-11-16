@@ -2,7 +2,7 @@
 //! router and mean nothing outside it.
 
 use account_core::{AppName, CoreError};
-use account_ids::is_id;
+use base_ids::is_id;
 use provenance::{ActionName, EntityId};
 use serde::{Deserialize, Serialize};
 use std::fmt;

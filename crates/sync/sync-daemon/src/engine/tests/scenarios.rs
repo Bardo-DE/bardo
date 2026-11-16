@@ -3,7 +3,8 @@ use crate::dataset::{Dataset, DatasetError, DatasetId, MemoryDataset};
 use crate::engine::{Engine, Outcome};
 use crate::journal::Journal;
 use account_capability::{Delta, HashKind};
-use account_ids::{Bytes, WebUrl};
+use base_ids::Bytes;
+use base_url::WebUrl;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_core::{

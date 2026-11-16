@@ -12,9 +12,9 @@ use account_capability::{Billing, Locality, Tier};
 use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
 use account_core::AccountId;
 use account_core::DataClass;
-use account_ids::{Permille, Tokens, TurnCount};
 use account_match::LlmNeed;
 use account_match::Need;
+use base_ids::{Permille, Tokens, TurnCount};
 use base_testkit::Scratch;
 use engine_supervisor::{FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig};
 use inference_core::{

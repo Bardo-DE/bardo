@@ -37,7 +37,7 @@ action-log = {path = "../action-log"}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
-account-ids = {path = "../../accounts/account-ids"}
+
 account-wire = {path = "../../accounts/account-wire"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}

@@ -51,7 +51,7 @@ impl ProviderGroup {
 mod tests {
     use super::*;
     use CapabilityKind::*;
-    use account_ids::word::word as word_of;
+    use base_ids::word::word as word_of;
 
     #[test]
     fn the_slug_is_the_serde_word_and_the_heading_is_plain() {

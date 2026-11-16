@@ -3,10 +3,11 @@
 use account_capability::LanguageTag;
 use account_capability::{Locality, ModelId};
 use account_core::{AccountId, AppName, DataClass, SpaceId};
-use account_ids::{Permille, UnixSeconds};
 use action_vocab::UtteranceId;
 use action_wire::VoiceIntent;
 use agent_voice_wire::*;
+use base_ids::Permille;
+use base_time::UnixSeconds;
 use inference_core::{InferRefusal, ModelError, Readiness, ServedBy};
 use serde::{Serialize, de::DeserializeOwned};
 

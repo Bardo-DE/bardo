@@ -5,7 +5,7 @@
 //! names which hosts that may be, so the daemon is never an open proxy.
 
 use account_core::CoreError;
-use account_ids::Origin;
+use base_url::Origin;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

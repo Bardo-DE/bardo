@@ -4,11 +4,11 @@ use crate::accounts::{llm_account, mail_account, storage_account};
 use crate::provider::{FakeProvider, cloud_provider, llm_provider, mail_provider};
 use crate::sheets::ScriptedSheets;
 use account_core::{Credential, SecretKey, SecretPurpose, SecretText};
-use account_ids::UnixSeconds;
-use account_ids::clock::FixedClock;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
+use base_time::FixedClock;
+use base_time::UnixSeconds;
 
 /// The instant the fake clock reads.
 pub const NOW: UnixSeconds = UnixSeconds(1_790_000_000);

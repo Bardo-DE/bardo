@@ -6,7 +6,7 @@
 //! content belongs to the replica that streams it. The `http` crate is re-exported, so a caller
 //! names the same version porter does.
 //!
-//! A request's URL is a porter [`WebUrl`](account_ids::WebUrl) (`https`, or `http` to this
+//! A request's URL is a porter [`WebUrl`](base_url::WebUrl) (`https`, or `http` to this
 //! computer); [`request`] turns it into the request's URI.
 //!
 //! The clients are other crates: `account-http-reqwest` for a direct connection and
@@ -15,7 +15,8 @@
 //! Requests and responses are plain values:
 //!
 //! ```
-//! use account_ids::{UnixSeconds, WebUrl};
+//! use base_time::UnixSeconds;
+//! use base_url::WebUrl;
 //! use account_http::http::{Response, StatusCode};
 //! use account_http::{HeaderText, request};
 //!

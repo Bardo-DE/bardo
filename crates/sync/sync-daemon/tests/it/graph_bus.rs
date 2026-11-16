@@ -9,7 +9,7 @@
 //! session, and an expired delta token uploads nothing again.
 
 use crate::common;
-use account_ids::clock::SystemClock;
+use base_time::SystemClock;
 
 use account_callers::CallerRole;
 use account_capability::StorageScope;
@@ -28,10 +28,10 @@ use account_core::{
 use account_fake::FakeProvider;
 use account_fake_servers::Running;
 use account_http_relay::RelayStream;
-use account_ids::UnixSeconds;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use common::hosted::{Link, host};
 use common::{Known, client};

@@ -3,7 +3,7 @@
 use crate::event::EventRef;
 use crate::ids::{FactId, FactText, TopicPath};
 use crate::thing::ThingRef;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use provenance::{Actor, Label, RunId};
 use serde::{Deserialize, Serialize};
 

@@ -34,9 +34,9 @@ impl CuaModel for Mute {
 
     fn usage(&self) -> TokenUsage {
         TokenUsage {
-            input: account_ids::Tokens(0),
-            output: account_ids::Tokens(0),
-            cached: account_ids::Tokens(0),
+            input: base_ids::Tokens(0),
+            output: base_ids::Tokens(0),
+            cached: base_ids::Tokens(0),
             charge: None,
         }
     }

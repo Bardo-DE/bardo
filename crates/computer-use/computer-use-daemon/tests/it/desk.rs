@@ -225,7 +225,7 @@ pub(crate) fn record_of_run(run: &RunId) -> Vec<CuaRecord> {
         CuaRecord::Finished {
             run: run.clone(),
             outcome: CuaOutcome::Done,
-            steps: account_ids::Count(1),
+            steps: base_ids::Count(1),
             charges: inference_core::ChargeTotal::default(),
             report: None,
         },

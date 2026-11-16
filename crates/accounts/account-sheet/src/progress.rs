@@ -8,7 +8,7 @@ use account_capability::KindToggle;
 use account_core::AccountLabel;
 use account_core::LimitReason;
 use account_core::{EndpointUrl, ServiceEndpoint};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use serde::{Deserialize, Serialize};
 
 /// The short code a person types at a provider's page (the device-code flow). Shown, not secret.

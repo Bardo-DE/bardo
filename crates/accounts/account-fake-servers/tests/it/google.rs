@@ -4,7 +4,7 @@
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, Response, Scheme, post_form, send};
 use account_fake_servers::{Google, Style, shipped};
-use account_ids::word::word as word_of;
+use base_ids::word::word as word_of;
 use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use sha2::{Digest, Sha256};

@@ -13,7 +13,7 @@ use crate::takes::Takes;
 use account_capability::Locality;
 use account_core::AccountId;
 use account_core::CoreError;
-use account_ids::is_id;
+use base_ids::is_id;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

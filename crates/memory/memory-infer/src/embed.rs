@@ -5,9 +5,9 @@ use account_capability::Modality;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use account_ids::Dims;
 use account_match::Need;
 use account_match::{DimsNeed, EmbedNeed};
+use base_ids::Dims;
 use inference_client::{Transport, TransportError};
 use inference_core::{
     EmbedReply, EmbedRequest, EmbedRole as WireRole, InferRefusal, InferReply, InferRequest,

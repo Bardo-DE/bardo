@@ -1,6 +1,6 @@
-//! The ids of the accounts vocabulary, each in the one slug grammar of `account-ids`.
+//! The ids of the accounts vocabulary, each in the one slug grammar of `base-ids`.
 
-use account_ids::slug_id;
+use base_ids::slug_id;
 
 slug_id!(
     /// One configured account (a row in accountd's registry, or a discovered local runtime).

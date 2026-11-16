@@ -8,7 +8,8 @@ use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_http::http::header::{ACCEPT, HeaderValue, RANGE};
 use account_http::http::{Method, Request, Response};
 use account_http::{Http, request};
-use account_ids::{Bytes, WebUrl};
+use base_ids::Bytes;
+use base_url::WebUrl;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
 use sync_core::status::unreached;
@@ -224,7 +225,7 @@ impl<H: Http> GdriveReplica<H> {
             .api(
                 &format!(
                     "files/{}/export",
-                    account_ids::percent::encode_unreserved(&id.0)
+                    base_url::percent::encode_unreserved(&id.0)
                 ),
                 &[("mimeType", mime)],
             )

@@ -13,7 +13,7 @@ base64 = { workspace = true }
 account-core = {path = "../../accounts/account-core"}
 account-fake = {path = "../../accounts/account-fake"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-account-ids = {path = "../../accounts/account-ids"}
+base-url = { path = "../../base/base-url" }
 account-provider = {path = "../../accounts/account-provider"}
 quickxorhash = {path = "../quickxorhash"}
 serde_json = { workspace = true }

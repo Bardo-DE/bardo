@@ -26,7 +26,8 @@ account-fake-secret-service = {path = "../account-fake-secret-service"}
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-wire = {path = "../account-wire"}
-account-ids = {path = "../account-ids"}
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
 account-client = {path = "../account-client"}
 account-client-dbus = {path = "../account-client-dbus"}
 account-callers = {path = "../account-callers", features = ["test-proc-root"]}

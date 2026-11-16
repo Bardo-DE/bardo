@@ -15,7 +15,7 @@
 
 use account_core::{AppName, DesktopSpace, DesktopSpaceRecord, SpaceLook, SpaceName};
 use account_fs::atomic::AtomicFile;
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, VecDeque};
 use std::path::Path;

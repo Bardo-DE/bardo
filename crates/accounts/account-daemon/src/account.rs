@@ -17,10 +17,10 @@ use account_dbus::accounts::account_path;
 use account_dbus::accounts::sheet::SheetKind;
 use account_dbus::accounts::{AccountServed, AccountServer};
 use account_dbus::{Call, Details, to_vardict};
-use account_ids::object_segment;
-use account_ids::word::word as word_of;
 use account_wire::AccountsRequest;
 use account_wire::names::ACCOUNTS_PATH;
+use base_ids::object_segment;
+use base_ids::word::word as word_of;
 use std::sync::Arc;
 use zbus::ObjectServer;
 use zbus::fdo;
@@ -38,7 +38,7 @@ impl<H, C> AccountObject<H, C> {
 }
 
 /// The closed word for why `account` needs signing in again, or empty.
-pub(crate) fn reauth_reason_word(account: &Account, now: account_ids::UnixSeconds) -> &'static str {
+pub(crate) fn reauth_reason_word(account: &Account, now: base_time::UnixSeconds) -> &'static str {
     match account.state {
         AccountState::NeedsReauth => account
             .restriction
@@ -99,7 +99,7 @@ impl<H: Host, C: Callers> AccountServer for AccountObject<H, C> {
     }
 
     async fn state(&self, header: Option<Header<'_>>) -> fdo::Result<String> {
-        Ok(account_ids::word::word(&visible(&self.0, header.as_ref()).await?.state).to_owned())
+        Ok(base_ids::word::word(&visible(&self.0, header.as_ref()).await?.state).to_owned())
     }
 
     /// Why the account has to be signed in again, when porter knows: a word of

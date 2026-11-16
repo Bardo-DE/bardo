@@ -1,6 +1,6 @@
 //! The wire types the rig amendment added: pinned JSON, round trips, and the redaction rules.
 
-use account_ids::{Count, Permille, Tokens};
+use base_ids::{Count, Permille, Tokens};
 use inference_core::*;
 use serde::Serialize;
 use serde::de::DeserializeOwned;

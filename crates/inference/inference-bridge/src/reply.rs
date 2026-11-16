@@ -2,7 +2,7 @@
 //! `ProviderError` to `ModelError`, `StopReason` both ways. The only place the two vocabularies
 //! meet on the way out.
 
-use account_ids::Tokens;
+use base_ids::Tokens;
 use inference_core as pi;
 use model_provider as sp;
 

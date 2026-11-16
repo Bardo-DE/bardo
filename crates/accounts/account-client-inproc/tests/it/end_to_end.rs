@@ -226,13 +226,13 @@ async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_a
     use account_family_generic::{DavLookup, GenericProvider};
     use account_http::SharedHttp;
     use account_http_reqwest::ReqwestHttp;
-    use account_ids::clock::FixedClock;
     use account_match::PimNeed;
     use account_provider::parse_provider;
     use account_secrets::MemorySecrets;
     use account_service::AccountService;
     use account_service_core::registry::Registry;
     use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput};
+    use base_time::FixedClock;
 
     let dav = FakeDav::start("bob", "hunter2").await.expect("dav");
     let spec = parse_provider(include_str!("../../../providers/generic-dav.toml")).expect("file");
@@ -354,12 +354,12 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
     use account_family_generic::{DavLookup, GenericProvider};
     use account_http::SharedHttp;
     use account_http_reqwest::ReqwestHttp;
-    use account_ids::clock::FixedClock;
     use account_provider::parse_provider;
     use account_secrets::MemorySecrets;
     use account_service::AccountService;
     use account_service_core::registry::Registry;
     use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput};
+    use base_time::FixedClock;
 
     let dav = FakeDav::start("bob", "hunter2").await.expect("dav");
     let spec = parse_provider(include_str!("../../../providers/generic-dav.toml")).expect("file");
@@ -447,13 +447,13 @@ async fn a_typed_pop3_server_is_added_through_the_sheet_and_found_by_a_mail_need
     use account_families::DynProvider;
     use account_family_generic::{GenericProvider, MailLookup};
     use account_http::SharedHttp;
-    use account_ids::clock::FixedClock;
     use account_match::MailNeed;
     use account_provider::parse_provider;
     use account_secrets::MemorySecrets;
     use account_service::AccountService;
     use account_service_core::registry::Registry;
     use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput};
+    use base_time::FixedClock;
 
     // The password is tried at the POP3 server before the review, so one is running.
     let pop3 = FakePop3::start(
@@ -556,7 +556,7 @@ type FamilyService = account_service::AccountService<
     Box<dyn account_families::DynProvider>,
     account_secrets::MemorySecrets,
     ScriptedSheets,
-    account_ids::clock::FixedClock,
+    base_time::FixedClock,
 >;
 
 type FamilyApp = Porter<Hosted<FamilyService>>;

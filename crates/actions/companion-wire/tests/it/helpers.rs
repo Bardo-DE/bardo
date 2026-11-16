@@ -1,7 +1,7 @@
 //! The helpers on the wire: the list the shell shows, a card, and the words in them.
 
-use account_ids::Count;
 use action_vocab::LabelText;
+use base_ids::Count;
 use companion_model::helper::*;
 use companion_wire::*;
 use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};

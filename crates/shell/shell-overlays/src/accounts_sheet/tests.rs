@@ -6,12 +6,12 @@ use account_core::{
     AccountId, AccountLabel, AppId, AppName, DataClass, EndpointUrl, Isolation, LimitReason,
     ProviderId, SecretText, SessionToken,
 };
-use account_ids::WebUrl;
 use account_sheet::{
     Entry, FieldKind, FieldSpec, FieldValue, ProblemKind as PorterProblem, ProviderKind,
     ProviderRow, Review, ReviewView, RowKind, ServiceRow, ServiceState, SheetView,
     SignInFault as PorterFault, SignInView, UserCode,
 };
+use base_url::WebUrl;
 use shell_model::accounts::sheet::{
     AccountsSheets, CopyMark, ListKey, SheetAction, SheetEvent, SheetHandle, step,
 };

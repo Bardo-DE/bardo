@@ -9,7 +9,7 @@ use crate::testing::scratch;
 use account_callers::{Caller, CallerRole};
 use account_capability::{Access as Rights, Delta, HashKind, StorageCap, StorageScope};
 use account_core::{AppId, AppName, Isolation};
-use account_ids::UnixSeconds;
+use base_time::UnixSeconds;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;

@@ -272,7 +272,7 @@ fn account_keys(account: &Account, provider_label: Option<&str>, files: FilesRow
             &Key::State(id.clone()),
             section,
             "Status",
-            account_ids::word::word(&account.state),
+            base_ids::word::word(&account.state),
         ),
     ];
     for class in sync_offers(account) {
@@ -588,7 +588,7 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
         match parse(&key.0, &snapshot).ok_or_else(unknown)? {
             Key::Label(id) => text(&account(&id)?.label.0),
             Key::Provider(id) => text(account(&id)?.provider.as_str()),
-            Key::State(id) => text(account_ids::word::word(&account(&id)?.state)),
+            Key::State(id) => text(base_ids::word::word(&account(&id)?.state)),
             Key::Sync(id, class) => {
                 account(&id)?;
                 Ok(toml::Value::Boolean(sync_allowed(

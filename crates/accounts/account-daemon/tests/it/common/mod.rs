@@ -18,12 +18,12 @@ use account_fake::{
     mail_provider,
 };
 use account_identities::SheetsDesk;
-use account_ids::clock::FixedClock;
 use account_secrets::{MemorySecrets, Secrets, SecretsError};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_wire::names::{SHEET_BUS, SHEET_PATH};
 use base_testkit::Scratch;
+use base_time::FixedClock;
 use bus::PrivateBus;
 use host::HostLog;
 use std::sync::Arc;
@@ -157,7 +157,7 @@ impl Rig {
                 Credential::OAuth {
                     access: SecretText::new(ACCESS_TOKEN),
                     refresh: SecretText::new(REFRESH_TOKEN),
-                    expires_at: account_ids::UnixSeconds(1_790_000_000),
+                    expires_at: base_time::UnixSeconds(1_790_000_000),
                     granted: Default::default(),
                 },
             ),

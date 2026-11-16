@@ -146,7 +146,7 @@ fn shape(shape: &pi::ReplyShape, json: JsonReply) -> Result<sp::OutputShape, Bri
     })
 }
 
-fn milli(permille: account_ids::Permille) -> sp::Milli {
+fn milli(permille: base_ids::Permille) -> sp::Milli {
     sp::Milli(u16::try_from(permille.0).unwrap_or(u16::MAX))
 }
 

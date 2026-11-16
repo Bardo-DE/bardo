@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-account-ids = {path = "../../accounts/account-ids"}
+base-ids = { path = "../../base/base-ids" }
 sandbox = {path = "../../sandbox/sandbox"}
 action-manifest = {path = "../action-manifest"}
 action-vocab = {path = "../action-vocab"}

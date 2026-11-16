@@ -28,8 +28,8 @@ use account_capability::Tier;
 use account_core::HelperId;
 use account_core::{DataClass, SecretText};
 use account_dbus::{Call, Details};
-use account_ids::clock::Clock;
 use account_tailscale::NodeId;
+use base_time::Clock;
 use inference_core::{InferRefusal, PlaceId, PlaceRow, PlaceState};
 use inference_dbus::inference::{
     AgentsServed, InferenceServed, InferenceServer, NeedArg, need_from_dbus,

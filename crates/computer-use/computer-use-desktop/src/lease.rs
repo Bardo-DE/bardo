@@ -128,7 +128,7 @@ mod tests {
     use crate::units::{GlobalCoord, GlobalRect, Pid};
     use crate::window::{WindowTitle, WorkspaceRef};
     use account_core::AppName;
-    use account_ids::Px;
+    use base_ids::Px;
     use std::collections::BTreeSet;
 
     fn info(ident: &str, trust: WindowTrust) -> ToplevelInfo {

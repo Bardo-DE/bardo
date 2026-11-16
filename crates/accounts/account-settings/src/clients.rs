@@ -3,8 +3,8 @@
 //! `account_oauth` reads beside the row, and any `endpoints`) and every other row are kept, so a
 //! hand-written Google row survives its key being changed in Settings.
 
-use account_ids::word::word;
 use account_provider::{ClientChannel, Issuer, parse_clients};
+use base_ids::word::word;
 use toml::{Table, Value};
 
 /// What is written.

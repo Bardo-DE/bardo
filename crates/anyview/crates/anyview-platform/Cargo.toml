@@ -15,7 +15,7 @@ publish.workspace = true
 # The code behind the feature is also gated on `target_os = "linux"`, so a build for another platform
 # ignores it (quire design/36).
 default = []
-quire-desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:account-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus", "dep:memfd", "dep:futures-util"]
+quire-desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus", "dep:memfd", "dep:futures-util"]
 # The fakes (`anyview_platform::testing`), for the tests of the crates that consume the traits.
 testing = ["dep:tempfile"]
 
@@ -54,7 +54,7 @@ action-manifest = {optional = true, path = "../../../actions/action-manifest"}
 action-wire = {optional = true, path = "../../../actions/action-wire"}
 provenance = {optional = true, path = "../../../provenance/provenance"}
 account-core = {optional = true, path = "../../../accounts/account-core"}
-account-ids = {optional = true, path = "../../../accounts/account-ids"}
+base-ids = { path = "../../../base/base-ids", optional = true }
 toml = { workspace = true, optional = true }
 
 [dev-dependencies]

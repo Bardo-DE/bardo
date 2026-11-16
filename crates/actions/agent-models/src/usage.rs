@@ -21,7 +21,7 @@ pub fn report_of(usage: TokenUsage) -> TurnReport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_ids::Tokens;
+    use base_ids::Tokens;
     use model_provider::Money;
     use rust_decimal::Decimal;
 

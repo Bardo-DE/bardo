@@ -43,7 +43,7 @@ impl DomainName {
     }
 }
 
-account_ids::string_newtype!(DomainName, CoreError);
+base_ids::string_newtype!(DomainName, CoreError);
 
 /// The `[matching]` table of a provider file.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]

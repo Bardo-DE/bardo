@@ -16,8 +16,8 @@ pub enum CoreError {
     MalformedValue(String),
 }
 
-impl From<account_ids::IdError> for CoreError {
-    fn from(error: account_ids::IdError) -> Self {
+impl From<base_ids::IdError> for CoreError {
+    fn from(error: base_ids::IdError) -> Self {
         CoreError::MalformedId {
             what: error.what(),
             text: error.text().to_owned(),

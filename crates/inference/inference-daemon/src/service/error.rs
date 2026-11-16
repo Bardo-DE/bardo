@@ -11,7 +11,7 @@
 //! second field.
 
 use crate::attached::ComputerError;
-use account_ids::Bytes;
+use base_ids::Bytes;
 use inference_core::{HardwareNote, NoPlaceReason, PlaceRefusal};
 use inference_dbus::inference::COMPUTER_ERROR_PREFIX;
 use inference_dbus::inference::PLACE_ERROR_PREFIX;

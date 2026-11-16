@@ -2,7 +2,7 @@
 //! copy as a file.
 
 use account_capability::HashKind;
-use account_ids::Bytes;
+use base_ids::Bytes;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;

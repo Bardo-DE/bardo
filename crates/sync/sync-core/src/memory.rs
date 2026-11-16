@@ -9,7 +9,8 @@ use crate::refusal::{Conflict, PutRefused, RemoteSide, ReplicaError};
 use crate::replica::Replica;
 use crate::transfer::{Blob, ByteRange, PutItem, PutTarget};
 use account_capability::StorageCap;
-use account_ids::{Bytes, UnixSeconds};
+use base_ids::Bytes;
+use base_time::UnixSeconds;
 use std::collections::BTreeMap;
 use std::sync::{Mutex, MutexGuard};
 

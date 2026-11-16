@@ -49,7 +49,7 @@ use crate::scheduler::next_look;
 use crate::service::{Access, DatasetName};
 use account_client::GrantsLink;
 use account_core::{AppName, Candidate, EndpointUrl};
-use account_ids::WebUrl;
+use base_url::WebUrl;
 use drive_core::{CacheLimit, Drive, DriveConfig, FreeSpace, ReplicaSource};
 use drive_fuse::{DriveFs, Mounter, Now};
 use sha2::{Digest, Sha256};
@@ -288,7 +288,7 @@ where
             let folders = drive_folders(&candidates);
             for candidate in &candidates {
                 let Some(account) =
-                    AccountDir::parse(&account_ids::object_segment(candidate.account.as_str()))
+                    AccountDir::parse(&base_ids::object_segment(candidate.account.as_str()))
                 else {
                     continue;
                 };

@@ -1,6 +1,6 @@
 [package]
-name = "account-ids"
-description = "Typed ids, units, web URLs and origins, the clock seam and percent-encoding: values that name nothing of accounts, parsed once where they enter."
+name = "base-time"
+description = "The time as a seam: the Clock and Monotonic traits, the system and test clocks, and UnixSeconds."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,12 +10,7 @@ publish.workspace = true
 
 [dependencies]
 chrono = { workspace = true, features = ["alloc"] }
-percent-encoding = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-thiserror = { workspace = true }
-
-[dev-dependencies]
-serde_json = { workspace = true }
 
 [lints]
 workspace = true

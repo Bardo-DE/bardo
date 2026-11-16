@@ -6,8 +6,8 @@ use account_core::AccountId;
 use account_core::ReauthReason;
 use account_core::{Credential, SecretText, TokenKind};
 use account_fake_servers::IssuerEvent;
-use account_ids::UnixSeconds;
 use account_provider::{Presented, Provider, ProviderError, ProviderSession, RevokeOutcome};
+use base_time::UnixSeconds;
 
 const SCOPES: &str = "openid https://www.googleapis.com/auth/userinfo.email \
     https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/tasks \
