@@ -41,12 +41,10 @@ struct FakeNpm;
 impl Run for FakeNpm {
     fn run(&self, _: &str, _: &[String], dir: &Path) -> Result<(), RunFault> {
         let pkg = dir.join("node_modules/@scope/tool");
-        std::fs::create_dir_all(&pkg)
-            .ok()
-            .ok_or_else(|| RunFault("npm".into()))?;
+        std::fs::create_dir_all(&pkg).expect("fake npm makes the package folder");
         std::fs::write(pkg.join("package.json"), r#"{"bin": {"tool-acp": "x.js"}}"#)
-            .ok()
-            .ok_or_else(|| RunFault("npm".into()))
+            .expect("fake npm writes the manifest");
+        Ok(())
     }
 }
 
@@ -61,25 +59,23 @@ struct FakeUv {
 impl Run for FakeUv {
     fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunFault> {
         self.calls.borrow_mut().push(args.to_vec());
-        let fail = || RunFault(program.to_owned());
+        let fail = || RunFault::Failed(program.to_owned());
         if program != "uv" {
             return Err(fail());
         }
         let bin = dir.join("venv/bin");
         if args.iter().any(|a| a == "venv") {
-            std::fs::create_dir_all(&bin).ok().ok_or_else(fail)?;
-            return std::fs::write(bin.join("python"), b"")
-                .ok()
-                .ok_or_else(fail);
+            std::fs::create_dir_all(&bin).expect("fake uv makes the environment folder");
+            std::fs::write(bin.join("python"), b"").expect("fake uv writes its python");
+            return Ok(());
         }
         if !self.leaves_program {
             return Ok(());
         }
         let requirement = args.last().ok_or_else(fail)?;
         let name = requirement.split("==").next().unwrap_or_default();
-        std::fs::write(bin.join(name), b"#!/bin/sh\n")
-            .ok()
-            .ok_or_else(fail)
+        std::fs::write(bin.join(name), b"#!/bin/sh\n").expect("fake uv writes the program");
+        Ok(())
     }
 }
 
@@ -326,7 +322,7 @@ fn a_python_program_missing_after_uv_installs_nothing() {
     let net = Served(BTreeMap::new());
     let fault =
         install(&dir, &snap, want("py", "1"), (&net, &FakeUv::default())).expect_err("no program");
-    assert_eq!(fault, InstallFault::NoProgram);
+    assert!(matches!(fault, InstallFault::NoProgram));
     installed(&dir, "py", "1").unwrap_err();
     assert!(versions(&dir, &Slug::parse("py").expect("slug")).is_empty());
 }

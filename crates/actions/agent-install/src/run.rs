@@ -4,9 +4,21 @@ use std::path::Path;
 use std::process::Command;
 
 /// Why a program did not run to success.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("{0} did not finish")]
-pub struct RunFault(pub String);
+#[derive(Debug, Clone, thiserror::Error)]
+pub enum RunFault {
+    /// The program could not be started.
+    #[error("{program} could not be started")]
+    Start {
+        /// The program.
+        program: String,
+        /// Why it did not start.
+        #[source]
+        source: std::sync::Arc<std::io::Error>,
+    },
+    /// The program ran and did not succeed.
+    #[error("{0} did not finish")]
+    Failed(String),
+}
 
 /// Runs a program to its end.
 pub trait Run {
@@ -28,11 +40,13 @@ impl Run for System {
             .args(args)
             .current_dir(dir)
             .status()
-            .ok()
-            .ok_or_else(|| RunFault(program.to_owned()))?;
+            .map_err(|source| RunFault::Start {
+                program: program.to_owned(),
+                source: std::sync::Arc::new(source),
+            })?;
         status
             .success()
             .then_some(())
-            .ok_or_else(|| RunFault(program.to_owned()))
+            .ok_or_else(|| RunFault::Failed(program.to_owned()))
     }
 }

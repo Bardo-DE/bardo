@@ -9,7 +9,7 @@ use crate::store::{read_record, versions, write_record};
 use crate::unpack::{Limits, UnpackFault, unpack};
 use crate::uv::uvx;
 use agent_registry::dirs::AgentsDir;
-use agent_registry::hash::Sha256Hex;
+use agent_registry::hash::{DigestRefused, Sha256Hex};
 use agent_registry::platform::Platform;
 use agent_registry::record::{Check, FILES, Record};
 use agent_registry::slug::{Slug, SlugRefused};
@@ -17,7 +17,7 @@ use agent_registry::snapshot::{Binary, Listing, Package, Snapshot};
 use std::path::Path;
 
 /// Why an install did not happen. Nothing is left half-installed.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum InstallFault {
     /// The list has no such agent.
     #[error("the agent list has no {0}")]
@@ -41,6 +41,27 @@ pub enum InstallFault {
         /// What arrived.
         got: String,
     },
+    /// A python package the list names is not a name the package index takes.
+    #[error("{package} cannot be installed on this computer")]
+    BadPackage {
+        /// What the list names.
+        package: String,
+        /// Why it is not a package name.
+        #[source]
+        source: crate::uv::SpecRefused,
+    },
+    /// A digest the list or the pin holds is not a SHA-256.
+    #[error("{text:?} is not a SHA-256 digest")]
+    NotDigest {
+        /// What was held.
+        text: String,
+        /// Why it is not one.
+        #[source]
+        source: DigestRefused,
+    },
+    /// The package's own manifest could not be read.
+    #[error("the package's manifest could not be read")]
+    Manifest(#[source] std::sync::Arc<dyn std::error::Error + Send + Sync>),
     /// A name unfit for a directory.
     #[error(transparent)]
     Name(#[from] SlugRefused),
@@ -257,7 +278,10 @@ fn binary(
     };
     let check = match &bin.sha256 {
         Some(text) => {
-            let expected = Sha256Hex::parse(text).ok().ok_or_else(|| refused(text))?;
+            let expected = Sha256Hex::parse(text).map_err(|source| InstallFault::NotDigest {
+                text: text.clone(),
+                source,
+            })?;
             if expected != got {
                 return Err(refused(expected.as_str()));
             }
@@ -267,9 +291,10 @@ fn binary(
         // with the pin. An unreadable pin is a refusal, never a fresh start.
         None => match std::fs::read_to_string(pin) {
             Ok(text) => {
-                let pinned = Sha256Hex::parse(&text)
-                    .ok()
-                    .ok_or_else(|| refused(text.trim()))?;
+                let pinned = Sha256Hex::parse(&text).map_err(|source| InstallFault::NotDigest {
+                    text: text.trim().to_owned(),
+                    source,
+                })?;
                 if pinned != got {
                     return Err(refused(pinned.as_str()));
                 }
@@ -315,11 +340,9 @@ fn npm(package: &Package, files: &Path, run: &dyn Run) -> Result<String, Install
     let name = package_name(&package.package);
     let manifest =
         std::fs::read_to_string(files.join("node_modules").join(name).join("package.json"))
-            .ok()
-            .ok_or(InstallFault::NoProgram)?;
+            .map_err(|e| InstallFault::Manifest(std::sync::Arc::new(e)))?;
     let json: serde_json::Value = serde_json::from_str(&manifest)
-        .ok()
-        .ok_or(InstallFault::NoProgram)?;
+        .map_err(|e| InstallFault::Manifest(std::sync::Arc::new(e)))?;
     let bin = match json.get("bin") {
         Some(serde_json::Value::String(_)) => name.rsplit('/').next().map(str::to_owned),
         Some(serde_json::Value::Object(map)) => map.keys().next().cloned(),

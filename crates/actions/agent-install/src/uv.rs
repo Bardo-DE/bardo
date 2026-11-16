@@ -6,7 +6,7 @@
 
 use crate::install::InstallFault;
 use crate::run::Run;
-use agent_registry::slug::Slug;
+use agent_registry::slug::{Slug, SlugRefused};
 use agent_registry::snapshot::Package;
 use std::path::Path;
 
@@ -21,8 +21,13 @@ pub struct PythonPackage {
 
 /// Why a package string is not a name with an optional version.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("{0:?} is not a package name with an optional version")]
-pub struct SpecRefused(String);
+#[error("{text:?} is not a package name with an optional version")]
+pub struct SpecRefused {
+    text: String,
+    /// Why the name is not one the registry keeps, when that is what was wrong.
+    #[source]
+    name: Option<SlugRefused>,
+}
 
 impl PythonPackage {
     /// Reads `name`, `name==1.2.3` or `name@1.2.3`, the forms the registry uses. URLs, direct
@@ -32,9 +37,12 @@ impl PythonPackage {
     ///
     /// Returns [`SpecRefused`] when the text is not a package name with an optional version.
     pub fn parse(text: &str) -> Result<Self, SpecRefused> {
-        let refused = || SpecRefused(text.to_owned());
+        let refused = |name| SpecRefused {
+            text: text.to_owned(),
+            name,
+        };
         if text.contains("://") || text.contains(char::is_whitespace) || text.contains(';') {
-            return Err(refused());
+            return Err(refused(None));
         }
         let requirement = match text.split_once('@') {
             Some((name, version)) => format!("{name}=={version}"),
@@ -44,7 +52,7 @@ impl PythonPackage {
             .split(['[', '=', '<', '>', '!', '~'])
             .next()
             .unwrap_or_default();
-        Slug::parse(name).ok().ok_or_else(refused)?;
+        Slug::parse(name).map_err(|e| refused(Some(e)))?;
         Ok(Self {
             name: name.to_owned(),
             requirement,
@@ -65,9 +73,11 @@ fn words(parts: &[&str]) -> Vec<String> {
 ///
 /// Returns [`InstallFault`] when the install did not happen; nothing is left half-installed.
 pub fn uvx(package: &Package, files: &Path, run: &dyn Run) -> Result<String, InstallFault> {
-    let python = PythonPackage::parse(&package.package)
-        .ok()
-        .ok_or_else(|| InstallFault::Unsupported(package.package.clone()))?;
+    let python =
+        PythonPackage::parse(&package.package).map_err(|source| InstallFault::BadPackage {
+            package: package.package.clone(),
+            source,
+        })?;
     run.run(
         "uv",
         &words(&[
