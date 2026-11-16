@@ -86,10 +86,10 @@ mod tests {
     #[test]
     fn a_large_payload_for_a_reader_that_never_reads_is_queued_not_written() {
         let mut writes = PipeWrites::default();
-        let (mut reader, writer) = pipe();
+        let (mut reader, write_end) = pipe();
         // Far over one pipe buffer: a blocking write of it would never return here.
         let payload: Arc<[u8]> = Arc::from(vec![9u8; 4 * 1024 * 1024]);
-        assert!(writes.push(PipeUse::Selection, writer, payload));
+        assert!(writes.push(PipeUse::Selection, write_end, payload));
         let queued = writes.take();
         assert_eq!(queued.len(), 1);
         assert!(writes.take().is_empty(), "taken once");
@@ -106,30 +106,30 @@ mod tests {
         let payload: Arc<[u8]> = Arc::from(&b"x"[..]);
         let mut readers = Vec::new();
         for n in 0..MAX_SELECTION_WRITES {
-            let (reader, writer) = pipe();
+            let (reader, write_end) = pipe();
             readers.push(reader);
             assert!(
-                writes.push(PipeUse::Selection, writer, Arc::clone(&payload)),
+                writes.push(PipeUse::Selection, write_end, Arc::clone(&payload)),
                 "pipe {n}"
             );
         }
-        let (_extra, writer) = pipe();
-        assert!(!writes.push(PipeUse::Selection, writer, Arc::clone(&payload)));
+        let (_extra, write_end) = pipe();
+        assert!(!writes.push(PipeUse::Selection, write_end, Arc::clone(&payload)));
         // A client that holds every selection place leaves the drag its own.
         for n in 0..MAX_DRAG_WRITES {
-            let (reader, writer) = pipe();
+            let (reader, write_end) = pipe();
             readers.push(reader);
             assert!(
-                writes.push(PipeUse::Drag, writer, Arc::clone(&payload)),
+                writes.push(PipeUse::Drag, write_end, Arc::clone(&payload)),
                 "drag pipe {n}"
             );
         }
-        let (_over, writer) = pipe();
-        assert!(!writes.push(PipeUse::Drag, writer, Arc::clone(&payload)));
+        let (_over, write_end) = pipe();
+        assert!(!writes.push(PipeUse::Drag, write_end, Arc::clone(&payload)));
         drop(writes.take());
-        let (_again, writer) = pipe();
+        let (_again, write_end) = pipe();
         assert!(
-            writes.push(PipeUse::Selection, writer, payload),
+            writes.push(PipeUse::Selection, write_end, payload),
             "the closed pipes gave their places back"
         );
     }

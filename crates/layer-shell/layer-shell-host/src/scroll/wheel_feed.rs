@@ -131,8 +131,8 @@ mod tests {
     }
 
     fn poll(listener: &WheelListener, wakes: &Arc<Wakes>) -> Poll<WheelEvent> {
-        let waker = Waker::from(Arc::clone(wakes));
-        let mut cx = Context::from_waker(&waker);
+        let wake_source = Waker::from(Arc::clone(wakes));
+        let mut cx = Context::from_waker(&wake_source);
         Pin::new(&mut listener.next()).poll(&mut cx)
     }
 

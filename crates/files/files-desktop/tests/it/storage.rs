@@ -22,8 +22,8 @@ struct Rig {
     _scratch: tempfile::TempDir,
 }
 
-async fn rig() -> Option<Rig> {
-    let bus = PrivateBus::start("storage")?;
+async fn rig() -> Rig {
+    let bus = PrivateBus::start("storage");
     let scratch = tempfile::tempdir().unwrap();
     let world = World::plant(scratch.path()).unwrap();
     let fake = FakeStorage::new(world);
@@ -31,14 +31,14 @@ async fn rig() -> Option<Rig> {
     serve(&server, NAME, fake.clone()).await.unwrap();
     let client = bus.connect().await;
     let storage = Storage::connect(&client).await.unwrap();
-    Some(Rig {
+    Rig {
         storage,
         server: Some(server),
         root: scratch.path().join("drives"),
         fake,
         bus,
         _scratch: scratch,
-    })
+    }
 }
 
 fn item(rig: &Rig, under: &str) -> ItemRef {
@@ -67,7 +67,7 @@ fn following(storage: &Storage) -> UnboundedReceiver<CloudNews> {
 
 #[tokio::test]
 async fn the_drives_are_listed_with_their_folders_and_room() {
-    let Some(rig) = rig().await else { return };
+    let rig = rig().await;
     let drives = within(rig.storage.drives()).await.unwrap();
     let names: Vec<_> = drives.iter().map(|d| d.provider.to_string()).collect();
     assert_eq!(names, ["OneDrive", "Google Drive"]);
@@ -83,7 +83,7 @@ async fn the_drives_are_listed_with_their_folders_and_room() {
 
 #[tokio::test]
 async fn items_stand_where_the_service_says_and_unknown_paths_are_left_out() {
-    let Some(rig) = rig().await else { return };
+    let rig = rig().await;
     let beach = item(&rig, "OneDrive/Pictures/Beach.jpg");
     let taxes = item(&rig, "OneDrive/Documents/Taxes 2025.pdf");
     let plan = item(&rig, "Google Drive/Projects/Plan.gdoc");
@@ -110,7 +110,7 @@ async fn items_stand_where_the_service_says_and_unknown_paths_are_left_out() {
 
 #[tokio::test]
 async fn a_download_moves_and_ends_downloaded_and_the_news_says_so() {
-    let Some(rig) = rig().await else { return };
+    let rig = rig().await;
     let beach = item(&rig, "OneDrive/Pictures/Beach.jpg");
     let mut news = following(&rig.storage);
     tokio::time::sleep(Duration::from_millis(200)).await;
@@ -145,7 +145,7 @@ async fn a_download_moves_and_ends_downloaded_and_the_news_says_so() {
 
 #[tokio::test]
 async fn keeping_and_removing_are_asked_and_a_refusal_comes_back_in_words() {
-    let Some(rig) = rig().await else { return };
+    let rig = rig().await;
     let report = item(&rig, "OneDrive/Documents/Report.docx");
     let plan = item(&rig, "Google Drive/Projects/Plan.gdoc");
     assert!(
@@ -172,7 +172,7 @@ async fn keeping_and_removing_are_asked_and_a_refusal_comes_back_in_words() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_service_going_away_is_news_and_no_drives_and_coming_back_is_news_again() {
-    let Some(mut rig) = rig().await else { return };
+    let mut rig = rig().await;
     let clouds = DesktopClouds::new(rig.storage.clone(), tokio::runtime::Handle::current());
     let (sender, mut news) = unbounded_channel();
     let guard = clouds
@@ -226,7 +226,7 @@ async fn the_service_going_away_is_news_and_no_drives_and_coming_back_is_news_ag
 
 #[tokio::test]
 async fn save_a_copy_makes_files_next_to_the_documents_and_refuses_what_has_no_format() {
-    let Some(rig) = rig().await else { return };
+    let rig = rig().await;
     let plan = item(&rig, "Google Drive/Projects/Plan.gdoc");
     let survey = item(&rig, "Google Drive/Projects/Survey.gform");
     let notes = item(&rig, "OneDrive/Documents/Notes.txt");

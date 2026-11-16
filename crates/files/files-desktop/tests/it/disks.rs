@@ -97,17 +97,17 @@ struct Rig {
     _bus: PrivateBus,
 }
 
-async fn rig(users: Arc<dyn DiskUsers>) -> Option<Rig> {
-    let bus = PrivateBus::start("disks")?;
+async fn rig(users: Arc<dyn DiskUsers>) -> Rig {
+    let bus = PrivateBus::start("disks");
     let server = bus.connect().await;
     let world = serve(&server, &devices()).await;
     let disks = Disks::new(bus.connect().await, users);
-    Some(Rig {
+    Rig {
         disks,
         world,
         server,
         _bus: bus,
-    })
+    }
 }
 
 fn id(node: &str) -> VolumeId {
@@ -122,9 +122,7 @@ async fn within<T>(work: impl std::future::Future<Output = T>) -> T {
 
 #[tokio::test]
 async fn only_the_disks_a_person_would_see_are_listed() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     let volumes = within(rig.disks.list()).await.unwrap();
     // (name, kind, mounted at, can eject), in the sidebar's order: external, then the
     // computer's own, then discs.
@@ -167,9 +165,7 @@ async fn only_the_disks_a_person_would_see_are_listed() {
 
 #[tokio::test]
 async fn opening_an_unmounted_disk_mounts_it_and_gives_the_folder() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     let folder = within(rig.disks.mount(&id("sdc1"))).await.unwrap();
     assert_eq!(folder, FolderPath::new("/run/media/p/sdc1").unwrap());
     let volumes = within(rig.disks.list()).await.unwrap();
@@ -179,9 +175,7 @@ async fn opening_an_unmounted_disk_mounts_it_and_gives_the_folder() {
 
 #[tokio::test]
 async fn opening_a_disk_the_person_may_not_open_says_so() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     rig.world.lock().unwrap().deny = true;
     let failed = within(rig.disks.mount(&id("sdc1"))).await;
     assert_eq!(failed, Err(MountFailure::NotAllowed));
@@ -189,9 +183,7 @@ async fn opening_a_disk_the_person_may_not_open_says_so() {
 
 #[tokio::test]
 async fn ejecting_unmounts_then_switches_the_drive_off() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     within(rig.disks.eject(&id("sdb1"))).await.unwrap();
     let calls = rig.world.lock().unwrap().calls.clone();
     assert_eq!(calls, ["unmount sdb1", "power_off stick"]);
@@ -199,9 +191,7 @@ async fn ejecting_unmounts_then_switches_the_drive_off() {
 
 #[tokio::test]
 async fn a_disc_is_ejected_by_its_drive_and_a_disk_with_no_drive_only_unmounted() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     within(rig.disks.eject(&id("sr0"))).await.unwrap();
     within(rig.disks.eject(&id("sdd1"))).await.unwrap();
     let calls = rig.world.lock().unwrap().calls.clone();
@@ -211,9 +201,7 @@ async fn a_disc_is_ejected_by_its_drive_and_a_disk_with_no_drive_only_unmounted(
 #[tokio::test]
 async fn a_busy_disk_stays_and_the_programs_using_it_come_with_the_failure() {
     let users = FakeUsers(vec![ProgramName::new("vlc")]);
-    let Some(rig) = rig(Arc::new(users)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(users)).await;
     rig.world.lock().unwrap().busy = true;
     let failed = within(rig.disks.eject(&id("sdb1"))).await;
     assert_eq!(
@@ -227,9 +215,7 @@ async fn a_busy_disk_stays_and_the_programs_using_it_come_with_the_failure() {
 
 #[tokio::test]
 async fn forcing_a_busy_disk_unmounts_it_with_the_force_option_then_switches_the_drive_off() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     rig.world.lock().unwrap().busy = true;
     within(rig.disks.force_eject(&id("sdb1"))).await.unwrap();
     let calls = rig.world.lock().unwrap().calls.clone();
@@ -238,9 +224,7 @@ async fn forcing_a_busy_disk_unmounts_it_with_the_force_option_then_switches_the
 
 #[tokio::test]
 async fn a_disk_plugged_in_or_taken_out_is_heard() {
-    let Some(rig) = rig(Arc::new(NoUsers)).await else {
-        return;
-    };
+    let rig = rig(Arc::new(NoUsers)).await;
     let mut changes = within(rig.disks.changes()).await.unwrap();
     plug(&rig.server, &rig.world, &device("sde1", "NEW")).await;
     assert_eq!(within(changes.next()).await, Some(()));

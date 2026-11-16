@@ -157,10 +157,6 @@ mod tests {
 
     #[test]
     fn every_built_in_reads_a_range_clipped_to_what_exists() {
-        let vec = b"abcd".to_vec();
-        let shared: Arc<[u8]> = Arc::from(&b"abcd"[..]);
-        assert_eq!(vec[..].read_range(1..3).unwrap(), b"bc");
-        let sources: [(&str, &dyn ReadAt); 2] = [("vec", &vec), ("arc", &shared)];
         // name, start, end, bytes
         const CASES: &[(&str, u64, u64, &[u8])] = &[
             ("inside", 1, 3, b"bc"),
@@ -170,6 +166,10 @@ mod tests {
             ("empty", 2, 2, b""),
             ("reversed", 3, 1, b""),
         ];
+        let vec = b"abcd".to_vec();
+        let shared: Arc<[u8]> = Arc::from(&b"abcd"[..]);
+        assert_eq!(vec[..].read_range(1..3).unwrap(), b"bc");
+        let sources: [(&str, &dyn ReadAt); 2] = [("vec", &vec), ("arc", &shared)];
         for (kind, source) in sources {
             assert_eq!(source.len(), ByteLen(4), "{kind}");
             for (name, start, end, want) in CASES {

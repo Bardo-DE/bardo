@@ -16,9 +16,7 @@ use super::intents::{FakeWindow, call, file, files, invocation, item, path, perf
 
 #[tokio::test]
 async fn open_shows_a_path_in_the_window() {
-    let Some(s) = served(FakeWindow::default()).await else {
-        return;
-    };
+    let s = served(FakeWindow::default()).await;
     let done = perform(
         &s.router,
         intents::OPEN,
@@ -56,9 +54,7 @@ async fn the_selection_and_the_folder_come_back_as_untrusted_file_names() {
         place: Some(Location::Folder(FolderPath::new("/home/p").unwrap())),
         ..FakeWindow::default()
     };
-    let Some(s) = served(window).await else {
-        return;
-    };
+    let s = served(window).await;
     let text_of = |outcome: &Outcome| match outcome.value.as_ref() {
         Some(Labelled {
             value: Value::Text(text),
@@ -92,9 +88,7 @@ async fn the_selection_and_the_folder_come_back_as_untrusted_file_names() {
 
 #[tokio::test]
 async fn changes_reach_the_window_as_typed_asks_and_come_with_a_token_that_undoes_them() {
-    let Some(s) = served(FakeWindow::default()).await else {
-        return;
-    };
+    let s = served(FakeWindow::default()).await;
     let trashed = perform(
         &s.router,
         intents::TRASH,
@@ -189,9 +183,7 @@ async fn changes_reach_the_window_as_typed_asks_and_come_with_a_token_that_undoe
 
 #[tokio::test]
 async fn nobody_but_the_router_is_answered() {
-    let Some(s) = served(FakeWindow::default()).await else {
-        return;
-    };
+    let s = served(FakeWindow::default()).await;
     let intruder = s.bus.connect().await;
     let options: HashMap<String, BusValue<'_>> = HashMap::new();
     let refused = call(

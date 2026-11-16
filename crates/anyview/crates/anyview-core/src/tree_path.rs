@@ -220,6 +220,14 @@ mod tests {
 
     #[test]
     fn the_open_children_of_a_node_are_its_direct_ones_in_order() {
+        // name, parent, wanted
+        const CASES: &[(&str, &[u32], &[u32])] = &[
+            ("root", &[], &[1, 5, 10]),
+            ("a child with two open", &[1], &[2, 3]),
+            ("a leaf level", &[1, 3], &[0]),
+            ("nothing open below", &[5], &[]),
+            ("a path that is not open", &[7], &[]),
+        ];
         let open = [
             path(&[]),
             path(&[5]),
@@ -231,14 +239,6 @@ mod tests {
         ]
         .into_iter()
         .fold(OpenNodes::default(), super::OpenNodes::opened);
-        // name, parent, wanted
-        const CASES: &[(&str, &[u32], &[u32])] = &[
-            ("root", &[], &[1, 5, 10]),
-            ("a child with two open", &[1], &[2, 3]),
-            ("a leaf level", &[1, 3], &[0]),
-            ("nothing open below", &[5], &[]),
-            ("a path that is not open", &[7], &[]),
-        ];
         for (name, parent, want) in CASES {
             assert_eq!(open.open_children(&path(parent)), *want, "{name}");
         }

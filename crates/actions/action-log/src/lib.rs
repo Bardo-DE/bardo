@@ -68,8 +68,8 @@ impl Visit for Fields {
 }
 
 /// The syslog priority of a level.
-fn priority(level: &Level) -> u8 {
-    match *level {
+fn priority(level: Level) -> u8 {
+    match level {
         Level::ERROR => 3,
         Level::WARN => 4,
         Level::INFO => 6,
@@ -78,7 +78,7 @@ fn priority(level: &Level) -> u8 {
 }
 
 /// One line: `[<priority>]daemon: LEVEL fields`.
-fn render(reader: Reader, daemon: &str, level: &Level, fields: &str) -> String {
+fn render(reader: Reader, daemon: &str, level: Level, fields: &str) -> String {
     let prefix = match reader {
         Reader::Journal => format!("<{}>", priority(level)),
         Reader::Plain => String::new(),
@@ -119,7 +119,7 @@ impl Subscriber for Lines {
         let line = render(
             self.reader,
             self.daemon,
-            event.metadata().level(),
+            *event.metadata().level(),
             &fields.0,
         );
         let _ = writeln!(std::io::stderr().lock(), "{line}");
@@ -198,7 +198,7 @@ mod tests {
             (Reader::Plain, Level::WARN, "voiced: WARN refused"),
         ];
         for (reader, level, want) in rows {
-            assert_eq!(render(reader, "voiced", &level, " refused"), want);
+            assert_eq!(render(reader, "voiced", level, " refused"), want);
         }
     }
 }

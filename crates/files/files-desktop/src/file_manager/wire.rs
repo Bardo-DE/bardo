@@ -17,9 +17,7 @@ impl Show {
     /// The call that says this.
     pub(crate) fn to_call(&self) -> Call {
         let (method, uris) = match &self.request {
-            ShowRequest::Folders(places) => {
-                ("ShowFolders", places.iter().filter_map(place_uri).collect())
-            }
+            ShowRequest::Folders(places) => ("ShowFolders", places.iter().map(place_uri).collect()),
             ShowRequest::Items(files) => ("ShowItems", files.iter().map(reveal_uri).collect()),
             ShowRequest::Properties(files) => {
                 ("ShowItemProperties", files.iter().map(reveal_uri).collect())
@@ -37,10 +35,10 @@ impl Show {
     }
 }
 
-fn place_uri(place: &Location) -> Option<String> {
+fn place_uri(place: &Location) -> String {
     match place {
-        Location::Folder(path) => Some(file_uri(path.as_path())),
-        Location::Trash => Some(TRASH_URI.to_owned()),
+        Location::Folder(path) => file_uri(path.as_path()),
+        Location::Trash => TRASH_URI.to_owned(),
     }
 }
 

@@ -32,11 +32,11 @@ fn pending(steps: Pending) -> crate::ime::PendingIme {
     }
 }
 
-fn preedit(text: &str, cursor: Option<(usize, usize)>) -> Option<Preedit> {
-    Some(Preedit {
+fn preedit(text: &str, cursor: Option<(usize, usize)>) -> Preedit {
+    Preedit {
         text: text.to_owned(),
         cursor,
-    })
+    }
 }
 
 fn deleted(before: usize, after: usize) -> BlitzImeEvent {
@@ -60,7 +60,7 @@ fn a_done_applies_what_was_buffered_in_the_protocols_order() {
         (
             "a single preedit commits its cursor range",
             Pending {
-                preedit: preedit("ni", Some((0, 2))),
+                preedit: Some(preedit("ni", Some((0, 2)))),
                 ..Pending::default()
             },
             vec![BlitzImeEvent::Preedit("ni".to_owned(), Some((0, 2)))],
@@ -68,7 +68,7 @@ fn a_done_applies_what_was_buffered_in_the_protocols_order() {
         (
             "both cursors at -1 hide the cursor",
             Pending {
-                preedit: preedit("n", None),
+                preedit: Some(preedit("n", None)),
                 ..Pending::default()
             },
             vec![BlitzImeEvent::Preedit("n".to_owned(), None)],
@@ -100,7 +100,7 @@ fn a_done_applies_what_was_buffered_in_the_protocols_order() {
         (
             "a full cycle applies delete, then commit, then preedit",
             Pending {
-                preedit: preedit("ni", Some((0, 2))),
+                preedit: Some(preedit("ni", Some((0, 2)))),
                 commit: Some("你"),
                 delete: Some((1, 0)),
             },
@@ -117,7 +117,7 @@ fn a_done_applies_what_was_buffered_in_the_protocols_order() {
         (
             "a commit of the composed text clears the composition first",
             Pending {
-                preedit: preedit("", Some((0, 0))),
+                preedit: Some(preedit("", Some((0, 0)))),
                 commit: Some("你好"),
                 ..Pending::default()
             },

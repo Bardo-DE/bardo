@@ -17,11 +17,11 @@ fn sent(text: Option<SurroundingText>) -> SentSurrounding {
     SentSurrounding { text }
 }
 
-fn outgoing(surrounding: SurroundingText, by_input_method: bool) -> Option<Outgoing> {
-    Some(Outgoing {
+fn outgoing(surrounding: SurroundingText, by_input_method: bool) -> Outgoing {
+    Outgoing {
         surrounding,
         by_input_method,
-    })
+    }
 }
 
 #[test]
@@ -30,7 +30,12 @@ fn sends_only_what_changed_since_the_last_send() {
     // (last sent, current, cause, expected)
     let cases = [
         // A field just focused: nothing sent yet, so everything is.
-        (None, Some(abc.clone()), false, outgoing(abc.clone(), false)),
+        (
+            None,
+            Some(abc.clone()),
+            false,
+            Some(outgoing(abc.clone(), false)),
+        ),
         // Nothing changed: nothing sent, whatever the cause.
         (Some(abc.clone()), Some(abc.clone()), true, None),
         // The text changed after an input-method `done`.
@@ -38,21 +43,21 @@ fn sends_only_what_changed_since_the_last_send() {
             Some(abc.clone()),
             Some(text("abcd", 4, 4)),
             true,
-            outgoing(text("abcd", 4, 4), true),
+            Some(outgoing(text("abcd", 4, 4), true)),
         ),
         // Only the caret moved (a click or an arrow key).
         (
             Some(abc.clone()),
             Some(text("abc", 1, 1)),
             false,
-            outgoing(text("abc", 1, 1), false),
+            Some(outgoing(text("abc", 1, 1), false)),
         ),
         // Only the selection's fixed end moved.
         (
             Some(text("abc", 1, 1)),
             Some(text("abc", 1, 0)),
             false,
-            outgoing(text("abc", 1, 0), false),
+            Some(outgoing(text("abc", 1, 0), false)),
         ),
         // No text field has the focus: nothing to say, sent or not.
         (None, None, false, None),

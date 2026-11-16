@@ -26,7 +26,7 @@ pub struct PrivateBus {
 
 impl PrivateBus {
     /// Starts a bus; panics, saying how to install it, when `dbus-daemon` is missing.
-    pub fn start(test: &str) -> Option<PrivateBus> {
+    pub fn start(test: &str) -> PrivateBus {
         let scratch = tempfile::tempdir().unwrap();
         let socket = scratch.path().join("bus.sock");
         let config = scratch.path().join("bus.conf");
@@ -59,7 +59,7 @@ impl PrivateBus {
             bus.address.starts_with("unix:"),
             "{test}: the private dbus-daemon printed no address"
         );
-        Some(bus)
+        bus
     }
 
     /// A new connection to the bus.

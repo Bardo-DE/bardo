@@ -186,6 +186,11 @@ async fn every_way_a_turn_can_end_is_sorted_for_the_run_machine() {
 
 #[tokio::test]
 async fn a_model_failure_leaves_the_session_usable_and_a_closed_one_does_not() {
+    async fn step(model: &mut InferdCuaModel<Scripted>) -> Result<CuaStepReply, CuaModelError> {
+        model
+            .step(request("x"), attachment(), &mut Collect::default())
+            .await
+    }
     let (transport, _) = Scripted::new(vec![
         ack(),
         vec![InferEvent::Finished(InferReply::Failed(
@@ -197,11 +202,6 @@ async fn a_model_failure_leaves_the_session_usable_and_a_closed_one_does_not() {
     ]);
     let mut model = InferdCuaModel::over(transport);
     model.begin(begin()).await.expect("begun");
-    async fn step(model: &mut InferdCuaModel<Scripted>) -> Result<CuaStepReply, CuaModelError> {
-        model
-            .step(request("x"), attachment(), &mut Collect::default())
-            .await
-    }
     assert_eq!(step(&mut model).await, Err(CuaModelError::Transient));
     assert_eq!(
         step(&mut model).await,

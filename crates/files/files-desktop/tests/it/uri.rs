@@ -6,31 +6,31 @@ use std::path::{Path, PathBuf};
 
 use files_desktop::uri::{TRASH_URI, Uri, UriError, file_uri, parse};
 
-fn file(path: &str) -> Result<Uri, UriError> {
-    Ok(Uri::File(PathBuf::from(path)))
+fn file(path: &str) -> Uri {
+    Uri::File(PathBuf::from(path))
 }
 
 #[test]
 fn addresses_are_read() {
     let rows = [
-        ("file:///home/me/a.txt", file("/home/me/a.txt")),
+        ("file:///home/me/a.txt", Ok(file("/home/me/a.txt"))),
         (
             "file:///home/me/My%20Files/a%20b.txt",
-            file("/home/me/My Files/a b.txt"),
+            Ok(file("/home/me/My Files/a b.txt")),
         ),
-        ("file:///tmp/caf%C3%A9", file("/tmp/café")),
-        ("file:///tmp/café", file("/tmp/café")),
-        ("file:///tmp/%E6%97%A5%E6%9C%AC", file("/tmp/日本")),
-        ("file://localhost/tmp/x", file("/tmp/x")),
-        ("file://LOCALHOST/tmp/x", file("/tmp/x")),
-        ("file:/tmp/x", file("/tmp/x")),
-        ("FILE:///tmp/x", file("/tmp/x")),
-        ("file:///tmp/dir/", file("/tmp/dir")),
-        ("file:///tmp//dir", file("/tmp/dir")),
-        ("file:///tmp/a%23b", file("/tmp/a#b")),
-        ("file:///tmp/a%2fb", file("/tmp/a/b")),
-        ("file:///tmp/a?x=1#frag", file("/tmp/a")),
-        ("file:///", file("/")),
+        ("file:///tmp/caf%C3%A9", Ok(file("/tmp/café"))),
+        ("file:///tmp/café", Ok(file("/tmp/café"))),
+        ("file:///tmp/%E6%97%A5%E6%9C%AC", Ok(file("/tmp/日本"))),
+        ("file://localhost/tmp/x", Ok(file("/tmp/x"))),
+        ("file://LOCALHOST/tmp/x", Ok(file("/tmp/x"))),
+        ("file:/tmp/x", Ok(file("/tmp/x"))),
+        ("FILE:///tmp/x", Ok(file("/tmp/x"))),
+        ("file:///tmp/dir/", Ok(file("/tmp/dir"))),
+        ("file:///tmp//dir", Ok(file("/tmp/dir"))),
+        ("file:///tmp/a%23b", Ok(file("/tmp/a#b"))),
+        ("file:///tmp/a%2fb", Ok(file("/tmp/a/b"))),
+        ("file:///tmp/a?x=1#frag", Ok(file("/tmp/a"))),
+        ("file:///", Ok(file("/"))),
         ("trash:///", Ok(Uri::Trash)),
         ("trash:///a.txt", Ok(Uri::Trash)),
         ("TRASH:", Ok(Uri::Trash)),
@@ -75,7 +75,7 @@ fn writing_then_reading_gives_the_path_back_even_for_a_name_that_is_not_text() {
         let written = file_uri(Path::new(path));
         assert!(written.starts_with("file:///"), "{written}");
         assert!(!written.contains(' '), "{written}");
-        assert_eq!(parse(&written), file(path), "{path}");
+        assert_eq!(parse(&written), Ok(file(path)), "{path}");
     }
     assert_eq!(parse(TRASH_URI), Ok(Uri::Trash));
 

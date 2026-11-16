@@ -13,8 +13,8 @@ impl Wake for Count {
 
 /// Polls `future` once with a waker that counts its wakes.
 fn poll_once<F: Future>(future: &mut std::pin::Pin<&mut F>, wakes: &Arc<Count>) -> Poll<F::Output> {
-    let waker = Waker::from(Arc::clone(wakes));
-    future.as_mut().poll(&mut Context::from_waker(&waker))
+    let wake_source = Waker::from(Arc::clone(wakes));
+    future.as_mut().poll(&mut Context::from_waker(&wake_source))
 }
 
 fn ready<F: Future>(future: F) -> F::Output {

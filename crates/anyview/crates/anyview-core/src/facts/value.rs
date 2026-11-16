@@ -180,6 +180,7 @@ mod tests {
 
     #[test]
     fn sample_rates_and_channels_read_as_a_person_says_them() {
+        const CHANNELS: &[(u16, &str)] = &[(1, "mono"), (2, "stereo"), (6, "6 channels")];
         const RATES: &[(u32, &str)] = &[
             (44_100, "44.1 kHz"),
             (48_000, "48 kHz"),
@@ -189,7 +190,6 @@ mod tests {
         for (hertz, want) in RATES {
             assert_eq!(FactValue::sample_rate(*hertz).as_str(), *want, "{hertz}");
         }
-        const CHANNELS: &[(u16, &str)] = &[(1, "mono"), (2, "stereo"), (6, "6 channels")];
         for (count, want) in CHANNELS {
             assert_eq!(FactValue::channels(*count).as_str(), *want, "{count}");
         }

@@ -86,7 +86,7 @@ pub fn parse_autoconfig_with(
     options: &SearchOptions,
 ) -> Result<Found, DiscoverFault> {
     let config = config::parse(xml).ok().ok_or(DiscoverFault::Unreadable)?;
-    select(&config, address, options)
+    select(&config, address, *options)
 }
 
 /// The domain of an address: after the last `@`; `None` for something that is not an address.
@@ -102,7 +102,7 @@ pub(crate) fn domain_of(address: &str) -> Option<DomainName> {
 fn select(
     config: &ClientConfig,
     address: &str,
-    options: &SearchOptions,
+    options: SearchOptions,
 ) -> Result<Found, DiscoverFault> {
     let tries = tries(options.starttls_only);
     let oauth_ok = options.oauth_only_ok;

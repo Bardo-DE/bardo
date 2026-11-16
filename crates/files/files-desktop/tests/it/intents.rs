@@ -109,20 +109,20 @@ pub(super) struct Served {
     _server: zbus::Connection,
 }
 
-pub(super) async fn served(window: FakeWindow) -> Option<Served> {
-    let bus = PrivateBus::start("intents")?;
+pub(super) async fn served(window: FakeWindow) -> Served {
+    let bus = PrivateBus::start("intents");
     let window = Arc::new(window);
     let server = bus.connect().await;
     let router = bus.connect().await;
     intents::offer_for_router(&server, Arc::clone(&window), &router)
         .await
         .unwrap();
-    Some(Served {
+    Served {
         bus,
         window,
         router,
         _server: server,
-    })
+    }
 }
 
 pub(super) async fn call(

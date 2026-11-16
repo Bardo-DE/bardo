@@ -50,11 +50,11 @@ impl SurfaceDocument {
             // The hook may have moved boxes (snapping); hoist from where it left them.
             stacking::rehoist(&mut self.doc.inner_mut());
         }
-        let publishes = self.after.read(&self.doc.inner());
+        let to_publish = self.after.read(&self.doc.inner());
         let published = self
             .doc
             .vdom
-            .in_runtime(|| after_resolve::publish(publishes));
+            .in_runtime(|| after_resolve::publish(to_publish));
         Resolved {
             prepainted,
             hover_moved: before != after,

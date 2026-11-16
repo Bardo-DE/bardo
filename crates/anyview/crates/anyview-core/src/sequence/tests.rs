@@ -47,7 +47,6 @@ fn moved_walks_and_stops_at_the_ends() {
 
 #[test]
 fn moved_to_a_position_goes_there_and_clamps_a_foreign_one() {
-    let long = sequence(10, 0);
     // name, length, position's index in the longer sequence, index after
     const CASES: &[(&str, usize, usize, usize)] = &[
         ("an entry", 5, 3, 3),
@@ -56,6 +55,7 @@ fn moved_to_a_position_goes_there_and_clamps_a_foreign_one() {
         ("a position past the end", 5, 8, 4),
         ("a position past the end of a single file", 1, 6, 0),
     ];
+    let long = sequence(10, 0);
     for (name, len, index, want) in CASES {
         let position = long.position_at(*index);
         let after = moved(sequence(*len, 0), SequenceMove::To(position));

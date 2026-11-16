@@ -133,6 +133,10 @@ fn a_pdf_choice_with_a_range_and_an_encoding_reports_both() {
 
 #[test]
 fn media_and_text_defaults() {
+    const TEXT: &[(TextExportKind, ExportExtension)] = &[
+        (TextExportKind::Pdf, ExportExtension::Pdf),
+        (TextExportKind::PlainText, ExportExtension::Txt),
+    ];
     const MEDIA: &[(MediaExportKind, ExportExtension)] = &[
         (MediaExportKind::FramePng, ExportExtension::Png),
         (MediaExportKind::FrameJpeg, ExportExtension::Jpg),
@@ -171,10 +175,6 @@ fn media_and_text_defaults() {
         MediaExport::default_for(MediaExportKind::ExtractAudio),
         MediaExport::AudioOnly(AudioTarget::Copy)
     );
-    const TEXT: &[(TextExportKind, ExportExtension)] = &[
-        (TextExportKind::Pdf, ExportExtension::Pdf),
-        (TextExportKind::PlainText, ExportExtension::Txt),
-    ];
     for (kind, extension) in TEXT {
         assert_eq!(
             TextExport::default_for(*kind).extension(),

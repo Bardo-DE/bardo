@@ -159,10 +159,10 @@ async fn poll_reports_a_change_and_the_waker_pings_when_a_watched_value_changes(
 
 #[test]
 fn the_shell_provider_pastes_what_the_seat_published_and_queues_what_it_copies() {
+    use blitz_traits::shell::ShellProvider as _;
     let (ping, _source) = calloop::ping::make_ping().expect("eventfd ping");
     let seat = SharedSelection::default();
     let provider = HostShellProvider::new(ping, seat.clone());
-    use blitz_traits::shell::ShellProvider as _;
 
     assert!(provider.get_clipboard_text().is_err(), "empty clipboard");
     let generation = seat.begin();

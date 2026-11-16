@@ -109,8 +109,8 @@ fn use_frame_tick_renders_each_published_tick() {
     let env = test_env(ping, Prepaint::None);
     let mut document = SurfaceDocument::build(HostRoot::new(ticking).context(handle.clone()), env);
     let wakes = Arc::new(Wakes::default());
-    let waker = std::task::Waker::from(Arc::clone(&wakes));
-    let mut cx = std::task::Context::from_waker(&waker);
+    let wake_source = std::task::Waker::from(Arc::clone(&wakes));
+    let mut cx = std::task::Context::from_waker(&wake_source);
     document.poll(&mut cx);
     assert_eq!(text(&mut document), "at 0 dt 0");
 
@@ -209,8 +209,8 @@ fn use_surface_scale_starts_at_the_published_scale_and_follows_each_change() {
     assert_eq!(handle.current_scale(), Scale120(150));
 
     let wakes = Arc::new(Wakes::default());
-    let waker = std::task::Waker::from(Arc::clone(&wakes));
-    let mut cx = std::task::Context::from_waker(&waker);
+    let wake_source = std::task::Waker::from(Arc::clone(&wakes));
+    let mut cx = std::task::Context::from_waker(&wake_source);
     document.poll(&mut cx);
     wakes.take();
     live.publish(Scale120(150));
@@ -312,8 +312,8 @@ fn use_toplevel_state_follows_each_configure() {
         SurfaceDocument::build(HostRoot::new(zoom_state).context(handle.clone()), env);
     assert_eq!(text(&mut document), "Unset");
     let wakes = Arc::new(Wakes::default());
-    let waker = std::task::Waker::from(Arc::clone(&wakes));
-    let mut cx = std::task::Context::from_waker(&waker);
+    let wake_source = std::task::Waker::from(Arc::clone(&wakes));
+    let mut cx = std::task::Context::from_waker(&wake_source);
     document.poll(&mut cx);
     wakes.take();
     live.publish(ToplevelState::default());
@@ -358,8 +358,8 @@ fn use_wheel_hears_every_event_in_order() {
     let env = test_env(ping, Prepaint::None);
     let mut document = SurfaceDocument::build(HostRoot::new(wheel_phases).context(handle), env);
     let wakes = Arc::new(Wakes::default());
-    let waker = std::task::Waker::from(Arc::clone(&wakes));
-    let mut cx = std::task::Context::from_waker(&waker);
+    let wake_source = std::task::Waker::from(Arc::clone(&wakes));
+    let mut cx = std::task::Context::from_waker(&wake_source);
     document.poll(&mut cx);
     assert_eq!(text(&mut document), "[]");
     wakes.take();
@@ -413,8 +413,8 @@ fn use_input_modality_is_the_seats_across_surfaces() {
         })
         .collect();
     let wakes = Arc::new(Wakes::default());
-    let waker = std::task::Waker::from(Arc::clone(&wakes));
-    let mut cx = std::task::Context::from_waker(&waker);
+    let wake_source = std::task::Waker::from(Arc::clone(&wakes));
+    let mut cx = std::task::Context::from_waker(&wake_source);
     for document in &mut documents {
         document.poll(&mut cx);
         assert_eq!(text(document), "pointer");

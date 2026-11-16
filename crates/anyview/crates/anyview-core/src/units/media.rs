@@ -340,13 +340,13 @@ mod tests {
 
     #[test]
     fn a_time_range_ends_after_it_starts() {
-        let at = MediaTime::from_secs;
         const CASES: &[(&str, u64, Option<u64>, bool)] = &[
             ("a part", 2, Some(5), true),
             ("to the end", 2, None, true),
             ("empty", 5, Some(5), false),
             ("backwards", 5, Some(2), false),
         ];
+        let at = MediaTime::from_secs;
         for (name, start, end, ok) in CASES {
             let made = TimeRange::new(at(*start), end.map(at));
             assert_eq!(made.is_ok(), *ok, "{name}");

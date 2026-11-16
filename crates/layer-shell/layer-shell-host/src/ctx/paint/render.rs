@@ -75,8 +75,8 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
     let Some(presenter) = surface.presenter.as_mut() else {
         return Ok(());
     };
-    let presented = presenter.present(state.gpu.as_mut(), &mut surface.document, target, &overlay);
-    let input = if presented.is_ok() {
+    let drawn = presenter.present(state.gpu.as_mut(), &mut surface.document, target, &overlay);
+    let input = if drawn.is_ok() {
         let now = Instant::now();
         surface.stats.presented(now - started, now);
         // Resolve may have asked for a redraw itself; continuation is decided on the
@@ -91,7 +91,7 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
         surface.stats.skipped();
         FrameInput::PresentFailed
     };
-    let first_frame = presented.is_ok();
+    let first_frame = drawn.is_ok();
     if first_frame && let Some(lock) = state.lock.as_mut() {
         lock.presented(id);
     }
@@ -111,7 +111,7 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
         // request was just dropped as this render's echo.
         state.frame_input(id, FrameInput::Invalidate);
     }
-    match presented {
+    match drawn {
         Err(error) if error.recovery() == Recovery::Fatal => Err(error),
         Err(error) => {
             eprintln!("shell-host: present {id:?}: {error}");

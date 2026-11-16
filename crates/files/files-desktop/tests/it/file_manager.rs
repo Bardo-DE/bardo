@@ -51,9 +51,7 @@ async fn call(client: &zbus::Connection, method: &str, uris: &[&str], startup: &
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn show_items_reaches_the_sink_with_each_file_and_the_startup_id() {
-    let Some(bus) = PrivateBus::start("show_items") else {
-        return;
-    };
+    let bus = PrivateBus::start("show_items");
     let (sink, mut heard) = sink();
     let server = bus.connect().await;
     assert!(matches!(
@@ -81,9 +79,7 @@ async fn show_items_reaches_the_sink_with_each_file_and_the_startup_id() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn show_folders_skips_what_it_cannot_show_and_an_empty_startup_id_is_none() {
-    let Some(bus) = PrivateBus::start("show_folders") else {
-        return;
-    };
+    let bus = PrivateBus::start("show_folders");
     let (sink, mut heard) = sink();
     let server = bus.connect().await;
     let _claim = claim(&server, sink).await.unwrap();
@@ -113,9 +109,7 @@ async fn show_folders_skips_what_it_cannot_show_and_an_empty_startup_id_is_none(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn properties_are_asked_for_and_a_call_with_nothing_to_show_is_silent() {
-    let Some(bus) = PrivateBus::start("properties") else {
-        return;
-    };
+    let bus = PrivateBus::start("properties");
     let (sink, mut heard) = sink();
     let server = bus.connect().await;
     let _claim = claim(&server, sink).await.unwrap();

@@ -26,14 +26,14 @@ fn pixel_inside(rr: RoundedRect, px: Px, py: Px) -> bool {
     let cy = f64::from(ly + ly + 1) / 2.0;
 
     // Which corner's circle (if any) governs this pixel.
-    let (corner_cx, in_corner_x) = if lx < r {
+    let (circle_x, in_corner_x) = if lx < r {
         (f64::from(r), true)
     } else if lx >= width - r {
         (f64::from(width - r), true)
     } else {
         (0.0, false)
     };
-    let (corner_cy, in_corner_y) = if ly < r {
+    let (circle_y, in_corner_y) = if ly < r {
         (f64::from(r), true)
     } else if ly >= height - r {
         (f64::from(height - r), true)
@@ -43,8 +43,8 @@ fn pixel_inside(rr: RoundedRect, px: Px, py: Px) -> bool {
     if !(in_corner_x && in_corner_y) {
         return true; // not in a corner square: the rounded rect is full there
     }
-    let dx = cx - corner_cx;
-    let dy = cy - corner_cy;
+    let dx = cx - circle_x;
+    let dy = cy - circle_y;
     dx * dx + dy * dy <= f64::from(r) * f64::from(r)
 }
 

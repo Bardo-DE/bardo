@@ -166,7 +166,7 @@ async fn search<H: Http, D: Dns>(
     // 3. SRV.
     match lookup_srv(dns, &domain).await {
         Ok(answers) => match found_from_srv_with(address, &answers, options.report_pop3)
-            .and_then(|f| tls_ok(f, options))
+            .and_then(|f| tls_ok(f, *options))
         {
             Ok(found) => return Some(Outcome::Servers(found)),
             Err(why) => tried.push(Tried {
@@ -220,7 +220,7 @@ async fn search<H: Http, D: Dns>(
 }
 
 /// Under `starttls_only`, a finding with a `STARTTLS` endpoint is not one.
-fn tls_ok(found: Found, options: &SearchOptions) -> Result<Found, DiscoverFault> {
+fn tls_ok(found: Found, options: SearchOptions) -> Result<Found, DiscoverFault> {
     let starttls = found.endpoints.iter().any(|e| e.tls == Tls::StartTls);
     match (options.starttls_only, starttls) {
         (true, true) => Err(DiscoverFault::NoServers),

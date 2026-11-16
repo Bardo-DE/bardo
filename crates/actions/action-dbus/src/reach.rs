@@ -8,7 +8,6 @@ use action_manifest::AgentReach;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
-use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 /// What a provider says about one action: the two values it may switch between.
@@ -111,8 +110,8 @@ impl ReachServer {
 
 #[zbus::interface(name = "org.bardo.IntentReach1")]
 impl ReachServer {
-    fn reach(&self) -> fdo::Result<String> {
-        Ok(self.json())
+    fn reach(&self) -> String {
+        self.json()
     }
 
     #[zbus(signal)]
