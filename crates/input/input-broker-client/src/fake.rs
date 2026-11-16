@@ -102,10 +102,10 @@ impl Session for FakeSession {
             return Err(ClientError::Refused(reason));
         }
         // The same ceiling the real service applies.
-        plan(request)
-            .map(drop)
-            .ok()
-            .ok_or(ClientError::Refused(Reason::BadCaps))?;
+        // The wire carries only the reason, so the fake keeps no more of the ceiling's verdict.
+        if plan(request).is_err() {
+            return Err(ClientError::Refused(Reason::BadCaps));
+        }
         let device = DeviceId(state.next_id);
         state.next_id = state.next_id.wrapping_add(1);
         match request.kind().delivery() {

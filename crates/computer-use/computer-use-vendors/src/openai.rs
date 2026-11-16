@@ -22,6 +22,10 @@ use crate::args::{Args, Verdict, field, point, signed, string, xy};
 
 /// How long a `wait` action waits.
 pub(crate) const WAIT_MS: u32 = 2_000;
+const _: () = assert!(
+    WAIT_MS <= WaitMs::MAX,
+    "the fixed wait is within a wait's range"
+);
 
 /// The actions of one call, each with the verb it is reported under.
 pub(crate) fn actions_of(args: &Args) -> Vec<(String, Verdict<CuaAction<ImageSpace>>)> {
@@ -142,7 +146,9 @@ fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> {
             text: bounded(TypedText::new(string(args, "text")?))?,
         }),
         "wait" => Ok(CuaAction::Wait {
-            for_ms: WaitMs::new(WAIT_MS).ok().ok_or(DropReason::BadNumber)?,
+            for_ms: WaitMs::new(WAIT_MS).unwrap_or_else(|error| {
+                unreachable!("the fixed wait is within a wait's range: {error}")
+            }),
         }),
         "screenshot" => Ok(CuaAction::Observe),
         _ => Err(DropReason::UnsupportedVerb),

@@ -66,8 +66,7 @@ pub fn encode_request(request: &MemoryRequest) -> Result<Call, CodecError> {
         R::RemoveRule(id) => call(Control, "RemoveRule", vec![body(id)?]),
         R::Pause(s, until) => {
             let until = u64::try_from(until.0)
-                .ok()
-                .ok_or_else(|| CodecError::Json("a time before the epoch".into()))?;
+                .map_err(|error| CodecError::Json(format!("a time before the epoch: {error}")))?;
             call(Control, "Pause", vec![space(s), CallArg::Seconds(until)])
         }
         R::Resume(s) => call(Control, "Resume", vec![space(s)]),
@@ -212,8 +211,7 @@ pub fn decode_request(call: &Call) -> Result<MemoryRequest, CodecError> {
         (Control, "Pause") => {
             let id = parse_space(args.text()?)?;
             let until = i64::try_from(args.seconds()?)
-                .ok()
-                .ok_or_else(|| CodecError::Json("a time past the range".into()))?;
+                .map_err(|error| CodecError::Json(format!("a time past the range: {error}")))?;
             args.end()?;
             Ok(R::Pause(id, UnixSeconds(until)))
         }

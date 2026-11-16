@@ -11,26 +11,28 @@ use files_ui::{Query, ReadError, Reading, Request, RequestSender};
 
 /// What the window is to do with a path an agent named.
 pub fn open_input(path: &Path) -> Result<Input, Refusal> {
-    let folder = FolderPath::new(path).ok().ok_or_else(not_there)?;
-    let meta = std::fs::metadata(path).ok().ok_or_else(not_there)?;
+    let folder = FolderPath::new(path).map_err(not_there)?;
+    let meta = std::fs::metadata(path).map_err(not_there)?;
     if meta.is_dir() {
         return Ok(Input::Go(Location::Folder(folder)));
     }
     let parent = path
         .parent()
-        .and_then(|parent| FolderPath::new(parent).ok())
-        .ok_or_else(not_there)?;
+        .ok_or_else(|| not_there("the path has no parent"))?;
+    let parent = FolderPath::new(parent).map_err(not_there)?;
     let name = path
         .file_name()
-        .and_then(|name| FileName::new(name).ok())
-        .ok_or_else(not_there)?;
+        .ok_or_else(|| not_there("the path has no file name"))?;
+    let name = FileName::new(name).map_err(not_there)?;
     Ok(Input::Reveal {
         folder: parent,
         names: vec![name],
     })
 }
 
-fn not_there() -> Refusal {
+/// What the agent is told about a path that cannot be used; what went wrong goes to the log.
+fn not_there(error: impl std::fmt::Display) -> Refusal {
+    tracing::debug!(%error, "a path an agent named cannot be used");
     Refusal::Failed("That file or folder isn\u{2019}t there.".to_owned())
 }
 

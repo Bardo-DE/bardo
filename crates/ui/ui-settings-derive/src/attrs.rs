@@ -305,16 +305,18 @@ pub(crate) fn parse_range(text: &str) -> Result<(i64, i64), String> {
     let (min, max) = text
         .split_once("..=")
         .ok_or_else(|| format!("range {text:?} must be written \"min..=max\""))?;
-    let min: i64 = min
-        .trim()
-        .parse()
-        .ok()
-        .ok_or_else(|| format!("range {text:?}: {:?} is not a whole number", min.trim()))?;
-    let max: i64 = max
-        .trim()
-        .parse()
-        .ok()
-        .ok_or_else(|| format!("range {text:?}: {:?} is not a whole number", max.trim()))?;
+    let min: i64 = min.trim().parse().map_err(|error| {
+        format!(
+            "range {text:?}: {:?} is not a whole number ({error})",
+            min.trim()
+        )
+    })?;
+    let max: i64 = max.trim().parse().map_err(|error| {
+        format!(
+            "range {text:?}: {:?} is not a whole number ({error})",
+            max.trim()
+        )
+    })?;
     if min > max {
         return Err(format!("range {text:?}: the low end is above the high end"));
     }

@@ -21,6 +21,7 @@ files-fs = {path = "../files-fs"}
 files-model = {path = "../files-model"}
 files-trash = {path = "../files-trash"}
 files-ui = {path = "../files-ui"}
+tracing = { workspace = true }
 freedesktop-icons = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 

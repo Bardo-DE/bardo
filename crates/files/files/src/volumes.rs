@@ -32,10 +32,10 @@ impl Drop for Stops {
 
 impl Volumes for DesktopVolumes {
     fn list(&self) -> Result<Vec<Volume>, VolumeError> {
-        self.runtime
-            .block_on(self.disks.list())
-            .ok()
-            .ok_or(VolumeError)
+        self.runtime.block_on(self.disks.list()).map_err(|error| {
+            tracing::warn!(%error, "the disks could not be listed");
+            VolumeError
+        })
     }
 
     fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
@@ -55,8 +55,10 @@ impl Volumes for DesktopVolumes {
         let mut stream = self
             .runtime
             .block_on(self.disks.changes())
-            .ok()
-            .ok_or(VolumeError)?;
+            .map_err(|error| {
+                tracing::warn!(%error, "the disks' changes could not be watched");
+                VolumeError
+            })?;
         let task = self.runtime.spawn(async move {
             while stream.next().await.is_some() {
                 changed();

@@ -23,16 +23,17 @@ pub(crate) fn object(input: &str) -> Option<Args> {
     reason = "the float is checked whole and within 0..=u32::MAX just before the cast"
 )]
 pub(crate) fn whole(value: &Value) -> Verdict<u32> {
-    let n = value
+    // A probe: a number that is not a whole `u32` is `BadNumber`, which says all there is to say.
+    value
         .as_u64()
+        .and_then(|n| u32::try_from(n).ok())
         .or_else(|| {
             value
                 .as_f64()
                 .filter(|f| f.fract() == 0.0 && *f >= 0.0 && *f <= f64::from(u32::MAX))
-                .map(|f| f as u64)
+                .map(|f| f as u32)
         })
-        .ok_or(DropReason::BadNumber)?;
-    u32::try_from(n).ok().ok_or(DropReason::BadNumber)
+        .ok_or(DropReason::BadNumber)
 }
 
 /// A signed whole number, for scroll distances.

@@ -71,8 +71,7 @@ fn open_nonblocking(path: &Path) -> Result<File> {
     use std::os::unix::fs::OpenOptionsExt;
     // A regular file ignores the flag; a FIFO opens at once instead of waiting for a writer.
     let nonblock = i32::try_from(rustix::fs::OFlags::NONBLOCK.bits())
-        .ok()
-        .ok_or_else(|| Error::from(ErrorKind::Unsupported))?;
+        .map_err(|error| Error::new(ErrorKind::Unsupported, error))?;
     std::fs::OpenOptions::new()
         .read(true)
         .custom_flags(nonblock)

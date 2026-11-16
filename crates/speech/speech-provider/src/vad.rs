@@ -23,9 +23,10 @@ impl Frame512 {
     ///
     /// [`FrameLenError`] when `samples` is not exactly one frame long.
     pub fn new(samples: &[i16]) -> Result<Self, FrameLenError> {
-        <[i16; FRAME_SAMPLES]>::try_from(samples)
-            .map(Self)
-            .ok()
+        samples
+            .first_chunk::<FRAME_SAMPLES>()
+            .filter(|_| samples.len() == FRAME_SAMPLES)
+            .map(|frame| Self(*frame))
             .ok_or(FrameLenError(samples.len()))
     }
 

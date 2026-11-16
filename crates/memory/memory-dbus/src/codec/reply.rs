@@ -39,8 +39,7 @@ pub fn decode_reply(call: &Call, outputs: &[String]) -> Result<MemoryReply, Code
                 Count(
                     count
                         .parse()
-                        .ok()
-                        .ok_or_else(|| CodecError::Json(format!("count {count:?}")))?,
+                        .map_err(|error| CodecError::Json(format!("count {count:?}: {error}")))?,
                 ),
             )),
             _ => Err(CodecError::Shape),
