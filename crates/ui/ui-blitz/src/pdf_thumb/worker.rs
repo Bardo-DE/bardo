@@ -85,7 +85,7 @@ fn work() {
             let mut jobs = queue.jobs.lock().unwrap_or_else(PoisonError::into_inner);
             loop {
                 match jobs.pop_front() {
-                    Some(job) if job.reply.is_closed() => continue,
+                    Some(job) if job.reply.is_closed() => {}
                     Some(job) => break job,
                     None => {
                         jobs = queue

@@ -143,7 +143,10 @@ mod eased {
             seen.windows(2).all(|pair| pair[1] >= pair[0]),
             "it only moves forward: {seen:?}"
         );
-        let arrived = seen.iter().position(|x| *x == 60.0).expect("reaches 60 px");
+        let arrived = seen
+            .iter()
+            .position(|x| (*x - 60.0).abs() < f32::EPSILON)
+            .expect("reaches 60 px");
         let by = Duration::from_millis(200);
         assert!(
             FRAME * u32::try_from(arrived).expect("small") <= by,
@@ -180,7 +183,10 @@ mod eased {
         assert_eq!(*seen.last().expect("frames"), 260.0);
         let moving = seen.iter().filter(|x| **x > 0.0 && **x < 260.0).count();
         assert!(moving >= 3, "eased over frames: {seen:?}");
-        let arrived = seen.iter().position(|x| *x == 260.0).expect("260 px");
+        let arrived = seen
+            .iter()
+            .position(|x| (*x - 260.0).abs() < f32::EPSILON)
+            .expect("260 px");
         assert!(
             FRAME * u32::try_from(arrived).expect("small") <= Duration::from_millis(208),
             "a page takes 200 ms at most: frame {arrived}"
@@ -712,7 +718,7 @@ mod fingers {
         assert!(
             eased_now
                 .iter()
-                .all(|h| h.zoom && h.y.abs() == detent(true).y)
+                .all(|h| h.zoom && (h.y.abs() - detent(true).y).abs() < f32::EPSILON)
         );
         assert_eq!(heard(&AS_RECEIVED), eased_now, "as-received hears the same");
         harness.advance(Duration::from_millis(400));
@@ -981,7 +987,9 @@ mod native {
             assert!(frames.len() < 6, "frames never ran out: {frames:?}");
         }
         assert!(
-            frames.iter().any(|(offset, _)| *offset == 300.0),
+            frames
+                .iter()
+                .any(|(offset, _)| (*offset - 300.0).abs() < f32::EPSILON),
             "a frame draws the jump: {frames:?}"
         );
         for (offset, seen) in &frames {

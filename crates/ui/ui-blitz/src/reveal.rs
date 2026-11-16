@@ -37,6 +37,10 @@ pub(crate) fn reveal(scroller: &MountedData, item: &MountedData) -> Scrolled {
     clippy::cast_possible_truncation,
     reason = "layout and pointer lengths are far inside f32's exact range"
 )]
+#[expect(
+    clippy::option_option,
+    reason = "None is no such node and Some(None) is an item already in view: two answers the caller tells apart"
+)]
 fn wanted_offset(doc: &BaseDocument, list: NodeId, item: NodeId) -> Option<Option<(f64, f64)>> {
     let scroller = doc.get_node(list)?;
     let layout = scroller.final_layout();

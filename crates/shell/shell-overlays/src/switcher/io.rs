@@ -71,14 +71,14 @@ pub(super) fn use_switcher(
     if *kept.peek() != level {
         kept.set(level);
     }
-    let held: MachineState<Opening> = use_machine_state(|_| Opening::default());
+    let opening: MachineState<Opening> = use_machine_state(|_| Opening::default());
     let effects = Effects {
         session,
         services,
         level: kept,
     };
     let machine = use_machine_in(
-        held,
+        opening,
         params,
         move || Facts {
             apps: session.peek().as_ref().map_or(0, |open| open.apps.len()),
@@ -87,7 +87,7 @@ pub(super) fn use_switcher(
         move |out, machine| effects.carry(out, machine),
     );
     let ctx = SwitcherCtx {
-        state: held.state,
+        state: opening.state,
         session,
         machine,
         surface: use_hook(|| CopyValue::new(surface)),

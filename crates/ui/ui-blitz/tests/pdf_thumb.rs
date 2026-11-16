@@ -14,6 +14,7 @@ use pdfrum_common::Limits;
 use pdfrum_edit::{EditDoc, Encryption, SaveOptions, blank_document, save};
 use peniko::Color;
 use peniko::kurbo::{Rect, Size as Sheet};
+use std::fmt::Write as _;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::time::Duration;
@@ -75,20 +76,20 @@ fn no_pages() -> Vec<u8> {
     let mut offsets = Vec::new();
     for (i, body) in objects.iter().enumerate() {
         offsets.push(out.len());
-        out.push_str(&format!("{} 0 obj\n{body}\nendobj\n", i + 1));
+        write!(out, "{} 0 obj\n{body}\nendobj\n", i + 1).expect("a String takes any write");
     }
     let xref = out.len();
-    out.push_str(&format!(
-        "xref\n0 {}\n0000000000 65535 f \n",
-        objects.len() + 1
-    ));
+    write!(out, "xref\n0 {}\n0000000000 65535 f \n", objects.len() + 1)
+        .expect("a String takes any write");
     for offset in offsets {
-        out.push_str(&format!("{offset:010} 00000 n \n"));
+        write!(out, "{offset:010} 00000 n \n").expect("a String takes any write");
     }
-    out.push_str(&format!(
+    write!(
+        out,
         "trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n",
         objects.len() + 1
-    ));
+    )
+    .expect("a String takes any write");
     out.into_bytes()
 }
 

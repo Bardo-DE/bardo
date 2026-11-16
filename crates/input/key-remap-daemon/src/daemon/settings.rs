@@ -106,6 +106,7 @@ pub(crate) fn parse_user(toml: &str) -> (ConfigLayer, Vec<Warning>) {
 mod tests {
     use super::*;
     use key_remap_proto::ProfileName;
+    use std::fmt::Write as _;
 
     fn layer(text: &str, source: ConfigSource) -> ConfigLayer {
         let (layer, warnings) = ConfigLayer::parse(text, source);
@@ -230,9 +231,10 @@ mod tests {
     #[test]
     fn an_oversize_layer_is_not_accepted_and_the_layers_in_force_are_untouched() {
         let in_force = Layers::builtin_only();
-        let huge: String = (0..=crate::MAX_PROFILES)
-            .map(|i| format!("[profile.p{i}]\n"))
-            .collect();
+        let mut huge = String::new();
+        for i in 0..=crate::MAX_PROFILES {
+            writeln!(huge, "[profile.p{i}]").expect("a String takes any write");
+        }
         let (layer, warnings) = parse_user(&huge);
         assert_eq!(warnings, []);
         let refused = in_force.with_user(layer).accepted();

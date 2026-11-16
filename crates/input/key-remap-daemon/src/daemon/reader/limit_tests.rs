@@ -6,6 +6,7 @@ use crate::daemon::inbox::{ClientId, Request};
 use crate::daemon::socket::client::recv;
 use crate::{Edge, Key, MAX_PROFILES};
 use key_remap_proto::ToClient;
+use std::fmt::Write as _;
 
 fn code(name: &str) -> u16 {
     Key::named(name).unwrap().code()
@@ -31,9 +32,10 @@ fn an_oversize_user_config_is_refused_and_the_earlier_one_stays() {
     assert!(matches!(recv(&rig.client), Some(ToClient::ConfigWarnings(w)) if w.is_empty()));
     assert_eq!(command_c(&mut rig), [(code("leftctrl"), 0), (code("x"), 1)]);
 
-    let huge: String = (0..=MAX_PROFILES)
-        .map(|i| format!("[profile.p{i}]\n"))
-        .collect();
+    let mut huge = String::new();
+    for i in 0..=MAX_PROFILES {
+        writeln!(huge, "[profile.p{i}]").expect("a String takes any write");
+    }
     rig.request(Request::UserConfig {
         client: ClientId(0),
         toml: huge,

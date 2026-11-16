@@ -159,9 +159,9 @@ fn the_strongest_covering_limit_wins_and_the_floor_wins_a_tie() {
         &call_in(&caller, &files, &delete, &work, Effect::Read),
     );
     match tie {
-        Limited::Ask(note) => {
-            assert!(!note.undo);
-            assert!(note.why.contains("administrator"), "{}", note.why);
+        Limited::Ask(ask) => {
+            assert!(!ask.undo);
+            assert!(ask.why.contains("administrator"), "{}", ask.why);
         }
         other => panic!("expected an ask, got {other:?}"),
     }
@@ -229,11 +229,11 @@ fn what_the_assistant_adds_is_theirs_to_remove_by_id_only() {
     let (rest, done) = limits_without(vec![made.clone()], &made.id);
     assert!(rest.is_empty());
     assert!(done);
-    let (_, none) = limits_without(
+    let (_, removed) = limits_without(
         vec![made],
         &StandingGrantId::parse("sg-0000000000000000").expect("id"),
     );
-    assert!(!none);
+    assert!(!removed);
 }
 
 #[test]

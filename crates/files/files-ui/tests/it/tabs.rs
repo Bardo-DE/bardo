@@ -16,7 +16,7 @@ const BAR: &str = "[aria-label=\"Tabs\"]";
 /// A window on the scratch folder, with what it needs kept alive.
 struct Rig {
     harness: Harness,
-    _dir: TempDir,
+    dir: TempDir,
     _config: TempDir,
 }
 
@@ -28,7 +28,7 @@ fn open() -> Rig {
     settle_until(&mut harness, |h| h.html().contains("zebra.png"));
     Rig {
         harness,
-        _dir: dir,
+        dir,
         _config: config,
     }
 }
@@ -57,7 +57,7 @@ fn command_t_opens_a_tab_on_the_same_folder_and_the_bar_shows_from_two_tabs() {
     rig.shows("zebra.png");
     // Both tabs are titled with the folder's name.
     let name = rig
-        ._dir
+        .dir
         .path()
         .file_name()
         .unwrap()

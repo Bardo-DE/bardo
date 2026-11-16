@@ -9,7 +9,7 @@ use files_core::{
 };
 use files_model::{Effect, Input, TabId};
 use files_ui::edge::Heard;
-use files_ui::{FakeVolumes, Launch, VolumeCall};
+use files_ui::{FakeVolumes, VolumeCall};
 use tempfile::TempDir;
 use ui_components::prelude::Point;
 use ui_harness::Input as Click;
@@ -132,7 +132,7 @@ fn window_over(
     let dir = scratch_folder();
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
-    let launch: Launch = launch(dir.path(), config.path(), &opener).with_volumes(volumes);
+    let launch = launch(dir.path(), config.path(), &opener).with_volumes(volumes);
     let mut harness = harness(launch);
     settle_until(&mut harness, |h| h.html().contains(shows));
     (harness, dir, config)

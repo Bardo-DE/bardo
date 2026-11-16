@@ -39,6 +39,10 @@ pub struct GeneralSettings {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "files/settings.toml", domain = "sidebar", page = page())]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "each bool is one switch in the settings file"
+)]
 pub struct SidebarSettings {
     /// `sidebar.home`.
     #[settings(label = "Home", section = "Favorites")]
@@ -98,6 +102,10 @@ impl Default for SidebarSettings {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "files/settings.toml", domain = "advanced", page = page())]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "each bool is one switch in the settings file"
+)]
 pub struct AdvancedSettings {
     /// `advanced.folders_on_top`.
     #[settings(

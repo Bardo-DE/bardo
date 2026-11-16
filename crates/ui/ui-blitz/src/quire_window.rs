@@ -58,7 +58,7 @@ impl std::fmt::Debug for QuireWindow {
         f.debug_struct("QuireWindow")
             .field("object", &self.object.id())
             .field("sent", &self.sent)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 

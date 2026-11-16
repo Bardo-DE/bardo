@@ -99,6 +99,7 @@ fn keep(previous: &KeymapState, problems: Vec<KeymapProblem>) -> KeymapState {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fmt::Write as _;
 
     fn text(t: &str) -> FileText {
         FileText::Text(t.to_owned())
@@ -119,9 +120,10 @@ mod tests {
 
     #[test]
     fn thousands_of_bad_lines_are_reported_as_fifty_and_a_count() {
-        let lines: String = (0..3000)
-            .map(|n| format!("bogus{n} = Primary+Q\n"))
-            .collect();
+        let mut lines = String::new();
+        for n in 0..3000 {
+            writeln!(lines, "bogus{n} = Primary+Q").expect("a String takes any write");
+        }
         let state = settle(&good(), text(&format!("copy = Primary+Alt+C\n{lines}")));
         assert_eq!(state.problems.len(), MAX_PROBLEMS + 1);
         let last = state.problems.last().expect("a last line");

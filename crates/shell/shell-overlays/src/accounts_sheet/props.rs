@@ -248,9 +248,7 @@ fn providers_props(rows: &[ProviderRow], draft: &Draft) -> ProvidersProps {
         ),
         query: draft.query.clone(),
         cursor: draft.cursor.as_ref().map(|key| match key {
-            ListKey::Provider(id) => {
-                ProviderPick::Provider(ProviderKey(id.as_str().to_owned()))
-            }
+            ListKey::Provider(id) => ProviderPick::Provider(ProviderKey(id.as_str().to_owned())),
             ListKey::Other => ProviderPick::Other,
         }),
     }
@@ -298,9 +296,9 @@ fn review_props(review: &ReviewView, draft: &Draft) -> ReviewProps {
                 key: ServiceKey(service_key(row.kind)),
                 name: row.kind.name().to_owned(),
                 offer: match row.state {
-                    ServiceState::Offered(shipped) => ServiceOffer::Offered(switch(
-                        draft.toggle_of(row.kind).unwrap_or(shipped),
-                    )),
+                    ServiceState::Offered(shipped) => {
+                        ServiceOffer::Offered(switch(draft.toggle_of(row.kind).unwrap_or(shipped)))
+                    }
                     ServiceState::Absent(reason) => ServiceOffer::Absent(absence_of(reason)),
                 },
                 limit: row.limit.map(limit_of),
@@ -416,9 +414,8 @@ pub(super) fn role_of(kind: FieldKind) -> FieldRole {
         FieldKind::OutgoingSecurity => FieldRole::OutgoingSecurity,
         FieldKind::SessionUrl => FieldRole::SessionUrl,
         FieldKind::ServerUrl => FieldRole::ServerUrl,
-        // The server field, and any kind porter adds later: quire's form has no role of its own
-        // for it yet, so it is the plain server field.
-        _ => FieldRole::Server,
+        // A name has no role of its own in quire's form yet, so it is the plain server field.
+        FieldKind::Server | FieldKind::Name => FieldRole::Server,
     }
 }
 

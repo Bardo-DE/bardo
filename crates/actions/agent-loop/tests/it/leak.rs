@@ -60,11 +60,11 @@ proptest! {
         before in "[a-z ]{0,20}",
     ) {
         let marker = "<tool_call>";
-        let dressed: String = marker
-            .chars()
-            .zip(gaps.iter().chain(std::iter::repeat(&"")))
-            .map(|(c, g)| format!("{g}{}", if upper { c.to_ascii_uppercase() } else { c }))
-            .collect();
+        let mut dressed = String::new();
+        for (c, gap) in marker.chars().zip(gaps.iter().chain(std::iter::repeat(&""))) {
+            dressed.push_str(gap);
+            dressed.push(if upper { c.to_ascii_uppercase() } else { c });
+        }
         let text = format!("{before}{dressed}{{}}");
         prop_assert!(leaked_call(&text).is_some(), "{:?}", text);
     }

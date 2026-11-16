@@ -73,7 +73,7 @@ fn debounce_loop<T>(rx: &mpsc::Receiver<()>, dir: &Path, out: &Sender<T>, read: 
     while rx.recv().is_ok() {
         loop {
             match rx.recv_timeout(DEBOUNCE) {
-                Ok(()) => continue,
+                Ok(()) => {}
                 Err(RecvTimeoutError::Timeout) => break,
                 Err(RecvTimeoutError::Disconnected) => return,
             }

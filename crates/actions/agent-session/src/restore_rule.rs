@@ -53,7 +53,7 @@ fn reach(role: CallerRole) -> Reach {
 pub fn may_restore(claimant: Claimant<'_>, opener: Option<&AppName>) -> bool {
     match (reach(claimant.role), opener) {
         (Reach::Any, _) => true,
-        (Reach::Own, Some(opened)) => opened == claimant.app,
+        (Reach::Own, Some(by)) => by == claimant.app,
         (Reach::Own, None) => false,
     }
 }

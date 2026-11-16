@@ -132,6 +132,8 @@ impl NetReply {
 
 impl fmt::Debug for NetReply {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("NetReply").field("url", &self.url).finish()
+        f.debug_struct("NetReply")
+            .field("url", &self.url)
+            .finish_non_exhaustive()
     }
 }

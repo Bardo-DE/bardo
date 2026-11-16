@@ -21,8 +21,8 @@ use files_trash::{FakeTrash, Trash};
 use files_ui::{PlaceKind, Places, STYLE};
 use ui_components::base::press::PointerButton;
 use ui_components::prelude::ShortcutKey;
+use ui_harness::Input;
 use ui_harness::harness::settle_until;
-use ui_harness::{Harness, Input};
 use ui_lint::{LintConfig, Profile, Rule, assert_clean, markup};
 
 use super::support::{RecordingOpener, harness, launch_remembering, scratch_folder};
@@ -88,7 +88,10 @@ const POSES: [Pose; 14] = [
 ];
 
 /// The window in `pose`.
-#[expect(clippy::too_many_lines, reason = "one arm per pose of the window, each building its own scene")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one arm per pose of the window, each building its own scene"
+)]
 fn page(pose: Pose) -> String {
     let dir = scratch_folder();
     let config = tempfile::tempdir().unwrap();
@@ -128,7 +131,7 @@ fn page(pose: Pose) -> String {
     )
     .with_home(home.clone())
     .with_places(Places::default().with(PlaceKind::Home, home));
-    let mut window: Harness = harness(launch);
+    let mut window = harness(launch);
     settle_until(&mut window, |h| h.html().contains("notes.txt"));
     match pose {
         Pose::Listed => {}

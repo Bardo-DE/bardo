@@ -16,8 +16,10 @@ fn a_folders_view_is_remembered_and_loaded_in_the_order_asked() {
     let mut rig = rig();
     let here = folder("/p");
     let place = Location::Folder(here.clone());
-    let mut prefs = FolderPrefs::default();
-    prefs.view = ViewMode::Icons;
+    let prefs = FolderPrefs {
+        view: ViewMode::Icons,
+        ..FolderPrefs::default()
+    };
     // Never changed: the defaults, and saving says nothing.
     rig.edge
         .run_in(TabId::FIRST, vec![Effect::LoadPrefs(place.clone())]);

@@ -27,7 +27,10 @@ mod keep {
     }
 
     /// A key-handling shell around plain text, a field and an edit surface, logging what it hears.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Shell() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut note = move |line: String| log.with_mut(|log| log.push(line));
@@ -156,7 +159,10 @@ mod kept_click {
         scale_percent: 100,
     };
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Page() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut note = move |entry: &str| log.with_mut(|log| log.push(entry.to_owned()));
@@ -275,7 +281,10 @@ mod kept_click {
 
     /// One folder being renamed, another beside it; `.app` logs its pointer-ups, as mailo's ends a
     /// drag there.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Renaming() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut note = move |entry: &str| log.with_mut(|log| log.push(entry.to_owned()));
@@ -493,7 +502,10 @@ mod removed {
 
     /// A shell holding a pane (itself focusable) holding a field that removes itself on Enter, as
     /// a rename field does when it commits.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn FieldPage() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut editing = use_signal(|| true);
@@ -700,22 +712,34 @@ mod field_handle {
         }
     }
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn ByHandle() -> Element {
         rsx! { Page { reach: Reach::Handle } }
     }
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn BySelector() -> Element {
         rsx! { Page { reach: Reach::Selector(".rename input") } }
     }
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn ByUnknown() -> Element {
         rsx! { Page { reach: Reach::Selector("#nothing-here") } }
     }
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn ByGarbage() -> Element {
         rsx! { Page { reach: Reach::Selector("[[") } }
     }
@@ -742,8 +766,8 @@ mod field_handle {
     #[test]
     fn a_field_reached_by_handle_or_selector_hears_focus_once_with_its_value_selected() {
         // the page, and what its log says: a selector's "found" comes before the focus event
-        let cases: [(fn() -> Element, &str); 2] =
-            [(ByHandle, "focus"), (BySelector, "found,focus")];
+        type Case = (fn() -> Element, &'static str);
+        let cases: [Case; 2] = [(ByHandle, "focus"), (BySelector, "found,focus")];
         for (app, logged) in cases {
             let harness = reached(app);
             assert!(harness.focus_of(".rename input"));
@@ -757,8 +781,8 @@ mod field_handle {
 
     #[test]
     fn an_unknown_or_unreadable_selector_is_a_typed_error() {
-        let cases: [(fn() -> Element, &str); 2] =
-            [(ByUnknown, "no-such-element"), (ByGarbage, "bad-selector")];
+        type Case = (fn() -> Element, &'static str);
+        let cases: [Case; 2] = [(ByUnknown, "no-such-element"), (ByGarbage, "bad-selector")];
         for (app, logged) in cases {
             let mut harness =
                 Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
@@ -781,7 +805,10 @@ mod field_handle {
 
     /// A field asked for twice by selector, 300 ms apart, as a palette's does on each open; its text
     /// echoed below.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Refocused() -> Element {
         let mut text = use_signal(|| "Invoice".to_owned());
         rsx! {
@@ -949,7 +976,10 @@ mod select {
 
     /// A rename field on "Archive", focused with select-all on mount and by the button; a second
     /// field to move away to; the value echoed below.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Rename() -> Element {
         let mut name = use_signal(|| "Archive".to_owned());
         let request = use_focus_request().with_select_all();
@@ -974,7 +1004,10 @@ mod select {
     }
 
     /// The same field, controlled but without select-all.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Plain() -> Element {
         let request = use_focus_request();
         rsx! {
@@ -1040,7 +1073,10 @@ mod select {
     }
 
     /// An app's own focusable element, focused through the public seam from a button.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Shell() -> Element {
         let mut shell = use_signal(|| None::<Rc<MountedData>>);
         rsx! {

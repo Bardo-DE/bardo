@@ -82,8 +82,8 @@ const SCALES: [u16; 4] = [125, 150, 175, 200];
 
 /// Ink: how far a pixel is from white, 0 (white) to 255 (black).
 fn ink(frame: &RgbaImage, x: u32, y: u32) -> u8 {
-    let [r, g, b, _] = frame.get_pixel(x, y).0;
-    255 - r.min(g).min(b)
+    let [red, green, blue, _] = frame.get_pixel(x, y).0;
+    255 - red.min(green).min(blue)
 }
 
 /// Which way a probe walks across a line.

@@ -109,7 +109,7 @@ impl std::fmt::Debug for WindowHandle {
         f.debug_struct("WindowHandle")
             .field("key", &self.key)
             .field("life", &self.life())
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 

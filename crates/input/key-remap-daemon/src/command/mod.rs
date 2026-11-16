@@ -124,6 +124,13 @@ fn execute(command: Command, env: Env) -> Result<(), String> {
 
 /// Can devices be had: from the device service when its socket is there (connecting creates
 /// nothing), else from the node (opening and closing it creates nothing either).
+#[cfg_attr(
+    not(test),
+    expect(
+        clippy::match_wildcard_for_single_variants,
+        reason = "tests add a stand-in variant for the service, so the wildcard is needed there"
+    )
+)]
 fn check_devices(env: &Env) -> Result<(), String> {
     match Source::detect(&env.device_service) {
         Source::Service(broker) => broker

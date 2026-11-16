@@ -243,9 +243,13 @@ mod tests {
 
     #[test]
     fn more_text_than_is_kept_makes_every_command_derived() {
+        use std::fmt::Write as _;
         let mut s = Served::default();
         let file = abs("/home/u/proj/big.txt");
-        let text: String = (0..=MAX_TOKENS).map(|n| format!("tok_{n:08} ")).collect();
+        let mut text = String::new();
+        for n in 0..=MAX_TOKENS {
+            write!(text, "tok_{n:08} ").expect("a String takes any write");
+        }
         s.record(&file, &file, &text);
         assert_eq!(
             s.derivation(&words("pwd"), &abs("/home/u/proj")),

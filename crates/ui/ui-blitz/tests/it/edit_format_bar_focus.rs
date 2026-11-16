@@ -8,7 +8,7 @@ use std::cell::RefCell;
 use std::time::Duration;
 use ui_blitz::FocusFallback;
 use ui_components::components::controls::segmented::Tracking;
-use ui_components::edit::handle::{EditHandle, use_edit_handle};
+use ui_components::edit::handle::use_edit_handle;
 use ui_components::edit::input::{EditInput, KeyInput};
 use ui_components::edit::pointer::{EditFocus, EditPointer};
 use ui_components::prelude::*;
@@ -37,9 +37,12 @@ enum Style {
 }
 
 /// A surface with a format bubble drawn over its text (a sibling, absolutely positioned).
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Editor() -> Element {
-    let handle: EditHandle = use_edit_handle();
+    let handle = use_edit_handle();
     let mut style = use_signal(|| Style::Plain);
     let mut picked = use_signal(|| 0u32);
     rsx! {

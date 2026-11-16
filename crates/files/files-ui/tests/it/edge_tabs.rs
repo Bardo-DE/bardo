@@ -155,10 +155,10 @@ fn a_question_is_asked_of_the_tab_whose_job_it_belongs_to() {
     let asked = until(&mut rig.inbox, |h| {
         matches!(h, Heard::Tab(_, Input::Op(OpEvent::Asking(_))))
     });
-    let Heard::Tab(asker, Input::Op(OpEvent::Asking(conflict))) = asked else {
+    let Heard::Tab(from, Input::Op(OpEvent::Asking(conflict))) = asked else {
         panic!("not asked");
     };
-    assert_eq!((asker, conflict.item), (second, name("notes.txt")));
+    assert_eq!((from, conflict.item), (second, name("notes.txt")));
     rig.edge.run(vec![Tabbed::new(
         second,
         Effect::Answer(Resolution::once(Answer::KeepBoth)),

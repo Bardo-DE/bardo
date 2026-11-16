@@ -26,12 +26,13 @@ fn rearm() -> Duration {
 }
 
 fn settings() -> HotCornerSettings {
-    let mut settings = HotCornerSettings::default();
-    settings.top_left = CornerBindings(vec![CornerBinding {
-        keys: CornerKeys::default(),
-        action: CornerDo::Desktop(CornerAction::Launcher),
-    }]);
-    settings
+    HotCornerSettings {
+        top_left: CornerBindings(vec![CornerBinding {
+            keys: CornerKeys::default(),
+            action: CornerDo::Desktop(CornerAction::Launcher),
+        }]),
+        ..HotCornerSettings::default()
+    }
 }
 
 /// The top left corner mounted on `hot_corners`, in a small viewport (the real surface is
