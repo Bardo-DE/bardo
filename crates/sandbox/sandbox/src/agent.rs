@@ -41,7 +41,9 @@ pub struct Bind {
     pub access: Access,
 }
 
-/// One host file shown inside the sandbox at another path, read-only: a file the caller wrote for this
+/// One host file shown inside the sandbox at another path, read-only.
+///
+/// It is a file the caller wrote for this
 /// run, over the agent's own file of that name. The agent cannot change it, and the host's file is
 /// not touched (bubblewrap mounts over it).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -139,10 +141,15 @@ impl AgentRun {
         self
     }
 
-    /// The same run with `path` read-only inside the writable workspace. The path must be
+    /// The same run with `path` read-only inside the writable workspace.
+    ///
+    /// The path must be
     /// strictly inside `cwd`. When the arguments are built, a path that does not exist is
     /// skipped (nothing to protect) and so is a symbolic link (a bind would follow it out of the
     /// workspace); skipping never makes the sandbox more open than without the path.
+    ///
+    /// # Errors
+    /// Returns `ProtectFault::OutsideCwd` when `path` is not strictly inside `cwd`.
     pub fn with_protect(mut self, path: AbsPath) -> Result<Self, ProtectFault> {
         let inside = path
             .as_str()

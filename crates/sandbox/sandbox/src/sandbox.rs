@@ -131,9 +131,9 @@ pub enum StartFault {
     /// The sandbox has a syscall filter and the caller gave no file to hand it over in.
     #[error("the syscall filter file was not given")]
     FilterFile,
-    /// The sandbox program could not be started.
-    #[error("the sandbox program did not start")]
-    Spawn,
+    /// The sandbox program could not be started; the text is the operating system's reason.
+    #[error("the sandbox program did not start: {0}")]
+    Spawn(String),
 }
 
 /// Something that confines commands. Closed set of implementations: `BwrapSandbox` and
@@ -149,6 +149,9 @@ pub trait Sandbox: Send + std::fmt::Debug {
     fn check(&self, cwd: &AbsPath) -> SandboxState;
 
     /// Starts the command, confined. Never runs it unconfined.
+    ///
+    /// # Errors
+    /// Returns a `StartFault` when the command cannot be confined or the sandbox program cannot start.
     fn start(&self, spec: &RunSpec) -> Result<Self::Job, StartFault>;
 }
 

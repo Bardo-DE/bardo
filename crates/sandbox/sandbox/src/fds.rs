@@ -25,6 +25,9 @@ fn inheritable(fdinfo: &str) -> bool {
 
 /// The descriptors above 2 that are not close-on-exec. An error where `/proc` cannot be read, so
 /// the caller can fail closed.
+///
+/// # Errors
+/// Returns the I/O error when `/proc/self/fd` cannot be read.
 pub fn inherited_fds() -> std::io::Result<Vec<u32>> {
     let mut found = Vec::new();
     for entry in std::fs::read_dir("/proc/self/fd")? {

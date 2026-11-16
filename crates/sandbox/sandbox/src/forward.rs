@@ -1,4 +1,6 @@
-//! The two ends of the endpoint-only network mode, std only. Inside the sandbox the forwarder
+//! The two ends of the endpoint-only network mode, std only.
+//!
+//! Inside the sandbox the forwarder
 //! listens on a loopback port and hands each connection to one unix socket; outside, the bridge
 //! listens on that socket and hands each connection to one loopback address. Both only copy
 //! bytes; neither reads, logs or keeps them, and neither can be pointed anywhere else: the
@@ -17,10 +19,16 @@ pub const MAX_LIVE: usize = 32;
 /// A stream that can be copied in both directions at once.
 pub trait Duplex: Read + Write + Send + Sized + 'static {
     /// A second handle on the same stream.
+    ///
+    /// # Errors
+    /// Returns the I/O error when the stream cannot be duplicated.
     fn dup(&self) -> io::Result<Self>;
     /// Tells the peer no more bytes are coming.
     fn finish(&self);
     /// Reads fail with a timeout after `limit` (`None`: wait for ever).
+    ///
+    /// # Errors
+    /// Returns the I/O error when the timeout cannot be set.
     fn limit_reads(&self, limit: Option<std::time::Duration>) -> io::Result<()>;
 }
 
@@ -120,6 +128,9 @@ pub struct NotLoopback;
 
 impl Loopback {
     /// `host` and `port`, if the host is exactly `127.0.0.1`.
+    ///
+    /// # Errors
+    /// Returns `NotLoopback` unless `host` is exactly `127.0.0.1` and `port` is not 0.
     pub fn new(host: &str, port: u16) -> Result<Self, NotLoopback> {
         match host.parse::<Ipv4Addr>() {
             Ok(ip) if ip == Ipv4Addr::LOCALHOST && port != 0 => {
@@ -193,6 +204,9 @@ pub struct Bridge {
 
 impl Bridge {
     /// Listens on `path` (which must not exist) and bridges to `target`.
+    ///
+    /// # Errors
+    /// Returns the I/O error when the socket cannot be created at `path`.
     pub fn start(path: &Path, target: Loopback) -> io::Result<Self> {
         Listening::start(path, move |client, held| {
             let Ok(upstream) = TcpStream::connect(SocketAddr::V4(target.0)) else {

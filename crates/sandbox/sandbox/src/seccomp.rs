@@ -237,11 +237,19 @@ impl Rule {
 }
 
 /// The jump from the instruction at `from` to the one at `to`, as a one-byte offset.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "the only failure is the one-byte overflow, which `TooLong` says in full"
+)]
 fn jump(from: usize, to: usize) -> Result<u8, SeccompFault> {
     u8::try_from(to - from - 1).map_err(|_| SeccompFault::TooLong)
 }
 
 /// The default filter, as the bytes bubblewrap reads from its `--seccomp` descriptor.
+///
+/// # Errors
+/// Returns `SeccompFault::Unsupported` on an architecture without a system call table, and
+/// `SeccompFault::TooLong` when the program outgrows a one-byte jump.
 pub fn default_filter() -> Result<Vec<u8>, SeccompFault> {
     let table = TABLE.as_ref().ok_or(SeccompFault::Unsupported)?;
     let rules: Vec<Rule> = table

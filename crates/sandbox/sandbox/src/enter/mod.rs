@@ -1,4 +1,6 @@
-//! The exec stage inside the sandbox: a small program that bubblewrap runs as the agent's
+//! The exec stage inside the sandbox.
+//!
+//! A small program that bubblewrap runs as the agent's
 //! command. It applies a Landlock ruleset to itself, reports the level it reached on standard
 //! error in one fixed line (`bardo-sandbox-enter: landlock=<word>`), and then replaces itself with
 //! the agent. Landlock is a second layer behind bubblewrap and the syscall filter: bubblewrap
@@ -24,7 +26,9 @@ pub const INSIDE_ENTER: &str = "/run/bardo/sandbox/enter";
 #[cfg(all(target_os = "linux", feature = "landlock"))]
 pub use apply::apply;
 
-/// The exec stage's `main`, as a function so any binary can be it:
+/// The exec stage's `main`, as a function so any binary can be it.
+///
+/// Its arguments are
 /// `NAME [--read P]... [--write P]... [--device P]... NETWORK -- PROGRAM [ARGS...]`.
 /// Exits 2 on words it refuses, 3 when Landlock fails in a way that is not "not available", and
 /// 127 when the program cannot be started.

@@ -29,6 +29,9 @@ pub struct Ports(Vec<u16>);
 
 impl Ports {
     /// These ports; none, or port 0, is a fault.
+    ///
+    /// # Errors
+    /// Returns `PolicyFault::BadPorts` when `ports` is empty or holds port 0.
     pub fn new(ports: Vec<u16>) -> Result<Self, PolicyFault> {
         if ports.is_empty() || ports.contains(&0) {
             return Err(PolicyFault::BadPorts);
@@ -76,6 +79,9 @@ pub struct EgressPolicy {
 
 impl EgressPolicy {
     /// A policy; an empty `allow` is a fault.
+    ///
+    /// # Errors
+    /// Returns `PolicyFault::NoAllow` when `allow` is empty.
     pub fn new(
         allow: Vec<HostPattern>,
         deny: Vec<HostPattern>,
@@ -88,6 +94,10 @@ impl EgressPolicy {
     }
 
     /// Whether the agent may ask for `host` on `port`. This is the check before any lookup.
+    ///
+    /// # Errors
+    /// Returns the `Refusal` naming the first rule that stops it: a port not allowed, a deny entry, or
+    /// no allow entry.
     pub fn check(&self, host: &Host, port: u16) -> Result<(), Refusal> {
         if !self.ports.allows(port) {
             return Err(Refusal::Port);
@@ -104,6 +114,10 @@ impl EgressPolicy {
 
     /// Whether the proxy may connect to `addr`, an address the checked name resolved to (or the
     /// literal the agent gave, which `check` already matched against an exact entry).
+    ///
+    /// # Errors
+    /// Returns `Refusal::Denied` when a deny entry names `addr`, and `Refusal::SpecialAddress` when it is
+    /// in a special range and no allow entry names it exactly.
     pub fn check_addr(&self, addr: IpAddr) -> Result<(), Refusal> {
         if self.deny.iter().any(|p| p.is_addr(addr)) {
             return Err(Refusal::Denied);

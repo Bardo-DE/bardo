@@ -208,6 +208,10 @@ fn target(name: &str, port: u16) -> Target {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of request heads and the fault each must give: a flat list of cases"
+)]
 fn request_heads_parse_or_name_the_fault() {
     let long = format!(
         "GET http://{}.example.com/ HTTP/1.1\r\n\r\n",

@@ -1,4 +1,6 @@
-//! What the exec stage is told: the paths and the network rule, as words before a `--`, built by
+//! What the exec stage is told.
+//!
+//! The paths and the network rule, as words before a `--`, built by
 //! the same code that builds the bubblewrap command line (`build`) and parsed strictly here.
 //! `words` and `parse` are each other's inverse, so the two cannot drift.
 
@@ -155,6 +157,10 @@ impl EnterPlan {
 
     /// The plan and the program words after the separator. Strict: an unknown word, a missing
     /// value, a bad path, two network words or none, no `--`, or no program is a fault.
+    ///
+    /// # Errors
+    /// Returns the `EnterFault` for an unknown word, a missing value, a bad path, two network words or
+    /// none, a missing `--`, or no program.
     pub fn parse(
         args: impl IntoIterator<Item = String>,
     ) -> Result<(Self, Vec<String>), EnterFault> {

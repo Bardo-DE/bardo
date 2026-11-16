@@ -29,7 +29,9 @@ use crate::sandbox::{EnvVar, Network};
 use base_path::AbsPath;
 use serde::{Deserialize, Serialize};
 
-/// Where a host keeps the resolver file `/etc/resolv.conf` points at, when it is a link into a
+/// The resolver files a host keeps behind `/etc/resolv.conf`.
+///
+/// Where the host keeps the file `/etc/resolv.conf` points at, when it is a link into a
 /// directory the sandbox empties (`/run`): systemd-resolved, `NetworkManager`, resolvconf, connman.
 /// With the host's network, each that exists is bound back read-only so names resolve; the rest
 /// of `/run` (the session bus, other sockets) stays hidden.
@@ -112,6 +114,10 @@ pub struct NetFault;
 impl AgentNet {
     /// The plan for `mode`, given the endpoint when there is one. A mismatch is a fault, never a
     /// silent downgrade or upgrade.
+    ///
+    /// # Errors
+    /// Returns `NetFault` when `mode` and `endpoint` do not match: the endpoint-only and allow-list
+    /// modes need an endpoint, the others take none.
     pub fn of(mode: NetworkMode, endpoint: Option<EndpointBind>) -> Result<Self, NetFault> {
         match (mode, endpoint) {
             (NetworkMode::None, None) => Ok(AgentNet::None),

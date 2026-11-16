@@ -7,6 +7,9 @@ use std::net::{IpAddr, ToSocketAddrs};
 /// Turns a host name into addresses.
 pub trait Resolver: Send + Sync + std::fmt::Debug {
     /// The addresses of `name`. An empty list or an error is a failed lookup.
+    ///
+    /// # Errors
+    /// Returns the I/O error of the lookup.
     fn resolve(&self, name: &str, port: u16) -> io::Result<Vec<IpAddr>>;
 }
 

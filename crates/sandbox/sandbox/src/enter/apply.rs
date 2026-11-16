@@ -14,6 +14,9 @@ const ABI_TOP: ABI = ABI::V9;
 const ABI_NET: ABI = ABI::V4;
 
 /// Restricts this process (and what it execs) to `plan`, and says how far the kernel went.
+///
+/// # Errors
+/// Returns the `RulesetError` when the Landlock ruleset cannot be built or applied to this process.
 pub fn apply(plan: &EnterPlan) -> Result<LandlockLevel, RulesetError> {
     let all = AccessFs::from_all(ABI_TOP);
     let device = AccessFs::from_read(ABI_TOP) | AccessFs::WriteFile | AccessFs::IoctlDev;

@@ -98,6 +98,9 @@ impl BwrapSandbox {
 
     /// Writes the seccomp filter to a new file at `path` (mode 0600; it must not exist), for
     /// `agent_command`. Nothing is written, and `Ok` is returned, when the filter is off.
+    ///
+    /// # Errors
+    /// Returns the I/O error when the file exists already or cannot be created or written.
     pub fn write_filter(&self, path: &AbsPath) -> std::io::Result<()> {
         use std::io::Write;
         use std::os::unix::fs::OpenOptionsExt;
@@ -119,6 +122,11 @@ impl BwrapSandbox {
     /// When the seccomp filter is on, `filter` must name a file written with `write_filter`;
     /// without one this is `StartFault::FilterFile`, never an unfiltered agent. Every
     /// descriptor the caller opens before spawning must be close-on-exec (see `inherited_fds`).
+    ///
+    /// # Errors
+    /// Returns `StartFault::Cannot` when the sandbox cannot confine `run.cwd`,
+    /// `StartFault::InheritedFds` when a descriptor would leak, and `StartFault::FilterFile` when
+    /// the seccomp filter is on and no `filter` file was given.
     pub fn agent_command(
         &self,
         run: &AgentRun,
@@ -140,6 +148,9 @@ impl BwrapSandbox {
     }
 
     /// `detect_with` for the default hardening: cgroup limits, the session of this process.
+    ///
+    /// # Errors
+    /// The same as [`Self::detect_with`].
     pub fn detect(path: &str) -> Result<Self, CannotSandbox> {
         Self::detect_with(path, &Hardening::default(), &UserSession::from_env())
     }
@@ -147,6 +158,11 @@ impl BwrapSandbox {
     /// Finds `bwrap` in the `:`-separated `path`, checks that the kernel lets it make the
     /// namespaces (one throwaway run), and that `hardening` can be applied. Where a limit that
     /// was asked for cannot be applied this is an error, never a weaker sandbox.
+    ///
+    /// # Errors
+    /// Returns `CannotSandbox` naming why: no `bwrap` on `path`, the kernel or `AppArmor` refusing
+    /// the namespaces, the seccomp filter or the resource limits not applicable here, or an
+    /// unsupported platform.
     pub fn detect_with(
         path: &str,
         hardening: &Hardening,
@@ -165,6 +181,10 @@ impl BwrapSandbox {
             return Err(refusal_at(Path::new(RESTRICT_USERNS)));
         }
         let filter = if hardening.seccomp {
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "`CannotSandbox` is a plain word that is complete by itself: either way no filter can be made here"
+            )]
             let bytes = default_filter().map_err(|_| CannotSandbox::SeccompUnavailable)?;
             if !bwrap_runs(&program, &["--seccomp", "0"], Some(&bytes)) {
                 return Err(CannotSandbox::SeccompUnavailable);
@@ -191,8 +211,10 @@ impl BwrapSandbox {
 /// A pipe already holding `bytes` (a filter is far below the pipe's capacity), read end only.
 fn filter_pipe(bytes: &[u8]) -> Result<Stdio, StartFault> {
     use std::io::Write;
-    let (reader, mut writer) = std::io::pipe().map_err(|_| StartFault::Spawn)?;
-    writer.write_all(bytes).map_err(|_| StartFault::Spawn)?;
+    let (reader, mut writer) = std::io::pipe().map_err(|e| StartFault::Spawn(e.to_string()))?;
+    writer
+        .write_all(bytes)
+        .map_err(|e| StartFault::Spawn(e.to_string()))?;
     Ok(Stdio::from(reader))
 }
 

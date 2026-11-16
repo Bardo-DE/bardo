@@ -248,8 +248,8 @@ fn the_exec_stage_starts_the_agent_and_its_plan_names_what_bubblewrap_mounts() {
 #[test]
 fn without_the_stage_nothing_changes() {
     let env = Vec::new();
-    let argv = Argv::new("agent", &[]).expect("argv");
-    let run = AgentRun::new(argv, abs("/work/project"), env, AgentNet::None);
+    let command = Argv::new("agent", &[]).expect("argv");
+    let run = AgentRun::new(command, abs("/work/project"), env, AgentNet::None);
     let args = agent_bwrap_args(&run, &Profile::bare());
     assert!(!args.iter().any(|a| a == INSIDE_ENTER));
     assert_eq!(args.last().map(String::as_str), Some("agent"));

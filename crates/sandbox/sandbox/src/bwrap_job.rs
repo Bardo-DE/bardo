@@ -65,11 +65,15 @@ impl BwrapJob {
         keep: usize,
         stdin: Stdio,
     ) -> Result<Self, StartFault> {
-        let (mut reader, writer) = std::io::pipe().map_err(|_| StartFault::Spawn)?;
-        let errors = writer.try_clone().map_err(|_| StartFault::Spawn)?;
+        let (mut reader, writer) = std::io::pipe().map_err(|e| StartFault::Spawn(e.to_string()))?;
+        let errors = writer
+            .try_clone()
+            .map_err(|e| StartFault::Spawn(e.to_string()))?;
         command.stdin(stdin).stdout(writer).stderr(errors);
         own_group(&mut command);
-        let child = command.spawn().map_err(|_| StartFault::Spawn)?;
+        let child = command
+            .spawn()
+            .map_err(|e| StartFault::Spawn(e.to_string()))?;
         // The command still holds the write ends; closing them lets the reader see the end.
         drop(command);
         let tail = Arc::new(Mutex::new(Tail::new(keep)));

@@ -108,6 +108,9 @@ fn first_line_too_long(bytes: &[u8]) -> bool {
 }
 
 /// Reads until the blank line that ends the headers, within `wait` and `MAX_HEAD`.
+///
+/// # Errors
+/// Returns the `BadRequest` for a head that is too long, late, cut off, empty, or unreadable.
 pub fn read_head<S: Duplex>(stream: &mut S, wait: Duration) -> Result<Head, BadRequest> {
     let deadline = Instant::now() + wait;
     let mut bytes: Vec<u8> = Vec::new();
@@ -209,6 +212,10 @@ fn http_authority(target: &str) -> Result<&str, BadRequest> {
 
 /// The request in `head`: its first line says what it wants, and no line is longer than
 /// [`MAX_LINE`]. The headers are not read, only bounded.
+///
+/// # Errors
+/// Returns the `BadRequest` for a head with an over-long line, a malformed request line, a target
+/// without a valid host, or a port that is not 1 to 65535.
 pub fn parse_head(head: &[u8]) -> Result<Request, BadRequest> {
     if head
         .split(|b| *b == b'\n')
@@ -220,7 +227,9 @@ pub fn parse_head(head: &[u8]) -> Result<Request, BadRequest> {
         .windows(2)
         .position(|w| w == b"\r\n")
         .ok_or(BadRequest::Malformed)?;
-    let line = std::str::from_utf8(&head[..line_end]).map_err(|_| BadRequest::Malformed)?;
+    let Ok(line) = std::str::from_utf8(&head[..line_end]) else {
+        return Err(BadRequest::Malformed);
+    };
     let words: Vec<&str> = line.split(' ').collect();
     let &[method, target, version] = words.as_slice() else {
         return Err(BadRequest::Malformed);

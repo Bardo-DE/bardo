@@ -1,4 +1,6 @@
-//! The filtering proxy of the allow-list network mode. It listens on a unix socket (the one the
+//! The filtering proxy of the allow-list network mode.
+//!
+//! It listens on a unix socket (the one the
 //! forwarder inside the sandbox hands every connection to), reads one proxy request, asks the
 //! policy, and either answers a refusal or connects out and copies bytes both ways.
 //!
@@ -100,6 +102,10 @@ impl Gate {
         self.policy
             .check(&target.host, target.port)
             .map_err(Failure::Refused)?;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "the agent is told only that the host is unreachable, whatever the lookup error was"
+        )]
         let addrs = match &target.host {
             Host::Addr(addr) => vec![*addr],
             Host::Name(name) => self
@@ -191,6 +197,9 @@ pub struct Proxy {
 
 impl Proxy {
     /// Listens on `path` (which must not exist) and serves each connection through `gate`.
+    ///
+    /// # Errors
+    /// Returns the I/O error when the socket cannot be created at `path`.
     pub fn start(path: &Path, gate: Gate) -> io::Result<Self> {
         Listening::start(path, move |client, held| {
             let gate = gate.clone();

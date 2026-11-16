@@ -106,6 +106,10 @@ fn literal(text: &str) -> Option<IpAddr> {
 
 impl Host {
     /// The host in `text`: an address literal or a name. Lower-cased, one trailing dot dropped.
+    ///
+    /// # Errors
+    /// Returns the `HostFault` naming why `text` is not a usable host or pattern (empty, bad
+    /// characters, a misplaced `*`, and the like).
     pub fn parse(text: &str) -> Result<Self, HostFault> {
         clean(text)?;
         match literal(text) {
@@ -138,6 +142,10 @@ pub enum HostPattern {
 
 impl HostPattern {
     /// The entry in `text`. Case does not matter and one trailing dot is ignored.
+    ///
+    /// # Errors
+    /// Returns the `HostFault` naming why `text` is not a usable host or pattern (empty, bad
+    /// characters, a misplaced `*`, and the like).
     pub fn parse(text: &str) -> Result<Self, HostFault> {
         clean(text)?;
         if let Some(addr) = literal(text) {
