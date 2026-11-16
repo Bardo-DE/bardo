@@ -12,8 +12,11 @@ use std::fmt::Debug;
 pub trait Desk: Debug + Send + Sync {
     /// The engines now: where each stands and what can be done about it.
     fn rows(&self) -> Work<'_, Vec<EngineRow>>;
-    /// Starts downloading `engine` for `scope`; answers at once, the rows follow it. `Err` is the
-    /// reason.
+    /// Starts downloading `engine` for `scope`; answers at once, the rows follow it.
+    ///
+    /// # Errors
+    ///
+    /// The `EngineFailure` that says why the download could not start.
     fn install(&self, engine: &str, scope: InstallScope) -> Result<(), EngineFailure>;
     /// Stops the download of `engine`.
     fn cancel(&self, engine: &str);

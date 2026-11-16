@@ -108,9 +108,10 @@ impl OnEngines {
             .map(|installs| installs.standing(kind));
         let standing = match (here, listed.map(|engine| &engine.state)) {
             (Some(Standing::Installing(thousandths)), _) => EngineStanding::Installing(thousandths),
-            (_, Some(EngineState::Found(_))) => EngineStanding::Ready,
             (_, Some(EngineState::Changed(_))) => EngineStanding::Changed,
-            (Some(Standing::Ready(_)), _) => EngineStanding::Ready,
+            (_, Some(EngineState::Found(_))) | (Some(Standing::Ready(_)), _) => {
+                EngineStanding::Ready
+            }
             (Some(Standing::Failed(why)), _) => EngineStanding::Failed(failure_of(why)),
             _ => EngineStanding::NotInstalled,
         };
@@ -137,7 +138,7 @@ fn failure_of(why: Failure) -> EngineFailure {
         Failure::Unsupported => EngineFailure::Unsupported,
         Failure::Package => EngineFailure::Package,
         Failure::Cancelled => EngineFailure::Cancelled,
-        _ => EngineFailure::Other,
+        Failure::Other => EngineFailure::Other,
     }
 }
 

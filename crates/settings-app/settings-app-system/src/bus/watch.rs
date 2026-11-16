@@ -44,9 +44,15 @@ async fn relay_matching(mut stream: MessageStream, matters: Matters, out: Ticker
     }
 }
 
-/// The ticks for the service `name` changing hands and for each signal it sends that `matters`,
-/// subscribed before anyone reads, so no change falls between the reading and the listening. The
-/// relays end with the ticks.
+/// The ticks for the service `name` changing hands and for each signal it sends that `matters`.
+///
+/// They are subscribed before anyone reads, so no change falls between the reading and the
+/// listening. The relays end with the ticks.
+///
+/// # Errors
+///
+/// `Absence::Failed` when the system bus cannot be reached or the subscription is not taken in
+/// time.
 pub async fn watch_service(
     bus: &BusSource,
     name: &'static str,
@@ -57,6 +63,10 @@ pub async fn watch_service(
 }
 
 /// [`watch_service`] on a connection already made (the session bus, for the shell's names).
+///
+/// # Errors
+///
+/// `Absence::Failed` when the subscription is not taken in time.
 pub async fn watch_on(
     connection: &Connection,
     name: &'static str,
@@ -74,9 +84,8 @@ pub async fn watch_on(
         let signals = MessageStream::for_match_rule(rule, connection, None).await?;
         Ok::<_, zbus::Error>((owners, signals))
     };
-    let (owners, signals) = match within(Deadline::READ, peer::DESKTOP, subscribed).await {
-        Ok(Ok(streams)) => streams,
-        Ok(Err(_)) | Err(_) => return Err(Absence::Failed),
+    let Ok(Ok((owners, signals))) = within(Deadline::READ, peer::DESKTOP, subscribed).await else {
+        return Err(Absence::Failed);
     };
     let (ticker, ticks) = Ticks::channel();
     Ok(ticks

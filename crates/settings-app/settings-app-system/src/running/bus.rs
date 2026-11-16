@@ -28,7 +28,7 @@ fn run_of(row: &RunningModel) -> ModelRun {
         RunState::Stopping => RunStanding::Stopping,
         RunState::Retrying => RunStanding::Retrying,
         RunState::Failed => RunStanding::Failed(row.reason.clone()),
-        _ => RunStanding::Stopped,
+        RunState::Stopped => RunStanding::Stopped,
     };
     ModelRun {
         model: row.model.clone(),

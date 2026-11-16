@@ -26,7 +26,7 @@ fn failure_of(error: &zbus::Error) -> MemoryFailure {
     match classify(error) {
         BusFailure::NoDaemon => MemoryFailure::Absent,
         BusFailure::Denied(_) => MemoryFailure::Trouble(Trouble::NotAllowed),
-        _ => MemoryFailure::Trouble(Trouble::Failed),
+        BusFailure::Other(_) => MemoryFailure::Trouble(Trouble::Failed),
     }
 }
 

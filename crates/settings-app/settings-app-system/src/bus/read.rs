@@ -43,7 +43,7 @@ pub(crate) async fn read(
 async fn pass(module: &impl Rows, valued: fn(&KeyKind) -> bool) -> Result<Described, LiveError> {
     let keys = module.describe().await?;
     let mut values = BTreeMap::new();
-    let mut lists = BTreeMap::new();
+    let mut word_lists = BTreeMap::new();
     for spec in keys.iter().filter(|spec| valued(&spec.kind)) {
         match module.get(&spec.path).await? {
             toml::Value::String(word) => {
@@ -53,7 +53,7 @@ async fn pass(module: &impl Rows, valued: fn(&KeyKind) -> bool) -> Result<Descri
                 values.insert(spec.path.clone(), on.to_string());
             }
             toml::Value::Array(items) => {
-                lists.insert(spec.path.clone(), words_of(&items));
+                word_lists.insert(spec.path.clone(), words_of(&items));
             }
             _ => {}
         }
@@ -61,7 +61,7 @@ async fn pass(module: &impl Rows, valued: fn(&KeyKind) -> bool) -> Result<Descri
     Ok(Described {
         keys,
         values,
-        lists,
+        lists: word_lists,
     })
 }
 

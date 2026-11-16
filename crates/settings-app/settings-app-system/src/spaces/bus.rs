@@ -66,7 +66,7 @@ async fn tell_memory(
 ) -> Result<(), String> {
     let memory = match pinned_starting(bus, MEMORY_BUS).await {
         Ok(memory) => memory,
-        Err(Absence::NotRunning) => return without_memory(removal),
+        Err(Absence::NotRunning) => return without_memory(*removal),
         Err(_) => return Err(COULD_NOT_REMOVE.to_owned()),
     };
     let proxy = control(&memory).await.map_err(said(COULD_NOT_REMOVE))?;
@@ -79,14 +79,14 @@ async fn tell_memory(
     match told {
         Some(Ok(_)) => Ok(()),
         Some(Err(error)) if matches!(classify(&error), BusFailure::NoDaemon) => {
-            without_memory(removal)
+            without_memory(*removal)
         }
         Some(Err(_)) | None => Err(COULD_NOT_REMOVE.to_owned()),
     }
 }
 
 /// What a removal does when memory is not there: carries on when it keeps everything, else stops.
-fn without_memory(removal: &Removal) -> Result<(), String> {
+fn without_memory(removal: Removal) -> Result<(), String> {
     if needs_memory(removal) {
         Err(MEMORY_NOT_RUNNING.to_owned())
     } else {

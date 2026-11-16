@@ -40,7 +40,7 @@ fn reason_of(error: &ClientError) -> ComputersReason {
             ComputerReason::NotAnswering => ComputersReason::NotAnswering,
             ComputerReason::NotAsking => ComputersReason::NotAsking,
             ComputerReason::TooManyAsking => ComputersReason::TooManyAsking,
-            _ => ComputersReason::Failed,
+            ComputerReason::Other(_) => ComputersReason::Failed,
         },
         ClientError::Transport(TransportError::Denied(_)) => ComputersReason::NotAllowed,
         _ => ComputersReason::Failed,

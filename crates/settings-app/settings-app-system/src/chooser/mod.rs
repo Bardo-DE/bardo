@@ -1,6 +1,7 @@
-//! A folder or a picture chosen by the person in the desktop's own chooser (the file chooser
-//! portal), never typed: the one way a Strata they already have is pointed at, and the one way a
-//! wallpaper is added.
+//! A folder or a picture chosen by the person in the desktop's own chooser, never typed.
+//!
+//! The chooser is the file chooser portal: the one way a Strata they already have is pointed at,
+//! and the one way a wallpaper is added.
 
 mod bus;
 

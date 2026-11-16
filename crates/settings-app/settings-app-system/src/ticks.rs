@@ -23,6 +23,10 @@ pub struct Ticker(Sender<()>);
 impl Ticker {
     /// Wakes the listener. A tick that is already waiting absorbs this one; `Err` when the
     /// listener has gone, which is the producer's cue to stop.
+    ///
+    /// # Errors
+    ///
+    /// `Gone` when the listener has gone.
     pub fn tick(&self) -> Result<(), Gone> {
         match self.0.try_send(()) {
             Ok(()) | Err(TrySendError::Full(())) => Ok(()),

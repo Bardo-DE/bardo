@@ -51,13 +51,12 @@ impl MemoryLink for FakeMemory {
 
     fn confirm(&self, pairs: Vec<SettingPair>) -> Work<'_, Result<(), MemoryFailure>> {
         let mut book = locked(&self.0);
-        let done = match book.failure {
-            Some(failure) => Err(failure),
-            None => {
-                book.waiting
-                    .retain(|waiting| pairs.iter().all(|pair| pair.key != waiting.key));
-                Ok(())
-            }
+        let done = if let Some(failure) = book.failure {
+            Err(failure)
+        } else {
+            book.waiting
+                .retain(|waiting| pairs.iter().all(|pair| pair.key != waiting.key));
+            Ok(())
         };
         book.confirmed.push(pairs);
         Box::pin(std::future::ready(done))

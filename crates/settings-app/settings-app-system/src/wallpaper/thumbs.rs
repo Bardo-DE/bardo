@@ -16,6 +16,7 @@ use anyview_platform::portable::FreedesktopThumbnails;
 use anyview_platform::{Env, PlatformError, ThumbPixels, ThumbSize, ThumbnailCache, file_uri};
 use md5::{Digest, Md5};
 use settings_app_files::CacheHome;
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 /// The size kept: 256 pixels on the longer side.
@@ -85,6 +86,11 @@ impl Thumbnails {
 
     /// The small picture of the file at `source`: the one the cache holds for this version of it, or
     /// one made now and kept. Blocking, for a worker thread.
+    ///
+    /// # Errors
+    ///
+    /// `ThumbFault::NotAbsolute` for a relative path; otherwise the fault of reading, decoding or
+    /// storing the picture.
     pub fn of(&self, source: &Path) -> Result<PathBuf, ThumbFault> {
         #[expect(
             clippy::map_err_ignore,
@@ -105,10 +111,10 @@ impl Thumbnails {
     /// Where the small picture of `file` is: the MD5 of the file's address, as the specification
     /// names it (the name the cache's writer gives).
     fn file_of(&self, file: &FilePath) -> PathBuf {
-        let name: String = Md5::digest(file_uri(file).as_bytes())
-            .iter()
-            .map(|byte| format!("{byte:02x}"))
-            .collect();
+        let mut name = String::new();
+        for byte in Md5::digest(file_uri(file).as_bytes()).iter() {
+            let _ = write!(name, "{byte:02x}");
+        }
         self.folder().join(format!("{name}.png"))
     }
 }

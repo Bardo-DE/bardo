@@ -11,6 +11,11 @@ use ui_peer::within;
 ///
 /// The whole read is under one action deadline besides each call's own: three modules of a
 /// row's worth of calls each must not hold an agent's request for as long as every call could.
+///
+/// # Errors
+///
+/// An `Absence` when no module could be read: the bus is missing, nothing is running, the callers
+/// are refused, or the whole read ran past its deadline.
 pub async fn read_accounts(bus: &BusSource) -> Result<AccountsPane, Absence> {
     within(Deadline::ACTION, peer::ACCOUNTS, read_modules(bus))
         .await

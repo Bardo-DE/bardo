@@ -1,6 +1,7 @@
-//! The account service as the Accounts pane meets it: the accounts the live modules list, and the
-//! sheet that adds an account (an identity or an AI key, through accountd), asked
-//! of the owner of the service's name that was confirmed.
+//! The account service as the Accounts pane meets it.
+//!
+//! That is the accounts the live modules list, and the sheet that adds an account (an identity or
+//! an AI key, through accountd), asked of the owner of the service's name that was confirmed.
 
 mod add;
 mod bus;

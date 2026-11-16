@@ -90,9 +90,9 @@ impl Agent {
 
 #[zbus::interface(name = "org.bluez.Agent1")]
 impl Agent {
-    async fn release(&self) {}
+    fn release(&self) {}
 
-    async fn cancel(&self) {}
+    fn cancel(&self) {}
 
     async fn request_authorization(&self, device: ObjectPath<'_>) -> Result<(), AgentError> {
         self.confirm(&device, PairingAsk::Allow).await
@@ -119,11 +119,9 @@ impl Agent {
         }
     }
 
-    async fn authorize_service(
-        &self,
-        _device: ObjectPath<'_>,
-        _uuid: &str,
-    ) -> Result<(), AgentError> {
+    fn authorize_service(&self, device: ObjectPath<'_>, uuid: &str) -> Result<(), AgentError> {
+        // Every service of a paired device is allowed: the pairing was what the person approved.
+        let _ = (device, uuid);
         Ok(())
     }
 

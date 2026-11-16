@@ -30,6 +30,10 @@ pub trait MemoryControl {
 
 /// The controls of the memory service whose owner was confirmed: calls go to that owner by its
 /// unique name.
+///
+/// # Errors
+///
+/// The `zbus::Error` when the proxy cannot be built for that owner.
 pub async fn control(memory: &Pinned) -> zbus::Result<MemoryControlProxy<'_>> {
     MemoryControlProxy::builder(&memory.connection)
         .destination(memory.destination())?

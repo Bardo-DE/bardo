@@ -23,7 +23,7 @@ fn owned(value: Value<'_>) -> OwnedValue {
 
 #[zbus::interface(name = "org.bardo.Spaces1")]
 impl Registry {
-    async fn list(&self) -> Vec<(String, Details)> {
+    fn list(&self) -> Vec<(String, Details)> {
         let rows = self.rows.lock().expect("rows").clone();
         rows.into_iter()
             .map(|(id, name)| {
@@ -39,7 +39,7 @@ impl Registry {
             .collect()
     }
 
-    async fn remove(&self, id: String) -> zbus::fdo::Result<()> {
+    fn remove(&self, id: String) -> zbus::fdo::Result<()> {
         self.log
             .lock()
             .expect("log")
@@ -58,7 +58,7 @@ struct Control {
 
 #[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl Control {
-    async fn remove_space(&self, space: String, removal: String) -> String {
+    fn remove_space(&self, space: String, removal: String) -> String {
         self.log
             .lock()
             .expect("log")

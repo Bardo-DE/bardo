@@ -51,21 +51,37 @@ impl Module {
     }
 
     /// The module's rows now.
+    ///
+    /// # Errors
+    ///
+    /// The `LiveError` the module answered with.
     pub async fn describe(&self) -> Result<LiveSchema, LiveError> {
         self.0.describe().await
     }
 
     /// A row's value.
+    ///
+    /// # Errors
+    ///
+    /// The `LiveError` the module answered with.
     pub async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         self.0.get(key).await
     }
 
     /// Sets a row.
+    ///
+    /// # Errors
+    ///
+    /// The `LiveError` the module answered with.
     pub async fn set(&self, key: &KeyPath, value: &toml::Value) -> Result<(), LiveError> {
         self.0.set(key, value).await
     }
 
     /// Runs an action row: a `set` of `true`.
+    ///
+    /// # Errors
+    ///
+    /// The `LiveError` the module answered with.
     pub async fn invoke(&self, key: &KeyPath) -> Result<(), LiveError> {
         self.set(key, &toml::Value::Boolean(true)).await
     }
@@ -82,6 +98,10 @@ impl Rows for Module {
 }
 
 /// The rows of `module` as they stand now, a value for each row `valued` picks out.
+///
+/// # Errors
+///
+/// The `Absence` the module's failure maps to, when its rows keep moving or a call fails.
 pub async fn reread(module: &Module, valued: fn(&KeyKind) -> bool) -> Result<Described, Absence> {
     read(module, valued).await
 }

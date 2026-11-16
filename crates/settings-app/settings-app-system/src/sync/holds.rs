@@ -48,8 +48,9 @@ pub async fn sync_of(syncd: &Pinned) -> Option<SyncProxy<'_>> {
         .ok()
 }
 
-/// Tells `tell` each hold the sync service starts or ends, until the bus goes away. It joins the
-/// service with `Watch` once subscribed, so holds already on arrive at once, and again each time
+/// Tells `tell` each hold the sync service starts or ends, until the bus goes away.
+///
+/// It joins the service with `Watch` once subscribed, so holds already on arrive at once, and again each time
 /// the service's name changes hands (its list of listeners is in its memory). A service that is
 /// not running is waited for, never started.
 pub async fn follow_holds(bus: &BusSource, mut tell: impl FnMut(HoldInput)) {
@@ -78,6 +79,7 @@ async fn watch(
     owners: &mut zbus::fdo::NameOwnerChangedStream,
     tell: &mut impl FnMut(HoldInput),
 ) -> Option<()> {
+    use zbus::export::futures_core::Stream;
     let Some(proxy) = sync_of(syncd).await else {
         return next_owner(owners).await;
     };
@@ -86,7 +88,6 @@ async fn watch(
     };
     // Holds already on come back as signals before this returns.
     let _ = answered(Deadline::READ, peer::SYNC, proxy.watch()).await;
-    use zbus::export::futures_core::Stream;
     loop {
         tokio::select! {
             owner = next_owner(owners) => return owner,

@@ -38,8 +38,8 @@ async fn dropping_the_ticks_ends_the_relays_that_fed_them() {
     let held = Arc::clone(&alive);
     let (_ticker, ticks) = Ticks::channel();
     let ticks = ticks.with_relay(tokio::spawn(async move {
-        let _held = held;
         std::future::pending::<()>().await;
+        drop(held);
     }));
     tokio::task::yield_now().await;
     assert_eq!(Arc::strong_count(&alive), 2, "the relay is running");

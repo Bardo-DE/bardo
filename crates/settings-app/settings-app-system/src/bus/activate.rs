@@ -9,9 +9,10 @@ use zbus::Connection;
 use zbus::fdo::DBusProxy;
 use zbus::names::WellKnownName;
 
-/// Asks the bus to start the daemon of each of `modules` (`StartServiceByName`), without waiting
-/// for any of them to come up: the pane that reads a daemon follows its name and reads it when it
-/// appears. A daemon that is already running is left alone. A name with no service file
+/// Asks the bus to start the daemon of each of `modules` (`StartServiceByName`).
+///
+/// It does not wait for any of them to come up: the pane that reads a daemon follows its name and
+/// reads it when it appears. A daemon that is already running is left alone. A name with no service file
 /// (`ServiceUnknown`), a refusal or a daemon that fails to start changes nothing: the daemon stays
 /// absent and its page says so, as before.
 pub async fn start(bus: &BusSource, modules: &[ModuleId]) {

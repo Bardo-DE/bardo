@@ -1,12 +1,12 @@
-//! Every call bardo-settings makes to another process runs under a deadline (audit DETENT-07), so a
-//! daemon that goes quiet, a stuck bus socket or a service waiting on a prompt costs one failed
-//! step and a sentence, never a pane or a window that waits for ever.
+//! Every call bardo-settings makes to another process runs under a deadline (audit DETENT-07).
+//!
+//! So a daemon that goes quiet, a stuck bus socket or a service waiting on a prompt costs one
+//! failed step and a sentence, never a pane or a window that waits for ever.
 //!
 //! The deadlines are quire's named ones (`Deadline::READ`, `ACTION`, `PROMPT`); a call picks the
 //! kind of wait it is and never writes a bare duration. Live-module calls (`LiveClient`) carry
 //! theirs inside; this is for the calls bardo-settings makes itself.
 
-use std::future::Future;
 use ui_peer::within;
 
 pub use ui_peer::Deadline;

@@ -173,8 +173,8 @@ struct Hosted<M> {
 }
 
 impl<M> fmt::Debug for Hosted<M> {
-    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
-        out.debug_struct("Hosted").finish_non_exhaustive()
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Hosted").finish_non_exhaustive()
     }
 }
 

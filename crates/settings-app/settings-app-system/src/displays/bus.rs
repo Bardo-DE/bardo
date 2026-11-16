@@ -130,7 +130,7 @@ fn outcome_words(outcome: ConfigOutcome) -> Result<(), String> {
         ConfigOutcome::Cancelled => {
             Err("The displays changed while this was being set. Try again.".to_owned())
         }
-        _ => Err("This display can\u{2019}t be set that way.".to_owned()),
+        ConfigOutcome::Failed => Err("This display can\u{2019}t be set that way.".to_owned()),
     }
 }
 

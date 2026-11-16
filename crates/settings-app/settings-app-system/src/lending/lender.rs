@@ -24,7 +24,7 @@ trait Lend: Debug + Send + Sync {
     fn disable(&self) -> Work<'_, Result<(), LendFailure>>;
 }
 
-fn failure_of(error: LendingError) -> LendFailure {
+fn failure_of(error: &LendingError) -> LendFailure {
     match error {
         LendingError::ShippedFileMissing => LendFailure::NotInstalled,
         LendingError::CouldNotWrite(_) => LendFailure::CouldNotSave,
@@ -37,7 +37,7 @@ fn existing_of(state: LendingState) -> Existing {
     match state {
         LendingState::NotInstalled => Existing::Absent,
         LendingState::Installed => Existing::Same,
-        _ => Existing::Different,
+        LendingState::Differs => Existing::Different,
     }
 }
 
@@ -51,11 +51,11 @@ impl<M: UnitManager + Debug + 'static> Lend for Over<M> {
     }
 
     fn enable(&self) -> Work<'_, Result<(), LendFailure>> {
-        Box::pin(async move { self.0.enable().await.map_err(failure_of) })
+        Box::pin(async move { self.0.enable().await.map_err(|error| failure_of(&error)) })
     }
 
     fn disable(&self) -> Work<'_, Result<(), LendFailure>> {
-        Box::pin(async move { self.0.disable().await.map_err(failure_of) })
+        Box::pin(async move { self.0.disable().await.map_err(|error| failure_of(&error)) })
     }
 }
 
@@ -64,10 +64,18 @@ impl<M: UnitManager + Debug + 'static> Lend for Over<M> {
 struct NoUnits;
 
 impl UnitManager for NoUnits {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "UnitManager is async; this manager is never asked and answers at once"
+    )]
     async fn reload(&self) -> Result<(), UnitFailure> {
         Err(UnitFailure(NO_SERVICES.to_owned()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "UnitManager is async; this manager is never asked and answers at once"
+    )]
     async fn restart(&self, _unit: &'static str) -> Result<(), UnitFailure> {
         Err(UnitFailure(NO_SERVICES.to_owned()))
     }
@@ -95,14 +103,14 @@ impl Lend for Session {
     fn enable(&self) -> Work<'_, Result<(), LendFailure>> {
         Box::pin(async move {
             let lending = self.lending().await?;
-            lending.enable().await.map_err(failure_of)
+            lending.enable().await.map_err(|error| failure_of(&error))
         })
     }
 
     fn disable(&self) -> Work<'_, Result<(), LendFailure>> {
         Box::pin(async move {
             let lending = self.lending().await?;
-            lending.disable().await.map_err(failure_of)
+            lending.disable().await.map_err(|error| failure_of(&error))
         })
     }
 }
@@ -166,6 +174,11 @@ impl Lender {
     }
 
     /// Sets sharing up; why not when it could not be.
+    ///
+    /// # Errors
+    ///
+    /// The `LendFailure` the change ended in, or `NoServices` when the session's services do not
+    /// answer in time.
     pub async fn enable(&self) -> Result<(), LendFailure> {
         within(Deadline::ACTION, peer::SERVICES, self.0.enable())
             .await
@@ -173,6 +186,10 @@ impl Lender {
     }
 
     /// Takes sharing away; why not when it could not be.
+    ///
+    /// # Errors
+    ///
+    /// As [`Self::enable`].
     pub async fn disable(&self) -> Result<(), LendFailure> {
         within(Deadline::ACTION, peer::SERVICES, self.0.disable())
             .await

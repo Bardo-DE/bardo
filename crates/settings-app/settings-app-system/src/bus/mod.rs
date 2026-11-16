@@ -1,6 +1,8 @@
-//! The bus every service is reached on: which bus to look on (`BusSource`), who vouches for the
-//! owner of a service's name, the daemons a pane reads, and the look-for-it-then-read-it steps
-//! the panes share. Nothing here starts a daemon unless a call says so.
+//! The bus every service is reached on.
+//!
+//! That is which bus to look on (`BusSource`), who vouches for the owner of a service's name, the
+//! daemons a pane reads, and the look-for-it-then-read-it steps the panes share. Nothing here
+//! starts a daemon unless a call says so.
 
 mod activate;
 mod attach;

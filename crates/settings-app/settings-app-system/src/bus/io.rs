@@ -46,6 +46,10 @@ pub trait ToAbsence {
 }
 
 /// `map_err(absence_of)` for an error that is passed by value.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "`map_err` hands the error over by value, so this has to take it that way"
+)]
 pub fn absence_of<E: ToAbsence>(error: E) -> Absence {
     error.absence()
 }
@@ -65,7 +69,7 @@ impl ToAbsence for zbus::Error {
         match classify(self) {
             BusFailure::NoDaemon => Absence::NotRunning,
             BusFailure::Denied(_) => Absence::NotPermitted,
-            _ => failed(self),
+            BusFailure::Other(_) => failed(self),
         }
     }
 }
@@ -84,7 +88,7 @@ impl ToAbsence for ClientError {
     fn absence(&self) -> Absence {
         match self {
             ClientError::Transport(transport) => transport.absence(),
-            _ => Absence::Failed,
+            ClientError::InferRefused(_) => Absence::Failed,
         }
     }
 }
@@ -103,7 +107,7 @@ impl ToAbsence for SpacesError {
     fn absence(&self) -> Absence {
         match self {
             SpacesError::Link(link) => link.absence(),
-            _ => Absence::Failed,
+            SpacesError::TooMany => Absence::Failed,
         }
     }
 }
@@ -120,12 +124,17 @@ pub fn plain(error: &LiveError) -> String {
         | LiveError::Failed(words)
         | LiveError::NotTheService(words)
         | LiveError::Timeout(words) => words.clone(),
-        _ => "The service did not answer as expected.".to_owned(),
+        LiveError::ZBus(_) => "The service did not answer as expected.".to_owned(),
     }
 }
 
 /// A connection to the bus. A bus that does not answer inside the read deadline (a socket that
 /// accepts and says nothing) is a failure, not a window that never opens.
+///
+/// # Errors
+///
+/// `Absence::NoBus` when there is no bus to look on, `Absence::Failed` when the connection fails or
+/// does not come up inside the read deadline.
 pub async fn connect(bus: &BusSource) -> Result<Connection, Absence> {
     within(Deadline::READ, peer::DESKTOP, dial(bus))
         .await
@@ -158,6 +167,10 @@ async fn name_owned(connection: &Connection, name: &str) -> Result<bool, Absence
 
 /// The signals that say the daemon's bus name changed hands, subscribed before anyone asks
 /// whether it is there, so no change falls between the question and the listening.
+///
+/// # Errors
+///
+/// `Absence::Failed` when the bus does not take the subscription inside the read deadline.
 pub async fn owner_changes(
     connection: &Connection,
     daemon: &Daemon,
@@ -226,12 +239,18 @@ pub async fn confirmed(
         .map_err(failed)?
 }
 
-/// A client of the daemon's module, only when the daemon is already on the bus: asking for the
-/// module of a daemon that is not running would start it, and opening Settings must not. The
-/// daemons a page reads are started when the page is shown (`activate::start`), by name, so
+/// A client of the daemon's module, only when the daemon is already on the bus.
+///
+/// Asking for the module of a daemon that is not running would start it, and opening Settings
+/// must not. The daemons a page reads are started when the page is shown (`activate::start`), by name, so
 /// this stays a look. The client asks the owner check before its first read and again whenever
 /// the name changes hands, so a program that merely took the name is `Unavailable` and is sent
 /// nothing, a typed secret included.
+///
+/// # Errors
+///
+/// `Absence::NotRunning` when nobody owns the daemon's name; otherwise the `Absence` that the
+/// bus's or the module's failure maps to.
 pub async fn open(
     bus: &BusSource,
     connection: &Connection,

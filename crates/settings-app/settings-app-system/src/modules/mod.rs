@@ -1,6 +1,7 @@
-//! Following a daemon's live settings module (`org.bardo.SettingsModule1`) as a pane does: look
-//! for it when the pane appears, read its rows, and read again each time it comes back or says a
-//! row changed. Looking never starts it (`Client::start` does that, once per page visit).
+//! Following a daemon's live settings module (`org.bardo.SettingsModule1`) as a pane does.
+//!
+//! Look for it when the pane appears, read its rows, and read again each time it comes back or
+//! says a row changed. Looking never starts it (`Client::start` does that, once per page visit).
 
 mod bus;
 #[cfg(feature = "testing")]

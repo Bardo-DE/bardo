@@ -11,6 +11,10 @@ use ui_settings::schema::KeyKind;
 use zbus::Connection;
 
 /// `daemon`'s module and its rows, when the daemon is already on the bus.
+///
+/// # Errors
+///
+/// The `Absence` of the daemon: not running, refusing this caller, not the service, or failing.
 pub async fn attach(
     bus: &BusSource,
     connection: &Connection,
@@ -24,6 +28,10 @@ pub async fn attach(
 
 /// Like [`attach`], listening for changes first, so none falls between the reading and the
 /// listening: what changes during the reading is heard after it.
+///
+/// # Errors
+///
+/// As [`attach`], and when the change stream cannot be opened.
 pub async fn attach_listening(
     bus: &BusSource,
     connection: &Connection,
@@ -38,6 +46,10 @@ pub async fn attach_listening(
 
 /// `daemon`'s module and its rows once, when the daemon is already on the bus: for a caller that
 /// asks a question, maybe sets a row, and follows nothing.
+///
+/// # Errors
+///
+/// As [`attach`], and when the bus cannot be reached.
 pub async fn open_once(
     bus: &BusSource,
     daemon: &Daemon,
@@ -49,6 +61,10 @@ pub async fn open_once(
 
 /// The rows of `daemon`'s module once, when the daemon is already on the bus: for a caller that
 /// asks one question and follows nothing.
+///
+/// # Errors
+///
+/// As [`open_once`].
 pub async fn read_once(
     bus: &BusSource,
     daemon: &Daemon,

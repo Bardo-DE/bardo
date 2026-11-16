@@ -1,5 +1,6 @@
-//! The person using this computer: their name and picture, for the card at the top of the
-//! sidebar. Read from AccountsService on the system bus, else from the passwd file and the
+//! The person using this computer: their name and picture, for the card at the top of the sidebar.
+//!
+//! Read from AccountsService on the system bus, else from the passwd file and the
 //! `.face` picture in their home folder. Nothing here starts a service.
 
 mod bus;

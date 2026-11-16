@@ -5,13 +5,14 @@ use crate::private_bus::PrivateBus;
 use settings_app_model::Absence;
 use settings_app_system::bus::{BusSource, Daemon, Vouch};
 use settings_app_system::modules::{Followed, ModulesLink, OnBus};
+use std::collections::BTreeMap;
 use std::sync::Mutex;
 use tokio::sync::mpsc::unbounded_channel;
 use ui_settings::live::{
     Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve,
 };
 use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };
 
 /// The bus name and path the module is served at.
@@ -37,10 +38,18 @@ impl Words {
 }
 
 impl LiveModule for Words {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LiveModule is async; this test module answers at once"
+    )]
     async fn permit(&self, _caller: &Caller, _access: Access) -> Verdict {
         self.policy
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LiveModule is async; this test module answers at once"
+    )]
     async fn describe(&self) -> LiveSchema {
         LiveSchema {
             version: 1,
@@ -55,16 +64,20 @@ impl LiveModule for Words {
                 page: Page::Accounts,
                 section: Section("Words".to_owned()),
                 exposure: Exposure::Basic,
-                labels: Default::default(),
-                unavailable: Default::default(),
-                groups: Default::default(),
-                places: Default::default(),
+                labels: WordLabels::default(),
+                unavailable: BTreeMap::default(),
+                groups: BTreeMap::default(),
+                places: BTreeMap::default(),
                 note: None,
                 agent: AgentSetting::HandsOff,
             }],
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LiveModule is async; this test module answers at once"
+    )]
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         match key.0.as_str() {
             ROW => Ok(toml::Value::String(
@@ -74,6 +87,10 @@ impl LiveModule for Words {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LiveModule is async; this test module answers at once"
+    )]
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         match (key.0.as_str(), value.as_str()) {
             (ROW, Some(word)) => {

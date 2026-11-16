@@ -18,11 +18,11 @@ pub async fn add_account(bus: &BusSource) -> AddEnd {
     let Ok(porter) = accountd.accounts() else {
         return AddEnd::Failed;
     };
-    let accounts = porter.accounts();
+    let registry = porter.accounts();
     let asked = answered(
         Deadline::PROMPT,
         peer::ACCOUNTS,
-        accounts.add(ProviderHint::Any, &ParentWindow::Unparented),
+        registry.add(ProviderHint::Any, &ParentWindow::Unparented),
     )
     .await;
     match asked {
