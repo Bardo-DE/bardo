@@ -93,6 +93,12 @@ fn an_error_status_and_anything_unreadable_say_nothing() {
         r#"{"ocs":{"meta":{"statuscode":200},"data":{}}}"#,
         r#"{"ocs":{"meta":{"statuscode":200},"data":{"capabilities":[]}}}"#,
     ] {
-        assert_eq!(parse_capabilities(text), Err(Error::Unreadable), "{text:?}");
+        assert!(
+            matches!(
+                parse_capabilities(text),
+                Err(Error::Unreadable | Error::Json(_))
+            ),
+            "{text:?}"
+        );
     }
 }

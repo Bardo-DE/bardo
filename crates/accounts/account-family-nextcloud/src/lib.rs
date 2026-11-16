@@ -34,7 +34,10 @@ fn fault(error: account_nextcloud_proto::Error) -> SignInFault {
         account_nextcloud_proto::Error::Unreachable | account_nextcloud_proto::Error::Insecure => {
             SignInFault::Unreachable
         }
-        account_nextcloud_proto::Error::Unreadable => SignInFault::Unreadable,
+        account_nextcloud_proto::Error::Unreadable
+        | account_nextcloud_proto::Error::Address(_)
+        | account_nextcloud_proto::Error::Request(_)
+        | account_nextcloud_proto::Error::Json(_) => SignInFault::Unreadable,
     }
 }
 

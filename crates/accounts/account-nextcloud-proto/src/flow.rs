@@ -60,8 +60,7 @@ pub fn start_request(server: &EndpointUrl) -> Result<Request<Vec<u8>>, Error> {
         .header(USER_AGENT, "Porter")
         .header(ACCEPT, "application/json")
         .body(Vec::new())
-        .ok()
-        .ok_or(Error::Unreadable)
+        .map_err(Error::Request)
 }
 
 /// What the server named for the flow.
@@ -99,8 +98,7 @@ pub fn poll_request(started: &Started) -> Result<Request<Vec<u8>>, Error> {
         .header(USER_AGENT, "Porter")
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .body(format!("token={}", started.token.expose()).into_bytes())
-        .ok()
-        .ok_or(Error::Unreadable)
+        .map_err(Error::Request)
 }
 
 /// What one poll's `response` came to.

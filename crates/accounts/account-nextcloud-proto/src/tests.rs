@@ -7,10 +7,10 @@ fn reply(status: u16) -> Response<Vec<u8>> {
 
 #[test]
 fn a_reply_is_a_refusal_a_server_failure_another_failure_or_a_success() {
-    assert_eq!(judged(&reply(401)).unwrap_err(), Error::Refused);
-    assert_eq!(judged(&reply(403)).unwrap_err(), Error::Refused);
-    assert_eq!(judged(&reply(502)).unwrap_err(), Error::Unreachable);
-    assert_eq!(judged(&reply(404)).unwrap_err(), Error::Unreadable);
+    assert!(matches!(judged(&reply(401)), Err(Error::Refused)));
+    assert!(matches!(judged(&reply(403)), Err(Error::Refused)));
+    assert!(matches!(judged(&reply(502)), Err(Error::Unreachable)));
+    assert!(matches!(judged(&reply(404)), Err(Error::Unreadable)));
     assert_eq!(judged(&reply(207)).unwrap().status(), 207);
 }
 

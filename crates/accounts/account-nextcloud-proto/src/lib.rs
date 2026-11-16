@@ -24,7 +24,7 @@ use http::header::AUTHORIZATION;
 use http::{HeaderValue, Request, Response};
 
 /// Why a request could not be built or a reply could not be used.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// The server refused the credential (401 or 403).
     #[error("the server refused the account")]
@@ -38,16 +38,23 @@ pub enum Error {
     /// A reply, or an address, that is not what Nextcloud sends.
     #[error("not a Nextcloud answer")]
     Unreadable,
+    /// The address is not a web URL.
+    #[error("the address is not a web URL")]
+    Address(#[source] base_ids::IdError),
+    /// The request could not be built.
+    #[error("the request could not be built")]
+    Request(#[source] http::Error),
+    /// The reply is not JSON.
+    #[error("the reply is not JSON")]
+    Json(#[source] serde_json::Error),
 }
 
 /// `url` as a web URL: `https`, or `http` to this computer.
 pub(crate) fn web(url: &EndpointUrl) -> Result<WebUrl, Error> {
-    WebUrl::try_from(url)
-        .ok()
-        .ok_or_else(|| match url.origin().scheme {
-            UrlScheme::Http => Error::Insecure,
-            _ => Error::Unreadable,
-        })
+    WebUrl::try_from(url).map_err(|cause| match url.origin().scheme {
+        UrlScheme::Http => Error::Insecure,
+        _ => Error::Address(cause),
+    })
 }
 
 /// `request` with `authorization` as its `Authorization` header.

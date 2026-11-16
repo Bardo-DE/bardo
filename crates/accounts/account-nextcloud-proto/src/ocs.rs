@@ -27,8 +27,7 @@ pub fn request(
         .header("OCS-APIRequest", "true")
         .header(ACCEPT, "application/json")
         .body(Vec::new())
-        .ok()
-        .ok_or(Error::Unreadable)?;
+        .map_err(Error::Request)?;
     Ok(authorized(request, authorization))
 }
 
@@ -57,7 +56,7 @@ pub fn capabilities(response: &Response<Vec<u8>>) -> Result<Vec<Claim>, Error> {
 /// [`Error::Unreadable`] when `json` is not JSON, or is not an OCS answer with a success status
 /// and a capabilities object.
 pub fn parse_capabilities(json: &str) -> Result<Vec<Claim>, Error> {
-    let root: Value = serde_json::from_str(json).ok().ok_or(Error::Unreadable)?;
+    let root: Value = serde_json::from_str(json).map_err(Error::Json)?;
     let ocs = root.get("ocs").ok_or(Error::Unreadable)?;
     let status = ocs
         .pointer("/meta/statuscode")

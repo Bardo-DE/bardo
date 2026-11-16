@@ -31,8 +31,7 @@ pub fn request(
         .header("OCS-APIRequest", "true")
         .header(ACCEPT, "application/json")
         .body(Vec::new())
-        .ok()
-        .ok_or(Error::Unreadable)?;
+        .map_err(Error::Request)?;
     Ok(authorized(request, authorization))
 }
 
@@ -82,18 +81,24 @@ mod tests {
         let server = EndpointUrl::parse("https://cloud.example.org").unwrap();
         for status in [200, 204, 401, 403] {
             assert_eq!(
-                revoked(&server, &reply(status)),
-                Ok(Revoked::Done),
+                revoked(&server, &reply(status)).unwrap(),
+                Revoked::Done,
                 "{status}"
             );
         }
         assert_eq!(
-            revoked(&server, &reply(404)),
-            Ok(Revoked::Manual(
+            revoked(&server, &reply(404)).unwrap(),
+            Revoked::Manual(
                 EndpointUrl::parse("https://cloud.example.org/settings/user/security").unwrap()
-            ))
+            )
         );
-        assert_eq!(revoked(&server, &reply(500)), Err(Error::Unreachable));
-        assert_eq!(revoked(&server, &reply(400)), Err(Error::Unreadable));
+        assert!(matches!(
+            revoked(&server, &reply(500)),
+            Err(Error::Unreachable)
+        ));
+        assert!(matches!(
+            revoked(&server, &reply(400)),
+            Err(Error::Unreadable)
+        ));
     }
 }

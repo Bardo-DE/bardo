@@ -94,13 +94,13 @@ fn the_start_is_a_post_to_the_login_flow_and_the_poll_posts_the_token() {
         poll.headers()[CONTENT_TYPE],
         "application/x-www-form-urlencoded"
     );
-    assert_eq!(started(&reply(404, "")), Err(Error::Unreadable));
+    assert!(matches!(started(&reply(404, "")), Err(Error::Unreadable)));
 }
 
 #[test]
 fn plain_http_to_another_computer_builds_no_request() {
     let server = EndpointUrl::parse("http://cloud.example.org").unwrap();
-    assert_eq!(start_request(&server).unwrap_err(), Error::Insecure);
+    assert!(matches!(start_request(&server), Err(Error::Insecure)));
     let local = EndpointUrl::parse("http://127.0.0.1:8080").unwrap();
     start_request(&local).unwrap();
 }
