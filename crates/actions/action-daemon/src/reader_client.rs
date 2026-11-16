@@ -32,22 +32,32 @@ impl ReaderClient {
         session: &SessionId,
         ask: &ReaderAsk,
     ) -> Result<Value, ReaderError> {
-        let ask = serde_json::to_string(ask)
-            .ok()
-            .ok_or(ReaderError::Unparseable)?;
-        let proxy = ReaderProxy::new(&self.connection)
-            .await
-            .ok()
-            .ok_or(ReaderError::ModelUnavailable)?;
+        let ask = serde_json::to_string(ask).map_err(|error| {
+            tracing::warn!(error = %error, "the reader's ask could not be written as JSON");
+            ReaderError::Unparseable
+        })?;
+        let proxy = ReaderProxy::new(&self.connection).await.map_err(|error| {
+            tracing::warn!(error = %error, "readerd is not on the bus");
+            ReaderError::ModelUnavailable
+        })?;
         let answer = proxy
             .extract(session.as_str(), &ask, &Details::new())
             .await
-            .ok()
-            .ok_or(ReaderError::ModelUnavailable)?;
-        serde_json::from_str::<Result<Value, ReaderError>>(&answer)
-            .ok()
-            .ok_or(ReaderError::Unparseable)?
+            .map_err(|error| {
+                tracing::warn!(error = %error, "readerd's Extract call failed");
+                ReaderError::ModelUnavailable
+            })?;
+        decode(&answer)?
     }
+}
+
+/// The JSON of `Result<Value, ReaderError>` readerd answered.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "the decode error quotes the reply, which holds the model's text and the person's data"
+)]
+fn decode(answer: &str) -> Result<Result<Value, ReaderError>, ReaderError> {
+    serde_json::from_str(answer).map_err(|_| ReaderError::Unparseable)
 }
 
 impl Reader for ReaderClient {

@@ -46,14 +46,18 @@ pub async fn read<T: Transport>(
     let mut session = transport
         .open(&need_of(inputs), request.class, request.tier)
         .await
-        .ok()
-        .ok_or(ReaderError::ModelUnavailable)?;
+        .map_err(|error| {
+            tracing::warn!(error = %error, "the reader could not open a model session");
+            ReaderError::ModelUnavailable
+        })?;
     // `turn` reads before it believes a failed write: a daemon that refuses a session hangs up
     // after writing the refusal.
     let reply = turn(&mut session, InferRequest::Chat(request), &mut Discard)
         .await
-        .ok()
-        .ok_or(ReaderError::ModelUnavailable)?;
+        .map_err(|error| {
+            tracing::warn!(error = %error, "the reader's model turn failed");
+            ReaderError::ModelUnavailable
+        })?;
     match reply {
         InferReply::Chat(chat) => match chat.stop {
             StopReason::EndTurn | StopReason::StopSequence => answer_of(&chat.text, &ask.want),

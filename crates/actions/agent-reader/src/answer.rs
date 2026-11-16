@@ -17,24 +17,25 @@ fn text_of(json: &Json) -> Result<&str, ReaderError> {
 }
 
 /// One JSON value as the value its schema asks for.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "the cause quotes the model's reply, which must not reach an error or a log"
+)]
 fn read(json: &Json, schema: &ValueSchema) -> Result<Value, ReaderError> {
     match schema {
         ValueSchema::Choice(_) => ChoiceId::parse(text_of(json)?)
             .map(Value::Choice)
-            .ok()
-            .ok_or_else(|| out_of(SchemaFault::NotInSet)),
+            .map_err(|_| out_of(SchemaFault::NotInSet)),
         ValueSchema::Integer { .. } => json
             .as_i64()
             .map(Value::Integer)
             .ok_or(out_of(SchemaFault::WrongType)),
         ValueSchema::Date => date(text_of(json)?)
             .map(Value::Date)
-            .ok()
-            .ok_or_else(|| out_of(SchemaFault::WrongType)),
+            .map_err(|_| out_of(SchemaFault::WrongType)),
         ValueSchema::DateTime => instant(text_of(json)?)
             .map(Value::DateTime)
-            .ok()
-            .ok_or_else(|| out_of(SchemaFault::WrongType)),
+            .map_err(|_| out_of(SchemaFault::WrongType)),
         ValueSchema::EntitiesAmong(offered) => {
             let named = json.as_array().ok_or(out_of(SchemaFault::WrongType))?;
             named
@@ -64,9 +65,7 @@ fn read(json: &Json, schema: &ValueSchema) -> Result<Value, ReaderError> {
                 .keys()
                 .find(|k| !wanted.iter().any(|(n, _)| n.as_str() == *k))
             {
-                let name = ParamName::parse(extra)
-                    .ok()
-                    .ok_or_else(|| out_of(SchemaFault::WrongType))?;
+                let name = ParamName::parse(extra).map_err(|_| out_of(SchemaFault::WrongType))?;
                 return Err(out_of(SchemaFault::UnknownField(name)));
             }
             Ok(Value::Record(fields))
@@ -89,6 +88,10 @@ fn read(json: &Json, schema: &ValueSchema) -> Result<Value, ReaderError> {
 /// # Errors
 ///
 /// Returns [`ReaderError`] when the reader could not answer.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "the cause quotes the model's reply, which must not reach an error or a log"
+)]
 pub fn answer_of(reply: &str, want: &ValueSchema) -> Result<Value, ReaderError> {
     let value = match want {
         ValueSchema::Choice(_) => {
@@ -96,15 +99,11 @@ pub fn answer_of(reply: &str, want: &ValueSchema) -> Result<Value, ReaderError> 
             read(&Json::String(bare.to_owned()), want)?
         }
         ValueSchema::Record(_) => {
-            let json: Json = serde_json::from_str(reply)
-                .ok()
-                .ok_or(ReaderError::Unparseable)?;
+            let json: Json = serde_json::from_str(reply).map_err(|_| ReaderError::Unparseable)?;
             read(&json, want)?
         }
         _ => {
-            let json: Json = serde_json::from_str(reply)
-                .ok()
-                .ok_or(ReaderError::Unparseable)?;
+            let json: Json = serde_json::from_str(reply).map_err(|_| ReaderError::Unparseable)?;
             let answer = json.get("answer").ok_or(ReaderError::Unparseable)?;
             read(answer, want)?
         }

@@ -132,7 +132,8 @@ pub enum ValueSchema {
     },
 }
 
-/// Why a value does not fit a schema.
+/// Why a value does not fit a schema. It travels as JSON, so it holds no source: where a fault is
+/// made from another error, that error is logged.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum SchemaFault {
@@ -256,9 +257,10 @@ impl ValueSchema {
             ValueSchema::Record(fields) => fields
                 .iter()
                 .map(|(name, schema)| {
-                    let name = FieldName::new(name.as_str())
-                        .ok()
-                        .ok_or(SchemaFault::NotRepresentable)?;
+                    let name = FieldName::new(name.as_str()).map_err(|error| {
+                        tracing::warn!(error = %error, "a field name is not one the structured-output vocabulary takes");
+                        SchemaFault::NotRepresentable
+                    })?;
                     Ok(Field {
                         name,
                         shape: schema.shape()?,
@@ -291,7 +293,9 @@ impl ValueSchema {
     }
 }
 
-/// Why the reader could not answer.
+/// Why the reader could not answer. It travels as JSON from readerd, so it holds no source: the
+/// code that makes one from another error logs that error (never the model's text, which an error
+/// may quote).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ReaderError {
