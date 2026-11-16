@@ -101,7 +101,7 @@ fn system_callers(honour: bool, env: Env<'_>) -> PathBuf {
 }
 
 fn user_callers(dirs: &Dirs) -> std::path::PathBuf {
-    dirs.memory_toml().with_file_name("memoryd-callers.toml")
+    dirs.memory_toml().with_file_name("callers.toml")
 }
 
 /// The person's rules. No file is a fresh install (the standard rules); a file that cannot be
@@ -235,6 +235,9 @@ async fn run(
 /// comes before the runtime builds its workers), then the daemon.
 pub fn start(env: Env<'_>) -> Result<(), StartError> {
     let dirs = dirs_from(env)?;
+    for line in crate::pre_bardo::move_pre_bardo_folders(&env) {
+        eprintln!("{line}");
+    }
     let selection = select(env(KEYS_VAR).as_deref(), TestKeys::THIS_BUILD);
     let key_dir = selection.writable_dir();
     let (keys, said) = AnyKeys::from_selection(selection)?;

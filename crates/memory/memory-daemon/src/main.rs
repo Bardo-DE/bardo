@@ -6,7 +6,7 @@ use std::process::ExitCode;
 
 /// almanac's memory daemon (`org.bardo.Memory1`).
 #[derive(Debug, Parser)]
-#[command(name = "memoryd", version)]
+#[command(name = "bardo-memoryd", version)]
 struct Args {
     /// Write the settings schema (`memory.settings.toml`) into this directory and stop.
     #[arg(long, value_name = "DIR")]

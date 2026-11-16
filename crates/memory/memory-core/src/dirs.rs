@@ -30,30 +30,31 @@ impl Dirs {
         }
     }
 
-    /// `<data>/quire/memory`.
+    /// `<data>/bardo/memory`.
     pub fn memory(&self) -> PathBuf {
-        self.data_home.join("quire").join("memory")
+        self.data_home.join("bardo").join("memory")
     }
 
-    /// `<cache>/quire/memory`: the rebuildable indexes of every Space.
+    /// `<cache>/bardo/memory`: the rebuildable indexes of every Space.
     pub fn cache_memory(&self) -> PathBuf {
-        self.cache_home.join("quire").join("memory")
+        self.cache_home.join("bardo").join("memory")
     }
 
-    /// `<config>/quire`: where memoryd's two files live (`memory.toml`, `memoryd-callers.toml`).
+    /// `<config>/bardo/memoryd`: where memoryd's two files live (`memory.toml`, `callers.toml`). It is
+    /// not [`Self::settings`]: that folder is the person's and only read, this one memoryd writes.
     pub fn config(&self) -> PathBuf {
-        self.config_home.join("quire")
+        self.config_home.join("bardo").join("memoryd")
     }
 
-    /// `<config>/almanac`: where the person's settings file lives (`settings.toml`, written by the
+    /// `<config>/bardo/memory`: where the person's settings file lives (`settings.toml`, written by the
     /// Settings app; memoryd only reads it).
     pub fn settings(&self) -> PathBuf {
-        self.config_home.join("almanac")
+        self.config_home.join("bardo").join("memory")
     }
 
-    /// `<runtime>/quire/memory`: the edit copies of every Space.
+    /// `<runtime>/bardo/memory`: the edit copies of every Space.
     pub fn runtime_memory(&self) -> PathBuf {
-        self.runtime_dir.join("quire").join("memory")
+        self.runtime_dir.join("bardo").join("memory")
     }
 
     /// The runtime directory itself (`$XDG_RUNTIME_DIR`).
@@ -61,12 +62,12 @@ impl Dirs {
         &self.runtime_dir
     }
 
-    /// `<data>/quire/memory/spaces.toml`.
+    /// `<data>/bardo/memory/spaces.toml`.
     pub fn spaces_toml(&self) -> PathBuf {
         self.memory().join("spaces.toml")
     }
 
-    /// `<data>/quire/memory/confirmed-settings.toml`: the loosened settings the person confirmed
+    /// `<data>/bardo/memory/confirmed-settings.toml`: the loosened settings the person confirmed
     /// (ALM-16). Only memoryd writes it, and it sits in the directory the agent sandbox cannot.
     pub fn confirmed_settings_toml(&self) -> PathBuf {
         self.memory().join("confirmed-settings.toml")
@@ -127,7 +128,7 @@ impl Dirs {
         self.index_dir(space).join("index.db")
     }
 
-    /// `<config>/quire/memory.toml`: the rule set, written only by memoryd.
+    /// `<config>/bardo/memoryd/memory.toml`: the rule set, written only by memoryd.
     pub fn memory_toml(&self) -> PathBuf {
         self.config().join("memory.toml")
     }

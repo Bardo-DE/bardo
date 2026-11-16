@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install inferd, steward's AI broker: the daemon, its systemd user unit and D-Bus activation
+# Install bardo-inferd, steward's AI broker: the daemon, its systemd user unit and D-Bus activation
 # file, the caller table and the AI settings page.
 #
 #   scripts/install.sh [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--bin-dir DIR] [--no-build]
@@ -14,7 +14,7 @@
 #               install with --no-build as root)
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
-#   PREFIX/libexec/quire/inferd                              the daemon
+#   PREFIX/libexec/bardo/bardo-inferd                       the daemon
 #   PREFIX/lib/systemd/user/bardo-inferd.service                   the user unit
 #   PREFIX/lib/systemd/user/bardo-inferd.service.d/sandbox.conf    the part of the unit's sandbox that needs a
 #                                                            mount namespace; left out (with one line saying
@@ -22,12 +22,12 @@
 #                                                            service one (Ubuntu 24.04's AppArmor restriction
 #                                                            on user namespaces); always installed with a destdir
 #   PREFIX/share/dbus-1/services/org.bardo.*.service         D-Bus activation
-#   PREFIX/share/porter/inferd-tailnet.conf                  the tailnet drop-in, as data: the Settings switch
+#   PREFIX/share/bardo/inference/tailnet.conf                  the tailnet drop-in, as data: the Settings switch
 #                                                            installs it for the person; never installed live
-#   PREFIX/share/quire/settings/inference.settings.toml         the AI settings page schema
-#   PREFIX/share/doc/porter/examples/                        inferd.toml and inferd-cloud.conf: samples
+#   PREFIX/share/bardo/settings/inference.settings.toml         the AI settings page schema
+#   PREFIX/share/doc/bardo/examples/                        inferd.toml and inferd-cloud.conf: samples
 #                                                            for the person to copy; never installed live
-#   SYSCONFDIR/porter/inferd-callers.toml                    the caller table (kept if the owner changed it)
+#   SYSCONFDIR/bardo/inferd-callers.toml                    the caller table (kept if the owner changed it)
 #
 # The script is standalone: it knows nothing of any desktop. Run again, it changes nothing that is
 # already as it should be (a file is replaced only when its content differs). It writes nothing under
@@ -145,7 +145,7 @@ mount_namespace_for_user_units() {
 }
 
 # --- The daemon ----------------------------------------------------------------------------------
-daemons="inferd"
+daemons="bardo-inferd"
 if [ -n "$bin_dir" ]; then
     built=$bin_dir
 else
@@ -165,7 +165,7 @@ else
         fi
         for tool in git cargo; do
             if ! command -v "$tool" >/dev/null 2>&1; then
-                echo "install.sh: $tool is needed to build inferd; install $tool and run this again" >&2
+                echo "install.sh: $tool is needed to build bardo-inferd; install $tool and run this again" >&2
                 exit 1
             fi
         done
@@ -200,7 +200,7 @@ for daemon in $daemons; do
 done
 
 # The files in dist/ name /usr/libexec/bardo; a different prefix changes that one path.
-libexec=$prefix/libexec/quire
+libexec=$prefix/libexec/bardo
 for daemon in $daemons; do
     put 755 "$built/$daemon" "$libexec/$daemon"
     put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/bardo "$libexec"
@@ -227,18 +227,18 @@ for activation in "$dist"/dbus/*.service; do
 done
 
 # --- Data ----------------------------------------------------------------------------------------
-put 644 "$dist/inference.settings.toml" "$prefix/share/quire/settings/inference.settings.toml"
+put 644 "$dist/inference.settings.toml" "$prefix/share/bardo/settings/inference.settings.toml"
 # The tailnet drop-in is data, never live: the Settings switch "Let my other computers use this
 # computer's models" copies it into the person's own systemd user configuration, with their consent.
-put 644 "$dist/inferd-tailnet.conf" "$prefix/share/porter/inferd-tailnet.conf"
-put 644 "$dist/inferd.toml" "$prefix/share/doc/porter/examples/inferd.toml"
-put 644 "$dist/inferd-cloud.conf" "$prefix/share/doc/porter/examples/inferd-cloud.conf"
+put 644 "$dist/inferd-tailnet.conf" "$prefix/share/bardo/inference/tailnet.conf"
+put 644 "$dist/inferd.toml" "$prefix/share/doc/bardo/examples/inferd.toml"
+put 644 "$dist/inferd-cloud.conf" "$prefix/share/doc/bardo/examples/inferd-cloud.conf"
 
 # --- The caller tables ---------------------------------------------------------------------------
 # inferd's (inferd-callers.toml). It is the machine owner's to edit once installed: a copy that
 # differs is kept, and the shipped one is left beside it as <name>.dist for them to compare.
 for table in inferd-callers.toml; do
-    callers=$sysconfdir/porter/$table
+    callers=$sysconfdir/bardo/$table
     if [ -f "$destdir$callers" ] && ! cmp -s "$dist/$table" "$destdir$callers"; then
         echo "kept $callers (it differs from the shipped one; the shipped one is $callers.dist)"
         put 644 "$dist/$table" "$callers.dist"

@@ -29,7 +29,7 @@ BUILDS=(
   # almanac (dbus), inferd's tests (dbus), an app that hosts inference itself (engines).
   "inference-client (no features) :: -p inference-client --no-default-features"
   "inference-client (dbus: inferd's tests, docket, almanac) :: -p inference-client --no-default-features --features dbus"
-  "inference-client (dbus,lending: detent's Settings) :: -p inference-client --no-default-features --features dbus,lending"
+  "inference-client (dbus,lending: the Settings app) :: -p inference-client --no-default-features --features dbus,lending"
   "inference-client (engines) :: -p inference-client --features engines"
 )
 

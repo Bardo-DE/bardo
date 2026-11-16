@@ -46,18 +46,18 @@ pub struct Roots {
 
 impl Roots {
     /// Where an all-users install goes: fixed, root's.
-    pub const SYSTEM: &'static str = "/usr/local/lib/porter/engines";
+    pub const SYSTEM: &'static str = "/usr/local/lib/bardo/engines";
 
     /// These two roots (a test's own).
     pub fn new(system: PathBuf, person: PathBuf) -> Self {
         Self { system, person }
     }
 
-    /// The standard roots: [`Self::SYSTEM`] and `<data_home>/porter/engines`.
+    /// The standard roots: [`Self::SYSTEM`] and `<data_home>/bardo/engines`.
     pub fn standard(data_home: &Path) -> Self {
         Self::new(
             PathBuf::from(Self::SYSTEM),
-            data_home.join("porter").join("engines"),
+            data_home.join("bardo").join("engines"),
         )
     }
 
@@ -197,7 +197,7 @@ mod tests {
     fn a_program_path_is_located_in_its_scope_and_a_partial_directory_is_not_an_install() {
         let roots = Roots::new(
             "/sys/engines".into(),
-            "/home/p/.local/share/porter/engines".into(),
+            "/home/p/.local/share/bardo/engines".into(),
         );
         let located = |path: &str| roots.locate(Path::new(path));
         assert_eq!(
@@ -209,7 +209,7 @@ mod tests {
             ))
         );
         assert_eq!(
-            located("/home/p/.local/share/porter/engines/vllm/0.31.0-cuda/engine/venv/bin/python"),
+            located("/home/p/.local/share/bardo/engines/vllm/0.31.0-cuda/engine/venv/bin/python"),
             Some((Scope::JustMe, EngineKind::Vllm, "0.31.0-cuda".to_owned()))
         );
         assert_eq!(

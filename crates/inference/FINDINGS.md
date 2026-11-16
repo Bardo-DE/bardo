@@ -13,7 +13,7 @@ Open items and standing facts. An entry names the condition that closes it.
 | `.github/workflows/ci.yml` and `portable.yml` | the repository secret `DEPS_TOKEN` (read access to porter, stoker and quire) exists and the first run of each is green; `bus-tests` is `continue-on-error` until it has passed on a hosted runner |
 | `scripts/check-boundary.sh` has no HIDDEN-crates rows (who may depend on `porter-dbus`, `porter-callers`, `porter-settings`, `porter-store`) | they are decided with porter's side of the cut; today the EDGES rows pin every direct edge of the nine crates |
 | The test `every_app_inferds_table_names_is_the_same_app_in_accountds` (Q10: inferd's and accountd's shipped caller tables name the same app and programs per unit) was dropped from `crates/inferd/tests/it/dist.rs`: it read porter's `dist/callers.toml`, which is not in this repository | a check that both tables agree runs where both files are present (porter's gate with a steward checkout, or a CI step that fetches porter's table at the pinned rev) |
-| The paths `share/porter/`, `share/doc/porter/` and `/etc/porter/inferd-callers.toml` keep porter's names, because inferd and Settings read them | a lane that renames them with their readers |
+| The paths `share/bardo/inference/`, `share/doc/bardo/` and `/etc/bardo/inferd-callers.toml` | renamed with their readers (2026-11-16) |
 
 ## Facts carried over from porter
 

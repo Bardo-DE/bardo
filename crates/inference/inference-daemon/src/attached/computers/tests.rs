@@ -115,7 +115,7 @@ fn a_computer_is_added_to_the_file_the_keys_and_the_book_and_reads_back_as_the_s
 
     // At the next start the file gives the same engine, and nothing is refused.
     let file = AddedFile::read(&rig.file()).expect("reads");
-    let (engines, refused) = file.attached(std::path::Path::new("/run/inferd"));
+    let (engines, refused) = file.attached(std::path::Path::new("/run/bardo/inference"));
     assert_eq!(refused, Vec::<String>::new());
     assert_eq!(engines.len(), 1);
     assert_eq!(engines[0].computer, target.computer);
@@ -349,7 +349,7 @@ fn the_settings_file_wins_a_clash_when_the_two_are_merged() {
             ..AddedComputer::default()
         },
     );
-    let sockets = std::path::Path::new("/run/inferd");
+    let sockets = std::path::Path::new("/run/bardo/inference");
     let (kept, said) = merged(&hand, &added, sockets);
     assert_eq!(kept, vec![]);
     assert_eq!(said.len(), 1, "{said:?}");
@@ -384,7 +384,7 @@ fn a_file_that_is_not_a_list_of_computers_is_kept_aside_and_the_list_starts_empt
             ..AddedComputer::default()
         },
     );
-    let (engines, refused) = file.attached(std::path::Path::new("/run/inferd"));
+    let (engines, refused) = file.attached(std::path::Path::new("/run/bardo/inference"));
     assert_eq!(engines, vec![]);
     assert_eq!(refused.len(), 2, "{refused:?}");
 }

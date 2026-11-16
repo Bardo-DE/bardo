@@ -36,7 +36,10 @@ fn the_activation_file_and_the_unit_name_the_bus_name_and_each_other() {
         key(&unit, "BusName"),
         Some(inference_dbus::inference::INFERENCE_BUS)
     );
-    assert_eq!(key(&activation, "SystemdService"), Some("bardo-inferd.service"));
+    assert_eq!(
+        key(&activation, "SystemdService"),
+        Some("bardo-inferd.service")
+    );
     assert_eq!(key(&activation, "Exec"), key(&unit, "ExecStart"));
     assert_eq!(key(&unit, "Type"), Some("dbus"));
 }
@@ -113,9 +116,9 @@ fn the_unit_gives_engines_the_gpu_and_only_this_computers_own_addresses() {
     // What inferd writes is created by systemd before the sandbox starts.
     // The sockets' directory, and nothing for credentials: the AI keys are accountd's and a key
     // reaches inferd on a descriptor, never in a file.
-    assert_eq!(key(&unit, "RuntimeDirectory"), Some("inferd"));
+    assert_eq!(key(&unit, "RuntimeDirectory"), Some("bardo/inference"));
     assert_eq!(key(&unit, "RuntimeDirectoryMode"), Some("0700"));
-    assert_eq!(key(&unit, "StateDirectory"), Some("quire/inferd"));
+    assert_eq!(key(&unit, "StateDirectory"), Some("bardo/inference"));
     assert_eq!(key(&unit, "ReadWritePaths"), None);
     // The mount-namespace keys are the drop-in's, which the installer leaves out where the system
     // refuses a user service its own mount namespace.
@@ -182,13 +185,21 @@ fn the_shipped_table_names_the_callers_the_design_calls_for() {
     let callers = shipped_callers();
     let cua = callers.resolve("bardo-computer-use.service").expect("cuad");
     assert_eq!(cua.role, inference_daemon::peers::Role::Cua);
-    for exe in ["memoryd", "intentd", "companiond", "readerd", "voiced"] {
+    for exe in [
+        "bardo-memoryd",
+        "bardo-actiond",
+        "bardo-companiond",
+        "bardo-readerd",
+        "bardo-voiced",
+    ] {
         let caller = callers
             .resolve(&format!("{exe}.service"))
             .unwrap_or_else(|| panic!("{exe}"));
         // The three that docket's places reach through are placers: they open as an app does.
         let want = match exe {
-            "companiond" | "readerd" | "intentd" => inference_daemon::peers::Role::Placer,
+            "bardo-companiond" | "bardo-readerd" | "bardo-actiond" => {
+                inference_daemon::peers::Role::Placer
+            }
             _ => inference_daemon::peers::Role::App,
         };
         assert_eq!(caller.role, want, "{exe}");

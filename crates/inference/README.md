@@ -48,12 +48,12 @@ Installed by the script (under the prefix, `/usr` by default):
 
 | What | Where |
 | --- | --- |
-| The daemon | `libexec/quire/inferd` |
+| The daemon | `libexec/bardo/bardo-inferd` |
 | Its systemd user unit | `lib/systemd/user/bardo-inferd.service` |
 | What lets the session bus start it | `share/dbus-1/services/org.bardo.Inference1.service` |
-| The AI page's settings description | `share/quire/settings/inference.settings.toml` |
-| The file that lets inferd answer your other computers (kept as data; the Settings switch installs it, with your say-so) | `share/porter/inferd-tailnet.conf` |
-| Examples to copy: the configuration and the optional file that lets it reach hosted models | `share/doc/porter/examples/` |
+| The AI page's settings description | `share/bardo/settings/inference.settings.toml` |
+| The file that lets inferd answer your other computers (kept as data; the Settings switch installs it, with your say-so) | `share/bardo/inference/tailnet.conf` |
+| Examples to copy: the configuration and the optional file that lets it reach hosted models | `share/doc/bardo/examples/` |
 | The table that says which app is Settings, which are the services | `/etc/bardo/inferd-callers.toml` |
 
 ## Checks

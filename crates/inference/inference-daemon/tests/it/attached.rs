@@ -562,13 +562,17 @@ fn real_inferd(bus: &bus::PrivateBus, config: &str, catalog: &[(&str, String)]) 
     let scratch = bus.scratch();
     let file = scratch.join("inferd.toml");
     std::fs::write(&file, config).expect("config");
-    let catalog_dir = scratch.join("data").join("stoker").join("catalog");
+    let catalog_dir = scratch
+        .join("data")
+        .join("bardo")
+        .join("models")
+        .join("catalog");
     std::fs::create_dir_all(&catalog_dir).expect("catalog dir");
     for (name, text) in catalog {
         std::fs::write(catalog_dir.join(name), text).expect("catalog file");
     }
     Started(
-        Command::new(env!("CARGO_BIN_EXE_inferd"))
+        Command::new(env!("CARGO_BIN_EXE_bardo-inferd"))
             .env_clear()
             .env("HOME", scratch)
             .env("XDG_RUNTIME_DIR", scratch)
@@ -577,7 +581,10 @@ fn real_inferd(bus: &bus::PrivateBus, config: &str, catalog: &[(&str, String)]) 
             .env("XDG_STATE_HOME", scratch.join("state"))
             .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
             // A Tailscale nobody serves: this computer's real one is never asked.
-            .env("BARDO_INFERD_TAILSCALE_SOCKET", scratch.join("no-tailscale.sock"))
+            .env(
+                "BARDO_INFERD_TAILSCALE_SOCKET",
+                scratch.join("no-tailscale.sock"),
+            )
             .arg("--config")
             .arg(&file)
             .stdin(Stdio::null())

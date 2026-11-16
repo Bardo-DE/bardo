@@ -75,12 +75,12 @@ impl Fixture {
     fn new() -> Self {
         let root = base_testkit::Scratch::new("lending");
         fs::create_dir_all(root.join("share")).expect("scratch");
-        fs::write(root.join("share/inferd-tailnet.conf"), SHIPPED).expect("shipped");
+        fs::write(root.join("share/tailnet.conf"), SHIPPED).expect("shipped");
         Self { root }
     }
 
     fn config(&self) -> LendingConfig {
-        LendingConfig::new(self.root.join("share/inferd-tailnet.conf"), self.user_dir())
+        LendingConfig::new(self.root.join("share/tailnet.conf"), self.user_dir())
     }
 
     fn user_dir(&self) -> PathBuf {
@@ -345,8 +345,8 @@ fn lookup<'a>(vars: &'a [(&'a str, &'a str)]) -> impl Fn(&str) -> Option<OsStrin
 fn the_environment_names_the_persons_folder_and_where_the_shipped_file_is() {
     let s = Fixture::new();
     let data = s.root.to_str().expect("utf-8");
-    fs::create_dir_all(s.root.join("porter")).expect("dir");
-    fs::write(s.root.join("porter/inferd-tailnet.conf"), SHIPPED).expect("file");
+    fs::create_dir_all(s.root.join("bardo/inference")).expect("dir");
+    fs::write(s.root.join("bardo/inference/tailnet.conf"), SHIPPED).expect("file");
 
     // (variables, the drop-in's folder, the shipped file)
     type Row<'a> = (Vec<(&'a str, &'a str)>, Option<&'a str>, Option<PathBuf>);
@@ -354,7 +354,7 @@ fn the_environment_names_the_persons_folder_and_where_the_shipped_file_is() {
         (
             vec![("HOME", "/home/ada"), ("XDG_DATA_DIRS", data)],
             Some("/home/ada/.config/systemd/user"),
-            Some(s.root.join("porter/inferd-tailnet.conf")),
+            Some(s.root.join("bardo/inference/tailnet.conf")),
         ),
         (
             vec![
@@ -363,7 +363,7 @@ fn the_environment_names_the_persons_folder_and_where_the_shipped_file_is() {
                 ("XDG_DATA_DIRS", data),
             ],
             Some("/home/ada/cfg/systemd/user"),
-            Some(s.root.join("porter/inferd-tailnet.conf")),
+            Some(s.root.join("bardo/inference/tailnet.conf")),
         ),
         // A relative XDG_CONFIG_HOME is ignored, as the XDG rules say.
         (
@@ -376,7 +376,7 @@ fn the_environment_names_the_persons_folder_and_where_the_shipped_file_is() {
             vec![("HOME", "/home/ada"), ("XDG_DATA_DIRS", "/nowhere/share")],
             Some("/home/ada/.config/systemd/user"),
             Some(PathBuf::from(
-                "/home/ada/.local/share/porter/inferd-tailnet.conf",
+                "/home/ada/.local/share/bardo/inference/tailnet.conf",
             )),
         ),
         // No home folder and no XDG_CONFIG_HOME: nowhere to put it.
@@ -407,7 +407,7 @@ fn a_prefix_names_the_shipped_file_where_install_sh_puts_it() {
     let config = LendingConfig::under_prefix(Path::new("/usr"), PathBuf::from("/x"));
     assert_eq!(
         config.shipped(),
-        Path::new("/usr/share/porter/inferd-tailnet.conf")
+        Path::new("/usr/share/bardo/inference/tailnet.conf")
     );
 }
 

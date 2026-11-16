@@ -310,7 +310,7 @@ fn real_inferd(bus: &bus::PrivateBus) -> Started {
     )
     .expect("config");
     Started(
-        Command::new(env!("CARGO_BIN_EXE_inferd"))
+        Command::new(env!("CARGO_BIN_EXE_bardo-inferd"))
             .env_clear()
             .env("HOME", scratch)
             .env("XDG_RUNTIME_DIR", scratch)

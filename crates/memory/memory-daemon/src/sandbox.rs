@@ -24,7 +24,7 @@ const ABI_TOP: ABI = ABI::V9;
 pub struct Policy {
     /// Directories read and written (the memory directories). They must exist when it is applied.
     pub writable: Vec<PathBuf>,
-    /// Directories other programs write and the daemon only reads (the Settings app's `almanac`
+    /// Directories other programs write and the daemon only reads (the Settings app's `bardo/memory`
     /// directory, where `settings.toml` lives and is watched). `prepare` makes them so the rule can
     /// name them; they are read-only in force.
     pub read_dirs: Vec<PathBuf>,

@@ -20,6 +20,7 @@ test-keys = ["dep:memory-keyfile"]
 test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
+old-folders = {path = "../../platform/old-folders"}
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal", features = ["oo7"]}
 memory-keyfile = {path = "../memory-keyfile", optional = true}
@@ -76,5 +77,5 @@ unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [[bin]]
-name = "memoryd"
+name = "bardo-memoryd"
 path = "src/main.rs"

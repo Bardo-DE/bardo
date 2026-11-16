@@ -11,7 +11,7 @@ fn vars(pairs: &[(&str, &str)]) -> impl Fn(&str) -> Option<String> {
 
 #[test]
 fn the_directories_follow_xdg_and_fall_back_under_home() {
-    // A data directory that holds nothing, so the stoker installed on this machine does not
+    // A data directory that holds nothing, so the bardo installed on this machine does not
     // decide where the system's catalog is.
     let from_home = Dirs::from_vars(vars(&[
         ("HOME", "/home/u"),
@@ -21,7 +21,7 @@ fn the_directories_follow_xdg_and_fall_back_under_home() {
     .expect("dirs");
     assert_eq!(
         from_home.config,
-        PathBuf::from("/home/u/.config/inferd/inferd.toml")
+        PathBuf::from("/home/u/.config/bardo/inference/inferd.toml")
     );
     assert_eq!(
         from_home.catalog.system,
@@ -29,16 +29,19 @@ fn the_directories_follow_xdg_and_fall_back_under_home() {
     );
     assert_eq!(
         from_home.catalog.user,
-        PathBuf::from("/home/u/.local/share/stoker/catalog")
+        PathBuf::from("/home/u/.local/share/bardo/models/catalog")
     );
-    assert_eq!(from_home.sockets, PathBuf::from("/run/user/1000/inferd"));
+    assert_eq!(
+        from_home.sockets,
+        PathBuf::from("/run/user/1000/bardo/inference")
+    );
     assert_eq!(
         from_home.audit,
-        PathBuf::from("/home/u/.local/state/quire/inferd/audit.jsonl")
+        PathBuf::from("/home/u/.local/state/bardo/inference/audit.jsonl")
     );
     assert_eq!(
         from_home.spend,
-        PathBuf::from("/home/u/.local/state/quire/inferd/spend.json")
+        PathBuf::from("/home/u/.local/state/bardo/inference/spend.json")
     );
     assert_eq!(
         from_home.hf_cache,
@@ -54,11 +57,17 @@ fn the_directories_follow_xdg_and_fall_back_under_home() {
         ("HF_HOME", "/hf"),
     ]))
     .expect("dirs");
-    assert_eq!(explicit.config, PathBuf::from("/cfg/inferd/inferd.toml"));
-    assert_eq!(explicit.catalog.user, PathBuf::from("/data/stoker/catalog"));
+    assert_eq!(
+        explicit.config,
+        PathBuf::from("/cfg/bardo/inference/inferd.toml")
+    );
+    assert_eq!(
+        explicit.catalog.user,
+        PathBuf::from("/data/bardo/models/catalog")
+    );
     assert_eq!(
         explicit.audit,
-        PathBuf::from("/state/quire/inferd/audit.jsonl")
+        PathBuf::from("/state/bardo/inference/audit.jsonl")
     );
     assert_eq!(explicit.hf_cache, PathBuf::from("/hf/hub"));
 }
@@ -77,11 +86,11 @@ fn a_relative_or_empty_xdg_variable_is_ignored() {
     .expect("dirs");
     assert_eq!(
         dirs.config,
-        PathBuf::from("/home/u/.config/inferd/inferd.toml")
+        PathBuf::from("/home/u/.config/bardo/inference/inferd.toml")
     );
     assert_eq!(
         dirs.audit,
-        PathBuf::from("/home/u/.local/state/quire/inferd/audit.jsonl")
+        PathBuf::from("/home/u/.local/state/bardo/inference/audit.jsonl")
     );
     assert_eq!(
         Dirs::from_vars(vars(&[("HOME", "/home/u"), ("XDG_RUNTIME_DIR", "run")])),

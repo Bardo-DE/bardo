@@ -6,7 +6,7 @@
 //! An entry that gives vectors makes a claim from its `vector_out` table (the vector length, the
 //! batch and input limits, the query and document prefixes). inferd keeps no override of its own: the catalog is
 //! the one place a model's details are written, and a user who needs other prefixes writes a
-//! catalog file of the same id in `$XDG_DATA_HOME/stoker/catalog`.
+//! catalog file of the same id in `$XDG_DATA_HOME/bardo/models/catalog`.
 
 use account_capability::ModelId;
 use account_capability::{
@@ -33,7 +33,7 @@ use std::path::{Path, PathBuf};
 pub struct CatalogDirs {
     /// `/usr/share/bardo/models/catalog`.
     pub system: PathBuf,
-    /// `$XDG_DATA_HOME/stoker/catalog`; a file here replaces the system file of the same id.
+    /// `$XDG_DATA_HOME/bardo/models/catalog`; a file here replaces the system file of the same id.
     pub user: PathBuf,
 }
 

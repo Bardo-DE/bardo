@@ -1,4 +1,4 @@
-//! The client of `bardo-speech-host`, the STT engine process, over `$XDG_RUNTIME_DIR/inferd/<engine>.sock`.
+//! The client of `bardo-speech-host`, the STT engine process, over `$XDG_RUNTIME_DIR/bardo/inference/<engine>.sock`.
 //!
 //! It speaks `speech_provider::host_wire` (a 4-byte length, then JSON). `SpeechHostClient` is
 //! one of the `SttBackend` arms in porter's inferd.
@@ -17,7 +17,7 @@
 //! use speech_host_client::{FrameBuffer, HostSocket, SpeechHostClient};
 //!
 //! // Naming a host connects to nothing: a connection is made per utterance.
-//! let socket = HostSocket(PathBuf::from("/run/user/1000/inferd/speech.sock"));
+//! let socket = HostSocket(PathBuf::from("/run/user/1000/bardo/inference/speech.sock"));
 //! let client = SpeechHostClient::new(socket.clone());
 //! assert_eq!(client.socket(), &socket);
 //!

@@ -271,7 +271,7 @@ pub(crate) fn flavor_of(kind: EngineKind) -> Option<Flavor> {
 
 /// The models `entries` make on this computer: those with a capability, and an engine profile
 /// whose program is configured. The first such profile of an entry is the one used.
-/// `sockets` is the directory the engines' sockets go in (`$XDG_RUNTIME_DIR/inferd`).
+/// `sockets` is the directory the engines' sockets go in (`$XDG_RUNTIME_DIR/bardo/inference`).
 pub fn build(entries: &[ModelEntry], engines: &EngineConfig, sockets: &Path) -> Vec<LocalModel> {
     entries
         .iter()

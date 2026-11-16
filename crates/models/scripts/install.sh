@@ -13,8 +13,8 @@
 #                                        With --user it moves the programs only: settings, units and
 #                                        shared files go to your own standard folders (~/.config, ~/.local/share)
 #   --destdir DIR                        put everything under DIR, for a package; nothing asks for root
-#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/quire/ and
-#                                        DIR/xdg/quire/; a release stages them elsewhere and places them later
+#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/bardo/ and
+#                                        DIR/xdg/bardo/; a release stages them elsewhere and places them later
 #   --no-build                           install what is already in target/release
 #   --bin-dir DIR                        install programs already built in DIR instead of building
 #   --dry-run                            print every action; build and write nothing
@@ -25,10 +25,10 @@
 #                                        /etc/os-release; ubuntu counts as debian)
 #
 # What goes where:
-#   PREFIX/share/stoker/catalog/         the model files (--user: ~/.local/share/stoker/catalog/)
-#   PREFIX/libexec/quire/bardo-engine-helper   the helper `pkexec` runs as root to install an engine for everyone
+#   PREFIX/share/bardo/models/catalog/  the model files (--user: ~/.local/share/bardo/models/catalog/)
+#   PREFIX/libexec/bardo/bardo-engine-helper   the helper `pkexec` runs as root to install an engine for everyone
 #   PREFIX/share/polkit-1/actions/org.bardo.engines.policy   its polkit action (system installs only)
-# inferd reads the catalogue from the person's own folder and from the shared-data folders of the
+# bardo-inferd reads the catalogue from the person's own folder and from the shared-data folders of the
 # system (/usr/local/share and /usr/share unless the system names others), so the default prefix
 # /usr/local is found. A prefix whose share folder is not one of those is not.
 set -euo pipefail
@@ -45,13 +45,14 @@ extra_arg() { return 1; }
 extra_build_tools() { :; }
 
 install_rest() {
-  put_tree 644 "$ROOT/catalog" "$SHARE/stoker/catalog"
+  put_tree 644 "$ROOT/catalog" "$SHARE/bardo/models/catalog"
   # The helper `pkexec` runs to install an engine for everyone needs its polkit action, which only
   # the system's share folder holds. An install for one person has no such action.
   if [ "$MODE" = system ]; then
     put 644 "$ROOT/dist/org.bardo.engines.policy" "$PREFIX/share/polkit-1/actions/org.bardo.engines.policy" policy
-    # porter installed this helper's action before the engines moved here; it names a program that is gone.
-    drop "$PREFIX/share/polkit-1/actions/org.bardo.engines.policy"
+    # Earlier installs left actions under the old names; they name programs that are gone.
+    drop "$PREFIX/share/polkit-1/actions/org.quire.engines.policy"
+    drop "$PREFIX/share/polkit-1/actions/org.quire.porter.engines.policy"
   fi
 }
 
@@ -163,18 +164,18 @@ case "$DESTDIR" in ""|/*) ;; *) die "--destdir must be an absolute path: $DESTDI
 case "$SYSCONFDIR" in /*) ;; *) die "--sysconfdir must be an absolute path: $SYSCONFDIR" ;; esac
 case "$SYSCONFDIR" in *[\|\&\\\ ]*) die "--sysconfdir cannot contain spaces, |, & or \\: $SYSCONFDIR" ;; esac
 
-LIBEXEC="$PREFIX/libexec/quire"
+LIBEXEC="$PREFIX/libexec/bardo"
 BINDIR="$PREFIX/bin"
 if [ "$MODE" = user ]; then
   UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   SHARE="${XDG_DATA_HOME:-$HOME/.local/share}"
-  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/quire"
+  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bardo"
 else
   UNIT_DIR="$PREFIX/lib/systemd/user"
   SHARE="$PREFIX/share"
-  CONF_DIR="$SYSCONFDIR/xdg/quire"
+  CONF_DIR="$SYSCONFDIR/xdg/bardo"
 fi
-SYS_QUIRE="$SYSCONFDIR/quire"
+SYS_BARDO="$SYSCONFDIR/bardo"
 
 under_home() { case "$PREFIX" in "$HOME"|"$HOME"/*) return 0 ;; *) return 1 ;; esac; }
 
@@ -426,7 +427,7 @@ install_bins() {
   done
 }
 install_callers() { # SOURCE NAME: the system's table, read by the daemon at start
-  put 644 "$1" "$SYS_QUIRE/$2" copy
+  put 644 "$1" "$SYS_BARDO/$2" copy
 }
 
 finish() {

@@ -8,14 +8,14 @@
 # directories, the session bus socket, nothing else), so with or without the drop-in, and outside
 # systemd, the daemon is confined by the kernel all the same.
 #
-# Forget (ALM-18) scrubs the live files only. Keep ~/.local/share/quire/memory out of snapshots
+# Forget (ALM-18) scrubs the live files only. Keep ~/.local/share/bardo/memory out of snapshots
 # and backups. The way that works on every file system: list it in the snapshot tool's and the
 # backup tool's excludes. On btrfs (the Fedora default; Ubuntu uses ext4) you can instead make it
 # its own subvolume, since a snapshot of the parent does not descend into it. A systemd unit
 # cannot do either; see FINDINGS.md.
 [Unit]
-Description=quire memory (org.bardo.Memory1)
-Documentation=man:memoryd(1)
+Description=bardo memory (org.bardo.Memory1)
+Documentation=man:bardo-memoryd(1)
 
 [Service]
 Type=dbus

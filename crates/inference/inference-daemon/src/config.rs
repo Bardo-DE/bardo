@@ -57,40 +57,40 @@ impl InferdConfig {
 /// Where everything is.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Dirs {
-    /// `$XDG_CONFIG_HOME/inferd/inferd.toml`: inferd's own folder, where Settings looks for it.
+    /// `$XDG_CONFIG_HOME/bardo/inference/inferd.toml`: inferd's own folder, where Settings looks for it.
     pub config: PathBuf,
     /// The catalog directories.
     pub catalog: CatalogDirs,
-    /// `$XDG_RUNTIME_DIR/inferd`: the engines' sockets.
+    /// `$XDG_RUNTIME_DIR/bardo/inference`: the engines' sockets.
     pub sockets: PathBuf,
-    /// `$XDG_STATE_HOME/quire/inferd/audit.jsonl`.
+    /// `$XDG_STATE_HOME/bardo/inference/audit.jsonl`.
     pub audit: PathBuf,
-    /// `$XDG_STATE_HOME/quire/inferd/spend.json`: what hosted models have cost this day and month.
+    /// `$XDG_STATE_HOME/bardo/inference/spend.json`: what hosted models have cost this day and month.
     pub spend: PathBuf,
-    /// `$XDG_STATE_HOME/quire/inferd/tool-proofs.json`: which models have shown they can make a
+    /// `$XDG_STATE_HOME/bardo/inference/tool-proofs.json`: which models have shown they can make a
     /// valid tool call (model ids and a word, never a prompt).
     pub tool_proofs: PathBuf,
-    /// `$XDG_STATE_HOME/quire/inferd/computers.toml`: the computers Settings added. inferd's own
+    /// `$XDG_STATE_HOME/bardo/inference/computers.toml`: the computers Settings added. inferd's own
     /// file; the hand-written `inferd.toml` is never written.
     pub computers: PathBuf,
-    /// `$XDG_STATE_HOME/quire/inferd/computer-keys`: the keys of those computers, one file each,
+    /// `$XDG_STATE_HOME/bardo/inference/computer-keys`: the keys of those computers, one file each,
     /// readable by their owner alone.
     pub computer_keys: PathBuf,
-    /// `$XDG_STATE_HOME/quire/inferd/guests.toml`: the answers the person gave about the
+    /// `$XDG_STATE_HOME/bardo/inference/guests.toml`: the answers the person gave about the
     /// computers that ask to use this one's models.
     pub guests: PathBuf,
     /// `$HF_HOME/hub`, else `~/.cache/huggingface/hub`: the weights, when the file names none.
     pub hf_cache: PathBuf,
-    /// `porter/providers` under the first data directory that has it (`/usr/local/share` or
+    /// `bardo/accounts/providers` under the first data directory that has it (`/usr/local/share` or
     /// `/usr/share` by default): the provider files this install ships.
     pub providers_system: PathBuf,
-    /// `$XDG_DATA_HOME/porter/providers`: the person's own provider files.
+    /// `$XDG_DATA_HOME/bardo/accounts/providers`: the person's own provider files.
     pub providers_own: PathBuf,
-    /// `$XDG_DATA_HOME/porter/engines`: the engines installed for this person alone.
+    /// `$XDG_DATA_HOME/bardo/engines`: the engines installed for this person alone.
     pub engines_own: PathBuf,
-    /// `porter/clients.toml` under the first data directory that has it.
+    /// `bardo/accounts/clients.toml` under the first data directory that has it.
     pub clients_shipped: PathBuf,
-    /// `$XDG_CONFIG_HOME/porter/clients.toml`.
+    /// `$XDG_CONFIG_HOME/bardo/accounts/clients.toml`.
     pub clients_own: PathBuf,
     /// The `applications` directories that hold desktop entries, the person's first: how an app
     /// is named on a consent sheet.
@@ -122,24 +122,24 @@ impl Dirs {
             .map(|dir| dir.join("applications"))
             .collect();
         Ok(Self {
-            providers_system: xdg.shipped("porter/providers"),
-            providers_own: data.join("porter").join("providers"),
-            engines_own: data.join("porter").join("engines"),
-            clients_shipped: xdg.shipped("porter/clients.toml"),
-            clients_own: config.join("porter").join("clients.toml"),
+            providers_system: xdg.shipped("bardo/accounts/providers"),
+            providers_own: data.join("bardo").join("accounts").join("providers"),
+            engines_own: data.join("bardo").join("engines"),
+            clients_shipped: xdg.shipped("bardo/accounts/clients.toml"),
+            clients_own: config.join("bardo").join("accounts").join("clients.toml"),
             applications,
-            config: config.join("inferd").join("inferd.toml"),
+            config: config.join("bardo").join("inference").join("inferd.toml"),
             catalog: CatalogDirs {
-                system: xdg.shipped("stoker/catalog"),
-                user: data.join("stoker").join("catalog"),
+                system: xdg.shipped("bardo/models/catalog"),
+                user: data.join("bardo").join("models").join("catalog"),
             },
-            sockets: runtime.join("inferd"),
-            audit: state.join("quire").join("inferd").join("audit.jsonl"),
-            spend: state.join("quire").join("inferd").join("spend.json"),
-            tool_proofs: state.join("quire").join("inferd").join("tool-proofs.json"),
-            computers: state.join("quire").join("inferd").join("computers.toml"),
-            computer_keys: state.join("quire").join("inferd").join("computer-keys"),
-            guests: state.join("quire").join("inferd").join("guests.toml"),
+            sockets: runtime.join("bardo").join("inference"),
+            audit: state.join("bardo").join("inference").join("audit.jsonl"),
+            spend: state.join("bardo").join("inference").join("spend.json"),
+            tool_proofs: state.join("bardo").join("inference").join("tool-proofs.json"),
+            computers: state.join("bardo").join("inference").join("computers.toml"),
+            computer_keys: state.join("bardo").join("inference").join("computer-keys"),
+            guests: state.join("bardo").join("inference").join("guests.toml"),
             hf_cache,
         })
     }

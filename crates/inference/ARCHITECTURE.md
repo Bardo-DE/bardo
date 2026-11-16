@@ -157,7 +157,7 @@ manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns 
   app, which names no unit). Every other program, and any image a person can write, is nobody.
 - Table translation. A `[[caller]]` row with a `unit` and at least one program becomes a `[[peer]]` row of
   the same app, unit and role (porter's own role spelling), its `exe` being the row's `exe` or, for a
-  daemon unit named `<name>.service` (lower case, digits, dashes), `libexec/quire/<name>` under `/usr`,
+  daemon unit named `<name>.service` (lower case, digits, dashes), `libexec/bardo/bardo-<name>` under `/usr`,
   `/usr/local` and `/opt/bardo/releases/*` (`images::installed`). Any other unit lists its `exe` in the row
   (`dist/callers.toml` does for detent and sill, in `bin`), and without one is nobody. Rows without a unit
   are not translated. One row for the unit manager (`systemd`, role `manager`, `Exe`) is added, and the

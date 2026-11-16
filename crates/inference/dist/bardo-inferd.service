@@ -8,7 +8,7 @@
 # for each engine, with its own PrivateNetwork and a read-only bind of just its weights) is not
 # built: when it is, this unit loses the device lines and the engines gain them.
 [Unit]
-Description=quire AI broker (org.bardo.Inference1)
+Description=bardo AI broker (org.bardo.Inference1)
 
 [Service]
 # Fixed role (peephole's LOADER_VARIABLES, checked by its `Full` proof): the manager's environment must not reach this unit.
@@ -24,7 +24,7 @@ TimeoutStopSec=20
 
 # --- Sandbox ---
 # The keys that need a mount namespace are in the drop-in sandbox.conf (see its header).
-# Unix sockets (the session bus, and the engines' sockets under %t/inferd) and this computer's own
+# Unix sockets (the session bus, and the engines' sockets under %t/bardo/inference) and this computer's own
 # loopback addresses only: the local runtimes the probe asks (Ollama, LM Studio, llama.cpp
 # server) and the agent endpoint's listener are on 127.0.0.1 / ::1, which PrivateNetwork would
 # hide. IPAddressDeny=any with IPAddressAllow=localhost leaves every other address unreachable,
@@ -39,8 +39,8 @@ TimeoutStopSec=20
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 IPAddressDeny=any
 IPAddressAllow=localhost
-# What inferd writes: its engines' sockets (the runtime directory, %t/inferd) and its state (the
-# audit file and the spend ledger, under $XDG_STATE_HOME/quire/inferd). systemd creates both
+# What inferd writes: its engines' sockets (the runtime directory, %t/bardo/inference) and its state (the
+# audit file and the spend ledger, under $XDG_STATE_HOME/bardo/inference). systemd creates both
 # before the sandbox starts. The rest of the person's files are read-only (ProtectHome in
 # sandbox.conf), so the weights cache is read through that.
 #
@@ -50,9 +50,9 @@ IPAddressAllow=localhost
 # before (keys/ and keys-audit.jsonl in the state directory) it removes once accountd has copied
 # it. A hosted model is called with the key for that one request, which needs the network drop-in
 # below.
-RuntimeDirectory=inferd
+RuntimeDirectory=bardo/inference
 RuntimeDirectoryMode=0700
-StateDirectory=quire/inferd
+StateDirectory=bardo/inference
 # No setuid gain. MemoryDenyWriteExecute is NOT set: CUDA and the engines' JIT need writable and
 # executable memory.
 NoNewPrivileges=yes

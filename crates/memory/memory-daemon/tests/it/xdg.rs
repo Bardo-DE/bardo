@@ -22,16 +22,16 @@ fn explicit_variables_win() {
         ("HOME", "/home/u"),
     ]))
     .expect("dirs");
-    assert_eq!(dirs.memory().to_str(), Some("/d/quire/memory"));
-    assert_eq!(dirs.memory_toml().to_str(), Some("/f/quire/memory.toml"));
+    assert_eq!(dirs.memory().to_str(), Some("/d/bardo/memory"));
+    assert_eq!(dirs.memory_toml().to_str(), Some("/f/bardo/memoryd/memory.toml"));
     let work = SpaceId::parse("work").expect("space");
     assert_eq!(
         dirs.index_db(&work).to_str(),
-        Some("/c/quire/memory/work/index.db")
+        Some("/c/bardo/memory/work/index.db")
     );
     assert_eq!(
         dirs.edit(&work).to_str(),
-        Some("/run/user/1000/quire/memory/edit/work")
+        Some("/run/user/1000/bardo/memory/edit/work")
     );
 }
 
@@ -45,11 +45,11 @@ fn defaults_come_from_home() {
     .expect("dirs");
     assert_eq!(
         dirs.memory().to_str(),
-        Some("/home/u/.local/share/quire/memory")
+        Some("/home/u/.local/share/bardo/memory")
     );
     assert_eq!(
         dirs.memory_toml().to_str(),
-        Some("/home/u/.config/quire/memory.toml")
+        Some("/home/u/.config/bardo/memoryd/memory.toml")
     );
 }
 

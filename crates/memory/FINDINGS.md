@@ -298,8 +298,8 @@ error of its name, one to one. `DbusTransport::call` maps a missing daemon
 read) with `callers::caller_for` mapping porter's caller onto almanac's: role `cua` is `Cuad`,
 role `sheet_host` of app `org.quire.Shell` is `ShellUi`, role `settings` of app `org.quire.Settings`
 (the unit `org.quire.Settings.service`, detent) is `Settings`, role `agent` of app
-`org.quire.Intents` is `Router`, every other identified process is `App`. The table is `/etc/quire/memory-callers.toml`
-with `<config>/quire/memory-callers.toml` laid over it (user rows win; a missing file is empty, a
+`org.quire.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
+with `<config>/bardo/memoryd/callers.toml` laid over it (user rows win; a missing file is empty, a
 bad one stops the daemon): porter's `[[caller]]` rows of `app`, optional `unit`, `role`.
 `dbus/memory-callers.toml` is the packaged system file. `TablePeers` is the test seam.
 
@@ -362,7 +362,7 @@ list the fact; they last as long as those bodies (90 days).
 after each request that changed them, emits `Recorded`, `Forgotten`, `ConsolidationReady`,
 `PendingChanged` (when a proposal lands pending) and `StatusChanged` (after pause, resume and
 rebuild), and runs on the multi-thread runtime (an export writes to the caller's stream blocking).
-`dbus/memoryd.service` and `dbus/org.quire.Memory1.service` are the user unit (`PrivateNetwork`,
+`dbus/bardo-memoryd.service` and `dbus/org.bardo.Memory1.service` are the user unit (`PrivateNetwork`,
 `ProtectSystem=strict`, `ProtectHome=read-only`, `ReadWritePaths` for the memory directories only)
 and the activation file. (Landlock came with the w4 fill, below.)
 
@@ -468,7 +468,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   better trigger than polling (built in the f4 fill).
 - **Landlock** (77): `memoryd/src/sandbox.rs`. The policy (`policy_for(dirs, bus_address)`, pure,
   a table test) is read-write on the four memory directories (data, cache, `<config>/quire`,
-  `<runtime>/quire/memory`), read-only on `/usr /lib /lib64 /bin /etc /proc /sys /dev/urandom`,
+  `<runtime>/bardo/memory`), read-only on `/usr /lib /lib64 /bin /etc /proc /sys /dev/urandom`,
   `ResolveUnix` on the session bus socket only (`unix:path=` of `DBUS_SESSION_BUS_ADDRESS`, else
   `<runtime>/bus`), and no TCP. `main` is no longer `#[tokio::main]`: it makes the directories,
   applies the policy (best effort: older kernels get what they have, none gets a warning on
@@ -732,8 +732,8 @@ no XDG directory, no `/proc`, no wall clock; it uses no D-Bus, inotify or Landlo
 `Memory::over(InProcess::new(Arc::new(almanac_local::open(backend, rules)?), caller))`.
 
 What an app must provide:
-- **A root directory** (`Root::new(path)`, e.g. its application-support directory). Below it: `data/quire/memory`
-  (`spaces.toml`, each Space's `events.db` and sealed files), `cache/quire/memory/<space>/index.db` (rebuildable).
+- **A root directory** (`Root::new(path)`, e.g. its application-support directory). Below it: `data/bardo/memory`
+  (`spaces.toml`, each Space's `events.db` and sealed files), `cache/bardo/memory/<space>/index.db` (rebuildable).
 - **A master key**: `ProvidedKeys::new(SpaceKey)`, 32 bytes from its own sign-in or keychain, the same on every
   run. A different one is not an error at open: the first request on a Space answers `Refusal::SpaceLocked`
   (`LogError::Locked` underneath, mapped by the service's `backend_refusal` as is a locked key store; a sealed file read is `VaultError::Sealed`). `ProvidedKeys` persists nothing, so
@@ -961,8 +961,8 @@ pages of `events.db`, `index.db` and sealed files. Per-Space keys are never rota
 copy taken before the forget still opens with the Space's current Secret Service key. Plain
 (readable) vaults are unlinked with no overwrite, so memory does not claim erasure for them. Only
 removing a whole Space destroys its key, and that is best-effort too (ALM-08). Keep
-`~/.local/share/quire/memory` out of snapshots and backups: add it to the snapshot and backup tools'
-excludes (works on every file system), or on btrfs make it its own subvolume (`dbus/memoryd.service` carries the same note; a
+`~/.local/share/bardo/memory` out of snapshots and backups: add it to the snapshot and backup tools'
+excludes (works on every file system), or on btrfs make it its own subvolume (`dbus/bardo-memoryd.service` carries the same note; a
 unit file cannot enforce it). Re-keying a Space after a forget is out of scope here; it needs a
 rewrite of both databases and the sealed files under a fresh key.
 
@@ -984,7 +984,7 @@ next to `Version`. Its words are a public contract (`Confinement::as_word`, pinn
 
 `dbus/org.quire.Memory1.xml`, the skeleton, the `ControlProxy::confinement()` getter and the
 introspection test move together. Whether the unit's own protections are on is a separate fact: they
-are on only when `memoryd.service.d/sandbox.conf` is installed (`scripts/install.sh` leaves it out
+are on only when `bardo-memoryd.service.d/sandbox.conf` is installed (`scripts/install.sh` leaves it out
 where `systemd --user` cannot make namespaces, the Ubuntu 24.04+ default), and can be read from the
 manager (`systemctl --user show memoryd -p ProtectSystem`). `Confinement` says nothing about it.
 

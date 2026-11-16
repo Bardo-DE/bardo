@@ -29,20 +29,20 @@ role = "cua"
 app = "org.bardo.Shell"
 unit = "bardo-shell.service"
 role = "sheet_host"
-exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/bardo-shell"]
 
 [[caller]]
 app = "org.bardo.Settings"
 unit = "org.bardo.Settings.service"
 role = "settings"
-exe = ["/usr/bin/bardo-settings", "/usr/local/bin/detent", "/opt/bardo/releases/*/bin/detent"]
+exe = ["/usr/bin/bardo-settings", "/usr/local/bin/bardo-settings", "/opt/bardo/releases/*/bin/bardo-settings"]
 
 # A scope never carries a fixed role: this row makes the shell's old scope a plain app.
 [[caller]]
 app = "org.bardo.Shell"
-unit = "sill-shell.scope"
+unit = "bardo-shell.scope"
 role = "sheet_host"
-exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/bardo-shell"]
 
 [[caller]]
 app = "org.bardo.Companion"
@@ -117,9 +117,9 @@ fn a_process_is_identified_by_its_cgroup() {
         (19, "app-org.bardo.Intents-5.scope"),
         // The shell's old transient scope matches its row exactly, but as a plain app only;
         // near misses are refused.
-        (21, "sill-shell.scope"),
-        (22, "sill-shell-2.scope"),
-        (23, "xsill-shell.scope"),
+        (21, "bardo-shell.scope"),
+        (22, "bardo-shell-2.scope"),
+        (23, "xbardo-shell.scope"),
         // The Settings app is a unit row; its app scope is only an app.
         (26, "org.bardo.Settings.service"),
         (27, "app-org.bardo.Settings-3.scope"),
@@ -301,7 +301,7 @@ async fn a_connection_is_resolved_through_its_process_to_its_cgroup() {
 #[tokio::test]
 async fn the_shell_in_its_old_transient_scope_may_not_forget() {
     let table = table_from_toml(TABLE).expect("table");
-    let proc = proc_with_me_in("sill-shell.scope");
+    let proc = proc_with_me_in("bardo-shell.scope");
     let (_scratch, _bus, _daemon, address) = world(table, proc.path()).await;
     let shell = Memory::over(DbusTransport::new(connect(&address).await));
     let refused = shell

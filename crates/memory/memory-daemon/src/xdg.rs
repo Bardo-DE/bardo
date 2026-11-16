@@ -14,7 +14,7 @@ pub enum XdgError {
     NoRuntimeDir,
 }
 
-fn root(
+pub(crate) fn root(
     lookup: &impl Fn(&str) -> Option<String>,
     var: &'static str,
     under_home: &str,

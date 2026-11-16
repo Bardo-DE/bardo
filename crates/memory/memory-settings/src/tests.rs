@@ -86,7 +86,7 @@ fn one(p: &str, v: toml::Value) -> String {
 #[test]
 fn the_schema_has_the_shape_the_settings_app_loads() {
     let schema = schema();
-    assert_eq!(schema["app"].as_str(), Some("almanac"));
+    assert_eq!(schema["app"].as_str(), Some("memory"));
     assert_eq!(schema["file"].as_str(), Some(SETTINGS_FILE));
     assert_eq!(schema["version"].as_integer(), Some(1));
     let mut seen = BTreeSet::new();

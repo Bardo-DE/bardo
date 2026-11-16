@@ -8,7 +8,7 @@ use model_catalog::{
 };
 use serde::{Deserialize, Serialize};
 
-/// The Unix socket an engine listens on, `$XDG_RUNTIME_DIR/inferd/<engine>.sock`.
+/// The Unix socket an engine listens on, `$XDG_RUNTIME_DIR/bardo/inference/<engine>.sock`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SocketPath(pub PathBuf);

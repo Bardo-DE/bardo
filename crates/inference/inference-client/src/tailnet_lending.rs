@@ -2,7 +2,7 @@
 //! switch "Let my other computers use this computer's models" does besides setting
 //! `ai.tailnet.serve`. inferd's service is shut off from every network address but its own; the
 //! file porter ships (`dist/inferd-tailnet.conf`, installed as data at
-//! `$prefix/share/porter/inferd-tailnet.conf`) opens Tailscale's own addresses and nothing else.
+//! `$prefix/share/bardo/inference/tailnet.conf`) opens Tailscale's own addresses and nothing else.
 //! It is the person's to turn on, so porter installs it only here, when they say yes.
 //!
 //! [`TailnetLending`] writes the file into the person's systemd user configuration, or takes it
@@ -41,8 +41,8 @@ pub const INFERD_UNIT: &str = "bardo-inferd.service";
 const DROP_IN_DIR: &str = "bardo-inferd.service.d";
 const DROP_IN_FILE: &str = "tailnet.conf";
 
-/// The name porter's shipped file has under `share/porter`.
-pub const SHIPPED_NAME: &str = "inferd-tailnet.conf";
+/// The name the shipped file has under `share/bardo/inference`.
+pub const SHIPPED_NAME: &str = "tailnet.conf";
 
 /// Why the manager did not do what it was asked: a sentence for a log, not for the person.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -75,10 +75,10 @@ impl LendingConfig {
         }
     }
 
-    /// The shipped file under `prefix` (`<prefix>/share/porter/inferd-tailnet.conf`).
+    /// The shipped file under `prefix` (`<prefix>/share/bardo/inference/tailnet.conf`).
     pub fn under_prefix(prefix: &Path, systemd_user_dir: PathBuf) -> Self {
         Self::new(
-            prefix.join("share/porter").join(SHIPPED_NAME),
+            prefix.join("share/bardo/inference").join(SHIPPED_NAME),
             systemd_user_dir,
         )
     }
@@ -103,7 +103,7 @@ impl LendingConfig {
         let candidates: Vec<PathBuf> = data_home
             .into_iter()
             .chain(std::env::split_paths(&data_dirs).filter(|path| path.is_absolute()))
-            .map(|dir| dir.join("porter").join(SHIPPED_NAME))
+            .map(|dir| dir.join("bardo/inference").join(SHIPPED_NAME))
             .collect();
         let shipped = candidates
             .iter()

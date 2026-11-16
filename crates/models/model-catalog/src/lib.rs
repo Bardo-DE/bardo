@@ -1,7 +1,7 @@
 //! The curated table of models we know how to run, as data files.
 //!
 //! `catalog/<id>.toml` is installed at `/usr/share/bardo/models/catalog/` and
-//! `$XDG_DATA_HOME/stoker/catalog/`; a user file replaces the system file of the same id. Every
+//! `$XDG_DATA_HOME/bardo/models/catalog/`; a user file replaces the system file of the same id. Every
 //! field is written and nothing defaults, except the optional ones (the model's own limits
 //! `context_max`, `max_output_max`, `context_min` in `[text_out]`, an engine's `context_arg`):
 //! a file with any other field missing is refused.

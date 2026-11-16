@@ -6,7 +6,7 @@
 #
 # Who may call. A caller is the systemd unit behind a bus connection (the bus names its process,
 # /proc/<pid>/cgroup names the unit); an app in its own app scope or Flatpak scope is an App
-# without a line here. cuad is the only caller that may open a computer-use session; it may also
+# without a line here. bardo-computer-use is the only caller that may open a computer-use session; it may also
 # list the places (Inference1.Places), to say plainly when no ready model can see the screen.
 cua = ["bardo-computer-use.service"]
 # The Settings app: the only caller of inferd's settings module (the model picker), as the unit the
@@ -30,7 +30,7 @@ places = ["bardo-companiond.service", "bardo-readerd.service", "bardo-actiond.se
 # agent_launcher = ["bardo-agent-acp.service"]
 #
 # An entry here or under [apps] is a unit's name, or the unit and the programs that may run in it:
-# a daemon's `<name>.service` runs `libexec/quire/<name>` (under /usr, /usr/local or
+# a daemon's `<name>.service` runs `libexec/bardo/bardo-<name>` (under /usr, /usr/local or
 # /opt/bardo/releases/*) without saying so, but a scope or a dotted service names none, and is
 # nobody until its entry lists them, e.g.
 #   { unit = "bardo-agent-acp.scope", exe = ["/usr/bin/bardo-agent-acp", "/usr/local/bin/bardo-agent-acp",

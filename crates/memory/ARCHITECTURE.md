@@ -248,7 +248,7 @@ interface other work builds on; a change is a format bump (section 6) or a SPEC 
 
 ## 6. File formats (frozen)
 
-**Layout** (all paths from the injected `Dirs`; the data root is `$XDG_DATA_HOME/quire/memory`):
+**Layout** (all paths from the injected `Dirs`; the data root is `$XDG_DATA_HOME/bardo/memory`):
 
 ```
 spaces.toml                         SpacesFile: one SpaceMeta per Space (id, created, replica, vault, format)
@@ -262,9 +262,9 @@ system/events.db                    desktop-level log: Space created or deleted,
 <space>/meta/marks.json             "do not remember" marks (vault file)
 <space>/meta/baseline.json          each topic file's text as the service last left it (an edit is a difference)
 <space>/flags/<run>.json            the notes a run's Flag hunks left, by fact
-$XDG_CACHE_HOME/quire/memory/<space>/index.db   recall index, SQLCipher, deletable; meta.space records the vector space it holds, so a restart adopts it
-$XDG_CONFIG_HOME/quire/memory.toml              RuleSet and defaults (written only by memoryd)
-$XDG_RUNTIME_DIR/quire/memory/edit/<space>/     decrypted edit copies on tmpfs
+$XDG_CACHE_HOME/bardo/memory/<space>/index.db   recall index, SQLCipher, deletable; meta.space records the vector space it holds, so a restart adopts it
+$XDG_CONFIG_HOME/bardo/memoryd/memory.toml              RuleSet and defaults (written only by memoryd)
+$XDG_RUNTIME_DIR/bardo/memory/edit/<space>/     decrypted edit copies on tmpfs
 ```
 
 **Event header (v1)**: `"QEL1" | seq u64be | replica [16] | occurred i64be | recorded i64be |

@@ -20,9 +20,9 @@ use std::process::ExitCode;
 
 /// porter's AI broker (`org.bardo.Inference1`).
 #[derive(Debug, Parser)]
-#[command(name = "inferd", version)]
+#[command(name = "bardo-inferd", version)]
 struct Args {
-    /// The configuration file, instead of `$XDG_CONFIG_HOME/inferd/inferd.toml`.
+    /// The configuration file, instead of `$XDG_CONFIG_HOME/bardo/inference/inferd.toml`.
     #[arg(long, value_name = "FILE")]
     config: Option<PathBuf>,
 }
@@ -36,6 +36,10 @@ fn fail(why: impl std::fmt::Display) -> ExitCode {
 #[tokio::main]
 async fn main() -> ExitCode {
     let args = Args::parse();
+    for line in inference_daemon::pre_bardo::move_pre_bardo_folders(|name| std::env::var(name).ok())
+    {
+        eprintln!("{line}");
+    }
     // Listening starts before anything else: a signal during start-up is kept, not fatal.
     let signals = match Signals::listen() {
         Ok(signals) => signals,

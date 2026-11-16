@@ -89,7 +89,7 @@ fn start(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> Daemon {
     }
     let log = scratch.join("inferd.stderr");
     let stderr = std::fs::File::create(&log).expect("the daemon's log file");
-    let child = Command::new(env!("CARGO_BIN_EXE_inferd"))
+    let child = Command::new(env!("CARGO_BIN_EXE_bardo-inferd"))
         .env_clear()
         .env("HOME", scratch)
         .env("XDG_RUNTIME_DIR", scratch)

@@ -9,8 +9,8 @@
 #                                        With --user it moves the programs only: settings, units and
 #                                        shared files go to your own standard folders (~/.config, ~/.local/share)
 #   --destdir DIR                        put everything under DIR, for a package; nothing asks for root
-#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/quire/ and
-#                                        DIR/xdg/quire/; a release stages them elsewhere and places them later
+#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/bardo/ and
+#                                        DIR/xdg/bardo/; a release stages them elsewhere and places them later
 #   --no-build                           install what is already in target/release
 #   --bin-dir DIR                        install programs already built in DIR instead of building
 #   --dry-run                            print every action; build and write nothing
@@ -21,24 +21,24 @@
 #                                        /etc/os-release; ubuntu counts as debian)
 #
 # What goes where (system install; --user puts the same in your own folders, see --prefix):
-#   PREFIX/libexec/quire/memoryd         the daemon
+#   PREFIX/libexec/bardo/bardo-memoryd         the daemon
 #   PREFIX/lib/systemd/user/             bardo-memoryd.service, pointed at the prefix, and
 #                                        bardo-memoryd.service.d/sandbox.conf, its protections
 #   PREFIX/share/dbus-1/services/        the activation file; interfaces/ has the interface XML
-#   PREFIX/share/quire/settings/         the Settings schema
-#   SYSCONFDIR/quire/memoryd-callers.toml which units may call memoryd. It is the machine's security
+#   PREFIX/share/bardo/settings/         the Settings schema
+#   SYSCONFDIR/bardo/memoryd-callers.toml which units may call memoryd. It is the machine's security
 #                                        table: always replaced, reset on every install. Needs root;
 #                                        memoryd reads it at start, so restart it after
 set -euo pipefail
 
 REPO_NAME="almanac"
 NEEDS_GIT=1
-FIRST_SERVICE="memoryd"
+FIRST_SERVICE="bardo-memoryd"
 CARGO_EXTRA=(--config net.git-fetch-with-cli=true)
 # Landlock, in code terms: memoryd confines itself to its own folders with or without the unit.
 SANDBOX_NOTE="memoryd still keeps itself to its own folders, with or without the private views."
 # name|cargo package|libexec or bin
-BINARIES=("memoryd|memoryd|libexec")
+BINARIES=("bardo-memoryd|memory-daemon|libexec")
 
 extra_arg() { return 1; }
 
@@ -57,7 +57,7 @@ install_rest() {
   put_unit "$ROOT/dbus/bardo-memoryd.service"
   put 644 "$ROOT/dbus/org.bardo.Memory1.service" "$SHARE/dbus-1/services/org.bardo.Memory1.service" unit
   put 644 "$ROOT/dbus/org.bardo.Memory1.xml" "$SHARE/dbus-1/interfaces/org.bardo.Memory1.xml" copy
-  put_tree 644 "$ROOT/memory-settings/schema" "$SHARE/quire/settings"
+  put_tree 644 "$ROOT/memory-settings/schema" "$SHARE/bardo/settings"
   install_callers "$ROOT/dbus/memoryd-callers.toml" memoryd-callers.toml
 }
 
@@ -169,18 +169,18 @@ case "$DESTDIR" in ""|/*) ;; *) die "--destdir must be an absolute path: $DESTDI
 case "$SYSCONFDIR" in /*) ;; *) die "--sysconfdir must be an absolute path: $SYSCONFDIR" ;; esac
 case "$SYSCONFDIR" in *[\|\&\\\ ]*) die "--sysconfdir cannot contain spaces, |, & or \\: $SYSCONFDIR" ;; esac
 
-LIBEXEC="$PREFIX/libexec/quire"
+LIBEXEC="$PREFIX/libexec/bardo"
 BINDIR="$PREFIX/bin"
 if [ "$MODE" = user ]; then
   UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   SHARE="${XDG_DATA_HOME:-$HOME/.local/share}"
-  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/quire"
+  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bardo"
 else
   UNIT_DIR="$PREFIX/lib/systemd/user"
   SHARE="$PREFIX/share"
-  CONF_DIR="$SYSCONFDIR/xdg/quire"
+  CONF_DIR="$SYSCONFDIR/xdg/bardo"
 fi
-SYS_QUIRE="$SYSCONFDIR/quire"
+SYS_BARDO="$SYSCONFDIR/bardo"
 
 under_home() { case "$PREFIX" in "$HOME"|"$HOME"/*) return 0 ;; *) return 1 ;; esac; }
 
@@ -431,7 +431,7 @@ install_bins() {
   done
 }
 install_callers() { # SOURCE NAME: the system's table, read by the daemon at start
-  put 644 "$1" "$SYS_QUIRE/$2" copy
+  put 644 "$1" "$SYS_BARDO/$2" copy
 }
 
 finish() {

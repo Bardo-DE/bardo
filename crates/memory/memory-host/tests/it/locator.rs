@@ -13,8 +13,8 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         (&home, "[memory.retention]\nsearch_days = 5\n"),
         (&etc, "[memory.retention]\nsession_days = 3\n"),
     ] {
-        std::fs::create_dir_all(dir.path().join("almanac")).unwrap();
-        std::fs::write(dir.path().join(SETTINGS_FILE), text).unwrap();
+        std::fs::create_dir_all(dir.path().join("bardo/memory")).unwrap();
+        std::fs::write(dir.path().join("bardo").join(SETTINGS_FILE), text).unwrap();
     }
     let env = |k: &str| match k {
         "XDG_CONFIG_HOME" => Some(home.path().display().to_string()),
@@ -26,7 +26,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
     locator
         .confirm(&pairs(&[("memory.retention.search_days", "5")]))
         .unwrap();
-    assert_eq!(locator.watch_dir(), Some(home.path().join("almanac")));
+    assert_eq!(locator.watch_dir(), Some(home.path().join("bardo/memory")));
     let value = locator.read(MemorySettings::default()).value;
     assert_eq!(value.retention.search, DayCount(5));
     // The first file wins whole: the later directory's other keys are not merged in.
@@ -46,8 +46,8 @@ fn pairs(of: &[(&str, &str)]) -> std::collections::BTreeMap<String, String> {
 
 /// A locator over a scratch configuration directory holding `text`, with its confirmation store.
 fn locator_with(dir: &std::path::Path, text: &str) -> Locator {
-    std::fs::create_dir_all(dir.join("almanac")).unwrap();
-    std::fs::write(dir.join(SETTINGS_FILE), text).unwrap();
+    std::fs::create_dir_all(dir.join("bardo/memory")).unwrap();
+    std::fs::write(dir.join("bardo").join(SETTINGS_FILE), text).unwrap();
     let home = dir.display().to_string();
     let env = move |k: &str| match k {
         "XDG_CONFIG_HOME" => Some(home.clone()),

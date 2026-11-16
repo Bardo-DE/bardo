@@ -31,11 +31,11 @@ impl Drop for Daemon {
 /// Scratch HOME and XDG roots, a callers file with the router's unit row, and a fake `/proc` in
 /// which this test process runs in `bardo-actiond.service` as its main process.
 fn scratch_home(root: &Path) {
-    let config = root.join("config").join("quire");
+    let config = root.join("config").join("bardo").join("memoryd");
     std::fs::create_dir_all(&config).expect("config dir");
     std::fs::create_dir_all(root.join("run")).expect("runtime dir");
     std::fs::write(
-        config.join("memoryd-callers.toml"),
+        config.join("callers.toml"),
         "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n",
     )
     .expect("callers file");
@@ -73,7 +73,7 @@ fn daemon_env(root: &Path, bus: &PrivateBus, keys: &str) -> Vec<(&'static str, S
 }
 
 fn spawn(root: &Path, bus: &PrivateBus, keys: &str) -> (Daemon, ChildStderr) {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_memoryd"))
+    let mut child = Command::new(env!("CARGO_BIN_EXE_bardo-memoryd"))
         .env_clear()
         .envs(daemon_env(root, bus, keys))
         .stdin(Stdio::null())
@@ -144,7 +144,7 @@ async fn record_into_desktop<G>(
     assert_eq!(event.space, SpaceId::desktop());
     assert!(keys_file.exists(), "the key went to the file");
     assert!(
-        root.join("data/quire/memory/desktop/events.db").exists(),
+        root.join("data/bardo/memory/desktop/events.db").exists(),
         "desktop was provisioned"
     );
     started

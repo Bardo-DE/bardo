@@ -21,7 +21,7 @@ fn paths() -> EnginePaths {
         programs: [
             program(EngineKind::Vllm, "/opt/vllm/bin/python"),
             program(EngineKind::LlamaServer, "/opt/llama/bin/llama-server"),
-            program(EngineKind::SpeechHost, "/opt/stoker/bin/bardo-speech-host"),
+            program(EngineKind::SpeechHost, "/opt/bardo/bin/bardo-speech-host"),
             program(EngineKind::KokoroFastApi, "/opt/kokoro/bin/python"),
             program(EngineKind::Strata, "/opt/strata/.venv/bin/python"),
         ]
@@ -62,7 +62,7 @@ fn an_engine_with_no_listed_program_cannot_start() {
 }
 
 fn socket(name: &str) -> SocketPath {
-    SocketPath(PathBuf::from(format!("/run/user/1000/inferd/{name}.sock")))
+    SocketPath(PathBuf::from(format!("/run/user/1000/bardo/inference/{name}.sock")))
 }
 
 fn args(unit: &UnitSpec) -> Vec<&str> {
@@ -92,7 +92,7 @@ fn holo_under_vllm_is_the_pinned_unit() {
                 "--served-model-name",
                 "holo-3.1-4b",
                 "--uds",
-                "/run/user/1000/inferd/vllm-holo.sock",
+                "/run/user/1000/bardo/inference/vllm-holo.sock",
                 "--limit-mm-per-prompt",
                 "{\"image\":3,\"video\":0}",
                 "--enable-auto-tool-choice",
@@ -114,7 +114,7 @@ fn holo_under_vllm_is_the_pinned_unit() {
             sandbox: Sandbox {
                 network: Network::None,
                 read: vec![PathBuf::from("/data/hf/hub/models--Hcompany--Holo-3.1-4B")],
-                write: vec![PathBuf::from("/run/user/1000/inferd")],
+                write: vec![PathBuf::from("/run/user/1000/bardo/inference")],
                 gpu: GpuAccess::Nvidia,
                 memory_max: MiB(4096 + 10400 + 1500),
             },
@@ -182,7 +182,7 @@ fn each_engine_gets_its_program_and_its_pinned_argv() {
                 "--alias".into(),
                 "holo-3.1-4b".into(),
                 "--host".into(),
-                "/run/user/1000/inferd/llama-holo.sock".into(),
+                "/run/user/1000/bardo/inference/llama-holo.sock".into(),
                 "--jinja".into(),
                 "--ctx-size".into(),
                 "32768".into(),
@@ -196,12 +196,12 @@ fn each_engine_gets_its_program_and_its_pinned_argv() {
             profile: nemotron.engines[0].clone(),
             entry: nemotron,
             socket: "speech-in",
-            program: "/opt/stoker/bin/bardo-speech-host",
+            program: "/opt/bardo/bin/bardo-speech-host",
             args: strings(&[
                 "--model-dir",
                 "/data/hf/hub/models--csukuangfj2--sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11/snapshots/ab43d895f5985b1bbab8b6eac8607fcdc05343f3",
                 "--socket",
-                "/run/user/1000/inferd/speech-in.sock",
+                "/run/user/1000/bardo/inference/speech-in.sock",
                 "--threads",
                 "6",
                 "--chunk-ms",
@@ -222,7 +222,7 @@ fn each_engine_gets_its_program_and_its_pinned_argv() {
                 "uvicorn",
                 "api.src.main:app",
                 "--uds",
-                "/run/user/1000/inferd/kokoro.sock",
+                "/run/user/1000/bardo/inference/kokoro.sock",
             ]),
             gpu: Some(GpuAccess::Absent),
             memory_max: None,
@@ -235,7 +235,7 @@ fn each_engine_gets_its_program_and_its_pinned_argv() {
             program: "/opt/strata/.venv/bin/python",
             args: strings(&[
                 "serve/server.py",
-                "--socket=/run/user/1000/inferd/strata.sock",
+                "--socket=/run/user/1000/bardo/inference/strata.sock",
             ]),
             gpu: None,
             memory_max: None,
@@ -275,7 +275,7 @@ fn the_socket_placeholder_is_replaced_wherever_it_appears() {
         weights: WeightFiles::SherpaDir,
     };
     let unit = command(&holo, &profile, &paths(), &socket("x"));
-    let s = "/run/user/1000/inferd/x.sock";
+    let s = "/run/user/1000/bardo/inference/x.sock";
     assert!(args(&unit).contains(&format!("--bind=unix:{s}").as_str()));
     assert!(args(&unit).contains(&format!("{s}:{s}").as_str()));
     assert!(args(&unit).iter().all(|a| !a.contains("{socket}")));
@@ -294,7 +294,7 @@ fn every_engine_starts_offline_with_no_network_and_a_writable_socket_directory_o
         assert_eq!(unit.sandbox.network, Network::None);
         assert_eq!(
             unit.sandbox.write,
-            vec![PathBuf::from("/run/user/1000/inferd")]
+            vec![PathBuf::from("/run/user/1000/bardo/inference")]
         );
         assert_eq!(
             unit.sandbox.read.len(),

@@ -3,7 +3,7 @@
 //! The identification is porter's (`account_callers::ProcCallers`: the bus names the pid, the pid's
 //! cgroup names the unit or the app scope), and so is the reading of the table files
 //! (`account_callers::load_callers`). What is memoryd's own is where they are —
-//! `/etc/bardo/memoryd-callers.toml` with the user's `<config>/quire/memoryd-callers.toml` laid
+//! `/etc/bardo/memoryd-callers.toml` with the user's `<config>/bardo/memoryd/callers.toml` laid
 //! over it — and [`caller_for`] that turns a porter role into one of almanac's callers. The router, the shell, cuad and the Settings app are the four fixed
 //! callers; every other identified process is an app.
 

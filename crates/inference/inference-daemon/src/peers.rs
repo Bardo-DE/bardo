@@ -322,8 +322,8 @@ const SHELL_APP: &str = "org.bardo.Shell";
 
 /// The programs the Settings app and the shell are installed as (in `bin`): the unit manager must
 /// say their units start one of these before they keep a fixed role.
-const SETTINGS_PROGRAM: &str = "detent";
-const SHELL_PROGRAM: &str = "sill";
+const SETTINGS_PROGRAM: &str = "bardo-settings";
+const SHELL_PROGRAM: &str = "bardo-shell";
 
 impl Caller {
     /// A shared caller as inferd knows roles: `Cua` and `Settings`, and `App` for every other.

@@ -1,4 +1,4 @@
-//! inferd to `bardo-speech-host`, over `$XDG_RUNTIME_DIR/inferd/<engine>.sock`: a 4-byte big-endian
+//! inferd to `bardo-speech-host`, over `$XDG_RUNTIME_DIR/bardo/inference/<engine>.sock`: a 4-byte big-endian
 //! length, then that many bytes of JSON, at most 1 MiB. porter's framing shape, declared again
 //! here because stoker has no porter dependency.
 

@@ -148,13 +148,13 @@ fn a_places_unit_that_is_no_app_and_a_shell_entry_that_is_no_service_are_refused
         Err(TableError::PlacesNotAnApp(unit)) if unit == "x.service"
     ));
     assert!(matches!(
-        CallerTable::from_toml_text("shell = [\"sill-shell\"]\n"),
-        Err(TableError::BadShellEntry(bad)) if bad == "sill-shell"
+        CallerTable::from_toml_text("shell = [\"bardo-shell\"]\n"),
+        Err(TableError::BadShellEntry(bad)) if bad == "bardo-shell"
     ));
     // A scope has no main process to check, so it cannot be the shell.
     assert!(matches!(
-        CallerTable::from_toml_text("shell = [\"sill-shell.scope\"]\n"),
-        Err(TableError::BadShellEntry(bad)) if bad == "sill-shell.scope"
+        CallerTable::from_toml_text("shell = [\"bardo-shell.scope\"]\n"),
+        Err(TableError::BadShellEntry(bad)) if bad == "bardo-shell.scope"
     ));
 }
 
@@ -272,7 +272,7 @@ places = ["bardo-companiond.service"]
 [apps]
 "org.bardo.Companion" = [
     "bardo-companiond.service",
-    { unit = "docket-acp-turn.scope", exe = ["/usr/bin/bardo-agent-acp", "/opt/bardo/releases/*/bin/bardo-agent-acp"] },
+    { unit = "bardo-agent-acp-turn.scope", exe = ["/usr/bin/bardo-agent-acp", "/opt/bardo/releases/*/bin/bardo-agent-acp"] },
 ]
 "#,
     )
@@ -291,7 +291,7 @@ places = ["bardo-companiond.service"]
         ))
     );
     assert_eq!(
-        row("docket-acp-turn.scope"),
+        row("bardo-agent-acp-turn.scope"),
         Some((
             CallerRole::App,
             vec![

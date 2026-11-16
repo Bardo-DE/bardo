@@ -16,6 +16,7 @@ test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
 zbus-ready = { path = "../../zbus-ready" }
+old-folders = { path = "../../platform/old-folders" }
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
@@ -107,5 +108,5 @@ unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [[bin]]
-name = "inferd"
+name = "bardo-inferd"
 path = "src/main.rs"

@@ -472,10 +472,10 @@ run by hand against the user's own engine.
 
 ## 9. Install
 
-`scripts/install.sh` installs `catalog/*.toml` under `PREFIX/share/stoker/catalog` (inferd reads
+`scripts/install.sh` installs `catalog/*.toml` under `PREFIX/share/bardo/models/catalog` (inferd reads
 `/usr/share/bardo/models/catalog` and `$XDG_DATA_HOME/stoker/catalog`, so use `--prefix /usr` for a
 machine-wide install). It builds and installs one program, engine-install's `bardo-engine-helper`, at
-`PREFIX/libexec/quire/bardo-engine-helper`, and on a system install its polkit action
+`PREFIX/libexec/bardo/bardo-engine-helper`, and on a system install its polkit action
 `org.bardo.engines.install` (`dist/org.bardo.engines.policy`, path rewritten to the prefix); the
 action porter installed before the engines moved here is removed. The rest of stoker is libraries
 and data. Flags: `--prefix DIR` (default `/usr/local`), `--destdir DIR` (for packages), `--user`
