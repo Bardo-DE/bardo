@@ -2,7 +2,7 @@
 //! signal that says to read again. Looking never starts the assistant.
 
 use super::RunningLink;
-use crate::bus::{BusSource, ToAbsence, inferd};
+use crate::bus::{BusSource, ToAbsence, because, inferd, said};
 use crate::computers::relay;
 use crate::deadline::{Deadline, answered, peer};
 use crate::ticks::Ticks;
@@ -61,8 +61,8 @@ fn words_of(error: &TransportError) -> String {
 /// once the model answers, which can take minutes, so it waits as long as a person's answer does;
 /// a Stop is an ordinary action.
 async fn act(bus: &BusSource, model: &str, action: RunAction) -> Result<(), String> {
-    let running = inferd(bus).await.map_err(|_| COULD_NOT.to_owned())?;
-    let transport = running.inference().map_err(|_| COULD_NOT.to_owned())?;
+    let running = inferd(bus).await.map_err(said(COULD_NOT))?;
+    let transport = running.inference().map_err(said(COULD_NOT))?;
     let done = match action {
         RunAction::Start => {
             answered(
@@ -113,7 +113,7 @@ impl Watch {
         };
         let changes = within(Deadline::READ, peer::ASSISTANT, subscribed)
             .await
-            .map_err(|_| Absence::Failed)??;
+            .map_err(because(Absence::Failed))??;
         let (ticker, ticks) = Ticks::channel();
         let ticks = ticks.with_relay(tokio::spawn(relay(changes, ticker)));
         Ok(Watch { ticks })

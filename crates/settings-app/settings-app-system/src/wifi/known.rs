@@ -1,7 +1,7 @@
 //! The networks this computer keeps a password for: removing them.
 
 use super::read::saved;
-use crate::bus::{BusSource, system_connection};
+use crate::bus::{BusSource, said, system_connection};
 use crate::deadline::{Deadline, peer};
 use networkmanager_proxy::ConnectionSettingsProxy;
 use settings_app_model::Ssid;
@@ -23,9 +23,7 @@ pub async fn delete_saved(connection: &Connection, path: &OwnedObjectPath) {
 
 /// Removes every kept connection to `ssid`, so the computer no longer joins it by itself.
 pub async fn forget(bus: &BusSource, ssid: Ssid) -> Result<(), String> {
-    let connection = system_connection(bus)
-        .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())?;
+    let connection = system_connection(bus).await.map_err(said(NOT_AVAILABLE))?;
     let removing = async {
         for (path, kept) in saved(&connection).await {
             if kept == ssid {

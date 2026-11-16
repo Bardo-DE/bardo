@@ -22,6 +22,23 @@ fn failed(why: impl std::fmt::Display) -> Absence {
     Absence::Failed
 }
 
+/// A failure the pane shows as `absence`: the cause goes to the log, so a stuck pane can be
+/// traced to the bus error behind it.
+pub(crate) fn because<E: std::fmt::Debug>(absence: Absence) -> impl FnOnce(E) -> Absence {
+    move |why| {
+        eprintln!("bardo-settings: a settings service is {absence:?}: {why:?}");
+        absence
+    }
+}
+
+/// A failure the person reads as `words`: the cause goes to the log.
+pub(crate) fn said<E: std::fmt::Debug>(words: &'static str) -> impl FnOnce(E) -> String {
+    move |why| {
+        eprintln!("bardo-settings: {words} ({why:?})");
+        words.to_owned()
+    }
+}
+
 /// Why a call failed, as a pane says it: nobody on the name means the service is not running, a
 /// refusal means this caller is not permitted, anything else is a failure.
 pub trait ToAbsence {

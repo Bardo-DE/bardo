@@ -2,7 +2,7 @@
 //! confirmed.
 
 use super::activate::start_one;
-use super::io::{confirmed, connect};
+use super::io::{because, confirmed, connect};
 use super::source::BusSource;
 use account_client::Porter;
 use account_client_dbus::Bus;
@@ -31,7 +31,7 @@ impl Pinned {
     /// The owner as the unique name porter's client sends to. A name the bus would not have given
     /// is a service that cannot be confirmed.
     fn unique(&self) -> Result<UniqueName<'static>, Absence> {
-        UniqueName::try_from(self.owner.0.clone()).map_err(|_| Absence::Unavailable)
+        UniqueName::try_from(self.owner.0.clone()).map_err(because(Absence::Unavailable))
     }
 
     /// Porter's bus transport with every call to accountd sent to the owner that was confirmed:

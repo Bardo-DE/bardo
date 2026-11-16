@@ -8,7 +8,7 @@
 use super::DisplaysLink;
 use super::brightness;
 use super::map::{mode_of, monitors_of, transform_of};
-use crate::bus::BusSource;
+use crate::bus::{BusSource, because, said};
 use crate::deadline::{Deadline, peer};
 use crate::ticks::{Ticker, Ticks};
 use desktop_client::client::{DesktopClient, WaylandRoute};
@@ -29,7 +29,7 @@ const CANNOT: &str = "Displays can\u{2019}t be changed right now.";
 
 fn connect() -> Result<DesktopClient, Absence> {
     DesktopClient::connect(WaylandRoute::Environment, DesktopConfig::default())
-        .map_err(|_| Absence::NotRunning)
+        .map_err(because(Absence::NotRunning))
 }
 
 fn read_blocking() -> Result<DisplaysStatus, Absence> {
@@ -94,7 +94,7 @@ fn settings_for(
 }
 
 fn apply_blocking(change: &DisplayChange) -> Result<(), String> {
-    let mut client = connect().map_err(|_| CANNOT.to_owned())?;
+    let mut client = connect().map_err(said(CANNOT))?;
     let name = OutputName::new(change.output.0.clone());
     let (head, settings) = settings_for(&client, &name, &change.edit)
         .ok_or_else(|| "That display isn\u{2019}t set up that way.".to_owned())?;
@@ -104,7 +104,7 @@ fn apply_blocking(change: &DisplayChange) -> Result<(), String> {
     )]);
     let ticket = client
         .send(DesktopCommand::ApplyOutputs(config))
-        .map_err(|_| CANNOT.to_owned())?;
+        .map_err(said(CANNOT))?;
     let Ticket::Config(id) = ticket else {
         return Err(CANNOT.to_owned());
     };
@@ -120,7 +120,7 @@ fn apply_blocking(change: &DisplayChange) -> Result<(), String> {
                 return outcome_words(outcome);
             }
         }
-        client.blocking_dispatch().map_err(|_| CANNOT.to_owned())?;
+        client.blocking_dispatch().map_err(said(CANNOT))?;
     }
 }
 

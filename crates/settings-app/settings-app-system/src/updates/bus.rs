@@ -3,7 +3,7 @@
 
 use super::wire::wire_of;
 use super::{InstallRefusal, UpdateTicks, UpdatesLink};
-use crate::bus::{BusSource, Pinned, ToAbsence, absence_of, connect, pinned, relay};
+use crate::bus::{BusSource, Pinned, ToAbsence, absence_of, because, connect, pinned, relay};
 use crate::deadline::{Deadline, peer};
 use crate::ticks::Ticks;
 use account_dbus::{BusFailure, classify};
@@ -119,7 +119,7 @@ async fn get_all(running: &Pinned) -> Result<HashMap<String, OwnedValue>, Absenc
         .build()
         .await
         .map_err(absence_of)?;
-    let interface = InterfaceName::try_from(INTERFACE).map_err(|_| Absence::Failed)?;
+    let interface = InterfaceName::try_from(INTERFACE).map_err(because(Absence::Failed))?;
     properties
         .get_all(interface)
         .await
@@ -170,9 +170,10 @@ async fn watch(bus: &BusSource) -> Result<UpdateTicks, Absence> {
 
 async fn ask(bus: &BusSource, request: Ask) -> Result<(), InstallRefusal> {
     let told = InstallRefusal::Told;
-    let running = pinned(bus, BUS_NAME)
-        .await
-        .map_err(|_| told(not_available()))?;
+    let running = pinned(bus, BUS_NAME).await.map_err(|why| {
+        eprintln!("bardo-settings: updates: the service is {why:?}");
+        told(not_available())
+    })?;
     let service = proxy(&running).await.map_err(|e| told(sentence_of(&e)))?;
     let call = async {
         match &request {

@@ -3,6 +3,7 @@
 //! system services whose names the bus's own policy reserves for the system, so the caller table
 //! that vouches for the desktop's own daemons has nothing to add.
 
+use super::io::because;
 use super::source::BusSource;
 use crate::deadline::{Deadline, peer};
 use settings_app_model::Absence;
@@ -23,11 +24,13 @@ pub async fn system_connection(bus: &BusSource) -> Result<Connection, Absence> {
 async fn dial(bus: &BusSource) -> Result<Connection, Absence> {
     match bus {
         BusSource::Absent => Err(Absence::NotRunning),
-        BusSource::Session => Connection::system().await.map_err(|_| Absence::NotRunning),
+        BusSource::Session => Connection::system()
+            .await
+            .map_err(because(Absence::NotRunning)),
         BusSource::Address(address, _) => {
             let builder = zbus::connection::Builder::address(address.as_str())
-                .map_err(|_| Absence::Failed)?;
-            builder.build().await.map_err(|_| Absence::NotRunning)
+                .map_err(because(Absence::Failed))?;
+            builder.build().await.map_err(because(Absence::NotRunning))
         }
     }
 }

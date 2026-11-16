@@ -79,9 +79,10 @@ struct Session(LendingConfig);
 
 impl Session {
     async fn lending(&self) -> Result<TailnetLending<SessionUnits>, LendFailure> {
-        let units = SessionUnits::session()
-            .await
-            .map_err(|_| LendFailure::NoServices)?;
+        let units = SessionUnits::session().await.map_err(|why| {
+            eprintln!("bardo-settings: sharing: the session's services are out of reach: {why:?}");
+            LendFailure::NoServices
+        })?;
         Ok(TailnetLending::new(self.0.clone(), units))
     }
 }

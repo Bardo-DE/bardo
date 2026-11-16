@@ -2,7 +2,7 @@
 //! guests and the changes. The engines signal (a computer answering or not) comes from its proxy.
 
 use super::{Change, ChangeFailure, ComputersLink};
-use crate::bus::{BusSource, Daemon, Pinned, ToAbsence, absence_of, inferd, read_once};
+use crate::bus::{BusSource, Daemon, Pinned, ToAbsence, absence_of, because, inferd, read_once};
 use crate::deadline::{Deadline, answered, peer};
 use crate::ticks::{Ticker, Ticks};
 use account_dbus::BusStream;
@@ -62,17 +62,23 @@ async fn read(bus: &BusSource) -> Result<ComputersFound, Absence> {
     };
     let (places, guests) = within(Deadline::READ, peer::ASSISTANT, asked)
         .await
-        .map_err(|_| Absence::Failed)??;
+        .map_err(because(Absence::Failed))??;
     Ok(ComputersFound {
         computers: places.iter().filter_map(ComputerRow::of).collect(),
         guests,
     })
 }
 
+/// The computers pane's failure for an absent service; the absence itself goes to the log.
+fn unreached(why: Absence) -> ComputersReason {
+    eprintln!("bardo-settings: computers: the service is {why:?}");
+    ComputersReason::Failed
+}
+
 /// The Tailscale computers that can be added, or why they cannot be listed.
 async fn candidates(bus: &BusSource) -> Result<Vec<ComputerCandidate>, ComputersReason> {
-    let running = inferd(bus).await.map_err(|_| ComputersReason::Failed)?;
-    let accounts = accounts(&running).map_err(|_| ComputersReason::Failed)?;
+    let running = inferd(bus).await.map_err(unreached)?;
+    let accounts = accounts(&running).map_err(unreached)?;
     answered(Deadline::READ, peer::ASSISTANT, accounts.candidates())
         .await
         .ok_or(ComputersReason::Failed)?
@@ -96,10 +102,8 @@ async fn add_server(bus: &BusSource, draft: ServerDraft) -> Result<(), ChangeFai
         None => served,
     };
     let computer = NewComputer::new(draft.name, vec![served]);
-    let running = inferd(bus)
-        .await
-        .map_err(|_| refused(ComputersReason::Failed))?;
-    let accounts = accounts(&running).map_err(|_| refused(ComputersReason::Failed))?;
+    let running = inferd(bus).await.map_err(|why| refused(unreached(why)))?;
+    let accounts = accounts(&running).map_err(|why| refused(unreached(why)))?;
     answered(
         Deadline::ACTION,
         peer::ASSISTANT,
@@ -131,10 +135,8 @@ async fn change(bus: &BusSource, change: Change) -> Result<(), ChangeFailure> {
         Change::Server(draft) => return add_server(bus, draft).await,
         other => other,
     };
-    let running = inferd(bus)
-        .await
-        .map_err(|_| refused(ComputersReason::Failed))?;
-    let accounts = accounts(&running).map_err(|_| refused(ComputersReason::Failed))?;
+    let running = inferd(bus).await.map_err(|why| refused(unreached(why)))?;
+    let accounts = accounts(&running).map_err(|why| refused(unreached(why)))?;
     let done = answered(Deadline::ACTION, peer::ASSISTANT, async {
         match change {
             Change::Add(node) => accounts.add_tailnet_computer(&node).await.map(drop),
@@ -183,7 +185,7 @@ async fn watch(bus: &BusSource) -> Result<Ticks, Absence> {
         };
         let (guests, engines) = within(Deadline::READ, peer::ASSISTANT, subscribed)
             .await
-            .map_err(|_| Absence::Failed)??;
+            .map_err(because(Absence::Failed))??;
         let (ticker, ticks) = Ticks::channel();
         let ticks = ticks
             .with_relay(tokio::spawn(relay(guests, ticker.clone())))

@@ -36,7 +36,8 @@ fn failure_of(error: &zbus::Error) -> MemoryFailure {
 async fn running(bus: &BusSource) -> Result<Pinned, MemoryFailure> {
     pinned(bus, MEMORY_NAME)
         .await
-        .map_err(|_| MemoryFailure::Absent)
+        // The absence says only that memory is not there; `pinned` has logged why.
+        .map_err(|_absence| MemoryFailure::Absent)
 }
 
 /// The looser values the file holds that wait for the person, in key order, read fresh.

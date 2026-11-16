@@ -1,7 +1,7 @@
 //! Reading the account modules once: what the intents provider answers from. Never starts a
 //! daemon.
 
-use crate::bus::{BusSource, Daemon, read_once};
+use crate::bus::{BusSource, Daemon, because, read_once};
 use crate::deadline::{Deadline, peer};
 use settings_app_model::{Absence, AccountsPane, ModuleId, Sources, accounts_row_is_valued};
 use ui_peer::within;
@@ -14,7 +14,7 @@ use ui_peer::within;
 pub async fn read_accounts(bus: &BusSource) -> Result<AccountsPane, Absence> {
     within(Deadline::ACTION, peer::ACCOUNTS, read_modules(bus))
         .await
-        .map_err(|_| Absence::Failed)?
+        .map_err(because(Absence::Failed))?
 }
 
 async fn read_modules(bus: &BusSource) -> Result<AccountsPane, Absence> {

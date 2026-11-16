@@ -25,11 +25,13 @@ fn told(words: impl Into<String>) -> JoinFailure {
 }
 
 /// The failure for a service that cannot be reached, whatever the reason.
-fn unavailable<E>(_: E) -> JoinFailure {
+fn unavailable<E: std::fmt::Debug>(why: E) -> JoinFailure {
+    eprintln!("bardo-settings: wifi: the service did not answer: {why:?}");
     told(NOT_AVAILABLE)
 }
 
-fn could_not(ssid: &Ssid) -> JoinFailure {
+fn could_not(ssid: &Ssid, why: &impl std::fmt::Debug) -> JoinFailure {
+    eprintln!("bardo-settings: wifi: could not join {}: {why:?}", ssid.0);
     told(format!(
         "Couldn\u{2019}t join \u{201c}{}\u{201d}. Try again in a moment.",
         ssid.0
@@ -233,7 +235,7 @@ async fn start(
         manager
             .activate_connection(&ObjectPath::from(path), &device, &none)
             .await
-            .map_err(|_| could_not(ssid))?;
+            .map_err(|why| could_not(ssid, &why))?;
         return Ok(None);
     }
     if security == WifiSecurity::Unsupported {
@@ -252,6 +254,6 @@ async fn start(
     let (added, _active) = manager
         .add_and_activate_connection(settings, &device, &specific)
         .await
-        .map_err(|_| could_not(ssid))?;
+        .map_err(|why| could_not(ssid, &why))?;
     Ok(Some(added))
 }

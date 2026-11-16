@@ -5,7 +5,7 @@ use super::WifiLink;
 use super::join::{join, join_hidden, sign_in};
 use super::known::forget;
 use super::read::{read, wifi_device, wireless_at};
-use crate::bus::{BusSource, every, system_connection, watch_service};
+use crate::bus::{BusSource, every, said, system_connection, watch_service};
 use crate::deadline::{Deadline, peer};
 use crate::ticks::Ticks;
 use networkmanager_proxy::{NetworkManagerProxy, SERVICE};
@@ -61,11 +61,11 @@ impl WifiLink for OnWifi {
 }
 
 async fn set_radio(bus: &BusSource, radio: WifiRadio) -> Result<(), String> {
-    let unavailable = |_| NOT_AVAILABLE.to_owned();
+    let unavailable = said(NOT_AVAILABLE);
     let connection = system_connection(bus).await.map_err(unavailable)?;
     let manager = NetworkManagerProxy::new(&connection)
         .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())?;
+        .map_err(said(NOT_AVAILABLE))?;
     let on = radio == WifiRadio::On;
     within(
         Deadline::ACTION,
@@ -74,7 +74,7 @@ async fn set_radio(bus: &BusSource, radio: WifiRadio) -> Result<(), String> {
     )
     .await
     .map_err(|silent| format!("{silent}."))?
-    .map_err(|_| COULD_NOT_SWITCH.to_owned())
+    .map_err(said(COULD_NOT_SWITCH))
 }
 
 /// Asks the wireless device to look again; a computer that cannot is left as it is.

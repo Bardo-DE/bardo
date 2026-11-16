@@ -4,7 +4,7 @@
 
 use super::ScreenSharingLink;
 use super::proxy::portal;
-use crate::bus::{BusSource, ToAbsence, pinned, pinned_starting};
+use crate::bus::{BusSource, ToAbsence, because, pinned, pinned_starting, said};
 use crate::deadline::{Deadline, answered, peer};
 use settings_app_callers::PORTAL_BUS;
 use settings_app_model::{Absence, ProgramSubject, ScreenGrant, Work, screen_grants_of};
@@ -26,7 +26,7 @@ async fn list(bus: &BusSource) -> Result<Vec<ScreenGrant>, Absence> {
     let proxy = portal(&running).await.map_err(|e| e.absence())?;
     let rows = within(Deadline::READ, peer::PORTAL, proxy.list_grants())
         .await
-        .map_err(|_| Absence::Failed)?
+        .map_err(because(Absence::Failed))?
         .map_err(|e| e.absence())?;
     Ok(screen_grants_of(&rows))
 }
@@ -36,25 +36,21 @@ async fn list(bus: &BusSource) -> Result<Vec<ScreenGrant>, Absence> {
 async fn revoke(bus: &BusSource, app: &ProgramSubject) -> Result<(), String> {
     let running = pinned(bus, PORTAL_BUS)
         .await
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
-    let proxy = portal(&running)
-        .await
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
+        .map_err(said(COULD_NOT_REMOVE))?;
+    let proxy = portal(&running).await.map_err(said(COULD_NOT_REMOVE))?;
     answered(Deadline::ACTION, peer::PORTAL, proxy.revoke(&app.0))
         .await
         .ok_or_else(|| COULD_NOT_REMOVE.to_owned())?
         .map(|_| ())
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())
+        .map_err(said(COULD_NOT_REMOVE))
 }
 
 /// Lets `app` share every screen and be controlled without asking, until it is taken back.
 async fn allow(bus: &BusSource, app: &ProgramSubject) -> Result<(), String> {
     let running = pinned(bus, PORTAL_BUS)
         .await
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
-    let proxy = portal(&running)
-        .await
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
+        .map_err(said(COULD_NOT_REMOVE))?;
+    let proxy = portal(&running).await.map_err(said(COULD_NOT_REMOVE))?;
     answered(
         Deadline::ACTION,
         peer::PORTAL,
@@ -62,7 +58,7 @@ async fn allow(bus: &BusSource, app: &ProgramSubject) -> Result<(), String> {
     )
     .await
     .ok_or_else(|| COULD_NOT_REMOVE.to_owned())?
-    .map_err(|_| COULD_NOT_REMOVE.to_owned())
+    .map_err(said(COULD_NOT_REMOVE))
 }
 
 /// The portal on the bus it is built over.

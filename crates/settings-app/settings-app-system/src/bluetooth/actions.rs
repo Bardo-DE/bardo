@@ -2,6 +2,7 @@
 //! call runs under a deadline, and a failure is a sentence for the person.
 
 use super::read::{find_device, managed};
+use crate::bus::said;
 use crate::deadline::{Deadline, peer};
 use bluez_proxy::{Adapter1Proxy, Device1Proxy};
 use settings_app_model::BtAddress;
@@ -20,9 +21,7 @@ async fn locate(
     connection: &Connection,
     address: &BtAddress,
 ) -> Result<(OwnedObjectPath, OwnedObjectPath, String), String> {
-    let objects = managed(connection)
-        .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())?;
+    let objects = managed(connection).await.map_err(said(NOT_AVAILABLE))?;
     find_device(&objects, address)
         .ok_or_else(|| "That device isn\u{2019}t in range any more.".to_owned())
 }
@@ -33,10 +32,10 @@ async fn device_at<'a>(
 ) -> Result<Device1Proxy<'a>, String> {
     Device1Proxy::builder(connection)
         .path(path.clone())
-        .map_err(|_| NOT_AVAILABLE.to_owned())?
+        .map_err(said(NOT_AVAILABLE))?
         .build()
         .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())
+        .map_err(said(NOT_AVAILABLE))
 }
 
 /// Runs `call` under `deadline`; `told` is the sentence for BlueZ's refusal.
@@ -54,16 +53,14 @@ async fn bounded<T>(
 
 /// Moves the switch. The adapter lets go of the radio when it is blocked outside the software.
 pub async fn set_power(connection: &Connection, on: bool) -> Result<(), String> {
-    let objects = managed(connection)
-        .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())?;
+    let objects = managed(connection).await.map_err(said(NOT_AVAILABLE))?;
     let adapter = super::read::adapter_path(&objects).ok_or_else(|| NOT_AVAILABLE.to_owned())?;
     let proxy = Adapter1Proxy::builder(connection)
         .path(adapter)
-        .map_err(|_| NOT_AVAILABLE.to_owned())?
+        .map_err(said(NOT_AVAILABLE))?
         .build()
         .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())?;
+        .map_err(said(NOT_AVAILABLE))?;
     bounded(Deadline::ACTION, proxy.set_powered(on), |_| {
         "Bluetooth couldn\u{2019}t be switched. Check that it isn\u{2019}t switched off on this computer."
             .to_owned()
@@ -136,10 +133,10 @@ pub async fn forget(connection: &Connection, address: &BtAddress) -> Result<(), 
     let (adapter, path, name) = locate(connection, address).await?;
     let proxy = Adapter1Proxy::builder(connection)
         .path(adapter)
-        .map_err(|_| NOT_AVAILABLE.to_owned())?
+        .map_err(said(NOT_AVAILABLE))?
         .build()
         .await
-        .map_err(|_| NOT_AVAILABLE.to_owned())?;
+        .map_err(said(NOT_AVAILABLE))?;
     bounded(
         Deadline::ACTION,
         proxy.remove_device(&ObjectPath::from(&path)),

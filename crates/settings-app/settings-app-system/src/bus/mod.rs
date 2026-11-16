@@ -19,6 +19,7 @@ pub use activate::start;
 pub use attach::{attach, attach_listening, open_once, read_once};
 pub use daemon::Daemon;
 pub use io::{ToAbsence, absence_of, connect, next_change, next_owner, open, owner_changes, plain};
+pub(crate) use io::{because, said};
 pub use pinned::{Pinned, inferd, pinned, pinned_starting};
 pub use read::words_of;
 pub(crate) use read::{Rows, read};

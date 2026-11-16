@@ -15,6 +15,13 @@ fn rejected() -> AgentError {
     AgentError::Rejected("The person said no.".to_owned())
 }
 
+/// The number a person typed for a passkey, or BlueZ's refusal that says why it is not one.
+fn passkey_of(typed: &str) -> Result<u32, AgentError> {
+    typed.parse().map_err(|why: std::num::ParseIntError| {
+        AgentError::Rejected(format!("The passkey was not a number: {why}"))
+    })
+}
+
 /// Forwards what devices ask to the page.
 pub struct Agent {
     pub asks: mpsc::UnboundedSender<PairingRequest>,
@@ -59,7 +66,8 @@ impl Agent {
         let (reply, answered) = PairingReply::channel();
         self.asks
             .send(PairingRequest { question, reply })
-            .map_err(|_| rejected())?;
+            // A closed channel means the page is gone; its send error holds only the request.
+            .map_err(|_closed| rejected())?;
         match answered.await {
             Ok(PairingAnswer::No) | Err(_) => Err(rejected()),
             Ok(answer) => Ok(answer),
@@ -126,9 +134,20 @@ impl Agent {
 
     /// A number of up to six digits, typed by the person.
     async fn request_passkey(&self, device: ObjectPath<'_>) -> Result<u32, AgentError> {
-        self.typed(&device, PairingAsk::Passkey)
-            .await?
-            .parse()
-            .map_err(|_| rejected())
+        passkey_of(&self.typed(&device, PairingAsk::Passkey).await?)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_passkey_that_is_not_a_number_says_why() {
+        assert!(matches!(passkey_of("123456"), Ok(123_456)));
+        let Err(AgentError::Rejected(words)) = passkey_of("12x") else {
+            panic!("a passkey with a letter in it must be refused");
+        };
+        assert!(words.contains("invalid digit"), "{words}");
     }
 }

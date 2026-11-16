@@ -2,7 +2,7 @@
 //! goes to the owner of the service's name that was confirmed, never to the name.
 
 use super::SpacesLink;
-use crate::bus::{BusSource, absence_of, pinned_starting};
+use crate::bus::{BusSource, absence_of, because, pinned_starting, said};
 use crate::deadline::{Deadline, answered, peer};
 use crate::memory_consent::control;
 use account_core::DesktopSpace;
@@ -27,7 +27,7 @@ async fn list(bus: &BusSource) -> Result<Vec<SpaceRow>, Absence> {
     };
     let records = within(Deadline::READ, peer::ACCOUNTS, asked)
         .await
-        .map_err(|_| Absence::Failed)??;
+        .map_err(because(Absence::Failed))??;
     Ok(records
         .into_iter()
         .map(|record| SpaceRow {
@@ -43,20 +43,17 @@ async fn list(bus: &BusSource) -> Result<Vec<SpaceRow>, Absence> {
 /// registry is asked anyway; when the person chose to delete, nothing is done and they are told,
 /// since only memory can delete what it holds. A program that took either name is told nothing.
 async fn remove(bus: &BusSource, space: &SpaceKey, removal: &Removal) -> Result<(), String> {
-    let wire = serde_json::to_string(removal).map_err(|_| COULD_NOT_REMOVE.to_owned())?;
+    let wire = serde_json::to_string(removal).map_err(said(COULD_NOT_REMOVE))?;
     let accountd = pinned_starting(bus, ACCOUNTS_BUS)
         .await
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
+        .map_err(said(COULD_NOT_REMOVE))?;
     tell_memory(bus, space, &wire, removal).await?;
-    let registry = accountd
-        .bus()
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?
-        .spaces();
-    let id = DesktopSpace::parse(&space.0).map_err(|_| COULD_NOT_REMOVE.to_owned())?;
+    let registry = accountd.bus().map_err(said(COULD_NOT_REMOVE))?.spaces();
+    let id = DesktopSpace::parse(&space.0).map_err(said(COULD_NOT_REMOVE))?;
     answered(Deadline::ACTION, peer::ACCOUNTS, registry.remove(&id))
         .await
         .ok_or_else(|| COULD_NOT_REMOVE.to_owned())?
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())
+        .map_err(said(COULD_NOT_REMOVE))
 }
 
 /// Tells memory the person's choice for the Space; with no memory running, what the choice does
@@ -72,9 +69,7 @@ async fn tell_memory(
         Err(Absence::NotRunning) => return without_memory(removal),
         Err(_) => return Err(COULD_NOT_REMOVE.to_owned()),
     };
-    let proxy = control(&memory)
-        .await
-        .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
+    let proxy = control(&memory).await.map_err(said(COULD_NOT_REMOVE))?;
     let told = answered(
         Deadline::ACTION,
         peer::MEMORY,

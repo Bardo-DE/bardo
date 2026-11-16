@@ -84,6 +84,10 @@ impl Thumbnails {
     /// The small picture of the file at `source`: the one the cache holds for this version of it, or
     /// one made now and kept. Blocking, for a worker thread.
     pub fn of(&self, source: &Path) -> Result<PathBuf, ThumbFault> {
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "FilePath::new fails only for a relative path, which NotAbsolute already says"
+        )]
         let file = FilePath::new(source).map_err(|_| ThumbFault::NotAbsolute)?;
         let input = file.on_disk();
         let stamp = input.stamp();

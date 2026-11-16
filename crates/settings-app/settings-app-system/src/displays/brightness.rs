@@ -3,7 +3,7 @@
 //! shell's role before it is read or told anything (`live::pinned`), and a call goes to the owner
 //! that was confirmed. Nothing is started: a shell that is not there has no sliders.
 
-use crate::bus::{BusSource, connect, pinned, watch_on};
+use crate::bus::{BusSource, because, connect, pinned, said, watch_on};
 use crate::deadline::{Deadline, answered, peer};
 use crate::ticks::Ticks;
 use settings_app_callers::DISPLAYS_BUS;
@@ -29,17 +29,17 @@ trait Displays1 {
 pub async fn read(bus: &BusSource) -> Result<BrightnessList, Absence> {
     let running = pinned(bus, DISPLAYS_BUS)
         .await
-        .map_err(|_| Absence::NotRunning)?;
+        .map_err(because(Absence::NotRunning))?;
     let proxy = Displays1Proxy::builder(&running.connection)
         .destination(running.destination())
-        .map_err(|_| Absence::Failed)?
+        .map_err(because(Absence::Failed))?
         .build()
         .await
-        .map_err(|_| Absence::Failed)?;
+        .map_err(because(Absence::Failed))?;
     let rows = answered(Deadline::READ, peer::DISPLAYS, proxy.brightness())
         .await
         .ok_or(Absence::Failed)?
-        .map_err(|_| Absence::Failed)?;
+        .map_err(because(Absence::Failed))?;
     Ok(BrightnessList::of_wire(&rows))
 }
 
@@ -47,13 +47,13 @@ pub async fn read(bus: &BusSource) -> Result<BrightnessList, Absence> {
 pub async fn set(bus: &BusSource, output: &OutputId, level: Brightness) -> Result<(), String> {
     let running = pinned(bus, DISPLAYS_BUS)
         .await
-        .map_err(|_| COULD_NOT_SET.to_owned())?;
+        .map_err(said(COULD_NOT_SET))?;
     let proxy = Displays1Proxy::builder(&running.connection)
         .destination(running.destination())
-        .map_err(|_| COULD_NOT_SET.to_owned())?
+        .map_err(said(COULD_NOT_SET))?
         .build()
         .await
-        .map_err(|_| COULD_NOT_SET.to_owned())?;
+        .map_err(said(COULD_NOT_SET))?;
     answered(
         Deadline::ACTION,
         peer::DISPLAYS,
@@ -61,12 +61,12 @@ pub async fn set(bus: &BusSource, output: &OutputId, level: Brightness) -> Resul
     )
     .await
     .ok_or_else(|| COULD_NOT_SET.to_owned())?
-    .map_err(|_| COULD_NOT_SET.to_owned())
+    .map_err(said(COULD_NOT_SET))
 }
 
 /// A tick each time the shell says the levels changed, or its name changes hands.
 pub async fn changes(bus: &BusSource) -> Result<Ticks, Absence> {
-    let connection = connect(bus).await.map_err(|_| Absence::NotRunning)?;
+    let connection = connect(bus).await.map_err(because(Absence::NotRunning))?;
     watch_on(&connection, DISPLAYS_BUS, is_levels).await
 }
 
