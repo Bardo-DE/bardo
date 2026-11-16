@@ -122,7 +122,8 @@ mod tests {
             (ProviderError::NeedsConsent, SignInFault::Unreadable),
         ];
         for (error, want) in cases {
-            assert_eq!(SignInFault::from(error), want, "{error:?}");
+            let label = format!("{error:?}");
+            assert_eq!(SignInFault::from(error), want, "{label}");
         }
     }
 }

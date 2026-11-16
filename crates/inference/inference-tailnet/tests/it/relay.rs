@@ -57,7 +57,7 @@ async fn bytes_go_both_ways_and_each_connection_asks_tailscale_again() {
     let faults = Arc::new(Mutex::new(Vec::new()));
     let told = Arc::clone(&faults);
     let on_fault: OnFault = Arc::new(move |fault: &DialError| {
-        told.lock().unwrap().push(*fault);
+        told.lock().unwrap().push(fault.to_string());
         format!("answered for {fault}")
     });
     let _relay = Relay::start(&path, node("nPI"), Dialer::new(api, port), on_fault).expect("relay");

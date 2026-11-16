@@ -492,7 +492,6 @@ dependencies = [
  "http",
  "httpdate",
  "thiserror 2.0.21",
- "tracing",
 ]
 
 [[package]]
@@ -1041,6 +1040,7 @@ dependencies = [
  "provenance",
  "serde_json",
  "thiserror 2.0.21",
+ "tracing",
 ]
 
 [[package]]
@@ -1065,6 +1065,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "tracing",
 ]
 
 [[package]]
@@ -1134,6 +1135,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "tracing",
  "zbus",
  "zbus-ready",
 ]
@@ -1242,6 +1244,7 @@ dependencies = [
  "provenance",
  "thiserror 2.0.21",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -1911,6 +1914,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -1942,6 +1946,7 @@ dependencies = [
  "provenance",
  "serde_json",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -1991,6 +1996,7 @@ dependencies = [
  "provenance",
  "serde_json",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -4535,6 +4541,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "tracing",
  "zbus",
 ]
 
@@ -4600,6 +4607,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "tracing",
 ]
 
 [[package]]
@@ -4811,6 +4819,7 @@ dependencies = [
  "rustix 1.1.6",
  "thiserror 2.0.21",
  "tokio",
+ "tracing",
  "wayland-client",
  "zbus",
 ]
@@ -7779,6 +7788,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "tracing",
  "ui-settings",
  "zbus",
  "zbus-ready",
@@ -9835,6 +9845,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "tokio-rustls",
+ "tracing",
 ]
 
 [[package]]
@@ -9888,6 +9899,7 @@ dependencies = [
  "serde_json",
  "speech-provider",
  "thiserror 2.0.21",
+ "tracing",
 ]
 
 [[package]]
@@ -12198,6 +12210,7 @@ dependencies = [
  "roxmltree 0.21.1",
  "sync-core",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -12898,6 +12911,7 @@ dependencies = [
  "thiserror 2.0.21",
  "toml",
  "toml_edit",
+ "tracing",
  "ui-extensions",
  "ui-helpers",
  "ui-settings",
@@ -13493,6 +13507,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "tracing",
  "ui-core",
  "ui-helpers",
  "ui-settings",

@@ -41,16 +41,20 @@ pub fn refusal(refusal: &Refusal) -> &'static str {
 }
 
 /// Why Tailscale could not be asked.
-fn tailscale(error: TailscaleError) -> &'static str {
+fn tailscale(error: &TailscaleError) -> &'static str {
     match error {
         TailscaleError::NotInstalled => "Tailscale isn't installed on this computer.",
-        TailscaleError::NotRunning => "Tailscale isn't running on this computer.",
+        TailscaleError::NotRunning | TailscaleError::Transport(_) => {
+            "Tailscale isn't running on this computer."
+        }
         TailscaleError::Refused => {
             "This computer's Tailscale doesn't let your accounts ask it yet."
         }
         TailscaleError::SignedOut => "Tailscale is signed out.",
         TailscaleError::NoSuchPeer => "Tailscale does not know that computer.",
-        TailscaleError::Malformed => "Tailscale gave an answer that couldn't be read.",
+        TailscaleError::Malformed | TailscaleError::Unreadable(_) => {
+            "Tailscale gave an answer that couldn't be read."
+        }
         TailscaleError::TimedOut => "Tailscale did not answer in time.",
     }
 }
@@ -59,7 +63,7 @@ fn tailscale(error: TailscaleError) -> &'static str {
 #[must_use]
 pub fn fault(fault: &DialError) -> String {
     match fault {
-        DialError::Tailscale(error) => tailscale(*error).to_owned(),
+        DialError::Tailscale(error) => tailscale(error).to_owned(),
         DialError::NoSuchComputer => {
             "That computer is not on your Tailscale network any more.".to_owned()
         }

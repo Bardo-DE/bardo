@@ -142,6 +142,7 @@ impl Node {
         let refuse = |why| SchemaRefusal {
             at: SchemaPath(at.clone()),
             why,
+            cause: None,
         };
         let Value::Object(map) = value else {
             return Err(refuse(Refused::NotASchema));

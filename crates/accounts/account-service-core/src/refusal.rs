@@ -65,7 +65,8 @@ mod tests {
             (ProviderError::NeedsConsent, Refusal::NeedsConsent),
         ];
         for (error, want) in cases {
-            assert_eq!(provider_refusal(error), want, "{error:?}");
+            let label = format!("{error:?}");
+            assert_eq!(provider_refusal(error), want, "{label}");
         }
     }
 

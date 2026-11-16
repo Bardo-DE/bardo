@@ -189,7 +189,8 @@ mod tests {
             (TailscaleError::NoSuchPeer, SignInFault::Unreadable),
         ];
         for (error, fault) in table {
-            assert_eq!(fault_of(error), fault, "{error:?}");
+            let label = format!("{error:?}");
+            assert_eq!(fault_of(error), fault, "{label}");
         }
     }
 }
