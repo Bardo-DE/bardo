@@ -351,10 +351,14 @@ mod session {
                     }
                 }
             };
-            tokio::time::timeout(JOB_WAIT, wait)
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "tokio's Elapsed carries nothing beyond the failure"
+            )]
+            let finished = tokio::time::timeout(JOB_WAIT, wait)
                 .await
-                .ok()
-                .ok_or_else(|| UnitFailure("the restart did not finish in time".to_owned()))?
+                .map_err(|_| UnitFailure("the restart did not finish in time".to_owned()));
+            finished?
         }
     }
 }

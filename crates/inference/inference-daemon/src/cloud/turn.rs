@@ -203,9 +203,13 @@ impl Model for CloudModel<'_> {
             Knob::Off => Temperature::ProviderDefault,
         };
         let target = remote_target(&self.pin.model);
-        let turn = bridge::chat_turn_for(&target, request, &self.frames)
-            .ok()
-            .ok_or(InferRefusal::Unsupported)?;
+        let turn = bridge::chat_turn_for(&target, request, &self.frames).map_err(|error| {
+            tracing::warn!(
+                ?error,
+                "the chat request cannot be expressed to the hosted model"
+            );
+            InferRefusal::Unsupported
+        })?;
         self.run(turn, temperature, sink).await
     }
 
@@ -215,9 +219,10 @@ impl Model for CloudModel<'_> {
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
         let target = remote_target(&self.pin.model);
-        let turn = bridge::task_turn_for(&target, request, self.tier)
-            .ok()
-            .ok_or(InferRefusal::Unsupported)?;
+        let turn = bridge::task_turn_for(&target, request, self.tier).map_err(|error| {
+            tracing::warn!(?error, "the task cannot be expressed to the hosted model");
+            InferRefusal::Unsupported
+        })?;
         self.run(turn, Temperature::ProviderDefault, sink).await
     }
 

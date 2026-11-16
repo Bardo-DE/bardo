@@ -167,7 +167,7 @@ impl ClientError {
 impl From<SessionError> for TransportError {
     fn from(error: SessionError) -> Self {
         match error {
-            SessionError::Closed => TransportError::Closed,
+            SessionError::Closed | SessionError::Broken(_) => TransportError::Closed,
             SessionError::Malformed(why) => TransportError::Malformed(why),
         }
     }

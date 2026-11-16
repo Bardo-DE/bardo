@@ -6,6 +6,7 @@ use crate::error::TransportError;
 use account_wire::{decode_frame, encode_frame};
 use std::mem::MaybeUninit;
 use std::os::fd::OwnedFd;
+use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt, Interest};
 use tokio::net::UnixStream;
 
@@ -94,8 +95,7 @@ impl FramedSession {
         self.stream
             .write_all(&bytes[sent..])
             .await
-            .ok()
-            .ok_or(SessionError::Closed)
+            .map_err(|error| SessionError::Broken(Arc::new(error)))
     }
 
     /// The first write: the fds travel with its first byte, so it must carry at least one.
@@ -118,8 +118,7 @@ impl FramedSession {
                 .map_err(std::io::Error::from)
             })
             .await
-            .ok()
-            .ok_or(SessionError::Closed)
+            .map_err(|error| SessionError::Broken(Arc::new(error)))
     }
 }
 
