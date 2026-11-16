@@ -80,14 +80,14 @@ fn env(program: &str, name: Option<&String>) -> Result<Option<EnvName>, ConfigFa
 }
 
 /// Variables the person's `set` table may not touch: the dynamic linker, the search path, and
-/// anything that runs code before the program does.
+/// anything that runs code before the program does, and the desktop's own `BARDO_` variables.
 fn forbidden(name: &str) -> bool {
     name.starts_with("LD_")
         || matches!(
             name,
             "PATH" | "HOME" | "BASH_ENV" | "ENV" | "IFS" | "PYTHONSTARTUP"
         )
-        || name.starts_with("DOCKET_")
+        || name.starts_with("BARDO_")
 }
 
 /// What starts the program and what it may see, from `command` or from the registry.

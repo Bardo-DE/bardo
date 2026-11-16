@@ -69,7 +69,7 @@ pub fn schemas() -> Vec<Schema> {
 pub fn schema() -> Schema {
     let parts = schemas();
     Schema {
-        app: AppId("bardo-shell".to_owned()),
+        app: AppId("shell".to_owned()),
         file: FilePath("shell/settings.toml".to_owned()),
         version: 1,
         pages: parts.iter().flat_map(|s| s.pages.clone()).collect(),
