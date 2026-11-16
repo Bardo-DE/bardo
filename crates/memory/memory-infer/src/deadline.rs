@@ -29,16 +29,18 @@ impl Deadlines {
 }
 
 /// A stage ran out of time.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("inferd did not answer in time")]
-pub(crate) struct TimedOut;
+pub(crate) struct TimedOut(#[source] std::sync::Arc<tokio::time::error::Elapsed>);
 
 /// Runs `work`, giving it up after `limit`.
 pub(crate) async fn within<T>(
     limit: Duration,
     work: impl Future<Output = T>,
 ) -> Result<T, TimedOut> {
-    tokio::time::timeout(limit, work).await.ok().ok_or(TimedOut)
+    tokio::time::timeout(limit, work)
+        .await
+        .map_err(|e| TimedOut(e.into()))
 }
 
 /// Why a turn did not finish.
