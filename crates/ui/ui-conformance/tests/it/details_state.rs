@@ -6,8 +6,6 @@
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::motion::detail::once::use_shake;
-use ui_components::motion::detail::operation::Operation;
-use ui_components::motion::detail::operation::PendingToken;
 use ui_components::motion::detail::pending::PendingSpec;
 use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::motion::detail::touch::Touch;
@@ -49,7 +47,10 @@ static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 const WIFI: PendingSpec = PendingSpec::Iterate { layers: 4 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Item() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,
@@ -58,7 +59,10 @@ fn Item() -> Element {
     }
 }
 
-#[allow(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[allow(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 #[component]
 fn ItemBody() -> Element {
     let detail = use_detail(NET(), Touch::Remote);

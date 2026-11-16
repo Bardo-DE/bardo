@@ -5,12 +5,10 @@
 
 use dioxus::prelude::*;
 use ui_components::base::selection::RowSelection;
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::collection_view::{
     CollectionItem, CollectionView, Flow, Thumbnail,
 };
-use ui_components::components::lists::table::look::TableLook;
 use ui_components::components::lists::table::model::TableColumn;
 use ui_components::components::lists::virtual_table::VirtualTable;
 use ui_components::prelude::*;
@@ -59,12 +57,18 @@ fn table(start: RowSelection) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn EmptyTable() -> Element {
     table(RowSelection::none())
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn TableWithFirst() -> Element {
     table(RowSelection::single(0))
 }
@@ -96,7 +100,10 @@ fn grid(start: RowSelection) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn EmptyGrid() -> Element {
     grid(RowSelection::none())
 }

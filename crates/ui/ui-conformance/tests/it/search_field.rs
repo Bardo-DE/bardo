@@ -7,8 +7,6 @@
 use dioxus::prelude::*;
 use std::cell::Cell;
 use std::time::Duration;
-use ui_components::components::menus::item::text::Marks;
-use ui_components::components::menus::search::view::SearchField;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -44,7 +42,10 @@ fn sections(query: &str) -> Vec<SuggestionSection<String>> {
     ]
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut query = use_signal(String::new);
     let mut log = use_signal(Vec::<String>::new);

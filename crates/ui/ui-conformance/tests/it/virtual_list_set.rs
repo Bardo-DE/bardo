@@ -4,7 +4,6 @@
 
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::lists::list::model::ListItem;
 use ui_components::components::lists::virtual_list::{RowHeight, VirtualList};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -16,7 +15,10 @@ const VIEW: Viewport = Viewport {
 };
 const ROWS: u32 = 10_000;
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut keys = use_signal(|| (0..ROWS).collect::<Vec<u32>>());
     let mut cursor = use_signal(|| None::<u32>);

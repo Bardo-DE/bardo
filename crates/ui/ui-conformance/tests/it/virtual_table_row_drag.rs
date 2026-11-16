@@ -6,7 +6,6 @@
 use dioxus::prelude::*;
 use ui_components::base::selection::{Pick, RowSelection};
 use ui_components::components::controls::scroller::handle::use_scroller;
-use ui_components::components::lists::table::look::TableLook;
 use ui_components::components::lists::table::model::TableColumn;
 use ui_components::components::lists::virtual_table::{
     RowDrop, RowDropKind, RowDropTarget, VirtualTable,
@@ -25,7 +24,10 @@ const ROWS: usize = 100;
 const CELL: f32 = 150.0;
 
 /// Every fifth row is a folder; rows 1 to 3 start selected.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let scroller = use_scroller();
     let mut chosen = use_signal(|| RowSelection::of_rows(Some(1), Some(3), [1, 2, 3]));

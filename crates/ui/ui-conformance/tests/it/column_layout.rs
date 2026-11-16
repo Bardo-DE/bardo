@@ -3,8 +3,6 @@
 
 use dioxus::prelude::*;
 use std::cell::Cell;
-use ui_components::components::chrome::column::model::ColumnExtent;
-use ui_components::components::chrome::column::view::Column;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::spacing::SpacingToken;
@@ -28,7 +26,10 @@ enum Layout {
     Fixed,
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let body = match LAYOUT.with(Cell::get) {
         Layout::Gapless => rsx! {

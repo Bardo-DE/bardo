@@ -14,7 +14,6 @@ use account_oauth::TokenResponse;
 use account_provider::{Issuer, ProviderError, ProviderSpec, SignInMode, Signed};
 use account_sheet::SignInFault;
 use std::fmt::Debug;
-use std::future::Future;
 
 /// One OAuth issuer's rules: the provider, the sign-in and the session each hold a copy of them.
 /// A unit value for an issuer with rules of its own, `Standard` for one without.

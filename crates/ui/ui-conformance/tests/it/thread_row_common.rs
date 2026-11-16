@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::app::thread_row::ThreadRow;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName, ExtraClass};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
@@ -16,7 +15,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Thread() -> Element {
     let mut mounted = use_signal(|| 0u32);
     let data = DataName::parse("hc")

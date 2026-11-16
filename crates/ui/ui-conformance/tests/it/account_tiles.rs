@@ -9,7 +9,6 @@ use probe::rect;
 use std::time::Duration;
 use ui_components::components::app::pin_tile::{PinFace, PinStatus};
 use ui_components::components::app::pin_tiles::{PinAdd, PinItem, PinMenu, PinTiles};
-use ui_components::components::content::image_source::ImageSource;
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_components::prelude::*;
 use ui_components::style::tokens::hex::{Colour, Hex};
@@ -40,7 +39,10 @@ fn account(key: char, provider: MarkProvider) -> PinItem<char> {
 
 /// Three accounts and the Add account tile, in the pinned grid on a window with no grain, each
 /// press and each new order logged.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Tiles() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut order = use_signal(|| vec!['P', 'W', 'G']);
@@ -199,7 +201,10 @@ static RUNNING: GlobalSignal<bool> = Signal::global(|| true);
 
 /// Four accounts, one of each status: A needs attention, B is working, C is working with no
 /// operation running, D is quiet. Each pick, status press and new order is logged.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Statuses() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let operation = if RUNNING() {
@@ -357,7 +362,10 @@ thread_local! {
     static WIDTH: std::cell::Cell<u32> = const { std::cell::Cell::new(212) };
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn OneTile() -> Element {
     let width = WIDTH.with(std::cell::Cell::get);
     rsx! {

@@ -4,7 +4,6 @@
 
 use crate::window_frame_controls::{VIEW, centre, ms};
 use dioxus::prelude::*;
-use ui_components::base::word::Word;
 use ui_components::prelude::*;
 use ui_components::style::space::frame_vars::FrameVars;
 use ui_harness::{Clock, Harness, HarnessConfig, Input};
@@ -23,7 +22,10 @@ fn Reader() -> Element {
     rsx! { p { class: "read", "{look.theme.slug()}|{frame.solid}" } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Switching() -> Element {
     let mut theme = use_signal(|| Theme::Light);
     rsx! {

@@ -6,10 +6,8 @@
 
 use dioxus::prelude::*;
 use ui_components::base::press::PointerButton;
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::name_cell::NameCell;
-use ui_components::components::lists::table::look::TableLook;
 use ui_components::components::lists::table::model::TableColumn;
 use ui_components::components::lists::virtual_table::{OutlineRow, OutlineToggle, VirtualTable};
 use ui_components::prelude::*;
@@ -24,7 +22,10 @@ const NAME: &str = "holiday-picture-2026-final-edit.png";
 /// The room the name cell is given: 14 characters beside the icon.
 const ROOM: Px = Px(120.0);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let scroller = use_scroller();
     let mut log = use_signal(String::new);

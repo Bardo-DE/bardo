@@ -8,7 +8,6 @@ use std::time::Duration;
 use ui_components::components::chrome::toolbar::model::{Picked, ToolbarItem, ToolbarRoom};
 use ui_components::components::chrome::toolbar::search::{SearchSeat, ToolbarSearch};
 use ui_components::components::chrome::toolbar::view::Toolbar;
-use ui_components::components::menus::search::view::SearchField;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -29,7 +28,10 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut query = use_signal(String::new);
     let trailing = vec![

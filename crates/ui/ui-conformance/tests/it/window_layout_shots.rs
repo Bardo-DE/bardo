@@ -6,10 +6,8 @@
 use dioxus::prelude::*;
 use std::cell::Cell;
 use std::time::Duration;
-use ui_components::base::geometry::units::{Point, Px};
 use ui_components::base::vocab::RowState;
 use ui_components::components::app::edge_peek::EdgePeek;
-use ui_components::components::app::space_editor::dot::SpaceDot;
 use ui_components::components::chrome::sidebar::Sidebar;
 use ui_components::components::chrome::sidebar_model::{SidebarFill, SidebarSection};
 use ui_components::components::chrome::split_view::model::{PaneSpec, SplitPane};
@@ -77,7 +75,10 @@ fn look() -> SpaceLook {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let theme = if DARK.with(Cell::get) {
         Theme::Dark

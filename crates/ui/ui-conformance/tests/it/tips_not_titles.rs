@@ -10,7 +10,7 @@ use ui_components::components::content::avatar::AvatarSize;
 use ui_components::components::content::provider_mark::MarkProvider;
 use ui_components::components::controls::chip::{Chip, ChipVariant};
 use ui_components::components::controls::segmented::Tracking;
-use ui_components::components::lists::row::row::{Outline, Row};
+use ui_components::components::lists::row::row::Outline;
 use ui_components::prelude::*;
 use ui_components::style::space::frame_vars::FrameVars;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -54,14 +54,20 @@ fn parts() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn UnderDs() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, {parts()} }
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Bare() -> Element {
     parts()
 }

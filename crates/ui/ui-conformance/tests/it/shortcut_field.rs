@@ -6,7 +6,6 @@ use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey};
 use std::time::Duration;
 use ui_blitz::FocusFallback;
-use ui_components::keys::on_action;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -22,7 +21,10 @@ fn start() -> Chord {
     Chord::new(ChordModifiers::META, ChordKey::Char('j'))
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let keys = ui_components::keys::use_keys();
     let mut shortcut = use_signal(|| Some(start()));

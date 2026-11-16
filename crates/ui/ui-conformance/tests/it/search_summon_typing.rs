@@ -5,7 +5,6 @@
 
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::menus::search::view::SearchField;
 use ui_components::focus::select::Select;
 use ui_components::focus::selector::focus_by_selector;
 use ui_components::prelude::*;
@@ -40,7 +39,10 @@ fn sections(query: &str, drawn: u32) -> Vec<SuggestionSection<String>> {
 
 /// A button that summons the card as mail's ⌘K does: the query cleared, the card shown, and the
 /// field asked for by selector with its text selected.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut query = use_signal(String::new);
     let mut shown = use_signal(|| false);

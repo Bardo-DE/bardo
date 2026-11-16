@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use std::cell::Cell;
 use std::time::Duration;
 use ui_components::base::geometry::placement::{Align, Side};
-use ui_components::components::menus::search::view::SearchField;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -74,7 +73,10 @@ fn sections(long_row: bool) -> Vec<SuggestionSection<String>> {
     .collect()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let setup = SETUP.with(Cell::get);
     let mut query = use_signal(String::new);
@@ -384,7 +386,10 @@ fn a_token_pressed_or_removed_is_told_and_the_caret_stays_in_the_field() {
     );
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Disabled() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

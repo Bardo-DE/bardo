@@ -14,7 +14,6 @@
 use crate::item::{BaseVersion, ContentHash, RemoteId, RemoteVersion};
 use crate::refusal::PutRefused;
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 use std::path::PathBuf;
 
 /// Where an item goes: a folder by id (`None`: the top of the drive) and its name there.

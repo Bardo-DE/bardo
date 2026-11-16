@@ -10,7 +10,6 @@ use ui_components::components::lists::preview::switcher::PaneSwitcher;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::motion::pane_slide::Pane;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -27,7 +26,10 @@ const VIEW: Viewport = Viewport {
 
 /// A tall root (three rows) and a short detail (one row), two buttons that ask for each pane,
 /// and a log of every pane the switcher settled on.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn PanesApp() -> Element {
     let mut shown = use_signal(|| Pane::Root);
     let mut log = use_signal(Vec::<&'static str>::new);

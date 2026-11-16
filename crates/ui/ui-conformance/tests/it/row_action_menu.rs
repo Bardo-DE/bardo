@@ -8,7 +8,6 @@ use std::time::Duration;
 use ui_components::components::menus::pop_up_button::{PopUpButton, PopUpKind};
 use ui_components::host::measure::{Anchor, MountedRef};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -92,7 +91,10 @@ fn Overflow() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn OwnPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -101,7 +103,10 @@ fn OwnPage() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn OverflowPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,

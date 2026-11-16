@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
@@ -29,7 +28,10 @@ fn place(name: &str) -> Vec<DataAttr> {
         .unwrap_or_default()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

@@ -10,7 +10,6 @@ use ui_components::components::app::edge_peek::EdgePeek;
 use ui_components::components::app::link_pill::{LinkPill, LinkTarget};
 use ui_components::components::app::today_tabs::{TodayTab, TodayTabs};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
@@ -23,7 +22,10 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Edge() -> Element {
     let mut pinned = use_signal(|| false);
     rsx! {
@@ -85,7 +87,10 @@ fn a_click_on_the_strip_pins_the_sidebar() {
     assert_eq!(harness.count(".ds-edge"), 0, "no strip while pinned");
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Today() -> Element {
     let start = now();
     let mut hovered = use_signal(Vec::<String>::new);
@@ -159,7 +164,10 @@ fn a_today_tab_leaves_when_its_time_is_up() {
     assert_eq!(harness.count(".ds-row"), 1, "{}", harness.html());
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Link() -> Element {
     let mut copied = use_signal(String::new);
     rsx! {

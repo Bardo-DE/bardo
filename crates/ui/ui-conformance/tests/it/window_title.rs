@@ -6,10 +6,12 @@ use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_components::prelude::*;
 use ui_components::window::host::{use_window_host, use_window_host_provider, use_window_title};
-use ui_components::window::icon::WindowIcon;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, WindowHosting};
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Titled() -> Element {
     let log = use_signal(Vec::<String>::new);
     let mut opened = use_signal(|| 1u32);
@@ -39,7 +41,10 @@ fn the_title_is_set_at_start_and_again_when_the_app_changes_it() {
     assert_eq!(log(&harness), "title:Draft 1,title:Draft 2");
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Hosted() -> Element {
     let mut opened = use_signal(|| 1u32);
     use_window_title(format!("Draft {opened}"));

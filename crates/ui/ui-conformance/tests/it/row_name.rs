@@ -3,9 +3,7 @@
 //! title, not by its key glyph and hint.
 
 use dioxus::prelude::*;
-use ui_components::prelude::RowLeading;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
 const VIEW: Viewport = Viewport {
@@ -14,7 +12,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

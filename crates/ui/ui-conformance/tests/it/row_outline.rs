@@ -11,7 +11,6 @@ use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::components::lists::row::row::Outline;
 use ui_components::focus::request::use_focus_request;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -37,7 +36,10 @@ fn place(path: &str) -> Common {
 }
 
 /// Two branches, each with a leaf; Projects accepts the drag, Archive is its target.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |entry: String| log.with_mut(|log| log.push(entry));

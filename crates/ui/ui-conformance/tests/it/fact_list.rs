@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::fields::fact_list::{Fact, FactList};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
@@ -13,7 +12,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Facts() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

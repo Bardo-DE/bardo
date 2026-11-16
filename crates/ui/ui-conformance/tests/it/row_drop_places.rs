@@ -7,7 +7,6 @@ use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::base::vocab::RowState;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -31,7 +30,10 @@ fn place(name: &str) -> Vec<DataAttr> {
 }
 
 /// The places during a drag the page tracks itself: the place under the pointer is the target.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut over = use_signal(|| None::<&'static str>);

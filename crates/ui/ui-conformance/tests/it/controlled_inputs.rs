@@ -10,7 +10,6 @@ use ui_components::base::vocab::shown_word;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::text_field_model::Invalid;
 use ui_components::components::menus::pop_up_button::PopUpButton;
-use ui_components::components::overlays::sheet::Sheet;
 use ui_components::components::overlays::sheet_attach::Attach;
 use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::*;
@@ -50,7 +49,10 @@ fn click(harness: &mut Harness, selector: &str) {
 }
 
 /// A secure field and a plain one, the caller holding both texts.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Secret() -> Element {
     let mut secret = use_signal(String::new);
     let mut plain = use_signal(|| "visible".to_owned());
@@ -163,7 +165,10 @@ fn submitting_hands_over_the_text_and_a_value_the_caller_empties_empties_the_fie
 }
 
 /// A plain field: its submits, its commits and its error.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Named() -> Element {
     let mut name = use_signal(String::new);
     let mut log = use_signal(Vec::<String>::new);
@@ -227,7 +232,10 @@ const PROVIDERS: [(&str, &str); 4] = [
 ];
 
 /// A provider list the caller holds the selection of, by key; `Reorder` swaps the first two.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Providers() -> Element {
     let mut picked = use_signal(|| None::<&'static str>);
     let mut flipped = use_signal(|| false);
@@ -305,7 +313,10 @@ fn a_list_cursor_is_a_key_the_caller_holds_and_follows_the_key_through_a_reorder
 }
 
 /// A pop-up the caller opens and closes, logging what the person asked.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Driven() -> Element {
     let mut open = use_signal(|| false);
     let mut asked = use_signal(Vec::<String>::new);
@@ -355,7 +366,10 @@ fn a_pop_up_opens_when_the_caller_says_and_only_asks_when_the_person_presses() {
 }
 
 /// A sheet with a field, a default button and a cancel.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Asking() -> Element {
     let mut name = use_signal(String::new);
     let mut log = use_signal(Vec::<String>::new);
@@ -413,7 +427,10 @@ fn return_in_a_sheet_presses_its_default_button_while_that_is_enabled() {
 }
 
 /// A sheet whose first stop is its default button.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Confirming() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -438,7 +455,10 @@ fn a_default_button_can_take_the_keyboard_as_its_sheet_opens() {
 }
 
 /// A sheet whose only stop is a toggle row, with a default button.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Switching() -> Element {
     let mut on = use_signal(|| Check::Off);
     let mut log = use_signal(Vec::<String>::new);

@@ -6,10 +6,6 @@
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::controls::button_marks::Leading;
-use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
-use ui_components::components::controls::progress::view::ProgressIndicator;
-use ui_components::motion::detail::operation::Operation;
-use ui_components::motion::detail::operation::PendingToken;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -31,7 +27,10 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

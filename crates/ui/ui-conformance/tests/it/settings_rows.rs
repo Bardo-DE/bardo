@@ -8,18 +8,15 @@
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_blitz::Extent;
-use ui_components::base::geometry::units::{Point, Px};
 use ui_components::base::vocab::RowState;
 use ui_components::components::app::row_more::RowMore;
 use ui_components::components::chrome::sidebar::Sidebar;
 use ui_components::components::chrome::sidebar_model::SidebarSection;
 use ui_components::components::fields::field_row::FieldRow;
-use ui_components::components::forms::icon_tile::TileFace;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::{ControlSize, SidebarSize};
 use ui_components::style::tokens::hex::Hex;
@@ -36,7 +33,10 @@ const NARROW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Pane() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -53,7 +53,10 @@ fn Pane() -> Element {
 }
 
 /// A `FormSection` holding a `FieldRow` and then a grouped List of one row.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn RowThenList() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -230,7 +233,10 @@ fn a_source_list_glyph_takes_the_ink_of_a_selection_that_moves() {
     );
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn More() -> Element {
     let mut log = use_signal(String::new);
     rsx! {
@@ -258,7 +264,10 @@ fn row_more_reports_the_press_before_it_has_measured_itself() {
     assert!(log.ends_with("rect;"), "the rect follows: {log}");
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Asking() -> Element {
     let named = |label: &str, role, id: &str| {
         AlertButton::new(label, role, EventHandler::new(|()| {})).with_common(Common {
@@ -281,7 +290,10 @@ fn an_alert_button_carries_the_id_its_host_gave_it() {
     assert_eq!(harness.text_of("#cancel").as_deref(), Some("Cancel"));
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn WideControl() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -314,7 +326,10 @@ fn a_wide_control_wraps_inside_the_row_instead_of_overflowing() {
     );
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ShortLabelToggle() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -370,7 +385,10 @@ fn a_grouped_list_after_a_field_row_has_the_hairline_between_them() {
 }
 
 /// A `FormSection` in the dark scheme whose row leads with the neutral family's tile.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn NeutralTileInDark() -> Element {
     rsx! {
         Ds { appearance: Appearance { theme: Theme::Dark, ..Appearance::default() }, material: Material::Window,

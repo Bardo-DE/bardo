@@ -9,7 +9,6 @@ use std::time::Duration;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_harness::harness::{assert_settles_to_zero_frames, settle_until};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -40,12 +39,18 @@ fn opener(page: Page) -> Option<String> {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn StackApp() -> Element {
     stack_app(Motion::default())
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ReducedApp() -> Element {
     stack_app(Motion::Reduced)
 }

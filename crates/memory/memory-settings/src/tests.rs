@@ -2,7 +2,7 @@
 
 use super::keys::{Rule, table};
 use super::*;
-use memory_core::{DayCount, VaultKind};
+use memory_core::DayCount;
 use std::collections::BTreeSet;
 
 fn schema() -> toml::Table {

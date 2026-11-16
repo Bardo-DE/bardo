@@ -3,13 +3,11 @@
 //! are what the window sends. Also the host measuring an element it found by selector.
 
 use dioxus::prelude::*;
-use keyboard_types::{Code, Key, Location, Modifiers};
 use std::cell::RefCell;
 use std::time::Duration;
 use ui_components::edit::raw_key::{KeyPhase, RawKey};
 use ui_components::focus::select::Select;
 use ui_components::focus::soon::focus_soon_told;
-use ui_components::host::measure::Measured;
 use ui_components::prelude::*;
 use ui_harness::{
     Clock, Harness, HarnessConfig, Input, PasteChord, RawKeyInput, RawKeyPhase, Viewport,
@@ -29,7 +27,10 @@ fn heard() -> Vec<RawKey> {
     HEARD.with(|heard| heard.borrow().clone())
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut told = use_signal(|| 0u8);
     let mut downs = use_signal(|| 0u8);

@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::app::space_editor::swatches::PresetSwatches;
 use ui_components::prelude::*;
-use ui_components::style::space::look::SpaceLook;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
 const VIEW: Viewport = Viewport {
@@ -19,7 +18,10 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut look = use_signal(SpaceLook::default);
     let mut changes = use_signal(|| 0u32);

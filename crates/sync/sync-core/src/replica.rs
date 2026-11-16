@@ -7,7 +7,6 @@ use crate::quota::Quota;
 use crate::refusal::{ExportError, PutRefused, ReplicaError};
 use crate::transfer::{Blob, ByteRange, PutItem};
 use account_capability::StorageCap;
-use std::future::Future;
 
 /// A dataset's folder in one Storage account. Every operation is resumable and idempotent.
 pub trait Replica: Send + Sync {

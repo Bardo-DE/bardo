@@ -6,8 +6,6 @@
 use dioxus::prelude::*;
 use std::cell::Cell;
 use std::time::Duration;
-use ui_components::base::geometry::units::Point;
-use ui_components::base::geometry::units::Px;
 use ui_components::components::app::edge_peek::EdgePeek;
 use ui_components::components::chrome::split_view::model::{PaneSpec, SplitPane};
 use ui_components::components::chrome::split_view::view::SplitView;
@@ -24,7 +22,10 @@ thread_local! {
     static PEEKING: Cell<bool> = const { Cell::new(true) };
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut pinned = use_signal(|| false);
     let pane = SplitPane::new(

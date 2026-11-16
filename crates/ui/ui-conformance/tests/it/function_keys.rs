@@ -5,7 +5,6 @@ use dioxus::prelude::*;
 use keymap::{Action, Context, Desktop, Platform, StandardAction};
 use std::time::Duration;
 use ui_blitz::FocusFallback;
-use ui_components::keys::on_action;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -15,7 +14,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -25,7 +27,10 @@ fn Page() -> Element {
 }
 
 /// Under `Ds`, so `use_keys` reads the root's keymap (the harness's platform), not the default.
-#[allow(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[allow(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 #[component]
 fn Pad() -> Element {
     let keys = ui_components::keys::use_keys();

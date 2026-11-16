@@ -7,7 +7,6 @@
 use dioxus::prelude::*;
 use std::cell::Cell;
 use ui_components::base::selection::{Pick, PickHow, RowSelection};
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::lists::column_browser::{
     BrowserColumn, BrowserRow, ColumnBrowser, ColumnPick,
 };
@@ -72,7 +71,10 @@ fn columns(root: &[Node], path: &[usize]) -> Vec<BrowserColumn<&'static str>> {
     shown
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut path = use_signal(Vec::<usize>::new);
     let root = tree();

@@ -8,7 +8,6 @@
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::stack::toast_hub::UndoToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
@@ -23,7 +22,10 @@ fn ms(n: u64) -> Duration {
 }
 
 /// A sheet whose bottom-right button pushes a toast and counts its presses.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn WithSheet() -> Element {
     let toasts = use_toasts();
     let mut presses = use_signal(|| 0u32);
@@ -46,7 +48,10 @@ fn WithSheet() -> Element {
 }
 
 /// The same button with no sheet around it.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn NoSheet() -> Element {
     let toasts = use_toasts();
     rsx! {
@@ -60,7 +65,10 @@ fn NoSheet() -> Element {
 
 /// A button at the bottom right, where the toast lands, that pushes an undoable toast and counts
 /// its presses and the undos.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn UnderToast() -> Element {
     let toasts = use_toasts();
     let mut presses = use_signal(|| 0u32);
@@ -86,7 +94,10 @@ fn UnderToast() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn UnderPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -95,7 +106,10 @@ fn UnderPage() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn SheetPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -104,7 +118,10 @@ fn SheetPage() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn PlainPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,

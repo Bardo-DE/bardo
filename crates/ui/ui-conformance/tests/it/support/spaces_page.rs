@@ -7,7 +7,6 @@ use dioxus::prelude::*;
 use ui_components::components::app::spaces::{
     SlideIn, SpaceHead, SpaceMenu, Spaces, SpacesFoot, SwitchChord, Switched, use_spaces,
 };
-use ui_components::components::menus::item::item::MenuItem;
 use ui_components::prelude::*;
 
 /// The toy payload: the folder a Space opens on.
@@ -103,23 +102,35 @@ fn page_of(count: usize, with_extra: Extra, editing: Editing) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 pub fn Three() -> Element {
     page_of(3, Extra::None, Editing::Sheet)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 pub fn One() -> Element {
     page_of(1, Extra::None, Editing::Sheet)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 pub fn WithAccounts() -> Element {
     page_of(2, Extra::Accounts, Editing::Sheet)
 }
 
 /// Three Spaces whose Edit Space... opens the app's own page.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 pub fn EditedOnAPage() -> Element {
     page_of(3, Extra::None, Editing::Page)
 }

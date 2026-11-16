@@ -4,7 +4,6 @@
 
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::overlays::inline_banner::InlineBanner;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -20,7 +19,10 @@ fn ms(n: u64) -> Duration {
 }
 
 /// A banner over a paragraph; each press is counted in `.log`.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Pane() -> Element {
     let mut log = use_signal(Vec::<&'static str>::new);
     rsx! {
@@ -102,7 +104,10 @@ fn a_severity_colours_the_mark_and_a_danger_banner_is_an_alert() {
 static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 
 /// A banner over a paragraph with no `Ds` root: it needs none.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Bare() -> Element {
     rsx! {
         div { style: "width:480px",
